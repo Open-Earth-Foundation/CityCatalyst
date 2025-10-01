@@ -1,27 +1,25 @@
+# Climate Advisor migration job - runs database migrations on deployment
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: ca-migrate
+  generateName: ca-migrate-
+  namespace: default
 spec:
   ttlSecondsAfterFinished: 86400
   template:
     spec:
       restartPolicy: OnFailure
       containers:
-      - name: climate-advisor-migrate
-        image: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor:latest
-        envFrom:
-        - configMapRef:
-            name: cc-climate-advisor-db-configmap
-        env:
-        - name: ALEMBIC_URL
-          valueFrom:
-            configMapKeyRef:
-              name: cc-climate-advisor-db-configmap
-              key: DB_URL
-        command: ["alembic", "upgrade", "heads"]
-        resources:
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-# Climate Advisor migration job - runs database migrations on deployment
+        - name: climate-advisor-migrate
+          image: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor:latest
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: cc-climate-advisor-db-configmap
+          env:
+            - name: ALEMBIC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: cc-climate-advisor-db-configmap
+                  key: DB_URL
+          command: ["alembic", "upgrade", "head"]

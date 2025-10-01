@@ -3,9 +3,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: climate-advisor-deploy
+  namespace: default
   labels:
     app: climate-advisor-deploy
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:
@@ -21,7 +24,8 @@ spec:
           # Set to Never for local
           imagePullPolicy: Always
           ports:
-            - containerPort: 8000
+            - containerPort: 8080
+              name: http
           envFrom:
             - configMapRef:
                 name: cc-climate-advisor-db-configmap
@@ -38,28 +42,28 @@ spec:
           livenessProbe:
             httpGet:
               path: /health
-              port: 8000
+              port: http
               httpHeaders:
-              - name: X-Liveness-Probe
-                value: "True"
+                - name: X-Liveness-Probe
+                  value: "True"
             initialDelaySeconds: 5
             periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /health
-              port: 8000
+              port: http
               httpHeaders:
-              - name: X-Liveness-Probe
-                value: "True"
+                - name: X-Liveness-Probe
+                  value: "True"
             initialDelaySeconds: 5
             periodSeconds: 5
           startupProbe:
             httpGet:
               path: /health
-              port: 8000
+              port: http
               httpHeaders:
-              - name: X-Liveness-Probe
-                value: "True"
+                - name: X-Liveness-Probe
+                  value: "True"
             initialDelaySeconds: 5
             periodSeconds: 5
             failureThreshold: 30

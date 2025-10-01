@@ -184,7 +184,6 @@ class Settings(BaseModel):
     openrouter_api_key: str | None = os.getenv("OPENROUTER_API_KEY")
     openrouter_base_url: str | None = None  # Will be overridden by LLM config
     openrouter_model: str | None = None     # Will be overridden by LLM config
-    request_timeout_ms: int | None = None   # Will be overridden by LLM config
 
     # OpenAI configuration for embeddings
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
@@ -211,8 +210,6 @@ class Settings(BaseModel):
         if self.openrouter_model is None:
             self.openrouter_model = self.llm.models.get("default", "openrouter/auto")
             
-        if self.request_timeout_ms is None:
-            self.request_timeout_ms = self.llm.api.openrouter.timeout_ms
 
 
 _settings: Settings | None = None

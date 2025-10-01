@@ -10,3 +10,4 @@ data:
   DB_PASSWORD: "climateadvisor"
   DB_NAME: "climateadvisor"
   DB_URL: "postgresql://climateadvisor:climateadvisor@dev-db-aurora.cluster-c5ipsfxjhb0m.us-east-1.rds.amazonaws.com/climateadvisor"
+  CA_DATABASE_URL: "postgresql://climateadvisor:climateadvisor@dev-db-aurora.cluster-c5ipsfxjhb0m.us-east-1.rds.amazonaws.com/climateadvisor"

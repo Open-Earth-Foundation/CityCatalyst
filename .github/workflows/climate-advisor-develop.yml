@@ -12,17 +12,23 @@ on:
   push:
     paths:
       - climate-advisor/service/**
+      - climate-advisor/llm_config.yaml
+      - climate-advisor/prompts/**
       - k8s/ca-deploy.yml
       - k8s/ca-migrate.yml
       - k8s/ca-service.yml
+      - k8s/cc-climate-advisor-db-configmap.yml
       - .github/workflows/climate-advisor-develop.yml
     branches: ["develop"]
   pull_request:
     paths:
       - climate-advisor/service/**
+      - climate-advisor/llm_config.yaml
+      - climate-advisor/prompts/**
       - k8s/ca-deploy.yml
       - k8s/ca-migrate.yml
       - k8s/ca-service.yml
+      - k8s/cc-climate-advisor-db-configmap.yml
       - .github/workflows/climate-advisor-develop.yml
 
 jobs:
@@ -47,7 +53,7 @@ jobs:
           VERSION: ${{ github.sha }}
           IMAGE: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor
         run: |
-          docker build -t $IMAGE:$VERSION -f climate-advisor/service/Dockerfile climate-advisor/service
+          docker build -t $IMAGE:$VERSION -f climate-advisor/service/Dockerfile climate-advisor
           docker tag $IMAGE:$VERSION $IMAGE:latest
           docker push $IMAGE:$VERSION
           docker push $IMAGE:latest
@@ -71,10 +77,12 @@ jobs:
       - name: Deploying service
         run: |
           kubectl create -f k8s/ca-migrate.yml -n default
+          kubectl apply -f k8s/cc-climate-advisor-db-configmap.yml -n default
           kubectl apply -f k8s/ca-service.yml -n default
           kubectl apply -f k8s/ca-deploy.yml -n default
           kubectl set env deployment/climate-advisor-deploy \
             OPENROUTER_API_KEY=${{secrets.OPENROUTER_API_KEY}} \
+            OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_CLIMATE_ADVISOR}} \
             CA_LOG_LEVEL=info \
             CA_CORS_ORIGINS="*" \
             CC_BASE_URL=https://citycatalyst.openearth.dev \

@@ -15,14 +15,13 @@ vector_db/
 ├── utils/                  # Utility functions and helpers
 │   ├── __init__.py
 │   └── text_processing.py  # PDF processing and text splitting utilities
-├── migrations/             # Database migration files
-│   ├── __init__.py
-│   └── 20250126_120000_vector_database.py
 ├── scripts/               # Additional utility scripts (existing)
 ├── files/                 # Directory for PDF files to process
 ├── upload_to_db.py        # Main script for processing PDFs
 ├── vector_init.py         # Database initialization utilities
 └── README.md              # This documentation
+
+Note: Database migrations are managed in ../service/migrations/
 ```
 
 ## Overview
@@ -133,35 +132,33 @@ python upload_to_db.py --directory files
 - `TextSplitter`: Intelligently splits text into chunks
 - `DocumentProcessor`: High-level document processing orchestration
 
-### Migrations (`migrations/`)
+### Database Migrations
 
-Database migration files managed by Alembic:
+**Database migrations are now centralized** in `climate-advisor/service/migrations/`.
 
-**Structure:**
+The vector database schema (pgvector extension and `document_embeddings` table) is included in the main service migration file:
 
-```
-migrations/
-├── env.py                          # Alembic environment configuration
-├── versions/                       # Migration version files
-│   └── 20250126_120000_vector_database.py  # Initial vector DB schema
-└── __init__.py
-```
-
-**Current Migration (20250126_120000):**
-
-- Creates pgvector extension (requires superuser)
-- Creates `document_embeddings` table with VECTOR type
-- Sets up indexes for model_name lookups
-- Note: Vector similarity index (IVFFlat) is created after data insertion
+- **Migration**: `service/migrations/versions/20250118_120000_initial_schema.py`
+- **Includes**:
+  - Service tables (`threads`, `messages`)
+  - Vector database tables (`document_embeddings` with pgvector)
+  - pgvector extension setup
 
 **Running Migrations:**
 
+Migrations are managed through the main service:
+
 ```bash
-# From climate-advisor/vector_db directory
-../.venv/Scripts/python.exe -m alembic upgrade head  # Upgrade to latest
-../.venv/Scripts/python.exe -m alembic downgrade -1  # Rollback one version
-../.venv/Scripts/python.exe -m alembic current       # Show current version
-../.venv/Scripts/python.exe -m alembic history       # Show migration history
+# From climate-advisor/service directory
+alembic upgrade head        # Apply all migrations
+alembic current             # Show current version
+alembic history             # Show migration history
+```
+
+Or use the Kubernetes migration job:
+
+```bash
+kubectl create -f k8s/ca-migrate.yml
 ```
 
 ## Usage Examples

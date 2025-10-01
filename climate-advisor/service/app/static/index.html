@@ -200,13 +200,20 @@
               }
               if (eventType === 'warning' || eventType === 'error') {
                 console.error(`[SSE ${eventType}]`, parsed);
+                if (parsed && typeof parsed === 'object' && parsed.thread_id) {
+                  document.getElementById('msgThreadId').value = parsed.thread_id;
+                }
               } else if (
                 eventType === 'done' &&
                 parsed &&
-                typeof parsed === 'object' &&
-                parsed.history_saved === false
+                typeof parsed === 'object'
               ) {
-                console.warn('[SSE warning] Chat history was not saved.', parsed);
+                if (parsed.history_saved === false) {
+                  console.warn('[SSE warning] Chat history was not saved.', parsed);
+                }
+                if (parsed.thread_id) {
+                  document.getElementById('msgThreadId').value = parsed.thread_id;
+                }
               }
             }
           }

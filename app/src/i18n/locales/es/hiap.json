@@ -47,7 +47,7 @@
   "top-actions-for-your-city-description": "Estas son las 40 principales acciones que recomendamos basadas en tu inventario de GEI y datos de contexto de la ciudad. Encontrarás 20 acciones para Mitigación y 20 para Adaptación en sus respectivas pestañas. Se recomienda volver a ejecutar el priorizador después de cualquier actualización o cambio relevante en los datos.",
   "actions-for-your-city-description": "Estas son las 40 principales acciones que recomendamos basadas en tu inventario de GEI, Evaluación de Riesgos Climáticos y datos de contexto de la ciudad. Encontrarás 20 acciones para Mitigación y 20 para Adaptación en sus respectivas pestañas.",
   "re-prioritize-actions": "Re-priorizar acciones",
-  "generated-action-plan": "generar plan de acción",
+  "generated-action-plan": "Plan de acción generado",
   "export-as-pdf": "exportar como PDF",
   "generating-pdf": "generando PDF...",
   "subactions": "Subacciones",

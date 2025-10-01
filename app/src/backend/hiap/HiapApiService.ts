@@ -10,6 +10,8 @@ import { db } from "@/models";
 import { getCityContextAndEmissionsData } from "./HiapService";
 import ActionPlanService from "@/backend/hiap/ActionPlanService";
 import ActionPlanEmailService from "@/backend/ActionPlanEmailService";
+import { ActionPlan } from "@/models/ActionPlan";
+
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 
@@ -98,12 +100,14 @@ export async function getPrioritizationResult(
 /** This Service works with the AI API. In development, run kubectl port-forward svc/hiap-service-dev 8080:80 to access it. */
 export const startActionPlanJob = async ({
   action,
+  cityId,
   cityLocode,
   lng,
   inventoryId,
   createdBy,
 }: {
   action: HIAction;
+  cityId: string;
   cityLocode: string;
   lng: LANGUAGES;
   inventoryId: string;
@@ -188,7 +192,7 @@ export const startActionPlanJob = async ({
 
       if (!statusResponse.ok) {
         const errorText = await statusResponse.text();
-        logger.error({errorText}, "Check progress error:");
+        logger.error({ errorText }, "Check progress error:");
         throw new Error(`Failed to check progress: ${errorText}`);
       }
 
@@ -231,7 +235,7 @@ export const startActionPlanJob = async ({
 
     if (!planResponse.ok) {
       const errorText = await planResponse.text();
-      logger.error({errorText}, "Get plan error:");
+      logger.error({ errorText }, "Get plan error:");
       throw new Error(`Failed to retrieve plan: ${errorText}`);
     }
 
@@ -250,6 +254,7 @@ export const startActionPlanJob = async ({
     // Save action plan to database
     try {
       const { actionPlan, created } = await ActionPlanService.upsertActionPlan({
+        cityId,
         actionId: action.actionId,
         highImpactActionRankedId: action.hiaRankingId, // This should be the ranked ID, not ranking ID
         cityLocode,
@@ -297,4 +302,82 @@ export const startActionPlanJob = async ({
     console.error("Error generating plan:", error);
     throw new Error(`Failed to generate plan: ${error}`);
   }
+};
+
+export const translateActionPlan = async (
+  inputPlan: ActionPlan,
+  inputLanguage: string,
+  outputLanguage: string,
+): Promise<ActionPlan> => {
+  const startResponse = await fetch(
+    `${HIAP_API_URL}/plan-creator/v1/translate_plan`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ inputPlan, inputLanguage, outputLanguage }),
+    },
+  );
+
+  const startText = await startResponse.text();
+  if (!startResponse.ok) {
+    throw new Error(`Failed to start translation: ${startText}`);
+  }
+
+  let startJson: any;
+  try {
+    startJson = JSON.parse(startText);
+  } catch (e) {
+    throw new Error(`Invalid JSON from translate_plan: ${startText}`);
+  }
+
+  const taskId: string | undefined = startJson.taskId;
+  if (!taskId) {
+    throw new Error("No taskId returned from translate_plan");
+  }
+
+  let status = "pending";
+  let attempts = 0;
+  const maxAttempts = 30;
+  const pollIntervalMs = 5000;
+  while (status === "pending" || status === "running") {
+    const statusResp = await fetch(
+      `${HIAP_API_URL}/plan-creator/v1/check_progress/${taskId}`,
+      { headers: { Accept: "application/json" } },
+    );
+    if (!statusResp.ok) {
+      const txt = await statusResp.text();
+      throw new Error(`Failed to check translation status: ${txt}`);
+    }
+    const statusJson = await statusResp.json();
+    status = statusJson.status;
+    if (status === "failed") {
+      throw new Error(statusJson.error || "Plan translation failed");
+    }
+    if (status === "pending" || status === "running") {
+      if (attempts >= maxAttempts) {
+        throw new Error("Plan translation timed out");
+      }
+      await new Promise((r) => setTimeout(r, pollIntervalMs));
+      attempts += 1;
+    }
+  }
+
+  const planResp = await fetch(
+    `${HIAP_API_URL}/plan-creator/v1/get_plan/${taskId}`,
+    { headers: { Accept: "application/json" } },
+  );
+  const planText = await planResp.text();
+  if (!planResp.ok) {
+    throw new Error(`Failed to fetch translated plan: ${planText}`);
+  }
+  let planJson: ActionPlan;
+  try {
+    planJson = JSON.parse(planText);
+  } catch (e) {
+    throw new Error(`Invalid translated plan JSON: ${planText}`);
+  }
+  return planJson;
 };

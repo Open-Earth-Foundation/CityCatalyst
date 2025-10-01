@@ -19,7 +19,7 @@ const generateRankingRequest = z.object({
  * /api/v0/city/{city}/hiap/action-plan/generate/{rankingId}:
  *   post:
  *     summary: Generate action plan for a specific ranking
- *     description: Generate a new action plan based on the provided action and ranking ID
+ *     description: Generate a new action plan based on the provided action and ranking ID. The city ID is extracted from the route parameter.
  *     parameters:
  *       - in: path
  *         name: city
@@ -75,6 +75,7 @@ export const POST = apiHandler(
 
     const result = await startActionPlanJob({
       action: body.action as HIAction,
+      cityId: params.city,
       cityLocode: body.cityLocode,
       lng: lng as LANGUAGES,
       inventoryId: body.inventoryId,

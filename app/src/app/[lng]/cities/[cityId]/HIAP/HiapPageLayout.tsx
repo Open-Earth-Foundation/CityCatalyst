@@ -1,6 +1,6 @@
 import { Box } from "@chakra-ui/react";
 import { Hero } from "@/components/GHGIHomePage/Hero";
-import { InventoryResponse, ACTION_TYPES } from "@/util/types";
+import { InventoryResponse, CityWithProjectDataResponse } from "@/util/types";
 import { PopulationAttributes } from "@/models/Population";
 import { TFunction } from "i18next";
 
@@ -10,6 +10,7 @@ interface HiapPageLayoutProps {
   lng: string;
   population: PopulationAttributes | null;
   children: React.ReactNode;
+  city?: CityWithProjectDataResponse | undefined;
 }
 
 export function HiapPageLayout({
@@ -18,6 +19,7 @@ export function HiapPageLayout({
   lng,
   population,
   children,
+  city,
 }: HiapPageLayoutProps) {
   return (
     <Box
@@ -34,6 +36,7 @@ export function HiapPageLayout({
         formattedEmissions={formattedEmissions}
         lng={lng}
         population={population}
+        city={city}
       />
 
       <Box

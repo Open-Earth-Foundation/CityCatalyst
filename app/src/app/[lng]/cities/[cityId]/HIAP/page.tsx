@@ -34,6 +34,11 @@ export default function HIAPPage(props: {
     error: inventoryError,
   } = useGetInventoryByCityIdQuery(cityId);
 
+  // getCityData
+  const { data: city } = api.useGetCityQuery(cityId, {
+    skip: !cityId,
+  });
+
   const {
     data: hiapData,
     isLoading,
@@ -84,6 +89,7 @@ export default function HIAPPage(props: {
         formattedEmissions={formattedEmissions}
         lng={lng}
         population={null}
+        city={city}
       >
         <ClimateActionsSection
           t={t}

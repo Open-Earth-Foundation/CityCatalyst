@@ -2,7 +2,10 @@
 import dynamic from "next/dynamic";
 import type { TFunction } from "i18next";
 import type { PopulationAttributes } from "@/models/Population";
-import type { InventoryResponse } from "@/util/types";
+import type {
+  CityWithProjectDataResponse,
+  InventoryResponse,
+} from "@/util/types";
 import { useGetOCCityDataQuery } from "@/services/api";
 import { useMemo } from "react";
 import { Box, Heading, Icon, Spinner, Text } from "@chakra-ui/react";
@@ -30,6 +33,7 @@ interface HeroProps {
   formattedEmissions: { value: string; unit: string };
   population?: PopulationAttributes | null;
   lng: string;
+  city?: CityWithProjectDataResponse | undefined;
 }
 
 export function Hero({
@@ -40,6 +44,7 @@ export function Hero({
   isPublic,
   population,
   lng,
+  city,
 }: HeroProps) {
   const { t } = useTranslation(lng, "dashboard");
   const { data: cityData } = useGetOCCityDataQuery(
@@ -48,6 +53,8 @@ export function Hero({
       skip: !inventory?.city?.locode,
     },
   );
+
+  console.log("city", city);
 
   const popWithDS = useMemo(
     () =>
@@ -58,6 +65,8 @@ export function Hero({
       ),
     [cityData?.population, population?.population, population?.year],
   );
+
+  console.log("inventory", city?.name);
 
   return (
     <Box bg="content.alternative" w="full" h="491px" pt="150px" px={8}>
@@ -91,19 +100,21 @@ export function Hero({
                   <Link
                     href={`/public/project/${inventory?.city?.project?.projectId}`}
                   >
-                    <ProjectTitle inventory={inventory} t={t} />
+                    <ProjectTitle inventory={inventory} city={city} t={t} />
                   </Link>
                 ) : (
-                  <ProjectTitle inventory={inventory} t={t} />
+                  <ProjectTitle inventory={inventory} city={city} t={t} />
                 )}
                 <Box display="flex" alignItems="center" gap={4}>
-                  {inventory?.city ? (
+                  {inventory?.city || city ? (
                     <>
                       <CircleFlag
                         countryCode={
-                          inventory.city.locode
+                          inventory?.city?.locode
                             ?.substring(0, 2)
-                            .toLowerCase() || ""
+                            .toLowerCase() ||
+                          city?.locode?.substring(0, 2).toLowerCase() ||
+                          ""
                         }
                         width={32}
                       />
@@ -115,7 +126,7 @@ export function Hero({
                         display="flex"
                       >
                         <span data-testid="hero-city-name">
-                          {inventory?.city?.name}
+                          {inventory ? inventory?.city?.name : city?.name}
                         </span>
                       </Heading>
                     </>
@@ -308,7 +319,7 @@ export function Hero({
             </Box>
             <Box mt={-25}>
               <CityMap
-                locode={inventory?.city?.locode ?? null}
+                locode={inventory?.city?.locode || city?.locode || null}
                 width={422}
                 height={317}
               />
@@ -322,9 +333,11 @@ export function Hero({
 
 function ProjectTitle({
   inventory,
+  city,
   t,
 }: {
   inventory: InventoryResponse | null;
+  city: CityWithProjectDataResponse | undefined;
   t: TFunction;
 }) {
   return (
@@ -335,9 +348,15 @@ function ProjectTitle({
       color="white"
       data-testid="hero-project-name"
     >
-      {inventory?.city?.project?.name === "cc_project_default"
-        ? t("default-project")
-        : inventory?.city?.project?.name}
+      {inventory
+        ? inventory?.city?.project?.name === "cc_project_default"
+          ? t("default-project")
+          : inventory?.city?.project?.name
+        : city
+          ? city?.project?.name === "cc_project_default"
+            ? t("default-project")
+            : city?.project?.name
+          : t("default-project")}
     </Text>
   );
 }

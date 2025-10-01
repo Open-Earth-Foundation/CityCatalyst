@@ -11,6 +11,11 @@ import { defineConfig, devices } from "@playwright/test";
  */
 export default defineConfig({
   testDir: "./e2e",
+  /* Make default timeouts shorter to fail fast */
+  timeout: 15000,
+  expect: {
+    timeout: 7000,
+  },
   /* Global setup to create admin user */
   globalSetup: "./e2e/global-setup.ts",
   /* Global teardown to cleanup admin user */
@@ -24,7 +29,7 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: "html",
+  reporter: [["html", { outputFolder: "playwright-report", open: "never" }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -87,7 +92,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "npm run start",
+    command: process.env.CI ? "bash -lc 'npm run build && npm run start'" : "npm run start",
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI,
   },

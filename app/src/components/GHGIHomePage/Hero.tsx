@@ -54,7 +54,6 @@ export function Hero({
     },
   );
 
-  console.log("city", city);
 
   const popWithDS = useMemo(
     () =>

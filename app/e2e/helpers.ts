@@ -272,16 +272,19 @@ export async function navigateToGHGIModule(page: Page) {
   await page.waitForLoadState("networkidle");
   await assessButton.click();
 
+  // Open the first accordion
+  const firstAccordion = page.locator('[data-part="item-trigger"]').first();
+  await firstAccordion.click();
+  await page.waitForTimeout(500);
+
   // Click the GHGI module launch button
   const moduleButton = page.getByTestId(
     "module-launch-077690c6-6fa3-44e1-84b7-6d758a6a4d88",
   );
   await page.waitForLoadState("networkidle");
-  
-  // Wait for stable state and handle potential accordion interference
   await moduleButton.waitFor({ state: 'visible' });
-  await page.waitForTimeout(1000); // Allow animations to complete
-  await moduleButton.click({ force: true });
+  await moduleButton.click();
+
   await page.waitForLoadState("networkidle");
 
   // If we're at GHGI onboarding, complete it to reach the inventory dashboard

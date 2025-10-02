@@ -163,8 +163,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   const onSubmit: SubmitHandler<Inputs> = async ({ activity }) => {
     const gasValues = extractGasesAndUnits(activity);
 
-    // return null; // temporary disable submit
-
     // extract field values
     const values: Record<string, any> = {};
     fields?.forEach((field) => {

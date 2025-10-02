@@ -196,12 +196,17 @@ export default function HomePage({
             bg="background.backgroundLight"
             px={8}
             mx="auto"
+            mt={"60px"}
           >
             <HStack my={8}>
               <Image src="/assets/automation.svg" alt="" />
               <HeadlineMedium>{t("tools-title")}</HeadlineMedium>
             </HStack>
-            <Separator borderColor="divider.neutral" borderWidth="2px" />
+            <Separator
+              borderColor="divider.neutral"
+              borderWidth="2px"
+              mb="48px"
+            />
             {/* Accordions for stages */}
             {modulesByStage && projectModules && (
               <AccordionRoot multiple defaultValue={stageOrder}>

@@ -535,6 +535,34 @@ export const fetchRanking = async (
     const locode = await InventoryService.getLocode(inventoryId);
     const ranking = await findOrSelectRanking(inventoryId, locode, lang, type);
     if (ranking) {
+      // Handle reprioritization - reset status and restart job
+      if (
+        ignoreExisting &&
+        ranking.status === HighImpactActionRankingStatus.SUCCESS
+      ) {
+        logger.info(
+          "Reprioritization requested - resetting ranking status to PENDING",
+        );
+
+        // Reset ranking status to PENDING (keep existing data)
+        await ranking.update({
+          status: HighImpactActionRankingStatus.PENDING,
+          jobId: null, // Clear old job ID
+        });
+
+        // Start new prioritization job
+        const contextData = await getCityContextAndEmissionsData(inventoryId);
+        const { taskId } = await startPrioritization(contextData, type);
+
+        // Update ranking with new job ID
+        await ranking.update({ jobId: taskId });
+
+        // Start background job
+        checkActionRankingJob(ranking, lang, type, user || undefined);
+
+        return { ...ranking.toJSON(), rankedActions: [] };
+      }
+
       if (!ignoreExisting) {
         // Return if already have ranked actions for this language
         const existingRanked = await getRankedActionsForLang(

@@ -35,7 +35,7 @@ export default function HIAPPage(props: {
     error: inventoryError,
   } = useGetInventoryByCityIdQuery(cityId);
 
-  const [ignoreExisting, setIgnoreExisting] = useState(true);
+  const [ignoreExisting, setIgnoreExisting] = useState(false);
 
   const {
     data: hiapData,
@@ -135,7 +135,10 @@ export default function HIAPPage(props: {
         {/* citycatalyst actions section */}
         <ClimateActionsSection
           t={t}
-          onReprioritize={() => refetch()}
+          onReprioritize={() => {
+            setIgnoreExisting(true);
+            refetch().finally(() => setIgnoreExisting(false));
+          }}
           setIgnoreExisting={setIgnoreExisting}
           actions={hiapData}
           inventory={inventory}

@@ -19,17 +19,7 @@ on:
       - k8s/ca-service.yml
       - k8s/cc-climate-advisor-db-configmap.yml
       - .github/workflows/climate-advisor-develop.yml
-    branches: ["develop", "ON-4672"]
-  pull_request:
-    paths:
-      - climate-advisor/service/**
-      - climate-advisor/llm_config.yaml
-      - climate-advisor/prompts/**
-      - k8s/ca-deploy.yml
-      - k8s/ca-migrate.yml
-      - k8s/ca-service.yml
-      - k8s/cc-climate-advisor-db-configmap.yml
-      - .github/workflows/climate-advisor-develop.yml
+    branches: ["develop"]
 
 jobs:
   # Skipping tests no tests available for climate advisor yet
@@ -37,6 +27,7 @@ jobs:
   pushToGHCR:
     # needs: runTests  # Commented out since we're skipping tests
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v4
 
@@ -47,8 +38,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pushing Climate Advisor to GHCR (develop)
-        if: github.ref == 'refs/heads/develop'
+      - name: Pushing Climate Advisor to GHCR
         env:
           VERSION: ${{ github.sha }}
           IMAGE: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor
@@ -57,24 +47,6 @@ jobs:
           docker tag $IMAGE:$VERSION $IMAGE:latest
           docker push $IMAGE:$VERSION
           docker push $IMAGE:latest
-
-      - name: Pushing Climate Advisor to GHCR (ON-4672 branch)
-        if: github.ref == 'refs/heads/ON-4672'
-        env:
-          VERSION: ON-4672
-          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor
-        run: |
-          docker build -t $IMAGE:$VERSION -f climate-advisor/service/Dockerfile climate-advisor
-          docker push $IMAGE:$VERSION
-
-      - name: Pushing Climate Advisor to GHCR (PR)
-        if: github.event_name == 'pull_request'
-        env:
-          VERSION: pr-${{ github.event.pull_request.number }}
-          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor
-        run: |
-          docker build -t $IMAGE:$VERSION -f climate-advisor/service/Dockerfile climate-advisor
-          docker push $IMAGE:$VERSION
 
   deployToEKS:
     needs: pushToGHCR

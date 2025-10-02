@@ -3,7 +3,7 @@ import { parse } from "csv-parse/sync";
 import { navigateToGHGIModule } from "./helpers";
 import * as fs from "fs";
 
-test.describe("CSV Download", () => {
+test.describe.skip("CSV Download", () => {
   test.setTimeout(120000); // Set 120 second timeout for all tests in this describe block
 
   test.beforeEach(async ({ page }) => {

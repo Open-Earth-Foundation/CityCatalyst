@@ -189,21 +189,27 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                 <Table.Cell textAlign="end" truncate>
                   {/*Direct measure entries are collected in tonnes by default*/}
                   {convertKgToTonnes(
-                    activity?.activityData?.co2_amount * 1000,
+                    activity?.activityData?.co2_unit === "units-tonnes"
+                      ? activity?.activityData?.co2_amount * 1000
+                      : activity?.activityData?.co2_amount,
                     "CO2e",
                     REGIONALLOCALES[lng as string],
                   )}
                 </Table.Cell>
                 <Table.Cell textAlign="end" truncate>
                   {convertKgToTonnes(
-                    activity?.activityData?.n2o_amount * 1000,
+                    activity?.activityData?.n2o_unit === "units-tonnes"
+                      ? activity?.activityData?.n2o_amount * 1000
+                      : activity?.activityData?.n2o_amount,
                     "N2O",
                     REGIONALLOCALES[lng as string],
                   )}
                 </Table.Cell>
                 <Table.Cell textAlign="end" truncate>
                   {convertKgToTonnes(
-                    activity?.activityData?.ch4_amount * 1000,
+                    activity?.activityData?.ch4_unit === "units-tonnes"
+                      ? activity?.activityData?.ch4_amount * 1000
+                      : activity?.activityData?.ch4_amount,
                     "CH4",
                     REGIONALLOCALES[lng as string],
                   )}

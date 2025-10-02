@@ -136,7 +136,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
           ...gasValue,
           gas: gasValue.gas as string,
           factor: parseFloat(data[`${gasValue.gas}EmissionFactor`]),
-          unit: data[`${gasValue.gas}EmissionFactorUnit`] as string,
+          unit: data[
+            `${gasValue.gas?.toLocaleLowerCase()}EmissionFactorUnit`
+          ] as string,
         };
         gasArray.push(gasObject);
       });
@@ -146,7 +148,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     const gasArray: { gas: string; factor: number; unit: string }[] = [];
     gases.forEach((gas) => {
       const gasFactorKey = `${gas}EmissionFactor`;
-      const gasUnitKey = `${gas}EmissionFactorUnit`;
+      const gasUnitKey = `${gas?.toLocaleLowerCase()}EmissionFactorUnit`;
       const gasObject = {
         gas: gas,
         factor: parseFloat(data[gasFactorKey]),
@@ -159,10 +161,8 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   }
 
   const onSubmit: SubmitHandler<Inputs> = async ({ activity }) => {
-    console.log(activity);
     const gasValues = extractGasesAndUnits(activity);
 
-    console.log(gasValues);
     // return null; // temporary disable submit
 
     // extract field values
@@ -183,9 +183,12 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     const requestData = {
       activityData: methodology?.id.includes("direct-measure")
         ? {
-            co2_amount: gasValues[1].factor,
-            ch4_amount: gasValues[0].factor,
-            n2o_amount: gasValues[2].factor,
+            ch4_amount: gasValues.find((g) => g.gas === "CH4")?.factor || 0,
+            co2_amount: gasValues.find((g) => g.gas === "CO2")?.factor || 0,
+            n2o_amount: gasValues.find((g) => g.gas === "N2O")?.factor || 0,
+            ch4_unit: gasValues.find((g) => g.gas === "CH4")?.unit || "",
+            co2_unit: gasValues.find((g) => g.gas === "CO2")?.unit || "",
+            n2o_unit: gasValues.find((g) => g.gas === "N2O")?.unit || "",
             ...values,
           }
         : { ...values },

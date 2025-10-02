@@ -63,11 +63,10 @@ async def get_db_session():
 
 async def init_pgvector(session=None) -> None:
     """
-    Initialize pgvector extension and configure vector columns.
+    Initialize pgvector extension.
 
-    This function:
-    1. Creates the pgvector extension if it doesn't exist
-    2. Configures the vector column type for document embeddings
+    This function creates the pgvector extension if it doesn't exist.
+    Vector columns are defined in the SQLAlchemy models using pgvector.sqlalchemy.Vector.
 
     Args:
         session: Optional async session to use. If None, creates a new session.
@@ -76,15 +75,6 @@ async def init_pgvector(session=None) -> None:
         # Use provided session
         # Create pgvector extension if it doesn't exist
         await session.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
-
-        # Create custom vector type for 1536-dimensional embeddings (text-embedding-3-small)
-        # This is optional as pgvector can handle vectors of any dimension
-        # but provides better performance with explicit types
-        await session.execute(text("""
-            CREATE TYPE IF NOT EXISTS vector_1536 AS (
-                x REAL[1536]
-            )
-        """))
 
         await session.commit()
         print("pgvector extension initialized successfully!")
@@ -95,15 +85,6 @@ async def init_pgvector(session=None) -> None:
         async with async_session_factory() as session:
             # Create pgvector extension if it doesn't exist
             await session.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
-
-            # Create custom vector type for 1536-dimensional embeddings (text-embedding-3-small)
-            # This is optional as pgvector can handle vectors of any dimension
-            # but provides better performance with explicit types
-            await session.execute(text("""
-                CREATE TYPE IF NOT EXISTS vector_1536 AS (
-                    x REAL[1536]
-                )
-            """))
 
             await session.commit()
             print("pgvector extension initialized successfully!")

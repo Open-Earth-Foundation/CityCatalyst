@@ -26,7 +26,7 @@
  */
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
-import pkg from "../../../../../../package.json";
+import pkg from "@/components/package.json";
 
 export const GET = apiHandler(async () => {
   return NextResponse.json({

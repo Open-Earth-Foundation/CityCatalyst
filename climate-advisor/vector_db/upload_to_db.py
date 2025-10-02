@@ -96,9 +96,7 @@ async def create_database_tables(engine) -> None:
     """Create database tables if they don't exist."""
     async with engine.begin() as conn:
         # Import models to ensure they are registered with SQLAlchemy
-        from app.models.document import DocumentEmbedding  # type: ignore
-
-        # Create all tables
+        # Create all tables for the vector models
         await conn.run_sync(DocumentEmbedding.metadata.create_all)
 
 
@@ -132,19 +130,19 @@ async def store_document_with_embeddings(
                 print(f"Warning: No embedding found for chunk {i} in {doc_data['filename']}")
                 continue
 
-            # Create embedding record with document metadata
+            # Create embedding record with document metadata and chunk content
             embedding = DocumentEmbedding(
                 embedding_id=str(uuid4()),
-                filename=doc_data["filename"],
-                file_path=doc_data["file_path"],
-                file_type=doc_data["file_type"],
-                file_size=doc_data["file_size"],
-                chunk_index=chunk_data["chunk_index"],
-                chunk_content=chunk_data["content"],
-                document_content=doc_data["content"],  # Full document content
-                metadata=chunk_data.get("metadata", {}),
                 model_name=embedding_result.model,
-                embedding_vector=embedding_result.embedding
+                embedding_vector=embedding_result.embedding,
+                # Document metadata
+                filename=doc_data["filename"],
+                file_path=doc_data.get("file_path"),
+                file_type=doc_data.get("file_type", "pdf"),
+                # Chunk data
+                chunk_content=chunk_data["content"],
+                chunk_index=chunk_data["chunk_index"],
+                chunk_size=chunk_data["metadata"]["chunk_size"],
             )
 
             session.add(embedding)

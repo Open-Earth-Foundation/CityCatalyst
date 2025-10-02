@@ -35,7 +35,7 @@ class ThreadService:
             try:
                 thread_id = UUID(thread_id)
             except ValueError:
-                return None
+                raise ThreadNotFoundException(thread_id)
 
         result = await self.session.execute(
             select(Thread).where(Thread.thread_id == thread_id)

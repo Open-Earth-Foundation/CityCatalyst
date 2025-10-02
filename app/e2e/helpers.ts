@@ -277,7 +277,11 @@ export async function navigateToGHGIModule(page: Page) {
     "module-launch-077690c6-6fa3-44e1-84b7-6d758a6a4d88",
   );
   await page.waitForLoadState("networkidle");
-  await moduleButton.click();
+  
+  // Wait for stable state and handle potential accordion interference
+  await moduleButton.waitFor({ state: 'visible' });
+  await page.waitForTimeout(1000); // Allow animations to complete
+  await moduleButton.click({ force: true });
   await page.waitForLoadState("networkidle");
 
   // If we're at GHGI onboarding, complete it to reach the inventory dashboard

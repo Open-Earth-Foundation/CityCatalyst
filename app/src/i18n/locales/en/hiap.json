@@ -132,5 +132,9 @@
   "plan-generation-started-description": "Your action plan is being generated. You'll receive an email notification when it's ready.",
   "plan-generation-failed": "Generation Failed",
   "plan-generation-failed-description": "Failed to start plan generation. Please try again.",
+  "reprioritization-started": "Reprioritization Started",
+  "reprioritization-started-description": "Your climate actions are being re-prioritized with the latest data. You'll receive an email when complete.",
+  "reprioritization-failed": "Reprioritization Failed",
+  "reprioritization-failed-description": "Failed to start reprioritization. Please try again.",
   "unknown": "Unknown"
 }

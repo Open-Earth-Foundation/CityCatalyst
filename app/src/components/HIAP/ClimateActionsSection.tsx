@@ -16,6 +16,7 @@ import { BodyLarge } from "../Texts/Body";
 import { TitleSmall } from "../Texts/Title";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
+import { toaster } from "@/components/ui/toaster";
 
 interface ClimateActionsSectionProps {
   t: (key: string) => string;
@@ -64,10 +65,26 @@ export function ClimateActionsSection({
         "Starting reprioritization",
       );
 
+      // Show toast notification that reprioritization has started
+      toaster.create({
+        title: t("reprioritization-started"),
+        description: t("reprioritization-started-description"),
+        type: "info",
+        duration: 5000,
+      });
+
       onReprioritize?.({ ignoreExisting: true });
       setIgnoreExisting?.(true);
     } catch (error) {
       logger.error({ error }, "Failed to reprioritize actions");
+
+      // Show error toast
+      toaster.create({
+        title: t("reprioritization-failed"),
+        description: t("reprioritization-failed-description"),
+        type: "error",
+        duration: 5000,
+      });
     }
   };
   return (

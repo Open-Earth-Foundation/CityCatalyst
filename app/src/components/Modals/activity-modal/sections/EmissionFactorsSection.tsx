@@ -4,8 +4,8 @@ import { Control } from "react-hook-form";
 import FormattedNumberInput from "@/components/formatted-number-input";
 import { Field } from "@/components/ui/field";
 import { MdWarning } from "react-icons/md";
-import { BodyMedium } from "@/components/Texts/Body";
-import LabelLarge from "@/components/Texts/Label";
+import { BodyMedium } from "@/components/package/Texts/Body";
+import LabelLarge from "@/components/package/Texts/Label";
 
 interface EmissionFactorsSectionProps {
   t: TFunction;

@@ -39,7 +39,7 @@ import TabTrigger from "@/components/ui/tab-trigger";
 import { logger } from "@/services/logger";
 import { trackEvent } from "@/lib/analytics";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
-import { TitleMedium } from "@/components/Texts/Title";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import PlanDetailsBox from "@/components/PlanDetailsBox";
 
 const AccountSettingsTab = ({ t }: { t: TFunction }) => {

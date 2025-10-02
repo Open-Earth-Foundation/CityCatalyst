@@ -2,8 +2,8 @@ import React from "react";
 import { useTranslation } from "@/i18n/client";
 import { Box, Link } from "@chakra-ui/react";
 import { Trans } from "react-i18next";
-import { BodyLarge } from "@/components/Texts/Body";
-import { TitleMedium } from "@/components/Texts/Title";
+import { BodyLarge } from "@/components/package/Texts/Body";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import i18next from "i18next";
 import { OrganizationResponse } from "@/util/types";
 

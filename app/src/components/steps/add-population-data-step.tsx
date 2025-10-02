@@ -20,7 +20,7 @@ import {
 import FormattedThousandsNumberInput from "@/app/[lng]/onboarding/setup/FormattedThousandsNumberInput";
 import { MdCheck, MdErrorOutline, MdInfoOutline } from "react-icons/md";
 import { Field } from "@/components/ui/field";
-import { BodyMedium } from "@/components/Texts/Body";
+import { BodyMedium } from "@/components/package/Texts/Body";
 import {
   SelectContent,
   SelectItem,

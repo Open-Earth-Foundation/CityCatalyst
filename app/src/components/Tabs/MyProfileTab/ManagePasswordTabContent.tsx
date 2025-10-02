@@ -1,7 +1,7 @@
 import React, { FC, useState } from "react";
 
 import { Box, Text, VStack } from "@chakra-ui/react";
-import { TitleMedium } from "@/components/Texts/Title";
+import { TitleMedium } from "@/components/package/Texts/Title";
 
 import { TFunction } from "i18next";
 import PasswordInput from "@/components/password-input";

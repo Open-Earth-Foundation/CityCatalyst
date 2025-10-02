@@ -1,6 +1,6 @@
 "use client";
-import { BodyMedium } from "@/components/Texts/Body";
-import { HeadlineSmall } from "@/components/Texts/Headline";
+import { BodyMedium } from "@/components/package/Texts/Body";
+import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { ProjectWithCities } from "@/util/types";
 import { Card, HStack, Icon } from "@chakra-ui/react";
 import type { TFunction } from "i18next";

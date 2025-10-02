@@ -20,7 +20,7 @@ import {
   NativeSelectField,
   NativeSelectRoot,
 } from "@/components/ui/native-select";
-import { BodyMedium } from "@/components/Texts/Body";
+import { BodyMedium } from "@/components/package/Texts/Body";
 
 interface ActivityDataSectionProps {
   t: TFunction;

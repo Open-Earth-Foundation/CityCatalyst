@@ -15,16 +15,16 @@ import {
   DrawerRoot,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-import { TitleLarge, TitleMedium } from "@/components/Texts/Title";
-import { BodyLarge } from "@/components/Texts/Body";
-import { DisplayMedium } from "@/components/Texts/Display";
+import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
+import { BodyLarge } from "@/components/package/Texts/Body";
+import { DisplayMedium } from "@/components/package/Texts/Display";
 import {
   HIAction,
   MitigationAction,
   AdaptationAction,
   ACTION_TYPES,
 } from "@/util/types";
-import { ButtonMedium } from "@/components/Texts/Button";
+import { ButtonMedium } from "@/components/package/Texts/Button";
 import { BarVisualization } from "@/components/BarVisualization";
 
 export function ActionDrawer({

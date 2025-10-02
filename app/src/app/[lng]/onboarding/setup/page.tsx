@@ -72,7 +72,8 @@ export default function OnboardingSetup(props: {
     setValue,
     watch,
     control,
-    formState: { errors, isSubmitting },
+    formState: { errors },
+    setError,
   } = useForm<Inputs>();
 
   const params = useSearchParams();
@@ -124,6 +125,9 @@ export default function OnboardingSetup(props: {
   const [ocCityData, setOcCityData] = useState<OCCityAttributes>();
   const [isConfirming, setConfirming] = useState(false);
   const [isProjectLimitModalOpen, setIsProjectLimitModalOpen] = useState(false);
+  const [populationErrorMessage, setPopulationErrorMessage] = useState<
+    string | undefined
+  >(undefined);
 
   const makeErrorToast = (title: string, description?: string) => {
     const { showErrorToast } = UseErrorToast({ description, title });
@@ -174,6 +178,13 @@ export default function OnboardingSetup(props: {
       selectedProject?.length > 0 ? selectedProject[0] : undefined;
 
     try {
+      if (!data.locode || !data.name) {
+        // TODO this error will appear on the last step, and users need to navigate back
+        // make sure validation is applied on each step, either using react-hook-form or manually
+        setPopulationErrorMessage(t("city-name-locode-required"));
+        throw new Error("City name and locode are required");
+      }
+
       city = await addCity({
         name: data.name,
         locode: data.locode!,
@@ -184,6 +195,20 @@ export default function OnboardingSetup(props: {
         countryLocode: country?.actor_id ?? undefined,
         projectId: EnterpriseMode ? projectId : undefined,
       }).unwrap();
+
+      if (cityPopulation == null || cityPopulationYear == null) {
+        setPopulationErrorMessage(t("city-population-required"));
+        return;
+      } else if (regionPopulation == null || regionPopulationYear == null) {
+        setPopulationErrorMessage(t("region-population-required"));
+        return;
+      } else if (countryPopulation == null || countryPopulationYear == null) {
+        setPopulationErrorMessage(t("country-population-required"));
+        return;
+      }
+
+      // clear error if all is well
+      setPopulationErrorMessage(undefined);
 
       // Log population data before sending
       const populationData = {
@@ -219,16 +244,16 @@ export default function OnboardingSetup(props: {
         inventoryType: inventoryGoal,
         globalWarmingPotentialType: globalWarmingPotential,
       }).unwrap();
-      
+
       // Track inventory creation
       trackEvent("inventory_created", {
         city_name: data.name,
         inventory_year: data.year,
         inventory_type: inventoryGoal,
         gwp_type: globalWarmingPotential,
-        from_onboarding: true
+        from_onboarding: true,
       });
-      
+
       await setUserInfo({
         defaultInventoryId: inventory.inventoryId,
         defaultCityId: city?.cityId!,
@@ -350,6 +375,7 @@ export default function OnboardingSetup(props: {
               setValue={setValue}
               watch={watch}
               ocCityData={ocCityData}
+              populationErrorMessage={populationErrorMessage}
             />
           )}
           {activeStep === 3 && (

@@ -3,22 +3,40 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Icon } from "@chakra-ui/react";
 import { LuRefreshCw } from "react-icons/lu";
 import { MdOutlineInfo } from "react-icons/md";
-import { HIAction, HIAPResponse } from "@/util/types";
+import {
+  HIAction,
+  HIAPResponse,
+  InventoryResponse,
+  ACTION_TYPES,
+  LANGUAGES,
+} from "@/util/types";
 import { ButtonMedium } from "../Texts/Button";
 import { HeadlineSmall } from "../Texts/Headline";
 import { BodyLarge } from "../Texts/Body";
 import { TitleSmall } from "../Texts/Title";
+import { api } from "@/services/api";
+import { logger } from "@/services/logger";
 
 interface ClimateActionsSectionProps {
   t: (key: string) => string;
-  onReprioritize?: () => void;
+  onReprioritize?: ({ ignoreExisting }: { ignoreExisting: boolean }) => void;
   actions: HIAPResponse | undefined;
+  inventory: InventoryResponse | null;
+  actionType?: ACTION_TYPES;
+  lng?: LANGUAGES;
+  setIgnoreExisting?: (ignoreExisting: boolean) => void;
+  isReprioritizing?: boolean;
 }
 
 export function ClimateActionsSection({
   t,
   onReprioritize,
   actions,
+  inventory,
+  actionType = ACTION_TYPES.Mitigation,
+  lng = LANGUAGES.en,
+  setIgnoreExisting,
+  isReprioritizing,
 }: ClimateActionsSectionProps) {
   const [actionsByLng, setActionsByLng] = useState<HIAction[] | undefined>(
     actions?.rankedActions,
@@ -28,6 +46,30 @@ export function ClimateActionsSection({
   useEffect(() => {
     setActionsByLng(actions?.rankedActions);
   }, [actions?.rankedActions]);
+
+  const handleReprioritize = async () => {
+    if (!inventory?.inventoryId) {
+      logger.warn("Cannot reprioritize without inventory ID");
+      return;
+    }
+
+    try {
+      logger.info(
+        {
+          inventoryId: inventory.inventoryId,
+          actionType,
+          lng,
+          ignoreExisting: true,
+        },
+        "Starting reprioritization",
+      );
+
+      onReprioritize?.({ ignoreExisting: true });
+      setIgnoreExisting?.(true);
+    } catch (error) {
+      logger.error({ error }, "Failed to reprioritize actions");
+    }
+  };
   return (
     <>
       {actionsByLng && actionsByLng.length > 0 ? (
@@ -68,7 +110,9 @@ export function ClimateActionsSection({
                 h="84px"
                 borderRadius="16px"
                 gap="12px"
-                onClick={() => onReprioritize?.()}
+                onClick={handleReprioritize}
+                loading={isReprioritizing}
+                disabled={isReprioritizing}
               >
                 <Icon
                   as={LuRefreshCw}
@@ -82,7 +126,9 @@ export function ClimateActionsSection({
                   textTransform="none"
                   color="white"
                 >
-                  {t("re-prioritize-actions")}
+                  {isReprioritizing
+                    ? t("re-prioritizing")
+                    : t("re-prioritize-actions")}
                 </HeadlineSmall>
               </Button>
             </Box>

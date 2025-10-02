@@ -39,12 +39,15 @@ const getClient = (() => {
     const bucketId = process.env.AWS_S3_BUCKET_ID;
 
     if (!region || !accessKeyId || !secretAccessKey || !bucketId) {
-      logger.error({
-        region: !!region,
-        accessKeyId: !!accessKeyId,
-        secretAccessKey: !!secretAccessKey,
-        bucketId: !!bucketId,
-      }, 'Missing AWS credentials');
+      logger.error(
+        {
+          region: !!region,
+          accessKeyId: !!accessKeyId,
+          secretAccessKey: !!secretAccessKey,
+          bucketId: !!bucketId,
+        },
+        "Missing AWS credentials",
+      );
       throw new Error("Missing AWS credentials");
     }
 
@@ -115,6 +118,7 @@ const startActionRankingJob = async (
   locode: string,
   lang: LANGUAGES,
   type: ACTION_TYPES,
+  user?: User,
 ) => {
   // Check if a ranking is already in progress for this inventory/locode
   const existingRanking = await db.models.HighImpactActionRanking.findOne({
@@ -127,11 +131,14 @@ const startActionRankingJob = async (
     existingRanking &&
     existingRanking.status === HighImpactActionRankingStatus.PENDING
   ) {
-    logger.info({
-      rankingId: existingRanking.id,
-      inventoryId,
-      locode,
-    }, "Ranking already in progress, returning existing ranking");
+    logger.info(
+      {
+        rankingId: existingRanking.id,
+        inventoryId,
+        locode,
+      },
+      "Ranking already in progress, returning existing ranking",
+    );
     return existingRanking;
   }
 
@@ -154,7 +161,7 @@ const startActionRankingJob = async (
   logger.info(`Ranking created in DB with ID: ${ranking.id}`);
 
   // Do not await here, it will make the request time out. Poll job in the background.
-  checkActionRankingJob(ranking, lang, type);
+  checkActionRankingJob(ranking, lang, type, user);
   return ranking;
 };
 
@@ -307,6 +314,7 @@ export const checkActionRankingJob = async (
   ranking: HighImpactActionRanking,
   lang: LANGUAGES,
   type: ACTION_TYPES,
+  user?: User,
 ) => {
   const { locode, inventoryId, jobId } = ranking;
   if (!jobId) throw new Error("Ranking is missing jobId");
@@ -358,6 +366,24 @@ export const checkActionRankingJob = async (
     await saveRankedActionsForLanguage(ranking, mergedRanked, lang);
 
     await ranking.update({ status: HighImpactActionRankingStatus.SUCCESS });
+
+    // Send email notification when job completes successfully
+    if (user && mergedRanked.length > 0) {
+      try {
+        await sendRankedReadyEmail(user, type);
+        logger.info(
+          { userId: user.userId, actionType: type },
+          "Sent prioritization ready email",
+        );
+      } catch (emailError) {
+        logger.error(
+          { error: emailError },
+          "Failed to send prioritization ready email",
+        );
+        // Continue execution - email failure shouldn't break the job completion
+      }
+    }
+
     return ranking;
   } catch (err) {
     logger.error({ err }, "Error in runActionRankingJob");
@@ -524,7 +550,7 @@ export const fetchRanking = async (
       // If ranking is pending, trigger job in background and return empty actions
       if (ranking.status === HighImpactActionRankingStatus.PENDING) {
         logger.info("Ranking is pending, triggering background job");
-        checkActionRankingJob(ranking, lang, type);
+        checkActionRankingJob(ranking, lang, type, user || undefined);
         return { ...ranking.toJSON(), rankedActions: [] };
       } else if (ranking.status === HighImpactActionRankingStatus.SUCCESS) {
         // Send email to user that the ranking is ready
@@ -532,21 +558,38 @@ export const fetchRanking = async (
           "Ranking is success, copying actions to requested language",
         );
         const newRanked = await copyRankedActionsToLang(ranking, lang);
-        if (newRanked.length > 0) {
-          sendRankedReadyEmail(user!, type);
-        } else {
-          logger.info("No ranked actions found");
-        }
+
+        logger.info(
+          `Copied ${newRanked.length} ranked actions for language ${lang}`,
+        );
         return { ...ranking.toJSON(), rankedActions: newRanked };
       } else if (ranking.status === HighImpactActionRankingStatus.FAILURE) {
         logger.info("Ranking is failure, starting new job");
-        return await startActionRankingJob(inventoryId, locode, lang, type);
+        return await startActionRankingJob(
+          inventoryId,
+          locode,
+          lang,
+          type,
+          user || undefined,
+        );
       }
       logger.info("No ranking found, starting new job");
-      return await startActionRankingJob(inventoryId, locode, lang, type);
+      return await startActionRankingJob(
+        inventoryId,
+        locode,
+        lang,
+        type,
+        user || undefined,
+      );
     } else {
       logger.info("No ranking found at all, starting new job");
-      return await startActionRankingJob(inventoryId, locode, lang, type);
+      return await startActionRankingJob(
+        inventoryId,
+        locode,
+        lang,
+        type,
+        user || undefined,
+      );
     }
   } catch (err) {
     logger.error({ err: err }, "Error fetching prioritized climate actions:");

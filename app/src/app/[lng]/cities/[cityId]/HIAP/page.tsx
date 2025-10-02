@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { use } from "react";
 import { useTranslation } from "@/i18n/client";
 import {
@@ -35,6 +35,8 @@ export default function HIAPPage(props: {
     error: inventoryError,
   } = useGetInventoryByCityIdQuery(cityId);
 
+  const [ignoreExisting, setIgnoreExisting] = useState(true);
+
   const {
     data: hiapData,
     isLoading,
@@ -45,6 +47,7 @@ export default function HIAPPage(props: {
       inventoryId: inventory?.inventoryId || "",
       lng: lang,
       actionType: ACTION_TYPES.Mitigation,
+      ignoreExisting: ignoreExisting, // set true only if reprioritizing button is clicked
     },
     { skip: !inventory?.inventoryId },
   );
@@ -133,7 +136,12 @@ export default function HIAPPage(props: {
         <ClimateActionsSection
           t={t}
           onReprioritize={() => refetch()}
+          setIgnoreExisting={setIgnoreExisting}
           actions={hiapData}
+          inventory={inventory}
+          actionType={ACTION_TYPES.Mitigation}
+          lng={lng as any}
+          isReprioritizing={isLoading}
         />
         <Tabs.Root
           variant="line"

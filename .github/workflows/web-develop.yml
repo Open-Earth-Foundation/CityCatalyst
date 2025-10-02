@@ -32,6 +32,7 @@ jobs:
       NEXTAUTH_URL: "http://localhost:3000"
       CDP_API_KEY: ${{ secrets.CDP_API_KEY_TEST }}
       CDP_MODE: "test"
+      NEXT_PUBLIC_FEATURE_FLAGS: "ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,JN_ENABLED"
     defaults:
       run:
         working-directory: ./app

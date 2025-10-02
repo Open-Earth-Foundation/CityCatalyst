@@ -81,13 +81,6 @@
  *                       error:
  *                         type: string
  *                         nullable: true
- *                       locode:
- *                         type: string
- *                       result:
- *                         type: array
- *                         items:
- *                           type: string
- *                           format: uuid
  *             examples:
  *               example:
  *                 value:

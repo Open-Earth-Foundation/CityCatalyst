@@ -203,11 +203,16 @@ export function handleDirectMeasureFormula(
   // Initialize an array to hold gas objects
   const gases = GAS_NAMES.map((gasName) => {
     const key = `${gasName.toLowerCase()}_amount`;
+    const unitKey = `${gasName.toLowerCase()}_unit`;
 
     let amount;
     try {
       // values collected from the direct measure form are in tonnes. but we store the values in kg
-      amount = new Decimal(data[key] ?? 0).mul(1000);
+      const unit = data[unitKey];
+      amount =
+        unit === "units-tonnes"
+          ? new Decimal(data[key] ?? 0).mul(1000)
+          : new Decimal(data[key] ?? 0);
     } catch (error) {
       throw new createHttpError.BadRequest(
         `Invalid number format for ${key}: ${data[key]}`,

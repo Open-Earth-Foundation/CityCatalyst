@@ -44,26 +44,25 @@ export const DirectMeasureSection = ({
           />
           <Controller
             rules={{ required: t("option-required") }}
-            defaultValue="tonnes"
             control={control}
-            name="activity.CO2EmissionFactorUnit"
+            name="activity.co2EmissionFactorUnit"
             render={({ field }) => (
               <NativeSelectRoot
                 {...field}
                 borderRadius="4px"
                 borderWidth={
-                  errors?.activity?.["CO2EmissionFactorUnit"] ? "1px" : 0
+                  errors?.activity?.["co2EmissionFactorUnit"] ? "1px" : 0
                 }
                 border="inputBox"
                 h="42px"
                 shadow="1dp"
                 borderColor={
-                  errors?.activity?.["CO2EmissionFactorUnit"]
+                  errors?.activity?.["co2EmissionFactorUnit"]
                     ? "sentiment.negativeDefault"
                     : ""
                 }
                 background={
-                  errors?.activity?.["CO2EmissionFactorUnit"]
+                  errors?.activity?.["co2EmissionFactorUnit"]
                     ? "sentiment.negativeOverlay"
                     : ""
                 }
@@ -75,15 +74,17 @@ export const DirectMeasureSection = ({
                 bgColor="base.light"
                 onChange={(e: any) => {
                   field.onChange(e.target.value);
-                  setValue("activity.CO2EmissionFactorUnit", e.target.value);
+                  setValue("activity.co2EmissionFactorUnit", e.target.value);
                 }}
               >
                 <NativeSelectField
                   placeholder={t("select-unit")}
                   defaultValue={field.value}
                 >
-                  <option value="kg">{t("unit-kilograms")}</option>
-                  <option value="tonnes">{t("unit-tonnes")}</option>
+                  <option value="units-kilograms">
+                    {t("units-kilograms")}
+                  </option>
+                  <option value="units-tonnes">{t("units-tonnes")}</option>
                 </NativeSelectField>
               </NativeSelectRoot>
             )}
@@ -97,12 +98,12 @@ export const DirectMeasureSection = ({
             </BodyMedium>
           </Box>
         )}
-        {errors?.activity?.["CO2EmissionFactorUnit"] &&
+        {errors?.activity?.["co2EmissionFactorUnit"] &&
           !errors?.activity?.["CO2EmissionFactor"] && (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
               <BodyMedium>
-                {errors?.activity?.["CO2EmissionFactorUnit"]?.message}
+                {errors?.activity?.["co2EmissionFactorUnit"]?.message}
               </BodyMedium>
             </Box>
           )}
@@ -120,26 +121,25 @@ export const DirectMeasureSection = ({
           />
           <Controller
             rules={{ required: t("option-required") }}
-            defaultValue="tonnes"
             control={control}
-            name="activity.N2OEmissionFactorUnit"
+            name="activity.n2oEmissionFactorUnit"
             render={({ field }) => (
               <NativeSelectRoot
                 {...field}
                 borderRadius="4px"
                 borderWidth={
-                  errors?.activity?.["N2OEmissionFactorUnit"] ? "1px" : 0
+                  errors?.activity?.["n2oEmissionFactorUnit"] ? "1px" : 0
                 }
                 border="inputBox"
                 h="42px"
                 shadow="1dp"
                 borderColor={
-                  errors?.activity?.["N2OEmissionFactorUnit"]
+                  errors?.activity?.["n2oEmissionFactorUnit"]
                     ? "sentiment.negativeDefault"
                     : ""
                 }
                 background={
-                  errors?.activity?.["N2OEmissionFactorUnit"]
+                  errors?.activity?.["n2oEmissionFactorUnit"]
                     ? "sentiment.negativeOverlay"
                     : ""
                 }
@@ -151,15 +151,17 @@ export const DirectMeasureSection = ({
                 bgColor="base.light"
                 onChange={(e: any) => {
                   field.onChange(e.target.value);
-                  setValue("activity.N2OEmissionFactorUnit", e.target.value);
+                  setValue("activity.n2oEmissionFactorUnit", e.target.value);
                 }}
               >
                 <NativeSelectField
                   placeholder={t("select-unit")}
                   defaultValue={field.value}
                 >
-                  <option value="kg">{t("unit-kilograms")}</option>
-                  <option value="tonnes">{t("unit-tonnes")}</option>
+                  <option value="units-kilograms">
+                    {t("units-kilograms")}
+                  </option>
+                  <option value="units-tonnes">{t("units-tonnes")}</option>
                 </NativeSelectField>
               </NativeSelectRoot>
             )}
@@ -173,12 +175,12 @@ export const DirectMeasureSection = ({
             </BodyMedium>
           </Box>
         )}
-        {errors?.activity?.["N2OEmissionFactorUnit"] &&
+        {errors?.activity?.["n2oEmissionFactorUnit"] &&
           !errors?.activity?.["N2OEmissionFactor"] && (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
               <BodyMedium>
-                {errors?.activity?.["N2OEmissionFactorUnit"]?.message}
+                {errors?.activity?.["n2oEmissionFactorUnit"]?.message}
               </BodyMedium>
             </Box>
           )}
@@ -196,26 +198,25 @@ export const DirectMeasureSection = ({
           />
           <Controller
             rules={{ required: t("option-required") }}
-            defaultValue="tonnes"
             control={control}
-            name="activity.CH4EmissionFactorUnit"
+            name="activity.ch4EmissionFactorUnit"
             render={({ field }) => (
               <NativeSelectRoot
                 {...field}
                 borderRadius="4px"
                 borderWidth={
-                  errors?.activity?.["CH4EmissionFactorUnit"] ? "1px" : 0
+                  errors?.activity?.["ch4EmissionFactorUnit"] ? "1px" : 0
                 }
                 border="inputBox"
                 h="42px"
                 shadow="1dp"
                 borderColor={
-                  errors?.activity?.["CH4EmissionFactorUnit"]
+                  errors?.activity?.["ch4EmissionFactorUnit"]
                     ? "sentiment.negativeDefault"
                     : ""
                 }
                 background={
-                  errors?.activity?.["CH4EmissionFactorUnit"]
+                  errors?.activity?.["ch4EmissionFactorUnit"]
                     ? "sentiment.negativeOverlay"
                     : ""
                 }
@@ -227,15 +228,17 @@ export const DirectMeasureSection = ({
                 bgColor="base.light"
                 onChange={(e: any) => {
                   field.onChange(e.target.value);
-                  setValue("activity.CH4EmissionFactorUnit", e.target.value);
+                  setValue("activity.ch4EmissionFactorUnit", e.target.value);
                 }}
               >
                 <NativeSelectField
                   placeholder={t("select-unit")}
                   defaultValue={field.value}
                 >
-                  <option value="un">{t("unit-kilograms")}</option>
-                  <option value="tonnes">{t("unit-tonnes")}</option>
+                  <option value="units-kilograms">
+                    {t("units-kilograms")}
+                  </option>
+                  <option value="units-tonnes">{t("units-tonnes")}</option>
                 </NativeSelectField>
               </NativeSelectRoot>
             )}
@@ -249,12 +252,12 @@ export const DirectMeasureSection = ({
             </BodyMedium>
           </Box>
         )}
-        {errors?.activity?.["CH4EmissionFactorUnit"] &&
+        {errors?.activity?.["ch4EmissionFactorUnit"] &&
           !errors?.activity?.["CH4EmissionFactor"] && (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
               <BodyMedium>
-                {errors?.activity?.["CH4EmissionFactorUnit"]?.message}
+                {errors?.activity?.["ch4EmissionFactorUnit"]?.message}
               </BodyMedium>
             </Box>
           )}

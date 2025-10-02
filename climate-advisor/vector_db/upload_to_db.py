@@ -84,7 +84,6 @@ from models.document import DocumentEmbedding
 from utils.text_processing import DocumentProcessor
 from services.embedding_service import EmbeddingService, EmbeddingResult
 
-# Import from local modules
 from vector_init import init_pgvector
 
 # Add the service directory to Python path for database session

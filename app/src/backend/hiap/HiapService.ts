@@ -1,5 +1,5 @@
 import { LANGUAGES, ACTION_TYPES } from "@/util/types";
-import { S3Client } from "@aws-sdk/client-s3";
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
@@ -23,6 +23,7 @@ import EmailService from "../EmailService";
 import { User } from "@/models/User";
 import { getSession } from "next-auth/react";
 import { AppSession } from "@/lib/auth";
+import { Op } from "sequelize";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 logger.info(`Using HIAP API at ${HIAP_API_URL}`);
@@ -39,12 +40,15 @@ const getClient = (() => {
     const bucketId = process.env.AWS_S3_BUCKET_ID;
 
     if (!region || !accessKeyId || !secretAccessKey || !bucketId) {
-      logger.error({
-        region: !!region,
-        accessKeyId: !!accessKeyId,
-        secretAccessKey: !!secretAccessKey,
-        bucketId: !!bucketId,
-      }, 'Missing AWS credentials');
+      logger.error(
+        {
+          region: !!region,
+          accessKeyId: !!accessKeyId,
+          secretAccessKey: !!secretAccessKey,
+          bucketId: !!bucketId,
+        },
+        "Missing AWS credentials",
+      );
       throw new Error("Missing AWS credentials");
     }
 
@@ -60,15 +64,6 @@ const getClient = (() => {
     return client;
   };
 })();
-
-const streamToString = async (stream: Readable): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const chunks: Uint8Array[] = [];
-    stream.on("data", (chunk: Uint8Array) => chunks.push(chunk));
-    stream.on("error", reject);
-    stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
-  });
-};
 
 export interface GlobalApiClimateAction {
   ActionID: string;
@@ -110,7 +105,7 @@ export const findExistingRanking = async (
   return ranking;
 };
 
-const startActionRankingJob = async (
+export const startActionRankingJob = async (
   inventoryId: string,
   locode: string,
   lang: LANGUAGES,
@@ -125,13 +120,17 @@ const startActionRankingJob = async (
   // If there's already a ranking in progress, return it instead of starting a new one
   if (
     existingRanking &&
-    existingRanking.status === HighImpactActionRankingStatus.PENDING
+    existingRanking.status === HighImpactActionRankingStatus.PENDING &&
+    existingRanking.jobId
   ) {
-    logger.info({
-      rankingId: existingRanking.id,
-      inventoryId,
-      locode,
-    }, "Ranking already in progress, returning existing ranking");
+    logger.info(
+      {
+        rankingId: existingRanking.id,
+        inventoryId,
+        locode,
+      },
+      "Ranking already in progress, returning existing ranking",
+    );
     return existingRanking;
   }
 
@@ -553,3 +552,278 @@ export const fetchRanking = async (
     throw err;
   }
 };
+
+// ============================================================================
+// HIAP Action Selections Migration Functions
+// We should delete these after the migration is complete
+// ============================================================================
+
+function getSelectedActionsFileName(locode: string, type: ACTION_TYPES) {
+  return `data/selected/${type}/${locode}.json`;
+}
+
+const streamToString = async (stream: any) => {
+  // AWS S3 returns a stream-like object with 'on' method in Node.js backend
+  const chunks: Uint8Array[] = [];
+  
+  return new Promise<string>((resolve, reject) => {
+    stream.on("data", (chunk: Uint8Array) => chunks.push(chunk));
+    stream.on("error", reject);
+    stream.on("end", () => {
+      const buffer = Buffer.concat(chunks);
+      resolve(buffer.toString("utf-8"));
+    });
+  });
+};
+
+export const readSelectedActionsFile = async (
+  locode: string,
+  type: ACTION_TYPES,
+) => {
+  try {
+    const selectedActionsKey = getSelectedActionsFileName(locode, type);
+    const client = getClient();
+
+    const command = new GetObjectCommand({
+      Bucket: process.env.AWS_S3_BUCKET_ID,
+      Key: selectedActionsKey,
+      // Add cache-busting to force fresh read
+      IfModifiedSince: new Date(0), // Always get fresh data
+    });
+    const response = await client.send(command);
+    const body = response.Body;
+    if (!body) return [];
+    const data = await streamToString(body);
+    try {
+      return JSON.parse(data); // This will be an array of action IDs
+    } catch {
+      return [];
+    }
+  } catch (err) {
+    logger.error(
+      `HIAP Migrate: Error reading selected actions file for ${locode}, ${type}: ${err}`,
+    );
+    // this will fail if the file doesn't exist,
+    // ignore it
+    return [];
+  }
+};
+
+async function updateSelectionForRankingIds(
+  rankingIds: string[],
+  selectedActionIds: string[],
+) {
+  const [affectedCount] = await db.models.HighImpactActionRanked.update(
+    { isSelected: true },
+    {
+      where: {
+        hiaRankingId: rankingIds,
+        actionId: selectedActionIds,
+      },
+    },
+  );
+
+  return affectedCount;
+}
+
+export async function migrateProjectSelections(projectId: string) {
+  const cities = await db.models.City.findAll({
+    where: { projectId },
+    attributes: ["locode", "name"],
+  });
+
+  // Gather all inventories for these cities, then call per-inventory migration
+  const cityIds = cities
+    .map((c) => (c as any).cityId as string | undefined)
+    .filter((id): id is string => !!id);
+
+  if (cityIds.length === 0) return;
+
+  const inventories = await db.models.Inventory.findAll({
+    where: { cityId: cityIds },
+    attributes: ["inventoryId"],
+  });
+  const inventoryIds = inventories
+    .map((i) => (i as any).inventoryId as string | undefined)
+    .filter((id): id is string => !!id);
+
+  if (inventoryIds.length === 0) return;
+
+  // Restrict to inventories that actually have HIAP rankings, mirroring the SQL join path
+  const rankings = await db.models.HighImpactActionRanking.findAll({
+    where: { inventoryId: { [Op.in]: inventoryIds } },
+    attributes: ["inventoryId"],
+    group: ["inventoryId"],
+  });
+  const rankedInventoryIds = rankings
+    .map((r) => (r as any).inventoryId as string | undefined)
+    .filter((id): id is string => !!id);
+
+  for (const invId of rankedInventoryIds) {
+    await migrateActionSelections(invId);
+  }
+}
+
+export async function migrateActionSelections(inventoryId: string) {
+  // Find rankings for this inventory to get locode(s) and types
+  const rankings = await db.models.HighImpactActionRanking.findAll({
+    where: { inventoryId },
+    attributes: ["locode", "type"],
+  });
+  const uniqueByKey = new Map<string, { locode: string; type: ACTION_TYPES }>();
+  for (const r of rankings as any[]) {
+    const key = `${r.locode}:${r.type}`;
+    if (!uniqueByKey.has(key))
+      uniqueByKey.set(key, { locode: r.locode, type: r.type });
+  }
+
+  for (const { locode, type } of uniqueByKey.values()) {
+    const selectedActionIds = await readSelectedActionsFile(locode, type);
+    if (!Array.isArray(selectedActionIds) || selectedActionIds.length === 0)
+      continue;
+
+    const rankingIds = (
+      await db.models.HighImpactActionRanking.findAll({
+        where: { inventoryId, locode, type },
+        attributes: ["id"],
+      })
+    ).map((r) => r.id);
+    if (rankingIds.length === 0) continue;
+    await updateSelectionForRankingIds(rankingIds, selectedActionIds);
+  }
+}
+
+/**
+ * Migrates HIAP action selections for all cities in a project.
+ *
+ * Logic:
+ * 1. Fetch all cities with the received project id
+ * 2. For each city:
+ *    - Grab the city's locode from the database
+ *    - For each action type:
+ *      - Read the corresponding file from S3
+ *      - Parse the file
+ *      - For each action_id in the file:
+ *        - Find the action_id in the HighImpactActionRanked table
+ *        - Set the action's is_selected to true in the db
+ */
+export async function migrateProjectActionSelections(
+  projectId: string,
+  year: number,
+): Promise<void> {
+  try {
+    logger.info(
+      `Starting HIAP action selection migration for project: ${projectId}`,
+    );
+
+    // Step 1: Fetch all cities with the received project id
+    const cities = await db.models.City.findAll({
+      where: { projectId, country: "Brazil" },
+      attributes: ["cityId", "locode", "name"],
+    });
+
+    if (cities.length === 0) {
+      logger.info(`No cities found for project: ${projectId}`);
+      return;
+    }
+
+    logger.info(`Found ${cities.length} cities for project: ${projectId}`);
+
+    // Step 2: For each city
+    for (const city of cities) {
+      const locode = city.locode;
+      const cityName = city.name;
+
+      if (!locode) {
+        logger.warn(`City ${cityName} has no locode, skipping`);
+        continue;
+      }
+
+      logger.info(`Processing city: ${cityName} (${locode})`);
+
+      // Step 3: For each action type
+      for (const actionType of Object.values(ACTION_TYPES)) {
+        try {
+          // Step 4: Read the corresponding file from S3
+          const selectedActionIds = await readSelectedActionsFile(
+            locode,
+            actionType,
+          );
+
+          if (
+            !Array.isArray(selectedActionIds) ||
+            selectedActionIds.length === 0
+          ) {
+            logger.info(
+              `No selected actions found for ${locode}, ${actionType}`,
+            );
+            continue;
+          }
+
+          logger.info(
+            `Found ${selectedActionIds.length} selected actions for ${locode}, ${actionType}`,
+          );
+
+          // Step 5: Get ranking IDs for this locode and action type, filtered by year
+          const rankings = await db.models.HighImpactActionRanking.findAll({
+            where: { locode, type: actionType },
+            include: [
+              {
+                model: db.models.Inventory,
+                as: "inventory",
+                where: { year },
+                attributes: ["inventoryId", "year"],
+              },
+            ],
+            attributes: ["id"],
+          });
+          const rankingIds = rankings.map((r: any) => r.id);
+
+          logger.info(
+            `Found ${rankingIds.length} rankings for ${locode}, ${actionType} (year: ${year})`,
+          );
+
+          if (rankingIds.length === 0) {
+            logger.info(`No rankings found for ${locode}, ${actionType}`);
+            continue;
+          }
+
+          // Step 6: Update all selected actions in a single batch operation
+          const [totalUpdated] = await db.models.HighImpactActionRanked.update(
+            { isSelected: true },
+            {
+              where: {
+                actionId: {
+                  [Op.in]: selectedActionIds,
+                },
+                hiaRankingId: {
+                  [Op.in]: rankingIds,
+                },
+              },
+            },
+          );
+
+          logger.info(
+            `Updated ${totalUpdated} action selections for ${locode}, ${actionType}`,
+          );
+        } catch (error) {
+          logger.error(`Error processing ${locode}, ${actionType}: ${error}`);
+          // Continue with other cities/types even if one fails
+        }
+      }
+    }
+
+    logger.info(
+      `Completed HIAP action selection migration for project: ${projectId}`,
+    );
+  } catch (error) {
+    logger.error(
+      `Error in migrateProjectActionSelections for project ${projectId}: ${error}`,
+    );
+    throw error;
+  }
+}
+
+// ============================================================================
+// END OF HIAP Action Selections Migration Functions
+// ============================================================================

@@ -30,6 +30,13 @@ class ThreadService:
         return thread
 
     async def get_thread(self, thread_id: Union[str, UUID]) -> Thread | None:
+        # Validate UUID format before querying
+        if isinstance(thread_id, str):
+            try:
+                thread_id = UUID(thread_id)
+            except ValueError:
+                return None
+
         result = await self.session.execute(
             select(Thread).where(Thread.thread_id == thread_id)
         )

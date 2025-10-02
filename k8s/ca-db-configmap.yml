@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: cc-climate-advisor-db-configmap
+  name: ca-db-configmap
   namespace: default
 data:
   DB_HOST: "dev-db-aurora.cluster-c5ipsfxjhb0m.us-east-1.rds.amazonaws.com"

@@ -80,7 +80,7 @@ DEFAULT_CHUNK_OVERLAP = 200
 DEFAULT_DIRECTORY = "files"
 
 # Import from local modules
-from models.document import Document, DocumentChunk, DocumentEmbedding
+from models.document import DocumentEmbedding
 from utils.text_processing import DocumentProcessor
 from services.embedding_service import EmbeddingService, EmbeddingResult
 
@@ -89,17 +89,17 @@ from vector_init import init_pgvector
 
 # Add the service directory to Python path for database session
 sys.path.insert(0, str(Path(__file__).parent.parent / "service"))
-from app.db.session import get_session
+from app.db.session import get_session  # type: ignore
 
 
 async def create_database_tables(engine) -> None:
     """Create database tables if they don't exist."""
     async with engine.begin() as conn:
         # Import models to ensure they are registered with SQLAlchemy
-        from app.models.document import Document, DocumentChunk, DocumentEmbedding
+        from app.models.document import DocumentEmbedding  # type: ignore
 
         # Create all tables
-        await conn.run_sync(Document.metadata.create_all)
+        await conn.run_sync(DocumentEmbedding.metadata.create_all)
 
 
 async def store_document_with_embeddings(
@@ -108,7 +108,7 @@ async def store_document_with_embeddings(
     embedding_results: List[EmbeddingResult]
 ) -> bool:
     """
-    Store a document with its chunks and embeddings in the database.
+    Store document chunks with their embeddings in the database.
 
     Args:
         session: Database session
@@ -119,21 +119,7 @@ async def store_document_with_embeddings(
         True if successful, False otherwise
     """
     try:
-        # Create document record
-        document = Document(
-            document_id=uuid4(),
-            filename=doc_data["filename"],
-            file_path=doc_data["file_path"],
-            file_type=doc_data["file_type"],
-            file_size=doc_data["file_size"],
-            content=doc_data["content"],
-            metadata=doc_data.get("metadata", {})
-        )
-
-        session.add(document)
-        await session.flush()  # Get the document ID
-
-        # Create chunks and their embeddings
+        # Store each chunk with its embedding
         for i, chunk_data in enumerate(doc_data["chunks"]):
             # Find corresponding embedding result
             embedding_result = None
@@ -146,22 +132,17 @@ async def store_document_with_embeddings(
                 print(f"Warning: No embedding found for chunk {i} in {doc_data['filename']}")
                 continue
 
-            # Create chunk
-            chunk = DocumentChunk(
-                chunk_id=uuid4(),
-                document_id=document.document_id,
-                chunk_index=chunk_data["chunk_index"],
-                content=chunk_data["content"],
-                metadata=chunk_data.get("metadata", {})
-            )
-
-            session.add(chunk)
-            await session.flush()  # Get the chunk ID
-
-            # Create embedding
+            # Create embedding record with document metadata
             embedding = DocumentEmbedding(
-                embedding_id=uuid4(),
-                chunk_id=chunk.chunk_id,
+                embedding_id=str(uuid4()),
+                filename=doc_data["filename"],
+                file_path=doc_data["file_path"],
+                file_type=doc_data["file_type"],
+                file_size=doc_data["file_size"],
+                chunk_index=chunk_data["chunk_index"],
+                chunk_content=chunk_data["content"],
+                document_content=doc_data["content"],  # Full document content
+                metadata=chunk_data.get("metadata", {}),
                 model_name=embedding_result.model,
                 embedding_vector=embedding_result.embedding
             )

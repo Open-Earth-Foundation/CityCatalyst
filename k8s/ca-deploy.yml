@@ -28,7 +28,7 @@ spec:
               name: http
           envFrom:
             - configMapRef:
-                name: cc-climate-advisor-db-configmap
+                name: ca-db-configmap
           env:
             - name: PROJECT_NAME
               value: "CityCatalyst Climate Advisor"

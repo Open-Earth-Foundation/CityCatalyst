@@ -15,11 +15,11 @@ spec:
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
-                name: cc-climate-advisor-db-configmap
+                name: ca-db-configmap
           env:
             - name: ALEMBIC_URL
               valueFrom:
                 configMapKeyRef:
-                  name: cc-climate-advisor-db-configmap
+                  name: ca-db-configmap
                   key: DB_URL
           command: ["alembic", "upgrade", "head"]

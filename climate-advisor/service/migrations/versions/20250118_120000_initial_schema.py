@@ -11,9 +11,7 @@ import sqlalchemy as sa
 try:
     from sqlalchemy.dialects.postgresql import JSONB, UUID
 except ImportError:
-    # Fallback for non-PostgreSQL databases
-    from sqlalchemy import JSON as JSONB
-    from sqlalchemy.types import String as UUID
+    print("Error importing UUID or JSONB")
 
 
 # revision identifiers, used by Alembic.
@@ -34,7 +32,7 @@ def upgrade() -> None:
     # Create threads table
     op.create_table(
         'threads',
-        sa.Column('thread_id', UUID(), primary_key=True),
+        sa.Column('thread_id', UUID(), primary_key=True),  # type: ignore
         sa.Column('user_id', sa.String(length=255), nullable=False),
         sa.Column('inventory_id', sa.String(length=255), nullable=True),
         sa.Column('title', sa.String(length=255), nullable=True),
@@ -59,10 +57,10 @@ def upgrade() -> None:
     # Create messages table
     op.create_table(
         'messages',
-        sa.Column('message_id', UUID(), primary_key=True),
+        sa.Column('message_id', UUID(), primary_key=True),  # type: ignore
         sa.Column(
             'thread_id',
-            UUID(),
+            UUID(),  # type: ignore
             sa.ForeignKey('threads.thread_id', ondelete='CASCADE'),
             nullable=False
         ),
@@ -92,7 +90,7 @@ def upgrade() -> None:
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
         );
     """)
-    
+
     # Create indexes for document_embeddings table
     op.create_index('ix_document_embeddings_model_name', 'document_embeddings', ['model_name'])
     
@@ -109,7 +107,7 @@ def downgrade() -> None:
     # ==================== DROP VECTOR DATABASE TABLES ====================
     # Drop vector database indexes first
     op.drop_index('ix_document_embeddings_model_name', table_name='document_embeddings')
-    
+
     # Drop vector database tables
     op.drop_table('document_embeddings')
     

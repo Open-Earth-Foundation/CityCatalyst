@@ -61,17 +61,19 @@ async def get_db_session():
             await engine.dispose()
 
 
-async def init_pgvector() -> None:
+async def init_pgvector(session=None) -> None:
     """
     Initialize pgvector extension and configure vector columns.
 
     This function:
     1. Creates the pgvector extension if it doesn't exist
     2. Configures the vector column type for document embeddings
-    """
-    engine, async_session_factory = create_db_connection()
 
-    async with async_session_factory() as session:
+    Args:
+        session: Optional async session to use. If None, creates a new session.
+    """
+    if session is not None:
+        # Use provided session
         # Create pgvector extension if it doesn't exist
         await session.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
 
@@ -86,8 +88,27 @@ async def init_pgvector() -> None:
 
         await session.commit()
         print("pgvector extension initialized successfully!")
+    else:
+        # Create own session
+        engine, async_session_factory = create_db_connection()
 
-    await engine.dispose()
+        async with async_session_factory() as session:
+            # Create pgvector extension if it doesn't exist
+            await session.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+
+            # Create custom vector type for 1536-dimensional embeddings (text-embedding-3-small)
+            # This is optional as pgvector can handle vectors of any dimension
+            # but provides better performance with explicit types
+            await session.execute(text("""
+                CREATE TYPE IF NOT EXISTS vector_1536 AS (
+                    x REAL[1536]
+                )
+            """))
+
+            await session.commit()
+            print("pgvector extension initialized successfully!")
+
+        await engine.dispose()
 
 
 async def create_vector_tables() -> None:
@@ -99,18 +120,17 @@ async def create_vector_tables() -> None:
     """
     print("Warning: Using create_all() for table creation.")
     print("For production, consider using: alembic upgrade head")
+    print("Note: Only document_embeddings table will be created")
 
     engine, async_session_factory = create_db_connection()
 
     async with async_session_factory() as session:
         # Import here to avoid circular imports
-        from models.document import Document, DocumentChunk, DocumentEmbedding
+        from models.document import DocumentEmbedding
 
         # Create all tables defined in the models
-        # This will create: documents, document_chunks, document_embeddings
+        # This will create: document_embeddings table
         async with engine.begin() as conn:
-            await conn.run_sync(Document.metadata.create_all)
-            await conn.run_sync(DocumentChunk.metadata.create_all)
             await conn.run_sync(DocumentEmbedding.metadata.create_all)
 
         await session.commit()

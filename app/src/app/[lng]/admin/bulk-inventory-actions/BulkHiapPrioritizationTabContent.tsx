@@ -14,8 +14,8 @@ import React, { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { logger } from "@/services/logger";
-import { BodyLarge, BodyMedium, BodySmall } from "@/components/Texts/Body";
-import { LabelMedium } from "@/components/Texts/Label";
+import { BodyLarge, BodyMedium, BodySmall } from "@/components/package/Texts/Body";
+import { LabelMedium } from "@/components/package/Texts/Label";
 import {
   api,
   useGetHiapJobsQuery,

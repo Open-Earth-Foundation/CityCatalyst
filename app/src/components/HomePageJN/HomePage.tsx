@@ -273,8 +273,6 @@ export default function HomePage({
               </AccordionRoot>
             )}
           </Box>
-          {/* Clima AI ChatBot Disclaimer Dialog */}
-          <ClimaAIAssistantDisclaimerDialog t={t} />
           <Footer lng={language} />
         </>
       )}

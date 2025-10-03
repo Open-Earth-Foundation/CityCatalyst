@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: ca-migrate-
+  generateName: climate-advisor-migrate-
   namespace: default
 spec:
   ttlSecondsAfterFinished: 86400
@@ -15,11 +15,11 @@ spec:
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
-                name: ca-db-configmap
+                name: climate-advisor-db-configmap
           env:
             - name: ALEMBIC_URL
               valueFrom:
                 configMapKeyRef:
-                  name: ca-db-configmap
+                  name: climate-advisor-db-configmap
                   key: DB_URL
           command: ["alembic", "upgrade", "head"]

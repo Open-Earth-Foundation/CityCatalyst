@@ -14,10 +14,10 @@ on:
       - climate-advisor/service/**
       - climate-advisor/llm_config.yaml
       - climate-advisor/prompts/**
-      - k8s/ca-deploy.yml
-      - k8s/ca-migrate.yml
-      - k8s/ca-service.yml
-      - k8s/cc-climate-advisor-db-configmap.yml
+      - k8s/climate-advisor-deploy.yml
+      - k8s/climate-advisor-migrate.yml
+      - k8s/climate-advisor-service.yml
+      - k8s/climate-advisor-db-configmap.yml
       - .github/workflows/climate-advisor-develop.yml
     branches: ["develop"]
 
@@ -67,10 +67,10 @@ jobs:
 
       - name: Deploying service
         run: |
-          kubectl create -f k8s/ca-migrate.yml -n default
-          kubectl apply -f k8s/cc-climate-advisor-db-configmap.yml -n default
-          kubectl apply -f k8s/ca-service.yml -n default
-          kubectl apply -f k8s/ca-deploy.yml -n default
+          kubectl create -f k8s/climate-advisor-migrate.yml -n default
+          kubectl apply -f k8s/climate-advisor-db-configmap.yml -n default
+          kubectl apply -f k8s/climate-advisor-service.yml -n default
+          kubectl apply -f k8s/climate-advisor-deploy.yml -n default
           kubectl set env deployment/climate-advisor-deploy \
             OPENROUTER_API_KEY=${{secrets.OPENROUTER_API_KEY}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_CLIMATE_ADVISOR}} \

@@ -83,7 +83,6 @@ from models.document import DocumentEmbedding
 from utils.text_processing import DocumentProcessor
 from services.embedding_service import EmbeddingService, EmbeddingResult
 
-# Import from local modules
 from vector_init import init_pgvector
 from config_loader import get_embedding_config
 

@@ -540,7 +540,7 @@ export const fetchRanking = async (
         // Reset ranking status to PENDING (keep existing data)
         await ranking.update({
           status: HighImpactActionRankingStatus.PENDING,
-          jobId: null, // Clear old job ID
+          jobId: undefined, // Clear old job ID
         });
 
         // Start new prioritization job
@@ -630,7 +630,7 @@ function getSelectedActionsFileName(locode: string, type: ACTION_TYPES) {
 const streamToString = async (stream: any) => {
   // AWS S3 returns a stream-like object with 'on' method in Node.js backend
   const chunks: Uint8Array[] = [];
-  
+
   return new Promise<string>((resolve, reject) => {
     stream.on("data", (chunk: Uint8Array) => chunks.push(chunk));
     stream.on("error", reject);

@@ -11,11 +11,17 @@ const updateActionPlanSchema = z.object({
 
 /**
  * @swagger
- * /api/v0/action-plans/{id}:
+ * /api/v0/city/{city}/hiap/action-plans/{id}:
  *   get:
  *     summary: Get action plan by ID
  *     description: Retrieve a specific action plan by its ID
  *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: City ID
  *       - in: path
  *         name: id
  *         required: true
@@ -54,11 +60,17 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
 
 /**
  * @swagger
- * /api/v0/action-plans/{id}:
+ * /api/v0/city/{city}/hiap/action-plans/{id}:
  *   patch:
  *     summary: Update action plan
  *     description: Update an existing action plan with new data
  *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: City ID
  *       - in: path
  *         name: id
  *         required: true
@@ -110,11 +122,17 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
 
 /**
  * @swagger
- * /api/v0/action-plans/{id}:
+ * /api/v0/city/{city}/hiap/action-plans/{id}:
  *   delete:
  *     summary: Delete action plan
  *     description: Delete an action plan by its ID
  *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: City ID
  *       - in: path
  *         name: id
  *         required: true

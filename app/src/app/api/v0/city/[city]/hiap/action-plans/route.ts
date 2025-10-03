@@ -22,17 +22,17 @@ const createActionPlanSchema = z.object({
 
 /**
  * @swagger
- * /api/v0/action-plans:
+ * /api/v0/city/{city}/hiap/action-plans:
  *   get:
- *     summary: Get action plans
- *     description: Retrieve action plans with optional filtering by inventory ID, language, and action ID
+ *     summary: Get action plans for a city
+ *     description: Retrieve action plans with optional filtering by language and action ID
  *     parameters:
- *       - in: query
- *         name: inventoryId
+ *       - in: path
+ *         name: city
+ *         required: true
  *         schema:
  *           type: string
- *           format: uuid
- *         description: Filter by inventory ID
+ *         description: City ID
  *       - in: query
  *         name: language
  *         schema:
@@ -83,10 +83,17 @@ export const GET = apiHandler(async (req: NextRequest) => {
 
 /**
  * @swagger
- * /api/v0/action-plans:
+ * /api/v0/city/{city}/hiap/action-plans:
  *   post:
- *     summary: Create a new action plan
+ *     summary: Create a new action plan for a city
  *     description: Create a new action plan with the provided data
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: City ID
  *     requestBody:
  *       required: true
  *       content:

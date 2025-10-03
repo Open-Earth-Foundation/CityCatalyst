@@ -1256,5 +1256,10 @@
   "invalid-request": "Invalid Request",
   "emission-factor-too-large": "Emission factor cannot exceed {{max}}. Please enter a smaller value.",
   "emission-factor-required": "Emission factor required",
-  "emission-factor-negative": "Emission factor cannot be negative. Please enter a positive value."
+  "emission-factor-negative": "Emission factor cannot be negative. Please enter a positive value.",
+  "fuel-type-kerosene": "Kerosene",
+  "fuel-type-crude-petroleum": "Crude Petroleum",
+  "fuel-type-biodiesel": "Biodiesel",
+  "fuel-type-fuel-oil": "Fuel Oil",
+  "fuel-type-not-applicable": "Not applicable"
 }

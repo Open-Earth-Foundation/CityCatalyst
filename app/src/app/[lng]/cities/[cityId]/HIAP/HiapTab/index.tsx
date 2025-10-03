@@ -57,6 +57,7 @@ import {
 import { MdArrowDropDown } from "react-icons/md";
 import { ButtonMedium } from "@/components/package/Texts/Button";
 import { ButtonSmall } from "@/components/package/Texts/Button";
+import { toaster } from "@/components/ui/toaster";
 
 const BarVisualization = ({
   value,
@@ -160,6 +161,11 @@ export function HiapTab({
       }).unwrap();
 
       setRowSelection(newRowSelection);
+      // toast
+      toaster.create({
+        title: t("selection-updated"),
+        type: "success",
+      });
       logger.info(selectedActionIds, "Updated selection");
     } catch (error) {
       logger.error(error, "Failed to update selection");

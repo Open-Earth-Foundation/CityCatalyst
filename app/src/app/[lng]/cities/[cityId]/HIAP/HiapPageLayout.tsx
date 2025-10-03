@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Flex, VStack } from "@chakra-ui/react";
 import { Hero } from "@/components/GHGIHomePage/Hero";
 import { InventoryResponse, CityWithProjectDataResponse } from "@/util/types";
 import { PopulationAttributes } from "@/models/Population";
@@ -22,12 +22,7 @@ export function HiapPageLayout({
   city,
 }: HiapPageLayoutProps) {
   return (
-    <Box
-      h="full"
-      display="flex"
-      flexDirection="column"
-      bg="background.backgroundLight"
-    >
+    <VStack h="full" bg="background.backgroundLight">
       <Hero
         inventory={inventory}
         isPublic={false}
@@ -50,6 +45,6 @@ export function HiapPageLayout({
       >
         {children}
       </Box>
-    </Box>
+    </VStack>
   );
 }

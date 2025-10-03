@@ -17,6 +17,8 @@ vector_db/
 │   └── text_processing.py  # PDF processing and text splitting utilities
 ├── scripts/               # Additional utility scripts (existing)
 ├── files/                 # Directory for PDF files to process
+├── embedding_config.yml   # Configuration for embeddings and chunking
+├── config_loader.py       # Configuration loader utility
 ├── upload_to_db.py        # Main script for processing PDFs
 ├── vector_init.py         # Database initialization utilities
 └── README.md              # This documentation
@@ -260,14 +262,31 @@ api:
     timeout_ms: 30000
 ```
 
-### Chunking Parameters
+### Embedding and Chunking Configuration
 
-The upload script uses fixed chunking parameters defined as constants:
+All embedding and chunking parameters are now centralized in `embedding_config.yml`:
 
-- Chunk size: 1000 characters
-- Chunk overlap: 200 characters
+```yaml
+# Text Processing Configuration
+text_processing:
+  max_text_length: 8000
 
-To modify these values, edit the `DEFAULT_CHUNK_SIZE` and `DEFAULT_CHUNK_OVERLAP` constants in `upload_to_db.py`.
+# Document Chunking Configuration
+chunking:
+  default_chunk_size: 1000
+  default_chunk_overlap: 200
+
+# File Processing Configuration
+file_processing:
+  default_directory: "files"
+
+# Embedding Service Configuration
+embedding_service:
+  batch_size: 100
+  requests_per_minute: 3500
+```
+
+To modify these values, edit `embedding_config.yml`. The configuration is loaded automatically by the scripts and services.
 
 ````
 

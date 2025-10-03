@@ -1,0 +1,29 @@
+# Embedding Configuration for Climate Advisor Vector Database
+#
+# This file contains configuration parameters for document processing,
+# text chunking, and embedding generation.
+
+# Text Processing Configuration
+text_processing:
+  # Maximum text length for embedding generation (text-embedding-3-large)
+  max_text_length: 8000
+
+# Document Chunking Configuration
+chunking:
+  # Default chunk size in characters
+  default_chunk_size: 2000
+
+  # Default overlap between chunks in characters
+  default_chunk_overlap: 200
+
+# File Processing Configuration
+file_processing:
+  # Default directory containing documents to process
+  default_directory: "files"
+
+# Embedding Service Configuration
+embedding_service:
+  batch_size: 100
+
+  # Rate limiting: requests per minute
+  requests_per_minute: 3000

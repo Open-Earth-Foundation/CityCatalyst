@@ -22,6 +22,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'service'
 
 from app.config.settings import get_settings
 
+# Import embedding configuration
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from config_loader import get_embedding_config
+
 
 @dataclass
 class EmbeddingResult:
@@ -44,6 +48,7 @@ class EmbeddingService:
     def __init__(self):
         """Initialize the embedding service with OpenAI client."""
         self.settings = get_settings()
+        self.config = get_embedding_config()
 
         # Check if OpenAI API key is available
         if not self.settings.openai_api_key:
@@ -55,9 +60,10 @@ class EmbeddingService:
             timeout=self.settings.llm.api.openai.timeout_ms / 1000 if self.settings.llm.api.openai.timeout_ms else 30.0
         )
         self.model = self.settings.llm.api.openai.embedding_model
-        self.batch_size = 100  # OpenAI's recommended batch size
-        self.requests_per_minute = 3500  # OpenAI's rate limit for embedding models
+        self.batch_size = self.config.batch_size
+        self.requests_per_minute = self.config.requests_per_minute
         self.min_delay = 60.0 / self.requests_per_minute  # Minimum delay between requests
+        self.max_text_length = self.config.max_text_length
 
     async def generate_embedding(self, text: str) -> EmbeddingResult:
         """
@@ -82,8 +88,8 @@ class EmbeddingService:
                 )
 
             # Truncate text if too long (OpenAI has token limits)
-            if len(text) > 8000:  # Conservative limit for text-embedding-3-small
-                text = text[:8000] + "..."
+            if len(text) > self.max_text_length:
+                text = text[:self.max_text_length] + "..."
 
             response = await self.client.embeddings.create(
                 input=text,

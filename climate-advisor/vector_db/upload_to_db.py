@@ -33,9 +33,13 @@ PREREQUISITES:
        pip install -r requirements.txt
 
 CONFIGURATION:
-    - Chunk size: 1000 characters (fixed)
-    - Chunk overlap: 200 characters (fixed)
-    - Directory: files (default, can be overridden with --directory)
+    Configuration parameters are defined in embedding_config.yml:
+    - Chunk size: Configurable (default: 1000 characters)
+    - Chunk overlap: Configurable (default: 200 characters)
+    - Directory: Configurable (default: files, can be overridden with --directory)
+    - Max text length: Configurable (default: 8000 characters)
+    - Batch size: Configurable (default: 100)
+    - Rate limits: Configurable (default: 3500 requests/minute)
 
 OUTPUT:
     The script will:
@@ -74,11 +78,6 @@ load_dotenv(env_path)
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
-# Configuration constants
-DEFAULT_CHUNK_SIZE = 1000
-DEFAULT_CHUNK_OVERLAP = 200
-DEFAULT_DIRECTORY = "files"
-
 # Import from local modules
 from models.document import DocumentEmbedding
 from utils.text_processing import DocumentProcessor
@@ -86,6 +85,13 @@ from services.embedding_service import EmbeddingService, EmbeddingResult
 
 # Import from local modules
 from vector_init import init_pgvector
+from config_loader import get_embedding_config
+
+# Load configuration
+_embedding_config = get_embedding_config()
+DEFAULT_CHUNK_SIZE = _embedding_config.default_chunk_size
+DEFAULT_CHUNK_OVERLAP = _embedding_config.default_chunk_overlap
+DEFAULT_DIRECTORY = _embedding_config.default_directory
 
 # Add the service directory to Python path for database session
 sys.path.insert(0, str(Path(__file__).parent.parent / "service"))

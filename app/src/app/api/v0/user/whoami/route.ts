@@ -42,4 +42,4 @@ export const GET = apiHandler(async (_req, { params, session }) => {
   return NextResponse.json({
     data: session.user
   });
-});
+})

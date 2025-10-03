@@ -163,7 +163,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     const gasValues = extractGasesAndUnits(activity);
 
     console.log(gasValues);
-    // return null; // temporary disable submit
+    return null; // temporary disable submit
 
     // extract field values
     const values: Record<string, any> = {};

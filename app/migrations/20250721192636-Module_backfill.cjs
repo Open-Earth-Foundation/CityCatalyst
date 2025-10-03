@@ -12,10 +12,11 @@ const sql_down = `
 /** @type {import("sequelize-cli").Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.sequelize.query(sql_up);
+    // Disabled, now handled by Module seeder
+    // await queryInterface.sequelize.query(sql_up);
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.sequelize.query(sql_down);
+    // await queryInterface.sequelize.query(sql_down);
   },
 };

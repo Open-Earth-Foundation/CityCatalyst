@@ -3,8 +3,10 @@
 /** @type {import("sequelize-cli").Migration} */
 module.exports = {
   async up(queryInterface) {
+    // Disabled, now handled by Module seeder
+    /*
     // Get all project IDs and create ProjectModules entries for CCRA
-    const projects = await queryInterface.sequelize.query(
+      const projects = await queryInterface.sequelize.query(
       'SELECT project_id FROM "Project"',
       { type: queryInterface.sequelize.QueryTypes.SELECT }
     );
@@ -19,11 +21,13 @@ module.exports = {
     if (projectModulesData.length > 0) {
       await queryInterface.bulkInsert("ProjectModules", projectModulesData);
     }
+    */
   },
 
   async down(queryInterface) {
-    await queryInterface.bulkDelete("ProjectModules", {
-      module_id: '3d1a4b2c-8e7f-4d5a-9c6b-1f2e3d4c5b6a'
-    });
+    /* await queryInterface.bulkDelete("ProjectModules", {
+      module_id: "3d1a4b2c-8e7f-4d5a-9c6b-1f2e3d4c5b6a",
+    }); */
   },
 };
+

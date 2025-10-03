@@ -71,9 +71,8 @@ export default function ForgotPassword(props: {
             {t("reset-password")}
           </Button>
           <Button
-            type="reset"
-            disabled={isSubmitting}
             variant="ghost"
+            disabled={isSubmitting}
             h={16}
             width="full"
             mt={4}

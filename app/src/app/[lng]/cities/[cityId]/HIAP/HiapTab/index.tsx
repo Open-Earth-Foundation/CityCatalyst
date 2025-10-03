@@ -44,8 +44,8 @@ import ClimateActionsEmptyState from "./ClimateActionsEmptyState";
 import ActionPlanSection from "./ActionPlanSection";
 import { DownloadIcon } from "@/components/icons";
 import { MdCheckBox } from "react-icons/md";
-import { TitleLarge } from "@/components/Texts/Title";
-import { BodyLarge } from "@/components/Texts/Body";
+import { TitleLarge } from "@/components/package/Texts/Title";
+import { BodyLarge } from "@/components/package/Texts/Body";
 import { IoMdCheckboxOutline } from "react-icons/io";
 import { TopPickIcon } from "@/components/icons";
 import {
@@ -55,8 +55,8 @@ import {
   MenuTrigger,
 } from "@/components/ui/menu";
 import { MdArrowDropDown } from "react-icons/md";
-import { ButtonMedium } from "@/components/Texts/Button";
-import { ButtonSmall } from "@/components/Texts/Button";
+import { ButtonMedium } from "@/components/package/Texts/Button";
+import { ButtonSmall } from "@/components/package/Texts/Button";
 
 const BarVisualization = ({
   value,

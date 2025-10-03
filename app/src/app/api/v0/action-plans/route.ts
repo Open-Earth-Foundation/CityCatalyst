@@ -5,7 +5,7 @@ import { z } from "zod";
 import createHttpError from "http-errors";
 
 const getActionPlansSchema = z.object({
-  cityId: z.string().optional(),
+  cityId: z.string().uuid("City ID must be a valid UUID"),
   language: z.string().optional(),
   actionId: z.string().optional(),
 });

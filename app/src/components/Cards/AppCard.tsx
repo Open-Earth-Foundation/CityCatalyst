@@ -3,7 +3,7 @@ import React from "react";
 import { Authz } from "@/util/types";
 import { api } from "@/services/api";
 import { toaster } from "@/components/ui/toaster";
-import { TitleMedium } from "@/components/Texts/Title";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import { MdDelete } from "react-icons/md";
 import { useTranslation } from "@/i18n/client";
 

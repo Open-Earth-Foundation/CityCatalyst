@@ -550,6 +550,27 @@ export enum HighImpactActionRankingStatus {
   SUCCESS = "SUCCESS",
   FAILURE = "FAILURE",
 }
+
+export interface BulkHiapPrioritizationResult {
+  cityId: string;
+  cityName: string;
+  inventoryId: string;
+  status: HighImpactActionRankingStatus;
+  taskId: string;
+  error?: string;
+}
+
+export interface HiapJob {
+  cityId: string;
+  cityName: string;
+  inventoryId: string;
+  year: number;
+  taskId: string;
+  actionType: string;
+  status: string;
+  createdAt: string;
+}
+
 export interface CoBenefits {
   air_quality: number;
   water_quality: number;

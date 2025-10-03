@@ -24,10 +24,10 @@ import {
 import { Tooltip } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import SourceDrawerTags from "./SourceDrawerTags";
-import { TitleLarge, TitleMedium } from "@/components/Texts/Title";
+import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
 import { SourceDrawerActivityTable } from "./SourceDrawerActivityTable";
-import { BodyLarge } from "@/components/Texts/Body";
-import { DisplayMedium } from "@/components/Texts/Display";
+import { BodyLarge } from "@/components/package/Texts/Body";
+import { DisplayMedium } from "@/components/package/Texts/Display";
 import ScalingSection from "./[subsector]/ScalingSection";
 import ProgressLoader from "@/components/ProgressLoader";
 

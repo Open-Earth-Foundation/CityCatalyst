@@ -4,10 +4,10 @@ import { Box, Button, Icon } from "@chakra-ui/react";
 import { LuRefreshCw } from "react-icons/lu";
 import { MdOutlineInfo } from "react-icons/md";
 import { HIAction, HIAPResponse, InventoryResponse } from "@/util/types";
-import { ButtonMedium } from "../Texts/Button";
-import { HeadlineSmall } from "../Texts/Headline";
-import { BodyLarge } from "../Texts/Body";
-import { TitleSmall } from "../Texts/Title";
+import { ButtonMedium } from "@/components/package/Texts/Button";
+import { HeadlineSmall } from "@/components/package/Texts/Headline";
+import { BodyLarge } from "@/components/package/Texts/Body";
+import { TitleSmall } from "@/components/package/Texts/Title";
 
 interface ClimateActionsSectionProps {
   t: (key: string) => string;

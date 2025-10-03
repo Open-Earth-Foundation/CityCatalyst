@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { ButtonSmall } from "@/components/Texts/Button";
+import { ButtonSmall } from "@/components/package/Texts/Button";
 import {
   CellProps,
   Column,

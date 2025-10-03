@@ -7,7 +7,7 @@ import { use } from "react";
 import ProgressLoader from "../ProgressLoader";
 import { Hero } from "../HomePageJN/Hero";
 import { MdBarChart } from "react-icons/md";
-import { HeadlineMedium } from "../Texts/Headline";
+import { HeadlineMedium } from "@/components/package/Texts/Headline";
 import { ModuleDashboardWidgets } from "../ModuleWidgets";
 import MissingCityDashboard from "../missing-city-dashboard";
 import { isFetchBaseQueryError } from "@/util/helpers";

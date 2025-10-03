@@ -10,8 +10,8 @@ export interface HighImpactActionRankingAttributes {
   langs: string[];
   created?: Date;
   lastUpdated?: Date;
-  jobId?: string | null;
-  status?: HighImpactActionRankingStatus | null;
+  jobId: string;
+  status?: HighImpactActionRankingStatus;
 }
 
 export type HighImpactActionRankingPk = "id";
@@ -29,8 +29,8 @@ export class HighImpactActionRanking
   langs!: string[];
   created?: Date;
   lastUpdated?: Date;
-  jobId?: string | null;
-  status?: HighImpactActionRankingStatus | null;
+  jobId!: string;
+  status?: HighImpactActionRankingStatus;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof HighImpactActionRanking {
     return HighImpactActionRanking.init(
@@ -60,7 +60,7 @@ export class HighImpactActionRanking
         },
         jobId: {
           type: DataTypes.TEXT,
-          allowNull: true,
+          allowNull: false,
           field: "job_id",
         },
         status: {

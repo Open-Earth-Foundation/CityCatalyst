@@ -172,7 +172,7 @@ from utils.text_processing import DocumentProcessor
 from services.embedding_service import EmbeddingService
 
 # Process a PDF file
-processor = DocumentProcessor(chunk_size=1000, chunk_overlap=200)
+processor = DocumentProcessor(chunk_size=2000, chunk_overlap=200)
 doc_data = processor.process_pdf_file("path/to/document.pdf")
 
 # Generate embeddings
@@ -273,7 +273,7 @@ text_processing:
 
 # Document Chunking Configuration
 chunking:
-  default_chunk_size: 1000
+  default_chunk_size: 2000
   default_chunk_overlap: 200
 
 # File Processing Configuration
@@ -283,7 +283,7 @@ file_processing:
 # Embedding Service Configuration
 embedding_service:
   batch_size: 100
-  requests_per_minute: 3500
+  requests_per_minute: 3000
 ```
 
 To modify these values, edit `embedding_config.yml`. The configuration is loaded automatically by the scripts and services.

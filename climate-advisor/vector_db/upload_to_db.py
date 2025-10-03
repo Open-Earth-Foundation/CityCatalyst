@@ -34,12 +34,12 @@ PREREQUISITES:
 
 CONFIGURATION:
     Configuration parameters are defined in embedding_config.yml:
-    - Chunk size: Configurable (default: 1000 characters)
+    - Chunk size: Configurable (default: 2000 characters)
     - Chunk overlap: Configurable (default: 200 characters)
     - Directory: Configurable (default: files, can be overridden with --directory)
     - Max text length: Configurable (default: 8000 characters)
     - Batch size: Configurable (default: 100)
-    - Rate limits: Configurable (default: 3500 requests/minute)
+    - Rate limits: Configurable (default: 3000 requests/minute)
 
 OUTPUT:
     The script will:
@@ -67,7 +67,7 @@ import argparse
 import os
 import sys
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from uuid import uuid4
 from dotenv import load_dotenv
 
@@ -163,17 +163,23 @@ async def store_document_with_embeddings(
 
 async def process_and_store_documents(
     directory_path: str,
-    chunk_size: int = DEFAULT_CHUNK_SIZE,
-    chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
+    chunk_size: Optional[int] = None,
+    chunk_overlap: Optional[int] = None
 ) -> None:
     """
     Process all PDFs in a directory and store them with embeddings.
 
     Args:
         directory_path: Path to directory containing PDF files
-        chunk_size: Size of text chunks
-        chunk_overlap: Overlap between chunks
+        chunk_size: Size of text chunks (uses config default if None)
+        chunk_overlap: Overlap between chunks (uses config default if None)
     """
+    # Get configuration values if not provided
+    if chunk_size is None:
+        chunk_size = DEFAULT_CHUNK_SIZE
+    if chunk_overlap is None:
+        chunk_overlap = DEFAULT_CHUNK_OVERLAP
+
     # Initialize services
     doc_processor = DocumentProcessor(chunk_size, chunk_overlap)
     embedding_service = EmbeddingService()
@@ -254,11 +260,7 @@ async def main():
         sys.exit(1)
 
     # Process and store documents
-    await process_and_store_documents(
-        args.directory,
-        DEFAULT_CHUNK_SIZE,
-        DEFAULT_CHUNK_OVERLAP
-    )
+    await process_and_store_documents(args.directory)
 
 
 if __name__ == "__main__":

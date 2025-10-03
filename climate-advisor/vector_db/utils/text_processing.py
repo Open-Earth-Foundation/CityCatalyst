@@ -15,6 +15,16 @@ from uuid import uuid4
 from PyPDF2 import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+# Import configuration
+try:
+    from ..config_loader import get_embedding_config
+except ImportError:
+    # Handle case when running module directly
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+    from config_loader import get_embedding_config
+
 
 class PDFProcessor:
     """Handles PDF text extraction and processing."""
@@ -56,8 +66,8 @@ class TextSplitter:
 
     def __init__(
         self,
-        chunk_size: int = 1000,
-        chunk_overlap: int = 200,
+        chunk_size: Optional[int] = None,
+        chunk_overlap: Optional[int] = None,
         separators: Optional[List[str]] = None
     ):
         """
@@ -68,6 +78,15 @@ class TextSplitter:
             chunk_overlap: Number of characters to overlap between chunks
             separators: Custom separators to use for splitting (optional)
         """
+        # Get configuration values
+        config = get_embedding_config()
+
+        # Use config values if not provided
+        if chunk_size is None:
+            chunk_size = config.default_chunk_size
+        if chunk_overlap is None:
+            chunk_overlap = config.default_chunk_overlap
+
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
 
@@ -137,14 +156,21 @@ class TextSplitter:
 class DocumentProcessor:
     """High-level document processing combining PDF extraction and text splitting."""
 
-    def __init__(self, chunk_size: int = 1000, chunk_overlap: int = 200):
+    def __init__(self, chunk_size: Optional[int] = None, chunk_overlap: Optional[int] = None):
         """
         Initialize the document processor.
 
         Args:
-            chunk_size: Size of text chunks for splitting
-            chunk_overlap: Overlap between chunks
+            chunk_size: Size of text chunks for splitting (uses config default if None)
+            chunk_overlap: Overlap between chunks (uses config default if None)
         """
+        # Get configuration values if not provided
+        config = get_embedding_config()
+        if chunk_size is None:
+            chunk_size = config.default_chunk_size
+        if chunk_overlap is None:
+            chunk_overlap = config.default_chunk_overlap
+
         self.text_splitter = TextSplitter(chunk_size, chunk_overlap)
         self.pdf_processor = PDFProcessor()
 

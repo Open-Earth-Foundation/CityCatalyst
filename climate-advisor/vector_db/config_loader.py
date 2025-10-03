@@ -8,7 +8,7 @@ parameters from the embedding_config.yml file.
 import os
 import yaml
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Optional, Union
 
 
 class EmbeddingConfig:
@@ -19,7 +19,7 @@ class EmbeddingConfig:
     easy access to configuration parameters.
     """
     
-    def __init__(self, config_path: str = None):
+    def __init__(self, config_path: Optional[str] = None):
         """
         Initialize configuration loader.
         
@@ -28,11 +28,11 @@ class EmbeddingConfig:
         """
         if config_path is None:
             # Default to embedding_config.yml in the same directory as this file
-            config_path = Path(__file__).parent / "embedding_config.yml"
+            config_path = str(Path(__file__).parent / "embedding_config.yml")
         
         self._config = self._load_config(config_path)
     
-    def _load_config(self, config_path: Path) -> Dict[str, Any]:
+    def _load_config(self, config_path: Union[str, Path]) -> Dict[str, Any]:
         """
         Load configuration from YAML file.
         
@@ -67,7 +67,7 @@ class EmbeddingConfig:
     @property
     def default_chunk_size(self) -> int:
         """Default chunk size in characters."""
-        return self._config.get('chunking', {}).get('default_chunk_size', 1000)
+        return self._config.get('chunking', {}).get('default_chunk_size', 2000)
     
     @property
     def default_chunk_overlap(self) -> int:

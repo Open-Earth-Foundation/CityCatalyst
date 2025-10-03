@@ -10,9 +10,12 @@ from pgvector.sqlalchemy import Vector
 # Import the base from the service app
 import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'service'))
 
-from app.db.base import Base
+# Add the parent directory (climate-advisor) to the path so we can import from service
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.insert(0, parent_dir)
+
+from service.app.db.base import Base
 
 
 class DocumentEmbedding(Base):

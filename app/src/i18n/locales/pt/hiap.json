@@ -132,5 +132,9 @@
   "exit-selection": "Sair da seleção",
   "download-csv": "CSV",
   "export-as-csv": "Exportar como CSV",
-  "unknown": "Desconhecido"
+  "unknown": "Desconhecido",
+  "reprioritization-started": "Início da Repriorização",
+  "reprioritization-started-description": "As suas ações climáticas estão sendo re-priorizadas com os dados mais recentes. Você receberá um email quando estiver completo.",
+  "reprioritization-failed": "Falha na Repriorização",
+  "reprioritization-failed-description": "Falha ao iniciar a repriorização. Por favor, tente novamente."
 }

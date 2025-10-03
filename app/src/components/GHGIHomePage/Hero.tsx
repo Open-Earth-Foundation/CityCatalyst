@@ -47,6 +47,14 @@ export function Hero({
   city,
 }: HeroProps) {
   const { t } = useTranslation(lng, "dashboard");
+  const activeCity = inventory?.city?.name ?? city?.name;
+  const activeProject = (() => {
+    const projectName = inventory?.city?.project?.name ?? city?.project?.name;
+    return projectName === "cc_project_default"
+      ? t("default-project")
+      : projectName;
+  })();
+
   const { data: cityData } = useGetOCCityDataQuery(
     inventory?.city?.locode || "",
     {
@@ -96,10 +104,10 @@ export function Hero({
                   <Link
                     href={`/public/project/${inventory?.city?.project?.projectId}`}
                   >
-                    <ProjectTitle inventory={inventory} city={city} t={t} />
+                    <ProjectTitle t={t} activeProject={activeProject} />
                   </Link>
                 ) : (
-                  <ProjectTitle inventory={inventory} city={city} t={t} />
+                  <ProjectTitle t={t} activeProject={activeProject} />
                 )}
                 <Box display="flex" alignItems="center" gap={4}>
                   {inventory?.city || city ? (
@@ -121,9 +129,7 @@ export function Hero({
                         lineHeight="52"
                         display="flex"
                       >
-                        <span data-testid="hero-city-name">
-                          {inventory ? inventory?.city?.name : city?.name}
-                        </span>
+                        <span data-testid="hero-city-name">{activeCity}</span>
                       </Heading>
                     </>
                   ) : (
@@ -328,13 +334,11 @@ export function Hero({
 }
 
 function ProjectTitle({
-  inventory,
-  city,
   t,
+  activeProject,
 }: {
-  inventory: InventoryResponse | null;
-  city: CityWithProjectDataResponse | undefined;
   t: TFunction;
+  activeProject: string | undefined;
 }) {
   return (
     <Text
@@ -344,15 +348,7 @@ function ProjectTitle({
       color="white"
       data-testid="hero-project-name"
     >
-      {inventory
-        ? inventory?.city?.project?.name === "cc_project_default"
-          ? t("default-project")
-          : inventory?.city?.project?.name
-        : city
-          ? city?.project?.name === "cc_project_default"
-            ? t("default-project")
-            : city?.project?.name
-          : t("default-project")}
+      {activeProject}
     </Text>
   );
 }

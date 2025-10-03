@@ -137,7 +137,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
           gas: gasValue.gas as string,
           factor: parseFloat(data[`${gasValue.gas}EmissionFactor`]),
           unit: data[
-            `${gasValue.gas?.toLocaleLowerCase()}EmissionFactorUnit`
+            `${gasValue.gas?.toLowerCase()}EmissionFactorUnit`
           ] as string,
         };
         gasArray.push(gasObject);
@@ -148,7 +148,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     const gasArray: { gas: string; factor: number; unit: string }[] = [];
     gases.forEach((gas) => {
       const gasFactorKey = `${gas}EmissionFactor`;
-      const gasUnitKey = `${gas?.toLocaleLowerCase()}EmissionFactorUnit`;
+      const gasUnitKey = `${gas?.toLowerCase()}EmissionFactorUnit`;
       const gasObject = {
         gas: gas,
         factor: parseFloat(data[gasFactorKey]),

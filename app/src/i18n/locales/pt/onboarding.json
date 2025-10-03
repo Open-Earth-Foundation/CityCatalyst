@@ -79,5 +79,9 @@
   "welcome-top": "Bem-vindo ao CityCatalyst",
   "welcome-title": "Vamos começar com informações sobre a sua cidade",
   "welcome-description": "Nesta etapa, escolha uma cidade para incluir no seu projeto e forneça detalhes relevantes que serão usados posteriormente.",
-  "welcome-CTA": "Comece agora"
+  "welcome-CTA": "Comece agora",
+  "city-population-required": "A população da cidade e o ano são necessários",
+  "region-population-required": "A população da região e o ano são necessários",
+  "country-population-required": "A população do país e o ano são necessários",
+  "city-name-locode-required": "Nome da cidade e código de localização são obrigatórios"
 }

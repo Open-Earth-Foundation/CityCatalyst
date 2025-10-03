@@ -1261,10 +1261,15 @@ export const api = createApi({
       }),
       getHiap: builder.query<
         HIAPResponse,
-        { inventoryId: string; actionType: ACTION_TYPES; lng: LANGUAGES }
+        {
+          inventoryId: string;
+          actionType: ACTION_TYPES;
+          lng: LANGUAGES;
+          ignoreExisting?: boolean;
+        }
       >({
-        query: ({ inventoryId, actionType, lng }) => ({
-          url: `inventory/${inventoryId}/hiap?actionType=${actionType}&lng=${lng}`,
+        query: ({ inventoryId, actionType, lng, ignoreExisting = false }) => ({
+          url: `inventory/${inventoryId}/hiap?actionType=${actionType}&lng=${lng}&ignoreExisting=${ignoreExisting}`,
           method: "GET",
         }),
         transformResponse: (response: { data: HIAPResponse }) => {

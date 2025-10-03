@@ -3,17 +3,29 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Icon } from "@chakra-ui/react";
 import { LuRefreshCw } from "react-icons/lu";
 import { MdOutlineInfo } from "react-icons/md";
-import { HIAction, HIAPResponse, InventoryResponse } from "@/util/types";
+import {
+  HIAction,
+  HIAPResponse,
+  InventoryResponse,
+  ACTION_TYPES,
+  LANGUAGES,
+} from "@/util/types";
 import { ButtonMedium } from "@/components/package/Texts/Button";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { BodyLarge } from "@/components/package/Texts/Body";
 import { TitleSmall } from "@/components/package/Texts/Title";
+import { logger } from "@/services/logger";
+import { toaster } from "../ui/toaster";
 
 interface ClimateActionsSectionProps {
   t: (key: string) => string;
-  onReprioritize?: () => void;
+  onReprioritize?: ({ ignoreExisting }: { ignoreExisting: boolean }) => void;
   actions: HIAPResponse | undefined;
-  inventory?: InventoryResponse | null;
+  inventory: InventoryResponse | null;
+  actionType?: ACTION_TYPES;
+  lng?: LANGUAGES;
+  setIgnoreExisting?: (ignoreExisting: boolean) => void;
+  isReprioritizing?: boolean;
 }
 
 export function ClimateActionsSection({
@@ -21,6 +33,10 @@ export function ClimateActionsSection({
   onReprioritize,
   actions,
   inventory,
+  actionType = ACTION_TYPES.Mitigation,
+  lng = LANGUAGES.en,
+  setIgnoreExisting,
+  isReprioritizing,
 }: ClimateActionsSectionProps) {
   const [actionsByLng, setActionsByLng] = useState<HIAction[] | undefined>(
     actions?.rankedActions,
@@ -31,6 +47,45 @@ export function ClimateActionsSection({
     setActionsByLng(actions?.rankedActions);
   }, [actions?.rankedActions]);
 
+  const handleReprioritize = async () => {
+    if (!inventory?.inventoryId) {
+      logger.warn("Cannot reprioritize without inventory ID");
+      return;
+    }
+
+    try {
+      logger.info(
+        {
+          inventoryId: inventory.inventoryId,
+          actionType,
+          lng,
+          ignoreExisting: true,
+        },
+        "Starting reprioritization",
+      );
+
+      // Show toast notification that reprioritization has started
+      toaster.create({
+        title: t("reprioritization-started"),
+        description: t("reprioritization-started-description"),
+        type: "info",
+        duration: 5000,
+      });
+
+      onReprioritize?.({ ignoreExisting: true });
+      setIgnoreExisting?.(true);
+    } catch (error) {
+      logger.error({ error }, "Failed to reprioritize actions");
+
+      // Show error toast
+      toaster.create({
+        title: t("reprioritization-failed"),
+        description: t("reprioritization-failed-description"),
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
   return (
     <>
       {actionsByLng && actionsByLng.length > 0 ? (
@@ -71,7 +126,9 @@ export function ClimateActionsSection({
                 h="84px"
                 borderRadius="16px"
                 gap="12px"
-                onClick={() => onReprioritize?.()}
+                onClick={handleReprioritize}
+                loading={isReprioritizing}
+                disabled={isReprioritizing}
               >
                 <Icon
                   as={LuRefreshCw}
@@ -85,7 +142,9 @@ export function ClimateActionsSection({
                   textTransform="none"
                   color="white"
                 >
-                  {t("re-prioritize-actions")}
+                  {isReprioritizing
+                    ? t("re-prioritizing")
+                    : t("re-prioritize-actions")}
                 </HeadlineSmall>
               </Button>
             </Box>

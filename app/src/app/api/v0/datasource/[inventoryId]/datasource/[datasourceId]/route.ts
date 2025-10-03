@@ -1,33 +1,6 @@
 /**
  * @swagger
  * /api/v0/datasource/{inventoryId}/datasource/{datasourceId}:
- *   get:
- *     tags:
- *       - Data Sources
- *     summary: Get a single data source with scaled data for an inventory (edit access).
- *     parameters:
- *       - in: path
- *         name: inventoryId
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *       - in: path
- *         name: datasourceId
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     responses:
- *       200:
- *         description: Data source with data.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               additionalProperties: true
- *       404:
- *         description: Inventory or data source not found.
  *   delete:
  *     tags:
  *       - Data Sources
@@ -39,12 +12,14 @@
  *         schema:
  *           type: string
  *           format: uuid
+ *         description: Inventory ID to remove data source from
  *       - in: path
  *         name: datasourceId
  *         required: true
  *         schema:
  *           type: string
  *           format: uuid
+ *         description: Data source ID to disconnect
  *     responses:
  *       200:
  *         description: Deleted values and deleted flag.
@@ -55,7 +30,22 @@
  *               properties:
  *                 data:
  *                   type: array
- *                   items: { type: object, additionalProperties: true }
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       datasourceId:
+ *                         type: string
+ *                         format: uuid
+ *                       name:
+ *                         type: string
+ *                       data:
+ *                         type: object
+ *                         additionalProperties: true
+ *                         description: Fetched data from the data source
+ *                       error:
+ *                         type: string
+ *                         nullable: true
+ *                         description: Error message if data fetch failed
  *                 deleted:
  *                   type: boolean
  *       404:
@@ -70,6 +60,68 @@ import { PermissionService } from "@/backend/permissions/PermissionService";
 import { City } from "@/models/City";
 import DataSourceService from "@/backend/DataSourceService";
 
+/**
+ * @swagger
+ * /api/v0/datasource/{inventoryId}/datasource/{datasourceId}:
+ *   get:
+ *     tags:
+ *       - Data Sources
+ *     summary: Get a single data source with scaled data for an inventory (edit access).
+ *     parameters:
+ *       - in: path
+ *         name: inventoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Inventory ID to retrieve data source for
+ *       - in: path
+ *         name: datasourceId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Data source ID to retrieve
+ *     responses:
+ *       200:
+ *         description: Data source with scaled data and population factors.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 datasourceId:
+ *                   type: string
+ *                   format: uuid
+ *                   description: Unique identifier for the data source
+ *                 name:
+ *                   type: string
+ *                   description: Name of the data source
+ *                 enabled:
+ *                   type: boolean
+ *                   description: Whether the data source is enabled
+ *                 sectorId:
+ *                   type: string
+ *                   format: uuid
+ *                   description: Associated sector identifier
+ *                 data:
+ *                   type: object
+ *                   description: Processed data from the data source
+ *                 populationIssue:
+ *                   type: string
+ *                   nullable: true
+ *                   description: Population scaling issue if any
+ *                 countryPopulationScaleFactor:
+ *                   type: number
+ *                   description: Scaling factor for country population
+ *                 regionPopulationScaleFactor:
+ *                   type: number
+ *                   description: Scaling factor for region population
+ *       401:
+ *         description: Unauthorized - user lacks edit access to the inventory.
+ *       404:
+ *         description: Inventory or data source not found.
+ */
 /** disconnects a datasource from an inventory */
 export const DELETE = apiHandler(async (_req, { params, session }) => {
   await PermissionService.canEditInventory(session, params.inventoryId);

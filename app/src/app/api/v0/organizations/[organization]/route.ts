@@ -20,68 +20,21 @@
  *           application/json:
  *             schema:
  *               type: object
- *               additionalProperties: true
- *       404:
- *         description: Organization not found.
- *   patch:
- *     tags:
- *       - Organizations
- *     summary: Update organization properties (admin only).
- *     description: Updates organization fields such as name and contactEmail. Requires an admin session. Response is the updated organization object (not wrapped).
- *     parameters:
- *       - in: path
- *         name: organization
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               contactEmail:
- *                 type: string
- *                 format: email
- *     responses:
- *       200:
- *         description: Organization updated.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               additionalProperties: true
- *       400:
- *         description: Cannot update default organization.
- *       404:
- *         description: Organization not found.
- *   delete:
- *     tags:
- *       - Organizations
- *     summary: Delete an organization (admin only).
- *     description: Deletes an organization unless it is the default. Requires an admin session. Response is { deleted: true } on success.
- *     parameters:
- *       - in: path
- *         name: organization
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     responses:
- *       200:
- *         description: Deletion flag.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
  *               properties:
- *                 deleted: { type: boolean }
- *       400:
- *         description: Cannot delete default organization.
+ *                 organizationId:
+ *                   type: string
+ *                   format: uuid
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                   nullable: true
+ *                 created:
+ *                   type: string
+ *                   format: date-time
+ *                 lastUpdated:
+ *                   type: string
+ *                   format: date-time
  *       404:
  *         description: Organization not found.
  */
@@ -122,6 +75,60 @@ export const GET = apiHandler(async (_req, { params, session }) => {
   return NextResponse.json(org);
 });
 
+/**
+ * @swagger
+ * /api/v0/organizations/{organization}:
+ *   patch:
+ *     tags:
+ *       - Organizations
+ *     summary: Update organization properties (admin only).
+ *     description: Updates organization fields such as name and contactEmail. Requires an admin session. Response is the updated organization object (not wrapped).
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               contactEmail:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: Organization updated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 organizationId:
+ *                   type: string
+ *                   format: uuid
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                   nullable: true
+ *                 created:
+ *                   type: string
+ *                   format: date-time
+ *                 lastUpdated:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Cannot update default organization.
+ *       404:
+ *         description: Organization not found.
+ */
 export const PATCH = apiHandler(async (req, { params, session }) => {
   const { organization: organizationId } = params;
   UserService.validateIsAdmin(session);
@@ -139,6 +146,36 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/v0/organizations/{organization}:
+ *   delete:
+ *     tags:
+ *       - Organizations
+ *     summary: Delete an organization (admin only).
+ *     description: Deletes an organization unless it is the default. Requires an admin session. Response is { deleted: true } on success.
+ *     parameters:
+ *       - in: path
+ *         name: organization
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Deletion flag.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 deleted:
+ *                   type: boolean
+ *       400:
+ *         description: Cannot delete default organization.
+ *       404:
+ *         description: Organization not found.
+ */
 export const DELETE = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
   const { organization: organizationId } = params;

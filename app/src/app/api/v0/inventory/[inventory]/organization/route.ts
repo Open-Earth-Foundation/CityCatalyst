@@ -4,7 +4,8 @@
  *   get:
  *     tags:
  *       - Inventory Organization
- *     summary: Get organization details for an inventory
+ *     summary: Get organization branding and theme information for an inventory
+ *     description: Retrieves organization details including identifier, name, logo URL, active status, and theme configuration for the inventory's associated organization. Requires a signed‑in user with access to the inventory.
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -12,9 +13,45 @@
  *         schema:
  *           type: string
  *           format: uuid
+ *         description: Inventory ID for which to retrieve organization information
  *     responses:
  *       200:
- *         description: Organization details returned.
+ *         description: Organization details with theme information.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 organizationId:
+ *                   type: string
+ *                   format: uuid
+ *                   description: Unique identifier for the organization
+ *                 organizationName:
+ *                   type: string
+ *                   description: Display name of the organization
+ *                 logoUrl:
+ *                   type: string
+ *                   format: uri
+ *                   nullable: true
+ *                   description: URL to organization logo image
+ *                 active:
+ *                   type: boolean
+ *                   description: Whether the organization is currently active
+ *                 theme:
+ *                   type: object
+ *                   properties:
+ *                     themeId:
+ *                       type: string
+ *                       format: uuid
+ *                       nullable: true
+ *                       description: Theme ID if a custom theme is configured
+ *                     themeKey:
+ *                       type: string
+ *                       nullable: true
+ *                       description: Theme key for styling configuration
+ *                   description: Organization theme configuration
+ *       401:
+ *         description: Unauthorized - user lacks access to the inventory.
  *       404:
  *         description: Inventory or organization not found.
  */

@@ -26,9 +26,10 @@ import { BiCaretDown, BiHomeAlt, BiSolidBarChartAlt2 } from "react-icons/bi";
 
 import { NavigationAccordion } from "../ui/navigation-accordion";
 import { NavigationLinks } from "../ui/navigation-links";
-import { StageNames } from "@/util/constants";
+import { Modules, StageNames } from "@/util/constants";
 import ProgressLoader from "../ProgressLoader";
 import { stageOrder, stageIcons } from "@/config/stages";
+import { getDashboardPath } from "@/util/routes";
 
 // Custom Select Component
 interface CustomSelectOption {
@@ -622,7 +623,7 @@ const JNDrawer = ({
                   {
                     label: "dashboard",
                     icon: BiSolidBarChartAlt2,
-                    href: `/#`,
+                    href: getDashboardPath(lng, selectedCity),
                   },
                   {
                     label: "all-projects",
@@ -637,9 +638,13 @@ const JNDrawer = ({
               {modulesByStage && projectModules && selectedProject && (
                 <>
                   {stageOrder.map((stage) => {
-                    const modules = projectModules.filter(
-                      (mod) => mod.stage === stage,
-                    );
+                    const modules = projectModules.filter((mod) => {
+                      // Filter out CCRA module
+                      if (mod.id === Modules.CCRA.id) {
+                        return false;
+                      }
+                      return mod.stage === stage;
+                    });
 
                     if (modules.length === 0) return null;
 

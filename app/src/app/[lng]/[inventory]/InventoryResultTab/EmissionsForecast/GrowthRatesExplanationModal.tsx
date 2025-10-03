@@ -1,5 +1,5 @@
-import { DisplayLarge } from "@/components/Texts/Display";
-import { LabelLarge } from "@/components/Texts/Label";
+import { DisplayLarge } from "@/components/package/Texts/Display";
+import { LabelLarge } from "@/components/package/Texts/Label";
 import {
   DialogBody,
   DialogCloseTrigger,

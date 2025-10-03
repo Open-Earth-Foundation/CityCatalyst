@@ -28,7 +28,7 @@ import { ActionCards } from "./ActionCards";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { HeadlineMedium } from "@/components/Texts/Headline";
+import { HeadlineMedium } from "@/components/package/Texts/Headline";
 import { useResourceValidation } from "@/hooks/useResourceValidation";
 import {
   AccordionRoot,
@@ -37,8 +37,8 @@ import {
   AccordionItemContent,
 } from "@/components/ui/accordion";
 import { ModuleCard } from "./ModuleCard";
-import { BodyLarge } from "@/components/Texts/Body";
-import { TitleLarge } from "@/components/Texts/Title";
+import { BodyLarge } from "@/components/package/Texts/Body";
+import { TitleLarge } from "@/components/package/Texts/Title";
 import { LuChevronDown } from "react-icons/lu";
 import { NoModulesCard } from "./NoModulesCard";
 import { Modules } from "@/util/constants";
@@ -204,7 +204,7 @@ export default function HomePage({
             <Separator borderColor="divider.neutral" borderWidth="2px" />
             {/* Accordions for stages */}
             {modulesByStage && projectModules && (
-              <AccordionRoot multiple>
+              <AccordionRoot multiple defaultValue={stageOrder}>
                 {stageOrder.map((stage) => {
                   const modules = projectModules.filter((mod) => {
                     // Filter out CCRA module unless feature flag is enabled

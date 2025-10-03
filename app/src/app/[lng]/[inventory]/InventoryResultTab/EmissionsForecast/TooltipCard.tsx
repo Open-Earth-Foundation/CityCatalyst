@@ -7,8 +7,8 @@ import {
   ISector,
 } from "@/util/constants";
 import { ColoredCircle } from "@/components/ColoredCircle";
-import { ButtonSmall } from "@/components/Texts/Button";
-import { TitleMedium } from "@/components/Texts/Title";
+import { ButtonSmall } from "@/components/package/Texts/Button";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import { getColorForSeries } from "./EmissionsForecastChart";
 import type { TFunction } from "i18next";
 import { EmissionsForecastData } from "@/util/types";

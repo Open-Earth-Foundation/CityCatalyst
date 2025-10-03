@@ -1,5 +1,6 @@
 import { Box, Flex, Icon, Text, Link } from "@chakra-ui/react";
 import { ReactElement } from "react";
+import { BodyLarge } from "../package";
 
 interface DialogItemProps {
   icon: ReactElement;
@@ -30,14 +31,9 @@ export default function DialogItem({
         <Text fontFamily="heading" fontWeight="bold" fontSize="title.md">
           {title}
         </Text>
-        <Text
-          fontFamily="body"
-          fontWeight="normal"
-          fontSize="body.lg"
-          lineHeight="24px"
-        >
+        <BodyLarge fontFamily="body" fontWeight="normal" lineHeight="24px">
           {description}
-        </Text>
+        </BodyLarge>
       </Box>
     </Box>
   );

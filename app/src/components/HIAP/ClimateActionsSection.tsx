@@ -181,22 +181,25 @@ export function ClimateActionsSection({
                 {t("actions-for-your-city-description")}
               </BodyLarge>
             </Box>
-            <Box
-              w="full"
-              display="flex"
-              flexDirection="row"
-              gap="8px"
-              alignItems="center"
-              border="1px solid"
-              borderColor="border.neutral"
-              borderRadius="8px"
-              p="16px"
-            >
-              <Icon as={MdOutlineInfo} boxSize="16px" color="content.link" />
-              <BodyLarge fontFamily="body" color="content.secondary">
-                {t("top-actions-tip")}
-              </BodyLarge>
-            </Box>
+            {/* if inventory is not null, show the tip */}
+            {inventory && (
+              <Box
+                w="full"
+                display="flex"
+                flexDirection="row"
+                gap="8px"
+                alignItems="center"
+                border="1px solid"
+                borderColor="border.neutral"
+                borderRadius="8px"
+                p="16px"
+              >
+                <Icon as={MdOutlineInfo} boxSize="16px" color="content.link" />
+                <BodyLarge fontFamily="body" color="content.secondary">
+                  {t("top-actions-tip")}
+                </BodyLarge>
+              </Box>
+            )}
           </Box>
         </Box>
       )}

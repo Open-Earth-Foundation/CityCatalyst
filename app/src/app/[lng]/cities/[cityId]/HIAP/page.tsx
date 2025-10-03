@@ -10,14 +10,13 @@ import {
 import { ACTION_TYPES, LANGUAGES } from "@/util/types";
 import { Box, Button, Icon, Tabs, Text } from "@chakra-ui/react";
 import { formatEmissions } from "@/util/helpers";
-import { Hero } from "@/components/GHGIHomePage/Hero";
 import { HiapTab } from "@/app/[lng]/cities/[cityId]/HIAP/HiapTab";
 import ProgressLoader from "@/components/ProgressLoader";
 import { AdaptationTabIcon, MitigationTabIcon } from "@/components/icons";
 import { LuRefreshCw, LuFileX } from "react-icons/lu";
 import { useRouter } from "next/navigation";
-import ClimateActionsEmptyState from "./HiapTab/ClimateActionsEmptyState";
 import { ClimateActionsSection } from "@/components/HIAP/ClimateActionsSection";
+import { HiapPageLayout } from "./HiapPageLayout";
 import i18next from "i18next";
 import { api } from "@/services/api";
 
@@ -36,6 +35,10 @@ export default function HIAPPage(props: {
   } = useGetInventoryByCityIdQuery(cityId);
 
   const [ignoreExisting, setIgnoreExisting] = useState(false);
+  // getCityData
+  const { data: city } = api.useGetCityQuery(cityId, {
+    skip: !cityId,
+  });
 
   const {
     data: hiapData,
@@ -81,58 +84,15 @@ export default function HIAPPage(props: {
   }
 
   // Show empty state if no inventory found
-  if (inventoryError || !inventory) {
+  if (!inventory) {
     return (
-      <Box
-        h="full"
-        display="flex"
-        flexDirection="column"
-        bg="background.backgroundLight"
-        alignItems="center"
-        justifyContent="center"
-        p="48px"
-      >
-        <ClimateActionsEmptyState
-          t={t}
-          inventory={null}
-          hasActions={false}
-          actionType={ACTION_TYPES.Mitigation}
-          onRefetch={() =>
-            router.push(`/${lng}/cities/${cityId}/GHGI/onboarding`)
-          }
-          isActionsPending={false}
-        />
-      </Box>
-    );
-  }
-
-  return (
-    <Box
-      h="full"
-      display="flex"
-      flexDirection="column"
-      bg="background.backgroundLight"
-    >
-      <Hero
-        inventory={inventory}
-        isPublic={false}
-        currentInventoryId={inventory?.inventoryId}
-        isInventoryLoading={isInventoryLoading}
+      <HiapPageLayout
+        inventory={null}
         formattedEmissions={formattedEmissions}
         lng={lng}
-        population={population}
-      />
-
-      <Box
-        display="flex"
-        mx="auto"
-        py="56px"
-        w="full"
-        maxW="1090px"
-        flexDirection="column"
-        gap="24px"
+        population={null}
+        city={city}
       >
-        {/* citycatalyst actions section */}
         <ClimateActionsSection
           t={t}
           onReprioritize={() => {
@@ -141,7 +101,7 @@ export default function HIAPPage(props: {
           }}
           setIgnoreExisting={setIgnoreExisting}
           actions={hiapData}
-          inventory={inventory}
+          inventory={null}
           actionType={ACTION_TYPES.Mitigation}
           lng={lng as any}
           isReprioritizing={isLoading}
@@ -180,13 +140,69 @@ export default function HIAPPage(props: {
             <Tabs.Content key={actionType} value={actionType} p="0" w="full">
               <HiapTab
                 type={actionType}
-                inventory={inventory}
+                inventory={null}
                 cityData={cityData!}
               />
             </Tabs.Content>
           ))}
         </Tabs.Root>
-      </Box>
-    </Box>
+      </HiapPageLayout>
+    );
+  }
+
+  return (
+    <HiapPageLayout
+      inventory={inventory}
+      formattedEmissions={formattedEmissions}
+      lng={lng}
+      population={population || null}
+    >
+      <ClimateActionsSection
+        t={t}
+        onReprioritize={() => refetch()}
+        actions={hiapData}
+        inventory={inventory}
+      />
+      <Tabs.Root
+        variant="line"
+        lazyMount
+        defaultValue={ACTION_TYPES.Mitigation}
+      >
+        <Tabs.List>
+          {Object.values(ACTION_TYPES).map((actionType) => (
+            <Tabs.Trigger
+              key={actionType}
+              value={actionType}
+              color="interactive.control"
+              display="flex"
+              gap="16px"
+              _selected={{
+                color: "interactive.secondary",
+                fontFamily: "heading",
+                fontWeight: "bold",
+              }}
+            >
+              <Icon
+                as={
+                  actionType === ACTION_TYPES.Mitigation
+                    ? MitigationTabIcon
+                    : AdaptationTabIcon
+                }
+              />
+              {t(`action-type-${actionType}`)}
+            </Tabs.Trigger>
+          ))}
+        </Tabs.List>
+        {Object.values(ACTION_TYPES).map((actionType) => (
+          <Tabs.Content key={actionType} value={actionType} p="0" w="full">
+            <HiapTab
+              type={actionType}
+              inventory={inventory}
+              cityData={cityData!}
+            />
+          </Tabs.Content>
+        ))}
+      </Tabs.Root>
+    </HiapPageLayout>
   );
 }

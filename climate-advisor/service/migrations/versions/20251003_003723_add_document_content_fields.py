@@ -21,7 +21,7 @@ def upgrade() -> None:
     
     # Add document metadata columns
     op.add_column('document_embeddings', 
-        sa.Column('filename', sa.String(length=500), nullable=False, server_default='unknown.pdf')
+        sa.Column('filename', sa.String(length=500), nullable=False, server_default='untitled_document.pdf')
     )
     op.add_column('document_embeddings', 
         sa.Column('file_path', sa.String(length=1000), nullable=True)

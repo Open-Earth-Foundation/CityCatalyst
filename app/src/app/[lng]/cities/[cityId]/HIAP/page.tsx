@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { use } from "react";
 import { useTranslation } from "@/i18n/client";
 import {
@@ -35,6 +35,8 @@ export default function HIAPPage(props: {
   } = useGetInventoryByCityIdQuery(cityId);
 
   const [ignoreExisting, setIgnoreExisting] = useState(false);
+  const [shouldRefetch, setShouldRefetch] = useState(false);
+
   // getCityData
   const { data: city } = api.useGetCityQuery(cityId, {
     skip: !cityId,
@@ -50,10 +52,20 @@ export default function HIAPPage(props: {
       inventoryId: inventory?.inventoryId || "",
       lng: lang,
       actionType: ACTION_TYPES.Mitigation,
-      ignoreExisting: ignoreExisting, // set true only if reprioritizing button is clicked
+      ignoreExisting: ignoreExisting,
     },
     { skip: !inventory?.inventoryId },
   );
+
+  // Handle reprioritization when ignoreExisting changes
+  useEffect(() => {
+    if (shouldRefetch && ignoreExisting) {
+      refetch().finally(() => {
+        setIgnoreExisting(false);
+        setShouldRefetch(false);
+      });
+    }
+  }, [ignoreExisting, shouldRefetch, refetch]);
 
   const formattedEmissions = inventory?.totalEmissions
     ? formatEmissions(inventory.totalEmissions)
@@ -97,7 +109,7 @@ export default function HIAPPage(props: {
           t={t}
           onReprioritize={() => {
             setIgnoreExisting(true);
-            refetch().finally(() => setIgnoreExisting(false));
+            setShouldRefetch(true);
           }}
           setIgnoreExisting={setIgnoreExisting}
           actions={hiapData}
@@ -150,6 +162,8 @@ export default function HIAPPage(props: {
     );
   }
 
+  console.log("ignoreExisting", ignoreExisting);
+
   return (
     <HiapPageLayout
       inventory={inventory}
@@ -159,7 +173,10 @@ export default function HIAPPage(props: {
     >
       <ClimateActionsSection
         t={t}
-        onReprioritize={() => refetch()}
+        onReprioritize={() => {
+          setIgnoreExisting(true);
+          setShouldRefetch(true);
+        }}
         actions={hiapData}
         inventory={inventory}
       />

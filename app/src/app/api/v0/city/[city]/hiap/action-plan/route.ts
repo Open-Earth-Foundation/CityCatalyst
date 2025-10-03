@@ -22,7 +22,7 @@ const createActionPlanSchema = z.object({
 
 /**
  * @swagger
- * /api/v0/city/{city}/hiap/action-plans:
+ * /api/v0/city/{city}/hiap/action-plan:
  *   get:
  *     summary: Get action plans for a city
  *     description: Retrieve action plans with optional filtering by language and action ID
@@ -83,7 +83,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
 
 /**
  * @swagger
- * /api/v0/city/{city}/hiap/action-plans:
+ * /api/v0/city/{city}/hiap/action-plan:
  *   post:
  *     summary: Create a new action plan for a city
  *     description: Create a new action plan with the provided data

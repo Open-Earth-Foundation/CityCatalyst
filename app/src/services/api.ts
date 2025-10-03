@@ -1320,7 +1320,7 @@ export const api = createApi({
           lng?: string;
           rankingId: string;
         }) => ({
-          url: `city/${cityId}/hiap/action-plan/${rankingId}`,
+          url: `city/${cityId}/hiap/action-plan/generate/${rankingId}`,
           method: "POST",
           body: { action, inventoryId, cityLocode, lng },
         }),
@@ -1339,7 +1339,7 @@ export const api = createApi({
           const params = new URLSearchParams();
           if (language) params.append("language", language);
           if (actionId) params.append("actionId", actionId);
-          return `city/${cityId}/hiap/action-plans?${params.toString()}`;
+          return `city/${cityId}/hiap/action-plan?${params.toString()}`;
         },
         transformResponse: (response: { data: ActionPlan[] }) => ({
           actionPlans: response.data,
@@ -1350,7 +1350,7 @@ export const api = createApi({
         ActionPlan,
         { cityId: string; id: string }
       >({
-        query: ({ cityId, id }) => `city/${cityId}/hiap/action-plans/${id}`,
+        query: ({ cityId, id }) => `city/${cityId}/hiap/action-plan/${id}`,
         transformResponse: (response: { data: ActionPlan }) => response.data,
         providesTags: ["ActionPlan"],
       }),

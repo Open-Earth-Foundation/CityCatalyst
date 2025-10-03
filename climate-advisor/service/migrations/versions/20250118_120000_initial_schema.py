@@ -84,8 +84,8 @@ def upgrade() -> None:
     # Note: Using raw SQL because SQLAlchemy can't properly serialize VECTOR type
     op.execute("""
         CREATE TABLE document_embeddings (
-            embedding_id VARCHAR(36) PRIMARY KEY,
-            model_name VARCHAR(100) NOT NULL,
+            embedding_id UUID PRIMARY KEY,
+            model_name TEXT NOT NULL,
             embedding_vector VECTOR NOT NULL,
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
         );

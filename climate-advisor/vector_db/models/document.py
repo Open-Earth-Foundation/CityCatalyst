@@ -23,7 +23,7 @@ class DocumentEmbedding(Base):
 
     # Primary embedding data
     embedding_id: Mapped[str] = mapped_column(String(36), primary_key=True)
-    model_name: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    model_name: Mapped[str] = mapped_column(Text, nullable=False, index=True)
     embedding_vector: Mapped[List[float]] = mapped_column(
         Vector(),
         nullable=False,

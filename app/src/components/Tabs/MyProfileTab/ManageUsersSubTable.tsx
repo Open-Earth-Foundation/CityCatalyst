@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback, useEffect } from "react";
-import { ButtonSmall } from "@/components/Texts/Button";
+import { ButtonSmall } from "@/components/package/Texts/Button";
 import { Column, Row, useTable } from "react-table";
 import { InviteStatus, GetUserCityInvitesResponse } from "@/util/types";
 import { MdOutlineDelete, MdOutlineReplay } from "react-icons/md";

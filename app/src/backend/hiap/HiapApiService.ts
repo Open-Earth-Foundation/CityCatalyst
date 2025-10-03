@@ -13,6 +13,7 @@ import ActionPlanEmailService from "@/backend/ActionPlanEmailService";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 
+/** This Service works with the AI API. In development, run kubectl port-forward svc/hiap-service-dev 8080:80 to access it. */
 export async function startPrioritization(
   contextData: any,
   type: ACTION_TYPES,
@@ -53,6 +54,7 @@ export async function startPrioritization(
   return { taskId };
 }
 
+/** This Service works with the AI API. In development, run kubectl port-forward svc/hiap-service-dev 8080:80 to access it. */
 export async function checkPrioritizationProgress(
   taskId: string,
 ): Promise<{ status: string; error?: string }> {
@@ -76,6 +78,7 @@ export async function checkPrioritizationProgress(
   return json;
 }
 
+/** This Service works with the AI API. In development, run kubectl port-forward svc/hiap-service-dev 8080:80 to access it. */
 export async function getPrioritizationResult(
   taskId: string,
 ): Promise<PrioritizerResponse> {
@@ -92,6 +95,7 @@ export async function getPrioritizationResult(
   return json;
 }
 
+/** This Service works with the AI API. In development, run kubectl port-forward svc/hiap-service-dev 8080:80 to access it. */
 export const startActionPlanJob = async ({
   action,
   cityLocode,

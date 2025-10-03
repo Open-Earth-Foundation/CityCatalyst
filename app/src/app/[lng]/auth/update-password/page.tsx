@@ -108,9 +108,8 @@ export default function UpdatePassword(props: {
             {t("reset-button")}
           </Button>
           <Button
-            type="reset"
-            disabled={isSubmitting}
             variant="ghost"
+            disabled={isSubmitting}
             h={16}
             width="full"
             mt={4}

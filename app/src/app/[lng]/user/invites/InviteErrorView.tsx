@@ -1,11 +1,11 @@
 "use client";
-import { DisplaySmall } from "@/components/Texts/Display";
+import { DisplaySmall } from "@/components/package/Texts/Display";
 import { useTranslation } from "@/i18n/client";
 import { MdArrowBack } from "react-icons/md";
 import { Button, Center, Icon, Box, Link } from "@chakra-ui/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { BodyXLarge } from "@/components/Texts/Body";
+import { BodyXLarge } from "@/components/package/Texts/Body";
 
 interface InviteErrorViewProps {
   lng: string;

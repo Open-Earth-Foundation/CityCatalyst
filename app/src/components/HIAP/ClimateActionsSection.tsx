@@ -10,13 +10,12 @@ import {
   ACTION_TYPES,
   LANGUAGES,
 } from "@/util/types";
-import { ButtonMedium } from "../Texts/Button";
-import { HeadlineSmall } from "../Texts/Headline";
-import { BodyLarge } from "../Texts/Body";
-import { TitleSmall } from "../Texts/Title";
-import { api } from "@/services/api";
+import { ButtonMedium } from "@/components/package/Texts/Button";
+import { HeadlineSmall } from "@/components/package/Texts/Headline";
+import { BodyLarge } from "@/components/package/Texts/Body";
+import { TitleSmall } from "@/components/package/Texts/Title";
 import { logger } from "@/services/logger";
-import { toaster } from "@/components/ui/toaster";
+import { toaster } from "../ui/toaster";
 
 interface ClimateActionsSectionProps {
   t: (key: string) => string;

@@ -1233,7 +1233,7 @@ export const api = createApi({
           ignoreExisting?: boolean;
         }
       >({
-        query: ({ inventoryId, actionType, lng, ignoreExisting }) => ({
+        query: ({ inventoryId, actionType, lng, ignoreExisting = false }) => ({
           url: `inventory/${inventoryId}/hiap?actionType=${actionType}&lng=${lng}&ignoreExisting=${ignoreExisting}`,
           method: "GET",
         }),

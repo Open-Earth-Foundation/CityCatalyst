@@ -43,6 +43,7 @@ import { LuChevronDown } from "react-icons/lu";
 import { NoModulesCard } from "./NoModulesCard";
 import { Modules } from "@/util/constants";
 import { stageOrder } from "@/config/stages";
+import ClimaAIAssistantDisclaimerDialog from "../ChatBot/clima-ai-assistant-disclaimer-dialog";
 
 export default function HomePage({
   lng,

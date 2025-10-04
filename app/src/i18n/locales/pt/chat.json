@@ -12,5 +12,17 @@
   "chat-suggestion-collect-data": "Como posso coletar dados?",
   "chat-suggestion-collect-data-message": "Como posso adicionar novas fontes de dados ao CityCatalyst?",
   "chat-suggestion-ipcc": "O que é o IPCC?",
-  "chat-suggestion-ipcc-message": "O que é o Painel Intergovernamental sobre Mudanças Climáticas (IPCC)?"
+  "chat-suggestion-ipcc-message": "O que é o Painel Intergovernamental sobre Mudanças Climáticas (IPCC)?",
+  "cancel": "Cancelar",
+  "start-using-clima-ai": "Começar a usar Clima AI",
+  "clima-ai-assistant-disclaimer-title": "Apresentando Clima AI",
+  "ask-ai-anything-title": "Pergunte qualquer coisa à IA",
+  "ask-ai-anything-description": "Para desbloquear todo o potencial do Clima AI, faça perguntas claras e específicas",
+  "verify-key-information-title": "Verifique informações importantes",
+  "verify-key-information-description": "O Clima AI pode ajudá-lo com seu inventário de emissões de GEE e fornecer suporte, mas sempre verifique informações críticas.",
+  "about-privacy-title": "Sobre sua privacidade",
+  "about-privacy-description": "Ao usar o Clima AI, você concorda com o armazenamento anônimo e análise de seus dados de conversa para melhorar a precisão e eficiência da IA.",
+  "about-privacy-bold": "Nenhum dado pessoal é publicado ou usado além do treinamento do modelo.",
+  "about-privacy-contact": "Para preocupações de privacidade, por favor",
+  "contact-support": "entre em contato com o suporte"
 }

@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import ClientRootLayout from "@/components/ClientRootLayout";
 import CookieConsent from "@/components/CookieConsent";
 import { use } from "react";
+import ChatPopover from "@/components/ChatBot/chat-popover";
 
 export const metadata: Metadata = {
   title: "CityCatalyst",
@@ -36,6 +37,7 @@ export default function RootLayout(props: {
           <Toaster />
           <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
           <CookieConsent lng={lng} />
+          <ChatPopover lng={lng} />
         </Providers>
       </body>
     </html>

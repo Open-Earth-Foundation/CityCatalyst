@@ -2,7 +2,9 @@ from typing import Optional, List
 
 
 def build_city_data(
-    contextData: dict, requestData: dict, ccra: Optional[List[dict]] = None
+    requestData: dict,
+    contextData: Optional[dict] = None,
+    ccra: Optional[List[dict]] = None,
 ) -> dict:
     """
     Build the city_data dictionary as required.
@@ -12,9 +14,10 @@ def build_city_data(
     - Initiates ccra as empty list (for now)
 
     Input:
-        contextData: general city context data from global api
+        contextData: general city context data from global api (optional). If not provided,
+            the context keys below are set to None.
         requestData: flat dict with keys: locode, populationSize, stationaryEnergyEmissions, transportationEmissions, wasteEmissions, ippuEmissions, afoluEmissions
-        ccra: ccra data from global api
+        ccra: ccra data from global api (optional). If not provided, the ccra key is set to an empty list.
 
     Returns:
     A dictionary with the following structure:
@@ -40,9 +43,11 @@ def build_city_data(
     # Step 1: Copy all relevant fields from contextData
     cityData = {}
 
-    # Step 2: Directly copy simple fields
+    # Step 2: Set locode from requestData as this is passed from the frontend.
+    cityData["locode"] = requestData.get("locode")
+
+    # Step 3: Directly copy simple fields if contextData is provided. Otherwise, set to None.
     for key in [
-        "locode",
         "name",
         "region",
         "regionName",
@@ -53,12 +58,16 @@ def build_city_data(
         "socioEconomicFactors",
         "accessToPublicServices",
     ]:
-        cityData[key] = contextData.get(key)
+        cityData[key] = None if contextData is None else contextData.get(key)
 
-    # Step 3: Override populationSize with value from requestBody
-    cityData["populationSize"] = requestData.get("populationSize")
+    # Step 4: Override populationSize with value from requestBody if provided by the frontend (not 0-value or missing)
+    if (
+        requestData.get("populationSize") is not None
+        and requestData.get("populationSize") >= 0
+    ):
+        cityData["populationSize"] = requestData.get("populationSize")
 
-    # Step 4: Copy emissions fields from flat requestBody
+    # Step 5: Copy emissions fields from flat requestBody
     emissionFields = [
         "stationaryEnergyEmissions",
         "transportationEmissions",
@@ -74,10 +83,10 @@ def build_city_data(
         cityData[field] = value
         totalEmissions += value
 
-    # Step 5: Set totalEmissions as the sum of the above emissions
+    # Step 6: Set totalEmissions as the sum of the above emissions
     cityData["totalEmissions"] = totalEmissions
 
-    # Step 6: Set the CCRA data
+    # Step 7: Set the CCRA data
     cityData["ccra"] = ccra
 
     # Step 7: Return the constructed dictionary

@@ -26,7 +26,7 @@ from prioritizer.models import (
     PrioritizerResponse,
     PrioritizerResponseBulk,
 )
-from prioritizer.tasks import compute_prioritization_bulk_subtask
+from prioritizer.tasks import _compute_prioritization_bulk_subtask
 from services.get_actions import get_actions
 
 
@@ -97,8 +97,11 @@ def worker(idx: int, city_data: CityData):
         "actions": actions,
     }
     try:
-        resp = compute_prioritization_bulk_subtask(
-            background_task_input, mode="tournament_ranking"
+        resp = _compute_prioritization_bulk_subtask(
+            background_task_input,
+            main_task_id="local",
+            subtask_idx=idx,
+            mode="tournament_ranking",
         )
         status = resp.get("status")
         if status == "completed":

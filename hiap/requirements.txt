@@ -114,7 +114,7 @@ pypdf==5.9.0
 PyPika==0.48.9
 pyproject_hooks==1.2.0
 pyreadline3==3.5.4
-pytest==8.4.1
+pytest==8.4.2
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.0
 pytz==2025.2

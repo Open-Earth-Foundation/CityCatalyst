@@ -5,8 +5,8 @@
 
 # Text Processing Configuration
 text_processing:
-  # Maximum text length for embedding generation (text-embedding-3-large)
-  max_text_length: 8000
+  # Maximum token limit for embedding generation (OpenAI text-embedding-3-large limit)
+  max_token_limit: 8000
 
 # Document Chunking Configuration
 chunking:

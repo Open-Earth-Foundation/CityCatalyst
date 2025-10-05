@@ -258,7 +258,7 @@ Configure embedding settings in `../llm_config.yaml`:
 ```yaml
 api:
   openai:
-    embedding_model: "text-embedding-3-small" # or "text-embedding-3-large"
+    embedding_model: "text-embedding-3-large"
     timeout_ms: 30000
 ```
 
@@ -269,12 +269,14 @@ All embedding and chunking parameters are now centralized in `embedding_config.y
 ```yaml
 # Text Processing Configuration
 text_processing:
-  max_text_length: 8000
+  # Maximum token limit for OpenAI embeddings (text-embedding-3-large supports up to 8191 tokens)
+  max_token_limit: 8000
 
 # Document Chunking Configuration
 chunking:
-  default_chunk_size: 2000
-  default_chunk_overlap: 200
+  # LangChain RecursiveCharacterTextSplitter settings
+  default_chunk_size: 2000 # Characters per chunk
+  default_chunk_overlap: 200 # Character overlap between chunks
 
 # File Processing Configuration
 file_processing:
@@ -282,9 +284,16 @@ file_processing:
 
 # Embedding Service Configuration
 embedding_service:
-  batch_size: 100
-  requests_per_minute: 3000
+  batch_size: 100 # Number of chunks to process in parallel
+  requests_per_minute: 3000 # Rate limit for OpenAI API
 ```
+
+**Important Notes:**
+
+- Documents are automatically chunked by LangChain's `RecursiveCharacterTextSplitter` before embedding
+- The `max_token_limit` is used for validation only - chunks should already be under this limit
+- If you see warnings about chunks exceeding the token limit, reduce `default_chunk_size` in the config
+- Token counting is done using `tiktoken` for accurate OpenAI token calculation
 
 To modify these values, edit `embedding_config.yml`. The configuration is loaded automatically by the scripts and services.
 

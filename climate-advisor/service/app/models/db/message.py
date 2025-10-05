@@ -8,11 +8,7 @@ from uuid import UUID
 from sqlalchemy import DateTime, Enum, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-try:
-    from sqlalchemy.dialects.postgresql import JSONB, UUID
-except ImportError:  # pragma: no cover
-    from sqlalchemy import JSON as JSONB  # type: ignore
-    from sqlalchemy import String as UUID  # type: ignore
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 from ...db import Base
 

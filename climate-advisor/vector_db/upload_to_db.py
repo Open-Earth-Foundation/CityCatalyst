@@ -46,7 +46,7 @@ OUTPUT:
     1. Initialize pgvector extension in the database
     2. Process each PDF file in the specified directory
     3. Extract text content and split into chunks
-    4. Generate embeddings using OpenAI's text-embedding-3-small model
+    4. Generate embeddings using OpenAI's text-embedding-3-large model
     5. Store documents, chunks, and embeddings in the database
     6. Display progress and summary statistics
 

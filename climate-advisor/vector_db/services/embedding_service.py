@@ -14,6 +14,7 @@ from dataclasses import dataclass
 
 from openai import AsyncOpenAI, OpenAIError
 import numpy as np
+import tiktoken
 
 # Import settings from the service app
 import sys
@@ -63,7 +64,29 @@ class EmbeddingService:
         self.batch_size = self.config.batch_size
         self.requests_per_minute = self.config.requests_per_minute
         self.min_delay = 60.0 / self.requests_per_minute  # Minimum delay between requests
-        self.max_text_length = self.config.max_text_length
+        self.max_tokens = self.config.max_token_limit
+
+        # Initialize tiktoken encoder for the model for token counting/validation
+        try:
+            self.tokenizer = tiktoken.encoding_for_model(self.model)
+        except KeyError:
+            # Fallback for models not in tiktoken
+            self.tokenizer = tiktoken.get_encoding("cl100k_base")
+
+
+    def calculate_tokens(self, text: str) -> int:
+        """
+        Calculate the number of tokens in the given text.
+
+        Args:
+            text: Text to count tokens for
+
+        Returns:
+            Number of tokens in the text
+        """
+        if not text:
+            return 0
+        return len(self.tokenizer.encode(text))
 
     async def generate_embedding(self, text: str) -> EmbeddingResult:
         """
@@ -87,9 +110,12 @@ class EmbeddingService:
                     error="Empty text provided"
                 )
 
-            # Truncate text if too long (OpenAI has token limits)
-            if len(text) > self.max_text_length:
-                text = text[:self.max_text_length] + "..."
+            # Validate token count (text should already be chunked by LangChain text splitter)
+            # Log a warning if chunk exceeds token limit - this shouldn't happen with proper chunking
+            text_tokens = self.calculate_tokens(text)
+            if text_tokens > self.max_tokens:
+                print(f"Warning: Text chunk has {text_tokens} tokens, exceeding limit of {self.max_tokens}. "
+                      f"Consider reducing chunk_size in embedding_config.yml")
 
             response = await self.client.embeddings.create(
                 input=text,
@@ -269,11 +295,12 @@ class EmbeddingService:
         Returns:
             Number of dimensions for the embedding model
         """
-        # text-embedding-3-small has 1536 dimensions
         # text-embedding-3-large has 3072 dimensions
-        # text-embedding-ada-002 has 1536 dimensions
+        # text-embedding-3-small has 1536 dimensions
+
         model_name = self.model.lower()
         if "large" in model_name:
             return 3072
         else:
             return 1536
+

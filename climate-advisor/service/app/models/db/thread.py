@@ -7,15 +7,7 @@ from uuid import UUID
 from sqlalchemy import DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-try:
-    from sqlalchemy.dialects.postgresql import UUID as PGUUID
-except ImportError:  # pragma: no cover - fallback when PG dialect unavailable
-    from sqlalchemy import String as PGUUID  # type: ignore
-
-try:
-    from sqlalchemy.dialects.postgresql import JSONB
-except ImportError:  # pragma: no cover - fallback when PG dialect unavailable
-    from sqlalchemy import JSON as JSONB  # type: ignore
+from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
 
 from ...db import Base
 

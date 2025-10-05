@@ -59,9 +59,9 @@ class EmbeddingConfig:
     
     # Text Processing Configuration
     @property
-    def max_text_length(self) -> int:
-        """Maximum text length for embedding generation."""
-        return self._config.get('text_processing', {}).get('max_text_length', 8000)
+    def max_token_limit(self) -> int:
+        """Maximum token limit for embedding generation."""
+        return self._config.get('text_processing', {}).get('max_token_limit', 8000)
     
     # Document Chunking Configuration
     @property

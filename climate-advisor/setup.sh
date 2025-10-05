@@ -45,7 +45,7 @@ fi
 # Set up the database
 echo "🔧 Setting up database schema..."
 cd service
-python ../scripts/setup_local_db.py
+python ../scripts/setup_database.py
 cd ..
 
 echo "✅ Database schema created successfully"

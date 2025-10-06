@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Optional
-from uuid import uuid4
+from typing import Optional, Union
+from uuid import uuid4, UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,7 +20,7 @@ class ThreadService:
         self, payload: ThreadCreateRequest, *, thread_id: Optional[str] = None
     ) -> Thread:
         thread = Thread(
-            thread_id=thread_id or str(uuid4()),
+            thread_id=thread_id or uuid4(),
             user_id=payload.user_id,
             inventory_id=payload.inventory_id,
             context=payload.context,
@@ -29,7 +29,14 @@ class ThreadService:
         await self.session.flush()
         return thread
 
-    async def get_thread(self, thread_id: str) -> Thread | None:
+    async def get_thread(self, thread_id: Union[str, UUID]) -> Thread | None:
+        # Validate UUID format before querying
+        if isinstance(thread_id, str):
+            try:
+                thread_id = UUID(thread_id)
+            except ValueError:
+                raise ThreadNotFoundException(thread_id)
+
         result = await self.session.execute(
             select(Thread).where(Thread.thread_id == thread_id)
         )
@@ -39,7 +46,7 @@ class ThreadService:
         thread.last_updated = datetime.now(timezone.utc)
         await self.session.flush()
 
-    async def get_thread_for_user(self, thread_id: str, user_id: str) -> Thread:
+    async def get_thread_for_user(self, thread_id: Union[str, UUID], user_id: str) -> Thread:
         """Return the thread if it is owned by ``user_id``.
 
         Raises:

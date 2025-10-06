@@ -154,3 +154,7 @@ api-demo/public/config.js
 
 # openapi-spec.json is generated at build time
 app/public/openapi-spec.json
+
+# Climate advisor specific files
+climate-advisor/scripts/setup_local_db.py
+

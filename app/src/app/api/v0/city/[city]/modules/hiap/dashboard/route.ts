@@ -23,7 +23,7 @@
  *         required: false
  *         schema:
  *           type: string
- *         description: Language code for localized content (default: 'en')
+ *         description: Language code for localized content, defaults to en
  *       - in: query
  *         name: ignoreExisting
  *         required: false

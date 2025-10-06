@@ -1,5 +1,5 @@
 "use client";
-import LabelLarge from "@/components/Texts/Label";
+import LabelLarge from "@/components/package/Texts/Label";
 import {
   AccordionItem,
   AccordionItemContent,
@@ -9,11 +9,11 @@ import {
 import React, { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { methodologiesBySector } from "./methodologies";
-import { TitleMedium } from "@/components/Texts/Title";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import { Button, Icon } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { MdArrowBack } from "react-icons/md";
-import { ButtonMedium } from "@/components/Texts/Button";
+import { ButtonMedium } from "@/components/package/Texts/Button";
 
 export function MethodologyTableOfContents({
   activeId,

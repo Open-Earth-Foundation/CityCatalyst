@@ -5,7 +5,7 @@ import { MdDelete } from "react-icons/md";
 import { useTranslation } from "@/i18n/client";
 import React from "react";
 import { Client } from "@/util/types";
-import { TitleMedium } from "@/components/Texts/Title";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import { api } from "@/services/api";
 import { toaster } from "@/components/ui/toaster";
 

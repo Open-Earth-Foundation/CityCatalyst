@@ -12,16 +12,15 @@ import { findClosestYear } from "@/util/helpers";
 import {
   Box,
   createListCollection,
-  Group,
   Heading,
   HStack,
   Icon,
-  InputAddon,
   Text,
 } from "@chakra-ui/react";
 import FormattedThousandsNumberInput from "@/app/[lng]/onboarding/setup/FormattedThousandsNumberInput";
 import { MdCheck, MdErrorOutline, MdInfoOutline } from "react-icons/md";
 import { Field } from "@/components/ui/field";
+import { BodyMedium } from "@/components/package/Texts/Body";
 import {
   SelectContent,
   SelectItem,
@@ -43,6 +42,7 @@ export default function SetPopulationDataStep({
   watch,
   setValue,
   numberOfYearsDisplayed,
+  populationErrorMessage,
 }: {
   t: TFunction;
   register: UseFormRegister<Inputs>;
@@ -54,6 +54,7 @@ export default function SetPopulationDataStep({
   setData: (data: OnboardingData) => void;
   setValue: any;
   numberOfYearsDisplayed: number;
+  populationErrorMessage?: string;
 }) {
   const yearInput = watch("year");
   const year: number | null = yearInput ? parseInt(yearInput) : null;
@@ -173,6 +174,11 @@ export default function SetPopulationDataStep({
         >
           {t("setup-population-data-description")}
         </Text>
+        {populationErrorMessage && (
+          <BodyMedium color="semantic.danger">
+            {populationErrorMessage}
+          </BodyMedium>
+        )}
       </Box>
       <Box
         w="full"

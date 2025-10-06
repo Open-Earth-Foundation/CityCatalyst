@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/accordion";
 import { convertKgToTonnes } from "@/util/helpers";
 import { HStack, Table, TableBody, TableCell } from "@chakra-ui/react";
-import { BodyMedium } from "@/components/Texts/Body";
-import { TitleSmall } from "@/components/Texts/Title";
-import { Overline } from "@/components/Texts/Overline";
+import { BodyMedium } from "@/components/package/Texts/Body";
+import { TitleSmall } from "@/components/package/Texts/Title";
+import { Overline } from "@/components/package/Texts/Overline";
 
 interface SourceDrawerActivityTableProps {
   activities: DataSourceActivityDataRecord[];

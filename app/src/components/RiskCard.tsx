@@ -10,9 +10,9 @@ import {
 } from "@/util/ccra-constants";
 import { RiskLevelTag } from "@/components/RiskLevelTag";
 import { RiskLevelIndicator } from "@/components/RiskLevelIndicator";
-import { TitleLarge, TitleSmall } from "./Texts/Title";
-import { BodyLarge, BodySmall } from "./Texts/Body";
-import { LabelMedium } from "./Texts/Label";
+import { TitleLarge, TitleSmall } from "./package/Texts/Title";
+import { BodyLarge, BodySmall } from "./package/Texts/Body";
+import { LabelMedium } from "./package/Texts/Label";
 
 export const RiskCard = ({
   risk,

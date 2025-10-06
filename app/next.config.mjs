@@ -11,6 +11,12 @@ function generateOpenAPISpec() {
   try {
     console.log("🔄 Generating OpenAPI specification...");
     
+    // Suppress console output from swagger doc generation
+    const originalError = console.error;
+    const originalLog = console.log;
+    console.error = () => {};
+    console.log = () => {};
+    
     const spec = createSwaggerSpec({
       apiFolder: "src/app/api/v0",
       definition: {
@@ -31,6 +37,10 @@ function generateOpenAPISpec() {
         security: [],
       },
     });
+
+    // Restore console
+    console.error = originalError;
+    console.log = originalLog;
 
     // Create public directory if it doesn't exist
     const publicDir = path.join(process.cwd(), "public");

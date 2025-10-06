@@ -3,3 +3,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+venv/
+.venv
+
+# Vector DB files - manage documents externally (e.g., Google Drive)
+vector_db/files/*.pdf

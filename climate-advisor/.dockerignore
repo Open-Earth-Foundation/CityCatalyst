@@ -69,8 +69,5 @@ scripts/
 architecture.md
 architecture_implementation_plan.md
 
-# LLM config (should be mounted or environment-based)
-llm_config.yaml
-
 # OpenAPI spec (for docs)
 climate-advisor-openapi.yaml

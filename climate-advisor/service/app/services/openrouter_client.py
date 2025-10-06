@@ -27,7 +27,11 @@ class OpenRouterClient:
         # Use LLM config values as defaults, allow overrides
         if llm_config:
             self.base_url = (base_url or llm_config.api.openrouter.base_url).rstrip("/")
-            self.timeout = httpx.Timeout((timeout_ms or llm_config.api.openrouter.timeout_ms) / 1000)
+            # Ensure we do not attempt division with None
+            config_timeout_ms = timeout_ms if timeout_ms is not None else llm_config.api.openrouter.timeout_ms
+            if config_timeout_ms is None:
+                raise ValueError("timeout_ms must be provided either as an argument or in llm_config.api.openrouter.timeout_ms")
+            self.timeout = httpx.Timeout(config_timeout_ms / 1000)
             self.default_model = default_model or llm_config.models.get("default", "openrouter/auto")
         else:
             # Fallback to original behavior if no LLM config
@@ -39,9 +43,11 @@ class OpenRouterClient:
 
     def _headers(self, request_id: Optional[str] = None) -> Dict[str, str]:
         h = {
-            "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
+        # Only add Authorization header if API key is provided
+        if self.api_key and self.api_key.strip():
+            h["Authorization"] = f"Bearer {self.api_key}"
         if request_id:
             h["X-Request-Id"] = request_id
         return h

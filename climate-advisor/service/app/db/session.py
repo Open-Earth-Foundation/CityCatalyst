@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import AsyncGenerator
+import logging
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.exc import ArgumentError
@@ -16,6 +17,8 @@ def _ensure_asyncpg_url(url: str) -> str:
     return url
 
 
+
+logger = logging.getLogger(__name__)
 
 from ..config.settings import get_settings
 
@@ -91,7 +94,24 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
         finally:
             await session.close()
 
+async def get_session_optional() -> AsyncGenerator[AsyncSession | None, None]:
+    """Return a session when available, otherwise yield None without raising."""
+    try:
+        session_factory = get_session_factory()
+    except Exception:
+        logger.exception("Failed to create database session factory")
+        yield None
+        return
 
-
-
-
+    try:
+        async with session_factory() as session:
+            try:
+                yield session
+            except Exception:
+                await session.rollback()
+                raise
+            finally:
+                await session.close()
+    except Exception:
+        logger.exception("Database session unavailable")
+        yield None

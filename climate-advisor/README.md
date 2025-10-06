@@ -1,6 +1,5 @@
 # Climate Advisor
 
-
 Climate Advisor (CA) is a standalone FastAPI microservice that powers the conversational experience for CityCatalyst (CC). The service lives under `climate-advisor/service` and exposes versioned APIs under `/v1/*`.
 
 ## Local Development
@@ -8,31 +7,44 @@ Climate Advisor (CA) is a standalone FastAPI microservice that powers the conver
 Prerequisites: Python 3.11+, pip, and Docker (for local Postgres).
 
 1. Create and activate a Python virtual environment:
+
    ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
 2. Copy the example environment file and adjust values as needed:
+
    ```bash
-   cp climate-advisor/.env.example climate-advisor/.env
+   cp .env.example .env
    ```
+
+   **Important**: Update the `OPENROUTER_API_KEY` with your actual OpenRouter API key and adjust the `CA_DATABASE_URL` if needed for your setup.
 
 3. Start a local Postgres instance (see [Postgres Quickstart](#postgres-quickstart)). Leave it running while you develop.
 
 4. Install dependencies:
+
    ```bash
    cd climate-advisor/service
    pip install -r requirements.txt
    ```
 
-5. Create or reset the database schema (idempotent):
+5. Set up the database schema using Alembic migrations:
+
    ```bash
-   python ../scripts/setup_local_db.py
+   cd climate-advisor
+   python scripts/setup_database.py
    ```
-   Add `--drop` to wipe and recreate the schema.
+
+   **Options:**
+
+   - Default: Run migrations to create/update schema
+   - `--check`: Test database connectivity only
+   - `--drop`: Reset database completely (destructive!)
 
 6. Run the service:
+
    ```bash
    uvicorn app.main:app --host 0.0.0.0 --port 8080
    ```
@@ -42,16 +54,75 @@ Prerequisites: Python 3.11+, pip, and Docker (for local Postgres).
    - OpenAPI JSON: http://localhost:8080/openapi.json
    - Playground: http://localhost:8080/playground (simple HTML tester)
 
-## Postgres Quickstart
+## Local Database Setup
 
-Launch a disposable Postgres container that matches the defaults in `.env.example`:
+### Step 1: Start PostgreSQL Container
+
+Launch a PostgreSQL container for local development:
 
 ```bash
-docker run --name ca-postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=climate_advisor \
+docker run --name ca-postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=postgres \
   -p 5432:5432 -d postgres:15
 ```
 
-Update `CA_DATABASE_URL` if you change credentials or the port. Stop the container with `docker stop ca-postgres` (and remove with `docker rm ca-postgres`).
+### Step 2: Create Database and User
+
+Connect to PostgreSQL and set up the climate advisor database:
+
+```bash
+# Connect to PostgreSQL interactively
+docker exec -it ca-postgres psql -U postgres -d postgres
+
+# Create the climateadvisor user
+CREATE USER climateadvisor WITH PASSWORD 'climateadvisor';
+
+# Create the climateadvisor database
+CREATE DATABASE climateadvisor OWNER climateadvisor;
+
+# Grant necessary permissions
+GRANT ALL PRIVILEGES ON DATABASE climateadvisor TO climateadvisor;
+ALTER USER climateadvisor CREATEDB;
+
+# Exit PostgreSQL
+\q
+```
+
+### Alternative: Direct Commands (Non-Interactive)
+
+```bash
+# Create user
+docker exec -i ca-postgres psql -U postgres -d postgres -c "CREATE USER climateadvisor WITH PASSWORD 'climateadvisor';"
+
+# Create database
+docker exec -i ca-postgres psql -U postgres -d postgres -c "CREATE DATABASE climateadvisor OWNER climateadvisor;"
+
+# Grant permissions
+docker exec -i ca-postgres psql -U postgres -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE climateadvisor TO climateadvisor; ALTER USER climateadvisor CREATEDB;"
+```
+
+### Step 3: Verify Setup
+
+```bash
+# List databases
+docker exec -i ca-postgres psql -U postgres -d postgres -c "\l"
+
+# List users
+docker exec -i ca-postgres psql -U postgres -d postgres -c "\du"
+```
+
+### Step 4: Update Environment Configuration
+
+Update your `.env` file in the climate-advisor directory:
+
+```bash
+CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5432/climateadvisor
+```
+
+### Container Management
+
+- Stop the container: `docker stop ca-postgres`
+- Remove the container: `docker rm ca-postgres`
+- View logs: `docker logs ca-postgres`
 
 ## Health Endpoint
 
@@ -64,15 +135,31 @@ Update `CA_DATABASE_URL` if you change credentials or the port. Stop the contain
 
 ## Docker (service)
 
-Build and run the API container:
+### Prerequisites
+
+1. Ensure your PostgreSQL database is running and accessible
+2. Copy `.env.example` to `.env` and configure your settings
+3. Make sure the `CA_DATABASE_URL` in `.env` points to your database
+
+### Build and Run
 
 ```bash
-cd climate-advisor/service
-docker build -t climate-advisor:dev .
-docker run --rm --env-file ../.env -p 8080:8080 climate-advisor:dev
+cd climate-advisor
+docker build -f service/Dockerfile -t climate-advisor:dev .
+docker run --rm --env-file .env -p 8080:8080 climate-advisor:dev
 ```
 
-Ensure Postgres is reachable from inside the container (e.g., use `host.docker.internal` on macOS/Windows).
+### Database Connection Notes
+
+- **Linux/macOS**: Use `host.docker.internal` to connect to host PostgreSQL
+- **Windows**: Use the IP address of your host machine (e.g., `192.168.65.2`)
+- **Network Mode**: Alternatively, use `--network host` on Linux to share the host network
+
+### Troubleshooting
+
+- If database connection fails, verify `CA_DATABASE_URL` in your `.env` file
+- Ensure PostgreSQL is running on the specified host/port
+- Check that the database user and database exist
 
 ## Configuration
 
@@ -98,6 +185,7 @@ All LLM-related configuration (models, prompts, generation parameters, etc.) is 
 - **Feature Flags**: Enable/disable streaming, dynamic model selection, etc.
 
 The configuration file supports:
+
 - Multiple model providers and models
 - Per-model default parameters
 - Flexible prompt templates with context injection
@@ -105,6 +193,7 @@ The configuration file supports:
 - Caching and logging configuration
 
 Environment variables can override YAML configuration for API keys and sensitive settings.
+
 - Future CC integration placeholders: `CC_BASE_URL`, `CC_OAUTH_CLIENT_ID`, `CC_OAUTH_CLIENT_SECRET`, `CC_OAUTH_TOKEN_URL`
 
 Environment variables are loaded automatically from the nearest `.env` when the service boots.
@@ -113,14 +202,15 @@ Environment variables are loaded automatically from the nearest `.env` when the 
 
 The service uses **Alembic** for database schema management. Migration files are located in `service/migrations/`.
 
-**Quick migration commands:**
+**Migration commands (use the setup script for initial setup):**
+
 ```bash
 cd climate-advisor/service
 
-# Apply all pending migrations
+# Apply all pending migrations (use setup script instead for initial setup)
 python migrate.py upgrade
 
-# Create new migration from model changes  
+# Create new migration from model changes
 python migrate.py auto "description of changes"
 
 # Check current migration status
@@ -128,17 +218,80 @@ python migrate.py current
 
 # View migration history
 python migrate.py history
+
+# Downgrade one migration
+python migrate.py downgrade
+
+# Create empty migration
+python migrate.py create "description"
+```
+
+**For local development setup:**
+
+```bash
+# Use the unified setup script (recommended)
+python ../scripts/setup_database.py
+
+# Or run migrations directly
+python migrate.py upgrade
+```
+
+Or do it executing commands after logging into a container
+
+```
+docker exec -it ca-postgres bash
 ```
 
 **Required environment variable:**
+
 - `CA_DATABASE_URL` - PostgreSQL connection string (e.g., `postgresql://user:pass@localhost:5432/climate_advisor`)
 
 See `service/migrations/README.md` for detailed migration documentation and best practices.
 
-## Scripts
+## Quick Setup (Recommended)
 
-- `climate-advisor/scripts/setup_local_db.py` - create/drop the Postgres schema
-- `climate-advisor/scripts/test_service_stream.py` - invoke `/v1/messages` and print SSE output
+For a complete from-scratch setup, run the automated setup script:
+
+**Linux/macOS:**
+
+```bash
+cd climate-advisor
+chmod +x setup.sh
+./setup.sh
+```
+
+**Windows:**
+
+```powershell
+cd climate-advisor
+.\setup.bat
+```
+
+These scripts will:
+
+1. ✅ Validate your `.env` configuration
+2. ✅ Start PostgreSQL container (if not running)
+3. ✅ Set up database schema using SQLAlchemy models
+4. ✅ Test service health
+
+## Manual Setup
+
+If you prefer manual setup or need more control:
+
+## Setup Scripts
+
+The `scripts/` directory contains several utilities for setting up and testing the service:
+
+### Database Setup Scripts
+
+- **`setup_database.py`** - **Recommended**: Unified database setup script that uses Alembic migrations. Works in both local development and containerized environments.
+  - `--check`: Test database connectivity only
+  - `--drop`: Reset database (destructive - drops all tables)
+  - Default: Run migrations to create/update schema
+
+### Testing Scripts
+
+- **`test_service_stream.py`** - Tests the `/v1/messages` endpoint and displays streaming SSE output for debugging.
 
 ## Quick Streaming Test
 
@@ -155,3 +308,15 @@ You should see SSE lines with `event: message` chunks followed by a terminal `ev
 - Built-in Swagger UI is available at `/docs` and ReDoc at `/redoc`.
 - A static OpenAPI spec lives at `climate-advisor/docs/climate-advisor-openapi.yaml` for external tooling.
 
+## 🎯 Ready to Use
+
+Once setup is complete, the Climate Advisor service provides:
+
+- **Real-time Chat**: Conversational AI powered by OpenRouter models
+- **Thread Management**: Persistent conversation threads with context
+- **Streaming Responses**: Server-sent events for real-time message streaming
+- **Database Integration**: Full PostgreSQL integration with proper schema management
+- **API Documentation**: Comprehensive OpenAPI/Swagger documentation
+- **Playground Interface**: Web-based testing interface at `/playground`
+
+The service is designed to be production-ready with proper error handling, logging, and database transactions.

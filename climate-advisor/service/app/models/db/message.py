@@ -30,7 +30,7 @@ class Message(Base):
     text: Mapped[str] = mapped_column(Text, nullable=False)
     tools_used: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
     role: Mapped[MessageRole] = mapped_column(
-        Enum(MessageRole, name="message_role"),
+        Enum(MessageRole, name="message_role", values_callable=lambda x: [e.value for e in x]),
         nullable=False,
         default=MessageRole.USER
     )

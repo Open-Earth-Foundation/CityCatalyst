@@ -5,7 +5,7 @@ import PasswordInput from "@/components/password-input";
 import { useTranslation } from "@/i18n/client";
 
 import { Box, Heading, Icon, Input, Link, Text } from "@chakra-ui/react";
-import LabelLarge from "@/components/Texts/Label";
+import LabelLarge from "@/components/package/Texts/Label";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, use } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -22,7 +22,7 @@ import i18next from "i18next";
 import { trackEvent, identifyUser } from "@/lib/analytics";
 import { hasFeatureFlag } from "@/util/feature-flags";
 import { FeatureFlags } from "@/util/feature-flags";
-import { getDashboardPath } from "@/util/routes";
+import { getHomePath } from "@/util/routes";
 
 type Inputs = {
   inventory?: string;
@@ -121,7 +121,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           role: userData.user.role,
           email: userData.user.email,
         });
-        router.push(callbackUrl ?? getDashboardPath(lng));
+        router.push(callbackUrl ?? getHomePath(lng));
       } else {
         logger.error(loginResponse, "Failed to login");
         setError(t("invalid-email-password"));

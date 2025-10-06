@@ -5,7 +5,7 @@
  *     tags:
  *       - City Files
  *     summary: Get a single uploaded city file by ID.
- *     description: Returns the stored file metadata for the given city and file ID. Requires a signed‑in user with access to the city. Response is wrapped in { data }.
+ *     description: Returns the stored file metadata for the given city and file ID. Requires a signed‑in user with access to the city. Response is wrapped in '{' data '}'.
  *     parameters:
  *       - in: path
  *         name: city
@@ -28,7 +28,40 @@
  *               properties:
  *                 data:
  *                   type: object
- *                   additionalProperties: true
+ *                   properties:
+ *                     fileId:
+ *                       type: string
+ *                       format: uuid
+ *                     fileName:
+ *                       type: string
+ *                     size:
+ *                       type: number
+ *                     fileType:
+ *                       type: string
+ *                     uploadDate:
+ *                       type: string
+ *                       format: date-time
+ *                     content:
+ *                       type: string
+ *                       description: File content as base64 or URL
+ */
+import UserService from "@/backend/UserService";
+import { apiHandler } from "@/util/api";
+import { NextResponse } from "next/server";
+
+export const GET = apiHandler(async (_req: Request, { session, params }) => {
+  const userFile = await UserService.findUserFile(
+    params.file,
+    params.city,
+    session,
+  );
+
+  return NextResponse.json({ data: userFile });
+});
+
+/**
+ * @swagger
+ * /api/v0/city/{city}/file/{file}:
  *   delete:
  *     tags:
  *       - City Files
@@ -54,23 +87,11 @@
  *             schema:
  *               type: object
  *               properties:
- *                 data: { type: object }
- *                 deleted: { type: boolean }
+ *                 data:
+ *                   type: object
+ *                 deleted:
+ *                   type: boolean
  */
-import UserService from "@/backend/UserService";
-import { apiHandler } from "@/util/api";
-import { NextResponse } from "next/server";
-
-export const GET = apiHandler(async (_req: Request, { session, params }) => {
-  const userFile = await UserService.findUserFile(
-    params.file,
-    params.city,
-    session,
-  );
-
-  return NextResponse.json({ data: userFile });
-});
-
 export const DELETE = apiHandler(async (_req: Request, { session, params }) => {
   const userFile = await UserService.findUserFile(
     params.file,

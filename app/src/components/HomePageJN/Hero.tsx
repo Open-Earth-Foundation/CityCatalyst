@@ -24,10 +24,10 @@ import {
 import Link from "next/link";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { CityWithProjectDataResponse, InventoryResponse } from "@/util/types";
-import { TitleMedium } from "@/components/Texts/Title";
-import { DisplayMedium } from "@/components/Texts/Display";
-import { HeadlineSmall } from "@/components/Texts/Headline";
-import { BodyMedium } from "@/components/Texts/Body";
+import { TitleMedium } from "@/components/package/Texts/Title";
+import { DisplayMedium } from "@/components/package/Texts/Display";
+import { HeadlineSmall } from "@/components/package/Texts/Headline";
+import { BodyMedium } from "@/components/package/Texts/Body";
 import { FiArrowUpRight } from "react-icons/fi";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });

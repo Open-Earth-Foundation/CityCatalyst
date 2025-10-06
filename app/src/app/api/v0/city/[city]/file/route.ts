@@ -5,7 +5,7 @@
  *     tags:
  *       - City Files
  *     summary: List uploaded files for a city.
- *     description: Returns metadata for files users have uploaded to the specified city, including derived size/type info. Requires a signed‑in session; unauthorized users receive 401. Response is wrapped in { data: File[] }.
+ *     description: Returns metadata for files users have uploaded to the specified city, including derived size/type info. Requires a signed‑in session; unauthorized users receive 401. Response is wrapped in data object.
  *     parameters:
  *       - in: path
  *         name: city
@@ -26,68 +26,38 @@
  *                   items:
  *                     type: object
  *                     properties:
- *                       id: { type: string }
- *                       file: { type: object, properties: { fileName: {type: string}, size: {type: integer}, fileType: {type: string} } }
- *                     additionalProperties: true
- *   post:
- *     tags:
- *       - City Files
- *     summary: Upload a file for a city to attach to inventory data.
- *     description: Accepts multipart/form-data to upload and register a file with sector/scopes metadata. Requires a signed‑in session and the UPLOAD_OWN_DATA_ENABLED feature flag. Returns the normalized file metadata in { data }.
- *     parameters:
- *       - in: path
- *         name: city
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               data:
- *                 type: string
- *                 format: binary
- *               inventoryId:
- *                 type: string
- *                 format: uuid
- *               sector:
- *                 type: string
- *               subsectors:
- *                 type: string
- *               scopes:
- *                 type: string
- *               fileReference:
- *                 type: string
- *               url:
- *                 type: string
- *                 format: uri
- *               status:
- *                 type: string
- *               gpcRefNo:
- *                 type: string
- *     responses:
- *       200:
- *         description: Uploaded file metadata wrapped in data.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: object
- *                   properties:
- *                     id: { type: string }
- *                     sector: { type: string }
- *                     file: { type: object, properties: { fileName: {type: string}, size: {type: integer}, fileType: {type: string} } }
- *                   additionalProperties: true
- *       400:
- *         description: Invalid file or payload.
- *       503:
- *         description: Feature disabled.
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                       userId:
+ *                         type: string
+ *                         format: uuid
+ *                       cityId:
+ *                         type: string
+ *                         format: uuid
+ *                       fileReference:
+ *                         type: string
+ *                       url:
+ *                         type: string
+ *                         format: uri
+ *                       sector:
+ *                         type: string
+ *                       status:
+ *                         type: string
+ *                       gpcRefNo:
+ *                         type: string
+ *                       lastUpdated:
+ *                         type: string
+ *                         format: date-time
+ *                       file:
+ *                         type: object
+ *                         properties:
+ *                           fileName:
+ *                             type: string
+ *                           size:
+ *                             type: integer
+ *                           fileType:
+ *                             type: string
  */
 import NotificationService from "@/backend/NotificationService";
 import UserService from "@/backend/UserService";
@@ -150,6 +120,107 @@ export const GET = apiHandler(async (_req: Request, context) => {
   return NextResponse.json({ data: userFilesTransformed });
 });
 
+/**
+ * @swagger
+ * /api/v0/city/{city}/file:
+ *   post:
+ *     tags:
+ *       - City Files
+ *     summary: Upload a file for a city to attach to inventory data.
+ *     description: Accepts multipart/form-data to upload and register a file with sector/scopes metadata. Requires a signed‑in session and the UPLOAD_OWN_DATA_ENABLED feature flag. Returns the normalized file metadata in data object.
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               data:
+ *                 type: string
+ *                 format: binary
+ *               inventoryId:
+ *                 type: string
+ *                 format: uuid
+ *               sector:
+ *                 type: string
+ *               subsectors:
+ *                 type: string
+ *               scopes:
+ *                 type: string
+ *               fileReference:
+ *                 type: string
+ *               url:
+ *                 type: string
+ *                 format: uri
+ *               status:
+ *                 type: string
+ *               gpcRefNo:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Uploaded file metadata wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     userId:
+ *                       type: string
+ *                       format: uuid
+ *                     cityId:
+ *                       type: string
+ *                       format: uuid
+ *                     fileReference:
+ *                       type: string
+ *                     url:
+ *                       type: string
+ *                       format: uri
+ *                     sector:
+ *                       type: string
+ *                     subsectors:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     scopes:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     fileName:
+ *                       type: string
+ *                     lastUpdated:
+ *                       type: string
+ *                       format: date-time
+ *                     status:
+ *                       type: string
+ *                     gpcRefNo:
+ *                       type: string
+ *                     file:
+ *                       type: object
+ *                       properties:
+ *                         fileName:
+ *                           type: string
+ *                         size:
+ *                           type: integer
+ *                         fileType:
+ *                           type: string
+ *       400:
+ *         description: Invalid file or payload.
+ *       503:
+ *         description: Feature disabled.
+ */
 export const POST = apiHandler(
   async (req: NextRequest, { params, session }) => {
     if (!hasServerFeatureFlag(FeatureFlags.UPLOAD_OWN_DATA_ENABLED)) {

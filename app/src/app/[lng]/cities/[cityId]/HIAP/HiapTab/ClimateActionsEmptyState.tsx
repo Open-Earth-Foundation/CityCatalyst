@@ -32,8 +32,8 @@ const TopActionsDataState = ({
   isActionsPending: boolean;
 }) => {
   const { data: inventoryProgress, isLoading } =
-    api.useGetInventoryProgressQuery(inventory!.inventoryId, {
-      skip: !inventory,
+    api.useGetInventoryProgressQuery(inventory?.inventoryId || "", {
+      skip: !inventory?.inventoryId,
     });
 
   // Check if there are any inventory values (activity level data)

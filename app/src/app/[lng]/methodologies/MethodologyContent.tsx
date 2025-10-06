@@ -5,16 +5,16 @@ import { methodologiesBySector } from "./methodologies";
 import { useParams } from "next/navigation";
 import { LANGUAGES } from "@/util/types";
 import { useTranslation } from "react-i18next";
-import { HeadlineLarge } from "@/components/Texts/Headline";
-import { TitleLarge } from "@/components/Texts/Title";
-import { BodyLarge, BodyMedium } from "@/components/Texts/Body";
-import { TitleMedium } from "@/components/Texts/Title";
+import { HeadlineLarge } from "@/components/package/Texts/Headline";
+import { TitleLarge } from "@/components/package/Texts/Title";
+import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import { List, ListItem, VStack, HStack, Image } from "@chakra-ui/react";
 
-import { ButtonSmall } from "@/components/Texts/Button";
+import { ButtonSmall } from "@/components/package/Texts/Button";
 import { Equation as IEquation } from "./types";
 import { LatexEquation } from "@/components/LatexEquation";
-import { DisplayMedium } from "@/components/Texts/Display";
+import { DisplayMedium } from "@/components/package/Texts/Display";
 
 const Equation = ({ equation }: { equation: IEquation }) => (
   <>

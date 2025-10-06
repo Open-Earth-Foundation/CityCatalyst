@@ -38,9 +38,90 @@
  *                   type: array
  *                   items:
  *                     type: object
- *                     additionalProperties: true
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                         description: Unique identifier for the emissions factor
+ *                       gpcReferenceNumber:
+ *                         type: string
+ *                         description: GPC reference number for the emissions factor
+ *                       emissionsPerActivity:
+ *                         type: number
+ *                         description: Emissions per unit of activity
+ *                       metadata:
+ *                         type: object
+ *                         additionalProperties: true
+ *                         description: Additional metadata for the emissions factor
+ *                       url:
+ *                         type: string
+ *                         format: uri
+ *                         description: Source URL for the emissions factor data
+ *                       gas:
+ *                         type: string
+ *                         description: Gas type (e.g., CO2, CH4, N2O)
+ *                       units:
+ *                         type: string
+ *                         description: Units of measurement for the emissions factor
+ *                       inventoryId:
+ *                         type: string
+ *                         format: uuid
+ *                         nullable: true
+ *                         description: Associated inventory ID if factor is inventory-specific
+ *                       region:
+ *                         type: string
+ *                         nullable: true
+ *                         description: Geographic region for the emissions factor
+ *                       actorId:
+ *                         type: string
+ *                         nullable: true
+ *                         description: Actor/organization identifier
+ *                       methodologyName:
+ *                         type: string
+ *                         nullable: true
+ *                         description: Name of the methodology used
+ *                       methodologyId:
+ *                         type: string
+ *                         format: uuid
+ *                         nullable: true
+ *                         description: Unique identifier for the methodology
+ *                       reference:
+ *                         type: string
+ *                         nullable: true
+ *                         description: Reference source for the emissions factor
+ *                       deprecated:
+ *                         type: boolean
+ *                         description: Whether this emissions factor is deprecated
+ *                       created:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Creation timestamp
+ *                       lastUpdated:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Last update timestamp
+ *                       dataSources:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             datasourceId:
+ *                               type: string
+ *                               format: uuid
+ *                             name:
+ *                               type: string
+ *                           description: Associated data sources for this emissions factor
+ *                     description: Emissions factor with complete metadata and associated data sources
  *       400:
  *         description: Invalid parameters (e.g., both inventoryId and regionLocode provided).
+ *     examples:
+ *       application/json:
+ *         inventoryId: "550e8400-e29b-41d4-a716-446655440000"
+ *         referenceNumber: "1.1.1"
+ *         methodologyId: "550e8400-e29b-41d4-a716-446655440001"
+ *         metadata:
+ *           sector: "Energy"
+ *           category: "Fuel Combustion"
  */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
@@ -131,11 +212,11 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
             (filterMappings[metadata[key]] as string) || metadata[key], // we need to have some mapping
         });
       }
-      logger.debug({orConditions, clause})
+      logger.debug({ orConditions, clause });
       andCondition.push(clause);
     }
 
-    logger.debug({andCondition})
+    logger.debug({ andCondition });
     whereClause = {
       [Op.and]: andCondition,
     };
@@ -147,7 +228,7 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
     whereClause.gpcReferenceNumber = referenceNumber;
   }
 
-  whereClause.methodologyName = methodologyId
+  whereClause.methodologyName = methodologyId;
 
   // Unified priority list (order matters)
   const priorityArray: string[] = [];
@@ -178,7 +259,7 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
     })
     .join("\n");
 
-  logger.debug({whereClause});
+  logger.debug({ whereClause });
 
   const emissionsFactors = await db.models.EmissionsFactor.findAll({
     where: whereClause,

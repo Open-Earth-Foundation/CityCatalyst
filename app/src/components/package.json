@@ -1,7 +1,7 @@
 {
   "name": "@oef/components",
   "version": "1.0.5",
-  "description": "CityCatalyst text/typography components packaged from app/src/components",
+  "description": "CityCatalyst UI components including typography and buttons packaged from app/src/components/package",
   "private": false,
   "license": "LGPL",
   "type": "module",
@@ -25,8 +25,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rimraf dist",
-    "prepublishOnly": "npm run build",
-    "preinstall": "npm -v >/dev/null"
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@types/react": "^19.1.8",

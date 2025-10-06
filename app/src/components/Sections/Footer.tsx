@@ -6,7 +6,7 @@ import FooterLink from "../Navigation/FooterLink";
 import { useTranslation } from "@/i18n/client";
 import { getCurrentVersion } from "@/util/helpers";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
-import { TitleSmall } from "../Texts/Title";
+import { TitleSmall } from "@/components/package/Texts/Title";
 
 const Footer = ({ lng }: { lng: string }) => {
   const currentVersion = getCurrentVersion();

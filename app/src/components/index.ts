@@ -5,28 +5,30 @@ export {
   BodyLarge,
   BodyMedium,
   BodySmall,
-} from "./Texts/Body";
+} from "./package/Texts/Body";
 export {
   ButtonSmall,
   ButtonMedium,
-} from "./Texts/Button";
+} from "./package/Texts/Button";
 export {
   DisplaySmall,
   DisplayMedium,
   DisplayLarge,
-} from "./Texts/Display";
+} from "./package/Texts/Display";
 export {
   HeadlineSmall,
   HeadlineMedium,
   HeadlineLarge,
-} from "./Texts/Headline";
-export { LabelLarge, LabelMedium } from "./Texts/Label";
-export { Overline } from "./Texts/Overline";
+} from "./package/Texts/Headline";
+export { LabelLarge, LabelMedium, LabelSmall } from "./package/Texts/Label";
+export { Overline } from "./package/Texts/Overline";
 export {
   TitleLarge,
   TitleMedium,
   TitleSmall,
-} from "./Texts/Title";
+} from "./package/Texts/Title";
+
+export { CCTerraButton } from "./package/Button/CCTerraButton";
 
 export type { TFunction } from "i18next";
 export type { TextProps, HeadingProps } from "@chakra-ui/react";

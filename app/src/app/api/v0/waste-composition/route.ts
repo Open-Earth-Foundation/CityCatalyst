@@ -5,7 +5,7 @@
  *     tags:
  *       - Waste Composition
  *     summary: Get waste composition formula inputs for an inventory and methodology.
- *     description: Returns formula input values (WCF_*) used by waste composition calculations for the specified methodology, using the inventory’s city country LOCODE when available. Requires a signed‑in session with access to the inventory. Response is wrapped in { data: FormulaInput[] }.
+ *     description: Returns formula input values (WCF_*) used by waste composition calculations for the specified methodology, using the inventory's city country LOCODE when available. Requires a signed‑in session with access to the inventory. Response is wrapped in data object.
  *     parameters:
  *       - in: query
  *         name: inventoryId
@@ -31,17 +31,28 @@
  *                   items:
  *                     type: object
  *                     properties:
- *                       parameterCode: { type: string }
- *                       parameterName: { type: string }
- *                       gpcRefno: { type: string }
- *                       formulaInputValue: { type: number }
- *                       formulaInputUnits: { type: string }
- *                       formulaName: { type: string }
- *                       region: { type: string }
- *                       actorId: { type: string }
- *                       datasource: { type: string }
- *                       rnk: { type: integer }
- *                       methodologyName: { type: string }
+ *                       parameterCode:
+ *                         type: string
+ *                       parameterName:
+ *                         type: string
+ *                       gpcRefno:
+ *                         type: string
+ *                       formulaInputValue:
+ *                         type: number
+ *                       formulaInputUnits:
+ *                         type: string
+ *                       formulaName:
+ *                         type: string
+ *                       region:
+ *                         type: string
+ *                       actorId:
+ *                         type: string
+ *                       datasource:
+ *                         type: string
+ *                       rnk:
+ *                         type: integer
+ *                       methodologyName:
+ *                         type: string
  *       400:
  *         description: Missing inventoryId or methodologyName.
  *       401:

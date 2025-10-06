@@ -7,8 +7,8 @@ import { useLatestInventory } from "@/hooks/use-latest-inventory";
 import { MdOpenInNew } from "react-icons/md";
 import { Button } from "../ui/button";
 import TopRisksWidget from "./CCRAWidget";
-import { HeadlineLarge, HeadlineSmall } from "../Texts/Headline";
-import { BodyLarge } from "../Texts/Body";
+import { HeadlineLarge, HeadlineSmall } from "@/components/package/Texts/Headline";
+import { BodyLarge } from "@/components/package/Texts/Body";
 
 interface CCRAWidgetProps {
   cityId: string;

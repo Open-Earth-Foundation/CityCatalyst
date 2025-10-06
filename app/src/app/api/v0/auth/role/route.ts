@@ -17,12 +17,14 @@
  *               email:
  *                 type: string
  *                 format: email
+ *                 description: Email address of the user whose role will be changed
  *               role:
  *                 type: string
  *                 enum: [user, admin]
+ *                 description: New role to assign to the user
  *     responses:
  *       200:
- *         description: Success flag.
+ *         description: User role successfully updated.
  *         content:
  *           application/json:
  *             schema:
@@ -30,16 +32,21 @@
  *               properties:
  *                 success:
  *                   type: boolean
+ *                   description: Indicates whether the role change was successful
  *             examples:
  *               example:
  *                 value:
  *                   success: true
  *       400:
- *         description: User already has the specified role.
+ *         description: User already has the specified role or invalid role value.
  *       403:
- *         description: Only admins can change roles.
+ *         description: Only admin users can change roles.
  *       404:
- *         description: User not found.
+ *         description: Target user not found.
+ *       422:
+ *         description: Validation error - invalid email format or missing required fields.
+ *       500:
+ *         description: Internal server error during role update.
  */
 import { Roles } from "@/util/types";
 import { db } from "@/models";

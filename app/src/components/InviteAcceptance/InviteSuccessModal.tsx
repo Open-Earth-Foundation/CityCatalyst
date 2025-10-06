@@ -2,8 +2,8 @@
 
 import React from "react";
 import { Box, VStack, HStack, Text, Icon } from "@chakra-ui/react";
-import { DisplaySmall } from "@/components/Texts/Display";
-import { BodyLarge } from "@/components/Texts/Body";
+import { DisplaySmall } from "@/components/package/Texts/Display";
+import { BodyLarge } from "@/components/package/Texts/Body";
 import { useTranslation } from "@/i18n/client";
 import { Button } from "../ui/button";
 import { MdArrowForward } from "react-icons/md";

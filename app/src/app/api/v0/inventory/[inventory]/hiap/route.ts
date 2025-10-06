@@ -5,7 +5,7 @@
  *     tags:
  *       - Inventory HIAP
  *     summary: Get HIAP ranking or related data for an inventory.
- *     description: Returns HIAP insights for the selected actionType and language. Requires a signed‑in user with access to the inventory. Response is wrapped in { data } (actionType‑dependent shape).
+ *     description: Returns HIAP insights for the selected actionType and language. Requires a signed‑in user with access to the inventory. Response is wrapped in '{' data '}' (actionType‑dependent shape).
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -36,7 +36,40 @@
  *             schema:
  *               type: object
  *               properties:
- *                 data: { type: object, additionalProperties: true }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     inventoryId:
+ *                       type: string
+ *                       format: uuid
+ *                     year:
+ *                       type: number
+ *                     hiapScore:
+ *                       type: number
+ *                       description: Overall HIAP score for the inventory
+ *                     categoryScores:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           category:
+ *                             type: string
+ *                           score:
+ *                             type: number
+ *                           indicators:
+ *                             type: array
+ *                             items:
+ *                               type: object
+ *                               properties:
+ *                                 indicator:
+ *                                   type: string
+ *                                 score:
+ *                                   type: number
+ *                                 description:
+ *                                   type: string
+ *                     lastUpdated:
+ *                       type: string
+ *                       format: date-time
  */
 import { apiHandler } from "@/util/api";
 import { LANGUAGES } from "@/util/types";
@@ -131,8 +164,10 @@ const updateSelectionRequest = z.object({
  *             schema:
  *               type: object
  *               properties:
- *                 success: { type: boolean }
- *                 updated: { type: number }
+ *                 success:
+ *                   type: boolean
+ *                 updated:
+ *                   type: number
  */
 export const PATCH = apiHandler(
   async (req: NextRequest, { params, session }) => {

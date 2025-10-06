@@ -1,3 +1,11 @@
+import { apiHandler } from "@/util/api";
+import createHttpError from "http-errors";
+import { NextResponse } from "next/server";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { OAuthClient } from "@/models/OAuthClient";
+import { OAuthClientI18N } from "@/models/OAuthClientI18N";
+import { Client } from "@/util/types";
+
 /**
  * @swagger
  * /api/v0/client/{client}:
@@ -5,13 +13,14 @@
  *     tags:
  *       - OAuth Clients
  *     summary: Get a single OAuth client by ID with localized metadata.
- *     description: Fetches a client and merges its i18n name/description entries by language. Requires a signed‑in session and OAUTH_ENABLED. Response is wrapped in { data }.
+ *     description: Fetches a client and merges its i18n name/description entries by language. Requires a signed‑in session and OAUTH_ENABLED. Response is wrapped in '{' data '}'.
  *     parameters:
  *       - in: path
  *         name: client
  *         required: true
  *         schema:
  *           type: string
+ *         description: OAuth client ID to retrieve
  *     responses:
  *       200:
  *         description: Client wrapped in data.
@@ -25,17 +34,21 @@
  *                   properties:
  *                     clientId:
  *                       type: string
+ *                       description: Unique identifier for the OAuth client
  *                     redirectUri:
  *                       type: string
  *                       format: uri
+ *                       description: Registered redirect URI for the OAuth flow
  *                     name:
  *                       type: object
  *                       additionalProperties:
  *                         type: string
+ *                       description: Localized client names by language code
  *                     description:
  *                       type: object
  *                       additionalProperties:
  *                         type: string
+ *                       description: Localized client descriptions by language code
  *             examples:
  *               example:
  *                 value:
@@ -50,36 +63,7 @@
  *         description: Client not found.
  *       500:
  *         description: OAuth not enabled or server error.
- *   delete:
- *     tags:
- *       - OAuth Clients
- *     summary: Delete an OAuth client by ID.
- *     description: Permanently removes a client record. Requires a signed‑in session and OAUTH_ENABLED. Returns 204 with no body on success.
- *     parameters:
- *       - in: path
- *         name: client
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       204:
- *         description: Client deleted.
- *       401:
- *         description: Must be logged in.
- *       404:
- *         description: Client not found.
- *       500:
- *         description: OAuth not enabled or server error.
  */
-import { apiHandler } from "@/util/api";
-import createHttpError from "http-errors";
-import { NextResponse } from "next/server";
-import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { OAuthClient } from "@/models/OAuthClient";
-import { OAuthClientI18N } from "@/models/OAuthClientI18N";
-import { Client } from "@/util/types";
-
-/** gets a client based on client ID */
 export const GET = apiHandler(async (_req, { params, session }) => {
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
     throw createHttpError.InternalServerError("OAuth 2.0 not enabled");
@@ -118,6 +102,31 @@ export const GET = apiHandler(async (_req, { params, session }) => {
   return NextResponse.json({ data: results });
 });
 
+/**
+ * @swagger
+ * /api/v0/client/{client}:
+ *   delete:
+ *     tags:
+ *       - OAuth Clients
+ *     summary: Delete an OAuth client by ID.
+ *     description: Permanently removes a client record. Requires a signed‑in session and OAUTH_ENABLED. Returns 204 with no body on success.
+ *     parameters:
+ *       - in: path
+ *         name: client
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: OAuth client ID to delete
+ *     responses:
+ *       204:
+ *         description: Client deleted.
+ *       401:
+ *         description: Must be logged in.
+ *       404:
+ *         description: Client not found.
+ *       500:
+ *         description: OAuth not enabled or server error.
+ */
 /** deletes a client */
 export const DELETE = apiHandler(async (_req, { params, session }) => {
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {

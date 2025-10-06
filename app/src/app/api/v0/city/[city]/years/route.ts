@@ -5,7 +5,7 @@
  *     tags:
  *       - City
  *     summary: List inventory identifiers and years for a city.
- *     description: Returns the basic city info plus a list of inventory IDs with years and last update timestamps. Requires a signed‑in user (future: public if inventory is public). Response is wrapped in { data: { city, years[] } }.
+ *     description: Returns the basic city info plus a list of inventory IDs with years and last update timestamps. Requires a signed‑in user (future: public if inventory is public). Response is wrapped in data object.
  *     parameters:
  *       - in: path
  *         name: city
@@ -24,15 +24,36 @@
  *                 data:
  *                   type: object
  *                   properties:
- *                     city: { type: object, additionalProperties: true }
+ *                     city:
+ *                       type: object
+ *                       properties:
+ *                         cityId:
+ *                           type: string
+ *                           format: uuid
+ *                         name:
+ *                           type: string
+ *                         region:
+ *                           type: string
+ *                           nullable: true
+ *                         country:
+ *                           type: string
+ *                           nullable: true
+ *                         locode:
+ *                           type: string
+ *                           nullable: true
  *                     years:
  *                       type: array
  *                       items:
  *                         type: object
  *                         properties:
- *                           year: { type: integer }
- *                           inventoryId: { type: string, format: uuid }
- *                           lastUpdate: { type: string, format: date-time }
+ *                           year:
+ *                             type: integer
+ *                           inventoryId:
+ *                             type: string
+ *                             format: uuid
+ *                           lastUpdate:
+ *                             type: string
+ *                             format: date-time
  *       404:
  *         description: City not found.
  */

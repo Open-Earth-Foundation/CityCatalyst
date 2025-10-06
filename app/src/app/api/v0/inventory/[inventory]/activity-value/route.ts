@@ -1,52 +1,9 @@
 /**
  * @swagger
  * /api/v0/inventory/{inventory}/activity-value:
- *   get:
+ *   post:
  *     tags:
  *       - Inventory Activity
- *     summary: List activity values for an inventory (edit access).
- *     description: Returns activity values filtered by subCategoryIds or subSectorId, optionally by methodology. Requires a signed‑in user with edit access to the inventory. Response is wrapped in { data: ActivityValue[] }.
- *     parameters:
- *       - in: path
- *         name: inventory
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *       - in: query
- *         name: subCategoryIds
- *         required: false
- *         description: Comma-separated subcategory IDs
- *         schema:
- *           type: string
- *       - in: query
- *         name: subSectorId
- *         required: false
- *         schema:
- *           type: string
- *           format: uuid
- *       - in: query
- *         name: methodologyId
- *         required: false
- *         schema:
- *           type: string
- *           format: uuid
- *     responses:
- *       200:
- *         description: Activity values wrapped in data.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: array
- *                   items: { type: object, additionalProperties: true }
- *       400:
- *         description: Missing required query parameter.
-   *   post:
-   *     tags:
-   *       - Inventory Activity
  *     summary: Create an activity value (edit access).
  *     description: Creates an activity and associated inventory/gas values as needed. Requires a signed‑in user with edit access to the inventory. Returns a success flag and the created value in { success, data }.
  *     parameters:
@@ -84,49 +41,62 @@
  *             schema:
  *               type: object
  *               properties:
- *                 success: { type: boolean }
- *                 data: { type: object, additionalProperties: true }
- *       400:
- *         description: Invalid data.
-   *   delete:
-   *     tags:
-   *       - Inventory Activity
- *     summary: Delete activities by subsector or reference number (edit access).
- *     description: Deletes activity rows within a subsector or by GPC reference number. Requires a signed‑in user with edit access. Returns a success flag and deletedCount in { success, data }.
- *     parameters:
- *       - in: path
- *         name: inventory
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *       - in: query
- *         name: subSectorId
- *         required: false
- *         schema:
- *           type: string
- *           format: uuid
- *       - in: query
- *         name: gpcReferenceNumber
- *         required: false
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Success flag and deleted count.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success: { type: boolean }
+ *                 success:
+ *                   type: boolean
  *                 data:
  *                   type: object
  *                   properties:
- *                     deletedCount: { type: integer }
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                       description: Unique identifier for the created activity value
+ *                     activityData:
+ *                       type: object
+ *                       additionalProperties: true
+ *                       description: Activity data specific to this inventory value
+ *                     co2eq:
+ *                       type: number
+ *                       description: CO2 equivalent emissions (in bigint format)
+ *                     co2eqYears:
+ *                       type: number
+ *                       description: Number of years for CO2 equivalent calculation
+ *                     inventoryValueId:
+ *                       type: string
+ *                       format: uuid
+ *                       nullable: true
+ *                       description: Associated inventory value ID
+ *                     datasourceId:
+ *                       type: string
+ *                       format: uuid
+ *                       nullable: true
+ *                       description: Associated data source ID
+ *                     metadata:
+ *                       type: object
+ *                       additionalProperties: true
+ *                       description: Additional metadata for the activity value
+ *                     created:
+ *                       type: string
+ *                       format: date-time
+ *                       description: Creation timestamp
+ *                     lastUpdated:
+ *                       type: string
+ *                       format: date-time
+ *                       description: Last update timestamp
+ *                   description: Created activity value with all properties
  *       400:
- *         description: Invalid query combination.
- */
+ *         description: Invalid data.
+ *     examples:
+ *       application/json:
+ *         gasValues:
+ *           - gas: "CO2"
+ *             value: 1000.5
+ *         inventoryValueId: "550e8400-e29b-41d4-a716-446655440000"
+ *         inventoryValue:
+ *           gpcReferenceNumber: "1.1.1"
+ *           value: 50000
+ *           inputMethodology: "550e8400-e29b-41d4-a716-446655440001"
+ *           subCategoryId: "550e8400-e29b-41d4-a716-446655440002"
+ * */
 import ActivityService from "@/backend/ActivityService";
 import { PermissionService } from "@/backend/permissions";
 import UserService from "@/backend/UserService";
@@ -201,6 +171,146 @@ export const POST = apiHandler(async (req, { params, session }) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/activity-value:
+ *   get:
+ *     tags:
+ *       - Inventory Activity
+ *     summary: List activity values for an inventory (edit access).
+ *     description: Returns activity values filtered by subCategoryIds or subSectorId, optionally by methodology. Requires a signed‑in user with edit access to the inventory. Response is wrapped in '{' data: ActivityValue[] '}'.
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: subCategoryIds
+ *         required: false
+ *         description: Comma-separated subcategory IDs
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: subSectorId
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: methodologyId
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Activity values wrapped in data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                         description: Unique identifier for the activity value
+ *                       activityData:
+ *                         type: object
+ *                         additionalProperties: true
+ *                         description: Activity data specific to this inventory value
+ *                       co2eq:
+ *                         type: number
+ *                         description: CO2 equivalent emissions (in bigint format)
+ *                       co2eqYears:
+ *                         type: number
+ *                         description: Number of years for CO2 equivalent calculation
+ *                       inventoryValueId:
+ *                         type: string
+ *                         format: uuid
+ *                         nullable: true
+ *                         description: Associated inventory value ID
+ *                       datasourceId:
+ *                         type: string
+ *                         format: uuid
+ *                         nullable: true
+ *                         description: Associated data source ID
+ *                       metadata:
+ *                         type: object
+ *                         additionalProperties: true
+ *                         description: Additional metadata for the activity value
+ *                       created:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Creation timestamp
+ *                       lastUpdated:
+ *                         type: string
+ *                         format: date-time
+ *                         description: Last update timestamp
+ *                       inventoryValue:
+ *                         type: object
+ *                         properties:
+ *                           inventoryValueId:
+ *                             type: string
+ *                             format: uuid
+ *                           gpcReferenceNumber:
+ *                             type: string
+ *                           inventoryId:
+ *                             type: string
+ *                             format: uuid
+ *                           value:
+ *                             type: number
+ *                           inputMethodology:
+ *                             type: string
+ *                             format: uuid
+ *                           subCategoryId:
+ *                             type: string
+ *                             format: uuid
+ *                           created:
+ *                             type: string
+ *                             format: date-time
+ *                           lastUpdated:
+ *                             type: string
+ *                             format: date-time
+ *                         description: Associated inventory value with calculation data
+ *                       gasValues:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             gasValueId:
+ *                               type: string
+ *                               format: uuid
+ *                             gas:
+ *                               type: string
+ *                             value:
+ *                               type: number
+ *                             activityValueId:
+ *                               type: string
+ *                               format: uuid
+ *                             emissionsFactor:
+ *                               type: object
+ *                               properties:
+ *                                 id:
+ *                                   type: string
+ *                                   format: uuid
+ *                                 gpcReferenceNumber:
+ *                                   type: string
+ *                                 emissionsPerActivity:
+ *                                   type: number
+ *                                 gas:
+ *                                   type: string
+ *                           description: Gas-specific values and emissions factors
+ *                     description: Activity value with associated inventory value and gas values
+ *       400:
+ *         description: Missing required query parameter.
+ * */
 export const GET = apiHandler(async (req, { params, session }) => {
   // extract and validate query params
   const subCategoryIdsParam = req.nextUrl.searchParams.get("subCategoryIds");
@@ -272,6 +382,50 @@ export const GET = apiHandler(async (req, { params, session }) => {
   return NextResponse.json({ data: activityValues });
 });
 
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/activity-value:
+ *   delete:
+ *     tags:
+ *       - Inventory Activity
+ *     summary: Delete activities by subsector or reference number (edit access).
+ *     description: Deletes activity rows within a subsector or by GPC reference number. Requires a signed‑in user with edit access. Returns a success flag and deletedCount in { success, data }.
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: subSectorId
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: gpcReferenceNumber
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Success flag and deleted count.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     deletedCount:
+ *                       type: integer
+ *       400:
+ *         description: Invalid query combination.
+ */
 export const DELETE = apiHandler(async (req, { params, session }) => {
   const subSectorId = req.nextUrl.searchParams.get("subSectorId");
   const gpcReferenceNumber = req.nextUrl.searchParams.get("gpcReferenceNumber");

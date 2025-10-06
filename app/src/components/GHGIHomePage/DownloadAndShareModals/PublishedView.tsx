@@ -13,7 +13,7 @@ import type { Locale } from "date-fns";
 import { enUS, pt, de, es } from "date-fns/locale";
 import { formatDistance } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
-import { BlueSubtitle } from "@/components/Texts/BlueSubtitle";
+import { BlueSubtitle } from "@/components/package/Texts/BlueSubtitle";
 import { FiExternalLink } from "react-icons/fi";
 
 export function PublishedView({

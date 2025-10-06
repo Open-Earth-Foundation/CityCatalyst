@@ -14,10 +14,11 @@ app/runtime_data/
 app/files/
 
 # HIAP Plan creator
-app/plan_creator/data/output/
+app/plan_creator_bundle/plan_creator/data/output/
 
 # HIAP Plan creator legacy
-app/plan_creator_legacy/data/output/
+app/plan_creator_bundle/plan_creator_legacy/data/output/
+app/plan_creator_bundle/plan_creator_legacy/vector_stores/
 
 # HIAP Prioritizer
 app/prioritizer/data/prioritized_local_testing/

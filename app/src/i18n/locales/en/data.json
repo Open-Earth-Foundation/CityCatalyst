@@ -1261,5 +1261,6 @@
   "fuel-type-crude-petroleum": "Crude Petroleum",
   "fuel-type-biodiesel": "Biodiesel",
   "fuel-type-fuel-oil": "Fuel Oil",
-  "fuel-type-not-applicable": "Not applicable"
+  "fuel-type-not-applicable": "Not applicable",
+  "on-road-transportation-fuel-type": "Fuel type"
 }

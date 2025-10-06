@@ -8,9 +8,9 @@ import { Box, Icon, Spinner, Text, Flex } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { MdGridView, MdInfoOutline, MdLocationCity } from "react-icons/md";
 import { ModulesIcon } from "../icons";
-import { BodyLarge, BodyMedium } from "../Texts/Body";
-import { DisplayMedium } from "../Texts/Display";
-import { HeadlineSmall } from "../Texts/Headline";
+import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
+import { DisplayMedium } from "@/components/package/Texts/Display";
+import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import ProjectMap from "../ProjectMap/ProjectMap";
 import { useState } from "react";
 

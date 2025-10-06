@@ -5,7 +5,7 @@
  *     tags:
  *       - Subsector
  *     summary: Get a subsector record by ID.
- *     description: Public endpoint that fetches a subsector by its identifier. No authentication is enforced. Response is wrapped in { data } containing the subsector fields.
+ *     description: Public endpoint that fetches a subsector by its identifier. No authentication is enforced. Response is wrapped in '{' data '}' containing the subsector fields.
  *     parameters:
  *       - in: path
  *         name: subsectorId
@@ -24,12 +24,28 @@
  *                 data:
  *                   type: object
  *                   properties:
- *                     subsectorId: { type: string, format: uuid }
- *                     subsectorName: { type: string }
- *                     sectorId: { type: string, format: uuid }
- *                     referenceNumber: { type: string }
- *                     scopeId: { type: string, format: uuid }
- *                   additionalProperties: true
+ *                     subsectorId:
+ *                       type: string
+ *                       format: uuid
+ *                     subsectorName:
+ *                       type: string
+ *                     sectorId:
+ *                       type: string
+ *                       format: uuid
+ *                     referenceNumber:
+ *                       type: string
+ *                     scopeId:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     categoryId:
+ *                       type: string
+ *                       format: uuid
+ *                       nullable: true
+ *                     description:
+ *                       type: string
+ *                       nullable: true
  *       404:
  *         description: Subsector not found.
  */

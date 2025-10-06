@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - City Population
- *     summary: Get most recent population data for a city
+ *     summary: Get most recent population data for a specific city
  *     parameters:
  *       - in: path
  *         name: city
@@ -12,9 +12,18 @@
  *         schema:
  *           type: string
  *           format: uuid
+ *         description: City ID for which to retrieve population data
  *     responses:
  *       200:
  *         description: Population data returned.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   description: Most recent population data for the city
  *   post:
  *     tags:
  *       - City Population
@@ -26,6 +35,7 @@
  *         schema:
  *           type: string
  *           format: uuid
+ *         description: City ID for which to retrieve population data
  *     requestBody:
  *       required: true
  *       content:
@@ -50,6 +60,23 @@
  *     responses:
  *       200:
  *         description: Population values updated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     cityPopulation:
+ *                       type: object
+ *                       description: City population record
+ *                     regionPopulation:
+ *                       type: object
+ *                       description: Region population record
+ *                     countryPopulation:
+ *                       type: object
+ *                       description: Country population record
  *       404:
  *         description: City not found.
  */

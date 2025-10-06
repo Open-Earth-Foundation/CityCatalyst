@@ -3,8 +3,8 @@ import { CCRARiskAssessment } from "@/util/types";
 import { useTranslation } from "@/i18n/client";
 import { RiskCard } from "@/components/RiskCard";
 import { Box, HStack } from "@chakra-ui/react";
-import { HeadlineLarge } from "@/components/Texts/Headline";
-import { BodyLarge } from "@/components/Texts/Body";
+import { HeadlineLarge } from "@/components/package/Texts/Headline";
+import { BodyLarge } from "@/components/package/Texts/Body";
 
 interface TopRisksWidgetProps {
   cityId: string;

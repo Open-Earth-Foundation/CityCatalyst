@@ -16,11 +16,17 @@
  *             properties:
  *               currentPassword:
  *                 type: string
+ *                 description: User's current password for verification
+ *                 minLength: 4
+ *                 maxLength: 64
  *               confirmPassword:
  *                 type: string
+ *                 description: New password to set (must be at least 4 characters with one lowercase letter, one uppercase letter, and one number)
+ *                 minLength: 4
+ *                 maxLength: 64
  *     responses:
  *       200:
- *         description: Success flag.
+ *         description: Password successfully updated.
  *         content:
  *           application/json:
  *             schema:
@@ -28,14 +34,21 @@
  *               properties:
  *                 success:
  *                   type: boolean
+ *                   description: Indicates whether the password update was successful
  *             examples:
  *               example:
  *                 value:
  *                   success: true
  *       400:
- *         description: Current password is incorrect.
+ *         description: Current password is incorrect or new password doesn't meet complexity requirements.
+ *       401:
+ *         description: User is not authenticated or session has expired.
  *       404:
  *         description: User not found or session expired.
+ *       422:
+ *         description: Validation error - invalid password format or missing required fields.
+ *       500:
+ *         description: Internal server error during password update.
  */
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";

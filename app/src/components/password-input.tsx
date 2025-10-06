@@ -5,7 +5,7 @@ import { TFunction } from "i18next";
 import { Field } from "@/components/ui/field";
 import { PasswordInput as ChakraPasswordInput } from "@/components/ui/password-input";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-import LabelLarge from "@/components/Texts/Label";
+import LabelLarge from "@/components/package/Texts/Label";
 
 export default function PasswordInput({
   children,

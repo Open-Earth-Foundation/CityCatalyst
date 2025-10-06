@@ -1,7 +1,7 @@
 import createHttpError from "http-errors";
 import type { User } from "@/models/User";
 import { Organization } from "@/models/Organization";
-import jwt from "jsonwebtoken";
+import jwt, { Secret } from "jsonwebtoken";
 import { sendEmail } from "@/lib/email";
 import { render } from "@react-email/components";
 import InviteToOrganizationTemplate from "@/lib/emails/InviteToOrganizationTemplate";
@@ -77,8 +77,8 @@ export default class EmailService {
       logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
       throw createHttpError.InternalServerError("configuration-error");
     }
-
-    let expiresIn = process.env.VERIFICATION_TOKEN_EXPIRATION ?? "30d";
+    const expiresIn = "30d";
+    const secret = process.env.VERIFICATION_TOKEN_SECRET as string;
     const invitationCode = jwt.sign(
       {
         reason: "organization-invite",
@@ -86,7 +86,7 @@ export default class EmailService {
         role,
         organizationId,
       },
-      process.env.VERIFICATION_TOKEN_SECRET!,
+      secret,
       { expiresIn },
     );
 

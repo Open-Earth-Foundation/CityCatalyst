@@ -7,8 +7,8 @@ import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import OAuthClientCard from "@/app/[lng]/admin/OAuthClientCard";
 import AddClientModal from "@/app/[lng]/admin/AddClientModal";
-import { TitleLarge } from "@/components/Texts/Title";
-import { ButtonMedium } from "@/components/Texts/Button";
+import { TitleLarge } from "@/components/package/Texts/Title";
+import { ButtonMedium } from "@/components/package/Texts/Button";
 import { BsPlus } from "react-icons/bs";
 
 const OAuthClientList = (props: { lng: string }) => {

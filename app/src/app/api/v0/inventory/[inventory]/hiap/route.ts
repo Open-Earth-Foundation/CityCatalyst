@@ -5,7 +5,7 @@
  *     tags:
  *       - Inventory HIAP
  *     summary: Get HIAP ranking or related data for an inventory.
- *     description: Returns HIAP insights for the selected actionType and language. Requires a signed‑in user with access to the inventory. Response is wrapped in { data } (actionType‑dependent shape).
+ *     description: Returns HIAP insights for the selected actionType and language. Requires a signed‑in user with access to the inventory. Response is wrapped in '{' data '}' (actionType‑dependent shape).
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -36,7 +36,40 @@
  *             schema:
  *               type: object
  *               properties:
- *                 data: { type: object, additionalProperties: true }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     inventoryId:
+ *                       type: string
+ *                       format: uuid
+ *                     year:
+ *                       type: number
+ *                     hiapScore:
+ *                       type: number
+ *                       description: Overall HIAP score for the inventory
+ *                     categoryScores:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           category:
+ *                             type: string
+ *                           score:
+ *                             type: number
+ *                           indicators:
+ *                             type: array
+ *                             items:
+ *                               type: object
+ *                               properties:
+ *                                 indicator:
+ *                                   type: string
+ *                                 score:
+ *                                   type: number
+ *                                 description:
+ *                                   type: string
+ *                     lastUpdated:
+ *                       type: string
+ *                       format: date-time
  */
 import { apiHandler } from "@/util/api";
 import { LANGUAGES } from "@/util/types";
@@ -78,12 +111,12 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
     );
     return Response.json({ data });
   } catch (error) {
-    logger.error("Error fetching HIAP data:", {
+    logger.error({
       err: error,
       inventory: params.inventory,
       type,
       lng,
-    });
+    }, "Error fetching HIAP data");
     throw new Error(
       `Failed to fetch HIAP data for city ${inventory.city.locode}: ${(error as Error).message}`,
       { cause: error },
@@ -131,8 +164,10 @@ const updateSelectionRequest = z.object({
  *             schema:
  *               type: object
  *               properties:
- *                 success: { type: boolean }
- *                 updated: { type: number }
+ *                 success:
+ *                   type: boolean
+ *                 updated:
+ *                   type: number
  */
 export const PATCH = apiHandler(
   async (req: NextRequest, { params, session }) => {
@@ -183,19 +218,19 @@ export const PATCH = apiHandler(
         updatedCount = affectedCount;
       }
 
-      logger.info("Updated HIAP action selection:", {
+      logger.info({
         inventoryId: params.inventory,
         selectedActionIds: body.selectedActionIds,
         updatedCount,
-      });
+      }, "Updated HIAP action selection");
 
       return NextResponse.json({ success: true, updated: updatedCount });
     } catch (error) {
-      logger.error("Error updating HIAP action selection:", {
+      logger.error({
         err: error,
         inventory: params.inventory,
         selectedActionIds: body.selectedActionIds,
-      });
+      }, "Error updating HIAP action selection");
       throw new Error(
         `Failed to update action selection for city ${inventory.city.locode}: ${(error as Error).message}`,
         { cause: error },

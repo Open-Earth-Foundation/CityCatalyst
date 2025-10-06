@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - City Modules
- *     summary: Get GHGI dashboard data for a city inventory
+ *     summary: Get Greenhouse Gas Inventory (GHGI) dashboard data for a city inventory
  *     parameters:
  *       - in: path
  *         name: city
@@ -21,6 +21,27 @@
  *     responses:
  *       200:
  *         description: GHGI dashboard data returned.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   description: GHGI dashboard data
+ *                 metadata:
+ *                   type: object
+ *                   properties:
+ *                     cityId:
+ *                       type: string
+ *                       format: uuid
+ *                     inventoryId:
+ *                       type: string
+ *                       format: uuid
+ *                     year:
+ *                       type: integer
+ *                     moduleId:
+ *                       type: string
  *       400:
  *         description: Inventory does not belong to city.
  *       404:

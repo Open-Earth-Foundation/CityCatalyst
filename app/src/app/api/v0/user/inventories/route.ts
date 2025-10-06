@@ -5,7 +5,7 @@
  *     tags:
  *       - User
  *     summary: List inventories accessible to the current user with city info.
- *     description: Returns inventories for cities the user belongs to, including the city name and locode. Requires a signed‑in session. Response is wrapped in { data: [{ inventory fields…, city: { name, locode } }] }.
+ *     description: Returns inventories for cities the user belongs to, including the city name and locode. Requires a signed‑in session. Response is wrapped in '{' data: [{ inventory fields…, city: { name, locode } }] '}'.
  *     responses:
  *       200:
  *         description: Inventories with city info wrapped in data.
@@ -19,13 +19,18 @@
  *                   items:
  *                     type: object
  *                     properties:
- *                       inventoryId: { type: string, format: uuid }
- *                       year: { type: integer }
+ *                       inventoryId:
+ *                         type: string
+ *                         format: uuid
+ *                       year:
+ *                         type: integer
  *                       city:
  *                         type: object
  *                         properties:
- *                           name: { type: string }
- *                           locode: { type: string }
+ *                           name:
+ *                             type: string
+ *                           locode:
+ *                             type: string
  *       401:
  *         description: Unauthorized.
  *       404:

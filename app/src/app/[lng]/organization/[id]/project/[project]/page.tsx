@@ -1,10 +1,10 @@
 "use client";
 import { OrganizationHero } from "@/components/Organization/OrganizationHero";
 import ProgressLoader from "@/components/ProgressLoader";
-import { BodyLarge } from "@/components/Texts/Body";
-import { ButtonMedium } from "@/components/Texts/Button";
-import { HeadlineLarge, HeadlineSmall } from "@/components/Texts/Headline";
-import { LabelLarge } from "@/components/Texts/Label";
+import { BodyLarge } from "@/components/package/Texts/Body";
+import { ButtonMedium } from "@/components/package/Texts/Button";
+import { HeadlineLarge, HeadlineSmall } from "@/components/package/Texts/Headline";
+import { LabelLarge } from "@/components/package/Texts/Label";
 import DataTable from "@/components/ui/data-table";
 import { useTranslation } from "@/i18n/client";
 import { useGetOrganizationQuery, useGetProjectsQuery } from "@/services/api";

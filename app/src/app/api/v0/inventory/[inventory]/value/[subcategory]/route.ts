@@ -23,34 +23,6 @@
  *         description: Inventory value returned.
  *       404:
  *         description: Not found.
- *   patch:
- *     tags:
- *       - Inventory Values
- *     summary: Upsert inventory value for a subcategory
- *     parameters:
- *       - in: path
- *         name: inventory
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *       - in: path
- *         name: subcategory
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *     responses:
- *       200:
- *         description: Inventory value updated or created.
- *       400:
- *         description: Invalid request.
  */
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { db } from "@/models";
@@ -66,7 +38,7 @@ import { Op } from "sequelize";
 export const GET = apiHandler(async (_req, { params, session }) => {
   const { resource } = await PermissionService.canEditInventory(
     session,
-    params.inventory
+    params.inventory,
   );
 
   const inventory = resource as Inventory;
@@ -105,12 +77,44 @@ export const GET = apiHandler(async (_req, { params, session }) => {
   return NextResponse.json({ data: inventoryValue });
 });
 
+/**
+ * @swagger
+ * /api/v0/inventory/{inventory}/value/{subcategory}:
+ *   patch:
+ *     tags:
+ *       - Inventory Values
+ *     summary: Upsert inventory value for a subcategory
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: subcategory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Inventory value updated or created.
+ *       400:
+ *         description: Invalid request.
+ */
 export const PATCH = apiHandler(async (req, { params, session }) => {
   const body = createInventoryValue.parse(await req.json());
 
   const { resource } = await PermissionService.canEditInventory(
     session,
-    params.inventory
+    params.inventory,
   );
 
   const inventory = resource as Inventory;

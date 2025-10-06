@@ -24,26 +24,25 @@ export default class ActionPlanEmailService {
     try {
       const { user, actionName, cityName, language, actionPlanUrl } = input;
 
-      logger.info("Sending action plan ready email", {
+      logger.info({
         userId: user.userId,
         email: user.email,
         actionName,
         cityName,
         language,
-      });
+      }, "Sending action plan ready email");
 
       // Get translations for the email subject
       const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
       const subject = t("action-plan-ready.subject");
 
-      logger.info("Email subject and template data", {
+      logger.info({
         subject,
         hasUser: !!user,
         userEmail: user?.email,
         actionName,
         cityName,
-        language,
-      });
+      }, "Email subject and template data");
 
       // Render the email template with error handling
       let emailHtml: string;
@@ -86,17 +85,13 @@ export default class ActionPlanEmailService {
       });
 
       if (result.success) {
-        logger.info("Action plan ready email sent successfully", {
+        logger.info({
           userId: user.userId,
           email: user.email,
           actionName,
-        });
+        }, "Action plan ready email sent successfully");
       } else {
-        logger.error("Failed to send action plan ready email", {
-          userId: user.userId,
-          email: user.email,
-          error: result.error,
-        });
+        logger.error({ userId: user.userId, email: user.email, error: result.error }, "Failed to send action plan ready email");
       }
     } catch (error: any) {
       logger.error({ err: error }, "Error sending action plan ready email");

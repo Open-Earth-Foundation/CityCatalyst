@@ -20,7 +20,7 @@ from prioritizer.models import (
 )
 from prioritizer.tasks import (
     _execute_prioritization,
-    compute_prioritization_bulk_subtask,
+    _compute_prioritization_bulk_subtask,
     _update_bulk_task_status,
 )
 from prioritizer.task_storage import task_storage
@@ -99,6 +99,18 @@ async def start_prioritization(request: Request, req: PrioritizerRequest):
     }
 
     actions_cached = _get_actions_cached()
+    # Fail early if actions could not be loaded
+    if not actions_cached:
+        logger.error(
+            f"Task {task_uuid}: No actions data available from global API; failing request early"
+        )
+        task_storage[task_uuid] = {
+            "status": "failed",
+            "error": "No actions data available from global API. Please try again later.",
+        }
+        return StartPrioritizationResponse(
+            taskId=task_uuid, status=task_storage[task_uuid]["status"]
+        )
 
     # Create the background task input
     background_task_input = {
@@ -171,8 +183,23 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
         "prioritizer_response_bulk": None,
         "error": None,
     }
-    executor = _get_bulk_executor()
+
     actions_cached = _get_actions_cached()
+    # Fail early if actions could not be loaded
+    if not actions_cached:
+        logger.error(
+            f"Task {main_task_id}: No actions data available from global API; failing request early"
+        )
+        task_storage[main_task_id] = {
+            "status": "failed",
+            "error": "No actions data available from global API. Please try again later.",
+        }
+        return StartPrioritizationResponse(
+            taskId=main_task_id, status=task_storage[main_task_id]["status"]
+        )
+
+    executor = _get_bulk_executor()
+
     for idx, city_data in enumerate(req.cityDataList):
         # mark subtask as running before submission
         try:
@@ -200,8 +227,10 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
             "actions": actions_cached,
         }
         future = executor.submit(
-            compute_prioritization_bulk_subtask,
+            _compute_prioritization_bulk_subtask,
             background_task_input,
+            main_task_id,
+            idx,
         )
 
         def _make_callback(task_id: str, sub_idx: int):

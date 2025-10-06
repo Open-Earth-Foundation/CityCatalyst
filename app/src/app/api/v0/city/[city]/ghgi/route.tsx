@@ -1,3 +1,34 @@
+/**
+ * @swagger
+ * /api/v0/city/{city}/ghgi:
+ *   get:
+ *     tags:
+ *       - GHG Inventory
+ *     summary: Get GHG inventory data for a city
+ *     description: Retrieves greenhouse gas inventory data for a specified city. The city parameter can be a UUID or "default" to use the user's default city.
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: City ID (UUID) or "default" to use user's default city
+ *     responses:
+ *       200:
+ *         description: GHG inventory data with total emissions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   description: Inventory data with calculated total emissions
+ *       400:
+ *         description: Invalid city ID or 'null' city parameter
+ *       404:
+ *         description: User has no default city or inventory not found
+ */
 import { NextResponse } from "next/server";
 
 import { apiHandler } from "@/util/api";

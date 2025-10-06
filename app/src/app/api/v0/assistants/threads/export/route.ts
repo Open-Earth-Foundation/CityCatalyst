@@ -31,7 +31,14 @@
  *                       type: string
  *                     assistantId:
  *                       type: string
- *                   additionalProperties: true
+ *                       description: OpenAI Assistant ID to export from
+ *                     threadId:
+ *                       type: string
+ *                       description: OpenAI Thread ID to export messages from
+ *                     format:
+ *                       type: string
+ *                       enum: ['json', 'csv', 'pdf']
+ *                       default: 'json'
  *             examples:
  *               example:
  *                 value:

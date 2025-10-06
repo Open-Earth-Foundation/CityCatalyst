@@ -132,5 +132,9 @@
   "exit-selection": "Salir de la selección",
   "download-csv": "CSV",
   "export-as-csv": "Exportar como CSV",
-  "unknown": "Desconocido"
+  "unknown": "Desconocido",
+  "reprioritization-started": "Inicio de Reasignación de Prioridades",
+  "reprioritization-started-description": "Se están re-priorizando tus acciones climáticas con los datos más recientes. Recibirás un correo electrónico cuando esté completo.",
+  "reprioritization-failed": "Fallo en la Reasignación de Prioridades",
+  "reprioritization-failed-description": "No se pudo iniciar la repriorización. Por favor, inténtalo de nuevo."
 }

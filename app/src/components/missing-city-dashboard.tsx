@@ -4,8 +4,8 @@ import { useTranslation } from "@/i18n/client";
 import { useRouter } from "next/navigation";
 import { MdArrowForward } from "react-icons/md";
 import { Button } from "@/components/ui/button";
-import { BodyXLarge } from "./Texts/Body";
-import { DisplayLarge } from "./Texts/Display";
+import { BodyXLarge } from "./package/Texts/Body";
+import { DisplayLarge } from "./package/Texts/Display";
 
 const MissingCityDashboard = ({
   lng,

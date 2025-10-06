@@ -24,7 +24,7 @@
   "generate-climate-actions-title": "Generate your climate action plan",
   "generate-climate-actions-description": "Check out your key actions for this category. Explore them to gain insights and create draft implementation plans for each.",
   "no-actions-found-title": "Your top climate actions are being processed",
-  "no-actions-found-description": "This process can take up up to 15 mins. You'll get an email and see them here when done",
+  "no-actions-found-description": "This process can take up to 15 mins. You'll get an email and see them here when done",
   "generate-climate-actions-widget-description": "You can create implementation plans for each of the selected actions. Feel free to browse the complete list of actions below and choose which ones you want to display here.",
   "action-plan": "Action plan",
   "download-action-plan": "download",
@@ -58,7 +58,7 @@
   "generating-actions": "Generating actions...",
   "checking-activity-data": "Checking activity data",
   "generating-climate-actions": "Your top climate actions are being processed",
-  "generating-climate-actions-description": "This process can take up up to 15 mins. You'll get an email and see them here when done",
+  "generating-climate-actions-description": "This process can take up to 15 mins. You'll get an email and see them here when done",
   "top-actions-for-your-city": "Top actions for your city",
   "top-actions-for-your-city-description": "These are the top 40 actions we recommend based on your GHG inventory and City Context data. You will find 20 actions for Mitigation and 20 for Adaptation in their respective tabs. Re-running the prioritizer after any relevant data update or change is recommended.",
   "actions-for-your-city-description": "These are the top 40 actions we recommend based on your GHG inventory, Climate Risk Assessment, and City Context data. You will find 20 actions for Mitigation and 20 for Adaptation in their respective tabs.",
@@ -132,5 +132,9 @@
   "plan-generation-started-description": "Your action plan is being generated. You'll receive an email notification when it's ready.",
   "plan-generation-failed": "Generation Failed",
   "plan-generation-failed-description": "Failed to start plan generation. Please try again.",
+  "reprioritization-started": "Reprioritization Started",
+  "reprioritization-started-description": "Your climate actions are being re-prioritized with the latest data. You'll receive an email when complete.",
+  "reprioritization-failed": "Reprioritization Failed",
+  "reprioritization-failed-description": "Failed to start reprioritization. Please try again.",
   "unknown": "Unknown"
 }

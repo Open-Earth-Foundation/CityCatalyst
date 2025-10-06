@@ -71,6 +71,7 @@ Establish the foundation for the Climate Advisor Service microservice and begin 
 Status: Implemented as a standalone FastAPI app under `climate-advisor/service/app` with health checks, v1 stubs, middleware, settings, and SSE utilities. No OpenRouter/CC integration yet.
 
 What was implemented
+
 - Structure created: `routes/`, `models/`, `services/`, `config/`, `middleware/`, `utils/` under `app/`.
 - Health endpoint: `GET /health`.
 - v1 endpoints (stubs):
@@ -85,17 +86,21 @@ What was implemented
 - Swagger: Built-in Swagger UI at `/docs` and ReDoc at `/redoc`. Static OpenAPI spec at `climate-advisor/docs/climate-advisor-openapi.yaml`.
 
 How it was implemented
+
 - Entry point `app/main.py` builds the FastAPI app with middleware, routers, and exception handlers; logs lifecycle events on startup/shutdown.
 - `app/middleware/request_context.py` uses a contextvar to store a per-request UUID or incoming `x-request-id` header; adds `X-Request-Id` to responses.
 - `app/routes/messages.py` returns `StreamingResponse` with SSE-formatted chunks from `app/utils/sse.py` and terminal `event: done`.
 - Problem Details factory ensures consistent error envelopes; 422/HTTPException/ValueError/500 paths covered.
 
 Examples
+
 - Health checks
+
   - Liveness: `curl -s http://localhost:8080/health`
     - Response: `{ "status": "ok" }`
 
 - Create thread (v1)
+
   - Request:
     ```bash
     curl -i -X POST http://localhost:8080/v1/threads \
@@ -108,6 +113,7 @@ Examples
           }'
     ```
   - Expected response (201):
+
     ```http
     HTTP/1.1 201 Created
     Location: /v1/threads/<uuid>
@@ -118,6 +124,7 @@ Examples
     ```
 
 - Stream message (v1)
+
   - Request (SSE, chunked echo):
     ```bash
     curl -N -X POST http://localhost:8080/v1/messages \
@@ -129,6 +136,7 @@ Examples
           }'
     ```
   - Example stream (server output shape):
+
     ```
     event: message
     id: 0
@@ -160,6 +168,7 @@ Examples
     ```
 
 Client notes
+
 - SSE: clients should use streaming fetch (e.g., `EventSource`/`ReadableStream` or `curl -N`). Server emits `text/event-stream` with `X-Accel-Buffering: no` and `Cache-Control: no-cache` headers to support real-time streaming.
 - Request IDs: pass `X-Request-Id` for traceability; the service returns the same in responses and terminal SSE event.
 - CORS: configure allowed origins via `CA_CORS_ORIGINS` (CSV). Default is `*` in dev.
@@ -204,7 +213,7 @@ Client notes
 - [x] Define ORM models for `Thread` and `Message` matching the schema in architecture.md (UUID primary keys, foreign keys, created_at/updated_at, role enum, tools_used JSONB).
 - [x] Create a repository/service layer that `/v1/threads` and `/v1/messages` use to insert and query records; unit tests cover happy path and basic error handling.
 - [x] Ship Alembic migrations (or an equivalent idempotent schema module) that build the initial tables.
-- [x] Provide a reproducible setup script (`climate-advisor/scripts/setup_local_db.py`) that can create/drop the dev database and run migrations regardless of where Postgres is hosted.
+- [x] Provide a reproducible setup script (`climate-advisor/scripts/setup_database.py`) that can create/drop the dev database and run migrations regardless of where Postgres is hosted.
 - [x] Update developer docs with local workflow for provisioning Postgres, running the setup script repeatedly, and cleaning data between iterations.
 
 **Files to Create/Modify:**
@@ -218,16 +227,17 @@ Client notes
 - `climate-advisor/service/app/routes/threads.py`
 - `climate-advisor/service/app/routes/messages.py`
 - `climate-advisor/service/app/config/settings.py`
-- `climate-advisor/scripts/setup_local_db.py` (schema bootstrapper, replaces Alembic for now)
+- `climate-advisor/scripts/setup_database.py` (schema bootstrapper using Alembic migrations)
 - `climate-advisor/service/.env.example`
 
 ##### TICKET-003 - Implementation Notes and Examples (Completed)
 
 What changed
+
 - Added SQLAlchemy async engine/session wiring in `climate-advisor/service/app/db/session.py`, including helpers to normalise Postgres URLs and expose `get_engine`/`get_session` for FastAPI dependencies and tooling.
 - Created ORM models for `Thread` and `Message` under `app/models/db/` with relationships, enums, timestamps, and JSONB payloads that match the architecture plan.
 - Introduced `ThreadService` and `MessageService` and updated `/v1/threads` + `/v1/messages` to persist user and assistant messages while refreshing thread metadata.
-- Added `climate-advisor/scripts/setup_local_db.py` for idempotent schema create/drop and documented the workflow (plus sample env values) in the README.
+- Added `climate-advisor/scripts/setup_database.py` for idempotent schema create/drop and documented the workflow (plus sample env values) in the README.
 - Updated environment defaults to use `postgresql://postgres:admin@host.docker.internal:5432/climate_advisor` so both host and containerised service share the same Postgres instance.
 - Captured the historical inventory-context flow from CityCatalyst so the persistence layer is ready for OAuth-backed context retrieval (e.g. `UserService.findUserInventory`, population lookups).
 
@@ -282,15 +292,18 @@ What changed
 - `climate-advisor/service/app/routes/messages.py`
 - `climate-advisor/service/tests/test_user_identity.py`
 - `climate-advisor/service/docs/persistence.md`
+
 ##### TICKET-005 - Implementation Notes and Examples (Completed)
 
 What changed
+
 - Centralised thread ownership checks inside `ThreadService.get_thread_for_user` and wired `/v1/messages` to use it, ensuring cross-user access is rejected consistently.
 - Kept `user_id` required in both thread/message payload schemas and verified the values are persisted on every insert.
 - Added async service-layer tests in `climate-advisor/service/tests/test_user_identity.py` covering ownership, role recording, and mismatch failures.
 - Documented caller responsibilities and query patterns in `climate-advisor/service/docs/persistence.md`.
 
 ---
+
 #### **TICKET-006: Environment Configuration and Documentation**
 
 **Priority:** Low  
@@ -316,12 +329,14 @@ What changed
 ---
 
 #### Completed Work (Sprint 1 So Far)
+
 - TICKET-001: Service scaffolding, health checks, request middleware, SSE echo stubs.
 - TICKET-002: OpenRouter integration, real streaming pipeline, request option overrides.
 - TICKET-003: Postgres persistence foundation (FastAPI + SQLAlchemy + setup script).
 - TICKET-005: User identity propagation, ownership enforcement, persistence docs/tests.
 
 #### Legacy CityCatalyst Assistant Capabilities to Port
+
 - `POST /api/v0/assistants/threads/[inventory]` (context builder via `UserService.findUserInventory`, population lookups, initial assistant message seeding).
 - `POST /api/v0/assistants/threads/messages` (user message append + OpenAI run streaming).
 - `POST /api/v0/assistants/threads/actions` (tool output callback pipeline for long-running actions).
@@ -336,7 +351,7 @@ What changed
 - [x] Docker image builds and runs via the service Dockerfile with `/health` returning success. (Validated via `docker run climate-advisor:dev` with health probes.)
 - [x] `/v1/threads` and `/v1/messages` respond successfully; `/v1/messages` streams OpenRouter output end-to-end. (cURL + Postman checks against running container.)
 - [x] Structured request logging shows propagated request IDs and correct SSE headers. (Log samples from running container include request IDs & SSE headers.)
-- [x] Developer docs and helper scripts cover local run, streaming test harness, and environment configuration. (README + `scripts/setup_local_db.py` + `scripts/test_service_stream.py`.)
+- [x] Developer docs and helper scripts cover local run, streaming test harness, and environment configuration. (README + `scripts/setup_database.py` + `scripts/test_service_stream.py`.)
 
 ### Dependencies for Sprint 2
 
@@ -349,11 +364,13 @@ What changed
 ##### TICKET-002 � Implementation Notes and Examples (Completed)
 
 Environment
+
 - Required env vars: `OPENROUTER_API_KEY`, optional `OPENROUTER_BASE_URL` (default `https://openrouter.ai/api/v1`), `OPENROUTER_MODEL`, `REQUEST_TIMEOUT_MS`.
 - Requests may override `model` and `temperature` via the `options` field; the service falls back to env defaults.
 - Developer utility: `climate-advisor/scripts/test_service_stream.py` streams from `/v1/messages` and prints SSE lines for smoke tests.
 
 Example: call `/v1/messages` with model overrides
+
 ```bash
 curl -N -X POST http://localhost:8080/v1/messages \
   -H "Content-Type: application/json" \
@@ -371,6 +388,7 @@ curl -N -X POST http://localhost:8080/v1/messages \
 ```
 
 Expected stream shape (SSE)
+
 ```
 event: message
 id: 0
@@ -385,12 +403,20 @@ data: {"ok": true, "request_id": "demo-req-002"}
 ```
 
 Next.js/Fetch streaming client example
+
 ```ts
 // In a Next.js route or client component using fetch + ReadableStream
 const res = await fetch("/api/ca/messages", {
   method: "POST",
-  headers: { "Content-Type": "application/json", "X-Request-Id": crypto.randomUUID() },
-  body: JSON.stringify({ user_id: "u_123", content: "Hello", options: { model: "openrouter/auto" } })
+  headers: {
+    "Content-Type": "application/json",
+    "X-Request-Id": crypto.randomUUID(),
+  },
+  body: JSON.stringify({
+    user_id: "u_123",
+    content: "Hello",
+    options: { model: "openrouter/auto" },
+  }),
 });
 
 const reader = res.body!.getReader();
@@ -405,7 +431,10 @@ while (true) {
   buffer = events.pop() || "";
   for (const e of events) {
     if (e.startsWith("data:")) {
-      const lines = e.split("\n").filter(Boolean).map(l => l.replace(/^data:\s?/, ""));
+      const lines = e
+        .split("\n")
+        .filter(Boolean)
+        .map((l) => l.replace(/^data:\s?/, ""));
       const payload = JSON.parse(lines.join("\n"));
       // handle payload.content chunks or terminal ok
     }
@@ -414,6 +443,7 @@ while (true) {
 ```
 
 Error streaming example
+
 ```
 event: error
 data: {"message":"Upstream 429: rate limited","retry_after_ms": 2000}
@@ -423,6 +453,7 @@ data: {"ok": false, "request_id": "<uuid>"}
 ```
 
 Logging and redaction
+
 - Log request/response metadata only (model, status, latencies); redact API keys and message content in production logs.
 - Include `request_id` in all logs; propagate to OpenRouter and include in terminal SSE event.
 
@@ -431,11 +462,13 @@ Logging and redaction
 ### Sprint 2 — Implementation Notes and Examples
 
 Environment
+
 - Required env vars: `OPENROUTER_API_KEY`, optional `OPENROUTER_BASE_URL` (default `https://openrouter.ai/api/v1`), `OPENROUTER_MODEL`, `REQUEST_TIMEOUT_MS`.
 - Requests may override `model`, `temperature` via `options` field; server falls back to env defaults.
 - Developer utility: `climate-advisor/scripts/test_service_stream.py` streams from `/v1/messages` and prints SSE lines.
 
 Example: call `/v1/messages` with model overrides
+
 ```bash
 curl -N -X POST http://localhost:8080/v1/messages \
   -H 'Content-Type: application/json' \
@@ -453,6 +486,7 @@ curl -N -X POST http://localhost:8080/v1/messages \
 ```
 
 Expected stream shape (SSE)
+
 ```
 event: message
 id: 0
@@ -467,12 +501,20 @@ data: {"ok": true, "request_id": "demo-req-002"}
 ```
 
 Next.js/Fetch streaming client example
+
 ```ts
 // In a Next.js route or client component using fetch + ReadableStream
 const res = await fetch("/api/ca/messages", {
   method: "POST",
-  headers: { "Content-Type": "application/json", "X-Request-Id": crypto.randomUUID() },
-  body: JSON.stringify({ user_id: "u_123", content: "Hello", options: { model: "openrouter/auto" } })
+  headers: {
+    "Content-Type": "application/json",
+    "X-Request-Id": crypto.randomUUID(),
+  },
+  body: JSON.stringify({
+    user_id: "u_123",
+    content: "Hello",
+    options: { model: "openrouter/auto" },
+  }),
 });
 
 const reader = res.body!.getReader();
@@ -487,7 +529,10 @@ while (true) {
   buffer = events.pop() || "";
   for (const e of events) {
     if (e.startsWith("data:")) {
-      const lines = e.split("\n").filter(Boolean).map(l => l.replace(/^data:\s?/, ""));
+      const lines = e
+        .split("\n")
+        .filter(Boolean)
+        .map((l) => l.replace(/^data:\s?/, ""));
       const payload = JSON.parse(lines.join("\n"));
       // handle payload.content chunks or terminal ok
     }
@@ -496,6 +541,7 @@ while (true) {
 ```
 
 Error streaming example
+
 ```
 event: error
 data: {"message":"Upstream 429: rate limited","retry_after_ms": 2000}
@@ -505,6 +551,7 @@ data: {"ok": false, "request_id": "<uuid>"}
 ```
 
 Logging and redaction
+
 - Log request/response metadata only (model, status, latencies); redact API keys and message content in production logs.
 - Include `request_id` in all logs; propagate to OpenRouter and include in terminal SSE event.
 
@@ -584,6 +631,7 @@ All LLM-related configuration has been centralized in `climate-advisor/llm_confi
 - **Logging**: Control request/response logging and performance metrics
 
 This centralized approach provides:
+
 - Easy configuration management without code changes
 - Environment-specific overrides via environment variables
 - Validation of parameters and limits
@@ -597,8 +645,3 @@ This centralized approach provides:
 - Persisting threads/messages in CA (persistence remains in CC as per architecture; CA stays stateless)
 - Vector DB ingestion and file handling beyond API surface stubs
 - Frontend (CC) code changes (will be handled in a separate PR)
-
-
-
-
-

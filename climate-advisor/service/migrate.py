@@ -44,47 +44,47 @@ def run_alembic(cmd_args: list[str]) -> int:
 
 def upgrade():
     """Apply all pending migrations."""
-    print("🔄 Applying database migrations...")
+    print("[*] Applying database migrations...")
     return run_alembic(["upgrade", "head"])
 
 
 def downgrade():
     """Downgrade one migration."""
-    print("⬇️ Downgrading one migration...")
+    print("[-] Downgrading one migration...")
     return run_alembic(["downgrade", "-1"])
 
 
 def current():
     """Show current migration revision."""
-    print("📍 Current migration revision:")
+    print("[i] Current migration revision:")
     return run_alembic(["current"])
 
 
 def history():
     """Show migration history."""
-    print("📜 Migration history:")
+    print("[i] Migration history:")
     return run_alembic(["history"])
 
 
 def create_migration(description: str):
     """Create a new empty migration."""
     if not description:
-        print("❌ Error: Migration description is required")
+        print("[!] Error: Migration description is required")
         print("Usage: python migrate.py create 'description of changes'")
         return 1
     
-    print(f"📝 Creating new migration: {description}")
+    print(f"[+] Creating new migration: {description}")
     return run_alembic(["revision", "-m", description])
 
 
 def auto_migration(description: str):
     """Auto-generate migration from model changes."""
     if not description:
-        print("❌ Error: Migration description is required")
+        print("[!] Error: Migration description is required")
         print("Usage: python migrate.py auto 'description of changes'")
         return 1
     
-    print(f"🤖 Auto-generating migration: {description}")
+    print(f"[+] Auto-generating migration: {description}")
     return run_alembic(["revision", "--autogenerate", "-m", description])
 
 
@@ -119,7 +119,7 @@ def main():
         show_help()
         return 0
     else:
-        print(f"❌ Unknown command: {command}")
+        print(f"[!] Unknown command: {command}")
         show_help()
         return 1
 

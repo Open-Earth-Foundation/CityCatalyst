@@ -4,8 +4,8 @@ import { ActivityDataByScope } from "@/util/types";
 import type { TFunction } from "i18next";
 import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
 import { InventoryTypeEnum, SECTORS } from "@/util/constants";
-import { ButtonSmall } from "@/components/Texts/Button";
-import { BodyMedium } from "@/components/Texts/Body";
+import { ButtonSmall } from "@/components/package/Texts/Button";
+import { BodyMedium } from "@/components/package/Texts/Body";
 import ByScopeViewSourceDrawer from "./ByScopeViewSourceDrawer";
 import { LuChevronDown } from "react-icons/lu";
 

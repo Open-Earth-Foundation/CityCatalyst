@@ -5,23 +5,25 @@
  *     tags:
  *       - Bulk Locations
  *     summary: List approximate lat/lng for accessible cities by organization or project.
- *     description: Returns a list of city location center points computed from boundary data. Requires a signed‑in user with access to the specified organization or project; otherwise 401 is returned. Items can be either a location record or an error for cities missing data.
+ *     description: Returns a list of city location center points computed from city boundary polygon data. For each city, the center latitude and longitude are calculated as the midpoint of the bounding box. Requires an authenticated user with proper access permissions to the specified organization or project. Cities with missing locode or boundary data will return error entries instead of location data. This endpoint is useful for mapping applications that need approximate city centers.
  *     parameters:
  *       - in: query
  *         name: organizationId
  *         required: false
+ *         description: UUID of the organization to get cities for. Either organizationId or projectId must be provided.
  *         schema:
  *           type: string
  *           format: uuid
  *       - in: query
  *         name: projectId
  *         required: false
+ *         description: UUID of the project to get cities for. Either organizationId or projectId must be provided.
  *         schema:
  *           type: string
  *           format: uuid
  *     responses:
  *       200:
- *         description: Array of results wrapped in data; each item is either a location or an error entry.
+ *         description: Array of city location results wrapped in data. Each item is either a successful location object with lat/lng coordinates or an error object for cities that failed to load.
  *         content:
  *           application/json:
  *             schema:
@@ -32,24 +34,34 @@
  *                   items:
  *                     oneOf:
  *                       - type: object
+ *                         description: Successful location data for a city
  *                         properties:
  *                           locode:
  *                             type: string
+ *                             description: City locode identifier
  *                           name:
  *                             type: string
+ *                             description: City name
  *                           country:
  *                             type: string
+ *                             description: Country name
  *                           latitude:
  *                             type: number
+ *                             description: Center latitude calculated from city boundary
  *                           longitude:
  *                             type: number
+ *                             description: Center longitude calculated from city boundary
  *                       - type: object
+ *                         description: Error entry for a city that failed to load
  *                         properties:
  *                           error:
  *                             type: string
+ *                             description: Error type (LOCODE_MISSING or FAILED_TO_LOAD_CITY_BOUNDARY)
+ *                             enum: [LOCODE_MISSING, FAILED_TO_LOAD_CITY_BOUNDARY]
  *                           cityId:
  *                             type: string
  *                             format: uuid
+ *                             description: UUID of the city that failed to load
  *             examples:
  *               example:
  *                 value:
@@ -62,11 +74,15 @@
  *                     - error: "FAILED_TO_LOAD_CITY_BOUNDARY"
  *                       cityId: "e1f2a3b4-0000-0000-0000-000000000000"
  *       400:
- *         description: Missing organizationId or projectId.
+ *         description: Either organizationId or projectId must be provided as query parameter.
  *       401:
- *         description: Unauthorized.
+ *         description: User must be authenticated to access this endpoint.
+ *       403:
+ *         description: User does not have access to the specified organization or project.
  *       404:
- *         description: Cities not found.
+ *         description: No cities found for the specified organization or project.
+ *       500:
+ *         description: Internal server error during city lookup or boundary data processing.
  */
 import CityBoundaryService, {
   CityBoundary,

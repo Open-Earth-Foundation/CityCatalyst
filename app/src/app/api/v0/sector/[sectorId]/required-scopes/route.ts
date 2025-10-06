@@ -5,7 +5,7 @@
  *     tags:
  *       - Sector
  *     summary: List required GPC scopes for a sector.
- *     description: Returns the distinct scope names used by subcategories within the sector. Public endpoint (no authentication enforced). Response is wrapped in { data: { requiredScopes: string[] } }.
+ *     description: Returns the distinct scope names used by subcategories within the sector. Public endpoint (no authentication enforced). Response is wrapped in '{' data: { requiredScopes: string[] } '}'.
  *     parameters:
  *       - in: path
  *         name: sectorId
@@ -26,7 +26,10 @@
  *                   properties:
  *                     requiredScopes:
  *                       type: array
- *                       items: { type: string }
+ *                       items:
+ *                         type: string
+ *                         description: GPC scope name required by the sector
+ *                         example: "Basic"
  *       404:
  *         description: Sector not found.
  */

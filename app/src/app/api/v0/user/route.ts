@@ -12,31 +12,6 @@
  *         description: Unauthorized.
  *       404:
  *         description: User not found.
- *   patch:
- *     tags:
- *       - User
- *     summary: Update default inventory and city for current user
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [defaultInventoryId, defaultCityId]
- *             properties:
- *               defaultInventoryId:
- *                 type: string
- *                 format: uuid
- *               defaultCityId:
- *                 type: string
- *                 format: uuid
- *     responses:
- *       200:
- *         description: Defaults updated.
- *       401:
- *         description: Unauthorized.
- *       404:
- *         description: User not found.
  */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
@@ -77,6 +52,35 @@ const updateUserRequest = z.object({
   defaultCityId: z.string().uuid(),
 });
 
+/**
+ * @swagger
+ * /api/v0/user:
+ *   patch:
+ *     tags:
+ *       - User
+ *     summary: Update default inventory and city for current user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [defaultInventoryId, defaultCityId]
+ *             properties:
+ *               defaultInventoryId:
+ *                 type: string
+ *                 format: uuid
+ *               defaultCityId:
+ *                 type: string
+ *                 format: uuid
+ *     responses:
+ *       200:
+ *         description: Defaults updated.
+ *       401:
+ *         description: Unauthorized.
+ *       404:
+ *         description: User not found.
+ */
 export const PATCH = apiHandler(async (req: Request, context) => {
   const body = updateUserRequest.parse(await req.json());
   if (!context.session) {

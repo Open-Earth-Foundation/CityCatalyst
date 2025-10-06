@@ -47,7 +47,6 @@
  *                               contactEmail:
  *                                 type: string
  *                                 format: email
- *                     additionalProperties: true
  *             examples:
  *               example:
  *                 value:

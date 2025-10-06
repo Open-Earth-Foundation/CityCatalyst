@@ -30,7 +30,7 @@ import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
-import { ButtonSmall } from "@/components/Texts/Button";
+import { ButtonSmall } from "@/components/package/Texts/Button";
 
 const EmissionsTable = ({
   topEmissions,

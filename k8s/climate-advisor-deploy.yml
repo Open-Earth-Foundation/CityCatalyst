@@ -1,32 +1,37 @@
+# Climate Advisor deployment configuration
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cc-global-api-deploy
+  name: climate-advisor-deploy
+  namespace: default
   labels:
-    app: cc-global-api
+    app: climate-advisor-deploy
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:
-      app: cc-global-api
+      app: climate-advisor-deploy
   template:
     metadata:
       labels:
-        app: cc-global-api
+        app: climate-advisor-deploy
     spec:
       containers:
-        - name: cc-global-api
-          image: ghcr.io/open-earth-foundation/citycatalyst-global-api:latest
+        - name: climate-advisor-deploy
+          image: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor:latest
           # Set to Never for local
           imagePullPolicy: Always
           ports:
-            - containerPort: 8000
+            - containerPort: 8080
+              name: http
           envFrom:
             - configMapRef:
-                name: cc-global-api-db-configmap
+                name: climate-advisor-db-configmap
           env:
             - name: PROJECT_NAME
-              value: "CityCatalyst Global API"
+              value: "CityCatalyst Climate Advisor"
           resources:
             requests:
               memory: "512Mi"
@@ -37,28 +42,28 @@ spec:
           livenessProbe:
             httpGet:
               path: /health
-              port: 8000
+              port: http
               httpHeaders:
-              - name: X-Liveness-Probe
-                value: "True"
+                - name: X-Liveness-Probe
+                  value: "True"
             initialDelaySeconds: 5
             periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /health
-              port: 8000
+              port: http
               httpHeaders:
-              - name: X-Liveness-Probe
-                value: "True"
+                - name: X-Liveness-Probe
+                  value: "True"
             initialDelaySeconds: 5
             periodSeconds: 5
           startupProbe:
             httpGet:
               path: /health
-              port: 8000
+              port: http
               httpHeaders:
-              - name: X-Liveness-Probe
-                value: "True"
+                - name: X-Liveness-Probe
+                  value: "True"
             initialDelaySeconds: 5
             periodSeconds: 5
             failureThreshold: 30

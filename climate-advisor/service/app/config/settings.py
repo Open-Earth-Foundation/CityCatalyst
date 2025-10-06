@@ -70,7 +70,7 @@ class GenerationLimits(BaseModel):
 
 class GenerationConfig(BaseModel):
     defaults: GenerationDefaults
-    limits: GenerationLimits
+    limits: Optional[GenerationLimits] = None
 
 
 class PromptsConfig(BaseModel):
@@ -87,9 +87,15 @@ class PromptsConfig(BaseModel):
         if not prompt_path:
             raise ValueError(f"Prompt type '{prompt_type}' not configured")
 
-        # Construct full path relative to climate-advisor root
-        config_dir = Path(__file__).parent.parent.parent.parent.parent
-        full_path = config_dir / prompt_path
+        # Construct full path - look in current working directory first (container)
+        # then fall back to relative path from this file
+        cwd_path = Path.cwd() / prompt_path
+        if cwd_path.exists():
+            full_path = cwd_path
+        else:
+            # Fallback to relative path from this file (for local development)
+            config_dir = Path(__file__).parent.parent.parent.parent.parent
+            full_path = config_dir / prompt_path
 
         if not full_path.exists():
             raise FileNotFoundError(f"Prompt file not found: {full_path}")
@@ -105,8 +111,15 @@ class OpenRouterConfig(BaseModel):
     retry_delay_ms: Optional[int] = None
 
 
+class OpenAIConfig(BaseModel):
+    base_url: str
+    timeout_ms: Optional[int] = None
+    embedding_model: str
+
+
 class APIConfig(BaseModel):
     openrouter: OpenRouterConfig
+    openai: OpenAIConfig
     requests: Optional[Dict[str, Any]] = None
 
 
@@ -137,20 +150,24 @@ class LLMConfig(BaseModel):
     api: APIConfig
     features: FeaturesConfig
     logging: LoggingConfig
-    cache: CacheConfig
+    cache: Optional[CacheConfig] = None
 
 
 def _load_llm_config() -> LLMConfig:
     """Load LLM configuration from YAML file."""
-    # Look for the config file in the climate-advisor root directory
-    config_path = Path(__file__).parent.parent.parent.parent / "llm_config.yaml"
-    
+    # Look for the config file in the current working directory (container root)
+    config_path = Path.cwd() / "llm_config.yaml"
+
+    # Also try the parent directory for local development
+    if not config_path.exists():
+        config_path = Path(__file__).parent.parent.parent.parent / "llm_config.yaml"
+
     if not config_path.exists():
         raise FileNotFoundError(f"LLM config file not found at {config_path}")
-    
+
     with open(config_path, 'r', encoding='utf-8') as f:
         config_data = yaml.safe_load(f)
-    
+
     return LLMConfig(**config_data)
 
 
@@ -167,7 +184,9 @@ class Settings(BaseModel):
     openrouter_api_key: str | None = os.getenv("OPENROUTER_API_KEY")
     openrouter_base_url: str | None = None  # Will be overridden by LLM config
     openrouter_model: str | None = None     # Will be overridden by LLM config
-    request_timeout_ms: int | None = None   # Will be overridden by LLM config
+
+    # OpenAI configuration for embeddings
+    openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
 
     # Database configuration
     database_url: str | None = os.getenv("CA_DATABASE_URL")
@@ -191,8 +210,6 @@ class Settings(BaseModel):
         if self.openrouter_model is None:
             self.openrouter_model = self.llm.models.get("default", "openrouter/auto")
             
-        if self.request_timeout_ms is None:
-            self.request_timeout_ms = self.llm.api.openrouter.timeout_ms
 
 
 _settings: Settings | None = None

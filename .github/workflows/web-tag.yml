@@ -9,7 +9,7 @@ on:
   push:
     paths:
       - app/**
-      - k8s/prod/prod/cc-prod-prod-migrate.yml
+      - k8s/prod/prod/cc-prod-migrate.yml
       - k8s/prod/cc-prod-seed.yml
       - k8s/prod/cc-prod-sync-catalogue.yml
       - k8s/prod/cc-prod-create-admin.yml

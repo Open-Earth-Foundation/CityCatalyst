@@ -29,7 +29,7 @@ filelock==3.18.0
 flatbuffers==25.2.10
 fonttools==4.58.5
 frozenlist==1.6.0
-fsspec==2025.5.0
+fsspec==2025.9.0
 google-auth==2.40.3
 googleapis-common-protos==1.70.0
 greenlet==3.2.2

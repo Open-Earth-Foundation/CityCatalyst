@@ -5,15 +5,15 @@ import { z } from "zod";
 import createHttpError from "http-errors";
 
 const getActionPlansSchema = z.object({
-  cityId: z.string().optional(),
-  language: z.string().optional(),
-  actionId: z.string().optional(),
+  cityId: z.string(),
+  language: z.string(),
+  actionId: z.string(),
 });
 
 const createActionPlanSchema = z.object({
   actionId: z.string(),
   inventoryId: z.string().uuid(),
-  hiActionRankingId: z.string().uuid().optional(),
+  hiActionRankingId: z.string().uuid(),
   cityLocode: z.string(),
   actionName: z.string(),
   language: z.string(),
@@ -24,8 +24,8 @@ const createActionPlanSchema = z.object({
  * @swagger
  * /api/v0/city/{city}/hiap/action-plan:
  *   get:
- *     summary: Get action plans for a city
- *     description: Retrieve action plans with optional filtering by language and action ID
+ *     summary: Get or translate action plans for a city
+ *     description: Retrieve action plans for a specific city, language, and action. Automatically translates if the plan doesn't exist in the requested language.
  *     parameters:
  *       - in: path
  *         name: city
@@ -34,27 +34,33 @@ const createActionPlanSchema = z.object({
  *           type: string
  *         description: City ID
  *       - in: query
- *         name: language
+ *         name: cityId
+ *         required: true
  *         schema:
  *           type: string
- *         description: Filter by language
+ *         description: City ID (same as path param)
+ *       - in: query
+ *         name: language
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Target language for the action plan
  *       - in: query
  *         name: actionId
+ *         required: true
  *         schema:
  *           type: string
- *         description: Filter by specific action ID
+ *         description: Specific action ID to retrieve
  *     responses:
  *       200:
- *         description: List of action plans
+ *         description: Action plan (existing or newly translated)
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
  *                 data:
- *                   type: array
- *                   items:
- *                     type: object
+ *                   type: object
  */
 export const GET = apiHandler(async (req: NextRequest) => {
   const url = new URL(req.url);
@@ -64,7 +70,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
     const { cityId, language, actionId } =
       getActionPlansSchema.parse(queryParams);
 
-    const actionPlans = await ActionPlanService.getActionPlansByCityId(
+    const actionPlans = await ActionPlanService.fetchOrTranslateActionPlan(
       cityId,
       language,
       actionId,
@@ -85,8 +91,8 @@ export const GET = apiHandler(async (req: NextRequest) => {
  * @swagger
  * /api/v0/city/{city}/hiap/action-plan:
  *   post:
- *     summary: Create a new action plan for a city
- *     description: Create a new action plan with the provided data
+ *     summary: Create or update an action plan for a city
+ *     description: Upsert an action plan with the provided data. The cityId is extracted from the route parameter.
  *     parameters:
  *       - in: path
  *         name: city
@@ -103,6 +109,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
  *             required:
  *               - actionId
  *               - inventoryId
+ *               - hiActionRankingId
  *               - cityLocode
  *               - actionName
  *               - language
@@ -110,23 +117,30 @@ export const GET = apiHandler(async (req: NextRequest) => {
  *             properties:
  *               actionId:
  *                 type: string
+ *                 description: ID of the high impact action
  *               inventoryId:
  *                 type: string
  *                 format: uuid
+ *                 description: ID of the inventory
  *               hiActionRankingId:
  *                 type: string
  *                 format: uuid
+ *                 description: ID of the high impact action ranking (required)
  *               cityLocode:
  *                 type: string
+ *                 description: City location code
  *               actionName:
  *                 type: string
+ *                 description: Name of the action
  *               language:
  *                 type: string
+ *                 description: Language code
  *               planData:
  *                 type: object
+ *                 description: Action plan data object
  *     responses:
  *       201:
- *         description: Action plan created successfully
+ *         description: Action plan created or updated successfully
  *         content:
  *           application/json:
  *             schema:
@@ -135,11 +149,13 @@ export const GET = apiHandler(async (req: NextRequest) => {
  *                 data:
  *                   type: object
  */
-export const POST = apiHandler(async (req: NextRequest, { session }) => {
+export const POST = apiHandler(async (req: NextRequest, { session, params }) => {
   const body = await req.json();
+
   const validatedData = createActionPlanSchema.parse(body);
 
   const { actionPlan } = await ActionPlanService.upsertActionPlan({
+    cityId: params.city,
     actionId: validatedData.actionId,
     highImpactActionRankedId: validatedData.hiActionRankingId,
     cityLocode: validatedData.cityLocode,

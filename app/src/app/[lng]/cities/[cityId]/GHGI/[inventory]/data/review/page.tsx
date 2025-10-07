@@ -1,7 +1,11 @@
 "use client";
 
-import DataReviewPage from "@/app/[lng]/[inventory]/data/review/page";
+import ReviewPage from "@/app/[lng]/[inventory]/data/review/page";
 
-export default function CityInventoryDataReviewPage() {
-  return <DataReviewPage />;
+/**
+ * JN route wrapper for review page
+ * Reuses the GHGI review page component to keep DRY
+ */
+export default function GHGIReviewPage() {
+  return <ReviewPage />;
 }

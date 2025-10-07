@@ -89,7 +89,7 @@ const nextConfig = {
         source: "/.well-known/oauth-authorization-server",
         destination: "/api/v0/oauth/metadata/",
       },
-      { source: '/api/v1/:path*', destination: '/api/v0/:path*' }
+      { source: '/api/v0/:path*', destination: '/api/v1/:path*' }
     ];
   },
 };

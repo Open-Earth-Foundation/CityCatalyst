@@ -136,5 +136,30 @@
   "exit-selection": "Sélection de sortie",
   "download-csv": "CSV",
   "export-as-csv": "Exporter en CSV",
-  "unknown": "Inconnu"
+  "unknown": "Inconnu",
+  "implementation-plan": "Plan de mise en œuvre",
+  "pdf": {
+    "title": "Plan de Mise en Œuvre de l'Action Climatique",
+    "sections": {
+      "overview": "Aperçu",
+      "implementation-steps": "Étapes de Mise en Œuvre",
+      "key-institutions": "Institutions Clés",
+      "milestones": "Jalons",
+      "mitigation-measures": "Mesures d'Atténuation",
+      "adaptation-measures": "Mesures d'Adaptation",
+      "sustainable-development-goals": "Objectifs de Développement Durable"
+    },
+    "labels": {
+      "city-context": "Contexte de la Ville",
+      "action-description": "Description de l'Action",
+      "national-strategy": "Stratégie Nationale",
+      "item": "Article"
+    },
+    "footer": {
+      "generated-by": "Généré par CityCatalyst",
+      "page": "Page",
+      "of": "de",
+      "generated-on": "Généré le"
+    }
+  }
 }

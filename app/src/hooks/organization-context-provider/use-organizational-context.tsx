@@ -10,6 +10,37 @@ import AccountFrozenWarningModal from "@/components/Modals/account-frozen-warnin
 type OrganizationState = {
   logoUrl: string | null;
   active: boolean;
+  organizationId?: string;
+};
+
+/**
+ * Normalizes organization data from API response to OrganizationState
+ */
+export const normalizeOrganizationState = (
+  orgData: {
+    logoUrl?: string | null;
+    active?: boolean;
+    organizationId?: string;
+  } | null,
+): OrganizationState => {
+  return {
+    logoUrl: orgData?.logoUrl ?? null,
+    active: orgData?.active ?? true,
+    organizationId: orgData?.organizationId,
+  };
+};
+
+/**
+ * Checks if organization state has changed by comparing all properties
+ */
+export const hasOrganizationChanged = (
+  prev: OrganizationState | null,
+  next: Partial<OrganizationState>,
+): boolean => {
+  if (!prev) return true;
+  return (Object.keys(next) as Array<keyof OrganizationState>).some(
+    (key) => prev[key] !== next[key],
+  );
 };
 
 type OrganizationContextType = {
@@ -28,10 +59,12 @@ export const OrganizationContextProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [organization, setOrganizationState] = useState<OrganizationState | null>({
-    logoUrl: null,
-    active: true,
-  });
+  const [organization, setOrganizationState] =
+    useState<OrganizationState | null>({
+      logoUrl: null,
+      active: true,
+      organizationId: undefined,
+    });
 
   const [showFrozenModal, setShowFrozenModal] = useState(false);
 
@@ -40,17 +73,18 @@ export const OrganizationContextProvider = ({
     if (stored) {
       const parsed = JSON.parse(stored) as OrganizationState;
       setOrganizationState((prev) => {
-        if (!prev) return parsed;
-        const hasChanged =
-          prev.logoUrl !== parsed.logoUrl || prev.active !== parsed.active;
-        return hasChanged ? parsed : prev;
+        return hasOrganizationChanged(prev, parsed) ? parsed : prev;
       });
     }
   }, []);
 
   const setOrganization = (updates: Partial<OrganizationState>) => {
     setOrganizationState((prev) => {
-      const baseState = prev || { logoUrl: null, active: true };
+      const baseState = prev || {
+        logoUrl: null,
+        active: true,
+        organizationId: undefined,
+      };
       const next = { ...baseState, ...updates };
       localStorage.setItem("organization", JSON.stringify(next));
       return next;

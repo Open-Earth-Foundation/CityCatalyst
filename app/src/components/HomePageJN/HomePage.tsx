@@ -26,7 +26,11 @@ import {
 import { Hero } from "./Hero";
 import { ActionCards } from "./ActionCards";
 import ProgressLoader from "@/components/ProgressLoader";
-import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import {
+  useOrganizationContext,
+  hasOrganizationChanged,
+  normalizeOrganizationState,
+} from "@/hooks/organization-context-provider/use-organizational-context";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { HeadlineMedium } from "@/components/package/Texts/Headline";
 import { useResourceValidation } from "@/hooks/useResourceValidation";
@@ -126,20 +130,16 @@ export default function HomePage({
 
   useEffect(() => {
     if (orgData) {
-      const logoUrl = orgData?.logoUrl ?? null;
-      const active = orgData?.active ?? true;
+      const newOrgState = normalizeOrganizationState(orgData);
 
-      if (
-        organization?.logoUrl !== logoUrl ||
-        organization?.active !== active
-      ) {
-        setOrganization({ logoUrl, active });
+      if (hasOrganizationChanged(organization, newOrgState)) {
+        setOrganization(newOrgState);
       }
       setTheme(orgData?.theme?.themeKey ?? "blue_theme");
     } else if (!isOrgDataLoading && !orgData) {
       setTheme("blue_theme");
     }
-  }, [isOrgDataLoading, orgData, setTheme]);
+  }, [isOrgDataLoading, orgData, organization, setOrganization, setTheme]);
 
   // Handle invalid city ID - redirect to default city or onboarding
   const { shouldRender: shouldRenderCity } = useResourceValidation({

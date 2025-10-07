@@ -4,7 +4,7 @@ import { z } from "zod";
 import createHttpError from "http-errors";
 import { languages } from "@/i18n/settings";
 import { PermissionService } from "@/backend/permissions/PermissionService";
-import { startActionPlanJob } from "@/backend/hiap/HiapApiService";
+import { hiapApiWrapper } from "@/backend/hiap/HiapApiService";
 import { ACTION_TYPES, HIAction, LANGUAGES } from "@/util/types";
 
 const generateRankingRequest = z.object({
@@ -73,7 +73,7 @@ export const POST = apiHandler(
 
     const lng = body.lng || languages[0];
 
-    const result = await startActionPlanJob({
+    const result = await hiapApiWrapper.startActionPlanJob({
       action: body.action as HIAction,
       cityId: params.city,
       cityLocode: body.cityLocode,

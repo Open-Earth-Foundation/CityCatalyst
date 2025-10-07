@@ -211,7 +211,9 @@ export default function HomePage({
     skip: !inventory?.cityId,
   });
 
-  const { isInventoryOrgDataLoading } = useInventoryOrganization(inventoryIdFromParam!);
+  const { isInventoryOrgDataLoading } = useInventoryOrganization(
+    inventoryIdFromParam!,
+  );
 
   const { isFrozenCheck } = useOrganizationContext();
 
@@ -381,4 +383,3 @@ export default function HomePage({
     </>
   );
 }
-

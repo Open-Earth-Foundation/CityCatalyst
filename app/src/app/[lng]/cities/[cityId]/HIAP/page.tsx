@@ -162,8 +162,6 @@ export default function HIAPPage(props: {
     );
   }
 
-  console.log("ignoreExisting", ignoreExisting);
-
   return (
     <HiapPageLayout
       inventory={inventory}

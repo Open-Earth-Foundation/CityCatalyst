@@ -86,14 +86,15 @@ def generate_multilingual_explanation(
     )
 
     # Retrieve the national strategy from the vector store relevant to the action
-    # Action type is a list of strings, extract the first element
-    action_type = single_action.get("ActionType")
-    if action_type is None:
-        logger.error(f"Action type is None for action_id={single_action['ActionID']}")
-        return None
-    # Action type is a list of strings, extract the first element
-    # Action type always only has one value
-    action_type = action_type[0]
+    # Action type is expected to be a list of strings; use the first element if present
+    action_type_list = single_action.get("ActionType")
+    action_type: Optional[str] = None
+    if isinstance(action_type_list, list) and len(action_type_list) > 0:
+        action_type = action_type_list[0]
+    else:
+        logger.warning(
+            f"Action type missing or malformed for action_id={single_action.get('ActionID')}; proceeding without action type"
+        )
 
     action_name = single_action.get("ActionName")
     action_description = single_action.get("Description")

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from typing import Optional
-from uuid import uuid4
+from typing import Optional, Union
+from uuid import uuid4, UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,14 +15,14 @@ class MessageService:
     async def create_message(
         self,
         *,
-        thread_id: str,
+        thread_id: Union[str, UUID],
         user_id: str,
         text: str,
         role: MessageRole,
         tools_used: Optional[dict] = None,
     ) -> Message:
         message = Message(
-            message_id=str(uuid4()),
+            message_id=uuid4(),
             thread_id=thread_id,
             user_id=user_id,
             role=role,
@@ -36,7 +36,7 @@ class MessageService:
     async def create_user_message(
         self,
         *,
-        thread_id: str,
+        thread_id: Union[str, UUID],
         user_id: str,
         text: str,
         tools_used: Optional[dict] = None,
@@ -52,7 +52,7 @@ class MessageService:
     async def create_assistant_message(
         self,
         *,
-        thread_id: str,
+        thread_id: Union[str, UUID],
         user_id: str,
         text: str,
         tools_used: Optional[dict] = None,

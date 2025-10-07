@@ -266,7 +266,7 @@ async function updateCountryEmissions(countryCode?: string) {
 
     if (updatedInventories > 0) {
       logger.info(
-        `✅ Successfully updated ${updatedInventories} inventories with country emissions data`,
+        `Successfully updated ${updatedInventories} inventories with country emissions data`,
       );
     }
   } catch (error) {

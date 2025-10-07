@@ -10,13 +10,13 @@ const packageInfo = JSON.parse(packageJson);
 function generateOpenAPISpec() {
   try {
     console.log("🔄 Generating OpenAPI specification...");
-    
+
     // Suppress console output from swagger doc generation
     const originalError = console.error;
     const originalLog = console.log;
     console.error = () => {};
     console.log = () => {};
-    
+
     const spec = createSwaggerSpec({
       apiFolder: "src/app/api/v0",
       definition: {
@@ -51,10 +51,10 @@ function generateOpenAPISpec() {
     // Write the spec to a public JSON file
     const outputPath = path.join(publicDir, "openapi-spec.json");
     fs.writeFileSync(outputPath, JSON.stringify(spec, null, 2));
-    
+
     console.log(`✅ OpenAPI spec generated: ${outputPath}`);
     console.log(`📊 Found ${Object.keys(spec.paths || {}).length} API endpoints`);
-    
+
     return spec;
   } catch (error) {
     console.error("❌ Error generating OpenAPI spec:", error);
@@ -89,6 +89,7 @@ const nextConfig = {
         source: "/.well-known/oauth-authorization-server",
         destination: "/api/v0/oauth/metadata/",
       },
+      { source: '/api/v1/:path*', destination: '/api/v0/:path*' }
     ];
   },
 };

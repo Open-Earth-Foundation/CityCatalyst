@@ -1,7 +1,11 @@
 "use client";
 
-import DataPage from "@/app/[lng]/[inventory]/data/page";
+import AddDataIntro from "@/app/[lng]/[inventory]/data/page";
 
-export default function CityInventoryDataPage() {
-  return <DataPage />;
+/**
+ * JN route wrapper for data intro page
+ * Reuses the GHGI data intro page component to keep DRY
+ */
+export default function GHGIAddDataIntro() {
+  return <AddDataIntro />;
 }

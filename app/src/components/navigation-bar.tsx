@@ -220,13 +220,13 @@ export function NavigationBar({
               <Link href={dashboardPath}>
                 <Heading color="base.light" size="md" opacity={0.75} ml={6}>
                   {t("dashboard")}
-              </Heading>
-            </Link>
-            <Link
-              rel="help noopener"
-              href="https://citycatalyst.openearth.org/learning-hub"
-            >
-              <Heading
+                </Heading>
+              </Link>
+              <Link
+                rel="help noopener"
+                href="https://citycatalyst.openearth.org/learning-hub"
+              >
+                <Heading
                   color="base.light"
                   size="md"
                   opacity={0.75}
@@ -508,6 +508,7 @@ export function NavigationBar({
             <JNDrawer
               lng={lng}
               currentInventoryId={currentInventoryId as string}
+              organizationId={organization?.organizationId as string}
               isOpen={isDrawerOpen}
               onClose={() => setIsDrawerOpen(false)}
               onOpenChange={({ open }) => setIsDrawerOpen(open)}

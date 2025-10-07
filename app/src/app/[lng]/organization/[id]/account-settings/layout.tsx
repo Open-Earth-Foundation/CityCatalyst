@@ -7,7 +7,11 @@ import { Box } from "@chakra-ui/react";
 import { useGetOrganizationQuery } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useEffect } from "react";
-import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import {
+  useOrganizationContext,
+  hasOrganizationChanged,
+  normalizeOrganizationState,
+} from "@/hooks/organization-context-provider/use-organizational-context";
 import { useTheme } from "next-themes";
 
 export default function OrganizationSettingsLayout(props: {
@@ -26,20 +30,16 @@ export default function OrganizationSettingsLayout(props: {
 
   useEffect(() => {
     if (orgData) {
-      const logoUrl = orgData?.logoUrl ?? null;
-      const active = orgData?.active ?? true;
+      const newOrgState = normalizeOrganizationState(orgData);
 
-      if (
-        organization?.logoUrl !== logoUrl ||
-        organization?.active !== active
-      ) {
-        setOrganization({ logoUrl, active });
+      if (hasOrganizationChanged(organization, newOrgState)) {
+        setOrganization(newOrgState);
       }
       setTheme(orgData?.theme?.themeKey ?? "blue_theme");
     } else {
       setTheme("blue_theme");
     }
-  }, [isOrgDataFetching, orgData, setOrganization, setTheme]);
+  }, [isOrgDataFetching, orgData, organization, setOrganization, setTheme]);
 
   if (isOrgDataFetching) {
     return <ProgressLoader />;

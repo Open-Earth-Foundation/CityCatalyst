@@ -25,7 +25,18 @@
   "no-actions-found-title": "Tus principales acciones climáticas están siendo procesadas",
   "no-actions-found-description": "Este proceso puede tomar hasta 15 minutos. Recibirás un email y las verás aquí cuando esté listo",
   "generate-climate-actions-widget-description": "Puedes crear planes de implementación para cada una de las acciones seleccionadas. Siéntete libre de explorar la lista completa de acciones a continuación y elegir cuáles quieres mostrar aquí.",
+  "action-plan": "Plan de acción",
   "download-action-plan": "descargar",
+  "additional-info": "Información adicional",
+  "action-type-label": "Tipo de acción",
+  "actions-of": {
+    "mitigation": "Acciones de mitigación",
+    "adaptation": "Acciones de adaptación"
+  },
+  "action-type": {
+    "mitigation": "Mitigación",
+    "adaptation": "Adaptación"
+  },
   "top-pick-action-title": "mejor opción",
   "integrate-renewables-into-municipal-water-systems": "integrar energías renovables en los sistemas de agua municipales",
   "reduction-potential": "Potencial de reducción",
@@ -118,5 +129,12 @@
   "plan-generation-started-description": "Su plan de acción se está generando. Recibirá una notificación por email cuando esté listo.",
   "plan-generation-failed": "Falló la Generación",
   "plan-generation-failed-description": "Falló al iniciar la generación del plan. Por favor, inténtelo de nuevo.",
-  "exit-selection": "Salir de la selección"
+  "exit-selection": "Salir de la selección",
+  "download-csv": "CSV",
+  "export-as-csv": "Exportar como CSV",
+  "unknown": "Desconocido",
+  "reprioritization-started": "Inicio de Reasignación de Prioridades",
+  "reprioritization-started-description": "Se están re-priorizando tus acciones climáticas con los datos más recientes. Recibirás un correo electrónico cuando esté completo.",
+  "reprioritization-failed": "Fallo en la Reasignación de Prioridades",
+  "reprioritization-failed-description": "No se pudo iniciar la repriorización. Por favor, inténtalo de nuevo."
 }

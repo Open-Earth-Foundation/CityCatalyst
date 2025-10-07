@@ -2,6 +2,7 @@
 Pytest configuration and shared fixtures.
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -16,6 +17,10 @@ if str(app_dir) not in sys.path:
     sys.path.insert(0, str(app_dir))
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
+
+# Provide dummy OPENAI_API_KEY for tests if missing or empty (CI may set empty string)
+if not os.getenv("OPENAI_API_KEY"):
+    os.environ["OPENAI_API_KEY"] = "sk-test"
 
 # Import the FastAPI app from main (unqualified), matching production layout
 import main  # type: ignore

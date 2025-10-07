@@ -20,25 +20,6 @@
  *         description: Authorization not found.
  *       500:
  *         description: OAuth not enabled.
- *   delete:
- *     tags:
- *       - User Clients
- *     summary: Revoke OAuth client authorization for current user
- *     parameters:
- *       - in: path
- *         name: client
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       204:
- *         description: Authorization revoked.
- *       401:
- *         description: Not signed in.
- *       404:
- *         description: Authorization not found.
- *       500:
- *         description: OAuth not enabled.
  */
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
@@ -115,6 +96,29 @@ export const GET = apiHandler(async (_req, { params, session }) => {
   return NextResponse.json({ data });
 });
 
+/**
+ * @swagger
+ * /api/v0/user/clients/{client}:
+ *   delete:
+ *     tags:
+ *       - User Clients
+ *     summary: Revoke OAuth client authorization for current user
+ *     parameters:
+ *       - in: path
+ *         name: client
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Authorization revoked.
+ *       401:
+ *         description: Not signed in.
+ *       404:
+ *         description: Authorization not found.
+ *       500:
+ *         description: OAuth not enabled.
+ */
 export const DELETE = apiHandler(async (_req, { params, session }) => {
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
     throw createHttpError.InternalServerError("OAuth 2.0 not enabled");

@@ -8,6 +8,7 @@ import logging
 from utils.build_city_data import build_city_data
 from services.get_context import get_context
 from services.get_actions import get_actions
+from services.get_ccra import get_ccra
 
 from plan_creator_bundle.plan_creator.models import (
     PlanRequest,
@@ -23,6 +24,8 @@ from plan_creator_bundle.plan_creator.tasks import (
     _execute_plan_translation,
 )
 from plan_creator_bundle.plan_creator.task_storage import task_storage
+
+from prioritizer.models import PrioritizationType
 
 logger = logging.getLogger(__name__)
 
@@ -87,26 +90,10 @@ async def start_plan_creation(request: Request, req: PlanRequest):
     requestCityData["ippuEmissions"] = req.cityData.cityEmissionsData.ippuEmissions
     requestCityData["afoluEmissions"] = req.cityData.cityEmissionsData.afoluEmissions
 
-    # 3. Fetch general city context data from global API
-    cityContext = get_context(requestCityData["locode"])
-    if not cityContext:
-        logger.error(
-            f"Task {task_uuid}: No city context data found from global API.",
-            exc_info=True,
-        )
-        raise HTTPException(
-            status_code=404, detail="No city context data found from global API."
-        )
-
-    # 4. Combine city context and city data
-    cityData = build_city_data(cityContext, requestCityData)
-
-    # 5. Fetch actions from API and filter by actionId
+    # 3. Fetch actions from API and filter by actionId and extract action type
     actions = get_actions()
     if not actions:
-        logger.error(
-            f"Task {task_uuid}: No actions data found from global API.", exc_info=True
-        )
+        logger.error(f"Task {task_uuid}: No actions data found from global API.")
         raise HTTPException(
             status_code=404, detail="No actions data found from global API."
         )
@@ -118,22 +105,60 @@ async def start_plan_creation(request: Request, req: PlanRequest):
             break
     if not action:
         logger.error(
-            f"Task {task_uuid}: Action not found within retrieved actions from global API.",
-            exc_info=True,
+            f"Task {task_uuid}: Action not found within retrieved actions from global API."
         )
         raise HTTPException(
             status_code=404,
             detail="Action not found within retrieved actions from global API.",
         )
 
-    # 6. Build dictionary with data for background task
+    # Extract first action type if it's a list, otherwise set to None
+    action_type = (
+        action["ActionType"][0]
+        if isinstance(action["ActionType"], list) and action["ActionType"]
+        else None
+    )
+
+    if not action_type:
+        logger.warning(
+            f"Task {task_uuid}: Action type not found within retrieved actions from global API."
+        )
+        logger.warning(f"Continuing with no specific action type from global API.")
+
+    # 4. Fetch general city context data from global API
+    # Initialize city context and CCRA as None
+    cityContext = None
+    cityCCRA = None
+
+    # Check if action type is mitigation or if action type is not provided execute for both mitigation and adaptation
+    if action_type == PrioritizationType.MITIGATION.value or action_type is None:
+        cityContext = get_context(requestCityData["locode"])
+        if not cityContext:
+            logger.warning(
+                f"Task {task_uuid}: No city context data found from global API."
+            )
+            logger.warning(
+                f"Continuing with no specific city context data from global API."
+            )
+
+    # Check if action type is adaptation or if action type is not provided execute for both mitigation and adaptation
+    if action_type == PrioritizationType.ADAPTATION.value or action_type is None:
+        cityCCRA = get_ccra(requestCityData["locode"], "current")
+        if not cityCCRA:
+            logger.warning(f"Task {task_uuid}: No CCRA data found from CCRA API.")
+            logger.warning(f"Continuing with no specific CCRA data from global API.")
+
+    # 4. Build city data, if no city context or CCRA data is provided, the city data will be built with the request data only.
+    cityData = build_city_data(requestCityData, cityContext, cityCCRA)
+
+    # 5. Build dictionary with data for background task
     background_task_input = {
         "countryCode": req.countryCode,
         "cityData": cityData,
         "action": action,
         "language": req.language,
     }
-    # 7. Start background thread for processing
+    # 6. Start background thread for processing
     try:
         thread = threading.Thread(
             target=_execute_plan_creation,
@@ -225,9 +250,7 @@ async def get_plan(request: Request, task_uuid: str):
 
     task_info = task_storage[task_uuid]
     if task_info["status"] == "failed":
-        logger.error(
-            f"Task {task_uuid}: Task failed: {task_info.get('error')}", exc_info=True
-        )
+        logger.error(f"Task {task_uuid}: Task failed: {task_info.get('error')}")
         raise HTTPException(
             status_code=500,
             detail=f"Task {task_uuid} failed: {task_info.get('error', 'Unknown error')}",

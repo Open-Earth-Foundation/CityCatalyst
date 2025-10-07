@@ -4,8 +4,8 @@
  *   get:
  *     tags:
  *       - Inventory Results
- *     summary: Get an emissions forecast derived from the inventory.
- *     description: Returns a forecast model output for the given inventory. Requires a signed‑in user with access to the inventory. Response is wrapped in { data } (model-dependent shape).
+ *     summary: Get emissions forecast with confidence metrics for an inventory.
+ *     description: Generates and returns emissions forecast data for the specified inventory using advanced forecasting models. Includes yearly predictions with confidence levels and methodology information. Requires a signed‑in user with read access to the inventory. Response is wrapped in '{' data '}'.
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -13,15 +13,46 @@
  *         schema:
  *           type: string
  *           format: uuid
+ *         description: Inventory ID for which to generate emissions forecast
  *     responses:
  *       200:
- *         description: Forecast wrapped in data.
+ *         description: Emissions forecast data wrapped in data object.
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 data: { type: object, additionalProperties: true }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     forecast:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           year:
+ *                             type: integer
+ *                             description: Forecast year
+ *                           emissions:
+ *                             type: number
+ *                             description: Predicted CO2 equivalent emissions for the year
+ *                           confidence:
+ *                             type: number
+ *                             minimum: 0
+ *                             maximum: 1
+ *                             description: Confidence level of the forecast (0-1, where 1 is highest confidence)
+ *                     methodology:
+ *                       type: string
+ *                       description: Forecasting methodology used
+ *                     lastUpdated:
+ *                       type: string
+ *                       format: date-time
+ *                       description: Timestamp of when forecast was generated
+ *                   description: Emissions forecast data with methodology and confidence metrics
+ *       401:
+ *         description: Unauthorized - user lacks access to the inventory.
+ *       404:
+ *         description: Inventory not found.
  */
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";

@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { EmissionsForecastChart } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/EmissionsForecastChart";
 import { MdInfoOutline } from "react-icons/md";
-import { TitleMedium } from "@/components/Texts/Title";
+import { TitleMedium } from "@/components/package/Texts/Title";
 
 export const EmissionsForecastCard = ({
   forecast,

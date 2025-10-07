@@ -1,19 +1,21 @@
+import { Organization } from "@/models/Organization";
+import { randomUUID } from "node:crypto";
+import { createOrganizationRequest } from "@/util/validation";
+import { NextResponse } from "next/server";
+import UserService from "@/backend/UserService";
+import { apiHandler } from "@/util/api";
+import { db } from "@/models";
+import {
+  CustomOrganizationError,
+  OrganizationErrorCodes,
+} from "@/lib/custom-errors/organization-error";
+import { User } from "@/models/User";
+import { OrganizationAdmin } from "@/models/OrganizationAdmin";
+import { Op } from "sequelize";
+
 /**
  * @swagger
  * /api/v0/organizations:
- *   get:
- *     tags:
- *       - Organizations
- *     summary: List organizations with projects and pending admin invites (admin only).
- *     description: Returns all organizations including selected project fields and pending org_admin invites. Requires an admin session; non‑admins receive 401/403 via middleware handlers. Response is a JSON array (not wrapped).
- *     responses:
- *       200:
- *         description: Array of organizations.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items: { type: object, additionalProperties: true }
  *   post:
  *     tags:
  *       - Organizations
@@ -39,7 +41,18 @@
  *           application/json:
  *             schema:
  *               type: object
- *               additionalProperties: true
+ *               properties:
+ *                 organizationId:
+ *                   type: string
+ *                   format: uuid
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                   nullable: true
+ *                 created:
+ *                   type: string
+ *                   format: date-time
  *       409:
  *         description: Organization name already exists.
  *         content:
@@ -50,18 +63,6 @@
  *                 error:
  *                   type: string
  */
-import { Organization } from "@/models/Organization";
-import { randomUUID } from "node:crypto";
-import { createOrganizationRequest } from "@/util/validation";
-import { NextResponse } from "next/server";
-import UserService from "@/backend/UserService";
-import { apiHandler } from "@/util/api";
-import { db } from "@/models";
-import { CustomOrganizationError, OrganizationErrorCodes } from "@/lib/custom-errors/organization-error";
-import { User } from "@/models/User";
-import { OrganizationAdmin } from "@/models/OrganizationAdmin";
-import { Op } from "sequelize";
-
 export const POST = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
   const orgData = createOrganizationRequest.parse(await req.json());
@@ -75,7 +76,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
     throw new CustomOrganizationError({
       errorKey: OrganizationErrorCodes.NAME_ALREADY_EXISTS,
       organizationName: orgData.name,
-      message: "organization-name-already-exists"
+      message: "organization-name-already-exists",
     });
   }
 
@@ -96,7 +97,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
     throw new CustomOrganizationError({
       errorKey: OrganizationErrorCodes.CREATION_FAILED,
       organizationName: orgData.name,
-      message: "user-already-org-admin"
+      message: "user-already-org-admin",
     });
   }
 
@@ -107,7 +108,36 @@ export const POST = apiHandler(async (req, { params, session }) => {
   });
   return NextResponse.json(newOrg, { status: 201 });
 });
-
+/**
+ * @swagger
+ * /api/v0/organizations:
+ *   get:
+ *     tags:
+ *       - Organizations
+ *     summary: List organizations with projects and pending admin invites (admin only).
+ *     description: Returns all organizations including selected project fields and pending org_admin invites. Requires an admin session; non‑admins receive 401/403 via middleware handlers. Response is a JSON array (not wrapped).
+ *     responses:
+ *       200:
+ *         description: Array of organizations.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   organizationId:
+ *                     type: string
+ *                     format: uuid
+ *                   name:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                     nullable: true
+ *                   created:
+ *                     type: string
+ *                     format: date-time
+ */
 export const GET = apiHandler(async (_req, { params, session }) => {
   UserService.validateIsAdmin(session);
 

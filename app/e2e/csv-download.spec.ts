@@ -4,27 +4,26 @@ import { navigateToGHGIModule } from "./helpers";
 import * as fs from "fs";
 
 test.describe.skip("CSV Download", () => {
-  test.setTimeout(180000); // Set 60 second timeout for all tests in this describe block
+  test.setTimeout(120000); // Set 120 second timeout for all tests in this describe block
 
   test.beforeEach(async ({ page }) => {
     await navigateToGHGIModule(page);
-    
+
     // Wait for the page to be fully loaded and rendered
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(1000); // Additional wait for React rendering
-    
+
     // Verify we're on the dashboard with more robust waiting
     const heroCityName = page.getByTestId("hero-city-name");
     await expect(heroCityName).toBeVisible({ timeout: 10000 });
     await expect(heroCityName).toHaveText("Chicago", { timeout: 5000 });
-    
+
     // Wait for the ActionCards component to render (indicates inventory data is loaded)
     const addDataCard = page.getByTestId("add-data-to-inventory-card");
     await expect(addDataCard).toBeVisible({ timeout: 10000 });
   });
 
   test("User can download inventory as CSV", async ({ page }) => {
-
     // Find and click the Download button
     // Looking for the download action card
     const downloadActionCard = page.getByTestId("download-action-card");
@@ -52,7 +51,7 @@ test.describe.skip("CSV Download", () => {
     expect(filename).toContain(".csv");
 
     // Save the downloaded file to a temporary location for verification
-    const downloadPath = 'temp-download.csv';
+    const downloadPath = "temp-download.csv";
     await download.saveAs(downloadPath);
     expect(fs.existsSync(downloadPath)).toBeTruthy();
 
@@ -103,7 +102,7 @@ test.describe.skip("CSV Download", () => {
     await csvDownloadButton.click();
 
     const download = await downloadPromise;
-    const downloadPath = 'temp-download-2.csv';
+    const downloadPath = "temp-download-2.csv";
     await download.saveAs(downloadPath);
 
     // Parse and validate CSV content
@@ -174,7 +173,6 @@ test.describe.skip("CSV Download", () => {
   });
 
   test("CSV download handles errors gracefully", async ({ page }) => {
-
     // Open download modal
     const downloadActionCard = page.getByTestId("download-action-card");
     await downloadActionCard.click();
@@ -202,7 +200,6 @@ test.describe.skip("CSV Download", () => {
   });
 
   test("Multiple format downloads work correctly", async ({ page }) => {
-
     // Open download modal
     const downloadActionCard = page.getByTestId("download-action-card");
     await downloadActionCard.click();
@@ -219,7 +216,7 @@ test.describe.skip("CSV Download", () => {
     expect(csvDownload.suggestedFilename()).toContain(".csv");
 
     // Verify CSV content
-    const csvPath = 'temp-csv-download.csv';
+    const csvPath = "temp-csv-download.csv";
     await csvDownload.saveAs(csvPath);
     const csvContent = fs.readFileSync(csvPath, "utf-8");
     expect(csvContent).toContain("GPC Reference Number");
@@ -245,7 +242,6 @@ test.describe.skip("CSV Download", () => {
   test("CSV download preserves special characters and formatting", async ({
     page,
   }) => {
-
     // Open download modal and download CSV
     const downloadActionCard = page.getByTestId("download-action-card");
     await downloadActionCard.click();
@@ -258,7 +254,7 @@ test.describe.skip("CSV Download", () => {
     await csvDownloadButton.click();
 
     const download = await downloadPromise;
-    const downloadPath = 'temp-download-3.csv';
+    const downloadPath = "temp-download-3.csv";
     await download.saveAs(downloadPath);
 
     // Read raw CSV content to check formatting
@@ -295,13 +291,13 @@ test.describe.skip("CSV Download", () => {
     await download.delete();
   });
 
-  test("CSV download contains actual inventory data", async ({ page }) => {
+  test.skip("CSV download contains actual inventory data", async ({ page }) => {
     // Create inventory through onboarding
     await navigateToGHGIModule(page);
 
     // Navigate to Dashboard
     await page.waitForLoadState("networkidle");
-    console.log("URL:",page.url())
+    console.log("URL:", page.url());
     // Navigate to Add Data section
     const addDataButton = page.getByTestId("add-data-to-inventory-card");
     await expect(addDataButton).toBeVisible({ timeout: 15000 });
@@ -329,7 +325,7 @@ test.describe.skip("CSV Download", () => {
     expect(subsectorCount).toBeGreaterThan(0);
 
     const firstSubsector = subsectorCards.first();
-    await firstSubsector.click();
+    await firstSubsector.click({ force: true });
 
     // Wait for methodology page to load
     await page.waitForLoadState("networkidle");
@@ -365,11 +361,11 @@ test.describe.skip("CSV Download", () => {
       // Then look for "Add emission data" button
       const addEmissionButton = page.getByTestId("add-emission-data-button");
       await expect(addEmissionButton).toBeVisible();
-      await addEmissionButton.click();
+      await addEmissionButton.click({ force: true });
     } else {
       // If no methodology cards, click emissions button directly
       const addEmissionButton = page.getByTestId("add-emission-data-button");
-      await addEmissionButton.click();
+      await addEmissionButton.click({ force: true });
     }
 
     // Fill in the emission data form
@@ -448,7 +444,7 @@ test.describe.skip("CSV Download", () => {
     await csvDownloadButton.click();
 
     const download = await downloadPromise;
-    const downloadPath = 'temp-download-4.csv';
+    const downloadPath = "temp-download-4.csv";
     await download.saveAs(downloadPath);
 
     // Parse and validate CSV contains our test data

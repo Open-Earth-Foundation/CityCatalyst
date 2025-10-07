@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { MdInfoOutline } from "react-icons/md";
 import type { TFunction } from "i18next";
-import { BodyLarge, BodyMedium } from "@/components/Texts/Body";
+import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
 import { Field } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 

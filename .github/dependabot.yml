@@ -20,3 +20,8 @@ updates:
     directory: "/hiap"
     schedule:
       interval: "weekly"
+  # ── Climate Advisor (pip)
+  - package-ecosystem: "pip"
+    directory: "/climate-advisor"
+    schedule:
+      interval: "weekly"

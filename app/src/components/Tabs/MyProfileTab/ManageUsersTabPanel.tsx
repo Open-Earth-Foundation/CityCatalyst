@@ -14,7 +14,7 @@ import { api } from "@/services/api";
 import { GetUserCityInvitesResponse } from "@/util/types";
 import ManageUsersTable from "./ManageUsersTable";
 import { MdSearch } from "react-icons/md";
-import { TitleMedium } from "@/components/Texts/Title";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import { AddCollaboratorButtonSmall } from "./AddCollaboratorButtonSmall";
 import { useTranslation } from "@/i18n/client";
 import { InputGroup } from "@/components/ui/input-group";

@@ -38,9 +38,11 @@ export const hasOrganizationChanged = (
   next: Partial<OrganizationState>,
 ): boolean => {
   if (!prev) return true;
-  return (Object.keys(next) as Array<keyof OrganizationState>).some(
-    (key) => prev[key] !== next[key],
-  );
+  const allKeys = new Set([
+    ...Object.keys(prev || {}),
+    ...Object.keys(next || {}),
+  ] as Array<keyof OrganizationState>);
+  return Array.from(allKeys).some((key) => prev[key] !== next[key]);
 };
 
 type OrganizationContextType = {

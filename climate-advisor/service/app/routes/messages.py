@@ -14,11 +14,14 @@ from ..models.requests import MessageCreateRequest
 from ..services.message_service import MessageService
 from ..services.openrouter_client import OpenRouterClient
 from ..services.thread_service import ThreadService
+from ..tools import ClimateVectorSearchTool
 from ..utils.sse import format_sse
 
 
 router = APIRouter()
 
+
+climate_vector_tool = ClimateVectorSearchTool()
 
 async def _stream_openrouter(
     payload: MessageCreateRequest,
@@ -27,6 +30,8 @@ async def _stream_openrouter(
     user_id: str,
     session_factory: Optional[async_sessionmaker[AsyncSession]],
     history_warning: Optional[str] = None,
+    tool_context: Optional[str] = None,
+    tool_invocations: Optional[List[dict]] = None,
 ) -> AsyncIterator[bytes]:
     req_id = get_request_id()
     settings = get_settings()
@@ -40,10 +45,10 @@ async def _stream_openrouter(
     # TODO: Add inventory context injection when available
     system_prompt = settings.llm.prompts.get_prompt("default")
 
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": payload.content},
-    ]
+    messages = [{"role": "system", "content": system_prompt}]
+    if tool_context:
+        messages.append({"role": "system", "content": tool_context})
+    messages.append({"role": "user", "content": payload.content})
 
     idx = 0
     assistant_chunks: List[str] = []
@@ -80,6 +85,7 @@ async def _stream_openrouter(
                             thread_id=thread.thread_id,
                             user_id=user_id,
                             text=assistant_content,
+                            tools_used=tool_invocations,
                         )
                         await thread_service.touch_thread(thread)
                         await session.commit()
@@ -93,14 +99,14 @@ async def _stream_openrouter(
             logging.warning("Skipping assistant message persistence because database is unavailable")
 
         yield format_sse(
-            {"ok": True, "request_id": req_id, "history_saved": history_saved, "thread_id": str(thread_id)},
+            {"ok": True, "request_id": req_id, "history_saved": history_saved, "thread_id": str(thread_id), "tools_used": tool_invocations},
             event="done",
         ).encode("utf-8")
     except Exception:
         logging.exception("Unhandled exception in _stream_openrouter")
         yield format_sse({"message": "An internal error has occurred."}, event="error").encode("utf-8")
         yield format_sse(
-            {"ok": False, "request_id": req_id, "history_saved": history_saved, "thread_id": str(thread_id)},
+            {"ok": False, "request_id": req_id, "history_saved": history_saved, "thread_id": str(thread_id), "tools_used": tool_invocations},
             event="done",
         ).encode("utf-8")
     finally:
@@ -183,6 +189,26 @@ async def post_message(
     if assistant_session_factory is None and history_warning is None:
         history_warning = base_warning
 
+    tool_context: Optional[str] = None
+    tool_invocations: Optional[List[dict]] = None
+
+    try:
+        tool_result = await climate_vector_tool.run(
+            payload.content,
+            session=session if session is not None else None,
+        )
+    except Exception:
+        logging.exception("Climate vector search tool invocation failed")
+        tool_result = None
+    else:
+        if tool_result is not None:
+            if tool_result.invocation is not None:
+                tool_invocations = [tool_result.invocation.to_dict()]
+                if tool_result.invocation.status == "error":
+                    logging.warning("Climate vector search tool error: %s", tool_result.invocation.error)
+            if tool_result.prompt_context:
+                tool_context = tool_result.prompt_context
+
     headers = {
         "Cache-Control": "no-cache",
         "Connection": "keep-alive",
@@ -195,5 +221,7 @@ async def post_message(
         user_id=resolved_user_id,
         session_factory=assistant_session_factory,
         history_warning=history_warning,
+        tool_context=tool_context,
+        tool_invocations=tool_invocations,
     )
     return StreamingResponse(stream, media_type="text/event-stream", headers=headers)

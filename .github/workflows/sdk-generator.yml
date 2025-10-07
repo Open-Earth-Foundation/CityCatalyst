@@ -61,15 +61,19 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Set up npm for SDK packaging
-        working-directory: typescript-fetch-client
-        run: npm install
-
-      - name: Configure npm package metadata
+      - name: Initialise package
         working-directory: typescript-fetch-client
         run: |
-          npm pkg set name='@oef/citycatalyst'
-          npm pkg set publishConfig.access='public'
+          if [ ! -f package.json ]; then
+            npm init --yes \
+              --scope=@oef \
+              --init-module=citycatalyst \
+              --init-version=0.0.1
+          fi
+
+      - name: Install npm dependencies
+        working-directory: typescript-fetch-client
+        run: npm install
 
       - name: Pack SDK for NPM
         working-directory: typescript-fetch-client

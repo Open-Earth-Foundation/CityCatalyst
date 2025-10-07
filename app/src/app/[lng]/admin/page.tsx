@@ -227,7 +227,7 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
       </Heading>
       {/* Admin Tabs */}
       <Box>
-        <Tabs.Root defaultValue="organizations" variant="line">
+        <Tabs.Root defaultValue="bulk-actions" variant="line">
           <Tabs.List bg="bg.muted" border="none" rounded="l3" p="1">
             <TabTrigger title="organizations" />
             <TabTrigger title="bulk-actions" />
@@ -499,7 +499,7 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
             </Box>
             {/* Bulk actions tabs */}
             <Tabs.Root
-              defaultValue="bulk-inventory-creation"
+              defaultValue="bulk-hiap-prioritization"
               orientation="vertical"
               mt="48px"
               variant="subtle"

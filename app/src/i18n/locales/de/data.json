@@ -1286,5 +1286,7 @@
   "fuel-type-crude-petroleum": "Rohöl",
   "fuel-type-biodiesel": "Biodiesel",
   "fuel-type-fuel-oil": "Heizöl",
-  "fuel-type-not-applicable": "Nicht zutreffend"
+  "fuel-type-not-applicable": "Nicht zutreffend",
+  "on-road-transportation-fuel-type": "Kraftstoffart",
+  "water-transportation-outside-fuel-type": "Kraftstoffart"
 }

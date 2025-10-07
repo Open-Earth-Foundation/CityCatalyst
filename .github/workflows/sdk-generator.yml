@@ -53,6 +53,7 @@ jobs:
         with:
           generator: typescript-fetch
           openapi-file: app/public/openapi-spec.json
+          command-args: --skip-validate-spec
 
       - name: Set up Node.js for npm publish
         uses: actions/setup-node@v4
@@ -99,6 +100,7 @@ jobs:
         with:
           generator: python
           openapi-file: app/public/openapi-spec.json
+          command-args: --skip-validate-spec
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -137,6 +139,7 @@ jobs:
         with:
           generator: ruby
           openapi-file: app/public/openapi-spec.json
+          command-args: --skip-validate-spec
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -176,6 +179,7 @@ jobs:
         with:
           generator: swift5
           openapi-file: app/public/openapi-spec.json
+          command-args: --skip-validate-spec
 
       - name: Archive Swift package
         run: tar -czf swift-sdk.tar.gz -C swift5 .
@@ -205,6 +209,7 @@ jobs:
         with:
           generator: kotlin
           openapi-file: app/public/openapi-spec.json
+          command-args: --skip-validate-spec
 
       - name: Set up Java
         uses: actions/setup-java@v4

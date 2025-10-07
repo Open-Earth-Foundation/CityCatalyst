@@ -63,7 +63,7 @@ const ModalPublish = ({
           // Copy public URL to clipboard when publishing
           const publicUrl = `${window.location.protocol}//${window.location.host}/${i18next.language}/public/${inventoryId}`;
           copyToClipboard(publicUrl);
-          
+
           // Show success toast with clipboard message
           toaster.success({
             title: t("publish-success-title"),
@@ -85,8 +85,14 @@ const ModalPublish = ({
       } else if (result.error) {
         // Show error toast for API errors
         toaster.error({
-          title: t(isPublishing ? "publish-error-title" : "unpublish-error-title"),
-          description: t(isPublishing ? "publish-error-description" : "unpublish-error-description"),
+          title: t(
+            isPublishing ? "publish-error-title" : "unpublish-error-title",
+          ),
+          description: t(
+            isPublishing
+              ? "publish-error-description"
+              : "unpublish-error-description",
+          ),
         });
       }
 
@@ -94,8 +100,14 @@ const ModalPublish = ({
     } catch (error) {
       // Show error toast for unexpected errors
       toaster.error({
-        title: t(isPublishing ? "publish-error-title" : "unpublish-error-title"),
-        description: t(isPublishing ? "publish-error-description" : "unpublish-error-description"),
+        title: t(
+          isPublishing ? "publish-error-title" : "unpublish-error-title",
+        ),
+        description: t(
+          isPublishing
+            ? "publish-error-description"
+            : "unpublish-error-description",
+        ),
       });
       throw error;
     }
@@ -107,7 +119,7 @@ const ModalPublish = ({
       onOpenChange={(e) => setModalOpen(e.open)}
       onInteractOutside={onPublishClose}
     >
-      <DialogContent maxW="container.md">
+      <DialogContent minW="fit-content">
         <DialogHeader>
           <HStack>
             <Image

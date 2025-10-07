@@ -3,7 +3,8 @@
 /** @type {import("sequelize-cli").Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.bulkInsert("Module", [
+    // Disabled, now handled by Module seeder
+    /* await queryInterface.bulkInsert("Module", [
       {
         id: '3d1a4b2c-8e7f-4d5a-9c6b-1f2e3d4c5b6a',
         type: 'OEF',
@@ -34,12 +35,13 @@ module.exports = {
         created: new Date(),
         last_updated: new Date()
       }
-    ]);
+    ]); */
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete("Module", {
-      id: '3d1a4b2c-8e7f-4d5a-9c6b-1f2e3d4c5b6a'
-    });
+    /* await queryInterface.bulkDelete("Module", {
+      id: "3d1a4b2c-8e7f-4d5a-9c6b-1f2e3d4c5b6a",
+    }); */
   },
 };
+

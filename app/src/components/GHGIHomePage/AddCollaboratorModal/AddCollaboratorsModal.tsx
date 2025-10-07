@@ -179,6 +179,7 @@ const AddCollaboratorsDialog = ({
         num_invitees: emails.length,
         organization_id: organizationId,
         role: "admin",
+        invited_emails: emails,
       });
 
       showSuccessToast();

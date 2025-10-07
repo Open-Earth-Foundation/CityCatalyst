@@ -1,6 +1,6 @@
 import { Box, Flex, Icon, Text, Link } from "@chakra-ui/react";
 import { ReactElement } from "react";
-import { BodyLarge } from "../package";
+import { BodyLarge } from "@/components/package/Texts/Body";
 
 interface DialogItemProps {
   icon: ReactElement;

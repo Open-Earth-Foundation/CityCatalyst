@@ -91,7 +91,7 @@ function extractEmissionsForYear(
   return { emissions: yearData.total_emissions, yearUsed: yearData.year };
 }
 
-async function updateCountryEmissions(countryCode?: string) {
+async function updateBrazilCountryEmissions() {
   const projectDir = process.cwd();
   env.loadEnvConfig(projectDir);
 
@@ -99,62 +99,36 @@ async function updateCountryEmissions(countryCode?: string) {
     await db.initialize();
   }
 
-  // Get country code from command line argument or default to BR
-  const targetCountry = countryCode || process.argv[2] || "BR";
-
-  if (!targetCountry || targetCountry.length < 2) {
-    logger.error(
-      "Invalid country code. Please provide a valid 2-letter country code (e.g., BR, US, DE)",
-    );
-    await db.sequelize?.close();
-    process.exit(1);
-  }
-
   try {
-    logger.info(
-      { countryCode: targetCountry },
-      "Starting country emissions update script",
-    );
+    logger.info("Starting Brazil country emissions update script");
 
-    // Find all cities for the specified country (locode starts with country code + space)
+    // Find all Brazilian cities (locode starts with "BR ")
     const cities = await db.models.City.findAll({
       where: {
         locode: {
-          [Op.like]: `${targetCountry} %`,
+          [Op.like]: "BR %",
         },
       },
     });
 
-    logger.info(
-      { count: cities.length, countryCode: targetCountry },
-      "Found cities for country",
-    );
+    logger.info({ count: cities.length }, "Found Brazilian cities");
 
     if (cities.length === 0) {
-      logger.info(
-        { countryCode: targetCountry },
-        "No cities found for country. Exiting.",
-      );
+      logger.info("No Brazilian cities found. Exiting.");
       await db.sequelize?.close();
       return;
     }
 
-    // Fetch country emissions data once (all cities in same country share the same data)
-    const countryData = await fetchCountryEmissions(targetCountry);
+    // Fetch Brazil country emissions data once (all Brazilian cities share the same data)
+    const countryData = await fetchCountryEmissions("BR");
 
     if (!countryData) {
-      logger.error(
-        { countryCode: targetCountry },
-        "Failed to fetch country emissions data. Exiting.",
-      );
+      logger.error("Failed to fetch Brazil country emissions data. Exiting.");
       await db.sequelize?.close();
       return;
     }
 
-    logger.info(
-      { countryCode: targetCountry },
-      "Successfully fetched country emissions data",
-    );
+    logger.info("Successfully fetched Brazil country emissions data");
 
     let totalInventories = 0;
     let updatedInventories = 0;
@@ -255,18 +229,17 @@ async function updateCountryEmissions(countryCode?: string) {
 
     logger.info(
       {
-        countryCode: targetCountry,
         totalInventories,
         updatedInventories,
         skippedInventories,
         failedInventories,
       },
-      "Country emissions update complete",
+      "Brazil country emissions update complete",
     );
 
     if (updatedInventories > 0) {
       logger.info(
-        `Successfully updated ${updatedInventories} inventories with country emissions data`,
+        `✅ Successfully updated ${updatedInventories} Brazilian city inventories with country emissions data`,
       );
     }
   } catch (error) {
@@ -276,7 +249,7 @@ async function updateCountryEmissions(countryCode?: string) {
   }
 }
 
-updateCountryEmissions().catch((error) => {
+updateBrazilCountryEmissions().catch((error) => {
   logger.error({ error }, "Unhandled error in script");
   process.exit(1);
 });

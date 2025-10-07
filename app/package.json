@@ -153,7 +153,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "k6": "^0.0.0",
     "open-cli": "^8.0.0",
-    "postcss": "8.4.31",
+    "postcss": "8.5.6",
     "prettier": "3.2.5",
     "sequelize-auto": "^0.8.8",
     "sequelize-cli": "^6.6.2",

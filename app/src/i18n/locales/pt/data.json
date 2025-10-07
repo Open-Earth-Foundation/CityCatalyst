@@ -1263,5 +1263,7 @@
   "fuel-type-crude-petroleum": "Petróleo Bruto",
   "fuel-type-biodiesel": "Biodiesel",
   "fuel-type-fuel-oil": "Óleo Combustível",
-  "fuel-type-not-applicable": "Não aplicável"
+  "fuel-type-not-applicable": "Não aplicável",
+  "on-road-transportation-fuel-type": "Tipo de combustível",
+  "water-transportation-outside-fuel-type": "Tipo de combustível"
 }

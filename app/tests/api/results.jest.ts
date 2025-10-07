@@ -1,6 +1,6 @@
 import { db } from "@/models";
 import { randomUUID } from "node:crypto";
-import { GET as getResults } from "@/app/api/v0/inventory/[inventory]/results/route";
+import { GET as getResults } from "@/app/api/v1/inventory/[inventory]/results/route";
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import {
   expectStatusCode,

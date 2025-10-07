@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/user/inventories:
+ * /api/v1/user/inventories:
  *   get:
  *     tags:
  *       - User

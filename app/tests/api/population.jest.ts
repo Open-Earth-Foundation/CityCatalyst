@@ -1,4 +1,4 @@
-import { POST as savePopulations } from "@/app/api/v0/city/[city]/population/route";
+import { POST as savePopulations } from "@/app/api/v1/city/[city]/population/route";
 import { db } from "@/models";
 import {
   expectToBeLooselyEqual,

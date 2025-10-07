@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/city/{city}/modules/ccra/dashboard:
+ * /api/v1/city/{city}/modules/ccra/dashboard:
  *   get:
  *     tags:
  *       - City Modules

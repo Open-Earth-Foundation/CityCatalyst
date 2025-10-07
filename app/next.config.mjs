@@ -18,7 +18,7 @@ function generateOpenAPISpec() {
     console.log = () => {};
 
     const spec = createSwaggerSpec({
-      apiFolder: "src/app/api/v0",
+      apiFolder: "src/app/api/v1",
       definition: {
         openapi: "3.0.0",
         info: {
@@ -87,7 +87,7 @@ const nextConfig = {
     return [
       {
         source: "/.well-known/oauth-authorization-server",
-        destination: "/api/v0/oauth/metadata/",
+        destination: "/api/v1/oauth/metadata/",
       },
       { source: '/api/v0/:path*', destination: '/api/v1/:path*' }
     ];

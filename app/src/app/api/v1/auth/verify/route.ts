@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/auth/verify:
+ * /api/v1/auth/verify:
  *   get:
  *     tags:
  *       - Auth
@@ -79,7 +79,7 @@ export const GET = apiHandler(async (_req, { session }) => {
 
 /**
  * @swagger
- * /api/v0/auth/verify:
+ * /api/v1/auth/verify:
  *   post:
  *     tags:
  *       - Auth

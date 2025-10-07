@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/city/{city}/modules/ghgi/dashboard:
+ * /api/v1/city/{city}/modules/ghgi/dashboard:
  *   get:
  *     tags:
  *       - City Modules

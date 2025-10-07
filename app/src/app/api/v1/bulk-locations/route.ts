@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/bulk-locations:
+ * /api/v1/bulk-locations:
  *   get:
  *     tags:
  *       - Bulk Locations

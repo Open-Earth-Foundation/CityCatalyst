@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/city/{city}/boundary:
+ * /api/v1/city/{city}/boundary:
  *   get:
  *     tags:
  *       - City

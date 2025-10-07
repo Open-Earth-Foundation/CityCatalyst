@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/cdp:
+ * /api/v1/inventory/{inventory}/cdp:
  *   post:
  *     tags:
  *       - Inventory CDP

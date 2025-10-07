@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/assistants/threads/messages:
+ * /api/v1/assistants/threads/messages:
  *   post:
  *     tags:
  *       - Assistants Threads

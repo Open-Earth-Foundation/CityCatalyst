@@ -10,7 +10,7 @@ import {
 import { randomUUID } from "node:crypto";
 import { Organization } from "@/models/Organization";
 import { Project } from "@/models/Project";
-import { PATCH as transferCity } from "@/app/api/v0/city/transfer/route";
+import { PATCH as transferCity } from "@/app/api/v1/city/transfer/route";
 
 const mockUserSession: AppSession = {
   user: { id: testUserID, role: Roles.User },

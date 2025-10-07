@@ -1,12 +1,12 @@
 import {
   GET as listClients,
   POST as addClient,
-} from "@/app/api/v0/client/route";
+} from "@/app/api/v1/client/route";
 
 import {
   GET as getClient,
   DELETE as removeClient,
-} from "@/app/api/v0/client/[client]/route";
+} from "@/app/api/v1/client/[client]/route";
 
 import { db } from "@/models";
 
@@ -134,7 +134,7 @@ describe("OAuth Client API", () => {
     setFeatureFlag(FeatureFlags.OAUTH_ENABLED, oldFeatureFlag);
   });
 
-  describe("GET /api/v0/client", () => {
+  describe("GET /api/v1/client", () => {
     it("should return an array of OAuth2.0 client objects with name and description in different languages", async () => {
       const req = mockRequest();
       const res = await listClients(req, { params: Promise.resolve({}) });
@@ -173,7 +173,7 @@ describe("OAuth Client API", () => {
     });
   });
 
-  describe("POST /api/v0/client", () => {
+  describe("POST /api/v1/client", () => {
     let createdClientId: string;
 
     it("should create a new OAuth2.0 client object", async () => {
@@ -220,7 +220,7 @@ describe("OAuth Client API", () => {
     });
   });
 
-  describe("GET /api/v0/client/[client]", () => {
+  describe("GET /api/v1/client/[client]", () => {
     it("should get the client object", async () => {
       const req = mockRequest();
       const client = testClients[0];
@@ -258,7 +258,7 @@ describe("OAuth Client API", () => {
     });
   });
 
-  describe("DELETE /api/v0/client/[client]", () => {
+  describe("DELETE /api/v1/client/[client]", () => {
     const toDelete: OAuthClientAttributes = {
       clientId: "test-client-to-delete",
       redirectURI: "https://deleteme.example/callback",

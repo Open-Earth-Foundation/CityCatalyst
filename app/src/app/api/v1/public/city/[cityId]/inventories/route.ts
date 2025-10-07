@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/public/city/{cityId}/inventories:
+ * /api/v1/public/city/{cityId}/inventories:
  *   get:
  *     tags:
  *       - Public

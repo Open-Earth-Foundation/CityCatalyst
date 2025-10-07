@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/city/{city}/organization:
+ * /api/v1/city/{city}/organization:
  *   get:
  *     tags:
  *       - City Organization

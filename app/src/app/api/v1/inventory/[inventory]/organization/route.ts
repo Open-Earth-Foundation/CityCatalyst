@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/organization:
+ * /api/v1/inventory/{inventory}/organization:
  *   get:
  *     tags:
  *       - Inventory Organization

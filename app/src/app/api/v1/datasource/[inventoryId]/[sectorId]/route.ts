@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/datasource/{inventoryId}/{sectorId}:
+ * /api/v1/datasource/{inventoryId}/{sectorId}:
  *   get:
  *     tags:
  *       - Data Sources

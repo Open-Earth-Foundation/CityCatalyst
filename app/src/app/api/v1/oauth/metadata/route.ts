@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/oauth/metadata:
+ * /api/v1/oauth/metadata:
  *   get:
  *     tags:
  *       - OAuth
@@ -64,7 +64,7 @@
  *                 value:
  *                   issuer: "https://api.citycatalyst.example"
  *                   authorization_endpoint: "https://api.citycatalyst.example/authorize/"
- *                   token_endpoint: "https://api.citycatalyst.example/api/v0/token/"
+ *                   token_endpoint: "https://api.citycatalyst.example/api/v1/token/"
  *                   scopes_supported: ["read", "write"]
  *                   response_types_supported: ["code"]
  *                   grant_types_supported: ["authorization_code", "refresh_token"]
@@ -134,7 +134,7 @@ export const GET = apiHandler(async (_req) => {
   return NextResponse.json<OAuthMetadata>({
     issuer: origin,
     authorization_endpoint: `${origin}/authorize/`,
-    token_endpoint: `${origin}/api/v0/token/`,
+    token_endpoint: `${origin}/api/v1/token/`,
     scopes_supported: ["read", "write"],
     response_types_supported: ["code"],
     grant_types_supported: ["authorization_code", "refresh_token"],

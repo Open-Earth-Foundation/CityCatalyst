@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/assistants/files/{fileId}:
+ * /api/v1/assistants/files/{fileId}:
  *   get:
  *     tags:
  *       - Assistants Files

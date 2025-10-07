@@ -6,7 +6,7 @@ import { db } from "@/models";
 
 /**
  * @swagger
- * /api/v0/public/project/{projectId}/cities:
+ * /api/v1/public/project/{projectId}/cities:
  *   get:
  *     tags:
  *       - Public

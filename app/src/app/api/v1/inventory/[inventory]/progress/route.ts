@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/progress:
+ * /api/v1/inventory/{inventory}/progress:
  *   get:
  *     tags:
  *       - Inventory Progress

@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/mock:
+ * /api/v1/mock:
  *   get:
  *     tags:
  *       - Mock
@@ -81,7 +81,7 @@ export const GET = apiHandler(async (_req, { session }) => {
 
 /**
  * @swagger
- * /api/v0/mock:
+ * /api/v1/mock:
  *   post:
  *     tags:
  *       - Mock

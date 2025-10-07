@@ -8,7 +8,7 @@ import { randomUUID } from "node:crypto";
 
 /**
  * @swagger
- * /api/v0/city/{city}/user:
+ * /api/v1/city/{city}/user:
  *   post:
  *     tags:
  *       - City Users
@@ -54,7 +54,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
 /**
  * @swagger
- * /api/v0/city/{city}/user:
+ * /api/v1/city/{city}/user:
  *   get:
  *     tags:
  *       - City Users
@@ -97,7 +97,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
 /**
  * @swagger
- * /api/v0/city/{city}/user:
+ * /api/v1/city/{city}/user:
  *   delete:
  *     tags:
  *       - City Users

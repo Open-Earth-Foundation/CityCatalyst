@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/value/subsector/{subsector}:
+ * /api/v1/inventory/{inventory}/value/subsector/{subsector}:
  *   get:
  *     tags:
  *       - Inventory Values
@@ -60,7 +60,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/value/subsector/{subsector}:
+ * /api/v1/inventory/{inventory}/value/subsector/{subsector}:
  *   patch:
  *     tags:
  *       - Inventory Values
@@ -169,7 +169,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/value/subsector/{subsector}:
+ * /api/v1/inventory/{inventory}/value/subsector/{subsector}:
  *   delete:
  *     tags:
  *       - Inventory Values

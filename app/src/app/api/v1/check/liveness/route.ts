@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/check/liveness:
+ * /api/v1/check/liveness:
  *   get:
  *     tags:
  *       - Check

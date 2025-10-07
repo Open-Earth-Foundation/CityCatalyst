@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/check/health:
+ * /api/v1/check/health:
  *   get:
  *     tags:
  *       - Check
@@ -92,4 +92,3 @@ export const GET = apiHandler(async () => {
     );
   }
 });
-

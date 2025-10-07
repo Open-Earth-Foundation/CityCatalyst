@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/results/emissions-forecast:
+ * /api/v1/inventory/{inventory}/results/emissions-forecast:
  *   get:
  *     tags:
  *       - Inventory Results

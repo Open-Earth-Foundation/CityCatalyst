@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/organizations/{organization}/projects:
+ * /api/v1/organizations/{organization}/projects:
  *   post:
  *     tags:
  *       - Organization Projects
@@ -105,7 +105,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
 });
 /**
  * @swagger
- * /api/v0/organizations/{organization}/projects:
+ * /api/v1/organizations/{organization}/projects:
  *   get:
  *     tags:
  *       - Organization Projects

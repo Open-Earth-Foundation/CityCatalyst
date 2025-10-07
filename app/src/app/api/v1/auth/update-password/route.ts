@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/auth/update-password:
+ * /api/v1/auth/update-password:
  *   post:
  *     tags:
  *       - Auth

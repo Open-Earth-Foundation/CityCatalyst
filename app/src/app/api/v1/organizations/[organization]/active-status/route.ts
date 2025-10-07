@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/organizations/{organization}/active-status:
+ * /api/v1/organizations/{organization}/active-status:
  *   patch:
  *     tags:
  *       - Organizations

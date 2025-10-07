@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/admin/all-cities:
+ * /api/v1/admin/all-cities:
  *   get:
  *     tags:
  *       - Admin

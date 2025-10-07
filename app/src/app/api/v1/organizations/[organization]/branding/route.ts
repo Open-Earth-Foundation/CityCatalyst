@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/organizations/{organization}/branding:
+ * /api/v1/organizations/{organization}/branding:
  *   patch:
  *     tags:
  *       - Organizations

@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/city/{city}/years:
+ * /api/v1/city/{city}/years:
  *   get:
  *     tags:
  *       - City

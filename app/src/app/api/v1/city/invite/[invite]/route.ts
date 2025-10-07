@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/city/invite/{invite}:
+ * /api/v1/city/invite/{invite}:
  *   get:
  *     tags:
  *       - City Invites

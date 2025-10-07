@@ -8,7 +8,7 @@ import { Client } from "@/util/types";
 
 /**
  * @swagger
- * /api/v0/client/{client}:
+ * /api/v1/client/{client}:
  *   get:
  *     tags:
  *       - OAuth Clients
@@ -104,7 +104,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 
 /**
  * @swagger
- * /api/v0/client/{client}:
+ * /api/v1/client/{client}:
  *   delete:
  *     tags:
  *       - OAuth Clients

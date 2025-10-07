@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/user/whoami:
+ * /api/v1/user/whoami:
  *   get:
  *     tags:
  *       - User

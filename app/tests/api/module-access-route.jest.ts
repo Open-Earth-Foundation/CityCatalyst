@@ -16,7 +16,7 @@ import {
   createCityWithoutProject,
   TestData,
 } from "../helpers/testDataCreationHelper";
-import { GET } from "@/app/api/v0/city/[city]/modules/[module]/access/route";
+import { GET } from "@/app/api/v1/city/[city]/modules/[module]/access/route";
 import { ModuleAccessService } from "@/backend/ModuleAccessService";
 import { randomUUID } from "crypto";
 import { AppSession, Auth } from "@/lib/auth";

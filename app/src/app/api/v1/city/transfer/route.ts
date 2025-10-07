@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/city/transfer:
+ * /api/v1/city/transfer:
  *   patch:
  *     tags:
  *       - City Transfer

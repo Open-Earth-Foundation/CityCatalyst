@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/assistants/threads/export:
+ * /api/v1/assistants/threads/export:
  *   post:
  *     tags:
  *       - Assistants Threads

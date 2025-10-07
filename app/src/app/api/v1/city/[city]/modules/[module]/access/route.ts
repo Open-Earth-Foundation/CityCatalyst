@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/city/{city}/modules/{module}/access:
+ * /api/v1/city/{city}/modules/{module}/access:
  *   get:
  *     tags:
  *       - City Modules

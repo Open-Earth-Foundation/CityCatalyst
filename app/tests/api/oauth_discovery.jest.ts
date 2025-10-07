@@ -1,4 +1,4 @@
-import { GET as getMetadata } from "@/app/api/v0/oauth/metadata/route";
+import { GET as getMetadata } from "@/app/api/v1/oauth/metadata/route";
 
 import { db } from "@/models";
 

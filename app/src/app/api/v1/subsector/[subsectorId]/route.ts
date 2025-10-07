@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/subsector/{subsectorId}:
+ * /api/v1/subsector/{subsectorId}:
  *   get:
  *     tags:
  *       - Subsector

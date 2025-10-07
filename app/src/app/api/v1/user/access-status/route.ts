@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/user/access-status:
+ * /api/v1/user/access-status:
  *   get:
  *     tags:
  *       - User

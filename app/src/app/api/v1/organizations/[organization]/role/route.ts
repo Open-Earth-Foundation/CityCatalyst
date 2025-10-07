@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/organizations/{organization}/role:
+ * /api/v1/organizations/{organization}/role:
  *   patch:
  *     tags:
  *       - Organizations

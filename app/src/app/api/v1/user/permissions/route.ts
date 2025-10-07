@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/user/permissions:
+ * /api/v1/user/permissions:
  *   get:
  *     tags:
  *       - User

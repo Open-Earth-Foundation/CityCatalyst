@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/city/{city}/population:
+ * /api/v1/city/{city}/population:
  *   get:
  *     tags:
  *       - City Population

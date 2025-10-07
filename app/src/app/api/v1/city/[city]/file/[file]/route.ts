@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/city/{city}/file/{file}:
+ * /api/v1/city/{city}/file/{file}:
  *   get:
  *     tags:
  *       - City Files
@@ -61,7 +61,7 @@ export const GET = apiHandler(async (_req: Request, { session, params }) => {
 
 /**
  * @swagger
- * /api/v0/city/{city}/file/{file}:
+ * /api/v1/city/{city}/file/{file}:
  *   delete:
  *     tags:
  *       - City Files

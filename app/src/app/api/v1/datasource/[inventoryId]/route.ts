@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/datasource/{inventoryId}:
+ * /api/v1/datasource/{inventoryId}:
  *   get:
  *     tags:
  *       - Data Sources
@@ -151,7 +151,7 @@ const applySourcesRequest = z.object({
 
 /**
  * @swagger
- * /api/v0/datasource/{inventoryId}:
+ * /api/v1/datasource/{inventoryId}:
  *   post:
  *     tags:
  *       - Data Sources

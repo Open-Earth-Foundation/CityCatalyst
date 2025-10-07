@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/activity-value/{id}:
+ * /api/v1/inventory/{inventory}/activity-value/{id}:
  *   patch:
  *     tags:
  *       - Inventory Activity
@@ -156,7 +156,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/activity-value/{id}:
+ * /api/v1/inventory/{inventory}/activity-value/{id}:
  *   delete:
  *     tags:
  *       - Inventory Activity
@@ -198,7 +198,7 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
 });
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/activity-value/{id}:
+ * /api/v1/inventory/{inventory}/activity-value/{id}:
  *   get:
  *     tags:
  *       - Inventory Activity

@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/admin/update-inventories:
+ * /api/v1/admin/update-inventories:
  *   post:
  *     tags:
  *       - Admin

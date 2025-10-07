@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/admin/connect-sources:
+ * /api/v1/admin/connect-sources:
  *   post:
  *     tags:
  *       - Admin

@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/emissions-factor:
+ * /api/v1/emissions-factor:
  *   post:
  *     tags:
  *       - Emissions Factors

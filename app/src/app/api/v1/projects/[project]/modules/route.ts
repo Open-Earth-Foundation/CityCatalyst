@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/projects/{project}/modules:
+ * /api/v1/projects/{project}/modules:
  *   get:
  *     tags:
  *       - Project Modules

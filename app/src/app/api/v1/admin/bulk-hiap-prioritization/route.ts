@@ -21,7 +21,7 @@ const bulkPrioritizationSchema = z.object({
 
 /**
  * @swagger
- * /api/v0/admin/bulk-hiap-prioritization:
+ * /api/v1/admin/bulk-hiap-prioritization:
  *   post:
  *     tags:
  *       - Admin

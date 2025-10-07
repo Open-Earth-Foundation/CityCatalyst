@@ -15,7 +15,7 @@ import { Op } from "sequelize";
 
 /**
  * @swagger
- * /api/v0/organizations:
+ * /api/v1/organizations:
  *   post:
  *     tags:
  *       - Organizations
@@ -110,7 +110,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
 });
 /**
  * @swagger
- * /api/v0/organizations:
+ * /api/v1/organizations:
  *   get:
  *     tags:
  *       - Organizations

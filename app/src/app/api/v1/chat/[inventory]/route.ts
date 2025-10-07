@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/chat/{inventory}:
+ * /api/v1/chat/{inventory}:
  *   post:
  *     tags:
  *       - Chat

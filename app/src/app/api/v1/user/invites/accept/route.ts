@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/user/invites/accept:
+ * /api/v1/user/invites/accept:
  *   patch:
  *     tags:
  *       - User Invites

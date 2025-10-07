@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/assistants/threads/{inventory}/retrieve:
+ * /api/v1/assistants/threads/{inventory}/retrieve:
  *   post:
  *     tags:
  *       - Assistants Threads

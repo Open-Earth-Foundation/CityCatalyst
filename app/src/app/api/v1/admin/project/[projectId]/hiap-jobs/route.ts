@@ -35,7 +35,7 @@ const hiapJobsQuerySchema = z.object({
 
 /**
  * @swagger
- * /api/v0/admin/project/{projectId}/hiap-jobs:
+ * /api/v1/admin/project/{projectId}/hiap-jobs:
  *   get:
  *     tags:
  *       - Admin

@@ -1,9 +1,9 @@
-import { GET as listClientAuthz } from "@/app/api/v0/user/clients/route";
+import { GET as listClientAuthz } from "@/app/api/v1/user/clients/route";
 
 import {
   GET as getClientAuthz,
   DELETE as deleteClientAuthz,
-} from "@/app/api/v0/user/clients/[client]/route";
+} from "@/app/api/v1/user/clients/[client]/route";
 
 import { db } from "@/models";
 
@@ -85,7 +85,7 @@ describe("OAuth Client Authz API", () => {
     setFeatureFlag(FeatureFlags.OAUTH_ENABLED, oldFeatureFlag);
   });
 
-  describe("GET /api/v0/user/clients", () => {
+  describe("GET /api/v1/user/clients", () => {
     it("should return an array of client authorization objects", async () => {
       const req = mockRequest();
       const res = await listClientAuthz(req, { params: Promise.resolve({}) });
@@ -113,7 +113,7 @@ describe("OAuth Client Authz API", () => {
     });
   });
 
-  describe("GET /api/v0/user/clients/[client]", () => {
+  describe("GET /api/v1/user/clients/[client]", () => {
     it("should get the client object", async () => {
       const req = mockRequest();
       const clientAuthz = testOAuthClientAuthzs[0];
@@ -149,7 +149,7 @@ describe("OAuth Client Authz API", () => {
     });
   });
 
-  describe("DELETE /api/v0/user/clients/[client]", () => {
+  describe("DELETE /api/v1/user/clients/[client]", () => {
     it("should delete the authorization", async () => {
       const req = mockRequest();
       const res = await deleteClientAuthz(req, {

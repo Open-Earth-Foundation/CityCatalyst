@@ -117,7 +117,7 @@ export const api = createApi({
     "Modules",
     "ActionPlan",
   ],
-  baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
     return {
       getCitiesAndYears: builder.query<CityAndYearsResponse[], void>({

@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/activity-value:
+ * /api/v1/inventory/{inventory}/activity-value:
  *   post:
  *     tags:
  *       - Inventory Activity
@@ -173,7 +173,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/activity-value:
+ * /api/v1/inventory/{inventory}/activity-value:
  *   get:
  *     tags:
  *       - Inventory Activity
@@ -384,7 +384,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/activity-value:
+ * /api/v1/inventory/{inventory}/activity-value:
  *   delete:
  *     tags:
  *       - Inventory Activity

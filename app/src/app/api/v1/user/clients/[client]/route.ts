@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/user/clients/{client}:
+ * /api/v1/user/clients/{client}:
  *   get:
  *     tags:
  *       - User Clients
@@ -98,7 +98,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 
 /**
  * @swagger
- * /api/v0/user/clients/{client}:
+ * /api/v1/user/clients/{client}:
  *   delete:
  *     tags:
  *       - User Clients

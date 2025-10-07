@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/waste-composition:
+ * /api/v1/waste-composition:
  *   get:
  *     tags:
  *       - Waste Composition

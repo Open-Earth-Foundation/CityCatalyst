@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/auth/delete:
+ * /api/v1/auth/delete:
  *   post:
  *     tags:
  *       - Auth

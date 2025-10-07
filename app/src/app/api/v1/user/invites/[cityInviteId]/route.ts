@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/user/invites/{cityInviteId}:
+ * /api/v1/user/invites/{cityInviteId}:
  *   delete:
  *     tags:
  *       - User Invites

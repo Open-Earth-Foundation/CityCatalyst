@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/user:
+ * /api/v1/user:
  *   get:
  *     tags:
  *       - User
@@ -54,7 +54,7 @@ const updateUserRequest = z.object({
 
 /**
  * @swagger
- * /api/v0/user:
+ * /api/v1/user:
  *   patch:
  *     tags:
  *       - User

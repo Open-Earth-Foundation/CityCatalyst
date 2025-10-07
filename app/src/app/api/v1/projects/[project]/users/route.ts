@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/projects/{project}/users:
+ * /api/v1/projects/{project}/users:
  *   get:
  *     tags:
  *       - Projects

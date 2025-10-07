@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/datasource/{inventoryId}/datasource/{datasourceId}:
+ * /api/v1/datasource/{inventoryId}/datasource/{datasourceId}:
  *   delete:
  *     tags:
  *       - Data Sources
@@ -62,7 +62,7 @@ import DataSourceService from "@/backend/DataSourceService";
 
 /**
  * @swagger
- * /api/v0/datasource/{inventoryId}/datasource/{datasourceId}:
+ * /api/v1/datasource/{inventoryId}/datasource/{datasourceId}:
  *   get:
  *     tags:
  *       - Data Sources

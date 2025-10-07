@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/results/{sectorName}:
+ * /api/v1/inventory/{inventory}/results/{sectorName}:
  *   get:
  *     tags:
  *       - Inventory Results

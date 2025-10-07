@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/value:
+ * /api/v1/inventory/{inventory}/value:
  *   get:
  *     tags:
  *       - Inventory Values

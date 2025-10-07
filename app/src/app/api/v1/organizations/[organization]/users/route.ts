@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/organizations/{organization}/users:
+ * /api/v1/organizations/{organization}/users:
  *   delete:
  *     tags:
  *       - Organization Users

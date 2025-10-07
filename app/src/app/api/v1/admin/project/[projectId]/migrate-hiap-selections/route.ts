@@ -13,7 +13,7 @@ const migrateSelectionsSchema = z.object({
 
 /**
  * @swagger
- * /api/v0/admin/project/{projectId}/migrate-hiap-selections:
+ * /api/v1/admin/project/{projectId}/migrate-hiap-selections:
  *   post:
  *     tags:
  *       - Admin

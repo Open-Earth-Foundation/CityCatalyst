@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/inventory/{inventory}:
+ * /api/v1/inventory/{inventory}:
  *   get:
  *     summary: Get inventory details by ID
  *     description: Returns inventory details including total emissions for the specified inventory ID. If 'default' is provided, returns the user's default inventory.
@@ -85,7 +85,7 @@ export const GET = apiHandler(async (req, { session, params }) => {
 
 /**
  * @swagger
- * /api/v0/inventory/{inventory}:
+ * /api/v1/inventory/{inventory}:
  *   delete:
  *     summary: Delete an inventory by ID
  *     description: Deletes the specified inventory. Only users with ORG_ADMIN permission can delete inventories.
@@ -130,7 +130,7 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
 
 /**
  * @swagger
- * /api/v0/inventory/{inventory}:
+ * /api/v1/inventory/{inventory}:
  *   patch:
  *     summary: Update inventory details
  *     description: Updates the specified inventory. Only users with edit permission can update inventories.

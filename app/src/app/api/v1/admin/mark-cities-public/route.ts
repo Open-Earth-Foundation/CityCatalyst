@@ -7,7 +7,7 @@ import { markCitiesPublicRequest } from "@/util/validation";
 
 /**
  * @swagger
- * /api/v0/admin/mark-cities-public:
+ * /api/v1/admin/mark-cities-public:
  *   put:
  *     tags:
  *       - Admin

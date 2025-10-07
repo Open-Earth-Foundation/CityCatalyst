@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 /**
  * @swagger
- * /api/v0:
+ * /api/v1:
  *   get:
  *     tags:
  *       - Root

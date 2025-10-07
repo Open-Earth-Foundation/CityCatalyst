@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/user/invites:
+ * /api/v1/user/invites:
  *   get:
  *     tags:
  *       - User Invites
@@ -70,7 +70,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
 /**
  * @swagger
- * /api/v0/user/invites:
+ * /api/v1/user/invites:
  *   post:
  *     tags:
  *       - User Invites

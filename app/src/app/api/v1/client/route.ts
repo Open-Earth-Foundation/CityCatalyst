@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/client:
+ * /api/v1/client:
  *   get:
  *     tags:
  *       - OAuth Clients
@@ -109,7 +109,7 @@ const NewClientRequest = z.object({
 
 /**
  * @swagger
- * /api/v0/client:
+ * /api/v1/client:
  *   post:
  *     tags:
  *       - OAuth Clients
@@ -246,7 +246,7 @@ export const POST = apiHandler(async (_req, { session }) => {
     description: descriptions,
   };
 
-  const locationUrl = `${_req.nextUrl.origin}/api/v0/client/${clientId}`;
+  const locationUrl = `${_req.nextUrl.origin}/api/v1/client/${clientId}`;
   return NextResponse.json(
     { data: results },
     { status: 201, headers: { Location: locationUrl } },

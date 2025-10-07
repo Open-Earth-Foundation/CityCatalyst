@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/download:
+ * /api/v1/inventory/{inventory}/download:
  *   get:
  *     tags:
  *       - Inventory Download

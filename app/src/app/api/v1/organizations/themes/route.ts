@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/organizations/themes:
+ * /api/v1/organizations/themes:
  *   get:
  *     tags:
  *       - Organizations

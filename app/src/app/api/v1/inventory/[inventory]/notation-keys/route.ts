@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/notation-keys:
+ * /api/v1/inventory/{inventory}/notation-keys:
  *   get:
  *     tags:
  *       - Inventory Notation Keys
@@ -145,7 +145,7 @@ const saveNotationKeysRequest = z.object({
 
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/notation-keys:
+ * /api/v1/inventory/{inventory}/notation-keys:
  *   post:
  *     tags:
  *       - Inventory Notation Keys

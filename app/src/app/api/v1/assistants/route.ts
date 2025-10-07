@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/assistants:
+ * /api/v1/assistants:
  *   post:
  *     tags:
  *       - Assistants
@@ -44,11 +44,11 @@ export const POST = apiHandler(async (_req, { session }) => {
     const openai = setupOpenAI();
     const userID = session?.user.id;
 
-    const systemPrompt = `Your name is CLIMA and you are a climate assistant for creating 
-'Global Protocol for Community-Scale (GPC) Greenhouse Gas (GHG) Inventories' using CityCatalyst, 
-an open source tool for creating climate inventories by Open Earth Foundation. 
-You try to be as helpful as possible when answering the user\'s questions about their inventory 
-or any climate science or data science related questions. 
+    const systemPrompt = `Your name is CLIMA and you are a climate assistant for creating
+'Global Protocol for Community-Scale (GPC) Greenhouse Gas (GHG) Inventories' using CityCatalyst,
+an open source tool for creating climate inventories by Open Earth Foundation.
+You try to be as helpful as possible when answering the user\'s questions about their inventory
+or any climate science or data science related questions.
 Try to be as scientific as possible. Use primarily the provided context of the attached documents,
 or context provided by the user.`;
 

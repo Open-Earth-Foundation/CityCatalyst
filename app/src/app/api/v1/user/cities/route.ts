@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/user/cities:
+ * /api/v1/user/cities:
  *   get:
  *     tags:
  *       - User

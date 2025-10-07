@@ -10,7 +10,7 @@ import { logger } from "@/services/logger";
 import { DEFAULT_PROJECT_ID } from "@/util/constants";
 /**
  * @swagger
- * /api/v0/city/{city}:
+ * /api/v1/city/{city}:
  *   get:
  *     tags:
  *       - City
@@ -75,7 +75,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 
 /**
  * @swagger
- * /api/v0/city/{city}:
+ * /api/v1/city/{city}:
  *   delete:
  *     tags:
  *       - City
@@ -161,7 +161,7 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
 
 /**
  * @swagger
- * /api/v0/city/{city}:
+ * /api/v1/city/{city}:
  *   patch:
  *     tags:
  *       - City

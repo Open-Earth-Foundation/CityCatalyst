@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/organizations/{organization}/invitations/accept:
+ * /api/v1/organizations/{organization}/invitations/accept:
  *   patch:
  *     tags:
  *       - Organization Invitations

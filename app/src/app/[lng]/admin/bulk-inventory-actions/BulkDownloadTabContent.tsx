@@ -53,7 +53,7 @@ const BulkDownloadTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
   const onSubmit = async (data: BulkDownloadInputs) => {
     showToast("preparing-dataset", "wait-fetch-data", "info", null);
     setDownloadLoading(true);
-    fetch(`/api/v0/projects/${data.projectId}/bulk-download`)
+    fetch(`/api/v1/projects/${data.projectId}/bulk-download`)
       .then(async (res) => {
         setDownloadLoading(false);
         if (!res.ok) {

@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/user/clients:
+ * /api/v1/user/clients:
  *   get:
  *     tags:
  *       - User Clients

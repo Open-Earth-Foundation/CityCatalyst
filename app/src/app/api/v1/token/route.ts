@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/token:
+ * /api/v1/token:
  *   post:
  *     tags:
  *       - Auth

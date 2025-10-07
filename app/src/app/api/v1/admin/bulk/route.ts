@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/admin/bulk:
+ * /api/v1/admin/bulk:
  *   post:
  *     tags:
  *       - Admin

@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/user/{userId}:
+ * /api/v1/user/{userId}:
  *   patch:
  *     tags:
  *       - User

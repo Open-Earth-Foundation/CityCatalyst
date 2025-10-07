@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/sector/{sectorId}/required-scopes:
+ * /api/v1/sector/{sectorId}/required-scopes:
  *   get:
  *     tags:
  *       - Sector

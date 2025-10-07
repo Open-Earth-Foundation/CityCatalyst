@@ -9,7 +9,7 @@ import { City } from "@/models/City";
 
 /**
  * @swagger
- * /api/v0/city/{city}/inventory:
+ * /api/v1/city/{city}/inventory:
  *   post:
  *     tags:
  *       - City Inventory
@@ -89,7 +89,7 @@ export const POST = apiHandler(
 
 /**
  * @swagger
- * /api/v0/city/{city}/inventory:
+ * /api/v1/city/{city}/inventory:
  *   get:
  *     tags:
  *       - City Inventory

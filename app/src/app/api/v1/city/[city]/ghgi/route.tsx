@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/city/{city}/ghgi:
+ * /api/v1/city/{city}/ghgi:
  *   get:
  *     tags:
  *       - GHG Inventory

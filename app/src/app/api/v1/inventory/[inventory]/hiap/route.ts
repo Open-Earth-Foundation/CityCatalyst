@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/hiap:
+ * /api/v1/inventory/{inventory}/hiap:
  *   get:
  *     tags:
  *       - Inventory HIAP
@@ -130,7 +130,7 @@ const updateSelectionRequest = z.object({
 
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/hiap:
+ * /api/v1/inventory/{inventory}/hiap:
  *   patch:
  *     tags:
  *       - Inventory HIAP

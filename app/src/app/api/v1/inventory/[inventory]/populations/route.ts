@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/inventory/{inventory}/populations:
+ * /api/v1/inventory/{inventory}/populations:
  *   get:
  *     tags:
  *       - Inventory Populations

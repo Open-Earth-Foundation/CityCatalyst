@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/public/city/{cityId}:
+ * /api/v1/public/city/{cityId}:
  *   get:
  *     tags:
  *       - Public

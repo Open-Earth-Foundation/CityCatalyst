@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/city/{city}/user/{user}:
+ * /api/v1/city/{city}/user/{user}:
  *   get:
  *     tags:
  *       - City Users
@@ -45,7 +45,7 @@ const updateUserRequest = z.object({
 
 /**
  * @swagger
- * /api/v0/city/{city}/user/{user}:
+ * /api/v1/city/{city}/user/{user}:
  *   patch:
  *     tags:
  *       - City Users
@@ -97,7 +97,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
 /**
  * @swagger
- * /api/v0/city/{city}/user/{user}:
+ * /api/v1/city/{city}/user/{user}:
  *   delete:
  *     tags:
  *       - City Users

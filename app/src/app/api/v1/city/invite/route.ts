@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/city/invite:
+ * /api/v1/city/invite:
  *   post:
  *     tags:
  *       - City Invites
@@ -127,7 +127,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
   const html = await render(
     InviteUserTemplate({
-      url: `${host}/api/v0/city/invite/${invite.id}?inventoryId=${body.inventoryId}&token=${invitationCode}&email=${body.email}`,
+      url: `${host}/api/v1/city/invite/${invite.id}?inventoryId=${body.inventoryId}&token=${invitationCode}&email=${body.email}`,
       user: { email: body.email, name: body.name },
       city,
       invitingUser: {

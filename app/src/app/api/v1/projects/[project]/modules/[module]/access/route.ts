@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/projects/{project}/modules/{module}/access:
+ * /api/v1/projects/{project}/modules/{module}/access:
  *   get:
  *     tags:
  *       - Project Modules
@@ -107,7 +107,7 @@ export const GET = apiHandler(async (_req: Request, context) => {
 
 /**
  * @swagger
- * /api/v0/projects/{project}/modules/{module}/access:
+ * /api/v1/projects/{project}/modules/{module}/access:
  *   post:
  *     tags:
  *       - Project Modules
@@ -190,7 +190,7 @@ export const POST = apiHandler(async (_req: Request, context) => {
 
 /**
  * @swagger
- * /api/v0/projects/{project}/modules/{module}/access:
+ * /api/v1/projects/{project}/modules/{module}/access:
  *   delete:
  *     tags:
  *       - Project Modules

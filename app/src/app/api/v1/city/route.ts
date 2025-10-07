@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/city:
+ * /api/v1/city:
  *   post:
  *     tags:
  *       - City
@@ -256,7 +256,7 @@ export const POST = apiHandler(async (req, { session }) => {
 
 /**
  * @swagger
- * /api/v0/city:
+ * /api/v1/city:
  *   get:
  *     tags:
  *       - City

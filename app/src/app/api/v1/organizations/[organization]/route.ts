@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v0/organizations/{organization}:
+ * /api/v1/organizations/{organization}:
  *   get:
  *     tags:
  *       - Organizations
@@ -77,7 +77,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 
 /**
  * @swagger
- * /api/v0/organizations/{organization}:
+ * /api/v1/organizations/{organization}:
  *   patch:
  *     tags:
  *       - Organizations
@@ -148,7 +148,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
 /**
  * @swagger
- * /api/v0/organizations/{organization}:
+ * /api/v1/organizations/{organization}:
  *   delete:
  *     tags:
  *       - Organizations

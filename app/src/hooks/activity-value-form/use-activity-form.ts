@@ -63,7 +63,6 @@ const useActivityForm = ({
   selectedActivity?: SuggestedActivity;
   methodology: Methodology;
 }) => {
-
   const {
     register,
     handleSubmit,

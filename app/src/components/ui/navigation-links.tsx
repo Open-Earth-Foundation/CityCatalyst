@@ -21,7 +21,7 @@ export const NavigationLinks: React.FC<NavigationLinksProps> = ({
 }) => {
   return (
     <Box w="full" display="flex" flexDirection="column" px={4} py="24px">
-      <VStack w="full" justifyContent="space-between">
+      <VStack w="full" justifyContent="space-between" gap="0.5rem">
         {items.map((item, index) => (
           <Link
             key={index}

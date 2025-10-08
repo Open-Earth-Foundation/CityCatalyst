@@ -25,7 +25,7 @@ export const NavigationAccordion: React.FC<NavigationAccordionProps> = ({
   defaultOpen = false,
 }) => {
   return (
-    <Box w="full" display="flex" flexDirection="column" py="24px">
+    <Box w="full" display="flex" flexDirection="column" py="spacing-4">
       <Accordion.Root collapsible defaultValue={defaultOpen ? ["section"] : []}>
         <Accordion.Item value="section">
           <Accordion.ItemTrigger

@@ -420,7 +420,11 @@ const ProjectFilterSection = ({
                   </Text>
                   <Box>
                     {result.type === "city" && (
-                      <Text fontSize="body.md" color="content.tertiary">
+                      <Text
+                        fontSize="body.md"
+                        color="content.tertiary"
+                        _hover={{ color: "base.light" }}
+                      >
                         {result.projectName} | {result.label}
                       </Text>
                     )}
@@ -431,7 +435,7 @@ const ProjectFilterSection = ({
           </Box>
         )}
         {/* Project dropdown */}
-        <Box display="flex" flexDirection="column" px={4} gap="24px">
+        <Box display="flex" flexDirection="column" px={4} gap="0.5rem">
           {/* Project Dropdown */}
           <CustomSelect
             options={filteredProjectOptions}

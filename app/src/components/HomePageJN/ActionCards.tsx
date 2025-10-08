@@ -11,6 +11,7 @@ import {
 import { MdArrowForward } from "react-icons/md";
 import { AllProjectsIcon } from "../icons";
 import ActionCardSmall from "./ActionCardSmall";
+import { LabelMedium } from "@/components/package/Texts";
 
 export function ActionCards({
   organization,
@@ -70,7 +71,7 @@ export function ActionCards({
                 fontWeight="bold"
                 _hover={{ textDecoration: "underline" }}
               >
-                {t("go-to-dashboard-cta")}
+                <LabelMedium>{t("go-to-dashboard-cta")}</LabelMedium>
                 <Icon as={MdArrowForward} boxSize={8} />
               </Link>
             </Box>

@@ -111,7 +111,7 @@ const DownloadButtons = ({
       true, // animated gradient
     );
     fetch(
-      `/api/v0/inventory/${inventoryId}/download?format=${format}&lng=${lng}`,
+      `/api/v1/inventory/${inventoryId}/download?format=${format}&lng=${lng}`,
     )
       .then((res) => {
         if (!res.ok) {
@@ -130,7 +130,7 @@ const DownloadButtons = ({
             downloadLink.download = filename;
 
             downloadLink.click();
-            
+
             // Track successful download
             trackEvent("report_downloaded", {
               format,
@@ -138,7 +138,7 @@ const DownloadButtons = ({
               city_locode: cityLocode,
               inventory_year: inventoryYear,
             });
-            
+
             showToast(
               "download-complete",
               "downloading-data",

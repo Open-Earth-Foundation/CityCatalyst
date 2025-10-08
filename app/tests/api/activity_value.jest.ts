@@ -2,12 +2,12 @@ import {
   DELETE as deleteActivityValue,
   GET as getActivityValue,
   PATCH as updateActivityValue,
-} from "@/app/api/v0/inventory/[inventory]/activity-value/[id]/route";
+} from "@/app/api/v1/inventory/[inventory]/activity-value/[id]/route";
 
 import {
   DELETE as deleteAllActivitiesInSubsector,
   POST as createActivityValue,
-} from "@/app/api/v0/inventory/[inventory]/activity-value/route";
+} from "@/app/api/v1/inventory/[inventory]/activity-value/route";
 
 import { db } from "@/models";
 import { randomUUID } from "node:crypto";

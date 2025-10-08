@@ -115,7 +115,7 @@ export default function ChatBot({
       threadIdRef.current = result;
 
       // Attempt to save threadId in the database asynchronously
-      fetch(`/api/v0/assistants/threads/export`, {
+      fetch(`/api/v1/assistants/threads/export`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -164,7 +164,7 @@ export default function ChatBot({
     abortControllerRef.current = abortController;
 
     try {
-      const response = await fetch(`/api/v0/assistants/threads/messages`, {
+      const response = await fetch(`/api/v1/assistants/threads/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -239,7 +239,7 @@ export default function ChatBot({
 
   const submitActionResult = async (runId: string, toolCallOutputs: object) => {
     try {
-      const response = await fetch(`/api/v0/assistants/threads/actions`, {
+      const response = await fetch(`/api/v1/assistants/threads/actions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -466,7 +466,7 @@ export default function ChatBot({
           const fileId = annotation.file_citation.file_id;
 
           try {
-            const response = await fetch(`/api/v0/assistants/files/${fileId}`, {
+            const response = await fetch(`/api/v1/assistants/files/${fileId}`, {
               method: "GET",
               headers: {
                 "Content-Type": "application/json",

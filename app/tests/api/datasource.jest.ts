@@ -1,7 +1,7 @@
-import { GET as getDataSourcesForSector } from "@/app/api/v0/datasource/[inventoryId]/[sectorId]/route";
-import { GET as getAllDataSources } from "@/app/api/v0/datasource/[inventoryId]/route";
-import { DELETE as deleteInventoryValue } from "@/app/api/v0/datasource/[inventoryId]/datasource/[datasourceId]/route";
-import { GET as getSingleDataSource } from "@/app/api/v0/datasource/[inventoryId]/datasource/[datasourceId]/route";
+import { GET as getDataSourcesForSector } from "@/app/api/v1/datasource/[inventoryId]/[sectorId]/route";
+import { GET as getAllDataSources } from "@/app/api/v1/datasource/[inventoryId]/route";
+import { DELETE as deleteInventoryValue } from "@/app/api/v1/datasource/[inventoryId]/datasource/[datasourceId]/route";
+import { GET as getSingleDataSource } from "@/app/api/v1/datasource/[inventoryId]/datasource/[datasourceId]/route";
 import { db } from "@/models";
 import { randomUUID } from "node:crypto";
 import { literal, Op } from "sequelize";
@@ -51,7 +51,7 @@ const mockSession: AppSession = {
 };
 
 const apiEndpoint =
-  "http://localhost:4000/api/v0/climatetrace/city/:locode/:year/:gpcReferenceNumber";
+  "http://localhost:4000/api/v1/climatetrace/city/:locode/:year/:gpcReferenceNumber";
 
 const mockGlobalApiResponses = [
   {
@@ -105,13 +105,13 @@ describe("DataSource API", () => {
     if (!city) {
       throw new Error(`Failed to find city with ID ${testData.cityId}`);
     }
-    
+
     // Update city with datasource test specific data
     await city.update({
       name: "CC_",
       locode: locode
     });
-    
+
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await db.models.CityUser.create({
       cityUserId: randomUUID(),
@@ -161,10 +161,10 @@ describe("DataSource API", () => {
         .apiEndpoint!.replace(":locode", locode)
         .replace(":year", inventory.year!.toString())
         .replace(":gpcReferenceNumber", subCategory.referenceNumber!);
-      
+
       // Update the datasource with the computed URL
       await source.update({ url });
-      
+
       fetchMock.mock(url, mockGlobalApiResponses[i]);
     }
   });

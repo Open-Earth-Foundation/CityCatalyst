@@ -28,8 +28,63 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 
 import yaml
-from dotenv import find_dotenv, load_dotenv
+from dotenv import find_dotenv, load_dotenv, dotenv_values
 from pydantic import BaseModel
+
+_ENV_LOADED = False
+
+
+def _load_environment() -> None:
+    """Load environment variables from the most relevant .env files.
+
+    We prioritise the current working directory, then fall back to the
+    climate-advisor service folder and finally the repository root.
+    """
+    global _ENV_LOADED
+    if _ENV_LOADED:
+        return
+
+    candidate_paths: list[Path] = []
+
+    dotenv_path = find_dotenv(usecwd=True)
+    if dotenv_path:
+        candidate_paths.append(Path(dotenv_path))
+
+    service_root = Path(__file__).resolve().parents[3]  # climate-advisor/
+    candidate_paths.append(service_root / ".env")
+
+    repo_root = service_root.parent  # CityCatalyst/
+    candidate_paths.append(repo_root / ".env")
+
+    loaded_paths: set[Path] = set()
+    for candidate in candidate_paths:
+        try:
+            resolved = candidate.resolve()
+        except FileNotFoundError:
+            # Path.resolve(strict=False) (default) should not raise, but guard just in case.
+            resolved = candidate
+
+        if resolved in loaded_paths or not resolved.exists():
+            continue
+
+        loaded = load_dotenv(resolved, override=False)
+        if loaded:
+            # Backfill missing (or empty) values explicitly to handle environments
+            # that scrub secrets by setting them to empty strings.
+            for key, value in dotenv_values(resolved).items():
+                if value is None:
+                    continue
+                current = os.getenv(key)
+        if not current:
+            os.environ[key] = value
+        loaded_paths.add(resolved)
+
+    _ENV_LOADED = True
+
+
+# Load environment variables at import time so that downstream modules/tests
+# see expected values even before get_settings() is invoked.
+_load_environment()
 
 
 def _parse_bool(value: Optional[str], default: bool = False) -> bool:
@@ -123,6 +178,13 @@ class APIConfig(BaseModel):
     requests: Optional[Dict[str, Any]] = None
 
 
+class ToolConfig(BaseModel):
+    climate_vector_search: Dict[str, Any] = {
+        "top_k": 5,
+        "min_score": 0.6,
+    }
+
+
 class FeaturesConfig(BaseModel):
     streaming_enabled: Optional[bool] = None
     dynamic_model_selection: Optional[bool] = None
@@ -135,6 +197,16 @@ class LoggingConfig(BaseModel):
     log_responses: Optional[bool] = None
     log_performance: Optional[bool] = None
     log_usage_stats: Optional[bool] = None
+
+
+class LangSmithConfig(BaseModel):
+    project: Optional[str] = None
+    endpoint: Optional[str] = None
+    tracing_enabled: Optional[bool] = None
+
+
+class ObservabilityConfig(BaseModel):
+    langsmith: Optional[LangSmithConfig] = None
 
 
 class CacheConfig(BaseModel):
@@ -151,6 +223,8 @@ class LLMConfig(BaseModel):
     features: FeaturesConfig
     logging: LoggingConfig
     cache: Optional[CacheConfig] = None
+    tools: ToolConfig = ToolConfig()
+    observability: Optional[ObservabilityConfig] = None
 
 
 def _load_llm_config() -> LLMConfig:
@@ -188,6 +262,14 @@ class Settings(BaseModel):
     # OpenAI configuration for embeddings
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
 
+    # LangSmith tracing configuration
+    # Only API key comes from .env for security
+    # All other settings (endpoint, project, tracing_enabled) must be in llm_config.yaml
+    langsmith_api_key: str | None = os.getenv("LANGSMITH_API_KEY")
+    langsmith_endpoint: str | None = None
+    langsmith_project: str | None = None
+    langsmith_tracing_enabled: bool = False
+
     # Database configuration
     database_url: str | None = os.getenv("CA_DATABASE_URL")
     database_pool_size: Optional[int] = _parse_int(os.getenv("CA_DATABASE_POOL_SIZE"), 5)
@@ -209,6 +291,43 @@ class Settings(BaseModel):
         
         if self.openrouter_model is None:
             self.openrouter_model = self.llm.models.get("default", "openrouter/auto")
+
+        # LangSmith configuration: ONLY API key from .env, everything else from llm_config.yaml
+        # No silent fallbacks - configuration must be explicit
+        langsmith_cfg = None
+        if self.llm.observability:
+            langsmith_cfg = self.llm.observability.langsmith
+
+        # Load configuration from llm_config.yaml ONLY
+        if langsmith_cfg:
+            if langsmith_cfg.project:
+                self.langsmith_project = langsmith_cfg.project
+            
+            if langsmith_cfg.endpoint:
+                self.langsmith_endpoint = langsmith_cfg.endpoint
+            
+            if langsmith_cfg.tracing_enabled is not None:
+                self.langsmith_tracing_enabled = bool(langsmith_cfg.tracing_enabled)
+
+        # Validate LangSmith configuration if tracing is enabled
+        if self.langsmith_tracing_enabled:
+            if not self.langsmith_api_key:
+                raise ValueError(
+                    "LangSmith tracing is enabled but LANGSMITH_API_KEY is not set in .env. "
+                    "Add LANGSMITH_API_KEY to .env or disable tracing (set tracing_enabled: false in llm_config.yaml)"
+                )
+            
+            if not self.langsmith_endpoint:
+                raise ValueError(
+                    "LangSmith tracing is enabled but endpoint is not configured. "
+                    "Add 'endpoint' under observability.langsmith in llm_config.yaml"
+                )
+            
+            if not self.langsmith_project:
+                raise ValueError(
+                    "LangSmith tracing is enabled but project is not configured. "
+                    "Add 'project' under observability.langsmith in llm_config.yaml"
+                )
             
 
 
@@ -224,11 +343,11 @@ def _parse_cors_origins(env_value: str | None) -> List[str]:
 def get_settings() -> Settings:
     global _settings
     if _settings is None:
-        load_dotenv(find_dotenv(usecwd=True))
-        
+        _load_environment()
+
         # Load LLM configuration from YAML
         llm_config = _load_llm_config()
-        
+
         # Create settings with LLM config
         settings = Settings(llm=llm_config)
         settings.cors_origins = _parse_cors_origins(os.getenv("CA_CORS_ORIGINS"))

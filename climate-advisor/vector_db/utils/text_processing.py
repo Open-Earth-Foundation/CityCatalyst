@@ -261,8 +261,8 @@ class DocumentProcessor:
                 print(f"Processing {pdf_file.name}...")
                 doc_data = self.process_pdf_file(str(pdf_file))
                 processed_docs.append(doc_data)
-                print(f"✓ Processed {pdf_file.name} ({len(doc_data['chunks'])} chunks)")
+                print(f"[SUCCESS] Processed {pdf_file.name} ({len(doc_data['chunks'])} chunks)")
             except Exception as e:
-                print(f"✗ Failed to process {pdf_file.name}: {str(e)}")
+                print(f"[FAILED] Failed to process {pdf_file.name}: {str(e)}")
 
         return processed_docs

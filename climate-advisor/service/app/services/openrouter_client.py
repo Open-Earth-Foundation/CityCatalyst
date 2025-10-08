@@ -1,3 +1,16 @@
+"""
+⚠️ DEPRECATED: This custom httpx client has been replaced with LangChainClient.
+
+Use: from ..services.langchain_client import LangChainClient
+
+The LangChainClient provides:
+- ✅ Automatic LangSmith tracing
+- ✅ Standard LangChain library
+- ✅ No 403 errors
+- ✅ Full conversation traces
+
+This file is kept for reference only.
+"""
 from __future__ import annotations
 
 import json
@@ -64,12 +77,16 @@ class OpenRouterClient:
 
     async def stream_chat(
         self,
-        messages: List[Dict[str, str]],
+        messages: List[Dict],
         model: Optional[str] = None,
         temperature: Optional[float] = None,
         request_id: Optional[str] = None,
-    ) -> AsyncIterator[str]:
-        """Yield content tokens from OpenRouter (OpenAI-compatible stream)."""
+        tools: Optional[List[Dict]] = None,
+    ) -> AsyncIterator[Dict]:
+        """Yield streaming events from OpenRouter (OpenAI-compatible stream).
+        
+        Returns full event objects instead of just content to support function calling.
+        """
         
         # Use LLM config defaults when parameters are not provided
         effective_model = model or self.default_model or "openrouter/auto"
@@ -87,6 +104,9 @@ class OpenRouterClient:
         
         if effective_temperature is not None:
             payload["temperature"] = effective_temperature
+            
+        if tools:
+            payload["tools"] = tools
 
         url = f"{self.base_url}/chat/completions"
 
@@ -105,21 +125,11 @@ class OpenRouterClient:
                             break
                         try:
                             obj = json.loads(data)
+                            # Yield the entire event object for function calling support
+                            yield obj
                         except json.JSONDecodeError:
                             logger.debug("OpenRouter stream received non-JSON data: %s", data[:200])
                             continue
-                        # choices[0].delta.content (OpenAI-style)
-                        try:
-                            delta = obj["choices"][0].get("delta") or {}
-                            content = delta.get("content")
-                            if content:
-                                yield content
-                        except Exception:
-                            # Some providers use 'choices[].message' in final chunks
-                            msg = obj.get("choices", [{}])[0].get("message", {})
-                            content = msg.get("content")
-                            if content:
-                                yield content
         except httpx.HTTPStatusError as e:
             # Surface limited details; caller should emit SSE error
             status = e.response.status_code if e.response else None

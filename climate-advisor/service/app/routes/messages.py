@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import AsyncIterator, List, Optional, Union
+import json
+from typing import Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID, uuid4
 import logging
 from fastapi import APIRouter, Depends, HTTPException
@@ -12,16 +13,22 @@ from ..db.session import get_session_optional, get_session_factory
 from ..middleware import get_request_id
 from ..models.requests import MessageCreateRequest
 from ..services.message_service import MessageService
-from ..services.openrouter_client import OpenRouterClient
+from ..services.langsmith_tracer import get_langsmith_tracer
+from ..services.langchain_client import OpenRouterResponsesClient
 from ..services.thread_service import ThreadService
 from ..tools import ClimateVectorSearchTool
 from ..utils.sse import format_sse
+from ..utils.tool_handler import persist_assistant_message
 
 
 router = APIRouter()
 
 
-climate_vector_tool = ClimateVectorSearchTool()
+def get_climate_vector_tool():
+    """Get climate vector search tool with current settings."""
+    settings = get_settings()
+    return ClimateVectorSearchTool(settings=settings)
+
 
 async def _stream_openrouter(
     payload: MessageCreateRequest,
@@ -30,79 +37,129 @@ async def _stream_openrouter(
     user_id: str,
     session_factory: Optional[async_sessionmaker[AsyncSession]],
     history_warning: Optional[str] = None,
-    tool_context: Optional[str] = None,
-    tool_invocations: Optional[List[dict]] = None,
+    session: Optional[AsyncSession] = None,
 ) -> AsyncIterator[bytes]:
     req_id = get_request_id()
     settings = get_settings()
 
-    client = OpenRouterClient(
+    tracer = get_langsmith_tracer()
+    conversation_run_id: Optional[str] = None
+    if tracer:
+        conversation_inputs = {
+            "thread_id": str(thread_id),
+            "user_id": user_id,
+            "user_message": payload.content,
+            "options": payload.options or {},
+            "request_id": req_id,
+        }
+        if history_warning:
+            conversation_inputs["history_warning"] = history_warning
+        if payload.inventory_id:
+            conversation_inputs["inventory_id"] = payload.inventory_id
+        conversation_run_id = tracer.start_conversation_run(
+            name="climate-advisor.message",
+            inputs=conversation_inputs,
+            tags=["conversation"],
+        )
+
+    langsmith_error: Optional[str] = None
+
+    # Use LangChain client for automatic tracing
+    client = LangChainClient(
         api_key=settings.openrouter_api_key or "",
         llm_config=settings.llm,
     )
 
     # Use the appropriate system prompt from LLM config
-    # TODO: Add inventory context injection when available
     system_prompt = settings.llm.prompts.get_prompt("default")
 
-    messages = [{"role": "system", "content": system_prompt}]
-    if tool_context:
-        messages.append({"role": "system", "content": tool_context})
+    # Define the climate vector search tool in OpenAI function calling format
+    tools = [{
+        "type": "function",
+        "function": {
+            "name": "climate_vector_search",
+            "description": "Search the climate knowledge base for relevant information about climate change, emissions, GHG, carbon, sustainability, environmental policies, renewable energy, net zero goals, climate adaptation, and mitigation strategies.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "question": {
+                        "type": "string",
+                        "description": "The search query to find relevant climate information in the knowledge base. Optimize this query for semantic search."
+                    }
+                },
+                "required": ["question"],
+                "additionalProperties": False
+            }
+        }
+    }]
+
+    messages: List[Dict] = [{"role": "system", "content": system_prompt}]
     messages.append({"role": "user", "content": payload.content})
 
-    idx = 0
-    assistant_chunks: List[str] = []
+    assistant_content = ""
     history_saved = False
+    tool_invocations: Optional[List[dict]] = None
+    tool_calls_accumulator = {}
 
     if history_warning:
         warning_payload = {"message": history_warning, "thread_id": str(thread_id)}
         yield format_sse(warning_payload, event="warning").encode("utf-8")
 
     try:
-        async for token in client.stream_chat(
+        # Stream the initial LLM response and accumulate any tool calls
+        async for acc, content, _, sse_bytes in stream_initial_response(
+            client=client,
             messages=messages,
-            model=(payload.options or {}).get("model") if payload.options else None,
-            temperature=(payload.options or {}).get("temperature") if payload.options else None,
-            request_id=req_id,
+            payload=payload,
+            req_id=req_id,
+            tools=tools,
         ):
-            if token:
-                assistant_chunks.append(token)
-                yield format_sse(
-                    {"index": idx, "content": token}, event="message", id=str(idx)
-                ).encode("utf-8")
-                idx += 1
+            tool_calls_accumulator = acc
+            assistant_content = content
+            yield sse_bytes
 
-        assistant_content = "".join(assistant_chunks)
-
-        if session_factory is not None:
-            try:
-                async with session_factory() as session:
-                    message_service = MessageService(session)
-                    thread_service = ThreadService(session)
-                    thread = await thread_service.get_thread_for_user(thread_id, user_id)
-                    try:
-                        await message_service.create_assistant_message(
-                            thread_id=thread.thread_id,
-                            user_id=user_id,
-                            text=assistant_content,
-                            tools_used=tool_invocations,
-                        )
-                        await thread_service.touch_thread(thread)
-                        await session.commit()
-                        history_saved = True
-                    except Exception:
-                        await session.rollback()
-                        logging.exception("Failed to persist assistant message")
-            except Exception:
-                logging.exception("Failed to persist assistant message")
+        # Execute any tool calls and stream the final response
+        if tool_calls_accumulator:
+            logging.info(
+                "Processing %s tool call(s) from LLM response",
+                len(tool_calls_accumulator)
+            )
+            climate_tool_instance = get_climate_vector_tool()
+            async for content_update, invocations, sse_bytes in handle_tool_calls(
+                tool_calls_accumulator=tool_calls_accumulator,
+                client=client,
+                messages=messages,
+                payload=payload,
+                req_id=req_id,
+                tools=tools,
+                climate_tool=climate_tool_instance,
+                session=session,
+                tracer=tracer,
+                conversation_run_id=conversation_run_id,
+            ):
+                if content_update is not None:
+                    assistant_content = content_update
+                if invocations is not None:
+                    tool_invocations = invocations
+                yield sse_bytes
         else:
-            logging.warning("Skipping assistant message persistence because database is unavailable")
+            logging.info("No tool calls to process - LLM responded directly")
+
+        # Persist the assistant message to database
+        history_saved = await persist_assistant_message(
+            session_factory=session_factory,
+            thread_id=thread_id,
+            user_id=user_id,
+            assistant_content=assistant_content,
+            tool_invocations=tool_invocations,
+        )
 
         yield format_sse(
             {"ok": True, "request_id": req_id, "history_saved": history_saved, "thread_id": str(thread_id), "tools_used": tool_invocations},
             event="done",
         ).encode("utf-8")
-    except Exception:
+    except Exception as exc:
+        langsmith_error = str(exc)
         logging.exception("Unhandled exception in _stream_openrouter")
         yield format_sse({"message": "An internal error has occurred."}, event="error").encode("utf-8")
         yield format_sse(
@@ -110,6 +167,21 @@ async def _stream_openrouter(
             event="done",
         ).encode("utf-8")
     finally:
+        if tracer and conversation_run_id:
+            conversation_outputs = {
+                "assistant_response": assistant_content,
+                "history_saved": history_saved,
+                "tools_used": tool_invocations or [],
+                "thread_id": str(thread_id),
+                "request_id": req_id,
+            }
+            if history_warning:
+                conversation_outputs["history_warning"] = history_warning
+            tracer.complete_run(
+                conversation_run_id,
+                outputs=conversation_outputs,
+                error=langsmith_error,
+            )
         await client.aclose()
 
 
@@ -189,26 +261,6 @@ async def post_message(
     if assistant_session_factory is None and history_warning is None:
         history_warning = base_warning
 
-    tool_context: Optional[str] = None
-    tool_invocations: Optional[List[dict]] = None
-
-    try:
-        tool_result = await climate_vector_tool.run(
-            payload.content,
-            session=session if session is not None else None,
-        )
-    except Exception:
-        logging.exception("Climate vector search tool invocation failed")
-        tool_result = None
-    else:
-        if tool_result is not None:
-            if tool_result.invocation is not None:
-                tool_invocations = [tool_result.invocation.to_dict()]
-                if tool_result.invocation.status == "error":
-                    logging.warning("Climate vector search tool error: %s", tool_result.invocation.error)
-            if tool_result.prompt_context:
-                tool_context = tool_result.prompt_context
-
     headers = {
         "Cache-Control": "no-cache",
         "Connection": "keep-alive",
@@ -221,7 +273,6 @@ async def post_message(
         user_id=resolved_user_id,
         session_factory=assistant_session_factory,
         history_warning=history_warning,
-        tool_context=tool_context,
-        tool_invocations=tool_invocations,
+        session=session,
     )
     return StreamingResponse(stream, media_type="text/event-stream", headers=headers)

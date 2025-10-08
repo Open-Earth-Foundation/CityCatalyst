@@ -78,8 +78,9 @@ load_dotenv(env_path)
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
-# Import from local modules
-from models.document import DocumentEmbedding
+# Import from service app modules
+sys.path.insert(0, str(Path(__file__).parent.parent / "service"))
+from app.models.db.document_embedding import DocumentEmbedding
 from utils.text_processing import DocumentProcessor
 from services.embedding_service import EmbeddingService, EmbeddingResult
 
@@ -137,7 +138,7 @@ async def store_document_with_embeddings(
 
             # Create embedding record with document metadata and chunk content
             embedding = DocumentEmbedding(
-                embedding_id=str(uuid4()),
+                embedding_id=uuid4(),
                 model_name=embedding_result.model,
                 embedding_vector=embedding_result.embedding,
                 # Document metadata

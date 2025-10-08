@@ -30,10 +30,8 @@ class VectorSearchMatch:
     model_name: str
     file_path: Optional[str] = None
 
-    def to_dict(self, preview_length: int = 280) -> Dict[str, Any]:
-        preview = self.content.strip().replace("\n", " ")
-        if len(preview) > preview_length:
-            preview = preview[:preview_length].rstrip() + "..."
+    def to_dict(self) -> Dict[str, Any]:
+        # Return full content without truncation
         return {
             "filename": self.filename,
             "file_path": self.file_path,
@@ -42,7 +40,7 @@ class VectorSearchMatch:
             "score": round(self.score, 4),
             "distance": round(self.distance, 4),
             "model_name": self.model_name,
-            "excerpt": preview,
+            "content": self.content.strip(),  # Full content, not excerpt
         }
 
 
@@ -76,54 +74,40 @@ class ClimateToolResult:
 
 
 class ClimateVectorSearchTool:
+    """Climate Vector Search Tool for LLM function calling.
+
+    This tool provides climate-related information from the vector database
+    when called by an LLM. The LLM decides when to use this tool based on
+    the conversation context.
+    """
     tool_name = "climate_vector_search"
-    _keywords = {
-        "climate",
-        "climate change",
-        "emission",
-        "emissions",
-        "co2",
-        "carbon",
-        "greenhouse",
-        "ghg",
-        "warming",
-        "net zero",
-        "decarbon",
-        "sustainability",
-        "resilience",
-        "adaptation",
-        "renewable",
-        "energy transition",
-        "climat",
-        "climatology",
-        "mitigation",
-        "sea level",
-        "heatwave",
-        "flood",
-        "drought",
-        "pollution",
-    }
-    _keyword_pattern = re.compile(r"\b(" + r"|".join(re.escape(k) for k in sorted(_keywords, key=len, reverse=True)) + r")\b", re.IGNORECASE)
 
     def __init__(
         self,
         *,
-        top_k: int = 4,
-        min_score: float = 0.6,
+        settings = None,
         session_factory: Optional[async_sessionmaker[AsyncSession]] = None,
         embedding_service: Optional[EmbeddingService] = None,
-        preview_chars: int = 320,
     ) -> None:
-        self.top_k = top_k
-        self.min_score = min_score
-        self.preview_chars = preview_chars
+        """Initialize the climate vector search tool.
+
+        Args:
+            settings: Application settings object (for configuration)
+            session_factory: Database session factory
+            embedding_service: Embedding service for generating question embeddings
+        """
+        # Get configuration from settings or use defaults
+        if settings and hasattr(settings, 'llm') and hasattr(settings.llm, 'tools'):
+            config = settings.llm.tools.climate_vector_search
+            self.top_k = config.get("top_k", 5)
+            self.min_score = config.get("min_score", 0.6)
+        else:
+            # Fallback defaults
+            self.top_k = 5
+            self.min_score = 0.6
+
         self._session_factory = session_factory
         self._embedding_service = embedding_service
-
-    def is_climate_related(self, text: str) -> bool:
-        if not text:
-            return False
-        return bool(self._keyword_pattern.search(text))
 
     def _get_session_factory(self) -> Optional[async_sessionmaker[AsyncSession]]:
         if self._session_factory is not None:
@@ -152,13 +136,36 @@ class ClimateVectorSearchTool:
         session: Optional[AsyncSession] = None,
         top_k: Optional[int] = None,
     ) -> ClimateToolResult:
+        """Run the climate vector search tool.
+
+        This tool is designed to be called by an LLM when it needs
+        climate-related information from the knowledge base.
+
+        Args:
+            question: The question to search for in the climate knowledge base
+            session: Optional database session
+            top_k: Optional override for number of chunks to retrieve
+
+        Returns:
+            ClimateToolResult with relevant chunks and context
+        """
         text = (question or "").strip()
         if not text:
-            return ClimateToolResult(used=False, prompt_context=None, reason="empty_question")
+            logger.warning("Vector search called with empty question")
+            return ClimateToolResult(
+                used=False,
+                prompt_context=None,
+                reason="empty_question"
+            )
+        
+        logger.info(
+            "Vector search initiated - question: '%s', top_k: %s, min_score: %s",
+            text,
+            top_k or self.top_k,
+            self.min_score
+        )
 
-        if not self.is_climate_related(text):
-            return ClimateToolResult(used=False, prompt_context=None, reason="not_climate_related")
-
+        # Get embedding service
         embedding_service = self._get_embedding_service()
         if embedding_service is None:
             invocation = ToolInvocationRecord(
@@ -175,8 +182,14 @@ class ClimateVectorSearchTool:
                 reason="embedding_service_unavailable",
             )
 
+        # Generate embedding for the question
+        logger.info("Generating embedding for vector search query")
         embedding_result = await embedding_service.generate_embedding(text)
         if not embedding_result.success or not embedding_result.embedding:
+            logger.error(
+                "Failed to generate embedding for vector search - error: %s",
+                embedding_result.error or "unknown"
+            )
             invocation = ToolInvocationRecord(
                 name=self.tool_name,
                 status="error",
@@ -185,14 +198,22 @@ class ClimateVectorSearchTool:
                 error=embedding_result.error or "embedding_failed",
             )
             return ClimateToolResult(
-                used=True,
+                used=True,  # Tool was called but failed
                 prompt_context=None,
                 invocation=invocation,
                 reason=embedding_result.error or "embedding_failed",
             )
+        
+        logger.info(
+            "Embedding generated successfully - model: %s, dimension: %s",
+            embedding_result.model,
+            len(embedding_result.embedding) if embedding_result.embedding else 0
+        )
 
+        # Use provided top_k or default
         limit = max(1, top_k or self.top_k)
 
+        # Run the vector search
         if session is not None:
             return await self._run_with_session(
                 question=text,
@@ -233,6 +254,13 @@ class ClimateVectorSearchTool:
         embedding: EmbeddingResult,
         limit: int,
     ) -> ClimateToolResult:
+        logger.info(
+            "Executing vector database search - model: %s, limit: %s, min_score: %s",
+            embedding.model,
+            limit,
+            self.min_score
+        )
+        
         distance_expr = DocumentEmbedding.embedding_vector.cosine_distance(embedding.embedding)
         stmt = (
             select(
@@ -253,13 +281,17 @@ class ClimateVectorSearchTool:
 
         result = await session.execute(stmt)
         rows = result.fetchall()
+        
+        logger.info("Vector search returned %s raw results from database", len(rows))
 
         matches: List[VectorSearchMatch] = []
+        filtered_count = 0
         for row in rows:
             data = row._mapping
             distance = float(data["distance"]) if data["distance"] is not None else 1.0
             score = max(0.0, min(1.0, 1.0 - distance))
             if score < self.min_score:
+                filtered_count += 1
                 continue
             matches.append(
                 VectorSearchMatch(
@@ -274,7 +306,34 @@ class ClimateVectorSearchTool:
                 )
             )
 
+        if filtered_count > 0:
+            logger.info(
+                "Filtered out %s results below min_score threshold (%s)",
+                filtered_count,
+                self.min_score
+            )
+        
+        if matches:
+            match_scores = [f"{m.score:.3f}" for m in matches]
+            logger.info(
+                "Vector search completed - %s matches found with scores: %s",
+                len(matches),
+                ", ".join(match_scores)
+            )
+            logger.info(
+                "Top match: filename='%s', chunk_index=%s, score=%.3f",
+                matches[0].filename,
+                matches[0].chunk_index,
+                matches[0].score
+            )
+
         if not matches:
+            logger.warning(
+                "Vector search completed with no matches - question: '%s', raw_results: %s, filtered: %s",
+                question,
+                len(rows),
+                filtered_count
+            )
             invocation = ToolInvocationRecord(
                 name=self.tool_name,
                 status="no_results",
@@ -301,7 +360,7 @@ class ClimateVectorSearchTool:
                 "top_k": limit,
                 "model": embedding.model,
             },
-            results=[match.to_dict(preview_length=self.preview_chars) for match in matches],
+            results=[match.to_dict() for match in matches],
         )
 
         prompt_context = self._build_prompt_context(matches)
@@ -318,12 +377,11 @@ class ClimateVectorSearchTool:
             "Relevant climate knowledge base excerpts were retrieved. Use them to ground your response when helpful.",
         ]
         for idx, match in enumerate(matches, start=1):
-            snippet = match.content.strip().replace("\n", " ")
-            if len(snippet) > self.preview_chars:
-                snippet = snippet[: self.preview_chars].rstrip() + "..."
+            # Include full content without truncation
+            content = match.content.strip()
             lines.append(
                 f"{idx}. Source: {match.filename} (chunk {match.chunk_index}, score {match.score:.2f})"
             )
-            lines.append(f"   Excerpt: {snippet}")
+            lines.append(f"   Full Content: {content}")
         lines.append("Always cite insights as coming from the internal climate knowledge base, not from personal memory.")
         return "\n".join(lines)

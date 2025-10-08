@@ -71,9 +71,9 @@ features:
 
 # Logging Configuration
 logging:
-  log_requests: false
-  log_responses: false
-  log_performance: false
+  log_requests: true
+  log_responses: true
+  log_performance: true
 
 # Observability Configuration
 observability:

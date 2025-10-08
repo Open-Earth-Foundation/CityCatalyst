@@ -10,6 +10,7 @@ messages route to convert conversation state into Response API inputs.
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any, Dict, Iterable, List, Optional
 
 from openai import AsyncOpenAI
@@ -69,11 +70,22 @@ class OpenRouterResponsesClient:
         if api_key is None:
             raise ValueError("OpenRouter API key must be provided")
 
+        headers: Dict[str, str] = {}
+        if default_headers:
+            headers.update(default_headers)
+
+        referer = os.getenv("OPENROUTER_REFERER") or "https://citycatalyst.ai"
+        title = os.getenv("OPENROUTER_TITLE") or "CityCatalyst Climate Advisor"
+
+        headers.setdefault("HTTP-Referer", referer)
+        headers.setdefault("X-Title", title)
+        headers.setdefault("Accept", "application/json")
+
         self._client = AsyncOpenAI(
             api_key=api_key,
             base_url=resolved_base_url,
             timeout=resolved_timeout,
-            default_headers=default_headers,
+            default_headers=headers,
             max_retries=max_retries,
         )
 
@@ -92,58 +104,40 @@ class OpenRouterResponsesClient:
     def stream_response(
         self,
         *,
-        input_items: Iterable[Dict[str, Any]],
-        instructions: Optional[str],
+        messages: List[Dict[str, Any]],
         model: Optional[str] = None,
         temperature: Optional[float] = None,
         tools: Optional[List[Dict[str, Any]]] = None,
-        conversation: Optional[str] = None,
+        tool_choice: Optional[Dict[str, Any]] | str | None = None,
         stream_options: Optional[Dict[str, Any]] = None,
-        max_tool_calls: Optional[int] = None,
-        metadata: Optional[Dict[str, Any]] = None,
     ):
-        """Invoke the Responses API with streaming enabled.
-
-        The caller is responsible for awaiting / iterating over the returned
-        context manager.
-        """
+        """Invoke the Chat Completions API with streaming enabled."""
         payload: Dict[str, Any] = {
             "model": model or self.default_model,
-            "input": list(input_items),
-            "stream": True,
+            "messages": messages,
         }
 
-        if instructions:
-            payload["instructions"] = instructions
-
-        if temperature is not None:
-            payload["temperature"] = temperature
-        else:
-            payload["temperature"] = self.default_temperature
+        payload["temperature"] = (
+            temperature if temperature is not None else self.default_temperature
+        )
 
         if tools:
             payload["tools"] = tools
-
-        if conversation:
-            payload["conversation"] = conversation
+            payload["parallel_tool_calls"] = True
+            if tool_choice:
+                payload["tool_choice"] = tool_choice
 
         if stream_options:
             payload["stream_options"] = stream_options
 
-        if max_tool_calls is not None:
-            payload["max_tool_calls"] = max_tool_calls
-
-        if metadata:
-            payload["metadata"] = metadata
-
         logger.debug(
-            "Starting Responses stream - model=%s conversation=%s instructions=%s",
+            "Starting Chat Completions stream - model=%s messages=%s tools=%s",
             payload["model"],
-            payload.get("conversation"),
-            bool(instructions),
+            len(messages),
+            len(tools) if tools else 0,
         )
 
-        return self._client.responses.stream(**payload)
+        return self._client.chat.completions.stream(**payload)
 
     async def aclose(self) -> None:
         """Dispose the underlying HTTP client."""

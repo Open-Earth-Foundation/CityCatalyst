@@ -628,7 +628,7 @@ const JNDrawer = ({
                   {
                     label: "all-projects",
                     icon: LuLayoutGrid,
-                    href: `/${lng}/organization/${organizationId}/projects`,
+                    href: `/${lng}/organization/${organizationId}/project`,
                   },
                 ]}
                 t={t}

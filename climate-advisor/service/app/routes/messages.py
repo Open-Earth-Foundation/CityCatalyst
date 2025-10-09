@@ -142,6 +142,8 @@ async def _stream_openrouter(
             iteration += 1
             accumulated_tool_calls: List[Dict[str, Any]] = []
             needs_tool_response = False
+            last_content_delta: Optional[str] = None
+            last_chunk_content: Optional[str] = None
 
             stream_kwargs: Dict[str, Any] = {
                 "messages": messages,
@@ -157,8 +159,21 @@ async def _stream_openrouter(
 
                     if event_type == "content.delta":
                         delta_text = chunk_dict.get("delta")
-                        if delta_text:
+                        if tracer and conversation_run_id and delta_text:
+                            tracer.record_stream_event(
+                                conversation_run_id,
+                                event_name="model_content_delta_raw",
+                                payload={"text": delta_text},
+                            )
+                        if delta_text and delta_text != last_content_delta:
+                            last_content_delta = delta_text
                             assistant_tokens.append(delta_text)
+                            if tracer and conversation_run_id:
+                                tracer.record_stream_event(
+                                    conversation_run_id,
+                                    event_name="model_content_delta",
+                                    payload={"text": delta_text},
+                                )
                             sse_bytes = format_sse(
                                 {"index": token_index, "content": delta_text},
                                 event="message",
@@ -181,15 +196,14 @@ async def _stream_openrouter(
                     finish_reason = choice.get("finish_reason")
 
                     content_piece = delta.get("content")
-                    if content_piece:
-                        assistant_tokens.append(content_piece)
-                        sse_bytes = format_sse(
-                            {"index": token_index, "content": content_piece},
-                            event="message",
-                            id=str(token_index),
-                        ).encode("utf-8")
-                        yield sse_bytes
-                        token_index += 1
+                    if content_piece and content_piece != last_chunk_content:
+                        last_chunk_content = content_piece
+                        if tracer and conversation_run_id:
+                            tracer.record_stream_event(
+                                conversation_run_id,
+                                event_name="model_content_snapshot",
+                                payload={"text": content_piece},
+                            )
 
                     tool_call_deltas = delta.get("tool_calls") or []
                     if tool_call_deltas:
@@ -220,8 +234,26 @@ async def _stream_openrouter(
                                     call_entry["function"]["name"] = function_name
                                 call_entry["function"]["arguments"] += arguments_fragment
 
+                            if tracer and conversation_run_id:
+                                tracer.record_stream_event(
+                                    conversation_run_id,
+                                    event_name="tool_call_delta",
+                                    payload={
+                                        "call_id": call_id,
+                                        "index": idx,
+                                        "name": function_name,
+                                        "arguments_fragment": arguments_fragment,
+                                    },
+                                )
+
                     if finish_reason:
                         logger.info("Stream finish reason: %s", finish_reason)
+                        if tracer and conversation_run_id:
+                            tracer.record_stream_event(
+                                conversation_run_id,
+                                event_name="model_finish",
+                                payload={"reason": finish_reason},
+                            )
                         break
 
             # For OpenRouter/OpenAI SDK, we use the accumulated data from streaming
@@ -244,6 +276,12 @@ async def _stream_openrouter(
                 "tool_calls": accumulated_tool_calls,
             }
             messages.append(assistant_message)
+            if tracer and conversation_run_id:
+                tracer.record_stream_event(
+                    conversation_run_id,
+                    event_name="assistant_tool_request",
+                    payload={"tool_calls": accumulated_tool_calls},
+                )
 
             for tool_call in accumulated_tool_calls:
                 tool_name = tool_call["function"]["name"]
@@ -311,6 +349,12 @@ async def _stream_openrouter(
                     tool_payload["error"] = invocation_dict["error"]
 
                 yield format_sse(tool_payload, event="tool_result").encode("utf-8")
+                if tracer and conversation_run_id:
+                    tracer.record_stream_event(
+                        conversation_run_id,
+                        event_name="tool_result",
+                        payload=tool_payload,
+                    )
 
                 if tracer and conversation_run_id:
                     tracer.log_tool_run(

@@ -115,10 +115,9 @@ export async function middleware(req: NextRequestWithAuth) {
       req.nextUrl.pathname.startsWith(`/${l}`),
     );
 
-    // If cookie exists and matches URL language, proceed normally
-    // If cookie exists but URL has different language, redirect to cookie language
-    // This handles cases where user has old URLs bookmarked or cached
-    if (lngInUrl && lng !== lngInUrl) {
+    // Only redirect if cookie exists and differs from URL language
+    // This ensures we don't create redirect loops when cookie isn't set yet
+    if (req.cookies.has(cookieName) && lngInUrl && lng !== lngInUrl) {
       // Cookie language takes precedence - redirect to correct language URL
       const pathWithoutLng = req.nextUrl.pathname.replace(
         new RegExp(`^/${lngInUrl}`),

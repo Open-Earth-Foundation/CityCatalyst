@@ -20,15 +20,15 @@ import { randomUUID } from "node:crypto";
 import {
   GET as getActionPlans,
   POST as createActionPlan,
-} from "@/app/api/v0/city/[city]/hiap/action-plan/route";
+} from "@/app/api/v1/city/[city]/hiap/action-plan/route";
 import {
   GET as getActionPlanById,
   PATCH as updateActionPlan,
   DELETE as deleteActionPlan,
-} from "@/app/api/v0/city/[city]/hiap/action-plan/[id]/route";
+} from "@/app/api/v1/city/[city]/hiap/action-plan/[id]/route";
 import {
   POST as generateActionPlan,
-} from "@/app/api/v0/city/[city]/hiap/action-plan/generate/[rankingId]/route";
+} from "@/app/api/v1/city/[city]/hiap/action-plan/generate/[rankingId]/route";
 
 import * as HiapApiService from "@/backend/hiap/HiapApiService";
 

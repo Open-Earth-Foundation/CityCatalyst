@@ -22,7 +22,7 @@ import {
 import { db } from "@/models";
 import { randomUUID } from "node:crypto";
 
-import { GET, PATCH } from "@/app/api/v0/inventory/[inventory]/hiap/route";
+import { GET, PATCH } from "@/app/api/v1/inventory/[inventory]/hiap/route";
 import * as HiapApiService from "@/backend/hiap/HiapApiService";
 
 describe("Inventory HIAP API", () => {

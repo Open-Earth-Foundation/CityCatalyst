@@ -121,8 +121,8 @@ export default function ChatPopover({
         <PopoverTrigger asChild>
           <Button
             position="fixed"
-            zIndex={30}
-            right={16}
+            zIndex={9999}
+            right={6}
             transition="all 300ms"
             bottom={getDynamicBottomPosition()}
             fontSize="button.md"

@@ -66,6 +66,10 @@ export async function middleware(req: NextRequestWithAuth) {
   let lng;
   let response: NextResponse | NextMiddlewareResult | undefined;
 
+  // Priority order for language detection:
+  // 1. Cookie (user's explicit preference)
+  // 2. Accept-Language header (browser preference)
+  // 3. Fallback language
   if (req.cookies.has(cookieName)) {
     lng = acceptLanguage.get(req.cookies.get(cookieName)?.value);
   }
@@ -86,33 +90,49 @@ export async function middleware(req: NextRequestWithAuth) {
   }
 
   // redirect for paths that don't have lng at the start
-  if (!req.cookies.has(cookieName)) {
-    response?.headers.set(
-      "Set-Cookie",
-      `${cookieName}=${lng}; Path=/; HttpOnly; SameSite=Strict`,
-    );
-  }
   if (
     !languages.some((loc) => req.nextUrl.pathname.startsWith(`/${loc}`)) &&
     !req.nextUrl.pathname.startsWith("/_next")
   ) {
-    response = NextResponse.redirect(
-      new URL(
-        `/${lng}${req.nextUrl.pathname}?${req.nextUrl.searchParams}`,
-        req.url,
-      ),
+    const redirectUrl = new URL(
+      `/${lng}${req.nextUrl.pathname}?${req.nextUrl.searchParams}`,
+      req.url,
     );
-  } else if (req.headers.has("referer")) {
-    const refererUrl = new URL(req.headers.get("referer")!);
-    const lngInReferer = languages.find((l) =>
-      refererUrl.pathname.startsWith(`/${l}`),
-    );
-    const response = next(req);
-    if (response instanceof NextResponse && lngInReferer) {
-      response.cookies.set(cookieName, lngInReferer);
+    const redirect = NextResponse.redirect(redirectUrl);
+    // Set cookie if not already present
+    if (!req.cookies.has(cookieName)) {
+      redirect.cookies.set(cookieName, lng, {
+        path: "/",
+        httpOnly: true,
+        sameSite: "strict",
+      });
     }
+    response = redirect;
   } else {
-    response = await next(req);
+    // Path already has language prefix
+    // Extract language from URL
+    const lngInUrl = languages.find((l) =>
+      req.nextUrl.pathname.startsWith(`/${l}`),
+    );
+
+    // If cookie exists and matches URL language, proceed normally
+    // If cookie exists but URL has different language, redirect to cookie language
+    // This handles cases where user has old URLs bookmarked or cached
+    if (lngInUrl && lng !== lngInUrl) {
+      // Cookie language takes precedence - redirect to correct language URL
+      const pathWithoutLng = req.nextUrl.pathname.replace(
+        new RegExp(`^/${lngInUrl}`),
+        "",
+      );
+      const redirectUrl = new URL(
+        `/${lng}${pathWithoutLng}${req.nextUrl.search}`,
+        req.url,
+      );
+      response = NextResponse.redirect(redirectUrl);
+    } else {
+      // Language matches or no cookie - proceed with auth check
+      response = await next(req);
+    }
   }
 
   return response;

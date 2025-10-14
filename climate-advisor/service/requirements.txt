@@ -10,6 +10,7 @@ PyYAML==6.0.3
 aiosqlite==0.21.0
 pydantic==2.11.9
 openai==2.1.0
+openai-agents
 numpy==2.3.3
 PyPDF2==3.0.1
 langchain==0.3.27

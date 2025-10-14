@@ -1,22 +1,24 @@
 from __future__ import annotations
 
 import json
+import logging
 from typing import Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID, uuid4
-import logging
+
+from agents import Runner
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
+from langsmith.wrappers import OpenAIAgentsTracingProcessor
+from agents import set_trace_processors
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from ..config import get_settings
 from ..db.session import get_session_optional, get_session_factory
 from ..middleware import get_request_id
 from ..models.requests import MessageCreateRequest
+from ..services.agent_service import AgentService
 from ..services.message_service import MessageService
-from ..services.langsmith_tracer import get_langsmith_tracer
-from ..services.langchain_client import OpenRouterResponsesClient
 from ..services.thread_service import ThreadService
-from ..tools import ClimateVectorSearchTool
 from ..utils.sse import format_sse
 from ..utils.tool_handler import persist_assistant_message
 
@@ -24,27 +26,25 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-
-def _parse_tool_arguments(arguments: str) -> Optional[Dict[str, Any]]:
-    if not arguments:
-        return None
+# Configure LangSmith tracing for Agents SDK
+settings = get_settings()
+if settings.langsmith_tracing_enabled:
     try:
-        parsed = json.loads(arguments)
-    except json.JSONDecodeError:
-        logger.warning("Unable to decode tool arguments as JSON")
-        return None
-    if isinstance(parsed, dict):
-        return parsed
-    return None
+        trace_metadata = {"service": settings.app_name}
+        set_trace_processors(
+            [
+                OpenAIAgentsTracingProcessor(
+                    project_name=settings.langsmith_project,
+                    metadata=trace_metadata,
+                )
+            ]
+        )
+        logger.info("LangSmith tracing enabled for Agents SDK")
+    except Exception as exc:
+        logger.warning("Failed to initialize LangSmith tracing: %s", exc)
 
 
-def get_climate_vector_tool():
-    """Get climate vector search tool with current settings."""
-    settings = get_settings()
-    return ClimateVectorSearchTool(settings=settings)
-
-
-async def _stream_openrouter(
+async def _stream_with_agents_sdk(
     payload: MessageCreateRequest,
     *,
     thread_id: Union[str, UUID],
@@ -53,350 +53,186 @@ async def _stream_openrouter(
     history_warning: Optional[str] = None,
     session: Optional[AsyncSession] = None,
 ) -> AsyncIterator[bytes]:
+    """Stream AI responses using OpenAI Agents SDK with OpenRouter.
+    
+    This function replaces the manual OpenAI SDK streaming with the Agents SDK,
+    providing built-in tool orchestration, streaming, and LangSmith tracing.
+    """
     req_id = get_request_id()
     settings = get_settings()
-
-    tracer = get_langsmith_tracer()
-    conversation_run_id: Optional[str] = None
-    if tracer:
-        conversation_inputs = {
-            "thread_id": str(thread_id),
-            "user_id": user_id,
-            "user_message": payload.content,
-            "options": payload.options or {},
-            "request_id": req_id,
-        }
-        if history_warning:
-            conversation_inputs["history_warning"] = history_warning
-        if payload.inventory_id:
-            conversation_inputs["inventory_id"] = payload.inventory_id
-        conversation_run_id = tracer.start_conversation_run(
-            name="climate-advisor.message",
-            inputs=conversation_inputs,
-            tags=["conversation"],
-        )
-
-    langsmith_error: Optional[str] = None
-
-    system_prompt = settings.llm.prompts.get_prompt("default")
-    tools = [
-        {
-            "type": "function",
-            "function": {
-                "name": "climate_vector_search",
-                "description": (
-                    "Search the climate knowledge base for relevant information "
-                    "about climate change, emissions, GHG, carbon, sustainability, "
-                    "environmental policies, renewable energy, net zero goals, "
-                    "climate adaptation, and mitigation strategies."
-                ),
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "question": {
-                            "type": "string",
-                            "description": (
-                                "The search query to find relevant climate information "
-                                "in the knowledge base. Optimize this query for semantic search."
-                            ),
-                        }
-                    },
-                    "required": ["question"],
-                    "additionalProperties": False,
-                },
-                "strict": True,
-            }
-        }
-    ]
-
-    base_messages: List[Dict[str, Any]] = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": payload.content},
-    ]
-
+    
+    # Send history warning if database is unavailable
     if history_warning:
         warning_payload = {"message": history_warning, "thread_id": str(thread_id)}
         yield format_sse(warning_payload, event="warning").encode("utf-8")
-
-    climate_tool_instance = get_climate_vector_tool()
+    
+    # Get model and temperature overrides from options
     options = payload.options or {}
     model_override = options.get("model")
     temperature_override = options.get("temperature")
-
-    messages = list(base_messages)
+    
+    # Track response state
     assistant_tokens: List[str] = []
     tool_invocations: List[dict] = []
     token_index = 0
     history_saved = False
-
+    agent_service: Optional[AgentService] = None
+    
     try:
-        client = OpenRouterResponsesClient(
-            api_key=settings.openrouter_api_key or "",
-            llm_config=settings.llm,
+        # Create agent service and agent
+        agent_service = AgentService()
+        agent = await agent_service.create_agent(
+            model=model_override,
+            temperature=temperature_override
         )
+        
+        logger.info(
+            "Starting Agents SDK streaming - thread_id=%s, user_id=%s, request_id=%s",
+            thread_id,
+            user_id,
+            req_id
+        )
+        
+        # Stream responses from the agent
+        result = Runner.run_streamed(agent, payload.content)
+        async for chunk in result.stream_events():
+            chunk_type = chunk.type
 
-        max_iterations = 5
-        iteration = 0
+            if chunk_type == "raw_response_event":
+                response_event = chunk.data
+                response_type = getattr(response_event, "type", "")
 
-        while iteration < max_iterations:
-            iteration += 1
-            accumulated_tool_calls: List[Dict[str, Any]] = []
-            needs_tool_response = False
-            last_content_delta: Optional[str] = None
-            last_chunk_content: Optional[str] = None
+                if response_type in {
+                    "response.output_text.delta",
+                    "response.refusal.delta",
+                }:
+                    content = getattr(response_event, "delta", "")
+                    if content:
+                        assistant_tokens.append(content)
+                        yield format_sse(
+                            {"index": token_index, "content": content},
+                            event="message",
+                            id=str(token_index),
+                        ).encode("utf-8")
+                        token_index += 1
 
-            stream_kwargs: Dict[str, Any] = {
-                "messages": messages,
-                "model": model_override,
-                "temperature": temperature_override,
-                "tools": tools,
-            }
+                elif response_type == "error":
+                    error_message = getattr(response_event, "message", "Streaming error")
+                    logger.error("Received error event from Responses API: %s", error_message)
+                    yield format_sse(
+                        {"message": error_message},
+                        event="error",
+                    ).encode("utf-8")
+                    break
 
-            async with client.stream_response(**stream_kwargs) as stream:
-                async for chunk in stream:
-                    chunk_dict = chunk.model_dump() if hasattr(chunk, "model_dump") else {}
-                    event_type = chunk_dict.get("type")
+                elif response_type == "response.completed":
+                    logger.info("Received response.completed event for thread_id=%s", thread_id)
 
-                    if event_type == "content.delta":
-                        delta_text = chunk_dict.get("delta")
-                        if tracer and conversation_run_id and delta_text:
-                            tracer.record_stream_event(
-                                conversation_run_id,
-                                event_name="model_content_delta_raw",
-                                payload={"text": delta_text},
-                            )
-                        if delta_text and delta_text != last_content_delta:
-                            last_content_delta = delta_text
-                            assistant_tokens.append(delta_text)
-                            if tracer and conversation_run_id:
-                                tracer.record_stream_event(
-                                    conversation_run_id,
-                                    event_name="model_content_delta",
-                                    payload={"text": delta_text},
-                                )
-                            sse_bytes = format_sse(
-                                {"index": token_index, "content": delta_text},
-                                event="message",
-                                id=str(token_index),
-                            ).encode("utf-8")
-                            yield sse_bytes
-                            token_index += 1
-                        continue
+                else:
+                    logger.debug("Unhandled raw response event type: %s", response_type)
 
-                    if event_type != "chunk":
-                        continue
+            elif chunk_type == "run_item_stream_event":
+                event_name = getattr(chunk, "name", "")
+                run_item = getattr(chunk, "item", None)
 
-                    chunk_payload = chunk_dict.get("chunk") or {}
-                    choices = chunk_payload.get("choices") or []
-                    if not choices:
-                        continue
+                if event_name == "tool_called" and run_item is not None:
+                    raw_item = getattr(run_item, "raw_item", None)
+                    tool_name = getattr(raw_item, "name", None) or getattr(raw_item, "type", "unknown_tool")
+                    call_id = getattr(raw_item, "call_id", None) or getattr(raw_item, "id", None)
 
-                    choice = choices[0]
-                    delta = choice.get("delta") or {}
-                    finish_reason = choice.get("finish_reason")
+                    arguments: Any = getattr(raw_item, "arguments", None)
+                    if isinstance(arguments, str):
+                        try:
+                            arguments = json.loads(arguments)
+                        except json.JSONDecodeError:
+                            pass
 
-                    content_piece = delta.get("content")
-                    if content_piece and content_piece != last_chunk_content:
-                        last_chunk_content = content_piece
-                        if tracer and conversation_run_id:
-                            tracer.record_stream_event(
-                                conversation_run_id,
-                                event_name="model_content_snapshot",
-                                payload={"text": content_piece},
-                            )
+                    existing = None
+                    for inv in tool_invocations:
+                        if (call_id and inv.get("id") == call_id) or inv.get("name") == tool_name:
+                            existing = inv
+                            break
 
-                    tool_call_deltas = delta.get("tool_calls") or []
-                    if tool_call_deltas:
-                        for tool_delta in tool_call_deltas:
-                            idx = tool_delta.get("index", len(accumulated_tool_calls))
-                            call_id = tool_delta.get("id") or f"call_{idx}"
-                            function_name = ""
-                            arguments_fragment = ""
-                            function_payload = tool_delta.get("function") or {}
-                            if function_payload:
-                                function_name = function_payload.get("name") or ""
-                                arguments_fragment = function_payload.get("arguments") or ""
+                    if existing is None:
+                        invocation = {
+                            "id": call_id,
+                            "name": tool_name,
+                            "arguments": arguments,
+                            "status": "executing",
+                        }
+                        tool_invocations.append(invocation)
+                    else:
+                        invocation = existing
+                        invocation["arguments"] = invocation.get("arguments") or arguments
+                        invocation["status"] = "executing"
 
-                            if idx >= len(accumulated_tool_calls):
-                                accumulated_tool_calls.append(
-                                    {
-                                        "id": call_id,
-                                        "type": tool_delta.get("type") or "function",
-                                        "function": {
-                                            "name": function_name,
-                                            "arguments": arguments_fragment,
-                                        },
-                                    }
-                                )
-                            else:
-                                call_entry = accumulated_tool_calls[idx]
-                                if function_name:
-                                    call_entry["function"]["name"] = function_name
-                                call_entry["function"]["arguments"] += arguments_fragment
-
-                            if tracer and conversation_run_id:
-                                tracer.record_stream_event(
-                                    conversation_run_id,
-                                    event_name="tool_call_delta",
-                                    payload={
-                                        "call_id": call_id,
-                                        "index": idx,
-                                        "name": function_name,
-                                        "arguments_fragment": arguments_fragment,
-                                    },
-                                )
-
-                    if finish_reason:
-                        logger.info("Stream finish reason: %s", finish_reason)
-                        if tracer and conversation_run_id:
-                            tracer.record_stream_event(
-                                conversation_run_id,
-                                event_name="model_finish",
-                                payload={"reason": finish_reason},
-                            )
-                        break
-
-            # For OpenRouter/OpenAI SDK, we use the accumulated data from streaming
-            # instead of get_final_response() which doesn't exist in OpenAI SDK
-            if finish_reason == "tool_calls" and accumulated_tool_calls:
-                needs_tool_response = True
-                logger.info(
-                    "Model requested %s tool call(s)",
-                    len(accumulated_tool_calls),
-                )
-            else:
-                needs_tool_response = False
-
-            if not needs_tool_response:
-                break
-
-            assistant_message = {
-                "role": "assistant",
-                "content": None,
-                "tool_calls": accumulated_tool_calls,
-            }
-            messages.append(assistant_message)
-            if tracer and conversation_run_id:
-                tracer.record_stream_event(
-                    conversation_run_id,
-                    event_name="assistant_tool_request",
-                    payload={"tool_calls": accumulated_tool_calls},
-                )
-
-            for tool_call in accumulated_tool_calls:
-                tool_name = tool_call["function"]["name"]
-                parsed_args = _parse_tool_arguments(tool_call["function"]["arguments"])
-                question = parsed_args.get("question") if parsed_args else None
-
-                if not question:
-                    logger.warning(
-                        "Vector search tool call missing 'question' argument"
-                    )
-                    tool_message = {
-                        "role": "tool",
-                        "tool_call_id": tool_call["id"],
-                        "name": tool_name,
-                        "content": json.dumps({"error": "Missing 'question' argument"}),
-                    }
-                    messages.append(tool_message)
                     yield format_sse(
                         {
-                            "tool_call_id": tool_call["id"],
-                            "name": tool_name,
-                            "status": "error",
-                            "error": "Missing 'question' argument",
+                            "name": invocation.get("name", "unknown_tool"),
+                            "status": invocation.get("status"),
+                            "arguments": invocation.get("arguments"),
                         },
                         event="tool_result",
                     ).encode("utf-8")
-                    continue
 
-                logger.info(
-                    "Vector search tool executing - call_id=%s question=%s",
-                    tool_call["id"],
-                    question,
-                )
+                elif event_name == "tool_output" and run_item is not None:
+                    raw_item = getattr(run_item, "raw_item", None)
+                    call_id = None
+                    if isinstance(raw_item, dict):
+                        call_id = raw_item.get("call_id")
+                    else:
+                        call_id = getattr(raw_item, "call_id", None) or getattr(raw_item, "id", None)
 
-                tool_result = await climate_tool_instance.run(question, session=session)
+                    output_value = getattr(run_item, "output", None)
+                    output_preview = str(output_value)[:200] if output_value is not None else ""
 
-                invocation_dict: Dict[str, Any] = (
-                    tool_result.invocation.to_dict()
-                    if tool_result.invocation
-                    else {
-                        "status": "success" if tool_result.matches else "no_results",
-                        "arguments": parsed_args or {},
-                        "results": [
-                            match.to_dict() for match in tool_result.matches
-                        ],
-                        "used": tool_result.used,
-                    }
-                )
-                invocation_dict["call_id"] = tool_call["id"]
-                tool_invocations.append(invocation_dict)
+                    invocation = None
+                    for inv in tool_invocations:
+                        if (call_id and inv.get("id") == call_id) or inv.get("status") == "executing":
+                            invocation = inv
+                            break
 
-                tool_payload = {
-                    "tool_call_id": tool_call["id"],
-                    "name": tool_name,
-                    "status": invocation_dict.get("status"),
-                    "arguments": invocation_dict.get("arguments"),
-                    "results": invocation_dict.get("results"),
-                    "used": tool_result.used,
-                }
-                if tool_result.prompt_context:
-                    tool_payload["prompt_context"] = tool_result.prompt_context
-                if tool_result.reason:
-                    tool_payload["reason"] = tool_result.reason
-                if invocation_dict.get("error"):
-                    tool_payload["error"] = invocation_dict["error"]
+                    if invocation is None:
+                        invocation = {
+                            "id": call_id,
+                            "name": getattr(raw_item, "name", "unknown_tool"),
+                            "arguments": None,
+                        }
+                        tool_invocations.append(invocation)
 
-                yield format_sse(tool_payload, event="tool_result").encode("utf-8")
-                if tracer and conversation_run_id:
-                    tracer.record_stream_event(
-                        conversation_run_id,
-                        event_name="tool_result",
-                        payload=tool_payload,
-                    )
+                    invocation["status"] = "success"
+                    invocation["result"] = str(output_value)[:500] if output_value is not None else ""
 
-                if tracer and conversation_run_id:
-                    tracer.log_tool_run(
-                        parent_run_id=conversation_run_id,
-                        name=tool_name,
-                        inputs={
-                            "tool_call_id": tool_call["id"],
-                            "question": question,
-                            "arguments": invocation_dict.get("arguments"),
+                    yield format_sse(
+                        {
+                            "name": invocation.get("name", "unknown_tool"),
+                            "status": invocation.get("status"),
+                            "result": output_preview,
                         },
-                        outputs={
-                            "status": invocation_dict.get("status"),
-                            "results": invocation_dict.get("results"),
-                            "used": tool_result.used,
-                            "reason": tool_result.reason,
-                            "prompt_context": tool_result.prompt_context,
-                        },
-                        error=invocation_dict.get("error"),
-                        tags=["rag"],
-                    )
+                        event="tool_result",
+                    ).encode("utf-8")
 
-                tool_output_text = (
-                    tool_result.prompt_context
-                    or json.dumps(invocation_dict.get("results") or [])
-                )
-                tool_message = {
-                    "role": "tool",
-                    "tool_call_id": tool_call["id"],
-                    "name": tool_name,
-                    "content": tool_output_text,
-                }
-                messages.append(tool_message)
+                else:
+                    logger.debug("Unhandled run item event: %s", event_name)
 
+            elif chunk_type == "agent_updated_stream_event":
+                logger.info("Agent updated during streaming for thread_id=%s", thread_id)
+
+            else:
+                logger.debug("Unhandled stream event type: %s", chunk_type)
+        
+        # Persist assistant message to database
         assistant_content = "".join(assistant_tokens)
-        history_saved = await persist_assistant_message(
-            session_factory=session_factory,
-            thread_id=thread_id,
-            user_id=user_id,
-            assistant_content=assistant_content,
-            tool_invocations=tool_invocations or None,
-        )
-
+        if assistant_content:
+            history_saved = await persist_assistant_message(
+                session_factory=session_factory,
+                thread_id=thread_id,
+                user_id=user_id,
+                assistant_content=assistant_content,
+                tool_invocations=tool_invocations or None,
+            )
+        
+        # Send completion event
         yield format_sse(
             {
                 "ok": True,
@@ -407,11 +243,12 @@ async def _stream_openrouter(
             },
             event="done",
         ).encode("utf-8")
+        
     except Exception as exc:
-        langsmith_error = str(exc)
-        logging.exception("Unhandled exception in _stream_openrouter")
+        logger.exception("Unhandled exception in Agents SDK streaming")
         yield format_sse(
-            {"message": "An internal error has occurred."}, event="error"
+            {"message": "An internal error has occurred."},
+            event="error"
         ).encode("utf-8")
         yield format_sse(
             {
@@ -423,25 +260,11 @@ async def _stream_openrouter(
             },
             event="done",
         ).encode("utf-8")
+    
     finally:
-        assistant_snapshot = "".join(assistant_tokens)
-        if tracer and conversation_run_id:
-            conversation_outputs = {
-                "assistant_response": assistant_snapshot,
-                "history_saved": history_saved,
-                "tools_used": tool_invocations or [],
-                "thread_id": str(thread_id),
-                "request_id": req_id,
-            }
-            if history_warning:
-                conversation_outputs["history_warning"] = history_warning
-            tracer.complete_run(
-                conversation_run_id,
-                outputs=conversation_outputs,
-                error=langsmith_error,
-            )
-        if client:
-            await client.aclose()
+        # Clean up agent service
+        if agent_service:
+            await agent_service.close()
 
 
 @router.post("/messages")
@@ -526,7 +349,7 @@ async def post_message(
         "X-Accel-Buffering": "no",
     }
 
-    stream = _stream_openrouter(
+    stream = _stream_with_agents_sdk(
         payload,
         thread_id=resolved_thread_id,
         user_id=resolved_user_id,

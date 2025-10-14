@@ -291,6 +291,13 @@ Or do it executing commands after logging into a container
 docker exec -it ca-postgres bash
 ```
 
+build and run containers
+
+```
+docker build -f service/Dockerfile -t climate-advisor:dev .
+docker run --rm --env-file .env -p 8080:8080 climate-advisor:dev
+```
+
 **Required environment variable:**
 
 - `CA_DATABASE_URL` - PostgreSQL connection string (e.g., `postgresql://user:pass@localhost:5432/climate_advisor`)

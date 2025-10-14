@@ -18,7 +18,7 @@ class DocumentEmbedding(Base):
     
     __tablename__ = "document_embeddings"
 
-    embedding_id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True)
+    embedding_id: Mapped[str] = mapped_column(PG_UUID(), primary_key=True)
     model_name: Mapped[str] = mapped_column(Text, nullable=False, index=True)
     embedding_vector: Mapped[Vector] = mapped_column(Vector(None), nullable=False)  # type: ignore
     created_at: Mapped[datetime] = mapped_column(

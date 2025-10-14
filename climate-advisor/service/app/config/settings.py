@@ -75,8 +75,8 @@ def _load_environment() -> None:
                 if value is None:
                     continue
                 current = os.getenv(key)
-        if not current:
-            os.environ[key] = value
+                if not current:
+                    os.environ[key] = value
         loaded_paths.add(resolved)
 
     _ENV_LOADED = True
@@ -328,7 +328,23 @@ class Settings(BaseModel):
                     "LangSmith tracing is enabled but project is not configured. "
                     "Add 'project' under observability.langsmith in llm_config.yaml"
                 )
-            
+
+            # Surface configuration to the expected environment variables for LangSmith/LangChain SDKs
+            os.environ.setdefault("LANGSMITH_TRACING_V2", "true")
+            os.environ.setdefault("LANGCHAIN_TRACING_V2", "true")
+
+            if self.langsmith_project:
+                os.environ.setdefault("LANGSMITH_PROJECT", self.langsmith_project)
+                os.environ.setdefault("LANGCHAIN_PROJECT", self.langsmith_project)
+
+            if self.langsmith_endpoint:
+                os.environ.setdefault("LANGSMITH_ENDPOINT", self.langsmith_endpoint)
+                os.environ.setdefault("LANGCHAIN_ENDPOINT", self.langsmith_endpoint)
+
+            if self.langsmith_api_key:
+                os.environ.setdefault("LANGSMITH_API_KEY", self.langsmith_api_key)
+                os.environ.setdefault("LANGCHAIN_API_KEY", self.langsmith_api_key)
+
 
 
 _settings: Settings | None = None

@@ -11,8 +11,18 @@ def db_query_notation_key(datasource_name, spatial_granularity, actor_id, gpc_re
             """
             SELECT  'NO' as notation_key,
                     'no-occurrance' as notation_key_name,
-                    'The activity or process does not occur or exist within the city' as unavailable_reason,
-                    'There are no facilities found in the city boundary' as unavailable_explanation
+                    jsonb_build_object(
+                        'en', 'The activity or process does not occur or exist within the city',
+                        'pt', 'A atividade ou processo não ocorre ou não existe dentro da cidade',
+                        'es', 'La actividad o proceso no ocurre o no existe dentro de la ciudad',
+                        'fr', 'L''activité ou le processus ne se produit pas ou n''existe pas dans la ville'
+                    ) as unavailable_reason,
+                    jsonb_build_object(
+                        'en', 'There are no facilities found in the city boundary',
+                        'pt', 'Não há instalações encontradas dentro dos limites da cidade',
+                        'es', 'No se encontraron instalaciones dentro de los límites de la ciudad',
+                        'fr', 'Aucune installation n''a été trouvée dans les limites de la ville'
+                    ) as unavailable_explanation
             FROM modelled.ghgi_city_facility_occurance
             WHERE facility_count = 0
             AND locode = :actor_id

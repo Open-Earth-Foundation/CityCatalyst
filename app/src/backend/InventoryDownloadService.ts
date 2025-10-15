@@ -8,9 +8,10 @@ import type {
 } from "@/util/types";
 import createHttpError from "http-errors";
 import { Op } from "sequelize";
+import { logger } from "@/services/logger";
+import { MAX_POPULATION_YEAR_DIFFERENCE } from "@/util/constants";
 
 // Maximum years to look forward/backward for population data
-const MAX_POPULATION_YEAR_DIFFERENCE = 10;
 
 export default class InventoryDownloadService {
   public static async queryInventoryData(
@@ -98,8 +99,13 @@ export default class InventoryDownloadService {
       inventory.year,
       MAX_POPULATION_YEAR_DIFFERENCE,
     );
+
+    console.log(populationEntries);
+    console.log(population);
+    console.log(MAX_POPULATION_YEAR_DIFFERENCE);
+
     if (!population) {
-      throw new createHttpError.NotFound(
+      logger.error(
         `Population data not found for city ${inventory.cityId} for year ${inventory.year}`,
       );
     }
@@ -116,8 +122,8 @@ export default class InventoryDownloadService {
         ...inventory.toJSON(),
         city: {
           ...inventory.city.toJSON(),
-          populationYear: population.year,
-          population: population.population || 0,
+          populationYear: population?.year as number,
+          population: population?.population || 0,
         },
       },
     };

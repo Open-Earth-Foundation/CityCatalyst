@@ -20,7 +20,7 @@ export const getApiDocs = async () => {
 
   // Fallback to dynamic generation if pre-generated spec doesn't exist or is empty
   const spec = createSwaggerSpec({
-    apiFolder: "src/app/api/v0",
+    apiFolder: "src/app/api/v1",
     definition: {
       openapi: "3.0.0",
       info: {

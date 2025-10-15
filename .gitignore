@@ -158,3 +158,4 @@ app/public/openapi-spec.json
 # Climate advisor specific files
 climate-advisor/scripts/setup_local_db.py
 
+sdk/

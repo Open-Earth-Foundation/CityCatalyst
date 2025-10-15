@@ -5,7 +5,7 @@ import {
   inventoryId,
   inventoryValues as inventoryValuesData,
 } from "./results.data";
-import { GET as getResults } from "@/app/api/v0/inventory/[inventory]/results/emissions-forecast/route";
+import { GET as getResults } from "@/app/api/v1/inventory/[inventory]/results/emissions-forecast/route";
 import { db } from "@/models";
 import { randomUUID } from "node:crypto";
 import { mockRequest, setupTests, testUserID } from "../helpers";
@@ -36,7 +36,7 @@ describe("Emissions Forecast API", () => {
   beforeAll(async () => {
     setupTests();
     await db.initialize();
-    
+
     // Create proper test data hierarchy
     testData = await createTestData({
       cityName: locode,
@@ -47,7 +47,7 @@ describe("Emissions Forecast API", () => {
     if (!city) {
       throw new Error(`Failed to find city with ID ${testData.cityId}`);
     }
-    
+
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await city.addUser(testUserID);
     inventory = await db.models.Inventory.create({

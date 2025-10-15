@@ -35,9 +35,15 @@ export default function ClimaAIAssistantDisclaimerDialog({
   return (
     <Dialog.Root open={open} onOpenChange={(e) => onOpenChange(e.open)}>
       <Portal>
-        <Dialog.Backdrop />
-        <Dialog.Positioner>
-          <Dialog.Content minH="500px" minW="727px" marginTop="20%" px="24px">
+        <Dialog.Backdrop zIndex={9999} />
+        <Dialog.Positioner zIndex={9999}>
+          <Dialog.Content
+            minH="500px"
+            minW="727px"
+            marginTop="2%"
+            px="24px"
+            pos="relative"
+          >
             <Dialog.Header
               w="full"
               borderBottomWidth="1px"

@@ -38,7 +38,7 @@ const shouldSkipFrozenCheckForPublicInventory = async (
   urlPath: string,
 ): Promise<boolean> => {
   if (req.method !== "PATCH") return false;
-  if (!urlPath.startsWith("/api/v0/inventory/")) return false;
+  if (!urlPath.startsWith("/api/v1/inventory/")) return false;
 
   try {
     const clonedReq = req.clone();

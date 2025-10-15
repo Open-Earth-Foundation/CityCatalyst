@@ -16,7 +16,7 @@ import { expect } from "@jest/globals";
 import { Roles } from "@/util/types";
 import { fileURLToPath } from "node:url";
 
-const mockUrl = "http://localhost:3000/api/v0";
+const mockUrl = "http://localhost:3000/api/v1";
 
 export function createRequest(url: string, body?: any) {
   const request = new NextRequest(new URL(url));

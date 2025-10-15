@@ -179,7 +179,7 @@ test.describe.skip("CSV Download", () => {
 
     // Mock network error for CSV download endpoint
     await page.route(
-      "**/api/v0/inventory/**/download?format=csv**",
+      "**/api/v1/inventory/**/download?format=csv**",
       (route) => {
         route.abort("failed");
       },

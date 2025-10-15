@@ -10,7 +10,7 @@ import {
 import {
   GET as getOrganizations,
   POST as createOrganization,
-} from "@/app/api/v0/organizations/route";
+} from "@/app/api/v1/organizations/route";
 import { db } from "@/models";
 import { CreateOrganizationRequest } from "@/util/validation";
 import { mockRequest, setupTests, testUserID } from "../helpers";
@@ -70,7 +70,7 @@ describe("Organization API", () => {
   it("should create an organization", async () => {
     // Create unique org data for this test
     const uniqueOrgData = getUniqueOrganizationData();
-    
+
     const req = mockRequest(uniqueOrgData);
     const res = await createOrganization(req, emptyParams);
     expect(res.status).toEqual(201);

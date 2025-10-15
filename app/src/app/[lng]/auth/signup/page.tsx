@@ -75,7 +75,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
     }
 
     try {
-      const res = await fetch("/api/v0/auth/register", {
+      const res = await fetch("/api/v1/auth/register", {
         method: "POST",
         body: JSON.stringify(data),
         headers: {

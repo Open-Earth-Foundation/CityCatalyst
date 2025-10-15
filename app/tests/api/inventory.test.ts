@@ -1,5 +1,5 @@
-import { GET as findInventory } from "@/app/api/v0/inventory/[inventory]/download/route";
-import { POST as submitInventory } from "@/app/api/v0/inventory/[inventory]/cdp/route";
+import { GET as findInventory } from "@/app/api/v1/inventory/[inventory]/download/route";
+import { POST as submitInventory } from "@/app/api/v1/inventory/[inventory]/cdp/route";
 import { db } from "@/models";
 import { CreateInventoryRequest } from "@/util/validation";
 import assert from "node:assert";
@@ -162,7 +162,7 @@ describe("Inventory API", () => {
   });
 
   it.skip("should download an inventory in csv format", async () => {
-    const url = `http://localhost:3000/api/v0/inventory/${inventory.inventoryId}?format=csv`;
+    const url = `http://localhost:3000/api/v1/inventory/${inventory.inventoryId}?format=csv`;
     const req = createRequest(url);
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
@@ -191,7 +191,7 @@ describe("Inventory API", () => {
 
   // TODO this test is very slow. use "CIRIS Light" spreadsheet instead (for download as well anyways)
   it.skip("should download an inventory in xls format", async () => {
-    const url = `http://localhost:3000/api/v0/inventory/${inventory.inventoryId}?format=xls`;
+    const url = `http://localhost:3000/api/v1/inventory/${inventory.inventoryId}?format=xls`;
     const req = createRequest(url);
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),

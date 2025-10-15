@@ -47,7 +47,7 @@
   "top-actions-for-your-city-description": "Estas son las 40 principales acciones que recomendamos basadas en tu inventario de GEI y datos de contexto de la ciudad. Encontrarás 20 acciones para Mitigación y 20 para Adaptación en sus respectivas pestañas. Se recomienda volver a ejecutar el priorizador después de cualquier actualización o cambio relevante en los datos.",
   "actions-for-your-city-description": "Estas son las 40 principales acciones que recomendamos basadas en tu inventario de GEI, Evaluación de Riesgos Climáticos y datos de contexto de la ciudad. Encontrarás 20 acciones para Mitigación y 20 para Adaptación en sus respectivas pestañas.",
   "re-prioritize-actions": "Re-priorizar acciones",
-  "generated-action-plan": "generar plan de acción",
+  "generated-action-plan": "Plan de acción generado",
   "export-as-pdf": "exportar como PDF",
   "generating-pdf": "generando PDF...",
   "subactions": "Subacciones",
@@ -136,5 +136,30 @@
   "reprioritization-started": "Inicio de Reasignación de Prioridades",
   "reprioritization-started-description": "Se están re-priorizando tus acciones climáticas con los datos más recientes. Recibirás un correo electrónico cuando esté completo.",
   "reprioritization-failed": "Fallo en la Reasignación de Prioridades",
-  "reprioritization-failed-description": "No se pudo iniciar la repriorización. Por favor, inténtalo de nuevo."
+  "reprioritization-failed-description": "No se pudo iniciar la repriorización. Por favor, inténtalo de nuevo.",
+  "implementation-plan": "Plan de implementación",
+  "pdf": {
+    "title": "Plan de Implementación de Acción Climática",
+    "sections": {
+      "overview": "Resumen",
+      "implementation-steps": "Pasos de Implementación",
+      "key-institutions": "Instituciones Clave",
+      "milestones": "Hitos",
+      "mitigation-measures": "Medidas de Mitigación",
+      "adaptation-measures": "Medidas de Adaptación",
+      "sustainable-development-goals": "Objetivos de Desarrollo Sostenible"
+    },
+    "labels": {
+      "city-context": "Contexto de la Ciudad",
+      "action-description": "Descripción de la Acción",
+      "national-strategy": "Estrategia Nacional",
+      "item": "Artículo"
+    },
+    "footer": {
+      "generated-by": "Generado por CityCatalyst",
+      "page": "Página",
+      "of": "de",
+      "generated-on": "Generado el"
+    }
+  }
 }

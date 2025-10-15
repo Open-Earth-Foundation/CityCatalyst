@@ -5,15 +5,14 @@ import PasswordInput from "@/components/password-input";
 import { useTranslation } from "@/i18n/client";
 import { Box, Heading, Link, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState, use } from "react";
+import { Suspense, useEffect, use } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import { UseSuccessToast } from "@/hooks/Toasts";
-import { logger } from "@/services/logger";
-import { trackEvent, identifyUser } from "@/lib/analytics";
+import { useLogin } from "@/hooks/useLogin";
 
 export type LoginInputs = {
   email: string;
@@ -43,12 +42,12 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
   const { lng } = use(props.params);
   const { t } = useTranslation(lng, "auth");
 
+  const { login, isLoading, error, clearError } = useLogin();
   const router = useRouter();
-  const [error, setError] = useState("");
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<LoginInputs>();
 
   const searchParams = useSearchParams();
@@ -69,34 +68,13 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
     title: t("verified-toast-title"),
     description: t("verified-toast-description"),
   });
+
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
-    try {
-      const res = await signIn("credentials", {
-        redirect: true,
-        email: data.email,
-        password: data.password,
-        callbackUrl: callbackUrl || `/${lng}/`,
-      });
+    clearError();
+    const result = await login(data, callbackUrl || `/${lng}/`);
 
-      if (res?.ok && !res?.error) {
-        // Track successful login
-        trackEvent("user_logged_in", {
-          method: "credentials",
-        });
-
-        // Identify the user for future tracking
-        identifyUser(data.email);
-
-        showLoginSuccessToast();
-        setError("");
-        return;
-      } else {
-        logger.error({ err: res?.error }, "Sign in failure:");
-        setError(t("invalid-email-password"));
-      }
-    } catch (error: any) {
-      logger.error({ err: error }, "Failed to sign in:");
-      setError(error);
+    if (result.success) {
+      showLoginSuccessToast();
     }
   };
 
@@ -140,7 +118,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
           <Button
             type="submit"
             formNoValidate
-            loading={isSubmitting}
+            loading={isLoading}
             h={16}
             width="full"
             bgColor="interactive.secondary"

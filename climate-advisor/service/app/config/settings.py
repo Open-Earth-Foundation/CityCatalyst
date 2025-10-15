@@ -76,7 +76,7 @@ def _load_environment() -> None:
                 if value is None:
                     continue
                 current = os.getenv(key)
-                if not current:
+                if current is None:
                     os.environ[key] = value
         loaded_paths.add(resolved)
 
@@ -328,7 +328,7 @@ class Settings(BaseModel):
 
             if missing:
                 logging.warning(
-                    "LangSmith tracing disabled because required configuration values are missing: %s",
+                    "LangSmith tracing disabled because the following required configuration values are missing: %s",
                     ", ".join(missing),
                 )
                 self.langsmith_tracing_enabled = False

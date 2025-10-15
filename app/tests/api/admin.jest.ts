@@ -1,6 +1,6 @@
-import { POST as changeRole } from "@/app/api/v0/auth/role/route";
-import { POST as createBulkInventories } from "@/app/api/v0/admin/bulk/route";
-import { POST as bulkConnectDataSources } from "@/app/api/v0/admin/connect-sources/route";
+import { POST as changeRole } from "@/app/api/v1/auth/role/route";
+import { POST as createBulkInventories } from "@/app/api/v1/admin/bulk/route";
+import { POST as bulkConnectDataSources } from "@/app/api/v1/admin/connect-sources/route";
 import { db } from "@/models";
 import {
   beforeAll,

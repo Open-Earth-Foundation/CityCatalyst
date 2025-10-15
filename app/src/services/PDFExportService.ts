@@ -1,18 +1,19 @@
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { TFunction } from "i18next";
 
 interface ActionPlanPDFData {
   metadata?: {
-    cityName?: string;
-    actionName?: string;
-    language?: string;
-    createdAt?: string;
+    cityName?: string | null;
+    actionName?: string | null;
+    language?: string | null;
+    createdAt?: string | null;
   };
   content?: {
     introduction?: {
-      city_description?: string;
-      action_description?: string;
-      national_strategy_explanation?: string;
+      city_description?: string | null;
+      action_description?: string | null;
+      national_strategy_explanation?: string | null;
     };
     subactions?: {
       items?: Array<{
@@ -57,22 +58,37 @@ interface ActionPlanPDFData {
 }
 
 export class PDFExportService {
-  private static addHeader(doc: jsPDF, cityName: string, actionName: string) {
+  private static addHeader(
+    doc: jsPDF,
+    cityName: string,
+    actionName: string,
+    t: TFunction,
+  ) {
     // Add title
     doc.setFontSize(20);
     doc.setFont("", "bold");
-    doc.text("Climate Action Implementation Plan", 20, 25);
+    doc.text(t("pdf.title"), 20, 25);
 
-    // Add subtitle
+    // Add subtitle with proper text formatting
     doc.setFontSize(16);
     doc.setFont("", "normal");
-    doc.text(`${actionName} - ${cityName}`, 20, 35);
+
+    const subtitleText = `${actionName} - ${cityName}`;
+
+    // Use jsPDF's built-in text formatting with maxWidth and align options
+    const textLines = doc.splitTextToSize(subtitleText, 160);
+    doc.text(textLines, 20, 35, { maxWidth: 160, align: "left" });
+
+    // Calculate Y position based on number of lines
+    const lineHeight = 7;
+    const subtitleHeight = textLines.length * lineHeight;
+    const dividerY = 35 + subtitleHeight + 5;
 
     // Add divider line
     doc.setLineWidth(0.5);
-    doc.line(20, 45, 190, 45);
+    doc.line(20, dividerY, 190, dividerY);
 
-    return 55; // Return Y position for next content
+    return dividerY + 10; // Return Y position for next content
   }
 
   private static addSection(
@@ -158,6 +174,7 @@ export class PDFExportService {
     doc: jsPDF,
     items: Array<{ title?: string; name?: string; description: string }>,
     yPosition: number,
+    t: TFunction,
   ): number {
     let currentY = yPosition;
 
@@ -171,7 +188,7 @@ export class PDFExportService {
       // Add bullet and title
       doc.setFontSize(11);
       doc.setFont("", "bold");
-      const titleText = `• ${item.title || item.name || "Item"}`;
+      const titleText = `• ${item.title || item.name || t("pdf.labels.item")}`;
       doc.text(titleText, 25, currentY);
       currentY += 7;
 
@@ -189,20 +206,25 @@ export class PDFExportService {
     planData: ActionPlanPDFData,
     actionName: string,
     cityName: string,
+    t: TFunction,
   ): void {
     const doc = new jsPDF();
 
     // Add header
-    let yPosition = this.addHeader(doc, cityName, actionName);
+    let yPosition = this.addHeader(doc, cityName, actionName, t);
 
     // Add introduction section
     if (planData.content?.introduction) {
-      yPosition = this.addSection(doc, "Overview", yPosition + 10);
+      yPosition = this.addSection(
+        doc,
+        t("pdf.sections.overview"),
+        yPosition + 10,
+      );
 
       if (planData.content.introduction.city_description) {
         yPosition = this.addText(
           doc,
-          `City Context: ${planData.content.introduction.city_description}`,
+          `${t("pdf.labels.city-context")}: ${planData.content.introduction.city_description}`,
           yPosition,
         );
       }
@@ -210,7 +232,7 @@ export class PDFExportService {
       if (planData.content.introduction.action_description) {
         yPosition = this.addText(
           doc,
-          `Action Description: ${planData.content.introduction.action_description}`,
+          `${t("pdf.labels.action-description")}: ${planData.content.introduction.action_description}`,
           yPosition,
         );
       }
@@ -218,7 +240,7 @@ export class PDFExportService {
       if (planData.content.introduction.national_strategy_explanation) {
         yPosition = this.addText(
           doc,
-          `National Strategy: ${planData.content.introduction.national_strategy_explanation}`,
+          `${t("pdf.labels.national-strategy")}: ${planData.content.introduction.national_strategy_explanation}`,
           yPosition,
         );
       }
@@ -228,7 +250,7 @@ export class PDFExportService {
     if (planData.content?.subactions?.items?.length) {
       yPosition = this.addSection(
         doc,
-        `Implementation Steps (${planData.content.subactions.items.length})`,
+        `${t("pdf.sections.implementation-steps")} (${planData.content.subactions.items.length})`,
         yPosition + 10,
       );
       yPosition = this.addNumberedList(
@@ -242,13 +264,14 @@ export class PDFExportService {
     if (planData.content?.institutions?.items?.length) {
       yPosition = this.addSection(
         doc,
-        `Key Institutions (${planData.content.institutions.items.length})`,
+        `${t("pdf.sections.key-institutions")} (${planData.content.institutions.items.length})`,
         yPosition + 10,
       );
       yPosition = this.addBulletList(
         doc,
         planData.content.institutions.items,
         yPosition,
+        t,
       );
     }
 
@@ -256,7 +279,7 @@ export class PDFExportService {
     if (planData.content?.milestones?.items?.length) {
       yPosition = this.addSection(
         doc,
-        `Milestones (${planData.content.milestones.items.length})`,
+        `${t("pdf.sections.milestones")} (${planData.content.milestones.items.length})`,
         yPosition + 10,
       );
       yPosition = this.addNumberedList(
@@ -270,13 +293,14 @@ export class PDFExportService {
     if (planData.content?.mitigations?.items?.length) {
       yPosition = this.addSection(
         doc,
-        `Mitigation Measures (${planData.content.mitigations.items.length})`,
+        `${t("pdf.sections.mitigation-measures")} (${planData.content.mitigations.items.length})`,
         yPosition + 10,
       );
       yPosition = this.addBulletList(
         doc,
         planData.content.mitigations.items,
         yPosition,
+        t,
       );
     }
 
@@ -284,13 +308,14 @@ export class PDFExportService {
     if (planData.content?.adaptations?.items?.length) {
       yPosition = this.addSection(
         doc,
-        `Adaptation Measures (${planData.content.adaptations.items.length})`,
+        `${t("pdf.sections.adaptation-measures")} (${planData.content.adaptations.items.length})`,
         yPosition + 10,
       );
       yPosition = this.addBulletList(
         doc,
         planData.content.adaptations.items,
         yPosition,
+        t,
       );
     }
 
@@ -298,13 +323,14 @@ export class PDFExportService {
     if (planData.content?.sdgs?.items?.length) {
       yPosition = this.addSection(
         doc,
-        `Sustainable Development Goals (${planData.content.sdgs.items.length})`,
+        `${t("pdf.sections.sustainable-development-goals")} (${planData.content.sdgs.items.length})`,
         yPosition + 10,
       );
       yPosition = this.addBulletList(
         doc,
         planData.content.sdgs.items,
         yPosition,
+        t,
       );
     }
 
@@ -315,11 +341,15 @@ export class PDFExportService {
       doc.setFontSize(8);
       doc.setFont("", "normal");
       doc.text(
-        `Generated by CityCatalyst - Page ${i} of ${pageCount}`,
+        `${t("pdf.footer.generated-by")} - ${t("pdf.footer.page")} ${i} ${t("pdf.footer.of")} ${pageCount}`,
         20,
         285,
       );
-      doc.text(`Generated on ${new Date().toLocaleDateString()}`, 150, 285);
+      doc.text(
+        `${t("pdf.footer.generated-on")} ${new Date().toLocaleDateString()}`,
+        150,
+        285,
+      );
     }
 
     // Generate filename and download

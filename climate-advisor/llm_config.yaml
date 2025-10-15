@@ -64,6 +64,13 @@ tools:
     min_score: 0.6
     description: "Search the climate knowledge base for relevant information about climate change, emissions, GHG, carbon, sustainability, environmental policies, renewable energy, net zero goals, climate adaptation, and mitigation strategies."
 
+# Conversation Configuration
+conversation:
+  # Number of previous messages to include for context
+  history_limit: 5
+  # Whether to include conversation history in agent context
+  include_history: true
+
 # Feature Flags
 features:
   # Enable/disable streaming responses

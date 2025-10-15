@@ -43,7 +43,7 @@ async def persist_assistant_message(
                     thread_id=thread.thread_id,
                     user_id=user_id,
                     text=assistant_content,
-                    tools_used=tool_invocations[0] if tool_invocations else None,
+                    tools_used=tool_invocations or None,
                 )
                 await thread_service.touch_thread(thread)
                 await session.commit()

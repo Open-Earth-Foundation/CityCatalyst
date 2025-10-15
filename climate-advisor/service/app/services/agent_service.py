@@ -93,21 +93,21 @@ class AgentService:
         self,
         *,
         model: Optional[str] = None,
-        temperature: Optional[float] = None,
         instructions: Optional[str] = None,
     ) -> Agent:
         """Create an AI agent with climate tools.
         
+        Temperature is configured globally in llm_config.yaml and applies to all requests.
+        The Agents SDK uses the OpenAI client configuration set during initialization.
+        
         Args:
             model: Optional model override (uses default if not provided)
-            temperature: Optional temperature override (uses default if not provided)
             instructions: Optional instructions override (uses system prompt if not provided)
         
         Returns:
             Configured Agent instance
         """
         agent_model = model or self.default_model
-        agent_temperature = temperature if temperature is not None else self.default_temperature
         agent_instructions = instructions or self.system_prompt
         
         # Create agent with climate vector search tool
@@ -118,15 +118,10 @@ class AgentService:
             tools=[climate_vector_search],
         )
         
-        # Note: Temperature is typically set at the model level in Agents SDK
-        # Some implementations may require passing it differently
-        # Store it as an attribute for potential future use
-        agent._temperature = agent_temperature
-        
         logger.info(
-            "Created agent with model=%s, temperature=%s, tools=%s",
+            "Created agent with model=%s, temperature=%s (from config), tools=%s",
             agent_model,
-            agent_temperature,
+            self.default_temperature,
             [tool.name for tool in agent.tools] if hasattr(agent, 'tools') else []
         )
         

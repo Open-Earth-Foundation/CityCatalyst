@@ -51,7 +51,6 @@ async def _stream_with_agents_sdk(
     user_id: str,
     session_factory: Optional[async_sessionmaker[AsyncSession]],
     history_warning: Optional[str] = None,
-    session: Optional[AsyncSession] = None,
 ) -> AsyncIterator[bytes]:
     """Stream AI responses using OpenAI Agents SDK with OpenRouter.
     
@@ -66,25 +65,53 @@ async def _stream_with_agents_sdk(
         warning_payload = {"message": history_warning, "thread_id": str(thread_id)}
         yield format_sse(warning_payload, event="warning").encode("utf-8")
     
-    # Get model and temperature overrides from options
+    # Get model override from options (temperature is configured globally in llm_config.yaml)
     options = payload.options or {}
     model_override = options.get("model")
-    temperature_override = options.get("temperature")
     
     # Track response state
     assistant_tokens: List[str] = []
     tool_invocations: List[dict] = []
     token_index = 0
     history_saved = False
+    streaming_error = False  # Track if streaming encountered an error
     agent_service: Optional[AgentService] = None
     
     try:
         # Create agent service and agent
         agent_service = AgentService()
         agent = await agent_service.create_agent(
-            model=model_override,
-            temperature=temperature_override
+            model=model_override
         )
+        
+        # Load conversation history if database is available and history is enabled
+        conversation_history = []
+        if session_factory and settings.llm.conversation and settings.llm.conversation.include_history:
+            try:
+                async with session_factory() as hist_session:
+                    message_service = MessageService(hist_session)
+                    history_limit = settings.llm.conversation.history_limit or 5
+                    
+                    # Get recent messages from thread (excluding the current user message)
+                    messages = await message_service.get_thread_messages(
+                        thread_id=thread_id,
+                        limit=history_limit
+                    )
+                    
+                    # Format messages for Agents SDK
+                    for msg in messages:
+                        conversation_history.append({
+                            "role": msg.role.value,
+                            "content": msg.text
+                        })
+                    
+                    logger.info(
+                        "Loaded %d messages from conversation history for thread_id=%s",
+                        len(conversation_history),
+                        thread_id
+                    )
+            except Exception as e:
+                logger.warning("Failed to load conversation history: %s", e)
         
         logger.info(
             "Starting Agents SDK streaming - thread_id=%s, user_id=%s, request_id=%s",
@@ -93,13 +120,25 @@ async def _stream_with_agents_sdk(
             req_id
         )
         
-        # Stream responses from the agent
-        result = Runner.run_streamed(agent, payload.content)
+        # Stream responses from the agent with conversation history
+        # If we have history, pass it along with the current message
+        if conversation_history:
+            # Add current user message to history
+            conversation_history.append({
+                "role": "user",
+                "content": payload.content
+            })
+            result = Runner.run_streamed(agent, conversation_history)
+        else:
+            # No history, just pass the current message
+            result = Runner.run_streamed(agent, payload.content)
         async for chunk in result.stream_events():
             chunk_type = chunk.type
 
             if chunk_type == "raw_response_event":
-                response_event = chunk.data
+                response_event = getattr(chunk, "data", None)
+                if not response_event:
+                    continue
                 response_type = getattr(response_event, "type", "")
 
                 if response_type in {
@@ -119,10 +158,12 @@ async def _stream_with_agents_sdk(
                 elif response_type == "error":
                     error_message = getattr(response_event, "message", "Streaming error")
                     logger.error("Received error event from Responses API: %s", error_message)
+                    streaming_error = True  # Mark that we encountered an error
                     yield format_sse(
                         {"message": error_message},
                         event="error",
                     ).encode("utf-8")
+                    # Don't persist message on streaming error
                     break
 
                 elif response_type == "response.completed":
@@ -221,28 +262,41 @@ async def _stream_with_agents_sdk(
             else:
                 logger.debug("Unhandled stream event type: %s", chunk_type)
         
-        # Persist assistant message to database
-        assistant_content = "".join(assistant_tokens)
-        if assistant_content:
-            history_saved = await persist_assistant_message(
-                session_factory=session_factory,
-                thread_id=thread_id,
-                user_id=user_id,
-                assistant_content=assistant_content,
-                tool_invocations=tool_invocations or None,
-            )
-        
-        # Send completion event
-        yield format_sse(
-            {
-                "ok": True,
-                "request_id": req_id,
-                "history_saved": history_saved,
-                "thread_id": str(thread_id),
-                "tools_used": tool_invocations or None,
-            },
-            event="done",
-        ).encode("utf-8")
+        # Only persist if streaming completed successfully (no errors)
+        if not streaming_error:
+            assistant_content = "".join(assistant_tokens)
+            if assistant_content:
+                history_saved = await persist_assistant_message(
+                    session_factory=session_factory,
+                    thread_id=thread_id,
+                    user_id=user_id,
+                    assistant_content=assistant_content,
+                    tool_invocations=tool_invocations or None,
+                )
+            
+            # Send completion event for successful streaming
+            yield format_sse(
+                {
+                    "ok": True,
+                    "request_id": req_id,
+                    "history_saved": history_saved,
+                    "thread_id": str(thread_id),
+                    "tools_used": tool_invocations or None,
+                },
+                event="done",
+            ).encode("utf-8")
+        else:
+            # Send done event with error status (error SSE was already sent above)
+            yield format_sse(
+                {
+                    "ok": False,
+                    "request_id": req_id,
+                    "history_saved": False,
+                    "thread_id": str(thread_id),
+                    "error": "Streaming error occurred",
+                },
+                event="done",
+            ).encode("utf-8")
         
     except Exception as exc:
         logger.exception("Unhandled exception in Agents SDK streaming")
@@ -355,6 +409,5 @@ async def post_message(
         user_id=resolved_user_id,
         session_factory=assistant_session_factory,
         history_warning=history_warning,
-        session=session,
     )
     return StreamingResponse(stream, media_type="text/event-stream", headers=headers)

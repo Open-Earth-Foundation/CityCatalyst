@@ -241,6 +241,20 @@ The configuration file supports:
 - Caching and logging configuration
 - Observability and tracing settings
 
+**Temperature Configuration:**
+
+Temperature is configured globally in `llm_config.yaml` and applies to all requests:
+
+```yaml
+generation:
+  defaults:
+    temperature: 0.1 # 0.0 = deterministic, 1.0 = creative
+```
+
+- Per-request temperature overrides are **not supported** due to OpenAI Agents SDK limitations
+- The Climate Advisor uses `0.1` by default for factual, deterministic responses
+- Model selection can be overridden per-request via the `options.model` parameter
+
 Environment variables can override YAML configuration for API keys and sensitive settings.
 
 - Future CC integration placeholders: `CC_BASE_URL`, `CC_OAUTH_CLIENT_ID`, `CC_OAUTH_CLIENT_SECRET`, `CC_OAUTH_TOKEN_URL`

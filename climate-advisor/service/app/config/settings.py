@@ -23,6 +23,7 @@ Usage:
     # Access app config: settings.port, settings.database_url
 """
 
+import logging
 import os
 from pathlib import Path
 from typing import Dict, List, Optional, Any
@@ -185,6 +186,11 @@ class ToolConfig(BaseModel):
     }
 
 
+class ConversationConfig(BaseModel):
+    history_limit: Optional[int] = 5
+    include_history: Optional[bool] = True
+
+
 class FeaturesConfig(BaseModel):
     streaming_enabled: Optional[bool] = None
     dynamic_model_selection: Optional[bool] = None
@@ -220,6 +226,7 @@ class LLMConfig(BaseModel):
     generation: GenerationConfig
     prompts: PromptsConfig
     api: APIConfig
+    conversation: Optional[ConversationConfig] = ConversationConfig()
     features: FeaturesConfig
     logging: LoggingConfig
     cache: Optional[CacheConfig] = None
@@ -311,24 +318,22 @@ class Settings(BaseModel):
 
         # Validate LangSmith configuration if tracing is enabled
         if self.langsmith_tracing_enabled:
+            missing: list[str] = []
             if not self.langsmith_api_key:
-                raise ValueError(
-                    "LangSmith tracing is enabled but LANGSMITH_API_KEY is not set in .env. "
-                    "Add LANGSMITH_API_KEY to .env or disable tracing (set tracing_enabled: false in llm_config.yaml)"
-                )
-            
+                missing.append("LANGSMITH_API_KEY (.env)")
             if not self.langsmith_endpoint:
-                raise ValueError(
-                    "LangSmith tracing is enabled but endpoint is not configured. "
-                    "Add 'endpoint' under observability.langsmith in llm_config.yaml"
-                )
-            
+                missing.append("observability.langsmith.endpoint (llm_config.yaml)")
             if not self.langsmith_project:
-                raise ValueError(
-                    "LangSmith tracing is enabled but project is not configured. "
-                    "Add 'project' under observability.langsmith in llm_config.yaml"
-                )
+                missing.append("observability.langsmith.project (llm_config.yaml)")
 
+            if missing:
+                logging.warning(
+                    "LangSmith tracing disabled because required configuration values are missing: %s",
+                    ", ".join(missing),
+                )
+                self.langsmith_tracing_enabled = False
+                return
+            
             # Surface configuration to the expected environment variables for LangSmith/LangChain SDKs
             os.environ.setdefault("LANGSMITH_TRACING_V2", "true")
             os.environ.setdefault("LANGCHAIN_TRACING_V2", "true")

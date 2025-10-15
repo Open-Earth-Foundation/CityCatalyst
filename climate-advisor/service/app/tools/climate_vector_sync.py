@@ -87,39 +87,11 @@ def climate_vector_search_sync(question: str) -> str:
     Returns:
         Formatted string with search results
     """
-    # Check if we're already in an event loop
     try:
         loop = asyncio.get_running_loop()
-        # We're in an async context, need to run in a separate thread with its own event loop
-        import concurrent.futures
-        import threading
-        
-        result_container = []
-        exception_container = []
-        
-        def run_in_new_loop():
-            """Run the async function in a new event loop in a separate thread."""
-            try:
-                # Create a new event loop for this thread
-                new_loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(new_loop)
-                try:
-                    result = new_loop.run_until_complete(_run_vector_search(question))
-                    result_container.append(result)
-                finally:
-                    new_loop.close()
-            except Exception as exc:
-                exception_container.append(exc)
-        
-        thread = threading.Thread(target=run_in_new_loop)
-        thread.start()
-        thread.join()
-        
-        if exception_container:
-            raise exception_container[0]
-        
-        return result_container[0] if result_container else "No result returned from search"
-        
+        # We're in an async context, use run_coroutine_threadsafe
+        future = asyncio.run_coroutine_threadsafe(_run_vector_search(question), loop)
+        return future.result()
     except RuntimeError:
         # No running event loop, safe to use asyncio.run()
         try:

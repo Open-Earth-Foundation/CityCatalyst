@@ -97,12 +97,6 @@ export default function SetPopulationDataStep({
   const countryPopulation = watch("countryPopulation");
   const countryPopulationYear = watch("countryPopulationYear");
 
-  useEffect(() => {
-    console.log({
-      countryPopulationYear,
-    });
-  }, [countryPopulationYear]);
-
   const yearsCollection = createListCollection({
     items: years.map((year) => ({ label: year.toString(), value: year })),
   });

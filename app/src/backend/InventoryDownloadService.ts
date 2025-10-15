@@ -100,9 +100,6 @@ export default class InventoryDownloadService {
       MAX_POPULATION_YEAR_DIFFERENCE,
     );
 
-    console.log(populationEntries);
-    console.log(population);
-    console.log(MAX_POPULATION_YEAR_DIFFERENCE);
 
     if (!population) {
       logger.error(

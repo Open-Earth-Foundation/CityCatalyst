@@ -44,9 +44,46 @@ function getQAFeatureFlags(): Record<string, boolean> {
 
   try {
     const stored = localStorage.getItem(QA_FLAGS_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : {};
+    if (!stored) {
+      return {};
+    }
+
+    const parsed = JSON.parse(stored);
+
+    // Validate that the parsed object is actually an object
+    if (
+      typeof parsed !== "object" ||
+      parsed === null ||
+      Array.isArray(parsed)
+    ) {
+      console.warn("Invalid QA feature flags format in localStorage, clearing");
+      localStorage.removeItem(QA_FLAGS_STORAGE_KEY);
+      return {};
+    }
+
+    // Validate that all keys are known feature flags and values are booleans
+    const validFlags: Record<string, boolean> = {};
+    for (const [key, value] of Object.entries(parsed)) {
+      // Check if the key is a valid feature flag
+      if (Object.values(FeatureFlags).includes(key as FeatureFlags)) {
+        // Check if the value is a boolean
+        if (typeof value === "boolean") {
+          validFlags[key] = value;
+        } else {
+          console.warn(
+            `Invalid QA feature flag value for ${key}: expected boolean, got ${typeof value}`,
+          );
+        }
+      } else {
+        console.warn(`Unknown QA feature flag: ${key}`);
+      }
+    }
+
+    return validFlags;
   } catch (error) {
     console.error("Failed to parse QA feature flags:", error);
+    // Clear corrupted data
+    localStorage.removeItem(QA_FLAGS_STORAGE_KEY);
     return {};
   }
 }
@@ -134,6 +171,20 @@ export function setQAFeatureFlag(flag: FeatureFlags, enabled: boolean): void {
     return;
   }
 
+  // Validate that the flag is a valid FeatureFlags enum value
+  if (!Object.values(FeatureFlags).includes(flag)) {
+    console.error(
+      `Invalid feature flag: ${flag}. Must be one of: ${Object.values(FeatureFlags).join(", ")}`,
+    );
+    return;
+  }
+
+  // Validate that enabled is a boolean
+  if (typeof enabled !== "boolean") {
+    console.error(`Invalid enabled value: ${enabled}. Must be a boolean.`);
+    return;
+  }
+
   const qaFlags = getQAFeatureFlags();
   qaFlags[flag] = enabled;
   localStorage.setItem(QA_FLAGS_STORAGE_KEY, JSON.stringify(qaFlags));
@@ -149,6 +200,14 @@ export function setQAFeatureFlag(flag: FeatureFlags, enabled: boolean): void {
  */
 export function clearQAFeatureFlag(flag: FeatureFlags): void {
   if (typeof window === "undefined") {
+    return;
+  }
+
+  // Validate that the flag is a valid FeatureFlags enum value
+  if (!Object.values(FeatureFlags).includes(flag)) {
+    console.error(
+      `Invalid feature flag: ${flag}. Must be one of: ${Object.values(FeatureFlags).join(", ")}`,
+    );
     return;
   }
 

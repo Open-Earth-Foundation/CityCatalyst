@@ -76,7 +76,7 @@ def _load_environment() -> None:
                 if value is None:
                     continue
                 current = os.getenv(key)
-                if not current:
+                if current is None:
                     os.environ[key] = value
         loaded_paths.add(resolved)
 

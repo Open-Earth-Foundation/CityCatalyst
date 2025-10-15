@@ -26,6 +26,7 @@ from routes.citywide_emission_endpoint import api_router as citywide_route
 from routes.ghgi_emissions import api_router as actor_emissions_route
 from routes.ccra_assessment import api_router as ccra_assessment
 from routes.ghgi_emission_forecast import api_router as emission_forecast
+from routes.ghgi_notation_key import api_router as ghgi_notation_key_route
 from routes.city_context import api_router as city_context_route
 from routes.get_climate_actions import api_router as climate_actions_route
 from routes.emissionfactor_publisher_endpoint import api_router as emissionfactor_publisher_route
@@ -150,6 +151,11 @@ app.include_router(
 
 app.include_router(
     emission_forecast,
+    tags=["GHGI Emissions"],
+)
+
+app.include_router(
+    ghgi_notation_key_route,
     tags=["GHGI Emissions"],
 )
 

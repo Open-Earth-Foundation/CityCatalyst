@@ -331,6 +331,7 @@ export default function SetPopulationDataStep({
                       }
                     >
                       <NativeSelectField
+                        name="countryPopulationYear"
                         value={field.value}
                         placeholder={t("inventory-year-placeholder")}
                         onChange={(e) => {
@@ -450,6 +451,7 @@ export default function SetPopulationDataStep({
                       }
                     >
                       <NativeSelectField
+                        name="regionPopulationYear"
                         value={field.value}
                         placeholder={t("inventory-year-placeholder")}
                         onChange={(e) => {
@@ -573,6 +575,7 @@ export default function SetPopulationDataStep({
                       }
                     >
                       <NativeSelectField
+                        name="cityPopulationYear"
                         value={field.value}
                         placeholder={t("inventory-year-placeholder")}
                         onChange={(e) => {

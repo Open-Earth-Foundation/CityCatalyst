@@ -46,12 +46,25 @@ const poppins = localFont({
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <div className={`${openSans.className} ${poppins.className}`}>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossOrigin="anonymous"
+      />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@400;500;600&display=swap"
+        rel="stylesheet"
+      />
       <style jsx global>
         {`
           :root {
             --font-poppins: ${poppins.style.fontFamily};
             --font-opensans: ${openSans.style.fontFamily};
+          }
+          html {
+            font-family: ${openSans.style.fontFamily}, "Open Sans", sans-serif;
           }
         `}
       </style>
@@ -74,6 +87,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
           </OrganizationContextProvider>
         </ChakraProvider>
       </ThemeProvider>
-    </>
+    </div>
   );
 }

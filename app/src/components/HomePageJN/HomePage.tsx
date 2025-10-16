@@ -26,9 +26,13 @@ import {
 import { Hero } from "./Hero";
 import { ActionCards } from "./ActionCards";
 import ProgressLoader from "@/components/ProgressLoader";
-import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import {
+  useOrganizationContext,
+  hasOrganizationChanged,
+  normalizeOrganizationState,
+} from "@/hooks/organization-context-provider/use-organizational-context";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { HeadlineMedium } from "@/components/Texts/Headline";
+import { HeadlineMedium } from "@/components/package/Texts/Headline";
 import { useResourceValidation } from "@/hooks/useResourceValidation";
 import {
   AccordionRoot,
@@ -37,12 +41,13 @@ import {
   AccordionItemContent,
 } from "@/components/ui/accordion";
 import { ModuleCard } from "./ModuleCard";
-import { BodyLarge } from "@/components/Texts/Body";
-import { TitleLarge } from "@/components/Texts/Title";
+import { BodyLarge } from "@/components/package/Texts/Body";
+import { TitleLarge } from "@/components/package/Texts/Title";
 import { LuChevronDown } from "react-icons/lu";
 import { NoModulesCard } from "./NoModulesCard";
 import { Modules } from "@/util/constants";
 import { stageOrder } from "@/config/stages";
+import ClimaAIAssistantDisclaimerDialog from "../ChatBot/clima-ai-assistant-disclaimer-dialog";
 
 export default function HomePage({
   lng,
@@ -125,20 +130,16 @@ export default function HomePage({
 
   useEffect(() => {
     if (orgData) {
-      const logoUrl = orgData?.logoUrl ?? null;
-      const active = orgData?.active ?? true;
+      const newOrgState = normalizeOrganizationState(orgData);
 
-      if (
-        organization?.logoUrl !== logoUrl ||
-        organization?.active !== active
-      ) {
-        setOrganization({ logoUrl, active });
+      if (hasOrganizationChanged(organization, newOrgState)) {
+        setOrganization(newOrgState);
       }
       setTheme(orgData?.theme?.themeKey ?? "blue_theme");
     } else if (!isOrgDataLoading && !orgData) {
       setTheme("blue_theme");
     }
-  }, [isOrgDataLoading, orgData, setTheme]);
+  }, [isOrgDataLoading, orgData, organization, setOrganization, setTheme]);
 
   // Handle invalid city ID - redirect to default city or onboarding
   const { shouldRender: shouldRenderCity } = useResourceValidation({
@@ -195,15 +196,20 @@ export default function HomePage({
             bg="background.backgroundLight"
             px={8}
             mx="auto"
+            mt={"60px"}
           >
             <HStack my={8}>
               <Image src="/assets/automation.svg" alt="" />
               <HeadlineMedium>{t("tools-title")}</HeadlineMedium>
             </HStack>
-            <Separator borderColor="divider.neutral" borderWidth="2px" />
+            <Separator
+              borderColor="divider.neutral"
+              borderWidth="2px"
+              mb="48px"
+            />
             {/* Accordions for stages */}
             {modulesByStage && projectModules && (
-              <AccordionRoot multiple>
+              <AccordionRoot multiple defaultValue={stageOrder}>
                 {stageOrder.map((stage) => {
                   const modules = projectModules.filter((mod) => {
                     // Filter out CCRA module unless feature flag is enabled

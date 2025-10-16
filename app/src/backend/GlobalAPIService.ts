@@ -35,10 +35,10 @@ export class GlobalAPIService {
         language: lang,
       });
 
-      logger.info("Fetching climate actions from API", {
+      logger.info({
         url,
         lang,
-      });
+      }, "Fetching climate actions from API");
 
       const response = await fetch(`${url}?${params.toString()}`, {
         method: "GET",
@@ -49,21 +49,21 @@ export class GlobalAPIService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        logger.error("API request failed", {
+        logger.error({
           status: response.status,
           statusText: response.statusText,
           error: errorText,
           lang,
-        });
+        }, "API request failed");
         throw new Error(
           `API request failed: ${response.status} ${response.statusText}`,
         );
       }
 
       const data = await response.json();
-      logger.info("Successfully fetched climate actions", {
+      logger.info({
         lang,
-      });
+      }, "Successfully fetched climate actions");
       return data;
     } catch (err) {
       logger.error({ err: err }, "Error fetching climate actions from API:");

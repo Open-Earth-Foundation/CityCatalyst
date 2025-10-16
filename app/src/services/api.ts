@@ -6,6 +6,7 @@ import {
   type UserAttributes,
   type ModuleAttributes,
   ProjectModulesAttributes,
+  ActionPlan,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
 import {
@@ -32,6 +33,7 @@ import {
   ListOrganizationsResponse,
   OrganizationResponse,
   OrganizationRole,
+  OrganizationInviteResponse,
   ProjectResponse,
   ProjectWithCities,
   RequiredScopesResponse,
@@ -66,6 +68,10 @@ import type {
   GHGInventorySummary,
   HIAPSummary,
   CCRASummary,
+  HIAction,
+  HighImpactActionRankingStatus,
+  BulkHiapPrioritizationResult,
+  HiapJob,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -99,6 +105,7 @@ export const api = createApi({
     "UserAccessStatus",
     "Cities",
     "Hiap",
+    "HiapJobs",
     "Themes",
     "Client",
     "CityDashboard",
@@ -109,8 +116,9 @@ export const api = createApi({
     "CCRADashboard",
     "ProjectModules",
     "Modules",
+    "ActionPlan",
   ],
-  baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
     return {
       getCitiesAndYears: builder.query<CityAndYearsResponse[], void>({
@@ -1061,7 +1069,7 @@ export const api = createApi({
             organizationId: data.organizationId,
           },
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: OrganizationInviteResponse) => response,
         invalidatesTags: [
           "OrganizationInvite",
           "Organizations",
@@ -1129,6 +1137,45 @@ export const api = createApi({
           body: data,
         }),
         transformResponse: (response: any) => response,
+      }),
+      markCitiesPublic: builder.mutation({
+        query: (data: { projectId: string }) => ({
+          url: `/admin/mark-cities-public`,
+          method: "PUT",
+          body: data,
+        }),
+        transformResponse: (response: { message: string }) => response,
+      }),
+      migrateHiapSelections: builder.mutation({
+        query: (data: { projectId: string; year: number }) => ({
+          url: `/admin/project/${data.projectId}/migrate-hiap-selections`,
+          method: "POST",
+          body: { year: data.year },
+        }),
+        transformResponse: (response: {
+          message: string;
+          citiesProcessed: number;
+        }) => response,
+      }),
+      startBulkHiapPrioritization: builder.mutation({
+        query: (data: {
+          projectId: string;
+          year: number;
+          actionType: ACTION_TYPES;
+          language?: string;
+        }) => ({
+          url: `/admin/bulk-hiap-prioritization`,
+          method: "POST",
+          body: data,
+        }),
+        transformResponse: (response: {
+          data: {
+            startedCount: number;
+            failedCount: number;
+            results: BulkHiapPrioritizationResult[];
+          };
+        }) => response.data,
+        invalidatesTags: ["HiapJobs"],
       }),
       getProjectUsers: builder.query({
         query: (projectId: string) => ({
@@ -1215,10 +1262,15 @@ export const api = createApi({
       }),
       getHiap: builder.query<
         HIAPResponse,
-        { inventoryId: string; actionType: ACTION_TYPES; lng: LANGUAGES }
+        {
+          inventoryId: string;
+          actionType: ACTION_TYPES;
+          lng: LANGUAGES;
+          ignoreExisting?: boolean;
+        }
       >({
-        query: ({ inventoryId, actionType, lng }) => ({
-          url: `inventory/${inventoryId}/hiap?actionType=${actionType}&lng=${lng}`,
+        query: ({ inventoryId, actionType, lng, ignoreExisting = false }) => ({
+          url: `inventory/${inventoryId}/hiap?actionType=${actionType}&lng=${lng}&ignoreExisting=${ignoreExisting}`,
           method: "GET",
         }),
         transformResponse: (response: { data: HIAPResponse }) => {
@@ -1242,6 +1294,66 @@ export const api = createApi({
           return response;
         },
         invalidatesTags: ["Hiap"],
+      }),
+      generateActionPlan: builder.mutation<
+        { plan: string; timestamp: string; actionName: string },
+        {
+          action: HIAction;
+          inventoryId: string;
+          cityLocode: string;
+          lng?: string;
+          cityId: string;
+          rankingId: string;
+        }
+      >({
+        query: ({
+          action,
+          inventoryId,
+          cityId,
+          lng,
+          cityLocode,
+          rankingId,
+        }: {
+          action: HIAction;
+          inventoryId: string;
+          cityId: string;
+          cityLocode?: string;
+          lng?: string;
+          rankingId: string;
+        }) => ({
+          url: `city/${cityId}/hiap/action-plan/generate/${rankingId}`,
+          method: "POST",
+          body: { action, inventoryId, cityLocode, lng },
+        }),
+        transformResponse: (response: {
+          data: { plan: string; timestamp: string; actionName: string };
+        }) => {
+          return response.data;
+        },
+        invalidatesTags: ["ActionPlan"],
+      }),
+      getActionPlans: builder.query<
+        { actionPlans: ActionPlan[] },
+        { cityId: string; language?: string; actionId?: string }
+      >({
+        query: ({ cityId, language, actionId }) => {
+          const params = new URLSearchParams();
+          if (language) params.append("language", language);
+          if (actionId) params.append("actionId", actionId);
+          return `city/${cityId}/hiap/action-plan?${params.toString()}`;
+        },
+        transformResponse: (response: { data: ActionPlan[] }) => ({
+          actionPlans: response.data,
+        }),
+        providesTags: ["ActionPlan"],
+      }),
+      getActionPlanById: builder.query<
+        ActionPlan,
+        { cityId: string; id: string }
+      >({
+        query: ({ cityId, id }) => `city/${cityId}/hiap/action-plan/${id}`,
+        transformResponse: (response: { data: ActionPlan }) => response.data,
+        providesTags: ["ActionPlan"],
       }),
       setOrgWhiteLabel: builder.mutation({
         query: (data: {
@@ -1530,6 +1642,19 @@ export const api = createApi({
         transformResponse: (response: { data: ProjectModulesAttributes }) =>
           response.data,
       }),
+      getHiapJobs: builder.query<
+        HiapJob[],
+        { projectId: string; year?: number; actionType?: string }
+      >({
+        query: ({ projectId, year, actionType }) => {
+          const params = new URLSearchParams();
+          if (year) params.append("year", year.toString());
+          if (actionType) params.append("actionType", actionType);
+          return `/admin/project/${projectId}/hiap-jobs?${params.toString()}`;
+        },
+        transformResponse: (response: { data: HiapJob[] }) => response.data,
+        providesTags: ["HiapJobs"],
+      }),
     };
   },
 });
@@ -1624,6 +1749,9 @@ export const {
   useDeleteProjectMutation,
   useCreateBulkInventoriesMutation,
   useConnectDataSourcesMutation,
+  useMarkCitiesPublicMutation,
+  useMigrateHiapSelectionsMutation,
+  useStartBulkHiapPrioritizationMutation,
   useGetProjectUsersQuery,
   useGetUserAccessStatusQuery,
   useGetAllCitiesInSystemQuery,
@@ -1631,6 +1759,9 @@ export const {
   useTransferCitiesMutation,
   useGetHiapQuery,
   useUpdateHiapSelectionMutation,
+  useGenerateActionPlanMutation,
+  useGetActionPlansQuery,
+  useGetActionPlanByIdQuery,
   useGetThemesQuery,
   useSetOrgWhiteLabelMutation,
   useGetOrganizationForInventoryQuery,
@@ -1654,5 +1785,6 @@ export const {
   useDeleteClientMutation,
   useEnableProjectModuleAccessMutation,
   useDisableProjectModuleAccessMutation,
+  useGetHiapJobsQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

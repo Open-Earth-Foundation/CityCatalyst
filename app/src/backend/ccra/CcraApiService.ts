@@ -3,7 +3,7 @@ import { logger } from "@/services/logger";
 import { CCRATopRisksData, Indicator, RiskAssessment } from "@/util/types";
 
 const CCRA_API_URL =
-  (process.env.GLOBAL_API_URL || "http://ccra-service") + "/api/v0";
+  (process.env.GLOBAL_API_URL || "http://ccra-service") + "/api/v1";
 
 class CCRAApiService {
   /**
@@ -29,7 +29,7 @@ class CCRAApiService {
       const data = await response.json();
       return Array.isArray(data) ? data : data.riskAssessment || [];
     } catch (error) {
-      logger.error("Error fetching risk assessment:", { error, actorId });
+      logger.error({ error, actorId }, "Error fetching risk assessment");
       throw error;
     }
   }
@@ -55,7 +55,7 @@ public static  async getIndicatorDetails(actorId: string): Promise<Indicator[]> 
       const data = await response.json();
       return Array.isArray(data) ? data : data.indicators || [];
     } catch (error) {
-      logger.error("Error fetching indicators:", { error, actorId });
+      logger.error({ error, actorId }, "Error fetching indicators:");
       throw error;
     }
   }
@@ -80,7 +80,7 @@ public static  async getIndicatorDetails(actorId: string): Promise<Indicator[]> 
         indicators,
       };
     } catch (error) {
-      logger.error("Error fetching CCRA data:", { error, actorId });
+      logger.error({ error, actorId }, "Error fetching CCRA data:");
       throw error;
     }
   }

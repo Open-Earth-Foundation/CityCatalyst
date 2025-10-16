@@ -9,7 +9,7 @@ import {
 } from "react-hook-form";
 import { Field } from "@/components/ui/field";
 import { MdError } from "react-icons/md";
-import { BodyMedium } from "@/components/Texts/Body";
+import { BodyMedium } from "@/components/package/Texts/Body";
 import { GHGIFormInputs } from "@/util/GHGI/types";
 
 // Type for general onboarding inputs

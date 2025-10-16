@@ -2,11 +2,11 @@ import { Card, Button, HStack, Image, Icon, VStack } from "@chakra-ui/react";
 import { Tooltip } from "@/components/ui/tooltip";
 import React from "react";
 import type { TFunction } from "i18next";
-import { ButtonMedium } from "@/components/Texts/Button";
-import { BodyMedium, BodySmall } from "../Texts/Body";
+import { ButtonMedium } from "@/components/package/Texts/Button";
+import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { MdArrowForward } from "react-icons/md";
 import { MdInfoOutline } from "react-icons/md";
-import { TitleLarge } from "../Texts/Title";
+import { TitleLarge } from "@/components/package/Texts/Title";
 import { ModuleAttributes } from "@/models/Module";
 
 export function ModuleCard({

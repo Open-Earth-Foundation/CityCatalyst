@@ -27,10 +27,10 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
   const searchParams = useSearchParams();
   const router = useRouter();
   const { t } = useTranslation(lng, "auth");
-  
+
   const queryParams = Object.fromEntries(searchParams.entries());
   const calledOnce = useRef(false);
-  
+
   // State management
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -62,12 +62,12 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
   // Auto-detect invite type from URL parameters
   const detectInviteType = (): InviteType => {
     if (inviteType) return inviteType;
-    
+
     const { cityIds, organizationId } = queryParams;
-    
+
     if (organizationId) return InviteType.ORGANIZATION;
     if (cityIds) return InviteType.CITY;
-    
+
     return InviteType.CITY; // default fallback
   };
 
@@ -76,7 +76,7 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
   const validateInput = (token: string, email: string, extraParam: string) => {
     const isValidToken = tokenRegex.test(token);
     const isValidEmail = emailPattern.test(email);
-    
+
     switch (currentInviteType) {
       case InviteType.CITY:
         const cityIdsArray = extraParam.split(",");
@@ -104,12 +104,12 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
 
   const getCountryFlag = (countryCode: string | undefined): string => {
     if (!countryCode || countryCode.length !== 2) return "🏙️";
-    
+
     const codePoints = countryCode
       .toUpperCase()
       .split("")
       .map(char => 127397 + char.charCodeAt(0));
-    
+
     return String.fromCodePoint(...codePoints);
   };
 
@@ -140,7 +140,7 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
             setIsLoading(false);
             return;
           }
-          
+
           const sanitizedCityIds = sanitizeInput(cityIds);
           result = await acceptCityInvite({
             token: sanitizedToken,
@@ -220,14 +220,14 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
                   flag: getCountryFlag(city?.countryLocode)
                 };
               });
-              
+
               finalInviteData = {
                 ...finalInviteData,
                 cities: invitedCities
               };
             }
           } catch (error) {
-            logger.error("Failed to fetch city data for invite:", error);
+            logger.error(error, "Failed to fetch city data for invite");
           }
         }
 
@@ -237,7 +237,7 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
       }
     } catch (error) {
       setError(true);
-      logger.error("Failed to accept invite:", error);
+      logger.error(error, "Failed to accept invite");
     } finally {
       setIsLoading(false);
     }
@@ -255,7 +255,7 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
   if (isLoading) return <ProgressLoader />;
   if (error) return <InviteErrorView lng={lng} />;
   if (success) return (
-    <InviteSuccessModal 
+    <InviteSuccessModal
       isOpen={success}
       onClose={handleSuccessClose}
       inviteData={inviteData}

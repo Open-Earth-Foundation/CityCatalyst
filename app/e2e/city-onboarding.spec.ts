@@ -1,7 +1,5 @@
 import { test, expect } from "@playwright/test";
-import {
-  createCityThroughOnboarding,
-} from "./helpers";
+import { createCityThroughOnboarding, dismissCookieConsent } from "./helpers";
 
 test("City Onboarding", async ({ page }) => {
   /** "should display the onboarding start page" */
@@ -27,6 +25,8 @@ test("City Onboarding", async ({ page }) => {
     await expect(description).toHaveText(
       /In this step, choose a city to include in your project and provide relevant details that wil be used later./i,
     );
+
+    await dismissCookieConsent(page);
 
     //   Verify the "Get Started" button is present and clickable
     const startButton = page.getByRole("button", { name: /Get Started/i });
@@ -87,4 +87,3 @@ test("City Onboarding", async ({ page }) => {
     await expect(page).toHaveURL(/\/en\/cities\/[a-f0-9-]+\/?$/);
   }
 });
-

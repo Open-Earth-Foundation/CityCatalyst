@@ -222,8 +222,7 @@ export function NavigationBar({
                 </Heading>
               </Link>
               <Link
-                target="_blank"
-                rel="help noopener noreferrer"
+                rel="help noopener"
                 href="https://citycatalyst.openearth.org/learning-hub"
               >
                 <Heading
@@ -503,11 +502,12 @@ export function NavigationBar({
             </Box>
           </Box>
           {/* JN Drawer */}
-          {/* Should be shown if JN is enabled and url has /cities*/}
-          {fullPath.includes("/cities") && (
+          {/* Should be shown if JN is enabled */}
+          {hasFeatureFlag(FeatureFlags.JN_ENABLED) && (
             <JNDrawer
               lng={lng}
               currentInventoryId={currentInventoryId as string}
+              organizationId={organization?.organizationId as string}
               isOpen={isDrawerOpen}
               onClose={() => setIsDrawerOpen(false)}
               onOpenChange={({ open }) => setIsDrawerOpen(open)}
@@ -515,7 +515,7 @@ export function NavigationBar({
           )}
           {/* TODO: [ON-4452] Remove project drawer and replace with JN drawer after JN is live */}
           {/* Project Drawer */}
-          {!fullPath.includes("/cities") && (
+          {!hasFeatureFlag(FeatureFlags.JN_ENABLED) && (
             <ProjectDrawer
               lng={lng}
               currentInventoryId={currentInventoryId as string}

@@ -455,7 +455,7 @@ const BulkInventoryCreationTabContent: FC<BulkActionsTabContentProps> = ({
                         value={field.value}
                         onValueChange={(e) => {
                           field.onChange(e);
-                          setSelectedGlobalWarmingPotentialValue(e.value);
+                          setSelectedGlobalWarmingPotentialValue(e.value || "");
                         }}
                       >
                         <HStack gap="16px">

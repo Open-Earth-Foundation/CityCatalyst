@@ -9,7 +9,7 @@ import { TFunction } from "i18next";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
 import { MdInfoOutline } from "react-icons/md";
-import { BodyMedium } from "@/components/Texts/Body";
+import { BodyMedium } from "@/components/package/Texts/Body";
 import { LANGUAGES, UpdateUserPayload } from "@/util/types";
 import { LanguageSelector } from "@/app/[lng]/auth/signup/LanguageSelector";
 import { Field } from "@/components/ui/field";

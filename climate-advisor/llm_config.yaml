@@ -1,0 +1,67 @@
+# Climate Advisor LLM Configuration
+# This file contains all LLM-related configuration for the Climate Advisor service
+
+# Model Configuration
+models:
+  # Default model to use when none is specified
+  default: "openai/gpt-4.1"
+
+  # Available models with their capabilities and default parameters
+  available:
+    "openai/gpt-4.1":
+      name: "GPT-4.1"
+      default_temperature: 0.2
+
+# Generation Parameters
+generation:
+  # Default parameters for text generation
+  defaults:
+    temperature: 0.1
+
+# System Prompts
+prompts:
+  # Default system prompt for general climate advice
+  default: "prompts/default.md"
+
+  # Prompt for inventory-specific context
+  inventory_context: "prompts/inventory_context.md"
+
+  # Prompt for data analysis tasks
+  data_analysis: "prompts/data_analysis.md"
+
+# API Configuration
+api:
+  # OpenRouter configuration
+  openrouter:
+    base_url: "https://openrouter.ai/api/v1"
+    # API key should be set via environment variable OPENROUTER_API_KEY
+    timeout_ms: 30000
+    retry_attempts: 3
+    retry_delay_ms: 1000
+
+  # OpenAI configuration for embeddings
+  openai:
+    base_url: "https://api.openai.com/v1"
+    # API key should be set via environment variable OPENAI_API_KEY
+    timeout_ms: 30000
+    embedding_model: "text-embedding-3-large"
+
+  # Request configuration
+  requests:
+    # Maximum time to wait for a response
+    timeout_ms: 30000
+    # Maximum number of retries for failed requests
+    max_retries: 3
+    # Delay between retries (exponential backoff)
+    retry_delay_ms: 1000
+
+# Feature Flags
+features:
+  # Enable/disable streaming responses
+  streaming_enabled: true
+
+# Logging Configuration
+logging:
+  log_requests: false
+  log_responses: false
+  log_performance: true

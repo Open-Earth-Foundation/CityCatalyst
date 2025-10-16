@@ -1,4 +1,4 @@
-import { convertKgToTonnes } from "@/util/helpers";
+import { convertKgToTonnes, clamp } from "@/util/helpers";
 import {
   Box,
   Card,
@@ -47,7 +47,7 @@ const EmissionsWidgetCard = ({
         <HStack align="start">
           {value && showProgress ? (
             <ProgressCircleRoot
-              value={Math.round(value)}
+              value={Math.round(clamp(value, 0, 100))}
               size="sm"
               color="interactive.secondary"
               mr="4px"
@@ -84,8 +84,13 @@ const EmissionsWidget = ({
   // Country total is in tonnes, inventory total is in kg
   const percentageOfCountrysEmissions =
     inventory?.totalEmissions && inventory?.totalCountryEmissions
-      ? (inventory.totalEmissions / (inventory.totalCountryEmissions * 1000)) *
-        100
+      ? clamp(
+          (inventory.totalEmissions /
+            (inventory.totalCountryEmissions * 1000)) *
+            100,
+          0,
+          100,
+        )
       : undefined;
   const emissionsPerCapita =
     inventory?.totalEmissions && population?.population

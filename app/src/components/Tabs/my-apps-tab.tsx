@@ -6,8 +6,8 @@ import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import { AppCard } from "../Cards/AppCard";
 import { useTranslation } from "@/i18n/client";
-import { HeadlineSmall } from "../Texts/Headline";
-import { BodyLarge } from "../Texts/Body";
+import { HeadlineSmall } from "@/components/package/Texts/Headline";
+import { BodyLarge } from "@/components/package/Texts/Body";
 
 interface MyAppsTabProps {
   lng: string /** Language to use for UI and client descriptions */;

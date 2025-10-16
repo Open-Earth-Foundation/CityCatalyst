@@ -33,7 +33,7 @@ const TEST_INVENTORY_DATA = {
 };
 
 const createInventory = async (request: APIRequestContext): Promise<string> => {
-  const cityResult = await request.post("/api/v0/city", {
+  const cityResult = await request.post("/api/v1/city", {
     data: TEST_CITY_DETAILS,
   });
   expect(cityResult.ok()).toBeTruthy();
@@ -42,7 +42,7 @@ const createInventory = async (request: APIRequestContext): Promise<string> => {
 
   // add population data
   const populationResult = await request.post(
-    `/api/v0/city/${cityId}/population`,
+    `/api/v1/city/${cityId}/population`,
     {
       data: {
         ...TEST_POPULATION_DATA,
@@ -54,7 +54,7 @@ const createInventory = async (request: APIRequestContext): Promise<string> => {
 
   // add inventory data
   const inventoryResult = await request.post(
-    `/api/v0/city/${cityId}/inventory`,
+    `/api/v1/city/${cityId}/inventory`,
     {
       data: {
         ...TEST_INVENTORY_DATA,
@@ -69,7 +69,7 @@ const createInventory = async (request: APIRequestContext): Promise<string> => {
 
   // make default inventory for user
 
-  await request.patch("/api/v0/user", {
+  await request.patch("/api/v1/user", {
     data: {
       cityId: cityData.id,
       defaultInventoryId: inventoryID,

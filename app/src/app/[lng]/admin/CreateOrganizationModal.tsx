@@ -21,6 +21,7 @@ import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { OrganizationRole } from "@/util/types";
 import { CustomInviteError } from "@/lib/custom-errors/custom-invite-error";
 import { CustomOrganizationError } from "@/lib/custom-errors/organization-error";
+import { trackEvent } from "@/lib/analytics";
 
 type CustomError = CustomInviteError | CustomOrganizationError;
 
@@ -74,19 +75,18 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
   });
   const { showSuccessToast } = UseSuccessToast({
     title: t("organization-added"),
+    description: t("invite-link-copied-to-clipboard"),
     duration: 1200,
   });
 
-  const [createOrganization, { isLoading, error: orgError }] =
+  const [createOrganization, { isLoading }] =
     api.useCreateOrganizationMutation();
 
   const [createProject, { isLoading: isProjectLoading }] =
     api.useCreateProjectMutation();
 
-  const [
-    createOrganizationInvite,
-    { isLoading: isInviteLoading, error: inviteError },
-  ] = api.useCreateOrganizationInviteMutation();
+  const [createOrganizationInvite, { isLoading: isInviteLoading }] =
+    api.useCreateOrganizationInviteMutation();
 
   const isSubmitting = isLoading || isProjectLoading || isInviteLoading;
 
@@ -144,13 +144,31 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
         inviteeEmails: [response.data.contactEmail],
       });
       if (projectResponse.data && inviteResponse.data) {
+        // Track admin invitation
+        trackEvent("admin_invited", {
+          num_invitees: 1,
+          organization_id: response.data.organizationId,
+          role: "admin",
+          invited_emails: [response.data.contactEmail],
+        });
+        // Copy invite URLs to clipboard
+        if (inviteResponse.data.inviteUrls) {
+          const inviteUrls = Object.values(inviteResponse.data.inviteUrls);
+          if (inviteUrls.length > 0) {
+            const urlsText = inviteUrls.join('\n');
+            navigator.clipboard.writeText(urlsText).catch(() => {
+              // Fallback if clipboard API fails
+              console.warn('Failed to copy to clipboard');
+            });
+          }
+        }
         showSuccessToast();
         closeFunction();
-      } else if (inviteError) {
-        handleCustomError(inviteError as CustomError, "error-invite");
+      } else if (inviteResponse.error) {
+        handleCustomError(inviteResponse.error as CustomError, "error-invite");
       }
-    } else if (orgError) {
-      handleCustomError(orgError as CustomError, "error-organization");
+    } else if (response.error) {
+      handleCustomError(response.error as CustomError, "error-organization");
     } else {
       showErrorToast();
     }

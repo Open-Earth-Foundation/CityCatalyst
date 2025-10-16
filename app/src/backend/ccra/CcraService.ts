@@ -147,7 +147,7 @@ export class CcraService {
         region: data.region,
       };
     } catch (error) {
-      logger.error("Error processing top risks:", error);
+      logger.error({ error }, "Error processing top risks");
       throw error;
     }
   }

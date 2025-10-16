@@ -38,7 +38,7 @@ const shouldSkipFrozenCheckForPublicInventory = async (
   urlPath: string,
 ): Promise<boolean> => {
   if (req.method !== "PATCH") return false;
-  if (!urlPath.startsWith("/api/v0/inventory/")) return false;
+  if (!urlPath.startsWith("/api/v1/inventory/")) return false;
 
   try {
     const clonedReq = req.clone();
@@ -219,12 +219,12 @@ export function apiHandler(handler: NextHandler) {
           throw new createHttpError.Unauthorized("Invalid client");
         }
         const scopes = token.scope.split(" ");
-        if (req.method in ["GET", "HEAD"] && !("read" in scopes)) {
+        if (["GET", "HEAD"].includes(req.method) && !(scopes.includes("read"))) {
           throw new createHttpError.Unauthorized("No read scope available");
         }
         if (
-          req.method in ["PUT", "PATCH", "POST", "DELETE"] &&
-          !("write" in scopes)
+          ["PUT", "PATCH", "POST", "DELETE"].includes(req.method) &&
+          !(scopes.includes("write"))
         ) {
           throw new createHttpError.Unauthorized("No write scope available");
         }

@@ -83,16 +83,17 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
       <Controller
         name={activity as any}
         control={control}
-        defaultValue={selectedActivityValue}
-        rules={{ required: required === false ? false : t("option-required") }}
-        render={({ field }) => {
-          return (
+        defaultValue={selectedActivityValue || ""}
+        rules={{
+          required: required === false ? false : t("option-required"),
+        }}
+        render={({ field }) => (
+          <>
             <NativeSelectRoot
-              {...field}
               shadow="1dp"
               borderRadius="4px"
               borderWidth={error ? "1px" : 0}
-              border="inpu/tBox"
+              border="inputBox"
               borderColor={error ? "sentiment.negativeDefault" : ""}
               background={error ? "sentiment.negativeOverlay" : ""}
               fontSize="body.lg"
@@ -103,15 +104,22 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
                 borderColor: "content.link",
                 shadow: "none",
               }}
+              {...register(activity as any, {
+                required: required === false ? false : t("option-required"),
+              })}
             >
               <NativeSelectField
                 placeholder={placeholder}
+                value={field.value || ""}
                 onChange={(e) => {
-                  field.onChange(e.currentTarget.value);
-                  setValue(activity as any, e.currentTarget.value);
+                  const value = e.currentTarget.value;
+                  field.onChange(value);
+                  setValue(activity as any, value);
                 }}
-                value={field.value}
               >
+                <option value="" disabled hidden>
+                  {placeholder}
+                </option>
                 {options?.map((item: string) => (
                   <option key={item} value={item}>
                     {t(item)}
@@ -119,17 +127,15 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
                 ))}
               </NativeSelectField>
             </NativeSelectRoot>
-          );
-        }}
+            {error ? (
+              <Box display="flex" gap="6px" alignItems="center">
+                <Icon as={MdWarning} color="sentiment.negativeDefault" />
+                <Text fontSize="body.md">{error?.message}</Text>
+              </Box>
+            ) : null}
+          </>
+        )}
       />
-      {error ? (
-        <Box display="flex" gap="6px" alignItems="center">
-          <Icon as={MdWarning} color="sentiment.negativeDefault" />
-          <Text fontSize="body.md">{error?.message}</Text>
-        </Box>
-      ) : (
-        ""
-      )}
     </Box>
   );
 };

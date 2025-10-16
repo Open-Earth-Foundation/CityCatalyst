@@ -1,0 +1,17 @@
+fastapi==0.118.0
+uvicorn[standard]==0.37.0
+httpx==0.28.1
+SQLAlchemy[asyncio]==2.0.43
+psycopg2-binary==2.9.10
+asyncpg==0.30.0
+alembic==1.16.5
+python-dotenv==1.1.1
+PyYAML==6.0.3
+aiosqlite==0.21.0
+pydantic==2.11.9
+openai==2.1.0
+numpy==2.3.3
+PyPDF2==3.0.1
+langchain-text-splitters==0.3.11
+pgvector==0.4.1
+tiktoken==0.8.0

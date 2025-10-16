@@ -3,7 +3,7 @@ import { Icon, Input, Text } from "@chakra-ui/react";
 import { FieldError } from "react-hook-form";
 import { Fieldset } from "@chakra-ui/react";
 import { Field } from "@/components/ui/field";
-import LabelLarge from "@/components/Texts/Label";
+import LabelLarge from "@/components/package/Texts/Label";
 
 export default function EmailInput({
   children,

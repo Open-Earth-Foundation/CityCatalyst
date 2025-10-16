@@ -1,7 +1,11 @@
 "use client";
 
-import DataStepPage from "@/app/[lng]/[inventory]/data/[step]/page";
+import AddDataSteps from "@/app/[lng]/[inventory]/data/[step]/page";
 
-export default function CityInventoryDataStepPage() {
-  return <DataStepPage />;
+/**
+ * JN route wrapper for add data steps page
+ * Reuses the GHGI add data steps page component to keep DRY
+ */
+export default function GHGIAddDataSteps() {
+  return <AddDataSteps />;
 }

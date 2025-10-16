@@ -1,6 +1,5 @@
 "use client";
 
-import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { useTranslation } from "@/i18n/client";
 import {
   api,
@@ -8,15 +7,13 @@ import {
   useGetInventoriesQuery,
 } from "@/services/api";
 import { useInventoryOrganization } from "@/hooks/use-inventory-organization";
-import { Box, HStack, Separator, useDisclosure, Image } from "@chakra-ui/react";
-import Cookies from "js-cookie";
-import { useTheme } from "next-themes";
-import { useParams, useRouter } from "next/navigation";
-import { use, useEffect } from "react";
+import { Box, HStack, useDisclosure, Image } from "@chakra-ui/react";
+import { useParams } from "next/navigation";
+import { use } from "react";
 import ProgressLoader from "../ProgressLoader";
 import { Hero } from "../HomePageJN/Hero";
 import { MdBarChart } from "react-icons/md";
-import { HeadlineMedium } from "../Texts/Headline";
+import { HeadlineMedium } from "@/components/package/Texts/Headline";
 import ModalPublish from "../GHGIHomePage/DownloadAndShareModals/ModalPublish";
 import { InventoryResponse } from "@/util/types";
 import { Button } from "../ui/button";
@@ -33,15 +30,13 @@ export default function CitiesDashboardPage({
 }) {
   const { lng, cityId } = use(params);
   const { t } = useTranslation(lng, "dashboard");
-  const cookieLanguage = Cookies.get("i18next");
-  const router = useRouter();
   const { year } = useParams();
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
-  // make sure that the inventory ID is using valid values
-  let cityIdFromParam = (cityId as string) ?? userInfo?.defaultCityId;
+  // Get the city ID from params or user's default
+  const cityIdFromParam = (cityId as string) ?? userInfo?.defaultCityId;
   const parsedYear = parseInt(year as string);
 
   const {
@@ -97,9 +92,9 @@ export default function CitiesDashboardPage({
 
   const latestInventory = inventories?.[0];
 
-  // Use inventory organization hook for theming
+  // Use inventory organization hook for theming - only when inventory exists
   const { isInventoryOrgDataLoading } = useInventoryOrganization(
-    latestInventory?.inventoryId!,
+    latestInventory?.inventoryId ?? "",
   );
 
   if (isFetchBaseQueryError(cityError)) {
@@ -122,9 +117,10 @@ export default function CitiesDashboardPage({
     return <ProgressLoader />;
   }
 
+  // Always render the dashboard - let widgets handle their own empty states
   return (
     <Box h="100%" minH="100vh" bg="base.light">
-      {cityIdFromParam && city && latestInventory && (
+      {cityIdFromParam && city && (
         <>
           <Hero
             city={city}
@@ -142,7 +138,7 @@ export default function CitiesDashboardPage({
                   {t("journey.your-city-dashboard")}
                 </HeadlineMedium>
               </HStack>
-              {!isPublic && (
+              {!isPublic && latestInventory && (
                 <Button variant="outline" onClick={onPublishOpen}>
                   <Image
                     fill="pink"
@@ -165,15 +161,17 @@ export default function CitiesDashboardPage({
           </Box>
         </>
       )}
-      <ModalPublish
-        // Todo: add close state action
-        setModalOpen={() => {}}
-        t={t}
-        isPublishOpen={isPublishOpen}
-        onPublishClose={onPublishClose}
-        inventoryId={latestInventory?.inventoryId!}
-        inventory={latestInventory as InventoryResponse}
-      />
+      {latestInventory && (
+        <ModalPublish
+          // Todo: add close state action
+          setModalOpen={() => {}}
+          t={t}
+          isPublishOpen={isPublishOpen}
+          onPublishClose={onPublishClose}
+          inventoryId={latestInventory.inventoryId}
+          inventory={latestInventory as InventoryResponse}
+        />
+      )}
     </Box>
   );
 }

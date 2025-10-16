@@ -8,5 +8,7 @@
   "oauth-unknown-client-id": "Unbekannte Client-ID",
   "oauth-mismatch-redirect-uri": "redirect_uri-Abweichung für client_id-Parameter",
   "oauth-generating-authorization-code": "Generierung des Autorisierungscodes",
-  "oauth-not-enabled": "OAuth 2.0-Zugriff auf diesem Server nicht aktiviert"
+  "oauth-not-enabled": "OAuth 2.0-Zugriff auf diesem Server nicht aktiviert",
+  "oauth-authorize-scope-read": "Es wird in der Lage sein, Ihre Stadtdaten zu lesen",
+  "oauth-authorize-scope-write": "Es wird in der Lage sein, Ihre Daten hinzuzufügen, zu bearbeiten und zu löschen"
 }

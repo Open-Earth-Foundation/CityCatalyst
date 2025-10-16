@@ -10,13 +10,13 @@ import {
 import {
   GET as getProjects,
   POST as createProject,
-} from "@/app/api/v0/organizations/[organization]/projects/route";
+} from "@/app/api/v1/organizations/[organization]/projects/route";
 
 import {
   DELETE as deleteProject,
   GET as getProject,
   PATCH as updateProject,
-} from "@/app/api/v0/projects/[project]/route";
+} from "@/app/api/v1/projects/[project]/route";
 import { mockRequest, setupTests, testUserID } from "../helpers";
 
 import {
@@ -87,7 +87,7 @@ describe("Project API", () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
-  describe("POST /api/v0/organizations/[organizationId]/projects", () => {
+  describe("POST /api/v1/organizations/[organizationId]/projects", () => {
     it("should create a project", async () => {
       const req = mockRequest({
         ...projectData,
@@ -122,7 +122,7 @@ describe("Project API", () => {
     });
   });
 
-  describe("GET /api/v0/organizations/[organizationId]/projects", () => {
+  describe("GET /api/v1/organizations/[organizationId]/projects", () => {
     it("should return all projects belonging to an organization", async () => {
       //   create a project in the organization
       //     fetch all projects in the organization, should return an array with the created project
@@ -149,7 +149,7 @@ describe("Project API", () => {
     });
   });
 
-  describe("GET /api/v0/projects/[projectId]", () => {
+  describe("GET /api/v1/projects/[projectId]", () => {
     it("should return a project", async () => {
       //   create a project
       //     fetch the project, should return the created project
@@ -183,7 +183,7 @@ describe("Project API", () => {
     });
   });
 
-  describe("PATCH /api/v0/projects/[projectId]", () => {
+  describe("PATCH /api/v1/projects/[projectId]", () => {
     it("should update a project", async () => {
       const project = await db.models.Project.create({
         projectId: randomUUID(),
@@ -211,7 +211,7 @@ describe("Project API", () => {
     });
   });
 
-  describe("PATCH /api/v0/projects/[projectId]", () => {
+  describe("PATCH /api/v1/projects/[projectId]", () => {
     it("should delete a project", async () => {
       const project = await db.models.Project.create({
         projectId: randomUUID(),

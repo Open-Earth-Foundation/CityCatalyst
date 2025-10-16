@@ -2,7 +2,7 @@ import { Table } from "@chakra-ui/react";
 import { ISector, SECTORS } from "@/util/constants";
 import { TFunction } from "i18next";
 import { ProjectionData } from "@/util/types";
-import { ButtonSmall } from "@/components/Texts/Button";
+import { ButtonSmall } from "@/components/package/Texts/Button";
 
 export const GrowthRatesExplanationModalTable = ({
   growthRates,

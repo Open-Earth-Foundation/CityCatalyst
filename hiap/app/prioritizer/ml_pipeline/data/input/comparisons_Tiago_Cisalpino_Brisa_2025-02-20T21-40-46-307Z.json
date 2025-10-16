@@ -1,0 +1,1416 @@
+[
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0013",
+    "ActionB": "c40_0029",
+    "PreferredAction": "c40_0013"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0011",
+    "ActionB": "c40_0017",
+    "PreferredAction": "c40_0017"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0017",
+    "ActionB": "ipcc_0065",
+    "PreferredAction": "c40_0017"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0026",
+    "ActionB": "c40_0027",
+    "PreferredAction": "c40_0026"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0018",
+    "ActionB": "ipcc_0035",
+    "PreferredAction": "c40_0018"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0033",
+    "ActionB": "c40_0023",
+    "PreferredAction": "c40_0033"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0052",
+    "ActionB": "ipcc_0050",
+    "PreferredAction": "ipcc_0052"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0001",
+    "ActionB": "c40_0043",
+    "PreferredAction": "ipcc_0001"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0019",
+    "ActionB": "ipcc_0032",
+    "PreferredAction": "ipcc_0032"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0002",
+    "ActionB": "ipcc_0012",
+    "PreferredAction": "ipcc_0002"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0018",
+    "ActionB": "ipcc_0054",
+    "PreferredAction": "ipcc_0054"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0022",
+    "ActionB": "ipcc_0063",
+    "PreferredAction": "ipcc_0063"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0063",
+    "ActionB": "ipcc_0005",
+    "PreferredAction": "ipcc_0005"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0032",
+    "ActionB": "c40_0029",
+    "PreferredAction": "c40_0032"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0015",
+    "ActionB": "c40_0018",
+    "PreferredAction": "ipcc_0015"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0031",
+    "ActionB": "ipcc_0019",
+    "PreferredAction": "ipcc_0031"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0011",
+    "ActionB": "c40_0010",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0047",
+    "ActionB": "c40_0019",
+    "PreferredAction": "c40_0019"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0038",
+    "ActionB": "c40_0035",
+    "PreferredAction": "c40_0038"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0016",
+    "ActionB": "c40_0014",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0027",
+    "ActionB": "c40_0015",
+    "PreferredAction": "c40_0015"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0034",
+    "ActionB": "ipcc_0035",
+    "PreferredAction": "Irrelevant"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0011",
+    "ActionB": "c40_0043",
+    "PreferredAction": "c40_0043"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0009",
+    "ActionB": "ipcc_0015",
+    "PreferredAction": "c40_0009"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0038",
+    "ActionB": "c40_0019",
+    "PreferredAction": "c40_0019"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0011",
+    "ActionB": "c40_0028",
+    "PreferredAction": "c40_0028"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0014",
+    "ActionB": "c40_0013",
+    "PreferredAction": "c40_0014"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0027",
+    "ActionB": "c40_0036",
+    "PreferredAction": "c40_0036"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0012",
+    "ActionB": "ipcc_0064",
+    "PreferredAction": "ipcc_0064"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0019",
+    "ActionB": "c40_0041",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0013",
+    "ActionB": "c40_0009",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0013",
+    "ActionB": "ipcc_0048",
+    "PreferredAction": "c40_0013"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0019",
+    "ActionB": "c40_0026",
+    "PreferredAction": "c40_0026"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0001",
+    "ActionB": "c40_0036",
+    "PreferredAction": "ipcc_0001"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0039",
+    "ActionB": "c40_0024",
+    "PreferredAction": "c40_0039"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0028",
+    "ActionB": "c40_0011",
+    "PreferredAction": "c40_0028"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0013",
+    "ActionB": "c40_0016",
+    "PreferredAction": "c40_0016"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0010",
+    "ActionB": "c40_0012",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0028",
+    "ActionB": "c40_0070",
+    "PreferredAction": "c40_0070"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0062",
+    "ActionB": "ipcc_0065",
+    "PreferredAction": "ipcc_0062"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0025",
+    "ActionB": "c40_0031",
+    "PreferredAction": "c40_0031"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0013",
+    "ActionB": "c40_0011",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0002",
+    "ActionB": "ipcc_0003",
+    "PreferredAction": "ipcc_0002"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0010",
+    "ActionB": "c40_0021",
+    "PreferredAction": "Irrelevant"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0009",
+    "ActionB": "c40_0010",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0002",
+    "ActionB": "c40_0010",
+    "PreferredAction": "ipcc_0002"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0047",
+    "ActionB": "c40_0011",
+    "PreferredAction": "c40_0011"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0002",
+    "ActionB": "ipcc_0021",
+    "PreferredAction": "ipcc_0002"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0027",
+    "ActionB": "c40_0031",
+    "PreferredAction": "c40_0031"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0034",
+    "ActionB": "c40_0014",
+    "PreferredAction": "c40_0014"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0011",
+    "ActionB": "c40_0009",
+    "PreferredAction": "ipcc_0011"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0015",
+    "ActionB": "ipcc_0023",
+    "PreferredAction": "ipcc_0015"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0005",
+    "ActionB": "c40_0009",
+    "PreferredAction": "ipcc_0005"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0015",
+    "ActionB": "ipcc_0014",
+    "PreferredAction": "ipcc_0015"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0028",
+    "ActionB": "c40_0031",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0027",
+    "ActionB": "ipcc_0002",
+    "PreferredAction": "ipcc_0002"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0070",
+    "ActionB": "c40_0010",
+    "PreferredAction": "c40_0070"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0036",
+    "ActionB": "c40_0071",
+    "PreferredAction": "c40_0071"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0013",
+    "ActionB": "c40_0009",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0009",
+    "ActionB": "c40_0015",
+    "PreferredAction": "c40_0015"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0027",
+    "ActionB": "ipcc_0012",
+    "PreferredAction": "ipcc_0012"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0012",
+    "ActionB": "c40_0010",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0029",
+    "ActionB": "c40_0011",
+    "PreferredAction": "c40_0029"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0010",
+    "ActionB": "c40_0023",
+    "PreferredAction": "c40_0023"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0014",
+    "ActionB": "c40_0015",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0043",
+    "ActionB": "c40_0037",
+    "PreferredAction": "c40_0037"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0016",
+    "ActionB": "c40_0026",
+    "PreferredAction": "ipcc_0016"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0021",
+    "ActionB": "ipcc_0016",
+    "PreferredAction": "ipcc_0016"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0012",
+    "ActionB": "c40_0026",
+    "PreferredAction": "c40_0026"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0064",
+    "ActionB": "c40_0010",
+    "PreferredAction": "ipcc_0064"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0010",
+    "ActionB": "c40_0028",
+    "PreferredAction": "c40_0028"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0018",
+    "ActionB": "c40_0017",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0029",
+    "ActionB": "ipcc_0038",
+    "PreferredAction": "c40_0029"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0035",
+    "ActionB": "ipcc_0008",
+    "PreferredAction": "c40_0035"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0043",
+    "ActionB": "ipcc_0064",
+    "PreferredAction": "ipcc_0064"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0032",
+    "ActionB": "ipcc_0030",
+    "PreferredAction": "ipcc_0032"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0001",
+    "ActionB": "ipcc_0032",
+    "PreferredAction": "ipcc_0001"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0017",
+    "ActionB": "c40_0009",
+    "PreferredAction": "c40_0017"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0010",
+    "ActionB": "c40_0018",
+    "PreferredAction": "c40_0018"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0032",
+    "ActionB": "c40_0011",
+    "PreferredAction": "c40_0032"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0018",
+    "ActionB": "c40_0026",
+    "PreferredAction": "c40_0026"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0043",
+    "ActionB": "c40_0017",
+    "PreferredAction": "c40_0017"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0078",
+    "ActionB": "ipcc_0032",
+    "PreferredAction": "ipcc_0032"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0031",
+    "ActionB": "c40_0019",
+    "PreferredAction": "c40_0019"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0043",
+    "ActionB": "c40_0035",
+    "PreferredAction": "c40_0043"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0007",
+    "ActionB": "ipcc_0033",
+    "PreferredAction": "ipcc_0007"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0017",
+    "ActionB": "c40_0009",
+    "PreferredAction": "c40_0017"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0035",
+    "ActionB": "c40_0011",
+    "PreferredAction": "c40_0011"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0002",
+    "ActionB": "c40_0009",
+    "PreferredAction": "ipcc_0002"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0008",
+    "ActionB": "ipcc_0024",
+    "PreferredAction": "ipcc_0008"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0047",
+    "ActionB": "ipcc_0062",
+    "PreferredAction": "ipcc_0062"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0009",
+    "ActionB": "c40_0033",
+    "PreferredAction": "c40_0033"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0065",
+    "ActionB": "ipcc_0066",
+    "PreferredAction": "ipcc_0066"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0034",
+    "ActionB": "c40_0009",
+    "PreferredAction": "c40_0009"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0070",
+    "ActionB": "ipcc_0009",
+    "PreferredAction": "c40_0070"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0043",
+    "ActionB": "c40_0070",
+    "PreferredAction": "c40_0070"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0017",
+    "ActionB": "c40_0014",
+    "PreferredAction": "Irrelevant"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0043",
+    "ActionB": "ipcc_0018",
+    "PreferredAction": "c40_0043"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0010",
+    "ActionB": "c40_0013",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0010",
+    "ActionB": "c40_0009",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0019",
+    "ActionB": "c40_0027",
+    "PreferredAction": "c40_0019"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0018",
+    "ActionB": "c40_0017",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0009",
+    "ActionB": "c40_0018",
+    "PreferredAction": "c40_0018"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0036",
+    "ActionB": "c40_0009",
+    "PreferredAction": "c40_0009"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0012",
+    "ActionB": "c40_0011",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0043",
+    "ActionB": "ipcc_0008",
+    "PreferredAction": "c40_0043"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0046",
+    "ActionB": "c40_0071",
+    "PreferredAction": "c40_0071"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0021",
+    "ActionB": "c40_0011",
+    "PreferredAction": "c40_0011"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0040",
+    "ActionB": "ipcc_0032",
+    "PreferredAction": "ipcc_0032"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0024",
+    "ActionB": "ipcc_0006",
+    "PreferredAction": "ipcc_0006"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0062",
+    "ActionB": "ipcc_0080",
+    "PreferredAction": "ipcc_0080"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0014",
+    "ActionB": "ipcc_0020",
+    "PreferredAction": "ipcc_0020"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0026",
+    "ActionB": "c40_0024",
+    "PreferredAction": "c40_0026"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0012",
+    "ActionB": "c40_0029",
+    "PreferredAction": "c40_0029"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0047",
+    "ActionB": "ipcc_0064",
+    "PreferredAction": "ipcc_0064"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0062",
+    "ActionB": "c40_0019",
+    "PreferredAction": "ipcc_0062"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0015",
+    "ActionB": "icare_0058",
+    "PreferredAction": "icare_0015"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0032",
+    "ActionB": "c40_0039",
+    "PreferredAction": "c40_0032"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0112",
+    "ActionB": "icare_0100",
+    "PreferredAction": "icare_0100"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0015",
+    "ActionB": "c40_0010",
+    "PreferredAction": "c40_0015"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0031",
+    "ActionB": "ipcc_0071",
+    "PreferredAction": "ipcc_0071"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0035",
+    "ActionB": "c40_0036",
+    "PreferredAction": "c40_0036"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0012",
+    "ActionB": "ipcc_0014",
+    "PreferredAction": "c40_0012"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0042",
+    "ActionB": "c40_0017",
+    "PreferredAction": "c40_0017"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0080",
+    "ActionB": "ipcc_0036",
+    "PreferredAction": "ipcc_0080"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0095",
+    "ActionB": "icare_0017",
+    "PreferredAction": "icare_0095"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0030",
+    "ActionB": "ipcc_0064",
+    "PreferredAction": "ipcc_0064"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0038",
+    "ActionB": "c40_0043",
+    "PreferredAction": "c40_0038"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0038",
+    "ActionB": "icare_0084",
+    "PreferredAction": "icare_0084"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0028",
+    "ActionB": "c40_0011",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0026",
+    "ActionB": "c40_0018",
+    "PreferredAction": "c40_0026"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0064",
+    "ActionB": "c40_0026",
+    "PreferredAction": "ipcc_0064"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0047",
+    "ActionB": "icare_0064",
+    "PreferredAction": "icare_0064"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0015",
+    "ActionB": "c40_0009",
+    "PreferredAction": "c40_0015"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0051",
+    "ActionB": "icare_0084",
+    "PreferredAction": "icare_0084"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0012",
+    "ActionB": "ipcc_0036",
+    "PreferredAction": "c40_0012"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0069",
+    "ActionB": "c40_0064",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0047",
+    "ActionB": "c40_0046",
+    "PreferredAction": "c40_0047"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0091",
+    "ActionB": "icare_0150",
+    "PreferredAction": "icare_0150"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0160",
+    "ActionB": "c40_0047",
+    "PreferredAction": "c40_0047"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0057",
+    "ActionB": "c40_0046",
+    "PreferredAction": "c40_0057"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0052",
+    "ActionB": "c40_0069",
+    "PreferredAction": "c40_0069"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0190",
+    "ActionB": "c40_0067",
+    "PreferredAction": "icare_0190"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0162",
+    "ActionB": "icare_0163",
+    "PreferredAction": "icare_0162"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0160",
+    "ActionB": "icare_0190",
+    "PreferredAction": "icare_0190"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0057",
+    "ActionB": "c40_0056",
+    "PreferredAction": "c40_0056"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0190",
+    "ActionB": "icare_0158",
+    "PreferredAction": "icare_0190"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0047",
+    "ActionB": "ipcc_0091",
+    "PreferredAction": "c40_0047"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "icare_0163",
+    "ActionB": "icare_0160",
+    "PreferredAction": "icare_0163"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0054",
+    "ActionB": "c40_0058",
+    "PreferredAction": "c40_0054"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0059",
+    "ActionB": "c40_0047",
+    "PreferredAction": "c40_0047"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0047",
+    "ActionB": "c40_0048",
+    "PreferredAction": "c40_0047"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0054",
+    "ActionB": "c40_0065",
+    "PreferredAction": "c40_0054"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "ipcc_0091",
+    "ActionB": "c40_0046",
+    "PreferredAction": "ipcc_0091"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0049",
+    "ActionB": "icare_0190",
+    "PreferredAction": "icare_0190"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRMGE",
+    "ActionA": "c40_0048",
+    "ActionB": "c40_0056",
+    "PreferredAction": "c40_0056"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0040",
+    "ActionB": "ipcc_0039",
+    "PreferredAction": "ipcc_0039"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0011",
+    "ActionB": "ipcc_0013",
+    "PreferredAction": "c40_0011"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0032",
+    "ActionB": "ipcc_0038",
+    "PreferredAction": "ipcc_0032"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "icare_0017",
+    "ActionB": "c40_0026",
+    "PreferredAction": "c40_0026"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0062",
+    "ActionB": "ipcc_0063",
+    "PreferredAction": "ipcc_0063"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0010",
+    "ActionB": "ipcc_0064",
+    "PreferredAction": "ipcc_0064"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "icare_0015",
+    "ActionB": "c40_0011",
+    "PreferredAction": "icare_0015"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0049",
+    "ActionB": "c40_0029",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "icare_0096",
+    "ActionB": "icare_0098",
+    "PreferredAction": "icare_0098"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0030",
+    "ActionB": "c40_0028",
+    "PreferredAction": "c40_0028"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0014",
+    "ActionB": "c40_0031",
+    "PreferredAction": "c40_0031"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0025",
+    "ActionB": "ipcc_0036",
+    "PreferredAction": "c40_0025"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "icare_0039",
+    "ActionB": "icare_0040",
+    "PreferredAction": "icare_0039"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0033",
+    "ActionB": "ipcc_0039",
+    "PreferredAction": "ipcc_0039"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0030",
+    "ActionB": "c40_0013",
+    "PreferredAction": "ipcc_0030"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "icare_0097",
+    "ActionB": "ipcc_0047",
+    "PreferredAction": "icare_0097"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0009",
+    "ActionB": "ipcc_0002",
+    "PreferredAction": "ipcc_0002"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "icare_0023",
+    "ActionB": "c40_0010",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0019",
+    "ActionB": "icare_0016",
+    "PreferredAction": "c40_0019"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0026",
+    "ActionB": "icare_0047",
+    "PreferredAction": "c40_0026"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0010",
+    "ActionB": "c40_0036",
+    "PreferredAction": "c40_0036"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0038",
+    "ActionB": "ipcc_0031",
+    "PreferredAction": "c40_0038"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0043",
+    "ActionB": "ipcc_0009",
+    "PreferredAction": "ipcc_0043"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0045",
+    "ActionB": "c40_0035",
+    "PreferredAction": "ipcc_0045"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0046",
+    "ActionB": "c40_0010",
+    "PreferredAction": "c40_0010"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "icare_0048",
+    "ActionB": "icare_0047",
+    "PreferredAction": "icare_0048"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "icare_0175",
+    "ActionB": "icare_0144",
+    "PreferredAction": "icare_0175"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "icare_0158",
+    "ActionB": "icare_0190",
+    "PreferredAction": "icare_0190"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0058",
+    "ActionB": "c40_0046",
+    "PreferredAction": "c40_0058"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "ipcc_0099",
+    "ActionB": "ipcc_0102",
+    "PreferredAction": "ipcc_0099"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "icare_0142",
+    "ActionB": "ipcc_0094",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "icare_0151",
+    "ActionB": "ipcc_0104",
+    "PreferredAction": "icare_0151"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0048",
+    "ActionB": "c40_0056",
+    "PreferredAction": "c40_0056"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0046",
+    "ActionB": "c40_0048",
+    "PreferredAction": "c40_0048"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0046",
+    "ActionB": "c40_0047",
+    "PreferredAction": "c40_0047"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0049",
+    "ActionB": "c40_0048",
+    "PreferredAction": "c40_0048"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0054",
+    "ActionB": "c40_0056",
+    "PreferredAction": "c40_0056"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "icare_0177",
+    "ActionB": "c40_0066",
+    "PreferredAction": "icare_0177"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0046",
+    "ActionB": "ipcc_0097",
+    "PreferredAction": "ipcc_0097"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0048",
+    "ActionB": "c40_0047",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0056",
+    "ActionB": "icare_0171",
+    "PreferredAction": "c40_0056"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0056",
+    "ActionB": "c40_0047",
+    "PreferredAction": "Unsure"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "icare_0160",
+    "ActionB": "c40_0047",
+    "PreferredAction": "c40_0047"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "icare_0140",
+    "ActionB": "icare_0145",
+    "PreferredAction": "icare_0145"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "icare_0190",
+    "ActionB": "c40_0050",
+    "PreferredAction": "icare_0190"
+  },
+  {
+    "SessionID": "33332c30-28ae-412c-9de4-36c9f0baed86",
+    "CityLocode": "BRCMG",
+    "ActionA": "c40_0048",
+    "ActionB": "c40_0052",
+    "PreferredAction": "c40_0052"
+  }
+]

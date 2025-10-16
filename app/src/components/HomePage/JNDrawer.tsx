@@ -397,7 +397,12 @@ const ProjectFilterSection = ({
                 cursor="pointer"
                 _hover={{
                   bg: "content.link",
-                  color: "base.light",
+                  "& .search-result-label": {
+                    color: "base.light",
+                  },
+                  "& .search-result-city-label": {
+                    color: "base.light",
+                  },
                 }}
                 onClick={() => {
                   if (result.type === "project") {
@@ -415,16 +420,23 @@ const ProjectFilterSection = ({
                 }}
               >
                 <VStack gap={2} alignItems="flex-start">
-                  <Text fontSize="body.lg" fontWeight="medium">
+                  <Text
+                    className="search-result-label"
+                    fontSize="body.lg"
+                    fontWeight="medium"
+                    color="content.secondary"
+                  >
                     {result.label}
                   </Text>
-                  <Box>
-                    {result.type === "city" && (
-                      <Text fontSize="body.md" color="content.tertiary">
-                        {result.projectName} | {result.label}
-                      </Text>
-                    )}
-                  </Box>
+                  {result.type === "city" && (
+                    <Text
+                      className="search-result-city-label"
+                      fontSize="body.md"
+                      color="content.tertiary"
+                    >
+                      {result.projectName} | {result.label}
+                    </Text>
+                  )}
                 </VStack>
               </Box>
             ))}

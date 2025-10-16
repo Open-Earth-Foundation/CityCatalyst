@@ -263,5 +263,6 @@
   "publish-error-title": "Publishing Failed",
   "publish-error-description": "There was an error publishing your inventory. Please try again.",
   "unpublish-error-title": "Unpublishing Failed",
-  "unpublish-error-description": "There was an error unpublishing your inventory. Please try again."
+  "unpublish-error-description": "There was an error unpublishing your inventory. Please try again.",
+  "invite-link-copied-to-clipboard": "Invite link copied to clipboard"
 }

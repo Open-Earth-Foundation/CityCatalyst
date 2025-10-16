@@ -101,8 +101,21 @@ const AdminOrganizationIdProfilePage = (props: {
       return;
     }
 
+    // Copy invite URLs to clipboard
+    if (response.data?.inviteUrls) {
+      const inviteUrls = Object.values(response.data.inviteUrls);
+      if (inviteUrls.length > 0) {
+        const urlsText = inviteUrls.join('\n');
+        navigator.clipboard.writeText(urlsText).catch(() => {
+          // Fallback if clipboard API fails
+          console.warn('Failed to copy to clipboard');
+        });
+      }
+    }
+
     showSuccessToast({
       title: t("invite-sent"),
+      description: t("invite-link-copied-to-clipboard"),
     });
   };
 

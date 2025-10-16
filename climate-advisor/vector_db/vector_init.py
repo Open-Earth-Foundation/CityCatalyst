@@ -108,10 +108,8 @@ async def create_vector_tables() -> None:
     async with async_session_factory() as session:
         # Import here to avoid circular imports
         # Add service path for imports
-        import sys
-        import os
-        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'service'))
-        from app.models.db.document_embedding import DocumentEmbedding
+        # Use relative import to avoid sys.path manipulation
+        from ..service.app.models.db.document_embedding import DocumentEmbedding
 
         # Create all tables defined in the models
         # This will create: document_embeddings table

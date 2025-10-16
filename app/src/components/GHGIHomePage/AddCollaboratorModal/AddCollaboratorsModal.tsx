@@ -173,6 +173,18 @@ const AddCollaboratorsDialog = ({
       role: OrganizationRole.ORG_ADMIN,
     });
     if (inviteResponse.data) {
+      // Copy invite URLs to clipboard
+      if (inviteResponse.data.inviteUrls) {
+        const inviteUrls = Object.values(inviteResponse.data.inviteUrls);
+        if (inviteUrls.length > 0) {
+          const urlsText = inviteUrls.join('\n');
+          navigator.clipboard.writeText(urlsText).catch(() => {
+            // Fallback if clipboard API fails
+            console.warn('Failed to copy to clipboard');
+          });
+        }
+      }
+
       // Track admin invitation
       trackEvent("admin_invited", {
         num_invitees: emails.length,
@@ -181,7 +193,13 @@ const AddCollaboratorsDialog = ({
         invited_emails: emails,
       });
 
-      showSuccessToast();
+      showSuccessToast({
+        title: t("invite-success-toast-title"),
+        description: t("invite-link-copied-to-clipboard"),
+      });
+      setEmails([]);
+      setSelectedCities([]);
+      setSelectedProject([]);
       onClose();
     } else {
       showErrorToast();

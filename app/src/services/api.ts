@@ -33,6 +33,7 @@ import {
   ListOrganizationsResponse,
   OrganizationResponse,
   OrganizationRole,
+  OrganizationInviteResponse,
   ProjectResponse,
   ProjectWithCities,
   RequiredScopesResponse,
@@ -1068,7 +1069,7 @@ export const api = createApi({
             organizationId: data.organizationId,
           },
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: OrganizationInviteResponse) => response,
         invalidatesTags: [
           "OrganizationInvite",
           "Organizations",

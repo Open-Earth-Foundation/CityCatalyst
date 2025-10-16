@@ -121,9 +121,23 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
         inviteeEmails: [email],
         role: OrganizationRole.ORG_ADMIN,
       }).unwrap();
+
+      // Copy invite URLs to clipboard
+      if (inviteResponse.inviteUrls) {
+        const inviteUrls = Object.values(inviteResponse.inviteUrls);
+        if (inviteUrls.length > 0) {
+          const urlsText = inviteUrls.join('\n');
+          navigator.clipboard.writeText(urlsText).catch(() => {
+            // Fallback if clipboard API fails
+            console.warn('Failed to copy to clipboard');
+          });
+        }
+      }
+
       toaster.dismiss();
       toaster.create({
         title: t("invite-sent-success"),
+        description: t("invite-link-copied-to-clipboard"),
         type: "success",
         duration: 3000,
       });

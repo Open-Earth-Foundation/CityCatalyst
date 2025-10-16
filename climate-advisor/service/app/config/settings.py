@@ -36,26 +36,35 @@ _ENV_LOADED = False
 
 
 def _load_environment() -> None:
-    """Load environment variables from the most relevant .env files.
+    """Load environment variables from .env files within the service.
 
-    We prioritise the current working directory, then fall back to the
-    climate-advisor service folder and finally the repository root.
+    We prioritise .env files located inside the climate-advisor service folder,
+    preferring the current working directory and falling back to the service
+    root. Files outside the service are ignored to avoid leaking config between
+    microservices.
     """
     global _ENV_LOADED
     if _ENV_LOADED:
         return
 
+    service_root = Path(__file__).resolve().parents[3]  # climate-advisor/
+
+    def _within_service(path: Path) -> bool:
+        try:
+            path.relative_to(service_root)
+        except ValueError:
+            return False
+        return True
+
     candidate_paths: list[Path] = []
 
     dotenv_path = find_dotenv(usecwd=True)
     if dotenv_path:
-        candidate_paths.append(Path(dotenv_path))
+        resolved_dotenv = Path(dotenv_path).resolve()
+        if _within_service(resolved_dotenv):
+            candidate_paths.append(resolved_dotenv)
 
-    service_root = Path(__file__).resolve().parents[3]  # climate-advisor/
     candidate_paths.append(service_root / ".env")
-
-    repo_root = service_root.parent  # CityCatalyst/
-    candidate_paths.append(repo_root / ".env")
 
     loaded_paths: set[Path] = set()
     for candidate in candidate_paths:

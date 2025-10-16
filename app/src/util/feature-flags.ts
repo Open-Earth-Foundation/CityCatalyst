@@ -13,6 +13,12 @@ export enum FeatureFlags {
 
 let cachedFeatureFlags: string[] | null = null;
 
+// These flags are always enabled, regardless of the environment variable
+
+const alwaysEnabled = [
+  FeatureFlags.OAUTH_ENABLED
+];
+
 export function getFeatureFlags(): string[] {
   if (cachedFeatureFlags != null) {
     return cachedFeatureFlags;
@@ -21,10 +27,13 @@ export function getFeatureFlags(): string[] {
   const flags = env("NEXT_PUBLIC_FEATURE_FLAGS");
 
   if (flags) {
-    cachedFeatureFlags = flags
+    const envFeatureFlags = flags
       .split(",")
       .map((flag) => flag.trim())
       .filter((flag) => flag.length > 0);
+    cachedFeatureFlags = Array.from(
+      new Set([...envFeatureFlags, ...alwaysEnabled])
+    );
   } else {
     cachedFeatureFlags = [];
   }
@@ -72,10 +81,14 @@ export function getServerFeatureFlags(): string[] {
     return cachedServerFeatureFlags;
   }
 
-  cachedServerFeatureFlags = flags
+  const envServerFeatureFlags = flags
     .split(",")
     .map((flag) => flag.trim())
     .filter((flag) => flag.length > 0);
+
+  cachedServerFeatureFlags = Array.from(
+    new Set([...envServerFeatureFlags, ...alwaysEnabled])
+  );
 
   return cachedServerFeatureFlags;
 }

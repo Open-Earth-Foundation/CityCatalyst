@@ -121,16 +121,11 @@ async def _stream_with_agents_sdk(
         )
         
         # Stream responses from the agent with conversation history
-        # If we have history, pass it along with the current message
+        # If we have history loaded from database, use it directly (it already includes the current user message)
+        # Otherwise, pass just the current message
         if conversation_history:
-            # Add current user message to history
-            conversation_history.append({
-                "role": "user",
-                "content": payload.content
-            })
             result = Runner.run_streamed(agent, conversation_history)
         else:
-            # No history, just pass the current message
             result = Runner.run_streamed(agent, payload.content)
         async for chunk in result.stream_events():
             chunk_type = chunk.type

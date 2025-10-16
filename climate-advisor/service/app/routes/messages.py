@@ -242,7 +242,7 @@ async def _stream_with_agents_sdk(
                         tool_invocations.append(invocation)
 
                     invocation["status"] = "success"
-                    invocation["result"] = str(output_value)[:500] if output_value is not None else ""
+                    invocation["result"] = str(output_value) if output_value is not None else ""
 
                     yield format_sse(
                         {

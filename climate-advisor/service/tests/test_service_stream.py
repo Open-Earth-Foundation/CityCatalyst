@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """
-Climate Advisor Service Streaming Test Utility
+Climate Advisor Service Streaming Test Utility (Agents SDK Implementation)
 
 This script tests the streaming functionality of the Climate Advisor service by sending
 a test message and printing the server-sent events (SSE) response to stdout.
 It is primarily used for development and debugging purposes.
+
+The service now uses OpenAI Agents SDK for streaming, which provides:
+- Built-in tool orchestration
+- Automatic LangSmith tracing
+- Native streaming support with tool calls
 
 Inputs:
     base_url: Optional base URL of the Climate Advisor service (default: http://localhost:8080)
@@ -13,6 +18,7 @@ Inputs:
 Outputs:
     Prints raw SSE events to stdout as they are received from the service
     Each event shows the streaming response chunks and terminal events
+    Expected event types: message, tool_result, warning, error, done
 
 Usage:
     python scripts/test_service_stream.py [base_url]

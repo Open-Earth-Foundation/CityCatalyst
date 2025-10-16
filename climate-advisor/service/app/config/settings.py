@@ -23,13 +23,78 @@ Usage:
     # Access app config: settings.port, settings.database_url
 """
 
+import logging
 import os
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 
 import yaml
-from dotenv import find_dotenv, load_dotenv
+from dotenv import find_dotenv, load_dotenv, dotenv_values
 from pydantic import BaseModel
+
+_ENV_LOADED = False
+
+
+def _load_environment() -> None:
+    """Load environment variables from .env files within the service.
+
+    We prioritise .env files located inside the climate-advisor service folder,
+    preferring the current working directory and falling back to the service
+    root. Files outside the service are ignored to avoid leaking config between
+    microservices.
+    """
+    global _ENV_LOADED
+    if _ENV_LOADED:
+        return
+
+    service_root = Path(__file__).resolve().parents[3]  # climate-advisor/
+
+    def _within_service(path: Path) -> bool:
+        try:
+            path.relative_to(service_root)
+        except ValueError:
+            return False
+        return True
+
+    candidate_paths: list[Path] = []
+
+    dotenv_path = find_dotenv(usecwd=True)
+    if dotenv_path:
+        resolved_dotenv = Path(dotenv_path).resolve()
+        if _within_service(resolved_dotenv):
+            candidate_paths.append(resolved_dotenv)
+
+    candidate_paths.append(service_root / ".env")
+
+    loaded_paths: set[Path] = set()
+    for candidate in candidate_paths:
+        try:
+            resolved = candidate.resolve()
+        except FileNotFoundError:
+            # Path.resolve(strict=False) (default) should not raise, but guard just in case.
+            resolved = candidate
+
+        if resolved in loaded_paths or not resolved.exists():
+            continue
+
+        loaded = load_dotenv(resolved, override=False)
+        if loaded:
+            # Backfill missing (or empty) values explicitly to handle environments
+            # that scrub secrets by setting them to empty strings.
+            for key, value in dotenv_values(resolved).items():
+                if value is None:
+                    continue
+                current = os.getenv(key)
+                if current is None:
+                    os.environ[key] = value
+        loaded_paths.add(resolved)
+
+    _ENV_LOADED = True
+
+
+# Load environment variables at import time so that downstream modules/tests
+# see expected values even before get_settings() is invoked.
+_load_environment()
 
 
 def _parse_bool(value: Optional[str], default: bool = False) -> bool:
@@ -123,6 +188,18 @@ class APIConfig(BaseModel):
     requests: Optional[Dict[str, Any]] = None
 
 
+class ToolConfig(BaseModel):
+    climate_vector_search: Dict[str, Any] = {
+        "top_k": 5,
+        "min_score": 0.6,
+    }
+
+
+class ConversationConfig(BaseModel):
+    history_limit: Optional[int] = 5
+    include_history: Optional[bool] = True
+
+
 class FeaturesConfig(BaseModel):
     streaming_enabled: Optional[bool] = None
     dynamic_model_selection: Optional[bool] = None
@@ -137,6 +214,16 @@ class LoggingConfig(BaseModel):
     log_usage_stats: Optional[bool] = None
 
 
+class LangSmithConfig(BaseModel):
+    project: Optional[str] = None
+    endpoint: Optional[str] = None
+    tracing_enabled: Optional[bool] = None
+
+
+class ObservabilityConfig(BaseModel):
+    langsmith: Optional[LangSmithConfig] = None
+
+
 class CacheConfig(BaseModel):
     enabled: Optional[bool] = None
     ttl_seconds: Optional[int] = None
@@ -148,9 +235,12 @@ class LLMConfig(BaseModel):
     generation: GenerationConfig
     prompts: PromptsConfig
     api: APIConfig
+    conversation: Optional[ConversationConfig] = ConversationConfig()
     features: FeaturesConfig
     logging: LoggingConfig
     cache: Optional[CacheConfig] = None
+    tools: ToolConfig = ToolConfig()
+    observability: Optional[ObservabilityConfig] = None
 
 
 def _load_llm_config() -> LLMConfig:
@@ -188,6 +278,14 @@ class Settings(BaseModel):
     # OpenAI configuration for embeddings
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
 
+    # LangSmith tracing configuration
+    # Only API key comes from .env for security
+    # All other settings (endpoint, project, tracing_enabled) must be in llm_config.yaml
+    langsmith_api_key: str | None = os.getenv("LANGSMITH_API_KEY")
+    langsmith_endpoint: str | None = None
+    langsmith_project: str | None = None
+    langsmith_tracing_enabled: bool = False
+
     # Database configuration
     database_url: str | None = os.getenv("CA_DATABASE_URL")
     database_pool_size: Optional[int] = _parse_int(os.getenv("CA_DATABASE_POOL_SIZE"), 5)
@@ -209,7 +307,58 @@ class Settings(BaseModel):
         
         if self.openrouter_model is None:
             self.openrouter_model = self.llm.models.get("default", "openrouter/auto")
+
+        # LangSmith configuration: ONLY API key from .env, everything else from llm_config.yaml
+        # No silent fallbacks - configuration must be explicit
+        langsmith_cfg = None
+        if self.llm.observability:
+            langsmith_cfg = self.llm.observability.langsmith
+
+        # Load configuration from llm_config.yaml ONLY
+        if langsmith_cfg:
+            if langsmith_cfg.project:
+                self.langsmith_project = langsmith_cfg.project
             
+            if langsmith_cfg.endpoint:
+                self.langsmith_endpoint = langsmith_cfg.endpoint
+            
+            if langsmith_cfg.tracing_enabled is not None:
+                self.langsmith_tracing_enabled = bool(langsmith_cfg.tracing_enabled)
+
+        # Validate LangSmith configuration if tracing is enabled
+        if self.langsmith_tracing_enabled:
+            missing: list[str] = []
+            if not self.langsmith_api_key:
+                missing.append("LANGSMITH_API_KEY (.env)")
+            if not self.langsmith_endpoint:
+                missing.append("observability.langsmith.endpoint (llm_config.yaml)")
+            if not self.langsmith_project:
+                missing.append("observability.langsmith.project (llm_config.yaml)")
+
+            if missing:
+                logging.warning(
+                    "LangSmith tracing disabled because the following required configuration values are missing: %s",
+                    ", ".join(missing),
+                )
+                self.langsmith_tracing_enabled = False
+                return
+            
+            # Surface configuration to the expected environment variables for LangSmith/LangChain SDKs
+            os.environ.setdefault("LANGSMITH_TRACING_V2", "true")
+            os.environ.setdefault("LANGCHAIN_TRACING_V2", "true")
+
+            if self.langsmith_project:
+                os.environ.setdefault("LANGSMITH_PROJECT", self.langsmith_project)
+                os.environ.setdefault("LANGCHAIN_PROJECT", self.langsmith_project)
+
+            if self.langsmith_endpoint:
+                os.environ.setdefault("LANGSMITH_ENDPOINT", self.langsmith_endpoint)
+                os.environ.setdefault("LANGCHAIN_ENDPOINT", self.langsmith_endpoint)
+
+            if self.langsmith_api_key:
+                os.environ.setdefault("LANGSMITH_API_KEY", self.langsmith_api_key)
+                os.environ.setdefault("LANGCHAIN_API_KEY", self.langsmith_api_key)
+
 
 
 _settings: Settings | None = None
@@ -224,11 +373,11 @@ def _parse_cors_origins(env_value: str | None) -> List[str]:
 def get_settings() -> Settings:
     global _settings
     if _settings is None:
-        load_dotenv(find_dotenv(usecwd=True))
-        
+        _load_environment()
+
         # Load LLM configuration from YAML
         llm_config = _load_llm_config()
-        
+
         # Create settings with LLM config
         settings = Settings(llm=llm_config)
         settings.cors_origins = _parse_cors_origins(os.getenv("CA_CORS_ORIGINS"))

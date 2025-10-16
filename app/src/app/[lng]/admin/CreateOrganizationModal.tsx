@@ -75,6 +75,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
   });
   const { showSuccessToast } = UseSuccessToast({
     title: t("organization-added"),
+    description: t("invite-link-copied-to-clipboard"),
     duration: 1200,
   });
 
@@ -150,6 +151,17 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
           role: "admin",
           invited_emails: [response.data.contactEmail],
         });
+        // Copy invite URLs to clipboard
+        if (inviteResponse.data.inviteUrls) {
+          const inviteUrls = Object.values(inviteResponse.data.inviteUrls);
+          if (inviteUrls.length > 0) {
+            const urlsText = inviteUrls.join('\n');
+            navigator.clipboard.writeText(urlsText).catch(() => {
+              // Fallback if clipboard API fails
+              console.warn('Failed to copy to clipboard');
+            });
+          }
+        }
         showSuccessToast();
         closeFunction();
       } else if (inviteResponse.error) {

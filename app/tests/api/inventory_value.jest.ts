@@ -1,8 +1,8 @@
 import {
   GET as findInventoryValue,
   PATCH as upsertInventoryValue,
-} from "@/app/api/v0/inventory/[inventory]/value/[subcategory]/route";
-import { GET as batchFindInventoryValues } from "@/app/api/v0/inventory/[inventory]/value/route";
+} from "@/app/api/v1/inventory/[inventory]/value/[subcategory]/route";
+import { GET as batchFindInventoryValues } from "@/app/api/v1/inventory/[inventory]/value/route";
 
 import { db } from "@/models";
 import { CreateInventoryValueRequest } from "@/util/validation";
@@ -107,7 +107,7 @@ describe("Inventory Value API", () => {
     if (!city) {
       throw new Error(`Failed to find city with ID ${testData.cityId}`);
     }
-    
+
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
     await city.addUser(testUserID);
     inventory = await db.models.Inventory.create({

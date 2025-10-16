@@ -120,34 +120,6 @@ const Footer = ({ lng }: { lng: string }) => {
             {/* eslint-disable-next-line i18next/no-literal-string */}
             <>v{currentVersion}</>
           </Text>
-          <Box
-            h={"20px"}
-            w={"61px"}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            bg="border.neutral"
-            borderRadius="20px"
-          >
-            <Text
-              fontFamily="heading"
-              fontSize="label.sm"
-              color="content.primary"
-              fontWeight="medium"
-              letterSpacing="wide"
-            >
-              BETA
-            </Text>
-          </Box>
-          <Text
-            color="base.light"
-            fontSize="body.md"
-            letterSpacing="wide"
-            lineHeight="20"
-            fontWeight="regular"
-          >
-            {t("beta-text")}
-          </Text>
           <Link
             href="/"
             color="base.light"

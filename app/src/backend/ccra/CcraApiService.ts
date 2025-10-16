@@ -3,7 +3,7 @@ import { logger } from "@/services/logger";
 import { CCRATopRisksData, Indicator, RiskAssessment } from "@/util/types";
 
 const CCRA_API_URL =
-  (process.env.GLOBAL_API_URL || "http://ccra-service") + "/api/v0";
+  (process.env.GLOBAL_API_URL || "http://ccra-service") + "/api/v1";
 
 class CCRAApiService {
   /**

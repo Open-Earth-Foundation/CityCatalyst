@@ -10,15 +10,11 @@ import {
 } from "../ResultsService";
 import { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
 import { HighImpactActionRankingStatus } from "@/util/types";
-import {
-  startPrioritization,
-  checkPrioritizationProgress,
-  getPrioritizationResult,
-} from "./HiapApiService";
+import { hiapApiWrapper } from "./HiapApiService";
 import { InventoryService } from "../InventoryService";
 import GlobalAPIService from "../GlobalAPIService";
 import { PrioritizerResponse, PrioritizerCityData } from "./types";
-import { uniqBy } from "lodash";
+import uniqBy from "lodash/uniqBy";
 import EmailService from "../EmailService";
 import { User } from "@/models/User";
 import { getSession } from "next-auth/react";
@@ -139,7 +135,10 @@ export const startActionRankingJob = async (
   logger.info({ contextData }, "City context and emissions data fetched");
   if (!contextData) throw new Error("No city context/emissions data found");
 
-  const { taskId } = await startPrioritization(contextData, type);
+  const { taskId } = await hiapApiWrapper.startPrioritization(
+    contextData,
+    type,
+  );
   logger.info({ taskId }, "Task ID received from HIAP API");
   if (!taskId) throw new Error("No taskId returned from HIAP API");
 
@@ -322,7 +321,8 @@ export const checkActionRankingJob = async (
       pollCount < maxPolls
     ) {
       await new Promise((resolve) => setTimeout(resolve, pollInterval));
-      const statusData = await checkPrioritizationProgress(jobId);
+      const statusData =
+        await hiapApiWrapper.checkPrioritizationProgress(jobId);
       logger.info({ jobStatus }, "Polled job status");
       switch (statusData.status) {
         case "completed":
@@ -342,7 +342,7 @@ export const checkActionRankingJob = async (
     }
     // Fetch result
     const actionRanking: PrioritizerResponse =
-      await getPrioritizationResult(jobId);
+      await hiapApiWrapper.getPrioritizationResult(jobId);
 
     // Merge and save ranked actions with details for this language
     const rankedActions = [
@@ -545,7 +545,10 @@ export const fetchRanking = async (
 
         // Start new prioritization job
         const contextData = await getCityContextAndEmissionsData(inventoryId);
-        const { taskId } = await startPrioritization(contextData, type);
+        const { taskId } = await hiapApiWrapper.startPrioritization(
+          contextData,
+          type,
+        );
 
         // Update ranking with new job ID
         await ranking.update({ jobId: taskId });

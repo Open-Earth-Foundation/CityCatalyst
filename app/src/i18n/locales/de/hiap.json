@@ -137,5 +137,30 @@
   "reprioritization-started": "Neupriorisierung Gestartet",
   "reprioritization-started-description": "Ihre Klimaschutzmaßnahmen werden mit den neuesten Daten neu priorisiert. Sie erhalten eine E-Mail, wenn dies abgeschlossen ist.",
   "reprioritization-failed": "Neupriorisierung fehlgeschlagen",
-  "reprioritization-failed-description": "Start der Neupriorisierung fehlgeschlagen. Bitte versuchen Sie es erneut."
+  "reprioritization-failed-description": "Start der Neupriorisierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+  "implementation-plan": "Umsetzungsplan",
+  "pdf": {
+    "title": "Umsetzungsplan für Klimaschutzmaßnahmen",
+    "sections": {
+      "overview": "Übersicht",
+      "implementation-steps": "Umsetzungsschritte",
+      "key-institutions": "Schlüsselinstitutionen",
+      "milestones": "Meilensteine",
+      "mitigation-measures": "Minderungsmaßnahmen",
+      "adaptation-measures": "Anpassungsmaßnahmen",
+      "sustainable-development-goals": "Ziele für nachhaltige Entwicklung"
+    },
+    "labels": {
+      "city-context": "Stadtkontext",
+      "action-description": "Aktionsbeschreibung",
+      "national-strategy": "Nationale Strategie",
+      "item": "Artikel"
+    },
+    "footer": {
+      "generated-by": "Erstellt von CityCatalyst",
+      "page": "Seite",
+      "of": "von",
+      "generated-on": "Erstellt am"
+    }
+  }
 }

@@ -23,10 +23,10 @@ const cookieName = "i18next";
 
 const excludedApi = [
   /^\/api\/auth\//,
-  /^\/api\/v0\/auth\//,
-  /^\/api\/v0\/check\//,
-  /^\/api\/v0\/mock\//,
-  /^\/api\/v0\/chat\//,
+  /^\/api\/v1\/auth\//,
+  /^\/api\/v1\/check\//,
+  /^\/api\/v1\/mock\//,
+  /^\/api\/v1\/chat\//,
 ];
 
 export async function middleware(req: NextRequestWithAuth) {

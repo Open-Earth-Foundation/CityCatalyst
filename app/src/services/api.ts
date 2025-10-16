@@ -33,6 +33,7 @@ import {
   ListOrganizationsResponse,
   OrganizationResponse,
   OrganizationRole,
+  OrganizationInviteResponse,
   ProjectResponse,
   ProjectWithCities,
   RequiredScopesResponse,
@@ -117,7 +118,7 @@ export const api = createApi({
     "Modules",
     "ActionPlan",
   ],
-  baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
     return {
       getCitiesAndYears: builder.query<CityAndYearsResponse[], void>({
@@ -1068,7 +1069,7 @@ export const api = createApi({
             organizationId: data.organizationId,
           },
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: OrganizationInviteResponse) => response,
         invalidatesTags: [
           "OrganizationInvite",
           "Organizations",

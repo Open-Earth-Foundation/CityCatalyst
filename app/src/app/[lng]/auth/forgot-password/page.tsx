@@ -28,7 +28,7 @@ export default function ForgotPassword(props: {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
-      const res = await fetch("/api/v0/auth/forgot", {
+      const res = await fetch("/api/v1/auth/forgot", {
         method: "POST",
         body: JSON.stringify({ email: data.email }),
         headers: {

@@ -23,7 +23,7 @@ test.describe("Login page", () => {
     await expectText(page, "Log In");
     await page.locator('input[name="email"]').fill(email);
     await page.locator('input[name="password"]').fill(password);
-    await page.locator('button[type="submit"]').click();
+    await page.getByRole("button", { name: "LOG IN" }).click();
 
     // TODO how to ensure that session route was called?
     await page.waitForResponse("/api/auth/session");
@@ -36,7 +36,7 @@ test.describe("Login page", () => {
 
     await page.locator('input[name="email"]').fill("testopenearthorg");
     await page.locator('input[name="password"]').fill("pas");
-    await page.locator('button[type="submit"]').click();
+    await page.getByRole("button", { name: "LOG IN" }).click();
 
     // await expect(page).toHaveURL("/en/auth/login/");
     await expectText(page, "Please enter a valid email address");

@@ -114,11 +114,16 @@ export default class EmailService {
       "invite-organization.subject",
     ).subject;
 
-    return sendEmail({
+    const emailResult = await sendEmail({
       to: email,
       subject: translatedSubject,
       html,
     });
+
+    return {
+      success: emailResult,
+      inviteUrl: url,
+    };
   }
 
   public static async sendProjectCreationNotificationEmail({

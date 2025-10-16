@@ -286,6 +286,11 @@ export interface UsersInvitesResponse {
   success: boolean;
 }
 
+export interface OrganizationInviteResponse {
+  success: boolean;
+  inviteUrls: Record<string, string>;
+}
+
 export interface RequiredScopesResponse {
   requiredScopes: string[];
 }

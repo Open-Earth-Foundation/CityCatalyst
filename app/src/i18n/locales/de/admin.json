@@ -236,5 +236,6 @@
   "unknown-error": "Unbekannter Fehler aufgetreten",
   "year-required": "Ein Jahr ist erforderlich",
   "project-required": "Ein Projekt ist erforderlich",
-  "action-type-required": "Ein Aktionstyp ist erforderlich"
+  "action-type-required": "Ein Aktionstyp ist erforderlich",
+  "invite-link-copied-to-clipboard": "Einladungslink in die Zwischenablage kopiert"
 }

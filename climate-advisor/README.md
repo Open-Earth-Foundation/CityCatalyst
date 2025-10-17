@@ -13,13 +13,23 @@ Prerequisites: Python 3.11+, pip, and Docker (for local Postgres).
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-2. Copy the example environment file and adjust values as needed:
+2. Create a `.env` file in the `climate-advisor` directory with your configuration:
 
    ```bash
-   cp .env.example .env
+   # Required
+   OPENROUTER_API_KEY=your-openrouter-api-key-here
+   CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5432/climateadvisor
+
+   # Optional - Only API keys go in .env
+   CA_CORS_ORIGINS=*
+   LANGSMITH_API_KEY=your-langsmith-api-key-here  # Only needed if tracing enabled in llm_config.yaml
    ```
 
-   **Important**: Update the `OPENROUTER_API_KEY` with your actual OpenRouter API key and adjust the `CA_DATABASE_URL` if needed for your setup.
+   **Important**:
+
+   - Replace placeholders with your actual API keys
+   - LangSmith configuration (endpoint, project, tracing_enabled) goes in `llm_config.yaml`, NOT `.env`
+   - See [Environment Variables](#environment-variables) section for full details
 
 3. Start a local Postgres instance (see [Postgres Quickstart](#postgres-quickstart)). Leave it running while you develop.
 
@@ -138,7 +148,7 @@ CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5432/climat
 ### Prerequisites
 
 1. Ensure your PostgreSQL database is running and accessible
-2. Copy `.env.example` to `.env` and configure your settings
+2. Create a `.env` file with your configuration (see [Environment Variables](#environment-variables) section)
 3. Make sure the `CA_DATABASE_URL` in `.env` points to your database
 
 ### Build and Run
@@ -165,14 +175,41 @@ docker run --rm --env-file .env -p 8080:8080 climate-advisor:dev
 
 ### Environment Variables
 
-Environment variables (see `.env.example` for defaults):
+Create a `.env` file in the `climate-advisor` directory with the following variables:
+
+**Required:**
+
+- `OPENROUTER_API_KEY` - your OpenRouter API key (required for LLM access)
+- `CA_DATABASE_URL` - SQLAlchemy async URL, e.g. `postgresql://climateadvisor:climateadvisor@localhost:5432/climateadvisor`
+
+**Optional:**
 
 - `CA_PORT` - default 8080
 - `CA_LOG_LEVEL` - info|debug
 - `CA_CORS_ORIGINS` - CSV list of allowed origins (default `*` for dev)
-- `CA_DATABASE_URL` - SQLAlchemy async URL, e.g. `postgresql://postgres:admin@localhost:5432/climate_advisor`
 - `CA_DATABASE_POOL_SIZE`, `CA_DATABASE_MAX_OVERFLOW`, `CA_DATABASE_POOL_TIMEOUT`, `CA_DATABASE_ECHO` - optional pool tuning
-- `OPENROUTER_API_KEY` - your OpenRouter API key (required)
+- `OPENAI_API_KEY` - OpenAI API key (optional, for embeddings)
+- `LANGSMITH_API_KEY` - LangSmith API key for tracing (required only if tracing is enabled in `llm_config.yaml`)
+
+**LangSmith Configuration - Strict Separation:**
+
+For LangSmith observability, configuration is split by security sensitivity:
+
+**Secrets (in `.env`):**
+
+- `LANGSMITH_API_KEY` - API key (required if tracing is enabled)
+
+**Configuration (in `llm_config.yaml` under `observability.langsmith`):**
+
+- `endpoint` - LangSmith API endpoint (e.g., "https://api.smith.langchain.com")
+- `project` - Project name (e.g., "climate_advisor")
+- `tracing_enabled` - Enable/disable tracing (true/false)
+
+**Important:**
+
+- There are **NO environment variable options** for endpoint, project, or tracing_enabled
+- These settings **MUST** be in `llm_config.yaml`
+- No silent fallbacks - service will fail at startup with clear error if configuration is missing
 
 ### LLM Configuration
 
@@ -182,7 +219,18 @@ All LLM-related configuration (models, prompts, generation parameters, etc.) is 
 - **Generation Parameters**: Default temperature, max_tokens, and other generation settings
 - **System Prompts**: Configurable prompts for different contexts (default, inventory-specific, data analysis)
 - **API Settings**: OpenRouter configuration, timeouts, retry logic
+- **Observability**: LangSmith tracing configuration (endpoint, project, tracing_enabled)
 - **Feature Flags**: Enable/disable streaming, dynamic model selection, etc.
+
+**Example LangSmith configuration in `llm_config.yaml`:**
+
+```yaml
+observability:
+  langsmith:
+    project: "climate_advisor"
+    endpoint: "https://api.smith.langchain.com"
+    tracing_enabled: true
+```
 
 The configuration file supports:
 
@@ -191,6 +239,21 @@ The configuration file supports:
 - Flexible prompt templates with context injection
 - Parameter validation and limits
 - Caching and logging configuration
+- Observability and tracing settings
+
+**Temperature Configuration:**
+
+Temperature is configured globally in `llm_config.yaml` and applies to all requests:
+
+```yaml
+generation:
+  defaults:
+    temperature: 0.1 # 0.0 = deterministic, 1.0 = creative
+```
+
+- Per-request temperature overrides are **not supported** due to OpenAI Agents SDK limitations
+- The Climate Advisor uses `0.1` by default for factual, deterministic responses
+- Model selection can be overridden per-request via the `options.model` parameter
 
 Environment variables can override YAML configuration for API keys and sensitive settings.
 
@@ -240,6 +303,13 @@ Or do it executing commands after logging into a container
 
 ```
 docker exec -it ca-postgres bash
+```
+
+build and run containers
+
+```
+docker build -f service/Dockerfile -t climate-advisor:dev .
+docker run --rm --env-file .env -p 8080:8080 climate-advisor:dev
 ```
 
 **Required environment variable:**
@@ -307,6 +377,54 @@ You should see SSE lines with `event: message` chunks followed by a terminal `ev
 
 - Built-in Swagger UI is available at `/docs` and ReDoc at `/redoc`.
 - A static OpenAPI spec lives at `climate-advisor/docs/climate-advisor-openapi.yaml` for external tooling.
+
+## Observability & Tracing
+
+The Climate Advisor service includes optional LangSmith integration for observability and tracing:
+
+### LangSmith Setup (Optional)
+
+1. **Get your LangSmith API key** from [smith.langchain.com](https://smith.langchain.com/)
+2. **Create a `.env` file** in the `climate-advisor/` directory:
+
+   ```bash
+   # Copy the example file
+   cp climate-advisor/env.example climate-advisor/.env
+
+   # Edit .env and add your API keys
+   LANGSMITH_API_KEY=your_langsmith_api_key_here
+   OPENROUTER_API_KEY=your_openrouter_api_key_here
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+
+3. **Configure tracing** in `llm_config.yaml`:
+   ```yaml
+   observability:
+     langsmith:
+       project: "climate_advisor"
+       endpoint: "https://api.smith.langchain.com"
+       tracing_enabled: true # Set to false to disable
+   ```
+
+### Tracing Features
+
+When enabled, LangSmith will track:
+
+- **Conversation runs**: Complete chat sessions with inputs/outputs
+- **Tool usage**: RAG queries, vector searches, and other tool calls
+- **Performance metrics**: Latency, token usage, and error rates
+- **Error tracking**: Detailed error logs and stack traces
+
+### Troubleshooting Tracing
+
+If you see warnings like `"create_run returned None"` in the logs:
+
+1. Check that `LANGSMITH_API_KEY` is set in your `.env` file
+2. Verify your LangSmith API key is valid
+3. Ensure the project name in `llm_config.yaml` matches your LangSmith project
+4. Check your internet connection to `api.smith.langchain.com`
+
+To disable tracing entirely, set `tracing_enabled: false` in `llm_config.yaml`.
 
 ## 🎯 Ready to Use
 

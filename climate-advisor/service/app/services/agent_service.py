@@ -11,6 +11,8 @@ from __future__ import annotations
 import logging
 import os
 from typing import Optional
+from uuid import UUID
+from typing import Union
 
 import openai
 from agents import Agent
@@ -23,11 +25,31 @@ logger = logging.getLogger(__name__)
 
 
 class AgentService:
-    """Service for creating and managing AI agents with OpenRouter support."""
+    """Service for creating and managing AI agents with OpenRouter support.
     
-    def __init__(self):
-        """Initialize the agent service with settings and OpenRouter client."""
+    Optionally stores CityCatalyst credentials (token, thread_id, user_id)
+    for use by tools that query CC inventory data.
+    """
+    
+    def __init__(
+        self,
+        cc_access_token: Optional[str] = None,
+        cc_thread_id: Optional[Union[str, UUID]] = None,
+        cc_user_id: Optional[str] = None,
+    ):
+        """Initialize the agent service with settings and OpenRouter client.
+        
+        Args:
+            cc_access_token: JWT token from CityCatalyst for inventory access
+            cc_thread_id: Current thread ID (for token refresh context)
+            cc_user_id: User ID (for token refresh and inventory queries)
+        """
         self.settings = get_settings()
+        
+        # Store CC credentials for tools to use
+        self.cc_access_token = cc_access_token
+        self.cc_thread_id = cc_thread_id
+        self.cc_user_id = cc_user_id
 
         # Initialize OpenRouter-configured AsyncOpenAI client and set globally
         self.client = self._create_openrouter_client()
@@ -46,9 +68,10 @@ class AgentService:
         self.default_temperature = self.settings.llm.generation.defaults.temperature
 
         logger.info(
-            "AgentService initialized with model=%s, temperature=%s",
+            "AgentService initialized with model=%s, temperature=%s, cc_token=%s",
             self.default_model,
-            self.default_temperature
+            self.default_temperature,
+            "present" if cc_access_token else "absent",
         )
     
     def _create_openrouter_client(self) -> AsyncOpenAI:

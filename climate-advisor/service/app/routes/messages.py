@@ -51,11 +51,20 @@ async def _stream_with_agents_sdk(
     user_id: str,
     session_factory: Optional[async_sessionmaker[AsyncSession]],
     history_warning: Optional[str] = None,
+    cc_access_token: Optional[str] = None,
 ) -> AsyncIterator[bytes]:
     """Stream AI responses using OpenAI Agents SDK with OpenRouter.
     
     This function replaces the manual OpenAI SDK streaming with the Agents SDK,
     providing built-in tool orchestration, streaming, and LangSmith tracing.
+    
+    Args:
+        payload: Message creation request
+        thread_id: ID of current conversation thread
+        user_id: ID of authenticated user (from thread)
+        session_factory: Factory for database sessions (may be None)
+        history_warning: Warning message if history unavailable
+        cc_access_token: JWT token from CityCatalyst for inventory API access
     """
     req_id = get_request_id()
     settings = get_settings()
@@ -69,6 +78,13 @@ async def _stream_with_agents_sdk(
     options = payload.options or {}
     model_override = options.get("model")
     
+    # Log token availability for debugging (redact actual token)
+    if cc_access_token:
+        from ..utils.token_manager import redact_token
+        logger.debug("CC access token available: %s", redact_token(cc_access_token))
+    else:
+        logger.debug("No CC access token available for inventory queries")
+    
     # Track response state
     assistant_tokens: List[str] = []
     tool_invocations: List[dict] = []
@@ -79,7 +95,12 @@ async def _stream_with_agents_sdk(
     
     try:
         # Create agent service and agent
-        agent_service = AgentService()
+        # Pass CC token and user_id so tools can access inventory data
+        agent_service = AgentService(
+            cc_access_token=cc_access_token,
+            cc_thread_id=thread_id,
+            cc_user_id=user_id,
+        )
         agent = await agent_service.create_agent(
             model=model_override
         )
@@ -332,6 +353,7 @@ async def post_message(
     history_warning: Optional[str] = None
     assistant_session_factory: Optional[async_sessionmaker[AsyncSession]] = None
     resolved_user_id: str = payload.user_id
+    cc_access_token: Optional[str] = None  # Token from CityCatalyst for inventory queries
 
     if payload.thread_id:
         resolved_thread_id: Union[str, UUID] = payload.thread_id
@@ -366,6 +388,13 @@ async def post_message(
         else:
             resolved_thread_id = thread.thread_id
             resolved_user_id = thread.user_id
+            
+            # Extract CC access token from thread context for inventory queries
+            cc_access_token = thread.get_access_token()
+            if cc_access_token:
+                from ..utils.token_manager import redact_token
+                logger.debug("Loaded CC token from thread context: %s", redact_token(cc_access_token))
+            
             message_service = MessageService(session)
             try:
                 await message_service.create_user_message(
@@ -404,5 +433,6 @@ async def post_message(
         user_id=resolved_user_id,
         session_factory=assistant_session_factory,
         history_warning=history_warning,
+        cc_access_token=cc_access_token,
     )
     return StreamingResponse(stream, media_type="text/event-stream", headers=headers)

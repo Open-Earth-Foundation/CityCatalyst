@@ -293,7 +293,10 @@ class Settings(BaseModel):
     database_pool_timeout: Optional[int] = _parse_int(os.getenv("CA_DATABASE_POOL_TIMEOUT"), 30)
     database_echo: bool = _parse_bool(os.getenv("CA_DATABASE_ECHO"), False)
 
-    # Future CityCatalyst integration placeholders
+    # CityCatalyst integration - JWT token exchange and inventory APIs
+    # CC_BASE_URL is required in production for token refresh and inventory data access
+    # Token refresh endpoint: POST /api/v0/assistants/token-refresh
+    # Inventory endpoints: GET /api/v0/inventory/* (example)
     cc_base_url: str | None = os.getenv("CC_BASE_URL")
     cc_oauth_client_id: str | None = os.getenv("CC_OAUTH_CLIENT_ID")
     cc_oauth_client_secret: str | None = os.getenv("CC_OAUTH_CLIENT_SECRET")

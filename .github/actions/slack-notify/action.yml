@@ -121,7 +121,7 @@ runs:
         HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
 
         if [ "$HTTP_CODE" = "200" ]; then
-          echo "✅ Slack notification sent successfully"
+          echo "Slack notification sent successfully"
           echo "success=true" >> $GITHUB_OUTPUT
         else
           echo "::error::Failed to send Slack notification (HTTP $HTTP_CODE)"

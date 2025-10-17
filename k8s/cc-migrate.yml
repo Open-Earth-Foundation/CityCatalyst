@@ -2,15 +2,9 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   generateName: cc-migrate-
-  labels:
-    app: cc-migrate
-    component: database-migration
 spec:
   ttlSecondsAfterFinished: 86400
   template:
-    metadata:
-      labels:
-        app: cc-migrate
     spec:
       restartPolicy: OnFailure
       containers:

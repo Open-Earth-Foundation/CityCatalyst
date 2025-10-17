@@ -189,46 +189,31 @@ jobs:
       - name: Testing connection to EKS
         run: kubectl get pods -n default
 
-      - name: Running migration job
+      # - name: Running migration job
+
+      - name: Run database migrations
         id: run_migrations
         run: |
-          RUN_ID="${{ github.run_id }}-${{ github.run_attempt }}"
-
           echo "=========================================="
-          echo "Database Migration"
+          echo "Starting Database Migration"
           echo "=========================================="
 
-          # Create a unique label for this migration run
-          RUN_ID="${{ github.run_id }}-${{ github.run_attempt }}"
+          # Simple: just create the job
+          echo "Creating migration job..."
+          kubectl create -f k8s/cc-migrate.yml -n default
 
-          # Create the migration job with temporary file (to add label)
-          echo "Creating migration job with tracking label..."
-          kubectl create -f k8s/cc-migrate.yml -n default --dry-run=client -o yaml | \
-            kubectl label -f - --local=true migration-run=$RUN_ID -o yaml | \
-            kubectl create -f -
+          # Wait a moment for it to appear
+          sleep 3
 
-          # Wait a moment for job to be created
-          sleep 2
-
-          # Find job using our unique label
+          # Find the most recent migration job
           JOB_NAME=$(kubectl get jobs -n default \
-            -l migration-run=$RUN_ID \
-            -o jsonpath='{.items[0].metadata.name}')
+            -l app=cc-migrate \
+            --sort-by=.metadata.creationTimestamp \
+            -o jsonpath='{.items[-1].metadata.name}')
 
           if [ -z "$JOB_NAME" ]; then
-            echo "Failed to find migration job with label migration-run=$RUN_ID"
-            echo "Attempting fallback: finding most recent cc-migrate job..."
-            
-            # Fallback: get most recent job starting with cc-migrate
-            JOB_NAME=$(kubectl get jobs -n default \
-              --sort-by=.metadata.creationTimestamp \
-              -o json | \
-              jq -r '.items[] | select(.metadata.name | startswith("cc-migrate-")) | .metadata.name' | \
-              tail -1)
-          fi
-
-          if [ -z "$JOB_NAME" ]; then
-            echo "Could not find migration job"
+            echo "Failed to find migration job"
+            kubectl get jobs -n default -l app=cc-migrate
             echo "status=failed" >> $GITHUB_OUTPUT
             exit 1
           fi
@@ -236,29 +221,79 @@ jobs:
           echo "Migration job created: $JOB_NAME"
           echo "job_name=$JOB_NAME" >> $GITHUB_OUTPUT
 
-          # Wait for job to complete (10 minute timeout)
+          # Wait for pod to be created (30 seconds max)
+          echo ""
+          echo "Waiting for pod to be created..."
+          for i in {1..30}; do
+            POD_NAME=$(kubectl get pods -n default -l job-name=$JOB_NAME -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            if [ -n "$POD_NAME" ]; then
+              echo "Pod created: $POD_NAME (after ${i}s)"
+              break
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 1
+          done
+
+          # If pod never appeared, debug why
+          if [ -z "$POD_NAME" ]; then
+            echo "=========================================="
+            echo "POD WAS NEVER CREATED"
+            echo "=========================================="
+            echo ""
+            echo "Job Events (shows WHY pod didn't start):"
+            kubectl describe job $JOB_NAME -n default
+            
+            echo ""
+            echo "Checking prerequisites:"
+            echo ""
+            echo "1. ConfigMap exists?"
+            kubectl get configmap cc-db-configmap -n default || echo " NOT FOUND"
+            
+            echo ""
+            echo "2. Can pull image?"
+            echo "   Checking: ghcr.io/open-earth-foundation/citycatalyst:latest"
+            kubectl run temp-pull-test \
+              --image=ghcr.io/open-earth-foundation/citycatalyst:latest \
+              --restart=Never \
+              --rm \
+              -n default \
+              --command -- echo "success" 2>&1 | head -5
+            
+            echo "status=failed" >> $GITHUB_OUTPUT
+            
+            {
+              echo "error_logs<<EOF"
+              echo "Pod was never created. Check job events above for details."
+              echo "EOF"
+            } >> $GITHUB_OUTPUT
+            
+            exit 1
+          fi
+
+          # Pod exists, now wait for job to complete
+          echo ""
           echo "Waiting for migration to complete (timeout: 10 minutes)..."
           echo "Started at: $(date)"
 
           if kubectl wait --for=condition=complete --timeout=600s job/$JOB_NAME -n default; then
-            echo "=========================================="
+            echo "========================================="
             echo "Migration Completed Successfully"
-            echo "=========================================="
+            echo "========================================="
             
             echo "status=success" >> $GITHUB_OUTPUT
             
-            # Show recent migration output using job name directly
-            echo "Recent migration output:"
-            kubectl logs job/$JOB_NAME -n default --tail=30
+            echo ""
+            echo "Migration output:"
+            kubectl logs job/$JOB_NAME -n default --tail=50
             
           else
             echo "=========================================="
-            echo "Migration Failed or Timed Out"
+            echo "Migration Failed"
             echo "=========================================="
             
             echo "status=failed" >> $GITHUB_OUTPUT
             
-            # Get job status
+            echo ""
             echo "Job Status:"
             kubectl get job $JOB_NAME -n default -o wide
             
@@ -266,38 +301,31 @@ jobs:
             echo "Pod Status:"
             kubectl get pods -n default -l job-name=$JOB_NAME -o wide
             
-            # Check restart count from job status
-            RESTART_COUNT=$(kubectl get job $JOB_NAME -n default -o jsonpath='{.status.failed}' 2>/dev/null || echo "0")
-            echo "restart_count=$RESTART_COUNT" >> $GITHUB_OUTPUT
-            echo "Job failure count: $RESTART_COUNT"
+            echo ""
+            echo "Pod Description:"
+            kubectl describe pod $POD_NAME -n default | tail -50
             
-            # Get error logs using job name (cleaner than pod lookup)
             echo ""
             echo "Migration Error Logs:"
-            echo "----------------------------------------"
-            MIGRATION_LOGS=$(kubectl logs job/$JOB_NAME -n default --tail=200 2>&1 || echo "Unable to retrieve logs")
-            
-            # Extract key error (last few lines with errors)
+            MIGRATION_LOGS=$(kubectl logs $POD_NAME -n default --tail=200 2>&1 || echo "Could not retrieve logs")
+            echo "$MIGRATION_LOGS"
+
+            # Extract key error for Slack
             KEY_ERROR=$(echo "$MIGRATION_LOGS" | grep -iE "error|failed|exception" | tail -5 | head -3)
             
-            # Fallback to last 3 lines if no error pattern found
             if [ -z "$KEY_ERROR" ]; then
               KEY_ERROR=$(echo "$MIGRATION_LOGS" | tail -3)
             fi
             
-            echo "$KEY_ERROR"
-            
-            # Save for Slack notification
             {
-              echo "error_logs<<EOF_MIGRATION_LOGS"
+              echo "error_logs<<EOF"
               echo "$KEY_ERROR"
-              echo "EOF_MIGRATION_LOGS"
+              echo "EOF"
             } >> $GITHUB_OUTPUT
             
             exit 1
           fi
         continue-on-error: true
-
       - name: Notify Slack - Migration Failure
         if: always() && steps.run_migrations.outputs.status == 'failed'
         uses: ./.github/actions/slack-notify

@@ -8,7 +8,7 @@ permissions:
 on:
   workflow_dispatch:
   push:
-    branches: [ "develop" ]
+    branches: ["develop"]
     paths:
       - app/**
       - k8s/cc-migrate.yml
@@ -172,7 +172,6 @@ jobs:
             type=gha,scope=develop
           cache-to: type=gha,mode=max,scope=citycatalyst-shared
 
-
   deployToEKS:
     needs: pushToGHCR
     runs-on: ubuntu-latest
@@ -190,9 +189,139 @@ jobs:
       - name: Testing connection to EKS
         run: kubectl get pods -n default
 
-      - name: Deploying service
+      - name: Running migration job
+        id: run_migrations
         run: |
-          kubectl create -f k8s/cc-migrate.yml -n default
+          RUN_ID="${{ github.run_id }}-${{ github.run_attempt }}"
+
+          echo "=========================================="
+          echo "Database Migration"
+          echo "=========================================="
+
+          # Create a unique label for this migration run
+          RUN_ID="${{ github.run_id }}-${{ github.run_attempt }}"
+
+          # Create the migration job with temporary file (to add label)
+          echo "Creating migration job with tracking label..."
+          kubectl create -f k8s/cc-migrate.yml -n default --dry-run=client -o yaml | \
+            kubectl label -f - --local=true migration-run=$RUN_ID -o yaml | \
+            kubectl create -f -
+
+          # Wait a moment for job to be created
+          sleep 2
+
+          # Find job using our unique label
+          JOB_NAME=$(kubectl get jobs -n default \
+            -l migration-run=$RUN_ID \
+            -o jsonpath='{.items[0].metadata.name}')
+
+          if [ -z "$JOB_NAME" ]; then
+            echo "Failed to find migration job with label migration-run=$RUN_ID"
+            echo "Attempting fallback: finding most recent cc-migrate job..."
+            
+            # Fallback: get most recent job starting with cc-migrate
+            JOB_NAME=$(kubectl get jobs -n default \
+              --sort-by=.metadata.creationTimestamp \
+              -o json | \
+              jq -r '.items[] | select(.metadata.name | startswith("cc-migrate-")) | .metadata.name' | \
+              tail -1)
+          fi
+
+          if [ -z "$JOB_NAME" ]; then
+            echo "Could not find migration job"
+            echo "status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          echo "Migration job created: $JOB_NAME"
+          echo "job_name=$JOB_NAME" >> $GITHUB_OUTPUT
+
+          # Wait for job to complete (10 minute timeout)
+          echo "Waiting for migration to complete (timeout: 10 minutes)..."
+          echo "Started at: $(date)"
+
+          if kubectl wait --for=condition=complete --timeout=600s job/$JOB_NAME -n default; then
+            echo "=========================================="
+            echo "Migration Completed Successfully"
+            echo "=========================================="
+            
+            echo "status=success" >> $GITHUB_OUTPUT
+            
+            # Show recent migration output using job name directly
+            echo "Recent migration output:"
+            kubectl logs job/$JOB_NAME -n default --tail=30
+            
+          else
+            echo "=========================================="
+            echo "Migration Failed or Timed Out"
+            echo "=========================================="
+            
+            echo "status=failed" >> $GITHUB_OUTPUT
+            
+            # Get job status
+            echo "Job Status:"
+            kubectl get job $JOB_NAME -n default -o wide
+            
+            echo ""
+            echo "Pod Status:"
+            kubectl get pods -n default -l job-name=$JOB_NAME -o wide
+            
+            # Check restart count from job status
+            RESTART_COUNT=$(kubectl get job $JOB_NAME -n default -o jsonpath='{.status.failed}' 2>/dev/null || echo "0")
+            echo "restart_count=$RESTART_COUNT" >> $GITHUB_OUTPUT
+            echo "Job failure count: $RESTART_COUNT"
+            
+            # Get error logs using job name (cleaner than pod lookup)
+            echo ""
+            echo "Migration Error Logs:"
+            echo "----------------------------------------"
+            MIGRATION_LOGS=$(kubectl logs job/$JOB_NAME -n default --tail=200 2>&1 || echo "Unable to retrieve logs")
+            
+            # Extract key error (last few lines with errors)
+            KEY_ERROR=$(echo "$MIGRATION_LOGS" | grep -iE "error|failed|exception" | tail -5 | head -3)
+            
+            # Fallback to last 3 lines if no error pattern found
+            if [ -z "$KEY_ERROR" ]; then
+              KEY_ERROR=$(echo "$MIGRATION_LOGS" | tail -3)
+            fi
+            
+            echo "$KEY_ERROR"
+            
+            # Save for Slack notification
+            {
+              echo "error_logs<<EOF_MIGRATION_LOGS"
+              echo "$KEY_ERROR"
+              echo "EOF_MIGRATION_LOGS"
+            } >> $GITHUB_OUTPUT
+            
+            exit 1
+          fi
+        continue-on-error: true
+
+      - name: Notify Slack - Migration Failure
+        if: always() && steps.run_migrations.outputs.status == 'failed'
+        uses: ./.github/actions/slack-notify
+        with:
+          type: migration_failure
+          webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          branch: ${{ github.ref_name }}
+          commit-sha: ${{ github.sha }}
+          commit-message: ${{ github.event.head_commit.message }}
+          author: ${{ github.event.head_commit.author.name }}
+          workflow-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          commit-url: ${{ github.event.repository.html_url }}/commit/${{ github.sha }}
+          error-logs: ${{ steps.run_migrations.outputs.error_logs }}
+          environment: development
+
+      - name: Stop deployment if migration failed
+        if: steps.run_migrations.outputs.status == 'failed'
+        run: |
+          echo "::error::Migration failed. Deployment cannot continue."
+          exit 1
+
+      - name: Deploying service
+        if: steps.run_migrations.outputs.status == 'success'
+        run: |
           kubectl create -f k8s/cc-seed.yml -n default
           kubectl apply -f k8s/cc-web-deploy.yml -n default
           kubectl set env deployment/cc-web-deploy \
@@ -233,3 +362,39 @@ jobs:
           # kubectl create job --from=cronjob/cc-sync-catalogue cc-sync-catalogue-manual -n default
           kubectl create -f k8s/cc-create-admin.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default
+  notifyDeploymentFailure:
+    needs: [runTests, pushToGHCR, deployToEKS]
+    runs-on: ubuntu-latest
+    if: |
+      always() && 
+      (needs.runTests.result == 'failure' || needs.pushToGHCR.result == 'failure' || needs.deployToEKS.result == 'failure') && 
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/develop'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine which stage failed
+        id: failed_stage
+        run: |
+          if [ "${{ needs.runTests.result }}" == "failure" ]; then
+            echo "stage=Tests" >> $GITHUB_OUTPUT
+          elif [ "${{ needs.pushToGHCR.result }}" == "failure" ]; then
+            echo "stage=Docker Build" >> $GITHUB_OUTPUT
+          elif [ "${{ needs.deployToEKS.result }}" == "failure" ]; then
+            echo "stage=Deployment" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Notify Slack - Deployment Failure
+        uses: ./.github/actions/slack-notify
+        with:
+          type: deployment_failure
+          webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          branch: ${{ github.ref_name }}
+          commit-sha: ${{ github.sha }}
+          commit-message: ${{ github.event.head_commit.message }}
+          author: ${{ github.event.head_commit.author.name }}
+          workflow-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          commit-url: ${{ github.event.repository.html_url }}/commit/${{ github.sha }}
+          failed-stage: ${{ steps.failed_stage.outputs.stage }}
+          environment: development

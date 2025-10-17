@@ -2,23 +2,29 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   generateName: cc-migrate-
+  labels:
+    app: cc-migrate
+    component: database-migration
 spec:
   ttlSecondsAfterFinished: 86400
   template:
+    metadata:
+      labels:
+        app: cc-migrate
     spec:
       restartPolicy: OnFailure
       containers:
-      - name: cc-migrate
-        image: ghcr.io/open-earth-foundation/citycatalyst:latest
-        imagePullPolicy: Always
-        envFrom:
-          - configMapRef:
-              name: cc-db-configmap
-        env:
-        - name: NODE_ENV
-          value: "development"
-        command: ["npm",  "run", "db:migrate"]
-        resources:
-          limits:
-            memory: "1024Mi"
-            cpu: "1000m"
+        - name: cc-migrate
+          image: ghcr.io/open-earth-foundation/citycatalyst:latest
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: cc-db-configmap
+          env:
+            - name: NODE_ENV
+              value: "development"
+          command: ["npm", "run", "db:migrate"]
+          resources:
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"

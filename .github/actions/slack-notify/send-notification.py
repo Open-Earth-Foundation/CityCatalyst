@@ -15,7 +15,7 @@ def build_migration_failure_payload(args: argparse.Namespace) -> Dict[str, Any]:
     # Determine environment and alert level
     if args.branch == "main":
         alert = "<!channel> "
-        env_label = "Production ⚠️"
+        env_label = "Production "
     else:
         alert = ""
         env_label = "Development"

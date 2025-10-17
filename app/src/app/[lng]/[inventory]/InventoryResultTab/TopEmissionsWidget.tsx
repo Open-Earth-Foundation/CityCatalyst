@@ -31,6 +31,7 @@ import {
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
 import { ButtonSmall } from "@/components/package/Texts/Button";
+import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 
 const EmissionsTable = ({
   topEmissions,
@@ -61,27 +62,17 @@ const EmissionsTable = ({
         {(topEmissions || []).map((emission, index) => (
           <Table.Row key={index}>
             <Table.Cell css={{ maxWidth: "50%", wordBreak: "break-word" }}>
-              <Text
-                fontFamily="heading"
-                fontSize="sm"
-                lineHeight="5"
-                letterSpacing="0.5px"
-                css={{ whiteSpace: "normal" }}
-              >
-                {t(toKebabCase(emission.subsectorName))}
-              </Text>
-              <Text
-                fontFamily="heading"
-                color="content.tertiary"
-                fontSize="xs"
-                lineHeight="4"
-                letterSpacing="0.5px"
-              >
+              <BodyMedium>{t(toKebabCase(emission.subsectorName))}</BodyMedium>
+              <BodySmall>
                 {`${capitalizeFirstLetter(t("scope"))} ${t(toKebabCase(emission.scopeName))} - ${t(toKebabCase(emission.sectorName))}`}
-              </Text>
+              </BodySmall>
             </Table.Cell>
-            <Table.Cell>{convertKgToTonnes(emission.co2eq)}</Table.Cell>
-            <Table.Cell>{emission.percentage}%</Table.Cell>
+            <Table.Cell>
+              <BodyMedium>{convertKgToTonnes(emission.co2eq)}</BodyMedium>
+            </Table.Cell>
+            <Table.Cell>
+              <BodyMedium>{emission.percentage}%</BodyMedium>
+            </Table.Cell>
           </Table.Row>
         ))}
       </Table.Body>

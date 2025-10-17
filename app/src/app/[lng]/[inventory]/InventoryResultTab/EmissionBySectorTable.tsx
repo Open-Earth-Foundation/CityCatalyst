@@ -1,10 +1,9 @@
 import { SectorEmission } from "@/util/types";
-import { Accordion, Box, Icon, Table, Text } from "@chakra-ui/react";
-import { convertKgToTonnes } from "@/util/helpers";
+import { Box, Icon, Table, Text } from "@chakra-ui/react";
+import { convertKgToTonnes, toKebabCaseModified } from "@/util/helpers";
 import React from "react";
 import { useTranslation } from "@/i18n/client";
 import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
-import { toKebabCaseModified } from "@/app/[lng]/[inventory]/InventoryResultTab/index";
 import {
   AccordionItem,
   AccordionItemContent,

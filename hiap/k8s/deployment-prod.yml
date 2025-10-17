@@ -36,9 +36,6 @@ spec:
             limits:
               memory: "2Gi"
               cpu: "1000m"
-          volumeMounts:
-            - name: output-storage-prod
-              mountPath: /app/plan_creator_legacy/data/output
           livenessProbe:
             httpGet:
               path: /
@@ -51,8 +48,4 @@ spec:
               port: http
             initialDelaySeconds: 5
             periodSeconds: 5
-      volumes:
-        - name: output-storage-prod
-          persistentVolumeClaim:
-            claimName: hiap-plan-output-pvc-prod
 

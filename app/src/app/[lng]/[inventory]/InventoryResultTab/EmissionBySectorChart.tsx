@@ -1,9 +1,8 @@
 import { SectorEmission } from "@/util/types";
 import { BarCustomLayerProps, ResponsiveBar } from "@nivo/bar";
 import { allSectorColors, SECTORS } from "@/util/constants";
-import { convertKgToTonnes } from "@/util/helpers";
+import { toKebabCaseModified, convertKgToTonnes } from "@/util/helpers";
 import { useTranslation } from "@/i18n/client";
-import { toKebabCaseModified } from "@/app/[lng]/[inventory]/InventoryResultTab/index";
 import { Badge, Box, Card, HStack, Text } from "@chakra-ui/react";
 import { useTooltip } from "@nivo/tooltip";
 import { useMemo, useState } from "react";

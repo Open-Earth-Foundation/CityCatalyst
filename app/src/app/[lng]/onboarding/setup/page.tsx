@@ -30,6 +30,7 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
 import ProjectLimitModal from "@/components/project-limit";
 import { trackEvent } from "@/lib/analytics";
+import { MAX_POPULATION_YEAR_DIFFERENCE } from "@/util/constants";
 
 export type Inputs = {
   city: string;
@@ -148,7 +149,7 @@ export default function OnboardingSetup(props: {
   const globalWarmingPotential = watch("globalWarmingPotential");
 
   const currentYear = new Date().getFullYear();
-  const numberOfYearsDisplayed = 20;
+  const numberOfYearsDisplayed = MAX_POPULATION_YEAR_DIFFERENCE;
   const years = Array.from(
     { length: numberOfYearsDisplayed },
     (_x, i) => currentYear - i,

@@ -272,7 +272,7 @@ pluggy==1.6.0
     # via pytest
 posthog==5.4.0
     # via chromadb
-propcache==0.3.2
+propcache==0.4.1
     # via
     #   aiohttp
     #   yarl

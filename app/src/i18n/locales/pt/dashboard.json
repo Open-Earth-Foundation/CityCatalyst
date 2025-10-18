@@ -264,5 +264,6 @@
   "unpublish-error-title": "Falha ao Despublicar",
   "unpublish-error-description": "Ocorreu um erro ao despublicar o seu inventário. Por favor, tente novamente.",
   "link-copied-to-clipboard": "Link copiado para a área de transferência",
-  "publish": "Publicar"
+  "publish": "Publicar",
+  "invite-link-copied-to-clipboard": "Link de convite copiado para a área de transferência"
 }

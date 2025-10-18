@@ -266,5 +266,6 @@
   "unpublish-error-title": "Error al Despublicar",
   "unpublish-error-description": "Hubo un error al despublicar tu inventario. Por favor, inténtalo de nuevo.",
   "link-copied-to-clipboard": "Enlace copiado al portapapeles",
-  "publish": "Publicar"
+  "publish": "Publicar",
+  "invite-link-copied-to-clipboard": "Enlace de invitación copiado al portapapeles"
 }

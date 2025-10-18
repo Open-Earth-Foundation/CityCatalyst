@@ -463,7 +463,7 @@ uvicorn==0.37.0
     #   hiap
 uvloop==0.21.0 ; platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'
     # via uvicorn
-watchfiles==1.1.0
+watchfiles==1.1.1
     # via uvicorn
 websocket-client==1.8.0
     # via kubernetes

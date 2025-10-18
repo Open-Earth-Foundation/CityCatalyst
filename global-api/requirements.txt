@@ -8,7 +8,7 @@ geopandas>=0.12,<1.1
 mypy==1.18.2
 osmnx==2.0.6
 pandas==2.3.3
-psycopg2-binary==2.9.10
+psycopg2-binary==2.9.11
 pydantic-settings==2.*
 pytest==8.4.2
 rioxarray==0.15.*

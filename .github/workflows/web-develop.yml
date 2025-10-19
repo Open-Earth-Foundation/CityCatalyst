@@ -275,7 +275,7 @@ jobs:
           echo "Waiting for migration to complete (timeout: 10 minutes)..."
           echo "Started at: $(date)"
 
-          if kubectl wait --for=condition=complete --timeout=600s job/$JOB_NAME -n default; then
+          if kubectl wait --for=condition=complete --timeout=300s job/$JOB_NAME -n default; then
             echo "========================================="
             echo "Migration Completed Successfully"
             echo "========================================="

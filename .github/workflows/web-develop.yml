@@ -198,7 +198,6 @@ jobs:
           echo "Starting Database Migration"
           echo "=========================================="
 
-          # Simple: just create the job
           echo "Creating migration job..."
           kubectl create -f k8s/cc-migrate.yml -n default
 

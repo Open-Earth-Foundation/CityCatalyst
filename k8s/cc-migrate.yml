@@ -7,12 +7,13 @@ metadata:
     component: database-migration
 spec:
   ttlSecondsAfterFinished: 86400
+  backoffLimit: 0 # Don't retry
   template:
     metadata:
       labels:
         app: cc-migrate
     spec:
-      restartPolicy: OnFailure
+      restartPolicy: Never
       containers:
         - name: cc-migrate
           image: ghcr.io/open-earth-foundation/citycatalyst:latest

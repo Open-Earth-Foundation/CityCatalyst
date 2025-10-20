@@ -1658,19 +1658,19 @@ export const api = createApi({
 
       // Climate Advisor Chat Endpoints (CA Integration)
       createChatThread: builder.mutation({
-        query: (data: { inventoryId: string; title?: string }) => ({
-          url: `/chat/threads/${data.inventoryId}`,
+        query: (data: { inventory_id?: string; title?: string }) => ({
+          url: `/chat/threads`,
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             title: data.title,
+            inventory_id: data.inventory_id,
           }),
         }),
         transformResponse: (response: { threadId: string }) => response,
       }),
-
     };
   },
 });

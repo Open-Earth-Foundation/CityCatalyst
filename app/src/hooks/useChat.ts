@@ -141,6 +141,7 @@ export function useChat({ inventoryId, t }: UseChatProps) {
     messages,
     inputDisabled,
     isGenerating,
+    assistantStartedResponding,
     handleSubmit,
     handleSuggestionClick,
     stopGeneration,

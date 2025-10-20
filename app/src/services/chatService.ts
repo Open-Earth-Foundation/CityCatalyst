@@ -14,12 +14,12 @@ export class ChatService {
   }
 
   async initializeThread(
-    createChatThread: (data: { inventoryId: string; title?: string }) => Promise<{ threadId: string }>,
+    createChatThread: (data: { inventory_id?: string; title?: string }) => Promise<{ threadId: string }>,
     t: (key: string) => string
   ): Promise<string> {
     try {
       const result = await createChatThread({
-        inventoryId: this.config.inventoryId,
+        inventory_id: this.config.inventoryId,
         title: t("chat-title") || "Climate Chat",
       });
 

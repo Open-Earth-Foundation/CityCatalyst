@@ -121,7 +121,7 @@ export function useSSEStream(options: SSEStreamOptions = {}) {
     }
   }, [parseSSEEvent, handleSSEEvent]);
 
-  const startStream = useCallback(async (url: string, options: RequestInit = {}) => {
+  const startStream = useCallback(async (url: string, fetchOptions: RequestInit = {}) => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -129,21 +129,44 @@ export function useSSEStream(options: SSEStreamOptions = {}) {
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
 
-    const response = await fetch(url, {
-      ...options,
-      signal: abortController.signal,
-    });
+    try {
+      const response = await fetch(url, {
+        ...fetchOptions,
+        signal: abortController.signal,
+      });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        // Try to extract error message from response
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          if (errorData.detail) {
+            errorMessage = errorData.detail;
+          } else if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch {
+          // Fallback to status text if JSON parsing fails
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
+      }
+
+      if (!response.body) {
+        throw new Error("HTTP response is null");
+      }
+
+      await handleStream(response);
+    } catch (error: any) {
+      if (error.name !== "AbortError") {
+        // Call onError callback for any non-abort errors
+        if (options.onError) {
+          options.onError(error.message || "Failed to start stream");
+        }
+      }
+      throw error; // Re-throw so calling code can handle it too
     }
-
-    if (!response.body) {
-      throw new Error("HTTP response is null");
-    }
-
-    await handleStream(response);
-  }, [handleStream]);
+  }, [handleStream, options]);
 
   const stopStream = useCallback(() => {
     if (abortControllerRef.current) {

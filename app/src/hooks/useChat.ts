@@ -7,7 +7,8 @@ import {
   Message, 
   appendMessage, 
   appendToLastMessage, 
-  createInitialMessage 
+  createInitialMessage,
+  removeLastEmptyAssistantMessage
 } from "@/utils/chatUtils";
 import { TFunction } from "i18next";
 
@@ -22,6 +23,7 @@ export function useChat({ inventoryId, t }: UseChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputDisabled, setInputDisabled] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [assistantStartedResponding, setAssistantStartedResponding] = useState(false);
   
   const [createChatThread] = useCreateChatThreadMutation();
 
@@ -40,16 +42,23 @@ export function useChat({ inventoryId, t }: UseChatProps) {
 
   const { startStream, stopStream } = useSSEStream({
     onMessage: (content: string) => {
+      setAssistantStartedResponding(true);
       setMessages(prev => appendToLastMessage(prev, content));
     },
     onComplete: () => {
       setInputDisabled(false);
       setIsGenerating(false);
+      setAssistantStartedResponding(false);
     },
     onError: (error: string) => {
+      // Remove empty assistant message if no response was received
+      if (!assistantStartedResponding) {
+        setMessages(prev => removeLastEmptyAssistantMessage(prev));
+      }
       handleError(new Error(error), "Failed to send message. Please try again.");
       setInputDisabled(false);
       setIsGenerating(false);
+      setAssistantStartedResponding(false);
     },
     onWarning: (warning: string) => {
       console.warn("Chat warning:", warning);
@@ -67,6 +76,8 @@ export function useChat({ inventoryId, t }: UseChatProps) {
   };
 
   const sendMessage = async (text: string) => {
+    setAssistantStartedResponding(false);
+    
     try {
       await initializeThread();
 
@@ -81,10 +92,15 @@ export function useChat({ inventoryId, t }: UseChatProps) {
       });
     } catch (error: any) {
       if (error.name !== "AbortError") {
+        // Remove empty assistant message if no response was received
+        if (!assistantStartedResponding) {
+          setMessages(prev => removeLastEmptyAssistantMessage(prev));
+        }
         handleError(error, "Failed to send message. Please try again.");
       }
       setInputDisabled(false);
       setIsGenerating(false);
+      setAssistantStartedResponding(false);
     }
   };
 
@@ -112,6 +128,7 @@ export function useChat({ inventoryId, t }: UseChatProps) {
     stopStream();
     setIsGenerating(false);
     setInputDisabled(false);
+    setAssistantStartedResponding(false);
   };
 
   useEffect(() => {

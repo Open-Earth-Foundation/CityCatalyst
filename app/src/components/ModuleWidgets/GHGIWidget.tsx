@@ -1,13 +1,11 @@
 import React from "react";
 import { Box } from "@chakra-ui/react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useTranslation } from "@/i18n/client";
 import {
   useGetCityPopulationQuery,
   useGetCityGHGIDashboardQuery,
 } from "@/services/api";
 import { useLatestInventory } from "@/hooks/use-latest-inventory";
-import { useRouter } from "next/navigation";
 import ReportResults from "../GHGI/ReportResults";
 import { InventoryResponse } from "@/util/types";
 
@@ -77,6 +75,7 @@ export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
       inventory={ghgiData?.inventory as InventoryResponse}
       isPublic={isPublic}
       population={population}
+      context="dashboard"
     />
   );
 };

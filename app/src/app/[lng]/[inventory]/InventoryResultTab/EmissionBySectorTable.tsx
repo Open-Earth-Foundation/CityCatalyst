@@ -50,18 +50,20 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
           backgroundColor="background.backgroundLight"
           textTransform="uppercase"
         >
-          <Table.ColumnHeader>
-            <ButtonSmall>{tData("sector")}</ButtonSmall>
-          </Table.ColumnHeader>
-          <Table.ColumnHeader>
-            <ButtonSmall>{tData("emissions")}</ButtonSmall>
-          </Table.ColumnHeader>
-          <Table.ColumnHeader>
-            <ButtonSmall>{tData("percentage-emissions")}</ButtonSmall>
-          </Table.ColumnHeader>
-          <Table.ColumnHeader>
-            <ButtonSmall>{tData("based-on-previous-year")}</ButtonSmall>
-          </Table.ColumnHeader>
+          <Table.Row>
+            <Table.ColumnHeader>
+              <ButtonSmall>{tData("sector")}</ButtonSmall>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              <ButtonSmall>{tData("emissions")}</ButtonSmall>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              <ButtonSmall>{tData("percentage-emissions")}</ButtonSmall>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              <ButtonSmall>{tData("based-on-previous-year")}</ButtonSmall>
+            </Table.ColumnHeader>
+          </Table.Row>
         </Table.Header>
         <Table.Body>
           {item.bySector?.map((sectorBreakDown, i) => {

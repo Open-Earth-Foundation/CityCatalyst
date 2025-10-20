@@ -11,6 +11,9 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
+import { Button } from "@/components/ui/button";
+import { MdOpenInNew } from "react-icons/md";
+import { useRouter } from "next/navigation";
 import { TabHeader } from "@/components/GHGIHomePage/TabHeader";
 import EmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsWidget";
 import TopEmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/TopEmissionsWidget";
@@ -96,10 +99,13 @@ function SectorTabs({
     description: t("error-fetching-sector-breakdown"),
   });
 
-  if (error) {
-    showErrorToast();
-    logger.error({ err: error }, "Error fetching sector breakdown:");
-  }
+  // Show error toast and log error only when error changes
+  useEffect(() => {
+    if (error) {
+      showErrorToast();
+      logger.error({ err: error }, "Error fetching sector breakdown:");
+    }
+  }, [error, showErrorToast]);
 
   useEffect(() => {
     setIsLoadingNewData(true);
@@ -490,18 +496,25 @@ export default function ReportResults({
   isPublic,
   population,
   showTabHeader = true,
+  context = "inventory",
 }: {
   lng: string;
   inventory?: InventoryResponse;
   population?: PopulationAttributes;
   isPublic: boolean;
   showTabHeader?: boolean;
+  context?: "dashboard" | "inventory";
 }) {
   const { t } = useTranslation(lng, "dashboard");
+  const router = useRouter();
 
   if (!inventory) {
     return null;
   }
+
+  // Determine what to show based on context
+  const showManageMissingSectors = context === "inventory" && !isPublic;
+  const showOpenCCInventories = context === "dashboard" && !isPublic;
 
   return (
     <Box display="flex" flexDirection="column" gap={8} w="full">
@@ -511,7 +524,25 @@ export default function ReportResults({
           inventory={inventory}
           title={"tab-emission-inventory-results-title"}
           isPublic={isPublic}
+          showActionButtons={showManageMissingSectors}
         />
+      )}
+
+      {showOpenCCInventories && (
+        <HStack justifyContent="space-between" mb={2}>
+          <Text color="content.link">{t("inventories")}</Text>
+          <Button
+            onClick={() => {
+              router.push(`/cities/${inventory.cityId}/GHGI`);
+            }}
+            variant="outline"
+            borderColor="border.neutral"
+            color="content.primary"
+          >
+            <Text>{t("open-cc-inventories")}</Text>
+            <MdOpenInNew />
+          </Button>
+        </HStack>
       )}
 
       <BlueSubtitle t={t} text={"overview"} />

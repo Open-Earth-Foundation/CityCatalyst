@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Optional
+from typing import Dict, Optional
 from uuid import UUID
 from typing import Union
 
@@ -19,7 +19,11 @@ from agents import Agent
 from openai import AsyncOpenAI
 
 from ..config import get_settings
-from ..tools import climate_vector_search
+from ..tools import (
+    CCInventoryTool,
+    build_cc_inventory_tools,
+    climate_vector_search,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +54,8 @@ class AgentService:
         self.cc_access_token = cc_access_token
         self.cc_thread_id = cc_thread_id
         self.cc_user_id = cc_user_id
+        self._inventory_tool: Optional[CCInventoryTool] = None
+        self._token_ref: Dict[str, Optional[str]] = {"value": cc_access_token}
 
         # Initialize OpenRouter-configured AsyncOpenAI client and set globally
         self.client = self._create_openrouter_client()
@@ -134,11 +140,37 @@ class AgentService:
         agent_instructions = instructions or self.system_prompt
         
         # Create agent with climate vector search tool
+        tools = [climate_vector_search]
+
+        if self.cc_access_token and self.cc_user_id and self.cc_thread_id:
+            thread_identifier = str(self.cc_thread_id)
+            self._inventory_tool = CCInventoryTool()
+            inventory_tools, token_ref = build_cc_inventory_tools(
+                inventory_tool=self._inventory_tool,
+                access_token=self._token_ref["value"],
+                user_id=str(self.cc_user_id),
+                thread_id=thread_identifier,
+            )
+            self._token_ref = token_ref
+            tools.extend(inventory_tools)
+            logger.info(
+                "Registered CC inventory tools for thread_id=%s user_id=%s",
+                thread_identifier,
+                self.cc_user_id,
+            )
+        else:
+            logger.debug(
+                "Skipping CC inventory tools (token=%s, user_id=%s, thread_id=%s)",
+                "present" if self.cc_access_token else "absent",
+                self.cc_user_id,
+                self.cc_thread_id,
+            )
+
         agent = Agent(
             name="Climate Advisor",
             instructions=agent_instructions,
             model=agent_model,
-            tools=[climate_vector_search],
+            tools=tools,
         )
         
         logger.info(
@@ -155,4 +187,11 @@ class AgentService:
         if self.client:
             await self.client.close()
             logger.info("AgentService client closed")
+        if self._inventory_tool:
+            await self._inventory_tool.close()
+
+    def update_cc_token(self, token: str) -> None:
+        """Update the cached CC token used by inventory tools."""
+        self.cc_access_token = token
+        self._token_ref["value"] = token
 

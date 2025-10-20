@@ -92,6 +92,39 @@ async def _stream_with_agents_sdk(
     history_saved = False
     streaming_error = False  # Track if streaming encountered an error
     agent_service: Optional[AgentService] = None
+    thread_identifier = str(thread_id)
+
+    async def _handle_refreshed_token(new_token: Optional[str]) -> None:
+        nonlocal cc_access_token, agent_service
+        if not new_token or new_token == cc_access_token:
+            return
+
+        logger.info("Received refreshed CC token for thread_id=%s", thread_identifier)
+        cc_access_token = new_token
+        if agent_service:
+            agent_service.update_cc_token(new_token)
+
+        if session_factory is None:
+            logger.warning(
+                "Cannot persist refreshed CC token (no session factory available)",
+            )
+            return
+
+        try:
+            async with session_factory() as token_session:
+                thread_service = ThreadService(token_session)
+                thread = await thread_service.get_thread_for_user(thread_id, user_id)
+                await thread_service.update_access_token(thread, new_token)
+                await token_session.commit()
+                logger.info(
+                    "Persisted refreshed CC token for thread_id=%s",
+                    thread_identifier,
+                )
+        except Exception:
+            logger.exception(
+                "Failed to persist refreshed CC token for thread_id=%s",
+                thread_identifier,
+            )
     
     try:
         # Create agent service and agent
@@ -242,6 +275,14 @@ async def _stream_with_agents_sdk(
 
                     output_value = getattr(run_item, "output", None)
                     output_preview = str(output_value)[:200] if output_value is not None else ""
+                    parsed_output: Optional[dict] = None
+                    if isinstance(output_value, str):
+                        try:
+                            parsed_output = json.loads(output_value)
+                        except json.JSONDecodeError:
+                            parsed_output = None
+                    elif isinstance(output_value, dict):
+                        parsed_output = output_value
 
                     invocation = None
                     for inv in tool_invocations:
@@ -259,6 +300,29 @@ async def _stream_with_agents_sdk(
 
                     invocation["status"] = "success"
                     invocation["result"] = str(output_value) if output_value is not None else ""
+                    if parsed_output is not None:
+                        invocation["result_json"] = parsed_output
+
+                    if parsed_output is not None:
+                        await _handle_refreshed_token(parsed_output.get("refreshed_token"))
+                        error_code = parsed_output.get("error_code")
+                        success_flag = parsed_output.get("success")
+                        if success_flag is False and error_code in {"missing_token", "expired_token"}:
+                            yield format_sse(
+                                {
+                                    "message": "CityCatalyst token is missing or expired. Please refresh and retry.",
+                                    "error_code": error_code,
+                                },
+                                event="error",
+                            ).encode("utf-8")
+                        elif success_flag is True and parsed_output.get("refreshed_token"):
+                            yield format_sse(
+                                {
+                                    "message": "CityCatalyst token refreshed.",
+                                    "event": "token_refreshed",
+                                },
+                                event="info",
+                            ).encode("utf-8")
 
                     yield format_sse(
                         {
@@ -342,6 +406,23 @@ async def post_message(
     payload: MessageCreateRequest,
     session: AsyncSession | None = Depends(get_session_optional),
 ):
+    # Log incoming request for debugging with detailed information
+    logger.info(
+        "=== POST /messages request received ===\n"
+        "  user_id: %s\n"
+        "  thread_id: %r (type: %s, length: %s)\n"
+        "  content_length: %d\n"
+        "  inventory_id: %s\n"
+        "  has_options: %s",
+        payload.user_id,
+        payload.thread_id,
+        type(payload.thread_id).__name__ if payload.thread_id else "None",
+        len(payload.thread_id) if payload.thread_id else "N/A",
+        len(payload.content),
+        payload.inventory_id,
+        bool(payload.options)
+    )
+    
     base_warning = (
         "Chat history is temporarily unavailable. The conversation will continue, "
         "but your messages will not be saved."
@@ -356,6 +437,24 @@ async def post_message(
     cc_access_token: Optional[str] = None  # Token from CityCatalyst for inventory queries
 
     if payload.thread_id:
+        # Validate thread_id is a valid UUID format before proceeding
+        try:
+            if isinstance(payload.thread_id, str):
+                UUID(payload.thread_id)  # This will raise ValueError if invalid
+        except ValueError:
+            logger.error(
+                "Invalid thread_id format received: %s (type: %s)",
+                payload.thread_id,
+                type(payload.thread_id).__name__
+            )
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "message": "Invalid thread ID format",
+                    "error": f"invalid input syntax for type uuid: \"{payload.thread_id}\"",
+                    "hint": "thread_id must be a valid UUID format (e.g., '550e8400-e29b-41d4-a716-446655440000')"
+                }
+            )
         resolved_thread_id: Union[str, UUID] = payload.thread_id
     elif session is None:
         temp_thread_id = uuid4()
@@ -378,7 +477,30 @@ async def post_message(
             thread = await thread_service.get_thread_for_user(resolved_thread_id, payload.user_id)
         except HTTPException:
             raise
-        except Exception:
+        except ValueError as e:
+            # Handle UUID validation errors that might occur in database operations
+            logger.error("UUID validation error accessing thread: %s", str(e))
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "message": "Invalid thread ID",
+                    "error": str(e),
+                    "hint": "Please ensure you're using a valid thread_id from thread creation"
+                }
+            )
+        except Exception as e:
+            # Check if this is a PostgreSQL UUID error
+            error_str = str(e)
+            if "invalid input syntax for type uuid" in error_str.lower():
+                logger.error("PostgreSQL UUID error: %s", error_str)
+                raise HTTPException(
+                    status_code=400,
+                    detail={
+                        "message": "Invalid thread ID format",
+                        "error": error_str,
+                        "hint": "thread_id must be a valid UUID"
+                    }
+                )
             try:
                 await session.rollback()
             except Exception:
@@ -388,6 +510,13 @@ async def post_message(
         else:
             resolved_thread_id = thread.thread_id
             resolved_user_id = thread.user_id
+            
+            logger.info(
+                "Thread loaded successfully - thread_id=%s, user_id=%s, inventory_id=%s",
+                resolved_thread_id,
+                resolved_user_id,
+                thread.inventory_id
+            )
             
             # Extract CC access token from thread context for inventory queries
             cc_access_token = thread.get_access_token()

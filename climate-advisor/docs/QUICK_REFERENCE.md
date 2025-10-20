@@ -66,25 +66,35 @@ expiry = get_token_expiry(token)
 print(f"Token expires at: {expiry}")
 ```
 
-### Using CC Inventory Tool
+### Using CC Inventory Tools
 
 ```python
-from climate_advisor.tools.cc_inventory_tool import CCInventoryTool
+import json
+from agents.tool import ToolContext
+from climate_advisor.tools import CCInventoryTool, build_cc_inventory_tools
 
-tool = CCInventoryTool()
-
-result = await tool.query_inventory(
-    query_type="emissions_factors",  # or "facilities", "scope3_activities"
-    token=thread.get_access_token(),
+inventory_tool = CCInventoryTool()
+tools, token_ref = build_cc_inventory_tools(
+    inventory_tool=inventory_tool,
+    access_token=thread.get_access_token(),
     user_id=thread.user_id,
     thread_id=thread.thread_id,
-    filters={"facility_id": "fac-123"}
 )
 
-if result.success:
-    print(result.data)
+get_inventory = tools[0]  # FunctionTool named "get_inventory"
+context = ToolContext(context=None, tool_call_id="dev-test")
+
+payload = json.dumps({"inventory_id": "inv-123"})
+result_json = await get_inventory.on_invoke_tool(context, payload)
+result = json.loads(result_json)
+
+if result["success"]:
+    print(result["data"])  # InventoryResponse object
 else:
-    print(f"Query failed: {result.error}")
+    print(f"Query failed: {result.get('error_code')}: {result.get('error')}")
+
+# When CA emits a refreshed token, update token_ref so future calls use it
+token_ref["value"] = result.get("refreshed_token", token_ref["value"])
 ```
 
 ### Logging with Token Redaction
@@ -297,7 +307,8 @@ curl -X POST http://localhost:3000/api/v0/assistants/token-refresh \
 | ------------------------------------- | ----------------------------------- |
 | `app/utils/token_manager.py`          | Token utilities (expiry, redaction) |
 | `app/services/citycatalyst_client.py` | HTTP client for CC                  |
-| `app/tools/cc_inventory_tool.py`      | Mockup inventory tool               |
+| `app/tools/cc_inventory_tool.py`      | CC inventory tool facade            |
+| `app/tools/cc_inventory_wrappers.py`  | Agents function wrappers            |
 | `app/routes/messages.py`              | Token extraction in message handler |
 | `app/models/db/thread.py`             | `get_access_token()` method         |
 | `app/services/thread_service.py`      | `update_access_token()` method      |

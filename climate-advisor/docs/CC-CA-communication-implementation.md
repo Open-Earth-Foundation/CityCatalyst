@@ -6,6 +6,8 @@
 - The JWT travels only inside CC → CA requests and is stored by CA in the thread `context` field under its own key; it is never sent to the browser or injected into LLM prompts.
 - CA reuses the stored token as an opaque bearer credential when fetching inventory data from CC and refreshes it by calling CC when needed.
 - **CA refreshes expired tokens**: CA calls an unauthenticated CC endpoint to request fresh tokens when the stored token expires.
+- **Inventory tool replies are structured JSON**: CA tools return `{"success": bool, "data": ..., "error_code": ..., "refreshed_token": ...}` so the assistant and CC UI can parse results consistently.
+- **Streaming status events**: When a tool determines the token is missing/expired, CA emits an SSE `error` event (`error_code=missing_token|expired_token`). When a new token is minted, CA emits an `info` event (`event: info`, `message: "CityCatalyst token refreshed."`).
 - Conversations are session-only: a page reload starts fresh, so CC does not persist history. CA can still load the last _n_ messages for a thread when streaming.
 - Streaming continues to flow through `POST /v1/messages` (SSE). CC provides an additional endpoint for token refresh.
 
@@ -65,6 +67,13 @@ sequenceDiagram
 | CC    | `POST /api/v0/assistants/token-refresh`      | Provide fresh JWT tokens to CA (unauthenticated).    | -                        | CA calls this when tokens expire; CC authenticates user via stored thread context.                 |
 | CA    | `POST /v1/threads`                           | Persist thread metadata + token.                     | -                        | Existing implementation already stores `context`; ensure token is stored under `access_token` key. |
 | CA    | `POST /v1/messages`                          | Stream assistant replies and persist messages.       | CC Inventory APIs        | Load thread, extract token, call CC inventory APIs, run agent, stream SSE.                         |
+
+## Inventory Tool Responses
+
+- `get_inventory`: returns the `InventoryResponse` payload used by CC (`{"success": true, "data": {...}}`). On failure the payload includes `error_code` (`missing_token`, `not_found`, `cc_error`, `invalid_arguments`) and `error`.
+- `get_all_datasources`: mirrors CC's `GetDataSourcesResult` shape with the same wrapper (`success/data/...`).
+- `get_user_inventories`: returns the list of inventories (`InventoryWithCity[]`) the authenticated user can access.
+- All tool payloads include `refreshed_token` when the CityCatalyst client performs an automatic token refresh so that CA can persist the new token and CC can react if needed.
 
 ## Thread Handling
 

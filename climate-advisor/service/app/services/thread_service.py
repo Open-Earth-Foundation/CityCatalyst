@@ -82,14 +82,16 @@ class ThreadService:
         self,
         thread: Thread,
         new_token: str,
+        expires_in: int = 3600,
     ) -> None:
         """Update thread's access token in context.
         
-        Stores the token with metadata about when it was issued.
+        Stores the token with metadata about when it was issued and expires.
         
         Args:
             thread: Thread to update
             new_token: Fresh JWT token from CityCatalyst
+            expires_in: Token lifetime in seconds (default 1 hour)
         """
-        context_update = create_token_context(new_token)
+        context_update = create_token_context(new_token, expires_in)
         await self.update_context(thread, context_update)

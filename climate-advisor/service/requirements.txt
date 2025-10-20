@@ -9,7 +9,7 @@ python-dotenv==1.1.1
 PyYAML==6.0.3
 aiosqlite==0.21.0
 pydantic==2.11.9
-openai==2.1.0
+openai==2.5.0
 openai-agents==0.1.0
 numpy==2.3.3
 PyPDF2==3.0.1

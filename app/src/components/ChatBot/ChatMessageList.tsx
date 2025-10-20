@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Box,
   HStack,
@@ -12,47 +12,73 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { Message } from "@/utils/chatUtils";
+import { PulsingAIIcon } from "./PulsingAIIcon";
 
 interface ChatMessageListProps {
   messages: Message[];
+  isGenerating?: boolean;
+  assistantStartedResponding?: boolean;
 }
 
-export function ChatMessageList({ messages }: ChatMessageListProps) {
+export function ChatMessageList({ messages, isGenerating, assistantStartedResponding }: ChatMessageListProps) {
   const { copyToClipboard, isCopied } = useCopyToClipboard({});
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const showPulsingIcon = isGenerating && !assistantStartedResponding;
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isGenerating]);
 
   return (
-    <Box overflowY="auto" maxH="35vh" spaceY={4}>
+    <Box 
+      overflowY="auto" 
+      maxH="35vh"
+      css={{
+        scrollBehavior: 'smooth'
+      }}
+    >
       {messages.map((m, i) => {
         const isUser = m.role === "user";
+        const isEmptyAssistantMessage = !isUser && !m.text.trim();
+        const shouldShowPulsing = isEmptyAssistantMessage && showPulsingIcon && i === messages.length - 1;
+        
         return (
-          <HStack key={i} align="top" asChild>
-            <Box>
-              <Box
-                w={9}
-                h={9}
-                p={2}
-                borderRadius="full"
-                bg="content.alternative"
-                visibility={isUser ? "hidden" : "visible"}
-              >
-                <Icon as={BsStars} boxSize={5} color="base.light" />
-              </Box>
+          <Box key={i} mb={4}>
+            <HStack align="top" asChild>
+              <Box>
+              {shouldShowPulsing ? (
+                <PulsingAIIcon />
+              ) : (
+                <Box
+                  w={9}
+                  h={9}
+                  p={2}
+                  borderRadius="full"
+                  bg="content.alternative"
+                  visibility={isUser ? "hidden" : "visible"}
+                >
+                  <Icon as={BsStars} boxSize={5} color="base.light" />
+                </Box>
+              )}
               <Spacer />
-              <Box
-                borderTopLeftRadius={isUser ? "2xl" : "0"}
-                borderBottomLeftRadius={isUser ? "2xl" : "0"}
-                borderTopRightRadius={isUser ? "0" : "2xl"}
-                borderBottomRightRadius={isUser ? "0" : "2xl"}
-                borderTopRadius="2xl"
-                px={6}
-                py={4}
-                bg={isUser ? "content.link" : "base.light"}
-                whiteSpace="pre-wrap"
-                color={isUser ? "base.light" : "content.tertiary"}
-                letterSpacing="0.5px"
-                lineHeight="24px"
-                fontSize="16px"
-              >
+              {!shouldShowPulsing && (
+                <Box
+                  borderTopLeftRadius={isUser ? "2xl" : "0"}
+                  borderBottomLeftRadius={isUser ? "2xl" : "0"}
+                  borderTopRightRadius={isUser ? "0" : "2xl"}
+                  borderBottomRightRadius={isUser ? "0" : "2xl"}
+                  borderTopRadius="2xl"
+                  px={6}
+                  py={4}
+                  bg={isUser ? "content.link" : "base.light"}
+                  whiteSpace="pre-wrap"
+                  color={isUser ? "base.light" : "content.tertiary"}
+                  letterSpacing="0.5px"
+                  lineHeight="24px"
+                  fontSize="16px"
+                >
                 <>
                   <ReactMarkdown rehypePlugins={[remarkGfm]}>
                     {m.text}
@@ -86,11 +112,15 @@ export function ChatMessageList({ messages }: ChatMessageListProps) {
                       </>
                     )}
                 </>
+                </Box>
+              )}
               </Box>
-            </Box>
-          </HStack>
+            </HStack>
+          </Box>
         );
       })}
+      {/* Invisible element to scroll to */}
+      <Box ref={messagesEndRef} />
     </Box>
   );
 }

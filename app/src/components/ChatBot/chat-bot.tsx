@@ -25,6 +25,7 @@ export default function ChatBot({
     messages,
     inputDisabled,
     isGenerating,
+    assistantStartedResponding,
     handleSubmit,
     handleSuggestionClick,
     stopGeneration,
@@ -34,7 +35,11 @@ export default function ChatBot({
 
   return (
     <Box display="flex" flexDirection="column" w="full" h="stretch">
-      <ChatMessageList messages={messages} />
+      <ChatMessageList 
+        messages={messages} 
+        isGenerating={isGenerating}
+        assistantStartedResponding={assistantStartedResponding}
+      />
 
       <Box divideX="2px" mt={2} mb={6} borderColor="border.neutral" />
 

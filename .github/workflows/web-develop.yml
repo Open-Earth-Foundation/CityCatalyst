@@ -306,7 +306,7 @@ jobs:
             
             echo ""
             echo "Migration Error Logs:"
-            MIGRATION_LOGS=$(kubectl logs $POD_NAME -n default --tail=200 2>&1 || echo "Could not retrieve logs")
+            MIGRATION_LOGS=$(kubectl logs $POD_NAME -n default --tail=200 2>&1 || echo "Could not retrieve error logs")
             echo "$MIGRATION_LOGS"
 
             # Extract key error for Slack
@@ -343,7 +343,7 @@ jobs:
       - name: Stop deployment if migration failed
         if: steps.run_migrations.outputs.status == 'failed'
         run: |
-          echo "::error::Migration failed. Deployment cannot continue."
+          echo "::error::Migration step failed. Deployment cannot continue."
           exit 1
 
       - name: Deploying service

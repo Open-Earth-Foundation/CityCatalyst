@@ -1,6 +1,6 @@
 import { SectorEmission } from "@/util/types";
 import { Box, Icon, Table, Text } from "@chakra-ui/react";
-import { convertKgToTonnes, toKebabCaseModified } from "@/util/helpers";
+import { convertKgToTonnes, shortSectorNameToKebabCase } from "@/util/helpers";
 import React from "react";
 import { useTranslation } from "@/i18n/client";
 import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
@@ -32,6 +32,7 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
   lng,
 }) => {
   const { t: tData } = useTranslation(lng, "data");
+  const { t: tDashboard } = useTranslation(lng, "dashboard");
 
   const renderTable = (item: {
     bySector: ExtendedSectorEmission[];
@@ -80,7 +81,9 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
             return (
               <Table.Row key={i} truncate>
                 <Table.Cell>
-                  {tData(toKebabCaseModified(sectorBreakDown.sectorName))}
+                  {tDashboard(
+                    shortSectorNameToKebabCase(sectorBreakDown.sectorName),
+                  )}
                 </Table.Cell>
                 <Table.Cell>
                   {convertKgToTonnes(sectorBreakDown.co2eq)}

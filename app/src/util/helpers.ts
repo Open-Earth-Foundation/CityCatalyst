@@ -430,11 +430,7 @@ export const getParamValueRequired = (param: string | string[] | undefined): str
   }
   return value;
 };
-export const toKebabCaseModified = (str: string) => {
-  if (str.toLowerCase().includes("ippu")) {
-    return "ippu";
-  } else if (str.toLowerCase().includes("afolu")) {
-    return "afolu";
-  }
-  return toKebabCase(str);
+
+export const shortSectorNameToKebabCase = (sectorName: string) => {
+  return toKebabCase(sectorName.toLowerCase() + "-short");
 };

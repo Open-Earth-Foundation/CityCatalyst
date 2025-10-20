@@ -1655,6 +1655,22 @@ export const api = createApi({
         transformResponse: (response: { data: HiapJob[] }) => response.data,
         providesTags: ["HiapJobs"],
       }),
+
+      // Climate Advisor Chat Endpoints (CA Integration)
+      createChatThread: builder.mutation({
+        query: (data: { inventoryId: string; title?: string }) => ({
+          url: `/chat/threads/${data.inventoryId}`,
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: data.title,
+          }),
+        }),
+        transformResponse: (response: { threadId: string }) => response,
+      }),
+
     };
   },
 });
@@ -1723,6 +1739,7 @@ export const {
   useMockDataQuery,
   useConnectToCDPMutation,
   useCreateThreadIdMutation,
+  useCreateChatThreadMutation,
   useUpdateActivityValueMutation,
   useDeleteAllActivityValuesMutation,
   useDeleteActivityValueMutation,

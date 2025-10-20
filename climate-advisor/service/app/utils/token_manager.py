@@ -13,7 +13,7 @@ from __future__ import annotations
 import json
 import logging
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
@@ -147,25 +147,38 @@ def get_token_subject(token: str) -> str | None:
 
 def create_token_context(
     access_token: str,
+    expires_in: Optional[int] = None,
     issued_at: Optional[datetime] = None,
 ) -> Dict[str, Any]:
     """Create a thread context dictionary for storing token with metadata.
     
     Args:
         access_token: The JWT token from CityCatalyst
+        expires_in: Token lifetime in seconds (if provided, overrides JWT exp claim)
         issued_at: When the token was issued (optional, defaults to now)
     
     Returns:
         Dictionary suitable for storing in thread.context
     """
+    if issued_at is None:
+        issued_at = datetime.now(timezone.utc)
+    
     context = {
         "access_token": access_token,
+        "issued_at": issued_at.isoformat(),
     }
     
     # Calculate when token expires
-    expires_at = get_token_expiry(access_token)
-    if expires_at:
+    if expires_in:
+        # Use provided expires_in seconds from now
+        expires_at = issued_at + timedelta(seconds=expires_in)
         context["expires_at"] = expires_at.isoformat()
+        context["expires_in"] = expires_in
+    else:
+        # Fall back to JWT exp claim
+        expires_at = get_token_expiry(access_token)
+        if expires_at:
+            context["expires_at"] = expires_at.isoformat()
     
     # Record when we got this token
     if issued_at:

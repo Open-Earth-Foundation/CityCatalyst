@@ -238,5 +238,9 @@
   "year-required": "A year is required",
   "project-required": "A project is required",
   "action-type-required": "An action type is required",
+  "languages": "Languages",
+  "select-languages-for-climate-actions": "Select languages for climate actions (prioritize EN & PT for fastest results)",
+  "please-select-at-least-one-language": "Please select at least one language",
+  "validation-error": "Validation error",
   "invite-link-copied-to-clipboard": "Invite link copied to clipboard"
 }

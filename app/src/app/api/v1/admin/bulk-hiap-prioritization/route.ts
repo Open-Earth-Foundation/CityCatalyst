@@ -16,7 +16,9 @@ const bulkPrioritizationSchema = z.object({
   projectId: z.string().uuid(),
   year: z.number().int().min(2000).max(new Date().getFullYear()),
   actionType: z.enum(["mitigation", "adaptation"]),
-  language: z.string(),
+  languages: z
+    .array(z.nativeEnum(LANGUAGES))
+    .min(1, "At least one language is required"),
 });
 
 /**
@@ -48,6 +50,12 @@ const bulkPrioritizationSchema = z.object({
  *               actionType:
  *                 type: string
  *                 enum: [mitigation, adaptation]
+ *               languages:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   enum: [en, es, pt, de, fr]
+ *                 minItems: 1
  *     responses:
  *       200:
  *         description: Bulk prioritization started successfully
@@ -90,7 +98,7 @@ const bulkPrioritizationSchema = z.object({
  */
 export const POST = apiHandler(async (req: NextRequest) => {
   const body = await req.json();
-  const { projectId, year, actionType, language } =
+  const { projectId, year, actionType, languages } =
     bulkPrioritizationSchema.parse(body);
   // Verify project exists
   const project = await db.models.Project.findByPk(projectId);
@@ -160,7 +168,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
       const ranking = await startActionRankingJob(
         inventory.inventoryId,
         city.locode,
-        language as LANGUAGES,
+        languages,
         actionType as ACTION_TYPES,
       );
 

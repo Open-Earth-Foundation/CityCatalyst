@@ -86,11 +86,11 @@ export interface GlobalApiClimateAction {
 export const findExistingRanking = async (
   inventoryId: string,
   locode: string,
-  lang: LANGUAGES,
+  langs: LANGUAGES[],
   type: ACTION_TYPES,
 ) => {
   const ranking = await db.models.HighImpactActionRanking.findOne({
-    where: { locode, inventoryId, langs: [lang], type },
+    where: { locode, inventoryId, langs, type },
     include: [
       {
         model: db.models.HighImpactActionRanked,
@@ -104,7 +104,7 @@ export const findExistingRanking = async (
 export const startActionRankingJob = async (
   inventoryId: string,
   locode: string,
-  lang: LANGUAGES,
+  langs: LANGUAGES[],
   type: ACTION_TYPES,
   user?: User,
 ) => {
@@ -138,6 +138,7 @@ export const startActionRankingJob = async (
   const { taskId } = await hiapApiWrapper.startPrioritization(
     contextData,
     type,
+    langs,
   );
   logger.info({ taskId }, "Task ID received from HIAP API");
   if (!taskId) throw new Error("No taskId returned from HIAP API");
@@ -145,15 +146,22 @@ export const startActionRankingJob = async (
   const ranking = await db.models.HighImpactActionRanking.create({
     locode,
     inventoryId,
-    langs: Object.values(LANGUAGES),
+    langs: langs,
     type,
     jobId: taskId,
     status: HighImpactActionRankingStatus.PENDING,
   });
-  logger.info(`Ranking created in DB with ID: ${ranking.id}`);
+  logger.info(
+    `Ranking created in DB with ID: ${ranking.id}, langs: ${langs.join(", ")}`,
+  );
 
   // Do not await here, it will make the request time out. Poll job in the background.
-  checkActionRankingJob(ranking, lang, type, user);
+  // Use the first language for the initial check
+  if (langs.length > 0) {
+    checkActionRankingJob(ranking, langs[0], type, user);
+  } else {
+    logger.error("No languages provided for action ranking job");
+  }
   return ranking;
 };
 
@@ -445,13 +453,23 @@ async function findOrSelectRanking(
   lang: LANGUAGES,
   type: ACTION_TYPES,
 ) {
-  let ranking = await findExistingRanking(inventoryId, locode, lang, type);
-  if (!ranking) {
-    ranking = await db.models.HighImpactActionRanking.findOne({
-      where: { inventoryId, locode, type },
-      order: [["created", "ASC"]],
-    });
-  }
+  // First try to find a ranking that includes the requested language
+  let ranking = await db.models.HighImpactActionRanking.findOne({
+    where: {
+      inventoryId,
+      locode,
+      type,
+      langs: { [Op.contains]: [lang] }, // Check if the langs array contains this language
+    },
+    include: [
+      {
+        model: db.models.HighImpactActionRanked,
+        as: "highImpactActionRanked",
+      },
+    ],
+    order: [["created", "DESC"]],
+  });
+
   return ranking;
 }
 
@@ -548,6 +566,7 @@ export const fetchRanking = async (
         const { taskId } = await hiapApiWrapper.startPrioritization(
           contextData,
           type,
+          (ranking.langs as LANGUAGES[]) || [lang], // Use existing langs or wrap single lang
         );
 
         // Update ranking with new job ID
@@ -592,7 +611,7 @@ export const fetchRanking = async (
         return await startActionRankingJob(
           inventoryId,
           locode,
-          lang,
+          [lang],
           type,
           user || undefined,
         );
@@ -601,7 +620,7 @@ export const fetchRanking = async (
       return await startActionRankingJob(
         inventoryId,
         locode,
-        lang,
+        [lang],
         type,
         user || undefined,
       );
@@ -610,7 +629,7 @@ export const fetchRanking = async (
       return await startActionRankingJob(
         inventoryId,
         locode,
-        lang,
+        [lang],
         type,
         user || undefined,
       );

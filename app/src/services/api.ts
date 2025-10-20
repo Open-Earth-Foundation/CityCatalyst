@@ -1162,7 +1162,7 @@ export const api = createApi({
           projectId: string;
           year: number;
           actionType: ACTION_TYPES;
-          language?: string;
+          languages: LANGUAGES[];
         }) => ({
           url: `/admin/bulk-hiap-prioritization`,
           method: "POST",

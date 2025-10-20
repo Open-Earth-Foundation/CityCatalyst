@@ -1,6 +1,6 @@
-aiohttp==3.12.*
+aiohttp==3.13.*
 alembic==1.16.5
-fastapi==0.118.0
+fastapi==0.119.0
 black==25.9.0
 flake8==7.3.0
 fsspec==2025.*
@@ -8,7 +8,7 @@ geopandas>=0.12,<1.1
 mypy==1.18.2
 osmnx==2.0.6
 pandas==2.3.3
-psycopg2-binary==2.9.10
+psycopg2-binary==2.9.11
 pydantic-settings==2.*
 pytest==8.4.2
 rioxarray==0.15.*

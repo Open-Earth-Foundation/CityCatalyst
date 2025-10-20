@@ -65,8 +65,8 @@ def retriever_main_action_tool(
 
     metadata_filter = {"main_action": {"$eq": True}}
 
-    logger.info("search_query", search_query)
-    logger.info("metadata_filter", metadata_filter)
+    logger.info("search_query: %s", search_query)
+    logger.info("metadata_filter: %s", metadata_filter)
 
     docs_and_scores = vector_store.similarity_search_with_relevance_scores(
         query=search_query,

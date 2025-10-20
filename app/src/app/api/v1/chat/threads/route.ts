@@ -50,7 +50,7 @@ interface TokenResponse {
 
 const createThreadRequest = z.object({
   title: z.string().optional(),
-  inventory_id: z.string().uuid().optional(),
+  inventory_id: z.string().optional(),
 });
 
 async function issueCaUserToken(params: {

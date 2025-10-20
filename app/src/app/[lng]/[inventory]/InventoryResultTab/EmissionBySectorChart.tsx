@@ -1,9 +1,8 @@
 import { SectorEmission } from "@/util/types";
 import { BarCustomLayerProps, ResponsiveBar } from "@nivo/bar";
 import { allSectorColors, SECTORS } from "@/util/constants";
-import { convertKgToTonnes } from "@/util/helpers";
+import { shortSectorNameToKebabCase, convertKgToTonnes } from "@/util/helpers";
 import { useTranslation } from "@/i18n/client";
-import { toKebabCaseModified } from "@/app/[lng]/[inventory]/InventoryResultTab/index";
 import { Badge, Box, Card, HStack, Text } from "@chakra-ui/react";
 import { useTooltip } from "@nivo/tooltip";
 import { useMemo, useState } from "react";
@@ -217,10 +216,11 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
   lng,
 }) => {
   const { t: tData } = useTranslation(lng, "data");
+  const { t: tDashboard } = useTranslation(lng, "dashboard");
   const defaultBreakdown = SECTORS.reduce((acc, sector) => {
     return {
       ...acc,
-      [toKebabCaseModified(sector.name)]: 0,
+      [shortSectorNameToKebabCase(sector.name)]: 0,
     };
   }, {});
 
@@ -273,7 +273,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
                     flex={1}
                     color="content.secondary"
                   >
-                    {tData(toKebabCaseModified(segment.id))}
+                    {tDashboard(shortSectorNameToKebabCase(segment.id))}
                   </Text>
                   <Text
                     fontSize="body.md"
@@ -331,7 +331,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
       const sectorBreakDown = item.bySector.reduce((acc, sector) => {
         return {
           ...acc,
-          [toKebabCaseModified(sector.sectorName)]: sector.co2eq,
+          [shortSectorNameToKebabCase(sector.sectorName)]: sector.co2eq,
         };
       }, defaultBreakdown);
       return {
@@ -342,7 +342,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
     .reverse();
 
   const chartDataKeys = SECTORS.map((sector) =>
-    toKebabCaseModified(sector.name),
+    shortSectorNameToKebabCase(sector.name),
   );
 
   const margin = { top: 50, right: 130, bottom: 50, left: 120 };
@@ -461,7 +461,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
               style={{ backgroundColor: allSectorColors[index] }}
             ></Box>
             <Text fontSize="body.md" ml={2} color="content.alternative">
-              {tData(toKebabCaseModified(sector.name))}
+              {tDashboard(shortSectorNameToKebabCase(sector.name))}
             </Text>
           </Box>
         ))}

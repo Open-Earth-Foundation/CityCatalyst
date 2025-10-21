@@ -147,7 +147,7 @@ export const GET = apiHandler(async (_req, { session, searchParams }) => {
     );
   }
 
-  if (!cities) {
+  if (cities.length === 0) {
     throw new createHttpError.NotFound("Cities not found");
   }
 

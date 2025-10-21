@@ -129,7 +129,6 @@ jobs:
           export IMAGE=ghcr.io/open-earth-foundation/citycatalyst-hiap
 
           # Apply production Kubernetes manifests
-          kubectl apply -f hiap/k8s/persistent-volume-prod.yml
           kubectl apply -f hiap/k8s/deployment-prod.yml
           kubectl apply -f hiap/k8s/service-prod.yml
 

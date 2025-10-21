@@ -46,7 +46,6 @@ export function useChat({ inventoryId, t }: UseChatProps) {
     onError: handleError,
   });
 
-
   const { startStream, stopStream } = useSSEStream(
     hasFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION)
       ? {
@@ -116,18 +115,20 @@ export function useChat({ inventoryId, t }: UseChatProps) {
 
   const initializeThread = async () => {
     if (!threadIdRef.current) {
-      const threadId = await chatService.initializeThread(async (data) => {
-        if (hasFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION)) {
+      const threadId = await chatService.initializeThread(
+        async (data) => {
           const result = await createChatThread(data).unwrap();
           return { threadId: result.threadId };
-        } else {
+        },
+        async (data) => {
           const result = await createThreadId({
-            inventoryId: data.inventory_id || inventoryId,
-            content: data.title || t("initial-message"),
+            inventoryId: data.inventoryId || inventoryId,
+            content: data.content || t("initial-message"),
           }).unwrap();
-          return { threadId: result };
-        }
-      }, t);
+          return result;
+        },
+        t,
+      );
       threadIdRef.current = threadId;
     }
   };

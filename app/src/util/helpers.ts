@@ -430,3 +430,7 @@ export const getParamValueRequired = (param: string | string[] | undefined): str
   }
   return value;
 };
+
+export const shortSectorNameToKebabCase = (sectorName: string) => {
+  return toKebabCase(sectorName.toLowerCase() + "-short");
+};

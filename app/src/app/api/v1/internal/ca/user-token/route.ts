@@ -87,7 +87,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Issue token representing the user (user-scoped, not inventory-scoped)
-    const issuer = process.env.HOST || "citycatalyst";
     const userToken = jwt.sign({
       sub: user_id,
       role: user.role,

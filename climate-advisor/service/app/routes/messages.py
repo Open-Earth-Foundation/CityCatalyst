@@ -523,6 +523,45 @@ async def post_message(
             if cc_access_token:
                 from ..utils.token_manager import redact_token
                 logger.debug("Loaded CC token from thread context: %s", redact_token(cc_access_token))
+            else:
+                # Proactively fetch a new token if none exists
+                logger.info("No CC token found in thread, attempting to fetch a new one for user_id=%s", resolved_user_id)
+                try:
+                    from ..services.citycatalyst_client import CityCatalystClient
+                    from ..utils.token_manager import redact_token, create_token_context
+                    
+                    cc_client = CityCatalystClient()
+                    fresh_token, expires_in = await cc_client.refresh_token(resolved_user_id)
+                    await cc_client.close()
+                    
+                    if fresh_token:
+                        cc_access_token = fresh_token
+                        logger.info(
+                            "Successfully fetched new CC token for user_id=%s (expires_in=%ds, token=%s)",
+                            resolved_user_id,
+                            expires_in,
+                            redact_token(fresh_token)
+                        )
+                        
+                        # Store the new token in thread context
+                        try:
+                            token_context = create_token_context(fresh_token, expires_in=expires_in)
+                            await thread_service.update_context(thread, token_context)
+                            await session.commit()
+                            logger.info("Persisted new CC token to thread context for thread_id=%s", resolved_thread_id)
+                        except Exception as ctx_exc:
+                            logger.warning("Failed to persist new CC token to thread context: %s", ctx_exc)
+                            try:
+                                await session.rollback()
+                            except Exception:
+                                pass
+                except Exception as token_exc:
+                    logger.error(
+                        "Failed to fetch CC token for user_id=%s: %s. Continuing without inventory tools.",
+                        resolved_user_id,
+                        token_exc,
+                        exc_info=True
+                    )
             
             message_service = MessageService(session)
             try:

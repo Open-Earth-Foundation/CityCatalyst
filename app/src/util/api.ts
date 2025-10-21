@@ -253,7 +253,7 @@ export function apiHandler(handler: NextHandler) {
             "Invalid or expired access token",
           );
         }
-        
+
         const origin = process.env.HOST || new URL(req.url).origin;
         if (token.aud !== origin) {
           throw new createHttpError.Unauthorized("Wrong server for token");
@@ -266,7 +266,7 @@ export function apiHandler(handler: NextHandler) {
           if (!isValidService) {
             throw new createHttpError.Unauthorized("Invalid service credentials");
           }
-          
+
           // For service tokens, we only need basic JWT validation (no OAuth checks)
           session = await makeServiceUserSession(token);
           logger.debug({
@@ -274,7 +274,7 @@ export function apiHandler(handler: NextHandler) {
             service_name: serviceName,
             endpoint: new URL(req.url).pathname
           }, 'Service-to-service token validated');
-          
+
         } else if (hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
           // OAuth validation path for regular client tokens
           const client = await OAuthClient.findByPk(token.client_id);

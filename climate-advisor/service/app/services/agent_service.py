@@ -139,8 +139,7 @@ class AgentService:
         agent_model = model or self.default_model
         agent_instructions = instructions or self.system_prompt
         
-        # Create agent with climate vector search tool
-        tools = [climate_vector_search]
+        tools = []
 
         if self.cc_access_token and self.cc_user_id and self.cc_thread_id:
             thread_identifier = str(self.cc_thread_id)
@@ -165,6 +164,8 @@ class AgentService:
                 self.cc_user_id,
                 self.cc_thread_id,
             )
+        
+        tools.append(climate_vector_search)
 
         agent = Agent(
             name="Climate Advisor",

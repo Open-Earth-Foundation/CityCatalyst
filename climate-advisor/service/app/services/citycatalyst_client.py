@@ -24,6 +24,7 @@ from ..utils.token_manager import (
     redact_token,
     get_token_expiry,
     create_token_context,
+    parse_jwt_claims,
 )
 
 logger = logging.getLogger(__name__)
@@ -49,15 +50,17 @@ class CityCatalystClient:
     - Gracefully handles auth failures
     """
     
-    def __init__(self, base_url: Optional[str] = None, timeout: int = 30):
+    def __init__(self, base_url: Optional[str] = None, api_key: Optional[str] = None, timeout: int = 30):
         """Initialize CityCatalyst client.
-        
+
         Args:
             base_url: CityCatalyst base URL (defaults to settings.cc_base_url)
+            api_key: CityCatalyst API key (defaults to settings.cc_api_key)
             timeout: Request timeout in seconds
         """
         settings = get_settings()
         self.base_url = base_url or settings.cc_base_url
+        self.api_key = api_key or settings.cc_api_key
         self.timeout = timeout
         self._client: Optional[httpx.AsyncClient] = None
         
@@ -128,8 +131,9 @@ class CityCatalystClient:
                 "Refreshing token for user=%s",
                 user_id,
             )
-            
-            response = await client.post(url, json=payload, headers=headers)
+
+            # Allow redirects for compatibility
+            response = await client.post(url, json=payload, headers=headers, follow_redirects=True)
             response.raise_for_status()
             
             data = response.json()
@@ -138,8 +142,24 @@ class CityCatalystClient:
             
             if not fresh_token:
                 raise TokenRefreshError("No token in refresh response")
-            
-            logger.info("Token refreshed successfully for user=%s", user_id)
+
+            try:
+                claims = parse_jwt_claims(fresh_token)
+            except Exception as claim_error:
+                logger.warning("Unable to parse refreshed token claims: %s", claim_error)
+                claims = {}
+
+            server_claim = claims.get("server") if isinstance(claims, dict) else None
+            issuer = claims.get("iss") if isinstance(claims, dict) else None
+            audience = claims.get("aud") if isinstance(claims, dict) else None
+
+            logger.info(
+                "Token refreshed successfully for user=%s (server=%s, iss=%s, aud=%s)",
+                user_id,
+                server_claim or "unknown",
+                issuer or "unknown",
+                audience or "unknown",
+            )
             return fresh_token, expires_in
             
         except httpx.HTTPStatusError as e:
@@ -191,7 +211,7 @@ class CityCatalystClient:
             headers = self._auth_headers(token)
             
             logger.debug("Making GET request to %s", url)
-            response = await client.get(url, headers=headers)
+            response = await client.get(url, headers=headers, follow_redirects=True)
             
             # Handle 401 Unauthorized - try to refresh
             if response.status_code == 401 and auto_refresh:
@@ -199,7 +219,7 @@ class CityCatalystClient:
                 try:
                     token, _ = await self.refresh_token(user_id)
                     headers = self._auth_headers(token)
-                    response = await client.get(url, headers=headers)
+                    response = await client.get(url, headers=headers, follow_redirects=True)
                 except TokenRefreshError as e:
                     logger.error("Failed to refresh token: %s", e)
                     raise CityCatalystClientError(f"Authentication failed: {e}") from e
@@ -240,7 +260,7 @@ class CityCatalystClient:
         if is_token_expired(token):
             logger.debug("Token expired, refreshing preemptively")
             try:
-                token = await self.refresh_token(token, user_id, thread_id)
+                token, _ = await self.refresh_token(user_id)
             except TokenRefreshError as e:
                 logger.warning("Preemptive token refresh failed: %s", e)
         
@@ -255,7 +275,7 @@ class CityCatalystClient:
             if response.status_code == 401 and auto_refresh:
                 logger.debug("Got 401, attempting token refresh")
                 try:
-                    token = await self.refresh_token(token, user_id, thread_id)
+                    token, _ = await self.refresh_token(user_id)
                     headers = self._auth_headers(token)
                     response = await client.post(url, headers=headers, json=json_data)
                 except TokenRefreshError as e:
@@ -324,6 +344,54 @@ class CityCatalystClient:
             return response.json()
         except Exception as e:
             raise CityCatalystClientError(f"Failed to parse inventory response: {e}") from e
+
+    async def get_user_inventories(
+        self,
+        *,
+        token: str,
+        user_id: str,
+    ) -> Dict[str, Any]:
+        """Fetch all inventories available to the authenticated user.
+
+        Args:
+            token: User access token
+            user_id: User ID for token refresh context
+
+        Returns:
+            Dictionary payload containing the list of inventories
+
+        Raises:
+            CityCatalystClientError: If API call fails
+        """
+        if not self.base_url:
+            raise CityCatalystClientError("CC_BASE_URL not configured")
+
+        url = f"{self.base_url}/api/v1/user/inventories/"
+        response = await self.get_with_auto_refresh(
+            url=url,
+            token=token,
+            user_id=user_id,
+            thread_id="",  # Not used in new refresh method
+        )
+
+        if not response.is_success:
+            error_text = response.text[:500] if response.text else "Unknown error"
+            logger.error(
+                "User inventories request failed: status=%s location=%s body=%s",
+                response.status_code,
+                response.headers.get("Location"),
+                error_text,
+            )
+            raise CityCatalystClientError(
+                f"Failed to fetch user inventories: {response.status_code} - {error_text}"
+            )
+
+        try:
+            return response.json()
+        except Exception as e:
+            raise CityCatalystClientError(
+                f"Failed to parse user inventories response: {e}"
+            ) from e
     
     async def get_city(
         self,
@@ -365,3 +433,44 @@ class CityCatalystClient:
             return response.json()
         except Exception as e:
             raise CityCatalystClientError(f"Failed to parse city response: {e}") from e
+
+    async def get_inventory_datasources(
+        self,
+        inventory_id: str,
+        token: str,
+        user_id: str,
+    ) -> Dict[str, Any]:
+        """Fetch available data sources for an inventory from CityCatalyst.
+
+        Args:
+            inventory_id: Inventory UUID
+            token: User access token
+            user_id: User ID for token refresh context
+
+        Returns:
+            Data sources data dictionary containing successful sources, removed sources, and failed sources
+
+        Raises:
+            CityCatalystClientError: If API call fails
+        """
+        if not self.base_url:
+            raise CityCatalystClientError("CC_BASE_URL not configured")
+
+        url = f"{self.base_url}/api/v1/datasource/{inventory_id}"
+        response = await self.get_with_auto_refresh(
+            url=url,
+            token=token,
+            user_id=user_id,
+            thread_id="",  # Not used in new refresh method
+        )
+
+        if not response.is_success:
+            error_text = response.text[:200] if response.text else "Unknown error"
+            raise CityCatalystClientError(
+                f"Failed to fetch data sources for inventory {inventory_id}: {response.status_code} - {error_text}"
+            )
+
+        try:
+            return response.json()
+        except Exception as e:
+            raise CityCatalystClientError(f"Failed to parse data sources response: {e}") from e

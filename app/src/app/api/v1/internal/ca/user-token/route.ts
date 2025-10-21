@@ -86,8 +86,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Service configuration error' }, { status: 500 });
     }
 
+    const issuerSource = process.env.CA_TOKEN_ISSUER || process.env.HOST || "citycatalyst";
+    const audienceSource =
+      process.env.CC_BASE_URL ||
+      process.env.HOST ||
+      "http://localhost:3000";
+
+    const normalize = (value: string): string => {
+      try {
+        return new URL(value).origin;
+      } catch {
+        return value;
+      }
+    };
+
+    const issuer = normalize(issuerSource);
+    const audience = normalize(audienceSource);
+
     // Issue token representing the user (user-scoped, not inventory-scoped)
-    const issuer = process.env.HOST || "citycatalyst";
     const userToken = jwt.sign({
       sub: user_id,
       role: user.role,
@@ -96,7 +112,7 @@ export async function POST(req: NextRequest) {
     }, process.env.VERIFICATION_TOKEN_SECRET, {
       expiresIn: '1h',
       issuer,
-      audience: "climate-advisor"
+      audience
     });
 
     logger.info({
@@ -104,7 +120,9 @@ export async function POST(req: NextRequest) {
       inventory_id,
       user_role: user.role,
       service: 'climate-advisor',
-      token_length: userToken.length
+      token_length: userToken.length,
+      token_audience: audience,
+      token_issuer: issuer
     }, 'Issued user token for CA service');
 
     return NextResponse.json({

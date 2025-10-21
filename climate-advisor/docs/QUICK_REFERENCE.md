@@ -81,20 +81,30 @@ tools, token_ref = build_cc_inventory_tools(
     thread_id=thread.thread_id,
 )
 
-get_inventory = tools[0]  # FunctionTool named "get_inventory"
+list_inventories, get_inventory = tools  # FunctionTools named accordingly
 context = ToolContext(context=None, tool_call_id="dev-test")
 
-payload = json.dumps({"inventory_id": "inv-123"})
-result_json = await get_inventory.on_invoke_tool(context, payload)
-result = json.loads(result_json)
+# 1) List user inventories when no ID is known yet
+list_result = json.loads(await list_inventories.on_invoke_tool(context, json.dumps({})))
+if list_result["success"]:
+    print(list_result["data"])  # InventoryWithCity[] payload
 
-if result["success"]:
-    print(result["data"])  # InventoryResponse object
+    first_inventory_id = list_result["data"]["data"][0]["inventoryId"]
+
+    # 2) Fetch a specific inventory using the ID returned above
+    payload = json.dumps({"inventory_id": first_inventory_id})
+    result_json = await get_inventory.on_invoke_tool(context, payload)
+    result = json.loads(result_json)
+
+    if result["success"]:
+        print(result["data"])  # InventoryResponse object
+    else:
+        print(f"Inventory lookup failed: {result.get('error_code')} -> {result.get('error')}")
 else:
-    print(f"Query failed: {result.get('error_code')}: {result.get('error')}")
+    print(f"Inventory listing failed: {list_result.get('error_code')} -> {list_result.get('error')}")
 
 # When CA emits a refreshed token, update token_ref so future calls use it
-token_ref["value"] = result.get("refreshed_token", token_ref["value"])
+token_ref["value"] = list_result.get("refreshed_token", token_ref["value"])
 ```
 
 ### Logging with Token Redaction
@@ -300,6 +310,11 @@ curl -X POST http://localhost:3000/api/v0/assistants/token-refresh \
   -H "Content-Type: application/json" \
   -d '{"user_id":"test-user","thread_id":"thread-123"}'
 ```
+
+### CityCatalyst Inventory Connectivity
+
+- API playground helper: `POST /v1/dev/user-inventories-check` (body: `{"user_id": "<uuid>"}`; defaults to the admin playground user when omitted).
+- CLI checker: `python climate-advisor/scripts/check_user_inventories.py --user-id <uuid>`
 
 ## Key Files
 

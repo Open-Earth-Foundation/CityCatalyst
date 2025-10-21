@@ -28,8 +28,16 @@ class _StubAsyncClient:
         self._responses = responses
         self.requests: List[Dict[str, Any]] = []
 
-    async def get(self, url: str, *, headers: Optional[Dict[str, str]] = None) -> httpx.Response:  # type: ignore[override]
-        self.requests.append({"method": "GET", "url": url, "headers": headers})
+    async def get(
+        self,
+        url: str,
+        *,
+        headers: Optional[Dict[str, str]] = None,
+        **kwargs: Any,
+    ) -> httpx.Response:  # type: ignore[override]
+        self.requests.append(
+            {"method": "GET", "url": url, "headers": headers, "extra": kwargs}
+        )
         return self._responses.pop(0)
 
     async def post(
@@ -38,9 +46,16 @@ class _StubAsyncClient:
         *,
         headers: Optional[Dict[str, str]] = None,
         json: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
     ) -> httpx.Response:  # type: ignore[override]
         self.requests.append(
-            {"method": "POST", "url": url, "headers": headers, "json": json},
+            {
+                "method": "POST",
+                "url": url,
+                "headers": headers,
+                "json": json,
+                "extra": kwargs,
+            },
         )
         return self._responses.pop(0)
 
@@ -65,7 +80,7 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
             "app.services.citycatalyst_client.get_settings",
             return_value=SimpleNamespace(cc_base_url=None),
         ), patch("app.services.citycatalyst_client.is_token_expired", return_value=False):
-            client = CityCatalystClient(base_url="https://cc.example")
+            client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
             stub = _StubAsyncClient(
                 [
                     _response(
@@ -94,7 +109,7 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
             "app.services.citycatalyst_client.get_settings",
             return_value=SimpleNamespace(cc_base_url=None),
         ), patch("app.services.citycatalyst_client.is_token_expired", return_value=False):
-            client = CityCatalystClient(base_url="https://cc.example")
+            client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
             stub = _StubAsyncClient(
                 [
                     _response(404, json_data={"error": "not found"}),
@@ -125,9 +140,10 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
             )
 
             with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
-                token = await client.refresh_token("user-123")
+                token, expires_in = await client.refresh_token("user-123")
 
             self.assertEqual(token, "new-token")
+            self.assertEqual(expires_in, 3600)
             recorded = stub.requests[0]
             self.assertEqual(
                 recorded["url"],

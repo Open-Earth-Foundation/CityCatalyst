@@ -214,31 +214,43 @@ export function apiHandler(handler: NextHandler) {
         if (token.aud !== origin) {
           throw new createHttpError.Unauthorized("Wrong server for token");
         }
-        const client = await OAuthClient.findByPk(token.client_id);
-        if (!client) {
-          throw new createHttpError.Unauthorized("Invalid client");
+
+        const issuedByCAService =
+          typeof token.issued_by === "string" &&
+          token.issued_by.toLowerCase() === "climate-advisor-service";
+
+        if (issuedByCAService) {
+          session = await makeOAuthUserSession(token);
+        } else {
+          const client = await OAuthClient.findByPk(token.client_id);
+          if (!client) {
+            throw new createHttpError.Unauthorized("Invalid client");
+          }
+          const scopes = token.scope.split(" ");
+          if (
+            ["GET", "HEAD"].includes(req.method) &&
+            !(scopes.includes("read"))
+          ) {
+            throw new createHttpError.Unauthorized("No read scope available");
+          }
+          if (
+            ["PUT", "PATCH", "POST", "DELETE"].includes(req.method) &&
+            !(scopes.includes("write"))
+          ) {
+            throw new createHttpError.Unauthorized("No write scope available");
+          }
+          const authz = await OAuthClientAuthz.findOne({
+            where: {
+              clientId: token.client_id,
+              userId: token.sub,
+            },
+          });
+          if (!authz) {
+            throw new createHttpError.Unauthorized("Authorization revoked");
+          }
+          await authz.update({ lastUsed: new Date() });
+          session = await makeOAuthUserSession(token);
         }
-        const scopes = token.scope.split(" ");
-        if (["GET", "HEAD"].includes(req.method) && !(scopes.includes("read"))) {
-          throw new createHttpError.Unauthorized("No read scope available");
-        }
-        if (
-          ["PUT", "PATCH", "POST", "DELETE"].includes(req.method) &&
-          !(scopes.includes("write"))
-        ) {
-          throw new createHttpError.Unauthorized("No write scope available");
-        }
-        const authz = await OAuthClientAuthz.findOne({
-          where: {
-            clientId: token.client_id,
-            userId: token.sub,
-          },
-        });
-        if (!authz) {
-          throw new createHttpError.Unauthorized("Authorization revoked");
-        }
-        await authz.update({ lastUsed: new Date() });
-        session = await makeOAuthUserSession(token);
       } else {
         session = await Auth.getServerSession();
       }

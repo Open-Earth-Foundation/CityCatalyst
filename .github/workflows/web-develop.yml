@@ -8,7 +8,7 @@ permissions:
 on:
   workflow_dispatch:
   push:
-    branches: [ "develop" ]
+    branches: ["develop"]
     paths:
       - app/**
       - k8s/cc-migrate.yml
@@ -172,7 +172,6 @@ jobs:
             type=gha,scope=develop
           cache-to: type=gha,mode=max,scope=citycatalyst-shared
 
-
   deployToEKS:
     needs: pushToGHCR
     runs-on: ubuntu-latest
@@ -196,6 +195,7 @@ jobs:
           kubectl create -f k8s/cc-seed.yml -n default
           kubectl apply -f k8s/cc-web-deploy.yml -n default
           kubectl set env deployment/cc-web-deploy \
+
             SMTP_USER=${{secrets.SMTP_USER}} \
             SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}} \
             NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}} \
@@ -208,6 +208,8 @@ jobs:
             "ADMIN_NAMES=${{secrets.ADMIN_NAMES}}" \
             "DEFAULT_ADMIN_EMAIL=${{secrets.DEFAULT_ADMIN_EMAIL}}" \
             "DEFAULT_ADMIN_PASSWORD=${{secrets.DEFAULT_ADMIN_PASSWORD}}" \
+            "CC_SERVICE_API_KEY=${{secrets.CC_SERVICE_API_KEY}}" \
+            "CA_BASE_URL=http://climate-advisor" \
             "HOST=https://citycatalyst.openearth.dev" \
             "NEXTAUTH_URL=https://citycatalyst.openearth.dev" \
             "NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev" \

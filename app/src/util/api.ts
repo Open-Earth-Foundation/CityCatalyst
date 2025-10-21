@@ -208,7 +208,7 @@ async function makeServiceUserSession(token: any): Promise<AppSession> {
 async function validateServiceCredentials(serviceName: string, serviceKey: string): Promise<boolean> {
   // Define valid service configurations
   const validServices: Record<string, string> = {
-    'climate-advisor': process.env.CA_SERVICE_API_KEY || '',
+    'climate-advisor': process.env.CC_SERVICE_API_KEY || '',
     // Add more services here as needed
     // 'another-service': process.env.ANOTHER_SERVICE_API_KEY || '',
   };

@@ -62,7 +62,7 @@ async function issueCaUserToken(params: {
     {
       method: "POST",
       headers: {
-        "X-CA-Service-Key": process.env.CA_SERVICE_API_KEY!,
+        "X-CA-Service-Key": process.env.CC_SERVICE_API_KEY!,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(params),

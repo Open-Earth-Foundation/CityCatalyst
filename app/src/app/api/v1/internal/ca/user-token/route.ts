@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
   try {
     // Verify CA service authentication
     const serviceKey = req.headers.get("X-CA-Service-Key");
-    if (!serviceKey || serviceKey !== process.env.CA_SERVICE_API_KEY) {
+    if (!serviceKey || serviceKey !== process.env.CC_SERVICE_API_KEY) {
       logger.warn(
         {
           provided_key: serviceKey ? "present" : "missing",

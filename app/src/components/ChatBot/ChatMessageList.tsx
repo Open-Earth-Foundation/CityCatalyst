@@ -22,17 +22,20 @@ interface ChatMessageListProps {
 
 export function ChatMessageList({ messages, isGenerating, assistantStartedResponding }: ChatMessageListProps) {
   const { copyToClipboard, isCopied } = useCopyToClipboard({});
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const showPulsingIcon = isGenerating && !assistantStartedResponding;
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
   }, [messages, isGenerating]);
 
   return (
     <Box 
+      ref={scrollContainerRef}
       overflowY="auto" 
       maxH="35vh"
       css={{
@@ -119,8 +122,6 @@ export function ChatMessageList({ messages, isGenerating, assistantStartedRespon
           </Box>
         );
       })}
-      {/* Invisible element to scroll to */}
-      <Box ref={messagesEndRef} />
     </Box>
   );
 }

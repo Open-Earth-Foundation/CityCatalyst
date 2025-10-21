@@ -109,7 +109,10 @@ export default class AdminService {
 
       for (const inventory of inventories) {
         if (!inventory.year) {
-          logger.error({ inventoryId: inventory.inventoryId }, "No year for inventory");
+          logger.error(
+            { inventoryId: inventory.inventoryId },
+            "No year for inventory",
+          );
           errors.push({
             locode: cityLocode,
             error: "No year for inventory " + inventory.inventoryId,
@@ -147,7 +150,10 @@ export default class AdminService {
           model: City,
           as: "city",
           attributes: ["locode"],
-          where: { locode: { [Op.in]: props.cityLocodes } },
+          where: {
+            locode: { [Op.in]: props.cityLocodes },
+            projectId: props.projectId ? props.projectId : { [Op.ne]: null },
+          },
           include: [
             {
               model: db.models.User,

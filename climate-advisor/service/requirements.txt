@@ -10,8 +10,12 @@ PyYAML==6.0.3
 aiosqlite==0.21.0
 pydantic==2.11.9
 openai==2.1.0
+openai-agents==0.1.0
 numpy==2.3.3
 PyPDF2==3.0.1
+langchain==0.3.27
+langchain-openai==0.3.35
 langchain-text-splitters==0.3.11
+langsmith==0.4.33
 pgvector==0.4.1
-tiktoken==0.8.0
+tiktoken==0.12.0

@@ -119,7 +119,6 @@ jobs:
         run: |
           kubectl apply -f hiap/k8s/deployment-dev.yml
           kubectl apply -f hiap/k8s/service-dev.yml
-          kubectl apply -f hiap/k8s/persistent-volume-dev.yml
 
           kubectl set env deployment/hiap-dev \
             OPENAI_MODEL_NAME_EXPLANATIONS=gpt-4.1-mini \

@@ -232,6 +232,17 @@ export default class DataSourceService {
         result.issue = sourceStatus;
         result.success = false;
       }
+    } else if (source.retrievalMethod === "global_api_notation_key") {
+      const sourceStatus =
+        await DataSourceService.applyGlobalAPINotationKeySource(
+          source,
+          inventory,
+          forceReplace,
+        );
+      if (typeof sourceStatus === "string") {
+        result.issue = sourceStatus;
+        result.success = false;
+      }
     } else if (
       populationScalingRetrievalMethods.includes(source.retrievalMethod ?? "")
     ) {
@@ -359,8 +370,15 @@ export default class DataSourceService {
       return message;
     }
 
-    if (typeof data.totals !== "object") {
-      if (data.detail === "No data available") {
+    if (
+      typeof data.totals !== "object" &&
+      typeof data.unavailable_reason !== "string"
+    ) {
+      if (
+        data.detail === "No data available" ||
+        data.detail ===
+          "No notation key data available for the specified parameters"
+      ) {
         return "Source doesn't have data available for this input";
       } else {
         const message = "Incorrect response from Global API for URL: " + url;
@@ -385,38 +403,8 @@ export default class DataSourceService {
       );
     }
 
-    let gpcReferenceNumber: string | undefined;
-    let subSector: SubSector | undefined;
-    if (source.subcategoryId) {
-      const subCategory = await db.models.SubCategory.findOne({
-        where: { subcategoryId: source.subcategoryId },
-        include: [{ model: db.models.SubSector, as: "subsector" }],
-      });
-
-      if (!subCategory) {
-        throw new createHttpError.InternalServerError(
-          "Sub-category for source not found",
-        );
-      }
-      gpcReferenceNumber = subCategory.referenceNumber;
-      subSector = subCategory.subsector;
-    } else if (source.subsectorId) {
-      subSector =
-        (await db.models.SubSector.findOne({
-          where: { subsectorId: source.subsectorId },
-        })) ?? undefined;
-
-      if (!subSector) {
-        throw new createHttpError.InternalServerError(
-          "Sub-sector for source not found",
-        );
-      }
-      gpcReferenceNumber = subSector.referenceNumber;
-    } else {
-      throw new createHttpError.InternalServerError(
-        "Sub-category or sub-sector not set in source data",
-      );
-    }
+    const { gpcReferenceNumber, subSector } =
+      await DataSourceService.findSubSectorAndGPCRefNo(source);
 
     // check for another already connected data source with the same GPC refno to prevent overwriting data or surplus emissions
     const existingInventoryValue = await db.models.InventoryValue.findOne({
@@ -487,6 +475,105 @@ export default class DataSourceService {
       inventoryValueId: inventoryValue.id,
       gas: "CH4",
       gasAmount: decimalToBigInt(ch4Amount),
+    });
+
+    return true;
+  }
+
+  private static async findSubSectorAndGPCRefNo(source: DataSource): Promise<{
+    gpcReferenceNumber: string;
+    subSector: SubSector;
+  }> {
+    let gpcReferenceNumber: string | undefined;
+    let subSector: SubSector | undefined;
+
+    if (source.subcategoryId) {
+      const subCategory = await db.models.SubCategory.findOne({
+        where: { subcategoryId: source.subcategoryId },
+        include: [{ model: db.models.SubSector, as: "subsector" }],
+      });
+
+      if (!subCategory) {
+        throw new createHttpError.InternalServerError(
+          "Sub-category for source not found",
+        );
+      }
+      gpcReferenceNumber = subCategory.referenceNumber;
+      subSector = subCategory.subsector;
+    } else if (source.subsectorId) {
+      subSector =
+        (await db.models.SubSector.findOne({
+          where: { subsectorId: source.subsectorId },
+        })) ?? undefined;
+
+      if (!subSector) {
+        throw new createHttpError.InternalServerError(
+          "Sub-sector for source not found",
+        );
+      }
+      gpcReferenceNumber = subSector.referenceNumber;
+    } else {
+      throw new createHttpError.InternalServerError(
+        "Sub-category or sub-sector not set in source data",
+      );
+    }
+
+    return { gpcReferenceNumber: gpcReferenceNumber!, subSector };
+  }
+
+  public static async applyGlobalAPINotationKeySource(
+    source: DataSource,
+    inventory: Inventory,
+    forceReplace: boolean = false,
+  ): Promise<string | boolean> {
+    const { gpcReferenceNumber, subSector } =
+      await DataSourceService.findSubSectorAndGPCRefNo(source);
+
+    // check for another already connected data source with the same GPC refno to prevent overwriting data or surplus emissions
+    const existingInventoryValue = await db.models.InventoryValue.findOne({
+      where: {
+        gpcReferenceNumber,
+        inventoryId: inventory.inventoryId,
+      },
+    });
+    if (existingInventoryValue) {
+      // forceReplace parameter overrides existing value check and deletes it
+      if (forceReplace) {
+        await existingInventoryValue.destroy();
+      } else {
+        throw new createHttpError.BadRequest(
+          "Inventory already has a value for GPC refno " + gpcReferenceNumber,
+        );
+      }
+    }
+
+    // same function is used as the only differences are the API route (in the source) and the returned values
+    const data = await DataSourceService.retrieveGlobalAPISource(
+      source,
+      inventory,
+    );
+    if (typeof data === "string") {
+      return data; // this is an error/ validation failure message and handled at the callsite
+    }
+
+    const unavailableReason = data.unavailable_reason;
+    const unavailableExplanation = data.unavailable_explanation;
+
+    if (!unavailableReason || !unavailableExplanation) {
+      logger.error(data, "Invalid data returned from notation key source");
+      return "invalid_notation_key_data"; // returned as error with translation key
+    }
+
+    await db.models.InventoryValue.create({
+      datasourceId: source.datasourceId,
+      inventoryId: inventory.inventoryId,
+      id: randomUUID(),
+      subCategoryId: source.subcategoryId,
+      subSectorId: subSector.subsectorId,
+      sectorId: subSector.sectorId,
+      gpcReferenceNumber,
+      unavailableReason,
+      unavailableExplanation,
     });
 
     return true;

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -15,15 +15,13 @@ from ..services.citycatalyst_client import (
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_USER_ID = "3e9c2695-ba01-470c-ae66-b564b6b36996"
-
 router = APIRouter(prefix="/dev", tags=["dev"])
 
 
 class InventoryCheckRequest(BaseModel):
     """Payload for developer inventory connectivity check."""
 
-    user_id: Optional[str] = None
+    user_id: str
 
 
 class InventoryCheckResponse(BaseModel):
@@ -42,7 +40,7 @@ class InventoryCheckResponse(BaseModel):
 async def user_inventories_check(payload: InventoryCheckRequest) -> InventoryCheckResponse:
     """Fetch inventories for the provided user ID using the CityCatalyst client."""
 
-    user_id = payload.user_id or DEFAULT_USER_ID
+    user_id = payload.user_id
     async with CityCatalystClient() as client:
         try:
             token, expires_in = await client.refresh_token(user_id)

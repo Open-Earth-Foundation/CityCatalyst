@@ -86,11 +86,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Service configuration error' }, { status: 500 });
     }
 
-    const issuerSource = process.env.CA_TOKEN_ISSUER || process.env.HOST || "citycatalyst";
-    const audienceSource =
-      process.env.CC_BASE_URL ||
-      process.env.HOST ||
-      "http://localhost:3000";
+    const issuerSource = process.env.CA_TOKEN_ISSUER ?? process.env.HOST;
+    if (!issuerSource) {
+      logger.error(
+        "Unable to issue CA user token: missing CA_TOKEN_ISSUER and HOST environment variables",
+      );
+      return NextResponse.json(
+        { error: "Service configuration error (issuer undefined)" },
+        { status: 500 },
+      );
+    }
+
+    const audienceSource = process.env.CC_BASE_URL ?? process.env.HOST;
+    if (!audienceSource) {
+      logger.error(
+        "Unable to issue CA user token: missing CC_BASE_URL and HOST environment variables",
+      );
+      return NextResponse.json(
+        { error: "Service configuration error (audience undefined)" },
+        { status: 500 },
+      );
+    }
 
     const normalize = (value: string): string => {
       try {

@@ -89,6 +89,7 @@ import CityBoundaryService, {
 } from "@/backend/CityBoundaryService";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { db } from "@/models";
+import { City } from "@/models/City";
 import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
@@ -113,28 +114,38 @@ export const GET = apiHandler(async (_req, { session, searchParams }) => {
 
   // check access to organization or project
   await PermissionService.checkAccess(session, { organizationId, projectId });
+  let cities: City[] = [];
 
-  const cities = await db.models.City.findAll({
-    where: projectId ? { projectId } : {},
-    attributes: ["locode", "name", "country"],
-    include: [
-      {
-        model: db.models.Project,
-        as: "project",
-        attributes: [],
-        include: organizationId
-          ? [
-              {
-                model: db.models.Organization,
-                attributes: [],
-                as: "organization",
-                where: { organizationId },
-              },
-            ]
-          : [],
-      },
-    ],
-  });
+  if (projectId) {
+    cities = await db.models.City.findAll({
+      where: { projectId },
+      attributes: ["locode", "name", "country"],
+    });
+  } else if (organizationId) {
+    cities = await db.models.City.findAll({
+      attributes: ["locode", "name", "country"],
+      include: [
+        {
+          model: db.models.Project,
+          as: "project",
+          attributes: [],
+          include: [
+            {
+              model: db.models.Organization,
+              attributes: [],
+              as: "organization",
+              where: { organizationId },
+              required: true,
+            },
+          ],
+        },
+      ],
+    });
+  } else {
+    throw new createHttpError.BadRequest(
+      "Either organizationId or projectId must be provided as URL parameter",
+    );
+  }
 
   if (!cities) {
     throw new createHttpError.NotFound("Cities not found");

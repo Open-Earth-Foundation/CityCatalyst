@@ -178,12 +178,23 @@ export default class CSVDownloadService {
           let dataSource = activityValue.activityData?.["data-source"];
 
           let activity_type = t(activityValue?.activityData?.[activityTypeKey]); // activityValue.metadata?.activityId;
+          console.log(
+            { activityTypeKey, activity_type },
+            activityValue?.activityData?.[activityTypeKey],
+            "tried translatin",
+          );
           let activity_amount =
             activityValue.activityData?.[activityTitleKey] ??
             activityValue.activityData?.["activity-value"];
           let activity_unit = t(
             activityValue.activityData?.[`${activityTitleKey}-unit`] ??
               activityValue.activityData?.["activity-unit"],
+          );
+          console.log(
+            { activity_unit },
+            activityValue.activityData?.[`${activityTitleKey}-unit`] ??
+              activityValue.activityData?.["activity-unit"],
+            "tried translating unit",
           );
 
           let emission_factor_ch4 = null;

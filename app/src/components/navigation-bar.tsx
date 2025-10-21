@@ -46,7 +46,7 @@ import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { Trans } from "react-i18next";
 import JNDrawer from "./HomePage/JNDrawer";
-import { getDashboardPath } from "@/util/routes";
+import { getDashboardPath, getHomePath } from "@/util/routes";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -137,6 +137,7 @@ export function NavigationBar({
   const inventoryStub = inventoryIdFromParam ?? currentInventoryId;
   const cityStub = cityIdParam ?? currentCityId;
   const dashboardPath = getDashboardPath(lng, cityStub, inventoryStub);
+  const homePath = getHomePath(lng, cityStub, inventoryStub);
     const { setTheme } = useTheme();
 
     const [isUserMenuOpen, setUserMenuOpen] = useState(false);
@@ -181,7 +182,7 @@ export function NavigationBar({
               </IconButton>
             )}
             {logoUrl && !isAuth ? (
-              <Link href={dashboardPath}>
+              <Link href={homePath}>
                 <img
                   src={logoUrl}
                   alt="Org logo"
@@ -195,7 +196,7 @@ export function NavigationBar({
             ) : (
               <>
                 {!isAuth && (
-                  <Link width={9} height={9} href={dashboardPath}>
+                  <Link width={9} height={9} href={homePath}>
                     <Image
                       src="/assets/logo.svg"
                       width={36}
@@ -204,7 +205,7 @@ export function NavigationBar({
                     />
                   </Link>
                 )}
-                <Link href={dashboardPath}>
+                <Link href={homePath}>
                   <Heading size="lg" color="base.light">
                     {t("title")}
                   </Heading>

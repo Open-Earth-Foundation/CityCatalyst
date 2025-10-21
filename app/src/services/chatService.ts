@@ -19,6 +19,10 @@ export class ChatService {
       inventory_id?: string;
       title?: string;
     }) => Promise<{ threadId: string }>,
+    createLegacyThread: (data: {
+      inventoryId: string;
+      content: string;
+    }) => Promise<string>,
     t: (key: string) => string,
   ): Promise<string> {
     try {
@@ -33,11 +37,10 @@ export class ChatService {
         return threadId;
       } else {
         // Legacy thread creation for old implementation
-        const result = await createChatThread({
-          inventory_id: this.config.inventoryId,
+        const threadId = await createLegacyThread({
+          inventoryId: this.config.inventoryId,
           content: t("initial-message"),
         });
-        const threadId = result;
         this.saveThreadToDatabase(threadId);
         return threadId;
       }

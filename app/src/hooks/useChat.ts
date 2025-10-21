@@ -46,7 +46,6 @@ export function useChat({ inventoryId, t }: UseChatProps) {
     onError: handleError,
   });
 
-
   const { startStream, stopStream } = useSSEStream(
     hasFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION)
       ? {

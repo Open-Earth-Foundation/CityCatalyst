@@ -39,5 +39,26 @@ class Thread(Base):
         passive_deletes=True,
     )
 
+    def get_access_token(self) -> Optional[str]:
+        """Extract JWT access token from thread context.
+        
+        Thread context should have structure:
+        {
+            "access_token": "eyJ...",
+            "expires_at": "2025-01-01T12:00:00+00:00",
+            "issued_at": "2025-01-01T10:00:00+00:00"
+        }
+        
+        Returns:
+            Access token string or None if not present
+        """
+        if not self.context or not isinstance(self.context, dict):
+            return None
+        return self.context.get("access_token")
+    
+    def has_access_token(self) -> bool:
+        """Check if thread has a valid access token in context."""
+        return self.get_access_token() is not None
+
 
 from .message import Message  # noqa: E402  (circular import resolution)

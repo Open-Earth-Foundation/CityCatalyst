@@ -8,8 +8,11 @@ export enum FeatureFlags {
   JN_ENABLED = "JN_ENABLED",
   OAUTH_ENABLED = "OAUTH_ENABLED",
   ANALYTICS_ENABLED = "ANALYTICS_ENABLED",
-  CCRA_MODULE = "CCRA_MODULE"
+  CCRA_MODULE = "CCRA_MODULE",
+  CA_SERVICE_INTEGRATION = "CA_SERVICE_INTEGRATION",
 }
+
+const QA_FLAGS_STORAGE_KEY = "qa_feature_flags";
 
 let cachedFeatureFlags: string[] | null = null;
 
@@ -21,9 +24,11 @@ export function getFeatureFlags(): string[] {
   const flags = env("NEXT_PUBLIC_FEATURE_FLAGS");
 
   if (flags) {
-    cachedFeatureFlags = flags
+    // Remove wrapping quotes and split, then clean each flag
+    const cleanFlags = flags.replace(/^["']|["']$/g, '');
+    cachedFeatureFlags = cleanFlags
       .split(",")
-      .map((flag) => flag.trim())
+      .map((flag) => flag.trim().replace(/^["']|["']$/g, ''))
       .filter((flag) => flag.length > 0);
   } else {
     cachedFeatureFlags = [];
@@ -32,7 +37,74 @@ export function getFeatureFlags(): string[] {
   return cachedFeatureFlags;
 }
 
+/**
+ * Get QA feature flag overrides from localStorage
+ */
+function getQAFeatureFlags(): Record<string, boolean> {
+  if (typeof window === "undefined") {
+    return {}; // Server-side, no localStorage
+  }
+
+  try {
+    const stored = localStorage.getItem(QA_FLAGS_STORAGE_KEY);
+    if (!stored) {
+      return {};
+    }
+
+    const parsed = JSON.parse(stored);
+
+    // Validate that the parsed object is actually an object
+    if (
+      typeof parsed !== "object" ||
+      parsed === null ||
+      Array.isArray(parsed)
+    ) {
+      console.warn("Invalid QA feature flags format in localStorage, clearing");
+      localStorage.removeItem(QA_FLAGS_STORAGE_KEY);
+      return {};
+    }
+
+    // Validate that all keys are known feature flags and values are booleans
+    const validFlags: Record<string, boolean> = {};
+    for (const [key, value] of Object.entries(parsed)) {
+      // Check if the key is a valid feature flag
+      if (Object.values(FeatureFlags).includes(key as FeatureFlags)) {
+        // Check if the value is a boolean
+        if (typeof value === "boolean") {
+          validFlags[key] = value;
+        } else {
+          console.warn(
+            `Invalid QA feature flag value for ${key}: expected boolean, got ${typeof value}`,
+          );
+        }
+      } else {
+        console.warn(`Unknown QA feature flag: ${key}`);
+      }
+    }
+
+    return validFlags;
+  } catch (error) {
+    console.error("Failed to parse QA feature flags:", error);
+    // Clear corrupted data
+    localStorage.removeItem(QA_FLAGS_STORAGE_KEY);
+    return {};
+  }
+}
+
+/**
+ * Check if a feature flag is enabled
+ * Priority: localStorage override (for QA) > environment variables
+ */
 export function hasFeatureFlag(flag: FeatureFlags): boolean {
+  // Check QA override first (only client-side)
+  if (typeof window !== "undefined") {
+    const qaFlags = getQAFeatureFlags();
+    if (flag in qaFlags) {
+      return qaFlags[flag];
+    }
+  }
+
+  // Fall back to environment variables
   return getFeatureFlags().includes(flag);
 }
 
@@ -82,4 +154,119 @@ export function getServerFeatureFlags(): string[] {
 
 export function hasServerFeatureFlag(flag: FeatureFlags): boolean {
   return getServerFeatureFlags().includes(flag);
+}
+
+// =============================================================================
+// QA FEATURE FLAG MANAGEMENT
+// =============================================================================
+
+/**
+ * Set a QA feature flag override (for testing purposes)
+ * This override takes precedence over environment variables
+ *
+ * @example
+ * // In browser console or QA UI:
+ * setQAFeatureFlag(FeatureFlags.CCRA_MODULE, true)
+ */
+export function setQAFeatureFlag(flag: FeatureFlags, enabled: boolean): void {
+  if (typeof window === "undefined") {
+    console.warn("QA feature flags can only be set client-side");
+    return;
+  }
+
+  // Validate that the flag is a valid FeatureFlags enum value
+  if (!Object.values(FeatureFlags).includes(flag)) {
+    console.error(
+      `Invalid feature flag: ${flag}. Must be one of: ${Object.values(FeatureFlags).join(", ")}`,
+    );
+    return;
+  }
+
+  // Validate that enabled is a boolean
+  if (typeof enabled !== "boolean") {
+    console.error(`Invalid enabled value: ${enabled}. Must be a boolean.`);
+    return;
+  }
+
+  const qaFlags = getQAFeatureFlags();
+  qaFlags[flag] = enabled;
+  localStorage.setItem(QA_FLAGS_STORAGE_KEY, JSON.stringify(qaFlags));
+
+  console.log(
+    `✅ QA Feature Flag ${enabled ? "ENABLED" : "DISABLED"}: ${flag}`,
+  );
+}
+
+/**
+ * Remove a specific QA feature flag override
+ * Falls back to environment variable setting
+ */
+export function clearQAFeatureFlag(flag: FeatureFlags): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  // Validate that the flag is a valid FeatureFlags enum value
+  if (!Object.values(FeatureFlags).includes(flag)) {
+    console.error(
+      `Invalid feature flag: ${flag}. Must be one of: ${Object.values(FeatureFlags).join(", ")}`,
+    );
+    return;
+  }
+
+  const qaFlags = getQAFeatureFlags();
+  delete qaFlags[flag];
+  localStorage.setItem(QA_FLAGS_STORAGE_KEY, JSON.stringify(qaFlags));
+
+  console.log(`🔄 QA Feature Flag cleared: ${flag} (using env default)`);
+}
+
+/**
+ * Clear all QA feature flag overrides
+ */
+export function clearAllQAFeatureFlags(): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  localStorage.removeItem(QA_FLAGS_STORAGE_KEY);
+  console.log("🧹 All QA feature flags cleared");
+}
+
+/**
+ * Get all current QA feature flag overrides
+ */
+export function listQAFeatureFlags(): Record<string, boolean> {
+  return getQAFeatureFlags();
+}
+
+/**
+ * Log all feature flags (env + QA overrides) for debugging
+ */
+export function debugFeatureFlags(): void {
+  const envFlags = getFeatureFlags();
+  const qaFlags = getQAFeatureFlags();
+
+  console.group("🚩 Feature Flags Status");
+  console.log("Environment Flags:", envFlags);
+  console.log("QA Overrides:", qaFlags);
+  console.log("\nFinal Status:");
+  Object.values(FeatureFlags).forEach((flag) => {
+    const isEnabled = hasFeatureFlag(flag);
+    const source = flag in qaFlags ? "QA Override" : "Environment";
+    console.log(`  ${flag}: ${isEnabled ? "✅ ON" : "❌ OFF"} (${source})`);
+  });
+  console.groupEnd();
+}
+
+// Make QA functions globally available in browser console for easy testing
+if (typeof window !== "undefined") {
+  (window as any).qaFlags = {
+    set: setQAFeatureFlag,
+    clear: clearQAFeatureFlag,
+    clearAll: clearAllQAFeatureFlags,
+    list: listQAFeatureFlags,
+    debug: debugFeatureFlags,
+    FeatureFlags,
+  };
 }

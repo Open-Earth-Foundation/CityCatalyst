@@ -7,12 +7,14 @@ from starlette.responses import Response
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.staticfiles import StaticFiles
 from typing import Any, Dict
+from pathlib import Path
 import time
 
 from .config.settings import get_settings
 from .routes.health import router as health_router
 from .routes.threads import router as threads_router
 from .routes.messages import router as messages_router
+from .routes.dev_inventory import router as dev_inventory_router
 from .middleware.request_context import RequestContextMiddleware, get_request_id
 import logging
 
@@ -79,9 +81,11 @@ def get_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(threads_router, prefix="/v1")
     app.include_router(messages_router, prefix="/v1")
+    app.include_router(dev_inventory_router, prefix="/v1")
 
     # Static playground for manual testing
-    app.mount("/playground", StaticFiles(directory="app/static", html=True), name="playground")
+    static_dir = Path(__file__).resolve().parent / "static"
+    app.mount("/playground", StaticFiles(directory=static_dir, html=True), name="playground")
 
     # Exception handlers -> Problem Details
     @app.exception_handler(RequestValidationError)

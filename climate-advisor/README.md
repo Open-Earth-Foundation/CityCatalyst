@@ -191,6 +191,13 @@ Create a `.env` file in the `climate-advisor` directory with the following varia
 - `OPENAI_API_KEY` - OpenAI API key (optional, for embeddings)
 - `LANGSMITH_API_KEY` - LangSmith API key for tracing (required only if tracing is enabled in `llm_config.yaml`)
 
+**CityCatalyst Integration (Token Exchange & Inventory APIs):**
+
+- `CC_BASE_URL` - Base URL of CityCatalyst instance (e.g., `http://localhost:3000` or `https://cc.example.com`)
+  - Used for JWT token refresh: `POST /api/v0/assistants/token-refresh`
+  - Used for inventory API calls: `GET /api/v0/inventory/*`
+  - Required in production; optional for local development without token refresh testing
+
 **LangSmith Configuration - Strict Separation:**
 
 For LangSmith observability, configuration is split by security sensitivity:

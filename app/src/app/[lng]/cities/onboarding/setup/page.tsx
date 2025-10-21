@@ -237,6 +237,7 @@ export default function OnboardingSetup(props: {
           px={1}
           zIndex={9999}
           transition="all"
+          data-onboarding-bottom-bar
         >
           <Box w="full" display="flex" flexDir="column" gap="32px">
             <Box w="full">

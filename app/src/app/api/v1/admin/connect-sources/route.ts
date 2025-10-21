@@ -25,6 +25,9 @@
  *                 type: array
  *                 items:
  *                   type: integer
+ *               projectId:
+ *                 type: string
+ *                 format: uuid
  *     responses:
  *       200:
  *         description: Operation result with any connection errors.
@@ -59,9 +62,10 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const connectBulkSourcesRequest = z.object({
-  userEmail: z.string().email(), // Email of the user whose invnetories are to be connected
+  userEmail: z.string().email(), // Email of the user whose inventories are to be connected
   cityLocodes: z.array(z.string()).max(100), // List of city locodes
   years: z.array(z.number().int().positive()).max(10), // List of years to create inventories for (can be comma separated input, multiple select dropdown etc., so multiple years can be chosen)
+  projectId: z.string().uuid().optional(), // Optional project ID to filter inventories
 });
 
 export const POST = apiHandler(async (req, { session }) => {

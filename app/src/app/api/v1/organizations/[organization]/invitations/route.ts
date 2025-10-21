@@ -137,6 +137,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
   }
 
   const failedInvites: { email: string }[] = [];
+  const inviteUrls: Record<string, string> = {};
 
   await Promise.all(
     validatedData.inviteeEmails.map(async (email) => {
@@ -144,7 +145,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
         const user = await User.findOne({
           where: { email },
         });
-        const emailSent = await EmailService.sendOrganizationInvitationEmail(
+        const emailResult = await EmailService.sendOrganizationInvitationEmail(
           {
             email,
             organizationId: validatedData.organizationId,
@@ -153,7 +154,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
           org,
           user,
         );
-        if (!emailSent) {
+        if (!emailResult.success) {
           throw createHttpError.InternalServerError("email-error");
         }
         let preExistingInvite = await OrganizationInvite.findOne({
@@ -182,6 +183,9 @@ export const POST = apiHandler(async (req, { params, session }) => {
             { email, organizationId },
             `error in organization/${organizationId}/invitations/route POST`
           );
+        } else {
+          // Store the invite URL from the email service
+          inviteUrls[email] = emailResult.inviteUrl;
         }
         return invite;
       } catch (e) {
@@ -199,5 +203,8 @@ export const POST = apiHandler(async (req, { params, session }) => {
       `Failed to send invitations to: ${failedInvites.map((f) => f.email).join(", ")}`,
     );
   }
-  return NextResponse.json({ success: failedInvites.length === 0 });
+  return NextResponse.json({ 
+    success: failedInvites.length === 0,
+    inviteUrls: inviteUrls 
+  });
 });

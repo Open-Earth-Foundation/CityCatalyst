@@ -65,7 +65,6 @@ const sectorSheetMapping: { [key: string]: number } = {
 
 export const GET = apiHandler(async (req, { params, session }) => {
   const lng = req.nextUrl.searchParams.get("lng") || "en";
-
   let body: Buffer | null = null;
   let headers: Record<string, string> | null = null;
 

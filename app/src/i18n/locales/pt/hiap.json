@@ -136,5 +136,30 @@
   "reprioritization-started": "Início da Repriorização",
   "reprioritization-started-description": "As suas ações climáticas estão sendo re-priorizadas com os dados mais recentes. Você receberá um email quando estiver completo.",
   "reprioritization-failed": "Falha na Repriorização",
-  "reprioritization-failed-description": "Falha ao iniciar a repriorização. Por favor, tente novamente."
+  "reprioritization-failed-description": "Falha ao iniciar a repriorização. Por favor, tente novamente.",
+  "implementation-plan": "Plano de implementação",
+  "pdf": {
+    "title": "Plano de Implementação de Ação Climática",
+    "sections": {
+      "overview": "Visão Geral",
+      "implementation-steps": "Passos de Implementação",
+      "key-institutions": "Instituições-chave",
+      "milestones": "Marcos",
+      "mitigation-measures": "Medidas de Mitigação",
+      "adaptation-measures": "Medidas de Adaptação",
+      "sustainable-development-goals": "Objetivos de Desenvolvimento Sustentável"
+    },
+    "labels": {
+      "city-context": "Contexto da Cidade",
+      "action-description": "Descrição da Ação",
+      "national-strategy": "Estratégia Nacional",
+      "item": "Item"
+    },
+    "footer": {
+      "generated-by": "Gerado por CityCatalyst",
+      "page": "Página",
+      "of": "de",
+      "generated-on": "Gerado em"
+    }
+  }
 }

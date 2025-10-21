@@ -70,7 +70,7 @@ export default function Onboarding(props: {
           </Box>
         </Box>
       </Box>
-      <Box bg="base.light" h="145px" w="full" pos="fixed" bottom="0" left="0">
+      <Box bg="base.light" h="145px" w="full" pos="fixed" bottom="0" left="0" data-onboarding-bottom-bar>
         {/* Progress Steps */}
         <Box p="4px">
           <ProgressSteps steps={steps} currentStep={-1} />

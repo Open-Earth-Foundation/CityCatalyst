@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timezone
-from typing import Optional, Union
+from typing import Any, Dict, Optional, Union
 from uuid import uuid4, UUID
 
 from sqlalchemy import select
@@ -10,6 +11,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..exceptions import ThreadNotFoundException, ThreadAccessDeniedException
 from ..models.db.thread import Thread
 from ..models.requests import ThreadCreateRequest
+from ..utils.token_manager import create_token_context
+
+
+logger = logging.getLogger(__name__)
 
 
 class ThreadService:
@@ -31,11 +36,19 @@ class ThreadService:
 
     async def get_thread(self, thread_id: Union[str, UUID]) -> Thread | None:
         # Validate UUID format before querying
+        original_thread_id = thread_id
         if isinstance(thread_id, str):
+            logger.debug("Validating thread_id string: %r", thread_id)
             try:
                 thread_id = UUID(thread_id)
-            except ValueError:
-                raise ThreadNotFoundException(thread_id)
+                logger.debug("UUID validation successful: %s", thread_id)
+            except ValueError as e:
+                logger.error(
+                    "Invalid UUID format - thread_id=%r, error=%s",
+                    original_thread_id,
+                    str(e)
+                )
+                raise ThreadNotFoundException(str(original_thread_id))
 
         result = await self.session.execute(
             select(Thread).where(Thread.thread_id == thread_id)
@@ -53,9 +66,68 @@ class ThreadService:
             ThreadNotFoundException: if the thread does not exist.
             ThreadAccessDeniedException: if the thread belongs to a different user.
         """
+        logger.debug(
+            "Getting thread for user - thread_id=%r (type=%s), user_id=%s",
+            thread_id,
+            type(thread_id).__name__,
+            user_id
+        )
+        
         thread = await self.get_thread(thread_id)
         if thread is None:
-            raise ThreadNotFoundException(thread_id)
+            logger.warning(
+                "Thread not found - thread_id=%s, user_id=%s",
+                thread_id,
+                user_id
+            )
+            raise ThreadNotFoundException(str(thread_id))
         if thread.user_id != user_id:
+            logger.warning(
+                "Thread access denied - thread_id=%s, requested_user=%s, owner_user=%s",
+                thread_id,
+                user_id,
+                thread.user_id
+            )
             raise ThreadAccessDeniedException()
+        
+        logger.debug(
+            "Thread retrieved successfully - thread_id=%s, user_id=%s",
+            thread.thread_id,
+            thread.user_id
+        )
         return thread
+    
+    async def update_context(self, thread: Thread, context_update: Dict[str, Any]) -> None:
+        """Update thread context with new values (e.g., refreshed token).
+        
+        This performs a shallow merge of the context dictionary.
+        Existing keys not in context_update are preserved.
+        
+        Args:
+            thread: Thread to update
+            context_update: Dictionary with new context values
+        """
+        if thread.context is None:
+            thread.context = {}
+        
+        # Merge new context into existing
+        thread.context.update(context_update)
+        await self.session.flush()
+    
+    async def update_access_token(
+        self,
+        thread: Thread,
+        new_token: str,
+        expires_in: int = 3600,
+    ) -> None:
+        """Update thread's access token in context.
+        
+        Stores the token with metadata about when it was issued and expires.
+        
+        Args:
+            thread: Thread to update
+            new_token: Fresh JWT token from CityCatalyst
+            expires_in: Token lifetime in seconds (default 1 hour)
+        """
+        context_update = create_token_context(new_token, expires_in)
+        await self.update_context(thread, context_update)

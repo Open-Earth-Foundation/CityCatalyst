@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { OpenChangeDetails } from "@zag-js/popover";
 import { api } from "@/services/api";
+import { useAIButtonPosition } from "@/hooks/useAIButtonPosition";
 
 export default function ChatPopover({
   lng,
@@ -74,33 +75,8 @@ export default function ChatPopover({
     setShowDisclaimer(false);
   };
 
-  // adjust the position of the popover based on the scroll position (i.e when the user scrolls to the bottom of the page)
-  const [scrollPosition, setScrollPosition] = useState(0);
-
-  const handleScroll = () => {
-    const scrollPosition = window.scrollY;
-    setScrollPosition(scrollPosition);
-  };
-
-  const getDynamicBottomPosition = () => {
-    if (typeof window === "undefined") {
-      return "8px"; // Default position for SSR
-    }
-    const maxScroll =
-      document.documentElement.scrollHeight - window.innerHeight;
-    const scrollPercentage = (scrollPosition / maxScroll) * 100;
-    if (scrollPercentage > 90) {
-      // Move up when near bottom
-      return "105px";
-    }
-    // Default position
-    return "8px";
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // Use the new hook to position the AI button
+  const dynamicBottomPosition = useAIButtonPosition();
 
   return (
     <>
@@ -124,7 +100,7 @@ export default function ChatPopover({
             zIndex={9999}
             right={6}
             transition="all 300ms"
-            bottom={getDynamicBottomPosition()}
+            bottom={dynamicBottomPosition}
             fontSize="button.md"
             fontStyle="normal"
             fontWeight="600"
@@ -134,6 +110,7 @@ export default function ChatPopover({
             fontFamily="heading"
             aria-label={t("ai-expert")}
             variant="solid"
+            data-ai-button
           >
             <Icon as={AskAiIcon} h={24} w={24} />
             {t("ask-ai")}
@@ -145,6 +122,7 @@ export default function ChatPopover({
           maxHeight={"76vh"}
           bg="background.neutral"
           className="drop-shadow-md"
+          pos="relative"
           zIndex={9999}
         >
           <PopoverHeader

@@ -21,6 +21,7 @@ import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { OrganizationRole } from "@/util/types";
 import { CustomInviteError } from "@/lib/custom-errors/custom-invite-error";
 import { CustomOrganizationError } from "@/lib/custom-errors/organization-error";
+import { trackEvent } from "@/lib/analytics";
 
 type CustomError = CustomInviteError | CustomOrganizationError;
 
@@ -84,10 +85,8 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
   const [createProject, { isLoading: isProjectLoading }] =
     api.useCreateProjectMutation();
 
-  const [
-    createOrganizationInvite,
-    { isLoading: isInviteLoading },
-  ] = api.useCreateOrganizationInviteMutation();
+  const [createOrganizationInvite, { isLoading: isInviteLoading }] =
+    api.useCreateOrganizationInviteMutation();
 
   const isSubmitting = isLoading || isProjectLoading || isInviteLoading;
 
@@ -145,6 +144,13 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
         inviteeEmails: [response.data.contactEmail],
       });
       if (projectResponse.data && inviteResponse.data) {
+        // Track admin invitation
+        trackEvent("admin_invited", {
+          num_invitees: 1,
+          organization_id: response.data.organizationId,
+          role: "admin",
+          invited_emails: [response.data.contactEmail],
+        });
         // Copy invite URLs to clipboard
         if (inviteResponse.data.inviteUrls) {
           const inviteUrls = Object.values(inviteResponse.data.inviteUrls);

@@ -1,4 +1,4 @@
-import { PATCH as updateUser } from "@/app/api/v0/user/route";
+import { PATCH as updateUser } from "@/app/api/v1/user/route";
 import { db } from "@/models";
 import { UserAttributes } from "@/models/User";
 import { beforeAll, afterAll, describe, it, expect } from "@jest/globals";

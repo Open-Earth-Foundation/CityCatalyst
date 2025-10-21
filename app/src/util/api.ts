@@ -38,7 +38,7 @@ const shouldSkipFrozenCheckForPublicInventory = async (
   urlPath: string,
 ): Promise<boolean> => {
   if (req.method !== "PATCH") return false;
-  if (!urlPath.startsWith("/api/v0/inventory/")) return false;
+  if (!urlPath.startsWith("/api/v1/inventory/")) return false;
 
   try {
     const clonedReq = req.clone();
@@ -187,6 +187,47 @@ async function makeOAuthUserSession(token: any): Promise<AppSession> {
   };
 }
 
+async function makeServiceUserSession(token: any): Promise<AppSession> {
+  const userId = token.sub;
+  const user = await db.models.User.findOne({ where: { userId } });
+  if (!user) {
+    throw new createHttpError.Unauthorized(`User not found for service token`);
+  }
+  return {
+    expires: token.exp || Math.floor(Date.now() / 1000) + 3600, // Use token exp or 1 hour from now
+    user: {
+      id: user.userId,
+      name: user.name,
+      email: user.email,
+      image: user.pictureUrl,
+      role: user.role || Roles.User,
+    },
+  };
+}
+
+async function validateServiceCredentials(serviceName: string, serviceKey: string): Promise<boolean> {
+  // Define valid service configurations
+  const validServices: Record<string, string> = {
+    'climate-advisor': process.env.CC_SERVICE_API_KEY || '',
+    // Add more services here as needed
+    // 'another-service': process.env.ANOTHER_SERVICE_API_KEY || '',
+  };
+
+  // Check if the service name is valid and key matches
+  const expectedKey = validServices[serviceName];
+  if (!expectedKey) {
+    logger.warn({ service_name: serviceName }, 'Unknown service name');
+    return false;
+  }
+
+  if (serviceKey !== expectedKey) {
+    logger.warn({ service_name: serviceName }, 'Invalid service key');
+    return false;
+  }
+
+  return true;
+}
+
 export function apiHandler(handler: NextHandler) {
   return async (
     req: NextRequest,
@@ -202,43 +243,68 @@ export function apiHandler(handler: NextHandler) {
       }
 
       const authorization = req.headers.get("Authorization");
+      const serviceName = req.headers.get("X-Service-Name");
+      const serviceKey = req.headers.get("X-Service-Key");
 
-      if (authorization && hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
+      if (authorization) {
         const token = getBearerToken(authorization);
         if (!token) {
           throw new createHttpError.Unauthorized(
             "Invalid or expired access token",
           );
         }
+
         const origin = process.env.HOST || new URL(req.url).origin;
         if (token.aud !== origin) {
           throw new createHttpError.Unauthorized("Wrong server for token");
         }
-        const client = await OAuthClient.findByPk(token.client_id);
-        if (!client) {
-          throw new createHttpError.Unauthorized("Invalid client");
+
+        // Check if this is service-to-service authentication
+        if (serviceName && serviceKey) {
+          // Validate service credentials
+          const isValidService = await validateServiceCredentials(serviceName, serviceKey);
+          if (!isValidService) {
+            throw new createHttpError.Unauthorized("Invalid service credentials");
+          }
+
+          // For service tokens, we only need basic JWT validation (no OAuth checks)
+          session = await makeServiceUserSession(token);
+          logger.debug({
+            user_id: token.sub,
+            service_name: serviceName,
+            endpoint: new URL(req.url).pathname
+          }, 'Service-to-service token validated');
+
+        } else if (hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
+          // OAuth validation path for regular client tokens
+          const client = await OAuthClient.findByPk(token.client_id);
+          if (!client) {
+            throw new createHttpError.Unauthorized("Invalid client");
+          }
+          const scopes = token.scope.split(" ");
+          if (["GET", "HEAD"].includes(req.method) && !(scopes.includes("read"))) {
+            throw new createHttpError.Unauthorized("No read scope available");
+          }
+          if (
+            ["PUT", "PATCH", "POST", "DELETE"].includes(req.method) &&
+            !(scopes.includes("write"))
+          ) {
+            throw new createHttpError.Unauthorized("No write scope available");
+          }
+          const authz = await OAuthClientAuthz.findOne({
+            where: {
+              clientId: token.client_id,
+              userId: token.sub,
+            },
+          });
+          if (!authz) {
+            throw new createHttpError.Unauthorized("Authorization revoked");
+          }
+          await authz.update({ lastUsed: new Date() });
+          session = await makeOAuthUserSession(token);
+        } else {
+          throw new createHttpError.Unauthorized("OAuth not enabled and no service credentials provided");
         }
-        const scopes = token.scope.split(" ");
-        if (["GET", "HEAD"].includes(req.method) && !(scopes.includes("read"))) {
-          throw new createHttpError.Unauthorized("No read scope available");
-        }
-        if (
-          ["PUT", "PATCH", "POST", "DELETE"].includes(req.method) &&
-          !(scopes.includes("write"))
-        ) {
-          throw new createHttpError.Unauthorized("No write scope available");
-        }
-        const authz = await OAuthClientAuthz.findOne({
-          where: {
-            clientId: token.client_id,
-            userId: token.sub,
-          },
-        });
-        if (!authz) {
-          throw new createHttpError.Unauthorized("Authorization revoked");
-        }
-        await authz.update({ lastUsed: new Date() });
-        session = await makeOAuthUserSession(token);
       } else {
         session = await Auth.getServerSession();
       }

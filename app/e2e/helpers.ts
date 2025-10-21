@@ -22,7 +22,7 @@ export async function signup(
   name: string = "Test Account",
   acceptTerms: boolean = true,
 ) {
-  const result = await request.post("/api/v0/auth/register", {
+  const result = await request.post("/api/v1/auth/register", {
     data: {
       email,
       password,
@@ -44,7 +44,7 @@ export async function createInventory(
   subsector: string,
   methodology: string,
 ) {
-  const result = await request.post("/api/v0/inventory", {
+  const result = await request.post("/api/v1/inventory", {
     data: {
       name,
       description,
@@ -227,7 +227,7 @@ export async function createProject(
   name: string,
   description: string,
 ) {
-  const result = await request.post("/api/v0/project", {
+  const result = await request.post("/api/v1/project", {
     data: {
       name,
       description,

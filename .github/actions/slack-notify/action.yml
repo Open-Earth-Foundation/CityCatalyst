@@ -1,0 +1,147 @@
+name: "Slack Notification"
+description: "Send formatted notifications to Slack for CI/CD events. Gives us Quick alerts and details on migration and build failures."
+author: "isaacbello"
+
+inputs:
+  type:
+    description: "Type of notification (migration_failure, deployment_failure)"
+    required: true
+  webhook-url:
+    description: "Slack webhook URL"
+    required: true
+  branch:
+    description: "Git branch name"
+    required: true
+  commit-sha:
+    description: "Git commit SHA"
+    required: true
+  commit-message:
+    description: "Git commit message"
+    required: true
+  author:
+    description: "Commit author name"
+    required: true
+  workflow-url:
+    description: "GitHub Actions workflow run URL"
+    required: true
+  commit-url:
+    description: "GitHub commit URL"
+    required: true
+  error-logs:
+    description: "Error logs (will extract key error only)"
+    required: false
+    default: ""
+  failed-stage:
+    description: "Failed stage name (for deployment failures)"
+    required: false
+    default: ""
+  environment:
+    description: "Deployment environment (development, staging, production)"
+    required: false
+    default: "development"
+
+outputs:
+  notification-sent:
+    description: "Whether notification was sent successfully"
+    value: ${{ steps.send.outputs.success }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Validate inputs
+      shell: bash
+      env:
+        WEBHOOK_URL: ${{ inputs.webhook-url }}
+        NOTIFICATION_TYPE: ${{ inputs.type }}
+      run: |
+        if [ -z "$WEBHOOK_URL" ]; then
+          echo "::warning::No webhook URL provided, skipping notification"
+          exit 0
+        fi
+
+        VALID_TYPES="migration_failure deployment_failure"
+        if ! echo "$VALID_TYPES" | grep -qw "$NOTIFICATION_TYPE"; then
+          echo "::error::Invalid notification type: $NOTIFICATION_TYPE"
+          echo "::error::Valid types: $VALID_TYPES"
+          exit 1
+        fi
+
+    - name: Extract key error message
+      id: error
+      if: inputs.error-logs != ''
+      shell: bash
+      env:
+        FULL_LOGS: ${{ inputs.error-logs }}
+      run: |
+        # Extract just the key error message (not full logs)
+        # Look for common error patterns
+        KEY_ERROR=$(echo "$FULL_LOGS" | grep -i "error\|failed\|exception" | head -5 | tail -3 || echo "$FULL_LOGS" | tail -3)
+
+        # If still too long, just take last 3 lines
+        if [ ${#KEY_ERROR} -gt 500 ]; then
+          KEY_ERROR=$(echo "$FULL_LOGS" | tail -3)
+        fi
+
+        {
+          echo "key_error<<EOF_ERROR"
+          echo "$KEY_ERROR"
+          echo "EOF_ERROR"
+        } >> $GITHUB_OUTPUT
+
+    - name: Build Slack payload
+      id: payload
+      shell: bash
+      env:
+        NOTIFICATION_TYPE: ${{ inputs.type }}
+        BRANCH: ${{ inputs.branch }}
+        COMMIT_SHA: ${{ inputs.commit-sha }}
+        COMMIT_MESSAGE: ${{ inputs.commit-message }}
+        AUTHOR: ${{ inputs.author }}
+        WORKFLOW_URL: ${{ inputs.workflow-url }}
+        COMMIT_URL: ${{ inputs.commit-url }}
+        ERROR_LOGS: ${{ steps.error.outputs.key_error }}
+        FAILED_STAGE: ${{ inputs.failed-stage }}
+        ACTION_PATH: ${{ github.action_path }}
+      run: |
+        python3 "$ACTION_PATH/send-notification.py" \
+          --type "$NOTIFICATION_TYPE" \
+          --branch "$BRANCH" \
+          --commit-sha "$COMMIT_SHA" \
+          --commit-message "$COMMIT_MESSAGE" \
+          --author "$AUTHOR" \
+          --workflow-url "$WORKFLOW_URL" \
+          --commit-url "$COMMIT_URL" \
+          --error-logs "$ERROR_LOGS" \
+          --failed-stage "$FAILED_STAGE" \
+          --output-file /tmp/slack-payload.json
+
+    - name: Send Slack notification
+      id: send
+      shell: bash
+      env:
+        WEBHOOK_URL: ${{ inputs.webhook-url }}
+      run: |
+        echo "Sending Slack notification..."
+
+        RESPONSE=$(curl -X POST "$WEBHOOK_URL" \
+          -H 'Content-Type: application/json' \
+          -d @/tmp/slack-payload.json \
+          -w "\n%{http_code}" \
+          -s)
+
+        HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+
+        if [ "$HTTP_CODE" = "200" ]; then
+          echo "✅ Slack notification sent successfully"
+          echo "success=true" >> $GITHUB_OUTPUT
+        else
+          echo "::error::Failed to send Slack notification (HTTP $HTTP_CODE)"
+          echo "::error::Response: $RESPONSE"
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+
+    - name: Cleanup
+      if: always()
+      shell: bash
+      run: rm -f /tmp/slack-payload.json

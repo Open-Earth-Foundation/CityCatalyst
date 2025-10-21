@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum as PyEnum
-from typing import Optional
+from typing import Any, Optional
 from uuid import UUID
 
 from sqlalchemy import DateTime, Enum, ForeignKey, String, Text, func
@@ -28,7 +28,7 @@ class Message(Base):
     )
     user_id: Mapped[str] = mapped_column(String(255), nullable=False)
     text: Mapped[str] = mapped_column(Text, nullable=False)
-    tools_used: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
+    tools_used: Mapped[Optional[Any]] = mapped_column(JSONB, nullable=True)
     role: Mapped[MessageRole] = mapped_column(
         Enum(MessageRole, name="message_role", values_callable=lambda x: [e.value for e in x]),
         nullable=False,

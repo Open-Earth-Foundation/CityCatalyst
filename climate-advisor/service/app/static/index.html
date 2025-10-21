@@ -82,6 +82,15 @@
         <button id="btnSendMessage">Send Message</button>
         <pre id="outMessages" class="status"></pre>
       </div>
+
+      <div class="card">
+        <div class="endpoint">POST /v1/dev/user-inventories-check</div>
+        <p class="muted">Quick connectivity check against CityCatalyst. Uses the admin playground user by default.</p>
+        <label>User ID</label>
+        <input id="devUserId" placeholder="3e9c2695-ba01-470c-ae66-b564b6b36996" />
+        <button id="btnDevInventory">Run Inventory Check</button>
+        <pre id="outDevInventory" class="status"></pre>
+      </div>
     </div>
 
     <div class="card">
@@ -90,6 +99,7 @@
         <li><code>GET /health</code> – liveness</li>
         <li><code>POST /v1/threads</code> – create thread, returns <code>{ thread_id }</code></li>
         <li><code>POST /v1/messages</code> – streams SSE <code>event: message</code> chunks and terminal <code>event: done</code></li>
+        <li><code>POST /v1/dev/user-inventories-check</code> – refresh token + fetch inventories for debugging</li>
       </ul>
       <p class="muted">Docs: <a href="/docs" target="_blank">Swagger UI</a> • <a href="/redoc" target="_blank">ReDoc</a></p>
     </div>
@@ -217,6 +227,28 @@
               }
             }
           }
+        } catch (e) {
+          out.textContent = 'ERROR: ' + e;
+        }
+      };
+
+      document.getElementById('btnDevInventory').onclick = async () => {
+        const out = document.getElementById('outDevInventory');
+        out.textContent = '...';
+        const payload = {};
+        const userId = document.getElementById('devUserId').value.trim();
+        if (userId) payload.user_id = userId;
+        const headers = { 'Content-Type': 'application/json' };
+        const reqId = document.getElementById('reqId').value.trim();
+        if (reqId) headers['X-Request-Id'] = reqId;
+        try {
+          const res = await fetch(url('/v1/dev/user-inventories-check'), {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(payload),
+          });
+          const txt = await res.text();
+          out.textContent = `${res.status} ${res.statusText}\n` + txt;
         } catch (e) {
           out.textContent = 'ERROR: ' + e;
         }

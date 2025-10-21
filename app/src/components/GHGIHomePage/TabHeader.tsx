@@ -16,11 +16,13 @@ export function TabHeader({
   title,
   isPublic = false,
   inventory,
+  showActionButtons = true,
 }: {
   t: TFunction<string, undefined>;
   title: string;
   isPublic?: boolean;
   inventory?: InventoryResponse;
+  showActionButtons?: boolean;
 }) {
   const { data: citiesAndYears, isLoading } = useGetCitiesAndYearsQuery();
 
@@ -67,7 +69,7 @@ export function TabHeader({
             >
               {t(title)}
             </Heading>
-            {!isPublic && (
+            {!isPublic && showActionButtons && (
               <Button
                 variant={"outline"}
                 p={6}

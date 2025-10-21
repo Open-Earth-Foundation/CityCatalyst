@@ -1,5 +1,7 @@
 import { useRef, useCallback } from "react";
 import { logger } from "@/services/logger";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { AssistantStream } from "openai/lib/AssistantStream";
 
 export interface SSEEvent {
   type?: string;
@@ -13,6 +15,11 @@ export interface SSEStreamOptions {
   onComplete?: () => void;
   onError?: (error: string) => void;
   onWarning?: (warning: string) => void;
+  // Legacy OpenAI Assistant API callbacks
+  onTextCreated?: () => void;
+  onTextDelta?: (delta: any) => void;
+  onRequiresAction?: (event: any) => void;
+  onRunCompleted?: () => void;
 }
 
 export function useSSEStream(options: SSEStreamOptions = {}) {
@@ -121,6 +128,38 @@ export function useSSEStream(options: SSEStreamOptions = {}) {
     }
   }, [parseSSEEvent, handleSSEEvent]);
 
+  // Handler for legacy OpenAI Assistant API streams
+  const handleAssistantStream = useCallback((stream: AssistantStream) => {
+    try {
+      // Text creation and delta events
+      if (options.onTextCreated) {
+        stream.on("textCreated", options.onTextCreated);
+      }
+      if (options.onTextDelta) {
+        stream.on("textDelta", options.onTextDelta);
+      }
+
+      // Events without helpers yet (e.g. requires_action and run.done)
+      stream.on("event", (event) => {
+        if (event.event === "thread.run.requires_action" && options.onRequiresAction) {
+          options.onRequiresAction(event);
+        }
+        if (event.event === "thread.run.completed" && options.onRunCompleted) {
+          options.onRunCompleted();
+        }
+      });
+    } catch (error: any) {
+      if (error.name === "APIUserAbortError" || error.message === "Request was aborted.") {
+        logger.info("Assistant stream processing was aborted.");
+      } else {
+        logger.error({ err: error }, "An error occurred while processing the assistant stream:");
+        if (options.onError) {
+          options.onError(error.message || "Assistant stream processing error");
+        }
+      }
+    }
+  }, [options]);
+
   const startStream = useCallback(async (url: string, fetchOptions: RequestInit = {}) => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -156,7 +195,15 @@ export function useSSEStream(options: SSEStreamOptions = {}) {
         throw new Error("HTTP response is null");
       }
 
-      await handleStream(response);
+      // Use different stream handling based on feature flag
+      if (hasFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION)) {
+        // New CA service SSE format
+        await handleStream(response);
+      } else {
+        // Legacy OpenAI Assistant API format using AssistantStream
+        const stream = AssistantStream.fromReadableStream(response.body);
+        handleAssistantStream(stream);
+      }
     } catch (error: any) {
       if (error.name !== "AbortError") {
         // Call onError callback for any non-abort errors
@@ -166,7 +213,7 @@ export function useSSEStream(options: SSEStreamOptions = {}) {
       }
       throw error; // Re-throw so calling code can handle it too
     }
-  }, [handleStream, options]);
+  }, [handleStream, handleAssistantStream, options]);
 
   const stopStream = useCallback(() => {
     if (abortControllerRef.current) {

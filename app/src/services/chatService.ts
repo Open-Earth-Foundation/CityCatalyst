@@ -1,5 +1,6 @@
 import { logger } from "@/services/logger";
 import { trackEvent } from "@/lib/analytics";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 export interface ChatServiceConfig {
   inventoryId: string;
@@ -18,17 +19,25 @@ export class ChatService {
     t: (key: string) => string
   ): Promise<string> {
     try {
-      const result = await createChatThread({
-        inventory_id: this.config.inventoryId,
-        title: t("chat-title") || "Climate Chat",
-      });
-
-      const threadId = result.threadId;
-
-      // Save threadId to database asynchronously
-      this.saveThreadToDatabase(threadId);
-
-      return threadId;
+      // Use feature flag to determine thread creation method
+      if (hasFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION)) {
+        const result = await createChatThread({
+          inventory_id: this.config.inventoryId,
+          title: t("chat-title") || "Climate Chat",
+        });
+        const threadId = result.threadId;
+        this.saveThreadToDatabase(threadId);
+        return threadId;
+      } else {
+        // Legacy thread creation for old implementation
+        const result = await createChatThread({
+          inventoryId: this.config.inventoryId,
+          content: t("initial-message"),
+        });
+        const threadId = result;
+        this.saveThreadToDatabase(threadId);
+        return threadId;
+      }
     } catch (error) {
       this.config.onError(
         error,
@@ -62,7 +71,12 @@ export class ChatService {
       inventory_id: this.config.inventoryId,
     });
 
-    const response = await fetch(`/api/v1/chat/messages`, {
+    // Use conditional URL based on feature flag
+    const messageUrl = hasFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION) 
+      ? `/api/v1/chat/messages`
+      : `/api/v1/assistants/threads/messages`;
+
+    const response = await fetch(messageUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

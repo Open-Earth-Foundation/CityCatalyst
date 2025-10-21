@@ -370,8 +370,15 @@ export default class DataSourceService {
       return message;
     }
 
-    if (typeof data.totals !== "object") {
-      if (data.detail === "No data available") {
+    if (
+      typeof data.totals !== "object" &&
+      typeof data.unavailable_reason !== "string"
+    ) {
+      if (
+        data.detail === "No data available" ||
+        data.detail ===
+          "No notation key data available for the specified parameters"
+      ) {
         return "Source doesn't have data available for this input";
       } else {
         const message = "Incorrect response from Global API for URL: " + url;

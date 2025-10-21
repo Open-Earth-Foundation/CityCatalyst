@@ -4,7 +4,7 @@ httpx==0.28.1
 SQLAlchemy[asyncio]==2.0.44
 psycopg2-binary==2.9.10
 asyncpg==0.30.0
-alembic==1.16.5
+alembic==1.17.0
 python-dotenv==1.1.1
 PyYAML==6.0.3
 aiosqlite==0.21.0

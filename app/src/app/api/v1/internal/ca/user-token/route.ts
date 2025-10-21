@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
     }, process.env.VERIFICATION_TOKEN_SECRET, {
       expiresIn: '1h',
       issuer,
-      audience: "climate-advisor"
+      audience: process.env.HOST || "citycatalyst"
     });
 
     logger.info({

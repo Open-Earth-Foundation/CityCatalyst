@@ -275,11 +275,14 @@ class CityCatalystClient:
             token: Bearer token
         
         Returns:
-            Headers dictionary
+            Headers dictionary with service authentication
         """
+        settings = get_settings()
         return {
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
+            "X-Service-Name": "climate-advisor",
+            "X-Service-Key": settings.cc_api_key or "",
         }
     
     # Convenience methods for common CC API operations

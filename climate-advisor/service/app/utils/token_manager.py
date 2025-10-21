@@ -181,10 +181,6 @@ def create_token_context(
             context["expires_at"] = expires_at.isoformat()
     
     # Record when we got this token
-    if issued_at:
-        context["issued_at"] = issued_at.isoformat()
-    else:
-        context["issued_at"] = datetime.now(timezone.utc).isoformat()
     
     return context
 

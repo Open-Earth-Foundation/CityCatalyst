@@ -50,15 +50,18 @@ runs:
   steps:
     - name: Validate inputs
       shell: bash
+      env:
+        WEBHOOK_URL: ${{ inputs.webhook-url }}
+        NOTIFICATION_TYPE: ${{ inputs.type }}
       run: |
-        if [ -z "${{ inputs.webhook-url }}" ]; then
+        if [ -z "$WEBHOOK_URL" ]; then
           echo "::warning::No webhook URL provided, skipping notification"
           exit 0
         fi
 
         VALID_TYPES="migration_failure deployment_failure"
-        if ! echo "$VALID_TYPES" | grep -qw "${{ inputs.type }}"; then
-          echo "::error::Invalid notification type: ${{ inputs.type }}"
+        if ! echo "$VALID_TYPES" | grep -qw "$NOTIFICATION_TYPE"; then
+          echo "::error::Invalid notification type: $NOTIFICATION_TYPE"
           echo "::error::Valid types: $VALID_TYPES"
           exit 1
         fi
@@ -67,9 +70,9 @@ runs:
       id: error
       if: inputs.error-logs != ''
       shell: bash
+      env:
+        FULL_LOGS: ${{ inputs.error-logs }}
       run: |
-        FULL_LOGS="${{ inputs.error-logs }}"
-
         # Extract just the key error message (not full logs)
         # Look for common error patterns
         KEY_ERROR=$(echo "$FULL_LOGS" | grep -i "error\|failed\|exception" | head -5 | tail -3 || echo "$FULL_LOGS" | tail -3)
@@ -79,40 +82,48 @@ runs:
           KEY_ERROR=$(echo "$FULL_LOGS" | tail -3)
         fi
 
-        # Escape for JSON
-        KEY_ERROR_ESCAPED=$(printf '%s' "$KEY_ERROR" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')
-
         {
           echo "key_error<<EOF_ERROR"
           echo "$KEY_ERROR"
           echo "EOF_ERROR"
         } >> $GITHUB_OUTPUT
 
-        echo "key_error_json=$KEY_ERROR_ESCAPED" >> $GITHUB_OUTPUT
-
     - name: Build Slack payload
       id: payload
       shell: bash
+      env:
+        NOTIFICATION_TYPE: ${{ inputs.type }}
+        BRANCH: ${{ inputs.branch }}
+        COMMIT_SHA: ${{ inputs.commit-sha }}
+        COMMIT_MESSAGE: ${{ inputs.commit-message }}
+        AUTHOR: ${{ inputs.author }}
+        WORKFLOW_URL: ${{ inputs.workflow-url }}
+        COMMIT_URL: ${{ inputs.commit-url }}
+        ERROR_LOGS: ${{ steps.error.outputs.key_error }}
+        FAILED_STAGE: ${{ inputs.failed-stage }}
+        ACTION_PATH: ${{ github.action_path }}
       run: |
-        python3 ${{ github.action_path }}/send-notification.py \
-          --type "${{ inputs.type }}" \
-          --branch "${{ inputs.branch }}" \
-          --commit-sha "${{ inputs.commit-sha }}" \
-          --commit-message "${{ inputs.commit-message }}" \
-          --author "${{ inputs.author }}" \
-          --workflow-url "${{ inputs.workflow-url }}" \
-          --commit-url "${{ inputs.commit-url }}" \
-          --error-logs "${{ steps.error.outputs.key_error }}" \
-          --failed-stage "${{ inputs.failed-stage }}" \
+        python3 "$ACTION_PATH/send-notification.py" \
+          --type "$NOTIFICATION_TYPE" \
+          --branch "$BRANCH" \
+          --commit-sha "$COMMIT_SHA" \
+          --commit-message "$COMMIT_MESSAGE" \
+          --author "$AUTHOR" \
+          --workflow-url "$WORKFLOW_URL" \
+          --commit-url "$COMMIT_URL" \
+          --error-logs "$ERROR_LOGS" \
+          --failed-stage "$FAILED_STAGE" \
           --output-file /tmp/slack-payload.json
 
     - name: Send Slack notification
       id: send
       shell: bash
+      env:
+        WEBHOOK_URL: ${{ inputs.webhook-url }}
       run: |
         echo "Sending Slack notification..."
 
-        RESPONSE=$(curl -X POST "${{ inputs.webhook-url }}" \
+        RESPONSE=$(curl -X POST "$WEBHOOK_URL" \
           -H 'Content-Type: application/json' \
           -d @/tmp/slack-payload.json \
           -w "\n%{http_code}" \
@@ -121,7 +132,7 @@ runs:
         HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
 
         if [ "$HTTP_CODE" = "200" ]; then
-          echo "Slack notification sent successfully"
+          echo "✅ Slack notification sent successfully"
           echo "success=true" >> $GITHUB_OUTPUT
         else
           echo "::error::Failed to send Slack notification (HTTP $HTTP_CODE)"

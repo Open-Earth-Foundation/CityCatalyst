@@ -213,3 +213,5 @@ export const Modules = {
   HIAP: { id: "9ee0e1ea-94ea-4329-b156-28d10ecd0ff8" },
   CCRA: { id: "3d1a4b2c-8e7f-4d5a-9c6b-1f2e3d4c5b6a" },
 };
+
+export const MAX_POPULATION_YEAR_DIFFERENCE = 20;

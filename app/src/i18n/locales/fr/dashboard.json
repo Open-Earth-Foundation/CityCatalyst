@@ -263,5 +263,6 @@
   "unpublish-error-title": "Échec de la dépublication",
   "unpublish-error-description": "Une erreur s'est produite lors de la dépublication de votre inventaire. Veuillez réessayer.",
   "link-copied-to-clipboard": "Lien copié dans le presse-papiers",
-  "publish": "Publier"
+  "publish": "Publier",
+  "invite-link-copied-to-clipboard": "Lien d'invitation copié dans le presse-papiers"
 }

@@ -236,5 +236,6 @@
   "unknown-error": "Ocurrió un error desconocido",
   "year-required": "Se requiere un año",
   "project-required": "Se requiere un proyecto",
-  "action-type-required": "Se requiere un tipo de acción"
+  "action-type-required": "Se requiere un tipo de acción",
+  "invite-link-copied-to-clipboard": "Enlace de invitación copiado al portapapeles"
 }

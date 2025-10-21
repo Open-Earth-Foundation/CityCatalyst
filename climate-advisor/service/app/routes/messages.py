@@ -525,7 +525,7 @@ async def post_message(
                 logger.debug("Loaded CC token from thread context: %s", redact_token(cc_access_token))
             else:
                 # Proactively fetch a new token if none exists
-                logger.info("No CC token found in thread, attempting to fetch a new one for user_id=%s", resolved_user_id)
+                logger.info("No CC token found in thread, attempting to fetch a new token for user_id=%s", resolved_user_id)
                 try:
                     from ..services.citycatalyst_client import CityCatalystClient
                     from ..utils.token_manager import redact_token, create_token_context

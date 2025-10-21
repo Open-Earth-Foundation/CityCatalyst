@@ -1,3 +1,20 @@
+import CityBoundaryService, {
+  CityBoundary,
+} from "@/backend/CityBoundaryService";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+import { db } from "@/models";
+import { City } from "@/models/City";
+import { logger } from "@/services/logger";
+import { apiHandler } from "@/util/api";
+import createHttpError from "http-errors";
+import { NextResponse } from "next/server";
+import z from "zod";
+
+const bulkLocationRequest = z.object({
+  organizationId: z.string().optional(),
+  projectId: z.string().optional(),
+});
+
 /**
  * @swagger
  * /api/v1/bulk-locations:
@@ -84,23 +101,6 @@
  *       500:
  *         description: Internal server error during city lookup or boundary data processing.
  */
-import CityBoundaryService, {
-  CityBoundary,
-} from "@/backend/CityBoundaryService";
-import { PermissionService } from "@/backend/permissions/PermissionService";
-import { db } from "@/models";
-import { City } from "@/models/City";
-import { logger } from "@/services/logger";
-import { apiHandler } from "@/util/api";
-import createHttpError from "http-errors";
-import { NextResponse } from "next/server";
-import z from "zod";
-
-const bulkLocationRequest = z.object({
-  organizationId: z.string().optional(),
-  projectId: z.string().optional(),
-});
-
 export const GET = apiHandler(async (_req, { session, searchParams }) => {
   if (!session) {
     throw new createHttpError.Unauthorized("Unauthorized");

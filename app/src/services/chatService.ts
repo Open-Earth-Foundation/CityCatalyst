@@ -15,8 +15,11 @@ export class ChatService {
   }
 
   async initializeThread(
-    createChatThread: (data: { inventory_id?: string; title?: string }) => Promise<{ threadId: string }>,
-    t: (key: string) => string
+    createChatThread: (data: {
+      inventory_id?: string;
+      title?: string;
+    }) => Promise<{ threadId: string }>,
+    t: (key: string) => string,
   ): Promise<string> {
     try {
       // Use feature flag to determine thread creation method
@@ -31,7 +34,7 @@ export class ChatService {
       } else {
         // Legacy thread creation for old implementation
         const result = await createChatThread({
-          inventoryId: this.config.inventoryId,
+          inventory_id: this.config.inventoryId,
           content: t("initial-message"),
         });
         const threadId = result;
@@ -41,7 +44,7 @@ export class ChatService {
     } catch (error) {
       this.config.onError(
         error,
-        "Failed to initialize thread. Please try again to send a message."
+        "Failed to initialize thread. Please try again to send a message.",
       );
       throw error;
     }
@@ -61,7 +64,7 @@ export class ChatService {
     } catch (error) {
       this.config.onError(
         error,
-        "Thread initialized, but saving thread ID to the database failed. Please check later."
+        "Thread initialized, but saving thread ID to the database failed. Please check later.",
       );
     }
   }
@@ -72,7 +75,7 @@ export class ChatService {
     });
 
     // Use conditional URL based on feature flag
-    const messageUrl = hasFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION) 
+    const messageUrl = hasFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION)
       ? `/api/v1/chat/messages`
       : `/api/v1/assistants/threads/messages`;
 

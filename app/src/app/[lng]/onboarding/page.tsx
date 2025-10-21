@@ -73,6 +73,7 @@ export default function Onboarding(props: {
         bottom="0"
         left="0"
         zIndex={999}
+        data-onboarding-bottom-bar
       >
         {/* Place holder steppers */}
         <HStack p="4px">

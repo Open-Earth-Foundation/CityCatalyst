@@ -306,7 +306,7 @@ jobs:
             
             echo ""
             echo "Migration Error Logs:"
-            MIGRATION_LOGS=$(kubectl logs $POD_NAME -n default --tail=200 2>&1 || echo "Could not retrieve logs")
+            MIGRATION_LOGS=$(kubectl logs $POD_NAME -n default --tail=200 2>&1 || echo "Could not retrieve error logs")
             echo "$MIGRATION_LOGS"
 
             # Extract key error for Slack
@@ -343,7 +343,7 @@ jobs:
       - name: Stop deployment if migration failed
         if: steps.run_migrations.outputs.status == 'failed'
         run: |
-          echo "::error::Migration failed. Deployment cannot continue."
+          echo "::error::Migration step failed. Deployment cannot continue."
           exit 1
 
       - name: Deploying service
@@ -364,6 +364,8 @@ jobs:
             "ADMIN_NAMES=${{secrets.ADMIN_NAMES}}" \
             "DEFAULT_ADMIN_EMAIL=${{secrets.DEFAULT_ADMIN_EMAIL}}" \
             "DEFAULT_ADMIN_PASSWORD=${{secrets.DEFAULT_ADMIN_PASSWORD}}" \
+            "CC_SERVICE_API_KEY=${{secrets.CC_SERVICE_API_KEY}}" \
+            "CA_BASE_URL=http://climate-advisor" \
             "HOST=https://citycatalyst.openearth.dev" \
             "NEXTAUTH_URL=https://citycatalyst.openearth.dev" \
             "NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev" \
@@ -371,12 +373,12 @@ jobs:
             "HIAP_API_URL=http://hiap-service-dev" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
-            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,JN_ENABLED" \
+            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,JN_ENABLED,CA_SERVICE_INTEGRATION" \
             "NEXT_PUBLIC_POSTHOG_KEY=${{secrets.NEXT_PUBLIC_POSTHOG_KEY}}" \
             "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" \
             "NEXT_PUBLIC_DEPLOYMENT_ENV=development" \
             "AWS_FILE_UPLOAD_S3_BUCKET_ID=citycatalyst-files" \
-            "AWS_FILE_UPLOAD_REGION=us-east-1"\
+            "AWS_FILE_UPLOAD_REGION=us-east-1" \
             "AWS_REGION"=${{secrets.AWS_REGION}} \
             "AWS_ACCESS_KEY_ID"=${{secrets.AWS_ACCESS_KEY_ID}} \
             "AWS_SECRET_ACCESS_KEY"=${{secrets.AWS_SECRET_ACCESS_KEY}} \

@@ -33,6 +33,7 @@ import {
   ListOrganizationsResponse,
   OrganizationResponse,
   OrganizationRole,
+  OrganizationInviteResponse,
   ProjectResponse,
   ProjectWithCities,
   RequiredScopesResponse,
@@ -1068,7 +1069,7 @@ export const api = createApi({
             organizationId: data.organizationId,
           },
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: OrganizationInviteResponse) => response,
         invalidatesTags: [
           "OrganizationInvite",
           "Organizations",
@@ -1654,6 +1655,22 @@ export const api = createApi({
         transformResponse: (response: { data: HiapJob[] }) => response.data,
         providesTags: ["HiapJobs"],
       }),
+
+      // Climate Advisor Chat Endpoints (CA Integration)
+      createChatThread: builder.mutation({
+        query: (data: { inventory_id?: string; title?: string }) => ({
+          url: `/chat/threads`,
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: data.title,
+            inventory_id: data.inventory_id,
+          }),
+        }),
+        transformResponse: (response: { threadId: string }) => response,
+      }),
     };
   },
 });
@@ -1722,6 +1739,7 @@ export const {
   useMockDataQuery,
   useConnectToCDPMutation,
   useCreateThreadIdMutation,
+  useCreateChatThreadMutation,
   useUpdateActivityValueMutation,
   useDeleteAllActivityValuesMutation,
   useDeleteActivityValueMutation,

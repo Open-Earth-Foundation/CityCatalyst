@@ -8,7 +8,7 @@ permissions:
 on:
   workflow_dispatch:
   push:
-    branches: [ "develop" ]
+    branches: ["develop"]
     paths:
       - app/**
       - k8s/cc-migrate.yml
@@ -172,7 +172,6 @@ jobs:
             type=gha,scope=develop
           cache-to: type=gha,mode=max,scope=citycatalyst-shared
 
-
   deployToEKS:
     needs: pushToGHCR
     runs-on: ubuntu-latest
@@ -190,12 +189,170 @@ jobs:
       - name: Testing connection to EKS
         run: kubectl get pods -n default
 
-      - name: Deploying service
+      # - name: Running migration job
+
+      - name: Run database migrations
+        id: run_migrations
         run: |
+          echo "=========================================="
+          echo "Starting Database Migration"
+          echo "=========================================="
+
+          echo "Creating migration job..."
           kubectl create -f k8s/cc-migrate.yml -n default
+
+          # Wait a moment for it to appear
+          sleep 3
+
+          # Find the most recent migration job
+          JOB_NAME=$(kubectl get jobs -n default \
+            -l app=cc-migrate \
+            --sort-by=.metadata.creationTimestamp \
+            -o jsonpath='{.items[-1].metadata.name}')
+
+          if [ -z "$JOB_NAME" ]; then
+            echo "Failed to find migration job"
+            kubectl get jobs -n default -l app=cc-migrate
+            echo "status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          echo "Migration job created: $JOB_NAME"
+          echo "job_name=$JOB_NAME" >> $GITHUB_OUTPUT
+
+          # Wait for pod to be created (30 seconds max)
+          echo ""
+          echo "Waiting for pod to be created..."
+          for i in {1..30}; do
+            POD_NAME=$(kubectl get pods -n default -l job-name=$JOB_NAME -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            if [ -n "$POD_NAME" ]; then
+              echo "Pod created: $POD_NAME (after ${i}s)"
+              break
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 1
+          done
+
+          # If pod never appeared, debug why
+          if [ -z "$POD_NAME" ]; then
+            echo "=========================================="
+            echo "POD WAS NEVER CREATED"
+            echo "=========================================="
+            echo ""
+            echo "Job Events (shows WHY pod didn't start):"
+            kubectl describe job $JOB_NAME -n default
+            
+            echo ""
+            echo "Checking prerequisites:"
+            echo ""
+            echo "1. ConfigMap exists?"
+            kubectl get configmap cc-db-configmap -n default || echo " NOT FOUND"
+            
+            echo ""
+            echo "2. Can pull image?"
+            echo "   Checking: ghcr.io/open-earth-foundation/citycatalyst:latest"
+            kubectl run temp-pull-test \
+              --image=ghcr.io/open-earth-foundation/citycatalyst:latest \
+              --restart=Never \
+              --rm \
+              -n default \
+              --command -- echo "success" 2>&1 | head -5
+            
+            echo "status=failed" >> $GITHUB_OUTPUT
+            
+            {
+              echo "error_logs<<EOF"
+              echo "Pod was never created. Check job events above for details."
+              echo "EOF"
+            } >> $GITHUB_OUTPUT
+            
+            exit 1
+          fi
+
+          # Pod exists, now wait for job to complete
+          echo ""
+          echo "Waiting for migration to complete (timeout: 10 minutes)..."
+          echo "Started at: $(date)"
+
+          if kubectl wait --for=condition=complete --timeout=300s job/$JOB_NAME -n default; then
+            echo "========================================="
+            echo "Migration Completed Successfully"
+            echo "========================================="
+            
+            echo "status=success" >> $GITHUB_OUTPUT
+            
+            echo ""
+            echo "Migration output:"
+            kubectl logs job/$JOB_NAME -n default --tail=50
+            
+          else
+            echo "=========================================="
+            echo "Migration Failed"
+            echo "=========================================="
+            
+            echo "status=failed" >> $GITHUB_OUTPUT
+            
+            echo ""
+            echo "Job Status:"
+            kubectl get job $JOB_NAME -n default -o wide
+            
+            echo ""
+            echo "Pod Status:"
+            kubectl get pods -n default -l job-name=$JOB_NAME -o wide
+            
+            echo ""
+            echo "Pod Description:"
+            kubectl describe pod $POD_NAME -n default | tail -50
+            
+            echo ""
+            echo "Migration Error Logs:"
+            MIGRATION_LOGS=$(kubectl logs $POD_NAME -n default --tail=200 2>&1 || echo "Could not retrieve error logs")
+            echo "$MIGRATION_LOGS"
+
+            # Extract key error for Slack
+            KEY_ERROR=$(echo "$MIGRATION_LOGS" | grep -iE "error|failed|exception" | tail -5 | head -3)
+            
+            if [ -z "$KEY_ERROR" ]; then
+              KEY_ERROR=$(echo "$MIGRATION_LOGS" | tail -3)
+            fi
+            
+            {
+              echo "error_logs<<EOF"
+              echo "$KEY_ERROR"
+              echo "EOF"
+            } >> $GITHUB_OUTPUT
+            
+            exit 1
+          fi
+        continue-on-error: true
+      - name: Notify Slack - Migration Failure
+        if: always() && steps.run_migrations.outputs.status == 'failed'
+        uses: ./.github/actions/slack-notify
+        with:
+          type: migration_failure
+          webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          branch: ${{ github.ref_name }}
+          commit-sha: ${{ github.sha }}
+          commit-message: ${{ github.event.head_commit.message }}
+          author: ${{ github.event.head_commit.author.name }}
+          workflow-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          commit-url: ${{ github.event.repository.html_url }}/commit/${{ github.sha }}
+          error-logs: ${{ steps.run_migrations.outputs.error_logs }}
+          environment: development
+
+      - name: Stop deployment if migration failed
+        if: steps.run_migrations.outputs.status == 'failed'
+        run: |
+          echo "::error::Migration step failed. Deployment cannot continue."
+          exit 1
+
+      - name: Deploying service
+        if: steps.run_migrations.outputs.status == 'success'
+        run: |
           kubectl create -f k8s/cc-seed.yml -n default
           kubectl apply -f k8s/cc-web-deploy.yml -n default
           kubectl set env deployment/cc-web-deploy \
+
             SMTP_USER=${{secrets.SMTP_USER}} \
             SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}} \
             NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}} \
@@ -208,6 +365,8 @@ jobs:
             "ADMIN_NAMES=${{secrets.ADMIN_NAMES}}" \
             "DEFAULT_ADMIN_EMAIL=${{secrets.DEFAULT_ADMIN_EMAIL}}" \
             "DEFAULT_ADMIN_PASSWORD=${{secrets.DEFAULT_ADMIN_PASSWORD}}" \
+            "CC_SERVICE_API_KEY=${{secrets.CC_SERVICE_API_KEY}}" \
+            "CA_BASE_URL=http://climate-advisor" \
             "HOST=https://citycatalyst.openearth.dev" \
             "NEXTAUTH_URL=https://citycatalyst.openearth.dev" \
             "NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev" \
@@ -215,7 +374,7 @@ jobs:
             "HIAP_API_URL=http://hiap-service-dev" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
-            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,JN_ENABLED" \
+            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,JN_ENABLED,CA_SERVICE_INTEGRATION" \
             "NEXT_PUBLIC_POSTHOG_KEY=${{secrets.NEXT_PUBLIC_POSTHOG_KEY}}" \
             "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" \
             "NEXT_PUBLIC_DEPLOYMENT_ENV=development" \
@@ -233,3 +392,39 @@ jobs:
           # kubectl create job --from=cronjob/cc-sync-catalogue cc-sync-catalogue-manual -n default
           kubectl create -f k8s/cc-create-admin.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default
+  notifyDeploymentFailure:
+    needs: [runTests, pushToGHCR, deployToEKS]
+    runs-on: ubuntu-latest
+    if: |
+      always() && 
+      (needs.runTests.result == 'failure' || needs.pushToGHCR.result == 'failure' || needs.deployToEKS.result == 'failure') && 
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/develop'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine which stage failed
+        id: failed_stage
+        run: |
+          if [ "${{ needs.runTests.result }}" == "failure" ]; then
+            echo "stage=Tests" >> $GITHUB_OUTPUT
+          elif [ "${{ needs.pushToGHCR.result }}" == "failure" ]; then
+            echo "stage=Docker Build" >> $GITHUB_OUTPUT
+          elif [ "${{ needs.deployToEKS.result }}" == "failure" ]; then
+            echo "stage=Deployment" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Notify Slack - Deployment Failure
+        uses: ./.github/actions/slack-notify
+        with:
+          type: deployment_failure
+          webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          branch: ${{ github.ref_name }}
+          commit-sha: ${{ github.sha }}
+          commit-message: ${{ github.event.head_commit.message }}
+          author: ${{ github.event.head_commit.author.name }}
+          workflow-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          commit-url: ${{ github.event.repository.html_url }}/commit/${{ github.sha }}
+          failed-stage: ${{ steps.failed_stage.outputs.stage }}
+          environment: development

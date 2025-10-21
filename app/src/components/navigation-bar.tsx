@@ -46,7 +46,7 @@ import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { Trans } from "react-i18next";
 import JNDrawer from "./HomePage/JNDrawer";
-import { getDashboardPath } from "@/util/routes";
+import { getDashboardPath, getHomePath } from "@/util/routes";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -138,6 +138,7 @@ export function NavigationBar({
   const inventoryStub = inventoryIdFromParam ?? currentInventoryId;
   const cityStub = cityIdParam ?? currentCityId;
   const dashboardPath = getDashboardPath(lng, cityStub, inventoryStub);
+  const homePath = getHomePath(lng, cityStub, inventoryStub);
   const { setTheme } = useTheme();
 
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
@@ -176,24 +177,52 @@ export function NavigationBar({
           w={logoUrl ? "250px" : "auto"}
           h={logoUrl ? "40px" : "auto"}
         >
-          {showMenu && !isPublic && (
-            <IconButton variant="ghost" onClick={() => setIsDrawerOpen(true)}>
-              <Icon as={MdOutlineMenu} boxSize={8} />
-            </IconButton>
-          )}
-          {logoUrl && !isAuth ? (
-            <Link href={dashboardPath}>
-              <img
-                src={logoUrl}
-                alt="Org logo"
-                style={{
-                  objectFit: "cover",
-                  height: "50px",
-                  width: "250px",
-                }}
-              />
-            </Link>
-          ) : (
+          <Box
+            display="flex"
+            gap={6}
+            flexShrink={logoUrl ? 0 : 1}
+            w={logoUrl ? "250px" : "auto"}
+            h={logoUrl ? "40px" : "auto"}
+          >
+            {showMenu && !isPublic && (
+              <IconButton variant="ghost" onClick={() => setIsDrawerOpen(true)}>
+                <Icon as={MdOutlineMenu} boxSize={8} />
+              </IconButton>
+            )}
+            {logoUrl && !isAuth ? (
+              <Link href={homePath}>
+                <img
+                  src={logoUrl}
+                  alt="Org logo"
+                  style={{
+                    objectFit: "cover",
+                    height: "50px",
+                    width: "250px",
+                  }}
+                />
+              </Link>
+            ) : (
+              <>
+                {!isAuth && (
+                  <Link width={9} height={9} href={homePath}>
+                    <Image
+                      src="/assets/logo.svg"
+                      width={36}
+                      height={36}
+                      alt="CityCatalyst logo"
+                    />
+                  </Link>
+                )}
+                <Link href={homePath}>
+                  <Heading size="lg" color="base.light">
+                    {t("title")}
+                  </Heading>
+                </Link>
+              </>
+            )}
+          </Box>
+          <Box flex={1} />
+          {showNav && !isPublic && (
             <>
               {!isAuth && (
                 <Link width={9} height={9} href={dashboardPath}>

@@ -237,5 +237,6 @@
   "unknown-error": "Unknown error occurred",
   "year-required": "A year is required",
   "project-required": "A project is required",
-  "action-type-required": "An action type is required"
+  "action-type-required": "An action type is required",
+  "invite-link-copied-to-clipboard": "Invite link copied to clipboard"
 }

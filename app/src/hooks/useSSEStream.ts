@@ -83,7 +83,7 @@ export function useSSEStream(options: SSEStreamOptions = {}) {
           break;
 
         default:
-          logger.debug({ event }, "Unhandled SSE event type");
+          logger.warn({ event }, "Unhandled SSE event type");
       }
     } catch (error: any) {
       logger.error({ error, event }, "Error handling SSE event");

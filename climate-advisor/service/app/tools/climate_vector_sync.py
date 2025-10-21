@@ -103,15 +103,24 @@ def climate_vector_search_sync(question: str) -> str:
 
 @function_tool
 async def climate_vector_search(question: str) -> str:
-    """Search the climate knowledge base for relevant information.
+    """Search the climate knowledge base for relevant climate science and policy information.
 
     This tool searches a vector database containing climate-related documents,
     research papers, and information about climate change, emissions, GHG protocols,
     carbon accounting, sustainability, environmental policies, renewable energy,
     net zero goals, climate adaptation, and mitigation strategies.
 
-    Use this tool when the user asks about climate-related topics that may require
-    specific factual information, data, or references from authoritative sources.
+    **WHEN TO USE:**
+    - Questions about climate science concepts, definitions, or methodologies
+    - Requests for citations, research, or verified climate facts
+    - General climate knowledge or educational content
+    
+    **DO NOT USE FOR:**
+    - ANY CityCatalyst operational requests (listing, viewing, fetching, accessing user data)
+    - Questions starting with "How do I...", "Can I...", "Show me..." related to CityCatalyst features
+    - Inventory operations - use get_user_inventories or get_inventory tools instead
+    - User-specific data queries - these require the CC inventory tools
+    - Product workflows or feature usage questions about CityCatalyst
 
     Args:
         question: The search query to find relevant climate information.
@@ -122,10 +131,15 @@ async def climate_vector_search(question: str) -> str:
         including source references and content excerpts. If no relevant information is found,
         returns a message indicating so.
 
-    Examples:
+    Examples of CORRECT usage:
         - "What is Scope 2 emissions?"
-        - "How do cities calculate GHG emissions?"
         - "What are the IPCC guidelines for carbon accounting?"
+        - "Explain the GHG Protocol methodology"
+        
+    Examples of INCORRECT usage (use CC inventory tools instead):
+        - "How do I list my inventories?"
+        - "Show me my inventory data"
+        - "What inventories do I have access to?"
     """
     return await _run_vector_search(question)
 

@@ -74,6 +74,7 @@ jobs:
           kubectl set env deployment/climate-advisor-deploy \
             OPENROUTER_API_KEY=${{secrets.OPENROUTER_API_KEY}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_CLIMATE_ADVISOR}} \
+            CC_API_KEY=${{secrets.CC_API_KEY}} \
             CA_LOG_LEVEL=info \
             CA_CORS_ORIGINS="*" \
             CC_BASE_URL=https://citycatalyst.openearth.dev \

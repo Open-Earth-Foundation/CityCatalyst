@@ -1170,9 +1170,9 @@ export const api = createApi({
         }),
         transformResponse: (response: {
           data: {
-            startedCount: number;
-            failedCount: number;
-            results: BulkHiapPrioritizationResult[];
+            totalCities: number;
+            firstBatchSize: number;
+            message: string;
           };
         }) => response.data,
         invalidatesTags: ["HiapJobs"],

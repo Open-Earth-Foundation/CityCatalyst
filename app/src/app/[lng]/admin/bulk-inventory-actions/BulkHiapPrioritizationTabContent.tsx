@@ -62,16 +62,9 @@ const BulkHiapPrioritizationTabContent: FC<
     api.useGetUserProjectsQuery({});
   const [errorMessage, setErrorMessage] = useState("");
   const [results, setResults] = useState<{
-    startedCount: number;
-    failedCount: number;
-    results: Array<{
-      cityId: string;
-      cityName: string;
-      inventoryId: string;
-      status: HighImpactActionRankingStatus;
-      taskId?: string;
-      error?: string;
-    }>;
+    totalCities: number;
+    firstBatchSize: number;
+    message: string;
   } | null>(null);
   const selectedProjectId = watch("projectId");
   const selectedYear = watch("year");
@@ -163,29 +156,12 @@ const BulkHiapPrioritizationTabContent: FC<
       }).unwrap();
       setResults(result);
 
-      if (result.startedCount === 0) {
-        // No inventories found for the specified year - this is not an error
-        showToast(
-          "no-inventories-found",
-          "no-inventories-for-year",
-          "info",
-          5000,
-        );
-      } else if (result.failedCount > 0) {
-        showToast(
-          "bulk-prioritization-partial-success",
-          "some-cities-failed",
-          "warning",
-          5000,
-        );
-      } else {
-        showToast(
-          "bulk-prioritization-complete",
-          "all-cities-started",
-          "success",
-          5000,
-        );
-      }
+      showToast(
+        "bulk-prioritization-started",
+        `First batch of ${result.firstBatchSize} cities started. Total: ${result.totalCities} cities. Cron job will process remaining batches.`,
+        "success",
+        6000,
+      );
     } catch (error) {
       logger.error(`Failed to start bulk HIAP prioritization: ${error}`);
       setErrorMessage("Network error occurred. Please try again.");

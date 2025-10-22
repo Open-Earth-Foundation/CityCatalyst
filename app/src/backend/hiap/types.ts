@@ -40,3 +40,7 @@ export interface PrioritizerCityData {
 export interface PrioritizerRequest {
   cityData: PrioritizerCityData;
 }
+
+export interface PrioritizerResponseBulk {
+  prioritizerResponseList: PrioritizerResponse[];
+}

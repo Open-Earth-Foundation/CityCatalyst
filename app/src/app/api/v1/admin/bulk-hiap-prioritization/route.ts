@@ -1,16 +1,23 @@
+/**
+ * Bulk HIAP Prioritization API
+ *
+ * Processes High Impact Action Prioritization for multiple cities in batches.
+ *
+ * See ./README.md for comprehensive documentation including:
+ * - Architecture diagrams
+ * - Status flow
+ * - Cron job integration
+ * - Progress monitoring
+ */
 import { NextRequest, NextResponse } from "next/server";
 import { apiHandler } from "@/util/api";
 import { z } from "zod";
 import createHttpError from "http-errors";
 import { db } from "@/models";
-import { startActionRankingJob } from "@/backend/hiap/HiapService";
+import { BulkHiapPrioritizationService } from "@/backend/hiap/BulkHiapPrioritizationService";
 import { logger } from "@/services/logger";
-import {
-  ACTION_TYPES,
-  LANGUAGES,
-  BulkHiapPrioritizationResult,
-  HighImpactActionRankingStatus,
-} from "@/util/types";
+import { ACTION_TYPES, LANGUAGES } from "@/util/types";
+import UserService from "@/backend/UserService";
 
 const bulkPrioritizationSchema = z.object({
   projectId: z.string().uuid(),
@@ -67,28 +74,12 @@ const bulkPrioritizationSchema = z.object({
  *                 data:
  *                   type: object
  *                   properties:
- *                     startedCount:
+ *                     totalCities:
  *                       type: integer
- *                     failedCount:
+ *                     totalBatches:
  *                       type: integer
- *                     results:
- *                       type: array
- *                       items:
- *                         type: object
- *                         properties:
- *                           cityId:
- *                             type: string
- *                             format: uuid
- *                           cityName:
- *                             type: string
- *                           inventoryId:
- *                             type: string
- *                             format: uuid
- *                           status:
- *                             type: string
- *                             enum: [started, failed]
- *                           error:
- *                             type: string
+ *                     message:
+ *                       type: string
  *       400:
  *         description: Invalid request parameters
  *       401:
@@ -96,116 +87,53 @@ const bulkPrioritizationSchema = z.object({
  *       404:
  *         description: Project not found or no inventories found
  */
-export const POST = apiHandler(async (req: NextRequest) => {
+export const POST = apiHandler(async (req: NextRequest, { session }) => {
+  // Check authentication first
+  if (!session) {
+    throw new createHttpError.Unauthorized("Unauthorized");
+  }
+
+  // Then check authorization (admin-only endpoint)
+  UserService.validateIsAdmin(session);
+
   const body = await req.json();
   const { projectId, year, actionType, languages } =
     bulkPrioritizationSchema.parse(body);
+
   // Verify project exists
   const project = await db.models.Project.findByPk(projectId);
   if (!project) {
     throw new createHttpError.NotFound("Project not found");
   }
 
-  // Get all cities in the project with inventories for the specified year
-  const citiesWithInventories = await db.models.City.findAll({
-    where: {
-      projectId: projectId,
-    },
-    include: [
-      {
-        model: db.models.Inventory,
-        as: "inventories",
-        where: {
-          year: year,
-        },
-        required: true,
-        attributes: ["inventoryId", "year"],
-      },
-    ],
-    attributes: ["cityId", "name", "locode"],
-  });
+  logger.info(
+    { projectId, year, actionType, languages },
+    "Starting bulk HIAP prioritization request",
+  );
 
-  if (!citiesWithInventories || citiesWithInventories.length === 0) {
-    // Return empty result instead of throwing an error - this is a valid state
+  try {
+    // Create ranking records and start async processing
+    const result =
+      await BulkHiapPrioritizationService.startBulkPrioritizationAsync({
+        projectId,
+        year,
+        actionType: actionType as ACTION_TYPES,
+        languages: languages as LANGUAGES[],
+      });
+
     return NextResponse.json({
       data: {
-        startedCount: 0,
-        failedCount: 0,
-        results: [],
+        totalCities: result.totalCities,
+        firstBatchSize: result.firstBatchSize,
+        message:
+          "First batch started. Cron job will process remaining batches automatically.",
       },
     });
+  } catch (error) {
+    logger.error(
+      { error, projectId, year, actionType },
+      "Failed to start bulk HIAP prioritization",
+    );
+    throw error;
   }
-
-  const results: BulkHiapPrioritizationResult[] = [];
-
-  let startedCount = 0;
-  let failedCount = 0;
-
-  // Process each city
-  for (const city of citiesWithInventories) {
-    // Query the inventory directly to guarantee an exact year match
-    const inventory = await db.models.Inventory.findOne({
-      where: { cityId: city.cityId, year },
-      attributes: ["inventoryId", "year"],
-    });
-    if (!inventory) {
-      logger.info(
-        `Skipping city for bulk HIAP: no inventory for requested year. CityId: ${city.cityId}, CityName: ${city.name ?? city.locode ?? ""}, RequestedYear: ${year}`,
-      );
-      continue; // not a failure; just skip
-    }
-    const cityName: string = city.name ?? city.locode ?? "";
-
-    // Validate required city data
-    if (!city.locode) {
-      logger.error(
-        `City ${cityName} (ID: ${city.cityId}) has no locode, skipping`,
-      );
-      continue;
-    }
-
-    try {
-      const ranking = await startActionRankingJob(
-        inventory.inventoryId,
-        city.locode,
-        languages,
-        actionType as ACTION_TYPES,
-      );
-
-      logger.info(
-        `Started HIAP prioritization for city ${cityName}. CityId: ${city.cityId}, InventoryId: ${inventory.inventoryId}, TaskId: ${ranking.jobId}, ActionType: ${actionType}`,
-      );
-
-      results.push({
-        cityId: city.cityId,
-        cityName,
-        inventoryId: inventory.inventoryId,
-        status: HighImpactActionRankingStatus.PENDING,
-        taskId: ranking.jobId,
-      });
-      startedCount++;
-    } catch (error) {
-      logger.error(
-        `Failed to start HIAP prioritization for city ${cityName}. CityId: ${city.cityId}, InventoryId: ${inventory.inventoryId}, Error: ${error instanceof Error ? error.message : String(error)}, ActionType: ${actionType}`,
-      );
-
-      results.push({
-        cityId: city.cityId,
-        cityName,
-        inventoryId: inventory.inventoryId,
-        status: HighImpactActionRankingStatus.FAILURE,
-        taskId: "", // No taskId available for failed jobs - no DB record created
-        error: error instanceof Error ? error.message : String(error),
-      });
-      failedCount++;
-    }
-  }
-
-  return NextResponse.json({
-    data: {
-      startedCount,
-      failedCount,
-      results,
-    },
-  });
 });

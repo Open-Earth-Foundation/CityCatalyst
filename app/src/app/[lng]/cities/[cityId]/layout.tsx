@@ -8,6 +8,7 @@ import { useTranslation } from "@/i18n/client";
 import { useSession } from "next-auth/react";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import ProgressLoader from "@/components/ProgressLoader";
+import Footer from "@/components/Sections/Footer";
 
 export default function CitiesLayout(props: {
   children: React.ReactNode;
@@ -29,6 +30,7 @@ export default function CitiesLayout(props: {
       <Box w="full" h="full">
         {children}
       </Box>
+      <Footer lng={lng} />
     </Box>
   );
 }

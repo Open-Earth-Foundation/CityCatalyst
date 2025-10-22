@@ -1,13 +1,16 @@
+"use client";
+
 import { NavigationBar } from "@/components/navigation-bar";
 import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
 import Footer from "@/components/Sections/Footer";
+import { use } from "react";
 
-export default async function DataLayout(props: {
+export default function DataLayout(props: {
   children: React.ReactNode;
   params: Promise<{ lng: string }>;
 }) {
-  const { lng } = await props.params;
+  const { lng } = use(props.params);
 
   return (
     <Box

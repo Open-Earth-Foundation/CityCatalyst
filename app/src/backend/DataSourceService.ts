@@ -354,21 +354,15 @@ export default class DataSourceService {
       return "Missing reference data in inventory";
     }
 
-    let url = source.apiEndpoint;
     const locode = inventory.city.locode.replace("-", " ");
     const year = inventory.year.toString();
-
-    if (source.retrievalMethod === "global_api_notation_key") {
-      url = source.apiEndpoint
-        .replace(":actor_id", locode)
-        .replace(":gpc_reference_number", referenceNumber);
-    } else {
-      url = source.apiEndpoint
-        .replace(":locode", locode)
-        .replace(":country", inventory.city.locode.slice(0, 2))
-        .replace(":year", year)
-        .replace(":gpcReferenceNumber", referenceNumber);
-    }
+    const url = source.apiEndpoint
+      .replace(":actor_id", locode)
+      .replace(":locode", locode)
+      .replace(":country", inventory.city.locode.slice(0, 2))
+      .replace(":year", year)
+      .replace(":gpc_reference_number", referenceNumber)
+      .replace(":gpcReferenceNumber", referenceNumber);
 
     let data;
     try {

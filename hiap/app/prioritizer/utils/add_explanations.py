@@ -81,7 +81,7 @@ def generate_multilingual_explanation(
     Returns:
         Optional[dict[str, str]]: Dictionary mapping language codes to explanation strings, or None if generation fails.
     """
-    logger.info(
+    logger.debug(
         f"Generating explanation for action_id={single_action['ActionID']}, rank={rank}, languages={languages}."
     )
 

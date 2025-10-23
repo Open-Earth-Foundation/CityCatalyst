@@ -39,6 +39,7 @@ _default_workers = max(
     1, int(os.getenv("BULK_CONCURRENCY", multiprocessing.cpu_count()))
 )
 logger.info(f"BULK_CONCURRENCY set to {_default_workers}")
+logger.info(f"XGBoost threads set to {os.getenv('XGBOOST_NUM_THREADS', '1')}")
 _bulk_executor = None
 
 

@@ -354,10 +354,14 @@ export default class DataSourceService {
       return "Missing reference data in inventory";
     }
 
+    const locode = inventory.city.locode.replace("-", " ");
+    const year = inventory.year.toString();
     const url = source.apiEndpoint
-      .replace(":locode", inventory.city.locode.replace("-", " "))
+      .replace(":actor_id", locode)
+      .replace(":locode", locode)
       .replace(":country", inventory.city.locode.slice(0, 2))
-      .replace(":year", inventory.year.toString())
+      .replace(":year", year)
+      .replace(":gpc_reference_number", referenceNumber)
       .replace(":gpcReferenceNumber", referenceNumber);
 
     let data;
@@ -371,8 +375,11 @@ export default class DataSourceService {
     }
 
     if (
-      typeof data.totals !== "object" &&
-      typeof data.unavailable_reason !== "string"
+      !(
+        typeof data.totals === "object" ||
+        (typeof data.notation_key_name !== "string" &&
+          typeof data.unavailable_explanation !== "object")
+      )
     ) {
       if (
         data.detail === "No data available" ||
@@ -525,7 +532,7 @@ export default class DataSourceService {
     source: DataSource,
     inventory: Inventory,
     forceReplace: boolean = false,
-  ): Promise<string | boolean> {
+  ): Promise<string | { gpcReferenceNumber: string; subSector: SubSector }> {
     const { gpcReferenceNumber, subSector } =
       await DataSourceService.findSubSectorAndGPCRefNo(source);
 
@@ -553,18 +560,22 @@ export default class DataSourceService {
       inventory,
     );
     if (typeof data === "string") {
+      logger.error("Notation key source retrieval error: " + data);
       return data; // this is an error/ validation failure message and handled at the callsite
     }
 
-    const unavailableReason = data.unavailable_reason;
-    const unavailableExplanation = data.unavailable_explanation;
+    const language = "en";
+    const unavailableReason = data.notation_key_name;
+    const unavailableExplanation =
+      data.unavailable_explanation[language] ??
+      data.unavailable_explanation["en"];
 
     if (!unavailableReason || !unavailableExplanation) {
       logger.error(data, "Invalid data returned from notation key source");
       return "invalid_notation_key_data"; // returned as error with translation key
     }
 
-    await db.models.InventoryValue.create({
+    const inventoryValue = await db.models.InventoryValue.create({
       datasourceId: source.datasourceId,
       inventoryId: inventory.inventoryId,
       id: randomUUID(),
@@ -576,7 +587,12 @@ export default class DataSourceService {
       unavailableExplanation,
     });
 
-    return true;
+    logger.debug(
+      { inventoryValue },
+      "InventoryValue created for notation key source",
+    );
+
+    return { gpcReferenceNumber: gpcReferenceNumber!, subSector };
   }
 
   private static async saveActivityValue({

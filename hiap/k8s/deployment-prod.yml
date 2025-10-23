@@ -6,8 +6,6 @@ metadata:
   labels:
     app: hiap-prod
 spec:
-  strategy:
-    type: Recreate
   replicas: 1
   selector:
     matchLabels:
@@ -48,4 +46,10 @@ spec:
               port: http
             initialDelaySeconds: 5
             periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            failureThreshold: 30
 

@@ -10,6 +10,8 @@ spec:
   selector:
     matchLabels:
       app: hiap-dev
+  strategy:
+    type: Recreate # needed because of high CPU request. Rolling update will not find a second large instance
   template:
     metadata:
       labels:

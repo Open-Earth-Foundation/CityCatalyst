@@ -354,11 +354,21 @@ export default class DataSourceService {
       return "Missing reference data in inventory";
     }
 
-    const url = source.apiEndpoint
-      .replace(":actor_id", inventory.city.locode.replace("-", " "))
-      .replace(":country", inventory.city.locode.slice(0, 2))
-      .replace(":year", inventory.year.toString())
-      .replace(":gpc_reference_number", referenceNumber);
+    let url = source.apiEndpoint;
+    const locode = inventory.city.locode.replace("-", " ");
+    const year = inventory.year.toString();
+
+    if (source.retrievalMethod === "global_api_notation_key") {
+      url = source.apiEndpoint
+        .replace(":actor_id", locode)
+        .replace(":gpc_reference_number", referenceNumber);
+    } else {
+      url = source.apiEndpoint
+        .replace(":locode", locode)
+        .replace(":country", inventory.city.locode.slice(0, 2))
+        .replace(":year", year)
+        .replace(":gpcReferenceNumber", referenceNumber);
+    }
 
     let data;
     try {
@@ -371,9 +381,11 @@ export default class DataSourceService {
     }
 
     if (
-      typeof data.totals !== "object" &&
-      (typeof data.notation_key_name !== "string" ||
-        typeof data.unavailable_explanation !== "object")
+      !(
+        typeof data.totals === "object" ||
+        (typeof data.notation_key_name !== "string" &&
+          typeof data.unavailable_explanation !== "object")
+      )
     ) {
       if (
         data.detail === "No data available" ||

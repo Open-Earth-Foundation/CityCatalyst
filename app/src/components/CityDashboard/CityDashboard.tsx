@@ -20,6 +20,7 @@ import { Button } from "../ui/button";
 import { ModuleDashboardWidgets } from "../ModuleWidgets";
 import MissingCityDashboard from "../missing-city-dashboard";
 import { isFetchBaseQueryError } from "@/util/helpers";
+import Footer from "../Sections/Footer";
 
 export default function CitiesDashboardPage({
   params,
@@ -172,6 +173,7 @@ export default function CitiesDashboardPage({
           inventory={latestInventory as InventoryResponse}
         />
       )}
+      <Footer lng={lng} />
     </Box>
   );
 }

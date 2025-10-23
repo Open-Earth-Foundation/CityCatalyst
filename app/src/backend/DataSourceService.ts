@@ -366,6 +366,7 @@ export default class DataSourceService {
 
     let data;
     try {
+      logger.debug(`Fetching data from URL: ${url}`);
       const response = await fetch(url);
       data = await response.json();
     } catch (err) {
@@ -377,8 +378,8 @@ export default class DataSourceService {
     if (
       !(
         typeof data.totals === "object" ||
-        (typeof data.notation_key_name !== "string" &&
-          typeof data.unavailable_explanation !== "object")
+        (typeof data.notation_key_name === "string" &&
+          typeof data.unavailable_explanation === "object")
       )
     ) {
       if (
@@ -439,7 +440,13 @@ export default class DataSourceService {
       return data; // this is an error/ validation failure message and handled at the callsite
     }
 
-    const emissions = data.totals.emissions;
+    if (!data?.totals?.emissions) {
+      throw new createHttpError.BadRequest(
+        "Global API response data is missing totals.emissions field",
+      );
+    }
+
+    const emissions = data?.totals?.emissions;
     const co2eq = new Decimal(emissions.co2eq_100yr).times(scaleFactor);
     const co2Amount = new Decimal(emissions.co2_mass).times(scaleFactor);
     const n2oAmount = new Decimal(emissions.n2o_mass).times(scaleFactor);
@@ -562,6 +569,16 @@ export default class DataSourceService {
     if (typeof data === "string") {
       logger.error("Notation key source retrieval error: " + data);
       return data; // this is an error/ validation failure message and handled at the callsite
+    }
+
+    if (
+      typeof data.notation_key_name !== "string" ||
+      typeof data.unavailable_explanation !== "object"
+    ) {
+      const message =
+        "Invalid global API response, missing fields notation_key_name or unavailable_explanation";
+      logger.error(data, message);
+      return message; // this is an error/ validation failure message and handled at the callsite
     }
 
     const language = "en";

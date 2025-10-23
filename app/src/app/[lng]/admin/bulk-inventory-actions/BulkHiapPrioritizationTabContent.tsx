@@ -8,13 +8,19 @@ import {
   NativeSelect,
   Table,
   VStack,
+  HStack,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { logger } from "@/services/logger";
-import { BodyLarge, BodyMedium, BodySmall } from "@/components/package/Texts/Body";
+import {
+  BodyLarge,
+  BodyMedium,
+  BodySmall,
+} from "@/components/package/Texts/Body";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import {
   api,
@@ -22,7 +28,11 @@ import {
   useMigrateHiapSelectionsMutation,
   useStartBulkHiapPrioritizationMutation,
 } from "@/services/api";
-import { ACTION_TYPES, HighImpactActionRankingStatus } from "@/util/types";
+import {
+  ACTION_TYPES,
+  HighImpactActionRankingStatus,
+  LANGUAGES,
+} from "@/util/types";
 
 interface BulkHiapPrioritizationTabContentProps {
   t: TFunction;
@@ -33,16 +43,18 @@ export interface BulkHiapPrioritizationInputs {
   projectId: string;
   year: number;
   actionType: ACTION_TYPES;
+  languages: LANGUAGES[];
 }
 
 const BulkHiapPrioritizationTabContent: FC<
   BulkHiapPrioritizationTabContentProps
 > = ({ t, lng }) => {
-  const { register, handleSubmit, reset, watch } =
+  const { register, handleSubmit, reset, watch, setValue } =
     useForm<BulkHiapPrioritizationInputs>({
       defaultValues: {
         year: new Date().getFullYear(),
         actionType: ACTION_TYPES.Mitigation,
+        languages: [LANGUAGES.en, LANGUAGES.pt],
       },
     });
 
@@ -64,6 +76,7 @@ const BulkHiapPrioritizationTabContent: FC<
   const selectedProjectId = watch("projectId");
   const selectedYear = watch("year");
   const selectedActionType = watch("actionType");
+  const selectedLanguages = watch("languages") || [];
 
   // Check if all required fields are complete for fetching
   const isFormComplete = Boolean(
@@ -122,6 +135,16 @@ const BulkHiapPrioritizationTabContent: FC<
   };
 
   const onSubmit = async (data: BulkHiapPrioritizationInputs) => {
+    if (!data.languages || data.languages.length === 0) {
+      showToast(
+        "validation-error",
+        "please-select-at-least-one-language",
+        "error",
+        5000,
+      );
+      return;
+    }
+
     showToast(
       "starting-bulk-prioritization",
       "processing-cities",
@@ -136,7 +159,7 @@ const BulkHiapPrioritizationTabContent: FC<
         projectId: data.projectId,
         year: data.year,
         actionType: data.actionType,
-        language: lng,
+        languages: data.languages,
       }).unwrap();
       setResults(result);
 
@@ -294,6 +317,30 @@ const BulkHiapPrioritizationTabContent: FC<
                 </NativeSelect.Field>
                 <NativeSelect.Indicator />
               </NativeSelect.Root>
+            </FieldRoot>
+
+            <FieldRoot>
+              <LabelMedium mb="8px">{t("languages")}</LabelMedium>
+              <BodySmall color="content.tertiary" mb="12px">
+                {t("select-languages-for-climate-actions")}
+              </BodySmall>
+              <VStack align="flex-start" gap="8px">
+                {Object.values(LANGUAGES).map((lang) => (
+                  <Checkbox
+                    key={lang}
+                    checked={selectedLanguages.includes(lang)}
+                    onCheckedChange={(e) => {
+                      const checked = e.checked;
+                      const newLanguages = checked
+                        ? [...selectedLanguages, lang]
+                        : selectedLanguages.filter((l) => l !== lang);
+                      setValue("languages", newLanguages);
+                    }}
+                  >
+                    <BodyMedium>{lang}</BodyMedium>
+                  </Checkbox>
+                ))}
+              </VStack>
             </FieldRoot>
           </Fieldset.Content>
 

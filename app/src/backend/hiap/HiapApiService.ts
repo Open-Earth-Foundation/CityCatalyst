@@ -20,6 +20,7 @@ export const hiapApiWrapper: {
   startPrioritization: (
     contextData: any,
     type: ACTION_TYPES,
+    langs: LANGUAGES[],
   ) => Promise<{ taskId: string }>;
   checkPrioritizationProgress: (
     taskId: string,
@@ -39,8 +40,8 @@ export const hiapApiWrapper: {
     outputLanguage: string,
   ) => Promise<ActionPlan>;
 } = {
-  startPrioritization: async (contextData, type) => {
-    return await startPrioritizationImpl(contextData, type);
+  startPrioritization: async (contextData, type, langs) => {
+    return await startPrioritizationImpl(contextData, type, langs);
   },
   checkPrioritizationProgress: async (taskId) => {
     return await checkPrioritizationProgressImpl(taskId);
@@ -64,13 +65,14 @@ export const hiapApiWrapper: {
 const startPrioritizationImpl = async (
   contextData: any,
   type: ACTION_TYPES,
+  langs: LANGUAGES[],
 ): Promise<{ taskId: string }> => {
-  logger.info(contextData, "Sending request to prioritizer");
+  logger.info({ contextData, langs }, "Sending request to prioritizer");
 
   const body = {
     cityData: contextData,
     prioritizationType: type,
-    language: Object.values(LANGUAGES),
+    language: langs,
   };
   const response = await fetch(
     `${HIAP_API_URL}/prioritizer/v1/start_prioritization`,

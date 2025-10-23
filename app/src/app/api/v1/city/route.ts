@@ -209,6 +209,19 @@ export const POST = apiHandler(async (req, { session }) => {
       cityId: randomUUID(),
       ...body,
     });
+
+    // Verify user exists before adding to city
+    const user = await db.models.User.findByPk(session.user.id);
+    if (!user) {
+      logger.error(
+        { userId: session.user.id, sessionUser: session.user },
+        "User from session does not exist in database - session/DB out of sync",
+      );
+      throw new createHttpError.InternalServerError(
+        "User account not found in database. Please log out and log in again.",
+      );
+    }
+
     await city.addUser(session.user.id);
     // we need to add an email notification here for all the admins of the organization
     const admins = await db.models.OrganizationAdmin.findAll({

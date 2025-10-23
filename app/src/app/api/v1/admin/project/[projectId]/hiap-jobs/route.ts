@@ -168,6 +168,9 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
     const inventory = rankingWithIncludes.inventory;
 
     if (!city || !inventory) {
+        logger.warn(
+          `Skipping ranking ${ranking.id}: missing city or inventory data`,
+        );
       return null;
     }
 
@@ -178,13 +181,14 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
       year: inventory.year,
       taskId: ranking.jobId,
       actionType: ranking.type,
-      status: ranking.status,
-      createdAt: ranking.created?.toISOString(),
-    };
-  });
+        status: ranking.status,
+        createdAt: ranking.created?.toISOString(),
+      };
+    })
+    .filter((job) => job !== null);
 
   logger.info(
-    `HIAP Jobs API called for project ${validatedProjectId}, year: ${validatedYear}, actionType: ${validatedActionType}, found ${hiapJobs.length} jobs`,
+    `HIAP Jobs API called for project ${validatedProjectId}, year: ${validatedYear}, actionType: ${validatedActionType}, found ${rankings.length} rankings, ${hiapJobs.length} valid jobs`,
   );
 
   return NextResponse.json({

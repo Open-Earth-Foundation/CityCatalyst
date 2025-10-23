@@ -29,7 +29,7 @@ def db_query_notation_key(datasource_name, spatial_granularity, actor_id, gpc_re
             AND gpc_reference_number = :gpc_reference_number
             AND datasource_name = :datasource_name
             AND spatial_granularity = :spatial_granularity
-            AND datasource_year - :year <= 3 
+            AND abs(datasource_year - :year) <= 3 
             """
         )
         params = {

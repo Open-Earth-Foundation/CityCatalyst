@@ -35,7 +35,7 @@ export const useLogin = (): UseLoginReturn => {
 
     try {
       const result = await signIn("credentials", {
-        redirect: true,
+        redirect: false,
         email: data.email,
         password: data.password,
         callbackUrl: callbackUrl || `/${lng}/cities`,
@@ -53,7 +53,8 @@ export const useLogin = (): UseLoginReturn => {
         trackEvent("user_logged_in", { method: "credentials" });
         identifyUser(data.email);
 
-        // Redirect after successful login
+        // Full page redirect after successful login
+        window.location.href = callbackUrl || `/${lng}/cities`;
         return { success: true };
       }
 

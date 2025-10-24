@@ -293,6 +293,9 @@ export default class AdminService {
     cityLocode: string,
   ): Promise<{ locode: string; error: string }[]> {
     const errors: any[] = [];
+    logger.info(
+      `Connecting data sources for inventory ${inventoryId} (city: ${cityLocode})`,
+    );
     const inventory = await db.models.Inventory.findOne({
       where: { inventoryId },
       include: [{ model: City, as: "city" }],
@@ -302,12 +305,22 @@ export default class AdminService {
     }
     // Find all data sources for the inventory
     const sources = await DataSourceService.findAllSources(inventoryId);
+    logger.debug(
+      `Found ${sources.length} data sources for inventory ${inventoryId}`,
+    );
     // Filter by locally available criteria (e.g. geographical location, year of inventory etc.)
-    const { applicableSources } = DataSourceService.filterSources(
+    const { applicableSources, removedSources } = DataSourceService.filterSources(
       inventory,
       sources,
     );
-
+    logger.debug(
+      `Found ${applicableSources.length} applicable data sources for inventory ${inventoryId}`,
+    );
+    for (const removedSource of removedSources) {
+      logger.debug(
+        `Data source ${removedSource.source.datasourceName} was filtered out for inventory ${inventoryId}: ${removedSource.reason}`,
+      );
+    }
     // group sources by GPC reference number so we can prioritize for each choice individually
     // TODO filter out sources that don't match the inventory's inventory type/ Subcategory's ReportingLevel
     const sourcesByReferenceNumber = groupBy(
@@ -341,16 +354,23 @@ export default class AdminService {
           // Try one after another until one connects successfully
           let isSuccessful = false;
           for (const source of prioritizedSources) {
+            logger.debug(`Trying data source ${source.datasourceId} for inventory ${inventoryId}`);
             const data = await DataSourceService.retrieveGlobalAPISource(
               source,
               inventory,
             );
             if (data instanceof String || typeof data === "string") {
+              logger.error(
+                `Failed to fetch source ${source.datasourceId} for inventory ${inventoryId} for city ${cityLocode}: ${data}`,
+              );
               errors.push({
                 locode: cityLocode,
                 error: `Failed to fetch source - ${source.datasourceId}: ${data}`,
               });
             } else {
+              logger.debug(
+                `Applying source ${source.datasourceId} for inventory ${inventoryId}`
+              );
               // save data source to DB
               // download source data and apply in database
               const result = await DataSourceService.applySource(
@@ -360,6 +380,9 @@ export default class AdminService {
                 true, // force replace existing InventoryValue entries
               );
               if (result.success) {
+                logger.debug(
+                  `Successfully applied source ${source.datasourceId} for inventory ${inventoryId}`,
+                );
                 isSuccessful = true;
                 break;
               } else {

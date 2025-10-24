@@ -55,6 +55,8 @@
   "no-activity-data-title": "Not enough data to generate your top climate actions yet",
   "no-activity-data-description": "You need to complete at least 1 activity in your inventory to generate your top actions list.",
   "generate-climate-actions-list": "Generate top actions list",
+  "error-generating-actions-title": "Something went wrong",
+  "error-generating-actions-description": "We encountered an error while generating your climate actions. Please try again.",
   "generating-actions": "Generating actions...",
   "checking-activity-data": "Checking activity data",
   "generating-climate-actions": "Your top climate actions are being processed",

@@ -220,6 +220,172 @@ export class BulkHiapPrioritizationService {
   }
 
   /**
+   * Retry failed batches by resetting them to TO_DO status
+   */
+  static async retryFailedBatches(params: {
+    projectId: string;
+    actionType: ACTION_TYPES;
+    jobIds?: string[];
+  }): Promise<{ retriedCount: number }> {
+    const { projectId, actionType, jobIds } = params;
+
+    logger.info(
+      { projectId, actionType, jobIds },
+      "Retrying failed HIAP batches",
+    );
+
+    if (!db.sequelize) {
+      throw new Error("Database not initialized");
+    }
+
+    // Build WHERE clause
+    const whereConditions: string[] = [
+      `har.status = :status`,
+      `har.type = :actionType`,
+      `c.project_id = :projectId`,
+    ];
+
+    const replacements: any = {
+      status: HighImpactActionRankingStatus.FAILURE,
+      actionType,
+      projectId,
+    };
+
+    if (jobIds && jobIds.length > 0) {
+      whereConditions.push(`har.job_id = ANY(:jobIds)`);
+      replacements.jobIds = jobIds;
+    }
+
+    // Use raw SQL to update with JOIN
+    const result = await db.sequelize.query(
+      `
+      UPDATE "HighImpactActionRanking" har
+      SET 
+        status = :newStatus,
+        job_id = NULL,
+        error_message = NULL
+      FROM "Inventory" inv
+      JOIN "City" c ON inv.city_id = c.city_id
+      WHERE har.inventory_id = inv.inventory_id
+        AND ${whereConditions.join(" AND ")}
+      `,
+      {
+        replacements: {
+          ...replacements,
+          newStatus: HighImpactActionRankingStatus.TO_DO,
+        },
+        type: QueryTypes.UPDATE,
+      },
+    );
+
+    // Result is [undefined, rowCount] for UPDATE queries
+    const retriedCount = (result as any)[1] || 0;
+
+    logger.info(
+      { retriedCount, projectId, actionType },
+      "Reset failed rankings to TO_DO",
+    );
+
+    return { retriedCount };
+  }
+
+  /**
+   * Get batch status information for a project
+   * Returns batches grouped by jobId with city details
+   */
+  static async getBatchStatus(params: {
+    projectId: string;
+    actionType: ACTION_TYPES;
+  }): Promise<
+    Array<{
+      jobId: string | null;
+      status: string;
+      cityCount: number;
+      cities: Array<{
+        locode: string;
+        inventoryId: string;
+        status: string;
+        errorMessage: string | null;
+      }>;
+    }>
+  > {
+    const { projectId, actionType } = params;
+
+    if (!db.sequelize) {
+      throw new Error("Database not initialized");
+    }
+
+    // Fetch all rankings for this project and action type
+    const rankings = await db.models.HighImpactActionRanking.findAll({
+      include: [
+        {
+          model: db.models.Inventory,
+          as: "inventory",
+          required: true,
+          include: [
+            {
+              model: db.models.City,
+              as: "city",
+              required: true,
+              where: { projectId },
+              attributes: ["cityId", "name", "locode"],
+            },
+          ],
+          attributes: ["inventoryId"],
+        },
+      ],
+      where: { type: actionType },
+      order: [["created", "ASC"]],
+    });
+
+    // Group by jobId (null jobIds = TO_DO batch)
+    const batchMap = new Map<
+      string,
+      {
+        jobId: string | null;
+        status: string;
+        cityCount: number;
+        cities: Array<{
+          locode: string;
+          inventoryId: string;
+          status: string;
+          errorMessage: string | null;
+        }>;
+      }
+    >();
+
+    for (const ranking of rankings) {
+      const jobId = ranking.jobId || "TO_DO";
+      const status = ranking.status || HighImpactActionRankingStatus.TO_DO;
+
+      if (!batchMap.has(jobId)) {
+        batchMap.set(jobId, {
+          jobId: ranking.jobId || null,
+          status: status,
+          cityCount: 0,
+          cities: [],
+        });
+      }
+
+      const batch = batchMap.get(jobId)!;
+      batch.cityCount++;
+      batch.cities.push({
+        locode: ranking.locode,
+        inventoryId: ranking.inventoryId,
+        status: status,
+        errorMessage: ranking.errorMessage || null,
+      });
+
+      // If batch has mixed statuses, use a summary status
+      if (batch.cities.some((c) => c.status !== batch.status)) {
+        batch.status = "MIXED";
+      }
+    }
+
+    return Array.from(batchMap.values());
+  }
+
+  /**
    * Fetch all cities with inventories for the specified year
    */
   private static async fetchCitiesWithInventories(

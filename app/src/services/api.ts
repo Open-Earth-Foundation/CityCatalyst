@@ -1177,6 +1177,60 @@ export const api = createApi({
         }) => response.data,
         invalidatesTags: ["HiapJobs"],
       }),
+      getBulkHiapBatchStatus: builder.query<
+        {
+          batches: Array<{
+            jobId: string | null;
+            status: string;
+            cityCount: number;
+            cities: Array<{
+              locode: string;
+              inventoryId: string;
+              status: string;
+              errorMessage: string | null;
+            }>;
+          }>;
+        },
+        { projectId: string; actionType: ACTION_TYPES }
+      >({
+        query: ({ projectId, actionType }) => ({
+          url: `/admin/bulk-hiap-prioritization?projectId=${projectId}&actionType=${actionType}`,
+          method: "GET",
+        }),
+        transformResponse: (response: {
+          data: {
+            batches: Array<{
+              jobId: string | null;
+              status: string;
+              cityCount: number;
+              cities: Array<{
+                locode: string;
+                inventoryId: string;
+                status: string;
+                errorMessage: string | null;
+              }>;
+            }>;
+          };
+        }) => response.data,
+        providesTags: ["HiapJobs"],
+      }),
+      retryFailedHiapBatches: builder.mutation<
+        { retriedCount: number },
+        {
+          projectId: string;
+          actionType: ACTION_TYPES;
+          jobIds?: string[];
+        }
+      >({
+        query: (data) => ({
+          url: `/admin/bulk-hiap-prioritization`,
+          method: "PATCH",
+          body: data,
+        }),
+        transformResponse: (response: { data: { retriedCount: number } }) =>
+          response.data,
+        invalidatesTags: ["HiapJobs"],
+      }),
       getProjectUsers: builder.query({
         query: (projectId: string) => ({
           method: "GET",
@@ -1786,6 +1840,8 @@ export const {
   useMarkCitiesPublicMutation,
   useMigrateHiapSelectionsMutation,
   useStartBulkHiapPrioritizationMutation,
+  useGetBulkHiapBatchStatusQuery,
+  useRetryFailedHiapBatchesMutation,
   useGetProjectUsersQuery,
   useGetUserAccessStatusQuery,
   useGetAllCitiesInSystemQuery,

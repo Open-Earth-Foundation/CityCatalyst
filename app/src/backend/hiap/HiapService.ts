@@ -303,8 +303,22 @@ export const checkBulkActionRankingJob = async (
     // Status is "completed" - fetch and process results
 
     // Fetch result for the bulk job
-    const bulkResponse =
-      await hiapApiWrapper.getBulkPrioritizationResult(jobId);
+    let bulkResponse;
+    try {
+      bulkResponse = await hiapApiWrapper.getBulkPrioritizationResult(jobId);
+    } catch (error: any) {
+      // If we get a 409 Conflict, the result may not be ready yet
+      // even though status check says "completed"
+      if (error.message?.includes("409")) {
+        logger.warn(
+          { jobId, error: error.message },
+          "Result not ready yet (409 Conflict), will retry on next cron run",
+        );
+        return false; // Not complete yet, try again later
+      }
+      // Other errors should fail the job
+      throw error;
+    }
 
     // Get all rankings that share this jobId
     const rankings = await db.models.HighImpactActionRanking.findAll({
@@ -366,11 +380,15 @@ export const checkBulkActionRankingJob = async (
           })),
         ];
 
-        const mergedRanked = await fetchAndMergeRankedActions(
-          lang,
-          rankedActions,
-        );
-        await saveRankedActionsForLanguage(ranking, mergedRanked, lang);
+        // Save ranked actions for ALL languages in ranking.langs
+        const languagesToProcess = ranking.langs as LANGUAGES[];
+        for (const language of languagesToProcess) {
+          const mergedRanked = await fetchAndMergeRankedActions(
+            language,
+            rankedActions,
+          );
+          await saveRankedActionsForLanguage(ranking, mergedRanked, language);
+        }
 
         // Update ranking status to success
         await ranking.update({ status: HighImpactActionRankingStatus.SUCCESS });
@@ -379,9 +397,9 @@ export const checkBulkActionRankingJob = async (
           {
             rankingId: ranking.id,
             locode: ranking.locode,
-            actionCount: mergedRanked.length,
+            languagesProcessed: languagesToProcess,
           },
-          "Saved ranked actions for city",
+          "Saved ranked actions for city in all languages",
         );
       } catch (error: any) {
         logger.error(
@@ -472,6 +490,38 @@ async function checkExistingActions(
   return null;
 }
 
+// Helper: Normalize field to array (handles strings and nulls)
+function normalizeToArray(value: any): string[] | undefined {
+  if (value === null || value === undefined) {
+    return undefined;
+  }
+  if (Array.isArray(value)) {
+    return value;
+  }
+  if (typeof value === "string") {
+    // If it's a string, split by common separators or return as single-item array
+    if (value.trim() === "") {
+      return undefined;
+    }
+    // Check if it's a comma-separated or newline-separated list
+    if (value.includes("\n")) {
+      return value
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+    if (value.includes(",")) {
+      return value
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+    // Otherwise, return as single item array
+    return [value];
+  }
+  return undefined;
+}
+
 // Helper: Create a single ranked action record
 async function createRankedActionRecord(
   rankingId: string,
@@ -489,10 +539,10 @@ async function createRankedActionRecord(
       type: rankedAction.type,
       explanation: rankedAction.explanation,
       name: rankedAction.name,
-      hazards: rankedAction.hazard,
-      sectors: rankedAction.sector,
-      subsectors: rankedAction.subsector,
-      primaryPurposes: rankedAction.primaryPurpose,
+      hazards: normalizeToArray(rankedAction.hazard),
+      sectors: normalizeToArray(rankedAction.sector),
+      subsectors: normalizeToArray(rankedAction.subsector),
+      primaryPurposes: normalizeToArray(rankedAction.primaryPurpose),
       description: rankedAction.description,
       cobenefits: rankedAction.cobenefits,
       equityAndInclusionConsiderations:
@@ -501,9 +551,11 @@ async function createRankedActionRecord(
       adaptationEffectiveness: rankedAction.adaptationEffectiveness,
       costInvestmentNeeded: rankedAction.costInvestmentNeeded,
       timelineForImplementation: rankedAction.timelineForImplementation,
-      dependencies: rankedAction.dependencies,
-      keyPerformanceIndicators: rankedAction.keyPerformanceIndicators,
-      powersAndMandates: rankedAction.powersAndMandates,
+      dependencies: normalizeToArray(rankedAction.dependencies),
+      keyPerformanceIndicators: normalizeToArray(
+        rankedAction.keyPerformanceIndicators,
+      ),
+      powersAndMandates: normalizeToArray(rankedAction.powersAndMandates),
       adaptationEffectivenessPerHazard:
         rankedAction.adaptationEffectivenessPerHazard,
       biome: rankedAction.biome,

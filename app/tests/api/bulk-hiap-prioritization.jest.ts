@@ -18,7 +18,9 @@ import {
 import { db } from "@/models";
 import { randomUUID } from "node:crypto";
 import { POST } from "@/app/api/v1/admin/bulk-hiap-prioritization/route";
+import { GET as CHECK_HIAP_JOBS_CRON } from "@/app/api/cron/check-hiap-jobs/route";
 import * as HiapApiService from "@/backend/hiap/HiapApiService";
+import { Op } from "sequelize";
 import { BulkHiapPrioritizationService } from "@/backend/hiap/BulkHiapPrioritizationService";
 import {
   checkBulkActionRankingJob,
@@ -921,6 +923,70 @@ describe("Bulk HIAP Prioritization API", () => {
           where: { inventoryId: extraInventories.map((i) => i.inventoryId) },
         });
       });
+
+      it("starts batch when TO_DO rankings exist with no PENDING jobs (retry scenario)", async () => {
+        // Simulate retry scenario: some rankings are TO_DO, none are PENDING
+        // This tests the Step 3 logic in the cron job
+
+        // Clean up existing rankings
+        await db.models.HighImpactActionRanking.destroy({
+          where: { inventoryId: inventoryIds },
+        });
+
+        // Create 3 TO_DO rankings (simulating retried failures)
+        const todoRankings = await Promise.all(
+          inventoryIds.slice(0, 2).map((inventoryId, idx) =>
+            db.models.HighImpactActionRanking.create({
+              id: randomUUID(),
+              inventoryId,
+              locode: `XX-TST-${idx + 1}`,
+              type: ACTION_TYPES.Mitigation,
+              langs: [LANGUAGES.en],
+              status: HighImpactActionRankingStatus.TO_DO,
+              jobId: null,
+            }),
+          ),
+        );
+
+        // Verify precondition: No PENDING jobs for this project
+        const pendingCount = await db.models.HighImpactActionRanking.count({
+          where: {
+            inventoryId: inventoryIds,
+            status: HighImpactActionRankingStatus.PENDING,
+          },
+        });
+        expect(pendingCount).toBe(0);
+
+        // Call startNextBatch (what cron Step 3 does)
+        const result = await BulkHiapPrioritizationService.startNextBatch(
+          projectId,
+          ACTION_TYPES.Mitigation,
+        );
+
+        // Should successfully start a batch
+        expect(result.started).toBe(true);
+        expect(result.batchSize).toBe(2); // BATCH_SIZE is 2 in tests
+        expect(result.taskId).toBe("mock-bulk-task-id");
+
+        // Verify rankings were updated to PENDING
+        const updatedRankings = await db.models.HighImpactActionRanking.findAll(
+          {
+            where: {
+              id: todoRankings.map((r) => r.id),
+            },
+          },
+        );
+
+        const pendingRankings = updatedRankings.filter(
+          (r) => r.status === HighImpactActionRankingStatus.PENDING,
+        );
+        expect(pendingRankings.length).toBe(2);
+
+        // Cleanup
+        await db.models.HighImpactActionRanking.destroy({
+          where: { id: todoRankings.map((r) => r.id) },
+        });
+      });
     });
   });
 
@@ -1004,20 +1070,18 @@ describe("Bulk HIAP Prioritization API", () => {
         order: [["rank", "ASC"]],
       });
 
-      expect(rankedActions.length).toBe(2);
+      expect(rankedActions.length).toBe(2); // 2 actions for 1 language ('en')
 
       // Verify first ranked action
       expect(rankedActions[0].actionId).toBe("test-action-1");
       expect(rankedActions[0].rank).toBe(1);
       expect(rankedActions[0].type).toBe(ACTION_TYPES.Mitigation);
-      expect((rankedActions[0].explanation as any).en).toContain(
-        "highly recommended",
-      );
       expect(rankedActions[0].lang).toBe(LANGUAGES.en);
 
       // Verify second ranked action
       expect(rankedActions[1].actionId).toBe("test-action-2");
       expect(rankedActions[1].rank).toBe(2);
+      expect(rankedActions[1].lang).toBe(LANGUAGES.en);
 
       // Cleanup
       await db.models.HighImpactActionRanked.destroy({
@@ -1052,7 +1116,7 @@ describe("Bulk HIAP Prioritization API", () => {
               },
               rankedActionsMitigation: [
                 {
-                  actionId: "mitigation-action-1",
+                  actionId: "test-action-1",
                   rank: 1,
                   explanation: {
                     explanations: {
@@ -1063,7 +1127,7 @@ describe("Bulk HIAP Prioritization API", () => {
               ],
               rankedActionsAdaptation: [
                 {
-                  actionId: "adaptation-action-1",
+                  actionId: "test-action-2",
                   rank: 1,
                   explanation: {
                     explanations: {
@@ -1099,10 +1163,10 @@ describe("Bulk HIAP Prioritization API", () => {
       });
 
       expect(mitigationActions.length).toBe(1);
-      expect(mitigationActions[0].actionId).toBe("mitigation-action-1");
+      expect(mitigationActions[0].actionId).toBe("test-action-1");
 
       expect(adaptationActions.length).toBe(1);
-      expect(adaptationActions[0].actionId).toBe("adaptation-action-1");
+      expect(adaptationActions[0].actionId).toBe("test-action-2");
 
       // Cleanup
       await db.models.HighImpactActionRanked.destroy({
@@ -1157,7 +1221,7 @@ describe("Bulk HIAP Prioritization API", () => {
               },
               rankedActionsMitigation: [
                 {
-                  actionId: "action-1",
+                  actionId: "test-action-1",
                   rank: 1,
                   explanation: { explanations: { en: "Test" } },
                 },
@@ -1171,7 +1235,7 @@ describe("Bulk HIAP Prioritization API", () => {
               },
               rankedActionsMitigation: [
                 {
-                  actionId: "action-2",
+                  actionId: "test-action-2",
                   rank: 1,
                   explanation: { explanations: { en: "Test" } },
                 },
@@ -1185,7 +1249,7 @@ describe("Bulk HIAP Prioritization API", () => {
               },
               rankedActionsMitigation: [
                 {
-                  actionId: "action-3",
+                  actionId: "test-action-3",
                   rank: 1,
                   explanation: { explanations: { en: "Test" } },
                 },
@@ -1226,6 +1290,89 @@ describe("Bulk HIAP Prioritization API", () => {
       });
       await db.models.HighImpactActionRanking.destroy({
         where: { id: rankings.map((r) => r.id) },
+      });
+    });
+
+    it("processes and saves ranked actions for all languages", async () => {
+      // Verify that when a ranking has multiple languages, actions are saved for all of them
+      const ranking = await db.models.HighImpactActionRanking.create({
+        id: randomUUID(),
+        inventoryId: inventoryIds[0],
+        locode: "XX-TST-1",
+        type: ACTION_TYPES.Mitigation,
+        langs: [LANGUAGES.en, LANGUAGES.pt], // Multiple languages
+        jobId: "test-multi-lang-job",
+        status: HighImpactActionRankingStatus.PENDING,
+      });
+
+      // Mock result with ranked actions
+      jest
+        .spyOn(HiapApiService.hiapApiWrapper, "getBulkPrioritizationResult")
+        .mockResolvedValue({
+          prioritizerResponseList: [
+            {
+              metadata: {
+                locode: "XX-TST-1",
+                rankedDate: new Date().toISOString(),
+              },
+              rankedActionsMitigation: [
+                {
+                  actionId: "test-action-1",
+                  rank: 1,
+                  explanation: {
+                    explanations: {
+                      en: "English explanation",
+                      pt: "Explicação em português",
+                    },
+                  },
+                },
+              ],
+              rankedActionsAdaptation: [],
+            },
+          ],
+        } as any);
+
+      // Process the job
+      await checkBulkActionRankingJob(
+        "test-multi-lang-job",
+        LANGUAGES.en,
+        ACTION_TYPES.Mitigation,
+      );
+
+      // Verify ranking updated to SUCCESS
+      const updatedRanking = await db.models.HighImpactActionRanking.findByPk(
+        ranking.id,
+      );
+      expect(updatedRanking?.status).toBe(
+        HighImpactActionRankingStatus.SUCCESS,
+      );
+
+      // Verify actions were saved for BOTH languages
+      const allRankedActions = await db.models.HighImpactActionRanked.findAll({
+        where: { hiaRankingId: ranking.id },
+        order: [["lang", "ASC"]],
+      });
+
+      expect(allRankedActions.length).toBe(2); // One for 'en', one for 'pt'
+
+      const enActions = allRankedActions.filter((a) => a.lang === LANGUAGES.en);
+      const ptActions = allRankedActions.filter((a) => a.lang === LANGUAGES.pt);
+
+      expect(enActions.length).toBe(1);
+      expect(ptActions.length).toBe(1);
+
+      // Both should have the same action data
+      expect(enActions[0].actionId).toBe("test-action-1");
+      expect(ptActions[0].actionId).toBe("test-action-1");
+      expect(enActions[0].rank).toBe(1);
+      expect(ptActions[0].rank).toBe(1);
+
+      // Cleanup
+      await db.models.HighImpactActionRanked.destroy({
+        where: { hiaRankingId: ranking.id },
+      });
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: ranking.id },
       });
     });
   });
@@ -1340,6 +1487,142 @@ describe("Bulk HIAP Prioritization API", () => {
       expect(updatedRanking?.errorMessage).toContain(
         "No prioritization result",
       );
+    });
+  });
+
+  describe("Cron Job Integration: Step 3 - TO_DO with no PENDING", () => {
+    it("cron job starts batch when TO_DO rankings exist with no PENDING jobs", async () => {
+      // Setup: Clean state with only TO_DO rankings (simulating retry scenario)
+      await db.models.HighImpactActionRanking.destroy({
+        where: { inventoryId: inventoryIds },
+      });
+
+      // Create TO_DO rankings (no PENDING jobs)
+      const todoRankings = await Promise.all(
+        inventoryIds.slice(0, 2).map((inventoryId, idx) =>
+          db.models.HighImpactActionRanking.create({
+            id: randomUUID(),
+            inventoryId,
+            locode: `XX-TST-${idx + 1}`,
+            type: ACTION_TYPES.Mitigation,
+            langs: [LANGUAGES.en],
+            status: HighImpactActionRankingStatus.TO_DO,
+            jobId: null,
+          }),
+        ),
+      );
+
+      // Verify precondition: No PENDING jobs exist
+      const pendingJobs = await db.models.HighImpactActionRanking.findAll({
+        where: {
+          status: HighImpactActionRankingStatus.PENDING,
+          jobId: { [Op.ne]: null },
+        },
+      });
+      expect(pendingJobs.length).toBe(0);
+
+      // Call cron endpoint (simulating cron job run)
+      const response = await CHECK_HIAP_JOBS_CRON();
+      expect(response.status).toBe(200);
+
+      // Parse response body
+      const responseBody = await response.json();
+
+      // Verify response indicates a batch was started
+      expect(responseBody.startedBatches).toBeGreaterThan(0);
+
+      // Verify rankings were picked up and updated to PENDING
+      const updatedRankings = await db.models.HighImpactActionRanking.findAll({
+        where: {
+          id: todoRankings.map((r) => r.id),
+        },
+      });
+
+      const pendingRankings = updatedRankings.filter(
+        (r) => r.status === HighImpactActionRankingStatus.PENDING,
+      );
+      expect(pendingRankings.length).toBe(2);
+
+      // Verify jobId was assigned
+      pendingRankings.forEach((ranking) => {
+        expect(ranking.jobId).toBe("mock-bulk-task-id");
+      });
+
+      // Cleanup
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: todoRankings.map((r) => r.id) },
+      });
+    });
+
+    it("cron job does NOT start TO_DO batch when PENDING job is still processing", async () => {
+      // Setup: Create a project with both PENDING (still processing) and TO_DO rankings
+      // This verifies Step 3 respects sequential processing (doesn't interfere with active batches)
+      await db.models.HighImpactActionRanking.destroy({
+        where: { inventoryId: inventoryIds },
+      });
+
+      // Create 1 PENDING ranking (active, still processing)
+      const pendingRanking = await db.models.HighImpactActionRanking.create({
+        id: randomUUID(),
+        inventoryId: inventoryIds[0],
+        locode: "XX-TST-1",
+        type: ACTION_TYPES.Mitigation,
+        langs: [LANGUAGES.en],
+        status: HighImpactActionRankingStatus.PENDING,
+        jobId: "existing-job-id",
+      });
+
+      // Create 1 TO_DO ranking (should NOT be picked up while PENDING is active)
+      const todoRanking = await db.models.HighImpactActionRanking.create({
+        id: randomUUID(),
+        inventoryId: inventoryIds[1],
+        locode: "XX-TST-2",
+        type: ACTION_TYPES.Mitigation,
+        langs: [LANGUAGES.en],
+        status: HighImpactActionRankingStatus.TO_DO,
+        jobId: null,
+      });
+
+      // Mock HIAP API to return "pending" for existing job (still processing)
+      jest
+        .spyOn(HiapApiService.hiapApiWrapper, "checkBulkPrioritizationProgress")
+        .mockResolvedValue({
+          status: "pending",
+        });
+
+      // Call cron endpoint
+      const response = await CHECK_HIAP_JOBS_CRON();
+      expect(response.status).toBe(200);
+
+      // Parse response body
+      const responseBody = await response.json();
+
+      // Verify: PENDING job should remain PENDING (still processing)
+      const updatedPending = await db.models.HighImpactActionRanking.findByPk(
+        pendingRanking.id,
+      );
+      expect(updatedPending?.status).toBe(
+        HighImpactActionRankingStatus.PENDING,
+      );
+      expect(updatedPending?.jobId).toBe("existing-job-id");
+
+      // Verify: TO_DO ranking should NOT be started (PENDING job still active)
+      const updatedTodo = await db.models.HighImpactActionRanking.findByPk(
+        todoRanking.id,
+      );
+      expect(updatedTodo?.status).toBe(HighImpactActionRankingStatus.TO_DO);
+      expect(updatedTodo?.jobId).toBeNull();
+
+      // Verify: Step 2 should NOT complete job (PENDING still processing)
+      // Verify: Step 3 should NOT start new batch (PENDING exists system-wide)
+      expect(responseBody.checkedJobs).toBe(1);
+      expect(responseBody.completedJobs).toBe(0);
+      expect(responseBody.startedBatches).toBe(0);
+
+      // Cleanup
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: [pendingRanking.id, todoRanking.id] },
+      });
     });
   });
 });

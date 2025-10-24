@@ -495,7 +495,30 @@ const getBulkPrioritizationResultImpl = async (
   );
 
   if (!response.ok) {
-    throw new Error("Failed to fetch bulk job result");
+    // Handle specific error cases
+    if (response.status === 409) {
+      throw new Error(
+        "Job result not ready yet (409 Conflict). This may indicate the job is still being finalized.",
+      );
+    }
+    if (response.status === 404) {
+      throw new Error(
+        "Job result not found (404). The job may have expired or the taskId is invalid.",
+      );
+    }
+
+    // Try to get error details from response
+    let errorDetail = "";
+    try {
+      const errorJson = await response.json();
+      errorDetail = errorJson.detail || errorJson.message || "";
+    } catch {
+      // Ignore JSON parse errors
+    }
+
+    throw new Error(
+      `Failed to fetch bulk job result: ${response.status} ${response.statusText}${errorDetail ? ` - ${errorDetail}` : ""}`,
+    );
   }
 
   const json = await response.json();

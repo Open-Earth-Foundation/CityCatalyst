@@ -14,6 +14,13 @@ import { Op, QueryTypes } from "sequelize";
  * Cron job endpoint to check HIAP job statuses and start next batches
  * Should be called every minute by Kubernetes CronJob
  * 
+
+ * 1. Check all PENDING jobs - if completed, save results (mark SUCCESS/FAILURE)
+ * 2. If NO PENDING jobs exist anywhere in the system:
+ *    - Find ONE project with TO_DO rankings (oldest first, FIFO)
+ *    - Start ONE batch for that project
+ * 3. If ANY PENDING jobs exist, skip batch starting (wait for completion)
+ * 
  * SECURITY: This endpoint is protected at the network level via Ingress.
  * The ingress blocks /api/cron/* paths from external access (see k8s/cc-ingress.yml).
  * Only internal Kubernetes services can call this endpoint.
@@ -24,7 +31,9 @@ import { Op, QueryTypes } from "sequelize";
  *     tags:
  *       - Cron
  *     summary: Check pending HIAP jobs and continue batch processing
- *     description: Checks status of pending HIAP prioritization jobs and starts next batches when current batches complete
+ *     description: |
+ *       Checks status of pending HIAP prioritization jobs and starts next batches.
+ *       Also starts new batches for projects with TO_DO rankings but no active PENDING jobs.
  *     responses:
  *       200:
  *         description: Cron job completed
@@ -43,7 +52,7 @@ import { Op, QueryTypes } from "sequelize";
 export async function GET() {
   const startTime = Date.now();
 
-  logger.info("Cron job: Checking HIAP jobs");
+  logger.info("🔄 Cron job STARTED: Checking HIAP jobs");
 
   try {
     // Ensure database is initialized
@@ -150,6 +159,81 @@ export async function GET() {
       }
     }
 
+    // Step 3: Start ONE batch if no PENDING jobs exist system-wide
+    if (pendingJobs.length === 0) {
+      logger.info(
+        "No PENDING jobs system-wide. Checking for TO_DO rankings to start next batch.",
+      );
+
+      // Find ONE project with TO_DO rankings (oldest first for fairness)
+      const nextProject = await db.sequelize.query<{
+        projectId: string;
+        type: ACTION_TYPES;
+        oldestCreated: Date;
+      }>(
+        `
+        SELECT c.project_id as "projectId", 
+               har.type,
+               MIN(har.created) as "oldestCreated"
+        FROM "public"."HighImpactActionRanking" har
+        JOIN "public"."Inventory" inv ON har.inventory_id = inv.inventory_id
+        JOIN "public"."City" c ON inv.city_id = c.city_id
+        WHERE har.status = :todoStatus
+        GROUP BY c.project_id, har.type
+        ORDER BY MIN(har.created) ASC
+        LIMIT 1
+        `,
+        {
+          replacements: {
+            todoStatus: HighImpactActionRankingStatus.TO_DO,
+          },
+          type: QueryTypes.SELECT,
+        },
+      );
+
+      if (nextProject.length > 0) {
+        const project = nextProject[0];
+        try {
+          const nextBatch = await BulkHiapPrioritizationService.startNextBatch(
+            project.projectId,
+            project.type,
+          );
+
+          if (nextBatch.started) {
+            startedBatches++;
+            logger.info(
+              {
+                projectId: project.projectId,
+                actionType: project.type,
+                batchSize: nextBatch.batchSize,
+                taskId: nextBatch.taskId,
+                oldestCreated: project.oldestCreated,
+              },
+              "Started next batch",
+            );
+          }
+        } catch (error: any) {
+          logger.error(
+            {
+              projectId: project.projectId,
+              actionType: project.type,
+              error: error.message,
+            },
+            "Error starting batch",
+          );
+        }
+      } else {
+        logger.info("No TO_DO rankings found. All processing complete.");
+      }
+    } else {
+      logger.info(
+        {
+          pendingJobCount: pendingJobs.length,
+        },
+        "PENDING jobs exist. Skipping Step 3 (enforce 1 batch at a time globally).",
+      );
+    }
+
     const duration = Date.now() - startTime;
 
     logger.info(
@@ -159,7 +243,7 @@ export async function GET() {
         startedBatches,
         durationMs: duration,
       },
-      "Cron job completed",
+      "✅ Cron job FINISHED successfully",
     );
 
     return NextResponse.json({
@@ -169,9 +253,10 @@ export async function GET() {
       durationMs: duration,
     });
   } catch (error: any) {
+    const duration = Date.now() - startTime;
     logger.error(
-      { error: error.message, stack: error.stack },
-      "Cron job failed",
+      { error: error.message, stack: error.stack, durationMs: duration },
+      "❌ Cron job FINISHED with error",
     );
     return NextResponse.json(
       { error: "Internal server error" },

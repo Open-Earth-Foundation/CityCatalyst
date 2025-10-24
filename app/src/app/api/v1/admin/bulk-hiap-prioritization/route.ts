@@ -31,6 +31,77 @@ const bulkPrioritizationSchema = z.object({
 /**
  * @swagger
  * /api/v1/admin/bulk-hiap-prioritization:
+ *   get:
+ *     tags:
+ *       - Admin
+ *     summary: Get batch status for bulk HIAP prioritization
+ *     description: Returns status of all batches for a project, grouped by jobId
+ *     parameters:
+ *       - in: query
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: actionType
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [mitigation, adaptation]
+ *     responses:
+ *       200:
+ *         description: Batch status information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     batches:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Project not found
+ */
+export const GET = apiHandler(async (req: NextRequest, { session, searchParams }) => {
+  // Check authentication first
+  if (!session) {
+    throw new createHttpError.Unauthorized("Unauthorized");
+  }
+
+  // Then check authorization (admin-only endpoint)
+  UserService.validateIsAdmin(session);
+
+  const projectId = searchParams.projectId;
+  const actionType = searchParams.actionType;
+
+  if (!projectId || !actionType) {
+    throw new createHttpError.BadRequest("projectId and actionType are required");
+  }
+
+  // Verify project exists
+  const project = await db.models.Project.findByPk(projectId);
+  if (!project) {
+    throw new createHttpError.NotFound("Project not found");
+  }
+
+  const batches = await BulkHiapPrioritizationService.getBatchStatus({
+    projectId,
+    actionType: actionType as ACTION_TYPES,
+  });
+
+  return NextResponse.json({ data: { batches } });
+});
+
+/**
+ * @swagger
+ * /api/v1/admin/bulk-hiap-prioritization:
  *   post:
  *     tags:
  *       - Admin
@@ -136,4 +207,94 @@ export const POST = apiHandler(async (req: NextRequest, { session }) => {
     );
     throw error;
   }
+});
+
+const retrySchema = z.object({
+  projectId: z.string().uuid(),
+  actionType: z.enum(["mitigation", "adaptation"]),
+  jobIds: z.array(z.string()).optional(),
+});
+
+/**
+ * @swagger
+ * /api/v1/admin/bulk-hiap-prioritization:
+ *   patch:
+ *     tags:
+ *       - Admin
+ *     summary: Retry failed HIAP prioritization batches
+ *     description: Resets failed rankings back to TO_DO status so they can be reprocessed by the cron job
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - projectId
+ *               - actionType
+ *             properties:
+ *               projectId:
+ *                 type: string
+ *                 format: uuid
+ *               actionType:
+ *                 type: string
+ *                 enum: [mitigation, adaptation]
+ *               jobIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Optional - specific job IDs to retry. If not provided, retries all failed jobs.
+ *     responses:
+ *       200:
+ *         description: Failed batches reset successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     retriedCount:
+ *                       type: integer
+ *                       description: Number of rankings reset to TO_DO
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Project not found
+ */
+export const PATCH = apiHandler(async (req: NextRequest, { session }) => {
+  // Check authentication first
+  if (!session) {
+    throw new createHttpError.Unauthorized("Unauthorized");
+  }
+
+  // Then check authorization (admin-only endpoint)
+  UserService.validateIsAdmin(session);
+
+  const body = await req.json();
+  const { projectId, actionType, jobIds } = retrySchema.parse(body);
+
+  // Verify project exists
+  const project = await db.models.Project.findByPk(projectId);
+  if (!project) {
+    throw new createHttpError.NotFound("Project not found");
+  }
+
+  logger.info(
+    { projectId, actionType, jobIds },
+    "Retrying failed HIAP prioritization batches",
+  );
+
+  const result = await BulkHiapPrioritizationService.retryFailedBatches({
+    projectId,
+    actionType: actionType as ACTION_TYPES,
+    jobIds,
+  });
+
+  return NextResponse.json({
+    data: {
+      retriedCount: result.retriedCount,
+    },
+  });
 });

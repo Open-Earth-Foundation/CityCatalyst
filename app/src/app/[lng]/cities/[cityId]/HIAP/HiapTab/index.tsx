@@ -473,8 +473,8 @@ export function HiapTab({
     );
   }
 
-  // Show empty state for no actions or errors (but not if PENDING)
-  if ((!hasActions && !isPending) || currentError) {
+  // Show empty state for no actions, errors, or PENDING status
+  if (!hasActions || currentError) {
     return (
       <ClimateActionsEmptyState
         t={t}

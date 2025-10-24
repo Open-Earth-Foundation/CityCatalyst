@@ -66,6 +66,13 @@ def _rank_actions_for_city(
             and isinstance(action["ActionType"], list)
             and "mitigation" in action["ActionType"]
         ]
+
+        # Log if no actions are passed into the ranking function
+        if len(mitigationActions) == 0:
+            logger.warning(
+                f"No mitigation actions found for city {cityData_dict['locode']}"
+            )
+
         mitigationRanking = ranking_function(
             cityData_dict,
             mitigationActions,
@@ -98,6 +105,13 @@ def _rank_actions_for_city(
             and isinstance(action["ActionType"], list)
             and "adaptation" in action["ActionType"]
         ]
+
+        # Log if no actions are passed into the ranking function
+        if len(adaptationActions) == 0:
+            logger.warning(
+                f"No adaptation actions found for city {cityData_dict['locode']}"
+            )
+
         adaptationRanking = ranking_function(
             cityData_dict, adaptationActions, comparator=ml_compare
         )

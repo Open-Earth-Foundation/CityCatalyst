@@ -20,7 +20,6 @@ export const useLatestInventory = ({
       skip: !cityId || !isPublic,
     });
 
-  console.log("useLatestInventory fetch:", publicInventories);
 
   // Use the appropriate data based on mode
   const inventories = isPublic ? publicInventories : privateInventories;
@@ -36,14 +35,6 @@ export const useLatestInventory = ({
     : inventories?.[0];
   const inventoryId = latestInventory?.inventoryId;
 
-  // Debug logging
-  console.log("useLatestInventory debug:", {
-    cityId,
-    year,
-    inventories: inventories?.length,
-    inventoryId,
-    latestInventory,
-  });
 
   return {
     inventoryId,

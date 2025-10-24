@@ -21,8 +21,6 @@ export default function PublicDashboard({
   const year = routeParams?.[0]; // First param is the year
   const { t } = useTranslation(lng, "dashboard");
 
-  // Debug logging
-  console.log("PublicDashboard debug:", { cityId, year, routeParams });
 
   // Get public city data
   const {
@@ -44,7 +42,6 @@ export default function PublicDashboard({
       skip: !cityId,
     });
 
-  console.log("PublicDashboard inventories:", { publicInventories, isPublicInventoriesLoading });
 
   const latestInventory = publicInventories?.[0];
 

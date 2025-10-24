@@ -98,13 +98,13 @@ export function HiapTab({
 }) {
   const lng = i18next.language as LANGUAGES;
   const { t } = useTranslation(lng, "hiap");
-  
+
   // UI State
   const [selectedAction, setSelectedAction] = useState<HIAction | null>(null);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [selectedActions, setSelectedActions] = useState<HIAction[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-  
+
   // HIAP Query State
   const [userTriggeredHiap, setUserTriggeredHiap] = useState(false);
   const [ignoreExisting, setIgnoreExisting] = useState(false);
@@ -150,7 +150,7 @@ export function HiapTab({
   const isAdaptation = type === ACTION_TYPES.Adaptation;
   const isPending = currentData?.status === HighImpactActionRankingStatus.PENDING;
   const hasActions = actions && actions.length > 0;
-  
+
   // Combined loading state
   const isCombinedLoading = isStatusLoading || isLoading;
   // Use error from triggered query if available, otherwise from status query

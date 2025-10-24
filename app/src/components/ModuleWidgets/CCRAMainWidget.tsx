@@ -15,6 +15,7 @@ interface CCRAWidgetProps {
   lng: string;
   onVisibilityChange?: (hasContent: boolean) => void;
   isPublic?: boolean;
+  year?: number;
 }
 
 export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
@@ -22,12 +23,14 @@ export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
   lng,
   isPublic = false,
   onVisibilityChange,
+  year,
 }) => {
   const { t } = useTranslation(lng, "ccra");
 
   const { inventoryId, isLoading: isInventoryLoading } = useLatestInventory({
     cityId,
     isPublic,
+    year,
   });
 
   // Fetch CCRA dashboard data

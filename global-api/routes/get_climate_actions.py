@@ -51,7 +51,9 @@ def db_climate_actions() -> List[Dict[str, Any]]:
                     'wildfires', adaptation_effectiveness_wildfires,
                     'diseases', adaptation_effectiveness_diseases
                 ) AS adaptationeffectivenessperhazard,
-                biome
+                biome,
+                action_category,
+                action_subcategory
             FROM modelled.cap_climate_action
             ORDER BY action_id
             """
@@ -103,7 +105,9 @@ def get_climate_actions(
                 "KeyPerformanceIndicators": key_performance_indicators,
                 "PowersAndMandates": response.get("powers_and_mandates"),
                 "AdaptationEffectivenessPerHazard": response.get("adaptationeffectivenessperhazard"),
-                "biome": response.get("biome")
+                "biome": response.get("biome"),
+                "ActionCategory": response.get("action_category"),
+                "ActionSubcategory": response.get("action_subcategory"),
             }
             results.append(result)  # Adding each constructed result to the results list
 

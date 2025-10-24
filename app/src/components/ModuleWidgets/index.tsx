@@ -13,6 +13,7 @@ interface ModuleDashboardWidgetsProps {
   lng: string;
   t: TFunction;
   isPublic?: boolean;
+  year?: number;
 }
 
 const WIDGET_COUNT = 3;
@@ -22,6 +23,7 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
   lng,
   t,
   isPublic = false,
+  year,
 }) => {
   const [widgetVisibility, setWidgetVisibility] = useState<
     Record<string, boolean>
@@ -63,18 +65,21 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
         lng={lng}
         onVisibilityChange={handleGHGIVisibility}
         isPublic={isPublic}
+        year={year}
       />
       <HIAPWidget
         cityId={cityId}
         lng={lng}
         onVisibilityChange={handleHIAPVisibility}
         isPublic={isPublic}
+        year={year}
       />
       <CCRAWidget
         cityId={cityId}
         lng={lng}
         onVisibilityChange={handleCCRAVisibility}
         isPublic={isPublic}
+        year={year}
       />
     </VStack>
   );

@@ -10,6 +10,8 @@ spec:
   selector:
     matchLabels:
       app: hiap-dev
+  strategy:
+    type: Recreate # needed because of high CPU request. Rolling update will not find a second large instance
   template:
     metadata:
       labels:
@@ -29,11 +31,11 @@ spec:
               value: "8000"
           resources:
             requests:
-              memory: "512Mi"
-              cpu: "250m"
+              memory: "20Gi" # Increased to 20Gi because of OOM error
+              cpu: "10" # "500m"
             limits:
-              memory: "1Gi"
-              cpu: "500m"
+              memory: "20Gi" # Increased to 20Gi because of OOM error
+              cpu: "12" # "500m"
           livenessProbe:
             httpGet:
               path: /

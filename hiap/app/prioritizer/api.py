@@ -39,6 +39,7 @@ _default_workers = max(
     1, int(os.getenv("BULK_CONCURRENCY", multiprocessing.cpu_count()))
 )
 logger.info(f"BULK_CONCURRENCY set to {_default_workers}")
+logger.info(f"XGBoost threads set to {os.getenv('XGBOOST_NUM_THREADS', '1')}")
 _bulk_executor = None
 
 
@@ -52,27 +53,26 @@ def _get_bulk_executor():
     return _bulk_executor
 
 
-# Global actions cache loaded once per API process
-_ACTIONS_CACHE = None
-
-
-def _get_actions_cached():
+# Load actions fresh once per incoming API request.
+# This intentionally avoids process-level caching to ensure upstream updates
+# are reflected on every new request, while still reusing the list across
+# the same request (e.g., bulk subtasks).
+def _load_actions_for_request():
     """
-    Load actions from global api and cache them to prevent reloading them on each request
-    or city subtask.
+    Fetch the latest actions from the Global API for the current request.
+
+    Behavior:
+    - Called once per API request; result is reused across that request.
+    - No cross-request/process cache is kept.
+    - Upstream changes are picked up on the next incoming request.
     """
-    # Set to global variable because we assign a value in the function for global scope
-    global _ACTIONS_CACHE
-    if _ACTIONS_CACHE is None:
-        try:
-            _ACTIONS_CACHE = get_actions()
-            logger.info(
-                f"Loaded actions cache: {len(_ACTIONS_CACHE) if _ACTIONS_CACHE else 0} items"
-            )
-        except Exception as e:
-            logger.error(f"Failed to load actions cache: {str(e)}", exc_info=True)
-            _ACTIONS_CACHE = None
-    return _ACTIONS_CACHE
+    try:
+        actions = get_actions()
+        logger.info(f"Loaded actions: {len(actions) if actions else 0} items")
+        return actions
+    except Exception as e:
+        logger.error(f"Failed to load actions: {str(e)}", exc_info=True)
+        return None
 
 
 @router.post(
@@ -98,7 +98,7 @@ async def start_prioritization(request: Request, req: PrioritizerRequest):
         "locode": req.cityData.cityContextData.locode,
     }
 
-    actions_cached = _get_actions_cached()
+    actions_cached = _load_actions_for_request()
     # Fail early if actions could not be loaded
     if not actions_cached:
         logger.error(
@@ -184,7 +184,7 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
         "error": None,
     }
 
-    actions_cached = _get_actions_cached()
+    actions_cached = _load_actions_for_request()
     # Fail early if actions could not be loaded
     if not actions_cached:
         logger.error(

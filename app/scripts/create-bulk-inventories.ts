@@ -1,6 +1,15 @@
 import fs from "fs";
 
-const apiToken = "";
+const apiToken = process.env.CITY_CATALYST_API_TOKEN;
+console.log("Token", apiToken);
+if (!apiToken) {
+  console.error("Error: CITY_CATALYST_API_TOKEN is not set in environment.");
+  console.error(
+    "Run with: CITY_CATALYST_API_TOKEN=your_token_here npm run bulk:create-inventories",
+  );
+  process.exit(1);
+}
+
 const apiUrl = "https://citycatalyst.openearth.dev/api/v1/admin/bulk";
 const chunkSize = 50;
 
@@ -34,7 +43,11 @@ function makeRequest(url: string, body: any, method: string = "POST") {
 }
 
 async function createBulkInventories() {
-  const cityLocodes = fs.readFileSync("scripts/data/").toString().split("\n");
+  const cityLocodes = fs
+    .readFileSync("scripts/data/brazil_locodes.csv")
+    .toString()
+    .split("\n")
+    .map((line) => line.trim());
   console.log(`Total locodes to process: ${cityLocodes.length}`);
 
   for (let i = 0; i < cityLocodes.length; i += chunkSize) {

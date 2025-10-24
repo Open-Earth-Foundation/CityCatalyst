@@ -31,10 +31,10 @@ spec:
               value: "8000"
           resources:
             requests:
-              memory: "512Mi"
+              memory: "20Gi" # Increased to 20Gi because of OOM error
               cpu: "10" # "500m"
             limits:
-              memory: "2Gi"
+              memory: "20Gi" # Increased to 20Gi because of OOM error
               cpu: "12" # "500m"
           livenessProbe:
             httpGet:

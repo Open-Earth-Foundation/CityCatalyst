@@ -14,6 +14,7 @@ interface GHGIWidgetProps {
   lng: string;
   onVisibilityChange?: (hasContent: boolean) => void;
   isPublic?: boolean;
+  year?: number;
 }
 
 export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
@@ -21,10 +22,12 @@ export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
   lng,
   onVisibilityChange,
   isPublic = false,
+  year,
 }) => {
   const { inventoryId, isLoading: isInventoryLoading } = useLatestInventory({
     cityId,
     isPublic,
+    year,
   });
 
   // Fetch GHGI dashboard data

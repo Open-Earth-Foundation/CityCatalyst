@@ -1278,6 +1278,23 @@ export const api = createApi({
         },
         providesTags: ["Hiap"],
       }),
+      getHiapStatus: builder.query<
+        HIAPResponse,
+        {
+          inventoryId: string;
+          actionType: ACTION_TYPES;
+          lng: LANGUAGES;
+        }
+      >({
+        query: ({ inventoryId, actionType, lng }) => ({
+          url: `inventory/${inventoryId}/hiap/status?actionType=${actionType}&lng=${lng}`,
+          method: "GET",
+        }),
+        transformResponse: (response: { data: HIAPResponse }) => {
+          return response.data;
+        },
+        providesTags: ["Hiap"],
+      }),
       updateHiapSelection: builder.mutation<
         { success: boolean; updated: number },
         { inventoryId: string; selectedActionIds: string[] }
@@ -1803,5 +1820,6 @@ export const {
   useEnableProjectModuleAccessMutation,
   useDisableProjectModuleAccessMutation,
   useGetHiapJobsQuery,
+  useGetHiapStatusQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

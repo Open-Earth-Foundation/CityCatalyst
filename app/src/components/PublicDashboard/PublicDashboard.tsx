@@ -15,10 +15,14 @@ import { isFetchBaseQueryError } from "@/util/helpers";
 export default function PublicDashboard({
   params,
 }: {
-  params: Promise<{ lng: string; cityId: string }>;
+  params: Promise<{ lng: string; cityId: string; params?: string[] }>;
 }) {
-  const { lng, cityId } = use(params);
+  const { lng, cityId, params: routeParams } = use(params);
+  const year = routeParams?.[0]; // First param is the year
   const { t } = useTranslation(lng, "dashboard");
+
+  // Debug logging
+  console.log("PublicDashboard debug:", { cityId, year, routeParams });
 
   // Get public city data
   const {
@@ -39,6 +43,8 @@ export default function PublicDashboard({
     api.useGetPublicCityInventoriesQuery(cityId!, {
       skip: !cityId,
     });
+
+  console.log("PublicDashboard inventories:", { publicInventories, isPublicInventoriesLoading });
 
   const latestInventory = publicInventories?.[0];
 
@@ -83,6 +89,7 @@ export default function PublicDashboard({
               lng={lng}
               t={t}
               isPublic={true}
+              year={year ? parseInt(year) : undefined}
             />
           </Box>
         </>

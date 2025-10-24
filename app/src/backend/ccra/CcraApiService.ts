@@ -3,13 +3,15 @@ import { logger } from "@/services/logger";
 import { CCRATopRisksData, Indicator, RiskAssessment } from "@/util/types";
 
 const CCRA_API_URL =
-  (process.env.GLOBAL_API_URL || "http://ccra-service") + "/api/v1";
+  (process.env.GLOBAL_API_URL || "http://ccra-service") + "/api/v0";
 
 class CCRAApiService {
   /**
    * Fetch risk assessment data for current scenario
    */
- public static  async getRiskAssessment(actorId: string): Promise<RiskAssessment[]> {
+  public static async getRiskAssessment(
+    actorId: string,
+  ): Promise<RiskAssessment[]> {
     try {
       const response = await fetch(
         `${CCRA_API_URL}/ccra/risk_assessment/city/${actorId}/current`,
@@ -37,7 +39,9 @@ class CCRAApiService {
   /**
    * Fetch indicator details for vulnerability calculations
    */
-public static  async getIndicatorDetails(actorId: string): Promise<Indicator[]> {
+  public static async getIndicatorDetails(
+    actorId: string,
+  ): Promise<Indicator[]> {
     try {
       const response = await fetch(
         `${CCRA_API_URL}/ccra/impactchain_indicators/city/${actorId}/current`,
@@ -63,7 +67,9 @@ public static  async getIndicatorDetails(actorId: string): Promise<Indicator[]> 
   /**
    * Fetch CCRA data for top risks display
    */
-  public static async fetchCCRATopRisksData(actorId: string): Promise<CCRATopRisksData> {
+  public static async fetchCCRATopRisksData(
+    actorId: string,
+  ): Promise<CCRATopRisksData> {
     try {
       logger.info(`Fetching CCRA top risks data for actor ${actorId}`);
 
@@ -85,7 +91,6 @@ public static  async getIndicatorDetails(actorId: string): Promise<Indicator[]> 
     }
   }
 }
-
 
 // Export the main fetch function
 export const fetchCCRATopRisksData = (actorId: string) =>

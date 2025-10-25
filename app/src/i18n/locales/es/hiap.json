@@ -161,5 +161,7 @@
       "of": "de",
       "generated-on": "Generado el"
     }
-  }
+  },
+  "error-generating-actions-title": "Algo salió mal",
+  "error-generating-actions-description": "Encontramos un error al generar tus acciones climáticas. Por favor, inténtalo de nuevo."
 }

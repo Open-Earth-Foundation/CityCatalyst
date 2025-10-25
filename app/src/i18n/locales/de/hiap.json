@@ -162,5 +162,7 @@
       "of": "von",
       "generated-on": "Erstellt am"
     }
-  }
+  },
+  "error-generating-actions-title": "Etwas ist schief gelaufen",
+  "error-generating-actions-description": "Wir haben einen Fehler beim Generieren Ihrer Klimaschutzmaßnahmen festgestellt. Bitte versuchen Sie es erneut."
 }

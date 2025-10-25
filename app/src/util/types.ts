@@ -551,6 +551,7 @@ export interface FormulaInputValuesResponse {
   region: string;
 }
 export enum HighImpactActionRankingStatus {
+  TO_DO = "TO_DO",
   PENDING = "PENDING",
   SUCCESS = "SUCCESS",
   FAILURE = "FAILURE",

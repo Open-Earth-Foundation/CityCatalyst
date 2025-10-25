@@ -36,6 +36,7 @@ import {
 import { ActionDrawer } from "@/components/ActionDrawer";
 import {
   useGetHiapQuery,
+  useGetHiapStatusQuery,
   useUpdateHiapSelectionMutation,
 } from "@/services/api";
 import { logger } from "@/services/logger";
@@ -97,18 +98,33 @@ export function HiapTab({
 }) {
   const lng = i18next.language as LANGUAGES;
   const { t } = useTranslation(lng, "hiap");
-  
+
   // UI State
   const [selectedAction, setSelectedAction] = useState<HIAction | null>(null);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [selectedActions, setSelectedActions] = useState<HIAction[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-  
+
   // HIAP Query State
   const [userTriggeredHiap, setUserTriggeredHiap] = useState(false);
   const [ignoreExisting, setIgnoreExisting] = useState(false);
 
   // API Queries
+  // Status check query - runs on page load to detect existing jobs
+  const {
+    data: statusData,
+    isLoading: isStatusLoading,
+    error: statusError,
+  } = useGetHiapStatusQuery(
+    {
+      inventoryId: inventory?.inventoryId || "",
+      lng: lng,
+      actionType: type,
+    },
+    { skip: !inventory?.inventoryId },
+  );
+
+  // Main HIAP query - only runs when user triggers it
   const {
     data: hiapData,
     isLoading,
@@ -128,10 +144,17 @@ export function HiapTab({
     useUpdateHiapSelectionMutation();
 
   // Derived State
-  const actions = hiapData?.rankedActions || [];
+  // Use hiapData if available (from user-triggered query), otherwise use statusData (from page load)
+  const currentData = hiapData || statusData;
+  const actions = currentData?.rankedActions || [];
   const isAdaptation = type === ACTION_TYPES.Adaptation;
-  const isPending = hiapData?.status === HighImpactActionRankingStatus.PENDING;
+  const isPending = currentData?.status === HighImpactActionRankingStatus.PENDING;
   const hasActions = actions && actions.length > 0;
+
+  // Combined loading state
+  const isCombinedLoading = isStatusLoading || isLoading;
+  // Use error from triggered query if available, otherwise from status query
+  const currentError = error || statusError;
 
   // Event Handlers
   const handleHiapGeneration = () => {
@@ -362,7 +385,7 @@ export function HiapTab({
         actionType={type}
         onRefetch={handleHiapGeneration}
         isActionsPending={false}
-        error={error}
+        error={currentError}
       />
     );
   }
@@ -427,7 +450,7 @@ export function HiapTab({
     })();
   };
 
-  if (isLoading) {
+  if (isCombinedLoading) {
     return (
       <Box
         display="flex"
@@ -450,8 +473,8 @@ export function HiapTab({
     );
   }
 
-  // Show empty state for no actions or errors
-  if (!hasActions || error) {
+  // Show empty state for no actions, errors, or PENDING status
+  if (!hasActions || currentError) {
     return (
       <ClimateActionsEmptyState
         t={t}
@@ -460,7 +483,7 @@ export function HiapTab({
         actionType={type}
         isActionsPending={isPending}
         onRefetch={handleHiapGeneration}
-        error={error}
+        error={currentError}
       />
     );
   }

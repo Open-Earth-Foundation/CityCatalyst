@@ -39,7 +39,8 @@
     "update-brazil-emissions": "tsx scripts/update-country-emissions.ts",
     "generate:changelog": "node scripts/generate-changelog.js",
     "upgrade:ui": "npm uninstall @emotion/styled framer-motion && npm install @chakra-ui/react@latest @emotion/react@latest",
-    "i18n:update": "for lang in de es pt; do node scripts/update-translation.js $lang; done"
+    "i18n:update": "for lang in de es pt; do node scripts/update-translation.js $lang; done",
+    "bulk:create-inventories": "tsx scripts/create-bulk-inventories.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.22",

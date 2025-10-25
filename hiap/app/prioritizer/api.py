@@ -7,6 +7,7 @@ import multiprocessing
 from concurrent.futures import (
     ProcessPoolExecutor,
 )
+from typing import Any, Dict, List, Optional
 
 import logging
 from utils.logging_config import setup_logger
@@ -40,17 +41,94 @@ _default_workers = max(
 )
 logger.info(f"BULK_CONCURRENCY set to {_default_workers}")
 logger.info(f"XGBoost threads set to {os.getenv('XGBOOST_NUM_THREADS', '1')}")
-_bulk_executor = None
 
 
-def _get_bulk_executor():
-    global _bulk_executor
-    if _bulk_executor is None:
-        _bulk_executor = ProcessPoolExecutor(
-            max_workers=_default_workers,
-            mp_context=multiprocessing.get_context("spawn"),
-        )
-    return _bulk_executor
+# Track per-bulk run executors and futures so we can cancel on failure
+_bulk_runs: Dict[str, Dict[str, Any]] = {}
+
+
+def _cancel_bulk_task(task_id: str, reason: Optional[str] = None):
+    run = _bulk_runs.get(task_id)
+    if not run:
+        return
+    # Mark run as cancelled to avoid repeated shutdowns
+    run["cancelled"] = True
+    # Log once
+    try:
+        if not run.get("cancel_log_emitted"):
+            logger.warning(
+                f"Task {task_id}: Bulk cancellation triggered — pending subtasks are cancelled and running workers are being terminated. In-flight tasks may fail shortly with 'Bulk cancelled'."
+            )
+            run["cancel_log_emitted"] = True
+    except Exception:
+        pass
+    # Set top-level failed status and a single error message once
+    try:
+        ts = task_storage.get(task_id, {})
+        if ts is not None:
+            task_storage[task_id]["status"] = "failed"
+            if not task_storage[task_id].get("error"):
+                if reason:
+                    task_storage[task_id][
+                        "error"
+                    ] = f"Bulk cancelled due to subtask failure: {reason}"
+                else:
+                    task_storage[task_id][
+                        "error"
+                    ] = "Bulk cancelled: one subtask failed; remaining tasks were terminated."
+    except Exception:
+        pass
+    # Mark all non-final subtasks as failed due to bulk cancellation
+    try:
+        subtasks = task_storage.get(task_id, {}).get("subtasks", [])
+        for s in subtasks:
+            status = s.get("status")
+            if status not in ("completed", "failed"):
+                s["status"] = "failed"
+                s["error"] = "Bulk cancelled"
+        # Do not overwrite top-level error here; updater will respect if already set
+        try:
+            _update_bulk_task_status(task_id)
+        except Exception:
+            pass
+    except Exception:
+        pass
+    # Best-effort cancel pending futures
+    try:
+        for f in run.get("futures", []):
+            try:
+                f.cancel()
+            except Exception:
+                pass
+    except Exception:
+        pass
+    # Force-terminate running worker processes owned by this bulk executor
+    try:
+        ex = run.get("executor")
+        procs = getattr(ex, "_processes", {}) or {}
+        for p in list(procs.values()):
+            try:
+                if p.is_alive():
+                    p.terminate()
+            except Exception:
+                pass
+    except Exception:
+        pass
+    # Ensure the executor is shut down with cancel_futures
+    try:
+        run.get("executor").shutdown(wait=False, cancel_futures=True)
+    except Exception:
+        pass
+
+
+def _cleanup_bulk_run(task_id: str):
+    run = _bulk_runs.pop(task_id, None)
+    if not run:
+        return
+    try:
+        run.get("executor").shutdown(wait=False, cancel_futures=True)
+    except Exception:
+        pass
 
 
 # Load actions fresh once per incoming API request.
@@ -79,9 +157,24 @@ def _load_actions_for_request():
     "/v1/start_prioritization",
     response_model=StartPrioritizationResponse,
     status_code=202,
+    summary="Start single-city prioritization job",
+    description=(
+        "Enqueue a background job to compute mitigation/adaptation prioritization for a single city.\n\n"
+        "Behavior:\n"
+        "- Returns 202 with a taskId immediately; use GET endpoints to poll and fetch results.\n"
+        "- Reads latest actions from Global API once per request.\n\n"
+        "Possible errors:\n"
+        "- 500 if background thread fails to start.\n"
+        "- 202 + status=failed if actions cannot be loaded."
+    ),
+    responses={
+        202: {"description": "Task accepted (pending or running)."},
+        500: {"description": "Background thread failed to start."},
+    },
 )
 @limiter.limit("10/minute")
 async def start_prioritization(request: Request, req: PrioritizerRequest):
+    """Submit a single-city prioritization task and return its `taskId`."""
     task_uuid = str(uuid.uuid4())
 
     # Log the request
@@ -129,6 +222,11 @@ async def start_prioritization(request: Request, req: PrioritizerRequest):
         thread.daemon = True
         thread.start()
         logger.info(f"Task {task_uuid}: Started background processing for task")
+        # Reflect running state immediately for progress polling
+        try:
+            task_storage[task_uuid]["status"] = "running"
+        except Exception:
+            pass
     except Exception as e:
         logger.error(
             f"Task {task_uuid}: Failed to start background thread: {str(e)}",
@@ -150,9 +248,24 @@ async def start_prioritization(request: Request, req: PrioritizerRequest):
     "/v1/start_prioritization_bulk",
     response_model=StartPrioritizationResponse,
     status_code=202,
+    summary="Start bulk prioritization job for multiple cities",
+    description=(
+        "Enqueue a bulk job that processes multiple cities in parallel.\n\n"
+        "Behavior:\n"
+        "- Returns 202 with a taskId immediately; use GET endpoints to poll and fetch results.\n"
+        "- Creates a dedicated process pool per bulk request.\n"
+        "- If any city fails, pending and running subtasks are cancelled/terminated, and the bulk task is marked failed.\n\n"
+        "Possible errors:\n"
+        "- 202 + status=failed if actions cannot be loaded.\n"
+        "- Bulk may fail due to missing CCRA/context or internal errors; the final error contains the root-cause message."
+    ),
+    responses={
+        202: {"description": "Bulk task accepted (pending or running)."},
+    },
 )
 @limiter.limit("10/minute")
 async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBulk):
+    """Submit a bulk prioritization task and return its `taskId`."""
     main_task_id = str(uuid.uuid4())
 
     # Log the request
@@ -198,7 +311,16 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
             taskId=main_task_id, status=task_storage[main_task_id]["status"]
         )
 
-    executor = _get_bulk_executor()
+    # Use a dedicated executor per bulk run so we can cancel all work on failure
+    executor = ProcessPoolExecutor(
+        max_workers=_default_workers, mp_context=multiprocessing.get_context("spawn")
+    )
+    _bulk_runs[main_task_id] = {"executor": executor, "futures": [], "cancelled": False}
+    # Reflect running state immediately for progress polling
+    try:
+        task_storage[main_task_id]["status"] = "running"
+    except Exception:
+        pass
 
     for idx, city_data in enumerate(req.cityDataList):
         # mark subtask as running before submission
@@ -232,9 +354,19 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
             main_task_id,
             idx,
         )
+        try:
+            _bulk_runs[main_task_id]["futures"].append(future)
+        except Exception:
+            pass
 
         def _make_callback(task_id: str, sub_idx: int):
             def _callback(f):
+                # If already cancelled, skip per-future handling to avoid duplicates
+                try:
+                    if _bulk_runs.get(task_id, {}).get("cancelled"):
+                        return
+                except Exception:
+                    pass
                 try:
                     result = f.result()
                     if result.get("status") == "completed":
@@ -247,12 +379,23 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
                         task_storage[task_id]["subtasks"][sub_idx]["error"] = (
                             result.get("error")
                         )
+                        # Cancel remaining work on first failure, propagate root cause
+                        _cancel_bulk_task(task_id, result.get("error"))
                 except Exception as e:
                     task_storage[task_id]["subtasks"][sub_idx]["status"] = "failed"
                     task_storage[task_id]["subtasks"][sub_idx]["error"] = str(e)
+                    # Cancel remaining work on first failure, propagate root cause
+                    _cancel_bulk_task(task_id, str(e))
                 finally:
                     try:
                         _update_bulk_task_status(task_id)
+                    except Exception:
+                        pass
+                    # If bulk is now terminal, cleanup executor
+                    try:
+                        status = task_storage.get(task_id, {}).get("status")
+                        if status in ("completed", "failed"):
+                            _cleanup_bulk_run(task_id)
                     except Exception:
                         pass
 
@@ -268,9 +411,20 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
 @router.get(
     "/v1/check_prioritization_progress/{task_uuid}",
     response_model=CheckProgressResponse,
+    summary="Check task progress (single or bulk)",
+    description=(
+        "Check the current status of a prioritization task (single or bulk).\n\n"
+        "Statuses: pending, running, completed, failed.\n"
+        "If failed, the response includes an error message."
+    ),
+    responses={
+        200: {"description": "Progress returned (may include error if failed)."},
+        404: {"description": "Task not found."},
+    },
 )
 @limiter.limit("10/minute")
 async def check_prioritization_progress(request: Request, task_uuid: str):
+    """Return the current status of the requested task."""
     logger.info(f"Task {task_uuid}: Checking prioritization progress")
     if task_uuid not in task_storage:
         logger.warning(f"Task {task_uuid}: Task not found")
@@ -286,18 +440,36 @@ async def check_prioritization_progress(request: Request, task_uuid: str):
     return CheckProgressResponse(status=task_info["status"])
 
 
-@router.get("/v1/get_prioritization/{task_uuid}", response_model=PrioritizerResponse)
+@router.get(
+    "/v1/get_prioritization/{task_uuid}",
+    response_model=PrioritizerResponse,
+    summary="Get single-city prioritization result",
+    description=(
+        "Return the computed prioritization for a single-city task.\n\n"
+        "Errors:\n"
+        "- 404 if task not found.\n"
+        "- 409 if not completed yet.\n"
+        "- 500 if the task failed.\n"
+        "- 400 if the task is actually a bulk task."
+    ),
+    responses={
+        200: {"description": "Prioritizer response returned."},
+        400: {"description": "Task is bulk; use bulk GET endpoint."},
+        404: {"description": "Task not found."},
+        409: {"description": "Task not completed yet."},
+        500: {"description": "Task failed."},
+    },
+)
 @limiter.limit("10/minute")
 async def get_prioritization(request: Request, task_uuid: str):
+    """Return the prioritization result for a completed single-city task."""
     logger.info(f"Task {task_uuid}: Retrieving prioritization result")
     if task_uuid not in task_storage:
         logger.warning(f"Task {task_uuid}: Task not found")
         raise HTTPException(status_code=404, detail=f"Task {task_uuid} not found")
     task_info = task_storage[task_uuid]
     if task_info["status"] == "failed":
-        logger.error(
-            f"Task {task_uuid}: Task failed: {task_info.get('error')}", exc_info=True
-        )
+        logger.error(f"Task {task_uuid}: Task failed: {task_info.get('error')}")
         raise HTTPException(
             status_code=500,
             detail=f"Task {task_uuid} failed: {task_info.get('error', 'Unknown error')}",
@@ -329,19 +501,35 @@ async def get_prioritization(request: Request, task_uuid: str):
 
 
 @router.get(
-    "/v1/get_prioritization_bulk/{task_uuid}", response_model=PrioritizerResponseBulk
+    "/v1/get_prioritization_bulk/{task_uuid}",
+    response_model=PrioritizerResponseBulk,
+    summary="Get bulk prioritization results",
+    description=(
+        "Return aggregated results for a completed bulk task.\n\n"
+        "Errors:\n"
+        "- 404 if task not found.\n"
+        "- 409 if not completed yet.\n"
+        "- 500 if the bulk task failed (message contains root cause).\n"
+        "- 400 if the task is actually a single task."
+    ),
+    responses={
+        200: {"description": "Bulk prioritizer responses returned."},
+        400: {"description": "Task is single; use single GET endpoint."},
+        404: {"description": "Task not found."},
+        409: {"description": "Task not completed yet."},
+        500: {"description": "Task failed."},
+    },
 )
 @limiter.limit("10/minute")
 async def get_prioritization_bulk(request: Request, task_uuid: str):
+    """Return the aggregated results for a completed bulk task."""
     logger.info(f"Task {task_uuid}: Retrieving bulk prioritization result")
     if task_uuid not in task_storage:
         logger.warning(f"Task {task_uuid}: Task not found")
         raise HTTPException(status_code=404, detail=f"Task {task_uuid} not found")
     task_info = task_storage[task_uuid]
     if task_info["status"] == "failed":
-        logger.error(
-            f"Task {task_uuid}: Task failed: {task_info.get('error')}", exc_info=True
-        )
+        logger.error(f"Task {task_uuid}: Task failed: {task_info.get('error')}")
         raise HTTPException(
             status_code=500,
             detail=f"Task {task_uuid} failed: {task_info.get('error', 'Unknown error')}",
@@ -372,7 +560,15 @@ async def get_prioritization_bulk(request: Request, task_uuid: str):
         )
 
 
-@router.get("/v1/debug/tasks")
+@router.get(
+    "/v1/debug/tasks",
+    summary="Debug: dump task storage (non-production)",
+    description="Return the full in-memory task state for debugging.",
+    responses={
+        200: {"description": "Task storage returned."},
+        500: {"description": "Encoding error."},
+    },
+)
 @limiter.limit("30/minute")
 async def debug_list_tasks(request: Request):
     """Return the full task_storage for debugging (json-encoded)."""

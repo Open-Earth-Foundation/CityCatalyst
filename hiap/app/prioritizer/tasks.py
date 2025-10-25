@@ -601,9 +601,19 @@ def _update_bulk_task_status(main_task_id: str):
                 f"Task {main_task_id}: Bulk prioritization completed for {len(results)} cities"
             )
     elif any(s == "failed" for s in statuses):
+        # Respect pre-set top-level error (e.g., from bulk cancellation)
         task_storage[main_task_id]["status"] = "failed"
-        errors = [s["error"] for s in subtasks if s["status"] == "failed"]
-        task_storage[main_task_id]["error"] = "; ".join(errors)
+        if not task_storage[main_task_id].get("error"):
+            # Deduplicate errors while preserving order
+            seen = set()
+            dedup_errors = []
+            for s in subtasks:
+                if s.get("status") == "failed":
+                    err = s.get("error")
+                    if err and err not in seen:
+                        seen.add(err)
+                        dedup_errors.append(err)
+            task_storage[main_task_id]["error"] = "; ".join(dedup_errors)
     elif any(s == "running" for s in statuses):
         task_storage[main_task_id]["status"] = "running"
     else:

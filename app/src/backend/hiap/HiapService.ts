@@ -635,7 +635,7 @@ async function saveRankedActionsForLanguage(
   const savedSample = mergedRanked.slice(0, 3).map((a) => ({
     actionId: a.actionId,
     rank: a.rank,
-    name: a.name?.substring(0, 30),
+    name: a.name ? Array.from(a.name).slice(0, 30).join('') : undefined,
   }));
   logger.info(
     {

@@ -23,17 +23,20 @@ import {
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
 import { FiHeart } from "react-icons/fi";
+import { api } from "@/services/api";
 
 const EmissionsWidgetCard = ({
   icon,
   value,
   field,
   showProgress,
+  isLoading = false,
 }: {
   icon: any;
   value?: number | undefined;
   field: any;
   showProgress: boolean;
+  isLoading?: boolean;
 }) => {
   const finalValue = value
     ? showProgress
@@ -45,7 +48,11 @@ const EmissionsWidgetCard = ({
     <HStack align="center" marginY={"9px"} justify="space-between" key={field}>
       <Stack w="full" height={"83px"}>
         <HStack align="start">
-          {value && showProgress ? (
+          {isLoading ? (
+            <ProgressCircleRoot value={null} size="sm" mr="4px">
+              <ProgressCircleRing cap="round" css={{ "--thickness": "2px" }} />
+            </ProgressCircleRoot>
+          ) : value && showProgress ? (
             <ProgressCircleRoot
               value={Math.round(clamp(value, 0, 100))}
               size="sm"
@@ -61,7 +68,7 @@ const EmissionsWidgetCard = ({
             </>
           )}
           <Heading size="lg" lineClamp={3} maxWidth="200px">
-            {finalValue}
+            {isLoading ? "Loading..." : finalValue}
           </Heading>
         </HStack>
         <Text fontSize={"xs"} color="content.tertiary">
@@ -81,13 +88,21 @@ const EmissionsWidget = ({
   inventory?: InventoryResponse;
   population?: PopulationAttributes;
 }) => {
-  // Country total is in tonnes, inventory total is in kg
+  // Fetch country emissions data
+  const {
+    data: countryEmissions,
+    isLoading: isLoadingCountryEmissions,
+    error: countryEmissionsError,
+  } = api.useGetInventoryCountryEmissionsQuery(inventory?.inventoryId!, {
+    skip: !inventory?.inventoryId,
+  });
+
+  // Calculate percentage of country's emissions
+  // Inventory total is in kg, country emissions are in tonnes CO2eq
   const percentageOfCountrysEmissions =
-    inventory?.totalEmissions && inventory?.totalCountryEmissions
+    inventory?.totalEmissions && countryEmissions?.emissions
       ? clamp(
-          (inventory.totalEmissions /
-            (inventory.totalCountryEmissions * 1000)) *
-            100,
+          (inventory.totalEmissions / countryEmissions.emissions) * 100,
           0,
           100,
         )
@@ -112,6 +127,7 @@ const EmissionsWidget = ({
       value: inventory?.totalEmissions,
       icon: FiHeart,
       showProgress: false,
+      isLoading: false,
     },
     {
       id: "emissions-per-capita-in-year",
@@ -126,12 +142,14 @@ const EmissionsWidget = ({
       value: emissionsPerCapita,
       icon: FiHeart,
       showProgress: false,
+      isLoading: false,
     },
     {
       id: "% of country's emissions",
       field: t("%-of-country's-emissions"),
       showProgress: true,
       value: percentageOfCountrysEmissions,
+      isLoading: isLoadingCountryEmissions,
     },
   ];
   return (

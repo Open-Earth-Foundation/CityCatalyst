@@ -121,6 +121,7 @@
   "collaborators-subheading": "<bold>Collaborators</bold> on {{name}}",
   "projects": "Projects",
   "projects-description": "{{orgName}} can currently set up to {{projectCount}} projects with {{cityCount}} cities",
+  "no-project": "Unassigned Cities",
   "all-cities": "All Cities ({{count}})",
   "all-collaborators": "All Collaborators ({{count}})",
   "all-inventories": "Inventories ({{count}})",

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import {
   Box,
   Button,
@@ -28,6 +28,7 @@ import DeleteCityModal from "@/components/Modals/delete-city-modal";
 import { CityAttributes } from "@/models/City";
 import { PopoverRoot } from "@/components/ui/popover";
 import { InputGroup } from "@/components/ui/input-group";
+import { useFuzzySearch } from "@/hooks/useFuzzySearch";
 
 interface ManageCitiesProps {
   t: TFunction;
@@ -44,31 +45,14 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
   } = useDisclosure();
   const [cityData, setCityData] = useState<CityAttributes>();
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredCitiesAndYears, setFilteredCitiesAndYears] = useState<
-    typeof citiesAndYears
-  >([]);
 
-  useEffect(() => {
-    if (citiesAndYears) {
-      const result = citiesAndYears.filter((item: any) => {
-        const matchesSearchTerm =
-          !searchTerm ||
-          item.city?.name
-            .toLocaleLowerCase()
-            .includes(searchTerm.toLocaleLowerCase()) ||
-          item.city?.region
-            ?.toLocaleLowerCase()
-            .includes(searchTerm.toLocaleLowerCase()) ||
-          item.city?.country
-            ?.toLocaleLowerCase()
-            .includes(searchTerm.toLocaleLowerCase());
-        return matchesSearchTerm;
-      });
-      setFilteredCitiesAndYears(result);
-    } else {
-      setFilteredCitiesAndYears([]);
-    }
-  }, [searchTerm, citiesAndYears]);
+  // Use fuzzy search hook
+  const filteredCitiesAndYears = useFuzzySearch({
+    data: citiesAndYears || [],
+    keys: ["city.name", "city.region", "city.country"],
+    searchTerm,
+    threshold: 0.3,
+  });
 
   return (
     <>

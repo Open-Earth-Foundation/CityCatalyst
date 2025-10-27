@@ -40,7 +40,7 @@ const EmissionsWidgetCard = ({
 }) => {
   const finalValue = value
     ? showProgress
-      ? `${value.toFixed(1)}%`
+      ? `${value.toFixed(3)}%`
       : convertKgToTonnes(value)
     : "N/A";
 
@@ -102,7 +102,8 @@ const EmissionsWidget = ({
   const percentageOfCountrysEmissions =
     inventory?.totalEmissions && countryEmissions?.emissions
       ? clamp(
-          (inventory.totalEmissions / countryEmissions.emissions) * 100,
+          (inventory.totalEmissions / (countryEmissions.emissions * 1000)) *
+            100,
           0,
           100,
         )

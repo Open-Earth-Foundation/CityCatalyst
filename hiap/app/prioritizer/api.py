@@ -7,6 +7,7 @@ import multiprocessing
 from concurrent.futures import (
     ProcessPoolExecutor,
 )
+import json
 
 import logging
 from utils.logging_config import setup_logger
@@ -102,10 +103,13 @@ async def start_prioritization(request: Request, req: PrioritizerRequest):
 
     # Log the request
     logger.info(f"Task {task_uuid}: Received prioritization request")
-    logger.info(f"Task {task_uuid}: Locode: {req.cityData.cityContextData.locode}")
-    logger.info(f"Task {task_uuid}: Prioritization type: {req.prioritizationType}")
-    logger.info(f"Task {task_uuid}: Languages: {req.language}")
-    logger.info(f"Task {task_uuid}: Country code: {req.countryCode}")
+    try:
+        body_json = json.dumps(jsonable_encoder(req), ensure_ascii=False)
+        logger.info(f"Task {task_uuid}: Request body: {body_json}")
+    except Exception:
+        logger.exception(
+            f"Task {task_uuid}: Failed to serialize request body for logging"
+        )
 
     # Log the request to the task storage
     task_storage[task_uuid] = {
@@ -187,12 +191,13 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
 
     # Log the request
     logger.info(f"Task {main_task_id}: Received bulk prioritization request")
-    logger.info(
-        f"Task {main_task_id}: Locode: {req.cityDataList[0].cityContextData.locode}"
-    )
-    logger.info(f"Task {main_task_id}: Prioritization type: {req.prioritizationType}")
-    logger.info(f"Task {main_task_id}: Languages: {req.language}")
-    logger.info(f"Task {main_task_id}: Country code: {req.countryCode}")
+    try:
+        body_json = json.dumps(jsonable_encoder(req), ensure_ascii=False)
+        logger.info(f"Task {main_task_id}: Request body: {body_json}")
+    except Exception:
+        logger.exception(
+            f"Task {main_task_id}: Failed to serialize request body for logging"
+        )
 
     # Log the request to the task storage
     subtasks = []

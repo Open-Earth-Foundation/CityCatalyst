@@ -27,7 +27,7 @@ spec:
                 - -c
                 - |
                   echo "Checking HIAP jobs at $(date)"
-                  curl -f -X GET http://citycatalyst-web-service:3000/api/cron/check-hiap-jobs
+                  curl -f -L -X GET http://cc-web:3000/api/cron/check-hiap-jobs
                   EXIT_CODE=$?
                   if [ $EXIT_CODE -eq 0 ]; then
                     echo "Cron job completed successfully"

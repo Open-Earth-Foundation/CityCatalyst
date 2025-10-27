@@ -19,6 +19,7 @@ interface HIAPWidgetProps {
   lng: string;
   onVisibilityChange?: (hasContent: boolean) => void;
   isPublic?: boolean;
+  year?: number;
 }
 
 export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
@@ -26,6 +27,7 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
   lng,
   onVisibilityChange,
   isPublic = false,
+  year,
 }) => {
   const { t } = useTranslation(lng, "hiap");
   const router = useRouter();
@@ -37,6 +39,7 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
   const { inventoryId, isLoading: isInventoryLoading } = useLatestInventory({
     cityId,
     isPublic,
+    year,
   });
 
   // Fetch HIAP dashboard data

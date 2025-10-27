@@ -6,6 +6,7 @@ import logging
 from prioritizer.utils.tournament import tournament_ranking
 from prioritizer.utils.tournament_quick_select import quickselect_top_k
 from prioritizer.utils.ml_comparator import ml_compare
+from prioritizer.utils.parallel_probe import ParallelismProbe
 from utils.build_city_data import build_city_data
 from services.get_context import get_context
 from services.get_ccra import get_ccra
@@ -65,6 +66,13 @@ def _rank_actions_for_city(
             and isinstance(action["ActionType"], list)
             and "mitigation" in action["ActionType"]
         ]
+
+        # Log if no actions are passed into the ranking function
+        if len(mitigationActions) == 0:
+            logger.warning(
+                f"No mitigation actions found for city {cityData_dict['locode']}"
+            )
+
         mitigationRanking = ranking_function(
             cityData_dict,
             mitigationActions,
@@ -97,6 +105,13 @@ def _rank_actions_for_city(
             and isinstance(action["ActionType"], list)
             and "adaptation" in action["ActionType"]
         ]
+
+        # Log if no actions are passed into the ranking function
+        if len(adaptationActions) == 0:
+            logger.warning(
+                f"No adaptation actions found for city {cityData_dict['locode']}"
+            )
+
         adaptationRanking = ranking_function(
             cityData_dict, adaptationActions, comparator=ml_compare
         )
@@ -297,6 +312,15 @@ def _compute_prioritization_bulk_subtask(
         raise ValueError(f"Invalid mode: {mode}")
 
     try:
+        # Minimal instrumentation via helper (no-ops unless enabled)
+        probe = ParallelismProbe(
+            enabled=os.getenv("LOG_PARALLELISM", "0") == "1",
+            logger=logger,
+            task_id=main_task_id,
+            subtask_idx=subtask_idx,
+        )
+        probe.start()
+
         start_time = time.time()
         requestData = background_task_input["requestData"]
         prioritizationType = background_task_input["prioritizationType"]
@@ -371,6 +395,7 @@ def _compute_prioritization_bulk_subtask(
         )
 
         process_time = time.time() - start_time
+        probe.end()
         logger.info(
             f"Bulk subtask {subtask_idx} of {main_task_id} ({requestData['locode']}): Prioritization completed in {process_time:.2f}s"
         )
@@ -381,6 +406,10 @@ def _compute_prioritization_bulk_subtask(
             f"Process subtask error for locode={background_task_input.get('requestData', {}).get('locode')}: {str(e)}",
             exc_info=True,
         )
+        try:
+            probe.end(failed=True)
+        except Exception:
+            pass
         return {"status": "failed", "error": f"Error during prioritization: {str(e)}"}
 
 

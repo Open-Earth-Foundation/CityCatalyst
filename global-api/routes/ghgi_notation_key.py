@@ -5,7 +5,7 @@ from db.database import SessionLocal
 api_router = APIRouter(prefix="/api/v0/ghgi/notation_key")
 
 
-def db_query_notation_key(datasource_name, spatial_granularity, actor_id, gpc_reference_number):
+def db_query_notation_key(datasource_name, spatial_granularity, actor_id, gpc_reference_number, year):
     with SessionLocal() as session:
         query = text(
             """
@@ -29,6 +29,7 @@ def db_query_notation_key(datasource_name, spatial_granularity, actor_id, gpc_re
             AND gpc_reference_number = :gpc_reference_number
             AND datasource_name = :datasource_name
             AND spatial_granularity = :spatial_granularity
+            AND abs(datasource_year - :year) <= 3 
             """
         )
         params = {
@@ -36,18 +37,20 @@ def db_query_notation_key(datasource_name, spatial_granularity, actor_id, gpc_re
             "spatial_granularity": spatial_granularity,
             "actor_id": actor_id,
             "gpc_reference_number": gpc_reference_number,
+            "year": year,
         }
         result = session.execute(query, params).fetchone()
 
     return result
 
 
-@api_router.get("/NO/source/{datasource_name}/{spatial_granularity}/{actor_id}/{gpc_reference_number}", summary="Get notation key NO for facilities not occurring in city")
+@api_router.get("/NO/source/{datasource_name}/{spatial_granularity}/{actor_id}/{gpc_reference_number}/{year}", summary="Get notation key NO for facilities not occurring in city")
 def get_notation_key_no(
     datasource_name: str,  # The name of the data source to query.
     spatial_granularity: str,  # The level of spatial granularity (e.g., country, region, city).
     actor_id: str,  # Identifier for the actor (e.g., city locode) associated with the notation key.
     gpc_reference_number: str,  # Reference number associated with the Global Protocol for Community-Scale Greenhouse Gas Emission Inventories (GPC).
+    year: int,  # The year for which the notation key is requested.
     ):
     """
     Retrieve notation key 'NO' data for facilities that do not occur within the city boundary.
@@ -60,7 +63,7 @@ def get_notation_key_no(
     Returns a structured response indicating that the activity does not occur in the city.
     """
 
-    result = db_query_notation_key(datasource_name, spatial_granularity, actor_id, gpc_reference_number)
+    result = db_query_notation_key(datasource_name, spatial_granularity, actor_id, gpc_reference_number, year)
 
     if not result:
         raise HTTPException(status_code=404, detail="No notation key data available for the specified parameters")

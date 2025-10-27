@@ -4,6 +4,12 @@ metadata:
   name: ingress
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
+    # Block access to internal/cron endpoints
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location ~ ^/api/cron/ {
+        deny all;
+        return 403;
+      }
 spec:
   ingressClassName: nginx
   tls:

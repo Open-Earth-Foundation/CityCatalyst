@@ -1,9 +1,10 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   Box,
   Button,
   Icon,
   IconButton,
+  Input,
   List,
   PopoverBody,
   PopoverContent,
@@ -17,6 +18,7 @@ import {
   MdDomain,
   MdMoreVert,
   MdOutlineFileDownload,
+  MdSearch,
 } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
 import NextLink from "next/link";
@@ -25,6 +27,7 @@ import { api } from "@/services/api";
 import DeleteCityModal from "@/components/Modals/delete-city-modal";
 import { CityAttributes } from "@/models/City";
 import { PopoverRoot } from "@/components/ui/popover";
+import { InputGroup } from "@/components/ui/input-group";
 
 interface ManageCitiesProps {
   t: TFunction;
@@ -40,6 +43,32 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
     onClose: onCityDeleteModalClose,
   } = useDisclosure();
   const [cityData, setCityData] = useState<CityAttributes>();
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filteredCitiesAndYears, setFilteredCitiesAndYears] = useState<
+    typeof citiesAndYears
+  >([]);
+
+  useEffect(() => {
+    if (citiesAndYears) {
+      const result = citiesAndYears.filter((item: any) => {
+        const matchesSearchTerm =
+          !searchTerm ||
+          item.city?.name
+            .toLocaleLowerCase()
+            .includes(searchTerm.toLocaleLowerCase()) ||
+          item.city?.region
+            ?.toLocaleLowerCase()
+            .includes(searchTerm.toLocaleLowerCase()) ||
+          item.city?.country
+            ?.toLocaleLowerCase()
+            .includes(searchTerm.toLocaleLowerCase());
+        return matchesSearchTerm;
+      });
+      setFilteredCitiesAndYears(result);
+    } else {
+      setFilteredCitiesAndYears([]);
+    }
+  }, [searchTerm, citiesAndYears]);
 
   return (
     <>
@@ -77,6 +106,42 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
           </Button>
         </NextLink>
       </Box>
+      <Box display="flex" gap="24px">
+        <InputGroup
+          w="365px"
+          height="48px"
+          shadow="1dp"
+          alignItems="center"
+          display="flex"
+          borderRadius="4px"
+          borderWidth="1px"
+          borderStyle="solid"
+          borderColor="border.neutral"
+          startElement={
+            <Icon
+              as={MdSearch}
+              color="content.tertiary"
+              display="flex"
+              pointerEvents="none"
+              alignItems="center"
+              size="md"
+            />
+          }
+        >
+          <Input
+            type="search"
+            fontSize="body.md"
+            fontFamily="heading"
+            letterSpacing="wide"
+            color="content.tertiary"
+            placeholder={t("search-by-city-or-country")}
+            border="none"
+            h="100%"
+            onChange={(e) => setSearchTerm(e.target.value)}
+            value={searchTerm}
+          />
+        </InputGroup>
+      </Box>
       <Box maxHeight="500px" overflow="scroll">
         <Table.Root
           variant="outline"
@@ -97,7 +162,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
             </Table.Row>
           </Table.Header>
           <Table.Body fontFamily="heading">
-            {citiesAndYears?.map(({ city }) => (
+            {filteredCitiesAndYears?.map(({ city }) => (
               <Table.Row key={city.cityId}>
                 <Table.Cell>
                   <Box

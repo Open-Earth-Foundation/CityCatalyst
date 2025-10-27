@@ -789,7 +789,7 @@ async function getCityContextAndEmissionsDataImpl(
   const cityData: PrioritizerCityData = {
     cityContextData: {
       locode: city.locode!,
-      populationSize: populationSize.population!,
+      populationSize: Number(populationSize.population!),
     },
     cityEmissionsData: {
       stationaryEnergyEmissions: getSectorEmissions(
@@ -798,16 +798,16 @@ async function getCityContextAndEmissionsDataImpl(
       ),
       transportationEmissions: getSectorEmissions(
         emissionsBySector,
-      "Transportation",
-    ),
-    wasteEmissions: getSectorEmissions(emissionsBySector, "Waste"),
-    ippuEmissions: getSectorEmissions(
-      emissionsBySector,
-      "Industrial Processes and Product Uses (IPPU)",
-    ),
-    afoluEmissions: getSectorEmissions(
-      emissionsBySector,
-      "Agriculture, Forestry, and Other Land Use (AFOLU)",
+        "Transportation",
+      ),
+      wasteEmissions: getSectorEmissions(emissionsBySector, "Waste"),
+      ippuEmissions: getSectorEmissions(
+        emissionsBySector,
+        "Industrial Processes and Product Uses (IPPU)",
+      ),
+      afoluEmissions: getSectorEmissions(
+        emissionsBySector,
+        "Agriculture, Forestry, and Other Land Use (AFOLU)",
       ),
     },
   };

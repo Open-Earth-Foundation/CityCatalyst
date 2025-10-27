@@ -222,25 +222,6 @@ export function NavigationBar({
             )}
           </Box>
           <Box flex={1} />
-          {showNav && !isPublic && (
-            <>
-              {!isAuth && (
-                <Link width={9} height={9} href={dashboardPath}>
-                  <Image
-                    src="/assets/logo.svg"
-                    width={36}
-                    height={36}
-                    alt="CityCatalyst logo"
-                  />
-                </Link>
-              )}
-              <Link href={dashboardPath}>
-                <Heading size="lg" color="base.light">
-                  {t("title")}
-                </Heading>
-              </Link>
-            </>
-          )}
         </Box>
         <Box flex={1} />
         {showNav && !isPublic && (

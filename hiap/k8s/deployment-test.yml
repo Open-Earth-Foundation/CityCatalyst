@@ -31,11 +31,13 @@ spec:
               value: "8000"
           resources:
             requests:
-              memory: "512Mi"
-              cpu: "250m"
+              memory: "20Gi" # Increased to 20Gi because of OOM error
+              cpu: "10" # "500m"
+              ephemeral-storage: "10Gi" # Added to store temporary files
             limits:
-              memory: "1Gi"
-              cpu: "500m"
+              memory: "20Gi" # Increased to 20Gi because of OOM error
+              cpu: "12" # "500m"
+              ephemeral-storage: "10Gi" # Added to store temporary files
           livenessProbe:
             httpGet:
               path: /

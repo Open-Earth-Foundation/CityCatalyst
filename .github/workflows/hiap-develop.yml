@@ -34,8 +34,8 @@ jobs:
       OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY: gpt-4.1
       OPENAI_MODEL_NAME_PLAN_TRANSLATION: gpt-4.1-mini
       EXPLANATIONS_ENABLED: false
-      XGBOOST_NUM_THREADS: 1
       BULK_CONCURRENCY: 1
+      XGBOOST_NUM_THREADS: 1
 
     steps:
       - uses: actions/checkout@v4
@@ -119,7 +119,6 @@ jobs:
         run: |
           kubectl apply -f hiap/k8s/deployment-dev.yml
           kubectl apply -f hiap/k8s/service-dev.yml
-          kubectl apply -f hiap/k8s/persistent-volume-dev.yml
 
           kubectl set env deployment/hiap-dev \
             OPENAI_MODEL_NAME_EXPLANATIONS=gpt-4.1-mini \
@@ -133,8 +132,10 @@ jobs:
             LANGCHAIN_TRACING_V2=true \
             S3_BUCKET_NAME=openearth.cap \
             EXPLANATIONS_ENABLED=true \
-            XGBOOST_NUM_THREADS=1 \
             BULK_CONCURRENCY=10 \
+            XGBOOST_NUM_THREADS=1 \
+            LOG_PARALLELISM=1 \
+            LOG_LEVEL=INFO \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_HIAP_DEV}} \
             LANGCHAIN_API_KEY=${{secrets.LANGCHAIN_API_KEY}} \
             AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID_HIAP}} \

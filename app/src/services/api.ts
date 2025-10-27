@@ -1162,7 +1162,7 @@ export const api = createApi({
           projectId: string;
           year: number;
           actionType: ACTION_TYPES;
-          language?: string;
+          languages: LANGUAGES[];
         }) => ({
           url: `/admin/bulk-hiap-prioritization`,
           method: "POST",
@@ -1170,11 +1170,65 @@ export const api = createApi({
         }),
         transformResponse: (response: {
           data: {
-            startedCount: number;
-            failedCount: number;
-            results: BulkHiapPrioritizationResult[];
+            totalCities: number;
+            firstBatchSize: number;
+            message: string;
           };
         }) => response.data,
+        invalidatesTags: ["HiapJobs"],
+      }),
+      getBulkHiapBatchStatus: builder.query<
+        {
+          batches: Array<{
+            jobId: string | null;
+            status: string;
+            cityCount: number;
+            cities: Array<{
+              locode: string;
+              inventoryId: string;
+              status: string;
+              errorMessage: string | null;
+            }>;
+          }>;
+        },
+        { projectId: string; actionType: ACTION_TYPES }
+      >({
+        query: ({ projectId, actionType }) => ({
+          url: `/admin/bulk-hiap-prioritization?projectId=${projectId}&actionType=${actionType}`,
+          method: "GET",
+        }),
+        transformResponse: (response: {
+          data: {
+            batches: Array<{
+              jobId: string | null;
+              status: string;
+              cityCount: number;
+              cities: Array<{
+                locode: string;
+                inventoryId: string;
+                status: string;
+                errorMessage: string | null;
+              }>;
+            }>;
+          };
+        }) => response.data,
+        providesTags: ["HiapJobs"],
+      }),
+      retryFailedHiapBatches: builder.mutation<
+        { retriedCount: number },
+        {
+          projectId: string;
+          actionType: ACTION_TYPES;
+          jobIds?: string[];
+        }
+      >({
+        query: (data) => ({
+          url: `/admin/bulk-hiap-prioritization`,
+          method: "PATCH",
+          body: data,
+        }),
+        transformResponse: (response: { data: { retriedCount: number } }) =>
+          response.data,
         invalidatesTags: ["HiapJobs"],
       }),
       getProjectUsers: builder.query({
@@ -1271,6 +1325,23 @@ export const api = createApi({
       >({
         query: ({ inventoryId, actionType, lng, ignoreExisting = false }) => ({
           url: `inventory/${inventoryId}/hiap?actionType=${actionType}&lng=${lng}&ignoreExisting=${ignoreExisting}`,
+          method: "GET",
+        }),
+        transformResponse: (response: { data: HIAPResponse }) => {
+          return response.data;
+        },
+        providesTags: ["Hiap"],
+      }),
+      getHiapStatus: builder.query<
+        HIAPResponse,
+        {
+          inventoryId: string;
+          actionType: ACTION_TYPES;
+          lng: LANGUAGES;
+        }
+      >({
+        query: ({ inventoryId, actionType, lng }) => ({
+          url: `inventory/${inventoryId}/hiap/status?actionType=${actionType}&lng=${lng}`,
           method: "GET",
         }),
         transformResponse: (response: { data: HIAPResponse }) => {
@@ -1655,6 +1726,22 @@ export const api = createApi({
         transformResponse: (response: { data: HiapJob[] }) => response.data,
         providesTags: ["HiapJobs"],
       }),
+
+      // Climate Advisor Chat Endpoints (CA Integration)
+      createChatThread: builder.mutation({
+        query: (data: { inventory_id?: string; title?: string }) => ({
+          url: `/chat/threads`,
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: data.title,
+            inventory_id: data.inventory_id,
+          }),
+        }),
+        transformResponse: (response: { threadId: string }) => response,
+      }),
     };
   },
 });
@@ -1723,6 +1810,7 @@ export const {
   useMockDataQuery,
   useConnectToCDPMutation,
   useCreateThreadIdMutation,
+  useCreateChatThreadMutation,
   useUpdateActivityValueMutation,
   useDeleteAllActivityValuesMutation,
   useDeleteActivityValueMutation,
@@ -1752,6 +1840,8 @@ export const {
   useMarkCitiesPublicMutation,
   useMigrateHiapSelectionsMutation,
   useStartBulkHiapPrioritizationMutation,
+  useGetBulkHiapBatchStatusQuery,
+  useRetryFailedHiapBatchesMutation,
   useGetProjectUsersQuery,
   useGetUserAccessStatusQuery,
   useGetAllCitiesInSystemQuery,
@@ -1786,5 +1876,6 @@ export const {
   useEnableProjectModuleAccessMutation,
   useDisableProjectModuleAccessMutation,
   useGetHiapJobsQuery,
+  useGetHiapStatusQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

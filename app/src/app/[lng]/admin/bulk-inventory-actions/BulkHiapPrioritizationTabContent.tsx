@@ -8,21 +8,39 @@ import {
   NativeSelect,
   Table,
   VStack,
+  HStack,
 } from "@chakra-ui/react";
+import {
+  AccordionItem,
+  AccordionItemContent,
+  AccordionItemTrigger,
+  AccordionRoot,
+} from "@/components/ui/accordion";
 import { TFunction } from "i18next";
 import React, { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { logger } from "@/services/logger";
-import { BodyLarge, BodyMedium, BodySmall } from "@/components/package/Texts/Body";
+import {
+  BodyLarge,
+  BodyMedium,
+  BodySmall,
+} from "@/components/package/Texts/Body";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import {
   api,
   useGetHiapJobsQuery,
   useMigrateHiapSelectionsMutation,
   useStartBulkHiapPrioritizationMutation,
+  useGetBulkHiapBatchStatusQuery,
+  useRetryFailedHiapBatchesMutation,
 } from "@/services/api";
-import { ACTION_TYPES, HighImpactActionRankingStatus } from "@/util/types";
+import {
+  ACTION_TYPES,
+  HighImpactActionRankingStatus,
+  LANGUAGES,
+} from "@/util/types";
 
 interface BulkHiapPrioritizationTabContentProps {
   t: TFunction;
@@ -33,16 +51,18 @@ export interface BulkHiapPrioritizationInputs {
   projectId: string;
   year: number;
   actionType: ACTION_TYPES;
+  languages: LANGUAGES[];
 }
 
 const BulkHiapPrioritizationTabContent: FC<
   BulkHiapPrioritizationTabContentProps
 > = ({ t, lng }) => {
-  const { register, handleSubmit, reset, watch } =
+  const { register, handleSubmit, reset, watch, setValue } =
     useForm<BulkHiapPrioritizationInputs>({
       defaultValues: {
         year: new Date().getFullYear(),
         actionType: ACTION_TYPES.Mitigation,
+        languages: [LANGUAGES.en, LANGUAGES.pt],
       },
     });
 
@@ -50,20 +70,19 @@ const BulkHiapPrioritizationTabContent: FC<
     api.useGetUserProjectsQuery({});
   const [errorMessage, setErrorMessage] = useState("");
   const [results, setResults] = useState<{
-    startedCount: number;
-    failedCount: number;
-    results: Array<{
-      cityId: string;
-      cityName: string;
-      inventoryId: string;
-      status: HighImpactActionRankingStatus;
-      taskId?: string;
-      error?: string;
-    }>;
+    totalCities: number;
+    firstBatchSize: number;
+    message: string;
   } | null>(null);
   const selectedProjectId = watch("projectId");
   const selectedYear = watch("year");
   const selectedActionType = watch("actionType");
+  const selectedLanguages = watch("languages") || [];
+
+  // State for batch selection (for selective retry)
+  const [selectedBatchJobIds, setSelectedBatchJobIds] = useState<Set<string>>(
+    new Set(),
+  );
 
   // Check if all required fields are complete for fetching
   const isFormComplete = Boolean(
@@ -90,6 +109,23 @@ const BulkHiapPrioritizationTabContent: FC<
     },
   );
 
+  // Fetch batch status (grouped by jobId)
+  const {
+    data: batchStatusData,
+    isLoading: isLoadingBatches,
+    error: batchStatusError,
+    refetch: refetchBatchStatus,
+  } = useGetBulkHiapBatchStatusQuery(
+    {
+      projectId: selectedProjectId!,
+      actionType: selectedActionType as ACTION_TYPES,
+    },
+    {
+      skip: !selectedProjectId || !selectedActionType,
+      pollingInterval: 60000, // Refresh every minute - that's how frequently the cron runs
+    },
+  );
+
   // Handle HIAP jobs error
   if (hiapJobsError && isFormComplete) {
     logger.error(`Error fetching HIAP jobs: ${JSON.stringify(hiapJobsError)}`);
@@ -102,6 +138,10 @@ const BulkHiapPrioritizationTabContent: FC<
   // Bulk prioritization mutation hook
   const [startBulkHiapPrioritization, { isLoading: isBulkProcessing }] =
     useStartBulkHiapPrioritizationMutation();
+
+  // Retry mutation hook
+  const [retryFailedBatches, { isLoading: isRetrying }] =
+    useRetryFailedHiapBatchesMutation();
 
   const showToast = (
     title: string,
@@ -122,6 +162,16 @@ const BulkHiapPrioritizationTabContent: FC<
   };
 
   const onSubmit = async (data: BulkHiapPrioritizationInputs) => {
+    if (!data.languages || data.languages.length === 0) {
+      showToast(
+        "validation-error",
+        "please-select-at-least-one-language",
+        "error",
+        5000,
+      );
+      return;
+    }
+
     showToast(
       "starting-bulk-prioritization",
       "processing-cities",
@@ -136,33 +186,16 @@ const BulkHiapPrioritizationTabContent: FC<
         projectId: data.projectId,
         year: data.year,
         actionType: data.actionType,
-        language: lng,
+        languages: data.languages,
       }).unwrap();
       setResults(result);
 
-      if (result.startedCount === 0) {
-        // No inventories found for the specified year - this is not an error
-        showToast(
-          "no-inventories-found",
-          "no-inventories-for-year",
-          "info",
-          5000,
-        );
-      } else if (result.failedCount > 0) {
-        showToast(
-          "bulk-prioritization-partial-success",
-          "some-cities-failed",
-          "warning",
-          5000,
-        );
-      } else {
-        showToast(
-          "bulk-prioritization-complete",
-          "all-cities-started",
-          "success",
-          5000,
-        );
-      }
+      showToast(
+        "bulk-prioritization-started",
+        `First batch of ${result.firstBatchSize} cities started. Total: ${result.totalCities} cities. Cron job will process remaining batches.`,
+        "success",
+        6000,
+      );
     } catch (error) {
       logger.error(`Failed to start bulk HIAP prioritization: ${error}`);
       setErrorMessage("Network error occurred. Please try again.");
@@ -172,6 +205,99 @@ const BulkHiapPrioritizationTabContent: FC<
         "error",
         null,
       );
+    }
+  };
+
+  const handleRetryBatch = async (jobIds?: string[]) => {
+    if (!selectedProjectId) {
+      return;
+    }
+
+    showToast("retrying-batch", "resetting-failed-cities", "info", null);
+
+    try {
+      const result = await retryFailedBatches({
+        projectId: selectedProjectId,
+        actionType: selectedActionType as ACTION_TYPES,
+        jobIds: jobIds,
+      }).unwrap();
+
+      showToast(
+        "retry-successful",
+        `${result.retriedCount} cities reset for retry`,
+        "success",
+        5000,
+      );
+
+      // Clear selection after successful retry
+      setSelectedBatchJobIds(new Set());
+
+      // Refetch batch status
+      refetchBatchStatus();
+    } catch (error) {
+      logger.error(`Retry failed: ${error}`);
+      showToast("retry-failed", "retry-failed-try-again", "error", 5000);
+    }
+  };
+
+  const handleToggleBatchSelection = (jobId: string) => {
+    setSelectedBatchJobIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(jobId)) {
+        newSet.delete(jobId);
+      } else {
+        newSet.add(jobId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleSelectAllFailedBatches = () => {
+    if (!batchStatusData?.batches) return;
+
+    const failedBatchJobIds = batchStatusData.batches
+      .filter(
+        (batch) =>
+          batch.jobId &&
+          batch.cities.some(
+            (c) => c.status === HighImpactActionRankingStatus.FAILURE,
+          ),
+      )
+      .map((batch) => batch.jobId!);
+
+    setSelectedBatchJobIds(new Set(failedBatchJobIds));
+  };
+
+  const handleDeselectAll = () => {
+    setSelectedBatchJobIds(new Set());
+  };
+
+  const handleRetrySelected = async () => {
+    if (selectedBatchJobIds.size === 0) {
+      showToast(
+        "validation-error",
+        "please-select-batches-to-retry",
+        "error",
+        5000,
+      );
+      return;
+    }
+
+    await handleRetryBatch(Array.from(selectedBatchJobIds));
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case HighImpactActionRankingStatus.SUCCESS:
+        return "green.600";
+      case HighImpactActionRankingStatus.FAILURE:
+        return "red.600";
+      case HighImpactActionRankingStatus.PENDING:
+        return "blue.600";
+      case HighImpactActionRankingStatus.TO_DO:
+        return "gray.600";
+      default:
+        return "gray.500";
     }
   };
 
@@ -295,82 +421,233 @@ const BulkHiapPrioritizationTabContent: FC<
                 <NativeSelect.Indicator />
               </NativeSelect.Root>
             </FieldRoot>
+
+            <FieldRoot>
+              <LabelMedium mb="8px">{t("languages")}</LabelMedium>
+              <BodySmall color="content.tertiary" mb="12px">
+                {t("select-languages-for-climate-actions")}
+              </BodySmall>
+              <VStack align="flex-start" gap="8px">
+                {Object.values(LANGUAGES).map((lang) => (
+                  <Checkbox
+                    key={lang}
+                    checked={selectedLanguages.includes(lang)}
+                    onCheckedChange={(e) => {
+                      const checked = e.checked;
+                      const newLanguages = checked
+                        ? [...selectedLanguages, lang]
+                        : selectedLanguages.filter((l) => l !== lang);
+                      setValue("languages", newLanguages);
+                    }}
+                  >
+                    <BodyMedium>{lang}</BodyMedium>
+                  </Checkbox>
+                ))}
+              </VStack>
+            </FieldRoot>
           </Fieldset.Content>
 
           <BodyMedium color="semantic.danger">{errorMessage}</BodyMedium>
 
-          {/* HIAP Jobs Table */}
-          {isFormComplete && (
+          {/* Batch Status Accordion */}
+          {selectedProjectId && selectedActionType && (
             <Box mt="32px">
-              <Heading
-                fontSize="title.sm"
-                mb="16px"
-                fontWeight="semibold"
-                color="content.secondary"
-              >
-                {t("hiap-prioritization-jobs")}
-              </Heading>
+              <HStack justify="space-between" mb="16px">
+                <Heading
+                  fontSize="title.sm"
+                  fontWeight="semibold"
+                  color="content.secondary"
+                >
+                  {t("hiap-prioritization-batches")}
+                </Heading>
+                {batchStatusData?.batches &&
+                  batchStatusData.batches.some((b) =>
+                    b.cities.some(
+                      (c) => c.status === HighImpactActionRankingStatus.FAILURE,
+                    ),
+                  ) && (
+                    <HStack gap="8px">
+                      {selectedBatchJobIds.size > 0 && (
+                        <>
+                          <BodySmall color="content.tertiary">
+                            {selectedBatchJobIds.size} {t("selected")}
+                          </BodySmall>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={handleDeselectAll}
+                          >
+                            {t("deselect-all")}
+                          </Button>
+                          <Button
+                            size="sm"
+                            colorPalette="red"
+                            onClick={handleRetrySelected}
+                            loading={isRetrying}
+                          >
+                            {t("retry-selected")}
+                          </Button>
+                        </>
+                      )}
+                      {selectedBatchJobIds.size === 0 && (
+                        <>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={handleSelectAllFailedBatches}
+                          >
+                            {t("select-all-failed")}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            colorPalette="red"
+                            onClick={() => handleRetryBatch(undefined)}
+                            loading={isRetrying}
+                          >
+                            {t("retry-all-failed-batches")}
+                          </Button>
+                        </>
+                      )}
+                    </HStack>
+                  )}
+              </HStack>
 
-              {isLoadingJobs ? (
+              {isLoadingBatches ? (
                 <BodyMedium color="content.tertiary">
-                  {t("loading-jobs")}...
+                  {t("loading-batches")}...
                 </BodyMedium>
-              ) : hiapJobsError ? (
+              ) : batchStatusError ? (
                 <BodyMedium color="semantic.danger">
-                  {t("error-loading-jobs")}:{" "}
-                  {hiapJobsError?.toString() || t("unknown-error")}
+                  {t("error-loading-batches")}:{" "}
+                  {batchStatusError?.toString() || t("unknown-error")}
                 </BodyMedium>
-              ) : hiapJobs.length === 0 ? (
+              ) : !batchStatusData?.batches ||
+                batchStatusData.batches.length === 0 ? (
                 <BodyMedium color="content.tertiary">
-                  {t("no-hiap-jobs-found")}
+                  {t("no-batches-found")}
                 </BodyMedium>
               ) : (
-                <Box overflowX="auto">
-                  <Table.Root size="sm">
-                    <Table.Header>
-                      <Table.Row>
-                        <Table.ColumnHeader>
-                          {t("city-name")}
-                        </Table.ColumnHeader>
-                        <Table.ColumnHeader>{t("job-id")}</Table.ColumnHeader>
-                        <Table.ColumnHeader>{t("status")}</Table.ColumnHeader>
-                        <Table.ColumnHeader>
-                          {t("created-at")}
-                        </Table.ColumnHeader>
-                      </Table.Row>
-                    </Table.Header>
-                    <Table.Body>
-                      {hiapJobs.map((job) => (
-                        <Table.Row
-                          key={`${job.cityId}-${job.inventoryId}-${job.actionType}`}
-                        >
-                          <Table.Cell>
-                            <BodyMedium fontWeight="medium">
-                              {job.cityName}
-                            </BodyMedium>
-                          </Table.Cell>
-                          <Table.Cell>
-                            <BodySmall
-                              fontFamily="mono"
-                              fontSize="xs"
-                              color="content.tertiary"
-                            >
-                              {job.taskId}
-                            </BodySmall>
-                          </Table.Cell>
-                          <Table.Cell>
-                            <BodyMedium>{job.status}</BodyMedium>
-                          </Table.Cell>
-                          <Table.Cell>
-                            <BodySmall color="content.tertiary">
-                              {new Date(job.createdAt).toLocaleDateString()}
-                            </BodySmall>
-                          </Table.Cell>
-                        </Table.Row>
-                      ))}
-                    </Table.Body>
-                  </Table.Root>
-                </Box>
+                <AccordionRoot collapsible multiple defaultValue={[]}>
+                  {batchStatusData.batches.map((batch, index) => {
+                    const batchLabel = batch.jobId || "TO_DO";
+                    const hasFailures = batch.cities.some(
+                      (c) => c.status === HighImpactActionRankingStatus.FAILURE,
+                    );
+                    const isSelectable = hasFailures && batch.jobId;
+                    const isSelected = batch.jobId
+                      ? selectedBatchJobIds.has(batch.jobId)
+                      : false;
+
+                    return (
+                      <AccordionItem key={batchLabel} value={batchLabel}>
+                        <AccordionItemTrigger indicatorPlacement="end">
+                          <HStack justify="space-between" w="full">
+                            <HStack gap="12px" flex="1">
+                              {isSelectable && (
+                                <Box
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (batch.jobId) {
+                                      handleToggleBatchSelection(batch.jobId);
+                                    }
+                                  }}
+                                >
+                                  <Checkbox checked={isSelected} />
+                                </Box>
+                              )}
+                              <BodyMedium fontWeight="semibold">
+                                {t("batch")} {index + 1}
+                              </BodyMedium>
+                              <BodySmall
+                                fontFamily="mono"
+                                fontSize="xs"
+                                color="content.tertiary"
+                              >
+                                {batch.jobId || "Not started"}
+                              </BodySmall>
+                            </HStack>
+                            <HStack gap="12px">
+                              <BodyMedium
+                                fontWeight="medium"
+                                color={getStatusColor(batch.status)}
+                              >
+                                {batch.status}
+                              </BodyMedium>
+                              <BodyMedium color="content.tertiary">
+                                {batch.cityCount} {t("cities")}
+                              </BodyMedium>
+                            </HStack>
+                          </HStack>
+                        </AccordionItemTrigger>
+                        <AccordionItemContent>
+                          <Box p="16px" bg="bg.muted" borderRadius="md">
+                            {hasFailures && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                colorPalette="red"
+                                mb="16px"
+                                onClick={() =>
+                                  handleRetryBatch(
+                                    batch.jobId ? [batch.jobId] : undefined,
+                                  )
+                                }
+                                loading={isRetrying}
+                              >
+                                {t("retry-this-batch")}
+                              </Button>
+                            )}
+                            <Table.Root size="sm">
+                              <Table.Header>
+                                <Table.Row>
+                                  <Table.ColumnHeader>
+                                    {t("city-locode")}
+                                  </Table.ColumnHeader>
+                                  <Table.ColumnHeader>
+                                    {t("status")}
+                                  </Table.ColumnHeader>
+                                  <Table.ColumnHeader>
+                                    {t("message")}
+                                  </Table.ColumnHeader>
+                                </Table.Row>
+                              </Table.Header>
+                              <Table.Body>
+                                {batch.cities.map((city) => (
+                                  <Table.Row key={city.inventoryId}>
+                                    <Table.Cell>
+                                      <BodyMedium fontWeight="medium">
+                                        {city.locode}
+                                      </BodyMedium>
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                      <BodyMedium
+                                        color={getStatusColor(city.status)}
+                                      >
+                                        {city.status}
+                                      </BodyMedium>
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                      {city.errorMessage ? (
+                                        <BodySmall color="semantic.danger">
+                                          {city.errorMessage}
+                                        </BodySmall>
+                                      ) : (
+                                        <BodySmall color="content.tertiary">
+                                          -
+                                        </BodySmall>
+                                      )}
+                                    </Table.Cell>
+                                  </Table.Row>
+                                ))}
+                              </Table.Body>
+                            </Table.Root>
+                          </Box>
+                        </AccordionItemContent>
+                      </AccordionItem>
+                    );
+                  })}
+                </AccordionRoot>
               )}
             </Box>
           )}

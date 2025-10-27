@@ -5,9 +5,13 @@ import {
   LANGUAGES,
 } from "@/util/types";
 import { logger } from "@/services/logger";
-import { PrioritizerResponse, PrioritizerCityData } from "./types";
+import {
+  PrioritizerResponse,
+  PrioritizerResponseBulk,
+  PrioritizerCityData,
+} from "./types";
 import { db } from "@/models";
-import { getCityContextAndEmissionsData } from "./HiapService";
+import { hiapServiceWrapper } from "./HiapService";
 import ActionPlanService from "@/backend/hiap/ActionPlanService";
 import ActionPlanEmailService from "@/backend/ActionPlanEmailService";
 import { ActionPlan } from "@/models/ActionPlan";
@@ -20,11 +24,22 @@ export const hiapApiWrapper: {
   startPrioritization: (
     contextData: any,
     type: ACTION_TYPES,
+    langs: LANGUAGES[],
   ) => Promise<{ taskId: string }>;
   checkPrioritizationProgress: (
     taskId: string,
   ) => Promise<{ status: string; error?: string }>;
   getPrioritizationResult: (taskId: string) => Promise<PrioritizerResponse>;
+  startBulkPrioritization: (
+    citiesData: PrioritizerCityData[],
+    type: ACTION_TYPES,
+  ) => Promise<{ taskId: string }>;
+  checkBulkPrioritizationProgress: (
+    taskId: string,
+  ) => Promise<{ status: string; error?: string }>;
+  getBulkPrioritizationResult: (
+    taskId: string,
+  ) => Promise<PrioritizerResponseBulk>;
   startActionPlanJob: (params: {
     action: HIAction;
     cityId: string;
@@ -39,14 +54,23 @@ export const hiapApiWrapper: {
     outputLanguage: string,
   ) => Promise<ActionPlan>;
 } = {
-  startPrioritization: async (contextData, type) => {
-    return await startPrioritizationImpl(contextData, type);
+  startPrioritization: async (contextData, type, langs) => {
+    return await startPrioritizationImpl(contextData, type, langs);
   },
   checkPrioritizationProgress: async (taskId) => {
     return await checkPrioritizationProgressImpl(taskId);
   },
   getPrioritizationResult: async (taskId) => {
     return await getPrioritizationResultImpl(taskId);
+  },
+  startBulkPrioritization: async (citiesData, type) => {
+    return await startBulkPrioritizationImpl(citiesData, type);
+  },
+  checkBulkPrioritizationProgress: async (taskId) => {
+    return await checkBulkPrioritizationProgressImpl(taskId);
+  },
+  getBulkPrioritizationResult: async (taskId) => {
+    return await getBulkPrioritizationResultImpl(taskId);
   },
   startActionPlanJob: async (params) => {
     return await startActionPlanJobImpl(params);
@@ -64,13 +88,14 @@ export const hiapApiWrapper: {
 const startPrioritizationImpl = async (
   contextData: any,
   type: ACTION_TYPES,
+  langs: LANGUAGES[],
 ): Promise<{ taskId: string }> => {
-  logger.info(contextData, "Sending request to prioritizer");
+  logger.info({ contextData, langs }, "Sending request to prioritizer");
 
   const body = {
     cityData: contextData,
     prioritizationType: type,
-    language: Object.values(LANGUAGES),
+    language: langs,
   };
   const response = await fetch(
     `${HIAP_API_URL}/prioritizer/v1/start_prioritization`,
@@ -161,7 +186,7 @@ const startActionPlanJobImpl = async ({
   try {
     // Get city context and emissions data
     const { cityContextData, cityEmissionsData } =
-      await getCityContextAndEmissionsData(inventoryId);
+      await hiapServiceWrapper.getCityContextAndEmissionsData(inventoryId);
 
     const payload = {
       cityData: {
@@ -353,6 +378,156 @@ const startActionPlanJobImpl = async ({
     logger.error({ error }, "Error generating plan");
     throw new Error(`Failed to generate plan: ${error}`);
   }
+};
+
+/**
+ * Start prioritization for multiple cities in bulk using HIAP bulk endpoint
+ * All cities are processed in a single batch request
+ * Returns a single taskId for the entire bulk job
+ */
+const startBulkPrioritizationImpl = async (
+  citiesData: PrioritizerCityData[],
+  type: ACTION_TYPES,
+): Promise<{ taskId: string }> => {
+  logger.info(
+    { cityCount: citiesData.length, type },
+    "Starting bulk prioritization",
+  );
+
+  const body = {
+    cityDataList: citiesData,
+    countryCode: "BR", // TODO: Make this dynamic based on the cities
+    prioritizationType:
+      type === ACTION_TYPES.Mitigation
+        ? "mitigation"
+        : type === ACTION_TYPES.Adaptation
+          ? "adaptation"
+          : "both",
+    language: [LANGUAGES.en, LANGUAGES.pt],
+  };
+
+  const response = await fetch(
+    `${HIAP_API_URL}/prioritizer/v1/start_prioritization_bulk`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    },
+  );
+
+  logger.info(
+    { status: response.status, statusText: response.statusText },
+    "startBulkPrioritization response status",
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    logger.error(
+      { status: response.status, error: errorText },
+      "Failed to start bulk prioritization job",
+    );
+    throw new Error(
+      `Failed to start bulk prioritization job: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  const json = await response.json();
+  logger.info("startBulkPrioritization response received successfully");
+
+  const { taskId } = json;
+  if (!taskId) throw new Error("No taskId returned from HIAP bulk API");
+
+  logger.info(
+    { taskId, cityCount: citiesData.length },
+    "Bulk prioritization started successfully",
+  );
+
+  return { taskId };
+};
+
+/**
+ * Check progress for a bulk prioritization job
+ * Uses the HIAP bulk progress endpoint
+ */
+const checkBulkPrioritizationProgressImpl = async (
+  taskId: string,
+): Promise<{ status: string; error?: string }> => {
+  const url = `${HIAP_API_URL}/prioritizer/v1/check_prioritization_progress/${taskId}`;
+  logger.info({ url, taskId }, "checkBulkPrioritizationProgress called");
+
+  const response = await fetch(url);
+
+  logger.info(
+    { status: response.status, statusText: response.statusText },
+    "checkBulkPrioritizationProgress response status",
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    logger.error(
+      { status: response.status, error: errorText, taskId },
+      "Failed to check bulk job status",
+    );
+    throw new Error("Failed to check bulk job status");
+  }
+
+  const json = await response.json();
+  logger.info("checkBulkPrioritizationProgress response received successfully");
+
+  return json;
+};
+
+/**
+ * Get prioritization results for a completed bulk job
+ * Uses the HIAP bulk get_prioritization_bulk endpoint
+ */
+const getBulkPrioritizationResultImpl = async (
+  taskId: string,
+): Promise<PrioritizerResponseBulk> => {
+  const url = `${HIAP_API_URL}/prioritizer/v1/get_prioritization_bulk/${taskId}`;
+  logger.info({ url, taskId }, "getBulkPrioritizationResult called");
+
+  const response = await fetch(url);
+
+  logger.info(
+    { status: response.status, statusText: response.statusText },
+    "getBulkPrioritizationResult response status",
+  );
+
+  if (!response.ok) {
+    // Handle specific error cases
+    if (response.status === 409) {
+      throw new Error(
+        "Job result not ready yet (409 Conflict). This may indicate the job is still being finalized.",
+      );
+    }
+    if (response.status === 404) {
+      throw new Error(
+        "Job result not found (404). The job may have expired or the taskId is invalid.",
+      );
+    }
+
+    // Try to get error details from response
+    let errorDetail = "";
+    try {
+      const errorJson = await response.json();
+      errorDetail = errorJson.detail || errorJson.message || "";
+    } catch {
+      // Ignore JSON parse errors
+    }
+
+    throw new Error(
+      `Failed to fetch bulk job result: ${response.status} ${response.statusText}${errorDetail ? ` - ${errorDetail}` : ""}`,
+    );
+  }
+
+  const json = await response.json();
+  logger.info(
+    { cityCount: json.prioritizerResponseList?.length || 0 },
+    "getBulkPrioritizationResult response received successfully",
+  );
+
+  return json;
 };
 
 const translateActionPlanImpl = async (

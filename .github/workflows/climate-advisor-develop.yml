@@ -1,14 +1,11 @@
 # Climate Advisor deployment workflow
 name: Push Climate Advisor to latest and deploy to EKS
-
 permissions:
   contents: read
   packages: write
   checks: write
-
 on:
   workflow_dispatch:
-
   push:
     paths:
       - climate-advisor/service/**
@@ -20,24 +17,20 @@ on:
       - k8s/climate-advisor-db-configmap.yml
       - .github/workflows/climate-advisor-develop.yml
     branches: ["develop"]
-
 jobs:
   # Skipping tests no tests available for climate advisor yet
-
   pushToGHCR:
     # needs: runTests  # Commented out since we're skipping tests
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v4
-
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Pushing Climate Advisor to GHCR
         env:
           VERSION: ${{ github.sha }}
@@ -47,7 +40,6 @@ jobs:
           docker tag $IMAGE:$VERSION $IMAGE:latest
           docker push $IMAGE:$VERSION
           docker push $IMAGE:latest
-
   deployToEKS:
     needs: pushToGHCR
     runs-on: ubuntu-latest
@@ -58,13 +50,10 @@ jobs:
       EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
     steps:
       - uses: actions/checkout@v4
-
       - name: Creating kubeconfig file
         run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
-
       - name: Testing connection to EKS
         run: kubectl get pods -n default
-
       - name: Deploying service
         run: |
           kubectl create -f k8s/climate-advisor-migrate.yml -n default
@@ -74,8 +63,11 @@ jobs:
           kubectl set env deployment/climate-advisor-deploy \
             OPENROUTER_API_KEY=${{secrets.OPENROUTER_API_KEY}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_CLIMATE_ADVISOR}} \
+            CC_API_KEY=${{secrets.CC_SERVICE_API_KEY}} \
             CA_LOG_LEVEL=info \
             CA_CORS_ORIGINS="*" \
             CC_BASE_URL=https://citycatalyst.openearth.dev \
+            LANGSMITH_API_KEY=${{secrets.LANGSMITH_API_KEY}} \
+            LANGSMITH_WORKSPACE_ID=${{secrets.LANGSMITH_WORKSPACE_ID}} \
             -n default
           kubectl rollout restart deployment climate-advisor-deploy -n default

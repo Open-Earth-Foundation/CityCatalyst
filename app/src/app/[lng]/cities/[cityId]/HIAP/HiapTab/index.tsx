@@ -36,12 +36,14 @@ import {
 import { ActionDrawer } from "@/components/ActionDrawer";
 import {
   useGetHiapQuery,
+  useGetHiapStatusQuery,
   useUpdateHiapSelectionMutation,
 } from "@/services/api";
 import { logger } from "@/services/logger";
 import { HighImpactActionRankingStatus } from "@/util/types";
 import ClimateActionsEmptyState from "./ClimateActionsEmptyState";
 import ActionPlanSection from "./ActionPlanSection";
+import ProgressLoader from "@/components/ProgressLoader";
 import { DownloadIcon } from "@/components/icons";
 import { MdCheckBox } from "react-icons/md";
 import { TitleLarge } from "@/components/package/Texts/Title";
@@ -87,18 +89,42 @@ export function HiapTab({
   type,
   inventory,
   cityData,
+  onTriggerHiap,
 }: {
   type: ACTION_TYPES;
   inventory: InventoryResponse | null;
   cityData: CityWithProjectDataResponse;
+  onTriggerHiap?: () => void;
 }) {
   const lng = i18next.language as LANGUAGES;
   const { t } = useTranslation(lng, "hiap");
+
+  // UI State
   const [selectedAction, setSelectedAction] = useState<HIAction | null>(null);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [selectedActions, setSelectedActions] = useState<HIAction[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
 
+  // HIAP Query State
+  const [userTriggeredHiap, setUserTriggeredHiap] = useState(false);
+  const [ignoreExisting, setIgnoreExisting] = useState(false);
+
+  // API Queries
+  // Status check query - runs on page load to detect existing jobs
+  const {
+    data: statusData,
+    isLoading: isStatusLoading,
+    error: statusError,
+  } = useGetHiapStatusQuery(
+    {
+      inventoryId: inventory?.inventoryId || "",
+      lng: lng,
+      actionType: type,
+    },
+    { skip: !inventory?.inventoryId },
+  );
+
+  // Main HIAP query - only runs when user triggers it
   const {
     data: hiapData,
     isLoading,
@@ -109,17 +135,38 @@ export function HiapTab({
       inventoryId: inventory?.inventoryId || "",
       lng: lng,
       actionType: type,
+      ignoreExisting: ignoreExisting,
     },
-    { skip: !inventory?.inventoryId },
+    { skip: !inventory?.inventoryId || !userTriggeredHiap },
   );
 
   const [updateHiapSelection, { isLoading: isUpdatingSelection }] =
     useUpdateHiapSelectionMutation();
 
-  const actions = hiapData?.rankedActions || [];
+  // Derived State
+  // Use hiapData if available (from user-triggered query), otherwise use statusData (from page load)
+  const currentData = hiapData || statusData;
+  const actions = currentData?.rankedActions || [];
   const isAdaptation = type === ACTION_TYPES.Adaptation;
+  const isPending = currentData?.status === HighImpactActionRankingStatus.PENDING;
+  const hasActions = actions && actions.length > 0;
 
-  const isPending = hiapData?.status === HighImpactActionRankingStatus.PENDING;
+  // Combined loading state
+  const isCombinedLoading = isStatusLoading || isLoading;
+  // Use error from triggered query if available, otherwise from status query
+  const currentError = error || statusError;
+
+  // Event Handlers
+  const handleHiapGeneration = () => {
+    if (error) {
+      // Retry with ignoreExisting flag
+      setIgnoreExisting(true);
+      refetch();
+    } else {
+      // Initial trigger
+      setUserTriggeredHiap(true);
+    }
+  };
 
   // Initialize selection state from database
   useEffect(() => {
@@ -336,10 +383,9 @@ export function HiapTab({
         inventory={null}
         hasActions={false}
         actionType={type}
-        onRefetch={() => {
-          // This will be handled by the parent component
-        }}
+        onRefetch={handleHiapGeneration}
         isActionsPending={false}
+        error={currentError}
       />
     );
   }
@@ -404,22 +450,31 @@ export function HiapTab({
     })();
   };
 
-  if (isLoading) {
-    return <Box p={4}>{t("loading")}</Box>;
-  }
-
-  if (error) {
+  if (isCombinedLoading) {
     return (
-      <Box p={4} color="red.500">
-        {t("error-loading-data")}
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        py="48px"
+        h="400px"
+      >
+        <ProgressLoader />
+        <Text
+          fontSize="body.lg"
+          color="content.secondary"
+          fontWeight="normal"
+          mt="24px"
+        >
+          {t("loading")}
+        </Text>
       </Box>
     );
   }
 
-  // Empty state - check if we have actions
-  const hasActions = actions && actions.length > 0;
-
-  if (!hasActions) {
+  // Show empty state for no actions, errors, or PENDING status
+  if (!hasActions || currentError) {
     return (
       <ClimateActionsEmptyState
         t={t}
@@ -427,10 +482,8 @@ export function HiapTab({
         hasActions={hasActions}
         actionType={type}
         isActionsPending={isPending}
-        onRefetch={() => {
-          // TODO: Implement refetch logic
-          refetch();
-        }}
+        onRefetch={handleHiapGeneration}
+        error={currentError}
       />
     );
   }

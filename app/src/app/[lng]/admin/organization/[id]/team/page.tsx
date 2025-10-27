@@ -426,7 +426,7 @@ const AdminOrganizationTeamPage = (props: {
                 textAlign="center"
                 pt={8}
               >
-                No matching cities found
+                {t("no-matching-cities")}
               </Text>
             )}
           </Box>

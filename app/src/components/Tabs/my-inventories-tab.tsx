@@ -241,7 +241,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                       <AccordionItem key={projectId} value={projectId}>
                         <AccordionItemTrigger>
                           <Text fontWeight="semibold" fontSize="label.lg">
-                            {projectNameMap[projectId]}
+                            {projectNameMap[projectId] ?? t("no-project")}
                           </Text>
                         </AccordionItemTrigger>
                         <AccordionItemContent>

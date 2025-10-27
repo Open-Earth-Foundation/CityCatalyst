@@ -123,6 +123,7 @@
   "cities": "Villes",
   "save-changes": "Enregistrer les modifications",
   "no-cities": "Aucune ville",
+  "no-matching-cities": "Aucune ville correspondante trouvée",
   "no-cities-available": "Aucune ville disponible",
   "organization-status-updated": "Le statut de l'organisation a été mis à jour avec succès.",
   "error-occurred": "Une erreur s'est produite, veuillez réessayer",

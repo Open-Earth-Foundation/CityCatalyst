@@ -54,6 +54,7 @@ import { PermissionService } from "@/backend/permissions/PermissionService";
 import { CountryEmissionsService } from "@/backend/CountryEmissionsService";
 import { db } from "@/models";
 import { logger } from "@/services/logger";
+import { Inventory } from "@/models/Inventory";
 
 export const GET = apiHandler(
   async (_req: NextRequest, { session, params }) => {
@@ -66,11 +67,16 @@ export const GET = apiHandler(
     }
 
     // Check permission to access inventory and get the resource
-    const { resource: inventory } = await PermissionService.canAccessInventory(session, inventoryId);
+    const { resource } = await PermissionService.canAccessInventory(
+      session,
+      inventoryId,
+    );
+
+    const inventory = resource as Inventory;
 
     // Load inventory with city information if not already included
-    const inventoryWithCity = inventory.city 
-      ? inventory 
+    const inventoryWithCity = inventory
+      ? inventory
       : await db.models.Inventory.findByPk(inventoryId, {
           include: [
             {
@@ -109,7 +115,10 @@ export const GET = apiHandler(
     }
 
     // Check if inventory already has country emissions data
-    if (inventoryWithCity.totalCountryEmissions && inventoryWithCity.totalCountryEmissions > 0) {
+    if (
+      inventoryWithCity.totalCountryEmissions &&
+      inventoryWithCity.totalCountryEmissions > 0
+    ) {
       return NextResponse.json({
         data: {
           emissions: Number(inventoryWithCity.totalCountryEmissions),
@@ -139,22 +148,22 @@ export const GET = apiHandler(
         totalCountryEmissions: countryEmissions.emissions,
       });
       logger.info(
-        { 
-          inventoryId: inventoryWithCity.inventoryId, 
-          countryCode, 
+        {
+          inventoryId: inventoryWithCity.inventoryId,
+          countryCode,
           emissions: countryEmissions.emissions,
-          yearUsed: countryEmissions.yearUsed 
+          yearUsed: countryEmissions.yearUsed,
         },
-        "Cached country emissions data for inventory"
+        "Cached country emissions data for inventory",
       );
     } catch (error) {
       logger.warn(
-        { 
-          error, 
+        {
+          error,
           inventoryId: inventoryWithCity.inventoryId,
-          countryCode 
+          countryCode,
         },
-        "Failed to cache country emissions data"
+        "Failed to cache country emissions data",
       );
       // Continue execution - we can still return the fetched data
     }

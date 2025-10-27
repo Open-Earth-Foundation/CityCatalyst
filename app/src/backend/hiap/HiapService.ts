@@ -334,6 +334,31 @@ export const checkBulkActionRankingJob = async (
       "Found rankings and responses for bulk job",
     );
 
+    // Log summary of what HIAP returned for each city
+    const responsesSummary = bulkResponse.prioritizerResponseList.map(
+      (response) => {
+        const mitActionIds = response.rankedActionsMitigation
+          .slice(0, 5)
+          .map((a) => `${a.actionId}:${a.rank}`)
+          .join(",");
+        const adpActionIds = response.rankedActionsAdaptation
+          .slice(0, 5)
+          .map((a) => `${a.actionId}:${a.rank}`)
+          .join(",");
+        return {
+          locode: response.metadata.locode,
+          mitCount: response.rankedActionsMitigation.length,
+          adpCount: response.rankedActionsAdaptation.length,
+          topMitActions: mitActionIds || "none",
+          topAdpActions: adpActionIds || "none",
+        };
+      },
+    );
+    logger.info(
+      { jobId, responses: responsesSummary },
+      "🔍 HIAP API Response Summary (first 5 actions per city)",
+    );
+
     // Create a map of locode -> PrioritizerResponse for easy lookup
     const responseByLocode = new Map(
       bulkResponse.prioritizerResponseList.map((response) => [
@@ -368,6 +393,18 @@ export const checkBulkActionRankingJob = async (
           });
           continue;
         }
+
+        // Log what we got from the response map
+        logger.info(
+          {
+            rankingId: ranking.id,
+            locode: ranking.locode,
+            foundInMap: !!cityResponse,
+            mitActionsCount: cityResponse.rankedActionsMitigation.length,
+            adpActionsCount: cityResponse.rankedActionsAdaptation.length,
+          },
+          "🔍 Retrieved city response from map",
+        );
 
         const rankedActions = [
           ...cityResponse.rankedActionsMitigation.map((a) => ({
@@ -593,8 +630,22 @@ async function saveRankedActionsForLanguage(
   );
 
   const savedCount = results.filter(Boolean).length;
+
+  // Log sample of what was saved
+  const savedSample = mergedRanked.slice(0, 3).map((a) => ({
+    actionId: a.actionId,
+    rank: a.rank,
+    name: a.name?.substring(0, 30),
+  }));
   logger.info(
-    `[saveRankedActionsForLanguage] Saved ${savedCount} out of ${mergedRanked.length} ranked actions for lang ${lang}.`,
+    {
+      rankingId: ranking.id,
+      lang,
+      savedCount,
+      totalMerged: mergedRanked.length,
+      savedSample,
+    },
+    `[saveRankedActionsForLanguage] Saved ranked actions to DB`,
   );
 
   // Return the newly created actions
@@ -689,7 +740,7 @@ function getSectorEmissions(
   sectorName: string,
 ): number | null {
   const value = emissionsBySector.find(
-    (s) => s.sectorName === sectorName,
+    (s) => s.sector_name === sectorName,
   )?.co2eq;
   const num = Number(value);
   return isNaN(num) ? null : num;
@@ -722,6 +773,19 @@ async function getCityContextAndEmissionsDataImpl(
     inventory.year!,
   );
   const emissionsBySector = await getTotalEmissionsBySector([inventoryId]);
+
+  // Log what we got from getTotalEmissionsBySector
+  logger.info(
+    {
+      inventoryId,
+      locode: city.locode,
+      emissionsBySectorCount: emissionsBySector.length,
+      sectorNames: emissionsBySector.map((s) => s.sector_name),
+      sampleSector: emissionsBySector[0],
+    },
+    "🔍 Emissions data retrieved from getTotalEmissionsBySector",
+  );
+
   const cityData: PrioritizerCityData = {
     cityContextData: {
       locode: city.locode!,
@@ -734,16 +798,30 @@ async function getCityContextAndEmissionsDataImpl(
       ),
       transportationEmissions: getSectorEmissions(
         emissionsBySector,
-        "Transportation",
-      ),
-      wasteEmissions: getSectorEmissions(emissionsBySector, "Waste"),
-      ippuEmissions: getSectorEmissions(emissionsBySector, "IPPU"),
-      afoluEmissions: getSectorEmissions(
-        emissionsBySector,
-        "Agriculture, Forestry, and Other Land Use (AFOLU)",
+      "Transportation",
+    ),
+    wasteEmissions: getSectorEmissions(emissionsBySector, "Waste"),
+    ippuEmissions: getSectorEmissions(
+      emissionsBySector,
+      "Industrial Processes and Product Uses (IPPU)",
+    ),
+    afoluEmissions: getSectorEmissions(
+      emissionsBySector,
+      "Agriculture, Forestry, and Other Land Use (AFOLU)",
       ),
     },
   };
+
+  // Log what we're about to send
+  logger.info(
+    {
+      inventoryId,
+      locode: city.locode,
+      cityEmissionsData: cityData.cityEmissionsData,
+    },
+    "🔍 Final city emissions data prepared for HIAP",
+  );
+
   return cityData;
 }
 

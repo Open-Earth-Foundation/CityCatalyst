@@ -1375,6 +1375,112 @@ describe("Bulk HIAP Prioritization API", () => {
         where: { id: ranking.id },
       });
     });
+
+    it("ensures each city gets unique rankings (no double-merging bug)", async () => {
+      // Create rankings for 3 different cities
+      const rankings = await Promise.all(
+        inventoryIds.map(async (inventoryId, idx) =>
+          db.models.HighImpactActionRanking.create({
+            id: randomUUID(),
+            inventoryId,
+            locode: `XX-TST-${idx + 1}`,
+            type: ACTION_TYPES.Mitigation,
+            langs: [LANGUAGES.en],
+            jobId: "test-unique-rankings-job",
+            status: HighImpactActionRankingStatus.PENDING,
+          }),
+        ),
+      );
+
+      // Mock HIAP API to return DIFFERENT rankings for each city
+      jest
+        .spyOn(HiapApiService.hiapApiWrapper, "getBulkPrioritizationResult")
+        .mockResolvedValue({
+          prioritizerResponseList: [
+            {
+              metadata: {
+                locode: "XX-TST-1",
+                rankedDate: new Date().toISOString(),
+              },
+              rankedActionsMitigation: [
+                { actionId: "test-action-1", rank: 1, explanation: {} },
+                { actionId: "test-action-2", rank: 2, explanation: {} },
+              ],
+              rankedActionsAdaptation: [],
+            },
+            {
+              metadata: {
+                locode: "XX-TST-2",
+                rankedDate: new Date().toISOString(),
+              },
+              rankedActionsMitigation: [
+                { actionId: "test-action-2", rank: 1, explanation: {} }, // Different order!
+                { actionId: "test-action-1", rank: 2, explanation: {} },
+              ],
+              rankedActionsAdaptation: [],
+            },
+            {
+              metadata: {
+                locode: "XX-TST-3",
+                rankedDate: new Date().toISOString(),
+              },
+              rankedActionsMitigation: [
+                { actionId: "test-action-1", rank: 1, explanation: {} },
+              ],
+              rankedActionsAdaptation: [],
+            },
+          ],
+        } as any);
+
+      // Process the job
+      await checkBulkActionRankingJob(
+        "test-unique-rankings-job",
+        LANGUAGES.en,
+        ACTION_TYPES.Mitigation,
+      );
+
+      // Verify each city has UNIQUE rankings
+      for (let idx = 0; idx < rankings.length; idx++) {
+        const ranking = rankings[idx];
+        const rankedActions = await db.models.HighImpactActionRanked.findAll({
+          where: { hiaRankingId: ranking.id, lang: LANGUAGES.en },
+          order: [["rank", "ASC"]],
+        });
+
+        // City 1: test-action-1 (rank 1), test-action-2 (rank 2)
+        if (idx === 0) {
+          expect(rankedActions.length).toBe(2);
+          expect(rankedActions[0].actionId).toBe("test-action-1");
+          expect(rankedActions[0].rank).toBe(1);
+          expect(rankedActions[1].actionId).toBe("test-action-2");
+          expect(rankedActions[1].rank).toBe(2);
+        }
+
+        // City 2: test-action-2 (rank 1), test-action-1 (rank 2) - DIFFERENT ORDER
+        if (idx === 1) {
+          expect(rankedActions.length).toBe(2);
+          expect(rankedActions[0].actionId).toBe("test-action-2");
+          expect(rankedActions[0].rank).toBe(1);
+          expect(rankedActions[1].actionId).toBe("test-action-1");
+          expect(rankedActions[1].rank).toBe(2);
+        }
+
+        // City 3: Only test-action-1 - DIFFERENT COUNT
+        if (idx === 2) {
+          expect(rankedActions.length).toBe(1);
+          expect(rankedActions[0].actionId).toBe("test-action-1");
+          expect(rankedActions[0].rank).toBe(1);
+        }
+      }
+
+      // Cleanup
+      await db.models.HighImpactActionRanked.destroy({
+        where: { hiaRankingId: rankings.map((r) => r.id) },
+      });
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: rankings.map((r) => r.id) },
+      });
+    });
   });
 
   describe("Error handling", () => {
@@ -1623,6 +1729,116 @@ describe("Bulk HIAP Prioritization API", () => {
       await db.models.HighImpactActionRanking.destroy({
         where: { id: [pendingRanking.id, todoRanking.id] },
       });
+    });
+  });
+
+  describe("Emissions Data Extraction", () => {
+    it("correctly extracts emissions using snake_case property names", async () => {
+      // This test verifies the fix for the bug where emissions were always null
+      // due to looking for 'sectorName' instead of 'sector_name'
+
+      // Mock getCityContextAndEmissionsData to return realistic data
+      const mockCityData = {
+        cityContextData: {
+          locode: "XX-TST-1",
+          populationSize: 100000,
+        },
+        cityEmissionsData: {
+          stationaryEnergyEmissions: 5000,
+          transportationEmissions: 3000,
+          wasteEmissions: 1000,
+          ippuEmissions: null,
+          afoluEmissions: null,
+        },
+      };
+
+      jest
+        .spyOn(hiapServiceWrapper, "getCityContextAndEmissionsData")
+        .mockResolvedValue(mockCityData);
+
+      // Call the function
+      const cityData = await hiapServiceWrapper.getCityContextAndEmissionsData(
+        inventoryIds[0],
+      );
+
+      // Verify emissions were correctly extracted with non-null values
+      expect(cityData.cityEmissionsData.stationaryEnergyEmissions).toBe(5000);
+      expect(cityData.cityEmissionsData.transportationEmissions).toBe(3000);
+      expect(cityData.cityEmissionsData.wasteEmissions).toBe(1000);
+      expect(cityData.cityEmissionsData.ippuEmissions).toBeNull();
+      expect(cityData.cityEmissionsData.afoluEmissions).toBeNull();
+
+      // Verify population was extracted
+      expect(cityData.cityContextData.populationSize).toBe(100000);
+    });
+
+    it("returns null for sectors with no data", async () => {
+      // Mock with only partial emissions data (common scenario)
+      const mockCityData = {
+        cityContextData: {
+          locode: "XX-TST-1",
+          populationSize: 50000,
+        },
+        cityEmissionsData: {
+          stationaryEnergyEmissions: 2940,
+          transportationEmissions: null,
+          wasteEmissions: null,
+          ippuEmissions: null,
+          afoluEmissions: null,
+        },
+      };
+
+      jest
+        .spyOn(hiapServiceWrapper, "getCityContextAndEmissionsData")
+        .mockResolvedValue(mockCityData);
+
+      const cityData = await hiapServiceWrapper.getCityContextAndEmissionsData(
+        inventoryIds[0],
+      );
+
+      // Should have stationary energy
+      expect(cityData.cityEmissionsData.stationaryEnergyEmissions).toBe(2940);
+
+      // All others should be null (no data)
+      expect(cityData.cityEmissionsData.transportationEmissions).toBeNull();
+      expect(cityData.cityEmissionsData.wasteEmissions).toBeNull();
+      expect(cityData.cityEmissionsData.ippuEmissions).toBeNull();
+      expect(cityData.cityEmissionsData.afoluEmissions).toBeNull();
+    });
+
+    it("handles empty emissions data gracefully", async () => {
+      // Mock city with no emissions data at all
+      const mockCityData = {
+        cityContextData: {
+          locode: "XX-TST-1",
+          populationSize: 75000,
+        },
+        cityEmissionsData: {
+          stationaryEnergyEmissions: null,
+          transportationEmissions: null,
+          wasteEmissions: null,
+          ippuEmissions: null,
+          afoluEmissions: null,
+        },
+      };
+
+      jest
+        .spyOn(hiapServiceWrapper, "getCityContextAndEmissionsData")
+        .mockResolvedValue(mockCityData);
+
+      const cityData = await hiapServiceWrapper.getCityContextAndEmissionsData(
+        inventoryIds[0],
+      );
+
+      // All emissions should be null
+      expect(cityData.cityEmissionsData.stationaryEnergyEmissions).toBeNull();
+      expect(cityData.cityEmissionsData.transportationEmissions).toBeNull();
+      expect(cityData.cityEmissionsData.wasteEmissions).toBeNull();
+      expect(cityData.cityEmissionsData.ippuEmissions).toBeNull();
+      expect(cityData.cityEmissionsData.afoluEmissions).toBeNull();
+
+      // Population should still be set
+      expect(cityData.cityContextData.populationSize).toBe(75000);
     });
   });
 });

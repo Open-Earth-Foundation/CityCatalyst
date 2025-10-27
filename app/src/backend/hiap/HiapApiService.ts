@@ -394,6 +394,18 @@ const startBulkPrioritizationImpl = async (
     "Starting bulk prioritization",
   );
 
+  // Log summary of city data being sent to HIAP
+  const citiesSummary = citiesData.map((city) => ({
+    locode: city.cityContextData.locode,
+    population: city.cityContextData.populationSize,
+    stationaryEnergy: city.cityEmissionsData.stationaryEnergyEmissions,
+    transportation: city.cityEmissionsData.transportationEmissions,
+    waste: city.cityEmissionsData.wasteEmissions,
+    ippu: city.cityEmissionsData.ippuEmissions,
+    afolu: city.cityEmissionsData.afoluEmissions,
+  }));
+  logger.info({ cities: citiesSummary }, "🔍 City data being sent to HIAP API");
+
   const body = {
     cityDataList: citiesData,
     countryCode: "BR", // TODO: Make this dynamic based on the cities

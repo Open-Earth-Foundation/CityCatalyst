@@ -8,7 +8,8 @@ from uuid import UUID
 from sqlalchemy import DateTime, Enum, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy import JSON
+from sqlalchemy.dialects.postgresql import UUID
 
 from ...db import Base
 
@@ -28,7 +29,7 @@ class Message(Base):
     )
     user_id: Mapped[str] = mapped_column(String(255), nullable=False)
     text: Mapped[str] = mapped_column(Text, nullable=False)
-    tools_used: Mapped[Optional[Any]] = mapped_column(JSONB, nullable=True)
+    tools_used: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
     role: Mapped[MessageRole] = mapped_column(
         Enum(MessageRole, name="message_role", values_callable=lambda x: [e.value for e in x]),
         nullable=False,

@@ -371,7 +371,10 @@ _settings: Settings | None = None
 
 def _parse_cors_origins(env_value: str | None) -> List[str]:
     if not env_value:
-        return ["http://localhost:8000"]  # dev default
+        return [
+            "http://localhost:8000",
+            "http://localhost:3000",
+        ]  # dev defaults for local frontends
     return [origin.strip() for origin in env_value.split(",") if origin.strip()]
 
 

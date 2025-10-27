@@ -52,6 +52,7 @@ async def _stream_with_agents_sdk(
     session_factory: Optional[async_sessionmaker[AsyncSession]],
     history_warning: Optional[str] = None,
     cc_access_token: Optional[str] = None,
+    inventory_id: Optional[str] = None,
 ) -> AsyncIterator[bytes]:
     """Stream AI responses using OpenAI Agents SDK with OpenRouter.
     
@@ -133,6 +134,7 @@ async def _stream_with_agents_sdk(
             cc_access_token=cc_access_token,
             cc_thread_id=thread_id,
             cc_user_id=user_id,
+            inventory_id=inventory_id,
         )
         agent = await agent_service.create_agent(
             model=model_override
@@ -434,6 +436,7 @@ async def post_message(
     history_warning: Optional[str] = None
     assistant_session_factory: Optional[async_sessionmaker[AsyncSession]] = None
     resolved_user_id: str = payload.user_id
+    resolved_inventory_id: Optional[str] = payload.inventory_id
     cc_access_token: Optional[str] = None  # Token from CityCatalyst for inventory queries
 
     if payload.thread_id:
@@ -510,6 +513,8 @@ async def post_message(
         else:
             resolved_thread_id = thread.thread_id
             resolved_user_id = thread.user_id
+            if thread.inventory_id:
+                resolved_inventory_id = thread.inventory_id
             
             logger.info(
                 "Thread loaded successfully - thread_id=%s, user_id=%s, inventory_id=%s",
@@ -602,5 +607,6 @@ async def post_message(
         session_factory=assistant_session_factory,
         history_warning=history_warning,
         cc_access_token=cc_access_token,
+        inventory_id=resolved_inventory_id,
     )
     return StreamingResponse(stream, media_type="text/event-stream", headers=headers)

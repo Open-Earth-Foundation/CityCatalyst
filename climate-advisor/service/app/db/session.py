@@ -91,11 +91,10 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
         except Exception:
             await session.rollback()
             raise
-        finally:
-            await session.close()
 
 async def get_session_optional() -> AsyncGenerator[AsyncSession | None, None]:
-    """Return a session when available, otherwise yield None without raising."""
+    """Return a session when available, otherwise yield None without raising.
+    """
     try:
         session_factory = get_session_factory()
     except Exception:
@@ -110,8 +109,8 @@ async def get_session_optional() -> AsyncGenerator[AsyncSession | None, None]:
             except Exception:
                 await session.rollback()
                 raise
-            finally:
-                await session.close()
     except Exception:
+        # Fallback: yield None for genuine database errors
         logger.exception("Database session unavailable")
         yield None
+        return

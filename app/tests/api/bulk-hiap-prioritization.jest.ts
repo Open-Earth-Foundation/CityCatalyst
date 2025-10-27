@@ -24,6 +24,7 @@ import { Op } from "sequelize";
 import { BulkHiapPrioritizationService } from "@/backend/hiap/BulkHiapPrioritizationService";
 import {
   checkBulkActionRankingJob,
+  checkSingleActionRankingJob,
   hiapServiceWrapper,
 } from "@/backend/hiap/HiapService";
 import { NextRequest } from "next/server";
@@ -1728,6 +1729,66 @@ describe("Bulk HIAP Prioritization API", () => {
       // Cleanup
       await db.models.HighImpactActionRanking.destroy({
         where: { id: [pendingRanking.id, todoRanking.id] },
+      });
+    });
+  });
+
+  describe("Single vs Bulk Job Handling", () => {
+    it("uses single job API endpoint when isBulk is false", async () => {
+      const ranking = await db.models.HighImpactActionRanking.create({
+        id: randomUUID(),
+        inventoryId: inventoryIds[0],
+        locode: "XX-TST-1",
+        type: ACTION_TYPES.Mitigation,
+        langs: [LANGUAGES.en],
+        jobId: "test-single-job-id",
+        status: HighImpactActionRankingStatus.PENDING,
+        isBulk: false, // Single job
+      });
+
+      // Mock single job API endpoint
+      const checkProgressSpy = jest
+        .spyOn(HiapApiService.hiapApiWrapper, "checkPrioritizationProgress")
+        .mockResolvedValue({ status: "completed" });
+
+      const getResultSpy = jest
+        .spyOn(HiapApiService.hiapApiWrapper, "getPrioritizationResult")
+        .mockResolvedValue({
+          metadata: {
+            locode: "XX-TST-1",
+            rankedDate: new Date().toISOString(),
+          },
+          rankedActionsMitigation: [
+            { actionId: "test-action-1", rank: 1, explanation: {} },
+          ],
+          rankedActionsAdaptation: [],
+        } as any);
+
+      // Process the job
+      await checkSingleActionRankingJob(
+        "test-single-job-id",
+        LANGUAGES.en,
+        ACTION_TYPES.Mitigation,
+      );
+
+      // Verify single job endpoints were called (not bulk endpoints)
+      expect(checkProgressSpy).toHaveBeenCalledWith("test-single-job-id");
+      expect(getResultSpy).toHaveBeenCalledWith("test-single-job-id");
+
+      // Verify ranking was updated to SUCCESS
+      const updatedRanking = await db.models.HighImpactActionRanking.findByPk(
+        ranking.id,
+      );
+      expect(updatedRanking?.status).toBe(
+        HighImpactActionRankingStatus.SUCCESS,
+      );
+
+      // Cleanup
+      await db.models.HighImpactActionRanked.destroy({
+        where: { hiaRankingId: ranking.id },
+      });
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: ranking.id },
       });
     });
   });

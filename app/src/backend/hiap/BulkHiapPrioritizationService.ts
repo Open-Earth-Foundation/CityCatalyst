@@ -486,6 +486,7 @@ export class BulkHiapPrioritizationService {
         type: actionType,
         jobId: null, // Null means not yet processed, will be updated when batch is sent to AI API
         status: HighImpactActionRankingStatus.TO_DO, // Not sent to AI API yet
+        isBulk: true, // Bulk prioritization
       }));
 
     if (newRankings.length > 0) {

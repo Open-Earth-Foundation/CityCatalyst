@@ -13,6 +13,7 @@ export interface HighImpactActionRankingAttributes {
   jobId?: string | null;
   status?: HighImpactActionRankingStatus;
   errorMessage?: string | null;
+  isBulk?: boolean;
 }
 
 export type HighImpactActionRankingPk = "id";
@@ -33,6 +34,7 @@ export class HighImpactActionRanking
   jobId?: string | null;
   status?: HighImpactActionRankingStatus;
   errorMessage?: string | null;
+  isBulk?: boolean;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof HighImpactActionRanking {
     return HighImpactActionRanking.init(
@@ -79,6 +81,12 @@ export class HighImpactActionRanking
           type: DataTypes.TEXT,
           allowNull: true,
           field: "error_message",
+        },
+        isBulk: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
+          field: "is_bulk",
         },
       },
       {

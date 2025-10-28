@@ -13,7 +13,11 @@ import { HighImpactActionRankingStatus } from "@/util/types";
 import { hiapApiWrapper } from "./HiapApiService";
 import { InventoryService } from "../InventoryService";
 import GlobalAPIService from "../GlobalAPIService";
-import { PrioritizerResponse, PrioritizerCityData } from "./types";
+import {
+  PrioritizerResponse,
+  PrioritizerCityData,
+  PrioritizerRankedAction,
+} from "./types";
 import uniqBy from "lodash/uniqBy";
 import EmailService from "../EmailService";
 import { User } from "@/models/User";
@@ -355,11 +359,11 @@ async function processBulkJobResults(
     (response) => {
       const mitActionIds = response.rankedActionsMitigation
         .slice(0, 5)
-        .map((a: any) => `${a.actionId}:${a.rank}`)
+        .map((a: PrioritizerRankedAction) => `${a.actionId}:${a.rank}`)
         .join(",");
       const adpActionIds = response.rankedActionsAdaptation
         .slice(0, 5)
-        .map((a: any) => `${a.actionId}:${a.rank}`)
+        .map((a: PrioritizerRankedAction) => `${a.actionId}:${a.rank}`)
         .join(",");
       return {
         locode: response.metadata.locode,
@@ -423,14 +427,18 @@ async function processBulkJobResults(
       );
 
       const rankedActions = [
-        ...cityResponse.rankedActionsMitigation.map((a: any) => ({
-          ...a,
-          type: ACTION_TYPES.Mitigation,
-        })),
-        ...cityResponse.rankedActionsAdaptation.map((a: any) => ({
-          ...a,
-          type: ACTION_TYPES.Adaptation,
-        })),
+        ...cityResponse.rankedActionsMitigation.map(
+          (a: PrioritizerRankedAction) => ({
+            ...a,
+            type: ACTION_TYPES.Mitigation,
+          }),
+        ),
+        ...cityResponse.rankedActionsAdaptation.map(
+          (a: PrioritizerRankedAction) => ({
+            ...a,
+            type: ACTION_TYPES.Adaptation,
+          }),
+        ),
       ];
 
       // Save ranked actions for ALL languages in ranking.langs

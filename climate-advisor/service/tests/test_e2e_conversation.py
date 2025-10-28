@@ -105,6 +105,59 @@ class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
         # May fail if thread doesn't exist
         self.assertIn(response.status_code, [200, 404])
 
+    def test_message_without_thread_id_creates_thread_auto(self) -> None:
+        """Test message creation without thread_id automatically creates a thread."""
+        response = self.client.post(
+            "/v1/messages",
+            json={
+                "user_id": "user-1",
+                "content": "Test message without thread"
+            }
+        )
+        
+        # Should succeed with auto-created thread
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        
+        # Verify response contains thread_id
+        self.assertIn("thread_id", data)
+        self.assertIsNotNone(data["thread_id"])
+        
+        # Verify thread_id is a valid UUID string
+        try:
+            from uuid import UUID
+            UUID(data["thread_id"])
+        except (ValueError, TypeError):
+            self.fail(f"thread_id '{data['thread_id']}' is not a valid UUID")
+
+    def test_subsequent_messages_use_created_thread(self) -> None:
+        """Test that subsequent messages can use the auto-created thread."""
+        # First message without thread_id
+        response1 = self.client.post(
+            "/v1/messages",
+            json={
+                "user_id": "user-1",
+                "content": "First message"
+            }
+        )
+        
+        self.assertEqual(response1.status_code, 200)
+        thread_id = response1.json()["thread_id"]
+        
+        # Second message with the same thread_id
+        response2 = self.client.post(
+            "/v1/messages",
+            json={
+                "user_id": "user-1",
+                "thread_id": thread_id,
+                "content": "Second message in same thread"
+            }
+        )
+        
+        # Should succeed
+        self.assertEqual(response2.status_code, 200)
+        self.assertEqual(response2.json()["thread_id"], thread_id)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

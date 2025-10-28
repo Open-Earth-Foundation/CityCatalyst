@@ -287,10 +287,11 @@ async def _stream_with_agents_sdk(
 
                     yield format_sse(
                         {
-                            "tool": invocation.get("name", "unknown_tool"),
-                            "args": invocation.get("arguments"),
+                            "name": invocation.get("name", "unknown_tool"),
+                            "status": invocation.get("status", "executing"),
+                            "arguments": invocation.get("arguments"),
                         },
-                        event="tool_call",
+                        event="tool_result",
                     ).encode("utf-8")
 
                 elif event_name == "tool_output" and run_item is not None:
@@ -467,6 +468,7 @@ async def post_message(
     cc_access_token: Optional[str] = None  # Token from CityCatalyst for inventory queries
     thread: Optional[Thread] = None
     resolved_thread_id: Union[str, UUID] | None = None
+    thread_created = False
 
     if payload.thread_id:
         # Validate thread_id is a valid UUID format before proceeding
@@ -516,6 +518,7 @@ async def post_message(
             try:
                 thread = await thread_service.create_thread(thread_payload)
                 resolved_thread_id = thread.thread_id
+                thread_created = True
                 logger.info(
                     "Created new thread for user_id=%s (thread_id=%s)",
                     payload.user_id,
@@ -526,7 +529,13 @@ async def post_message(
                 raise HTTPException(status_code=400, detail=str(exc))
             except Exception as exc:
                 logger.exception("Failed to create thread for user_id=%s", payload.user_id, exc_info=exc)
-                thread = None
+                raise HTTPException(
+                    status_code=503,
+                    detail={
+                        "message": "Unable to create conversation thread",
+                        "hint": "Please retry your request. If the problem persists, contact support.",
+                    },
+                )
         else:
             try:
                 thread = await thread_service.get_thread_for_user(resolved_thread_id, payload.user_id)
@@ -541,6 +550,7 @@ async def post_message(
                         payload.user_id,
                         resolved_thread_id,
                     )
+                    thread_created = True
                     resolved_thread_id = thread.thread_id
                 except ValueError as exc:
                     logger.error(
@@ -556,7 +566,13 @@ async def post_message(
                         resolved_thread_id,
                         exc_info=exc,
                     )
-                    thread = None
+                    raise HTTPException(
+                        status_code=503,
+                        detail={
+                            "message": "Unable to create conversation thread with provided ID",
+                            "hint": "Please retry your request. If the problem persists, contact support.",
+                        },
+                    )
             except HTTPException:
                 raise
             except ValueError as e:
@@ -590,6 +606,27 @@ async def post_message(
                 logging.exception("Failed to load thread before streaming message")
                 history_warning = history_warning or base_warning
                 thread = None
+
+        if thread_created and thread is not None:
+            try:
+                await session.commit()
+                await session.refresh(thread)
+            except Exception:
+                try:
+                    await session.rollback()
+                except Exception:
+                    logging.exception("Failed to rollback session after thread persistence failure")
+                logger.exception(
+                    "Failed to persist newly created thread for user_id=%s",
+                    payload.user_id,
+                )
+                raise HTTPException(
+                    status_code=500,
+                    detail={
+                        "message": "Failed to persist conversation thread",
+                        "hint": "Please retry your request.",
+                    },
+                )
 
         if thread is not None:
             resolved_thread_id = thread.thread_id
@@ -678,14 +715,24 @@ async def post_message(
     if assistant_session_factory is None and history_warning is None:
         history_warning = base_warning
 
+    if resolved_thread_id is None:
+        logger.error(
+            "Unable to resolve thread ID for request_id=%s",
+            get_request_id(),
+        )
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "message": "Unable to initialize conversation thread",
+                "hint": "Please retry your request once the service is available.",
+            },
+        )
+
     headers = {
         "Cache-Control": "no-cache",
         "Connection": "keep-alive",
         "X-Accel-Buffering": "no",
     }
-
-    # Ensure thread_id is set before streaming
-    assert resolved_thread_id is not None, "resolved_thread_id must be set before streaming"
 
     stream = _stream_with_agents_sdk(
         payload,

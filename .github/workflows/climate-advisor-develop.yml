@@ -73,6 +73,7 @@ jobs:
                  tests/test_thread_service_uuid.py \
                  tests/test_user_identity.py \
                  tests/test_document_embedding_model.py \
+                 --junit-xml=test-results-unit.xml \
                  -v --tb=short --color=yes
 
       - name: Run TIER 1 critical tests
@@ -81,6 +82,7 @@ jobs:
           pytest tests/test_api_routes.py \
                  tests/test_agent_service.py \
                  tests/test_e2e_conversation.py \
+                 --junit-xml=test-results-tier1.xml \
                  -v --tb=short --color=yes
 
       - name: Generate test coverage report
@@ -106,7 +108,7 @@ jobs:
         uses: dorny/test-reporter@v1
         with:
           name: Climate Advisor Test Results
-          path: "*.xml"
+          path: "climate-advisor/service/test-results-*.xml"
           reporter: "java-junit"
           fail-on-error: false
 

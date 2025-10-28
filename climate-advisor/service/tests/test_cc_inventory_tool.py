@@ -98,7 +98,8 @@ class CCInventoryToolTests(unittest.IsolatedAsyncioTestCase):
             thread_id="thread-xyz",
         )
 
-        get_inventory_tool = tools[1]  # get_inventory is the second tool
+        get_inventory_tool = next((t for t in tools if getattr(t, "name", None) == "get_inventory"), None)
+        self.assertIsNotNone(get_inventory_tool, "get_inventory tool not found in tools list")
         ctx = ToolContext(
             context=None,
             tool_call_id="test-call",

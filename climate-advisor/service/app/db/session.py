@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import AsyncGenerator
+from typing import Any, AsyncGenerator
 import logging
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -37,7 +37,7 @@ def _create_engine():
 
     database_url = _ensure_asyncpg_url(settings.database_url)
 
-    engine_kwargs = {
+    engine_kwargs: dict[str, Any] = {
         "echo": settings.database_echo,
         "pool_pre_ping": True,
     }
@@ -51,7 +51,7 @@ def _create_engine():
 
     try:
         engine = create_async_engine(database_url, **engine_kwargs)
-    except ArgumentError:
+    except (ArgumentError, TypeError):
         # Some dialects (e.g. SQLite) do not support pooling args.
         engine = create_async_engine(
             database_url,
@@ -91,11 +91,10 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
         except Exception:
             await session.rollback()
             raise
-        finally:
-            await session.close()
 
 async def get_session_optional() -> AsyncGenerator[AsyncSession | None, None]:
-    """Return a session when available, otherwise yield None without raising."""
+    """Return a session when available, otherwise yield None without raising.
+    """
     try:
         session_factory = get_session_factory()
     except Exception:
@@ -103,15 +102,17 @@ async def get_session_optional() -> AsyncGenerator[AsyncSession | None, None]:
         yield None
         return
 
+    session_provided = False
     try:
         async with session_factory() as session:
+            session_provided = True
             try:
                 yield session
             except Exception:
                 await session.rollback()
                 raise
-            finally:
-                await session.close()
     except Exception:
+        if session_provided:
+            raise
         logger.exception("Database session unavailable")
         yield None

@@ -62,6 +62,8 @@ class CityCatalystClient:
         self.base_url = base_url or settings.cc_base_url
         self.api_key = api_key or settings.cc_api_key
         self.timeout = timeout
+        # Datasource aggregation pulls several upstream feeds and often exceeds the default 30s.
+        self.datasource_timeout = max(self.timeout, 90)
         self._client: Optional[httpx.AsyncClient] = None
         
         if not self.base_url:
@@ -181,6 +183,7 @@ class CityCatalystClient:
         user_id: str,
         thread_id: str,
         auto_refresh: bool = True,
+        request_timeout: Optional[float] = None,
     ) -> httpx.Response:
         """Make GET request with automatic token refresh on 401.
         
@@ -209,9 +212,15 @@ class CityCatalystClient:
         try:
             client = await self._get_client()
             headers = self._auth_headers(token)
+            timeout_value = request_timeout or self.timeout
             
-            logger.debug("Making GET request to %s", url)
-            response = await client.get(url, headers=headers, follow_redirects=True)
+            logger.debug("Making GET request to %s (timeout=%s)", url, timeout_value)
+            response = await client.get(
+                url,
+                headers=headers,
+                follow_redirects=True,
+                timeout=timeout_value,
+            )
             
             # Handle 401 Unauthorized - try to refresh
             if response.status_code == 401 and auto_refresh:
@@ -219,7 +228,12 @@ class CityCatalystClient:
                 try:
                     token, _ = await self.refresh_token(user_id)
                     headers = self._auth_headers(token)
-                    response = await client.get(url, headers=headers, follow_redirects=True)
+                    response = await client.get(
+                        url,
+                        headers=headers,
+                        follow_redirects=True,
+                        timeout=timeout_value,
+                    )
                 except TokenRefreshError as e:
                     logger.error("Failed to refresh token: %s", e)
                     raise CityCatalystClientError(f"Authentication failed: {e}") from e
@@ -239,6 +253,7 @@ class CityCatalystClient:
         thread_id: str,
         json_data: Optional[Dict[str, Any]] = None,
         auto_refresh: bool = True,
+        request_timeout: Optional[float] = None,
     ) -> httpx.Response:
         """Make POST request with automatic token refresh on 401.
         
@@ -267,9 +282,16 @@ class CityCatalystClient:
         try:
             client = await self._get_client()
             headers = self._auth_headers(token)
+            timeout_value = request_timeout or self.timeout
             
-            logger.debug("Making POST request to %s", url)
-            response = await client.post(url, headers=headers, json=json_data)
+            logger.debug("Making POST request to %s (timeout=%s)", url, timeout_value)
+            response = await client.post(
+                url,
+                headers=headers,
+                json=json_data,
+                follow_redirects=True,
+                timeout=timeout_value,
+            )
             
             # Handle 401 Unauthorized - try to refresh
             if response.status_code == 401 and auto_refresh:
@@ -277,7 +299,13 @@ class CityCatalystClient:
                 try:
                     token, _ = await self.refresh_token(user_id)
                     headers = self._auth_headers(token)
-                    response = await client.post(url, headers=headers, json=json_data)
+                    response = await client.post(
+                        url,
+                        headers=headers,
+                        json=json_data,
+                        follow_redirects=True,
+                        timeout=timeout_value,
+                    )
                 except TokenRefreshError as e:
                     logger.error("Failed to refresh token: %s", e)
                     raise CityCatalystClientError(f"Authentication failed: {e}") from e
@@ -459,12 +487,13 @@ class CityCatalystClient:
         if not self.base_url:
             raise CityCatalystClientError("CC_BASE_URL not configured")
 
-        url = f"{self.base_url}/api/v1/datasource/{inventory_id}"
+        url = f"{self.base_url}/api/v1/datasource/{inventory_id}/"
         response = await self.get_with_auto_refresh(
             url=url,
             token=token,
             user_id=user_id,
             thread_id="",  # Not used in new refresh method
+            request_timeout=self.datasource_timeout,
         )
 
         if not response.is_success:

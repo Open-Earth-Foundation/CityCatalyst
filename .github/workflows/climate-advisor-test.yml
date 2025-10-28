@@ -1,38 +1,34 @@
-# Climate Advisor deployment workflow
-name: Push Climate Advisor to latest and deploy to EKS
+name: Test Climate Advisor and Deploy to EKS Test
 permissions:
   contents: read
   packages: write
   checks: write
+
 on:
   workflow_dispatch:
-  pull_request:
-    branches: ["develop"]
-    paths:
-      - climate-advisor/service/**
-      - climate-advisor/llm_config.yaml
-      - climate-advisor/prompts/**
-      - k8s/climate-advisor-deploy.yml
-      - k8s/climate-advisor-migrate.yml
-      - k8s/climate-advisor-service.yml
-      - k8s/climate-advisor-db-configmap.yml
-      - .github/workflows/climate-advisor-develop.yml
   push:
+    branches:
+      - main
     paths:
-      - climate-advisor/service/**
-      - climate-advisor/llm_config.yaml
-      - climate-advisor/prompts/**
-      - k8s/climate-advisor-deploy.yml
-      - k8s/climate-advisor-migrate.yml
-      - k8s/climate-advisor-service.yml
-      - k8s/climate-advisor-db-configmap.yml
-      - .github/workflows/climate-advisor-develop.yml
-    branches: ["develop"]
+      - "climate-advisor/service/**"
+      - "climate-advisor/llm_config.yaml"
+      - "climate-advisor/prompts/**"
+      - "climate-advisor/vector_db/**"
+      - "k8s/climate-advisor-deploy.yml"
+      - "k8s/climate-advisor-migrate.yml"
+      - "k8s/climate-advisor-service.yml"
+      - "k8s/climate-advisor-db-configmap.yml"
+      - ".github/workflows/climate-advisor-test.yml"
+
+concurrency:
+  group: climate-advisor-test
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY_TEST }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY_CLIMATE_ADVISOR }}
       CA_LOG_LEVEL: debug
       CA_CORS_ORIGINS: "*"
@@ -110,47 +106,68 @@ jobs:
           reporter: "java-junit"
           fail-on-error: false
 
-  pushToGHCR:
+  build:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/main'
+    env:
+      REGISTRY: ghcr.io
+      REPOSITORY: open-earth-foundation/citycatalyst-climate-advisor
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Log in to the Container registry
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Pushing Climate Advisor to GHCR
-        env:
-          VERSION: ${{ github.sha }}
-          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor
-        run: |
-          docker build -t $IMAGE:$VERSION -f climate-advisor/service/Dockerfile climate-advisor
-          docker tag $IMAGE:$VERSION $IMAGE:latest
-          docker push $IMAGE:$VERSION
-          docker push $IMAGE:latest
-  deployToEKS:
-    needs: pushToGHCR
+
+      - name: Get Git commit hash
+        id: vars
+        run: echo "commit_hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: climate-advisor
+          file: climate-advisor/service/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ steps.vars.outputs.commit_hash }}
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:test
+
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/main'
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
       EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Creating kubeconfig file
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create kubeconfig file
         run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
-      - name: Testing connection to EKS
+
+      - name: Test connection to EKS
         run: kubectl get pods -n default
-      - name: Deploying service
+
+      - name: Deploy test service
         run: |
-          kubectl create -f k8s/climate-advisor-migrate.yml -n default
+          kubectl apply -f k8s/climate-advisor-migrate.yml -n default
           kubectl apply -f k8s/climate-advisor-db-configmap.yml -n default
           kubectl apply -f k8s/climate-advisor-service.yml -n default
           kubectl apply -f k8s/climate-advisor-deploy.yml -n default
+
           kubectl set env deployment/climate-advisor-deploy \
             OPENROUTER_API_KEY=${{secrets.OPENROUTER_API_KEY}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_CLIMATE_ADVISOR}} \
@@ -161,4 +178,6 @@ jobs:
             LANGSMITH_API_KEY=${{secrets.LANGSMITH_API_KEY}} \
             LANGSMITH_WORKSPACE_ID=${{secrets.LANGSMITH_WORKSPACE_ID}} \
             -n default
+
           kubectl rollout restart deployment climate-advisor-deploy -n default
+          kubectl rollout status deployment/climate-advisor-deploy -n default --timeout=300s

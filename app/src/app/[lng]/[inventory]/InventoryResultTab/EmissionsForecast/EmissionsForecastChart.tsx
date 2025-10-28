@@ -64,7 +64,7 @@ export const EmissionsForecastChart = ({
 
   return (
     <>
-      <Box width="100%" height="70vh">
+      <Box width="100%" height="500px">
         <ResponsiveLine
           data={data}
           margin={{ top: 50, right: 30, bottom: 50, left: 80 }}

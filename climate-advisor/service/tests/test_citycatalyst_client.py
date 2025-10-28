@@ -78,7 +78,7 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
     async def test_get_inventory_success(self) -> None:
         with patch(
             "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None),
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
         ), patch("app.services.citycatalyst_client.is_token_expired", return_value=False):
             client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
             stub = _StubAsyncClient(
@@ -107,7 +107,7 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
     async def test_get_inventory_not_found_raises(self) -> None:
         with patch(
             "app.services.citycatalyst_client.get_settings",
-            return_value=SimpleNamespace(cc_base_url=None),
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
         ), patch("app.services.citycatalyst_client.is_token_expired", return_value=False):
             client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
             stub = _StubAsyncClient(

@@ -59,6 +59,10 @@ class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
 
         async def get_session_factory():
             return self.session_factory
+        
+        async def get_session_optional():
+            async with self.session_factory() as session:
+                yield session
 
         self.app.dependency_overrides[
             __import__("app.db.session", fromlist=["get_session"]).get_session
@@ -67,13 +71,26 @@ class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
         self.app.dependency_overrides[
             __import__("app.db.session", fromlist=["get_session_factory"]).get_session_factory
         ] = get_session_factory
+        
+        self.app.dependency_overrides[
+            __import__("app.db.session", fromlist=["get_session_optional"]).get_session_optional
+        ] = get_session_optional
 
         self.client = TestClient(self.app)
 
     async def asyncTearDown(self) -> None:
-        async with self.engine.begin() as conn:
-            await conn.run_sync(Base.metadata.drop_all)
-        await self.engine.dispose()
+        """Clean up test database and close connections."""
+        # Close test client first
+        if hasattr(self, 'client'):
+            self.client.close()
+        
+        # Dispose of the engine to close all connections
+        if hasattr(self, 'engine'):
+            await self.engine.dispose()
+        
+        # Clear dependency overrides
+        if hasattr(self, 'app'):
+            self.app.dependency_overrides.clear()
 
     def test_conversation_with_invalid_thread_id(self) -> None:
         """Test message creation with invalid thread_id fails gracefully."""
@@ -115,20 +132,31 @@ class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
             }
         )
         
-        # Should succeed with auto-created thread
+        # Should succeed with streaming response
         self.assertEqual(response.status_code, 200)
-        data = response.json()
+        self.assertIn("text/event-stream", response.headers.get("content-type", ""))
         
-        # Verify response contains thread_id
-        self.assertIn("thread_id", data)
-        self.assertIsNotNone(data["thread_id"])
+        # Parse SSE stream to find thread_id in done event
+        thread_id = None
+        for line in response.text.split('\n'):
+            if line.startswith('data:'):
+                try:
+                    data = json.loads(line[5:].strip())
+                    if data.get("thread_id"):
+                        thread_id = data["thread_id"]
+                        break
+                except json.JSONDecodeError:
+                    continue
+        
+        # Verify thread_id was found
+        self.assertIsNotNone(thread_id, "thread_id not found in SSE stream")
         
         # Verify thread_id is a valid UUID string
         try:
             from uuid import UUID
-            UUID(data["thread_id"])
+            UUID(thread_id)
         except (ValueError, TypeError):
-            self.fail(f"thread_id '{data['thread_id']}' is not a valid UUID")
+            self.fail(f"thread_id '{thread_id}' is not a valid UUID")
 
     def test_subsequent_messages_use_created_thread(self) -> None:
         """Test that subsequent messages can use the auto-created thread."""
@@ -142,7 +170,20 @@ class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
         )
         
         self.assertEqual(response1.status_code, 200)
-        thread_id = response1.json()["thread_id"]
+        
+        # Parse SSE stream to find thread_id in done event
+        thread_id = None
+        for line in response1.text.split('\n'):
+            if line.startswith('data:'):
+                try:
+                    data = json.loads(line[5:].strip())
+                    if data.get("thread_id"):
+                        thread_id = data["thread_id"]
+                        break
+                except json.JSONDecodeError:
+                    continue
+        
+        self.assertIsNotNone(thread_id, "thread_id not found in first message SSE stream")
         
         # Second message with the same thread_id
         response2 = self.client.post(
@@ -154,9 +195,23 @@ class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
             }
         )
         
-        # Should succeed
+        # Should succeed with streaming response
         self.assertEqual(response2.status_code, 200)
-        self.assertEqual(response2.json()["thread_id"], thread_id)
+        self.assertIn("text/event-stream", response2.headers.get("content-type", ""))
+        
+        # Verify thread_id in second response matches
+        thread_id_2 = None
+        for line in response2.text.split('\n'):
+            if line.startswith('data:'):
+                try:
+                    data = json.loads(line[5:].strip())
+                    if data.get("thread_id"):
+                        thread_id_2 = data["thread_id"]
+                        break
+                except json.JSONDecodeError:
+                    continue
+        
+        self.assertEqual(thread_id_2, thread_id, "thread_id mismatch in second message")
 
 
 if __name__ == "__main__":

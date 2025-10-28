@@ -7,11 +7,10 @@ from uuid import UUID
 
 from sqlalchemy import DateTime, Enum, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from sqlalchemy import JSON
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 
 from ...db import Base
+from .types import JSONBCompat
 
 
 class MessageRole(str, PyEnum):
@@ -23,13 +22,13 @@ class MessageRole(str, PyEnum):
 class Message(Base):
     __tablename__ = "messages"
 
-    message_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True)
+    message_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True)
     thread_id: Mapped[UUID] = mapped_column(
         ForeignKey("threads.thread_id", ondelete="CASCADE"), nullable=False, index=True
     )
     user_id: Mapped[str] = mapped_column(String(255), nullable=False)
     text: Mapped[str] = mapped_column(Text, nullable=False)
-    tools_used: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
+    tools_used: Mapped[Optional[Any]] = mapped_column(JSONBCompat(), nullable=True)
     role: Mapped[MessageRole] = mapped_column(
         Enum(MessageRole, name="message_role", values_callable=lambda x: [e.value for e in x]),
         nullable=False,

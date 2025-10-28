@@ -3,14 +3,14 @@ from __future__ import annotations
 import inspect
 import json
 import logging
+from contextlib import AsyncExitStack
 from typing import Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID, uuid4
 
-from agents import Runner
+from agents import Runner, set_trace_processors
 from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.responses import StreamingResponse
 from langsmith.wrappers import OpenAIAgentsTracingProcessor
-from agents import set_trace_processors
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from ..config import get_settings
@@ -470,6 +470,15 @@ async def post_message(
     resolved_thread_id: Union[str, UUID] | None = None
     thread_created = False
 
+    try:
+        if inspect.isawaitable(session_factory_dep):
+            session_factory_dep = await session_factory_dep
+    except Exception:
+        logging.exception("Failed to resolve session factory dependency")
+        session_factory_dep = None
+
+    exit_stack = AsyncExitStack()
+
     if payload.thread_id:
         # Validate thread_id is a valid UUID format before proceeding
         try:
@@ -504,108 +513,116 @@ async def post_message(
         # Thread will be created when the database session is available
         resolved_thread_id = None
 
-    if session is None:
-        logging.error("Database session unavailable; continuing without chat history persistence")
-        history_warning = history_warning or base_warning
-    else:
-        thread_service = ThreadService(session)
-        thread_payload = ThreadCreateRequest(
-            user_id=payload.user_id,
-            inventory_id=payload.inventory_id,
-            context=payload.context,
-        )
-        if resolved_thread_id is None:
+    try:
+        if session is None and session_factory_dep is not None:
             try:
-                thread = await thread_service.create_thread(thread_payload)
-                resolved_thread_id = thread.thread_id
-                thread_created = True
-                logger.info(
-                    "Created new thread for user_id=%s (thread_id=%s)",
-                    payload.user_id,
-                    resolved_thread_id,
-                )
-            except ValueError as exc:
-                logger.error("Invalid thread data while creating thread: %s", exc)
-                raise HTTPException(status_code=400, detail=str(exc))
-            except Exception as exc:
-                logger.exception("Failed to create thread for user_id=%s", payload.user_id, exc_info=exc)
-                raise HTTPException(
-                    status_code=503,
-                    detail={
-                        "message": "Unable to create conversation thread",
-                        "hint": "Please retry your request. If the problem persists, contact support.",
-                    },
-                )
+                session = await exit_stack.enter_async_context(session_factory_dep())
+            except Exception:
+                logging.exception("Failed to acquire session from session factory")
+                session = None
+
+        if session is None:
+            logging.error("Database session unavailable; continuing without chat history persistence")
+            history_warning = history_warning or base_warning
         else:
-            try:
-                thread = await thread_service.get_thread_for_user(resolved_thread_id, payload.user_id)
-            except ThreadNotFoundException:
+            thread_service = ThreadService(session)
+            thread_payload = ThreadCreateRequest(
+                user_id=payload.user_id,
+                inventory_id=payload.inventory_id,
+                context=payload.context,
+            )
+            if resolved_thread_id is None:
                 try:
-                    thread = await thread_service.create_thread(
-                        thread_payload,
-                        thread_id=resolved_thread_id,
-                    )
+                    thread = await thread_service.create_thread(thread_payload)
+                    resolved_thread_id = thread.thread_id
+                    thread_created = True
                     logger.info(
-                        "Created new thread for user_id=%s with provided thread_id=%s",
+                        "Created new thread for user_id=%s (thread_id=%s)",
                         payload.user_id,
                         resolved_thread_id,
                     )
-                    thread_created = True
-                    resolved_thread_id = thread.thread_id
                 except ValueError as exc:
-                    logger.error(
-                        "Invalid thread data while creating thread with provided id %s: %s",
-                        resolved_thread_id,
-                        exc,
-                    )
+                    logger.error("Invalid thread data while creating thread: %s", exc)
                     raise HTTPException(status_code=400, detail=str(exc))
                 except Exception as exc:
-                    logger.exception(
-                        "Failed to create thread for user_id=%s with provided thread_id=%s",
-                        payload.user_id,
-                        resolved_thread_id,
-                        exc_info=exc,
-                    )
+                    logger.exception("Failed to create thread for user_id=%s", payload.user_id, exc_info=exc)
                     raise HTTPException(
                         status_code=503,
                         detail={
-                            "message": "Unable to create conversation thread with provided ID",
+                            "message": "Unable to create conversation thread",
                             "hint": "Please retry your request. If the problem persists, contact support.",
                         },
                     )
-            except HTTPException:
-                raise
-            except ValueError as e:
-                # Handle UUID validation errors that might occur in database operations
-                logger.error("UUID validation error accessing thread: %s", str(e))
-                raise HTTPException(
-                    status_code=400,
-                    detail={
-                        "message": "Invalid thread ID",
-                        "error": str(e),
-                        "hint": "Please ensure you're using a valid thread_id from thread creation",
-                    },
-                )
-            except Exception as e:
-                # Check if this is a PostgreSQL UUID error
-                error_str = str(e)
-                if "invalid input syntax for type uuid" in error_str.lower():
-                    logger.error("PostgreSQL UUID error: %s", error_str)
+            else:
+                try:
+                    thread = await thread_service.get_thread_for_user(resolved_thread_id, payload.user_id)
+                except ThreadNotFoundException:
+                    try:
+                        thread = await thread_service.create_thread(
+                            thread_payload,
+                            thread_id=resolved_thread_id,
+                        )
+                        logger.info(
+                            "Created new thread for user_id=%s with provided thread_id=%s",
+                            payload.user_id,
+                            resolved_thread_id,
+                        )
+                        thread_created = True
+                        resolved_thread_id = thread.thread_id
+                    except ValueError as exc:
+                        logger.error(
+                            "Invalid thread data while creating thread with provided id %s: %s",
+                            resolved_thread_id,
+                            exc,
+                        )
+                        raise HTTPException(status_code=400, detail=str(exc))
+                    except Exception as exc:
+                        logger.exception(
+                            "Failed to create thread for user_id=%s with provided thread_id=%s",
+                            payload.user_id,
+                            resolved_thread_id,
+                            exc_info=exc,
+                        )
+                        raise HTTPException(
+                            status_code=503,
+                            detail={
+                                "message": "Unable to create conversation thread with provided ID",
+                                "hint": "Please retry your request. If the problem persists, contact support.",
+                            },
+                        )
+                except HTTPException:
+                    raise
+                except ValueError as e:
+                    # Handle UUID validation errors that might occur in database operations
+                    logger.error("UUID validation error accessing thread: %s", str(e))
                     raise HTTPException(
                         status_code=400,
                         detail={
-                            "message": "Invalid thread ID format",
-                            "error": error_str,
-                            "hint": "thread_id must be a valid UUID",
+                            "message": "Invalid thread ID",
+                            "error": str(e),
+                            "hint": "Please ensure you're using a valid thread_id from thread creation",
                         },
                     )
-                try:
-                    await session.rollback()
-                except Exception:
-                    logging.exception("Failed to rollback session after thread load failure")
-                logging.exception("Failed to load thread before streaming message")
-                history_warning = history_warning or base_warning
-                thread = None
+                except Exception as e:
+                    # Check if this is a PostgreSQL UUID error
+                    error_str = str(e)
+                    if "invalid input syntax for type uuid" in error_str.lower():
+                        logger.error("PostgreSQL UUID error: %s", error_str)
+                        raise HTTPException(
+                            status_code=400,
+                            detail={
+                                "message": "Invalid thread ID format",
+                                "error": error_str,
+                                "hint": "thread_id must be a valid UUID",
+                            },
+                        )
+                    try:
+                        await session.rollback()
+                    except Exception:
+                        logging.exception("Failed to rollback session after thread load failure")
+                    logging.exception("Failed to load thread before streaming message")
+                    history_warning = history_warning or base_warning
+                    thread = None
 
         if thread_created and thread is not None:
             try:
@@ -706,11 +723,12 @@ async def post_message(
             else:
                 try:
                     assistant_session_factory = session_factory_dep
-                    if inspect.isawaitable(assistant_session_factory):
-                        assistant_session_factory = await assistant_session_factory
                 except Exception:
                     logging.exception("Failed to acquire session factory for assistant persistence")
                     history_warning = history_warning or base_warning
+
+    finally:
+        await exit_stack.aclose()
 
     if assistant_session_factory is None and history_warning is None:
         history_warning = base_warning

@@ -7,10 +7,10 @@ from uuid import UUID
 from sqlalchemy import DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from sqlalchemy import JSON
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 
 from ...db import Base
+from .types import JSONBCompat
 
 
 class Thread(Base):
@@ -19,7 +19,7 @@ class Thread(Base):
     thread_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True)
     user_id: Mapped[str] = mapped_column(String(255), index=True, nullable=False)
     inventory_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    context: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    context: Mapped[Optional[dict]] = mapped_column(JSONBCompat(), nullable=True)
     title: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

@@ -122,7 +122,7 @@ const TopEmissionsWidget = ({
         </Card.Body>
       </Card.Root>
     );
-  } else if (results!?.totalEmissions.total <= 0) {
+  } else if (!results || !results.totalEmissions || results.totalEmissions.total === null || results.totalEmissions.total === undefined || !results.totalEmissions.bySector || !Array.isArray(results.totalEmissions.bySector) || results.totalEmissions.bySector.length === 0) {
     return (
       <Card.Root width={"713px"} height={"448px"}>
         <Card.Header>

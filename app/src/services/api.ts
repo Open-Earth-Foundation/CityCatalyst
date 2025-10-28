@@ -14,6 +14,7 @@ import {
   AcceptInviteResponse,
   CityAndYearsResponse,
   ConnectDataSourceQuery,
+  CountryEmissionsResponse,
   ConnectDataSourceResponse,
   EmissionsFactorResponse,
   EmissionsForecastData,
@@ -237,6 +238,11 @@ export const api = createApi({
         transformResponse: (response: { data: InventoryProgressResponse }) =>
           response.data,
         providesTags: ["InventoryProgress"],
+      }),
+      getInventoryCountryEmissions: builder.query<CountryEmissionsResponse, string>({
+        query: (inventoryId) => `inventory/${inventoryId}/country-emissions`,
+        transformResponse: (response: { data: CountryEmissionsResponse }) =>
+          response.data,
       }),
       addCity: builder.mutation<
         CityAttributes,

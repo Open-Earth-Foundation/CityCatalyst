@@ -20,6 +20,7 @@ from prioritizer.models import (
     CityData,
     PrioritizerResponseBulk,
     PrioritizationType,
+    Explanation,
 )
 
 # Import the shared task_storage from api.py (or move to a separate module if needed)
@@ -79,15 +80,17 @@ def _rank_actions_for_city(
             comparator=ml_compare,
         )
         for action, rank in mitigationRanking:
-            explanation = None
-            if EXPLANATIONS_ENABLED:
-                explanation = generate_multilingual_explanation(
+            explanation = (
+                generate_multilingual_explanation(
                     country_code=country_code,
                     city_data=cityData_dict,
                     single_action=action,
                     rank=rank,
                     languages=languages,
                 )
+                if EXPLANATIONS_ENABLED
+                else Explanation(explanations={lang: "" for lang in languages})
+            )
             rankedActionsMitigation.append(
                 RankedAction(
                     actionId=action["ActionID"], rank=rank, explanation=explanation
@@ -116,15 +119,17 @@ def _rank_actions_for_city(
             cityData_dict, adaptationActions, comparator=ml_compare
         )
         for action, rank in adaptationRanking:
-            explanation = None
-            if EXPLANATIONS_ENABLED:
-                explanation = generate_multilingual_explanation(
+            explanation = (
+                generate_multilingual_explanation(
                     country_code=country_code,
                     city_data=cityData_dict,
                     single_action=action,
                     rank=rank,
                     languages=languages,
                 )
+                if EXPLANATIONS_ENABLED
+                else Explanation(explanations={lang: "" for lang in languages})
+            )
             rankedActionsAdaptation.append(
                 RankedAction(
                     actionId=action["ActionID"], rank=rank, explanation=explanation

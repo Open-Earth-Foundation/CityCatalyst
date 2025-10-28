@@ -1,6 +1,6 @@
 aiohappyeyeballs==2.6.1
     # via aiohttp
-aiohttp==3.12.15
+aiohttp==3.13.1
     # via langchain-community
 aiosignal==1.4.0
     # via aiohttp
@@ -12,7 +12,7 @@ anyio==4.11.0
     #   openai
     #   starlette
     #   watchfiles
-attrs==25.3.0
+attrs==25.4.0
     # via
     #   aiohttp
     #   jsonschema
@@ -366,7 +366,7 @@ rich==14.1.0
     # via
     #   chromadb
     #   typer
-rpds-py==0.27.1
+rpds-py==0.28.0
     # via
     #   jsonschema
     #   referencing
@@ -457,7 +457,7 @@ urllib3==2.3.0
     #   botocore
     #   kubernetes
     #   requests
-uvicorn==0.37.0
+uvicorn==0.38.0
     # via
     #   chromadb
     #   hiap

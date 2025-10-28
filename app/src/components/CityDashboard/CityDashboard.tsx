@@ -126,6 +126,7 @@ export default function CitiesDashboardPage({
           <Hero
             city={city}
             year={parsedYear}
+            ghgiCityData={latestInventory as InventoryResponse}
             isPublic={isPublic}
             isLoading={isInventoryOrgDataLoading || isCityLoading}
             t={t}

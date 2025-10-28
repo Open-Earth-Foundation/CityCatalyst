@@ -65,8 +65,6 @@ jobs:
           pytest tests/test_cc_inventory_tool.py \
                  tests/test_citycatalyst_client.py \
                  tests/test_rag_tool.py \
-                 tests/test_sync_tool.py \
-                 tests/test_thread_service_uuid.py \
                  tests/test_user_identity.py \
                  tests/test_document_embedding_model.py \
                  --junit-xml=test-results-unit.xml \

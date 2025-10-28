@@ -2,18 +2,23 @@
 import { OrganizationHero } from "@/components/Organization/OrganizationHero";
 import ProgressLoader from "@/components/ProgressLoader";
 import { BodyLarge } from "@/components/package/Texts/Body";
-import { ButtonMedium } from "@/components/package/Texts/Button";
-import { HeadlineLarge, HeadlineSmall } from "@/components/package/Texts/Headline";
+import { ButtonMedium, ButtonSmall } from "@/components/package/Texts/Button";
+import {
+  HeadlineLarge,
+  HeadlineSmall,
+} from "@/components/package/Texts/Headline";
 import { LabelLarge } from "@/components/package/Texts/Label";
-import DataTable from "@/components/ui/data-table";
+import { lazy, Suspense } from "react";
+
+const CitiesTable = lazy(() => import("@/components/Project/CitiesTable"));
 import { useTranslation } from "@/i18n/client";
 import { useGetOrganizationQuery, useGetProjectsQuery } from "@/services/api";
-import { ProjectWithCities } from "@/util/types";
-import { Box, Button, Card, Icon, Table, VStack } from "@chakra-ui/react";
+import { Box, Card, Icon, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
+import { use, useMemo } from "react";
 import { MdArrowBack, MdArrowForward, MdNavigateNext } from "react-icons/md";
+import { Button } from "@/components/ui/button";
 
 export default function ProjectPage(props: {
   params: Promise<{ lng: string; id: string; project: string }>;
@@ -34,15 +39,10 @@ export default function ProjectPage(props: {
     error: projectsError,
   } = useGetProjectsQuery({ organizationId });
 
-  const [project, setProject] = useState<ProjectWithCities | null>(null);
-  useEffect(() => {
-    if (projects && projectId) {
-      const foundProject = projects.find(
-        (proj) => proj.projectId === projectId,
-      );
-      setProject(foundProject || null);
-    }
-  }, [projectId, projects]);
+  const project = useMemo(() => {
+    if (!projects || !projectId) return null;
+    return projects.find((proj) => proj.projectId === projectId) || null;
+  }, [projects, projectId]);
 
   if (orgLoading || areProjectsLoading) {
     return (
@@ -98,36 +98,9 @@ export default function ProjectPage(props: {
               <BodyLarge>{t("discover-cities-description")}</BodyLarge>
             </VStack>
             {project?.cities && project.cities.length > 0 && (
-              <DataTable
-                data={project?.cities}
-                searchable
-                pagination
-                itemsPerPage={20}
-                columns={[
-                  { header: t("city-name"), accessor: "name" },
-                  {
-                    header: t("country-name"),
-                    accessor: "country",
-                  },
-                  { header: t("status"), accessor: null },
-                  { header: "", accessor: null },
-                ]}
-                selectKey="cityId"
-                renderRow={(item, idx) => (
-                  <Table.Row key={idx}>
-                    <Table.Cell>{item.name}</Table.Cell>
-                    <Table.Cell>{item.country}</Table.Cell>
-                    <Table.Cell>{t("active")}</Table.Cell>
-                    <Table.Cell textAlign="end">
-                      <Icon
-                        as={MdNavigateNext}
-                        boxSize={6}
-                        color="interactive.control"
-                      />
-                    </Table.Cell>
-                  </Table.Row>
-                )}
-              />
+              <Suspense fallback={<ProgressLoader />}>
+                <CitiesTable cities={project.cities} lng={lng} t={t} />
+              </Suspense>
             )}
             <NextLink
               href="https://citycatalyst.openearth.org/learning-hub"

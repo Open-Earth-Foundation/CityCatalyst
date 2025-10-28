@@ -12,7 +12,7 @@ anyio==4.11.0
     #   openai
     #   starlette
     #   watchfiles
-attrs==25.3.0
+attrs==25.4.0
     # via
     #   aiohttp
     #   jsonschema

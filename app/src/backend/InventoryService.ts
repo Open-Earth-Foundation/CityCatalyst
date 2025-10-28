@@ -30,7 +30,7 @@ export const InventoryService = {
   ): Promise<Inventory> {
     // Check read-only access permission
     await PermissionService.canAccessInventory(session, inventoryId);
-    
+
     // Load inventory with includes
     const inventory = await db.models.Inventory.findByPk(inventoryId, {
       include: [
@@ -41,7 +41,12 @@ export const InventoryService = {
             {
               model: db.models.Project,
               as: "project",
-              attributes: ["projectId", "name", "organizationId"],
+              include: [
+                {
+                  model: db.models.Organization,
+                  as: "organization",
+                },
+              ],
             },
           ],
         },
@@ -68,4 +73,4 @@ export const InventoryService = {
     inventory.totalEmissions = sum;
     return inventory;
   },
-}; 
+};

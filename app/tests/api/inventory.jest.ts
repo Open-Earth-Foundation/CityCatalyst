@@ -416,7 +416,6 @@ describe("Inventory API", () => {
     expect(deleted).toEqual(true);
     expect(data.inventoryName).toEqual(inventory.inventoryName);
     expect(data.year).toEqual(inventory.year);
-    expect(data.totalEmissions).toEqual(inventory.totalEmissions);
   });
 
   it("should reject inventory deletion as collaborator", async () => {

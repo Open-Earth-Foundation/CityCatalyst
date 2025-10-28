@@ -80,6 +80,22 @@ def _load_actions_for_request():
     "/v1/start_prioritization",
     response_model=StartPrioritizationResponse,
     status_code=202,
+    summary="Start single prioritization (asynchronous)",
+    description=(
+        "Starts a single prioritization job and returns a task identifier. "
+        "Use the progress and result endpoints to poll for completion. "
+        "If upstream actions are unavailable, the task is created in a failed state and still returned as 202."
+    ),
+    responses={
+        202: {
+            "description": "Accepted. Task created. Response contains taskId and initial status.",
+        },
+        422: {"description": "Validation error"},
+        429: {"description": "Too Many Requests (rate limited)"},
+        500: {
+            "description": "Internal Server Error (failed to start background processing)"
+        },
+    },
 )
 @limiter.limit("10/minute")
 async def start_prioritization(request: Request, req: PrioritizerRequest):
@@ -154,6 +170,20 @@ async def start_prioritization(request: Request, req: PrioritizerRequest):
     "/v1/start_prioritization_bulk",
     response_model=StartPrioritizationResponse,
     status_code=202,
+    summary="Start bulk prioritization (asynchronous)",
+    description=(
+        "Starts a bulk prioritization job for multiple cities and returns a task identifier. "
+        "Each city runs as a subtask. Use the bulk result endpoint to retrieve the aggregated outcome. "
+        "If upstream actions are unavailable, the task is created in a failed state and still returned as 202."
+    ),
+    responses={
+        202: {
+            "description": "Accepted. Bulk task created. Response contains taskId and initial status.",
+        },
+        422: {"description": "Validation error"},
+        429: {"description": "Too Many Requests (rate limited)"},
+        500: {"description": "Internal Server Error"},
+    },
 )
 @limiter.limit("10/minute")
 async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBulk):
@@ -349,6 +379,19 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
 @router.get(
     "/v1/check_prioritization_progress/{task_uuid}",
     response_model=CheckProgressResponse,
+    summary="Check prioritization task progress",
+    description=(
+        "Returns the current status of a prioritization task. "
+        "If the task has failed, an error message is included in the payload."
+    ),
+    responses={
+        200: {
+            "description": "OK. Status returned (pending, running, completed, or failed)."
+        },
+        404: {"description": "Task not found"},
+        422: {"description": "Validation error"},
+        429: {"description": "Too Many Requests (rate limited)"},
+    },
 )
 @limiter.limit("10/minute")
 async def check_prioritization_progress(request: Request, task_uuid: str):
@@ -367,7 +410,26 @@ async def check_prioritization_progress(request: Request, task_uuid: str):
     return CheckProgressResponse(status=task_info["status"])
 
 
-@router.get("/v1/get_prioritization/{task_uuid}", response_model=PrioritizerResponse)
+@router.get(
+    "/v1/get_prioritization/{task_uuid}",
+    response_model=PrioritizerResponse,
+    summary="Get single prioritization result",
+    description=(
+        "Returns the computed prioritization for a single task once completed. "
+        "Use the progress endpoint to check readiness."
+    ),
+    responses={
+        200: {"description": "OK. Prioritization result returned."},
+        400: {
+            "description": "Bad Request. Task is a bulk task; use bulk result endpoint instead."
+        },
+        404: {"description": "Task not found"},
+        409: {"description": "Conflict. Task not completed yet."},
+        422: {"description": "Validation error"},
+        429: {"description": "Too Many Requests (rate limited)"},
+        500: {"description": "Internal Server Error. Task failed during processing."},
+    },
+)
 @limiter.limit("10/minute")
 async def get_prioritization(request: Request, task_uuid: str):
     logger.info(f"Task {task_uuid}: Retrieving prioritization result")
@@ -410,7 +472,24 @@ async def get_prioritization(request: Request, task_uuid: str):
 
 
 @router.get(
-    "/v1/get_prioritization_bulk/{task_uuid}", response_model=PrioritizerResponseBulk
+    "/v1/get_prioritization_bulk/{task_uuid}",
+    response_model=PrioritizerResponseBulk,
+    summary="Get bulk prioritization result",
+    description=(
+        "Returns the aggregated prioritization results for a bulk task once completed. "
+        "Use the progress endpoint to check readiness."
+    ),
+    responses={
+        200: {"description": "OK. Bulk prioritization result returned."},
+        400: {
+            "description": "Bad Request. Task is a single task; use single result endpoint instead."
+        },
+        404: {"description": "Task not found"},
+        409: {"description": "Conflict. Task not completed yet."},
+        422: {"description": "Validation error"},
+        429: {"description": "Too Many Requests (rate limited)"},
+        500: {"description": "Internal Server Error. Task failed during processing."},
+    },
 )
 @limiter.limit("10/minute")
 async def get_prioritization_bulk(request: Request, task_uuid: str):
@@ -453,7 +532,17 @@ async def get_prioritization_bulk(request: Request, task_uuid: str):
         )
 
 
-@router.get("/v1/debug/tasks")
+@router.get(
+    "/v1/debug/tasks",
+    summary="Debug: list all tasks",
+    description="Returns the full in-memory task store for debugging.",
+    responses={
+        200: {"description": "OK. Full task store returned."},
+        422: {"description": "Validation error"},
+        429: {"description": "Too Many Requests (rate limited)"},
+        500: {"description": "Internal Server Error"},
+    },
+)
 @limiter.limit("30/minute")
 async def debug_list_tasks(request: Request):
     """Return the full task_storage for debugging (json-encoded)."""

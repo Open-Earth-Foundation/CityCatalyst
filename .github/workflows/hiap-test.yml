@@ -126,9 +126,9 @@ jobs:
             LANGCHAIN_PROJECT_NAME_PRIORITIZER=hiap-test-prioritizer \
             LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION=hiap-test-plan-translation \
             LANGCHAIN_ENDPOINT=https://api.smith.langchain.com \
-            LANGCHAIN_TRACING_V2=true \
+            LANGCHAIN_TRACING_V2=false \
             S3_BUCKET_NAME=openearth.cap \
-            EXPLANATIONS_ENABLED=true \
+            EXPLANATIONS_ENABLED=false \
             BULK_CONCURRENCY=10 \
             XGBOOST_NUM_THREADS=1 \
             LOG_PARALLELISM=1 \

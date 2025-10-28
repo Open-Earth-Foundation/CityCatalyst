@@ -163,7 +163,7 @@ jobs:
 
       - name: Deploy test service
         run: |
-          kubectl apply -f k8s/climate-advisor-migrate.yml -n default
+          kubectl create -f k8s/climate-advisor-migrate.yml -n default
           kubectl apply -f k8s/climate-advisor-db-configmap.yml -n default
           kubectl apply -f k8s/climate-advisor-service.yml -n default
           kubectl apply -f k8s/climate-advisor-deploy.yml -n default

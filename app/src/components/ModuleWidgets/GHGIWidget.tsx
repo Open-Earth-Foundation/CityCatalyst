@@ -51,8 +51,12 @@ export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
   const hasContent =
     ghgiData &&
     ghgiData.inventory &&
-    ghgiData.totalEmissions?.total &&
-    ghgiData.totalEmissions.total > 0;
+    ghgiData.totalEmissions &&
+    ghgiData.totalEmissions.total !== null &&
+    ghgiData.totalEmissions.total !== undefined &&
+    ghgiData.totalEmissions.bySector &&
+    Array.isArray(ghgiData.totalEmissions.bySector) &&
+    ghgiData.totalEmissions.bySector.length > 0;
 
   React.useEffect(() => {
     if (!isLoading) {

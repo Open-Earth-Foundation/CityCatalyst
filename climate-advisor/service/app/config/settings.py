@@ -152,18 +152,31 @@ class PromptsConfig(BaseModel):
         if not prompt_path:
             raise ValueError(f"Prompt type '{prompt_type}' not configured")
 
-        # Construct full path - look in current working directory first (container)
-        # then fall back to relative path from this file
-        cwd_path = Path.cwd() / prompt_path
-        if cwd_path.exists():
-            full_path = cwd_path
-        else:
-            # Fallback to relative path from this file (for local development)
-            config_dir = Path(__file__).parent.parent.parent.parent.parent
-            full_path = config_dir / prompt_path
+        # Build search roots dynamically to handle both development and containerized environments
+        search_roots = [
+            Path.cwd(),  # Container root or current working directory
+            Path(__file__).resolve().parents[3],  # climate-advisor/
+        ]
+        
+        # Dynamically search up the directory tree for the repository root
+        # without assuming a fixed depth (which fails in some environments)
+        current = Path(__file__).resolve()
+        for _ in range(10):  # Limit iterations to prevent infinite loops
+            current = current.parent
+            if (current / "llm_config.yaml").exists():
+                # Found the climate-advisor directory
+                search_roots.append(current)
+                break
 
-        if not full_path.exists():
-            raise FileNotFoundError(f"Prompt file not found: {full_path}")
+        full_path = None
+        for root in search_roots:
+            candidate = root / prompt_path
+            if candidate.exists():
+                full_path = candidate
+                break
+
+        if full_path is None or not full_path.exists():
+            raise FileNotFoundError(f"Prompt file not found: {Path.cwd() / prompt_path}")
 
         with open(full_path, 'r', encoding='utf-8') as f:
             return f.read().strip()
@@ -371,7 +384,10 @@ _settings: Settings | None = None
 
 def _parse_cors_origins(env_value: str | None) -> List[str]:
     if not env_value:
-        return ["http://localhost:8000"]  # dev default
+        return [
+            "http://localhost:8000",
+            "http://localhost:3000",
+        ]  # dev defaults for local frontends
     return [origin.strip() for origin in env_value.split(",") if origin.strip()]
 
 

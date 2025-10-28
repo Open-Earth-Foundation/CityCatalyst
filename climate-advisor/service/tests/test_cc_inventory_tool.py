@@ -98,9 +98,15 @@ class CCInventoryToolTests(unittest.IsolatedAsyncioTestCase):
             thread_id="thread-xyz",
         )
 
-        get_inventory_tool = tools[0]
-        ctx = ToolContext(context=None, tool_call_id="test-call")
-        output = await get_inventory_tool.on_invoke_tool(
+        get_inventory_tool = next((t for t in tools if getattr(t, "name", None) == "get_inventory"), None)
+        self.assertIsNotNone(get_inventory_tool, "get_inventory tool not found in tools list")
+        ctx = ToolContext(
+            context=None,
+            tool_call_id="test-call",
+            tool_name="test_tool",
+            tool_arguments={"inventory_id": "inv-10"}
+        )
+        output = await get_inventory_tool.on_invoke_tool(  # type: ignore[attr-defined]
             ctx,
             json.dumps({"inventory_id": "inv-10"}),
         )
@@ -118,9 +124,14 @@ class CCInventoryToolTests(unittest.IsolatedAsyncioTestCase):
             user_id="user",
             thread_id="thread",
         )
-        get_inventory_tool = tools[0]
-        ctx = ToolContext(context=None, tool_call_id="test-call")
-        output = await get_inventory_tool.on_invoke_tool(
+        get_inventory_tool = tools[1]  # get_inventory is the second tool
+        ctx = ToolContext(
+            context=None,
+            tool_call_id="test-call",
+            tool_name="test_tool",
+            tool_arguments={"inventory_id": ""}
+        )
+        output = await get_inventory_tool.on_invoke_tool(  # type: ignore[attr-defined]
             ctx,
             json.dumps({"inventory_id": ""}),
         )
@@ -140,15 +151,20 @@ class CCInventoryToolTests(unittest.IsolatedAsyncioTestCase):
             user_id="user",
             thread_id="thread",
         )
-        get_inventory_tool = tools[0]
-        ctx = ToolContext(context=None, tool_call_id="test-call")
-        await get_inventory_tool.on_invoke_tool(
+        get_inventory_tool = tools[1]  # get_inventory is the second tool
+        ctx = ToolContext(
+            context=None,
+            tool_call_id="test-call",
+            tool_name="test_tool",
+            tool_arguments={"inventory_id": "inv-11"}
+        )
+        await get_inventory_tool.on_invoke_tool(  # type: ignore[attr-defined]
             ctx,
             json.dumps({"inventory_id": "inv-11"}),
         )
         stub_client.tokens_used.clear()
         token_ref["value"] = "updated-token"
-        await get_inventory_tool.on_invoke_tool(
+        await get_inventory_tool.on_invoke_tool(  # type: ignore[attr-defined]
             ctx,
             json.dumps({"inventory_id": "inv-11"}),
         )
@@ -166,9 +182,14 @@ class CCInventoryToolTests(unittest.IsolatedAsyncioTestCase):
             user_id="user",
             thread_id="thread",
         )
-        get_inventory_tool = tools[0]
-        ctx = ToolContext(context=None, tool_call_id="test-call")
-        output = await get_inventory_tool.on_invoke_tool(
+        get_inventory_tool = tools[1]  # get_inventory is the second tool
+        ctx = ToolContext(
+            context=None,
+            tool_call_id="test-call",
+            tool_name="test_tool",
+            tool_arguments={"inventory_id": "inv-12"}
+        )
+        output = await get_inventory_tool.on_invoke_tool(  # type: ignore[attr-defined]
             ctx,
             json.dumps({"inventory_id": "inv-12"}),
         )

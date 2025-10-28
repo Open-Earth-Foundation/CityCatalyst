@@ -9,6 +9,7 @@ import {
 import { checkBulkActionRankingJob } from "@/backend/hiap/HiapService";
 import { BulkHiapPrioritizationService } from "@/backend/hiap/BulkHiapPrioritizationService";
 import { Op, QueryTypes } from "sequelize";
+import { checkSingleActionRankingJob } from "@/backend/hiap/HiapService";
 
 /**
  * Cron job endpoint to check HIAP job statuses and start next batches
@@ -70,12 +71,14 @@ export async function GET() {
       jobId: string;
       type: ACTION_TYPES;
       langs: string[];
+      isBulk: boolean;
     }>(
       `
       SELECT DISTINCT ON ("job_id", "type") 
         "job_id" as "jobId",
         "type",
-        "langs"
+        "langs",
+        "is_bulk" as "isBulk"
       FROM "public"."HighImpactActionRanking"
       WHERE "status" = :status
         AND "job_id" IS NOT NULL
@@ -98,11 +101,19 @@ export async function GET() {
     for (const job of pendingJobs) {
       try {
         const lang = (job.langs as any)[0] as LANGUAGES; // Get first language from array
-        const isComplete = await checkBulkActionRankingJob(
-          job.jobId,
-          lang,
-          job.type as ACTION_TYPES,
-        );
+
+        // Call appropriate function based on job type
+        const isComplete = job.isBulk
+          ? await checkBulkActionRankingJob(
+              job.jobId,
+              lang,
+              job.type as ACTION_TYPES,
+            )
+          : await checkSingleActionRankingJob(
+              job.jobId,
+              lang,
+              job.type as ACTION_TYPES,
+            );
 
         if (isComplete) {
           completedJobs++;

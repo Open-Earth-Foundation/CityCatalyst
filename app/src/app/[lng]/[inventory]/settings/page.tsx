@@ -63,6 +63,10 @@ export default function Settings() {
     skip: !userInfo,
   });
 
+  const { data: projects } = api.useGetUserProjectsQuery(undefined, {
+    skip: !userInfo,
+  });
+
   const { inventory: inventoryParam } = useParams();
   const inventoryId = inventoryParam as string;
 
@@ -199,6 +203,7 @@ export default function Settings() {
               <MyInventoriesTab
                 lng={lng}
                 cities={cities}
+                projects={projects}
                 t={t}
                 defaultCityId={cityId}
               />

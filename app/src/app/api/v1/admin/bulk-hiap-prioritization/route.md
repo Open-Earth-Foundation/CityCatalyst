@@ -8,6 +8,7 @@ Complete documentation for the bulk High Impact Actions prioritization system.
 
 - [Quick Start](#quick-start)
 - [Overview](#overview)
+- [Single vs Bulk Job Distinction (isBulk Flag)](#single-vs-bulk-job-distinction-isbulk-flag)
 - [Architecture](#architecture)
 - [API Endpoints](#api-endpoints)
   - [Start Bulk Prioritization](#1-start-bulk-prioritization)
@@ -80,6 +81,71 @@ Uses **Kubernetes CronJob** (runs every minute) instead of a traditional backgro
 - ✅ Stateless: survives pod restarts
 - ✅ Simple to monitor and debug
 - ✅ Kubernetes-native solution
+
+---
+
+## Single vs Bulk Job Distinction (isBulk Flag)
+
+The system distinguishes between **single-city** and **bulk** HIAP prioritization jobs using the `is_bulk` flag in the `HighImpactActionRanking` table. This ensures the cron job uses the correct HIAP API endpoints.
+
+### Problem
+
+Previously, the cron job always called bulk API endpoints even for single-city rankings, which could cause issues.
+
+### Solution
+
+Added a boolean `is_bulk` field to track whether a ranking is part of a bulk job or a single-city job.
+
+### API Endpoint Mapping
+
+| Job Type | Cron Calls | Status Check Endpoint | Result Fetch Endpoint |
+|----------|-----------|----------------------|----------------------|
+| **Bulk** (`isBulk = true`) | `checkBulkActionRankingJob()` | `checkBulkPrioritizationProgress(jobId)` | `getBulkPrioritizationResult(jobId)` |
+| **Single** (`isBulk = false`) | `checkSingleActionRankingJob()` | `checkPrioritizationProgress(jobId)` | `getPrioritizationResult(jobId)` |
+
+**Architecture:**
+- Cron job queries `is_bulk` flag and routes to appropriate handler function
+- Each handler function uses its specific HIAP API endpoints
+- Both handlers share common processing logic via `processBulkJobResults()`
+
+### Database Schema
+
+**Column:** `is_bulk` BOOLEAN
+- Default value: `false`
+- NOT NULL constraint
+- Set automatically when creating ranking records
+
+### Backfill Logic
+
+Existing rankings are backfilled with this heuristic:
+```sql
+UPDATE "HighImpactActionRanking" har
+SET is_bulk = true
+WHERE har.job_id IN (
+  SELECT job_id
+  FROM "HighImpactActionRanking"
+  WHERE job_id IS NOT NULL
+  GROUP BY job_id
+  HAVING COUNT(*) > 1  -- More than 1 ranking = bulk job
+);
+```
+
+**Logic:**
+- If 2+ cities share the same `job_id` → Bulk job (`is_bulk = true`)
+- If only 1 city has the `job_id` → Single job (`is_bulk = false`)
+
+### Implementation Notes
+
+**Cron Job** (`/api/cron/check-hiap-jobs`):
+- Queries `is_bulk` field when fetching pending jobs
+- Routes to `checkBulkActionRankingJob()` or `checkSingleActionRankingJob()` based on flag
+
+**Service Layer** (`HiapService.ts`):
+- Both functions check job status and fetch results using their respective endpoints
+- Both save results using shared `processBulkJobResults()` logic
+- `isBulk` is set when creating ranking records:
+  - Single city: `isBulk: false`
+  - Bulk: `isBulk: true`
 
 ---
 

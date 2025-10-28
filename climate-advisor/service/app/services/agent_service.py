@@ -10,9 +10,8 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Dict, Optional
+from typing import Any, Dict, Optional, Union
 from uuid import UUID
-from typing import Union
 
 import openai
 from agents import Agent
@@ -40,6 +39,7 @@ class AgentService:
         cc_access_token: Optional[str] = None,
         cc_thread_id: Optional[Union[str, UUID]] = None,
         cc_user_id: Optional[str] = None,
+        inventory_id: Optional[str] = None,
     ):
         """Initialize the agent service with settings and OpenRouter client.
         
@@ -54,8 +54,10 @@ class AgentService:
         self.cc_access_token = cc_access_token
         self.cc_thread_id = cc_thread_id
         self.cc_user_id = cc_user_id
+        self.inventory_id = inventory_id
         self._inventory_tool: Optional[CCInventoryTool] = None
         self._token_ref: Dict[str, Optional[str]] = {"value": cc_access_token}
+        self._inventory_prompt: Optional[str] = None
 
         # Initialize OpenRouter-configured AsyncOpenAI client and set globally
         self.client = self._create_openrouter_client()
@@ -117,6 +119,158 @@ class AgentService:
         
         logger.info("OpenRouter client created with base_url=%s", base_url)
         return client
+
+    async def _build_inventory_prompt(self, *, thread_identifier: str) -> Optional[str]:
+        """Load the inventory-context prompt if an inventory is associated with the thread."""
+        if self._inventory_prompt is not None:
+            return self._inventory_prompt
+
+        if not self.inventory_id:
+            logger.debug("No inventory_id available; skipping inventory prompt")
+            return None
+
+        if not (self.cc_access_token and self.cc_user_id and self._inventory_tool):
+            logger.debug(
+                "Missing prerequisites for inventory prompt (token=%s, user_id=%s, tool=%s)",
+                bool(self.cc_access_token),
+                self.cc_user_id,
+                bool(self._inventory_tool),
+            )
+            return None
+
+        try:
+            result = await self._inventory_tool.fetch_inventory(
+                self.inventory_id,
+                token=self._token_ref["value"],
+                user_id=str(self.cc_user_id),
+                thread_id=thread_identifier,
+            )
+        except Exception:
+            logger.exception(
+                "Unexpected error fetching inventory %s for prompt generation",
+                self.inventory_id,
+            )
+            return None
+
+        if not result.success or not result.data:
+            logger.warning(
+                "Unable to build inventory prompt (success=%s, error=%s, code=%s)",
+                result.success,
+                result.error,
+                result.error_code,
+            )
+            return None
+
+        payload = result.data.get("data", result.data) if isinstance(result.data, dict) else result.data
+        context_block = self._format_inventory_context(payload)
+        if not context_block:
+            logger.debug("Inventory context formatting returned empty payload")
+            return None
+
+        try:
+            template = self.settings.llm.prompts.get_prompt("inventory_context")
+            self._inventory_prompt = template.format(inventory_context=context_block)
+        except Exception as exc:
+            logger.warning("Failed to apply inventory context template: %s", exc, exc_info=True)
+            self._inventory_prompt = context_block
+
+        return self._inventory_prompt
+
+    @staticmethod
+    def _nearest_population(populations: Any, target_year: Any, value_key: str) -> tuple[Optional[Any], Optional[int]]:
+        """Find the population entry closest to the target year for a given key."""
+        if not populations or target_year is None:
+            return None, None
+
+        try:
+            target_year_int = int(target_year)
+        except (TypeError, ValueError):
+            return None, None
+
+        closest_value: Optional[Any] = None
+        closest_year: Optional[int] = None
+
+        for entry in populations:
+            if not isinstance(entry, dict):
+                continue
+            value = entry.get(value_key)
+            entry_year = entry.get("year")
+            if value is None or entry_year is None:
+                continue
+            try:
+                entry_year_int = int(entry_year)
+            except (TypeError, ValueError):
+                continue
+
+            if closest_year is None or abs(entry_year_int - target_year_int) < abs(closest_year - target_year_int):
+                closest_value = value
+                closest_year = entry_year_int
+
+        return closest_value, closest_year
+
+    def _format_inventory_context(self, inventory: Any) -> Optional[str]:
+        """Format inventory data into a human-readable context snippet."""
+        if not isinstance(inventory, dict):
+            return None
+
+        city = inventory.get("city") or {}
+        inventory_year = inventory.get("year")
+        inventory_name = inventory.get("inventoryName") or inventory.get("name")
+        inventory_id = inventory.get("inventoryId") or inventory.get("id") or self.inventory_id
+        total_emissions = inventory.get("totalEmissions")
+        inventory_values = inventory.get("inventoryValues") or []
+
+        populations = city.get("populations") or []
+        city_population, city_population_year = self._nearest_population(populations, inventory_year, "population")
+        region_population, region_population_year = self._nearest_population(populations, inventory_year, "regionPopulation")
+        country_population, country_population_year = self._nearest_population(populations, inventory_year, "countryPopulation")
+
+        lines = []
+
+        if inventory_name:
+            lines.append(f"- Inventory name: {inventory_name}")
+        if inventory_id:
+            lines.append(f"- Inventory ID: {inventory_id}")
+        if inventory_year is not None:
+            lines.append(f"- Inventory year: {inventory_year}")
+        if total_emissions is not None:
+            lines.append(f"- Reported total emissions: {total_emissions}")
+        if inventory_values:
+            lines.append(f"- Recorded inventory values: {len(inventory_values)}")
+
+        city_name = city.get("name")
+        region_name = city.get("region")
+        country_name = city.get("country")
+        country_locode = city.get("countryLocode") or city.get("locode")
+        city_area = city.get("area")
+
+        if city_name:
+            lines.append(f"- City: {city_name}")
+        if region_name:
+            lines.append(f"- Region: {region_name}")
+        if country_name:
+            lines.append(f"- Country: {country_name}")
+        if country_locode:
+            lines.append(f"- Country LOCODE: {country_locode}")
+        if city_area is not None:
+            lines.append(f"- City area (km²): {city_area}")
+
+        if city_population is not None:
+            suffix = f" (year {city_population_year})" if city_population_year is not None else ""
+            lines.append(f"- City population: {city_population}{suffix}")
+
+        if region_population is not None:
+            suffix = f" (year {region_population_year})" if region_population_year is not None else ""
+            lines.append(f"- Region population: {region_population}{suffix}")
+
+        if country_population is not None:
+            suffix = f" (year {country_population_year})" if country_population_year is not None else ""
+            lines.append(f"- Country population: {country_population}{suffix}")
+
+        if not lines:
+            return None
+
+        return "\n".join(lines)
     
     async def create_agent(
         self,
@@ -138,7 +292,7 @@ class AgentService:
         """
         agent_model = model or self.default_model
         agent_instructions = instructions or self.system_prompt
-        
+        inventory_prompt: Optional[str] = None
         tools = []
 
         if self.cc_access_token and self.cc_user_id and self.cc_thread_id:
@@ -157,6 +311,9 @@ class AgentService:
                 thread_identifier,
                 self.cc_user_id,
             )
+            inventory_prompt = await self._build_inventory_prompt(
+                thread_identifier=thread_identifier,
+            )
         else:
             logger.debug(
                 "Skipping CC inventory tools (token=%s, user_id=%s, thread_id=%s)",
@@ -164,7 +321,10 @@ class AgentService:
                 self.cc_user_id,
                 self.cc_thread_id,
             )
-        
+
+        if inventory_prompt:
+            agent_instructions = f"{agent_instructions}\n\n{inventory_prompt}"
+
         tools.append(climate_vector_search)
 
         agent = Agent(
@@ -195,4 +355,5 @@ class AgentService:
         """Update the cached CC token used by inventory tools."""
         self.cc_access_token = token
         self._token_ref["value"] = token
+        self._inventory_prompt = None
 

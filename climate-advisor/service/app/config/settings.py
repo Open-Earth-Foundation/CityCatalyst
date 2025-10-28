@@ -152,11 +152,21 @@ class PromptsConfig(BaseModel):
         if not prompt_path:
             raise ValueError(f"Prompt type '{prompt_type}' not configured")
 
+        # Build search roots dynamically to handle both development and containerized environments
         search_roots = [
-            Path.cwd(),
+            Path.cwd(),  # Container root or current working directory
             Path(__file__).resolve().parents[3],  # climate-advisor/
-            Path(__file__).resolve().parents[4],  # repository root
         ]
+        
+        # Dynamically search up the directory tree for the repository root
+        # without assuming a fixed depth (which fails in some environments)
+        current = Path(__file__).resolve()
+        for _ in range(10):  # Limit iterations to prevent infinite loops
+            current = current.parent
+            if (current / "llm_config.yaml").exists():
+                # Found the climate-advisor directory
+                search_roots.append(current)
+                break
 
         full_path = None
         for root in search_roots:

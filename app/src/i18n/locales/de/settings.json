@@ -167,5 +167,6 @@
   "my-apps-authorized-on": "Autorisiert am",
   "my-apps-last-used": "Zuletzt verwendet",
   "my-apps-never": "(Nie)",
-  "my-apps-error-loading-apps": "Fehler beim Laden von Apps."
+  "my-apps-error-loading-apps": "Fehler beim Laden von Apps.",
+  "search-by-city-or-country": "Suche nach Stadt- oder Ländername"
 }

@@ -134,6 +134,7 @@
   "cities": "Cities",
   "save-changes": "Save Changes",
   "no-cities": "No cities",
+  "no-matching-cities": "No matching cities found",
   "no-cities-available": "No cities available",
   "organization-status-updated": "Organization status updated successfully.",
   "error-occurred": "An error occured, please try again",

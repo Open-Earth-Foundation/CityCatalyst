@@ -6,13 +6,15 @@ import {
   Heading,
   Icon,
   IconButton,
+  Input,
   Table,
   Tabs,
   Text,
 } from "@chakra-ui/react";
-import { MdAdd, MdMoreVert, MdOutlineGroup } from "react-icons/md";
+import { MdAdd, MdMoreVert, MdOutlineGroup, MdSearch } from "react-icons/md";
 import React, { useEffect, useMemo, useState, use } from "react";
 import { useTranslation } from "@/i18n/client";
+import { useFuzzySearch } from "@/hooks/useFuzzySearch";
 import {
   api,
   useGetOrganizationQuery,
@@ -27,6 +29,7 @@ import {
   AccordionItemTrigger,
   AccordionRoot,
 } from "@/components/ui/accordion";
+import { InputGroup } from "@/components/ui/input-group";
 import { convertKgToTonnes } from "@/util/helpers";
 import { LuChevronDown } from "react-icons/lu";
 import DataTable from "@/components/ui/data-table";
@@ -49,6 +52,7 @@ import { uniqBy } from "lodash";
 import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { toaster } from "@/components/ui/toaster";
+import { TitleMedium } from "@/components/package/Texts";
 
 const AdminOrganizationTeamPage = (props: {
   params: Promise<{ lng: string; id: string }>;
@@ -81,6 +85,7 @@ const AdminOrganizationTeamPage = (props: {
 
   const [selectedProject, setSelectedProject] = React.useState<string[]>([]);
   const [selectedCity, setSelectedCity] = React.useState<string | null>("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { data: organization, isLoading: isOrganizationLoading } =
     useGetOrganizationQuery(id);
@@ -157,6 +162,52 @@ const AdminOrganizationTeamPage = (props: {
     );
   }, [selectedCity, selectedProject, projectsData]);
 
+  // Flatten projects and cities for fuzzy search
+  const flattenedCities = useMemo(() => {
+    if (!projectsData) return [];
+    return projectsData.flatMap((project) =>
+      project.cities.map((city) => ({
+        ...city,
+        projectId: project.projectId,
+        projectName: project.name,
+      })),
+    );
+  }, [projectsData]);
+
+  // Use fuzzy search hook for filtering cities
+  const filteredFlatCities = useFuzzySearch({
+    data: flattenedCities,
+    keys: ["name", "projectName"],
+    searchTerm,
+    threshold: 0.3,
+  });
+
+  // Reconstruct projects with filtered cities
+  const filteredProjectsData = useMemo(() => {
+    if (!projectsData) return [];
+    if (!searchTerm) return projectsData;
+
+    const matchedCityIds = new Set(
+      filteredFlatCities.map((city) => city.cityId),
+    );
+
+    return projectsData
+      .map((project) => ({
+        ...project,
+        cities: project.cities.filter((city) =>
+          matchedCityIds.has(city.cityId),
+        ),
+      }))
+      .filter((project) => project.cities.length > 0);
+  }, [projectsData, searchTerm, filteredFlatCities]);
+
+  // Auto-expand all projects with matching cities when searching
+  const expandedProjects = useMemo(() => {
+    if (!searchTerm || !filteredProjectsData) return selectedProject;
+
+    return filteredProjectsData.map((project) => project.projectId);
+  }, [searchTerm, filteredProjectsData, selectedProject]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToRemove, setUserToRemove] = useState<ProjectUserResponse | null>(
@@ -213,7 +264,7 @@ const AdminOrganizationTeamPage = (props: {
         alignItems="flex-start"
         justifyContent="space-between"
       >
-        <Box w="250px" flex={1}>
+        <Box w="250px" flexShrink={0} display="flex" flexDirection="column">
           <Text
             fontSize="title.md"
             mb={3}
@@ -222,120 +273,163 @@ const AdminOrganizationTeamPage = (props: {
           >
             {t("projects")}
           </Text>
-          <AccordionRoot
-            variant="plain"
-            value={selectedProject}
-            onValueChange={(val) => {
-              setSelectedProject(val.value);
-              setSelectedCity(null);
-            }}
-          >
-            {projectsData?.map((item) => (
-              <AccordionItem key={item.projectId} value={item.projectId}>
-                <AccordionItemTrigger
-                  onClick={() => {
-                    setSelectedCity(null);
-                  }}
-                  w="full"
-                  hideIndicator
-                  padding="0px"
-                >
-                  <Button
-                    rounded={0}
-                    variant="plain"
-                    display="flex"
-                    justifyContent="space-between"
-                    w="full"
-                    minH="56px"
-                    p={4}
-                    pr={0}
-                    alignItems="center"
-                    color={
-                      selectedProject.includes(item.projectId)
-                        ? "interactive.secondary"
-                        : "content.secondary"
-                    }
-                  >
-                    <Text
-                      fontSize="label.lg"
-                      fontWeight="semibold"
-                      color="currentcolor"
-                    >
-                      {item.name}
-                    </Text>
-                    <Accordion.ItemIndicator
-                      color="currentColor"
-                      rotate={{ base: "-90deg", _open: "-180deg" }}
-                    >
-                      <Icon
-                        as={LuChevronDown}
-                        color="currentColor"
-                        boxSize={4}
-                      />
-                    </Accordion.ItemIndicator>
-                  </Button>
-                </AccordionItemTrigger>
-                <AccordionItemContent padding="0px" pb={4}>
-                  {item.cities.length === 0 && (
-                    <Text
-                      fontSize="body.lg"
-                      fontWeight={600}
-                      color="content.primary"
-                    >
-                      {t("no-cities")}
-                    </Text>
-                  )}
-                  {item.cities.length > 0 && (
-                    <Tabs.Root
-                      display="flex"
-                      mt="12px"
-                      flexDirection="row"
-                      variant="subtle"
+
+          {/* Search Bar */}
+          <Box mb="12px">
+            <InputGroup
+              w="full"
+              height="48px"
+              shadow="1dp"
+              alignItems="center"
+              display="flex"
+              borderRadius="4px"
+              borderWidth="1px"
+              borderStyle="solid"
+              borderColor="border.neutral"
+              startElement={
+                <Icon
+                  as={MdSearch}
+                  color="content.tertiary"
+                  display="flex"
+                  pointerEvents="none"
+                  alignItems="center"
+                  size="md"
+                />
+              }
+            >
+              <Input
+                type="search"
+                fontSize="body.md"
+                fontFamily="heading"
+                letterSpacing="wide"
+                color="content.tertiary"
+                placeholder={t("search-by-city-or-country")}
+                border="none"
+                h="100%"
+                onChange={(e) => setSearchTerm(e.target.value)}
+                value={searchTerm}
+              />
+            </InputGroup>
+          </Box>
+
+          <Box maxHeight="600px" overflowY="auto" minHeight="200px">
+            {filteredProjectsData && filteredProjectsData.length > 0 ? (
+              <AccordionRoot
+                variant="plain"
+                collapsible
+                multiple
+                value={expandedProjects}
+                onValueChange={(val) => {
+                  setSelectedProject(val.value);
+                  setSelectedCity(null);
+                }}
+              >
+                {filteredProjectsData.map((item) => (
+                  <AccordionItem key={item.projectId} value={item.projectId}>
+                    <AccordionItemTrigger
+                      onClick={() => {
+                        setSelectedCity(null);
+                      }}
                       w="full"
-                      gap="12px"
-                      value={selectedCity}
-                      onValueChange={(val) => setSelectedCity(val.value)}
+                      hideIndicator
+                      padding="0px"
                     >
-                      <Tabs.List
-                        w="full"
+                      <Button
+                        rounded={0}
+                        variant="plain"
                         display="flex"
-                        flexDirection="column"
-                        gap="12px"
+                        justifyContent="space-between"
+                        w="full"
+                        minH="56px"
+                        p={4}
+                        pr={0}
                       >
-                        {item.cities.map((city) => (
-                          <Tabs.Trigger
-                            key={city.cityId}
-                            value={city.cityId}
-                            fontFamily="heading"
-                            justifyContent={"left"}
-                            letterSpacing={"wide"}
-                            color="content.secondary"
-                            lineHeight="20px"
-                            fontStyle="normal"
-                            fontSize="label.lg"
-                            minH="52px"
+                        <TitleMedium>{item.name}</TitleMedium>
+                        <Accordion.ItemIndicator
+                          color="currentColor"
+                          rotate={{ base: "-90deg", _open: "-180deg" }}
+                        >
+                          <Icon
+                            as={LuChevronDown}
+                            color="currentColor"
+                            boxSize={4}
+                          />
+                        </Accordion.ItemIndicator>
+                      </Button>
+                    </AccordionItemTrigger>
+                    <AccordionItemContent padding="0px" pb={4}>
+                      {item.cities.length === 0 && (
+                        <Text
+                          fontSize="body.lg"
+                          fontWeight={600}
+                          color="content.primary"
+                        >
+                          {t("no-cities")}
+                        </Text>
+                      )}
+                      {item.cities.length > 0 && (
+                        <Tabs.Root
+                          display="flex"
+                          mt="12px"
+                          flexDirection="row"
+                          variant="subtle"
+                          w="full"
+                          gap="12px"
+                          value={selectedCity}
+                          onValueChange={(val) => setSelectedCity(val.value)}
+                        >
+                          <Tabs.List
                             w="full"
-                            _selected={{
-                              color: "content.link",
-                              fontSize: "label.lg",
-                              fontWeight: "medium",
-                              backgroundColor: "background.neutral",
-                              borderRadius: "8px",
-                              borderWidth: "1px",
-                              borderStyle: "solid",
-                              borderColor: "content.link",
-                            }}
+                            display="flex"
+                            flexDirection="column"
+                            gap="12px"
                           >
-                            {city.name}
-                          </Tabs.Trigger>
-                        ))}
-                      </Tabs.List>
-                    </Tabs.Root>
-                  )}
-                </AccordionItemContent>
-              </AccordionItem>
-            ))}
-          </AccordionRoot>
+                            {item.cities.map((city) => (
+                              <Tabs.Trigger
+                                key={city.cityId}
+                                value={city.cityId}
+                                fontFamily="heading"
+                                justifyContent={"left"}
+                                letterSpacing={"wide"}
+                                color="content.secondary"
+                                lineHeight="20px"
+                                fontStyle="normal"
+                                fontSize="label.lg"
+                                minH="52px"
+                                w="full"
+                                _selected={{
+                                  color: "content.link",
+                                  fontSize: "label.lg",
+                                  fontWeight: "medium",
+                                  backgroundColor: "background.neutral",
+                                  borderRadius: "8px",
+                                  borderWidth: "1px",
+                                  borderStyle: "solid",
+                                  borderColor: "content.link",
+                                }}
+                              >
+                                {city.name}
+                              </Tabs.Trigger>
+                            ))}
+                          </Tabs.List>
+                        </Tabs.Root>
+                      )}
+                    </AccordionItemContent>
+                  </AccordionItem>
+                ))}
+              </AccordionRoot>
+            ) : (
+              <Text
+                fontSize="body.lg"
+                fontWeight={600}
+                color="content.primary"
+                textAlign="center"
+                pt={8}
+              >
+                {t("no-matching-cities")}
+              </Text>
+            )}
+          </Box>
         </Box>
         <Box w="full">
           {isLoadingProjectUsers ? (

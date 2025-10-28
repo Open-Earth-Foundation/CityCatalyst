@@ -1,22 +1,12 @@
-# Climate Advisor deployment workflow
-name: Push Climate Advisor to latest and deploy to EKS
+name: Push tagged Climate Advisor to GHCR and deploy to production
+
 permissions:
   contents: read
   packages: write
   checks: write
+
 on:
   workflow_dispatch:
-  pull_request:
-    branches: ["develop"]
-    paths:
-      - climate-advisor/service/**
-      - climate-advisor/llm_config.yaml
-      - climate-advisor/prompts/**
-      - k8s/climate-advisor-deploy.yml
-      - k8s/climate-advisor-migrate.yml
-      - k8s/climate-advisor-service.yml
-      - k8s/climate-advisor-db-configmap.yml
-      - .github/workflows/climate-advisor-develop.yml
   push:
     paths:
       - climate-advisor/service/**
@@ -26,11 +16,18 @@ on:
       - k8s/climate-advisor-migrate.yml
       - k8s/climate-advisor-service.yml
       - k8s/climate-advisor-db-configmap.yml
-      - .github/workflows/climate-advisor-develop.yml
-    branches: ["develop"]
+      - .github/workflows/climate-advisor-tag.yml
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+concurrency:
+  group: climate-advisor-prod
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    if: ${{ !contains(github.ref, '-') }}
     env:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY_CLIMATE_ADVISOR }}
@@ -113,52 +110,87 @@ jobs:
   pushToGHCR:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
+    if: ${{ !contains(github.ref, '-') }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "full_version=$VERSION" >> $GITHUB_OUTPUT
+
+          MAJOR=$(echo $VERSION | cut -d. -f1)
+          echo "major_version=$MAJOR" >> $GITHUB_OUTPUT
+
+          MINOR=$(echo $VERSION | cut -d. -f1-2)
+          echo "minor_version=$MINOR" >> $GITHUB_OUTPUT
+
+          echo "Extracted versions:"
+          echo "  Full: $VERSION"
+          echo "  Major: $MAJOR"
+          echo "  Minor: $MINOR"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Pushing Climate Advisor to GHCR
-        env:
-          VERSION: ${{ github.sha }}
-          IMAGE: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor
-        run: |
-          docker build -t $IMAGE:$VERSION -f climate-advisor/service/Dockerfile climate-advisor
-          docker tag $IMAGE:$VERSION $IMAGE:latest
-          docker push $IMAGE:$VERSION
-          docker push $IMAGE:latest
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: climate-advisor
+          file: climate-advisor/service/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/open-earth-foundation/citycatalyst-climate-advisor:${{ github.sha }}
+            ghcr.io/open-earth-foundation/citycatalyst-climate-advisor:stable
+            ghcr.io/open-earth-foundation/citycatalyst-climate-advisor:${{ steps.version.outputs.major_version }}
+            ghcr.io/open-earth-foundation/citycatalyst-climate-advisor:${{ steps.version.outputs.minor_version }}
+            ghcr.io/open-earth-foundation/citycatalyst-climate-advisor:${{ steps.version.outputs.full_version }}
+
   deployToEKS:
     needs: pushToGHCR
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
+    if: ${{ !contains(github.ref, '-') }}
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
-      EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_PROD_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_PROD_USER }}
+      EKS_PROD_NAME: ${{ secrets.EKS_PROD_NAME }}
+      SHA: ${{ github.sha }}
+      REF: ${{ github.ref }}
+      IMAGE: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor
     steps:
       - uses: actions/checkout@v4
+
       - name: Creating kubeconfig file
-        run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_PROD_NAME}} --region us-east-1
+
       - name: Testing connection to EKS
         run: kubectl get pods -n default
+
       - name: Deploying service
         run: |
+          export VERSION=${REF#refs/tags/v}
           kubectl create -f k8s/climate-advisor-migrate.yml -n default
           kubectl apply -f k8s/climate-advisor-db-configmap.yml -n default
           kubectl apply -f k8s/climate-advisor-service.yml -n default
           kubectl apply -f k8s/climate-advisor-deploy.yml -n default
+          kubectl set image deployment/climate-advisor-deploy climate-advisor-deploy=$IMAGE:$VERSION -n default
           kubectl set env deployment/climate-advisor-deploy \
             OPENROUTER_API_KEY=${{secrets.OPENROUTER_API_KEY}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_CLIMATE_ADVISOR}} \
             CC_API_KEY=${{secrets.CC_SERVICE_API_KEY}} \
             CA_LOG_LEVEL=info \
             CA_CORS_ORIGINS="*" \
-            CC_BASE_URL=https://citycatalyst.openearth.dev \
+            CC_BASE_URL=https://citycatalyst.io \
             LANGSMITH_API_KEY=${{secrets.LANGSMITH_API_KEY}} \
             LANGSMITH_WORKSPACE_ID=${{secrets.LANGSMITH_WORKSPACE_ID}} \
             -n default
           kubectl rollout restart deployment climate-advisor-deploy -n default
+          kubectl rollout status deployment/climate-advisor-deploy -n default --timeout=300s

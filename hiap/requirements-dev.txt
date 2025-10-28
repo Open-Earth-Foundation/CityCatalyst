@@ -24,7 +24,7 @@ executing==2.2.1
     # via stack-data
 fonttools==4.60.1
     # via matplotlib
-ipykernel==6.30.1
+ipykernel==7.0.1
 ipython==9.6.0
     # via ipykernel
 ipython-pygments-lexers==1.1.1

@@ -9,6 +9,7 @@ import ClientRootLayout from "@/components/ClientRootLayout";
 import CookieConsent from "@/components/CookieConsent";
 import { use } from "react";
 import ChatPopover from "@/components/ChatBot/chat-popover";
+import IframeAwareWrapper from "@/components/IframeAwareWrapper";
 
 export const metadata: Metadata = {
   title: "CityCatalyst",
@@ -36,8 +37,10 @@ export default function RootLayout(props: {
         <Providers>
           <Toaster />
           <ClientRootLayout lng={lng}>{props.children}</ClientRootLayout>
-          <CookieConsent lng={lng} />
-          <ChatPopover lng={lng} />
+          <IframeAwareWrapper>
+            <CookieConsent lng={lng} />
+            <ChatPopover lng={lng} />
+          </IframeAwareWrapper>
         </Providers>
       </body>
     </html>

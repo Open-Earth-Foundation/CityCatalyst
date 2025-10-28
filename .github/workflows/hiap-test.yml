@@ -133,6 +133,9 @@ jobs:
             XGBOOST_NUM_THREADS=1 \
             LOG_PARALLELISM=1 \
             LOG_LEVEL=INFO \
+            SUBTASK_TIMEOUT_SECONDS=300 \
+            OPENAI_TIMEOUT_SECONDS=60 \
+            OPENAI_MAX_RETRIES=3 \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_HIAP_TEST}} \
             LANGCHAIN_API_KEY=${{secrets.LANGCHAIN_API_KEY}} \
             AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID_HIAP}} \

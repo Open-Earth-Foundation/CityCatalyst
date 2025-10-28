@@ -205,10 +205,47 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
 
     executor = _get_bulk_executor()
 
-    for idx, city_data in enumerate(req.cityDataList):
-        # mark subtask as running before submission
+    # Per-subtask timeout (seconds), default 5 minutes; configurable via env
+    try:
+        timeout_seconds = int(os.getenv("SUBTASK_TIMEOUT_SECONDS", "300"))
+    except Exception:
+        timeout_seconds = 300
+
+    # Timeout handler
+    def _on_subtask_timeout(task_id: str, sub_idx: int, f):
         try:
-            task_storage[main_task_id]["subtasks"][idx]["status"] = "running"
+            if f.done():
+                return
+            # Mark subtask as failed due to timeout
+            try:
+                task_storage[task_id]["subtasks"][sub_idx]["status"] = "failed"
+                task_storage[task_id]["subtasks"][sub_idx]["error"] = "timeout"
+                # Flag to let callback ignore late results
+                task_storage[task_id]["subtasks"][sub_idx]["timed_out"] = True
+            except Exception:
+                pass
+            try:
+                # Best-effort cancel (no effect if already running)
+                f.cancel()
+            except Exception:
+                pass
+            try:
+                _update_bulk_task_status(task_id)
+            except Exception:
+                pass
+        except Exception:
+            pass
+
+    # Submit only up to available workers; schedule next city when one finishes
+    total = len(req.cityDataList)
+    max_inflight = min(_default_workers, total)
+    submit_lock = threading.Lock()
+    state = {"next_idx": max_inflight}
+
+    def _submit_city(sub_idx: int):
+        city_data = req.cityDataList[sub_idx]
+        try:
+            task_storage[main_task_id]["subtasks"][sub_idx]["status"] = "running"
         except Exception:
             pass
         requestData = {
@@ -235,35 +272,74 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
             _compute_prioritization_bulk_subtask,
             background_task_input,
             main_task_id,
-            idx,
+            sub_idx,
         )
 
-        def _make_callback(task_id: str, sub_idx: int):
+        def _make_callback(task_id: str, sub_idx_inner: int, timer: threading.Timer):
             def _callback(f):
                 try:
-                    result = f.result()
-                    if result.get("status") == "completed":
-                        task_storage[task_id]["subtasks"][sub_idx][
+                    # Cancel timeout timer on completion
+                    try:
+                        timer.cancel()
+                    except Exception:
+                        pass
+
+                    # If already timed out, ignore late result
+                    try:
+                        if task_storage[task_id]["subtasks"][sub_idx_inner].get(
+                            "timed_out"
+                        ):
+                            pass
+                        else:
+                            result = f.result()
+                            if result.get("status") == "completed":
+                                task_storage[task_id]["subtasks"][sub_idx_inner][
+                                    "status"
+                                ] = "completed"
+                                task_storage[task_id]["subtasks"][sub_idx_inner]["result"] = PrioritizerResponse(**result["result"])  # type: ignore
+                            else:
+                                task_storage[task_id]["subtasks"][sub_idx_inner][
+                                    "status"
+                                ] = "failed"
+                                task_storage[task_id]["subtasks"][sub_idx_inner][
+                                    "error"
+                                ] = result.get("error")
+                    except Exception as e:
+                        task_storage[task_id]["subtasks"][sub_idx_inner][
                             "status"
-                        ] = "completed"
-                        task_storage[task_id]["subtasks"][sub_idx]["result"] = PrioritizerResponse(**result["result"])  # type: ignore
-                    else:
-                        task_storage[task_id]["subtasks"][sub_idx]["status"] = "failed"
-                        task_storage[task_id]["subtasks"][sub_idx]["error"] = (
-                            result.get("error")
+                        ] = "failed"
+                        task_storage[task_id]["subtasks"][sub_idx_inner]["error"] = str(
+                            e
                         )
-                except Exception as e:
-                    task_storage[task_id]["subtasks"][sub_idx]["status"] = "failed"
-                    task_storage[task_id]["subtasks"][sub_idx]["error"] = str(e)
                 finally:
                     try:
                         _update_bulk_task_status(task_id)
                     except Exception:
                         pass
+                    # Schedule next city, keeping inflight <= max_inflight
+                    try:
+                        with submit_lock:
+                            ni = state["next_idx"]
+                            if ni < total:
+                                state["next_idx"] = ni + 1
+                                _submit_city(ni)
+                    except Exception:
+                        pass
 
             return _callback
 
-        future.add_done_callback(_make_callback(main_task_id, idx))
+        # Start watchdog timer per subtask
+        timer = threading.Timer(
+            timeout_seconds, _on_subtask_timeout, args=(main_task_id, sub_idx, future)
+        )
+        timer.daemon = True
+        timer.start()
+
+        future.add_done_callback(_make_callback(main_task_id, sub_idx, timer))
+
+    # Prime the pool with up to max_inflight tasks
+    for i in range(max_inflight):
+        _submit_city(i)
 
     return StartPrioritizationResponse(
         taskId=main_task_id, status=task_storage[main_task_id]["status"]

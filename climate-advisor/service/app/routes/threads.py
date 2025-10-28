@@ -69,3 +69,8 @@ async def create_thread(
         context=thread.context,
     )
 
+
+@router.options("/threads", include_in_schema=False)
+async def options_threads() -> Response:
+    return Response(status_code=status.HTTP_200_OK)
+

@@ -185,7 +185,7 @@ class MessageCreationRouteTests(unittest.IsolatedAsyncioTestCase):
             async with self.session_factory() as session:
                 yield session
 
-        async def get_session_factory():
+        def get_session_factory_override():
             return self.session_factory
 
         self.app.dependency_overrides[
@@ -194,7 +194,7 @@ class MessageCreationRouteTests(unittest.IsolatedAsyncioTestCase):
         
         self.app.dependency_overrides[
             __import__("app.db.session", fromlist=["get_session_factory"]).get_session_factory
-        ] = get_session_factory
+        ] = get_session_factory_override
 
         self.client = TestClient(self.app)
 
@@ -277,6 +277,8 @@ class MessageCreationRouteTests(unittest.IsolatedAsyncioTestCase):
 
     def test_message_with_options(self) -> None:
         """Test message creation with model and temperature options."""
+        thread_id = str(uuid4())
+        
         with patch("app.services.agent_service.AgentService") as mock_agent_service:
             mock_agent = AsyncMock()
             mock_agent_service.return_value.create_agent = AsyncMock(
@@ -293,6 +295,7 @@ class MessageCreationRouteTests(unittest.IsolatedAsyncioTestCase):
                 json={
                     "user_id": "user-1",
                     "content": "Test",
+                    "thread_id": thread_id,
                     "options": {
                         "model": "openai/gpt-4o",
                         "temperature": 0.5

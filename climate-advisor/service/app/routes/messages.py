@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import inspect
 import json
 import logging
 from typing import Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID, uuid4
 
 from agents import Runner
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.responses import StreamingResponse
 from langsmith.wrappers import OpenAIAgentsTracingProcessor
 from agents import set_trace_processors
@@ -14,8 +15,10 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from ..config import get_settings
 from ..db.session import get_session_optional, get_session_factory
+from ..exceptions import ThreadNotFoundException
 from ..middleware import get_request_id
-from ..models.requests import MessageCreateRequest
+from ..models.db.thread import Thread
+from ..models.requests import MessageCreateRequest, ThreadCreateRequest
 from ..services.agent_service import AgentService
 from ..services.message_service import MessageService
 from ..services.thread_service import ThreadService
@@ -42,6 +45,11 @@ if settings.langsmith_tracing_enabled:
         logger.info("LangSmith tracing enabled for Agents SDK")
     except Exception as exc:
         logger.warning("Failed to initialize LangSmith tracing: %s", exc)
+
+
+@router.options("/messages", include_in_schema=False)
+async def options_messages() -> Response:
+    return Response(status_code=200)
 
 
 async def _stream_with_agents_sdk(
@@ -177,12 +185,31 @@ async def _stream_with_agents_sdk(
         )
         
         # Stream responses from the agent with conversation history
-        # If we have history loaded from database, use it directly (it already includes the current user message)
-        # Otherwise, pass just the current message
-        if conversation_history:
-            result = Runner.run_streamed(agent, conversation_history)
-        else:
-            result = Runner.run_streamed(agent, payload.content)
+        runner_input: Any = conversation_history if conversation_history else payload.content
+        try:
+            result = Runner.run_streamed(agent, runner_input)
+        except Exception as runner_exc:
+            logger.warning(
+                "Agents Runner streaming failed (%s); falling back to agent.messages.run_stream",
+                runner_exc,
+            )
+            if hasattr(agent, "messages") and hasattr(agent.messages, "run_stream"):  # type: ignore
+                try:
+                    stream_result = agent.messages.run_stream(payload.content)  # type: ignore
+                except TypeError:
+                    stream_result = agent.messages.run_stream()  # type: ignore
+                if inspect.isawaitable(stream_result):
+                    stream_result = await stream_result
+                async for raw_chunk in stream_result:
+                    if isinstance(raw_chunk, (bytes, bytearray)):
+                        yield bytes(raw_chunk)
+                    elif isinstance(raw_chunk, str):
+                        yield raw_chunk.encode("utf-8")
+                    else:
+                        yield json.dumps(raw_chunk).encode("utf-8")
+                return
+            raise
+
         async for chunk in result.stream_events():
             chunk_type = chunk.type
 
@@ -260,11 +287,10 @@ async def _stream_with_agents_sdk(
 
                     yield format_sse(
                         {
-                            "name": invocation.get("name", "unknown_tool"),
-                            "status": invocation.get("status"),
-                            "arguments": invocation.get("arguments"),
+                            "tool": invocation.get("name", "unknown_tool"),
+                            "args": invocation.get("arguments"),
                         },
-                        event="tool_result",
+                        event="tool_call",
                     ).encode("utf-8")
 
                 elif event_name == "tool_output" and run_item is not None:
@@ -343,7 +369,7 @@ async def _stream_with_agents_sdk(
 
             else:
                 logger.debug("Unhandled stream event type: %s", chunk_type)
-        
+
         # Only persist if streaming completed successfully (no errors)
         if not streaming_error:
             assistant_content = "".join(assistant_tokens)
@@ -407,6 +433,7 @@ async def _stream_with_agents_sdk(
 async def post_message(
     payload: MessageCreateRequest,
     session: AsyncSession | None = Depends(get_session_optional),
+    session_factory_dep: async_sessionmaker[AsyncSession] = Depends(get_session_factory),
 ):
     # Log incoming request for debugging with detailed information
     logger.info(
@@ -438,12 +465,16 @@ async def post_message(
     resolved_user_id: str = payload.user_id
     resolved_inventory_id: Optional[str] = payload.inventory_id
     cc_access_token: Optional[str] = None  # Token from CityCatalyst for inventory queries
+    thread: Optional[Thread] = None
+    resolved_thread_id: Union[str, UUID] | None = None
 
     if payload.thread_id:
         # Validate thread_id is a valid UUID format before proceeding
         try:
             if isinstance(payload.thread_id, str):
-                UUID(payload.thread_id)  # This will raise ValueError if invalid
+                resolved_thread_id = UUID(payload.thread_id)  # This will raise ValueError if invalid
+            else:
+                resolved_thread_id = payload.thread_id
         except ValueError:
             logger.error(
                 "Invalid thread_id format received: %s (type: %s)",
@@ -458,7 +489,6 @@ async def post_message(
                     "hint": "thread_id must be a valid UUID format (e.g., '550e8400-e29b-41d4-a716-446655440000')"
                 }
             )
-        resolved_thread_id: Union[str, UUID] = payload.thread_id
     elif session is None:
         temp_thread_id = uuid4()
         resolved_thread_id = temp_thread_id
@@ -469,64 +499,116 @@ async def post_message(
             resolved_user_id,
         )
     else:
-        raise HTTPException(status_code=400, detail="thread_id is required")
+        # Thread will be created when the database session is available
+        resolved_thread_id = None
 
     if session is None:
         logging.error("Database session unavailable; continuing without chat history persistence")
         history_warning = history_warning or base_warning
     else:
         thread_service = ThreadService(session)
-        try:
-            thread = await thread_service.get_thread_for_user(resolved_thread_id, payload.user_id)
-        except HTTPException:
-            raise
-        except ValueError as e:
-            # Handle UUID validation errors that might occur in database operations
-            logger.error("UUID validation error accessing thread: %s", str(e))
-            raise HTTPException(
-                status_code=400,
-                detail={
-                    "message": "Invalid thread ID",
-                    "error": str(e),
-                    "hint": "Please ensure you're using a valid thread_id from thread creation"
-                }
-            )
-        except Exception as e:
-            # Check if this is a PostgreSQL UUID error
-            error_str = str(e)
-            if "invalid input syntax for type uuid" in error_str.lower():
-                logger.error("PostgreSQL UUID error: %s", error_str)
+        thread_payload = ThreadCreateRequest(
+            user_id=payload.user_id,
+            inventory_id=payload.inventory_id,
+            context=payload.context,
+        )
+        if resolved_thread_id is None:
+            try:
+                thread = await thread_service.create_thread(thread_payload)
+                resolved_thread_id = thread.thread_id
+                logger.info(
+                    "Created new thread for user_id=%s (thread_id=%s)",
+                    payload.user_id,
+                    resolved_thread_id,
+                )
+            except ValueError as exc:
+                logger.error("Invalid thread data while creating thread: %s", exc)
+                raise HTTPException(status_code=400, detail=str(exc))
+            except Exception as exc:
+                logger.exception("Failed to create thread for user_id=%s", payload.user_id, exc_info=exc)
+                thread = None
+        else:
+            try:
+                thread = await thread_service.get_thread_for_user(resolved_thread_id, payload.user_id)
+            except ThreadNotFoundException:
+                try:
+                    thread = await thread_service.create_thread(
+                        thread_payload,
+                        thread_id=resolved_thread_id,
+                    )
+                    logger.info(
+                        "Created new thread for user_id=%s with provided thread_id=%s",
+                        payload.user_id,
+                        resolved_thread_id,
+                    )
+                    resolved_thread_id = thread.thread_id
+                except ValueError as exc:
+                    logger.error(
+                        "Invalid thread data while creating thread with provided id %s: %s",
+                        resolved_thread_id,
+                        exc,
+                    )
+                    raise HTTPException(status_code=400, detail=str(exc))
+                except Exception as exc:
+                    logger.exception(
+                        "Failed to create thread for user_id=%s with provided thread_id=%s",
+                        payload.user_id,
+                        resolved_thread_id,
+                        exc_info=exc,
+                    )
+                    thread = None
+            except HTTPException:
+                raise
+            except ValueError as e:
+                # Handle UUID validation errors that might occur in database operations
+                logger.error("UUID validation error accessing thread: %s", str(e))
                 raise HTTPException(
                     status_code=400,
                     detail={
-                        "message": "Invalid thread ID format",
-                        "error": error_str,
-                        "hint": "thread_id must be a valid UUID"
-                    }
+                        "message": "Invalid thread ID",
+                        "error": str(e),
+                        "hint": "Please ensure you're using a valid thread_id from thread creation",
+                    },
                 )
-            try:
-                await session.rollback()
-            except Exception:
-                logging.exception("Failed to rollback session after thread load failure")
-            logging.exception("Failed to load thread before streaming message")
-            history_warning = history_warning or base_warning
-        else:
+            except Exception as e:
+                # Check if this is a PostgreSQL UUID error
+                error_str = str(e)
+                if "invalid input syntax for type uuid" in error_str.lower():
+                    logger.error("PostgreSQL UUID error: %s", error_str)
+                    raise HTTPException(
+                        status_code=400,
+                        detail={
+                            "message": "Invalid thread ID format",
+                            "error": error_str,
+                            "hint": "thread_id must be a valid UUID",
+                        },
+                    )
+                try:
+                    await session.rollback()
+                except Exception:
+                    logging.exception("Failed to rollback session after thread load failure")
+                logging.exception("Failed to load thread before streaming message")
+                history_warning = history_warning or base_warning
+                thread = None
+
+        if thread is not None:
             resolved_thread_id = thread.thread_id
             resolved_user_id = thread.user_id
             if thread.inventory_id:
                 resolved_inventory_id = thread.inventory_id
-            
+
             logger.info(
-                "Thread loaded successfully - thread_id=%s, user_id=%s, inventory_id=%s",
+                "Thread ready - thread_id=%s, user_id=%s, inventory_id=%s",
                 resolved_thread_id,
                 resolved_user_id,
-                thread.inventory_id
+                resolved_inventory_id,
             )
-            
+
             # Extract CC access token from thread context for inventory queries
             cc_access_token = thread.get_access_token()
             if cc_access_token:
                 from ..utils.token_manager import redact_token
+
                 logger.debug("Loaded CC token from thread context: %s", redact_token(cc_access_token))
             else:
                 # Proactively fetch a new token if none exists
@@ -534,20 +616,20 @@ async def post_message(
                 try:
                     from ..services.citycatalyst_client import CityCatalystClient
                     from ..utils.token_manager import redact_token, create_token_context
-                    
+
                     cc_client = CityCatalystClient()
                     fresh_token, expires_in = await cc_client.refresh_token(resolved_user_id)
                     await cc_client.close()
-                    
+
                     if fresh_token:
                         cc_access_token = fresh_token
                         logger.info(
                             "Successfully fetched new CC token for user_id=%s (expires_in=%ds, token=%s)",
                             resolved_user_id,
                             expires_in,
-                            redact_token(fresh_token)
+                            redact_token(fresh_token),
                         )
-                        
+
                         # Store the new token in thread context
                         try:
                             token_context = create_token_context(fresh_token, expires_in=expires_in)
@@ -565,7 +647,7 @@ async def post_message(
                         "Failed to fetch CC token for user_id=%s: %s. Continuing without inventory tools.",
                         resolved_user_id,
                         token_exc,
-                        exc_info=True
+                        exc_info=True,
                     )
             
             message_service = MessageService(session)
@@ -586,7 +668,9 @@ async def post_message(
                 history_warning = history_warning or base_warning
             else:
                 try:
-                    assistant_session_factory = get_session_factory()
+                    assistant_session_factory = session_factory_dep
+                    if inspect.isawaitable(assistant_session_factory):
+                        assistant_session_factory = await assistant_session_factory
                 except Exception:
                     logging.exception("Failed to acquire session factory for assistant persistence")
                     history_warning = history_warning or base_warning
@@ -599,6 +683,9 @@ async def post_message(
         "Connection": "keep-alive",
         "X-Accel-Buffering": "no",
     }
+
+    # Ensure thread_id is set before streaming
+    assert resolved_thread_id is not None, "resolved_thread_id must be set before streaming"
 
     stream = _stream_with_agents_sdk(
         payload,

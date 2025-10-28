@@ -11,6 +11,7 @@ import { HeadlineMedium } from "@/components/package/Texts/Headline";
 import { ModuleDashboardWidgets } from "../ModuleWidgets";
 import MissingCityDashboard from "../missing-city-dashboard";
 import { isFetchBaseQueryError } from "@/util/helpers";
+import { InventoryResponse } from "@/util/types";
 
 export default function PublicDashboard({
   params,
@@ -20,7 +21,6 @@ export default function PublicDashboard({
   const { lng, cityId, params: routeParams } = use(params);
   const year = routeParams?.[0]; // First param is the year
   const { t } = useTranslation(lng, "dashboard");
-
 
   // Get public city data
   const {
@@ -41,7 +41,6 @@ export default function PublicDashboard({
     api.useGetPublicCityInventoriesQuery(cityId!, {
       skip: !cityId,
     });
-
 
   const latestInventory = publicInventories?.[0];
 
@@ -68,6 +67,7 @@ export default function PublicDashboard({
             city={publicCity}
             year={latestInventory.year}
             isPublic={true}
+            ghgiCityData={latestInventory as InventoryResponse}
             isLoading={isPublicCityLoading}
             t={t}
             population={population}

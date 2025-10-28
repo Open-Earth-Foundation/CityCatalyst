@@ -38,8 +38,29 @@ LANGCHAIN_PROJECT_NAME_PRIORITIZER = os.getenv("LANGCHAIN_PROJECT_NAME_PRIORITIZ
 if not LANGCHAIN_PROJECT_NAME_PRIORITIZER:
     raise ValueError("LANGCHAIN_PROJECT_NAME_PRIORITIZER is not set")
 
-# Use OpenAI client
-openai_client = wrap_openai(OpenAI(api_key=OPENAI_API_KEY))
+
+# Use OpenAI client with client-level timeout and retries (overrideable via env)
+def _get_openai_timeout_seconds() -> float:
+    try:
+        return float(os.getenv("OPENAI_TIMEOUT_SECONDS", "60"))
+    except Exception:
+        return 60.0
+
+
+def _get_openai_max_retries() -> int:
+    try:
+        return int(os.getenv("OPENAI_MAX_RETRIES", "3"))
+    except Exception:
+        return 3
+
+
+openai_client = wrap_openai(
+    OpenAI(
+        api_key=OPENAI_API_KEY,
+        timeout=_get_openai_timeout_seconds(),
+        max_retries=_get_openai_max_retries(),
+    )
+)
 
 
 def build_explanation_model(language_codes: list[str]) -> Type[BaseModel]:
@@ -139,6 +160,8 @@ def generate_multilingual_explanation(
             ],
             temperature=0,
             response_format=ExplanationModelDynamic,
+            # Per-request timeout (falls back to client default if omitted)
+            timeout=_get_openai_timeout_seconds(),
         )
         explanation_obj = completion.choices[0].message.parsed
 

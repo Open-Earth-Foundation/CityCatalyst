@@ -102,8 +102,18 @@ describe("PermissionService", () => {
     it("should allow system admin to access any resource", async () => {
       const session = createSession(systemAdminUserId, Roles.Admin);
 
+      // Create a real inventory for the test
+      const inventoryId = randomUUID();
+      await db.models.Inventory.create({
+        inventoryId,
+        cityId: testData.cityId,
+        inventoryName: "Test Inventory",
+        year: 2023,
+        totalEmissions: 1000,
+      });
+
       const result = await PermissionService.checkAccess(session, {
-        inventoryId: randomUUID(), // Non-existent inventory
+        inventoryId,
       });
 
       expect(result.hasAccess).toBe(true);

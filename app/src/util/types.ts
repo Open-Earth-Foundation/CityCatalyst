@@ -39,6 +39,14 @@ export interface CityYearData {
   lastUpdate: Date;
 }
 
+export interface CountryEmissionsResponse {
+  emissions: number;
+  yearUsed: number;
+  dataSource: string;
+  countryCode: string;
+  inventoryYear: number;
+}
+
 interface RequiredInventoryAttributes extends Required<InventoryAttributes> {}
 
 export type FullInventoryValue = InventoryValue & {
@@ -551,6 +559,7 @@ export interface FormulaInputValuesResponse {
   region: string;
 }
 export enum HighImpactActionRankingStatus {
+  TO_DO = "TO_DO",
   PENDING = "PENDING",
   SUCCESS = "SUCCESS",
   FAILURE = "FAILURE",

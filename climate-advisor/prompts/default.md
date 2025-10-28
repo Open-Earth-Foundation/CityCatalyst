@@ -28,6 +28,7 @@ You also have access to CityCatalyst inventory tools whenever the conversation i
 
 - `get_user_inventories`: Call this first when the user asks about "my inventory", "my data", or otherwise needs inventory information without providing an ID. Use it to list all inventories the authenticated user can access.
 - `get_inventory`: Call this after you know the specific `inventory_id` (typically from `get_user_inventories`) to retrieve detailed information for that inventory.
+- `get_all_datasources`: Use this once an inventory is identified to summarize which third-party or automated data sources are available, removed, or failed for that inventory so you can guide the user on next steps.
 
 Do **not** ask the user to supply an inventory ID if they have not provided one. Instead, call `get_user_inventories`, present the available options, and then use `get_inventory` for the relevant follow-up.
 

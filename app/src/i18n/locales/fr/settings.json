@@ -120,6 +120,7 @@
   "collaborators-subheading": "<bold>Collaborateurs</bold> sur {{name}}",
   "projects": "Projets",
   "projects-description": "{{orgName}} peut actuellement mettre en place jusqu'à {{projectCount}} projets avec {{cityCount}} villes",
+  "no-project": "Villes non assignées",
   "all-cities": "Toutes les villes ({{count}})",
   "all-collaborators": "Tous les Collaborateurs ({{count}})",
   "all-inventories": "Inventaires ({{count}})",

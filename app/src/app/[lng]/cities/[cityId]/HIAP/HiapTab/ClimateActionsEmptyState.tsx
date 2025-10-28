@@ -10,6 +10,7 @@ import { Box, Icon, Text, Button } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import i18next from "i18next";
 import { useState } from "react";
+import { BiSolidError } from "react-icons/bi";
 
 // Renders different screens for data states:
 // 1. No activity level data found to generate actions (disable generate actions button)
@@ -23,6 +24,7 @@ const TopActionsDataState = ({
   actionType,
   onRefetch,
   isActionsPending,
+  error,
 }: {
   t: TFunction;
   inventory: InventoryResponse | null;
@@ -30,6 +32,7 @@ const TopActionsDataState = ({
   actionType: ACTION_TYPES;
   onRefetch: () => void;
   isActionsPending: boolean;
+  error?: any;
 }) => {
   const { data: inventoryProgress, isLoading } =
     api.useGetInventoryProgressQuery(inventory?.inventoryId || "", {
@@ -85,11 +88,13 @@ const TopActionsDataState = ({
 
       {!hasActivityLevelData && !isLoading && <NoActivityLevelData t={t} />}
 
-      {isActionsPending && !isLoading && hasActivityLevelData && (
+      {isActionsPending && !isLoading && hasActivityLevelData && !error && (
         <GeneratingClimateActions t={t} isActionsPending={isActionsPending} />
       )}
 
-      {hasActivityLevelData && !hasActions && !isActionsPending && (
+      {error && <ErrorGeneratingActions t={t} onRefetch={onRefetch} />}
+
+      {hasActivityLevelData && !hasActions && !isActionsPending && !error && (
         <GenerateActionsPrompt
           t={t}
           isLoading={isLoading}
@@ -303,6 +308,57 @@ const GeneratingClimateActions = ({
       >
         {t("generating-climate-actions-description")}
       </Text>
+    </Box>
+  );
+};
+
+const ErrorGeneratingActions = ({
+  t,
+  onRefetch,
+}: {
+  t: TFunction;
+  onRefetch: () => void;
+}) => {
+  return (
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      py="48px"
+      h="400px"
+    >
+      <Icon as={BiSolidError} boxSize="64px" color="content.negative" />
+      <Text
+        fontSize="title.md"
+        color="content.primary"
+        mt="24px"
+        fontFamily="heading"
+        fontWeight="semibold"
+        textAlign="center"
+      >
+        {t("error-generating-actions-title")}
+      </Text>
+      <Text
+        w="400px"
+        fontSize="body.lg"
+        color="content.secondary"
+        fontWeight="normal"
+        mt="8px"
+        textAlign="center"
+      >
+        {t("error-generating-actions-description")}
+      </Text>
+      <Button
+        mt="24px"
+        bg="content.link"
+        color="white"
+        onClick={onRefetch}
+        py="32px"
+        w="400px"
+        _hover={{ bg: "content.linkHover" }}
+      >
+        {t("generate-climate-actions-list")}
+      </Button>
     </Box>
   );
 };

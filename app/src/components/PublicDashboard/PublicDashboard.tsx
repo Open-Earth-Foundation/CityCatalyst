@@ -11,6 +11,7 @@ import { HeadlineMedium } from "@/components/package/Texts/Headline";
 import { ModuleDashboardWidgets } from "../ModuleWidgets";
 import MissingCityDashboard from "../missing-city-dashboard";
 import { isFetchBaseQueryError } from "@/util/helpers";
+import { InventoryResponse } from "@/util/types";
 
 export default function PublicDashboard({
   params,
@@ -68,6 +69,7 @@ export default function PublicDashboard({
             city={publicCity}
             year={latestInventory.year}
             isPublic={true}
+            ghgiCityData={latestInventory as InventoryResponse}
             isLoading={isPublicCityLoading}
             t={t}
             population={population}

@@ -13,7 +13,11 @@ import { HighImpactActionRankingStatus } from "@/util/types";
 import { hiapApiWrapper } from "./HiapApiService";
 import { InventoryService } from "../InventoryService";
 import GlobalAPIService from "../GlobalAPIService";
-import { PrioritizerResponse, PrioritizerCityData } from "./types";
+import {
+  PrioritizerResponse,
+  PrioritizerCityData,
+  PrioritizerRankedAction,
+} from "./types";
 import uniqBy from "lodash/uniqBy";
 import EmailService from "../EmailService";
 import { User } from "@/models/User";
@@ -86,11 +90,11 @@ export interface GlobalApiClimateAction {
 export const findExistingRanking = async (
   inventoryId: string,
   locode: string,
-  lang: LANGUAGES,
+  langs: LANGUAGES[],
   type: ACTION_TYPES,
 ) => {
   const ranking = await db.models.HighImpactActionRanking.findOne({
-    where: { locode, inventoryId, langs: [lang], type },
+    where: { locode, inventoryId, langs, type },
     include: [
       {
         model: db.models.HighImpactActionRanked,
@@ -104,7 +108,7 @@ export const findExistingRanking = async (
 export const startActionRankingJob = async (
   inventoryId: string,
   locode: string,
-  lang: LANGUAGES,
+  langs: LANGUAGES[],
   type: ACTION_TYPES,
   user?: User,
 ) => {
@@ -131,13 +135,15 @@ export const startActionRankingJob = async (
     return existingRanking;
   }
 
-  const contextData = await getCityContextAndEmissionsData(inventoryId);
+  const contextData =
+    await hiapServiceWrapper.getCityContextAndEmissionsData(inventoryId);
   logger.info({ contextData }, "City context and emissions data fetched");
   if (!contextData) throw new Error("No city context/emissions data found");
 
   const { taskId } = await hiapApiWrapper.startPrioritization(
     contextData,
     type,
+    langs,
   );
   logger.info({ taskId }, "Task ID received from HIAP API");
   if (!taskId) throw new Error("No taskId returned from HIAP API");
@@ -145,16 +151,400 @@ export const startActionRankingJob = async (
   const ranking = await db.models.HighImpactActionRanking.create({
     locode,
     inventoryId,
-    langs: Object.values(LANGUAGES),
+    langs: langs,
     type,
     jobId: taskId,
     status: HighImpactActionRankingStatus.PENDING,
+    isBulk: false, // Single city prioritization
   });
-  logger.info(`Ranking created in DB with ID: ${ranking.id}`);
+  logger.info(
+    `Ranking created in DB with ID: ${ranking.id}, langs: ${langs.join(", ")}`,
+  );
 
   // Do not await here, it will make the request time out. Poll job in the background.
-  checkActionRankingJob(ranking, lang, type, user);
+  // Use the first language for the initial check
+  if (langs.length > 0) {
+    checkActionRankingJob(ranking, langs[0], type, user);
+  } else {
+    logger.error("No languages provided for action ranking job");
+  }
   return ranking;
+};
+
+/**
+ * Start bulk prioritization job for multiple cities
+ * All cities will share the same jobId from HIAP
+ */
+export const startBulkActionRankingJob = async (
+  citiesInventoriesData: Array<{
+    inventoryId: string;
+    locode: string;
+    cityId: string;
+  }>,
+  lang: LANGUAGES,
+  type: ACTION_TYPES,
+) => {
+  logger.info(
+    { cityCount: citiesInventoriesData.length, type },
+    "Starting bulk action ranking job",
+  );
+
+  // Gather context data for all cities
+  const citiesData: PrioritizerCityData[] = [];
+  const failed: Array<{ inventoryId: string; error: string }> = [];
+
+  for (const { inventoryId, locode } of citiesInventoriesData) {
+    try {
+      const contextData =
+        await hiapServiceWrapper.getCityContextAndEmissionsData(inventoryId);
+      citiesData.push(contextData);
+    } catch (error: any) {
+      logger.error(
+        { inventoryId, error },
+        `Failed to get context data for city ${locode}`,
+      );
+      failed.push({ inventoryId, error: error.message });
+    }
+  }
+
+  if (citiesData.length === 0) {
+    throw new Error("Failed to get context data for all cities");
+  }
+
+  // Start bulk prioritization (single HIAP API call for all cities)
+  const { taskId } = await hiapApiWrapper.startBulkPrioritization(
+    citiesData,
+    type,
+  );
+
+  logger.info(
+    { taskId, cityCount: citiesData.length },
+    "Bulk prioritization started, creating ranking records",
+  );
+
+  // Create ranking records for all cities with the SAME jobId
+  const rankings = await Promise.all(
+    citiesInventoriesData.map(async ({ inventoryId, locode, cityId }) => {
+      // Skip if context data failed for this city
+      if (failed.some((f) => f.inventoryId === inventoryId)) {
+        return null;
+      }
+
+      return await db.models.HighImpactActionRanking.create({
+        locode,
+        inventoryId,
+        langs: Object.values(LANGUAGES),
+        type,
+        jobId: taskId, // SAME jobId for all cities in this bulk batch
+        status: HighImpactActionRankingStatus.PENDING,
+        isBulk: true, // Old bulk prioritization (kept for backward compatibility)
+      });
+    }),
+  );
+
+  const successfulRankings = rankings.filter((r) => r !== null);
+
+  logger.info(
+    {
+      taskId,
+      totalCities: citiesInventoriesData.length,
+      successful: successfulRankings.length,
+      failed: failed.length,
+    },
+    "Bulk ranking records created",
+  );
+
+  return {
+    taskId,
+    rankings: successfulRankings,
+    failed,
+  };
+};
+
+/**
+ * Check single prioritization job status ONCE and save results if completed
+ * Called by cron job for single-city rankings
+ * Returns true if job is complete (success or failure), false if still pending
+ */
+export const checkSingleActionRankingJob = async (
+  jobId: string,
+  lang: LANGUAGES,
+  type: ACTION_TYPES,
+): Promise<boolean> => {
+  logger.info({ jobId, type }, "Checking single action ranking job status");
+
+  try {
+    // Check status ONCE (no polling)
+    const statusData = await hiapApiWrapper.checkPrioritizationProgress(jobId);
+
+    logger.info(
+      { jobId, status: statusData.status },
+      "Checked single job status",
+    );
+
+    // Handle different status outcomes
+    if (statusData.status === "pending") {
+      return false;
+    }
+
+    if (statusData.status === "failed") {
+      await db.models.HighImpactActionRanking.update(
+        {
+          status: HighImpactActionRankingStatus.FAILURE,
+          errorMessage:
+            statusData.error || "HIAP single prioritization job failed",
+        },
+        { where: { jobId } },
+      );
+      logger.error(
+        { jobId, error: statusData.error },
+        "Single prioritization job failed",
+      );
+      return true;
+    }
+
+    // Status is "completed" - fetch result
+    let singleResponse;
+    try {
+      singleResponse = await hiapApiWrapper.getPrioritizationResult(jobId);
+    } catch (error: any) {
+      if (error.message?.includes("409")) {
+        logger.warn(
+          { jobId, error: error.message },
+          "Result not ready yet (409 Conflict), will retry on next cron run",
+        );
+        return false;
+      }
+      throw error;
+    }
+
+    // Wrap single response in bulk format for unified processing
+    const bulkResponse = {
+      prioritizerResponseList: [singleResponse],
+    };
+
+    // Process using the same logic as bulk jobs
+    return await processBulkJobResults(jobId, bulkResponse);
+  } catch (err) {
+    logger.error({ err, jobId }, "Error in checkSingleActionRankingJob");
+    throw err;
+  }
+};
+
+/**
+ * Process bulk job results (shared by both bulk and single jobs)
+ * Saves ranked actions for all cities in the job
+ * Returns true when complete
+ */
+async function processBulkJobResults(
+  jobId: string,
+  bulkResponse: { prioritizerResponseList: any[] },
+): Promise<boolean> {
+  // Get all rankings that share this jobId
+  const rankings = await db.models.HighImpactActionRanking.findAll({
+    where: { jobId },
+  });
+
+  logger.info(
+    {
+      jobId,
+      rankingCount: rankings.length,
+      responseCount: bulkResponse.prioritizerResponseList.length,
+    },
+    "Found rankings and responses for bulk job",
+  );
+
+  // Log summary of what HIAP returned for each city
+  const responsesSummary = bulkResponse.prioritizerResponseList.map(
+    (response) => {
+      const mitActionIds = response.rankedActionsMitigation
+        .slice(0, 5)
+        .map((a: PrioritizerRankedAction) => `${a.actionId}:${a.rank}`)
+        .join(",");
+      const adpActionIds = response.rankedActionsAdaptation
+        .slice(0, 5)
+        .map((a: PrioritizerRankedAction) => `${a.actionId}:${a.rank}`)
+        .join(",");
+      return {
+        locode: response.metadata.locode,
+        mitCount: response.rankedActionsMitigation.length,
+        adpCount: response.rankedActionsAdaptation.length,
+        topMitActions: mitActionIds || "none",
+        topAdpActions: adpActionIds || "none",
+      };
+    },
+  );
+  logger.info(
+    { jobId, responses: responsesSummary },
+    "🔍 HIAP API Response Summary (first 5 actions per city)",
+  );
+
+  // Create a map of locode -> PrioritizerResponse for easy lookup
+  const responseByLocode = new Map(
+    bulkResponse.prioritizerResponseList.map((response) => [
+      response.metadata.locode,
+      response,
+    ]),
+  );
+
+  // Save ranked actions for each city's ranking
+  for (const ranking of rankings) {
+    try {
+      // Skip rankings that already failed during context data fetch
+      if (ranking.status === HighImpactActionRankingStatus.FAILURE) {
+        logger.info(
+          { rankingId: ranking.id, locode: ranking.locode },
+          "Skipping ranking that already failed during context fetch",
+        );
+        continue;
+      }
+
+      // Find the response for this city's locode
+      const cityResponse = responseByLocode.get(ranking.locode);
+
+      if (!cityResponse) {
+        logger.error(
+          { rankingId: ranking.id, locode: ranking.locode },
+          "No response found for city in bulk results",
+        );
+        await ranking.update({
+          status: HighImpactActionRankingStatus.FAILURE,
+          errorMessage: `No prioritization result found for locode: ${ranking.locode}`,
+        });
+        continue;
+      }
+
+      // Log what we got from the response map
+      logger.info(
+        {
+          rankingId: ranking.id,
+          locode: ranking.locode,
+          foundInMap: !!cityResponse,
+          mitActionsCount: cityResponse.rankedActionsMitigation.length,
+          adpActionsCount: cityResponse.rankedActionsAdaptation.length,
+        },
+        "🔍 Retrieved city response from map",
+      );
+
+      const rankedActions = [
+        ...cityResponse.rankedActionsMitigation.map(
+          (a: PrioritizerRankedAction) => ({
+            ...a,
+            type: ACTION_TYPES.Mitigation,
+          }),
+        ),
+        ...cityResponse.rankedActionsAdaptation.map(
+          (a: PrioritizerRankedAction) => ({
+            ...a,
+            type: ACTION_TYPES.Adaptation,
+          }),
+        ),
+      ];
+
+      // Save ranked actions for ALL languages in ranking.langs
+      const languagesToProcess = ranking.langs as LANGUAGES[];
+      for (const language of languagesToProcess) {
+        const mergedRanked = await fetchAndMergeRankedActions(
+          language,
+          rankedActions,
+        );
+        await saveRankedActionsForLanguage(ranking, mergedRanked, language);
+      }
+
+      // Update ranking status to success
+      await ranking.update({ status: HighImpactActionRankingStatus.SUCCESS });
+
+      logger.info(
+        {
+          rankingId: ranking.id,
+          locode: ranking.locode,
+          languagesProcessed: languagesToProcess,
+        },
+        "Saved ranked actions for city in all languages",
+      );
+    } catch (error: any) {
+      logger.error(
+        { rankingId: ranking.id, locode: ranking.locode, error },
+        "Failed to save ranked actions for city",
+      );
+      await ranking.update({
+        status: HighImpactActionRankingStatus.FAILURE,
+        errorMessage: error.message || "Failed to save ranked actions",
+      });
+    }
+  }
+
+    logger.info({ jobId }, "Bulk action ranking job completed successfully");
+
+  return true; // Job is complete (success)
+}
+
+/**
+ * Check bulk prioritization job status ONCE and save results if completed
+ * Called by cron job for multi-city rankings
+ * Returns true if job is complete (success or failure), false if still pending
+ */
+export const checkBulkActionRankingJob = async (
+  jobId: string,
+  lang: LANGUAGES,
+  type: ACTION_TYPES,
+): Promise<boolean> => {
+  logger.info({ jobId, type }, "Checking bulk action ranking job status");
+
+  try {
+    // Check status ONCE (no polling)
+    const statusData =
+      await hiapApiWrapper.checkBulkPrioritizationProgress(jobId);
+
+    logger.info(
+      { jobId, status: statusData.status },
+      "Checked bulk job status",
+    );
+
+    // Handle different status outcomes
+    if (statusData.status === "pending") {
+      // Still processing - cron will check again next minute
+      return false;
+    }
+
+    if (statusData.status === "failed") {
+      // Update all rankings with this jobId to failed
+      await db.models.HighImpactActionRanking.update(
+        {
+          status: HighImpactActionRankingStatus.FAILURE,
+          errorMessage:
+            statusData.error || "HIAP bulk prioritization job failed",
+        },
+        { where: { jobId } },
+      );
+      logger.error(
+        { jobId, error: statusData.error },
+        "Bulk prioritization job failed",
+      );
+      return true; // Job is complete (failed)
+    }
+
+    // Status is "completed" - fetch result
+    let bulkResponse;
+    try {
+      bulkResponse = await hiapApiWrapper.getBulkPrioritizationResult(jobId);
+    } catch (error: any) {
+      if (error.message?.includes("409")) {
+        logger.warn(
+          { jobId, error: error.message },
+          "Result not ready yet (409 Conflict), will retry on next cron run",
+        );
+        return false;
+      }
+      throw error;
+    }
+
+    // Process using shared logic
+    return await processBulkJobResults(jobId, bulkResponse);
+  } catch (err) {
+    logger.error({ err, jobId }, "Error in checkBulkActionRankingJob");
+    throw err;
+  }
 };
 
 async function fetchAndMergeRankedActions(
@@ -225,6 +615,38 @@ async function checkExistingActions(
   return null;
 }
 
+// Helper: Normalize field to array (handles strings and nulls)
+function normalizeToArray(value: any): string[] | undefined {
+  if (value === null || value === undefined) {
+    return undefined;
+  }
+  if (Array.isArray(value)) {
+    return value;
+  }
+  if (typeof value === "string") {
+    // If it's a string, split by common separators or return as single-item array
+    if (value.trim() === "") {
+      return undefined;
+    }
+    // Check if it's a comma-separated or newline-separated list
+    if (value.includes("\n")) {
+      return value
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+    if (value.includes(",")) {
+      return value
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+    // Otherwise, return as single item array
+    return [value];
+  }
+  return undefined;
+}
+
 // Helper: Create a single ranked action record
 async function createRankedActionRecord(
   rankingId: string,
@@ -242,10 +664,10 @@ async function createRankedActionRecord(
       type: rankedAction.type,
       explanation: rankedAction.explanation,
       name: rankedAction.name,
-      hazards: rankedAction.hazard,
-      sectors: rankedAction.sector,
-      subsectors: rankedAction.subsector,
-      primaryPurposes: rankedAction.primaryPurpose,
+      hazards: normalizeToArray(rankedAction.hazard),
+      sectors: normalizeToArray(rankedAction.sector),
+      subsectors: normalizeToArray(rankedAction.subsector),
+      primaryPurposes: normalizeToArray(rankedAction.primaryPurpose),
       description: rankedAction.description,
       cobenefits: rankedAction.cobenefits,
       equityAndInclusionConsiderations:
@@ -254,9 +676,11 @@ async function createRankedActionRecord(
       adaptationEffectiveness: rankedAction.adaptationEffectiveness,
       costInvestmentNeeded: rankedAction.costInvestmentNeeded,
       timelineForImplementation: rankedAction.timelineForImplementation,
-      dependencies: rankedAction.dependencies,
-      keyPerformanceIndicators: rankedAction.keyPerformanceIndicators,
-      powersAndMandates: rankedAction.powersAndMandates,
+      dependencies: normalizeToArray(rankedAction.dependencies),
+      keyPerformanceIndicators: normalizeToArray(
+        rankedAction.keyPerformanceIndicators,
+      ),
+      powersAndMandates: normalizeToArray(rankedAction.powersAndMandates),
       adaptationEffectivenessPerHazard:
         rankedAction.adaptationEffectivenessPerHazard,
       biome: rankedAction.biome,
@@ -294,8 +718,22 @@ async function saveRankedActionsForLanguage(
   );
 
   const savedCount = results.filter(Boolean).length;
+
+  // Log sample of what was saved
+  const savedSample = mergedRanked.slice(0, 3).map((a) => ({
+    actionId: a.actionId,
+    rank: a.rank,
+    name: a.name ? Array.from(a.name).slice(0, 30).join('') : undefined,
+  }));
   logger.info(
-    `[saveRankedActionsForLanguage] Saved ${savedCount} out of ${mergedRanked.length} ranked actions for lang ${lang}.`,
+    {
+      rankingId: ranking.id,
+      lang,
+      savedCount,
+      totalMerged: mergedRanked.length,
+      savedSample,
+    },
+    `[saveRankedActionsForLanguage] Saved ranked actions to DB`,
   );
 
   // Return the newly created actions
@@ -332,6 +770,7 @@ export const checkActionRankingJob = async (
           jobStatus = HighImpactActionRankingStatus.FAILURE;
           await ranking.update({
             status: HighImpactActionRankingStatus.FAILURE,
+            errorMessage: statusData.error || "HIAP prioritization job failed",
           });
           throw new Error("Prioritization job failed");
         default:
@@ -389,13 +828,22 @@ function getSectorEmissions(
   sectorName: string,
 ): number | null {
   const value = emissionsBySector.find(
-    (s) => s.sectorName === sectorName,
+    (s) => s.sector_name === sectorName,
   )?.co2eq;
   const num = Number(value);
   return isNaN(num) ? null : num;
 }
 
-export async function getCityContextAndEmissionsData(
+// Wrapper object for functions that need to be mocked in tests
+export const hiapServiceWrapper = {
+  getCityContextAndEmissionsData: async (
+    inventoryId: string,
+  ): Promise<PrioritizerCityData> => {
+    return await getCityContextAndEmissionsDataImpl(inventoryId);
+  },
+};
+
+async function getCityContextAndEmissionsDataImpl(
   inventoryId: string,
 ): Promise<PrioritizerCityData> {
   // Get inventory to access city information
@@ -413,10 +861,23 @@ export async function getCityContextAndEmissionsData(
     inventory.year!,
   );
   const emissionsBySector = await getTotalEmissionsBySector([inventoryId]);
+
+  // Log what we got from getTotalEmissionsBySector
+  logger.info(
+    {
+      inventoryId,
+      locode: city.locode,
+      emissionsBySectorCount: emissionsBySector.length,
+      sectorNames: emissionsBySector.map((s) => s.sector_name),
+      sampleSector: emissionsBySector[0],
+    },
+    "🔍 Emissions data retrieved from getTotalEmissionsBySector",
+  );
+
   const cityData: PrioritizerCityData = {
     cityContextData: {
       locode: city.locode!,
-      populationSize: populationSize.population!,
+      populationSize: Number(populationSize.population!),
     },
     cityEmissionsData: {
       stationaryEnergyEmissions: getSectorEmissions(
@@ -428,13 +889,27 @@ export async function getCityContextAndEmissionsData(
         "Transportation",
       ),
       wasteEmissions: getSectorEmissions(emissionsBySector, "Waste"),
-      ippuEmissions: getSectorEmissions(emissionsBySector, "IPPU"),
+      ippuEmissions: getSectorEmissions(
+        emissionsBySector,
+        "Industrial Processes and Product Uses (IPPU)",
+      ),
       afoluEmissions: getSectorEmissions(
         emissionsBySector,
         "Agriculture, Forestry, and Other Land Use (AFOLU)",
       ),
     },
   };
+
+  // Log what we're about to send
+  logger.info(
+    {
+      inventoryId,
+      locode: city.locode,
+      cityEmissionsData: cityData.cityEmissionsData,
+    },
+    "🔍 Final city emissions data prepared for HIAP",
+  );
+
   return cityData;
 }
 
@@ -445,13 +920,23 @@ async function findOrSelectRanking(
   lang: LANGUAGES,
   type: ACTION_TYPES,
 ) {
-  let ranking = await findExistingRanking(inventoryId, locode, lang, type);
-  if (!ranking) {
-    ranking = await db.models.HighImpactActionRanking.findOne({
-      where: { inventoryId, locode, type },
-      order: [["created", "ASC"]],
-    });
-  }
+  // First try to find a ranking that includes the requested language
+  let ranking = await db.models.HighImpactActionRanking.findOne({
+    where: {
+      inventoryId,
+      locode,
+      type,
+      langs: { [Op.contains]: [lang] }, // Check if the langs array contains this language
+    },
+    include: [
+      {
+        model: db.models.HighImpactActionRanked,
+        as: "highImpactActionRanked",
+      },
+    ],
+    order: [["created", "DESC"]],
+  });
+
   return ranking;
 }
 
@@ -544,10 +1029,12 @@ export const fetchRanking = async (
         });
 
         // Start new prioritization job
-        const contextData = await getCityContextAndEmissionsData(inventoryId);
+        const contextData =
+          await hiapServiceWrapper.getCityContextAndEmissionsData(inventoryId);
         const { taskId } = await hiapApiWrapper.startPrioritization(
           contextData,
           type,
+          (ranking.langs as LANGUAGES[]) || [lang], // Use existing langs or wrap single lang
         );
 
         // Update ranking with new job ID
@@ -592,7 +1079,7 @@ export const fetchRanking = async (
         return await startActionRankingJob(
           inventoryId,
           locode,
-          lang,
+          [lang],
           type,
           user || undefined,
         );
@@ -601,7 +1088,7 @@ export const fetchRanking = async (
       return await startActionRankingJob(
         inventoryId,
         locode,
-        lang,
+        [lang],
         type,
         user || undefined,
       );
@@ -610,7 +1097,7 @@ export const fetchRanking = async (
       return await startActionRankingJob(
         inventoryId,
         locode,
-        lang,
+        [lang],
         type,
         user || undefined,
       );

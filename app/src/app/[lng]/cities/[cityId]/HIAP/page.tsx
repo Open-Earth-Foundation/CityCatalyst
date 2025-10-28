@@ -36,6 +36,7 @@ export default function HIAPPage(props: {
 
   const [ignoreExisting, setIgnoreExisting] = useState(false);
   const [shouldRefetch, setShouldRefetch] = useState(false);
+  const [userTriggeredHiap, setUserTriggeredHiap] = useState(false);
 
   // getCityData
   const { data: city } = api.useGetCityQuery(cityId, {
@@ -54,7 +55,7 @@ export default function HIAPPage(props: {
       actionType: ACTION_TYPES.Mitigation,
       ignoreExisting: ignoreExisting,
     },
-    { skip: !inventory?.inventoryId },
+    { skip: !inventory?.inventoryId || !userTriggeredHiap },
   );
 
   // Handle reprioritization when ignoreExisting changes
@@ -154,6 +155,7 @@ export default function HIAPPage(props: {
                 type={actionType}
                 inventory={null}
                 cityData={cityData!}
+                onTriggerHiap={() => setUserTriggeredHiap(true)}
               />
             </Tabs.Content>
           ))}
@@ -214,6 +216,7 @@ export default function HIAPPage(props: {
               type={actionType}
               inventory={inventory}
               cityData={cityData!}
+              onTriggerHiap={() => setUserTriggeredHiap(true)}
             />
           </Tabs.Content>
         ))}

@@ -51,7 +51,7 @@ def _create_engine():
 
     try:
         engine = create_async_engine(database_url, **engine_kwargs)
-    except ArgumentError:
+    except (ArgumentError, TypeError):
         # Some dialects (e.g. SQLite) do not support pooling args.
         engine = create_async_engine(
             database_url,

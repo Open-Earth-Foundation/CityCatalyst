@@ -130,14 +130,14 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
           </Flex>
         </Flex>
         <Box mt={-50}>
-          <ProjectMap
+          {/* <ProjectMap
             organizationId={organization?.organizationId}
             projectId={projectId}
             width={422}
             height={317}
             setSelectedCity={setSelectedCity}
             selectedCity={selectedCity}
-          />
+          /> */}
         </Box>
       </Flex>
     </Box>

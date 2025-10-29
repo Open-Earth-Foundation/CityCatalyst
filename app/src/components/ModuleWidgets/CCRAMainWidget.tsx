@@ -1,14 +1,18 @@
 import React from "react";
-import { Text, HStack, Box, Heading } from "@chakra-ui/react";
+import { Text, HStack, Box, Heading, Icon, Link } from "@chakra-ui/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/i18n/client";
-import { useGetCityCCRADashboardQuery } from "@/services/api";
+import { useGetCityCCRADashboardQuery, useGetCityQuery } from "@/services/api";
 import { useLatestInventory } from "@/hooks/use-latest-inventory";
 import { MdOpenInNew } from "react-icons/md";
 import { Button } from "../ui/button";
 import TopRisksWidget from "./CCRAWidget";
-import { HeadlineLarge, HeadlineSmall } from "@/components/package/Texts/Headline";
-import { BodyLarge } from "@/components/package/Texts/Body";
+import {
+  HeadlineLarge,
+  HeadlineSmall,
+} from "@/components/package/Texts/Headline";
+import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
+import { useRouter } from "next/navigation";
 
 interface CCRAWidgetProps {
   cityId: string;
@@ -26,6 +30,7 @@ export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
   year,
 }) => {
   const { t } = useTranslation(lng, "ccra");
+  const router = useRouter();
 
   const { inventoryId, isLoading: isInventoryLoading } = useLatestInventory({
     cityId,
@@ -44,6 +49,11 @@ export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
       skip: !inventoryId,
     },
   );
+
+  // Get city by cityId
+  const { data: city } = useGetCityQuery(cityId, {
+    skip: !cityId,
+  });
 
   const isLoading = isInventoryLoading || isCcraLoading;
 
@@ -70,8 +80,31 @@ export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
 
   return (
     <Box w="full">
-      <HStack justifyContent="space-between" mb={2}>
-        <Text color="content.link">{t("climate-risk-assessment")}</Text>
+      <HStack justifyContent="space-between" mt={2}>
+        <HStack justifyContent="space-between" mb={2}>
+          <Text color="content.link">{t("climate-risk-assessment")}</Text>
+        </HStack>
+        <Link
+          href={`${process.env.NEXT_PUBLIC_CC_CCRA_REPLIT_URL}/cities/${encodeURIComponent(city?.locode ?? "")}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Button
+            variant="outline"
+            borderColor="border.neutral"
+            color="content.primary"
+            p="24px"
+          >
+            <BodyMedium
+              fontWeight="bold"
+              color="content.primary"
+              fontFamily="heading"
+            >
+              {t("see-full-risk-results")}
+            </BodyMedium>
+            <Icon as={MdOpenInNew} color="interactive.control" />
+          </Button>
+        </Link>
       </HStack>
       <HeadlineSmall fontWeight="semibold">
         {t("top-climate-risks")}
@@ -79,6 +112,7 @@ export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
       <BodyLarge fontWeight="regular" color="interactive.control">
         {t("top-climate-risks-description")}
       </BodyLarge>
+
       <Box mt={10}>
         <TopRisksWidget
           cityId={cityId}

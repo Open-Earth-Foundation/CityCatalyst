@@ -79,30 +79,31 @@ export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
   return (
     <Box w="full">
       <HStack justifyContent="space-between" mt={2}>
-        <HStack justifyContent="space-between" mb={2}>
-          <Text color="content.link">{t("climate-risk-assessment")}</Text>
-        </HStack>
-        <Link
-          href={`${process.env.NEXT_PUBLIC_CC_CCRA_REPLIT_URL}/cities/${encodeURIComponent(city?.locode ?? "")}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Button
-            variant="outline"
-            borderColor="border.neutral"
-            color="content.primary"
-            p="24px"
+        <Text color="content.link">{t("climate-risk-assessment")}</Text>
+
+        {city?.locode && city.locode.trim() !== "" && (
+          <Link
+            href={`${process.env.NEXT_PUBLIC_CC_CCRA_REPLIT_URL}/cities/${encodeURIComponent(city.locode)}`}
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <BodyMedium
-              fontWeight="bold"
+            <Button
+              variant="outline"
+              borderColor="border.neutral"
               color="content.primary"
-              fontFamily="heading"
+              p="24px"
             >
-              {t("see-full-risk-results")}
-            </BodyMedium>
-            <Icon as={MdOpenInNew} color="interactive.control" />
-          </Button>
-        </Link>
+              <BodyMedium
+                fontWeight="bold"
+                color="content.primary"
+                fontFamily="heading"
+              >
+                {t("see-full-risk-results")}
+              </BodyMedium>
+              <Icon as={MdOpenInNew} color="interactive.control" />
+            </Button>
+          </Link>
+        )}
       </HStack>
       <HeadlineSmall fontWeight="semibold">
         {t("top-climate-risks")}

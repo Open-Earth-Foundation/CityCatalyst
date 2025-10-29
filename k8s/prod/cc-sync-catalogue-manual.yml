@@ -9,7 +9,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: cc-sync-catalogue
-          image: ghcr.io/open-earth-foundation/citycatalyst:0.9.10
+          image: ghcr.io/open-earth-foundation/citycatalyst:stable
           imagePullPolicy: Always
           envFrom:
             - configMapRef:

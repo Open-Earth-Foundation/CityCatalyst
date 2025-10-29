@@ -21,6 +21,10 @@ interface CCRAWidgetProps {
   year?: number;
 }
 
+const CCRA_REPLIT_URL =
+  process.env.NEXT_PUBLIC_CC_CCRA_REPLIT_URL ??
+  "https://citycatalyst-ccra.replit.app";
+
 export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
   cityId,
   lng,
@@ -83,7 +87,7 @@ export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
 
         {city?.locode && city.locode.trim() !== "" && (
           <Link
-            href={`${process.env.NEXT_PUBLIC_CC_CCRA_REPLIT_URL}/cities/${encodeURIComponent(city.locode)}`}
+            href={`${CCRA_REPLIT_URL}/cities/${encodeURIComponent(city.locode)}`}
             target="_blank"
             rel="noopener noreferrer"
           >

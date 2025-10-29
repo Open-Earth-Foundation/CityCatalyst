@@ -1,20 +1,8 @@
 import fs from "fs";
-
-const apiToken = process.env.CITY_CATALYST_API_TOKEN;
-console.log("Token", apiToken);
-if (!apiToken) {
-  console.error("Error: CITY_CATALYST_API_TOKEN is not set in environment.");
-  console.error(
-    "Run with: CITY_CATALYST_API_TOKEN=your_token_here npm run bulk:create-inventories",
-  );
-  process.exit(1);
-}
-// const origin = "https://citycatalyst.openearth.dev";
-const origin = "http://localhost:3000";
-const apiUrl = `${origin}/api/v1/admin/bulk`;
-const chunkSize = 50;
+import { parseArgs } from 'node:util';
 
 const DEFAULT_EMAILS = [
+    "evan@openearth.org",
     "milan+test1@openearth.org",
     "milan+test@openearth.org",
     "amanda@openearth.org",
@@ -25,24 +13,82 @@ const DEFAULT_EMAILS = [
     "carlos@openearth.org",
   ];
 
-// const EMAILS = DEFAULT_EMAILS;
-const EMAILS = ["evan@openearth.org"];
+const { values, positionals } = parseArgs({
+  options: {
+    token: {
+      type: 'string',
+      short: 't',
+      default: process.env.CITY_CATALYST_API_TOKEN
+    },
+    origin: { type: 'string', short: 'o', default: 'https://citycatalyst.io' },
+    projectId: { type: 'string', short: 'p' },
+    emails: { type: 'string', short: 'e', default: DEFAULT_EMAILS.join(',') },
+    years: { type: 'string', short: 'y' },
+    scope: { type: 'string', short: 's', default: 'gpc_basic_plus' },
+    gwp: { type: 'string', short: 'g', default: 'AR6' },
+  },
+  allowPositionals: true,
+});
 
-const DEFAULT_PROJECT_ID = "6169d5a4-0f31-4132-966e-c2feed1b9496";
-// const PROJECT_ID = DEFAULT_PROJECT_ID;
-const PROJECT_ID = "c6592782-ea7d-4231-87f2-39ba8d941ce0";
+const apiToken = values.token;
 
-const baseRequestBody = {
-  projectId: PROJECT_ID,
+if (!apiToken) {
+  throw new Error(`No API token provided. Use --token option or set CITY_CATALYST_API_TOKEN environment variable.`);
+}
+
+const origin = values.origin;
+const createUrl = `${origin}/api/v1/admin/bulk`;
+const connectUrl = `${origin}/api/v1/admin/connect-sources`;
+const chunkSize = 10;
+const emails = values.emails?.split(',').map(email => email.trim());
+const projectId = values.projectId;
+
+if (!projectId) {
+  throw new Error(`No project ID provided. Use --projectId option to specify the project.`);
+}
+
+const years = values.years?.split(',').map(year => parseInt(year.trim()));
+
+if (!years || years.length === 0) {
+  throw new Error(`No years provided. Use --years option to specify the years.`);
+}
+
+const scope = values.scope;
+const gwp = values.gwp;
+
+if (positionals.length === 0) {
+  throw new Error(`No input file provided. Specify the path to the locodes file as a positional argument.`);
+}
+
+const baseCreateBody = {
+  projectId,
   cityLocodes: [],
-  emails: EMAILS,
-  years: [2022],
-  scope: "gpc_basic_plus",
-  gwp: "AR6",
+  emails,
+  years,
+  scope,
+  gwp,
 };
 
-function makeRequest(url: string, body: any, method: string = "POST") {
-  return fetch(url, {
+const baseConnectBody = {
+  projectId,
+  cityLocodes: [],
+  userEmail: emails[0],
+  years
+};
+
+function createRequest(body: any, method: string = "POST") {
+  return fetch(createUrl, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiToken}`,
+    },
+    body: JSON.stringify(body),
+  });
+}
+
+function connectRequest(body: any, method: string = "POST") {
+  return fetch(connectUrl, {
     method,
     headers: {
       "Content-Type": "application/json",
@@ -54,15 +100,15 @@ function makeRequest(url: string, body: any, method: string = "POST") {
 
 async function createBulkInventories() {
   const cityLocodes = fs
-    .readFileSync("scripts/data/brazil_locodes.csv")
+    .readFileSync(positionals[0], "utf-8")
     .toString()
     .split("\n")
     .map((line) => line.trim());
   console.log(`Total locodes to process: ${cityLocodes.length}`);
 
   for (let i = 0; i < cityLocodes.length; i += chunkSize) {
-    const result = await makeRequest(apiUrl, {
-      ...baseRequestBody,
+    const result = await createRequest({
+      ...baseCreateBody,
       cityLocodes: cityLocodes.slice(i, i + chunkSize),
     });
     if (!result.ok) {
@@ -73,6 +119,19 @@ async function createBulkInventories() {
     }
     console.log(
       `Created bulk inventories for locodes ${i} to ${i + chunkSize}`,
+    );
+    const connectResult = await connectRequest({
+      ...baseConnectBody,
+      cityLocodes: cityLocodes.slice(i, i + chunkSize),
+    });
+    if (!connectResult.ok) {
+      const errorText = await connectResult.text();
+      throw new Error(
+        `Failed to create bulk inventories (index ${i} to ${i + chunkSize}): ${connectResult.status} - ${errorText}`,
+      );
+    }
+    console.log(
+      `Connected bulk inventories for locodes ${i} to ${i + chunkSize}`,
     );
   }
 }

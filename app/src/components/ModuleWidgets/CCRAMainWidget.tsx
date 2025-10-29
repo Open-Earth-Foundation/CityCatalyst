@@ -12,7 +12,6 @@ import {
   HeadlineSmall,
 } from "@/components/package/Texts/Headline";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
-import { useRouter } from "next/navigation";
 
 interface CCRAWidgetProps {
   cityId: string;
@@ -30,7 +29,6 @@ export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
   year,
 }) => {
   const { t } = useTranslation(lng, "ccra");
-  const router = useRouter();
 
   const { inventoryId, isLoading: isInventoryLoading } = useLatestInventory({
     cityId,

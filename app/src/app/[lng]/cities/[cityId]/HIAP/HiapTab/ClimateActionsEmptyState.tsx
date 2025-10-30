@@ -47,6 +47,56 @@ const TopActionsDataState = ({
   const totalUploadedData = inventoryProgress?.totalProgress?.uploaded || 0;
   const hasActivityLevelData = hasInventoryData && totalUploadedData > 0;
 
+  const renderCurrentState = () => {
+    if (isLoading) {
+      return (
+        <Box
+          h="200px"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <ProgressLoader />
+          <Text
+            fontSize="body.lg"
+            color="content.secondary"
+            fontWeight="normal"
+            mt="24px"
+          >
+            {t("checking-activity-data")}
+          </Text>
+        </Box>
+      );
+    }
+
+    if (!hasActivityLevelData) {
+      return <NoActivityLevelData t={t} />;
+    }
+
+    if (error) {
+      return <ErrorGeneratingActions t={t} onRefetch={onRefetch} />;
+    }
+
+    if (isActionsPending) {
+      return (
+        <GeneratingClimateActions t={t} isActionsPending={isActionsPending} />
+      );
+    }
+
+    if (hasActions) {
+      return <GeneratedActions t={t} />;
+    }
+
+    return (
+      <GenerateActionsPrompt
+        t={t}
+        isLoading={isLoading}
+        onRefetch={onRefetch}
+      />
+    );
+  };
+
   return (
     <Box display="flex" flexDirection="column" gap="48px" w="1090px">
       {/* Shared heading and description */}
@@ -65,44 +115,7 @@ const TopActionsDataState = ({
         </Text>
       </Box>
 
-      {/* Render states conditionally */}
-      {isLoading && (
-        <Box
-          h="200px"
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <ProgressLoader />
-          <Text
-            fontSize="body.lg"
-            color="content.secondary"
-            fontWeight="normal"
-            mt="24px"
-          >
-            {t("checking-activity-data")}
-          </Text>
-        </Box>
-      )}
-
-      {!hasActivityLevelData && !isLoading && <NoActivityLevelData t={t} />}
-
-      {isActionsPending && !isLoading && hasActivityLevelData && !error && (
-        <GeneratingClimateActions t={t} isActionsPending={isActionsPending} />
-      )}
-
-      {error && <ErrorGeneratingActions t={t} onRefetch={onRefetch} />}
-
-      {hasActivityLevelData && !hasActions && !isActionsPending && !error && (
-        <GenerateActionsPrompt
-          t={t}
-          isLoading={isLoading}
-          onRefetch={onRefetch}
-        />
-      )}
-
-      {hasActivityLevelData && hasActions && <GeneratedActions t={t} />}
+      {renderCurrentState()}
     </Box>
   );
 };

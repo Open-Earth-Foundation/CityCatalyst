@@ -33,6 +33,7 @@ export const hiapApiWrapper: {
   startBulkPrioritization: (
     citiesData: PrioritizerCityData[],
     type: ACTION_TYPES,
+    languages: LANGUAGES[],
   ) => Promise<{ taskId: string }>;
   checkBulkPrioritizationProgress: (
     taskId: string,
@@ -63,8 +64,8 @@ export const hiapApiWrapper: {
   getPrioritizationResult: async (taskId) => {
     return await getPrioritizationResultImpl(taskId);
   },
-  startBulkPrioritization: async (citiesData, type) => {
-    return await startBulkPrioritizationImpl(citiesData, type);
+  startBulkPrioritization: async (citiesData, type, languages) => {
+    return await startBulkPrioritizationImpl(citiesData, type, languages);
   },
   checkBulkPrioritizationProgress: async (taskId) => {
     return await checkBulkPrioritizationProgressImpl(taskId);
@@ -188,12 +189,15 @@ const startActionPlanJobImpl = async ({
     const { cityContextData, cityEmissionsData } =
       await hiapServiceWrapper.getCityContextAndEmissionsData(inventoryId);
 
+    // Extract country code from LOCODE (first 2 characters)
+    const countryCode = cityLocode.substring(0, 2);
+
     const payload = {
       cityData: {
         cityContextData,
         cityEmissionsData,
       },
-      countryCode: cityLocode.split(" ")[0],
+      countryCode,
       actionId: action.actionId,
       language: lng,
     };
@@ -388,11 +392,20 @@ const startActionPlanJobImpl = async ({
 const startBulkPrioritizationImpl = async (
   citiesData: PrioritizerCityData[],
   type: ACTION_TYPES,
+  languages: LANGUAGES[],
 ): Promise<{ taskId: string }> => {
+  // Guard: Ensure citiesData is not empty before accessing first element
+  if (citiesData.length === 0) {
+    throw new Error("No city data provided for bulk prioritization.");
+  }
+
   logger.info(
-    { cityCount: citiesData.length, type },
+    { cityCount: citiesData.length, type, languages },
     "Starting bulk prioritization",
   );
+
+  // Extract country code from first city's LOCODE (first 2 characters)
+  const countryCode = citiesData[0].cityContextData.locode.substring(0, 2);
 
   // Log summary of city data being sent to HIAP
   const citiesSummary = citiesData.map((city) => ({
@@ -408,14 +421,9 @@ const startBulkPrioritizationImpl = async (
 
   const body = {
     cityDataList: citiesData,
-    countryCode: "BR", // TODO: Make this dynamic based on the cities
-    prioritizationType:
-      type === ACTION_TYPES.Mitigation
-        ? "mitigation"
-        : type === ACTION_TYPES.Adaptation
-          ? "adaptation"
-          : "both",
-    language: [LANGUAGES.en, LANGUAGES.pt],
+    countryCode,
+    prioritizationType: type,
+    language: languages,
   };
 
   const response = await fetch(

@@ -37,28 +37,26 @@ class CityContextData(BaseModel):
             description="UN/LOCODE identifier in the format 'AA BBB'",
         ),
     ]
-    populationSize: Optional[NonNegativeInteger] = Field(
-        default=None, description="Population size of the city"
+    populationSize: NonNegativeInteger = Field(
+        description="Population size of the city"
     )
 
 
 class CityEmissionsData(BaseModel):
-    stationaryEnergyEmissions: Optional[NonNegativeInteger] = Field(
-        default=None, description="Stationary energy emissions (integer, >= 0)"
+    stationaryEnergyEmissions: NonNegativeInteger = Field(
+        description="Stationary energy emissions (integer, >= 0)"
     )
-    transportationEmissions: Optional[NonNegativeInteger] = Field(
-        default=None, description="Transportation emissions (integer, >= 0)"
+    transportationEmissions: NonNegativeInteger = Field(
+        description="Transportation emissions (integer, >= 0)"
     )
-    wasteEmissions: Optional[NonNegativeInteger] = Field(
-        default=None, description="Waste emissions (integer, >= 0)"
+    wasteEmissions: NonNegativeInteger = Field(
+        description="Waste emissions (integer, >= 0)"
     )
-    ippuEmissions: Optional[NonNegativeInteger] = Field(
-        default=None,
-        description="Industrial processes and product use emissions (integer, >= 0)",
+    ippuEmissions: NonNegativeInteger = Field(
+        description="Industrial processes and product use emissions (integer, >= 0)"
     )
-    afoluEmissions: Optional[Annotated[int, Field(strict=True)]] = Field(
-        default=None,
-        description="Agriculture, forestry, and other land use emissions (integer; can be negative, zero, or positive)",
+    afoluEmissions: Annotated[int, Field(strict=True)] = Field(
+        description="Agriculture, forestry, and other land use emissions (integer; can be negative, zero, or positive)"
     )
 
 

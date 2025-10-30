@@ -26,6 +26,8 @@ const { values, positionals } = parseArgs({
     years: { type: 'string', short: 'y' },
     scope: { type: 'string', short: 's', default: 'gpc_basic_plus' },
     gwp: { type: 'string', short: 'g', default: 'AR6' },
+    skipCreate: { type: 'boolean', short: 'c', default: false },
+    skipConnect: { type: 'boolean', short: 'n', default: false },
   },
   allowPositionals: true,
 });
@@ -107,32 +109,37 @@ async function createBulkInventories() {
   console.log(`Total locodes to process: ${cityLocodes.length}`);
 
   for (let i = 0; i < cityLocodes.length; i += chunkSize) {
-    const result = await createRequest({
-      ...baseCreateBody,
-      cityLocodes: cityLocodes.slice(i, i + chunkSize),
-    });
-    if (!result.ok) {
-      const errorText = await result.text();
-      throw new Error(
-        `Failed to create bulk inventories (index ${i} to ${i + chunkSize}): ${result.status} - ${errorText}`,
+    if (!values.skipCreate) {
+      const result = await createRequest({
+        ...baseCreateBody,
+        cityLocodes: cityLocodes.slice(i, i + chunkSize),
+      });
+      if (!result.ok) {
+        const errorText = await result.text();
+        throw new Error(
+          `Failed to create bulk inventories (index ${i} to ${i + chunkSize}): ${result.status} - ${errorText}`,
+        );
+      }
+      console.log(
+        `Created bulk inventories for locodes ${i} to ${i + chunkSize}`,
       );
     }
-    console.log(
-      `Created bulk inventories for locodes ${i} to ${i + chunkSize}`,
-    );
-    const connectResult = await connectRequest({
-      ...baseConnectBody,
-      cityLocodes: cityLocodes.slice(i, i + chunkSize),
-    });
-    if (!connectResult.ok) {
-      const errorText = await connectResult.text();
-      throw new Error(
-        `Failed to create bulk inventories (index ${i} to ${i + chunkSize}): ${connectResult.status} - ${errorText}`,
+
+    if (!values.skipConnect) {
+      const connectResult = await connectRequest({
+        ...baseConnectBody,
+        cityLocodes: cityLocodes.slice(i, i + chunkSize),
+      });
+      if (!connectResult.ok) {
+        const errorText = await connectResult.text();
+        throw new Error(
+          `Failed to create bulk inventories (index ${i} to ${i + chunkSize}): ${connectResult.status} - ${errorText}`,
+        );
+      }
+      console.log(
+        `Connected bulk inventories for locodes ${i} to ${i + chunkSize}`,
       );
     }
-    console.log(
-      `Connected bulk inventories for locodes ${i} to ${i + chunkSize}`,
-    );
   }
 }
 

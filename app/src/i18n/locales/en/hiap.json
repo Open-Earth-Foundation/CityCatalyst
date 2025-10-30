@@ -139,6 +139,7 @@
   "reprioritization-failed": "Reprioritization Failed",
   "reprioritization-failed-description": "Failed to start reprioritization. Please try again.",
   "unknown": "Unknown",
+  "inventory-year": "Inventory Year",
   "implementation-plan": "Implementation plan",
   "pdf": {
     "title": "Climate Action Implementation Plan",

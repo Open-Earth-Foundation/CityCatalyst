@@ -1603,7 +1603,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
   describe("Cron Job Integration: Step 3 - TO_DO with no PENDING", () => {
     it("cron job starts batch when TO_DO rankings exist with no PENDING jobs", async () => {
-      // Setup: Clean state with only TO_DO rankings (simulating retry scenario)
+      // Setup: Clean only test inventories' rankings
       await db.models.HighImpactActionRanking.destroy({
         where: { inventoryId: inventoryIds },
       });
@@ -1619,13 +1619,15 @@ describe("Bulk HIAP Prioritization API", () => {
             langs: [LANGUAGES.en],
             status: HighImpactActionRankingStatus.TO_DO,
             jobId: null,
+            isBulk: true,
           }),
         ),
       );
 
-      // Verify precondition: No PENDING jobs exist
+      // Verify precondition: No PENDING jobs in test data
       const pendingJobs = await db.models.HighImpactActionRanking.findAll({
         where: {
+          inventoryId: inventoryIds,
           status: HighImpactActionRankingStatus.PENDING,
           jobId: { [Op.ne]: null },
         },
@@ -1681,6 +1683,7 @@ describe("Bulk HIAP Prioritization API", () => {
         langs: [LANGUAGES.en],
         status: HighImpactActionRankingStatus.PENDING,
         jobId: "existing-job-id",
+        isBulk: true, // Mark as bulk job
       });
 
       // Create 1 TO_DO ranking (should NOT be picked up while PENDING is active)
@@ -1692,12 +1695,14 @@ describe("Bulk HIAP Prioritization API", () => {
         langs: [LANGUAGES.en],
         status: HighImpactActionRankingStatus.TO_DO,
         jobId: null,
+        isBulk: true,
       });
 
       // Mock HIAP API to return "pending" for existing job (still processing)
+      // Override the global mock for this specific test
       jest
         .spyOn(HiapApiService.hiapApiWrapper, "checkBulkPrioritizationProgress")
-        .mockResolvedValue({
+        .mockResolvedValueOnce({
           status: "pending",
         });
 
@@ -2252,6 +2257,11 @@ describe("Bulk HIAP Prioritization API", () => {
 
   describe("Cron Job Error Handling - 404 Task Not Found", () => {
     it("marks PENDING job as FAILURE when HIAP API returns 404", async () => {
+      // Clean up only test inventories' rankings
+      await db.models.HighImpactActionRanking.destroy({
+        where: { inventoryId: inventoryIds },
+      });
+
       // Create a PENDING ranking (simulating a job that's been sent to HIAP)
       const ranking = await db.models.HighImpactActionRanking.create({
         id: randomUUID(),
@@ -2261,12 +2271,14 @@ describe("Bulk HIAP Prioritization API", () => {
         langs: [LANGUAGES.en],
         jobId: "non-existent-job-id",
         status: HighImpactActionRankingStatus.PENDING,
+        isBulk: true, // Mark as bulk job
       });
 
       // Mock HIAP API to throw 404 error (task not found)
+      // Override the global mock for this specific test
       jest
         .spyOn(HiapApiService.hiapApiWrapper, "checkBulkPrioritizationProgress")
-        .mockRejectedValue(new Error("Failed to check bulk job status"));
+        .mockRejectedValueOnce(new Error("Failed to check bulk job status"));
 
       // Call cron endpoint
       const response = await CHECK_HIAP_JOBS_CRON();
@@ -2288,13 +2300,21 @@ describe("Bulk HIAP Prioritization API", () => {
       );
       expect(updatedRanking?.errorMessage).toContain("Job check failed");
 
-      // Cleanup
+      // Cleanup - clean up any ranked actions first
+      await db.models.HighImpactActionRanked.destroy({
+        where: { hiaRankingId: ranking.id },
+      });
       await db.models.HighImpactActionRanking.destroy({
         where: { id: ranking.id },
       });
     });
 
     it("continues processing other jobs when one job check fails", async () => {
+      // Clean up only test inventories' rankings
+      await db.models.HighImpactActionRanking.destroy({
+        where: { inventoryId: inventoryIds },
+      });
+
       // Create two PENDING rankings with different jobIds
       const ranking1 = await db.models.HighImpactActionRanking.create({
         id: randomUUID(),
@@ -2304,6 +2324,7 @@ describe("Bulk HIAP Prioritization API", () => {
         langs: [LANGUAGES.en],
         jobId: "failing-job-id",
         status: HighImpactActionRankingStatus.PENDING,
+        isBulk: true, // Mark as bulk job
       });
 
       const ranking2 = await db.models.HighImpactActionRanking.create({
@@ -2314,9 +2335,11 @@ describe("Bulk HIAP Prioritization API", () => {
         langs: [LANGUAGES.en],
         jobId: "successful-job-id",
         status: HighImpactActionRankingStatus.PENDING,
+        isBulk: true, // Mark as bulk job
       });
 
       // Mock HIAP API to fail for first job but succeed for second
+      // Override the global mock with custom implementation
       const checkProgressSpy = jest.spyOn(
         HiapApiService.hiapApiWrapper,
         "checkBulkPrioritizationProgress",
@@ -2328,6 +2351,31 @@ describe("Bulk HIAP Prioritization API", () => {
         }
         return { status: "completed" };
       });
+
+      // Mock GlobalAPIService for the successful job
+      jest.spyOn(GlobalAPIService, "fetchAllClimateActions").mockResolvedValue([
+        {
+          ActionID: "test-action-1",
+          ActionName: "Test Action",
+          ActionType: [ACTION_TYPES.Mitigation],
+          Hazard: null,
+          Sector: ["Energy"],
+          Subsector: ["Electricity"],
+          PrimaryPurpose: ["Reduce emissions"],
+          Description: "Test",
+          CoBenefits: {},
+          EquityAndInclusionConsiderations: "Test",
+          GHGReductionPotential: {},
+          AdaptationEffectiveness: null,
+          CostInvestmentNeeded: "low",
+          TimelineForImplementation: "<5 years",
+          Dependencies: [],
+          KeyPerformanceIndicators: [],
+          PowersAndMandates: null,
+          AdaptationEffectivenessPerHazard: {},
+          biome: null,
+        },
+      ] as any);
 
       jest
         .spyOn(HiapApiService.hiapApiWrapper, "getBulkPrioritizationResult")
@@ -2376,10 +2424,15 @@ describe("Bulk HIAP Prioritization API", () => {
         HighImpactActionRankingStatus.SUCCESS,
       );
 
-      // Cleanup
-      await db.models.HighImpactActionRanked.destroy({
+      // Cleanup - clean up ranked actions first
+      const allRankedActions = await db.models.HighImpactActionRanked.findAll({
         where: { hiaRankingId: [ranking1.id, ranking2.id] },
       });
+      if (allRankedActions.length > 0) {
+        await db.models.HighImpactActionRanked.destroy({
+          where: { hiaRankingId: [ranking1.id, ranking2.id] },
+        });
+      }
       await db.models.HighImpactActionRanking.destroy({
         where: { id: [ranking1.id, ranking2.id] },
       });

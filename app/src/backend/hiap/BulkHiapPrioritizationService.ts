@@ -220,17 +220,86 @@ export class BulkHiapPrioritizationService {
   }
 
   /**
+   * Mark specific cities as EXCLUDED to prevent them from being retried
+   * Used when certain cities cause entire batches to fail
+   */
+  private static async excludeCitiesFromRetry(params: {
+    projectId: string;
+    actionType: ACTION_TYPES;
+    cityLocodes: string[];
+    jobIds?: string[];
+  }): Promise<number> {
+    const { projectId, actionType, cityLocodes, jobIds } = params;
+
+    if (!db.sequelize) {
+      throw new Error("Database not initialized");
+    }
+
+    const whereConditions: string[] = [
+      `har.status = :status`,
+      `har.type = :actionType`,
+      `c.project_id = :projectId`,
+      `c.locode = ANY(ARRAY[:cityLocodes])`,
+    ];
+
+    const replacements: any = {
+      status: HighImpactActionRankingStatus.FAILURE,
+      actionType,
+      projectId,
+      cityLocodes,
+    };
+
+    if (jobIds && jobIds.length > 0) {
+      whereConditions.push(`har.job_id = ANY(ARRAY[:jobIds])`);
+      replacements.jobIds = jobIds;
+    }
+
+    // Mark excluded cities as EXCLUDED so they won't be retried
+    const result = await db.sequelize.query(
+      `
+      UPDATE "HighImpactActionRanking" har
+      SET 
+        status = :excludedStatus,
+        job_id = NULL,
+        error_message = 'City excluded from retry - caused batch failure'
+      FROM "Inventory" inv
+      JOIN "City" c ON inv.city_id = c.city_id
+      WHERE har.inventory_id = inv.inventory_id
+        AND ${whereConditions.join(" AND ")}
+      `,
+      {
+        replacements: {
+          ...replacements,
+          excludedStatus: HighImpactActionRankingStatus.EXCLUDED,
+        },
+        type: QueryTypes.UPDATE,
+      },
+    );
+
+    const excludedCount = (result as any)[1] || 0;
+
+    logger.info(
+      { excludedCount, cityLocodes },
+      "Excluded problematic cities from retry",
+    );
+
+    return excludedCount;
+  }
+
+  /**
    * Retry failed batches by resetting them to TO_DO status
+   * Can exclude specific cities that are causing batch failures
    */
   static async retryFailedBatches(params: {
     projectId: string;
     actionType: ACTION_TYPES;
     jobIds?: string[];
-  }): Promise<{ retriedCount: number }> {
-    const { projectId, actionType, jobIds } = params;
+    excludedCityLocodes?: string[];
+  }): Promise<{ retriedCount: number; excludedCount: number }> {
+    const { projectId, actionType, jobIds, excludedCityLocodes } = params;
 
     logger.info(
-      { projectId, actionType, jobIds },
+      { projectId, actionType, jobIds, excludedCityLocodes },
       "Retrying failed HIAP batches",
     );
 
@@ -238,7 +307,18 @@ export class BulkHiapPrioritizationService {
       throw new Error("Database not initialized");
     }
 
-    // Build WHERE clause
+    // Exclude specific cities if requested
+    let excludedCount = 0;
+    if (excludedCityLocodes && excludedCityLocodes.length > 0) {
+      excludedCount = await this.excludeCitiesFromRetry({
+        projectId,
+        actionType,
+        cityLocodes: excludedCityLocodes,
+        jobIds,
+      });
+    }
+
+    // Build WHERE clause for cities to retry
     const whereConditions: string[] = [
       `har.status = :status`,
       `har.type = :actionType`,
@@ -252,8 +332,14 @@ export class BulkHiapPrioritizationService {
     };
 
     if (jobIds && jobIds.length > 0) {
-      whereConditions.push(`har.job_id = ANY(:jobIds)`);
+      whereConditions.push(`har.job_id = ANY(ARRAY[:jobIds])`);
       replacements.jobIds = jobIds;
+    }
+
+    // Exclude cities that were marked as excluded
+    if (excludedCityLocodes && excludedCityLocodes.length > 0) {
+      whereConditions.push(`c.locode != ALL(ARRAY[:excludedCityLocodes])`);
+      replacements.excludedCityLocodes = excludedCityLocodes;
     }
 
     // Use raw SQL to update with JOIN
@@ -282,11 +368,71 @@ export class BulkHiapPrioritizationService {
     const retriedCount = (result as any)[1] || 0;
 
     logger.info(
-      { retriedCount, projectId, actionType },
+      { retriedCount, excludedCount, projectId, actionType },
       "Reset failed rankings to TO_DO",
     );
 
-    return { retriedCount };
+    return { retriedCount, excludedCount };
+  }
+
+  /**
+   * Un-exclude cities by moving them from EXCLUDED back to TO_DO status
+   */
+  static async unexcludeCities(params: {
+    projectId: string;
+    actionType: ACTION_TYPES;
+    cityLocodes: string[];
+  }): Promise<{ unexcludedCount: number }> {
+    const { projectId, actionType, cityLocodes } = params;
+
+    logger.info(
+      { projectId, actionType, cityLocodes },
+      "Un-excluding cities - moving from EXCLUDED to TO_DO",
+    );
+
+    if (!db.sequelize) {
+      throw new Error("Database not initialized");
+    }
+
+    if (!cityLocodes || cityLocodes.length === 0) {
+      return { unexcludedCount: 0 };
+    }
+
+    // Move excluded cities back to TO_DO
+    const result = await db.sequelize.query(
+      `
+      UPDATE "HighImpactActionRanking" har
+      SET 
+        status = :toDoStatus,
+        error_message = NULL
+      FROM "Inventory" inv
+      JOIN "City" c ON inv.city_id = c.city_id
+      WHERE har.inventory_id = inv.inventory_id
+        AND har.status = :excludedStatus
+        AND har.type = :actionType
+        AND c.project_id = :projectId
+        AND c.locode = ANY(ARRAY[:cityLocodes])
+      `,
+      {
+        replacements: {
+          toDoStatus: HighImpactActionRankingStatus.TO_DO,
+          excludedStatus: HighImpactActionRankingStatus.EXCLUDED,
+          actionType,
+          projectId,
+          cityLocodes,
+        },
+        type: QueryTypes.UPDATE,
+      },
+    );
+
+    const unexcludedCount = (result as any)[1] || 0;
+
+    logger.info(
+      { unexcludedCount, projectId, actionType },
+      "Cities moved from EXCLUDED to TO_DO",
+    );
+
+    return { unexcludedCount };
   }
 
   /**

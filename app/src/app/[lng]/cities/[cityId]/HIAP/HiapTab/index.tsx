@@ -148,7 +148,10 @@ export function HiapTab({
   const currentData = hiapData || statusData;
   const actions = currentData?.rankedActions || [];
   const isAdaptation = type === ACTION_TYPES.Adaptation;
-  const isPending = currentData?.status === HighImpactActionRankingStatus.PENDING;
+  const isPending =
+    currentData?.status === HighImpactActionRankingStatus.PENDING;
+  const isFailure =
+    currentData?.status === HighImpactActionRankingStatus.FAILURE;
   const hasActions = actions && actions.length > 0;
 
   // Combined loading state
@@ -163,7 +166,8 @@ export function HiapTab({
       setIgnoreExisting(true);
       refetch();
     } else {
-      // Initial trigger
+      // Initial trigger - always ignore existing for empty state generation
+      setIgnoreExisting(true);
       setUserTriggeredHiap(true);
     }
   };
@@ -474,7 +478,7 @@ export function HiapTab({
   }
 
   // Show empty state for no actions, errors, or PENDING status
-  if (!hasActions || currentError) {
+  if (!hasActions || currentError || isFailure) {
     return (
       <ClimateActionsEmptyState
         t={t}
@@ -483,7 +487,7 @@ export function HiapTab({
         actionType={type}
         isActionsPending={isPending}
         onRefetch={handleHiapGeneration}
-        error={currentError}
+        error={currentError || isFailure}
       />
     );
   }

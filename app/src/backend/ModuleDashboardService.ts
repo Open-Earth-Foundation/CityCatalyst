@@ -2,7 +2,7 @@ import { db } from "@/models";
 import { getEmissionResults } from "@/backend/ResultsService";
 import { fetchRanking } from "@/backend/hiap/HiapService";
 import { logger } from "@/services/logger";
-import { ACTION_TYPES } from "@/util/types";
+import { ACTION_TYPES, HighImpactActionRankingStatus, LANGUAGES } from "@/util/types";
 import { ModuleService } from "@/backend/ModuleService";
 import { Modules } from "@/util/constants";
 import createHttpError from "http-errors";
@@ -10,6 +10,8 @@ import { Inventory } from "@/models/Inventory";
 import { CcraService, TopRisksResult } from "./ccra/CcraService";
 import { fetchCCRATopRisksData } from "./ccra/CcraApiService";
 import { AppSession } from "@/lib/auth";
+import { InventoryService } from "@/backend/InventoryService";
+import { Op } from "sequelize";
 
 export class ModuleDashboardService {
   /**
@@ -100,21 +102,17 @@ export class ModuleDashboardService {
         throw new createHttpError.Forbidden("module-access-denied-hiap");
       }
 
-      // Get high impact action plan data
-      const mitigationData = await fetchRanking(
+      // Get existing ranking data for both action types (like status API)
+      const mitigationData = await this.getHIAPStatusData(
         inventory.inventoryId,
         ACTION_TYPES.Mitigation,
         lng as any,
-        session,
-        ignoreExisting,
       );
 
-      const adaptationData = await fetchRanking(
+      const adaptationData = await this.getHIAPStatusData(
         inventory.inventoryId,
         ACTION_TYPES.Adaptation,
         lng as any,
-        session,
-        ignoreExisting,
       );
 
       return {
@@ -184,6 +182,68 @@ export class ModuleDashboardService {
         inventoryId: inventory.inventoryId,
         error: `Failed to fetch CCRA data: ${(error as Error).message}`,
       } as any;
+    }
+  }
+
+  /**
+   * Get HIAP status data for a specific action type (mimics status API logic)
+   */
+  private static async getHIAPStatusData(
+    inventoryId: string,
+    type: ACTION_TYPES,
+    lng: LANGUAGES,
+  ): Promise<any> {
+    try {
+      const locode = await InventoryService.getLocode(inventoryId);
+      
+      // Find any existing ranking for this inventory/locode/type
+      const ranking = await db.models.HighImpactActionRanking.findOne({
+        where: {
+          inventoryId,
+          locode,
+          type,
+          langs: { [Op.contains]: [lng] }, // Check if the langs array contains this language
+        },
+        order: [["created", "DESC"]],
+      });
+
+      if (!ranking) {
+        return { 
+          status: "not_found", 
+          rankedActions: [],
+          rankingId: null 
+        };
+      }
+
+      // Get existing actions for this language and type
+      const existingActions = await db.models.HighImpactActionRanked.findAll({
+        where: { 
+          hiaRankingId: ranking.id, 
+          lang: lng,
+          type: type
+        },
+        order: [["rank", "ASC"]],
+      });
+
+      return {
+        ...ranking.toJSON(),
+        status: ranking.status || HighImpactActionRankingStatus.PENDING,
+        rankedActions: existingActions,
+      };
+    } catch (error) {
+      logger.error({
+        err: error,
+        inventoryId,
+        type,
+        lng,
+      }, "Error getting HIAP status data");
+      
+      return {
+        status: "failure",
+        rankedActions: [],
+        rankingId: null,
+        error: `Failed to get HIAP status data: ${(error as Error).message}`,
+      };
     }
   }
 }

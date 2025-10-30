@@ -44,7 +44,9 @@ export default function PublicDashboard({
     });
 
 
-  const latestInventory = publicInventories?.[0];
+  const targetInventory = year
+    ? publicInventories?.find((inv) => inv.year === parseInt(year))
+    : publicInventories?.[0];
 
   if (isFetchBaseQueryError(publicCityError)) {
     return (
@@ -57,19 +59,30 @@ export default function PublicDashboard({
     );
   }
 
+  if (!targetInventory && !isPublicInventoriesLoading) {
+    return (
+      <MissingCityDashboard
+        lng={lng}
+        cityId={cityId}
+        error={`No inventory found for year ${year}`}
+        isPublic={true}
+      />
+    );
+  }
+
   if (isPublicCityLoading || isPublicInventoriesLoading) {
     return <ProgressLoader />;
   }
 
   return (
     <Box h="100%" minH="100vh" bg="base.light">
-      {cityId && publicCity && latestInventory && (
+      {cityId && publicCity && targetInventory && (
         <>
           <Hero
             city={publicCity}
-            year={latestInventory.year}
+            year={targetInventory.year}
             isPublic={true}
-            ghgiCityData={latestInventory as InventoryResponse}
+            ghgiCityData={targetInventory as InventoryResponse}
             isLoading={isPublicCityLoading}
             t={t}
             population={population}

@@ -404,8 +404,17 @@ const startBulkPrioritizationImpl = async (
     "Starting bulk prioritization",
   );
 
-  // Extract country code from first city's LOCODE (first 2 characters)
-  const countryCode = citiesData[0].cityContextData.locode.substring(0, 2);
+  // Extract and validate country codes from all cities' LOCODEs
+  const countryCodes = citiesData.map((city) =>
+    city.cityContextData.locode.substring(0, 2),
+  );
+  const uniqueCountryCodes = Array.from(new Set(countryCodes));
+  if (uniqueCountryCodes.length !== 1) {
+    throw new Error(
+      `Bulk prioritization requires all cities to be from the same country. Found country codes: ${uniqueCountryCodes.join(", ")}`,
+    );
+  }
+  const countryCode = uniqueCountryCodes[0];
 
   // Log summary of city data being sent to HIAP
   const citiesSummary = citiesData.map((city) => ({

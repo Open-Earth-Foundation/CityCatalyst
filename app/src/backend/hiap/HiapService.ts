@@ -864,9 +864,10 @@ async function getCityContextAndEmissionsDataImpl(
   );
 
   // Ensure population is number or null (HIAP accepts null)
-  const populationSize = populationData.population
-    ? Number(populationData.population)
-    : null;
+  const populationSize =
+    populationData.population && !isNaN(Number(populationData.population))
+      ? Number(populationData.population)
+      : null;
 
   const emissionsBySector = await getTotalEmissionsBySector([inventoryId]);
 

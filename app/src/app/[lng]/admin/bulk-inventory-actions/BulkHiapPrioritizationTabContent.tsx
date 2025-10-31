@@ -601,12 +601,12 @@ const BulkHiapPrioritizationTabContent: FC<
                 ) && (
                   <Box
                     p="12px"
-                    bg="blue.50"
+                    bg="background.neutral"
                     borderRadius="md"
                     borderLeft="4px solid"
-                    borderColor="blue.500"
+                    borderColor="semantic.info"
                   >
-                    <BodySmall color="blue.900">
+                    <BodySmall color="content.primary">
                       {t("tip-expand-batch-to-exclude-cities")}
                     </BodySmall>
                   </Box>
@@ -614,11 +614,11 @@ const BulkHiapPrioritizationTabContent: FC<
                 {excludedCityLocodes.size > 0 && (
                   <HStack
                     p="12px"
-                    bg="orange.50"
+                    bg="semantic.warningOverlay"
                     borderRadius="md"
                     justify="space-between"
                   >
-                    <BodySmall color="orange.800">
+                    <BodySmall color="semantic.warning">
                       {t("cities-excluded-warning", {
                         count: excludedCityLocodes.size,
                         cities: Array.from(excludedCityLocodes).join(", "),
@@ -801,7 +801,7 @@ const BulkHiapPrioritizationTabContent: FC<
                                       key={city.inventoryId}
                                       bg={
                                         isMarkedForExclusion || isExcludedCity
-                                          ? "orange.50"
+                                          ? "semantic.warningOverlay"
                                           : undefined
                                       }
                                     >

@@ -24,6 +24,9 @@ export interface CityContextData {
   populationSize: number | null;
 }
 
+/**
+ * City emissions data - internal representation (can have null values)
+ */
 export interface CityEmissionsData {
   stationaryEnergyEmissions: number | null;
   transportationEmissions: number | null;

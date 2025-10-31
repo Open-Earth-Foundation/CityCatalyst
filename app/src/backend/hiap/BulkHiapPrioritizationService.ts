@@ -572,6 +572,7 @@ export class BulkHiapPrioritizationService {
     const { taskId } = await hiapApiWrapper.startBulkPrioritization(
       citiesContextData,
       actionType,
+      languages,
     );
 
     logger.info(

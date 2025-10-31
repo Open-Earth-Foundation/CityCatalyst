@@ -263,5 +263,11 @@
   "select-all-failed": "Sélectionner tout a échoué",
   "please-select-batches-to-retry": "Veuillez sélectionner au moins un lot pour réessayer",
   "retry-this-batch": "Réessayer Ce Lot",
-  "batch": "Lot"
+  "batch": "Lot",
+  "tip-expand-batch-to-exclude-cities": "Astuce: Développez un lot échoué pour voir les villes individuelles. Cochez les cases dans la colonne Exclure pour exclure les villes problématiques de la nouvelle tentative.",
+  "cities-excluded-warning": "{{count}} {{count, plural, one {ville} other {villes}}} seront exclues de la nouvelle tentative: {{cities}}",
+  "clear-exclusions": "Effacer les exclusions",
+  "unexclude-cities": "Désexclure {{count}} {{count, plural, one {ville} other {villes}}}",
+  "exclude-column-header": "Exclure",
+  "check-cities-to-exclude-tooltip": "Cochez les villes pour les exclure de la nouvelle tentative"
 }

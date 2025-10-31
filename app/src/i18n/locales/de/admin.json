@@ -263,5 +263,11 @@
   "select-all-failed": "Auswahl aller fehlgeschlagen",
   "please-select-batches-to-retry": "Bitte wählen Sie mindestens eine Charge zum Wiederholen aus",
   "retry-this-batch": "Diesen Stapel erneut versuchen",
-  "batch": "Charge"
+  "batch": "Charge",
+  "tip-expand-batch-to-exclude-cities": "Tipp: Erweitern Sie eine fehlgeschlagene Charge, um einzelne Städte zu sehen. Aktivieren Sie die Kontrollkästchen in der Spalte Ausschließen, um problematische Städte vom erneuten Versuch auszuschließen.",
+  "cities-excluded-warning": "{{count}} {{count, plural, one {Stadt} other {Städte}}} werden vom erneuten Versuch ausgeschlossen: {{cities}}",
+  "clear-exclusions": "Ausschlüsse löschen",
+  "unexclude-cities": "{{count}} {{count, plural, one {Stadt} other {Städte}}} wieder einschließen",
+  "exclude-column-header": "Ausschließen",
+  "check-cities-to-exclude-tooltip": "Städte ankreuzen, um sie vom erneuten Versuch auszuschließen"
 }

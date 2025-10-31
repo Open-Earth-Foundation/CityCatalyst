@@ -263,5 +263,11 @@
   "select-all-failed": "Select All Failed",
   "please-select-batches-to-retry": "Please select at least one batch to retry",
   "retry-this-batch": "Retry This Batch",
-  "batch": "Batch"
+  "batch": "Batch",
+  "tip-expand-batch-to-exclude-cities": "Tip: Expand a failed batch below to see individual cities. Check the boxes in the Exclude column to exclude problematic cities from retry.",
+  "cities-excluded-warning": "{{count}} {{count, plural, one {city} other {cities}}} will be excluded from retry: {{cities}}",
+  "clear-exclusions": "Clear exclusions",
+  "unexclude-cities": "Un-exclude {{count}} {{count, plural, one {city} other {cities}}}",
+  "exclude-column-header": "Exclude",
+  "check-cities-to-exclude-tooltip": "Check cities to exclude them from retry"
 }

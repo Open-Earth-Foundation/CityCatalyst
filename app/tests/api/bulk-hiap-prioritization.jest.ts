@@ -17,7 +17,11 @@ import {
 } from "@/util/types";
 import { db } from "@/models";
 import { randomUUID } from "node:crypto";
-import { POST } from "@/app/api/v1/admin/bulk-hiap-prioritization/route";
+import {
+  POST,
+  PATCH,
+  PUT,
+} from "@/app/api/v1/admin/bulk-hiap-prioritization/route";
 import { GET as CHECK_HIAP_JOBS_CRON } from "@/app/api/cron/check-hiap-jobs/route";
 import * as HiapApiService from "@/backend/hiap/HiapApiService";
 import { Op } from "sequelize";
@@ -1599,7 +1603,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
   describe("Cron Job Integration: Step 3 - TO_DO with no PENDING", () => {
     it("cron job starts batch when TO_DO rankings exist with no PENDING jobs", async () => {
-      // Setup: Clean state with only TO_DO rankings (simulating retry scenario)
+      // Setup: Clean only test inventories' rankings
       await db.models.HighImpactActionRanking.destroy({
         where: { inventoryId: inventoryIds },
       });
@@ -1615,13 +1619,15 @@ describe("Bulk HIAP Prioritization API", () => {
             langs: [LANGUAGES.en],
             status: HighImpactActionRankingStatus.TO_DO,
             jobId: null,
+            isBulk: true,
           }),
         ),
       );
 
-      // Verify precondition: No PENDING jobs exist
+      // Verify precondition: No PENDING jobs in test data
       const pendingJobs = await db.models.HighImpactActionRanking.findAll({
         where: {
+          inventoryId: inventoryIds,
           status: HighImpactActionRankingStatus.PENDING,
           jobId: { [Op.ne]: null },
         },
@@ -1677,6 +1683,7 @@ describe("Bulk HIAP Prioritization API", () => {
         langs: [LANGUAGES.en],
         status: HighImpactActionRankingStatus.PENDING,
         jobId: "existing-job-id",
+        isBulk: true, // Mark as bulk job
       });
 
       // Create 1 TO_DO ranking (should NOT be picked up while PENDING is active)
@@ -1688,12 +1695,14 @@ describe("Bulk HIAP Prioritization API", () => {
         langs: [LANGUAGES.en],
         status: HighImpactActionRankingStatus.TO_DO,
         jobId: null,
+        isBulk: true,
       });
 
       // Mock HIAP API to return "pending" for existing job (still processing)
+      // Override the global mock for this specific test
       jest
         .spyOn(HiapApiService.hiapApiWrapper, "checkBulkPrioritizationProgress")
-        .mockResolvedValue({
+        .mockResolvedValueOnce({
           status: "pending",
         });
 
@@ -1900,6 +1909,533 @@ describe("Bulk HIAP Prioritization API", () => {
 
       // Population should still be set
       expect(cityData.cityContextData.populationSize).toBe(75000);
+    });
+  });
+
+  describe("PATCH /api/v1/admin/bulk-hiap-prioritization - Exclude Cities", () => {
+    it("excludes specified cities and retries the rest", async () => {
+      // Create 3 failed rankings
+      const rankings = await Promise.all(
+        inventoryIds.map((invId, idx) =>
+          db.models.HighImpactActionRanking.create({
+            id: randomUUID(),
+            inventoryId: invId,
+            locode: `XX-TST-${idx + 1}`,
+            type: ACTION_TYPES.Mitigation,
+            langs: [LANGUAGES.en],
+            status: HighImpactActionRankingStatus.FAILURE,
+            jobId: "failed-job-id",
+            errorMessage: "Batch failed",
+          }),
+        ),
+      );
+
+      const req = mockRequest({
+        projectId,
+        actionType: ACTION_TYPES.Mitigation,
+        excludedCityLocodes: ["XX-TST-1"], // Exclude first city
+      });
+
+      const res = await PATCH(req, { params: Promise.resolve({}) });
+
+      expect(res.status).toBe(200);
+      const body = await res.json();
+
+      // Should exclude 1 and retry 2
+      expect(body.data.excludedCount).toBe(1);
+      expect(body.data.retriedCount).toBe(2);
+
+      // Verify database state
+      const updatedRankings = await db.models.HighImpactActionRanking.findAll({
+        where: { id: rankings.map((r) => r.id) },
+        order: [["locode", "ASC"]],
+      });
+
+      // First city should be EXCLUDED
+      expect(updatedRankings[0].locode).toBe("XX-TST-1");
+      expect(updatedRankings[0].status).toBe(
+        HighImpactActionRankingStatus.EXCLUDED,
+      );
+      expect(updatedRankings[0].errorMessage).toContain("excluded from retry");
+      expect(updatedRankings[0].jobId).toBeNull();
+
+      // Other cities should be TO_DO
+      expect(updatedRankings[1].status).toBe(
+        HighImpactActionRankingStatus.TO_DO,
+      );
+      expect(updatedRankings[1].errorMessage).toBeNull();
+      expect(updatedRankings[2].status).toBe(
+        HighImpactActionRankingStatus.TO_DO,
+      );
+      expect(updatedRankings[2].errorMessage).toBeNull();
+
+      // Cleanup
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: rankings.map((r) => r.id) },
+      });
+    });
+
+    it("excludes multiple cities when specified", async () => {
+      const rankings = await Promise.all(
+        inventoryIds.map((invId, idx) =>
+          db.models.HighImpactActionRanking.create({
+            id: randomUUID(),
+            inventoryId: invId,
+            locode: `XX-TST-${idx + 1}`,
+            type: ACTION_TYPES.Mitigation,
+            langs: [LANGUAGES.en],
+            status: HighImpactActionRankingStatus.FAILURE,
+            jobId: "failed-job-id",
+          }),
+        ),
+      );
+
+      const req = mockRequest({
+        projectId,
+        actionType: ACTION_TYPES.Mitigation,
+        excludedCityLocodes: ["XX-TST-1", "XX-TST-2"], // Exclude two cities
+      });
+
+      const res = await PATCH(req, { params: Promise.resolve({}) });
+
+      expect(res.status).toBe(200);
+      const body = await res.json();
+
+      expect(body.data.excludedCount).toBe(2);
+      expect(body.data.retriedCount).toBe(1);
+
+      // Cleanup
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: rankings.map((r) => r.id) },
+      });
+    });
+
+    it("retries all without exclusions when excludedCityLocodes is empty", async () => {
+      const rankings = await Promise.all(
+        inventoryIds.slice(0, 2).map((invId, idx) =>
+          db.models.HighImpactActionRanking.create({
+            id: randomUUID(),
+            inventoryId: invId,
+            locode: `XX-TST-${idx + 1}`,
+            type: ACTION_TYPES.Mitigation,
+            langs: [LANGUAGES.en],
+            status: HighImpactActionRankingStatus.FAILURE,
+            jobId: "failed-job-id",
+          }),
+        ),
+      );
+
+      const req = mockRequest({
+        projectId,
+        actionType: ACTION_TYPES.Mitigation,
+        // No excludedCityLocodes
+      });
+
+      const res = await PATCH(req, { params: Promise.resolve({}) });
+
+      expect(res.status).toBe(200);
+      const body = await res.json();
+
+      expect(body.data.excludedCount).toBe(0);
+      expect(body.data.retriedCount).toBe(2);
+
+      const updatedRankings = await db.models.HighImpactActionRanking.findAll({
+        where: { id: rankings.map((r) => r.id) },
+      });
+
+      // All should be TO_DO (none excluded)
+      updatedRankings.forEach((ranking) => {
+        expect(ranking.status).toBe(HighImpactActionRankingStatus.TO_DO);
+      });
+
+      // Cleanup
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: rankings.map((r) => r.id) },
+      });
+    });
+
+    it("only excludes cities from specified jobIds when provided", async () => {
+      // Create rankings with two different jobIds
+      const batch1Rankings = await Promise.all(
+        inventoryIds.slice(0, 2).map((invId, idx) =>
+          db.models.HighImpactActionRanking.create({
+            id: randomUUID(),
+            inventoryId: invId,
+            locode: `XX-TST-${idx + 1}`,
+            type: ACTION_TYPES.Mitigation,
+            langs: [LANGUAGES.en],
+            status: HighImpactActionRankingStatus.FAILURE,
+            jobId: "batch-1",
+          }),
+        ),
+      );
+
+      const batch2Ranking = await db.models.HighImpactActionRanking.create({
+        id: randomUUID(),
+        inventoryId: inventoryIds[2],
+        locode: "XX-TST-3",
+        type: ACTION_TYPES.Mitigation,
+        langs: [LANGUAGES.en],
+        status: HighImpactActionRankingStatus.FAILURE,
+        jobId: "batch-2",
+      });
+
+      const req = mockRequest({
+        projectId,
+        actionType: ACTION_TYPES.Mitigation,
+        jobIds: ["batch-1"], // Only retry batch-1
+        excludedCityLocodes: ["XX-TST-1"],
+      });
+
+      const res = await PATCH(req, { params: Promise.resolve({}) });
+
+      expect(res.status).toBe(200);
+      const body = await res.json();
+
+      // Should only affect batch-1
+      expect(body.data.excludedCount).toBe(1);
+      expect(body.data.retriedCount).toBe(1);
+
+      // Verify batch-2 is unchanged
+      const unchangedRanking = await db.models.HighImpactActionRanking.findByPk(
+        batch2Ranking.id,
+      );
+      expect(unchangedRanking?.status).toBe(
+        HighImpactActionRankingStatus.FAILURE,
+      );
+      expect(unchangedRanking?.jobId).toBe("batch-2");
+
+      // Cleanup
+      await db.models.HighImpactActionRanking.destroy({
+        where: {
+          id: [...batch1Rankings.map((r) => r.id), batch2Ranking.id],
+        },
+      });
+    });
+  });
+
+  describe("PUT /api/v1/admin/bulk-hiap-prioritization - Un-exclude Cities", () => {
+    it("moves excluded cities back to TO_DO", async () => {
+      // Create excluded rankings
+      const rankings = await Promise.all(
+        inventoryIds.slice(0, 2).map((invId, idx) =>
+          db.models.HighImpactActionRanking.create({
+            id: randomUUID(),
+            inventoryId: invId,
+            locode: `XX-TST-${idx + 1}`,
+            type: ACTION_TYPES.Mitigation,
+            langs: [LANGUAGES.en],
+            status: HighImpactActionRankingStatus.EXCLUDED,
+            errorMessage: "City excluded from retry",
+          }),
+        ),
+      );
+
+      const req = mockRequest({
+        projectId,
+        actionType: ACTION_TYPES.Mitigation,
+        cityLocodes: ["XX-TST-1", "XX-TST-2"],
+      });
+
+      const res = await PUT(req, { params: Promise.resolve({}) });
+
+      expect(res.status).toBe(200);
+      const body = await res.json();
+
+      expect(body.data.unexcludedCount).toBe(2);
+
+      // Verify database state
+      const updatedRankings = await db.models.HighImpactActionRanking.findAll({
+        where: { id: rankings.map((r) => r.id) },
+      });
+
+      updatedRankings.forEach((ranking) => {
+        expect(ranking.status).toBe(HighImpactActionRankingStatus.TO_DO);
+        expect(ranking.errorMessage).toBeNull();
+      });
+
+      // Cleanup
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: rankings.map((r) => r.id) },
+      });
+    });
+
+    it("only un-excludes specified cities", async () => {
+      const rankings = await Promise.all(
+        inventoryIds.map((invId, idx) =>
+          db.models.HighImpactActionRanking.create({
+            id: randomUUID(),
+            inventoryId: invId,
+            locode: `XX-TST-${idx + 1}`,
+            type: ACTION_TYPES.Mitigation,
+            langs: [LANGUAGES.en],
+            status: HighImpactActionRankingStatus.EXCLUDED,
+            errorMessage: "Excluded",
+          }),
+        ),
+      );
+
+      const req = mockRequest({
+        projectId,
+        actionType: ACTION_TYPES.Mitigation,
+        cityLocodes: ["XX-TST-1"], // Only un-exclude first city
+      });
+
+      const res = await PUT(req, { params: Promise.resolve({}) });
+
+      expect(res.status).toBe(200);
+      const body = await res.json();
+
+      expect(body.data.unexcludedCount).toBe(1);
+
+      // Verify only first city is TO_DO
+      const updatedRankings = await db.models.HighImpactActionRanking.findAll({
+        where: { id: rankings.map((r) => r.id) },
+        order: [["locode", "ASC"]],
+      });
+
+      expect(updatedRankings[0].status).toBe(
+        HighImpactActionRankingStatus.TO_DO,
+      );
+      expect(updatedRankings[1].status).toBe(
+        HighImpactActionRankingStatus.EXCLUDED,
+      );
+      expect(updatedRankings[2].status).toBe(
+        HighImpactActionRankingStatus.EXCLUDED,
+      );
+
+      // Cleanup
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: rankings.map((r) => r.id) },
+      });
+    });
+
+    it("returns 400 when cityLocodes is empty", async () => {
+      const req = mockRequest({
+        projectId,
+        actionType: ACTION_TYPES.Mitigation,
+        cityLocodes: [], // Empty array
+      });
+
+      const res = await PUT(req, { params: Promise.resolve({}) });
+
+      expect(res.status).toBe(400);
+      const body = await res.json();
+      expect(body.error).toBeTruthy();
+    });
+
+    it("returns 0 unexcluded when no matching excluded cities found", async () => {
+      const req = mockRequest({
+        projectId,
+        actionType: ACTION_TYPES.Mitigation,
+        cityLocodes: ["NON-EXISTENT"],
+      });
+
+      const res = await PUT(req, { params: Promise.resolve({}) });
+
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body.data.unexcludedCount).toBe(0);
+    });
+
+    it("requires admin permission", async () => {
+      jest.spyOn(Auth, "getServerSession").mockResolvedValue(mockUserSession);
+
+      const req = mockRequest({
+        projectId,
+        actionType: ACTION_TYPES.Mitigation,
+        cityLocodes: ["XX-TST-1"],
+      });
+
+      const res = await PUT(req, { params: Promise.resolve({}) });
+
+      expect(res.status).toBe(403);
+      const body = await res.json();
+      expect(body.error.message).toContain("Forbidden");
+    });
+  });
+
+  describe("Cron Job Error Handling - 404 Task Not Found", () => {
+    it("marks PENDING job as FAILURE when HIAP API returns 404", async () => {
+      // Clean up only test inventories' rankings
+      await db.models.HighImpactActionRanking.destroy({
+        where: { inventoryId: inventoryIds },
+      });
+
+      // Create a PENDING ranking (simulating a job that's been sent to HIAP)
+      const ranking = await db.models.HighImpactActionRanking.create({
+        id: randomUUID(),
+        inventoryId: inventoryIds[0],
+        locode: "XX-TST-1",
+        type: ACTION_TYPES.Mitigation,
+        langs: [LANGUAGES.en],
+        jobId: "non-existent-job-id",
+        status: HighImpactActionRankingStatus.PENDING,
+        isBulk: true, // Mark as bulk job
+      });
+
+      // Mock HIAP API to throw 404 error (task not found)
+      // Override the global mock for this specific test
+      jest
+        .spyOn(HiapApiService.hiapApiWrapper, "checkBulkPrioritizationProgress")
+        .mockRejectedValueOnce(new Error("Failed to check bulk job status"));
+
+      // Call cron endpoint
+      const response = await CHECK_HIAP_JOBS_CRON();
+      expect(response.status).toBe(200);
+
+      // Parse response body
+      const responseBody = await response.json();
+
+      // Verify the job was marked as completed (even though it failed)
+      expect(responseBody.completedJobs).toBe(1);
+      expect(responseBody.checkedJobs).toBe(1);
+
+      // Verify ranking was updated to FAILURE (unblocking the queue)
+      const updatedRanking = await db.models.HighImpactActionRanking.findByPk(
+        ranking.id,
+      );
+      expect(updatedRanking?.status).toBe(
+        HighImpactActionRankingStatus.FAILURE,
+      );
+      expect(updatedRanking?.errorMessage).toContain("Job check failed");
+
+      // Cleanup - clean up any ranked actions first
+      await db.models.HighImpactActionRanked.destroy({
+        where: { hiaRankingId: ranking.id },
+      });
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: ranking.id },
+      });
+    });
+
+    it("continues processing other jobs when one job check fails", async () => {
+      // Clean up only test inventories' rankings
+      await db.models.HighImpactActionRanking.destroy({
+        where: { inventoryId: inventoryIds },
+      });
+
+      // Create two PENDING rankings with different jobIds
+      const ranking1 = await db.models.HighImpactActionRanking.create({
+        id: randomUUID(),
+        inventoryId: inventoryIds[0],
+        locode: "XX-TST-1",
+        type: ACTION_TYPES.Mitigation,
+        langs: [LANGUAGES.en],
+        jobId: "failing-job-id",
+        status: HighImpactActionRankingStatus.PENDING,
+        isBulk: true, // Mark as bulk job
+      });
+
+      const ranking2 = await db.models.HighImpactActionRanking.create({
+        id: randomUUID(),
+        inventoryId: inventoryIds[1],
+        locode: "XX-TST-2",
+        type: ACTION_TYPES.Mitigation,
+        langs: [LANGUAGES.en],
+        jobId: "successful-job-id",
+        status: HighImpactActionRankingStatus.PENDING,
+        isBulk: true, // Mark as bulk job
+      });
+
+      // Mock HIAP API to fail for first job but succeed for second
+      // Override the global mock with custom implementation
+      const checkProgressSpy = jest.spyOn(
+        HiapApiService.hiapApiWrapper,
+        "checkBulkPrioritizationProgress",
+      );
+
+      checkProgressSpy.mockImplementation(async (taskId: string) => {
+        if (taskId === "failing-job-id") {
+          throw new Error("Task not found");
+        }
+        return { status: "completed" };
+      });
+
+      // Mock GlobalAPIService for the successful job
+      jest.spyOn(GlobalAPIService, "fetchAllClimateActions").mockResolvedValue([
+        {
+          ActionID: "test-action-1",
+          ActionName: "Test Action",
+          ActionType: [ACTION_TYPES.Mitigation],
+          Hazard: null,
+          Sector: ["Energy"],
+          Subsector: ["Electricity"],
+          PrimaryPurpose: ["Reduce emissions"],
+          Description: "Test",
+          CoBenefits: {},
+          EquityAndInclusionConsiderations: "Test",
+          GHGReductionPotential: {},
+          AdaptationEffectiveness: null,
+          CostInvestmentNeeded: "low",
+          TimelineForImplementation: "<5 years",
+          Dependencies: [],
+          KeyPerformanceIndicators: [],
+          PowersAndMandates: null,
+          AdaptationEffectivenessPerHazard: {},
+          biome: null,
+        },
+      ] as any);
+
+      jest
+        .spyOn(HiapApiService.hiapApiWrapper, "getBulkPrioritizationResult")
+        .mockResolvedValue({
+          prioritizerResponseList: [
+            {
+              metadata: {
+                locode: "XX-TST-2",
+                rankedDate: new Date().toISOString(),
+              },
+              rankedActionsMitigation: [
+                {
+                  actionId: "test-action-1",
+                  rank: 1,
+                  explanation: { explanations: { en: "Test" } },
+                },
+              ],
+              rankedActionsAdaptation: [],
+            },
+          ],
+        } as any);
+
+      // Call cron endpoint
+      const response = await CHECK_HIAP_JOBS_CRON();
+      expect(response.status).toBe(200);
+
+      const responseBody = await response.json();
+
+      // Should check 2 jobs and complete 2 (one failed, one succeeded)
+      expect(responseBody.checkedJobs).toBe(2);
+      expect(responseBody.completedJobs).toBe(2);
+
+      // Verify first job is FAILURE
+      const updatedRanking1 = await db.models.HighImpactActionRanking.findByPk(
+        ranking1.id,
+      );
+      expect(updatedRanking1?.status).toBe(
+        HighImpactActionRankingStatus.FAILURE,
+      );
+
+      // Verify second job is SUCCESS
+      const updatedRanking2 = await db.models.HighImpactActionRanking.findByPk(
+        ranking2.id,
+      );
+      expect(updatedRanking2?.status).toBe(
+        HighImpactActionRankingStatus.SUCCESS,
+      );
+
+      // Cleanup - clean up ranked actions first
+      const allRankedActions = await db.models.HighImpactActionRanked.findAll({
+        where: { hiaRankingId: [ranking1.id, ranking2.id] },
+      });
+      if (allRankedActions.length > 0) {
+        await db.models.HighImpactActionRanked.destroy({
+          where: { hiaRankingId: [ranking1.id, ranking2.id] },
+        });
+      }
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: [ranking1.id, ranking2.id] },
+      });
     });
   });
 });

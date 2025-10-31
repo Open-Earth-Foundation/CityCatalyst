@@ -164,8 +164,36 @@ export async function GET() {
       } catch (error: any) {
         logger.error(
           { jobId: job.jobId, error: error.message },
-          "Error checking/processing HIAP job",
+          "Error checking/processing HIAP job - marking as FAILURE",
         );
+
+        // Mark all rankings with this jobId as FAILURE to unblock the queue
+        try {
+          await db.models.HighImpactActionRanking.update(
+            {
+              status: HighImpactActionRankingStatus.FAILURE,
+              errorMessage: `Job check failed: ${error.message}`,
+            },
+            {
+              where: {
+                jobId: job.jobId,
+                status: HighImpactActionRankingStatus.PENDING,
+              },
+            },
+          );
+
+          logger.info(
+            { jobId: job.jobId },
+            "Marked PENDING rankings as FAILURE due to job check error",
+          );
+          completedJobs++;
+        } catch (updateError: any) {
+          logger.error(
+            { jobId: job.jobId, error: updateError.message },
+            "Failed to mark rankings as FAILURE",
+          );
+        }
+        
         // Continue with other jobs even if one fails
       }
     }

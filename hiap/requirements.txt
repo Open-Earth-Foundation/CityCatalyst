@@ -245,7 +245,7 @@ opentelemetry-sdk==1.37.0
     # via
     #   chromadb
     #   opentelemetry-exporter-otlp-proto-grpc
-opentelemetry-semantic-conventions==0.58b0
+opentelemetry-semantic-conventions==0.59b0
     # via opentelemetry-sdk
 orjson==3.11.3
     # via

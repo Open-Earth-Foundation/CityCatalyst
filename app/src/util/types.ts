@@ -563,6 +563,7 @@ export enum HighImpactActionRankingStatus {
   PENDING = "PENDING",
   SUCCESS = "SUCCESS",
   FAILURE = "FAILURE",
+  EXCLUDED = "EXCLUDED",
 }
 
 export interface BulkHiapPrioritizationResult {

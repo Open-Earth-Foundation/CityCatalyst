@@ -181,11 +181,11 @@ export const startBulkActionRankingJob = async (
     locode: string;
     cityId: string;
   }>,
-  lang: LANGUAGES,
+  langs: LANGUAGES[],
   type: ACTION_TYPES,
 ) => {
   logger.info(
-    { cityCount: citiesInventoriesData.length, type },
+    { cityCount: citiesInventoriesData.length, type, langs },
     "Starting bulk action ranking job",
   );
 
@@ -215,6 +215,7 @@ export const startBulkActionRankingJob = async (
   const { taskId } = await hiapApiWrapper.startBulkPrioritization(
     citiesData,
     type,
+    langs,
   );
 
   logger.info(
@@ -856,10 +857,18 @@ async function getCityContextAndEmissionsDataImpl(
   if (!inventory) throw new Error("Inventory not found");
   const city = inventory.city;
   if (!city) throw new Error("City not found for inventory");
-  const populationSize = await PopulationService.getPopulationDataForCityYear(
+
+  const populationData = await PopulationService.getPopulationDataForCityYear(
     city.cityId,
     inventory.year!,
   );
+
+  // Ensure population is number or null (HIAP accepts null)
+  const populationSize =
+    populationData.population && !isNaN(Number(populationData.population))
+      ? Number(populationData.population)
+      : null;
+
   const emissionsBySector = await getTotalEmissionsBySector([inventoryId]);
 
   // Log what we got from getTotalEmissionsBySector
@@ -874,15 +883,11 @@ async function getCityContextAndEmissionsDataImpl(
     "🔍 Emissions data retrieved from getTotalEmissionsBySector",
   );
 
-  const cityData: PrioritizerCityData = {
-    cityContextData: {
-      locode: city.locode!,
-      populationSize: Number(populationSize.population!),
-    },
-    cityEmissionsData: {
-      stationaryEnergyEmissions: getSectorEmissions(
-        emissionsBySector,
-        "Stationary Energy",
+  // Get emissions for each sector (can be null)
+  const rawEmissions = {
+    stationaryEnergyEmissions: getSectorEmissions(
+      emissionsBySector,
+      "Stationary Energy",
       ),
       transportationEmissions: getSectorEmissions(
         emissionsBySector,
@@ -894,20 +899,36 @@ async function getCityContextAndEmissionsDataImpl(
         "Industrial Processes and Product Uses (IPPU)",
       ),
       afoluEmissions: getSectorEmissions(
-        emissionsBySector,
-        "Agriculture, Forestry, and Other Land Use (AFOLU)",
-      ),
-    },
+      emissionsBySector,
+      "Agriculture, Forestry, and Other Land Use (AFOLU)",
+    ),
   };
 
-  // Log what we're about to send
+  // Transform emissions: null → 0 (HIAP requires numbers, not null)
+  const cityEmissionsData = {
+    stationaryEnergyEmissions: rawEmissions.stationaryEnergyEmissions ?? 0,
+    transportationEmissions: rawEmissions.transportationEmissions ?? 0,
+    wasteEmissions: rawEmissions.wasteEmissions ?? 0,
+    ippuEmissions: rawEmissions.ippuEmissions ?? 0,
+    afoluEmissions: rawEmissions.afoluEmissions ?? 0,
+  };
+
+  const cityData: PrioritizerCityData = {
+    cityContextData: {
+      locode: city.locode!,
+      populationSize,
+    },
+    cityEmissionsData,
+  };
+
   logger.info(
     {
       inventoryId,
       locode: city.locode,
-      cityEmissionsData: cityData.cityEmissionsData,
+      population: populationSize,
+      cityEmissionsData,
     },
-    "🔍 Final city emissions data prepared for HIAP",
+    "🔍 Final city data prepared for HIAP",
   );
 
   return cityData;

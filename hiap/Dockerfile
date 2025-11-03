@@ -14,11 +14,9 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
 # Set the working directory
 WORKDIR /app
 
-# Copy only the global requirements.txt first for better layer caching
-COPY requirements.txt ./requirements.txt
-
-# Install dependencies without caching pip files
-RUN uv pip install --system --no-cache-dir -r requirements.txt
+# Copy uv project files and install dependencies with uv
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --system
 
 # Copy the entire app directory (including all subfolders)
 COPY app/ ./

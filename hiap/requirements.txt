@@ -397,7 +397,7 @@ sqlalchemy==2.0.43
     # via
     #   langchain
     #   langchain-community
-starlette==0.48.0
+starlette==0.50.0
     # via fastapi
 sympy==1.14.0
     # via onnxruntime

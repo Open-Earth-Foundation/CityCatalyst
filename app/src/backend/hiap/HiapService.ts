@@ -863,10 +863,10 @@ async function getCityContextAndEmissionsDataImpl(
     inventory.year!,
   );
 
-  // Ensure population is number or null (HIAP accepts null)
+  // Ensure population is integer or null (HIAP requires integer ≥ 0 or null)
   const populationSize =
     populationData.population && !isNaN(Number(populationData.population))
-      ? Number(populationData.population)
+      ? Math.round(Number(populationData.population))
       : null;
 
   const emissionsBySector = await getTotalEmissionsBySector([inventoryId]);
@@ -888,34 +888,45 @@ async function getCityContextAndEmissionsDataImpl(
     stationaryEnergyEmissions: getSectorEmissions(
       emissionsBySector,
       "Stationary Energy",
-      ),
-      transportationEmissions: getSectorEmissions(
-        emissionsBySector,
-        "Transportation",
-      ),
-      wasteEmissions: getSectorEmissions(emissionsBySector, "Waste"),
-      ippuEmissions: getSectorEmissions(
-        emissionsBySector,
-        "Industrial Processes and Product Uses (IPPU)",
-      ),
-      afoluEmissions: getSectorEmissions(
+    ),
+    transportationEmissions: getSectorEmissions(
+      emissionsBySector,
+      "Transportation",
+    ),
+    wasteEmissions: getSectorEmissions(emissionsBySector, "Waste"),
+    ippuEmissions: getSectorEmissions(
+      emissionsBySector,
+      "Industrial Processes and Product Uses (IPPU)",
+    ),
+    afoluEmissions: getSectorEmissions(
       emissionsBySector,
       "Agriculture, Forestry, and Other Land Use (AFOLU)",
     ),
   };
 
-  // Transform emissions: null → 0 (HIAP requires numbers, not null)
+  // Transform emissions: convert to integers (HIAP requires strict integers)
+  // null → 0, floats → rounded integers
   const cityEmissionsData = {
-    stationaryEnergyEmissions: rawEmissions.stationaryEnergyEmissions ?? 0,
-    transportationEmissions: rawEmissions.transportationEmissions ?? 0,
-    wasteEmissions: rawEmissions.wasteEmissions ?? 0,
-    ippuEmissions: rawEmissions.ippuEmissions ?? 0,
-    afoluEmissions: rawEmissions.afoluEmissions ?? 0,
+    stationaryEnergyEmissions: Math.round(
+      rawEmissions.stationaryEnergyEmissions ?? 0,
+    ),
+    transportationEmissions: Math.round(
+      rawEmissions.transportationEmissions ?? 0,
+    ),
+    wasteEmissions: Math.round(rawEmissions.wasteEmissions ?? 0),
+    ippuEmissions: Math.round(rawEmissions.ippuEmissions ?? 0),
+    afoluEmissions: Math.round(rawEmissions.afoluEmissions ?? 0),
   };
+
+  // Format locode with space: "BRSAO" -> "BR SAO" (HIAP requires: ^[A-Za-z]{2}\s[A-Za-z]{3}$)
+  const formattedLocode =
+    city.locode!.length === 5
+      ? `${city.locode!.substring(0, 2)} ${city.locode!.substring(2)}`
+      : city.locode!;
 
   const cityData: PrioritizerCityData = {
     cityContextData: {
-      locode: city.locode!,
+      locode: formattedLocode,
       populationSize,
     },
     cityEmissionsData,
@@ -924,11 +935,21 @@ async function getCityContextAndEmissionsDataImpl(
   logger.info(
     {
       inventoryId,
-      locode: city.locode,
+      originalLocode: city.locode,
+      formattedLocode: formattedLocode,
       population: populationSize,
       cityEmissionsData,
+      types: {
+        locode: typeof formattedLocode,
+        population: typeof populationSize,
+        stationaryEnergy: typeof cityEmissionsData.stationaryEnergyEmissions,
+        transportation: typeof cityEmissionsData.transportationEmissions,
+        waste: typeof cityEmissionsData.wasteEmissions,
+        ippu: typeof cityEmissionsData.ippuEmissions,
+        afolu: typeof cityEmissionsData.afoluEmissions,
+      },
     },
-    "🔍 Final city data prepared for HIAP",
+    "🔍 Final city data prepared for HIAP (with type validation)",
   );
 
   return cityData;

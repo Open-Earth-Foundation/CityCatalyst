@@ -52,20 +52,6 @@ def sample_city_context():
 
 
 @pytest.fixture
-def sample_request_data():
-    """Sample request data for testing."""
-    return {
-        "locode": "BR RIO",
-        "populationSize": 6748000,
-        "stationaryEnergyEmissions": 1500.0,
-        "transportationEmissions": 2200.0,
-        "wasteEmissions": 800.0,
-        "ippuEmissions": 300.0,
-        "afoluEmissions": 150.0,
-    }
-
-
-@pytest.fixture
 def sample_climate_actions():
     """Sample list of climate actions for testing - includes both mitigation and adaptation."""
     return [
@@ -83,7 +69,7 @@ def sample_climate_actions():
             "Description": {
                 "en": "New Building Standards for environmentally responsible construction",
                 "es": "Estándares de construcción ambientalmente responsables",
-                "pt": "Padrões de construção ambientalmente responsáveis",
+                "pt": "Padrões de construcción ambientalmente responsáveis",
             },
             "CoBenefits": {
                 "air_quality": 1,
@@ -169,11 +155,11 @@ def sample_city_data_request():
         "cityData": {
             "cityContextData": {"locode": "BR RIO", "populationSize": 6748000},
             "cityEmissionsData": {
-                "stationaryEnergyEmissions": 1500.0,
-                "transportationEmissions": 2200.0,
-                "wasteEmissions": 800.0,
-                "ippuEmissions": 300.0,
-                "afoluEmissions": 150.0,
+                "stationaryEnergyEmissions": 1500,
+                "transportationEmissions": 2200,
+                "wasteEmissions": 800,
+                "ippuEmissions": 300,
+                "afoluEmissions": 150,
             },
         },
         "language": ["en", "es", "pt"],

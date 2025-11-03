@@ -4,6 +4,7 @@ import { AppSession, Auth } from "@/lib/auth";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
+import { H } from "@/lib/highlight";
 
 import { StreamingTextResponse } from "ai";
 import OpenAI from "openai";
@@ -205,10 +206,13 @@ async function makeServiceUserSession(token: any): Promise<AppSession> {
   };
 }
 
-async function validateServiceCredentials(serviceName: string, serviceKey: string): Promise<boolean> {
+async function validateServiceCredentials(
+  serviceName: string,
+  serviceKey: string,
+): Promise<boolean> {
   // Define valid service configurations
   const validServices: Record<string, string> = {
-    'climate-advisor': process.env.CC_SERVICE_API_KEY || '',
+    "climate-advisor": process.env.CC_SERVICE_API_KEY || "",
     // Add more services here as needed
     // 'another-service': process.env.ANOTHER_SERVICE_API_KEY || '',
   };
@@ -216,12 +220,12 @@ async function validateServiceCredentials(serviceName: string, serviceKey: strin
   // Check if the service name is valid and key matches
   const expectedKey = validServices[serviceName];
   if (!expectedKey) {
-    logger.warn({ service_name: serviceName }, 'Unknown service name');
+    logger.warn({ service_name: serviceName }, "Unknown service name");
     return false;
   }
 
   if (serviceKey !== expectedKey) {
-    logger.warn({ service_name: serviceName }, 'Invalid service key');
+    logger.warn({ service_name: serviceName }, "Invalid service key");
     return false;
   }
 
@@ -237,6 +241,14 @@ export function apiHandler(handler: NextHandler) {
     let result: ApiResponse;
     let session: AppSession | null = null;
     let error: Error | null = null;
+
+    const span = H
+      ? H.startWithHeaders(
+          `${req.method} ${new URL(req.url).pathname}`,
+          req.headers,
+        ).span
+      : null;
+
     try {
       if (!db.initialized) {
         await db.initialize();
@@ -262,19 +274,26 @@ export function apiHandler(handler: NextHandler) {
         // Check if this is service-to-service authentication
         if (serviceName && serviceKey) {
           // Validate service credentials
-          const isValidService = await validateServiceCredentials(serviceName, serviceKey);
+          const isValidService = await validateServiceCredentials(
+            serviceName,
+            serviceKey,
+          );
           if (!isValidService) {
-            throw new createHttpError.Unauthorized("Invalid service credentials");
+            throw new createHttpError.Unauthorized(
+              "Invalid service credentials",
+            );
           }
 
           // For service tokens, we only need basic JWT validation (no OAuth checks)
           session = await makeServiceUserSession(token);
-          logger.debug({
-            user_id: token.sub,
-            service_name: serviceName,
-            endpoint: new URL(req.url).pathname
-          }, 'Service-to-service token validated');
-
+          logger.debug(
+            {
+              user_id: token.sub,
+              service_name: serviceName,
+              endpoint: new URL(req.url).pathname,
+            },
+            "Service-to-service token validated",
+          );
         } else if (hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
           // OAuth validation path for regular client tokens
           const client = await OAuthClient.findByPk(token.client_id);
@@ -282,12 +301,15 @@ export function apiHandler(handler: NextHandler) {
             throw new createHttpError.Unauthorized("Invalid client");
           }
           const scopes = token.scope.split(" ");
-          if (["GET", "HEAD"].includes(req.method) && !(scopes.includes("read"))) {
+          if (
+            ["GET", "HEAD"].includes(req.method) &&
+            !scopes.includes("read")
+          ) {
             throw new createHttpError.Unauthorized("No read scope available");
           }
           if (
             ["PUT", "PATCH", "POST", "DELETE"].includes(req.method) &&
-            !(scopes.includes("write"))
+            !scopes.includes("write")
           ) {
             throw new createHttpError.Unauthorized("No write scope available");
           }
@@ -303,7 +325,9 @@ export function apiHandler(handler: NextHandler) {
           await authz.update({ lastUsed: new Date() });
           session = await makeOAuthUserSession(token);
         } else {
-          throw new createHttpError.Unauthorized("OAuth not enabled and no service credentials provided");
+          throw new createHttpError.Unauthorized(
+            "OAuth not enabled and no service credentials provided",
+          );
         }
       } else {
         session = await Auth.getServerSession();
@@ -349,6 +373,7 @@ export function apiHandler(handler: NextHandler) {
       logger.info(record);
     }
 
+    span?.end();
     return result;
   };
 }
@@ -367,7 +392,10 @@ function errorHandler(err: unknown, _req: NextRequest) {
       },
       { status: 400 },
     );
-  } else if (err instanceof CustomOrganizationError || err instanceof CustomInviteError) {
+  } else if (
+    err instanceof CustomOrganizationError ||
+    err instanceof CustomInviteError
+  ) {
     return NextResponse.json(err.data, { status: 409 });
   } else if (createHttpError.isHttpError(err) && err.expose) {
     return NextResponse.json(

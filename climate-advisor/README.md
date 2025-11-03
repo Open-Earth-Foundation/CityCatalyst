@@ -657,17 +657,6 @@ uvicorn app.main:app --reload
 
 Check token handler logs for CC_BASE_URL and token endpoint issues.
 
-## Future Enhancements
-
-- [ ] File upload endpoint for document ingestion
-- [ ] Thread retrieval endpoint to fetch conversation history
-- [ ] Admin endpoints for model configuration changes
-- [ ] Advanced search with filtering and ranking
-- [ ] Vector database clustering for large-scale deployments
-- [ ] Additional LLM providers beyond OpenRouter
-- [ ] Rate limiting and quota management
-- [ ] User preferences and conversation settings
-
 ## Contributing
 
 1. Create a feature branch: `git checkout -b feature/my-feature`

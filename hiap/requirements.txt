@@ -270,7 +270,7 @@ pandas==2.3.3
     # via hiap
 pluggy==1.6.0
     # via pytest
-posthog==5.4.0
+posthog==6.7.13
     # via chromadb
 propcache==0.4.1
     # via

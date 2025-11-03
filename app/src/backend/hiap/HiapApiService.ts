@@ -98,6 +98,20 @@ const startPrioritizationImpl = async (
     prioritizationType: type,
     language: langs,
   };
+
+  // Log detailed request payload
+  logger.info(
+    {
+      url: `${HIAP_API_URL}/prioritizer/v1/start_prioritization`,
+      body: body,
+      bodyJson: JSON.stringify(body, null, 2),
+      contextDataKeys: Object.keys(contextData),
+      cityContextData: contextData.cityContextData,
+      cityEmissionsData: contextData.cityEmissionsData,
+    },
+    "🔍 DETAILED startPrioritization request payload",
+  );
+
   const response = await fetch(
     `${HIAP_API_URL}/prioritizer/v1/start_prioritization`,
     {
@@ -113,8 +127,14 @@ const startPrioritizationImpl = async (
   if (!response.ok) {
     const errorText = await response.text();
     logger.error(
-      { status: response.status, error: errorText },
-      "Failed to start prioritization job",
+      { 
+        status: response.status, 
+        statusText: response.statusText,
+        error: errorText,
+        requestBody: body,
+        requestBodyJson: JSON.stringify(body, null, 2),
+      },
+      "❌ Failed to start prioritization job - DETAILED ERROR",
     );
     throw new Error(
       `Failed to start prioritization job: ${response.status} ${response.statusText}`,
@@ -435,6 +455,29 @@ const startBulkPrioritizationImpl = async (
     language: languages,
   };
 
+  // Log detailed request payload for bulk prioritization
+  logger.info(
+    {
+      url: `${HIAP_API_URL}/prioritizer/v1/start_prioritization_bulk`,
+      cityCount: citiesData.length,
+      countryCode,
+      prioritizationType: type,
+      languages,
+      firstCity: citiesData[0],
+      bodyStructure: {
+        cityDataList: `Array[${citiesData.length}]`,
+        countryCode,
+        prioritizationType: type,
+        language: languages,
+      },
+      sampleCityData: citiesData[0] ? {
+        cityContextData: citiesData[0].cityContextData,
+        cityEmissionsData: citiesData[0].cityEmissionsData,
+      } : null,
+    },
+    "🔍 DETAILED startBulkPrioritization request payload",
+  );
+
   const response = await fetch(
     `${HIAP_API_URL}/prioritizer/v1/start_prioritization_bulk`,
     {
@@ -452,8 +495,17 @@ const startBulkPrioritizationImpl = async (
   if (!response.ok) {
     const errorText = await response.text();
     logger.error(
-      { status: response.status, error: errorText },
-      "Failed to start bulk prioritization job",
+      { 
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText,
+        cityCount: citiesData.length,
+        countryCode,
+        prioritizationType: type,
+        languages,
+        firstCityData: citiesData[0],
+      },
+      "❌ Failed to start bulk prioritization job - DETAILED ERROR",
     );
     throw new Error(
       `Failed to start bulk prioritization job: ${response.status} ${response.statusText}`,

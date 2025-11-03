@@ -31,8 +31,6 @@ class CityContextData(BaseModel):
         str,
         Field(
             pattern=r"^[A-Za-z]{2}\s[A-Za-z]{3}$",
-            min_length=6,
-            max_length=6,
             strict=True,
             description="UN/LOCODE identifier in the format 'AA BBB'",
         ),
@@ -71,8 +69,6 @@ LanguageList = Annotated[
             str,
             Field(
                 pattern=r"^[A-Za-z]{2}$",
-                min_length=2,
-                max_length=2,
                 strict=True,
                 description="ISO 639-1 two-letter language code",
             ),
@@ -86,8 +82,6 @@ class PrioritizerRequest(BaseModel):
     cityData: CityData
     countryCode: str = Field(
         default="BR",  # TODO: Field should be required but for now we default to Brazil
-        min_length=2,
-        max_length=2,
         pattern=r"^[A-Za-z]{2}$",
         strict=True,
         description="ISO 3166-1 alpha-2 code",
@@ -106,8 +100,6 @@ class PrioritizerRequestBulk(BaseModel):
     cityDataList: List[CityData]
     countryCode: str = Field(
         default="BR",  # TODO: Field should be required but for now we default to Brazil
-        min_length=2,
-        max_length=2,
         pattern=r"^[A-Za-z]{2}$",
         strict=True,
         description="ISO 3166-1 alpha-2 code",

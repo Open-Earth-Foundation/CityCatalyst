@@ -45,7 +45,7 @@ llvmlite==0.45.0
     # via numba
 matplotlib==3.10.6
     # via seaborn
-matplotlib-inline==0.1.7
+matplotlib-inline==0.2.1
     # via
     #   ipykernel
     #   ipython

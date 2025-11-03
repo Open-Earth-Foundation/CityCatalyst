@@ -10,6 +10,7 @@ import { StreamingTextResponse } from "ai";
 import OpenAI from "openai";
 
 import { db } from "@/models";
+import { hasServerFeatureFlag } from "@/util/feature-flags";
 import { ValidationError } from "sequelize";
 import { ManualInputValidationError } from "@/lib/custom-errors/manual-input-error";
 import { CustomOrganizationError } from "@/lib/custom-errors/organization-error";
@@ -242,7 +243,7 @@ export function apiHandler(handler: NextHandler) {
     let session: AppSession | null = null;
     let error: Error | null = null;
 
-    const span = H
+    const span = hasServerFeatureFlag(FeatureFlags.HIGHLIGHT_ENABLED)
       ? H.startWithHeaders(
           `${req.method} ${new URL(req.url).pathname}`,
           req.headers,

@@ -166,5 +166,6 @@
   "my-apps-authorized-on": "Autorisé sur",
   "my-apps-last-used": "Dernière utilisation",
   "my-apps-never": "(Jamais)",
-  "my-apps-error-loading-apps": "Erreur de chargement des applications."
+  "my-apps-error-loading-apps": "Erreur de chargement des applications.",
+  "search-by-city-or-country": "Recherche par nom de ville ou de pays"
 }

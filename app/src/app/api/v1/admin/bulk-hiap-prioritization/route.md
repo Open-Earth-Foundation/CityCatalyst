@@ -13,10 +13,12 @@ Complete documentation for the bulk High Impact Actions prioritization system.
 - [API Endpoints](#api-endpoints)
   - [Start Bulk Prioritization](#1-start-bulk-prioritization)
   - [Get Batch Status](#2-get-batch-status)
-  - [Retry Failed Batches](#3-retry-failed-batches)
+  - [Retry Failed Batches (with Optional Exclusions)](#3-retry-failed-batches-with-optional-exclusions)
+  - [Un-exclude Cities](#4-un-exclude-cities)
 - [How It Works](#how-it-works)
 - [Status Lifecycle](#status-lifecycle)
 - [Retry Functionality](#retry-functionality)
+- [Excluding Problematic Cities](#excluding-problematic-cities)
 - [Multi-Project Processing](#multi-project-processing)
 - [Error Handling](#error-handling)
 - [Security](#security)
@@ -47,12 +49,30 @@ curl -X POST http://localhost:3000/api/v1/admin/bulk-hiap-prioritization \
 }
 
 # Check batch status
-curl http://localhost:3000/api/v1/admin/bulk-hiap-prioritization/status?projectId=...&actionType=mitigation
+curl http://localhost:3000/api/v1/admin/bulk-hiap-prioritization?projectId=...&actionType=mitigation
 
 # Retry failed cities
 curl -X PATCH http://localhost:3000/api/v1/admin/bulk-hiap-prioritization \
   -H "Content-Type: application/json" \
   -d '{"projectId": "...", "actionType": "mitigation"}'
+
+# Retry failed cities, excluding problematic ones
+curl -X PATCH http://localhost:3000/api/v1/admin/bulk-hiap-prioritization \
+  -H "Content-Type: application/json" \
+  -d '{
+    "projectId": "...",
+    "actionType": "mitigation",
+    "excludedCityLocodes": ["US-NYC", "BR-SAO"]
+  }'
+
+# Un-exclude cities to retry them again
+curl -X PUT http://localhost:3000/api/v1/admin/bulk-hiap-prioritization \
+  -H "Content-Type: application/json" \
+  -d '{
+    "projectId": "...",
+    "actionType": "mitigation",
+    "cityLocodes": ["US-NYC"]
+  }'
 ```
 
 ---
@@ -136,7 +156,7 @@ WHERE har.job_id IN (
 
 ### Implementation Notes
 
-**Cron Job** (`/api/cron/check-hiap-jobs`):
+**Cron Job** (`/api/v1/cron/check-hiap-jobs`):
 - Queries `is_bulk` field when fetching pending jobs
 - Routes to `checkBulkActionRankingJob()` or `checkSingleActionRankingJob()` based on flag
 
@@ -197,7 +217,7 @@ sequenceDiagram
 
 ### Cron Job Logic
 
-Every minute, the cron job (`/api/cron/check-hiap-jobs`) does:
+Every minute, the cron job (`/api/v1/cron/check-hiap-jobs`) does:
 
 1. **Check PENDING jobs** - Poll HIAP API for completion
 2. **Process completed jobs** - Save results, mark SUCCESS/FAILURE
@@ -312,40 +332,87 @@ Every minute, the cron job (`/api/cron/check-hiap-jobs`) does:
 - `PENDING`: Batch is currently being processed by HIAP API
 - `FAILURE`: At least one city in batch failed
 - `TO_DO`: Batch hasn't been started yet
+- `EXCLUDED`: City excluded from retry (causes batch failures)
 
 ---
 
-### 3. Retry Failed Batches
+### 3. Retry Failed Batches (with Optional Exclusions)
 
 **Endpoint:** `PATCH /api/v1/admin/bulk-hiap-prioritization`
 
-**Purpose:** Reset failed rankings to allow reprocessing
+**Purpose:** Reset failed rankings to allow reprocessing, optionally excluding problematic cities
 
 **Request:**
 ```json
 {
   "projectId": "uuid",
   "actionType": "mitigation",
-  "jobIds": ["abc123", "def456"]  // Optional: specific batches to retry
+  "jobIds": ["abc123", "def456"],  // Optional: specific batches to retry
+  "excludedCityLocodes": ["US-NYC", "BR-SAO"]  // Optional: cities to exclude
 }
 ```
 
-**Omit `jobIds`** to retry ALL failed cities in the project.
+**Parameters:**
+- `projectId` (required): Project UUID
+- `actionType` (required): `mitigation` or `adaptation`
+- `jobIds` (optional): Specific batches to retry. Omit to retry ALL failed cities
+- `excludedCityLocodes` (optional): City locodes to exclude from retry
 
 **Response (200 OK):**
 ```json
 {
-  "retriedCount": 150
+  "retriedCount": 148,  // Cities reset to TO_DO
+  "excludedCount": 2    // Cities marked as EXCLUDED
 }
 ```
 
 **What It Does:**
 1. Finds rankings with `status = FAILURE` (optionally filtered by jobIds)
-2. Updates: `FAILURE` → `TO_DO`, clears `jobId` and `errorMessage`
-3. Cron job will automatically pick them up on next run
+2. For cities in `excludedCityLocodes`: `FAILURE` → `EXCLUDED`, stores reason
+3. For remaining cities: `FAILURE` → `TO_DO`, clears `jobId` and `errorMessage`
+4. Cron job will automatically pick up TO_DO rankings on next run
+5. EXCLUDED cities won't be retried (prevents problematic cities from failing entire batches)
+
+**Why Exclude Cities?**
+
+The HIAP API doesn't handle partial failures well - if one city fails, the entire batch fails. Use `excludedCityLocodes` to skip cities that consistently cause batch failures (e.g., missing data, invalid context).
 
 **Errors:**
 - `400`: Missing required parameters
+- `401`: Not authenticated
+- `403`: Not an admin
+
+---
+
+### 4. Un-exclude Cities
+
+**Endpoint:** `PUT /api/v1/admin/bulk-hiap-prioritization`
+
+**Purpose:** Move excluded cities back to TO_DO for retry
+
+**Request:**
+```json
+{
+  "projectId": "uuid",
+  "actionType": "mitigation",
+  "cityLocodes": ["US-NYC", "BR-SAO"]  // Cities to un-exclude
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "unexcludedCount": 2
+}
+```
+
+**What It Does:**
+1. Finds rankings with `status = EXCLUDED` matching the city locodes
+2. Updates: `EXCLUDED` → `TO_DO`, clears `errorMessage`
+3. Cron job will pick them up on next run
+
+**Errors:**
+- `400`: Missing required parameters or empty cityLocodes array
 - `401`: Not authenticated
 - `403`: Not an admin
 
@@ -374,7 +441,7 @@ Every minute, the cron job (`/api/cron/check-hiap-jobs`) does:
 
 ### Phase 2: Cron-Based Processing
 
-**Cron Job:** Runs every minute via `/api/cron/check-hiap-jobs`
+**Cron Job:** Runs every minute via `/api/v1/cron/check-hiap-jobs`
 
 #### Every Minute, the Cron Does:
 
@@ -445,7 +512,9 @@ stateDiagram-v2
   TO_DO --> PENDING:Batch starts (sent to HIAP API)
   PENDING --> SUCCESS:HIAP processing complete
   PENDING --> FAILURE:HIAP processing failed
-  FAILURE --> TO_DO:Manual retry
+  FAILURE --> TO_DO:Manual retry (no exclusions)
+  FAILURE --> EXCLUDED:Manual retry (with exclusions)
+  EXCLUDED --> TO_DO:Un-exclude
   SUCCESS --> [*]
   note right of TO_DO 
   Waiting to be processed
@@ -458,6 +527,10 @@ stateDiagram-v2
   note right of SUCCESS 
   Completed successfully
         Ranked actions saved
+  end note
+  note right of EXCLUDED
+  Excluded from retry
+        Caused batch failures
   end note
   note right of FAILURE 
   Failed with error message
@@ -540,25 +613,159 @@ GROUP BY status;
 
 ---
 
-## Security
+## Excluding Problematic Cities
+
+### The Problem
+
+The HIAP API doesn't handle **partial failures** well. If one city in a batch fails (e.g., missing data, invalid context), the **entire batch** fails. This means 99 working cities get marked as FAILURE because of 1 problematic city.
+
+### The Solution: City Exclusion
+
+Exclude problematic cities from retry so the rest of the batch can proceed:
+
+```json
+{
+  "projectId": "uuid",
+  "actionType": "mitigation",
+  "jobIds": ["failed-batch-id"],
+  "excludedCityLocodes": ["US-NYC"]  // ← Exclude this problematic city
+}
+```
+
+### How It Works
+
+**Step 1: Identify Problematic City**
+- Batch fails with error: "City US-NYC has insufficient emissions data"
+- You identify US-NYC as the cause
+
+**Step 2: Exclude and Retry**
+```bash
+curl -X PATCH /api/v1/admin/bulk-hiap-prioritization \
+  -d '{
+    "projectId": "...",
+    "actionType": "mitigation",
+    "jobIds": ["failed-batch-id"],
+    "excludedCityLocodes": ["US-NYC"]
+  }'
+```
+
+**Response:**
+```json
+{
+  "retriedCount": 99,    // 99 cities reset to TO_DO
+  "excludedCount": 1     // US-NYC marked as EXCLUDED
+}
+```
+
+**Step 3: Database State**
+```sql
+-- Before:
+US-NYC:  status=FAILURE, error_message="insufficient data"
+US-CHI:  status=FAILURE  (collateral damage)
+US-LA:   status=FAILURE  (collateral damage)
+... 97 more cities: FAILURE
+
+-- After:
+US-NYC:  status=EXCLUDED, error_message="City excluded from retry - caused batch failure"
+US-CHI:  status=TO_DO    ✅ Ready to retry
+US-LA:   status=TO_DO    ✅ Ready to retry
+... 97 more cities: TO_DO
+```
+
+**Step 4: Cron Reprocesses**
+- Cron picks up the 99 TO_DO cities
+- Batch succeeds (no problematic city)
+- All 99 → SUCCESS
+
+### UI Features
+
+The admin UI provides checkboxes for excluding cities:
+
+```
+┌─ Batch 3: FAILURE (100 cities) ────────────────────────┐
+│                                                         │
+│  [Retry This Batch]                                    │
+│                                                         │
+│  🚫 Exclude | City LOCODE | Status  | Message         │
+│  ├──────────┼─────────────┼─────────┼─────────────────│
+│  │ ☐        │ US-NYC      │ FAILURE │ Insufficient... │
+│  │ ☐        │ US-CHI      │ FAILURE │ Batch failed    │
+│  │ ☐        │ US-LA       │ FAILURE │ Batch failed    │
+│                                                         │
+│  ⚠️  1 city will be excluded: US-NYC                   │
+│     [Clear exclusions]                                  │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Workflow:**
+1. Expand failed batch
+2. Check boxes in "🚫 Exclude" column for problematic cities
+3. Orange banner shows excluded cities
+4. Click "Retry This Batch"
+5. Excluded cities → EXCLUDED, others → TO_DO
+
+### Un-excluding Cities
+
+If you fix the underlying issue (e.g., add missing data), move cities back to TO_DO:
+
+```bash
+curl -X PUT /api/v1/admin/bulk-hiap-prioritization \
+  -d '{
+    "projectId": "...",
+    "actionType": "mitigation",
+    "cityLocodes": ["US-NYC"]
+  }'
+```
+
+**Result:**
+```
+US-NYC: status=EXCLUDED → status=TO_DO, error_message=NULL
+```
+
+The UI also provides an "Un-exclude X cities" button in batches with excluded cities.
+
+### When to Use Exclusions
+
+✅ **Use when:**
+- One city consistently fails batches
+- Missing/corrupt data for specific city
+- Invalid city context (wrong locode, missing location data)
+- City causes HIAP API errors
+
+❌ **Don't use when:**
+- Entire batch fails (likely HIAP API issue, not city-specific)
+- Temporary network errors (just retry without exclusions)
+- First failure (give it another try first)
+
+### EXCLUDED Status
+
+Cities with `status = EXCLUDED`:
+- **Won't be picked up** by cron for processing
+- **Show in orange** in the UI
+- **Can be un-excluded** to move back to TO_DO
+- **Store reason** in `error_message` field
+
+---
+
+## Multi-Project Processing
 
 ### Network-Level Protection
 
-The cron endpoint `/api/cron/check-hiap-jobs` is **blocked at the ingress level**.
+The cron endpoint `/api/cron/check-hiap-jobs` and the versioned `/api/v1/cron/*` routes are **blocked at the ingress level**.
 
 **Ingress Configuration** (`k8s/cc-ingress.yml`):
 ```yaml
 metadata:
   annotations:
     nginx.ingress.kubernetes.io/server-snippet: |
-      location ~ /api/cron/ {
+      location ~ /api/v1/cron/ {
         deny all;
         return 403;
       }
 ```
 
 **Result:**
-- ✅ External requests to `/api/cron/*` → 403 Forbidden
+- ✅ External requests to `/api/v1/cron/*` → 403 Forbidden
 - ✅ Internal Kubernetes services can call it
 - ✅ No application-level authentication needed
 
@@ -597,10 +804,10 @@ curl -X POST http://localhost:3000/api/v1/admin/bulk-hiap-prioritization \
 
 ```bash
 # Simple GET request
-curl http://localhost:3000/api/cron/check-hiap-jobs
+curl http://localhost:3000/api/v1/cron/check-hiap-jobs
 
 # With formatted JSON output
-curl -s http://localhost:3000/api/cron/check-hiap-jobs | jq
+curl -s http://localhost:3000/api/v1/cron/check-hiap-jobs | jq
 
 # Example response
 {
@@ -630,7 +837,7 @@ watch -n 5 'psql $DATABASE_URL -c "
 # Call cron every 30 seconds for testing
 while true; do
   echo "=== $(date) ==="
-  curl -s http://localhost:3000/api/cron/check-hiap-jobs | jq
+  curl -s http://localhost:3000/api/v1/cron/check-hiap-jobs | jq
   sleep 30
 done
 ```
@@ -666,7 +873,7 @@ psql $DATABASE_URL -c "
 "
 
 # Manually trigger cron
-curl http://localhost:3000/api/cron/check-hiap-jobs
+curl http://localhost:3000/api/v1/cron/check-hiap-jobs
 ```
 
 ---
@@ -744,7 +951,7 @@ kubectl logs job/check-hiap-jobs-{timestamp}
 ### Code
 
 - **API Route**: `app/src/app/api/v1/admin/bulk-hiap-prioritization/route.ts`
-- **Cron Job**: `app/src/app/api/cron/check-hiap-jobs/route.ts`
+- **Cron Job**: `app/src/app/api/v1/cron/check-hiap-jobs/route.ts`
 - **Service**: `app/src/backend/hiap/BulkHiapPrioritizationService.ts`
 - **HIAP Service**: `app/src/backend/hiap/HiapService.ts`
 - **Frontend**: `app/src/app/[lng]/admin/bulk-inventory-actions/BulkHiapPrioritizationTabContent.tsx`

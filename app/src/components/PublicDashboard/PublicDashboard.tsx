@@ -43,7 +43,6 @@ export default function PublicDashboard({
       skip: !cityId,
     });
 
-
   const targetInventory = year
     ? publicInventories?.find((inv) => inv.year === parseInt(year))
     : publicInventories?.[0];

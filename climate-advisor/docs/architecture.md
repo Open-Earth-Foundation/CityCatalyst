@@ -1,218 +1,455 @@
-# Climate Advisor (Chatbot) Architecture
+# Climate Advisor Service Architecture
 
-## Current Architecture (As-Is)
+## Overview
 
-The chatbot is implemented inside the Next.js app via API routes that directly call the OpenAI API using the JS SDK.
+Climate Advisor is a production FastAPI microservice that manages conversational AI for CityCatalyst. It provides:
 
-Key components and flows:
+- **Thread & Message Management**: Persistent conversation storage in PostgreSQL
+- **Agentic AI with Tool Integration**: OpenAI Agents SDK with function calling
+- **Vector-Based RAG**: Semantic search over climate knowledge base via pgvector
+- **Token Management**: JWT refresh and caching for CityCatalyst API access
+- **Streaming Responses**: Server-Sent Events (SSE) for real-time delivery
 
-- Assistant creation (stubbed):
-  - `app/src/app/api/v0/assistants/route.ts` – defines instructions and assistant name, currently returns 501 (not fully implemented). Uses `OPENAI_API_KEY` via `setupOpenAI()`.
-- Thread lifecycle:
-  - Create thread with inventory context: `app/src/app/api/v0/assistants/threads/[inventory]/route.ts`
-    - Builds a context string from Inventory + City + Population data fetched via Sequelize models and session user.
-    - Creates an OpenAI thread and seeds it with the context and an initial assistant message.
-    - Returns `{ threadId }` to the client.
-  - Send message and stream assistant response: `app/src/app/api/v0/assistants/threads/messages/route.ts`
-    - Accepts `{ threadId, content }`.
-    - Appends a user message and starts a streamed run using `OPENAI_ASSISTANT_ID`.
-    - Streams response back to the browser.
-  - Tool outputs streaming: `app/src/app/api/v0/assistants/threads/actions/route.ts`
-    - Submits tool outputs to an active run and streams the result.
-  - Retrieve thread metadata: `app/src/app/api/v0/assistants/threads/[inventory]/retrieve/route.ts`.
-  - Optional persistence of thread mapping: `app/src/app/api/v0/assistants/threads/export/route.ts` writes to `db.models.AssistantThread`.
-- OpenAI client wiring:
-  - `app/src/util/openai.ts` – thin wrapper to create the OpenAI client with `OPENAI_API_KEY`.
-- Frontend API usage:
-  - `app/src/services/api.ts` – exposes `createThreadId` calling `/assistants/threads/{inventoryId}`.
+## Current Architecture (As-Implemented)
 
-Runtime deps and env:
-
-- Env: `OPENAI_API_KEY`, `OPENAI_ASSISTANT_ID` (consumed in routes).
-- Data access: Next.js API routes reach directly into app DB models to build context (inventory, city, populations, user session info).
-- Streaming: Next.js route returns a readable stream to the browser.
-
-### Current Pain Points
-
-- Tight coupling: Chat logic depends on app session, DB models, and domain types.
-- Hard to scale independently: Chat traffic scales with the web app.
-- Mixed concerns: OpenAI integration and domain-specific context generation live in the same process.
-- Limited admin flows: Assistant creation stubbed; vector store/file flows not fully wired.
-
----
-
-## Target Architecture (To-Be)
-
-Introduce a standalone Python microservice “Climate Advisor Service” exposing a language-agnostic HTTP API. The Next.js app will call this service instead of OpenRouter directly.
-
-Guiding principles:
-
-- Clear API contract (no app-internal ORM/models in boundary).
-- Service owns OpenRouter integration, assistant/run lifecycles, and response streaming.
-- Context is provided explicitly by caller as structured data, or fetched via stable app APIs (not DB coupling).
-- Compatible streaming (SSE or chunked) to preserve UX.
-
-```mermaid
-flowchart LR
-  FE[CC UI] -->|existing app endpoints| CC[CityCatalyst]
-  CC -->|HTTP JSON/SSE| CAS[Climate Advisor Service Python]
-  CAS --> OAI[OpenRouter API]
-
-  subgraph Data Layer
-    IDP[OAuth Provider]
-    DB[(CityCatalyst DB)]
-  end
-
-  CC -->|OAuth token| IDP
-  CC --> DB
-  CAS -->|HTTP with token| CC
-```
-
-### Service Responsibilities
-
-- Thread lifecycle: create/retrieve threads, seed context.
-- Messaging: accept user messages; stream LLM responses.
-- Tool calls: accept and forward tool outputs.
-- Files/vector store: optional endpoints to upload/list/retrieve; or accept externally managed IDs.
-- Observability: structured logs, request IDs, metrics; configurable timeouts and retry/backoff.
-
-### Detailed Architecture Diagram (Service and App Connections)
+### System Architecture
 
 ```mermaid
 flowchart TB
-  subgraph Browser
-    UI[CityCatalyst CC UI]
-  end
+    subgraph Client["CityCatalyst Web App"]
+        UI["Next.js + React<br/>RTK Query Client"]
+    end
 
-  subgraph CityCatalyst
-    N1[API Route: /api/v0/chat/*]
-    N2[RTK Query Client]
-  end
+    subgraph Service["Climate Advisor Service"]
+        API["API Layer<br/>POST /v1/threads<br/>POST /v1/messages"]
+        Pipeline["Processing Pipeline<br/>ThreadResolver → TokenHandler<br/>MessageService → AgentService"]
+        Agent["OpenAI Agent<br/>+ climate_vector_search<br/>+ cc_inventory_query"]
+    end
 
-  subgraph "Climate Advisor Service FastAPI"
-    R1[v1/threads]
-    R2[v1/messages SSE]
-    R4[v1/files]
-    SVC[Open Router Client]
-  end
+    DB[("PostgreSQL<br/>Threads | Messages<br/>Embeddings")]
+    LLM["OpenRouter<br/>(LLM Provider)"]
+    CC["CityCatalyst API<br/>Token & Inventory"]
 
-  subgraph Data Plane
-    OAI[(Open Router API)]
-    DB[(CityCatalyst DB)]
-    IDP[(OAuth Provider)]
-  end
-
-  UI -->|HTTP| N2 -->|/api/v0| N1 -->|HTTP with OAuth token| R1
-  N1 -->|HTTP with OAuth token| R2
-  R2 --> SVC --> OAI
-  N1 -->|OAuth token| IDP
-  N1 --> DB
+    UI -->|"HTTP/REST<br/>(JWT Token)"| API
+    API --> Pipeline
+    Pipeline --> Agent
+    Agent -->|Vector Search| DB
+    Agent -->|LLM Calls| LLM
+    Agent -->|Inventory Query| CC
+    Pipeline -->|Store/Retrieve| DB
 ```
 
-Sequence (OAuth DB connection):
+### Request Flow Diagram
 
 ```mermaid
 sequenceDiagram
-  participant UI as CC UI
-  participant CC as CityCatalyst
-  participant CAS as Climate Advisor Service
-  participant IDP as OAuth Provider
-  participant DB as CityCatalyst DB
+    participant Client
+    participant API as Climate Advisor API
+    participant Thread as ThreadResolver
+    participant Token as TokenHandler
+    participant DB as PostgreSQL
+    participant Agent as AgentService
+    participant CC as CityCatalyst API
 
-  UI->>CC: Request data
-  CC->>CAS: Request data
-  CAS->>IDP: Get OAuth token
-  IDP-->>CAS: Access Token
-  CAS->>CC: Request context data with token
-  CC->>DB: Get context data
-  DB-->>CC: Context data
-  CC-->>CAS: Context data
-  CAS-->>CC: Chatbot response
-  CC-->>UI: Chatbot response
+    Client->>API: POST /v1/messages<br/>{user_id, content, thread_id?, context}
+
+    API->>Thread: Resolve thread
+    alt thread_id exists
+        Thread->>DB: Fetch thread
+    else create new
+        Thread->>DB: Create thread
+    end
+    Thread-->>API: thread
+
+    API->>Token: Load & validate token
+    alt token expired
+        Token->>CC: Refresh token
+        CC-->>Token: New access token
+        Token->>DB: Update thread context
+    end
+    Token-->>API: Valid token
+
+    API->>Agent: Execute with token
+    Agent->>CC: Use token for CC API calls
+    Agent-->>Client: Response (SSE stream)
 ```
 
-### API Contract (proposed v1)
-
-`
-
-- `/v1/threads/{thread_id}`
-  - Returns: Messages in thread
-- `/v1/messages`
-  - includes thread_id or request to generate new thread. Contains also user_id
-  - Streaming endpoint for messages
-- `/v1/actions` (optional)
-  - Future thing to call ''actions" in CC like redirect to other page
-- `/v1/files` (optional)
-  - Multipart upload, returns file ID; list/retrieve as needed.
-  - Mockup for now but possible way to share screenshots parts of the app with the model
-
-## Database Schema Additions (Chat)
-
-The chat feature persists minimal thread and message data in the CityCatalyst DB. It introduces two new tables linked to the existing `User` table:
-
-- Entities: `User` → `Thread` → `Message`.
-- Relationships: one user has many threads; one thread has many messages.
-- Identifiers: `user_id` (existing), `thread_id` (thread id), `message_id` (message id).
-- Message payload: `text` and `tools_used` (`jsonb`) capturing tools invoked and arguments.
-- Indexes: by `user_id` on threads and by `thread_id` on messages; unique `thread_id`.
+### Tool Integration Architecture
 
 ```mermaid
-erDiagram
-  User ||--o{ Thread : has
-  Thread ||--o{ Message : contains
+flowchart TD
+    Agent["Agent Decision Loop"]
 
-  User {
-    string user_id PK
-  }
+    Agent -->|Analyze message| Decision{Tool needed?}
 
-  Thread {
-    string thread_id PK
-    string user_id FK
-    string title
-    datetime created_at
-    string last_updated
-  }
+    Decision -->|Yes| Tool1["climate_vector_search"]
+    Decision -->|Yes| Tool2["cc_inventory_query"]
+    Decision -->|No| Generate["Generate response"]
 
-  Message {
-    string message_id PK
-    string thread_id FK
-    string text
-    string tools_used
-    datetime created_at
-    enum user_assistant
-  }
+    Tool1 --> Embed["Embed query<br/>Search pgvector<br/>Return results"]
+    Tool2 --> Query["Validate token<br/>Refresh if expired<br/>Query CC API"]
+
+    Embed --> Results["Tool Results"]
+    Query --> Results
+
+    Results --> Continue["Agent incorporates results<br/>& generates response"]
+    Generate --> Continue
+
+    Continue --> SSE["Stream tokens via SSE"]
 ```
 
-Notes:
+## Data Flow
 
-- `tools_used` holds a JSON array of tool calls per message, e.g. `[ { "name": "search_inventory", "args": { ... }, "status": "success" } ]`.
-- Threads may exist without an `thread_id` until created upstream; populate after thread creation.
-- Messages are append-only; edits create new rows if needed.
+### 1. Thread Creation Flow
 
-## Required Changes
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API as POST /v1/threads
+    participant Service as ThreadService
+    participant DB as PostgreSQL
 
-Changes in the Next.js app:
+    Client->>API: {user_id, inventory_id, context}
+    API->>Service: create_thread()
+    Service->>Service: Generate UUID
+    Service->>DB: INSERT thread
+    DB-->>Service: Success
+    Service-->>API: Thread object
+    API-->>Client: 201 Created<br/>{thread_id, inventory_id, context}
+```
 
-- Replace direct OpenAI SDK usage in routes with HTTP calls to the microservice:
-  - `app/src/app/api/v0/chat/threads/[inventory]/route.ts` – create thread by calling `POST /v1/threads` with the existing context string (or structured blocks). Persist returned `thread_id` .
-  - `app/src/app/api/v0/chat/threads/messages/route.ts` – call `POST /v1/messages` and pipe SSE/stream to the client. Handle `OPENAI_ASSISTANT_ID` on the service side.
-  - `app/src/app/api/v0/chat/threads/actions/route.ts` – proxy to `POST /v1/actions`.
-  - `app/src/app/api/v0/chat/threads/[inventory]/retrieve/route.ts` – proxy to `GET /v1/threads/{id}`.
-  - `app/src/app/api/v0/chat/files/[fileId]/route.ts` – proxy to service’s file endpoints (optional).
-- Config:
-  - Add `CLIMATE_ADVISOR_BASE_URL` and service-to-service credential env vars.
-  - Keep `OPENAI_*` envs only in the service (remove from Next app when migration completes).
-- Streaming:
-  - Maintain the same streaming contract to the browser
--
+### 2. Message & Streaming Flow
 
-## References to Current Code
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API as POST /v1/messages
+    participant Resolver as ThreadResolver
+    participant Token as TokenHandler
+    participant DB as PostgreSQL
+    participant CC as CityCatalyst API
 
-- Assistant (stub): `app/src/app/api/v0/assistants/route.ts:1`
-- Create thread with context: `app/src/app/api/v0/assistants/threads/[inventory]/route.ts:1`
-- Send message + stream: `app/src/app/api/v0/assistants/threads/messages/route.ts:1`
-- Tool outputs stream: `app/src/app/api/v0/assistants/threads/actions/route.ts:1`
-- Retrieve thread: `app/src/app/api/v0/assistants/threads/[inventory]/retrieve/route.ts:1`
-- Export mapping: `app/src/app/api/v0/assistants/threads/export/route.ts:1`
-- OpenAI client setup: `app/src/util/openai.ts:1`
-- Frontend RTK endpoint creating thread ID: `app/src/services/api.ts:876`
+    Client->>API: {user_id, content, thread_id?, context}
+
+    API->>Resolver: resolve_thread()
+    alt thread_id exists
+        Resolver->>DB: Fetch thread
+    else create new
+        Resolver->>DB: Create thread
+    end
+    Resolver-->>API: thread
+
+    API->>Token: load_token()
+    alt token expired
+        Token->>CC: Refresh token
+        CC-->>Token: New access token
+    end
+    Token->>DB: Save token in thread context
+    Token-->>API: Valid token
+
+    API-->>Client: Proceed with agent execution
+```
+
+## Database Schema
+
+### Thread Model
+
+```python
+class Thread(Base):
+    __tablename__ = "threads"
+
+    thread_id: UUID = PK
+    user_id: str = FK (User)
+    inventory_id: Optional[str]
+    context: Optional[Dict] = JSONB
+    title: Optional[str]
+    created_at: datetime
+    last_updated: datetime
+
+    messages: List[Message] = relationship(cascade=delete)
+```
+
+**context field example:**
+
+```json
+{
+  "access_token": "eyJ...",
+  "expires_at": "2025-01-29T15:30:00Z",
+  "issued_at": "2025-01-29T13:30:00Z",
+  "cc_access_token": "...",
+  "inventory_name": "San Francisco",
+  "custom_metadata": "..."
+}
+```
+
+### Message Model
+
+```python
+class Message(Base):
+    __tablename__ = "messages"
+
+    message_id: UUID = PK
+    thread_id: UUID = FK (Thread)
+    text: str
+    role: Enum = {'user', 'assistant'}
+    tools_used: Optional[Dict] = JSONB
+    created_at: datetime
+
+    thread: Thread = relationship(back_populates=messages)
+```
+
+**tools_used field example:**
+
+```json
+[
+  {
+    "name": "climate_vector_search",
+    "status": "success",
+    "arguments": {
+      "query": "emissions reduction strategies"
+    },
+    "results": [
+      {
+        "filename": "GPC_Full_MASTER_RW_v7.pdf",
+        "chunk_index": 42,
+        "score": 0.87,
+        "content": "Document excerpt..."
+      }
+    ]
+  }
+]
+```
+
+### DocumentEmbedding Model (Vector DB)
+
+**Vector Index:**
+
+```sql
+CREATE INDEX ix_document_embeddings_vector
+ON document_embeddings
+USING ivfflat (embedding_vector vector_cosine_ops)
+WITH (lists = 100);
+```
+
+## Service Layers
+
+### 1. Route Layer (FastAPI)
+
+**`routes/health.py`**
+
+- `GET /health` - Liveness probe
+
+**`routes/threads.py`**
+
+- `POST /v1/threads` - Create thread with optional context
+
+**`routes/messages.py`**
+
+- `POST /v1/messages` - Send message, stream response (SSE)
+
+### 2. Service Layer
+
+**ThreadService** (`services/thread_service.py`)
+
+- `create_thread()` - Create new thread
+- `get_thread()` - Retrieve thread by ID
+- `get_thread_for_user()` - Verify user ownership
+- `update_context()` - Update thread JSONB context
+- `touch_thread()` - Update last_updated timestamp
+
+**MessageService** (`services/message_service.py`)
+
+- `create_user_message()` - Persist user message
+- `create_assistant_message()` - Persist assistant response
+- `get_thread_messages()` - Load conversation history
+
+**AgentService** (`services/agent_service.py`)
+
+- `create_agent()` - Initialize Agents SDK with tools
+- `_create_openrouter_client()` - Configure OpenRouter endpoint
+- `_setup_tools()` - Build tool definitions for agent
+
+**EmbeddingService** (`services/embedding_service.py`)
+
+- `generate_embeddings()` - Call OpenAI embedding API
+- `generate_embeddings_batch()` - Batch embedding generation
+
+**CityCatalystClient** (`services/citycatalyst_client.py`)
+
+- `refresh_token()` - Call CityCatalyst token refresh endpoint
+- `query_inventory()` - Call CityCatalyst inventory APIs
+- Error handling and retry logic
+
+### 3. Tool Layer
+
+**ClimateVectorSearchTool** (`tools/climate_vector_tool.py`)
+
+```python
+async def climate_vector_search(query: str, top_k: int = 5) -> List[VectorSearchMatch]:
+    """
+    Semantic search over climate knowledge base.
+
+    1. Generate embedding for query using OpenAI
+    2. Search pgvector for similar chunks
+    3. Return top-k results with similarity scores
+    4. Tool invocation recorded in message.tools_used
+    """
+```
+
+**CCInventoryTool** (`tools/cc_inventory_tool.py`)
+
+```python
+async def cc_inventory_query(inventory_id: str, data_type: str) -> Dict:
+    """
+    Query CityCatalyst inventory APIs.
+
+    1. Load JWT token from thread context
+    2. Check token expiration
+    3. Refresh token if needed via CityCatalyst
+    4. Call CityCatalyst inventory endpoint
+    5. Return formatted inventory data
+    6. Tool invocation recorded in message.tools_used
+    """
+```
+
+### 4. Utility Layer
+
+**StreamingHandler** (`utils/streaming_handler.py`)
+
+- Orchestrates agent execution
+- Handles SSE stream formatting
+- Manages tool invocation tracking
+- Persists messages after streaming
+
+**ThreadResolver** (`utils/thread_resolver.py`)
+
+- Resolves thread_id (existing or create new)
+- Handles thread creation with context
+
+**TokenHandler** (`utils/token_handler.py`)
+
+- Loads token from multiple sources
+- Manages token refresh logic
+- Handles CityCatalyst token endpoint calls
+
+## Configuration & Settings
+
+### LLM Configuration (`llm_config.yaml`)
+
+See `llm_config.yaml` in the project root for configuration of models, prompts, tools, conversation history limits, and observability settings.
+
+### Environment Variables (`settings.py`)
+
+Environment variables are configured in `.env` file. See `.env.example` for all available configuration options including database URL, API keys (OpenRouter, OpenAI), CityCatalyst settings, and LangSmith configuration.
+
+## Integration Points
+
+### 1. CityCatalyst App ↔ Climate Advisor
+
+**Request Flow:**
+
+```
+CityCatalyst Next.js App
+  └─ POST /api/v0/chat/messages
+      {
+        "user_id": "...",
+        "content": "...",
+        "thread_id": "..." (optional),
+        "context": {
+          "cc_access_token": "jwt"
+        }
+      }
+      ↓
+      Proxy to Climate Advisor Service
+      └─ POST /v1/messages
+          ↓
+          Response: SSE stream
+          ├─ event: message
+          ├─ event: tool_use
+          └─ event: done
+```
+
+### 2. Climate Advisor ↔ OpenRouter (LLM)
+
+```
+AgentService
+  └─ AsyncOpenAI(base_url="https://openrouter.ai/api/v1")
+      └─ headers: {"Authorization": "Bearer $OPENROUTER_API_KEY"}
+          ├─ LLM Provider: OpenRouter
+          ├─ Tools: [climate_vector_search, cc_inventory_query]
+          └─ Stream: true (token-by-token)
+```
+
+### 3. Climate Advisor ↔ OpenAI (Embeddings)
+
+```
+EmbeddingService
+  └─ AsyncOpenAI(api_key=$OPENAI_API_KEY)
+      └─ Model: text-embedding-3-large
+          ├─ Used for query embeddings (climate_vector_search)
+          ├─ Dimension: 3072
+          └─ Rate limit: 3000 RPM
+```
+
+### 4. Climate Advisor ↔ CityCatalyst (Token & Inventory)
+
+```
+TokenHandler / CCInventoryTool
+  └─ POST $CC_BASE_URL/api/v0/assistants/token-refresh
+      ├─ Input: refresh_token or access_token
+      ├─ Response: new access_token with expiry
+      └─ Cached in thread.context["access_token"]
+
+  └─ GET $CC_BASE_URL/api/v0/inventory/{data_type}
+      ├─ Headers: Authorization: Bearer {access_token}
+      ├─ Query: inventory_id
+      └─ Response: Formatted inventory data
+```
+
+### 5. Climate Advisor ↔ PostgreSQL
+
+```
+AsyncSession (SQLAlchemy)
+  ├─ Threads table (CRUD)
+  ├─ Messages table (Write + Read history)
+  └─ DocumentEmbeddings table (Vector search)
+```
+
+### 6. Climate Advisor ↔ pgvector (Vector Search)
+
+```
+vector_search query:
+SELECT
+  embedding_id,
+  filename,
+  content,
+  embedding_vector <=> query_embedding as distance
+FROM document_embeddings
+ORDER BY embedding_vector <=> query_embedding
+LIMIT 5
+```
+
+### Conversation History Loading
+
+- **Limit**: Last 5 messages (configurable in `llm_config.yaml`)
+- **Query**: Indexed by `thread_id` for O(log n) lookup
+- **Benefit**: Balances context richness vs. token usage
+
+### Vector Search Optimization
+
+- **Index**: IVFFlat on `embedding_vector` column
+- **Search Time**: ~10-50ms for 10k+ documents
+- **Distance Metric**: Cosine similarity
+- **Tuning**: `WITH (lists = 100)` for balance
+
+### Database Connection Pooling
+
+```python
+engine = create_async_engine(
+    database_url,
+    poolclass=NullPool,  # Async-safe
+    pool_size=20,
+    max_overflow=10,
+    pool_timeout=30
+)
+```

@@ -115,6 +115,7 @@ export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
       <BodyLarge fontWeight="regular" color="interactive.control">
         {t("top-climate-risks-description")}
       </BodyLarge>
+
       <Box mt={10}>
         <TopRisksWidget
           cityId={cityId}

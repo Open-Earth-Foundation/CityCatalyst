@@ -181,11 +181,11 @@ export const startBulkActionRankingJob = async (
     locode: string;
     cityId: string;
   }>,
-  lang: LANGUAGES,
+  langs: LANGUAGES[],
   type: ACTION_TYPES,
 ) => {
   logger.info(
-    { cityCount: citiesInventoriesData.length, type },
+    { cityCount: citiesInventoriesData.length, type, langs },
     "Starting bulk action ranking job",
   );
 
@@ -215,6 +215,7 @@ export const startBulkActionRankingJob = async (
   const { taskId } = await hiapApiWrapper.startBulkPrioritization(
     citiesData,
     type,
+    langs,
   );
 
   logger.info(
@@ -856,10 +857,18 @@ async function getCityContextAndEmissionsDataImpl(
   if (!inventory) throw new Error("Inventory not found");
   const city = inventory.city;
   if (!city) throw new Error("City not found for inventory");
-  const populationSize = await PopulationService.getPopulationDataForCityYear(
+
+  const populationData = await PopulationService.getPopulationDataForCityYear(
     city.cityId,
     inventory.year!,
   );
+
+  // Ensure population is integer or null (HIAP requires integer ≥ 0 or null)
+  const populationSize =
+    populationData.population && !isNaN(Number(populationData.population))
+      ? Math.round(Number(populationData.population))
+      : null;
+
   const emissionsBySector = await getTotalEmissionsBySector([inventoryId]);
 
   // Log what we got from getTotalEmissionsBySector
@@ -874,40 +883,73 @@ async function getCityContextAndEmissionsDataImpl(
     "🔍 Emissions data retrieved from getTotalEmissionsBySector",
   );
 
-  const cityData: PrioritizerCityData = {
-    cityContextData: {
-      locode: city.locode!,
-      populationSize: Number(populationSize.population!),
-    },
-    cityEmissionsData: {
-      stationaryEnergyEmissions: getSectorEmissions(
-        emissionsBySector,
-        "Stationary Energy",
-      ),
-      transportationEmissions: getSectorEmissions(
-        emissionsBySector,
-        "Transportation",
-      ),
-      wasteEmissions: getSectorEmissions(emissionsBySector, "Waste"),
-      ippuEmissions: getSectorEmissions(
-        emissionsBySector,
-        "Industrial Processes and Product Uses (IPPU)",
-      ),
-      afoluEmissions: getSectorEmissions(
-        emissionsBySector,
-        "Agriculture, Forestry, and Other Land Use (AFOLU)",
-      ),
-    },
+  // Get emissions for each sector (can be null)
+  const rawEmissions = {
+    stationaryEnergyEmissions: getSectorEmissions(
+      emissionsBySector,
+      "Stationary Energy",
+    ),
+    transportationEmissions: getSectorEmissions(
+      emissionsBySector,
+      "Transportation",
+    ),
+    wasteEmissions: getSectorEmissions(emissionsBySector, "Waste"),
+    ippuEmissions: getSectorEmissions(
+      emissionsBySector,
+      "Industrial Processes and Product Uses (IPPU)",
+    ),
+    afoluEmissions: getSectorEmissions(
+      emissionsBySector,
+      "Agriculture, Forestry, and Other Land Use (AFOLU)",
+    ),
   };
 
-  // Log what we're about to send
+  // Transform emissions: convert to integers (HIAP requires strict integers)
+  // null → 0, floats → rounded integers
+  const cityEmissionsData = {
+    stationaryEnergyEmissions: Math.round(
+      rawEmissions.stationaryEnergyEmissions ?? 0,
+    ),
+    transportationEmissions: Math.round(
+      rawEmissions.transportationEmissions ?? 0,
+    ),
+    wasteEmissions: Math.round(rawEmissions.wasteEmissions ?? 0),
+    ippuEmissions: Math.round(rawEmissions.ippuEmissions ?? 0),
+    afoluEmissions: Math.round(rawEmissions.afoluEmissions ?? 0),
+  };
+
+  // Format locode with space: "BRSAO" -> "BR SAO" (HIAP requires: ^[A-Za-z]{2}\s[A-Za-z]{3}$)
+  const formattedLocode =
+    city.locode!.length === 5
+      ? `${city.locode!.substring(0, 2)} ${city.locode!.substring(2)}`
+      : city.locode!;
+
+  const cityData: PrioritizerCityData = {
+    cityContextData: {
+      locode: formattedLocode,
+      populationSize,
+    },
+    cityEmissionsData,
+  };
+
   logger.info(
     {
       inventoryId,
-      locode: city.locode,
-      cityEmissionsData: cityData.cityEmissionsData,
+      originalLocode: city.locode,
+      formattedLocode: formattedLocode,
+      population: populationSize,
+      cityEmissionsData,
+      types: {
+        locode: typeof formattedLocode,
+        population: typeof populationSize,
+        stationaryEnergy: typeof cityEmissionsData.stationaryEnergyEmissions,
+        transportation: typeof cityEmissionsData.transportationEmissions,
+        waste: typeof cityEmissionsData.wasteEmissions,
+        ippu: typeof cityEmissionsData.ippuEmissions,
+        afolu: typeof cityEmissionsData.afoluEmissions,
+      },
     },
-    "🔍 Final city emissions data prepared for HIAP",
+    "🔍 Final city data prepared for HIAP (with type validation)",
   );
 
   return cityData;

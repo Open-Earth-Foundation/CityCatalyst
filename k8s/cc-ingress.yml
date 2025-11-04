@@ -6,7 +6,11 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
     # Block access to internal/cron endpoints
     nginx.ingress.kubernetes.io/server-snippet: |
-      location ~ ^/api/cron/ {
+      location ~ ^/api/v1/cron/ {
+        deny all;
+        return 403;
+      }
+      location ~ ^/api/v1/cron/ {
         deny all;
         return 403;
       }

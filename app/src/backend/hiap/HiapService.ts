@@ -171,6 +171,24 @@ export const startActionRankingJob = async (
   return ranking;
 };
 
+export const startBothActionRankingJobs = async (
+  inventoryId: string,
+  locode: string,
+  langs: LANGUAGES[],
+  type: ACTION_TYPES,
+  user?: User,
+) => {
+  const oppositeType =
+    type === ACTION_TYPES.Mitigation
+      ? ACTION_TYPES.Adaptation
+      : ACTION_TYPES.Mitigation;
+
+  // start the opposite type job in the background
+  await startActionRankingJob(inventoryId, locode, langs, oppositeType, user);
+  // then start the current type job and return the result
+  return await startActionRankingJob(inventoryId, locode, langs, type, user);
+};
+
 /**
  * Start bulk prioritization job for multiple cities
  * All cities will share the same jobId from HIAP
@@ -1118,7 +1136,8 @@ export const fetchRanking = async (
         return { ...ranking.toJSON(), rankedActions: newRanked };
       } else if (ranking.status === HighImpactActionRankingStatus.FAILURE) {
         logger.info("Ranking is failure, starting new job");
-        return await startActionRankingJob(
+        // start a job for the opposite type
+        await startBothActionRankingJobs(
           inventoryId,
           locode,
           [lang],
@@ -1127,7 +1146,7 @@ export const fetchRanking = async (
         );
       }
       logger.info("No ranking found, starting new job");
-      return await startActionRankingJob(
+      return await startBothActionRankingJobs(
         inventoryId,
         locode,
         [lang],
@@ -1136,7 +1155,7 @@ export const fetchRanking = async (
       );
     } else {
       logger.info("No ranking found at all, starting new job");
-      return await startActionRankingJob(
+      return await startBothActionRankingJobs(
         inventoryId,
         locode,
         [lang],

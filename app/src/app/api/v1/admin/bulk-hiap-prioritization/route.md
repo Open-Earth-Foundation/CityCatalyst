@@ -751,7 +751,7 @@ Cities with `status = EXCLUDED`:
 
 ### Network-Level Protection
 
-The cron endpoint `/api/cron/check-hiap-jobs` is **blocked at the ingress level**.
+The cron endpoint `/api/cron/check-hiap-jobs` and the versioned `/api/v1/cron/*` routes are **blocked at the ingress level**.
 
 **Ingress Configuration** (`k8s/cc-ingress.yml`):
 ```yaml

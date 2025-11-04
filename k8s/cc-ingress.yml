@@ -10,6 +10,10 @@ metadata:
         deny all;
         return 403;
       }
+      location ~ ^/api/v1/cron/ {
+        deny all;
+        return 403;
+      }
 spec:
   ingressClassName: nginx
   tls:

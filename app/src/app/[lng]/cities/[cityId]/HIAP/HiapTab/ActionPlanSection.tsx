@@ -66,11 +66,6 @@ const ActionPlanSection = ({
           >
             {t("generate-climate-actions-title")}
           </Text>
-          <Button variant="ghost" color="interactive.control" p="4px">
-            <Icon as={DownloadIcon} />
-            <Text>{t("download-action-plan")}</Text>
-            <Icon as={FaCaretDown} color="interactive.control" />
-          </Button>
         </Box>
         <Text
           fontSize="body.lg"

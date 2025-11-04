@@ -33,6 +33,7 @@ export const hiapApiWrapper: {
   startBulkPrioritization: (
     citiesData: PrioritizerCityData[],
     type: ACTION_TYPES,
+    languages: LANGUAGES[],
   ) => Promise<{ taskId: string }>;
   checkBulkPrioritizationProgress: (
     taskId: string,
@@ -63,8 +64,8 @@ export const hiapApiWrapper: {
   getPrioritizationResult: async (taskId) => {
     return await getPrioritizationResultImpl(taskId);
   },
-  startBulkPrioritization: async (citiesData, type) => {
-    return await startBulkPrioritizationImpl(citiesData, type);
+  startBulkPrioritization: async (citiesData, type, languages) => {
+    return await startBulkPrioritizationImpl(citiesData, type, languages);
   },
   checkBulkPrioritizationProgress: async (taskId) => {
     return await checkBulkPrioritizationProgressImpl(taskId);
@@ -97,6 +98,20 @@ const startPrioritizationImpl = async (
     prioritizationType: type,
     language: langs,
   };
+
+  // Log detailed request payload
+  logger.info(
+    {
+      url: `${HIAP_API_URL}/prioritizer/v1/start_prioritization`,
+      body: body,
+      bodyJson: JSON.stringify(body, null, 2),
+      contextDataKeys: Object.keys(contextData),
+      cityContextData: contextData.cityContextData,
+      cityEmissionsData: contextData.cityEmissionsData,
+    },
+    "🔍 DETAILED startPrioritization request payload",
+  );
+
   const response = await fetch(
     `${HIAP_API_URL}/prioritizer/v1/start_prioritization`,
     {
@@ -112,8 +127,14 @@ const startPrioritizationImpl = async (
   if (!response.ok) {
     const errorText = await response.text();
     logger.error(
-      { status: response.status, error: errorText },
-      "Failed to start prioritization job",
+      { 
+        status: response.status, 
+        statusText: response.statusText,
+        error: errorText,
+        requestBody: body,
+        requestBodyJson: JSON.stringify(body, null, 2),
+      },
+      "❌ Failed to start prioritization job - DETAILED ERROR",
     );
     throw new Error(
       `Failed to start prioritization job: ${response.status} ${response.statusText}`,
@@ -188,12 +209,15 @@ const startActionPlanJobImpl = async ({
     const { cityContextData, cityEmissionsData } =
       await hiapServiceWrapper.getCityContextAndEmissionsData(inventoryId);
 
+    // Extract country code from LOCODE (first 2 characters)
+    const countryCode = cityLocode.substring(0, 2);
+
     const payload = {
       cityData: {
         cityContextData,
         cityEmissionsData,
       },
-      countryCode: cityLocode.split(" ")[0],
+      countryCode,
       actionId: action.actionId,
       language: lng,
     };
@@ -388,11 +412,29 @@ const startActionPlanJobImpl = async ({
 const startBulkPrioritizationImpl = async (
   citiesData: PrioritizerCityData[],
   type: ACTION_TYPES,
+  languages: LANGUAGES[],
 ): Promise<{ taskId: string }> => {
+  // Guard: Ensure citiesData is not empty before accessing first element
+  if (citiesData.length === 0) {
+    throw new Error("No city data provided for bulk prioritization.");
+  }
+
   logger.info(
-    { cityCount: citiesData.length, type },
+    { cityCount: citiesData.length, type, languages },
     "Starting bulk prioritization",
   );
+
+  // Extract and validate country codes from all cities' LOCODEs
+  const countryCodes = citiesData.map((city) =>
+    city.cityContextData.locode.substring(0, 2),
+  );
+  const uniqueCountryCodes = Array.from(new Set(countryCodes));
+  if (uniqueCountryCodes.length !== 1) {
+    throw new Error(
+      `Bulk prioritization requires all cities to be from the same country. Found country codes: ${uniqueCountryCodes.join(", ")}`,
+    );
+  }
+  const countryCode = uniqueCountryCodes[0];
 
   // Log summary of city data being sent to HIAP
   const citiesSummary = citiesData.map((city) => ({
@@ -408,15 +450,33 @@ const startBulkPrioritizationImpl = async (
 
   const body = {
     cityDataList: citiesData,
-    countryCode: "BR", // TODO: Make this dynamic based on the cities
-    prioritizationType:
-      type === ACTION_TYPES.Mitigation
-        ? "mitigation"
-        : type === ACTION_TYPES.Adaptation
-          ? "adaptation"
-          : "both",
-    language: [LANGUAGES.en, LANGUAGES.pt],
+    countryCode,
+    prioritizationType: type,
+    language: languages,
   };
+
+  // Log detailed request payload for bulk prioritization
+  logger.info(
+    {
+      url: `${HIAP_API_URL}/prioritizer/v1/start_prioritization_bulk`,
+      cityCount: citiesData.length,
+      countryCode,
+      prioritizationType: type,
+      languages,
+      firstCity: citiesData[0],
+      bodyStructure: {
+        cityDataList: `Array[${citiesData.length}]`,
+        countryCode,
+        prioritizationType: type,
+        language: languages,
+      },
+      sampleCityData: citiesData[0] ? {
+        cityContextData: citiesData[0].cityContextData,
+        cityEmissionsData: citiesData[0].cityEmissionsData,
+      } : null,
+    },
+    "🔍 DETAILED startBulkPrioritization request payload",
+  );
 
   const response = await fetch(
     `${HIAP_API_URL}/prioritizer/v1/start_prioritization_bulk`,
@@ -435,8 +495,17 @@ const startBulkPrioritizationImpl = async (
   if (!response.ok) {
     const errorText = await response.text();
     logger.error(
-      { status: response.status, error: errorText },
-      "Failed to start bulk prioritization job",
+      { 
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText,
+        cityCount: citiesData.length,
+        countryCode,
+        prioritizationType: type,
+        languages,
+        firstCityData: citiesData[0],
+      },
+      "❌ Failed to start bulk prioritization job - DETAILED ERROR",
     );
     throw new Error(
       `Failed to start bulk prioritization job: ${response.status} ${response.statusText}`,

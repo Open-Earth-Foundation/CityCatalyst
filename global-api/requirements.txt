@@ -1,6 +1,6 @@
 aiohttp==3.13.*
-alembic==1.17.0
-fastapi==0.120.1
+alembic==1.17.1
+fastapi==0.121.0
 black==25.9.0
 flake8==7.3.0
 fsspec==2025.*
@@ -13,8 +13,8 @@ pydantic-settings==2.*
 pytest==8.4.2
 rioxarray>=0.15.0,<1.0
 scipy==1.16.*
-shapely==2.0.7
-SQLAlchemy==2.0.43
+shapely==2.1.2
+SQLAlchemy==2.0.44
 tqdm==4.67.*
 uvicorn==0.38.0
 xarray==2025.*

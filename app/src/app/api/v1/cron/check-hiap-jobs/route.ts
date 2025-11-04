@@ -27,7 +27,7 @@ import { checkSingleActionRankingJob } from "@/backend/hiap/HiapService";
  * Only internal Kubernetes services can call this endpoint.
  * 
  * @swagger
- * /api/cron/check-hiap-jobs:
+ * /api/v1/cron/check-hiap-jobs:
  *   get:
  *     tags:
  *       - Cron

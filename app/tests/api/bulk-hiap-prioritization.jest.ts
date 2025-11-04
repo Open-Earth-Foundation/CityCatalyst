@@ -22,7 +22,7 @@ import {
   PATCH,
   PUT,
 } from "@/app/api/v1/admin/bulk-hiap-prioritization/route";
-import { GET as CHECK_HIAP_JOBS_CRON } from "@/app/api/cron/check-hiap-jobs/route";
+import { GET as CHECK_HIAP_JOBS_CRON } from "@/app/api/v1/cron/check-hiap-jobs/route";
 import * as HiapApiService from "@/backend/hiap/HiapApiService";
 import { Op } from "sequelize";
 import { BulkHiapPrioritizationService } from "@/backend/hiap/BulkHiapPrioritizationService";

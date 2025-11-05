@@ -102,20 +102,17 @@ describe("Action Plan API Tests", () => {
     jest.clearAllMocks();
 
     // Set up mock return values
-    (
-      db.models.ActionPlan.findAll as jest.MockedFunction<any>
-    ).mockResolvedValue([]);
-    (
-      HiapApiService.hiapApiWrapper
-        .startActionPlanJob as jest.MockedFunction<any>
-    ).mockResolvedValue({
-      plan: JSON.stringify({
-        metadata: { title: "Generated Plan" },
-        sections: [],
-      }),
-      timestamp: new Date().toISOString(),
-      actionName: "Generated Action",
-    });
+    (db.models.ActionPlan.findAll as any).mockResolvedValue([]);
+    (HiapApiService.hiapApiWrapper.startActionPlanJob as any).mockResolvedValue(
+      {
+        plan: JSON.stringify({
+          metadata: { title: "Generated Plan" },
+          sections: [],
+        }),
+        timestamp: new Date().toISOString(),
+        actionName: "Generated Action",
+      },
+    );
   });
 
   describe("POST /api/v1/city/[city]/hiap/action-plan (Create)", () => {
@@ -133,9 +130,7 @@ describe("Action Plan API Tests", () => {
       };
 
       // Mock database create
-      (
-        db.models.ActionPlan.create as jest.MockedFunction<any>
-      ).mockResolvedValue(mockActionPlan);
+      (db.models.ActionPlan.create as any).mockResolvedValue(mockActionPlan);
 
       const actionPlanData = {
         actionId: "test-action-123",

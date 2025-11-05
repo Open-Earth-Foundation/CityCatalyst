@@ -84,6 +84,12 @@ jest.mock("@/backend/permissions/PermissionService", () => ({
 
 // Import after mocks
 import { db } from "@/models";
+
+// Get references to the mocked functions
+const mockActionPlanCreate = db.models.ActionPlan
+  .create as jest.MockedFunction<any>;
+const mockActionPlanFindAll = db.models.ActionPlan
+  .findAll as jest.MockedFunction<any>;
 import * as HiapApiService from "@/backend/hiap/HiapApiService";
 
 describe("Action Plan API Tests", () => {
@@ -102,7 +108,7 @@ describe("Action Plan API Tests", () => {
     jest.clearAllMocks();
 
     // Set up mock return values
-    (db.models.ActionPlan.findAll as any).mockResolvedValue([]);
+    mockActionPlanFindAll.mockResolvedValue([]);
     (HiapApiService.hiapApiWrapper.startActionPlanJob as any).mockResolvedValue(
       {
         plan: JSON.stringify({
@@ -155,7 +161,7 @@ describe("Action Plan API Tests", () => {
       expect(body.data).toBeTruthy();
       expect(body.data.actionId).toBe("test-action-123");
       expect(body.data.language).toBe("en");
-      expect(db.models.ActionPlan.create).toHaveBeenCalledWith(
+      expect(mockActionPlanCreate).toHaveBeenCalledWith(
         expect.objectContaining({
           actionId: "test-action-123",
           cityLocode: "XX-TEST",

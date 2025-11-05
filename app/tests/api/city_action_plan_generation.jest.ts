@@ -3,22 +3,26 @@ import { POST as createActionPlan } from "@/app/api/v1/city/[city]/hiap/action-p
 import { POST as generateActionPlan } from "@/app/api/v1/city/[city]/hiap/action-plan/generate/[rankingId]/route";
 import { randomUUID } from "node:crypto";
 
-// Mock the database models
+// Mock the database models with hardcoded returns
 jest.mock("@/models", () => ({
   db: {
     initialize: jest.fn(),
     models: {
       ActionPlan: {
-        create: jest.fn().mockImplementation((data: any) =>
+        create: jest.fn(() =>
           Promise.resolve({
             id: "mock-plan-id",
-            ...data,
+            actionId: "test-action-123",
+            cityLocode: "XX-TEST",
+            actionName: "Test Action",
+            language: "en",
+            createdBy: "test-user-id",
             created: new Date(),
             lastUpdated: new Date(),
           }),
         ),
         findOne: jest.fn(),
-        findAll: jest.fn(),
+        findAll: jest.fn(() => Promise.resolve([])),
         destroy: jest.fn(),
       },
       HighImpactActionRanking: {
@@ -84,12 +88,6 @@ jest.mock("@/backend/permissions/PermissionService", () => ({
 
 // Import after mocks
 import { db } from "@/models";
-
-// Get references to the mocked functions
-const mockActionPlanCreate = db.models.ActionPlan
-  .create as jest.MockedFunction<any>;
-const mockActionPlanFindAll = db.models.ActionPlan
-  .findAll as jest.MockedFunction<any>;
 import * as HiapApiService from "@/backend/hiap/HiapApiService";
 
 describe("Action Plan API Tests", () => {
@@ -107,8 +105,7 @@ describe("Action Plan API Tests", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Set up mock return values
-    mockActionPlanFindAll.mockResolvedValue([]);
+    // Set up mock return values with hardcoded responses
     (HiapApiService.hiapApiWrapper.startActionPlanJob as any).mockResolvedValue(
       {
         plan: JSON.stringify({
@@ -161,7 +158,7 @@ describe("Action Plan API Tests", () => {
       expect(body.data).toBeTruthy();
       expect(body.data.actionId).toBe("test-action-123");
       expect(body.data.language).toBe("en");
-      expect(mockActionPlanCreate).toHaveBeenCalledWith(
+      expect(db.models.ActionPlan.create).toHaveBeenCalledWith(
         expect.objectContaining({
           actionId: "test-action-123",
           cityLocode: "XX-TEST",

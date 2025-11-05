@@ -189,7 +189,7 @@ export default function HIAPInventoryPage(props: {
               <HiapTab
                 type={actionType}
                 inventory={null}
-                cityData={city}
+                cityData={city!}
                 onTriggerHiap={() => setUserTriggeredHiap(true)}
               />
             </Tabs.Content>
@@ -205,7 +205,7 @@ export default function HIAPInventoryPage(props: {
       formattedEmissions={formattedEmissions}
       lng={lng}
       population={population || null}
-      city={city}
+      city={city!}
     >
       {/* Year Selector Section */}
       {inventoriesForYearSelector.length > 1 && (
@@ -282,7 +282,7 @@ export default function HIAPInventoryPage(props: {
             <HiapTab
               type={actionType}
               inventory={inventory}
-              cityData={city}
+              cityData={city!}
               onTriggerHiap={() => setUserTriggeredHiap(true)}
             />
           </Tabs.Content>

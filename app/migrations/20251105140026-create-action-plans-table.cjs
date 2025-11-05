@@ -49,69 +49,94 @@ module.exports = {
         allowNull: true,
         comment: "Timestamp when the plan was generated",
       },
-      created_by: {
-        type: Sequelize.UUID,
+
+      // Plan content - Introduction section
+      city_description: {
+        type: Sequelize.TEXT,
         allowNull: true,
-        comment: "User ID who created the plan",
+        comment: "Description of the city context (from introduction)",
+      },
+      action_description: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+        comment: "Description of the climate action (from introduction)",
+      },
+      national_strategy_explanation: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+        comment:
+          "Explanation of relevant national strategy (from introduction)",
       },
 
-      // Plan content - stored as JSONB for flexibility
+      // Subactions as JSON array
       subactions: {
         type: Sequelize.JSONB,
         allowNull: true,
-        defaultValue: [],
-        comment: "List of sub-actions in the plan",
+        comment: "Array of subaction items",
       },
+
+      // Institutions as JSON array
       institutions: {
         type: Sequelize.JSONB,
         allowNull: true,
-        defaultValue: [],
-        comment: "List of institutions involved",
+        comment: "Array of relevant institutions",
       },
+
+      // Milestones as JSON array
       milestones: {
         type: Sequelize.JSONB,
         allowNull: true,
-        defaultValue: [],
-        comment: "List of milestones for the plan",
+        comment: "Array of milestone items",
       },
+
+      // Timeline as JSON array
       timeline: {
         type: Sequelize.JSONB,
         allowNull: true,
-        defaultValue: [],
-        comment: "Timeline information for the plan",
+        comment: "Array of timeline items",
       },
+
+      // Cost budget as JSON array
       cost_budget: {
         type: Sequelize.JSONB,
         allowNull: true,
-        defaultValue: [],
-        comment: "Cost and budget information",
+        comment: "Array of cost budget items",
       },
+
+      // MER indicators as JSON array
       mer_indicators: {
         type: Sequelize.JSONB,
         allowNull: true,
-        defaultValue: [],
-        comment: "Monitoring, evaluation, and reporting indicators",
+        comment: "Array of monitoring, evaluation, and reporting indicators",
       },
+
+      // Mitigations as JSON array
       mitigations: {
         type: Sequelize.JSONB,
         allowNull: true,
-        defaultValue: [],
-        comment: "Mitigation measures",
+        comment: "Array of mitigation measures",
       },
+
+      // Adaptations as JSON array
       adaptations: {
         type: Sequelize.JSONB,
         allowNull: true,
-        defaultValue: [],
-        comment: "Adaptation measures",
+        comment: "Array of adaptation measures",
       },
+
+      // SDGs as JSON array
       sdgs: {
         type: Sequelize.JSONB,
         allowNull: true,
-        defaultValue: [],
-        comment: "Sustainable Development Goals alignment",
+        comment: "Array of relevant Sustainable Development Goals",
       },
 
-      // Timestamps
+      // Tracking fields
+      created_by: {
+        type: Sequelize.STRING,
+        allowNull: true,
+        comment: "User ID who created this action plan",
+      },
       created: {
         allowNull: false,
         type: Sequelize.DATE,
@@ -124,17 +149,18 @@ module.exports = {
       },
     });
 
-    // Add indexes for performance
-    await queryInterface.addIndex("ActionPlan", ["action_id"]);
-    await queryInterface.addIndex("ActionPlan", ["city_locode"]);
-    await queryInterface.addIndex("ActionPlan", ["language"]);
-    await queryInterface.addIndex("ActionPlan", ["created_by"]);
-    await queryInterface.addIndex("ActionPlan", [
-      "high_impact_action_ranked_id",
-    ]);
+    // Add indexes for better query performance
+    await queryInterface.addIndex("ActionPlan", ["action_id"], {
+      name: "idx_action_plan_action_id",
+    });
+
+    await queryInterface.addIndex("ActionPlan", ["language"], {
+      name: "idx_action_plan_language",
+    });
   },
 
   async down(queryInterface, Sequelize) {
+    // Drop the ActionPlan table
     await queryInterface.dropTable("ActionPlan");
   },
 };

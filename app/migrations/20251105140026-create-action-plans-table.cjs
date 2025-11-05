@@ -148,15 +148,6 @@ module.exports = {
         defaultValue: Sequelize.NOW,
       },
     });
-
-    // Add indexes for better query performance
-    await queryInterface.addIndex("ActionPlan", ["action_id"], {
-      name: "idx_action_plan_action_id",
-    });
-
-    await queryInterface.addIndex("ActionPlan", ["language"], {
-      name: "idx_action_plan_language",
-    });
   },
 
   async down(queryInterface, Sequelize) {

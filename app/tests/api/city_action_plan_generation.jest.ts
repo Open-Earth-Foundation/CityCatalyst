@@ -2,6 +2,7 @@ import { describe, it, expect, jest, beforeEach } from "@jest/globals";
 import { POST as createActionPlan } from "@/app/api/v1/city/[city]/hiap/action-plan/route";
 import { POST as generateActionPlan } from "@/app/api/v1/city/[city]/hiap/action-plan/generate/[rankingId]/route";
 import { randomUUID } from "node:crypto";
+import { NextRequest } from "next/server";
 
 // Mock the database models with hardcoded returns
 jest.mock("@/models", () => ({
@@ -54,10 +55,19 @@ jest.mock("@/models", () => ({
   },
 }));
 
-// Mock the HIAP API service
+// Mock the HIAP API service with hardcoded return
 jest.mock("@/backend/hiap/HiapApiService", () => ({
   hiapApiWrapper: {
-    startActionPlanJob: jest.fn(),
+    startActionPlanJob: jest.fn(() =>
+      Promise.resolve({
+        plan: JSON.stringify({
+          metadata: { title: "Generated Plan" },
+          sections: [],
+        }),
+        timestamp: new Date().toISOString(),
+        actionName: "Generated Action",
+      }),
+    ),
   },
 }));
 
@@ -96,26 +106,14 @@ describe("Action Plan API Tests", () => {
     expires: "1h",
   };
 
-  const mockRequest = (body: any) =>
-    ({
-      url: "http://localhost:3000/api/v1/city/test-city/hiap/action-plan",
-      json: async () => body,
-    }) as any; // Type assertion to satisfy NextRequest interface
+  const mockRequest = (body?: any): NextRequest => {
+    const request = new NextRequest(new URL("http://localhost:3000/api/v1"));
+    request.json = jest.fn(() => Promise.resolve(body));
+    return request;
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
-
-    // Set up mock return values with hardcoded responses
-    (HiapApiService.hiapApiWrapper.startActionPlanJob as any).mockResolvedValue(
-      {
-        plan: JSON.stringify({
-          metadata: { title: "Generated Plan" },
-          sections: [],
-        }),
-        timestamp: new Date().toISOString(),
-        actionName: "Generated Action",
-      },
-    );
   });
 
   describe("POST /api/v1/city/[city]/hiap/action-plan (Create)", () => {

@@ -5,7 +5,7 @@ import { z } from "zod";
 import createHttpError from "http-errors";
 
 const getActionPlansSchema = z.object({
-  cityId: z.string(),
+  cityId: z.string().optional(),
   language: z.string(),
   actionId: z.string(),
 });
@@ -62,13 +62,13 @@ const createActionPlanSchema = z.object({
  *                 data:
  *                   type: object
  */
-export const GET = apiHandler(async (req: NextRequest) => {
+export const GET = apiHandler(async (req: NextRequest, { params }) => {
   const url = new URL(req.url);
   const queryParams = Object.fromEntries(url.searchParams.entries());
 
   try {
-    const { cityId, language, actionId } =
-      getActionPlansSchema.parse(queryParams);
+    const { language, actionId } = getActionPlansSchema.parse(queryParams);
+    const cityId = params.city;
 
     const actionPlans = await ActionPlanService.fetchOrTranslateActionPlan(
       cityId,
@@ -149,21 +149,23 @@ export const GET = apiHandler(async (req: NextRequest) => {
  *                 data:
  *                   type: object
  */
-export const POST = apiHandler(async (req: NextRequest, { session, params }) => {
-  const body = await req.json();
+export const POST = apiHandler(
+  async (req: NextRequest, { session, params }) => {
+    const body = await req.json();
 
-  const validatedData = createActionPlanSchema.parse(body);
+    const validatedData = createActionPlanSchema.parse(body);
 
-  const { actionPlan } = await ActionPlanService.upsertActionPlan({
-    cityId: params.city,
-    actionId: validatedData.actionId,
-    highImpactActionRankedId: validatedData.hiActionRankingId,
-    cityLocode: validatedData.cityLocode,
-    actionName: validatedData.actionName,
-    language: validatedData.language,
-    planData: validatedData.planData,
-    createdBy: session?.user?.id,
-  });
+    const { actionPlan } = await ActionPlanService.upsertActionPlan({
+      cityId: params.city,
+      actionId: validatedData.actionId,
+      highImpactActionRankedId: validatedData.hiActionRankingId,
+      cityLocode: validatedData.cityLocode,
+      actionName: validatedData.actionName,
+      language: validatedData.language,
+      planData: validatedData.planData,
+      createdBy: session?.user?.id,
+    });
 
-  return NextResponse.json({ data: actionPlan }, { status: 201 });
-});
+    return NextResponse.json({ data: actionPlan }, { status: 201 });
+  },
+);

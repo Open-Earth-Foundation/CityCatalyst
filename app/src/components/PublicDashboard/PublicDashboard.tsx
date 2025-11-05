@@ -22,6 +22,7 @@ export default function PublicDashboard({
   const year = routeParams?.[0]; // First param is the year
   const { t } = useTranslation(lng, "dashboard");
 
+
   // Get public city data
   const {
     data: publicCity,

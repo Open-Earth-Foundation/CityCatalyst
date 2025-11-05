@@ -43,7 +43,7 @@ export default function HIAPInventoryPage(props: {
   } = api.useGetInventoryQuery(inventoryId!, { skip: !inventoryId });
 
   // getCityData
-  const { data: city } = api.useGetCityQuery(cityId, {
+  const { data: city, isLoading: isCityLoading } = api.useGetCityQuery(cityId, {
     skip: !cityId,
   });
 
@@ -104,7 +104,7 @@ export default function HIAPInventoryPage(props: {
   );
 
   // Show loading state while fetching
-  if (isInventoryLoading || isInventoriesLoading) {
+  if (isInventoryLoading || isInventoriesLoading || isCityLoading) {
     return (
       <Box
         h="full"
@@ -117,8 +117,22 @@ export default function HIAPInventoryPage(props: {
     );
   }
 
-  // If inventory doesn't exist or user doesn't have access, redirect
+  // If inventory doesn't exist or user doesn't have access, show error state
   if (inventoryError || !inventory) {
+    // If city data is not loaded yet, show loading
+    if (!city) {
+      return (
+        <Box
+          h="full"
+          display="flex"
+          flexDirection="column"
+          bg="background.backgroundLight"
+        >
+          <ProgressLoader />
+        </Box>
+      );
+    }
+
     return (
       <HiapPageLayout
         inventory={null}
@@ -175,7 +189,7 @@ export default function HIAPInventoryPage(props: {
               <HiapTab
                 type={actionType}
                 inventory={null}
-                cityData={city!}
+                cityData={city}
                 onTriggerHiap={() => setUserTriggeredHiap(true)}
               />
             </Tabs.Content>
@@ -268,7 +282,7 @@ export default function HIAPInventoryPage(props: {
             <HiapTab
               type={actionType}
               inventory={inventory}
-              cityData={city!}
+              cityData={city}
               onTriggerHiap={() => setUserTriggeredHiap(true)}
             />
           </Tabs.Content>

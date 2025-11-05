@@ -5,7 +5,7 @@ import ProgressLoader from "@/components/ProgressLoader";
 import { useModuleAccess } from "@/hooks/useModuleAccess";
 
 interface UseModuleAccessLayoutProps {
-  params: Promise<{ lng: string; cityId: string }>;
+  params: Promise<{ lng: string; cityId: string; inventory?: string }>;
   moduleId: string;
   fallbackPath?: string;
   children: React.ReactNode;
@@ -17,10 +17,13 @@ export const useModuleAccessLayout = ({
   fallbackPath,
   children,
 }: UseModuleAccessLayoutProps): React.ReactElement => {
-  const { lng, cityId } = use(params);
+  const { lng, cityId, inventory } = use(params);
 
   // Skip module access check when JN_ENABLED feature flag is OFF
-  const shouldCheckAccess = hasFeatureFlag(FeatureFlags.JN_ENABLED);
+  // Also skip for main module pages (when there's no inventory parameter)
+  // These pages typically just redirect to specific inventories
+  const shouldCheckAccess = hasFeatureFlag(FeatureFlags.JN_ENABLED) && !!inventory;
+
   const { hasAccess } = useModuleAccess({
     cityId,
     moduleId,

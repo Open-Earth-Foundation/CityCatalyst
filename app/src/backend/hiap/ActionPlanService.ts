@@ -236,6 +236,19 @@ export default class ActionPlanService {
           {
             model: db.models.HighImpactActionRanked,
             as: "highImpactActionRanked",
+            include: [
+              {
+                model: db.models.HighImpactActionRanking,
+                as: "highImpactActionRanking",
+                include: [
+                  {
+                    model: db.models.Inventory,
+                    as: "inventory",
+                    where: { cityId: cityId },
+                  },
+                ],
+              },
+            ],
           },
         ],
         order: [["created", "DESC"]],

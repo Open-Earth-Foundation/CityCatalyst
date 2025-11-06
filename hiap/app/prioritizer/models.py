@@ -3,7 +3,6 @@ from typing import Optional, List, Annotated, Dict
 from datetime import datetime
 from enum import Enum
 
-# %%
 # --- Enums ---
 
 
@@ -21,7 +20,6 @@ NonNegativeInteger = Annotated[
 ]
 
 
-# %%
 # --- Request models ---
 
 
@@ -113,7 +111,6 @@ class PrioritizerRequestBulk(BaseModel):
     )
 
 
-# %%
 # --- Response models ---
 
 

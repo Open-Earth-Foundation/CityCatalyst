@@ -2,7 +2,6 @@ from pydantic import BaseModel, Field, StrictStr
 from typing import Optional, List, Dict, Annotated
 from datetime import datetime, date
 
-# %%
 # --- Request models ---
 
 
@@ -67,7 +66,6 @@ class PlanRequest(BaseModel):
     )
 
 
-# %%
 # --- Response models ---
 
 
@@ -206,9 +204,9 @@ class PlanCreatorMetadata(BaseModel):
     locode: Annotated[
         str,
         Field(
-            pattern=r"^[A-Za-z]{2}$",
+            pattern=r"^[A-Za-z]{2}\s[A-Za-z]{3}$",
             strict=True,
-            description="Two-letter code",
+            description="UN/LOCODE identifier in the format 'AA BBB'",
         ),
     ]  # Locode comes from frontend request, there it is always known, even if the city is not found in global API
     cityName: Optional[str] = (

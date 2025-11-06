@@ -220,28 +220,22 @@ export default class ActionPlanService {
     actionId: string,
   ): Promise<ActionPlan[]> {
     try {
+      const city = await db.models.City.findByPk(cityId);
+      if (!city?.locode) {
+        logger.warn({ cityId }, "City not found or has no locode");
+        return [];
+      }
+
       const actionPlans = await db.models.ActionPlan.findAll({
         where: {
           language,
           actionId,
+          cityLocode: city.locode, // Direct filter by city locode
         },
         include: [
           {
             model: db.models.HighImpactActionRanked,
             as: "highImpactActionRanked",
-            include: [
-              {
-                model: db.models.HighImpactActionRanking,
-                as: "highImpactActionRanking",
-                include: [
-                  {
-                    model: db.models.Inventory,
-                    as: "inventory",
-                    where: { cityId: cityId },
-                  },
-                ],
-              },
-            ],
           },
         ],
         order: [["created", "DESC"]],
@@ -418,7 +412,17 @@ export default class ActionPlanService {
 
       // If no plans found in requested language, try to find plans in other languages and translate them
       if (!actionPlans || actionPlans.length === 0) {
-        // Get plans in any language for this action
+        // Get the city's locode first
+        const city = await db.models.City.findByPk(cityId);
+        if (!city?.locode) {
+          logger.warn(
+            { cityId },
+            "City not found or has no locode for translation",
+          );
+          return [];
+        }
+
+        // Get plans in any language for this action and city
         const basePlans = await db.models.ActionPlan.findAll({
           where: {
             actionId,

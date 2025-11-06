@@ -23,11 +23,11 @@ import { checkSingleActionRankingJob } from "@/backend/hiap/HiapService";
  * 3. If ANY PENDING jobs exist, skip batch starting (wait for completion)
  * 
  * SECURITY: This endpoint is protected at the network level via Ingress.
- * The ingress blocks /api/cron/* paths from external access (see k8s/cc-ingress.yml).
+ * The ingress explicitly blocks both /api/cron/* and /api/v1/cron/* paths from external access (see k8s/cc-ingress.yml).
  * Only internal Kubernetes services can call this endpoint.
  * 
  * @swagger
- * /api/cron/check-hiap-jobs:
+ * /api/v1/cron/check-hiap-jobs:
  *   get:
  *     tags:
  *       - Cron

@@ -156,7 +156,7 @@ WHERE har.job_id IN (
 
 ### Implementation Notes
 
-**Cron Job** (`/api/cron/check-hiap-jobs`):
+**Cron Job** (`/api/v1/cron/check-hiap-jobs`):
 - Queries `is_bulk` field when fetching pending jobs
 - Routes to `checkBulkActionRankingJob()` or `checkSingleActionRankingJob()` based on flag
 
@@ -217,7 +217,7 @@ sequenceDiagram
 
 ### Cron Job Logic
 
-Every minute, the cron job (`/api/cron/check-hiap-jobs`) does:
+Every minute, the cron job (`/api/v1/cron/check-hiap-jobs`) does:
 
 1. **Check PENDING jobs** - Poll HIAP API for completion
 2. **Process completed jobs** - Save results, mark SUCCESS/FAILURE
@@ -441,7 +441,7 @@ The HIAP API doesn't handle partial failures well - if one city fails, the entir
 
 ### Phase 2: Cron-Based Processing
 
-**Cron Job:** Runs every minute via `/api/cron/check-hiap-jobs`
+**Cron Job:** Runs every minute via `/api/v1/cron/check-hiap-jobs`
 
 #### Every Minute, the Cron Does:
 
@@ -751,21 +751,21 @@ Cities with `status = EXCLUDED`:
 
 ### Network-Level Protection
 
-The cron endpoint `/api/cron/check-hiap-jobs` is **blocked at the ingress level**.
+The cron endpoint `/api/cron/check-hiap-jobs` and the versioned `/api/v1/cron/*` routes are **blocked at the ingress level**.
 
 **Ingress Configuration** (`k8s/cc-ingress.yml`):
 ```yaml
 metadata:
   annotations:
     nginx.ingress.kubernetes.io/server-snippet: |
-      location ~ /api/cron/ {
+      location ~ /api/v1/cron/ {
         deny all;
         return 403;
       }
 ```
 
 **Result:**
-- ✅ External requests to `/api/cron/*` → 403 Forbidden
+- ✅ External requests to `/api/v1/cron/*` → 403 Forbidden
 - ✅ Internal Kubernetes services can call it
 - ✅ No application-level authentication needed
 
@@ -804,10 +804,10 @@ curl -X POST http://localhost:3000/api/v1/admin/bulk-hiap-prioritization \
 
 ```bash
 # Simple GET request
-curl http://localhost:3000/api/cron/check-hiap-jobs
+curl http://localhost:3000/api/v1/cron/check-hiap-jobs
 
 # With formatted JSON output
-curl -s http://localhost:3000/api/cron/check-hiap-jobs | jq
+curl -s http://localhost:3000/api/v1/cron/check-hiap-jobs | jq
 
 # Example response
 {
@@ -837,7 +837,7 @@ watch -n 5 'psql $DATABASE_URL -c "
 # Call cron every 30 seconds for testing
 while true; do
   echo "=== $(date) ==="
-  curl -s http://localhost:3000/api/cron/check-hiap-jobs | jq
+  curl -s http://localhost:3000/api/v1/cron/check-hiap-jobs | jq
   sleep 30
 done
 ```
@@ -873,7 +873,7 @@ psql $DATABASE_URL -c "
 "
 
 # Manually trigger cron
-curl http://localhost:3000/api/cron/check-hiap-jobs
+curl http://localhost:3000/api/v1/cron/check-hiap-jobs
 ```
 
 ---
@@ -951,7 +951,7 @@ kubectl logs job/check-hiap-jobs-{timestamp}
 ### Code
 
 - **API Route**: `app/src/app/api/v1/admin/bulk-hiap-prioritization/route.ts`
-- **Cron Job**: `app/src/app/api/cron/check-hiap-jobs/route.ts`
+- **Cron Job**: `app/src/app/api/v1/cron/check-hiap-jobs/route.ts`
 - **Service**: `app/src/backend/hiap/BulkHiapPrioritizationService.ts`
 - **HIAP Service**: `app/src/backend/hiap/HiapService.ts`
 - **Frontend**: `app/src/app/[lng]/admin/bulk-inventory-actions/BulkHiapPrioritizationTabContent.tsx`

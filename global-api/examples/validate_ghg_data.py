@@ -25,7 +25,7 @@ from utils.data_validation import (
     get_climatetrace_emissions,
     get_edgar_emissions,
     parse_city_inventory,
-    compare_emissions
+    compare_emissions,
 )
 import pandas as pd
 
@@ -37,15 +37,15 @@ def example_single_sector_comparison():
     print("=" * 80)
     print("Example 1: Single Sector Comparison")
     print("=" * 80)
-    
+
     # Example parameters
     locode = "BRRIO"  # Rio de Janeiro
     year = 2022
     reference_number = "I.1.1"  # Residential buildings
-    
+
     print(f"\nComparing emissions for {locode} in {year}")
     print(f"Sector: {reference_number} (Residential buildings)\n")
-    
+
     # Fetch from each source
     print("Fetching ClimateTrace data...")
     ct_data = get_climatetrace_emissions(locode, year, reference_number)
@@ -54,7 +54,7 @@ def example_single_sector_comparison():
         print(f"  CO2eq (100yr): {ct_data['emissions']['CO2eq_100yr']:,.0f} tonnes")
     else:
         print("  ✗ No data found")
-    
+
     print("\nFetching EDGAR data...")
     edgar_data = get_edgar_emissions(locode, year, reference_number)
     if edgar_data:
@@ -62,50 +62,54 @@ def example_single_sector_comparison():
         print(f"  CO2eq (100yr): {edgar_data['emissions']['CO2eq_100yr']:,.0f} tonnes")
     else:
         print("  ✗ No data found")
-    
+
     print("\nFetching City Inventory data...")
     # Example: Load city inventory from CSV
     inventory_path = f"/home/runner/work/CityCatalyst/CityCatalyst/hiap/app/cap_off_app/data/ghgi_exports/inventory-{locode.replace('BR', 'BR ')}-{year}.csv"
-    
+
     city_data = None
     if os.path.exists(inventory_path):
         inventory_df = pd.read_csv(inventory_path)
         city_data = parse_city_inventory(inventory_df, reference_number)
         if city_data:
             print(f"  ✓ Found {city_data['num_entries']} inventory entries")
-            print(f"  CO2eq (reported): {city_data['emissions'].get('CO2eq_reported', 0):,.0f} tonnes")
+            print(
+                f"  CO2eq (reported): {city_data['emissions'].get('CO2eq_reported', 0):,.0f} tonnes"
+            )
         else:
             print(f"  ✗ No data for sector {reference_number}")
     else:
         print(f"  ✗ Inventory file not found: {inventory_path}")
-    
+
     # Compare the data
     print("\n" + "-" * 80)
     print("Comparison Results:")
     print("-" * 80)
-    
+
     comparison = compare_emissions(ct_data, edgar_data, city_data)
-    
+
     print(f"\nAvailable sources: {', '.join(comparison['available_sources'])}")
-    
-    if comparison['emissions_co2eq_100yr']:
+
+    if comparison["emissions_co2eq_100yr"]:
         print("\nEmissions (tonnes CO2eq):")
-        for source, value in comparison['emissions_co2eq_100yr'].items():
+        for source, value in comparison["emissions_co2eq_100yr"].items():
             print(f"  {source:15s}: {value:>15,.0f}")
-    
-    if comparison['relative_differences']:
+
+    if comparison["relative_differences"]:
         print("\nRelative differences (%):")
-        for pair, diff in comparison['relative_differences'].items():
+        for pair, diff in comparison["relative_differences"].items():
             print(f"  {pair:30s}: {diff:>10.1f}%")
-    
-    if comparison.get('validation_metrics'):
-        metrics = comparison['validation_metrics']
+
+    if comparison.get("validation_metrics"):
+        metrics = comparison["validation_metrics"]
         print(f"\nValidation Metrics:")
         print(f"  Mean emissions: {metrics.get('mean_emissions', 0):,.0f} tonnes CO2eq")
         print(f"  Std deviation: {metrics.get('std_deviation', 0):,.0f} tonnes CO2eq")
-        print(f"  Coefficient of variation: {metrics.get('coefficient_of_variation_pct', 0):.1f}%")
+        print(
+            f"  Coefficient of variation: {metrics.get('coefficient_of_variation_pct', 0):.1f}%"
+        )
         print(f"  Data quality: {metrics.get('data_quality_assessment', 'unknown')}")
-    
+
     print("\n")
 
 
@@ -116,72 +120,72 @@ def example_full_inventory_validation():
     print("=" * 80)
     print("Example 2: Full Inventory Validation")
     print("=" * 80)
-    
+
     locode = "BRRIO"  # Rio de Janeiro
     year = 2022
-    
+
     # Define sectors to validate
     sectors = [
         "I.1.1",  # Residential buildings - stationary energy
         "I.2.1",  # Commercial buildings - stationary energy
         "I.3.1",  # Manufacturing - stationary energy
         "I.4.1",  # Energy industries
-        "II.1.1", # On-road transportation
-        "II.2.1", # Railways
-        "III.1.1", # Solid waste disposal
+        "II.1.1",  # On-road transportation
+        "II.2.1",  # Railways
+        "III.1.1",  # Solid waste disposal
     ]
-    
+
     print(f"\nValidating inventory for {locode} in {year}")
     print(f"Analyzing {len(sectors)} sectors\n")
-    
+
     # Check if city inventory exists
     inventory_path = f"/home/runner/work/CityCatalyst/CityCatalyst/hiap/app/cap_off_app/data/ghgi_exports/inventory-{locode.replace('BR', 'BR ')}-{year}.csv"
-    
+
     if not os.path.exists(inventory_path):
         print(f"Note: City inventory not found at {inventory_path}")
         print("Will compare ClimateTrace and EDGAR only\n")
         inventory_path = None
-    
+
     # Run validation
     results = validate_ghg_inventory(locode, year, sectors, inventory_path)
-    
+
     # Display summary
     print("=" * 80)
     print("Validation Summary")
     print("=" * 80)
-    summary = results['validation_summary']
+    summary = results["validation_summary"]
     print(f"Sectors analyzed: {summary['sectors_analyzed']}")
     print(f"Sectors with data: {summary['sectors_with_data']}")
     print(f"Sectors with multiple sources: {summary['sectors_with_multiple_sources']}")
     print(f"Overall data quality: {summary['overall_data_quality']}")
-    
+
     # Display sector-by-sector results
     print("\n" + "=" * 80)
     print("Sector-by-Sector Results")
     print("=" * 80)
-    
-    for ref_num, comparison in results['sector_comparisons'].items():
-        sources = comparison.get('available_sources', [])
+
+    for ref_num, comparison in results["sector_comparisons"].items():
+        sources = comparison.get("available_sources", [])
         if not sources:
             continue
-        
+
         print(f"\n{ref_num}:")
         print(f"  Sources: {', '.join(sources)}")
-        
-        if comparison.get('emissions_co2eq_100yr'):
-            for source, value in comparison['emissions_co2eq_100yr'].items():
+
+        if comparison.get("emissions_co2eq_100yr"):
+            for source, value in comparison["emissions_co2eq_100yr"].items():
                 print(f"    {source}: {value:,.0f} tonnes CO2eq")
-        
-        if comparison.get('validation_metrics'):
-            quality = comparison['validation_metrics'].get('data_quality_assessment')
-            cv = comparison['validation_metrics'].get('coefficient_of_variation_pct', 0)
+
+        if comparison.get("validation_metrics"):
+            quality = comparison["validation_metrics"].get("data_quality_assessment")
+            cv = comparison["validation_metrics"].get("coefficient_of_variation_pct", 0)
             print(f"  Quality: {quality} (CV: {cv:.1f}%)")
-    
+
     # Save results to JSON
     output_path = "/tmp/ghg_validation_results.json"
-    with open(output_path, 'w') as f:
+    with open(output_path, "w") as f:
         json.dump(results, f, indent=2)
-    
+
     print(f"\n✓ Full results saved to: {output_path}\n")
 
 
@@ -192,7 +196,8 @@ def example_interpret_results():
     print("=" * 80)
     print("Example 3: Interpreting Validation Results")
     print("=" * 80)
-    print("""
+    print(
+        """
 Based on the referenced paper (https://iopscience.iop.org/article/10.1088/1748-9326/acbb91),
 here's how to interpret the validation metrics:
 
@@ -236,7 +241,8 @@ here's how to interpret the validation metrics:
    - Includes local measurements
    - Detailed sector breakdown needed
    - Official reporting purposes
-""")
+"""
+    )
 
 
 if __name__ == "__main__":
@@ -244,17 +250,17 @@ if __name__ == "__main__":
     print("=" * 80)
     print("\nThis script demonstrates validation of greenhouse gas inventory data")
     print("by comparing ClimateTrace, EDGAR, and city-reported emissions.\n")
-    
+
     # Run examples
     try:
         example_single_sector_comparison()
         input("\nPress Enter to continue to Example 2...")
-        
+
         example_full_inventory_validation()
         input("\nPress Enter to continue to Example 3...")
-        
+
         example_interpret_results()
-        
+
         print("\n" + "=" * 80)
         print("Examples completed!")
         print("=" * 80)
@@ -263,10 +269,11 @@ if __name__ == "__main__":
         print("- Code: global-api/utils/data_validation.py")
         print("- Results: /tmp/ghg_validation_results.json")
         print("\n")
-        
+
     except KeyboardInterrupt:
         print("\n\nExecution interrupted by user.")
     except Exception as e:
         print(f"\n\nError during execution: {e}")
         import traceback
+
         traceback.print_exc()

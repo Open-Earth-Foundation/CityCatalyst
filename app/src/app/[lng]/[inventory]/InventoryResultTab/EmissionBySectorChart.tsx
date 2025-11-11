@@ -273,7 +273,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
                     flex={1}
                     color="content.secondary"
                   >
-                    {tDashboard(shortSectorNameToKebabCase(segment.id))}
+                    {tDashboard(segment.id)}
                   </Text>
                   <Text
                     fontSize="body.md"

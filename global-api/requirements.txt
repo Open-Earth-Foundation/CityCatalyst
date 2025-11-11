@@ -10,7 +10,7 @@ osmnx==2.0.6
 pandas==2.3.3
 psycopg2-binary==2.9.11
 pydantic-settings==2.*
-pytest==8.4.2
+pytest==9.0.0
 rioxarray>=0.15.0,<1.0
 scipy==1.16.*
 shapely==2.1.2
@@ -24,7 +24,7 @@ nest_asyncio==1.6.*
 xlrd==2.0.*
 dns-cache==0.3.*
 openpyxl==3.1.*
-pytest==8.4.2
+pytest==9.0.0
 pytest-cov==7.0.0
 httpx==0.28.1
 pyproj==3.7.*

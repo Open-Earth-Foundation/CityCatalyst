@@ -567,7 +567,10 @@ export const checkBulkActionRankingJob = async (
 };
 
 // Helper: Extract string from multilingual field (object or string)
-function extractLocalizedString(field: any, lang: LANGUAGES): string | undefined {
+function extractLocalizedString(
+  field: string | Record<string, string> | null | undefined,
+  lang: LANGUAGES,
+): string | undefined {
   if (!field) return undefined;
   if (typeof field === 'string') return field;
   if (typeof field === 'object' && field[lang]) return field[lang];
@@ -1068,7 +1071,10 @@ async function getRankedActionsForLang(
 }
 
 // Helper: Copy actions from any existing language to the requested language
-export async function copyRankedActionsToLang(ranking: any, lang: LANGUAGES) {
+export async function copyRankedActionsToLang(
+  ranking: HighImpactActionRanking,
+  lang: LANGUAGES,
+) {
   const allLangRanked = await db.models.HighImpactActionRanked.findAll({
     where: { hiaRankingId: ranking.id },
   });
@@ -1085,11 +1091,16 @@ export async function copyRankedActionsToLang(ranking: any, lang: LANGUAGES) {
     (a, b) => a.rank - b.rank,
   );
 
-  // Check what languages are available in explanations
-  const firstAction = uniqueActions[0];
-  const availableLanguages = firstAction?.explanation
-    ? Object.keys(firstAction.explanation)
-    : [];
+  // Aggregate available languages across all actions
+  const availableLanguagesSet = new Set<string>();
+  for (const action of uniqueActions) {
+    if (action.explanation && typeof action.explanation === 'object') {
+      Object.keys(action.explanation).forEach((lang) =>
+        availableLanguagesSet.add(lang),
+      );
+    }
+  }
+  const availableLanguages = Array.from(availableLanguagesSet).sort();
   const hasRequestedLang = availableLanguages.includes(lang);
 
   logger.info(

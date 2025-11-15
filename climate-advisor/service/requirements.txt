@@ -1,5 +1,5 @@
 fastapi==0.119.1
-uvicorn[standard]==0.37.0
+uvicorn[standard]==0.38.0
 httpx==0.28.1
 SQLAlchemy[asyncio]==2.0.44
 psycopg2-binary==2.9.10

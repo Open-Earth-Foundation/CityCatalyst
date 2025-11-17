@@ -89,8 +89,8 @@ export function ActionDrawer({
   // extract explanation for current language from action data, falling back to english
   const actionExplanation =
     (lng in action.explanation
-      ? action.explanation[lng]
-      : action.explanation["en"]) ?? t("no-explanation-available");
+      ? (action.explanation as Record<string, string>)[lng]
+      : action.explanation.en) ?? t("no-explanation-available");
 
   return (
     <DrawerRoot

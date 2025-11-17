@@ -12,8 +12,6 @@ class PrioritizationType(str, Enum):
     BOTH = "both"  # Set to both to run prioritization for both mitigation and adaptation actions
 
 
-# --- Request models ---
-
 # Strict type aliases
 
 NonNegativeInteger = Annotated[
@@ -21,9 +19,8 @@ NonNegativeInteger = Annotated[
     Field(ge=0, strict=True, description="Non-negative integer value"),
 ]
 
-# Note: inline Annotated[int, Field(strict=True)] is used when negatives are allowed
 
-# Language codes are defined inline on the list type below
+# --- Request models ---
 
 
 class CityContextData(BaseModel):

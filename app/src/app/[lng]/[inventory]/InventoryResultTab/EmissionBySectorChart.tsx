@@ -1,5 +1,5 @@
 import { SectorEmission } from "@/util/types";
-import { BarCustomLayerProps, ResponsiveBar } from "@nivo/bar";
+import { BarCustomLayerProps, ResponsiveBar, BarDatum } from "@nivo/bar";
 import { allSectorColors, SECTORS } from "@/util/constants";
 import { shortSectorNameToKebabCase, convertKgToTonnes } from "@/util/helpers";
 import { useTranslation } from "@/i18n/client";
@@ -79,11 +79,12 @@ export interface CombinedPoint {
   };
 }
 
-export interface CustomCombinedBarLayerProps<D> extends BarCustomLayerProps<D> {
+export interface CustomCombinedBarLayerProps<D extends BarDatum>
+  extends BarCustomLayerProps<D> {
   customTooltip: (point: CombinedPoint) => React.ReactNode;
 }
 
-function CustomCombinedBarLayer<D>({
+function CustomCombinedBarLayer<D extends BarDatum>({
   bars,
   customTooltip,
 }: CustomCombinedBarLayerProps<D>) {

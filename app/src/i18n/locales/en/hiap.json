@@ -17,6 +17,8 @@
   "n-a": "N/A",
   "go-back": "Go back",
   "action-description": "Action description",
+  "action-explanation": "Explanation",
+  "no-explanation-available": "No explanation available",
   "adaptation-effectiveness": "Adaptation Effectiveness",
   "adaptation-effectiveness-by-hazard": "Adaptation Effectiveness by Hazard",
   "ranking": "Ranking",

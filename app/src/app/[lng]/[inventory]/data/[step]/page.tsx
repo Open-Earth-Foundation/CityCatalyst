@@ -775,7 +775,7 @@ export default function AddDataSteps() {
                         boxSize={6}
                         color="interactive.control"
                       />
-                      {formatPercentage(currentStep.reasonNEProgress)}% "NE" - Not Estimated
+                      {formatPercentage(currentStep.reasonNEProgress)}% <Trans t={t}>not-estimated</Trans>
                     </Badge>
                     <Badge w="auto">
                       <Box
@@ -783,7 +783,7 @@ export default function AddDataSteps() {
                         borderRadius="full"
                         backgroundImage="repeating-linear-gradient(45deg, #D1D5DB, #D1D5DB 2px, transparent 2px, transparent 4px)"
                       />
-                      {formatPercentage(currentStep.reasonNOProgress)}% "NO" - Not Occurring
+                      {formatPercentage(currentStep.reasonNOProgress)}% <Trans t={t}>not-occurring</Trans>
                     </Badge>
                   </Box>
                 ) : (

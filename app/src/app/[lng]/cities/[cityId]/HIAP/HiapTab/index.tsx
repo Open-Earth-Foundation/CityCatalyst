@@ -499,6 +499,7 @@ export function HiapTab({
           isOpen={!!selectedAction}
           onClose={() => setSelectedAction(null)}
           t={t}
+          lng={lng}
         />
       )}
       {/* Top action widgets / mitigation */}
@@ -509,6 +510,7 @@ export function HiapTab({
         cityId={cityData.cityId}
         cityData={cityData}
         inventoryId={inventory.inventoryId}
+        lng={lng}
       />
       <Box display="flex" flexDirection="column" gap="18px" py="24px">
         <Box display="flex" justifyContent="space-between" alignItems="center">

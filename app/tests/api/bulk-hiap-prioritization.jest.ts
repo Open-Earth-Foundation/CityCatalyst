@@ -23,7 +23,7 @@ import {
   PUT,
 } from "@/app/api/v1/admin/bulk-hiap-prioritization/route";
 import { GET as CHECK_HIAP_JOBS_CRON } from "@/app/api/v1/cron/check-hiap-jobs/route";
-import * as HiapApiService from "@/backend/hiap/HiapApiService";
+import HiapApiService from "@/backend/hiap/HiapApiService";
 import { Op } from "sequelize";
 import { BulkHiapPrioritizationService } from "@/backend/hiap/BulkHiapPrioritizationService";
 import {
@@ -31,7 +31,6 @@ import {
   checkSingleActionRankingJob,
   hiapServiceWrapper,
 } from "@/backend/hiap/HiapService";
-import { NextRequest } from "next/server";
 import GlobalAPIService from "@/backend/GlobalAPIService";
 import {
   createTestData,
@@ -119,20 +118,18 @@ describe("Bulk HIAP Prioritization API", () => {
       } as any);
 
     // Mock HIAP API wrapper functions - these are the actual external API calls
-    jest
-      .spyOn(HiapApiService.hiapApiWrapper, "startBulkPrioritization")
-      .mockResolvedValue({
-        taskId: "mock-bulk-task-id",
-      });
+    jest.spyOn(HiapApiService, "startBulkPrioritization").mockResolvedValue({
+      taskId: "mock-bulk-task-id",
+    });
 
     jest
-      .spyOn(HiapApiService.hiapApiWrapper, "checkBulkPrioritizationProgress")
+      .spyOn(HiapApiService, "checkBulkPrioritizationProgress")
       .mockResolvedValue({
         status: "completed",
       });
 
     jest
-      .spyOn(HiapApiService.hiapApiWrapper, "getBulkPrioritizationResult")
+      .spyOn(HiapApiService, "getBulkPrioritizationResult")
       .mockResolvedValue({
         prioritizerResponseList: [
           {
@@ -1010,13 +1007,13 @@ describe("Bulk HIAP Prioritization API", () => {
 
       // Mock HIAP API to return successful completion
       jest
-        .spyOn(HiapApiService.hiapApiWrapper, "checkBulkPrioritizationProgress")
+        .spyOn(HiapApiService, "checkBulkPrioritizationProgress")
         .mockResolvedValue({
           status: "completed",
         });
 
       jest
-        .spyOn(HiapApiService.hiapApiWrapper, "getBulkPrioritizationResult")
+        .spyOn(HiapApiService, "getBulkPrioritizationResult")
         .mockResolvedValue({
           prioritizerResponseList: [
             {
@@ -1111,7 +1108,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       // Mock result with both mitigation and adaptation actions
       jest
-        .spyOn(HiapApiService.hiapApiWrapper, "getBulkPrioritizationResult")
+        .spyOn(HiapApiService, "getBulkPrioritizationResult")
         .mockResolvedValue({
           prioritizerResponseList: [
             {
@@ -1216,7 +1213,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       // Mock result with all 3 cities
       jest
-        .spyOn(HiapApiService.hiapApiWrapper, "getBulkPrioritizationResult")
+        .spyOn(HiapApiService, "getBulkPrioritizationResult")
         .mockResolvedValue({
           prioritizerResponseList: [
             {
@@ -1312,7 +1309,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       // Mock result with ranked actions
       jest
-        .spyOn(HiapApiService.hiapApiWrapper, "getBulkPrioritizationResult")
+        .spyOn(HiapApiService, "getBulkPrioritizationResult")
         .mockResolvedValue({
           prioritizerResponseList: [
             {
@@ -1399,7 +1396,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       // Mock HIAP API to return DIFFERENT rankings for each city
       jest
-        .spyOn(HiapApiService.hiapApiWrapper, "getBulkPrioritizationResult")
+        .spyOn(HiapApiService, "getBulkPrioritizationResult")
         .mockResolvedValue({
           prioritizerResponseList: [
             {
@@ -1512,7 +1509,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
     it("stores error message when job status check returns failed", async () => {
       jest
-        .spyOn(HiapApiService.hiapApiWrapper, "checkBulkPrioritizationProgress")
+        .spyOn(HiapApiService, "checkBulkPrioritizationProgress")
         .mockResolvedValue({
           status: "failed",
           error: "HIAP processing failed",
@@ -1552,7 +1549,7 @@ describe("Bulk HIAP Prioritization API", () => {
     it("stores error message when no result found for city locode", async () => {
       // Mock result with missing city
       jest
-        .spyOn(HiapApiService.hiapApiWrapper, "getBulkPrioritizationResult")
+        .spyOn(HiapApiService, "getBulkPrioritizationResult")
         .mockResolvedValue({
           prioritizerResponseList: [
             // Only return result for XX-TST-2, missing XX-TST-1
@@ -1701,7 +1698,7 @@ describe("Bulk HIAP Prioritization API", () => {
       // Mock HIAP API to return "pending" for existing job (still processing)
       // Override the global mock for this specific test
       jest
-        .spyOn(HiapApiService.hiapApiWrapper, "checkBulkPrioritizationProgress")
+        .spyOn(HiapApiService, "checkBulkPrioritizationProgress")
         .mockResolvedValueOnce({
           status: "pending",
         });
@@ -1757,11 +1754,11 @@ describe("Bulk HIAP Prioritization API", () => {
 
       // Mock single job API endpoint
       const checkProgressSpy = jest
-        .spyOn(HiapApiService.hiapApiWrapper, "checkPrioritizationProgress")
+        .spyOn(HiapApiService, "checkPrioritizationProgress")
         .mockResolvedValue({ status: "completed" });
 
       const getResultSpy = jest
-        .spyOn(HiapApiService.hiapApiWrapper, "getPrioritizationResult")
+        .spyOn(HiapApiService, "getPrioritizationResult")
         .mockResolvedValue({
           metadata: {
             locode: "XX-TST-1",
@@ -2277,7 +2274,7 @@ describe("Bulk HIAP Prioritization API", () => {
       // Mock HIAP API to throw 404 error (task not found)
       // Override the global mock for this specific test
       jest
-        .spyOn(HiapApiService.hiapApiWrapper, "checkBulkPrioritizationProgress")
+        .spyOn(HiapApiService, "checkBulkPrioritizationProgress")
         .mockRejectedValueOnce(new Error("Failed to check bulk job status"));
 
       // Call cron endpoint
@@ -2341,7 +2338,7 @@ describe("Bulk HIAP Prioritization API", () => {
       // Mock HIAP API to fail for first job but succeed for second
       // Override the global mock with custom implementation
       const checkProgressSpy = jest.spyOn(
-        HiapApiService.hiapApiWrapper,
+        HiapApiService,
         "checkBulkPrioritizationProgress",
       );
 
@@ -2378,7 +2375,7 @@ describe("Bulk HIAP Prioritization API", () => {
       ] as any);
 
       jest
-        .spyOn(HiapApiService.hiapApiWrapper, "getBulkPrioritizationResult")
+        .spyOn(HiapApiService, "getBulkPrioritizationResult")
         .mockResolvedValue({
           prioritizerResponseList: [
             {

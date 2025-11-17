@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { apiHandler } from "@/util/api";
 import { z } from "zod";
-import createHttpError from "http-errors";
 import { languages } from "@/i18n/settings";
 import { PermissionService } from "@/backend/permissions/PermissionService";
-import { hiapApiWrapper } from "@/backend/hiap/HiapApiService";
-import { ACTION_TYPES, HIAction, LANGUAGES } from "@/util/types";
+import { HiapApiService } from "@/backend/hiap/HiapApiService";
+import { HIAction, LANGUAGES } from "@/util/types";
 
 const generateRankingRequest = z.object({
   action: z.any(), // HIAction object - using z.any() for flexibility
@@ -73,7 +72,7 @@ export const POST = apiHandler(
 
     const lng = body.lng || languages[0];
 
-    const result = await hiapApiWrapper.startActionPlanJob({
+    const result = await HiapApiService.startActionPlanJob({
       action: body.action as HIAction,
       cityId: params.city,
       cityLocode: body.cityLocode,

@@ -50,7 +50,23 @@ import { checkSingleActionRankingJob } from "@/backend/hiap/HiapService";
  *                 startedBatches:
  *                   type: number
  */
-export async function GET() {
+export async function GET(headers: Headers) {
+  // validate API key from Authorization header to only allow requests from cron job
+  const authorization = headers.get("Authorization") || "";
+  if (!authorization.startsWith("Bearer ")) {
+    return NextResponse.json(
+      { error: { message: "Unauthorized, Authorization header missing" } },
+      { status: 401 },
+    );
+  }
+  const token = authorization.replace("Bearer ", "").trim();
+  if (token.length > 0 && token !== process.env.CC_CRON_JOB_API_KEY) {
+    return NextResponse.json(
+      { error: { message: "Unauthorized, API key invalid" } },
+      { status: 401 },
+    );
+  }
+
   const startTime = Date.now();
 
   logger.info("🔄 Cron job STARTED: Checking HIAP jobs");
@@ -193,7 +209,7 @@ export async function GET() {
             "Failed to mark rankings as FAILURE",
           );
         }
-        
+
         // Continue with other jobs even if one fails
       }
     }
@@ -298,9 +314,8 @@ export async function GET() {
       "❌ Cron job FINISHED with error",
     );
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error - " + error.message },
       { status: 500 },
     );
   }
 }
-

@@ -111,6 +111,7 @@ export const ClimateActionCard = ({
           whiteSpace="nowrap"
           lineClamp={2}
           color="content.secondary"
+          minHeight="56px"
         >
           {action.name}
         </TitleLarge>
@@ -255,7 +256,6 @@ const GeneratePlanDialog = ({
     language: action.lang || "en",
   });
 
-  
   const planToDisplay = existingPlan?.planData;
   const hasExistingPlan = !!existingPlan;
 

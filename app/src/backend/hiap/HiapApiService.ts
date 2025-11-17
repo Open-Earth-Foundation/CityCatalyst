@@ -20,69 +20,15 @@ const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 
 // Wrapper object for external API calls that need to be mocked in tests
 // These are the actual 3rd-party HTTP calls to the HIAP service
-export const hiapApiWrapper: {
-  startPrioritization: (
-    contextData: any,
-    type: ACTION_TYPES,
-    langs: LANGUAGES[],
-  ) => Promise<{ taskId: string }>;
-  checkPrioritizationProgress: (
-    taskId: string,
-  ) => Promise<{ status: string; error?: string }>;
-  getPrioritizationResult: (taskId: string) => Promise<PrioritizerResponse>;
-  startBulkPrioritization: (
-    citiesData: PrioritizerCityData[],
-    type: ACTION_TYPES,
-    languages: LANGUAGES[],
-  ) => Promise<{ taskId: string }>;
-  checkBulkPrioritizationProgress: (
-    taskId: string,
-  ) => Promise<{ status: string; error?: string }>;
-  getBulkPrioritizationResult: (
-    taskId: string,
-  ) => Promise<PrioritizerResponseBulk>;
-  startActionPlanJob: (params: {
-    action: HIAction;
-    cityId: string;
-    cityLocode: string;
-    lng: LANGUAGES;
-    inventoryId: string;
-    createdBy?: string;
-  }) => Promise<{ plan: string; timestamp: string; actionName: string }>;
-  translateActionPlan: (
-    inputPlan: ActionPlan,
-    inputLanguage: string,
-    outputLanguage: string,
-  ) => Promise<ActionPlan>;
-} = {
-  startPrioritization: async (contextData, type, langs) => {
-    return await startPrioritizationImpl(contextData, type, langs);
-  },
-  checkPrioritizationProgress: async (taskId) => {
-    return await checkPrioritizationProgressImpl(taskId);
-  },
-  getPrioritizationResult: async (taskId) => {
-    return await getPrioritizationResultImpl(taskId);
-  },
-  startBulkPrioritization: async (citiesData, type, languages) => {
-    return await startBulkPrioritizationImpl(citiesData, type, languages);
-  },
-  checkBulkPrioritizationProgress: async (taskId) => {
-    return await checkBulkPrioritizationProgressImpl(taskId);
-  },
-  getBulkPrioritizationResult: async (taskId) => {
-    return await getBulkPrioritizationResultImpl(taskId);
-  },
-  startActionPlanJob: async (params) => {
-    return await startActionPlanJobImpl(params);
-  },
-  translateActionPlan: async (inputPlan, inputLanguage, outputLanguage) => {
-    return await translateActionPlanImpl(
-      inputPlan,
-      inputLanguage,
-      outputLanguage,
-    );
-  },
+export const hiapApiWrapper = {
+  startPrioritization,
+  checkPrioritizationProgress,
+  getPrioritizationResult,
+  startBulkPrioritization,
+  checkBulkPrioritizationProgress,
+  getBulkPrioritizationResult,
+  startActionPlanJob,
+  translateActionPlan,
 };
 
 function makeHIAPRequest(
@@ -112,7 +58,7 @@ function makeHIAPRequest(
 }
 
 /** This Service works with the AI API. In development, run kubectl port-forward svc/hiap-service-dev 8080:80 to access it. */
-const startPrioritizationImpl = async (
+const startPrioritization = async (
   contextData: any,
   type: ACTION_TYPES,
   langs: LANGUAGES[],
@@ -171,7 +117,7 @@ const startPrioritizationImpl = async (
 };
 
 /** This Service works with the AI API. In development, run kubectl port-forward svc/hiap-service-dev 8080:80 to access it. */
-const checkPrioritizationProgressImpl = async (
+const checkPrioritizationProgress = async (
   taskId: string,
 ): Promise<{ status: string; error?: string }> => {
   const url = `/prioritizer/v1/check_prioritization_progress/${taskId}`;
@@ -195,7 +141,7 @@ const checkPrioritizationProgressImpl = async (
 };
 
 /** This Service works with the AI API. In development, run kubectl port-forward svc/hiap-service-dev 8080:80 to access it. */
-const getPrioritizationResultImpl = async (
+const getPrioritizationResult = async (
   taskId: string,
 ): Promise<PrioritizerResponse> => {
   const url = `/prioritizer/v1/get_prioritization/${taskId}`;
@@ -212,7 +158,7 @@ const getPrioritizationResultImpl = async (
 };
 
 /** This Service works with the AI API. In development, run kubectl port-forward svc/hiap-service-dev 8080:80 to access it. */
-const startActionPlanJobImpl = async ({
+const startActionPlanJob = async ({
   action,
   cityId,
   cityLocode,
@@ -416,7 +362,7 @@ const startActionPlanJobImpl = async ({
  * All cities are processed in a single batch request
  * Returns a single taskId for the entire bulk job
  */
-const startBulkPrioritizationImpl = async (
+const startBulkPrioritization = async (
   citiesData: PrioritizerCityData[],
   type: ACTION_TYPES,
   languages: LANGUAGES[],
@@ -536,7 +482,7 @@ const startBulkPrioritizationImpl = async (
  * Check progress for a bulk prioritization job
  * Uses the HIAP bulk progress endpoint
  */
-const checkBulkPrioritizationProgressImpl = async (
+const checkBulkPrioritizationProgress = async (
   taskId: string,
 ): Promise<{ status: string; error?: string }> => {
   const url = `/prioritizer/v1/check_prioritization_progress/${taskId}`;
@@ -568,7 +514,7 @@ const checkBulkPrioritizationProgressImpl = async (
  * Get prioritization results for a completed bulk job
  * Uses the HIAP bulk get_prioritization_bulk endpoint
  */
-const getBulkPrioritizationResultImpl = async (
+const getBulkPrioritizationResult = async (
   taskId: string,
 ): Promise<PrioritizerResponseBulk> => {
   const url = `/prioritizer/v1/get_prioritization_bulk/${taskId}`;
@@ -617,7 +563,7 @@ const getBulkPrioritizationResultImpl = async (
   return json;
 };
 
-const translateActionPlanImpl = async (
+const translateActionPlan = async (
   inputPlan: ActionPlan,
   inputLanguage: string,
   outputLanguage: string,

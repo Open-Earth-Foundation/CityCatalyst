@@ -113,7 +113,7 @@ export default function InventoryCalculationTab({
             </Badge>
             <Badge>
               <Icon as={CircleIcon} boxSize={6} color="interactive.control" />
-              {formatPercent(reasonNEProgress)}% "NE" - Not Estimated
+              {formatPercent(reasonNEProgress)}% <Trans t={t}>not-estimated</Trans>
             </Badge>
             <Badge>
               <Box
@@ -121,7 +121,7 @@ export default function InventoryCalculationTab({
                 borderRadius="full"
                 backgroundImage="repeating-linear-gradient(45deg, #C5CBF5, #C5CBF5 2px, transparent 2px, transparent 4px)"
               />
-              {formatPercent(reasonNOProgress)}% "NO" - Not Occurring
+              {formatPercent(reasonNOProgress)}% <Trans t={t}>not-occurring</Trans>
             </Badge>
           </Box>
           <Box display="flex" flexDirection="column" gap={8} py={8}>

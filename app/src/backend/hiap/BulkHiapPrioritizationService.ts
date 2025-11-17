@@ -6,7 +6,7 @@ import {
   HighImpactActionRankingStatus,
 } from "@/util/types";
 import { hiapServiceWrapper, checkBulkActionRankingJob } from "./HiapService";
-import { HiapApiService } from "./HiapApiService";
+import { hiapApiWrapper } from "./HiapApiService";
 import { Op, QueryTypes } from "sequelize";
 
 interface CityInventoryData {
@@ -715,7 +715,7 @@ export class BulkHiapPrioritizationService {
     );
 
     // Start HIAP bulk prioritization
-    const { taskId } = await HiapApiService.startBulkPrioritization(
+    const { taskId } = await hiapApiWrapper.startBulkPrioritization(
       citiesContextData,
       actionType,
       languages,
@@ -804,3 +804,4 @@ export class BulkHiapPrioritizationService {
     );
   }
 }
+

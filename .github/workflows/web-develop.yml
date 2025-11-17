@@ -385,8 +385,7 @@ jobs:
             "AWS_ACCESS_KEY_ID"=${{secrets.AWS_ACCESS_KEY_ID}} \
             "AWS_SECRET_ACCESS_KEY"=${{secrets.AWS_SECRET_ACCESS_KEY}} \
             "AWS_S3_BUCKET_ID"=${{secrets.AWS_S3_BUCKET_ID}} \
-            CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}} \
-            "HIAP_API_KEY=${{secrets.HIAP_API_KEY}}"
+            CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}}
           kubectl apply -f k8s/cc-sync-catalogue.yml -n default # cronjob
           kubectl create -f k8s/cc-sync-catalogue-manual.yml -n default # on deployment
           # TODO this (running cronjob on deploy) doesn't work since it can't randomize names. Needs own randomness source

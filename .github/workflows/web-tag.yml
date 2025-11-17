@@ -228,7 +228,6 @@ jobs:
             "AWS_ACCESS_KEY_ID"=${{secrets.AWS_ACCESS_KEY_ID_PROD}} \
             "AWS_SECRET_ACCESS_KEY"=${{secrets.AWS_SECRET_ACCESS_KEY_PROD}} \
             "AWS_S3_BUCKET_ID"=${{secrets.AWS_S3_BUCKET_ID_PROD}} \
-            CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}} \
-            "HIAP_API_KEY=${{secrets.HIAP_API_KEY}}"
+            CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}}
           kubectl create -f k8s/prod/cc-prod-create-admin.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default

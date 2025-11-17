@@ -239,6 +239,8 @@ export default function AddDataSteps() {
       ...s,
       connectedProgress: 0,
       addedProgress: 0,
+      reasonNEProgress: 0,
+      reasonNOProgress: 0,
       totalSubSectors: 0,
       sector: null,
       subSectors: null,
@@ -274,6 +276,12 @@ export default function AddDataSteps() {
       step.addedProgress = clamp(
         sectorProgress.uploaded / sectorProgress.total,
       );
+      step.reasonNEProgress = clamp(
+        sectorProgress.reasonNE / sectorProgress.total,
+      );
+      step.reasonNOProgress = clamp(
+        sectorProgress.reasonNO / sectorProgress.total,
+      );
       return step;
     });
     setSteps(updatedSteps);
@@ -297,7 +305,7 @@ export default function AddDataSteps() {
   }, [activeStep]);
 
   const totalStepCompletion = currentStep
-    ? clamp(currentStep.connectedProgress + currentStep.addedProgress)
+    ? clamp(currentStep.connectedProgress + currentStep.addedProgress + currentStep.reasonNEProgress + currentStep.reasonNOProgress)
     : 0;
   const formatPercentage = (percentage: number) =>
     Math.round(percentage * 1000) / 10;
@@ -725,7 +733,10 @@ export default function AddDataSteps() {
                     values={[
                       currentStep.connectedProgress,
                       currentStep.addedProgress,
+                      currentStep.reasonNEProgress,
+                      currentStep.reasonNOProgress,
                     ]}
+                    colors={["interactive.connected", "interactive.tertiary", "interactive.control", "striped"]}
                     height={4}
                   />
                   <Heading size="sm" ml={6} mt={-1} whiteSpace="nowrap">
@@ -757,6 +768,22 @@ export default function AddDataSteps() {
                       {t("data-added-percent", {
                         progress: formatPercentage(currentStep.addedProgress),
                       })}
+                    </Badge>
+                    <Badge w="auto">
+                      <Icon
+                        as={CircleIcon}
+                        boxSize={6}
+                        color="interactive.control"
+                      />
+                      {formatPercentage(currentStep.reasonNEProgress)}% <Trans t={t}>not-estimated</Trans>
+                    </Badge>
+                    <Badge w="auto">
+                      <Box
+                        boxSize={6}
+                        borderRadius="full"
+                        backgroundImage="repeating-linear-gradient(45deg, #D1D5DB, #D1D5DB 2px, transparent 2px, transparent 4px)"
+                      />
+                      {formatPercentage(currentStep.reasonNOProgress)}% <Trans t={t}>not-occurring</Trans>
                     </Badge>
                   </Box>
                 ) : (

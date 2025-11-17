@@ -1273,5 +1273,6 @@
   "fuel-type-fuel-oil": "Aceite Combustible",
   "fuel-type-not-applicable": "No aplicable",
   "on-road-transportation-fuel-type": "Tipo de combustible",
-  "water-transportation-outside-fuel-type": "Tipo de combustible"
+  "water-transportation-outside-fuel-type": "Tipo de combustible",
+  "not-occurring": "No Ocurre"
 }

@@ -48,7 +48,7 @@
   "scope-unavailable-description": "Some emissions activities may not be relevant for your city, or maybe they're accounted for in a different section. Check the reason that fits and provide details if needed. This helps keep your inventory accurate and tailored to your city.",
   "select-reason": "Select Reason",
   "reason-NO": "The activity or process does not occur or exist within the city",
-  "not-estimated": "Not Estimated",
+  "not-estimated-progress": "Not Estimated",
   "not-occurring": "Not Occurring",
   "reason-NE": "The emissions for this activity are not estimated",
   "reason-C": "The emissions could lead to the disclosure of confidential information",

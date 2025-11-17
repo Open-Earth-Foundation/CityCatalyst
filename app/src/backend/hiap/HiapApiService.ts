@@ -85,6 +85,32 @@ export const hiapApiWrapper: {
   },
 };
 
+function makeHIAPRequest(
+  path: string, // starting with /
+  method: string = "GET",
+  body: Record<string, any> = {},
+): Promise<any> {
+  const url = HIAP_API_URL + path;
+
+  if (method === "GET") {
+    return fetch(url, {
+      method: "GET",
+      headers: {
+        "X-API-KEY": process.env.HIAP_API_KEY ?? "",
+      },
+    });
+  }
+
+  return fetch(url, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      "X-API-KEY": process.env.HIAP_API_KEY ?? "",
+    },
+    body: JSON.stringify(body),
+  });
+}
+
 /** This Service works with the AI API. In development, run kubectl port-forward svc/hiap-service-dev 8080:80 to access it. */
 const startPrioritizationImpl = async (
   contextData: any,
@@ -112,13 +138,10 @@ const startPrioritizationImpl = async (
     "🔍 DETAILED startPrioritization request payload",
   );
 
-  const response = await fetch(
-    `${HIAP_API_URL}/prioritizer/v1/start_prioritization`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    },
+  const response = await makeHIAPRequest(
+    "/prioritizer/v1/start_prioritization",
+    "POST",
+    body,
   );
   logger.info(
     { status: response.status, statusText: response.statusText },
@@ -127,8 +150,8 @@ const startPrioritizationImpl = async (
   if (!response.ok) {
     const errorText = await response.text();
     logger.error(
-      { 
-        status: response.status, 
+      {
+        status: response.status,
         statusText: response.statusText,
         error: errorText,
         requestBody: body,
@@ -151,9 +174,9 @@ const startPrioritizationImpl = async (
 const checkPrioritizationProgressImpl = async (
   taskId: string,
 ): Promise<{ status: string; error?: string }> => {
-  const url = `${HIAP_API_URL}/prioritizer/v1/check_prioritization_progress/${taskId}`;
+  const url = `/prioritizer/v1/check_prioritization_progress/${taskId}`;
   logger.info({ url }, "checkPrioritizationProgress called");
-  const response = await fetch(url);
+  const response = await makeHIAPRequest(url);
   logger.info(
     { status: response.status, statusText: response.statusText },
     "checkPrioritizationProgress response status",
@@ -175,9 +198,9 @@ const checkPrioritizationProgressImpl = async (
 const getPrioritizationResultImpl = async (
   taskId: string,
 ): Promise<PrioritizerResponse> => {
-  const url = `${HIAP_API_URL}/prioritizer/v1/get_prioritization/${taskId}`;
+  const url = `/prioritizer/v1/get_prioritization/${taskId}`;
   logger.info({ url }, "getPrioritizationResult called");
-  const response = await fetch(url);
+  const response = await makeHIAPRequest(url);
   logger.info(
     { status: response.status, statusText: response.statusText },
     "getPrioritizationResult response status",
@@ -223,16 +246,10 @@ const startActionPlanJobImpl = async ({
     };
 
     // Step 1: Start plan creation and get task ID
-    const startResponse = await fetch(
-      `${HIAP_API_URL}/plan-creator/v1/start_plan_creation`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(payload),
-      },
+    const startResponse = await makeHIAPRequest(
+      `/plan-creator/v1/start_plan_creation`,
+      "POST",
+      payload,
     );
 
     // Log the raw response for debugging
@@ -273,13 +290,8 @@ const startActionPlanJobImpl = async ({
         } of ${maxAttempts}`,
       );
 
-      const statusResponse = await fetch(
-        `${HIAP_API_URL}/plan-creator/v1/check_progress/${task_id}`,
-        {
-          headers: {
-            Accept: "application/json",
-          },
-        },
+      const statusResponse = await makeHIAPRequest(
+        `/plan-creator/v1/check_progress/${task_id}`,
       );
 
       logger.info(statusResponse, "Check progress response status:");
@@ -316,13 +328,8 @@ const startActionPlanJobImpl = async ({
     // Step 3: Get the generated plan
     logger.info(`Fetching plan for task ${task_id}`);
 
-    const planResponse = await fetch(
-      `${HIAP_API_URL}/plan-creator/v1/get_plan/${task_id}`,
-      {
-        headers: {
-          Accept: "application/json",
-        },
-      },
+    const planResponse = await makeHIAPRequest(
+      `/plan-creator/v1/get_plan/${task_id}`,
     );
 
     logger.info(planResponse, "Get plan response status:");
@@ -470,21 +477,20 @@ const startBulkPrioritizationImpl = async (
         prioritizationType: type,
         language: languages,
       },
-      sampleCityData: citiesData[0] ? {
-        cityContextData: citiesData[0].cityContextData,
-        cityEmissionsData: citiesData[0].cityEmissionsData,
-      } : null,
+      sampleCityData: citiesData[0]
+        ? {
+            cityContextData: citiesData[0].cityContextData,
+            cityEmissionsData: citiesData[0].cityEmissionsData,
+          }
+        : null,
     },
     "🔍 DETAILED startBulkPrioritization request payload",
   );
 
-  const response = await fetch(
-    `${HIAP_API_URL}/prioritizer/v1/start_prioritization_bulk`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    },
+  const response = await makeHIAPRequest(
+    "/prioritizer/v1/start_prioritization_bulk",
+    "POST",
+    body,
   );
 
   logger.info(
@@ -495,7 +501,7 @@ const startBulkPrioritizationImpl = async (
   if (!response.ok) {
     const errorText = await response.text();
     logger.error(
-      { 
+      {
         status: response.status,
         statusText: response.statusText,
         error: errorText,
@@ -533,10 +539,10 @@ const startBulkPrioritizationImpl = async (
 const checkBulkPrioritizationProgressImpl = async (
   taskId: string,
 ): Promise<{ status: string; error?: string }> => {
-  const url = `${HIAP_API_URL}/prioritizer/v1/check_prioritization_progress/${taskId}`;
+  const url = `/prioritizer/v1/check_prioritization_progress/${taskId}`;
   logger.info({ url, taskId }, "checkBulkPrioritizationProgress called");
 
-  const response = await fetch(url);
+  const response = await makeHIAPRequest(url);
 
   logger.info(
     { status: response.status, statusText: response.statusText },
@@ -565,10 +571,10 @@ const checkBulkPrioritizationProgressImpl = async (
 const getBulkPrioritizationResultImpl = async (
   taskId: string,
 ): Promise<PrioritizerResponseBulk> => {
-  const url = `${HIAP_API_URL}/prioritizer/v1/get_prioritization_bulk/${taskId}`;
+  const url = `/prioritizer/v1/get_prioritization_bulk/${taskId}`;
   logger.info({ url, taskId }, "getBulkPrioritizationResult called");
 
-  const response = await fetch(url);
+  const response = await makeHIAPRequest(url);
 
   logger.info(
     { status: response.status, statusText: response.statusText },
@@ -616,16 +622,10 @@ const translateActionPlanImpl = async (
   inputLanguage: string,
   outputLanguage: string,
 ): Promise<ActionPlan> => {
-  const startResponse = await fetch(
-    `${HIAP_API_URL}/plan-creator/v1/translate_plan`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({ inputPlan, inputLanguage, outputLanguage }),
-    },
+  const startResponse = await makeHIAPRequest(
+    "/plan-creator/v1/translate_plan",
+    "POST",
+    { inputPlan, inputLanguage, outputLanguage },
   );
 
   const startText = await startResponse.text();
@@ -650,9 +650,8 @@ const translateActionPlanImpl = async (
   const maxAttempts = 30;
   const pollIntervalMs = 5000;
   while (status === "pending" || status === "running") {
-    const statusResp = await fetch(
-      `${HIAP_API_URL}/plan-creator/v1/check_progress/${taskId}`,
-      { headers: { Accept: "application/json" } },
+    const statusResp = await makeHIAPRequest(
+      `/plan-creator/v1/check_progress/${taskId}`,
     );
     if (!statusResp.ok) {
       const txt = await statusResp.text();
@@ -672,10 +671,7 @@ const translateActionPlanImpl = async (
     }
   }
 
-  const planResp = await fetch(
-    `${HIAP_API_URL}/plan-creator/v1/get_plan/${taskId}`,
-    { headers: { Accept: "application/json" } },
-  );
+  const planResp = await makeHIAPRequest(`/plan-creator/v1/get_plan/${taskId}`);
   const planText = await planResp.text();
   if (!planResp.ok) {
     throw new Error(`Failed to fetch translated plan: ${planText}`);

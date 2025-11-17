@@ -14,11 +14,7 @@ import {
   TestData,
 } from "../helpers/testDataCreationHelper";
 import { AppSession, Auth } from "@/lib/auth";
-import {
-  Roles,
-  ACTION_TYPES,
-  HighImpactActionRankingStatus,
-} from "@/util/types";
+import { Roles, ACTION_TYPES, HighImpactActionRankingStatus } from "@/util/types";
 import { db } from "@/models";
 import { randomUUID } from "node:crypto";
 import {
@@ -30,9 +26,11 @@ import {
   PATCH as updateActionPlan,
   DELETE as deleteActionPlan,
 } from "@/app/api/v1/city/[city]/hiap/action-plan/[id]/route";
-import { POST as generateActionPlan } from "@/app/api/v1/city/[city]/hiap/action-plan/generate/[rankingId]/route";
+import {
+  POST as generateActionPlan,
+} from "@/app/api/v1/city/[city]/hiap/action-plan/generate/[rankingId]/route";
 
-import HiapApiService from "@/backend/hiap/HiapApiService";
+import * as HiapApiService from "@/backend/hiap/HiapApiService";
 
 describe("City HIAP Prioritization API", () => {
   let testData: TestData;
@@ -75,18 +73,22 @@ describe("City HIAP Prioritization API", () => {
     jest.spyOn(Auth, "getServerSession").mockResolvedValue(mockSession);
 
     // Mock HiapApiService external API wrappers
-    jest.spyOn(HiapApiService, "translateActionPlan").mockResolvedValue({
-      metadata: { title: "Translated Plan" },
-    } as any);
+    jest
+      .spyOn(HiapApiService.hiapApiWrapper, "translateActionPlan")
+      .mockResolvedValue({
+        metadata: { title: "Translated Plan" },
+      } as any);
 
-    jest.spyOn(HiapApiService, "startActionPlanJob").mockResolvedValue({
-      plan: JSON.stringify({
-        metadata: { title: "Generated Plan" },
-        sections: [],
-      }),
-      timestamp: new Date().toISOString(),
-      actionName: "Mock Action",
-    });
+    jest
+      .spyOn(HiapApiService.hiapApiWrapper, "startActionPlanJob")
+      .mockResolvedValue({
+        plan: JSON.stringify({
+          metadata: { title: "Generated Plan" },
+          sections: [],
+        }),
+        timestamp: new Date().toISOString(),
+        actionName: "Mock Action",
+      });
   });
 
   afterAll(async () => {
@@ -189,13 +191,10 @@ describe("City HIAP Prioritization API", () => {
 
       // Cleanup
       await db.models.ActionPlan.destroy({ where: { id: actionPlan.id } });
-      await db.models.HighImpactActionRanked.destroy({
-        where: { id: rankedAction.id },
-      });
-      await db.models.HighImpactActionRanking.destroy({
-        where: { id: ranking.id },
-      });
+      await db.models.HighImpactActionRanked.destroy({ where: { id: rankedAction.id } });
+      await db.models.HighImpactActionRanking.destroy({ where: { id: ranking.id } });
     });
+
   });
 
   describe("POST /api/v0/city/[city]/hiap/action-plan", () => {
@@ -264,7 +263,7 @@ describe("City HIAP Prioritization API", () => {
 
       // Verify it was saved to database
       const savedPlan = await db.models.ActionPlan.findOne({
-        where: {
+        where: { 
           actionId: rankedAction.actionId,
           language: "en",
         },
@@ -276,12 +275,8 @@ describe("City HIAP Prioritization API", () => {
       if (savedPlan) {
         await db.models.ActionPlan.destroy({ where: { id: savedPlan.id } });
       }
-      await db.models.HighImpactActionRanked.destroy({
-        where: { id: rankedAction.id },
-      });
-      await db.models.HighImpactActionRanking.destroy({
-        where: { id: ranking.id },
-      });
+      await db.models.HighImpactActionRanked.destroy({ where: { id: rankedAction.id } });
+      await db.models.HighImpactActionRanking.destroy({ where: { id: ranking.id } });
     });
 
     it("validates UUID format for inventoryId and hiActionRankingId", async () => {
@@ -365,12 +360,8 @@ describe("City HIAP Prioritization API", () => {
 
       // Cleanup
       await db.models.ActionPlan.destroy({ where: { id: actionPlan.id } });
-      await db.models.HighImpactActionRanked.destroy({
-        where: { id: rankedAction.id },
-      });
-      await db.models.HighImpactActionRanking.destroy({
-        where: { id: ranking.id },
-      });
+      await db.models.HighImpactActionRanked.destroy({ where: { id: rankedAction.id } });
+      await db.models.HighImpactActionRanking.destroy({ where: { id: ranking.id } });
     });
   });
 
@@ -431,12 +422,8 @@ describe("City HIAP Prioritization API", () => {
 
       // Cleanup
       await db.models.ActionPlan.destroy({ where: { id: actionPlan.id } });
-      await db.models.HighImpactActionRanked.destroy({
-        where: { id: rankedAction.id },
-      });
-      await db.models.HighImpactActionRanking.destroy({
-        where: { id: ranking.id },
-      });
+      await db.models.HighImpactActionRanked.destroy({ where: { id: rankedAction.id } });
+      await db.models.HighImpactActionRanking.destroy({ where: { id: ranking.id } });
     });
 
     it("returns 404 when action plan does not exist", async () => {
@@ -500,12 +487,8 @@ describe("City HIAP Prioritization API", () => {
       expect(deleted).toBeNull();
 
       // Cleanup
-      await db.models.HighImpactActionRanked.destroy({
-        where: { id: rankedAction.id },
-      });
-      await db.models.HighImpactActionRanking.destroy({
-        where: { id: ranking.id },
-      });
+      await db.models.HighImpactActionRanked.destroy({ where: { id: rankedAction.id } });
+      await db.models.HighImpactActionRanking.destroy({ where: { id: ranking.id } });
     });
 
     it("returns 404 when action plan does not exist", async () => {
@@ -557,10 +540,7 @@ describe("City HIAP Prioritization API", () => {
 
       const req = mockRequest(requestBody);
       const res = await generateActionPlan(req, {
-        params: Promise.resolve({
-          city: testData.cityId,
-          rankingId: ranking.id,
-        }),
+        params: Promise.resolve({ city: testData.cityId, rankingId: ranking.id }),
         session: mockSession,
       } as any);
 
@@ -570,18 +550,14 @@ describe("City HIAP Prioritization API", () => {
       expect(body.data.actionName).toBe("Mock Action");
 
       // Verify the mock was called
-      expect(HiapApiService.startActionPlanJob).toHaveBeenCalled();
+      expect(HiapApiService.hiapApiWrapper.startActionPlanJob).toHaveBeenCalled();
 
       // Cleanup action plans created by the service
       await db.models.ActionPlan.destroy({
         where: { actionId: rankedAction.actionId },
       });
-      await db.models.HighImpactActionRanked.destroy({
-        where: { id: rankedAction.id },
-      });
-      await db.models.HighImpactActionRanking.destroy({
-        where: { id: ranking.id },
-      });
+      await db.models.HighImpactActionRanked.destroy({ where: { id: rankedAction.id } });
+      await db.models.HighImpactActionRanking.destroy({ where: { id: ranking.id } });
     });
 
     it("returns 400 when required fields are missing", async () => {
@@ -590,10 +566,7 @@ describe("City HIAP Prioritization API", () => {
         // missing inventoryId and cityLocode
       });
       const res = await generateActionPlan(req, {
-        params: Promise.resolve({
-          city: testData.cityId,
-          rankingId: randomUUID(),
-        }),
+        params: Promise.resolve({ city: testData.cityId, rankingId: randomUUID() }),
         session: mockSession,
       } as any);
 
@@ -601,3 +574,4 @@ describe("City HIAP Prioritization API", () => {
     });
   });
 });
+

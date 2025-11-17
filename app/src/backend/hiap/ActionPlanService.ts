@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { db } from "@/models";
 import { ActionPlan } from "@/models/ActionPlan";
 import { logger } from "@/services/logger";
-import { hiapApiWrapper } from "./HiapApiService";
+import { HiapApiService } from "./HiapApiService";
 
 // Interfaces updated to work with new table structure
 
@@ -473,7 +473,7 @@ export default class ActionPlanService {
             );
             if (keyResult) {
               // Translate the plan
-              const translated = await hiapApiWrapper.translateActionPlan(
+              const translated = await HiapApiService.translateActionPlan(
                 keyResult.planData,
                 sourcePlan.language,
                 language,

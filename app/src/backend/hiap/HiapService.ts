@@ -1,16 +1,12 @@
 import { LANGUAGES, ACTION_TYPES } from "@/util/types";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
-import { Readable } from "stream";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
 import PopulationService from "../PopulationService";
-import {
-  getTotalEmissionsBySector,
-  EmissionsBySector,
-} from "../ResultsService";
+import { getTotalEmissionsBySector } from "../ResultsService";
 import { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
 import { HighImpactActionRankingStatus } from "@/util/types";
-import { hiapApiWrapper } from "./HiapApiService";
+import { HiapApiService } from "./HiapApiService";
 import { InventoryService } from "../InventoryService";
 import GlobalAPIService from "../GlobalAPIService";
 import {
@@ -21,7 +17,6 @@ import {
 import uniqBy from "lodash/uniqBy";
 import EmailService from "../EmailService";
 import { User } from "@/models/User";
-import { getSession } from "next-auth/react";
 import { AppSession } from "@/lib/auth";
 import { Op } from "sequelize";
 
@@ -140,7 +135,7 @@ export const startActionRankingJob = async (
   logger.info({ contextData }, "City context and emissions data fetched");
   if (!contextData) throw new Error("No city context/emissions data found");
 
-  const { taskId } = await hiapApiWrapper.startPrioritization(
+  const { taskId } = await HiapApiService.startPrioritization(
     contextData,
     type,
     langs,
@@ -230,7 +225,7 @@ export const startBulkActionRankingJob = async (
   }
 
   // Start bulk prioritization (single HIAP API call for all cities)
-  const { taskId } = await hiapApiWrapper.startBulkPrioritization(
+  const { taskId } = await HiapApiService.startBulkPrioritization(
     citiesData,
     type,
     langs,
@@ -294,7 +289,7 @@ export const checkSingleActionRankingJob = async (
 
   try {
     // Check status ONCE (no polling)
-    const statusData = await hiapApiWrapper.checkPrioritizationProgress(jobId);
+    const statusData = await HiapApiService.checkPrioritizationProgress(jobId);
 
     logger.info(
       { jobId, status: statusData.status },
@@ -325,7 +320,7 @@ export const checkSingleActionRankingJob = async (
     // Status is "completed" - fetch result
     let singleResponse;
     try {
-      singleResponse = await hiapApiWrapper.getPrioritizationResult(jobId);
+      singleResponse = await HiapApiService.getPrioritizationResult(jobId);
     } catch (error: any) {
       if (error.message?.includes("409")) {
         logger.warn(
@@ -493,7 +488,7 @@ async function processBulkJobResults(
     }
   }
 
-    logger.info({ jobId }, "Bulk action ranking job completed successfully");
+  logger.info({ jobId }, "Bulk action ranking job completed successfully");
 
   return true; // Job is complete (success)
 }
@@ -513,7 +508,7 @@ export const checkBulkActionRankingJob = async (
   try {
     // Check status ONCE (no polling)
     const statusData =
-      await hiapApiWrapper.checkBulkPrioritizationProgress(jobId);
+      await HiapApiService.checkBulkPrioritizationProgress(jobId);
 
     logger.info(
       { jobId, status: statusData.status },
@@ -546,7 +541,7 @@ export const checkBulkActionRankingJob = async (
     // Status is "completed" - fetch result
     let bulkResponse;
     try {
-      bulkResponse = await hiapApiWrapper.getBulkPrioritizationResult(jobId);
+      bulkResponse = await HiapApiService.getBulkPrioritizationResult(jobId);
     } catch (error: any) {
       if (error.message?.includes("409")) {
         logger.warn(
@@ -742,7 +737,7 @@ async function saveRankedActionsForLanguage(
   const savedSample = mergedRanked.slice(0, 3).map((a) => ({
     actionId: a.actionId,
     rank: a.rank,
-    name: a.name ? Array.from(a.name).slice(0, 30).join('') : undefined,
+    name: a.name ? Array.from(a.name).slice(0, 30).join("") : undefined,
   }));
   logger.info(
     {
@@ -779,7 +774,7 @@ export const checkActionRankingJob = async (
     ) {
       await new Promise((resolve) => setTimeout(resolve, pollInterval));
       const statusData =
-        await hiapApiWrapper.checkPrioritizationProgress(jobId);
+        await HiapApiService.checkPrioritizationProgress(jobId);
       logger.info({ jobStatus }, "Polled job status");
       switch (statusData.status) {
         case "completed":
@@ -800,7 +795,7 @@ export const checkActionRankingJob = async (
     }
     // Fetch result
     const actionRanking: PrioritizerResponse =
-      await hiapApiWrapper.getPrioritizationResult(jobId);
+      await HiapApiService.getPrioritizationResult(jobId);
 
     // Merge and save ranked actions with details for this language
     const rankedActions = [
@@ -1091,7 +1086,7 @@ export const fetchRanking = async (
         // Start new prioritization job
         const contextData =
           await hiapServiceWrapper.getCityContextAndEmissionsData(inventoryId);
-        const { taskId } = await hiapApiWrapper.startPrioritization(
+        const { taskId } = await HiapApiService.startPrioritization(
           contextData,
           type,
           (ranking.langs as LANGUAGES[]) || [lang], // Use existing langs or wrap single lang

@@ -23,7 +23,7 @@ import { db } from "@/models";
 import { randomUUID } from "node:crypto";
 
 import { GET, PATCH } from "@/app/api/v1/inventory/[inventory]/hiap/route";
-import * as HiapApiService from "@/backend/hiap/HiapApiService";
+import HiapApiService from "@/backend/hiap/HiapApiService";
 
 describe("Inventory HIAP API", () => {
   let inventoryId: string;
@@ -67,32 +67,28 @@ describe("Inventory HIAP API", () => {
     jest.spyOn(Auth, "getServerSession").mockResolvedValue(mockSession);
 
     // Mock HIAP API wrapper functions - these are the actual external API calls
+    jest.spyOn(HiapApiService, "startPrioritization").mockResolvedValue({
+      taskId: "mock-task-id",
+    });
     jest
-      .spyOn(HiapApiService.hiapApiWrapper, "startPrioritization")
-      .mockResolvedValue({
-        taskId: "mock-task-id",
-      });
-    jest
-      .spyOn(HiapApiService.hiapApiWrapper, "checkPrioritizationProgress")
+      .spyOn(HiapApiService, "checkPrioritizationProgress")
       .mockResolvedValue({
         status: "completed",
       });
-    jest
-      .spyOn(HiapApiService.hiapApiWrapper, "getPrioritizationResult")
-      .mockResolvedValue({
-        rankedActionsMitigation: [
-          {
-            actionId: "test-action-1",
-            rank: 1,
-            explanation: {
-              en: "Test explanation for mitigation",
-              es: "Explicación de prueba para mitigación",
-              pt: "Explicação de teste para mitigação",
-            },
+    jest.spyOn(HiapApiService, "getPrioritizationResult").mockResolvedValue({
+      rankedActionsMitigation: [
+        {
+          actionId: "test-action-1",
+          rank: 1,
+          explanation: {
+            en: "Test explanation for mitigation",
+            es: "Explicación de prueba para mitigación",
+            pt: "Explicação de teste para mitigação",
           },
-        ],
-        rankedActionsAdaptation: [],
-      } as any);
+        },
+      ],
+      rankedActionsAdaptation: [],
+    } as any);
   });
 
   afterAll(async () => {
@@ -148,9 +144,7 @@ describe("Inventory HIAP API", () => {
       expect(body.data).toBeTruthy();
 
       // Verify startPrioritization was called
-      expect(
-        HiapApiService.hiapApiWrapper.startPrioritization,
-      ).toHaveBeenCalled();
+      expect(HiapApiService.startPrioritization).toHaveBeenCalled();
 
       // Verify a ranking was created in the database
       const ranking = await db.models.HighImpactActionRanking.findOne({

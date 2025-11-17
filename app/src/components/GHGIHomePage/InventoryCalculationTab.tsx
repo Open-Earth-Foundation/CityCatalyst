@@ -43,12 +43,19 @@ export default function InventoryCalculationTab({
   const { t } = useTranslation(lng, "dashboard");
   let totalProgress = 0,
     thirdPartyProgress = 0,
-    uploadedProgress = 0;
+    uploadedProgress = 0,
+    reasonNEProgress = 0,
+    reasonNOProgress = 0;
   if (inventoryProgress && inventoryProgress.totalProgress.total > 0) {
-    const { uploaded, thirdParty, total } = inventoryProgress.totalProgress;
-    totalProgress = clamp((uploaded + thirdParty) / total);
+    const { uploaded, thirdParty, reasonNE, reasonNO, total } =
+      inventoryProgress.totalProgress;
+    totalProgress = clamp(
+      (uploaded + thirdParty + reasonNE + reasonNO) / total,
+    );
     thirdPartyProgress = clamp(thirdParty / total);
     uploadedProgress = clamp(uploaded / total);
+    reasonNEProgress = clamp(reasonNE / total);
+    reasonNOProgress = clamp(reasonNO / total);
   }
 
   const sectorsForInventory = inventory
@@ -72,8 +79,18 @@ export default function InventoryCalculationTab({
             gap={6}
           >
             <SegmentedProgress
-              values={[thirdPartyProgress, uploadedProgress]}
-              colors={["interactive.connected", "interactive.tertiary"]}
+              values={[
+                thirdPartyProgress,
+                uploadedProgress,
+                reasonNEProgress,
+                reasonNOProgress,
+              ]}
+              colors={[
+                "interactive.connected",
+                "interactive.tertiary",
+                "interactive.control",
+                "striped",
+              ]}
             />
             <Heading
               fontWeight="semibold"
@@ -93,6 +110,18 @@ export default function InventoryCalculationTab({
               <Icon as={CircleIcon} boxSize={6} color="interactive.tertiary" />
               {formatPercent(uploadedProgress)}%{" "}
               <Trans t={t}>uploaded-data</Trans>
+            </Badge>
+            <Badge>
+              <Icon as={CircleIcon} boxSize={6} color="interactive.control" />
+              {formatPercent(reasonNEProgress)}% "NE" - Not Estimated
+            </Badge>
+            <Badge>
+              <Box
+                boxSize={3}
+                borderRadius="full"
+                backgroundImage="repeating-linear-gradient(45deg, #C5CBF5, #C5CBF5 2px, transparent 2px, transparent 4px)"
+              />
+              {formatPercent(reasonNOProgress)}% "NO" - Not Occurring
             </Badge>
           </Box>
           <Box display="flex" flexDirection="column" gap={8} py={8}>

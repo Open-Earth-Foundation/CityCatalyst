@@ -97,6 +97,8 @@ export interface SectorProgress {
   total: number;
   thirdParty: number;
   uploaded: number;
+  reasonNE: number;
+  reasonNO: number;
   subSectors: SubSectorWithRelations[];
 }
 
@@ -106,6 +108,8 @@ export interface InventoryProgressResponse {
     total: number;
     thirdParty: number;
     uploaded: number;
+    reasonNE: number;
+    reasonNO: number;
   };
   sectorProgress: SectorProgress[];
 }

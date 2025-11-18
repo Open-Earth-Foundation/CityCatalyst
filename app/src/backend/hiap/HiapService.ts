@@ -566,6 +566,19 @@ export const checkBulkActionRankingJob = async (
   }
 };
 
+// Helper: Extract string from multilingual field (object or string)
+function extractLocalizedString(
+  field: string | Record<string, string> | null | undefined,
+  lang: LANGUAGES,
+): string | undefined {
+  if (!field) return undefined;
+  if (typeof field === 'string') return field;
+  if (typeof field === 'object' && field[lang]) return field[lang];
+  // Fallback to English if requested language not available
+  if (typeof field === 'object' && field['en']) return field['en'];
+  return undefined;
+}
+
 async function fetchAndMergeRankedActions(
   lang: LANGUAGES,
   rankedActions: {
@@ -592,15 +605,17 @@ async function fetchAndMergeRankedActions(
       return {
         ...rankedAction,
         explanation: rankedAction.explanation,
-        name: details.ActionName,
+        name: extractLocalizedString(details.ActionName, lang),
         hazard: details.Hazard,
         sector: details.Sector,
         subsector: details.Subsector,
         primaryPurpose: details.PrimaryPurpose,
-        description: details.Description,
+        description: extractLocalizedString(details.Description, lang),
         cobenefits: details.CoBenefits,
-        equityAndInclusionConsiderations:
+        equityAndInclusionConsiderations: extractLocalizedString(
           details.EquityAndInclusionConsiderations,
+          lang,
+        ),
         GHGReductionPotential: details.GHGReductionPotential,
         adaptationEffectiveness: details.AdaptationEffectiveness,
         costInvestmentNeeded: details.CostInvestmentNeeded,
@@ -997,6 +1012,40 @@ async function findOrSelectRanking(
     order: [["created", "DESC"]],
   });
 
+  // If no ranking found with the requested language, try to find ANY ranking for this inventory/type
+  // We can then copy actions to the requested language
+  if (!ranking) {
+    logger.info(
+      { inventoryId, locode, type, requestedLang: lang },
+      "No ranking found with requested language, searching for any ranking for this inventory/type",
+    );
+    ranking = await db.models.HighImpactActionRanking.findOne({
+      where: {
+        inventoryId,
+        locode,
+        type,
+      },
+      include: [
+        {
+          model: db.models.HighImpactActionRanked,
+          as: "highImpactActionRanked",
+        },
+      ],
+      order: [["created", "DESC"]],
+    });
+
+    if (ranking) {
+      logger.info(
+        {
+          rankingId: ranking.id,
+          rankingLangs: ranking.langs,
+          requestedLang: lang,
+        },
+        "Found ranking with different languages, will copy to requested language",
+      );
+    }
+  }
+
   return ranking;
 }
 
@@ -1022,7 +1071,10 @@ async function getRankedActionsForLang(
 }
 
 // Helper: Copy actions from any existing language to the requested language
-async function copyRankedActionsToLang(ranking: any, lang: LANGUAGES) {
+export async function copyRankedActionsToLang(
+  ranking: HighImpactActionRanking,
+  lang: LANGUAGES,
+) {
   const allLangRanked = await db.models.HighImpactActionRanked.findAll({
     where: { hiaRankingId: ranking.id },
   });
@@ -1039,20 +1091,69 @@ async function copyRankedActionsToLang(ranking: any, lang: LANGUAGES) {
     (a, b) => a.rank - b.rank,
   );
 
+  // Aggregate available languages across all actions
+  const availableLanguagesSet = new Set<string>();
+  for (const action of uniqueActions) {
+    if (action.explanation && typeof action.explanation === 'object') {
+      Object.keys(action.explanation).forEach((lang) =>
+        availableLanguagesSet.add(lang),
+      );
+    }
+  }
+  const availableLanguages = Array.from(availableLanguagesSet).sort();
+  const hasRequestedLang = availableLanguages.includes(lang);
+
   logger.info(
+    {
+      requestedLang: lang,
+      availableLanguages,
+      rankingLangs: ranking.langs,
+      hasRequestedLang,
+      actionCount: uniqueActions.length,
+    },
     `Copying ${uniqueActions.length} unique actions to language ${lang}`,
   );
+
+  if (!hasRequestedLang) {
+    logger.warn(
+      {
+        requestedLang: lang,
+        availableLanguages,
+        rankingId: ranking.id,
+      },
+      `⚠️  Requested language ${lang} not found in existing explanations. ` +
+        `Explanations will only contain: ${availableLanguages.join(", ")}. ` +
+        `Frontend should fall back to an available language.`,
+    );
+  }
 
   const rankedActions = uniqueActions.map((r) => ({
     actionId: r.actionId,
     rank: r.rank,
-    explanation: r.explanation,
+    explanation: r.explanation, // Pass through explanation object with available languages
     type: r.type as ACTION_TYPES,
   }));
 
   // Fetch and merge action details in the requested language
   const mergedRanked = await fetchAndMergeRankedActions(lang, rankedActions);
-  return await saveRankedActionsForLanguage(ranking, mergedRanked, lang);
+  const savedActions = await saveRankedActionsForLanguage(ranking, mergedRanked, lang);
+
+  // Update the ranking's langs array to include the new language
+  const currentLangs = ranking.langs as string[];
+  if (!currentLangs.includes(lang)) {
+    const updatedLangs = [...currentLangs, lang];
+    await ranking.update({ langs: updatedLangs });
+    logger.info(
+      {
+        rankingId: ranking.id,
+        previousLangs: currentLangs,
+        updatedLangs,
+      },
+      "Updated ranking langs array with new language",
+    );
+  }
+
+  return savedActions;
 }
 
 // Helper: Send email to user that the ranking is ready
@@ -1124,14 +1225,35 @@ export const fetchRanking = async (
         checkActionRankingJob(ranking, lang, type, user || undefined);
         return { ...ranking.toJSON(), rankedActions: [] };
       } else if (ranking.status === HighImpactActionRankingStatus.SUCCESS) {
-        // Send email to user that the ranking is ready
+        // Ranking exists with SUCCESS status but doesn't have records for this language yet
         logger.info(
-          "Ranking is success, copying actions to requested language",
+          {
+            rankingId: ranking.id,
+            requestedLang: lang,
+            rankingLangs: ranking.langs,
+            locode: ranking.locode,
+          },
+          "Ranking is SUCCESS, copying actions to requested language",
         );
         const newRanked = await copyRankedActionsToLang(ranking, lang);
 
         logger.info(
-          `Copied ${newRanked.length} ranked actions for language ${lang}`,
+          {
+            copiedCount: newRanked.length,
+            lang,
+            sampleAction: newRanked[0]
+              ? {
+                  actionId: newRanked[0].actionId,
+                  rank: newRanked[0].rank,
+                  hasName: !!newRanked[0].name,
+                  hasExplanation: !!newRanked[0].explanation,
+                  explanationKeys: newRanked[0].explanation
+                    ? Object.keys(newRanked[0].explanation)
+                    : [],
+                }
+              : null,
+          },
+          `✅ Copied ${newRanked.length} ranked actions for language ${lang}`,
         );
         return { ...ranking.toJSON(), rankedActions: newRanked };
       } else if (ranking.status === HighImpactActionRankingStatus.FAILURE) {

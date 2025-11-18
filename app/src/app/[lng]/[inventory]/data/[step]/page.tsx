@@ -305,7 +305,12 @@ export default function AddDataSteps() {
   }, [activeStep]);
 
   const totalStepCompletion = currentStep
-    ? clamp(currentStep.connectedProgress + currentStep.addedProgress + currentStep.reasonNEProgress + currentStep.reasonNOProgress)
+    ? clamp(
+        currentStep.connectedProgress +
+          currentStep.addedProgress +
+          currentStep.reasonNEProgress +
+          currentStep.reasonNOProgress,
+      )
     : 0;
   const formatPercentage = (percentage: number) =>
     Math.round(percentage * 1000) / 10;
@@ -736,7 +741,12 @@ export default function AddDataSteps() {
                       currentStep.reasonNEProgress,
                       currentStep.reasonNOProgress,
                     ]}
-                    colors={["interactive.connected", "interactive.tertiary", "interactive.control", "striped"]}
+                    colors={[
+                      "interactive.connected",
+                      "interactive.tertiary",
+                      "interactive.control",
+                      "striped",
+                    ]}
                     height={4}
                   />
                   <Heading size="sm" ml={6} mt={-1} whiteSpace="nowrap">
@@ -775,15 +785,17 @@ export default function AddDataSteps() {
                         boxSize={6}
                         color="interactive.control"
                       />
-                      {formatPercentage(currentStep.reasonNEProgress)}% <Trans t={t}>not-estimated</Trans>
+                      {formatPercentage(currentStep.reasonNEProgress)}%{" "}
+                      <Trans t={t}>not-estimated-progress</Trans>
                     </Badge>
                     <Badge w="auto">
                       <Box
-                        boxSize={6}
+                        boxSize={3}
                         borderRadius="full"
                         backgroundImage="repeating-linear-gradient(45deg, #D1D5DB, #D1D5DB 2px, transparent 2px, transparent 4px)"
                       />
-                      {formatPercentage(currentStep.reasonNOProgress)}% <Trans t={t}>not-occurring</Trans>
+                      {formatPercentage(currentStep.reasonNOProgress)}%{" "}
+                      <Trans t={t}>not-occurring</Trans>
                     </Badge>
                   </Box>
                 ) : (

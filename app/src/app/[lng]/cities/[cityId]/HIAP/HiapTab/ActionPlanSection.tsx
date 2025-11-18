@@ -1,7 +1,5 @@
-import { Box, Button, Icon, Text } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { DownloadIcon } from "@/components/icons";
-import { FaCaretDown } from "react-icons/fa";
 import { HIAction, CityWithProjectDataResponse } from "@/util/types";
 import { ClimateActionCard } from "@/components/ClimateActionCard";
 import { ActionDrawer } from "@/components/ActionDrawer";
@@ -28,6 +26,7 @@ const ActionPlanSection = ({
   cityId,
   cityData,
   inventoryId,
+  lng,
 }: {
   t: TFunction;
   rankedActions?: HIAction[];
@@ -35,6 +34,7 @@ const ActionPlanSection = ({
   cityId?: string;
   cityData?: CityWithProjectDataResponse;
   inventoryId?: string;
+  lng: string;
 }) => {
   const topPickActions = getTopPickActions(rankedActions);
   const [selectedAction, setSelectedAction] = useState<HIAction | null>(null);
@@ -47,6 +47,7 @@ const ActionPlanSection = ({
           isOpen={!!selectedAction}
           onClose={() => setSelectedAction(null)}
           t={t}
+          lng={lng}
         />
       )}
       <Box w="1090px" mx="auto" py="48px" display="flex" flexDirection="column">

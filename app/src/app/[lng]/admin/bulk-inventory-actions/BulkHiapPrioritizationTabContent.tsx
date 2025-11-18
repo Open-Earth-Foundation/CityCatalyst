@@ -9,6 +9,8 @@ import {
   Table,
   VStack,
   HStack,
+  CheckboxGroup,
+  Checkbox,
 } from "@chakra-ui/react";
 import {
   AccordionItem,
@@ -20,7 +22,6 @@ import { TFunction } from "i18next";
 import React, { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { logger } from "@/services/logger";
 import {
   BodyLarge,
@@ -42,6 +43,8 @@ import {
   HighImpactActionRankingStatus,
   LANGUAGES,
 } from "@/util/types";
+import { Checkbox as CCCheckbox } from "@/components/ui/checkbox";
+
 
 interface BulkHiapPrioritizationTabContentProps {
   t: TFunction;
@@ -63,7 +66,7 @@ const BulkHiapPrioritizationTabContent: FC<
       defaultValues: {
         year: new Date().getFullYear(),
         actionType: ACTION_TYPES.Mitigation,
-        languages: [LANGUAGES.en, LANGUAGES.pt],
+        languages: [],
       },
     });
 
@@ -79,6 +82,17 @@ const BulkHiapPrioritizationTabContent: FC<
   const selectedYear = watch("year");
   const selectedActionType = watch("actionType");
   const selectedLanguages = watch("languages") || [];
+
+  // Handler for individual language checkbox changes
+  const handleLanguageToggle = (
+    language: LANGUAGES,
+    checked: string | boolean,
+  ) => {
+    const newLanguages = Boolean(checked)
+      ? [...selectedLanguages, language]
+      : selectedLanguages.filter((l) => l !== language);
+    setValue("languages", newLanguages);
+  };
 
   // State for batch selection (for selective retry)
   const [selectedBatchJobIds, setSelectedBatchJobIds] = useState<Set<string>>(
@@ -502,29 +516,29 @@ const BulkHiapPrioritizationTabContent: FC<
               </NativeSelect.Root>
             </FieldRoot>
 
-            <FieldRoot>
+            <Box>
               <LabelMedium mb="8px">{t("languages")}</LabelMedium>
               <BodySmall color="content.tertiary" mb="12px">
                 {t("select-languages-for-climate-actions")}
               </BodySmall>
               <VStack align="flex-start" gap="8px">
-                {Object.values(LANGUAGES).map((lang) => (
-                  <Checkbox
+                {Object.values(LANGUAGES).map((lang, index) => (
+                  <Checkbox.Root
                     key={lang}
                     checked={selectedLanguages.includes(lang)}
                     onCheckedChange={(e) => {
-                      const checked = e.checked;
-                      const newLanguages = checked
-                        ? [...selectedLanguages, lang]
-                        : selectedLanguages.filter((l) => l !== lang);
-                      setValue("languages", newLanguages);
+                      handleLanguageToggle(lang, e.checked as boolean);
                     }}
                   >
-                    <BodyMedium>{lang}</BodyMedium>
-                  </Checkbox>
+                    <Checkbox.HiddenInput />
+                    <Checkbox.Control>
+                      <Checkbox.Indicator />
+                    </Checkbox.Control>
+                    <Checkbox.Label>{lang}</Checkbox.Label>
+                  </Checkbox.Root>
                 ))}
               </VStack>
-            </FieldRoot>
+            </Box>
           </Fieldset.Content>
 
           <BodyMedium color="semantic.danger">{errorMessage}</BodyMedium>
@@ -676,7 +690,12 @@ const BulkHiapPrioritizationTabContent: FC<
                                     }
                                   }}
                                 >
-                                  <Checkbox checked={isSelected} />
+                                  <Checkbox.Root checked={isSelected}>
+                                    <Checkbox.HiddenInput />
+                                    <Checkbox.Control>
+                                      <Checkbox.Indicator />
+                                    </Checkbox.Control>
+                                  </Checkbox.Root>
                                 </Box>
                               )}
                               <BodyMedium fontWeight="semibold">
@@ -808,7 +827,7 @@ const BulkHiapPrioritizationTabContent: FC<
                                       {hasFailures && (
                                         <Table.Cell>
                                           {isFailedCity && (
-                                            <Checkbox
+                                            <CCCheckbox
                                               checked={isMarkedForExclusion}
                                               onCheckedChange={() =>
                                                 handleToggleCityExclusion(

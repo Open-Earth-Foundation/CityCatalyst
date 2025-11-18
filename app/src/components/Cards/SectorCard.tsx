@@ -43,13 +43,17 @@ export function SectorCard({
 
   let totalProgress = 0,
     thirdPartyProgress = 0,
-    uploadedProgress = 0;
+    uploadedProgress = 0,
+    reasonNEProgress = 0,
+    reasonNOProgress = 0;
   if (sectorProgress && sectorProgress.total > 0) {
     thirdPartyProgress = clamp(
       sectorProgress.thirdParty / sectorProgress.total,
     );
     uploadedProgress = clamp(sectorProgress.uploaded / sectorProgress.total);
-    totalProgress = clamp(thirdPartyProgress + uploadedProgress);
+    reasonNEProgress = clamp(sectorProgress.reasonNE / sectorProgress.total);
+    reasonNOProgress = clamp(sectorProgress.reasonNO / sectorProgress.total);
+    totalProgress = clamp(thirdPartyProgress + uploadedProgress + reasonNEProgress + reasonNOProgress);
   }
   /*** Data ***/
   const {
@@ -143,8 +147,8 @@ export function SectorCard({
             gap={6}
           >
             <SegmentedProgress
-              values={[thirdPartyProgress, uploadedProgress]}
-              colors={["interactive.connected", "interactive.tertiary"]}
+              values={[thirdPartyProgress, uploadedProgress, reasonNEProgress, reasonNOProgress]}
+              colors={["interactive.connected", "interactive.tertiary", "interactive.control", "striped"]}
               height={2}
             />
             <Text

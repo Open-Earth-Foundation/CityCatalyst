@@ -97,6 +97,8 @@ export interface SectorProgress {
   total: number;
   thirdParty: number;
   uploaded: number;
+  reasonNE: number;
+  reasonNO: number;
   subSectors: SubSectorWithRelations[];
 }
 
@@ -106,6 +108,8 @@ export interface InventoryProgressResponse {
     total: number;
     thirdParty: number;
     uploaded: number;
+    reasonNE: number;
+    reasonNO: number;
   };
   sectorProgress: SectorProgress[];
 }
@@ -615,12 +619,6 @@ export interface AdaptationEffectivenessPerHazard {
   "sea-level-rise": string | null;
 }
 
-export interface Explanation {
-  en: string;
-  es: string;
-  pt: string;
-}
-
 export interface BaseAction {
   id: string;
   hiaRankingId: string;
@@ -644,7 +642,7 @@ export interface BaseAction {
   isSelected: boolean;
   actionId: string;
   rank: number;
-  explanation: Explanation;
+  explanation: Record<string, string>;
   created: Date;
   last_updated: Date;
 }

@@ -149,7 +149,7 @@
     "step1": "<1>Richten Sie Ihr erstes Inventar ein</1> - Sie können während dieser Testphase mit einer Stadt beginnen.",
     "step2": "<1>Laden Sie Mitarbeiter ein</1> - Arbeiten Sie als Team, um Ihre Daten zu erstellen und zu überprüfen.",
     "step3": "<1>Erkunden Sie die Schlüsselfunktionen</1> - Von der Erstellung Ihres Treibhausgasinventars bis zur Anpassung Ihres Logos und Ihrer Farben.",
-    "step4": "<1>Fragen Sie AI</1> - Unser Klimaassistent ist bereit, Ihre Fragen zu beantworten und Sie im Prozess zu unterstützen. Überprüfung vorgeschlagener Auswirkungsmaßnahmen."
+    "step4": "<1>Fragen Sie AI</1> - Unser Klimaassistent ist bereit, Ihre Fragen zu beantworten und Sie im Prozess zu unterstützen, die vorgeschlagenen Auswirkungsmaßnahmen zu überprüfen."
   },
   "role-update": {
     "subject": "City Catalyst - Rolle aktualisiert",
@@ -189,7 +189,7 @@
     "footer": "Open Earth Foundation ist eine gemeinnützige öffentliche Nutzenkörperschaft aus Kalifornien, USA. EIN: 85-3261449"
   },
   "hiap-ranking-ready": {
-    "subject": "Stadt Katalysator - HIAP Ranking Bereit",
+    "subject": "CityCatalyst - HIAP Ranking Bereit",
     "preview": "CityCatalyst: HIAP-Ranking bereit",
     "brand": "CityCatalyst",
     "title": "Ihre Minderungsmaßnahmen sind bereit!",
@@ -201,7 +201,7 @@
     "footer": "Open Earth Foundation ist eine gemeinnützige öffentliche Nutzenkörperschaft aus Kalifornien, USA. EIN: 85-3261449"
   },
   "action-plan-ready": {
-    "subject": "City Catalyst - Aktionsplan bereit",
+    "subject": "CityCatalyst - Aktionsplan bereit",
     "preview": "CityCatalyst: Ihr Klimaaktionsplan ist bereit!",
     "brand": "CityCatalyst",
     "title": "Ihr Klimaaktionsplan ist bereit!",

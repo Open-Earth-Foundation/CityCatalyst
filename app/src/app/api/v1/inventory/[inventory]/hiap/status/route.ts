@@ -51,6 +51,7 @@ import { logger } from "@/services/logger";
 import { db } from "@/models";
 import { InventoryService } from "@/backend/InventoryService";
 import { Op } from "sequelize";
+import { copyRankedActionsToLang } from "@/backend/hiap/HiapService";
 
 export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
   if (!session) {
@@ -72,9 +73,9 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
 
   try {
     const locode = await InventoryService.getLocode(params.inventory);
-    
-    // Find any existing ranking for this inventory/locode/type
-    const ranking = await db.models.HighImpactActionRanking.findOne({
+
+    // First try to find a ranking that includes the requested language
+    let ranking = await db.models.HighImpactActionRanking.findOne({
       where: {
         inventoryId: params.inventory,
         locode,
@@ -84,25 +85,96 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
       order: [["created", "DESC"]],
     });
 
+    // If no ranking found with the requested language, try to find ANY ranking for this inventory/type
     if (!ranking) {
-      return Response.json({ 
-        data: { 
-          status: "not_found", 
+      logger.info(
+        { inventoryId: params.inventory, locode, type, requestedLang: lng },
+        "No ranking found with requested language in /status, searching for any ranking",
+      );
+
+      ranking = await db.models.HighImpactActionRanking.findOne({
+        where: {
+          inventoryId: params.inventory,
+          locode,
+          type,
+        },
+        order: [["created", "DESC"]],
+      });
+
+      if (ranking) {
+        logger.info(
+          {
+            rankingId: ranking.id,
+            rankingLangs: ranking.langs,
+            requestedLang: lng,
+          },
+          "Found ranking with different languages in /status endpoint",
+        );
+      }
+    }
+
+    if (!ranking) {
+      return Response.json({
+        data: {
+          status: "not_found",
           rankedActions: [],
-          rankingId: null 
-        } 
+          rankingId: null
+        }
       });
     }
 
     // Get existing actions for this language and type
-    const existingActions = await db.models.HighImpactActionRanked.findAll({
-      where: { 
-        hiaRankingId: ranking.id, 
+    let existingActions = await db.models.HighImpactActionRanked.findAll({
+      where: {
+        hiaRankingId: ranking.id,
         lang: lng,
         type: type
       },
       order: [["rank", "ASC"]],
     });
+
+    // If ranking is successful but no actions exist for this language, copy them synchronously
+    const hasActionsForLang = existingActions.length > 0;
+    const rankingLangs = ranking.langs as string[];
+    const rankingHasLang = rankingLangs.includes(lng);
+
+    if (
+      ranking.status === HighImpactActionRankingStatus.SUCCESS &&
+      !hasActionsForLang &&
+      !rankingHasLang
+    ) {
+      logger.info(
+        {
+          rankingId: ranking.id,
+          rankingLangs,
+          requestedLang: lng,
+        },
+        "Copying ranked actions to new language synchronously",
+      );
+
+      try {
+        // Copy actions synchronously and return them immediately
+        existingActions = await copyRankedActionsToLang(ranking, lng);
+        logger.info(
+          {
+            rankingId: ranking.id,
+            lang: lng,
+            copiedCount: existingActions.length,
+          },
+          "Successfully copied ranked actions to new language",
+        );
+      } catch (error) {
+        logger.error(
+          {
+            err: error,
+            rankingId: ranking.id,
+            lang: lng,
+          },
+          "Failed to copy ranked actions to new language",
+        );
+        // Continue with empty actions rather than failing the request
+      }
+    }
 
     const response = {
       ...ranking.toJSON(),

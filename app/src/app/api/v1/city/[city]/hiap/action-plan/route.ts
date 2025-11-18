@@ -5,7 +5,7 @@ import { z } from "zod";
 import createHttpError from "http-errors";
 
 const getActionPlansSchema = z.object({
-  cityId: z.string().optional(),
+  cityId: z.string().optional(), // Optional since we get it from path params
   language: z.string(),
   actionId: z.string(),
 });
@@ -68,7 +68,7 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
 
   try {
     const { language, actionId } = getActionPlansSchema.parse(queryParams);
-    const cityId = params.city;
+    const cityId = params.city as string;
 
     const actionPlans = await ActionPlanService.fetchOrTranslateActionPlan(
       cityId,

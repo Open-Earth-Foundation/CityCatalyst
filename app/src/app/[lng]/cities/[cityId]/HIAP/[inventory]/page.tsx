@@ -189,13 +189,27 @@ export default function HIAPInventoryPage(props: {
               <HiapTab
                 type={actionType}
                 inventory={null}
-                cityData={city!}
+                cityData={city}
                 onTriggerHiap={() => setUserTriggeredHiap(true)}
               />
             </Tabs.Content>
           ))}
         </Tabs.Root>
       </HiapPageLayout>
+    );
+  }
+
+  // If city data is not loaded yet, show loading
+  if (!city) {
+    return (
+      <Box
+        h="full"
+        display="flex"
+        flexDirection="column"
+        bg="background.backgroundLight"
+      >
+        <ProgressLoader />
+      </Box>
     );
   }
 
@@ -282,7 +296,7 @@ export default function HIAPInventoryPage(props: {
             <HiapTab
               type={actionType}
               inventory={inventory}
-              cityData={city!}
+              cityData={city}
               onTriggerHiap={() => setUserTriggeredHiap(true)}
             />
           </Tabs.Content>

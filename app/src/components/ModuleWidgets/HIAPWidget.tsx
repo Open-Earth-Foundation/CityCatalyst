@@ -91,6 +91,7 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
           isOpen={!!selectedAction}
           onClose={() => setSelectedAction(null)}
           t={t}
+          lng={lng}
         />
       )}
       <Box w="full">

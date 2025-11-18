@@ -3,7 +3,7 @@ from typing import Tuple, Union, Optional, Dict, Any, Literal
 from langchain.tools import tool
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
-from langchain.schema import Document
+from langchain_core.documents import Document
 from openai import OpenAI
 from utils.get_vectorstore_local import get_vectorstore
 from utils.get_json_file import get_json_from_file

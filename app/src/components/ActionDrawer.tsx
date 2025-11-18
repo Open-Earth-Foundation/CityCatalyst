@@ -1,11 +1,4 @@
-import {
-  Badge,
-  HStack,
-  Icon,
-  Stack,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Badge, HStack, Icon, Stack, Text, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { MdArrowBack } from "react-icons/md";
 import {
@@ -32,11 +25,13 @@ export function ActionDrawer({
   isOpen,
   onClose,
   t,
+  lng,
 }: {
   action: HIAction;
   isOpen: boolean;
   onClose: () => void;
   t: TFunction;
+  lng: string;
 }) {
   // Extract GHG Reduction Potential entries
   const ghgReductionEntries =
@@ -91,6 +86,12 @@ export function ActionDrawer({
     adaptationEffectivenessSecondCol = entries.slice(splitIndex);
   }
 
+  // extract explanation for current language from action data, falling back to english
+  const actionExplanation =
+    (lng in action.explanation
+      ? action.explanation[lng]
+      : action.explanation.en) ?? t("no-explanation-available");
+
   return (
     <DrawerRoot
       open={isOpen}
@@ -139,6 +140,9 @@ export function ActionDrawer({
 
               <TitleMedium>{t("action-description")}</TitleMedium>
               <BodyLarge>{action.description}</BodyLarge>
+
+              <TitleMedium>{t("action-explanation")}</TitleMedium>
+              <BodyLarge>{actionExplanation}</BodyLarge>
 
               <VStack align="start" gap={4}>
                 {action.type === ACTION_TYPES.Mitigation && (

@@ -4,6 +4,7 @@ import threading
 
 from fastapi import HTTPException, APIRouter, Request
 import logging
+import json
 
 from utils.build_city_data import build_city_data
 from services.get_context import get_context
@@ -24,6 +25,7 @@ from plan_creator_bundle.plan_creator.tasks import (
     _execute_plan_translation,
 )
 from plan_creator_bundle.plan_creator.task_storage import task_storage
+from fastapi.encoders import jsonable_encoder
 
 from prioritizer.models import PrioritizationType
 
@@ -61,8 +63,13 @@ async def start_plan_creation(request: Request, req: PlanRequest):
     # Generate a unique task ID
     task_uuid = str(uuid.uuid4())
     logger.info(f"Task {task_uuid}: Received plan creation request")
-    logger.info(f"Task {task_uuid}: Locode: {req.cityData.cityContextData.locode}")
-    logger.info(f"Task {task_uuid}: Requested language: {req.language}")
+    try:
+        body_json = json.dumps(jsonable_encoder(req), ensure_ascii=False)
+        logger.info(f"Task {task_uuid}: Request body: {body_json}")
+    except Exception:
+        logger.exception(
+            f"Task {task_uuid}: Failed to serialize request body for logging"
+        )
 
     # 1. Initialize task status
     task_storage[task_uuid] = {
@@ -304,9 +311,13 @@ async def translate_plan(
 
     # Log the plan translation request
     logger.info(f"Task {task_uuid}: Received plan translation request")
-    logger.info(
-        f"Task {task_uuid}: Translating plan from {req.inputLanguage} to {req.outputLanguage}"
-    )
+    try:
+        body_json = json.dumps(jsonable_encoder(req), ensure_ascii=False)
+        logger.info(f"Task {task_uuid}: Request body: {body_json}")
+    except Exception:
+        logger.exception(
+            f"Task {task_uuid}: Failed to serialize request body for logging"
+        )
 
     # Initialize task status
     task_storage[task_uuid] = {

@@ -149,7 +149,7 @@
     "step1": "<1>Configure o seu primeiro inventário</1> - Você pode começar com uma cidade durante este teste.",
     "step2": "<1>Convide colaboradores</1> - Trabalhe em equipe para construir e revisar seus dados.",
     "step3": "<1>Explore as principais funcionalidades</1> - Desde a construção do seu inventário de GEE até a personalização do seu logotipo e cores.",
-    "step4": "<1>Pergunte à IA</1> - O nosso Assistente Climático está pronto para responder às suas perguntas e apoiá-lo no processo. revisando as ações de impacto sugeridas."
+    "step4": "<1>Pergunte à IA</1> - O nosso Assistente Climático está pronto para responder às suas perguntas e apoiá-lo no processo de revisar as ações de impacto sugeridas."
   },
   "role-update": {
     "subject": "City Catalyst - Função Atualizada",
@@ -201,7 +201,7 @@
     "footer": "A Open Earth Foundation é uma corporação sem fins lucrativos de benefício público da Califórnia, EUA. EIN: 85-3261449"
   },
   "action-plan-ready": {
-    "subject": "City Catalyst - Plano de Ação Pronto",
+    "subject": "CityCatalyst - Plano de Ação Pronto",
     "preview": "CityCatalyst: Seu plano de ação climática está pronto!",
     "brand": "CityCatalyst",
     "title": "Seu plano de ação climática está pronto!",

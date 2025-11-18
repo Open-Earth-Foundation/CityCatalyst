@@ -149,7 +149,7 @@
     "step1": "<1>Configura tu primer inventario</1> - Puedes comenzar con una ciudad durante este periodo de prueba.",
     "step2": "<1>Invita a colaboradores</1> - Trabaja en equipo para construir y revisar tus datos.",
     "step3": "<1>Explora las características clave</1> - Desde construir tu inventario de GEI hasta personalizar tu logotipo y colores.",
-    "step4": "<1>Pregunta a la IA</1> - Nuestro Asistente Climático está listo para responder tus preguntas y apoyarte en el proceso. revisando las acciones de impacto sugeridas."
+    "step4": "<1>Pregunta a la IA</1> - Nuestro Asistente Climático está listo para responder tus preguntas y apoyarte en el proceso de revisar las acciones de impacto sugeridas."
   },
   "role-update": {
     "subject": "City Catalyst - Rol Actualizado",
@@ -189,7 +189,7 @@
     "footer": "Open Earth Foundation es una corporación sin fines de lucro de beneficio público de California, EE. UU. EIN: 85-3261449"
   },
   "hiap-ranking-ready": {
-    "subject": "Catalizador de la Ciudad - Clasificación HIAP Lista",
+    "subject": "CityCatalyst - Clasificación HIAP Lista",
     "preview": "CityCatalyst: Clasificación HIAP Lista",
     "brand": "CityCatalyst",
     "title": "¡Tus acciones de mitigación están listas!",

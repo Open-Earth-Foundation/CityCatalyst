@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/models";
 import { logger } from "@/services/logger";
 import {
@@ -8,7 +8,7 @@ import {
 } from "@/util/types";
 import { checkBulkActionRankingJob } from "@/backend/hiap/HiapService";
 import { BulkHiapPrioritizationService } from "@/backend/hiap/BulkHiapPrioritizationService";
-import { Op, QueryTypes } from "sequelize";
+import { QueryTypes } from "sequelize";
 import { checkSingleActionRankingJob } from "@/backend/hiap/HiapService";
 
 /**
@@ -50,9 +50,9 @@ import { checkSingleActionRankingJob } from "@/backend/hiap/HiapService";
  *                 startedBatches:
  *                   type: number
  */
-export async function GET(headers: Headers) {
+export async function GET(req: NextRequest) {
   // validate API key from Authorization header to only allow requests from cron job
-  const authorization = headers.get("Authorization") || "";
+  const authorization = req.headers.get("Authorization") || "";
   if (!authorization.startsWith("Bearer ")) {
     return NextResponse.json(
       { error: { message: "Unauthorized, Authorization header missing" } },

@@ -1264,5 +1264,6 @@
   "fuel-type-not-applicable": "Non applicable",
   "on-road-transportation-fuel-type": "Type de carburant",
   "water-transportation-outside-fuel-type": "Type de carburant",
-  "not-occurring": "Non survenant"
+  "not-occurring": "Non survenant",
+  "not-estimated-progress": "Non Estimé"
 }

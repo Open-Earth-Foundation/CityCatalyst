@@ -165,5 +165,7 @@
   },
   "error-generating-actions-title": "Etwas ist schief gelaufen",
   "error-generating-actions-description": "Wir haben einen Fehler beim Generieren Ihrer Klimaschutzmaßnahmen festgestellt. Bitte versuchen Sie es erneut.",
-  "inventory-year": "Inventarjahr"
+  "inventory-year": "Inventarjahr",
+  "action-explanation": "Erläuterung",
+  "no-explanation-available": "Keine Erklärung verfügbar"
 }

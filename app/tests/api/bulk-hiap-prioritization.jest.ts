@@ -31,7 +31,6 @@ import {
   checkSingleActionRankingJob,
   hiapServiceWrapper,
 } from "@/backend/hiap/HiapService";
-import { NextRequest } from "next/server";
 import GlobalAPIService from "@/backend/GlobalAPIService";
 import {
   createTestData,
@@ -39,6 +38,23 @@ import {
   TestData,
 } from "../helpers/testDataCreationHelper";
 import { setupTests, mockRequest } from "../helpers";
+
+import * as HiapCronJobModule from "@/app/api/v1/cron/check-hiap-jobs/route";
+
+const MOCK_CRON_API_KEY = "MOCK_CRON_API_KEY";
+
+function callHiapCronJobRoute() {
+  const req = mockRequest(
+    {},
+    {},
+    { Authorization: "Bearer " + MOCK_CRON_API_KEY },
+  );
+  Object.defineProperty(HiapCronJobModule, "API_KEY", {
+    value: MOCK_CRON_API_KEY,
+  });
+  // HiapCronJobModule.API_KEY = MOCK_CRON_API_KEY;
+  return CHECK_HIAP_JOBS_CRON(req);
+}
 
 describe("Bulk HIAP Prioritization API", () => {
   let testData: TestData;
@@ -1635,7 +1651,7 @@ describe("Bulk HIAP Prioritization API", () => {
       expect(pendingJobs.length).toBe(0);
 
       // Call cron endpoint (simulating cron job run)
-      const response = await CHECK_HIAP_JOBS_CRON();
+      const response = await callHiapCronJobRoute();
       expect(response.status).toBe(200);
 
       // Parse response body
@@ -1707,7 +1723,7 @@ describe("Bulk HIAP Prioritization API", () => {
         });
 
       // Call cron endpoint
-      const response = await CHECK_HIAP_JOBS_CRON();
+      const response = await callHiapCronJobRoute();
       expect(response.status).toBe(200);
 
       // Parse response body
@@ -2281,7 +2297,7 @@ describe("Bulk HIAP Prioritization API", () => {
         .mockRejectedValueOnce(new Error("Failed to check bulk job status"));
 
       // Call cron endpoint
-      const response = await CHECK_HIAP_JOBS_CRON();
+      const response = await callHiapCronJobRoute();
       expect(response.status).toBe(200);
 
       // Parse response body
@@ -2399,7 +2415,7 @@ describe("Bulk HIAP Prioritization API", () => {
         } as any);
 
       // Call cron endpoint
-      const response = await CHECK_HIAP_JOBS_CRON();
+      const response = await callHiapCronJobRoute();
       expect(response.status).toBe(200);
 
       const responseBody = await response.json();

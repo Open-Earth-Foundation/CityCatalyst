@@ -39,8 +39,6 @@ import {
 } from "../helpers/testDataCreationHelper";
 import { setupTests, mockRequest } from "../helpers";
 
-import * as HiapCronJobModule from "@/app/api/v1/cron/check-hiap-jobs/route";
-
 const MOCK_CRON_API_KEY = "MOCK_CRON_API_KEY";
 
 function callHiapCronJobRoute() {
@@ -49,10 +47,7 @@ function callHiapCronJobRoute() {
     {},
     { Authorization: "Bearer " + MOCK_CRON_API_KEY },
   );
-  Object.defineProperty(HiapCronJobModule, "API_KEY", {
-    value: MOCK_CRON_API_KEY,
-  });
-  // HiapCronJobModule.API_KEY = MOCK_CRON_API_KEY;
+  process.env.CC_CRON_JOB_API_KEY = MOCK_CRON_API_KEY;
   return CHECK_HIAP_JOBS_CRON(req);
 }
 

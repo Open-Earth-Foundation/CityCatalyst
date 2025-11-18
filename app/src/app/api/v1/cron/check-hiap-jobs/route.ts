@@ -11,8 +11,6 @@ import { BulkHiapPrioritizationService } from "@/backend/hiap/BulkHiapPrioritiza
 import { QueryTypes } from "sequelize";
 import { checkSingleActionRankingJob } from "@/backend/hiap/HiapService";
 
-export const API_KEY = process.env.CC_CRON_JOB_API_KEY;
-
 /**
  * Cron job endpoint to check HIAP job statuses and start next batches
  * Should be called every minute by Kubernetes CronJob
@@ -62,7 +60,7 @@ export async function GET(req: NextRequest) {
     );
   }
   const token = authorization.replace("Bearer ", "").trim();
-  if (token.length > 0 && token !== API_KEY) {
+  if (token.length > 0 && token !== process.env.CC_CRON_JOB_API_KEY) {
     return NextResponse.json(
       { error: { message: "Unauthorized, API key invalid" } },
       { status: 401 },

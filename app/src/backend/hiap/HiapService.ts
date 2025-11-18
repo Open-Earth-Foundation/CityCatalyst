@@ -1134,7 +1134,7 @@ export async function copyRankedActionsToLang(
     type: r.type as ACTION_TYPES,
   }));
 
-  // Fetch and merge action details in the requested language (German names/descriptions)
+  // Fetch and merge action details in the requested language
   const mergedRanked = await fetchAndMergeRankedActions(lang, rankedActions);
   const savedActions = await saveRankedActionsForLanguage(ranking, mergedRanked, lang);
 

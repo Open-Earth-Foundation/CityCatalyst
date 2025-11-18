@@ -12,7 +12,7 @@ import {
   Flex,
   IconButton,
 } from "@chakra-ui/react";
-import { MdOutlineClose  } from "react-icons/md";
+import { MdOutlineClose } from "react-icons/md";
 import { useTranslation } from "@/i18n/client";
 import { getAnalyticsConsent, setAnalyticsConsent } from "@/lib/analytics";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
@@ -25,7 +25,7 @@ export function CookieConsent({ lng }: CookieConsentProps) {
   const [showBanner, setShowBanner] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation(lng, "cookie-consent");
-  
+
   // Use hasServerFeatureFlag which uses process.env directly (no caching issues)
   const analyticsEnabled = hasFeatureFlag(FeatureFlags.ANALYTICS_ENABLED);
 
@@ -73,6 +73,7 @@ export function CookieConsent({ lng }: CookieConsentProps) {
       boxShadow="0 -2px 10px rgba(0, 0, 0, 0.1)"
       zIndex={1000}
       p={4}
+      data-onboarding-bottom-bar
     >
       <Container maxW="container.xl">
         <Flex
@@ -81,9 +82,9 @@ export function CookieConsent({ lng }: CookieConsentProps) {
           justify="space-between"
           gap={4}
         >
-          <VStack align="start"  flex={1}>
+          <VStack align="start" flex={1}>
             <Text fontSize="sm" fontWeight="medium" color="">
-            {t("title")}
+              {t("title")}
             </Text>
             <Text fontSize="xs" color="base.dar" lineHeight="tall">
               {t("description")}{" "}
@@ -95,7 +96,6 @@ export function CookieConsent({ lng }: CookieConsentProps) {
               >
                 {t("privacy-policy-link")}
               </Link>
-              
             </Text>
           </VStack>
 

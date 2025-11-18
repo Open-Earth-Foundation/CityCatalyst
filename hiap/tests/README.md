@@ -95,10 +95,9 @@ open htmlcov/index.html
 Tests individual functions in isolation with mocked dependencies:
 
 ```python
-def test_build_city_data_with_complete_data(sample_city_context, sample_request_data):
-    result = build_city_data(sample_city_context, sample_request_data)
-    assert result["locode"] == "BRRIO"
-    assert result["totalEmissions"] == 4950.0
+def test_city_context_fixture(sample_city_context):
+    assert sample_city_context["locode"] == "BR RIO"
+    assert sample_city_context["biome"] == "Atlantic Forest"
 ```
 
 ### Integration Test Example
@@ -144,7 +143,6 @@ def test_get_actions_success(mock_session):
 
 - `client` - FastAPI test client
 - `sample_city_context` - Sample city context data
-- `sample_request_data` - Sample request data with emissions
 - `sample_climate_action` - Sample climate action data
 - `sample_city_data_request` - Complete city data request for APIs
 

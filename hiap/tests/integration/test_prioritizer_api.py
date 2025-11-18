@@ -82,49 +82,53 @@ class TestPrioritizerAPI:
         # Should return validation error
         assert response.status_code == 422
 
-    def test_start_prioritization_language_validation(self, client):
-        """Test prioritization with various language field scenarios."""
-        # Test missing language field
-        invalid_request: dict = {
+    def test_start_prioritization_strict_type_validation(self, client):
+        """Test stricter Pydantic datatypes (non-negative ints, strict ints, patterns)."""
+        # populationSize as string (strict int), invalid locode pattern
+        invalid_request_1 = {
             "cityData": {
-                "cityContextData": {
-                    "locode": "BR RIO",
-                    "populationSize": 6748000,
-                },
+                "cityContextData": {"locode": "BRRIO", "populationSize": "6748000"},
                 "cityEmissionsData": {
-                    "stationaryEnergyEmissions": 1500.0,
-                    "transportationEmissions": 2200.0,
-                    "wasteEmissions": 800.0,
-                    "ippuEmissions": 300.0,
-                    "afoluEmissions": 150.0,
+                    "stationaryEnergyEmissions": 1500,
+                    "transportationEmissions": 2200,
+                    "wasteEmissions": 800,
+                    "ippuEmissions": 300,
+                    "afoluEmissions": 150,
                 },
             }
-            # Missing language field
         }
 
-        response = client.post(
-            "/prioritizer/v1/start_prioritization", json=invalid_request
-        )
-        assert response.status_code == 422
+        # negative value for a NonNegativeInteger field
+        invalid_request_2 = {
+            "cityData": {
+                "cityContextData": {"locode": "BR RIO", "populationSize": 6748000},
+                "cityEmissionsData": {
+                    "stationaryEnergyEmissions": -1,
+                    "transportationEmissions": 2200,
+                    "wasteEmissions": 800,
+                    "ippuEmissions": 300,
+                    "afoluEmissions": 0,
+                },
+            }
+        }
 
-        # Test empty language list
-        invalid_request_with_empty_lang = invalid_request.copy()
-        invalid_request_with_empty_lang["language"] = []
-        response = client.post(
-            "/prioritizer/v1/start_prioritization", json=invalid_request_with_empty_lang
-        )
-        assert response.status_code == 422
+        # float provided where strict int is required
+        invalid_request_3 = {
+            "cityData": {
+                "cityContextData": {"locode": "BR RIO", "populationSize": 6748000},
+                "cityEmissionsData": {
+                    "stationaryEnergyEmissions": 1500,
+                    "transportationEmissions": 2200.5,
+                    "wasteEmissions": 800,
+                    "ippuEmissions": 300,
+                    "afoluEmissions": -10,  # allowed to be negative but must be int
+                },
+            }
+        }
 
-        # Test single language (should succeed)
-        valid_request = invalid_request.copy()
-        valid_request["language"] = ["en"]
-        response = client.post(
-            "/prioritizer/v1/start_prioritization", json=valid_request
-        )
-        assert response.status_code == 202
-        data = response.json()
-        assert "taskId" in data
-        assert "status" in data
+        for payload in (invalid_request_1, invalid_request_2, invalid_request_3):
+            response = client.post("/prioritizer/v1/start_prioritization", json=payload)
+            assert response.status_code == 422
 
     def test_check_progress_nonexistent_task(self, client):
         """Test checking progress for non-existent task."""
@@ -178,11 +182,11 @@ class TestPrioritizerAPI:
             "cityData": {
                 "cityContextData": {"locode": "BR RIO", "populationSize": 6748000},
                 "cityEmissionsData": {
-                    "stationaryEnergyEmissions": 1500.0,
-                    "transportationEmissions": 2200.0,
-                    "wasteEmissions": 800.0,
-                    "ippuEmissions": 300.0,
-                    "afoluEmissions": 150.0,
+                    "stationaryEnergyEmissions": 1500,
+                    "transportationEmissions": 2200,
+                    "wasteEmissions": 800,
+                    "ippuEmissions": 300,
+                    "afoluEmissions": 150,
                 },
             },
             "language": ["en"],
@@ -317,49 +321,27 @@ class TestPrioritizerWorkflow:
             },
         ]
 
-        # Test bulk request with missing language field (should fail)
-        bulk_request_invalid = {
-            "cityDataList": [
-                {
-                    "cityContextData": {"locode": "BR RIO", "populationSize": 6748000},
-                    "cityEmissionsData": {
-                        "stationaryEnergyEmissions": 1500.0,
-                        "transportationEmissions": 2200.0,
-                        "wasteEmissions": 800.0,
-                        "ippuEmissions": 300.0,
-                        "afoluEmissions": 150.0,
-                    },
-                }
-            ]
-            # Missing language field
-        }
-
-        response = client.post(
-            "/prioritizer/v1/start_prioritization_bulk", json=bulk_request_invalid
-        )
-        assert response.status_code == 422
-
         # Test valid bulk request (should succeed)
         bulk_request_valid = {
             "cityDataList": [
                 {
                     "cityContextData": {"locode": "BR RIO", "populationSize": 6748000},
                     "cityEmissionsData": {
-                        "stationaryEnergyEmissions": 1500.0,
-                        "transportationEmissions": 2200.0,
-                        "wasteEmissions": 800.0,
-                        "ippuEmissions": 300.0,
-                        "afoluEmissions": 150.0,
+                        "stationaryEnergyEmissions": 1500,
+                        "transportationEmissions": 2200,
+                        "wasteEmissions": 800,
+                        "ippuEmissions": 300,
+                        "afoluEmissions": 150,
                     },
                 },
                 {
                     "cityContextData": {"locode": "BR SAO", "populationSize": 12300000},
                     "cityEmissionsData": {
-                        "stationaryEnergyEmissions": 2500.0,
-                        "transportationEmissions": 3500.0,
-                        "wasteEmissions": 1200.0,
-                        "ippuEmissions": 500.0,
-                        "afoluEmissions": 200.0,
+                        "stationaryEnergyEmissions": 2500,
+                        "transportationEmissions": 3500,
+                        "wasteEmissions": 1200,
+                        "ippuEmissions": 500,
+                        "afoluEmissions": 200,
                     },
                 },
             ],

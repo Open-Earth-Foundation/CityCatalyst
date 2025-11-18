@@ -13,7 +13,11 @@ import { HighImpactActionRankingStatus } from "@/util/types";
 import { hiapApiWrapper } from "./HiapApiService";
 import { InventoryService } from "../InventoryService";
 import GlobalAPIService from "../GlobalAPIService";
-import { PrioritizerResponse, PrioritizerCityData } from "./types";
+import {
+  PrioritizerResponse,
+  PrioritizerCityData,
+  PrioritizerRankedAction,
+} from "./types";
 import uniqBy from "lodash/uniqBy";
 import EmailService from "../EmailService";
 import { User } from "@/models/User";
@@ -151,6 +155,7 @@ export const startActionRankingJob = async (
     type,
     jobId: taskId,
     status: HighImpactActionRankingStatus.PENDING,
+    isBulk: false, // Single city prioritization
   });
   logger.info(
     `Ranking created in DB with ID: ${ranking.id}, langs: ${langs.join(", ")}`,
@@ -166,6 +171,24 @@ export const startActionRankingJob = async (
   return ranking;
 };
 
+export const startBothActionRankingJobs = async (
+  inventoryId: string,
+  locode: string,
+  langs: LANGUAGES[],
+  type: ACTION_TYPES,
+  user?: User,
+) => {
+  const oppositeType =
+    type === ACTION_TYPES.Mitigation
+      ? ACTION_TYPES.Adaptation
+      : ACTION_TYPES.Mitigation;
+
+  // start the opposite type job in the background
+  startActionRankingJob(inventoryId, locode, langs, oppositeType, user);
+  // then start the current type job and return the result
+  return await startActionRankingJob(inventoryId, locode, langs, type, user);
+};
+
 /**
  * Start bulk prioritization job for multiple cities
  * All cities will share the same jobId from HIAP
@@ -176,11 +199,11 @@ export const startBulkActionRankingJob = async (
     locode: string;
     cityId: string;
   }>,
-  lang: LANGUAGES,
+  langs: LANGUAGES[],
   type: ACTION_TYPES,
 ) => {
   logger.info(
-    { cityCount: citiesInventoriesData.length, type },
+    { cityCount: citiesInventoriesData.length, type, langs },
     "Starting bulk action ranking job",
   );
 
@@ -210,6 +233,7 @@ export const startBulkActionRankingJob = async (
   const { taskId } = await hiapApiWrapper.startBulkPrioritization(
     citiesData,
     type,
+    langs,
   );
 
   logger.info(
@@ -232,6 +256,7 @@ export const startBulkActionRankingJob = async (
         type,
         jobId: taskId, // SAME jobId for all cities in this bulk batch
         status: HighImpactActionRankingStatus.PENDING,
+        isBulk: true, // Old bulk prioritization (kept for backward compatibility)
       });
     }),
   );
@@ -256,8 +281,226 @@ export const startBulkActionRankingJob = async (
 };
 
 /**
+ * Check single prioritization job status ONCE and save results if completed
+ * Called by cron job for single-city rankings
+ * Returns true if job is complete (success or failure), false if still pending
+ */
+export const checkSingleActionRankingJob = async (
+  jobId: string,
+  lang: LANGUAGES,
+  type: ACTION_TYPES,
+): Promise<boolean> => {
+  logger.info({ jobId, type }, "Checking single action ranking job status");
+
+  try {
+    // Check status ONCE (no polling)
+    const statusData = await hiapApiWrapper.checkPrioritizationProgress(jobId);
+
+    logger.info(
+      { jobId, status: statusData.status },
+      "Checked single job status",
+    );
+
+    // Handle different status outcomes
+    if (statusData.status === "pending") {
+      return false;
+    }
+
+    if (statusData.status === "failed") {
+      await db.models.HighImpactActionRanking.update(
+        {
+          status: HighImpactActionRankingStatus.FAILURE,
+          errorMessage:
+            statusData.error || "HIAP single prioritization job failed",
+        },
+        { where: { jobId } },
+      );
+      logger.error(
+        { jobId, error: statusData.error },
+        "Single prioritization job failed",
+      );
+      return true;
+    }
+
+    // Status is "completed" - fetch result
+    let singleResponse;
+    try {
+      singleResponse = await hiapApiWrapper.getPrioritizationResult(jobId);
+    } catch (error: any) {
+      if (error.message?.includes("409")) {
+        logger.warn(
+          { jobId, error: error.message },
+          "Result not ready yet (409 Conflict), will retry on next cron run",
+        );
+        return false;
+      }
+      throw error;
+    }
+
+    // Wrap single response in bulk format for unified processing
+    const bulkResponse = {
+      prioritizerResponseList: [singleResponse],
+    };
+
+    // Process using the same logic as bulk jobs
+    return await processBulkJobResults(jobId, bulkResponse);
+  } catch (err) {
+    logger.error({ err, jobId }, "Error in checkSingleActionRankingJob");
+    throw err;
+  }
+};
+
+/**
+ * Process bulk job results (shared by both bulk and single jobs)
+ * Saves ranked actions for all cities in the job
+ * Returns true when complete
+ */
+async function processBulkJobResults(
+  jobId: string,
+  bulkResponse: { prioritizerResponseList: any[] },
+): Promise<boolean> {
+  // Get all rankings that share this jobId
+  const rankings = await db.models.HighImpactActionRanking.findAll({
+    where: { jobId },
+  });
+
+  logger.info(
+    {
+      jobId,
+      rankingCount: rankings.length,
+      responseCount: bulkResponse.prioritizerResponseList.length,
+    },
+    "Found rankings and responses for bulk job",
+  );
+
+  // Log summary of what HIAP returned for each city
+  const responsesSummary = bulkResponse.prioritizerResponseList.map(
+    (response) => {
+      const mitActionIds = response.rankedActionsMitigation
+        .slice(0, 5)
+        .map((a: PrioritizerRankedAction) => `${a.actionId}:${a.rank}`)
+        .join(",");
+      const adpActionIds = response.rankedActionsAdaptation
+        .slice(0, 5)
+        .map((a: PrioritizerRankedAction) => `${a.actionId}:${a.rank}`)
+        .join(",");
+      return {
+        locode: response.metadata.locode,
+        mitCount: response.rankedActionsMitigation.length,
+        adpCount: response.rankedActionsAdaptation.length,
+        topMitActions: mitActionIds || "none",
+        topAdpActions: adpActionIds || "none",
+      };
+    },
+  );
+  logger.info(
+    { jobId, responses: responsesSummary },
+    "🔍 HIAP API Response Summary (first 5 actions per city)",
+  );
+
+  // Create a map of locode -> PrioritizerResponse for easy lookup
+  const responseByLocode = new Map(
+    bulkResponse.prioritizerResponseList.map((response) => [
+      response.metadata.locode,
+      response,
+    ]),
+  );
+
+  // Save ranked actions for each city's ranking
+  for (const ranking of rankings) {
+    try {
+      // Skip rankings that already failed during context data fetch
+      if (ranking.status === HighImpactActionRankingStatus.FAILURE) {
+        logger.info(
+          { rankingId: ranking.id, locode: ranking.locode },
+          "Skipping ranking that already failed during context fetch",
+        );
+        continue;
+      }
+
+      // Find the response for this city's locode
+      const cityResponse = responseByLocode.get(ranking.locode);
+
+      if (!cityResponse) {
+        logger.error(
+          { rankingId: ranking.id, locode: ranking.locode },
+          "No response found for city in bulk results",
+        );
+        await ranking.update({
+          status: HighImpactActionRankingStatus.FAILURE,
+          errorMessage: `No prioritization result found for locode: ${ranking.locode}`,
+        });
+        continue;
+      }
+
+      // Log what we got from the response map
+      logger.info(
+        {
+          rankingId: ranking.id,
+          locode: ranking.locode,
+          foundInMap: !!cityResponse,
+          mitActionsCount: cityResponse.rankedActionsMitigation.length,
+          adpActionsCount: cityResponse.rankedActionsAdaptation.length,
+        },
+        "🔍 Retrieved city response from map",
+      );
+
+      const rankedActions = [
+        ...cityResponse.rankedActionsMitigation.map(
+          (a: PrioritizerRankedAction) => ({
+            ...a,
+            type: ACTION_TYPES.Mitigation,
+          }),
+        ),
+        ...cityResponse.rankedActionsAdaptation.map(
+          (a: PrioritizerRankedAction) => ({
+            ...a,
+            type: ACTION_TYPES.Adaptation,
+          }),
+        ),
+      ];
+
+      // Save ranked actions for ALL languages in ranking.langs
+      const languagesToProcess = ranking.langs as LANGUAGES[];
+      for (const language of languagesToProcess) {
+        const mergedRanked = await fetchAndMergeRankedActions(
+          language,
+          rankedActions,
+        );
+        await saveRankedActionsForLanguage(ranking, mergedRanked, language);
+      }
+
+      // Update ranking status to success
+      await ranking.update({ status: HighImpactActionRankingStatus.SUCCESS });
+
+      logger.info(
+        {
+          rankingId: ranking.id,
+          locode: ranking.locode,
+          languagesProcessed: languagesToProcess,
+        },
+        "Saved ranked actions for city in all languages",
+      );
+    } catch (error: any) {
+      logger.error(
+        { rankingId: ranking.id, locode: ranking.locode, error },
+        "Failed to save ranked actions for city",
+      );
+      await ranking.update({
+        status: HighImpactActionRankingStatus.FAILURE,
+        errorMessage: error.message || "Failed to save ranked actions",
+      });
+    }
+  }
+
+    logger.info({ jobId }, "Bulk action ranking job completed successfully");
+
+  return true; // Job is complete (success)
+}
+
+/**
  * Check bulk prioritization job status ONCE and save results if completed
- * Called by cron job - no polling loop, just a single status check
+ * Called by cron job for multi-city rankings
  * Returns true if job is complete (success or failure), false if still pending
  */
 export const checkBulkActionRankingJob = async (
@@ -300,127 +543,41 @@ export const checkBulkActionRankingJob = async (
       return true; // Job is complete (failed)
     }
 
-    // Status is "completed" - fetch and process results
-
-    // Fetch result for the bulk job
+    // Status is "completed" - fetch result
     let bulkResponse;
     try {
       bulkResponse = await hiapApiWrapper.getBulkPrioritizationResult(jobId);
     } catch (error: any) {
-      // If we get a 409 Conflict, the result may not be ready yet
-      // even though status check says "completed"
       if (error.message?.includes("409")) {
         logger.warn(
           { jobId, error: error.message },
           "Result not ready yet (409 Conflict), will retry on next cron run",
         );
-        return false; // Not complete yet, try again later
+        return false;
       }
-      // Other errors should fail the job
       throw error;
     }
 
-    // Get all rankings that share this jobId
-    const rankings = await db.models.HighImpactActionRanking.findAll({
-      where: { jobId },
-    });
-
-    logger.info(
-      {
-        jobId,
-        rankingCount: rankings.length,
-        responseCount: bulkResponse.prioritizerResponseList.length,
-      },
-      "Found rankings and responses for bulk job",
-    );
-
-    // Create a map of locode -> PrioritizerResponse for easy lookup
-    const responseByLocode = new Map(
-      bulkResponse.prioritizerResponseList.map((response) => [
-        response.metadata.locode,
-        response,
-      ]),
-    );
-
-    // Save ranked actions for each city's ranking
-    for (const ranking of rankings) {
-      try {
-        // Skip rankings that already failed during context data fetch
-        if (ranking.status === HighImpactActionRankingStatus.FAILURE) {
-          logger.info(
-            { rankingId: ranking.id, locode: ranking.locode },
-            "Skipping ranking that already failed during context fetch",
-          );
-          continue;
-        }
-
-        // Find the response for this city's locode
-        const cityResponse = responseByLocode.get(ranking.locode);
-
-        if (!cityResponse) {
-          logger.error(
-            { rankingId: ranking.id, locode: ranking.locode },
-            "No response found for city in bulk results",
-          );
-          await ranking.update({
-            status: HighImpactActionRankingStatus.FAILURE,
-            errorMessage: `No prioritization result found for locode: ${ranking.locode}`,
-          });
-          continue;
-        }
-
-        const rankedActions = [
-          ...cityResponse.rankedActionsMitigation.map((a) => ({
-            ...a,
-            type: ACTION_TYPES.Mitigation,
-          })),
-          ...cityResponse.rankedActionsAdaptation.map((a) => ({
-            ...a,
-            type: ACTION_TYPES.Adaptation,
-          })),
-        ];
-
-        // Save ranked actions for ALL languages in ranking.langs
-        const languagesToProcess = ranking.langs as LANGUAGES[];
-        for (const language of languagesToProcess) {
-          const mergedRanked = await fetchAndMergeRankedActions(
-            language,
-            rankedActions,
-          );
-          await saveRankedActionsForLanguage(ranking, mergedRanked, language);
-        }
-
-        // Update ranking status to success
-        await ranking.update({ status: HighImpactActionRankingStatus.SUCCESS });
-
-        logger.info(
-          {
-            rankingId: ranking.id,
-            locode: ranking.locode,
-            languagesProcessed: languagesToProcess,
-          },
-          "Saved ranked actions for city in all languages",
-        );
-      } catch (error: any) {
-        logger.error(
-          { rankingId: ranking.id, locode: ranking.locode, error },
-          "Failed to save ranked actions for city",
-        );
-        await ranking.update({
-          status: HighImpactActionRankingStatus.FAILURE,
-          errorMessage: error.message || "Failed to save ranked actions",
-        });
-      }
-    }
-
-    logger.info({ jobId }, "Bulk action ranking job completed successfully");
-
-    return true; // Job is complete (success)
+    // Process using shared logic
+    return await processBulkJobResults(jobId, bulkResponse);
   } catch (err) {
     logger.error({ err, jobId }, "Error in checkBulkActionRankingJob");
     throw err;
   }
 };
+
+// Helper: Extract string from multilingual field (object or string)
+function extractLocalizedString(
+  field: string | Record<string, string> | null | undefined,
+  lang: LANGUAGES,
+): string | undefined {
+  if (!field) return undefined;
+  if (typeof field === 'string') return field;
+  if (typeof field === 'object' && field[lang]) return field[lang];
+  // Fallback to English if requested language not available
+  if (typeof field === 'object' && field['en']) return field['en'];
+  return undefined;
+}
 
 async function fetchAndMergeRankedActions(
   lang: LANGUAGES,
@@ -448,15 +605,17 @@ async function fetchAndMergeRankedActions(
       return {
         ...rankedAction,
         explanation: rankedAction.explanation,
-        name: details.ActionName,
+        name: extractLocalizedString(details.ActionName, lang),
         hazard: details.Hazard,
         sector: details.Sector,
         subsector: details.Subsector,
         primaryPurpose: details.PrimaryPurpose,
-        description: details.Description,
+        description: extractLocalizedString(details.Description, lang),
         cobenefits: details.CoBenefits,
-        equityAndInclusionConsiderations:
+        equityAndInclusionConsiderations: extractLocalizedString(
           details.EquityAndInclusionConsiderations,
+          lang,
+        ),
         GHGReductionPotential: details.GHGReductionPotential,
         adaptationEffectiveness: details.AdaptationEffectiveness,
         costInvestmentNeeded: details.CostInvestmentNeeded,
@@ -593,8 +752,22 @@ async function saveRankedActionsForLanguage(
   );
 
   const savedCount = results.filter(Boolean).length;
+
+  // Log sample of what was saved
+  const savedSample = mergedRanked.slice(0, 3).map((a) => ({
+    actionId: a.actionId,
+    rank: a.rank,
+    name: a.name ? Array.from(a.name).slice(0, 30).join('') : undefined,
+  }));
   logger.info(
-    `[saveRankedActionsForLanguage] Saved ${savedCount} out of ${mergedRanked.length} ranked actions for lang ${lang}.`,
+    {
+      rankingId: ranking.id,
+      lang,
+      savedCount,
+      totalMerged: mergedRanked.length,
+      savedSample,
+    },
+    `[saveRankedActionsForLanguage] Saved ranked actions to DB`,
   );
 
   // Return the newly created actions
@@ -689,7 +862,7 @@ function getSectorEmissions(
   sectorName: string,
 ): number | null {
   const value = emissionsBySector.find(
-    (s) => s.sectorName === sectorName,
+    (s) => s.sector_name === sectorName,
   )?.co2eq;
   const num = Number(value);
   return isNaN(num) ? null : num;
@@ -717,33 +890,101 @@ async function getCityContextAndEmissionsDataImpl(
   if (!inventory) throw new Error("Inventory not found");
   const city = inventory.city;
   if (!city) throw new Error("City not found for inventory");
-  const populationSize = await PopulationService.getPopulationDataForCityYear(
+
+  const populationData = await PopulationService.getPopulationDataForCityYear(
     city.cityId,
     inventory.year!,
   );
+
+  // Ensure population is integer or null (HIAP requires integer ≥ 0 or null)
+  const populationSize =
+    populationData.population && !isNaN(Number(populationData.population))
+      ? Math.round(Number(populationData.population))
+      : null;
+
   const emissionsBySector = await getTotalEmissionsBySector([inventoryId]);
+
+  // Log what we got from getTotalEmissionsBySector
+  logger.info(
+    {
+      inventoryId,
+      locode: city.locode,
+      emissionsBySectorCount: emissionsBySector.length,
+      sectorNames: emissionsBySector.map((s) => s.sector_name),
+      sampleSector: emissionsBySector[0],
+    },
+    "🔍 Emissions data retrieved from getTotalEmissionsBySector",
+  );
+
+  // Get emissions for each sector (can be null)
+  const rawEmissions = {
+    stationaryEnergyEmissions: getSectorEmissions(
+      emissionsBySector,
+      "Stationary Energy",
+    ),
+    transportationEmissions: getSectorEmissions(
+      emissionsBySector,
+      "Transportation",
+    ),
+    wasteEmissions: getSectorEmissions(emissionsBySector, "Waste"),
+    ippuEmissions: getSectorEmissions(
+      emissionsBySector,
+      "Industrial Processes and Product Uses (IPPU)",
+    ),
+    afoluEmissions: getSectorEmissions(
+      emissionsBySector,
+      "Agriculture, Forestry, and Other Land Use (AFOLU)",
+    ),
+  };
+
+  // Transform emissions: convert to integers (HIAP requires strict integers)
+  // null → 0, floats → rounded integers
+  const cityEmissionsData = {
+    stationaryEnergyEmissions: Math.round(
+      rawEmissions.stationaryEnergyEmissions ?? 0,
+    ),
+    transportationEmissions: Math.round(
+      rawEmissions.transportationEmissions ?? 0,
+    ),
+    wasteEmissions: Math.round(rawEmissions.wasteEmissions ?? 0),
+    ippuEmissions: Math.round(rawEmissions.ippuEmissions ?? 0),
+    afoluEmissions: Math.round(rawEmissions.afoluEmissions ?? 0),
+  };
+
+  // Format locode with space: "BRSAO" -> "BR SAO" (HIAP requires: ^[A-Za-z]{2}\s[A-Za-z]{3}$)
+  const formattedLocode =
+    city.locode!.length === 5
+      ? `${city.locode!.substring(0, 2)} ${city.locode!.substring(2)}`
+      : city.locode!;
+
   const cityData: PrioritizerCityData = {
     cityContextData: {
-      locode: city.locode!,
-      populationSize: populationSize.population!,
+      locode: formattedLocode,
+      populationSize,
     },
-    cityEmissionsData: {
-      stationaryEnergyEmissions: getSectorEmissions(
-        emissionsBySector,
-        "Stationary Energy",
-      ),
-      transportationEmissions: getSectorEmissions(
-        emissionsBySector,
-        "Transportation",
-      ),
-      wasteEmissions: getSectorEmissions(emissionsBySector, "Waste"),
-      ippuEmissions: getSectorEmissions(emissionsBySector, "IPPU"),
-      afoluEmissions: getSectorEmissions(
-        emissionsBySector,
-        "Agriculture, Forestry, and Other Land Use (AFOLU)",
-      ),
-    },
+    cityEmissionsData,
   };
+
+  logger.info(
+    {
+      inventoryId,
+      originalLocode: city.locode,
+      formattedLocode: formattedLocode,
+      population: populationSize,
+      cityEmissionsData,
+      types: {
+        locode: typeof formattedLocode,
+        population: typeof populationSize,
+        stationaryEnergy: typeof cityEmissionsData.stationaryEnergyEmissions,
+        transportation: typeof cityEmissionsData.transportationEmissions,
+        waste: typeof cityEmissionsData.wasteEmissions,
+        ippu: typeof cityEmissionsData.ippuEmissions,
+        afolu: typeof cityEmissionsData.afoluEmissions,
+      },
+    },
+    "🔍 Final city data prepared for HIAP (with type validation)",
+  );
+
   return cityData;
 }
 
@@ -771,6 +1012,40 @@ async function findOrSelectRanking(
     order: [["created", "DESC"]],
   });
 
+  // If no ranking found with the requested language, try to find ANY ranking for this inventory/type
+  // We can then copy actions to the requested language
+  if (!ranking) {
+    logger.info(
+      { inventoryId, locode, type, requestedLang: lang },
+      "No ranking found with requested language, searching for any ranking for this inventory/type",
+    );
+    ranking = await db.models.HighImpactActionRanking.findOne({
+      where: {
+        inventoryId,
+        locode,
+        type,
+      },
+      include: [
+        {
+          model: db.models.HighImpactActionRanked,
+          as: "highImpactActionRanked",
+        },
+      ],
+      order: [["created", "DESC"]],
+    });
+
+    if (ranking) {
+      logger.info(
+        {
+          rankingId: ranking.id,
+          rankingLangs: ranking.langs,
+          requestedLang: lang,
+        },
+        "Found ranking with different languages, will copy to requested language",
+      );
+    }
+  }
+
   return ranking;
 }
 
@@ -796,7 +1071,10 @@ async function getRankedActionsForLang(
 }
 
 // Helper: Copy actions from any existing language to the requested language
-async function copyRankedActionsToLang(ranking: any, lang: LANGUAGES) {
+export async function copyRankedActionsToLang(
+  ranking: HighImpactActionRanking,
+  lang: LANGUAGES,
+) {
   const allLangRanked = await db.models.HighImpactActionRanked.findAll({
     where: { hiaRankingId: ranking.id },
   });
@@ -813,20 +1091,69 @@ async function copyRankedActionsToLang(ranking: any, lang: LANGUAGES) {
     (a, b) => a.rank - b.rank,
   );
 
+  // Aggregate available languages across all actions
+  const availableLanguagesSet = new Set<string>();
+  for (const action of uniqueActions) {
+    if (action.explanation && typeof action.explanation === 'object') {
+      Object.keys(action.explanation).forEach((lang) =>
+        availableLanguagesSet.add(lang),
+      );
+    }
+  }
+  const availableLanguages = Array.from(availableLanguagesSet).sort();
+  const hasRequestedLang = availableLanguages.includes(lang);
+
   logger.info(
+    {
+      requestedLang: lang,
+      availableLanguages,
+      rankingLangs: ranking.langs,
+      hasRequestedLang,
+      actionCount: uniqueActions.length,
+    },
     `Copying ${uniqueActions.length} unique actions to language ${lang}`,
   );
+
+  if (!hasRequestedLang) {
+    logger.warn(
+      {
+        requestedLang: lang,
+        availableLanguages,
+        rankingId: ranking.id,
+      },
+      `⚠️  Requested language ${lang} not found in existing explanations. ` +
+        `Explanations will only contain: ${availableLanguages.join(", ")}. ` +
+        `Frontend should fall back to an available language.`,
+    );
+  }
 
   const rankedActions = uniqueActions.map((r) => ({
     actionId: r.actionId,
     rank: r.rank,
-    explanation: r.explanation,
+    explanation: r.explanation, // Pass through explanation object with available languages
     type: r.type as ACTION_TYPES,
   }));
 
   // Fetch and merge action details in the requested language
   const mergedRanked = await fetchAndMergeRankedActions(lang, rankedActions);
-  return await saveRankedActionsForLanguage(ranking, mergedRanked, lang);
+  const savedActions = await saveRankedActionsForLanguage(ranking, mergedRanked, lang);
+
+  // Update the ranking's langs array to include the new language
+  const currentLangs = ranking.langs as string[];
+  if (!currentLangs.includes(lang)) {
+    const updatedLangs = [...currentLangs, lang];
+    await ranking.update({ langs: updatedLangs });
+    logger.info(
+      {
+        rankingId: ranking.id,
+        previousLangs: currentLangs,
+        updatedLangs,
+      },
+      "Updated ranking langs array with new language",
+    );
+  }
+
+  return savedActions;
 }
 
 // Helper: Send email to user that the ranking is ready
@@ -898,19 +1225,41 @@ export const fetchRanking = async (
         checkActionRankingJob(ranking, lang, type, user || undefined);
         return { ...ranking.toJSON(), rankedActions: [] };
       } else if (ranking.status === HighImpactActionRankingStatus.SUCCESS) {
-        // Send email to user that the ranking is ready
+        // Ranking exists with SUCCESS status but doesn't have records for this language yet
         logger.info(
-          "Ranking is success, copying actions to requested language",
+          {
+            rankingId: ranking.id,
+            requestedLang: lang,
+            rankingLangs: ranking.langs,
+            locode: ranking.locode,
+          },
+          "Ranking is SUCCESS, copying actions to requested language",
         );
         const newRanked = await copyRankedActionsToLang(ranking, lang);
 
         logger.info(
-          `Copied ${newRanked.length} ranked actions for language ${lang}`,
+          {
+            copiedCount: newRanked.length,
+            lang,
+            sampleAction: newRanked[0]
+              ? {
+                  actionId: newRanked[0].actionId,
+                  rank: newRanked[0].rank,
+                  hasName: !!newRanked[0].name,
+                  hasExplanation: !!newRanked[0].explanation,
+                  explanationKeys: newRanked[0].explanation
+                    ? Object.keys(newRanked[0].explanation)
+                    : [],
+                }
+              : null,
+          },
+          `✅ Copied ${newRanked.length} ranked actions for language ${lang}`,
         );
         return { ...ranking.toJSON(), rankedActions: newRanked };
       } else if (ranking.status === HighImpactActionRankingStatus.FAILURE) {
         logger.info("Ranking is failure, starting new job");
-        return await startActionRankingJob(
+        // start a job for the opposite type
+        await startBothActionRankingJobs(
           inventoryId,
           locode,
           [lang],
@@ -919,7 +1268,7 @@ export const fetchRanking = async (
         );
       }
       logger.info("No ranking found, starting new job");
-      return await startActionRankingJob(
+      return await startBothActionRankingJobs(
         inventoryId,
         locode,
         [lang],
@@ -928,7 +1277,7 @@ export const fetchRanking = async (
       );
     } else {
       logger.info("No ranking found at all, starting new job");
-      return await startActionRankingJob(
+      return await startBothActionRankingJobs(
         inventoryId,
         locode,
         [lang],

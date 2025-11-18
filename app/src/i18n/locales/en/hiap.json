@@ -17,6 +17,8 @@
   "n-a": "N/A",
   "go-back": "Go back",
   "action-description": "Action description",
+  "action-explanation": "Explanation",
+  "no-explanation-available": "No explanation available",
   "adaptation-effectiveness": "Adaptation Effectiveness",
   "adaptation-effectiveness-by-hazard": "Adaptation Effectiveness by Hazard",
   "ranking": "Ranking",
@@ -139,6 +141,7 @@
   "reprioritization-failed": "Reprioritization Failed",
   "reprioritization-failed-description": "Failed to start reprioritization. Please try again.",
   "unknown": "Unknown",
+  "inventory-year": "Inventory Year",
   "implementation-plan": "Implementation plan",
   "pdf": {
     "title": "Climate Action Implementation Plan",

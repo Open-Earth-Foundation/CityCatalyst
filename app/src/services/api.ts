@@ -14,6 +14,7 @@ import {
   AcceptInviteResponse,
   CityAndYearsResponse,
   ConnectDataSourceQuery,
+  CountryEmissionsResponse,
   ConnectDataSourceResponse,
   EmissionsFactorResponse,
   EmissionsForecastData,
@@ -237,6 +238,14 @@ export const api = createApi({
         transformResponse: (response: { data: InventoryProgressResponse }) =>
           response.data,
         providesTags: ["InventoryProgress"],
+      }),
+      getInventoryCountryEmissions: builder.query<
+        CountryEmissionsResponse,
+        string
+      >({
+        query: (inventoryId) => `inventory/${inventoryId}/country-emissions`,
+        transformResponse: (response: { data: CountryEmissionsResponse }) =>
+          response.data,
       }),
       addCity: builder.mutation<
         CityAttributes,
@@ -1215,11 +1224,12 @@ export const api = createApi({
         providesTags: ["HiapJobs"],
       }),
       retryFailedHiapBatches: builder.mutation<
-        { retriedCount: number },
+        { retriedCount: number; excludedCount: number },
         {
           projectId: string;
           actionType: ACTION_TYPES;
           jobIds?: string[];
+          excludedCityLocodes?: string[];
         }
       >({
         query: (data) => ({
@@ -1227,7 +1237,25 @@ export const api = createApi({
           method: "PATCH",
           body: data,
         }),
-        transformResponse: (response: { data: { retriedCount: number } }) =>
+        transformResponse: (response: {
+          data: { retriedCount: number; excludedCount: number };
+        }) => response.data,
+        invalidatesTags: ["HiapJobs"],
+      }),
+      unexcludeCities: builder.mutation<
+        { unexcludedCount: number },
+        {
+          projectId: string;
+          actionType: ACTION_TYPES;
+          cityLocodes: string[];
+        }
+      >({
+        query: (data) => ({
+          url: `/admin/bulk-hiap-prioritization`,
+          method: "PUT",
+          body: data,
+        }),
+        transformResponse: (response: { data: { unexcludedCount: number } }) =>
           response.data,
         invalidatesTags: ["HiapJobs"],
       }),
@@ -1842,6 +1870,7 @@ export const {
   useStartBulkHiapPrioritizationMutation,
   useGetBulkHiapBatchStatusQuery,
   useRetryFailedHiapBatchesMutation,
+  useUnexcludeCitiesMutation,
   useGetProjectUsersQuery,
   useGetUserAccessStatusQuery,
   useGetAllCitiesInSystemQuery,

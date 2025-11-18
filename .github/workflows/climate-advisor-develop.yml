@@ -6,6 +6,17 @@ permissions:
   checks: write
 on:
   workflow_dispatch:
+  pull_request:
+    branches: ["develop"]
+    paths:
+      - climate-advisor/service/**
+      - climate-advisor/llm_config.yaml
+      - climate-advisor/prompts/**
+      - k8s/climate-advisor-deploy.yml
+      - k8s/climate-advisor-migrate.yml
+      - k8s/climate-advisor-service.yml
+      - k8s/climate-advisor-db-configmap.yml
+      - .github/workflows/climate-advisor-develop.yml
   push:
     paths:
       - climate-advisor/service/**
@@ -18,9 +29,89 @@ on:
       - .github/workflows/climate-advisor-develop.yml
     branches: ["develop"]
 jobs:
-  # Skipping tests no tests available for climate advisor yet
+  test:
+    runs-on: ubuntu-latest
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY_CLIMATE_ADVISOR }}
+      CA_LOG_LEVEL: debug
+      CA_CORS_ORIGINS: "*"
+      CC_BASE_URL: http://localhost:3000
+      CA_DATABASE_URL: "sqlite+aiosqlite:///:memory:"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-climate-advisor-${{ hashFiles('climate-advisor/service/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-climate-advisor-
+
+      - name: Install dependencies
+        working-directory: climate-advisor/service
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio pytest-cov coverage
+
+      - name: Run unit tests
+        working-directory: climate-advisor/service
+        run: |
+          pytest tests/test_cc_inventory_tool.py \
+                 tests/test_citycatalyst_client.py \
+                 tests/test_rag_tool.py \
+                 tests/test_user_identity.py \
+                 tests/test_document_embedding_model.py \
+                 --junit-xml=test-results-unit.xml \
+                 -v --tb=short --color=yes
+
+      - name: Run TIER 1 critical tests
+        working-directory: climate-advisor/service
+        run: |
+          pytest tests/test_api_routes.py \
+                 tests/test_agent_service.py \
+                 tests/test_e2e_conversation.py \
+                 --junit-xml=test-results-tier1.xml \
+                 -v --tb=short --color=yes
+
+      - name: Generate test coverage report
+        working-directory: climate-advisor/service
+        run: |
+          pytest tests/ \
+                 --cov=app \
+                 --cov-report=html \
+                 --cov-report=term-missing \
+                 --cov-report=xml \
+                 -v || true
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./climate-advisor/service/coverage.xml
+          flags: climate-advisor
+          name: climate-advisor-coverage
+          fail_ci_if_error: false
+
+      - name: Test report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Climate Advisor Test Results
+          path: "climate-advisor/service/test-results-*.xml"
+          reporter: "java-junit"
+          fail-on-error: false
+
   pushToGHCR:
-    # needs: runTests  # Commented out since we're skipping tests
+    needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop'
     steps:

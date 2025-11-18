@@ -22,10 +22,21 @@ class ThreadService:
         self.session = session
 
     async def create_thread(
-        self, payload: ThreadCreateRequest, *, thread_id: Optional[str] = None
+        self, payload: ThreadCreateRequest, *, thread_id: Optional[Union[str, UUID]] = None
     ) -> Thread:
+        if thread_id is None:
+            thread_uuid = uuid4()
+        elif isinstance(thread_id, UUID):
+            thread_uuid = thread_id
+        else:
+            try:
+                thread_uuid = UUID(str(thread_id))
+            except ValueError as exc:
+                logger.error("Failed to create thread due to invalid UUID: %s", thread_id)
+                raise ValueError(str(exc))
+
         thread = Thread(
-            thread_id=thread_id or uuid4(),
+            thread_id=thread_uuid,
             user_id=payload.user_id,
             inventory_id=payload.inventory_id,
             context=payload.context,

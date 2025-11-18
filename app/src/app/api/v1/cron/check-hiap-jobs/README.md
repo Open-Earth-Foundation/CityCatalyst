@@ -40,7 +40,12 @@ For each unique jobId:
   → If "pending": Do nothing, check again next minute
   → If "completed": Save results → PENDING → SUCCESS
   → If "failed": Mark as FAILURE with error message
+  → If error (404, timeout, etc): Mark as FAILURE to unblock queue
 ```
+
+**Critical:** When HIAP API throws an error (404 Task Not Found, timeout, etc.), 
+the cron job marks all PENDING rankings with that jobId as FAILURE. This prevents 
+stuck jobs from blocking the entire queue indefinitely.
 
 ### Step 2: Start Next Batch (if idle)
 ```

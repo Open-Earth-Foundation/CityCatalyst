@@ -9,6 +9,8 @@ import {
   Table,
   VStack,
   HStack,
+  CheckboxGroup,
+  Checkbox,
 } from "@chakra-ui/react";
 import {
   AccordionItem,
@@ -20,7 +22,6 @@ import { TFunction } from "i18next";
 import React, { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { logger } from "@/services/logger";
 import {
   BodyLarge,
@@ -35,12 +36,15 @@ import {
   useStartBulkHiapPrioritizationMutation,
   useGetBulkHiapBatchStatusQuery,
   useRetryFailedHiapBatchesMutation,
+  useUnexcludeCitiesMutation,
 } from "@/services/api";
 import {
   ACTION_TYPES,
   HighImpactActionRankingStatus,
   LANGUAGES,
 } from "@/util/types";
+import { Checkbox as CCCheckbox } from "@/components/ui/checkbox";
+
 
 interface BulkHiapPrioritizationTabContentProps {
   t: TFunction;
@@ -62,7 +66,7 @@ const BulkHiapPrioritizationTabContent: FC<
       defaultValues: {
         year: new Date().getFullYear(),
         actionType: ACTION_TYPES.Mitigation,
-        languages: [LANGUAGES.en, LANGUAGES.pt],
+        languages: [],
       },
     });
 
@@ -79,8 +83,24 @@ const BulkHiapPrioritizationTabContent: FC<
   const selectedActionType = watch("actionType");
   const selectedLanguages = watch("languages") || [];
 
+  // Handler for individual language checkbox changes
+  const handleLanguageToggle = (
+    language: LANGUAGES,
+    checked: string | boolean,
+  ) => {
+    const newLanguages = Boolean(checked)
+      ? [...selectedLanguages, language]
+      : selectedLanguages.filter((l) => l !== language);
+    setValue("languages", newLanguages);
+  };
+
   // State for batch selection (for selective retry)
   const [selectedBatchJobIds, setSelectedBatchJobIds] = useState<Set<string>>(
+    new Set(),
+  );
+
+  // State for city exclusion (to exclude problematic cities from retry)
+  const [excludedCityLocodes, setExcludedCityLocodes] = useState<Set<string>>(
     new Set(),
   );
 
@@ -142,6 +162,10 @@ const BulkHiapPrioritizationTabContent: FC<
   // Retry mutation hook
   const [retryFailedBatches, { isLoading: isRetrying }] =
     useRetryFailedHiapBatchesMutation();
+
+  // Un-exclude mutation hook
+  const [unexcludeCities, { isLoading: isUnexcluding }] =
+    useUnexcludeCitiesMutation();
 
   const showToast = (
     title: string,
@@ -213,24 +237,37 @@ const BulkHiapPrioritizationTabContent: FC<
       return;
     }
 
-    showToast("retrying-batch", "resetting-failed-cities", "info", null);
+    const excludedLocodes = Array.from(excludedCityLocodes);
+    const hasExclusions = excludedLocodes.length > 0;
+
+    showToast(
+      "retrying-batch",
+      hasExclusions
+        ? `Resetting failed cities (excluding ${excludedLocodes.length} cities)`
+        : "resetting-failed-cities",
+      "info",
+      null,
+    );
 
     try {
       const result = await retryFailedBatches({
         projectId: selectedProjectId,
         actionType: selectedActionType as ACTION_TYPES,
         jobIds: jobIds,
+        excludedCityLocodes:
+          excludedLocodes.length > 0 ? excludedLocodes : undefined,
       }).unwrap();
 
-      showToast(
-        "retry-successful",
-        `${result.retriedCount} cities reset for retry`,
-        "success",
-        5000,
-      );
+      const message =
+        result.excludedCount > 0
+          ? `${result.retriedCount} cities reset for retry, ${result.excludedCount} cities excluded`
+          : `${result.retriedCount} cities reset for retry`;
 
-      // Clear selection after successful retry
+      showToast("retry-successful", message, "success", 6000);
+
+      // Clear selections after successful retry
       setSelectedBatchJobIds(new Set());
+      setExcludedCityLocodes(new Set());
 
       // Refetch batch status
       refetchBatchStatus();
@@ -272,6 +309,22 @@ const BulkHiapPrioritizationTabContent: FC<
     setSelectedBatchJobIds(new Set());
   };
 
+  const handleToggleCityExclusion = (locode: string) => {
+    setExcludedCityLocodes((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(locode)) {
+        newSet.delete(locode);
+      } else {
+        newSet.add(locode);
+      }
+      return newSet;
+    });
+  };
+
+  const handleClearExclusions = () => {
+    setExcludedCityLocodes(new Set());
+  };
+
   const handleRetrySelected = async () => {
     if (selectedBatchJobIds.size === 0) {
       showToast(
@@ -286,6 +339,45 @@ const BulkHiapPrioritizationTabContent: FC<
     await handleRetryBatch(Array.from(selectedBatchJobIds));
   };
 
+  const handleUnexcludeCities = async (cityLocodes: string[]) => {
+    if (!selectedProjectId || cityLocodes.length === 0) {
+      return;
+    }
+
+    showToast(
+      "unexcluding-cities",
+      `Moving ${cityLocodes.length} ${cityLocodes.length === 1 ? "city" : "cities"} back to TO_DO`,
+      "info",
+      null,
+    );
+
+    try {
+      const result = await unexcludeCities({
+        projectId: selectedProjectId,
+        actionType: selectedActionType as ACTION_TYPES,
+        cityLocodes,
+      }).unwrap();
+
+      showToast(
+        "unexclude-successful",
+        `${result.unexcludedCount} ${result.unexcludedCount === 1 ? "city" : "cities"} moved back to TO_DO`,
+        "success",
+        5000,
+      );
+
+      // Refetch batch status
+      refetchBatchStatus();
+    } catch (error) {
+      logger.error(`Un-exclude failed: ${error}`);
+      showToast(
+        "unexclude-failed",
+        "Failed to un-exclude cities",
+        "error",
+        5000,
+      );
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case HighImpactActionRankingStatus.SUCCESS:
@@ -296,6 +388,8 @@ const BulkHiapPrioritizationTabContent: FC<
         return "blue.600";
       case HighImpactActionRankingStatus.TO_DO:
         return "gray.600";
+      case HighImpactActionRankingStatus.EXCLUDED:
+        return "orange.600";
       default:
         return "gray.500";
     }
@@ -422,29 +516,29 @@ const BulkHiapPrioritizationTabContent: FC<
               </NativeSelect.Root>
             </FieldRoot>
 
-            <FieldRoot>
+            <Box>
               <LabelMedium mb="8px">{t("languages")}</LabelMedium>
               <BodySmall color="content.tertiary" mb="12px">
                 {t("select-languages-for-climate-actions")}
               </BodySmall>
               <VStack align="flex-start" gap="8px">
-                {Object.values(LANGUAGES).map((lang) => (
-                  <Checkbox
+                {Object.values(LANGUAGES).map((lang, index) => (
+                  <Checkbox.Root
                     key={lang}
                     checked={selectedLanguages.includes(lang)}
                     onCheckedChange={(e) => {
-                      const checked = e.checked;
-                      const newLanguages = checked
-                        ? [...selectedLanguages, lang]
-                        : selectedLanguages.filter((l) => l !== lang);
-                      setValue("languages", newLanguages);
+                      handleLanguageToggle(lang, e.checked as boolean);
                     }}
                   >
-                    <BodyMedium>{lang}</BodyMedium>
-                  </Checkbox>
+                    <Checkbox.HiddenInput />
+                    <Checkbox.Control>
+                      <Checkbox.Indicator />
+                    </Checkbox.Control>
+                    <Checkbox.Label>{lang}</Checkbox.Label>
+                  </Checkbox.Root>
                 ))}
               </VStack>
-            </FieldRoot>
+            </Box>
           </Fieldset.Content>
 
           <BodyMedium color="semantic.danger">{errorMessage}</BodyMedium>
@@ -452,66 +546,109 @@ const BulkHiapPrioritizationTabContent: FC<
           {/* Batch Status Accordion */}
           {selectedProjectId && selectedActionType && (
             <Box mt="32px">
-              <HStack justify="space-between" mb="16px">
-                <Heading
-                  fontSize="title.sm"
-                  fontWeight="semibold"
-                  color="content.secondary"
-                >
-                  {t("hiap-prioritization-batches")}
-                </Heading>
-                {batchStatusData?.batches &&
-                  batchStatusData.batches.some((b) =>
-                    b.cities.some(
-                      (c) => c.status === HighImpactActionRankingStatus.FAILURE,
-                    ),
-                  ) && (
-                    <HStack gap="8px">
-                      {selectedBatchJobIds.size > 0 && (
-                        <>
-                          <BodySmall color="content.tertiary">
-                            {selectedBatchJobIds.size} {t("selected")}
-                          </BodySmall>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={handleDeselectAll}
-                          >
-                            {t("deselect-all")}
-                          </Button>
-                          <Button
-                            size="sm"
-                            colorPalette="red"
-                            onClick={handleRetrySelected}
-                            loading={isRetrying}
-                          >
-                            {t("retry-selected")}
-                          </Button>
-                        </>
-                      )}
-                      {selectedBatchJobIds.size === 0 && (
-                        <>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={handleSelectAllFailedBatches}
-                          >
-                            {t("select-all-failed")}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            colorPalette="red"
-                            onClick={() => handleRetryBatch(undefined)}
-                            loading={isRetrying}
-                          >
-                            {t("retry-all-failed-batches")}
-                          </Button>
-                        </>
-                      )}
-                    </HStack>
-                  )}
-              </HStack>
+              <VStack align="stretch" mb="16px" gap="12px">
+                <HStack justify="space-between">
+                  <Heading
+                    fontSize="title.sm"
+                    fontWeight="semibold"
+                    color="content.secondary"
+                  >
+                    {t("hiap-prioritization-batches")}
+                  </Heading>
+                  {batchStatusData?.batches &&
+                    batchStatusData.batches.some((b) =>
+                      b.cities.some(
+                        (c) =>
+                          c.status === HighImpactActionRankingStatus.FAILURE,
+                      ),
+                    ) && (
+                      <HStack gap="8px">
+                        {selectedBatchJobIds.size > 0 && (
+                          <>
+                            <BodySmall color="content.tertiary">
+                              {selectedBatchJobIds.size} {t("selected")}
+                            </BodySmall>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={handleDeselectAll}
+                            >
+                              {t("deselect-all")}
+                            </Button>
+                            <Button
+                              size="sm"
+                              colorPalette="red"
+                              onClick={handleRetrySelected}
+                              loading={isRetrying}
+                            >
+                              {t("retry-selected")}
+                            </Button>
+                          </>
+                        )}
+                        {selectedBatchJobIds.size === 0 && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={handleSelectAllFailedBatches}
+                            >
+                              {t("select-all-failed")}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              colorPalette="red"
+                              onClick={() => handleRetryBatch(undefined)}
+                              loading={isRetrying}
+                            >
+                              {t("retry-all-failed-batches")}
+                            </Button>
+                          </>
+                        )}
+                      </HStack>
+                    )}
+                </HStack>
+                {batchStatusData?.batches?.some((b) =>
+                  b.cities.some(
+                    (c) => c.status === HighImpactActionRankingStatus.FAILURE,
+                  ),
+                ) && (
+                  <Box
+                    p="12px"
+                    bg="background.neutral"
+                    borderRadius="md"
+                    borderLeft="4px solid"
+                    borderColor="semantic.info"
+                  >
+                    <BodySmall color="content.primary">
+                      {t("tip-expand-batch-to-exclude-cities")}
+                    </BodySmall>
+                  </Box>
+                )}
+                {excludedCityLocodes.size > 0 && (
+                  <HStack
+                    p="12px"
+                    bg="semantic.warningOverlay"
+                    borderRadius="md"
+                    justify="space-between"
+                  >
+                    <BodySmall color="semantic.warning">
+                      {t("cities-excluded-warning", {
+                        count: excludedCityLocodes.size,
+                        cities: Array.from(excludedCityLocodes).join(", "),
+                      })}
+                    </BodySmall>
+                    <Button
+                      size="xs"
+                      variant="ghost"
+                      colorPalette="orange"
+                      onClick={handleClearExclusions}
+                    >
+                      {t("clear-exclusions")}
+                    </Button>
+                  </HStack>
+                )}
+              </VStack>
 
               {isLoadingBatches ? (
                 <BodyMedium color="content.tertiary">
@@ -553,7 +690,12 @@ const BulkHiapPrioritizationTabContent: FC<
                                     }
                                   }}
                                 >
-                                  <Checkbox checked={isSelected} />
+                                  <Checkbox.Root checked={isSelected}>
+                                    <Checkbox.HiddenInput />
+                                    <Checkbox.Control>
+                                      <Checkbox.Indicator />
+                                    </Checkbox.Control>
+                                  </Checkbox.Root>
                                 </Box>
                               )}
                               <BodyMedium fontWeight="semibold">
@@ -582,25 +724,75 @@ const BulkHiapPrioritizationTabContent: FC<
                         </AccordionItemTrigger>
                         <AccordionItemContent>
                           <Box p="16px" bg="bg.muted" borderRadius="md">
-                            {hasFailures && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                colorPalette="red"
-                                mb="16px"
-                                onClick={() =>
-                                  handleRetryBatch(
-                                    batch.jobId ? [batch.jobId] : undefined,
-                                  )
-                                }
-                                loading={isRetrying}
-                              >
-                                {t("retry-this-batch")}
-                              </Button>
+                            {(hasFailures ||
+                              batch.cities.some(
+                                (c) =>
+                                  c.status ===
+                                  HighImpactActionRankingStatus.EXCLUDED,
+                              )) && (
+                              <HStack gap="8px" mb="16px">
+                                {hasFailures && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    colorPalette="red"
+                                    onClick={() =>
+                                      handleRetryBatch(
+                                        batch.jobId ? [batch.jobId] : undefined,
+                                      )
+                                    }
+                                    loading={isRetrying}
+                                  >
+                                    {t("retry-this-batch")}
+                                  </Button>
+                                )}
+                                {batch.cities.some(
+                                  (c) =>
+                                    c.status ===
+                                    HighImpactActionRankingStatus.EXCLUDED,
+                                ) && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    colorPalette="orange"
+                                    onClick={() =>
+                                      handleUnexcludeCities(
+                                        batch.cities
+                                          .filter(
+                                            (c) =>
+                                              c.status ===
+                                              HighImpactActionRankingStatus.EXCLUDED,
+                                          )
+                                          .map((c) => c.locode),
+                                      )
+                                    }
+                                    loading={isUnexcluding}
+                                  >
+                                    {t("unexclude-cities", {
+                                      count: batch.cities.filter(
+                                        (c) =>
+                                          c.status ===
+                                          HighImpactActionRankingStatus.EXCLUDED,
+                                      ).length,
+                                    })}
+                                  </Button>
+                                )}
+                              </HStack>
                             )}
                             <Table.Root size="sm">
                               <Table.Header>
                                 <Table.Row>
+                                  {hasFailures && (
+                                    <Table.ColumnHeader width="90px">
+                                      <Box
+                                        title={t(
+                                          "check-cities-to-exclude-tooltip",
+                                        )}
+                                      >
+                                        {t("exclude-column-header")}
+                                      </Box>
+                                    </Table.ColumnHeader>
+                                  )}
                                   <Table.ColumnHeader>
                                     {t("city-locode")}
                                   </Table.ColumnHeader>
@@ -613,33 +805,66 @@ const BulkHiapPrioritizationTabContent: FC<
                                 </Table.Row>
                               </Table.Header>
                               <Table.Body>
-                                {batch.cities.map((city) => (
-                                  <Table.Row key={city.inventoryId}>
-                                    <Table.Cell>
-                                      <BodyMedium fontWeight="medium">
-                                        {city.locode}
-                                      </BodyMedium>
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                      <BodyMedium
-                                        color={getStatusColor(city.status)}
-                                      >
-                                        {city.status}
-                                      </BodyMedium>
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                      {city.errorMessage ? (
-                                        <BodySmall color="semantic.danger">
-                                          {city.errorMessage}
-                                        </BodySmall>
-                                      ) : (
-                                        <BodySmall color="content.tertiary">
-                                          -
-                                        </BodySmall>
+                                {batch.cities.map((city) => {
+                                  const isFailedCity =
+                                    city.status ===
+                                    HighImpactActionRankingStatus.FAILURE;
+                                  const isExcludedCity =
+                                    city.status ===
+                                    HighImpactActionRankingStatus.EXCLUDED;
+                                  const isMarkedForExclusion =
+                                    excludedCityLocodes.has(city.locode);
+
+                                  return (
+                                    <Table.Row
+                                      key={city.inventoryId}
+                                      bg={
+                                        isMarkedForExclusion || isExcludedCity
+                                          ? "semantic.warningOverlay"
+                                          : undefined
+                                      }
+                                    >
+                                      {hasFailures && (
+                                        <Table.Cell>
+                                          {isFailedCity && (
+                                            <CCCheckbox
+                                              checked={isMarkedForExclusion}
+                                              onCheckedChange={() =>
+                                                handleToggleCityExclusion(
+                                                  city.locode,
+                                                )
+                                              }
+                                              colorPalette="orange"
+                                            />
+                                          )}
+                                        </Table.Cell>
                                       )}
-                                    </Table.Cell>
-                                  </Table.Row>
-                                ))}
+                                      <Table.Cell>
+                                        <BodyMedium fontWeight="medium">
+                                          {city.locode}
+                                        </BodyMedium>
+                                      </Table.Cell>
+                                      <Table.Cell>
+                                        <BodyMedium
+                                          color={getStatusColor(city.status)}
+                                        >
+                                          {city.status}
+                                        </BodyMedium>
+                                      </Table.Cell>
+                                      <Table.Cell>
+                                        {city.errorMessage ? (
+                                          <BodySmall color="semantic.danger">
+                                            {city.errorMessage}
+                                          </BodySmall>
+                                        ) : (
+                                          <BodySmall color="content.tertiary">
+                                            -
+                                          </BodySmall>
+                                        )}
+                                      </Table.Cell>
+                                    </Table.Row>
+                                  );
+                                })}
                               </Table.Body>
                             </Table.Root>
                           </Box>

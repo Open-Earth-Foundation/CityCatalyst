@@ -9,6 +9,7 @@ import {
 import { checkBulkActionRankingJob } from "@/backend/hiap/HiapService";
 import { BulkHiapPrioritizationService } from "@/backend/hiap/BulkHiapPrioritizationService";
 import { Op, QueryTypes } from "sequelize";
+import { checkSingleActionRankingJob } from "@/backend/hiap/HiapService";
 
 /**
  * Cron job endpoint to check HIAP job statuses and start next batches
@@ -22,11 +23,11 @@ import { Op, QueryTypes } from "sequelize";
  * 3. If ANY PENDING jobs exist, skip batch starting (wait for completion)
  * 
  * SECURITY: This endpoint is protected at the network level via Ingress.
- * The ingress blocks /api/cron/* paths from external access (see k8s/cc-ingress.yml).
+ * The ingress explicitly blocks both /api/cron/* and /api/v1/cron/* paths from external access (see k8s/cc-ingress.yml).
  * Only internal Kubernetes services can call this endpoint.
  * 
  * @swagger
- * /api/cron/check-hiap-jobs:
+ * /api/v1/cron/check-hiap-jobs:
  *   get:
  *     tags:
  *       - Cron
@@ -70,12 +71,14 @@ export async function GET() {
       jobId: string;
       type: ACTION_TYPES;
       langs: string[];
+      isBulk: boolean;
     }>(
       `
       SELECT DISTINCT ON ("job_id", "type") 
         "job_id" as "jobId",
         "type",
-        "langs"
+        "langs",
+        "is_bulk" as "isBulk"
       FROM "public"."HighImpactActionRanking"
       WHERE "status" = :status
         AND "job_id" IS NOT NULL
@@ -98,11 +101,19 @@ export async function GET() {
     for (const job of pendingJobs) {
       try {
         const lang = (job.langs as any)[0] as LANGUAGES; // Get first language from array
-        const isComplete = await checkBulkActionRankingJob(
-          job.jobId,
-          lang,
-          job.type as ACTION_TYPES,
-        );
+
+        // Call appropriate function based on job type
+        const isComplete = job.isBulk
+          ? await checkBulkActionRankingJob(
+              job.jobId,
+              lang,
+              job.type as ACTION_TYPES,
+            )
+          : await checkSingleActionRankingJob(
+              job.jobId,
+              lang,
+              job.type as ACTION_TYPES,
+            );
 
         if (isComplete) {
           completedJobs++;
@@ -153,8 +164,36 @@ export async function GET() {
       } catch (error: any) {
         logger.error(
           { jobId: job.jobId, error: error.message },
-          "Error checking/processing HIAP job",
+          "Error checking/processing HIAP job - marking as FAILURE",
         );
+
+        // Mark all rankings with this jobId as FAILURE to unblock the queue
+        try {
+          await db.models.HighImpactActionRanking.update(
+            {
+              status: HighImpactActionRankingStatus.FAILURE,
+              errorMessage: `Job check failed: ${error.message}`,
+            },
+            {
+              where: {
+                jobId: job.jobId,
+                status: HighImpactActionRankingStatus.PENDING,
+              },
+            },
+          );
+
+          logger.info(
+            { jobId: job.jobId },
+            "Marked PENDING rankings as FAILURE due to job check error",
+          );
+          completedJobs++;
+        } catch (updateError: any) {
+          logger.error(
+            { jobId: job.jobId, error: updateError.message },
+            "Failed to mark rankings as FAILURE",
+          );
+        }
+        
         // Continue with other jobs even if one fails
       }
     }

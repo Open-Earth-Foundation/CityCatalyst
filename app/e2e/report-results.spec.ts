@@ -6,8 +6,6 @@ import {
   navigateToGHGIModule,
 } from "./helpers";
 
-const subSectorId = "abe4c7b0-242d-3ed2-a146-48885d6fb38d";
-
 test.describe("Report Results", () => {
   test.setTimeout(120000);
   // before each test, create a city and inventory

@@ -282,7 +282,7 @@ export async function navigateToGHGIModule(page: Page) {
     "module-launch-077690c6-6fa3-44e1-84b7-6d758a6a4d88",
   );
   await page.waitForLoadState("networkidle");
-  await moduleButton.waitFor({ state: 'visible' });
+  await moduleButton.waitFor({ state: "visible" });
   await moduleButton.click();
 
   await page.waitForLoadState("networkidle");
@@ -300,4 +300,18 @@ export async function navigateToGHGIModule(page: Page) {
       await page.waitForLoadState("networkidle");
     }
   }
+}
+
+export async function navigateToDashboard(page: Page, cityId: string) {
+  await page.goto(`/en/cities/${cityId}/dashboard`);
+  await page.waitForLoadState("networkidle");
+}
+
+export async function navigateToDataPage(
+  page: Page,
+  cityId: string,
+  inventoryId: string,
+) {
+  await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/data/`);
+  await page.waitForLoadState("networkidle");
 }

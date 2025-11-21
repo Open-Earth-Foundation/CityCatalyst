@@ -101,7 +101,14 @@ export function SegmentedProgress({
         {shownValues.map((value, i) => (
           <Box
             key={i}
-            backgroundColor={value.color}
+            backgroundColor={
+              colors[i] === "striped" ? "transparent" : value.color
+            }
+            backgroundImage={
+              colors[i] === "striped"
+                ? "repeating-linear-gradient(45deg, #C5CBF5, #C5CBF5 4px, transparent 4px, transparent 8px)"
+                : undefined
+            }
             h={height}
             w={`${(100 * value.percentage) / max}%`}
             borderStartRadius={i === 0 ? "10px" : undefined}

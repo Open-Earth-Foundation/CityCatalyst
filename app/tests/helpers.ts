@@ -27,11 +27,15 @@ export function createRequest(url: string, body?: any) {
 export function mockRequest(
   body?: any,
   searchParams?: Record<string, string>,
+  headers?: Record<string, string>,
 ): NextRequest {
   const request = new NextRequest(new URL(mockUrl));
   request.json = mock.fn(() => Promise.resolve(body));
   for (const param in searchParams) {
     request.nextUrl.searchParams.append(param, searchParams[param]);
+  }
+  for (const header in headers) {
+    request.headers.append(header, headers[header]);
   }
   return request;
 }

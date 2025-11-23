@@ -232,18 +232,40 @@ CC_BASE_URL=http://localhost:3000
 docker run --name ca-postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=postgres \
   -p 5432:5432 -d postgres:15
 
+# Fixed commands (check for user)
+# give hint on actual docker name container E.g. bold_buck random name
+docker exec -i bold_buck psql -U citycatalyst -d postgres -v ON_ERROR_STOP=1 -c "CREATE USER climateadvisor WITH PASSWORD 'climateadvisor';"
+
+docker exec -i bold_buck psql -U citycatalyst -d postgres -v ON_ERROR_STOP=1 -c "CREATE DATABASE climateadvisor OWNER climateadvisor;"
+
+docker exec -i bold_buck psql -U citycatalyst -d postgres -v ON_ERROR_STOP=1 -c "GRANT ALL PRIVILEGES ON DATABASE climateadvisor TO climateadvisor;"
+
+docker exec -i bold_buck psql -U citycatalyst -d postgres -v ON_ERROR_STOP=1 -c "ALTER USER climateadvisor CREATEDB;"
+
 # Setup database and user
-docker exec -i ca-postgres psql -U postgres -d postgres << EOF
+docker exec -i ca-postgres psql -U postgres -d postgres
 CREATE USER climateadvisor WITH PASSWORD 'climateadvisor';
 CREATE DATABASE climateadvisor OWNER climateadvisor;
 GRANT ALL PRIVILEGES ON DATABASE climateadvisor TO climateadvisor;
 ALTER USER climateadvisor CREATEDB;
-EOF
 
 # Install pgvector extension
 docker exec ca-postgres apt update
 docker exec ca-postgres apt install -y postgresql-15-pgvector
 docker exec ca-postgres psql -U postgres -d climateadvisor -c "CREATE EXTENSION IF NOT EXISTS vector;"
+```
+
+```
+TODO: add comments for docker exec bold_buck sh -lc "apt-get update && apt-get install
+
+docker exec bold_buck sh -lc "apt-get update && apt-get install -y postgresql-16-pgvector"
+docker exec bold_buck sh -lc "ls /usr/share/postgresql/16/extension/vector.control"
+docker exec -i bold_buck psql -U citycatalyst -d climateadvisor -c "CREATE EXTENSION IF NOT EXISTS vector;"
+
+
+on windows:
+TODO: Create additional key in .env for database setup
+CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5432/climateadvisor
 ```
 
 ### 4. Install Dependencies & Setup Database
@@ -263,6 +285,12 @@ python scripts/setup_database.py
 cd climate-advisor/service
 uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 ```
+
+TODO: instead of uvicorn chanfe config to use docker container here
+
+something like this:
+docker build -t hiap-app .
+docker run -it --rm -p 8000:8000 --env-file .env hiap-app
 
 ### 6. Verify Setup
 

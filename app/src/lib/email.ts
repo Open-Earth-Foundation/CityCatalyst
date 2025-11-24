@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import { createTransport } from "nodemailer";
 import { logger } from "@/services/logger";
 
 type EmailPayload = {
@@ -43,7 +43,7 @@ export const sendEmail = async (data: EmailPayload) => {
       `SMTP password length: ${smtpOptions.auth.pass?.length} characters`,
     );
 
-    const transporter = nodemailer.createTransport({
+    const transporter = createTransport({
       ...smtpOptions,
     });
 

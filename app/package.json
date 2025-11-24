@@ -146,6 +146,7 @@
     "sequelize-cli": "^6.6.2",
     "storybook": "^8.2.7",
     "ts-jest": "^29.4.1",
+    "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "5.8.3"
   },

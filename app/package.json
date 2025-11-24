@@ -74,6 +74,7 @@
     "fetch-blob": "^4.0.0",
     "framer-motion": "^12.12.1",
     "fuse.js": "^7.1.0",
+    "geojson": "^0.5.0",
     "http-errors": "^2.0.0",
     "i18next": "^25.5.2",
     "i18next-browser-languagedetector": "^8.1.0",

@@ -271,10 +271,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
                   justifyContent="space-between"
                 >
                   <Box display="flex" alignItems="center" gap={2}>
-                    <Box
-                      boxSize="4"
-                      style={{ backgroundColor: segment.color }}
-                    ></Box>
+                    <Box boxSize="4" bgColor={segment.color}></Box>
                     <Text
                       fontSize="body.md"
                       textAlign="left"

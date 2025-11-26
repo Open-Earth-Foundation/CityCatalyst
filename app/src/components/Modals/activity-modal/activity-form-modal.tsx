@@ -17,6 +17,7 @@ import useActivityForm, {
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import useEmissionFactors from "@/hooks/activity-value-form/use-emission-factors";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import { trackEvent } from "@/lib/analytics";
 import {
   DialogBackdrop,
   DialogCloseTrigger,
@@ -243,6 +244,14 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     }
 
     if (response.data) {
+      // Track successful activity data submission
+      trackEvent("activity_data_submitted", {
+        action: edit ? "update" : "create",
+        methodology_id: methodology?.id,
+        reference_number: referenceNumber,
+        inventory_id: inventoryId,
+      });
+      
       setHasActivityData(!hasActivityData);
       showSuccessToast();
       reset();

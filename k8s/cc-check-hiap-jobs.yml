@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: citycatalyst-check-hiap-jobs
+  namespace: default
+spec:
+  # Run every minute
+  schedule: "* * * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid # Prevent overlapping runs
+  jobTemplate:
+    spec:
+      backoffLimit: 2 # Retry twice on failure
+      template:
+        metadata:
+          labels:
+            app: citycatalyst-cron
+            job: check-hiap-jobs
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: check-hiap-jobs
+              image: curlimages/curl:latest
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "Checking HIAP jobs at $(date)"
+                  curl -f -L -X GET http://cc-web:3000/api/v1/cron/check-hiap-jobs
+                  EXIT_CODE=$?
+                  if [ $EXIT_CODE -eq 0 ]; then
+                    echo "Cron job completed successfully"
+                  else
+                    echo "Cron job failed with exit code $EXIT_CODE"
+                    exit $EXIT_CODE
+                  fi
+

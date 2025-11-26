@@ -10,6 +10,7 @@ export enum FeatureFlags {
   ANALYTICS_ENABLED = "ANALYTICS_ENABLED",
   CCRA_MODULE = "CCRA_MODULE",
   CA_SERVICE_INTEGRATION = "CA_SERVICE_INTEGRATION",
+  HIGHLIGHT_ENABLED = "HIGHLIGHT_ENABLED",
 }
 
 const QA_FLAGS_STORAGE_KEY = "qa_feature_flags";
@@ -25,10 +26,10 @@ export function getFeatureFlags(): string[] {
 
   if (flags) {
     // Remove wrapping quotes and split, then clean each flag
-    const cleanFlags = flags.replace(/^["']|["']$/g, '');
+    const cleanFlags = flags.replace(/^["']|["']$/g, "");
     cachedFeatureFlags = cleanFlags
       .split(",")
-      .map((flag) => flag.trim().replace(/^["']|["']$/g, ''))
+      .map((flag) => flag.trim().replace(/^["']|["']$/g, ""))
       .filter((flag) => flag.length > 0);
   } else {
     cachedFeatureFlags = [];

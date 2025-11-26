@@ -135,18 +135,22 @@ export default class InventoryProgressService {
         (inventoryValue) => sector.sectorId === inventoryValue.sectorId,
       );
 
-      let sectorCounts = { thirdParty: 0, uploaded: 0 };
+      let sectorCounts = { thirdParty: 0, uploaded: 0, reasonNE: 0, reasonNO: 0 };
       if (inventoryValues) {
         sectorCounts = inventoryValues.reduce(
           (acc, inventoryValue) => {
             if (inventoryValue.dataSource) {
               acc.thirdParty++;
+            } else if (inventoryValue.unavailableReason === "reason-NE") {
+              acc.reasonNE++;
+            } else if (inventoryValue.unavailableReason === "reason-NO") {
+              acc.reasonNO++;
             } else {
               acc.uploaded++;
             }
             return acc;
           },
-          { thirdParty: 0, uploaded: 0 },
+          { thirdParty: 0, uploaded: 0, reasonNE: 0, reasonNO: 0 },
         );
       }
 
@@ -202,9 +206,11 @@ export default class InventoryProgressService {
         acc.total += sectorInfo.total;
         acc.thirdParty += sectorInfo.thirdParty;
         acc.uploaded += sectorInfo.uploaded;
+        acc.reasonNE += sectorInfo.reasonNE;
+        acc.reasonNO += sectorInfo.reasonNO;
         return acc;
       },
-      { total: 0, thirdParty: 0, uploaded: 0 },
+      { total: 0, thirdParty: 0, uploaded: 0, reasonNE: 0, reasonNO: 0 },
     );
 
     return {

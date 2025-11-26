@@ -123,6 +123,7 @@
   "collaborators-subheading": "<bold>Mitwirkende</bold> an {{name}}",
   "projects": "Projekte",
   "projects-description": "{{orgName}} kann derzeit bis zu {{projectCount}} Projekte mit {{cityCount}} Städten einrichten",
+  "no-project": "Nicht zugewiesene Städte",
   "all-cities": "Alle Städte ({{count}})",
   "all-collaborators": "Alle Mitarbeiter ({{count}})",
   "all-inventories": "Inventar ({{count}})",
@@ -166,5 +167,6 @@
   "my-apps-authorized-on": "Autorisiert am",
   "my-apps-last-used": "Zuletzt verwendet",
   "my-apps-never": "(Nie)",
-  "my-apps-error-loading-apps": "Fehler beim Laden von Apps."
+  "my-apps-error-loading-apps": "Fehler beim Laden von Apps.",
+  "search-by-city-or-country": "Suche nach Stadt- oder Ländername"
 }

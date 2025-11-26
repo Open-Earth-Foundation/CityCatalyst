@@ -1,3 +1,20 @@
+import CityBoundaryService, {
+  CityBoundary,
+} from "@/backend/CityBoundaryService";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+import { db } from "@/models";
+import { City } from "@/models/City";
+import { logger } from "@/services/logger";
+import { apiHandler } from "@/util/api";
+import createHttpError from "http-errors";
+import { NextResponse } from "next/server";
+import z from "zod";
+
+const bulkLocationRequest = z.object({
+  organizationId: z.string().optional(),
+  projectId: z.string().optional(),
+});
+
 /**
  * @swagger
  * /api/v1/bulk-locations:
@@ -84,22 +101,6 @@
  *       500:
  *         description: Internal server error during city lookup or boundary data processing.
  */
-import CityBoundaryService, {
-  CityBoundary,
-} from "@/backend/CityBoundaryService";
-import { PermissionService } from "@/backend/permissions/PermissionService";
-import { db } from "@/models";
-import { logger } from "@/services/logger";
-import { apiHandler } from "@/util/api";
-import createHttpError from "http-errors";
-import { NextResponse } from "next/server";
-import z from "zod";
-
-const bulkLocationRequest = z.object({
-  organizationId: z.string().optional(),
-  projectId: z.string().optional(),
-});
-
 export const GET = apiHandler(async (_req, { session, searchParams }) => {
   if (!session) {
     throw new createHttpError.Unauthorized("Unauthorized");
@@ -113,30 +114,40 @@ export const GET = apiHandler(async (_req, { session, searchParams }) => {
 
   // check access to organization or project
   await PermissionService.checkAccess(session, { organizationId, projectId });
+  let cities: City[] = [];
 
-  const cities = await db.models.City.findAll({
-    where: projectId ? { projectId } : {},
-    attributes: ["locode", "name", "country"],
-    include: [
-      {
-        model: db.models.Project,
-        as: "project",
-        attributes: [],
-        include: organizationId
-          ? [
-              {
-                model: db.models.Organization,
-                attributes: [],
-                as: "organization",
-                where: { organizationId },
-              },
-            ]
-          : [],
-      },
-    ],
-  });
+  if (projectId) {
+    cities = await db.models.City.findAll({
+      where: { projectId },
+      attributes: ["locode", "name", "country"],
+    });
+  } else if (organizationId) {
+    cities = await db.models.City.findAll({
+      attributes: ["locode", "name", "country"],
+      include: [
+        {
+          model: db.models.Project,
+          as: "project",
+          attributes: [],
+          include: [
+            {
+              model: db.models.Organization,
+              attributes: [],
+              as: "organization",
+              where: { organizationId },
+              required: true,
+            },
+          ],
+        },
+      ],
+    });
+  } else {
+    throw new createHttpError.BadRequest(
+      "Either organizationId or projectId must be provided as URL parameter",
+    );
+  }
 
-  if (!cities) {
+  if (cities.length === 0) {
     throw new createHttpError.NotFound("Cities not found");
   }
 

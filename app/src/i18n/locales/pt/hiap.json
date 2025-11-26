@@ -161,5 +161,10 @@
       "of": "de",
       "generated-on": "Gerado em"
     }
-  }
+  },
+  "error-generating-actions-title": "Algo deu errado",
+  "error-generating-actions-description": "Encontramos um erro ao gerar suas ações climáticas. Por favor, tente novamente.",
+  "inventory-year": "Ano do Inventário",
+  "action-explanation": "Explicação",
+  "no-explanation-available": "Sem explicação disponível"
 }

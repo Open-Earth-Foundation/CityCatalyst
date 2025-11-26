@@ -70,3 +70,5 @@ spec:
             httpGet:
               path: /api/v0/check/liveness
               port: 3000
+            failureThreshold: 30
+            periodSeconds: 10

@@ -1,5 +1,5 @@
 import { SectorEmission } from "@/util/types";
-import { BarCustomLayerProps, ResponsiveBar } from "@nivo/bar";
+import { BarCustomLayerProps, ResponsiveBar, BarDatum } from "@nivo/bar";
 import { allSectorColors, SECTORS } from "@/util/constants";
 import { shortSectorNameToKebabCase, convertKgToTonnes } from "@/util/helpers";
 import { useTranslation } from "@/i18n/client";
@@ -79,11 +79,12 @@ export interface CombinedPoint {
   };
 }
 
-export interface CustomCombinedBarLayerProps<D> extends BarCustomLayerProps<D> {
+export interface CustomCombinedBarLayerProps<D extends BarDatum>
+  extends BarCustomLayerProps<D> {
   customTooltip: (point: CombinedPoint) => React.ReactNode;
 }
 
-function CustomCombinedBarLayer<D>({
+function CustomCombinedBarLayer<D extends BarDatum>({
   bars,
   customTooltip,
 }: CustomCombinedBarLayerProps<D>) {
@@ -226,7 +227,12 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
 
   const customTooltip = (point: CombinedPoint) => {
     return (
-      <Box backgroundColor="white" borderRadius="8px" boxShadow="2dp">
+      <Box
+        backgroundColor="white"
+        borderRadius="8px"
+        boxShadow="2dp"
+        minW="420px"
+      >
         <Box>
           <Box
             py={3}
@@ -259,37 +265,39 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
                 <Box
                   key={segment.id}
                   display="flex"
-                  flexDirection="column"
+                  flexDirection="row"
+                  alignItems="center"
                   gap={2}
                   justifyContent="space-between"
                 >
-                  <Box
-                    boxSize="4"
-                    style={{ backgroundColor: segment.color }}
-                  ></Box>
-                  <Text
-                    fontSize="body.md"
-                    textAlign="left"
-                    flex={1}
-                    color="content.secondary"
-                  >
-                    {tDashboard(shortSectorNameToKebabCase(segment.id))}
-                  </Text>
-                  <Text
-                    fontSize="body.md"
-                    px={2}
-                    textAlign="right"
-                    color="content.primary"
-                  >
-                    {segment.percentage.toFixed(2)}%
-                  </Text>
-                  <Text
-                    fontSize="body.md"
-                    textAlign="right"
-                    color="content.primary"
-                  >
-                    {convertKgToTonnes(segment.value)}
-                  </Text>
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <Box boxSize="4" bgColor={segment.color}></Box>
+                    <Text
+                      fontSize="body.md"
+                      textAlign="left"
+                      flex={1}
+                      color="content.secondary"
+                    >
+                      {tDashboard(segment.id)}
+                    </Text>
+                  </Box>
+                  <Box display="flex" justifyContent="flex-end" gap={4}>
+                    <Text
+                      fontSize="body.md"
+                      px={2}
+                      textAlign="right"
+                      color="content.primary"
+                    >
+                      {segment.percentage.toFixed(2)}%
+                    </Text>
+                    <Text
+                      fontSize="body.md"
+                      textAlign="right"
+                      color="content.primary"
+                    >
+                      {convertKgToTonnes(segment.value)}
+                    </Text>
+                  </Box>
                 </Box>
               ))}
           </Box>
@@ -348,8 +356,8 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
   const margin = { top: 50, right: 130, bottom: 50, left: 120 };
 
   return (
-    <Box h="600px">
-      <Box h="600px" position="relative">
+    <Box h="auto">
+      <Box h="500px" position="relative">
         <ResponsiveBar
           borderRadius={5}
           enableLabel={false}

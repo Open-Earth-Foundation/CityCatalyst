@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { City } from "@/models/City";
+import { QueryTypes } from "sequelize";
 
 /**
  * @swagger
@@ -135,14 +136,32 @@ export const GET = apiHandler(
       session,
       params.city,
     );
-    const inventory = await db.models.Inventory.findAll({
+    const inventories = await db.models.Inventory.findAll({
       where: { cityId: (city as City)?.cityId },
     });
 
-    if (!inventory) {
-      throw new createHttpError.BadRequest("Something went wrong!");
-    }
+    // Add total emissions for each inventory
+    const inventoriesWithTotals = await Promise.all(
+      inventories.map(async (inventory) => {
+        const rawQuery = `
+          SELECT SUM(co2eq) as sum
+          FROM "InventoryValue"
+          WHERE inventory_id = :inventoryId
+        `;
 
-    return NextResponse.json({ data: inventory });
+        const [{ sum }] = (await db.sequelize!.query(rawQuery, {
+          replacements: { inventoryId: inventory.inventoryId },
+          type: QueryTypes.SELECT,
+          raw: true,
+        })) as unknown as { sum: number }[];
+
+        return {
+          ...inventory.toJSON(),
+          totalEmissions: sum || 0,
+        };
+      })
+    );
+
+    return NextResponse.json({ data: inventoriesWithTotals });
   },
 );

@@ -29,10 +29,12 @@ async def create_thread(
         "=== POST /threads request received ===\n"
         "  user_id: %s\n"
         "  inventory_id: %s\n"
-        "  has_context: %s",
+        "  has_context: %s\n"
+        "  context_keys: %s",
         payload.user_id,
         payload.inventory_id,
-        bool(payload.context)
+        bool(payload.context),
+        list(payload.context.keys()) if payload.context and isinstance(payload.context, dict) else []
     )
     
     service = ThreadService(session)
@@ -45,11 +47,15 @@ async def create_thread(
             "  thread_id: %s (type: %s)\n"
             "  user_id: %s\n"
             "  inventory_id: %s\n"
+            "  stored_context_keys: %s\n"
+            "  has_cc_token: %s\n"
             "  Location header: /v1/threads/%s",
             thread.thread_id,
             type(thread.thread_id).__name__,
             thread.user_id,
             thread.inventory_id,
+            list(thread.context.keys()) if thread.context and isinstance(thread.context, dict) else [],
+            bool(thread.context and isinstance(thread.context, dict) and thread.context.get("access_token")),
             thread.thread_id
         )
     except Exception as e:
@@ -68,4 +74,9 @@ async def create_thread(
         inventory_id=thread.inventory_id,
         context=thread.context,
     )
+
+
+@router.options("/threads", include_in_schema=False)
+async def options_threads() -> Response:
+    return Response(status_code=status.HTTP_200_OK)
 

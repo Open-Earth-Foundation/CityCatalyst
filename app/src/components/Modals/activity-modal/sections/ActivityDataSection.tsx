@@ -1,9 +1,4 @@
-import {
-  Box,
-  HStack,
-  Icon,
-  Text,
-} from "@chakra-ui/react";
+import { Box, HStack, Icon, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import {
   Control,
@@ -54,12 +49,7 @@ export const ActivityDataSection = ({
   }
 
   return (
-    <Box
-      display="flex"
-      justifyContent="space-between"
-      gap="16px"
-      w="full"
-    >
+    <Box display="flex" justifyContent="space-between" gap="16px" w="full">
       <Field
         invalid={!!resolve(prefix + "activityDataAmount", errors)}
         label={<Text truncate>{t(title)}</Text>}
@@ -85,9 +75,7 @@ export const ActivityDataSection = ({
                 <NativeSelectRoot
                   {...field}
                   borderRadius="4px"
-                  borderWidth={
-                    errors?.activity?.[`${title}-unit`] ? "1px" : 0
-                  }
+                  borderWidth={errors?.activity?.[`${title}-unit`] ? "1px" : 0}
                   border="inputBox"
                   h="42px"
                   shadow="1dp"
@@ -109,13 +97,11 @@ export const ActivityDataSection = ({
                   bgColor="base.light"
                   onChange={(e: any) => {
                     field.onChange(e.target.value);
-                    setValue(
-                      `activity.${title}-unit` as any,
-                      e.target.value,
-                    );
+                    setValue(`activity.${title}-unit` as any, e.target.value);
                   }}
                 >
                   <NativeSelectField
+                    aria-label={t("select-unit")}
                     placeholder={t("select-unit")}
                     defaultValue={field.value}
                   >
@@ -163,9 +149,7 @@ export const ActivityDataSection = ({
             render={({ field }) => (
               <NativeSelectRoot
                 borderRadius="4px"
-                borderWidth={
-                  errors?.activity?.emissionFactorType ? "1px" : 0
-                }
+                borderWidth={errors?.activity?.emissionFactorType ? "1px" : 0}
                 border="inputBox"
                 h="42px"
                 shadow="1dp"
@@ -190,14 +174,12 @@ export const ActivityDataSection = ({
                 })}
               >
                 <NativeSelectField
+                  aria-label={t("select-emission-factor-type")}
                   value={field.value}
                   placeholder={t("emissions-factor-type-placeholder")}
                   onChange={(e: any) => {
                     field.onChange(e.target.value);
-                    setValue(
-                      "activity.emissionFactorType",
-                      e.target.value,
-                    );
+                    setValue("activity.emissionFactorType", e.target.value);
                   }}
                 >
                   {emissionsFactorTypes.map(({ id, name }) => (
@@ -216,17 +198,10 @@ export const ActivityDataSection = ({
           {errors.activity?.emissionFactorType ? (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
-              <BodyMedium>
-                {t("emission-factor-form-label")}
-              </BodyMedium>
+              <BodyMedium>{t("emission-factor-form-label")}</BodyMedium>
             </Box>
           ) : (
-            <Box
-              display="flex"
-              gap="6px"
-              alignItems="center"
-              mt="6px"
-            />
+            <Box display="flex" gap="6px" alignItems="center" mt="6px" />
           )}
         </Field>
       )}

@@ -14,6 +14,7 @@ import {
   AcceptInviteResponse,
   CityAndYearsResponse,
   ConnectDataSourceQuery,
+  CountryEmissionsResponse,
   ConnectDataSourceResponse,
   EmissionsFactorResponse,
   EmissionsForecastData,
@@ -237,6 +238,14 @@ export const api = createApi({
         transformResponse: (response: { data: InventoryProgressResponse }) =>
           response.data,
         providesTags: ["InventoryProgress"],
+      }),
+      getInventoryCountryEmissions: builder.query<
+        CountryEmissionsResponse,
+        string
+      >({
+        query: (inventoryId) => `inventory/${inventoryId}/country-emissions`,
+        transformResponse: (response: { data: CountryEmissionsResponse }) =>
+          response.data,
       }),
       addCity: builder.mutation<
         CityAttributes,
@@ -1162,7 +1171,7 @@ export const api = createApi({
           projectId: string;
           year: number;
           actionType: ACTION_TYPES;
-          language?: string;
+          languages: LANGUAGES[];
         }) => ({
           url: `/admin/bulk-hiap-prioritization`,
           method: "POST",
@@ -1170,11 +1179,84 @@ export const api = createApi({
         }),
         transformResponse: (response: {
           data: {
-            startedCount: number;
-            failedCount: number;
-            results: BulkHiapPrioritizationResult[];
+            totalCities: number;
+            firstBatchSize: number;
+            message: string;
           };
         }) => response.data,
+        invalidatesTags: ["HiapJobs"],
+      }),
+      getBulkHiapBatchStatus: builder.query<
+        {
+          batches: Array<{
+            jobId: string | null;
+            status: string;
+            cityCount: number;
+            cities: Array<{
+              locode: string;
+              inventoryId: string;
+              status: string;
+              errorMessage: string | null;
+            }>;
+          }>;
+        },
+        { projectId: string; actionType: ACTION_TYPES }
+      >({
+        query: ({ projectId, actionType }) => ({
+          url: `/admin/bulk-hiap-prioritization?projectId=${projectId}&actionType=${actionType}`,
+          method: "GET",
+        }),
+        transformResponse: (response: {
+          data: {
+            batches: Array<{
+              jobId: string | null;
+              status: string;
+              cityCount: number;
+              cities: Array<{
+                locode: string;
+                inventoryId: string;
+                status: string;
+                errorMessage: string | null;
+              }>;
+            }>;
+          };
+        }) => response.data,
+        providesTags: ["HiapJobs"],
+      }),
+      retryFailedHiapBatches: builder.mutation<
+        { retriedCount: number; excludedCount: number },
+        {
+          projectId: string;
+          actionType: ACTION_TYPES;
+          jobIds?: string[];
+          excludedCityLocodes?: string[];
+        }
+      >({
+        query: (data) => ({
+          url: `/admin/bulk-hiap-prioritization`,
+          method: "PATCH",
+          body: data,
+        }),
+        transformResponse: (response: {
+          data: { retriedCount: number; excludedCount: number };
+        }) => response.data,
+        invalidatesTags: ["HiapJobs"],
+      }),
+      unexcludeCities: builder.mutation<
+        { unexcludedCount: number },
+        {
+          projectId: string;
+          actionType: ACTION_TYPES;
+          cityLocodes: string[];
+        }
+      >({
+        query: (data) => ({
+          url: `/admin/bulk-hiap-prioritization`,
+          method: "PUT",
+          body: data,
+        }),
+        transformResponse: (response: { data: { unexcludedCount: number } }) =>
+          response.data,
         invalidatesTags: ["HiapJobs"],
       }),
       getProjectUsers: builder.query({
@@ -1271,6 +1353,23 @@ export const api = createApi({
       >({
         query: ({ inventoryId, actionType, lng, ignoreExisting = false }) => ({
           url: `inventory/${inventoryId}/hiap?actionType=${actionType}&lng=${lng}&ignoreExisting=${ignoreExisting}`,
+          method: "GET",
+        }),
+        transformResponse: (response: { data: HIAPResponse }) => {
+          return response.data;
+        },
+        providesTags: ["Hiap"],
+      }),
+      getHiapStatus: builder.query<
+        HIAPResponse,
+        {
+          inventoryId: string;
+          actionType: ACTION_TYPES;
+          lng: LANGUAGES;
+        }
+      >({
+        query: ({ inventoryId, actionType, lng }) => ({
+          url: `inventory/${inventoryId}/hiap/status?actionType=${actionType}&lng=${lng}`,
           method: "GET",
         }),
         transformResponse: (response: { data: HIAPResponse }) => {
@@ -1769,6 +1868,9 @@ export const {
   useMarkCitiesPublicMutation,
   useMigrateHiapSelectionsMutation,
   useStartBulkHiapPrioritizationMutation,
+  useGetBulkHiapBatchStatusQuery,
+  useRetryFailedHiapBatchesMutation,
+  useUnexcludeCitiesMutation,
   useGetProjectUsersQuery,
   useGetUserAccessStatusQuery,
   useGetAllCitiesInSystemQuery,
@@ -1803,5 +1905,6 @@ export const {
   useEnableProjectModuleAccessMutation,
   useDisableProjectModuleAccessMutation,
   useGetHiapJobsQuery,
+  useGetHiapStatusQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

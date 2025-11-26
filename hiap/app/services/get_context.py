@@ -12,9 +12,12 @@ python scripts/create_city_data/get_context.py --locode "BR ATM"
 """
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from pathlib import Path
 import argparse
 import json
+import logging
 
 BASE_DIR = Path(__file__).parent.parent.parent
 
@@ -25,18 +28,42 @@ def get_context(locode):
     # Construct the API endpoint URL
     url = f"{base_url}/{locode}"
 
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
+    # Configure retry strategy similar to get_actions
+    retry_strategy = Retry(
+        total=3,
+        backoff_factor=1,
+        status_forcelist=[500, 502, 503, 504],
+        allowed_methods=["GET"],
+    )
 
-        # Parse and return the JSON response
+    session = requests.Session()
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+
+    try:
+        logger = logging.getLogger(__name__)
+        logger.info(f"Fetching city context from {url} ...")
+        # Add connection/read timeouts
+        response = session.get(url, timeout=(10, 30))
+        logger.info(f"Response status code: {response.status_code}")
+        logger.debug(f"Response headers: {response.headers}")
+        response.raise_for_status()
         return response.json()
+    except requests.exceptions.Timeout:
+        logger = logging.getLogger(__name__)
+        logger.error("Request timed out when fetching city context")
+        return None
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching data: {e}")
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error fetching data: {e}")
         return None
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        logger = logging.getLogger(__name__)
+        logger.error(f"An unexpected error occurred: {e}")
         return None
+    finally:
+        session.close()
 
 
 if __name__ == "__main__":

@@ -53,6 +53,7 @@ import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { validate } from "uuid";
 import { db } from "@/models";
+import { QueryTypes } from "sequelize";
 
 export const GET = apiHandler(async (req, { params }) => {
   const { cityId } = params;
@@ -86,9 +87,30 @@ export const GET = apiHandler(async (req, { params }) => {
       "isPublic",
       "publishedAt",
       "lastUpdated",
-      "totalEmissions",
     ],
   });
 
-  return NextResponse.json({ data: publicInventories });
+  // Add total emissions for each inventory
+  const inventoriesWithTotals = await Promise.all(
+    publicInventories.map(async (inventory) => {
+      const rawQuery = `
+        SELECT SUM(co2eq) as sum
+        FROM "InventoryValue"
+        WHERE inventory_id = :inventoryId
+      `;
+
+      const [{ sum }] = (await db.sequelize!.query(rawQuery, {
+        replacements: { inventoryId: inventory.inventoryId },
+        type: QueryTypes.SELECT,
+        raw: true,
+      })) as unknown as { sum: number }[];
+
+      return {
+        ...inventory.toJSON(),
+        totalEmissions: sum || 0,
+      };
+    })
+  );
+
+  return NextResponse.json({ data: inventoriesWithTotals });
 });

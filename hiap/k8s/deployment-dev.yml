@@ -6,12 +6,12 @@ metadata:
   labels:
     app: hiap-dev
 spec:
-  strategy:
-    type: Recreate
   replicas: 1
   selector:
     matchLabels:
       app: hiap-dev
+  strategy:
+    type: Recreate # needed because of high CPU request. Rolling update will not find a second large instance
   template:
     metadata:
       labels:
@@ -31,11 +31,13 @@ spec:
               value: "8000"
           resources:
             requests:
-              memory: "512Mi"
-              cpu: "250m"
+              memory: "20Gi" # Increased to 20Gi because of OOM error
+              cpu: "10" # "500m"
+              ephemeral-storage: "10Gi" # Added to store temporary files
             limits:
-              memory: "1Gi"
-              cpu: "500m"
+              memory: "20Gi" # Increased to 20Gi because of OOM error
+              cpu: "12" # "500m"
+              ephemeral-storage: "10Gi" # Added to store temporary files
           livenessProbe:
             httpGet:
               path: /
@@ -48,3 +50,9 @@ spec:
               port: http
             initialDelaySeconds: 5
             periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            failureThreshold: 30

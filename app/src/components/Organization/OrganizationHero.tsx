@@ -127,41 +127,17 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
                 </BodyMedium>
               </Box>
             </Flex>
-            <Flex align="baseline" gap={3}>
-              <Icon as={ModulesIcon} boxSize={6} fill="base.light" />
-              <Box>
-                <Flex gap={1}>
-                  <HeadlineSmall color="base.light">{t("pro")}</HeadlineSmall>
-                  <Tooltip
-                    content={t("active-plan-tooltip")}
-                    positioning={{
-                      placement: "bottom-start",
-                    }}
-                  >
-                    <Icon
-                      as={MdInfoOutline}
-                      w={3}
-                      h={3}
-                      color="background.overlay"
-                    />
-                  </Tooltip>
-                </Flex>
-                <BodyMedium color="background.overlay">
-                  {t("active-plan")}
-                </BodyMedium>
-              </Box>
-            </Flex>
           </Flex>
         </Flex>
         <Box mt={-50}>
-          <ProjectMap
+          {/* <ProjectMap
             organizationId={organization?.organizationId}
             projectId={projectId}
             width={422}
             height={317}
             setSelectedCity={setSelectedCity}
             selectedCity={selectedCity}
-          />
+          /> */}
         </Box>
       </Flex>
     </Box>

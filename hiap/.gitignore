@@ -22,6 +22,7 @@ app/plan_creator_bundle/plan_creator_legacy/vector_stores/
 
 # HIAP Prioritizer
 app/prioritizer/data/prioritized_local_testing/
+app/prioritizer/data/excel/
 
 # HIAP Cap off app
 app/cap_off_app/data/frontend/

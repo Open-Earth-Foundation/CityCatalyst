@@ -9,10 +9,10 @@ It translates the following fields:
 - EquityAndInclusionConsiderations
 
 Execute the script with the following command:
-python scripts/translate_actions.py --language <language_code>
+python hiap/app/prioritizer/scripts/translate_actions.py --language <language_code> --filename <filename.json>
 
 Example:
-python scripts/translate_actions.py --language es
+python hiap/app/prioritizer/scripts/translate_actions.py --language es --filename merged.json
 """
 
 import argparse
@@ -144,15 +144,19 @@ def main():
         required=True,
         help="Target language code (e.g., es, fr, de)",
     )
+    parser.add_argument(
+        "--filename",
+        type=str,
+        required=True,
+        help="Input JSON filename located under data/excel (e.g., merged.json)",
+    )
     args = parser.parse_args()
 
-    # Input and output paths
-    input_path = Path(BASE_DIR / "data/climate_actions/output/merged.json")
-    output_dir = Path(BASE_DIR / "data/climate_actions/output/translations")
-    output_path = output_dir / f"merged_{args.language}.json"
-
-    # Create output directory if it doesn't exist
-    output_dir.mkdir(parents=True, exist_ok=True)
+    # Input and output paths (read from data/excel/{filename}, write translation_{language}.json into same folder)
+    input_path = Path(BASE_DIR / "data/excel" / args.filename)
+    if not input_path.exists():
+        raise FileNotFoundError(f"Input file not found: {input_path}")
+    output_path = input_path.parent / f"translation_{args.language}.json"
 
     # Read input file
     print(f"Reading actions from {input_path}")

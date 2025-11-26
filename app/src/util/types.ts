@@ -39,6 +39,14 @@ export interface CityYearData {
   lastUpdate: Date;
 }
 
+export interface CountryEmissionsResponse {
+  emissions: number;
+  yearUsed: number;
+  dataSource: string;
+  countryCode: string;
+  inventoryYear: number;
+}
+
 interface RequiredInventoryAttributes extends Required<InventoryAttributes> {}
 
 export type FullInventoryValue = InventoryValue & {
@@ -89,6 +97,8 @@ export interface SectorProgress {
   total: number;
   thirdParty: number;
   uploaded: number;
+  reasonNE: number;
+  reasonNO: number;
   subSectors: SubSectorWithRelations[];
 }
 
@@ -98,6 +108,8 @@ export interface InventoryProgressResponse {
     total: number;
     thirdParty: number;
     uploaded: number;
+    reasonNE: number;
+    reasonNO: number;
   };
   sectorProgress: SectorProgress[];
 }
@@ -551,9 +563,11 @@ export interface FormulaInputValuesResponse {
   region: string;
 }
 export enum HighImpactActionRankingStatus {
+  TO_DO = "TO_DO",
   PENDING = "PENDING",
   SUCCESS = "SUCCESS",
   FAILURE = "FAILURE",
+  EXCLUDED = "EXCLUDED",
 }
 
 export interface BulkHiapPrioritizationResult {
@@ -605,12 +619,6 @@ export interface AdaptationEffectivenessPerHazard {
   "sea-level-rise": string | null;
 }
 
-export interface Explanation {
-  en: string;
-  es: string;
-  pt: string;
-}
-
 export interface BaseAction {
   id: string;
   hiaRankingId: string;
@@ -634,7 +642,7 @@ export interface BaseAction {
   isSelected: boolean;
   actionId: string;
   rank: number;
-  explanation: Explanation;
+  explanation: Record<string, string>;
   created: Date;
   last_updated: Date;
 }

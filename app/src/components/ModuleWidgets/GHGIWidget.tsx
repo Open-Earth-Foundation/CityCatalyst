@@ -14,6 +14,7 @@ interface GHGIWidgetProps {
   lng: string;
   onVisibilityChange?: (hasContent: boolean) => void;
   isPublic?: boolean;
+  year?: number;
 }
 
 export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
@@ -21,10 +22,12 @@ export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
   lng,
   onVisibilityChange,
   isPublic = false,
+  year,
 }) => {
   const { inventoryId, isLoading: isInventoryLoading } = useLatestInventory({
     cityId,
     isPublic,
+    year,
   });
 
   // Fetch GHGI dashboard data
@@ -48,8 +51,12 @@ export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
   const hasContent =
     ghgiData &&
     ghgiData.inventory &&
-    ghgiData.totalEmissions?.total &&
-    ghgiData.totalEmissions.total > 0;
+    ghgiData.totalEmissions &&
+    ghgiData.totalEmissions.total !== null &&
+    ghgiData.totalEmissions.total !== undefined &&
+    ghgiData.totalEmissions.bySector &&
+    Array.isArray(ghgiData.totalEmissions.bySector) &&
+    ghgiData.totalEmissions.bySector.length > 0;
 
   React.useEffect(() => {
     if (!isLoading) {

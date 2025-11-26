@@ -58,7 +58,7 @@ async function issueCaUserToken(params: {
   inventory_id?: string;
 }): Promise<TokenResponse> {
   const response = await fetch(
-    `${process.env.CC_BASE_URL}/api/v1/internal/ca/user-token`,
+    `${process.env.HOST}/api/v1/internal/ca/user-token`,
     {
       method: "POST",
       headers: {

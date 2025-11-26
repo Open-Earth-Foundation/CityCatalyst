@@ -231,4 +231,7 @@ jobs:
             CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}} \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl create -f k8s/prod/cc-prod-create-admin.yml -n default
+          kubectl set env deployment/citycatalyst-check-hiap-jobs \
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
+          kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default

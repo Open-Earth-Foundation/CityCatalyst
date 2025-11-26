@@ -39,38 +39,38 @@ export class FormulaInput
   extends Model<FormulaInputAttributes, FormulaInputCreationAttributes>
   implements Partial<FormulaInputAttributes>
 {
-  gas!: string;
-  parameterCode!: string;
-  parameterName!: string;
-  gpcRefno!: string;
-  year?: number;
-  source?: string;
-  formulaInputValue!: number;
-  formulaInputUnits!: string;
-  formulaName!: string;
-  metadata?: Record<string, any>;
-  region!: string;
-  actorId!: string;
-  datasource!: string;
-  rnk!: number;
-  methodologyName!: string;
-  methodologyId!: string;
-  formulaInputId!: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  declare gas: string;
+  declare parameterCode: string;
+  declare parameterName: string;
+  declare gpcRefno: string;
+  declare year?: number;
+  declare source?: string;
+  declare formulaInputValue: number;
+  declare formulaInputUnits: string;
+  declare formulaName: string;
+  declare metadata?: Record<string, any>;
+  declare region: string;
+  declare actorId: string;
+  declare datasource: string;
+  declare rnk: number;
+  declare methodologyName: string;
+  declare methodologyId: string;
+  declare formulaInputId: string;
+  declare createdAt?: Date;
+  declare updatedAt?: Date;
 
   /**
    * Define associations here if you have related models.
    * Uncomment and adjust according to your actual models.
    */
   // FormulaInput belongsTo Methodology via methodologyId
-  methodology!: Methodology;
-  getMethodology!: Sequelize.BelongsToGetAssociationMixin<Methodology>;
-  setMethodology!: Sequelize.BelongsToSetAssociationMixin<
+  declare methodology: Methodology;
+  declare getMethodology: Sequelize.BelongsToGetAssociationMixin<Methodology>;
+  declare setMethodology: Sequelize.BelongsToSetAssociationMixin<
     Methodology,
     MethodologyId
   >;
-  createMethodology!: Sequelize.BelongsToCreateAssociationMixin<Methodology>;
+  declare createMethodology: Sequelize.BelongsToCreateAssociationMixin<Methodology>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof FormulaInput {
     return FormulaInput.init(

@@ -60,108 +60,108 @@ export class InventoryValue
   extends Model<InventoryValueAttributes, InventoryValueCreationAttributes>
   implements Partial<InventoryValueAttributes>
 {
-  id!: string;
-  gpcReferenceNumber?: string;
+  declare id: string;
+  declare gpcReferenceNumber?: string;
   /** @deprecated moved to ActivityValue */
-  activityValue?: number | null; // TODO remove
+  declare activityValue?: number | null; // TODO remove
   /** @deprecated moved to ActivityValue */
-  activityUnits?: string | null; // TODO remove
-  co2eq?: bigint;
-  co2eqYears?: number;
-  unavailableReason?: string | null;
-  unavailableExplanation?: string | null;
-  inputMethodology?: string;
-  sectorId?: string;
-  subSectorId?: string;
-  subCategoryId?: string;
-  inventoryId?: string;
-  datasourceId?: string | null;
-  created?: Date;
-  lastUpdated?: Date;
+  declare activityUnits?: string | null; // TODO remove
+  declare co2eq?: bigint;
+  declare co2eqYears?: number;
+  declare unavailableReason?: string | null;
+  declare unavailableExplanation?: string | null;
+  declare inputMethodology?: string;
+  declare sectorId?: string;
+  declare subSectorId?: string;
+  declare subCategoryId?: string;
+  declare inventoryId?: string;
+  declare datasourceId?: string | null;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // InventoryValue belongsTo Inventory via inventoryId
-  inventory!: Inventory;
-  getInventory!: Sequelize.BelongsToGetAssociationMixin<Inventory>;
-  setInventory!: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
-  createInventory!: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
+  declare inventory: Inventory;
+  declare getInventory: Sequelize.BelongsToGetAssociationMixin<Inventory>;
+  declare setInventory: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
+  declare createInventory: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
   // InventoryValue belongsTo SubCategory via subcategoryId
-  sector!: Sector;
-  getSector!: Sequelize.BelongsToGetAssociationMixin<Sector>;
-  setSector!: Sequelize.BelongsToSetAssociationMixin<Sector, SectorId>;
-  createSector!: Sequelize.BelongsToCreateAssociationMixin<Sector>;
+  declare sector: Sector;
+  declare getSector: Sequelize.BelongsToGetAssociationMixin<Sector>;
+  declare setSector: Sequelize.BelongsToSetAssociationMixin<Sector, SectorId>;
+  declare createSector: Sequelize.BelongsToCreateAssociationMixin<Sector>;
   // InventoryValue belongsTo SubCategory via subcategoryId
-  subSector!: SubSector;
-  getSubSector!: Sequelize.BelongsToGetAssociationMixin<SubSector>;
-  setSubSector!: Sequelize.BelongsToSetAssociationMixin<SubSector, SubSectorId>;
-  createSubSector!: Sequelize.BelongsToCreateAssociationMixin<SubSector>;
+  declare subSector: SubSector;
+  declare getSubSector: Sequelize.BelongsToGetAssociationMixin<SubSector>;
+  declare setSubSector: Sequelize.BelongsToSetAssociationMixin<SubSector, SubSectorId>;
+  declare createSubSector: Sequelize.BelongsToCreateAssociationMixin<SubSector>;
   // InventoryValue belongsTo SubCategory via subcategoryId
-  subcategory!: SubCategory;
-  getSubcategory!: Sequelize.BelongsToGetAssociationMixin<SubCategory>;
-  setSubcategory!: Sequelize.BelongsToSetAssociationMixin<
+  declare subcategory: SubCategory;
+  declare getSubcategory: Sequelize.BelongsToGetAssociationMixin<SubCategory>;
+  declare setSubcategory: Sequelize.BelongsToSetAssociationMixin<
     SubCategory,
     SubCategoryId
   >;
-  createSubcategory!: Sequelize.BelongsToCreateAssociationMixin<SubCategory>;
+  declare createSubcategory: Sequelize.BelongsToCreateAssociationMixin<SubCategory>;
   // InventoryValue belongsTo DataSource via datasourceId
-  dataSource?: DataSource;
-  getDataSource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
-  setDataSource!: Sequelize.BelongsToSetAssociationMixin<
+  declare dataSource?: DataSource;
+  declare getDataSource: Sequelize.BelongsToGetAssociationMixin<DataSource>;
+  declare setDataSource: Sequelize.BelongsToSetAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  createDataSource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
+  declare createDataSource: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
   // InventoryValue hasMany GasValue via inventoryValueId
-  gasValues!: GasValue[];
-  getGasValues!: Sequelize.HasManyGetAssociationsMixin<GasValue>;
-  setGasValues!: Sequelize.HasManySetAssociationsMixin<GasValue, GasValueId>;
-  addGasValue!: Sequelize.HasManyAddAssociationMixin<GasValue, GasValueId>;
-  addGasValues!: Sequelize.HasManyAddAssociationsMixin<GasValue, GasValueId>;
-  createGasValue!: Sequelize.HasManyCreateAssociationMixin<GasValue>;
-  removeGasValue!: Sequelize.HasManyRemoveAssociationMixin<
+  declare gasValues: GasValue[];
+  declare getGasValues: Sequelize.HasManyGetAssociationsMixin<GasValue>;
+  declare setGasValues: Sequelize.HasManySetAssociationsMixin<GasValue, GasValueId>;
+  declare addGasValue: Sequelize.HasManyAddAssociationMixin<GasValue, GasValueId>;
+  declare addGasValues: Sequelize.HasManyAddAssociationsMixin<GasValue, GasValueId>;
+  declare createGasValue: Sequelize.HasManyCreateAssociationMixin<GasValue>;
+  declare removeGasValue: Sequelize.HasManyRemoveAssociationMixin<
     GasValue,
     GasValueId
   >;
-  removeGasValues!: Sequelize.HasManyRemoveAssociationsMixin<
+  declare removeGasValues: Sequelize.HasManyRemoveAssociationsMixin<
     GasValue,
     GasValueId
   >;
-  hasGasValue!: Sequelize.HasManyHasAssociationMixin<GasValue, GasValueId>;
-  hasGasValues!: Sequelize.HasManyHasAssociationsMixin<GasValue, GasValueId>;
-  countGasValues!: Sequelize.HasManyCountAssociationsMixin;
+  declare hasGasValue: Sequelize.HasManyHasAssociationMixin<GasValue, GasValueId>;
+  declare hasGasValues: Sequelize.HasManyHasAssociationsMixin<GasValue, GasValueId>;
+  declare countGasValues: Sequelize.HasManyCountAssociationsMixin;
 
   // InventoryValue hasMany ActivityValue via inventoryValueId
-  activityValues!: ActivityValue[];
-  getActivityValues!: Sequelize.HasManyGetAssociationsMixin<ActivityValue>;
-  setActivityValues!: Sequelize.HasManySetAssociationsMixin<
+  declare activityValues: ActivityValue[];
+  declare getActivityValues: Sequelize.HasManyGetAssociationsMixin<ActivityValue>;
+  declare setActivityValues: Sequelize.HasManySetAssociationsMixin<
     ActivityValue,
     ActivityValueId
   >;
-  addActivityValue!: Sequelize.HasManyAddAssociationMixin<
+  declare addActivityValue: Sequelize.HasManyAddAssociationMixin<
     ActivityValue,
     ActivityValueId
   >;
-  addActivityValues!: Sequelize.HasManyAddAssociationsMixin<
+  declare addActivityValues: Sequelize.HasManyAddAssociationsMixin<
     ActivityValue,
     ActivityValueId
   >;
-  createActivityValue!: Sequelize.HasManyCreateAssociationMixin<ActivityValue>;
-  removeActivityValue!: Sequelize.HasManyRemoveAssociationMixin<
+  declare createActivityValue: Sequelize.HasManyCreateAssociationMixin<ActivityValue>;
+  declare removeActivityValue: Sequelize.HasManyRemoveAssociationMixin<
     ActivityValue,
     ActivityValueId
   >;
-  removeActivityValues!: Sequelize.HasManyRemoveAssociationsMixin<
+  declare removeActivityValues: Sequelize.HasManyRemoveAssociationsMixin<
     ActivityValue,
     ActivityValueId
   >;
-  hasActivityValue!: Sequelize.HasManyHasAssociationMixin<
+  declare hasActivityValue: Sequelize.HasManyHasAssociationMixin<
     ActivityValue,
     ActivityValueId
   >;
-  hasActivityValues!: Sequelize.HasManyHasAssociationsMixin<
+  declare hasActivityValues: Sequelize.HasManyHasAssociationsMixin<
     ActivityValue,
     ActivityValueId
   >;
-  countActivityValues!: Sequelize.HasManyCountAssociationsMixin;
+  declare countActivityValues: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof InventoryValue {
     return InventoryValue.init(

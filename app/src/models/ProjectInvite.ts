@@ -31,21 +31,21 @@ export class ProjectInvite
   extends Model<ProjectInviteAttributes, ProjectInviteCreationAttributes>
   implements Partial<ProjectInviteAttributes>
 {
-  id!: string;
-  projectId!: string;
-  userId?: string;
-  email?: string;
-  status?: InviteStatus;
-  created?: Date;
-  lastUpdated?: Date;
+  declare id: string;
+  declare projectId: string;
+  declare userId?: string;
+  declare email?: string;
+  declare status?: InviteStatus;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   //   ProjectInvite belongs to Project via projectId
-  project!: Project;
-  getProject!: Sequelize.BelongsToGetAssociationMixin<Project>;
-  setProject!: Sequelize.BelongsToSetAssociationMixin<Project, string>;
-  user!: User;
-  getUser!: Sequelize.BelongsToGetAssociationMixin<User>;
-  setUser!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
+  declare project: Project;
+  declare getProject: Sequelize.BelongsToGetAssociationMixin<Project>;
+  declare setProject: Sequelize.BelongsToSetAssociationMixin<Project, string>;
+  declare user: User;
+  declare getUser: Sequelize.BelongsToGetAssociationMixin<User>;
+  declare setUser: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof ProjectInvite {
     return ProjectInvite.init(

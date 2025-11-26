@@ -154,7 +154,7 @@
     "typescript": "5.8.3"
   },
   "engines": {
-    "node": ">=20.5.0"
+    "node": "^22.21.1"
   },
   "overrides": {
     "prismjs": "1.30.0"

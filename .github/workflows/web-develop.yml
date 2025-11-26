@@ -41,7 +41,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "npm"
           cache-dependency-path: app/package-lock.json
 
@@ -241,13 +241,13 @@ jobs:
             echo ""
             echo "Job Events (shows WHY pod didn't start):"
             kubectl describe job $JOB_NAME -n default
-            
+
             echo ""
             echo "Checking prerequisites:"
             echo ""
             echo "1. ConfigMap exists?"
             kubectl get configmap cc-db-configmap -n default || echo " NOT FOUND"
-            
+
             echo ""
             echo "2. Can pull image?"
             echo "   Checking: ghcr.io/open-earth-foundation/citycatalyst:latest"
@@ -257,15 +257,15 @@ jobs:
               --rm \
               -n default \
               --command -- echo "success" 2>&1 | head -5
-            
+
             echo "status=failed" >> $GITHUB_OUTPUT
-            
+
             {
               echo "error_logs<<EOF"
               echo "Pod was never created. Check job events above for details."
               echo "EOF"
             } >> $GITHUB_OUTPUT
-            
+
             exit 1
           fi
 
@@ -278,32 +278,32 @@ jobs:
             echo "========================================="
             echo "Migration Completed Successfully"
             echo "========================================="
-            
+
             echo "status=success" >> $GITHUB_OUTPUT
-            
+
             echo ""
             echo "Migration output:"
             kubectl logs job/$JOB_NAME -n default --tail=50
-            
+
           else
             echo "=========================================="
             echo "Migration Failed"
             echo "=========================================="
-            
+
             echo "status=failed" >> $GITHUB_OUTPUT
-            
+
             echo ""
             echo "Job Status:"
             kubectl get job $JOB_NAME -n default -o wide
-            
+
             echo ""
             echo "Pod Status:"
             kubectl get pods -n default -l job-name=$JOB_NAME -o wide
-            
+
             echo ""
             echo "Pod Description:"
             kubectl describe pod $POD_NAME -n default | tail -50
-            
+
             echo ""
             echo "Migration Error Logs:"
             MIGRATION_LOGS=$(kubectl logs $POD_NAME -n default --tail=200 2>&1 || echo "Could not retrieve error logs")
@@ -311,17 +311,17 @@ jobs:
 
             # Extract key error for Slack
             KEY_ERROR=$(echo "$MIGRATION_LOGS" | grep -iE "error|failed|exception" | tail -5 | head -3)
-            
+
             if [ -z "$KEY_ERROR" ]; then
               KEY_ERROR=$(echo "$MIGRATION_LOGS" | tail -3)
             fi
-            
+
             {
               echo "error_logs<<EOF"
               echo "$KEY_ERROR"
               echo "EOF"
             } >> $GITHUB_OUTPUT
-            
+
             exit 1
           fi
         continue-on-error: true
@@ -397,8 +397,8 @@ jobs:
     needs: [runTests, pushToGHCR, deployToEKS]
     runs-on: ubuntu-latest
     if: |
-      always() && 
-      (needs.runTests.result == 'failure' || needs.pushToGHCR.result == 'failure' || needs.deployToEKS.result == 'failure') && 
+      always() &&
+      (needs.runTests.result == 'failure' || needs.pushToGHCR.result == 'failure' || needs.deployToEKS.result == 'failure') &&
       github.event_name == 'push' &&
       github.ref == 'refs/heads/develop'
 

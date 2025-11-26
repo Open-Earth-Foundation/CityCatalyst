@@ -26,9 +26,10 @@ import { BiCaretDown, BiHomeAlt, BiSolidBarChartAlt2 } from "react-icons/bi";
 
 import { NavigationAccordion } from "../ui/navigation-accordion";
 import { NavigationLinks } from "../ui/navigation-links";
-import { StageNames } from "@/util/constants";
+import { Modules, StageNames } from "@/util/constants";
 import ProgressLoader from "../ProgressLoader";
 import { stageOrder, stageIcons } from "@/config/stages";
+import { getDashboardPath } from "@/util/routes";
 
 // Custom Select Component
 interface CustomSelectOption {
@@ -396,7 +397,12 @@ const ProjectFilterSection = ({
                 cursor="pointer"
                 _hover={{
                   bg: "content.link",
-                  color: "base.light",
+                  "& .search-result-label": {
+                    color: "base.light",
+                  },
+                  "& .search-result-city-label": {
+                    color: "base.light",
+                  },
                 }}
                 onClick={() => {
                   if (result.type === "project") {
@@ -414,16 +420,23 @@ const ProjectFilterSection = ({
                 }}
               >
                 <VStack gap={2} alignItems="flex-start">
-                  <Text fontSize="body.lg" fontWeight="medium">
+                  <Text
+                    className="search-result-label"
+                    fontSize="body.lg"
+                    fontWeight="medium"
+                    color="content.secondary"
+                  >
                     {result.label}
                   </Text>
-                  <Box>
-                    {result.type === "city" && (
-                      <Text fontSize="body.md" color="content.tertiary">
-                        {result.projectName} | {result.label}
-                      </Text>
-                    )}
-                  </Box>
+                  {result.type === "city" && (
+                    <Text
+                      className="search-result-city-label"
+                      fontSize="body.md"
+                      color="content.tertiary"
+                    >
+                      {result.projectName} | {result.label}
+                    </Text>
+                  )}
                 </VStack>
               </Box>
             ))}
@@ -622,12 +635,12 @@ const JNDrawer = ({
                   {
                     label: "dashboard",
                     icon: BiSolidBarChartAlt2,
-                    href: `/#`,
+                    href: getDashboardPath(lng, selectedCity),
                   },
                   {
                     label: "all-projects",
                     icon: LuLayoutGrid,
-                    href: `/${lng}/organization/${organizationId}/projects`,
+                    href: `/${lng}/organization/${organizationId}/project`,
                   },
                 ]}
                 t={t}
@@ -637,9 +650,13 @@ const JNDrawer = ({
               {modulesByStage && projectModules && selectedProject && (
                 <>
                   {stageOrder.map((stage) => {
-                    const modules = projectModules.filter(
-                      (mod) => mod.stage === stage,
-                    );
+                    const modules = projectModules.filter((mod) => {
+                      // Filter out CCRA module
+                      if (mod.id === Modules.CCRA.id) {
+                        return false;
+                      }
+                      return mod.stage === stage;
+                    });
 
                     if (modules.length === 0) return null;
 

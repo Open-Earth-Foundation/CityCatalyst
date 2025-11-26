@@ -83,10 +83,10 @@ def _execute_plan_creation(task_uuid: str, background_task_input):
         try:
             # Step 1: Create metadata
             metadata = PlanCreatorMetadata(
-                locode=result["city_data"]["locode"],
-                cityName=result["city_data"]["name"],
-                actionId=result["climate_action_data"]["ActionID"],
-                actionName=result["climate_action_data"]["ActionName"],
+                locode=result["city_data"].get("locode"),
+                cityName=result["city_data"].get("name"),
+                actionId=result["climate_action_data"].get("ActionID"),
+                actionName=result["climate_action_data"].get("ActionName"),
                 language=background_task_input["language"],
                 createdAt=datetime.now(UTC),
             )

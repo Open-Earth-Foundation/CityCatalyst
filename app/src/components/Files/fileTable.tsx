@@ -155,7 +155,7 @@ const FilesTable = ({ t, files }: { t: TFunction; files: UserFile[] }) => {
                           }}
                         >
                           <Link
-                            href={`/api/v0/city/${file.cityId}/file/${file.id}/download-file`}
+                            href={`/api/v1/city/${file.cityId}/file/${file.id}/download-file`}
                             download
                             style={{ display: "flex", gap: "4px" }}
                           >

@@ -5,7 +5,7 @@ import { useTranslation } from "@/i18n/client";
 import { ACTION_TYPES, HIAction } from "@/util/types";
 import { ClimateActionCard } from "@/components/ClimateActionCard";
 import { ActionDrawer } from "@/components/ActionDrawer";
-import { HeadlineSmall } from "../Texts/Headline";
+import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { Button } from "../ui/button";
 import { MdOpenInNew } from "react-icons/md";
 import { useRouter } from "next/navigation";
@@ -19,6 +19,7 @@ interface HIAPWidgetProps {
   lng: string;
   onVisibilityChange?: (hasContent: boolean) => void;
   isPublic?: boolean;
+  year?: number;
 }
 
 export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
@@ -26,6 +27,7 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
   lng,
   onVisibilityChange,
   isPublic = false,
+  year,
 }) => {
   const { t } = useTranslation(lng, "hiap");
   const router = useRouter();
@@ -37,6 +39,7 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
   const { inventoryId, isLoading: isInventoryLoading } = useLatestInventory({
     cityId,
     isPublic,
+    year,
   });
 
   // Fetch HIAP dashboard data
@@ -88,6 +91,7 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
           isOpen={!!selectedAction}
           onClose={() => setSelectedAction(null)}
           t={t}
+          lng={lng}
         />
       )}
       <Box w="full">

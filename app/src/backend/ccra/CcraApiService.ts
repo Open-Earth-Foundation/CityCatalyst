@@ -9,7 +9,9 @@ class CCRAApiService {
   /**
    * Fetch risk assessment data for current scenario
    */
- public static  async getRiskAssessment(actorId: string): Promise<RiskAssessment[]> {
+  public static async getRiskAssessment(
+    actorId: string,
+  ): Promise<RiskAssessment[]> {
     try {
       const response = await fetch(
         `${CCRA_API_URL}/ccra/risk_assessment/city/${actorId}/current`,
@@ -29,7 +31,7 @@ class CCRAApiService {
       const data = await response.json();
       return Array.isArray(data) ? data : data.riskAssessment || [];
     } catch (error) {
-      logger.error("Error fetching risk assessment:", { error, actorId });
+      logger.error({ error, actorId }, "Error fetching risk assessment");
       throw error;
     }
   }
@@ -37,7 +39,9 @@ class CCRAApiService {
   /**
    * Fetch indicator details for vulnerability calculations
    */
-public static  async getIndicatorDetails(actorId: string): Promise<Indicator[]> {
+  public static async getIndicatorDetails(
+    actorId: string,
+  ): Promise<Indicator[]> {
     try {
       const response = await fetch(
         `${CCRA_API_URL}/ccra/impactchain_indicators/city/${actorId}/current`,
@@ -55,7 +59,7 @@ public static  async getIndicatorDetails(actorId: string): Promise<Indicator[]> 
       const data = await response.json();
       return Array.isArray(data) ? data : data.indicators || [];
     } catch (error) {
-      logger.error("Error fetching indicators:", { error, actorId });
+      logger.error({ error, actorId }, "Error fetching indicators:");
       throw error;
     }
   }
@@ -63,7 +67,9 @@ public static  async getIndicatorDetails(actorId: string): Promise<Indicator[]> 
   /**
    * Fetch CCRA data for top risks display
    */
-  public static async fetchCCRATopRisksData(actorId: string): Promise<CCRATopRisksData> {
+  public static async fetchCCRATopRisksData(
+    actorId: string,
+  ): Promise<CCRATopRisksData> {
     try {
       logger.info(`Fetching CCRA top risks data for actor ${actorId}`);
 
@@ -80,12 +86,11 @@ public static  async getIndicatorDetails(actorId: string): Promise<Indicator[]> 
         indicators,
       };
     } catch (error) {
-      logger.error("Error fetching CCRA data:", { error, actorId });
+      logger.error({ error, actorId }, "Error fetching CCRA data:");
       throw error;
     }
   }
 }
-
 
 // Export the main fetch function
 export const fetchCCRATopRisksData = (actorId: string) =>

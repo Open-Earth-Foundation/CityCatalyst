@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { EmissionsForecastChart } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/EmissionsForecastChart";
 import { MdInfoOutline } from "react-icons/md";
-import { TitleMedium } from "@/components/Texts/Title";
+import { TitleMedium } from "@/components/package/Texts/Title";
 
 export const EmissionsForecastCard = ({
   forecast,
@@ -35,7 +35,7 @@ export const EmissionsForecastCard = ({
         lng={lng}
       />
 
-      <Card.Root paddingY="0px" paddingX="0px" height="100%" width="100%">
+      <Card.Root paddingY="0px" paddingX="0px" height="650px" width="100%">
         <CardHeader>
           <HStack>
             <TitleMedium>
@@ -64,8 +64,9 @@ export const EmissionsForecastCard = ({
           paddingY="0px"
           paddingLeft={4}
           paddingRight={0}
-          height="auto"
+          height="600px"
           width="100%"
+          overflow="hidden"
         >
           <EmissionsForecastChart forecast={forecast} t={t} />
         </CardBody>

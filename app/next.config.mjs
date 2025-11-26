@@ -10,9 +10,15 @@ const packageInfo = JSON.parse(packageJson);
 function generateOpenAPISpec() {
   try {
     console.log("🔄 Generating OpenAPI specification...");
-    
+
+    // Suppress console output from swagger doc generation
+    const originalError = console.error;
+    const originalLog = console.log;
+    console.error = () => {};
+    console.log = () => {};
+
     const spec = createSwaggerSpec({
-      apiFolder: "src/app/api/v0",
+      apiFolder: "src/app/api/v1",
       definition: {
         openapi: "3.0.0",
         info: {
@@ -32,6 +38,10 @@ function generateOpenAPISpec() {
       },
     });
 
+    // Restore console
+    console.error = originalError;
+    console.log = originalLog;
+
     // Create public directory if it doesn't exist
     const publicDir = path.join(process.cwd(), "public");
     if (!fs.existsSync(publicDir)) {
@@ -41,10 +51,10 @@ function generateOpenAPISpec() {
     // Write the spec to a public JSON file
     const outputPath = path.join(publicDir, "openapi-spec.json");
     fs.writeFileSync(outputPath, JSON.stringify(spec, null, 2));
-    
+
     console.log(`✅ OpenAPI spec generated: ${outputPath}`);
     console.log(`📊 Found ${Object.keys(spec.paths || {}).length} API endpoints`);
-    
+
     return spec;
   } catch (error) {
     console.error("❌ Error generating OpenAPI spec:", error);
@@ -77,8 +87,10 @@ const nextConfig = {
     return [
       {
         source: "/.well-known/oauth-authorization-server",
-        destination: "/api/v0/oauth/metadata/",
+        destination: "/api/v1/oauth/metadata/",
       },
+      { source: "/api/v0/:path*", destination: "/api/v1/:path*" },
+      { source: "/api/cron/:path*", destination: "/api/v1/cron/:path*" },
     ];
   },
 };

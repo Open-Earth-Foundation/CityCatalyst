@@ -7,6 +7,7 @@ import multiprocessing
 from concurrent.futures import (
     ProcessPoolExecutor,
 )
+import json
 
 import logging
 from utils.logging_config import setup_logger
@@ -20,7 +21,7 @@ from prioritizer.models import (
 )
 from prioritizer.tasks import (
     _execute_prioritization,
-    compute_prioritization_bulk_subtask,
+    _compute_prioritization_bulk_subtask,
     _update_bulk_task_status,
 )
 from prioritizer.task_storage import task_storage
@@ -39,6 +40,7 @@ _default_workers = max(
     1, int(os.getenv("BULK_CONCURRENCY", multiprocessing.cpu_count()))
 )
 logger.info(f"BULK_CONCURRENCY set to {_default_workers}")
+logger.info(f"XGBoost threads set to {os.getenv('XGBOOST_NUM_THREADS', '1')}")
 _bulk_executor = None
 
 
@@ -52,33 +54,48 @@ def _get_bulk_executor():
     return _bulk_executor
 
 
-# Global actions cache loaded once per API process
-_ACTIONS_CACHE = None
-
-
-def _get_actions_cached():
+# Load actions fresh once per incoming API request.
+# This intentionally avoids process-level caching to ensure upstream updates
+# are reflected on every new request, while still reusing the list across
+# the same request (e.g., bulk subtasks).
+def _load_actions_for_request():
     """
-    Load actions from global api and cache them to prevent reloading them on each request
-    or city subtask.
+    Fetch the latest actions from the Global API for the current request.
+
+    Behavior:
+    - Called once per API request; result is reused across that request.
+    - No cross-request/process cache is kept.
+    - Upstream changes are picked up on the next incoming request.
     """
-    # Set to global variable because we assign a value in the function for global scope
-    global _ACTIONS_CACHE
-    if _ACTIONS_CACHE is None:
-        try:
-            _ACTIONS_CACHE = get_actions()
-            logger.info(
-                f"Loaded actions cache: {len(_ACTIONS_CACHE) if _ACTIONS_CACHE else 0} items"
-            )
-        except Exception as e:
-            logger.error(f"Failed to load actions cache: {str(e)}", exc_info=True)
-            _ACTIONS_CACHE = None
-    return _ACTIONS_CACHE
+    try:
+        actions = get_actions()
+        logger.info(f"Loaded actions: {len(actions) if actions else 0} items")
+        return actions
+    except Exception as e:
+        logger.error(f"Failed to load actions: {str(e)}", exc_info=True)
+        return None
 
 
 @router.post(
     "/v1/start_prioritization",
     response_model=StartPrioritizationResponse,
     status_code=202,
+    summary="Start single prioritization (asynchronous)",
+    description=(
+        "Starts a single prioritization job and returns a task identifier. "
+        "Use the progress and result endpoints to poll for completion. "
+        "If upstream actions are unavailable, the task is created in a failed state and still returned as 202."
+    ),
+    responses={
+        202: {
+            "description": "Accepted. Task created. Response contains taskId and initial status.",
+        },
+        422: {"description": "Validation error"},
+        429: {"description": "Too Many Requests (rate limited)"},
+        500: {
+            "description": "Internal Server Error (failed to start background processing)"
+        },
+    },
 )
 @limiter.limit("10/minute")
 async def start_prioritization(request: Request, req: PrioritizerRequest):
@@ -86,10 +103,13 @@ async def start_prioritization(request: Request, req: PrioritizerRequest):
 
     # Log the request
     logger.info(f"Task {task_uuid}: Received prioritization request")
-    logger.info(f"Task {task_uuid}: Locode: {req.cityData.cityContextData.locode}")
-    logger.info(f"Task {task_uuid}: Prioritization type: {req.prioritizationType}")
-    logger.info(f"Task {task_uuid}: Languages: {req.language}")
-    logger.info(f"Task {task_uuid}: Country code: {req.countryCode}")
+    try:
+        body_json = json.dumps(jsonable_encoder(req), ensure_ascii=False)
+        logger.info(f"Task {task_uuid}: Request body: {body_json}")
+    except Exception:
+        logger.exception(
+            f"Task {task_uuid}: Failed to serialize request body for logging"
+        )
 
     # Log the request to the task storage
     task_storage[task_uuid] = {
@@ -98,7 +118,19 @@ async def start_prioritization(request: Request, req: PrioritizerRequest):
         "locode": req.cityData.cityContextData.locode,
     }
 
-    actions_cached = _get_actions_cached()
+    actions_cached = _load_actions_for_request()
+    # Fail early if actions could not be loaded
+    if not actions_cached:
+        logger.error(
+            f"Task {task_uuid}: No actions data available from global API; failing request early"
+        )
+        task_storage[task_uuid] = {
+            "status": "failed",
+            "error": "No actions data available from global API. Please try again later.",
+        }
+        return StartPrioritizationResponse(
+            taskId=task_uuid, status=task_storage[task_uuid]["status"]
+        )
 
     # Create the background task input
     background_task_input = {
@@ -138,6 +170,20 @@ async def start_prioritization(request: Request, req: PrioritizerRequest):
     "/v1/start_prioritization_bulk",
     response_model=StartPrioritizationResponse,
     status_code=202,
+    summary="Start bulk prioritization (asynchronous)",
+    description=(
+        "Starts a bulk prioritization job for multiple cities and returns a task identifier. "
+        "Each city runs as a subtask. Use the bulk result endpoint to retrieve the aggregated outcome. "
+        "If upstream actions are unavailable, the task is created in a failed state and still returned as 202."
+    ),
+    responses={
+        202: {
+            "description": "Accepted. Bulk task created. Response contains taskId and initial status.",
+        },
+        422: {"description": "Validation error"},
+        429: {"description": "Too Many Requests (rate limited)"},
+        500: {"description": "Internal Server Error"},
+    },
 )
 @limiter.limit("10/minute")
 async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBulk):
@@ -145,12 +191,13 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
 
     # Log the request
     logger.info(f"Task {main_task_id}: Received bulk prioritization request")
-    logger.info(
-        f"Task {main_task_id}: Locode: {req.cityDataList[0].cityContextData.locode}"
-    )
-    logger.info(f"Task {main_task_id}: Prioritization type: {req.prioritizationType}")
-    logger.info(f"Task {main_task_id}: Languages: {req.language}")
-    logger.info(f"Task {main_task_id}: Country code: {req.countryCode}")
+    try:
+        body_json = json.dumps(jsonable_encoder(req), ensure_ascii=False)
+        logger.info(f"Task {main_task_id}: Request body: {body_json}")
+    except Exception:
+        logger.exception(
+            f"Task {main_task_id}: Failed to serialize request body for logging"
+        )
 
     # Log the request to the task storage
     subtasks = []
@@ -171,12 +218,64 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
         "prioritizer_response_bulk": None,
         "error": None,
     }
+
+    actions_cached = _load_actions_for_request()
+    # Fail early if actions could not be loaded
+    if not actions_cached:
+        logger.error(
+            f"Task {main_task_id}: No actions data available from global API; failing request early"
+        )
+        task_storage[main_task_id] = {
+            "status": "failed",
+            "error": "No actions data available from global API. Please try again later.",
+        }
+        return StartPrioritizationResponse(
+            taskId=main_task_id, status=task_storage[main_task_id]["status"]
+        )
+
     executor = _get_bulk_executor()
-    actions_cached = _get_actions_cached()
-    for idx, city_data in enumerate(req.cityDataList):
-        # mark subtask as running before submission
+
+    # Per-subtask timeout (seconds), default 5 minutes; configurable via env
+    try:
+        timeout_seconds = int(os.getenv("SUBTASK_TIMEOUT_SECONDS", "300"))
+    except Exception:
+        timeout_seconds = 300
+
+    # Timeout handler
+    def _on_subtask_timeout(task_id: str, sub_idx: int, f):
         try:
-            task_storage[main_task_id]["subtasks"][idx]["status"] = "running"
+            if f.done():
+                return
+            # Mark subtask as failed due to timeout
+            try:
+                task_storage[task_id]["subtasks"][sub_idx]["status"] = "failed"
+                task_storage[task_id]["subtasks"][sub_idx]["error"] = "timeout"
+                # Flag to let callback ignore late results
+                task_storage[task_id]["subtasks"][sub_idx]["timed_out"] = True
+            except Exception:
+                pass
+            try:
+                # Best-effort cancel (no effect if already running)
+                f.cancel()
+            except Exception:
+                pass
+            try:
+                _update_bulk_task_status(task_id)
+            except Exception:
+                pass
+        except Exception:
+            pass
+
+    # Submit only up to available workers; schedule next city when one finishes
+    total = len(req.cityDataList)
+    max_inflight = min(_default_workers, total)
+    submit_lock = threading.Lock()
+    state = {"next_idx": max_inflight}
+
+    def _submit_city(sub_idx: int):
+        city_data = req.cityDataList[sub_idx]
+        try:
+            task_storage[main_task_id]["subtasks"][sub_idx]["status"] = "running"
         except Exception:
             pass
         requestData = {
@@ -200,36 +299,77 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
             "actions": actions_cached,
         }
         future = executor.submit(
-            compute_prioritization_bulk_subtask,
+            _compute_prioritization_bulk_subtask,
             background_task_input,
+            main_task_id,
+            sub_idx,
         )
 
-        def _make_callback(task_id: str, sub_idx: int):
+        def _make_callback(task_id: str, sub_idx_inner: int, timer: threading.Timer):
             def _callback(f):
                 try:
-                    result = f.result()
-                    if result.get("status") == "completed":
-                        task_storage[task_id]["subtasks"][sub_idx][
+                    # Cancel timeout timer on completion
+                    try:
+                        timer.cancel()
+                    except Exception:
+                        pass
+
+                    # If already timed out, ignore late result
+                    try:
+                        if task_storage[task_id]["subtasks"][sub_idx_inner].get(
+                            "timed_out"
+                        ):
+                            pass
+                        else:
+                            result = f.result()
+                            if result.get("status") == "completed":
+                                task_storage[task_id]["subtasks"][sub_idx_inner][
+                                    "status"
+                                ] = "completed"
+                                task_storage[task_id]["subtasks"][sub_idx_inner]["result"] = PrioritizerResponse(**result["result"])  # type: ignore
+                            else:
+                                task_storage[task_id]["subtasks"][sub_idx_inner][
+                                    "status"
+                                ] = "failed"
+                                task_storage[task_id]["subtasks"][sub_idx_inner][
+                                    "error"
+                                ] = result.get("error")
+                    except Exception as e:
+                        task_storage[task_id]["subtasks"][sub_idx_inner][
                             "status"
-                        ] = "completed"
-                        task_storage[task_id]["subtasks"][sub_idx]["result"] = PrioritizerResponse(**result["result"])  # type: ignore
-                    else:
-                        task_storage[task_id]["subtasks"][sub_idx]["status"] = "failed"
-                        task_storage[task_id]["subtasks"][sub_idx]["error"] = (
-                            result.get("error")
+                        ] = "failed"
+                        task_storage[task_id]["subtasks"][sub_idx_inner]["error"] = str(
+                            e
                         )
-                except Exception as e:
-                    task_storage[task_id]["subtasks"][sub_idx]["status"] = "failed"
-                    task_storage[task_id]["subtasks"][sub_idx]["error"] = str(e)
                 finally:
                     try:
                         _update_bulk_task_status(task_id)
                     except Exception:
                         pass
+                    # Schedule next city, keeping inflight <= max_inflight
+                    try:
+                        with submit_lock:
+                            ni = state["next_idx"]
+                            if ni < total:
+                                state["next_idx"] = ni + 1
+                                _submit_city(ni)
+                    except Exception:
+                        pass
 
             return _callback
 
-        future.add_done_callback(_make_callback(main_task_id, idx))
+        # Start watchdog timer per subtask
+        timer = threading.Timer(
+            timeout_seconds, _on_subtask_timeout, args=(main_task_id, sub_idx, future)
+        )
+        timer.daemon = True
+        timer.start()
+
+        future.add_done_callback(_make_callback(main_task_id, sub_idx, timer))
+
+    # Prime the pool with up to max_inflight tasks
+    for i in range(max_inflight):
+        _submit_city(i)
 
     return StartPrioritizationResponse(
         taskId=main_task_id, status=task_storage[main_task_id]["status"]
@@ -239,6 +379,19 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
 @router.get(
     "/v1/check_prioritization_progress/{task_uuid}",
     response_model=CheckProgressResponse,
+    summary="Check prioritization task progress",
+    description=(
+        "Returns the current status of a prioritization task. "
+        "If the task has failed, an error message is included in the payload."
+    ),
+    responses={
+        200: {
+            "description": "OK. Status returned (pending, running, completed, or failed)."
+        },
+        404: {"description": "Task not found"},
+        422: {"description": "Validation error"},
+        429: {"description": "Too Many Requests (rate limited)"},
+    },
 )
 @limiter.limit("10/minute")
 async def check_prioritization_progress(request: Request, task_uuid: str):
@@ -257,7 +410,26 @@ async def check_prioritization_progress(request: Request, task_uuid: str):
     return CheckProgressResponse(status=task_info["status"])
 
 
-@router.get("/v1/get_prioritization/{task_uuid}", response_model=PrioritizerResponse)
+@router.get(
+    "/v1/get_prioritization/{task_uuid}",
+    response_model=PrioritizerResponse,
+    summary="Get single prioritization result",
+    description=(
+        "Returns the computed prioritization for a single task once completed. "
+        "Use the progress endpoint to check readiness."
+    ),
+    responses={
+        200: {"description": "OK. Prioritization result returned."},
+        400: {
+            "description": "Bad Request. Task is a bulk task; use bulk result endpoint instead."
+        },
+        404: {"description": "Task not found"},
+        409: {"description": "Conflict. Task not completed yet."},
+        422: {"description": "Validation error"},
+        429: {"description": "Too Many Requests (rate limited)"},
+        500: {"description": "Internal Server Error. Task failed during processing."},
+    },
+)
 @limiter.limit("10/minute")
 async def get_prioritization(request: Request, task_uuid: str):
     logger.info(f"Task {task_uuid}: Retrieving prioritization result")
@@ -300,7 +472,24 @@ async def get_prioritization(request: Request, task_uuid: str):
 
 
 @router.get(
-    "/v1/get_prioritization_bulk/{task_uuid}", response_model=PrioritizerResponseBulk
+    "/v1/get_prioritization_bulk/{task_uuid}",
+    response_model=PrioritizerResponseBulk,
+    summary="Get bulk prioritization result",
+    description=(
+        "Returns the aggregated prioritization results for a bulk task once completed. "
+        "Use the progress endpoint to check readiness."
+    ),
+    responses={
+        200: {"description": "OK. Bulk prioritization result returned."},
+        400: {
+            "description": "Bad Request. Task is a single task; use single result endpoint instead."
+        },
+        404: {"description": "Task not found"},
+        409: {"description": "Conflict. Task not completed yet."},
+        422: {"description": "Validation error"},
+        429: {"description": "Too Many Requests (rate limited)"},
+        500: {"description": "Internal Server Error. Task failed during processing."},
+    },
 )
 @limiter.limit("10/minute")
 async def get_prioritization_bulk(request: Request, task_uuid: str):
@@ -343,7 +532,17 @@ async def get_prioritization_bulk(request: Request, task_uuid: str):
         )
 
 
-@router.get("/v1/debug/tasks")
+@router.get(
+    "/v1/debug/tasks",
+    summary="Debug: list all tasks",
+    description="Returns the full in-memory task store for debugging.",
+    responses={
+        200: {"description": "OK. Full task store returned."},
+        422: {"description": "Validation error"},
+        429: {"description": "Too Many Requests (rate limited)"},
+        500: {"description": "Internal Server Error"},
+    },
+)
 @limiter.limit("30/minute")
 async def debug_list_tasks(request: Request):
     """Return the full task_storage for debugging (json-encoded)."""

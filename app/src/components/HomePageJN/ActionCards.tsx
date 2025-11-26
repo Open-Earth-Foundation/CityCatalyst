@@ -1,5 +1,13 @@
 import type { TFunction } from "i18next";
-import { Box, Text, Grid, GridItem, Icon, Link } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  Grid,
+  GridItem,
+  Icon,
+  Link,
+  HStack,
+} from "@chakra-ui/react";
 import { AddCollaboratorButton } from "./AddCollaboratorButton";
 import { MdBarChart } from "react-icons/md";
 
@@ -48,10 +56,12 @@ export function ActionCards({
             h="100%"
           >
             <Box>
-              <Icon as={MdBarChart} boxSize={6} mb={2} />
-              <Text fontWeight="bold" fontSize="xl">
-                {t("check-your-dashboard")}
-              </Text>
+              <HStack>
+                <Icon as={MdBarChart} boxSize={6} mb={2} />
+                <Text fontWeight="bold" fontSize="xl">
+                  {t("check-your-dashboard")}
+                </Text>
+              </HStack>
               <Text mt={2}>{t("check-your-dashboard-description")}</Text>
             </Box>
             <Box

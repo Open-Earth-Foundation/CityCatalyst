@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from "uuid";
 import { db } from "@/models";
 import { ActionPlan } from "@/models/ActionPlan";
 import { logger } from "@/services/logger";
+import { hiapApiWrapper } from "./HiapApiService";
+
 // Interfaces updated to work with new table structure
 
 export interface CreateActionPlanInput {
@@ -65,6 +67,7 @@ export interface UpdateActionPlanInput {
 export interface UpsertActionPlanInput {
   actionId: string;
   highImpactActionRankedId?: string;
+  cityId: string;
   cityLocode: string;
   actionName: string;
   language: string;
@@ -85,6 +88,7 @@ export default class ActionPlanService {
     if (planData.metadata) {
       result.cityName = planData.metadata.cityName;
       result.createdAtTimestamp = planData.metadata.createdAt;
+      result.actionName = planData.metadata.actionName;
     }
 
     // Extract introduction content
@@ -211,36 +215,47 @@ export default class ActionPlanService {
    * Get action plans by city ID
    */
   public static async getActionPlansByCityId(
-    cityId?: string,
-    language?: string,
-    actionId?: string,
+    cityId: string,
+    language: string,
+    actionId: string,
   ): Promise<ActionPlan[]> {
     try {
-      const whereClause: any = {};
-      if (language) {
-        whereClause.language = language;
-      }
-      if (actionId) {
-        whereClause.actionId = actionId;
+      const city = await db.models.City.findByPk(cityId);
+      if (!city?.locode) {
+        logger.warn({ cityId }, "City not found or has no locode");
+        return [];
       }
 
       const actionPlans = await db.models.ActionPlan.findAll({
-        where: whereClause,
+        where: {
+          language,
+          actionId,
+          cityLocode: city.locode, // Direct filter by city locode
+        },
         include: [
           {
             model: db.models.HighImpactActionRanked,
             as: "highImpactActionRanked",
+            include: [
+              {
+                model: db.models.HighImpactActionRanking,
+                as: "highImpactActionRanking",
+                include: [
+                  {
+                    model: db.models.Inventory,
+                    as: "inventory",
+                    where: { cityId: cityId },
+                  },
+                ],
+              },
+            ],
           },
         ],
         order: [["created", "DESC"]],
       });
-
       return actionPlans;
     } catch (error: any) {
-      logger.error(
-        { err: error },
-        "Failed to get action plans by inventory ID",
-      );
+      logger.error({ err: error }, "Failed to get action plans by city ID");
       throw createHttpError.InternalServerError(
         "Failed to retrieve action plans",
       );
@@ -319,7 +334,7 @@ export default class ActionPlanService {
 
       // Check if action plan already exists
       const existingPlans = await this.getActionPlansByCityId(
-        undefined, // No city filter for upsert
+        input.cityId,
         input.language,
         input.actionId,
       );
@@ -365,10 +380,11 @@ export default class ActionPlanService {
   public static async getActionPlanByKey(
     actionId: string,
     language: string,
+    cityId: string,
   ): Promise<{ planData: any } | null> {
     try {
       const actionPlans = await this.getActionPlansByCityId(
-        undefined, // No city filter
+        cityId,
         language,
         actionId,
       );
@@ -385,6 +401,125 @@ export default class ActionPlanService {
       logger.error({ err: error }, "Failed to get action plan by key");
       throw createHttpError.InternalServerError(
         "Failed to retrieve action plan",
+      );
+    }
+  }
+
+  /**
+   * - Returns existing plan if it exists in the requested language
+   * - Translates from another language if available
+   * - Returns empty array if no plan exists in any language
+   */
+  public static async fetchOrTranslateActionPlan(
+    cityId: string,
+    language: string,
+    actionId: string,
+  ): Promise<ActionPlan[]> {
+    try {
+      // First, try to get plans in the requested language
+      let actionPlans = await this.getActionPlansByCityId(
+        cityId,
+        language,
+        actionId,
+      );
+
+      // If no plans found in requested language, try to find plans in other languages and translate them
+      if (!actionPlans || actionPlans.length === 0) {
+        // Get the city's locode first
+        const city = await db.models.City.findByPk(cityId);
+        if (!city?.locode) {
+          logger.warn(
+            { cityId },
+            "City not found or has no locode for translation",
+          );
+          return [];
+        }
+
+        // Get plans in any language for this action and city
+        const basePlans = await db.models.ActionPlan.findAll({
+          where: {
+            actionId,
+          },
+          include: [
+            {
+              model: db.models.HighImpactActionRanked,
+              as: "highImpactActionRanked",
+              include: [
+                {
+                  model: db.models.HighImpactActionRanking,
+                  as: "highImpactActionRanking",
+                  include: [
+                    {
+                      model: db.models.Inventory,
+                      as: "inventory",
+                      where: { cityId: cityId },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          order: [["created", "DESC"]],
+        });
+
+        const sourcePlan = basePlans && basePlans[0];
+        if (sourcePlan && sourcePlan.language !== language) {
+          try {
+            // Get the plan data in legacy format for translation
+            const keyResult = await this.getActionPlanByKey(
+              sourcePlan.actionId,
+              sourcePlan.language,
+              cityId,
+            );
+            if (keyResult) {
+              // Translate the plan
+              const translated = await hiapApiWrapper.translateActionPlan(
+                keyResult.planData,
+                sourcePlan.language,
+                language,
+              );
+
+              // Transform the translated plan data to extract the translated action name
+              const transformedData = this.transformPlanData(translated);
+
+              // Save the translated plan
+              await this.upsertActionPlan({
+                actionId: sourcePlan.actionId,
+                highImpactActionRankedId:
+                  sourcePlan.highImpactActionRankedId || undefined,
+                cityId: cityId,
+                cityLocode: sourcePlan.cityLocode,
+                actionName: transformedData.actionName || sourcePlan.actionName,
+                language,
+                planData: translated,
+              });
+
+              // Get the newly created/updated plan
+              actionPlans = await this.getActionPlansByCityId(
+                cityId,
+                language,
+                actionId,
+              );
+            }
+          } catch (translationError) {
+            logger.error(
+              { err: translationError, actionId, language },
+              "Failed to translate action plan, returning empty result",
+            );
+            // Return empty array if translation fails
+            actionPlans = [];
+          }
+        }
+      }
+
+      return actionPlans;
+    } catch (error: any) {
+      logger.error(
+        { err: error, cityId, language, actionId },
+        "Failed to get action plans",
+      );
+      throw createHttpError.InternalServerError(
+        "Failed to retrieve action plans",
       );
     }
   }

@@ -17,6 +17,8 @@
   "n-a": "N/A",
   "go-back": "Go back",
   "action-description": "Action description",
+  "action-explanation": "Explanation",
+  "no-explanation-available": "No explanation available",
   "adaptation-effectiveness": "Adaptation Effectiveness",
   "adaptation-effectiveness-by-hazard": "Adaptation Effectiveness by Hazard",
   "ranking": "Ranking",
@@ -24,9 +26,21 @@
   "generate-climate-actions-title": "Generate your climate action plan",
   "generate-climate-actions-description": "Check out your key actions for this category. Explore them to gain insights and create draft implementation plans for each.",
   "no-actions-found-title": "Your top climate actions are being processed",
-  "no-actions-found-description": "This process can take up up to 15 mins. You'll get an email and see them here when done",
+  "no-actions-found-description": "This process can take up to 15 mins. You'll get an email and see them here when done",
   "generate-climate-actions-widget-description": "You can create implementation plans for each of the selected actions. Feel free to browse the complete list of actions below and choose which ones you want to display here.",
+  "action-plan": "Action plan",
   "download-action-plan": "download",
+  "download-csv": "CSV",
+  "additional-info": "Additional info",
+  "action-type-label": "Action type",
+  "actions-of": {
+    "mitigation": "Mitigation actions",
+    "adaptation": "Adaptation actions"
+  },
+  "action-type": {
+    "mitigation": "Mitigation",
+    "adaptation": "Adaptation"
+  },
   "top-pick-action-title": "top pick",
   "integrate-renewables-into-municipal-water-systems": "Integrate renewables into municipal water systems",
   "reduction-potential": "Reduction potential",
@@ -43,17 +57,20 @@
   "no-activity-data-title": "Not enough data to generate your top climate actions yet",
   "no-activity-data-description": "You need to complete at least 1 activity in your inventory to generate your top actions list.",
   "generate-climate-actions-list": "Generate top actions list",
+  "error-generating-actions-title": "Something went wrong",
+  "error-generating-actions-description": "We encountered an error while generating your climate actions. Please try again.",
   "generating-actions": "Generating actions...",
   "checking-activity-data": "Checking activity data",
   "generating-climate-actions": "Your top climate actions are being processed",
-  "generating-climate-actions-description": "This process can take up up to 15 mins. You'll get an email and see them here when done",
+  "generating-climate-actions-description": "This process can take up to 15 mins. You'll get an email and see them here when done",
   "top-actions-for-your-city": "Top actions for your city",
   "top-actions-for-your-city-description": "These are the top 40 actions we recommend based on your GHG inventory and City Context data. You will find 20 actions for Mitigation and 20 for Adaptation in their respective tabs. Re-running the prioritizer after any relevant data update or change is recommended.",
   "actions-for-your-city-description": "These are the top 40 actions we recommend based on your GHG inventory, Climate Risk Assessment, and City Context data. You will find 20 actions for Mitigation and 20 for Adaptation in their respective tabs.",
   "citycatalyst-actions-title": "citycatalyst actions",
   "re-prioritize-actions": "Re-prioritize actions",
   "generated-action-plan": "generate action plan",
-  "export-as-pdf": "export as pdf",
+  "export-as-csv": "Export as CSV",
+  "export-as-pdf": "Export as PDF",
   "generating-pdf": "generating pdf...",
   "subactions": "Subactions",
   "municipal-institutions-involved": "municipal institutions involved",
@@ -113,11 +130,41 @@
   "exit-selection": "Exit selection",
   "ranked-and-unranked-actions-description": "Here are the climate initiatives that our AI model has identified as having the greatest potential impact for your city. You can select any three actions to create detailed plans in the upper section. Additionally, feel free to download this table to share with stakeholders.",
   "view-generated-plan": "View Generated Plan",
-  "loading": "Loading...",
   "generating-plan": "Generating Plan...",
   "missing-data": "Missing Data",
   "plan-generation-started": "Plan Generation Started",
   "plan-generation-started-description": "Your action plan is being generated. You'll receive an email notification when it's ready.",
   "plan-generation-failed": "Generation Failed",
-  "plan-generation-failed-description": "Failed to start plan generation. Please try again."
+  "plan-generation-failed-description": "Failed to start plan generation. Please try again.",
+  "reprioritization-started": "Reprioritization Started",
+  "reprioritization-started-description": "Your climate actions are being re-prioritized with the latest data. You'll receive an email when complete.",
+  "reprioritization-failed": "Reprioritization Failed",
+  "reprioritization-failed-description": "Failed to start reprioritization. Please try again.",
+  "unknown": "Unknown",
+  "inventory-year": "Inventory Year",
+  "implementation-plan": "Implementation plan",
+  "pdf": {
+    "title": "Climate Action Implementation Plan",
+    "sections": {
+      "overview": "Overview",
+      "implementation-steps": "Implementation Steps",
+      "key-institutions": "Key Institutions",
+      "milestones": "Milestones",
+      "mitigation-measures": "Mitigation Measures",
+      "adaptation-measures": "Adaptation Measures",
+      "sustainable-development-goals": "Sustainable Development Goals"
+    },
+    "labels": {
+      "city-context": "City Context",
+      "action-description": "Action Description",
+      "national-strategy": "National Strategy",
+      "item": "Item"
+    },
+    "footer": {
+      "generated-by": "Generated by CityCatalyst",
+      "page": "Page",
+      "of": "of",
+      "generated-on": "Generated on"
+    }
+  }
 }

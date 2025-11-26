@@ -2,7 +2,10 @@
 import dynamic from "next/dynamic";
 import type { TFunction } from "i18next";
 import type { PopulationAttributes } from "@/models/Population";
-import type { InventoryResponse } from "@/util/types";
+import type {
+  CityWithProjectDataResponse,
+  InventoryResponse,
+} from "@/util/types";
 import { useGetOCCityDataQuery } from "@/services/api";
 import { useMemo } from "react";
 import { Box, Heading, Icon, Spinner, Text } from "@chakra-ui/react";
@@ -23,13 +26,14 @@ import { useTranslation } from "@/i18n/client";
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
 interface HeroProps {
-  inventory: InventoryResponse;
+  inventory: InventoryResponse | null;
   isPublic: boolean;
   currentInventoryId: string | null;
   isInventoryLoading: boolean;
   formattedEmissions: { value: string; unit: string };
-  population?: PopulationAttributes;
+  population?: PopulationAttributes | null;
   lng: string;
+  city?: CityWithProjectDataResponse | undefined;
 }
 
 export function Hero({
@@ -40,11 +44,23 @@ export function Hero({
   isPublic,
   population,
   lng,
+  city,
 }: HeroProps) {
   const { t } = useTranslation(lng, "dashboard");
-  const { data: cityData } = useGetOCCityDataQuery(inventory.city?.locode!, {
-    skip: !inventory.city?.locode,
-  });
+  const activeCity = inventory?.city?.name ?? city?.name;
+  const activeProject = (() => {
+    const projectName = inventory?.city?.project?.name ?? city?.project?.name;
+    return projectName === "cc_project_default"
+      ? t("default-project")
+      : projectName;
+  })();
+
+  const { data: cityData } = useGetOCCityDataQuery(
+    inventory?.city?.locode || "",
+    {
+      skip: !inventory?.city?.locode,
+    },
+  );
 
   const popWithDS = useMemo(
     () =>
@@ -88,19 +104,21 @@ export function Hero({
                   <Link
                     href={`/public/project/${inventory?.city?.project?.projectId}`}
                   >
-                    <ProjectTitle inventory={inventory} t={t} />
+                    <ProjectTitle t={t} activeProject={activeProject} />
                   </Link>
                 ) : (
-                  <ProjectTitle inventory={inventory} t={t} />
+                  <ProjectTitle t={t} activeProject={activeProject} />
                 )}
                 <Box display="flex" alignItems="center" gap={4}>
-                  {inventory?.city ? (
+                  {inventory?.city || city ? (
                     <>
                       <CircleFlag
                         countryCode={
-                          inventory.city.locode
+                          inventory?.city?.locode
                             ?.substring(0, 2)
-                            .toLowerCase() || ""
+                            .toLowerCase() ||
+                          city?.locode?.substring(0, 2).toLowerCase() ||
+                          ""
                         }
                         width={32}
                       />
@@ -111,9 +129,7 @@ export function Hero({
                         lineHeight="52"
                         display="flex"
                       >
-                        <span data-testid="hero-city-name">
-                          {inventory?.city?.name}
-                        </span>
+                        <span data-testid="hero-city-name">{activeCity}</span>
                       </Heading>
                     </>
                   ) : (
@@ -305,7 +321,7 @@ export function Hero({
             </Box>
             <Box mt={-25}>
               <CityMap
-                locode={inventory?.city?.locode ?? null}
+                locode={inventory?.city?.locode || city?.locode || null}
                 width={422}
                 height={317}
               />
@@ -318,11 +334,11 @@ export function Hero({
 }
 
 function ProjectTitle({
-  inventory,
   t,
+  activeProject,
 }: {
-  inventory: InventoryResponse;
   t: TFunction;
+  activeProject: string | undefined;
 }) {
   return (
     <Text
@@ -332,9 +348,7 @@ function ProjectTitle({
       color="white"
       data-testid="hero-project-name"
     >
-      {inventory?.city?.project?.name === "cc_project_default"
-        ? t("default-project")
-        : inventory?.city?.project?.name}
+      {activeProject}
     </Text>
   );
 }

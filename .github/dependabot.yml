@@ -15,8 +15,13 @@ updates:
     directory: "global-api"
     schedule:
       interval: "weekly"
-  # ── HIAP (pip)
-  - package-ecosystem: "pip"
+  # ── HIAP (uv)
+  - package-ecosystem: "uv"
     directory: "/hiap"
+    schedule:
+      interval: "weekly"
+  # ── Climate Advisor (pip)
+  - package-ecosystem: "pip"
+    directory: "/climate-advisor"
     schedule:
       interval: "weekly"

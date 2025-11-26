@@ -17,6 +17,7 @@ import useActivityForm, {
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import useEmissionFactors from "@/hooks/activity-value-form/use-emission-factors";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import { trackEvent } from "@/lib/analytics";
 import {
   DialogBackdrop,
   DialogCloseTrigger,
@@ -136,7 +137,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
           ...gasValue,
           gas: gasValue.gas as string,
           factor: parseFloat(data[`${gasValue.gas}EmissionFactor`]),
-          unit: gasValue.emissionsFactor.units as string,
+          unit: data[
+            `${gasValue.gas?.toLocaleLowerCase()}EmissionFactorUnit`
+          ] as string,
         };
         gasArray.push(gasObject);
       });
@@ -146,7 +149,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     const gasArray: { gas: string; factor: number; unit: string }[] = [];
     gases.forEach((gas) => {
       const gasFactorKey = `${gas}EmissionFactor`;
-      const gasUnitKey = `${gas}EmissionFactorUnit`;
+      const gasUnitKey = `${gas?.toLocaleLowerCase()}EmissionFactorUnit`;
       const gasObject = {
         gas: gas,
         factor: parseFloat(data[gasFactorKey]),
@@ -179,9 +182,12 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     const requestData = {
       activityData: methodology?.id.includes("direct-measure")
         ? {
-            co2_amount: gasValues[1].factor,
-            ch4_amount: gasValues[0].factor,
-            n2o_amount: gasValues[2].factor,
+            ch4_amount: gasValues.find((g) => g.gas === "CH4")?.factor || 0,
+            co2_amount: gasValues.find((g) => g.gas === "CO2")?.factor || 0,
+            n2o_amount: gasValues.find((g) => g.gas === "N2O")?.factor || 0,
+            ch4_unit: gasValues.find((g) => g.gas === "CH4")?.unit || "",
+            co2_unit: gasValues.find((g) => g.gas === "CO2")?.unit || "",
+            n2o_unit: gasValues.find((g) => g.gas === "N2O")?.unit || "",
             ...values,
           }
         : { ...values },
@@ -238,6 +244,14 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     }
 
     if (response.data) {
+      // Track successful activity data submission
+      trackEvent("activity_data_submitted", {
+        action: edit ? "update" : "create",
+        methodology_id: methodology?.id,
+        reference_number: referenceNumber,
+        inventory_id: inventoryId,
+      });
+      
       setHasActivityData(!hasActivityData);
       showSuccessToast();
       reset();

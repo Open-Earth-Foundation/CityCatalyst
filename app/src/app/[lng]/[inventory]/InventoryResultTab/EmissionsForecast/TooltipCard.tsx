@@ -7,12 +7,12 @@ import {
   ISector,
 } from "@/util/constants";
 import { ColoredCircle } from "@/components/ColoredCircle";
-import { ButtonSmall } from "@/components/Texts/Button";
-import { TitleMedium } from "@/components/Texts/Title";
+import { ButtonSmall } from "@/components/package/Texts/Button";
+import { TitleMedium } from "@/components/package/Texts/Title";
 import { getColorForSeries } from "./EmissionsForecastChart";
 import type { TFunction } from "i18next";
 import { EmissionsForecastData } from "@/util/types";
-import type { Point } from "@nivo/line";
+import type { Point, LineSeries } from "@nivo/line";
 
 interface LineChartData {
   id: string;
@@ -21,7 +21,7 @@ interface LineChartData {
 }
 
 interface TooltipCardProps {
-  point: Point;
+  point: Point<LineSeries>;
   data: LineChartData[];
   forecast: EmissionsForecastData;
   t: TFunction;
@@ -120,7 +120,7 @@ const TooltipCard = ({ point, data, forecast, t }: TooltipCardProps) => {
                   yearData && forecast.growthRates[yearData.x as string];
                 const growthRate =
                   yearGrowthRates?.[sectorRefNo!] ||
-                  yearGrowthRates?.[point.serieId as string];
+                  yearGrowthRates?.[point.seriesId as string];
 
                 return (
                   <Table.Row key={id}>

@@ -28,10 +28,22 @@ spec:
             - name: PROJECT_NAME
               value: "CityCatalyst Global API"
           resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
             limits:
               memory: "1024Mi"
               cpu: "1000m"
           livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+              httpHeaders:
+              - name: X-Liveness-Probe
+                value: "True"
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          readinessProbe:
             httpGet:
               path: /health
               port: 8000

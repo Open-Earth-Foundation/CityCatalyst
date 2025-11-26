@@ -66,7 +66,7 @@ export default function AdminNotificationTemplate({
           </Text>
 
           <Link
-            href={`${host}/api/v0/user/file/${file.id}/download-file`}
+            href={`${host}/api/v1/user/file/${file.id}/download-file`}
             key={file.id}
             download
           >

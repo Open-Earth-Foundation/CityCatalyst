@@ -1,17 +1,16 @@
 import { SectorEmission } from "@/util/types";
-import { Accordion, Box, Icon, Table, Text } from "@chakra-ui/react";
-import { convertKgToTonnes } from "@/util/helpers";
+import { Box, Icon, Table, Text } from "@chakra-ui/react";
+import { convertKgToTonnes, shortSectorNameToKebabCase } from "@/util/helpers";
 import React from "react";
 import { useTranslation } from "@/i18n/client";
 import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
-import { toKebabCaseModified } from "@/app/[lng]/[inventory]/InventoryResultTab/index";
 import {
   AccordionItem,
   AccordionItemContent,
   AccordionItemTrigger,
   AccordionRoot,
 } from "@/components/ui/accordion";
-import { ButtonSmall } from "@/components/Texts/Button";
+import { ButtonSmall } from "@/components/package/Texts/Button";
 
 interface EmissionBySectorTableProps {
   data: {
@@ -33,6 +32,7 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
   lng,
 }) => {
   const { t: tData } = useTranslation(lng, "data");
+  const { t: tDashboard } = useTranslation(lng, "dashboard");
 
   const renderTable = (item: {
     bySector: ExtendedSectorEmission[];
@@ -51,18 +51,20 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
           backgroundColor="background.backgroundLight"
           textTransform="uppercase"
         >
-          <Table.ColumnHeader>
-            <ButtonSmall>{tData("sector")}</ButtonSmall>
-          </Table.ColumnHeader>
-          <Table.ColumnHeader>
-            <ButtonSmall>{tData("emissions")}</ButtonSmall>
-          </Table.ColumnHeader>
-          <Table.ColumnHeader>
-            <ButtonSmall>{tData("percentage-emissions")}</ButtonSmall>
-          </Table.ColumnHeader>
-          <Table.ColumnHeader>
-            <ButtonSmall>{tData("based-on-previous-year")}</ButtonSmall>
-          </Table.ColumnHeader>
+          <Table.Row>
+            <Table.ColumnHeader>
+              <ButtonSmall>{tData("sector")}</ButtonSmall>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              <ButtonSmall>{tData("emissions")}</ButtonSmall>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              <ButtonSmall>{tData("percentage-emissions")}</ButtonSmall>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              <ButtonSmall>{tData("based-on-previous-year")}</ButtonSmall>
+            </Table.ColumnHeader>
+          </Table.Row>
         </Table.Header>
         <Table.Body>
           {item.bySector?.map((sectorBreakDown, i) => {
@@ -79,7 +81,9 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
             return (
               <Table.Row key={i} truncate>
                 <Table.Cell>
-                  {tData(toKebabCaseModified(sectorBreakDown.sectorName))}
+                  {tDashboard(
+                    shortSectorNameToKebabCase(sectorBreakDown.sectorName),
+                  )}
                 </Table.Cell>
                 <Table.Cell>
                   {convertKgToTonnes(sectorBreakDown.co2eq)}

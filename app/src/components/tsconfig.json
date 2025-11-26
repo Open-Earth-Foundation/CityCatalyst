@@ -5,14 +5,8 @@
     "declaration": true,
     "emitDeclarationOnly": false,
     "jsx": "react-jsx",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "skipLibCheck": true
   },
-  "include": [
-    "./index.ts",
-    "./Texts/**/*.ts",
-    "./Texts/**/*.tsx"
-  ]
+  "include": ["./index.ts", "package/**/*.ts", "package/**/*.tsx"]
 }
-
-

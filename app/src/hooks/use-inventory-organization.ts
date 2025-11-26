@@ -1,5 +1,9 @@
 import { useGetOrganizationForInventoryQuery } from "@/services/api";
-import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import {
+  useOrganizationContext,
+  hasOrganizationChanged,
+  normalizeOrganizationState,
+} from "@/hooks/organization-context-provider/use-organizational-context";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
 
@@ -14,14 +18,10 @@ export function useInventoryOrganization(inventoryId: string) {
 
   useEffect(() => {
     if (inventoryOrgData) {
-      const logoUrl = inventoryOrgData?.logoUrl ?? null;
-      const active = inventoryOrgData?.active ?? true;
+      const newOrgState = normalizeOrganizationState(inventoryOrgData);
 
-      if (
-        organization?.logoUrl !== logoUrl ||
-        organization?.active !== active
-      ) {
-        setOrganization({ logoUrl, active });
+      if (hasOrganizationChanged(organization, newOrgState)) {
+        setOrganization(newOrgState);
       }
       setTheme((inventoryOrgData?.theme?.themeKey as string) || "blue_theme");
     }

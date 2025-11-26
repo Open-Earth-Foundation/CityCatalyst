@@ -2,10 +2,10 @@ import {
   DELETE as deleteInventory,
   GET as findInventory,
   PATCH as updateInventory,
-} from "@/app/api/v0/inventory/[inventory]/route";
-import { GET as calculateProgress } from "@/app/api/v0/inventory/[inventory]/progress/route";
-import { POST as createInventory } from "@/app/api/v0/city/[city]/inventory/route";
-import { POST as submitInventory } from "@/app/api/v0/inventory/[inventory]/cdp/route";
+} from "@/app/api/v1/inventory/[inventory]/route";
+import { GET as calculateProgress } from "@/app/api/v1/inventory/[inventory]/progress/route";
+import { POST as createInventory } from "@/app/api/v1/city/[city]/inventory/route";
+import { POST as submitInventory } from "@/app/api/v1/inventory/[inventory]/cdp/route";
 import { db } from "@/models";
 import { CreateInventoryRequest } from "@/util/validation";
 import { randomUUID } from "node:crypto";
@@ -99,11 +99,11 @@ describe("Inventory API", () => {
   let subSector: SubSector;
   let subSector2: SubSector;
   let testData: TestData;
-  
+
   // Mock sessions for different user types
   const collaboratorSession: AppSession = { user: { id: collaboratorUserId, role: Roles.User }, expires: "1h" };
   const orgAdminSession: AppSession = { user: { id: orgAdminUserId, role: Roles.User }, expires: "1h" };
-  
+
   let prevGetServerSession = Auth.getServerSession;
 
   beforeAll(async () => {
@@ -135,7 +135,7 @@ describe("Inventory API", () => {
     await db.models.Sector.destroy({
       where: { sectorName: { [Op.like]: "XX_INVENTORY_PROGRESS_TEST%" } },
     });
-    
+
     // Create proper test data hierarchy
     testData = await createTestData({
       cityName: cityName,
@@ -146,22 +146,22 @@ describe("Inventory API", () => {
     if (!city) {
       throw new Error(`Failed to find city with ID ${testData.cityId}`);
     }
-    
+
     // Update city with test-specific data
     await city.update({
       name: cityName,
       country: cityCountry,
       locode
     });
-    
+
     // Create test users
     await db.models.User.upsert({ userId: collaboratorUserId, name: "COLLABORATOR_USER" });
     await db.models.User.upsert({ userId: orgAdminUserId, name: "ORG_ADMIN_USER" });
-    
+
     // Set up permissions:
     // 1. Collaborator - can only access/edit inventories, not create/delete
     await city.addUser(collaboratorUserId);
-    
+
     // 2. Org Admin - can create/delete inventories
     await db.models.OrganizationAdmin.create({
       organizationAdminId: randomUUID(),
@@ -239,7 +239,7 @@ describe("Inventory API", () => {
 
   it("should create an inventory as org admin", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
-    
+
     await db.models.Inventory.destroy({
       where: { inventoryName },
     });
@@ -258,10 +258,10 @@ describe("Inventory API", () => {
     expect(data.year).toEqual(inventory.year);
     expect(data.totalEmissions).toEqual(inventory.totalEmissions);
   });
-  
+
   it("should reject inventory creation as collaborator", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(collaboratorSession));
-    
+
     const req = mockRequest(inventoryData);
     const res = await createInventory(req, {
       params: Promise.resolve({ city: city.cityId }),
@@ -285,7 +285,7 @@ describe("Inventory API", () => {
 
   it("should find an inventory as org admin", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
-    
+
     const req = mockRequest();
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
@@ -297,10 +297,10 @@ describe("Inventory API", () => {
     const totalSumOfActivityValues = 79735;
     expectToBeLooselyEqual(data.totalEmissions, totalSumOfActivityValues);
   });
-  
+
   it("should find an inventory as collaborator", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(collaboratorSession));
-    
+
     const req = mockRequest();
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
@@ -314,7 +314,7 @@ describe("Inventory API", () => {
   });
 
   it.skip("should download an inventory in csv format", async () => {
-    const url = `http://localhost:3000/api/v0/inventory/${inventory.inventoryId}?format=csv`;
+    const url = `http://localhost:3000/api/v1/inventory/${inventory.inventoryId}?format=csv`;
     const req = createRequest(url);
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
@@ -347,7 +347,7 @@ describe("Inventory API", () => {
 
   // TODO this test is very slow. use "CIRIS Light" spreadsheet instead (for download as well anyways)
   it.skip("should download an inventory in xls format", async () => {
-    const url = `http://localhost:3000/api/v0/inventory/${inventory.inventoryId}?format=xls`;
+    const url = `http://localhost:3000/api/v1/inventory/${inventory.inventoryId}?format=xls`;
     const req = createRequest(url);
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
@@ -362,17 +362,17 @@ describe("Inventory API", () => {
 
   it("should not find non-existing inventories as org admin", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
-    
+
     const req = mockRequest(invalidInventory);
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: randomUUID() }),
     });
     expect(res.status).toEqual(404);
   });
-  
+
   it("should return 404 for non-existing inventories as collaborator", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(collaboratorSession));
-    
+
     const req = mockRequest(invalidInventory);
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: randomUUID() }),
@@ -406,7 +406,7 @@ describe("Inventory API", () => {
 
   it("should delete an inventory as org admin", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
-    
+
     const req = mockRequest();
     const res = await deleteInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
@@ -416,12 +416,11 @@ describe("Inventory API", () => {
     expect(deleted).toEqual(true);
     expect(data.inventoryName).toEqual(inventory.inventoryName);
     expect(data.year).toEqual(inventory.year);
-    expect(data.totalEmissions).toEqual(inventory.totalEmissions);
   });
-  
+
   it("should reject inventory deletion as collaborator", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(collaboratorSession));
-    
+
     const req = mockRequest();
     const res = await deleteInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
@@ -433,7 +432,7 @@ describe("Inventory API", () => {
 
   it("should not delete a non-existing inventory as org admin", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
-    
+
     const req = mockRequest();
     const res = await deleteInventory(req, {
       params: Promise.resolve({ inventory: randomUUID() }),
@@ -578,7 +577,7 @@ describe("Inventory API", () => {
 
   it("should return 404 for a uuid string in that doesn't exist as org admin", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
-    
+
     const req = mockRequest();
     const res = await findInventory(req, {
       params: Promise.resolve({

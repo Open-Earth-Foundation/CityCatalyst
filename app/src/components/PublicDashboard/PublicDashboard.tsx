@@ -7,17 +7,19 @@ import { use } from "react";
 import ProgressLoader from "../ProgressLoader";
 import { Hero } from "../HomePageJN/Hero";
 import { MdBarChart } from "react-icons/md";
-import { HeadlineMedium } from "../Texts/Headline";
+import { HeadlineMedium } from "@/components/package/Texts/Headline";
 import { ModuleDashboardWidgets } from "../ModuleWidgets";
 import MissingCityDashboard from "../missing-city-dashboard";
 import { isFetchBaseQueryError } from "@/util/helpers";
+import { InventoryResponse } from "@/util/types";
 
 export default function PublicDashboard({
   params,
 }: {
-  params: Promise<{ lng: string; cityId: string }>;
+  params: Promise<{ lng: string; cityId: string; params?: string[] }>;
 }) {
-  const { lng, cityId } = use(params);
+  const { lng, cityId, params: routeParams } = use(params);
+  const year = routeParams?.[0]; // First param is the year
   const { t } = useTranslation(lng, "dashboard");
 
   // Get public city data
@@ -40,7 +42,9 @@ export default function PublicDashboard({
       skip: !cityId,
     });
 
-  const latestInventory = publicInventories?.[0];
+  const targetInventory = year
+    ? publicInventories?.find((inv) => inv.year === parseInt(year))
+    : publicInventories?.[0];
 
   if (isFetchBaseQueryError(publicCityError)) {
     return (
@@ -53,18 +57,30 @@ export default function PublicDashboard({
     );
   }
 
+  if (!targetInventory && !isPublicInventoriesLoading) {
+    return (
+      <MissingCityDashboard
+        lng={lng}
+        cityId={cityId}
+        error={`No inventory found for year ${year}`}
+        isPublic={true}
+      />
+    );
+  }
+
   if (isPublicCityLoading || isPublicInventoriesLoading) {
     return <ProgressLoader />;
   }
 
   return (
     <Box h="100%" minH="100vh" bg="base.light">
-      {cityId && publicCity && latestInventory && (
+      {cityId && publicCity && targetInventory && (
         <>
           <Hero
             city={publicCity}
-            year={latestInventory.year}
+            year={targetInventory.year}
             isPublic={true}
+            ghgiCityData={targetInventory as InventoryResponse}
             isLoading={isPublicCityLoading}
             t={t}
             population={population}
@@ -83,6 +99,7 @@ export default function PublicDashboard({
               lng={lng}
               t={t}
               isPublic={true}
+              year={year ? parseInt(year) : undefined}
             />
           </Box>
         </>

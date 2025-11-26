@@ -1,6 +1,6 @@
 import { db } from "@/models";
 import { randomUUID } from "node:crypto";
-import { GET as getBreakdown } from "@/app/api/v0/inventory/[inventory]/results/[sectorName]/route";
+import { GET as getBreakdown } from "@/app/api/v1/inventory/[inventory]/results/[sectorName]/route";
 
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import {
@@ -60,24 +60,24 @@ describe("Results API", () => {
       sectorId: "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
       sectorName: "Stationary Energy",
     });
-    
+
     subSector1 = await db.models.SubSector.upsert({
       subsectorId: "a235005c-f223-3c64-a0d2-f55d6f22f32f",
       sectorId: sector.sectorId,
       subsectorName: "Commercial and institutional buildings and facilities",
     });
-    
+
     subSector2 = await db.models.SubSector.upsert({
       subsectorId: "abe4c7b0-242d-3ed2-a146-48885d6fb38d",
       sectorId: sector.sectorId,
       subsectorName: "Residential buildings",
     });
-    
+
     subCategory1 = await db.models.SubCategory.upsert({
       subcategoryId: "942f2e36-ab1f-3fbf-af9e-31d997f518c7",
       subsectorId: subSector1.subsectorId,
     });
-    
+
     subCategory2 = await db.models.SubCategory.upsert({
       subcategoryId: "58a9822a-fae0-3831-9f8b-4ec1fb48a54f",
       subsectorId: subSector2.subsectorId,
@@ -88,7 +88,7 @@ describe("Results API", () => {
       datasourceId: "814d43fd-42bf-49f9-a10f-2c5486cf0344",
       datasourceName: "Test DataSource 1",
     });
-    
+
     await db.models.DataSource.upsert({
       datasourceId: "6bbbab3d-2978-4e7d-a2a7-295ecf35f338",
       datasourceName: "Test DataSource 2",
@@ -132,10 +132,10 @@ describe("Results API", () => {
         throw new Error(`Failed to create InventoryValue: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
-    
+
     // Verify all InventoryValue records were created
     expect(createdInventoryValues).toHaveLength(inventoryValuesData.length);
-    
+
     for (const activityValueData of activityValuesData) {
       try {
         // If co2eq is a string, convert to BigInt for DB insertion

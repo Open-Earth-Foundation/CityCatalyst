@@ -39,6 +39,14 @@ export interface CityYearData {
   lastUpdate: Date;
 }
 
+export interface CountryEmissionsResponse {
+  emissions: number;
+  yearUsed: number;
+  dataSource: string;
+  countryCode: string;
+  inventoryYear: number;
+}
+
 interface RequiredInventoryAttributes extends Required<InventoryAttributes> {}
 
 export type FullInventoryValue = InventoryValue & {
@@ -89,6 +97,8 @@ export interface SectorProgress {
   total: number;
   thirdParty: number;
   uploaded: number;
+  reasonNE: number;
+  reasonNO: number;
   subSectors: SubSectorWithRelations[];
 }
 
@@ -98,6 +108,8 @@ export interface InventoryProgressResponse {
     total: number;
     thirdParty: number;
     uploaded: number;
+    reasonNE: number;
+    reasonNO: number;
   };
   sectorProgress: SectorProgress[];
 }
@@ -284,6 +296,11 @@ export interface UsersInvitesRequest {
 
 export interface UsersInvitesResponse {
   success: boolean;
+}
+
+export interface OrganizationInviteResponse {
+  success: boolean;
+  inviteUrls: Record<string, string>;
 }
 
 export interface RequiredScopesResponse {
@@ -546,10 +563,33 @@ export interface FormulaInputValuesResponse {
   region: string;
 }
 export enum HighImpactActionRankingStatus {
+  TO_DO = "TO_DO",
   PENDING = "PENDING",
   SUCCESS = "SUCCESS",
   FAILURE = "FAILURE",
+  EXCLUDED = "EXCLUDED",
 }
+
+export interface BulkHiapPrioritizationResult {
+  cityId: string;
+  cityName: string;
+  inventoryId: string;
+  status: HighImpactActionRankingStatus;
+  taskId: string;
+  error?: string;
+}
+
+export interface HiapJob {
+  cityId: string;
+  cityName: string;
+  inventoryId: string;
+  year: number;
+  taskId: string;
+  actionType: string;
+  status: string;
+  createdAt: string;
+}
+
 export interface CoBenefits {
   air_quality: number;
   water_quality: number;
@@ -579,12 +619,6 @@ export interface AdaptationEffectivenessPerHazard {
   "sea-level-rise": string | null;
 }
 
-export interface Explanation {
-  en: string;
-  es: string;
-  pt: string;
-}
-
 export interface BaseAction {
   id: string;
   hiaRankingId: string;
@@ -608,7 +642,7 @@ export interface BaseAction {
   isSelected: boolean;
   actionId: string;
   rank: number;
-  explanation: Explanation;
+  explanation: Record<string, string>;
   created: Date;
   last_updated: Date;
 }

@@ -43,7 +43,7 @@ export default function UpdatePassword(props: {
     }
     const body = { newPassword: data.password, resetToken };
     try {
-      const res = await fetch("/api/v0/auth/password", {
+      const res = await fetch("/api/v1/auth/password", {
         method: "POST",
         body: JSON.stringify(body),
         headers: {
@@ -108,9 +108,8 @@ export default function UpdatePassword(props: {
             {t("reset-button")}
           </Button>
           <Button
-            type="reset"
-            disabled={isSubmitting}
             variant="ghost"
+            disabled={isSubmitting}
             h={16}
             width="full"
             mt={4}

@@ -1,7 +1,11 @@
 "use client";
 
-import ManageSectorsPage from "@/app/[lng]/[inventory]/data/manage-sectors/page";
+import ManageSubSectors from "@/app/[lng]/[inventory]/data/manage-sectors/page";
 
-export default function CityInventoryManageSectorsPage() {
-  return <ManageSectorsPage />;
+/**
+ * JN route wrapper for manage sectors page
+ * Reuses the GHGI manage sectors page component to keep DRY
+ */
+export default function GHGIManageSubSectors() {
+  return <ManageSubSectors />;
 }

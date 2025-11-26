@@ -8,9 +8,9 @@ import { Box, Icon, Spinner, Text, Flex } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { MdGridView, MdInfoOutline, MdLocationCity } from "react-icons/md";
 import { ModulesIcon } from "../icons";
-import { BodyLarge, BodyMedium } from "../Texts/Body";
-import { DisplayMedium } from "../Texts/Display";
-import { HeadlineSmall } from "../Texts/Headline";
+import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
+import { DisplayMedium } from "@/components/package/Texts/Display";
+import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import ProjectMap from "../ProjectMap/ProjectMap";
 import { useState } from "react";
 
@@ -127,41 +127,17 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
                 </BodyMedium>
               </Box>
             </Flex>
-            <Flex align="baseline" gap={3}>
-              <Icon as={ModulesIcon} boxSize={6} fill="base.light" />
-              <Box>
-                <Flex gap={1}>
-                  <HeadlineSmall color="base.light">{t("pro")}</HeadlineSmall>
-                  <Tooltip
-                    content={t("active-plan-tooltip")}
-                    positioning={{
-                      placement: "bottom-start",
-                    }}
-                  >
-                    <Icon
-                      as={MdInfoOutline}
-                      w={3}
-                      h={3}
-                      color="background.overlay"
-                    />
-                  </Tooltip>
-                </Flex>
-                <BodyMedium color="background.overlay">
-                  {t("active-plan")}
-                </BodyMedium>
-              </Box>
-            </Flex>
           </Flex>
         </Flex>
         <Box mt={-50}>
-          <ProjectMap
+          {/* <ProjectMap
             organizationId={organization?.organizationId}
             projectId={projectId}
             width={422}
             height={317}
             setSelectedCity={setSelectedCity}
             selectedCity={selectedCity}
-          />
+          /> */}
         </Box>
       </Flex>
     </Box>

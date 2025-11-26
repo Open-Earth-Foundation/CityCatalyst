@@ -282,6 +282,22 @@ export function convertKgToKiloTonnes(
   return Number(kg.div(1e6).toNumber().toFixed(2));
 }
 
+export function convertKgToTonnesNumeric(
+  valueInKg: number | Decimal | bigint,
+): number {
+  const kg = toDecimal(valueInKg);
+  if (!kg) return 0;
+  return Number(kg.div(1e3).toNumber());
+}
+
+export function convertTonnesToKgNumeric(
+  valueInTonnes: number | Decimal | bigint,
+): number {
+  const tonnes = toDecimal(valueInTonnes);
+  if (!tonnes) return 0;
+  return Number(tonnes.mul(1e3).toNumber());
+}
+
 export function convertKgToTonnes(
   valueInKg: number | Decimal | bigint,
   gas?: string | null,
@@ -413,4 +429,8 @@ export const getParamValueRequired = (param: string | string[] | undefined): str
     throw new Error(`Required parameter is missing or undefined`);
   }
   return value;
+};
+
+export const shortSectorNameToKebabCase = (sectorName: string) => {
+  return toKebabCase(sectorName.toLowerCase() + "-short");
 };

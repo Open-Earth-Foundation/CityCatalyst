@@ -11,7 +11,9 @@ export interface HighImpactActionRankingAttributes {
   created?: Date;
   lastUpdated?: Date;
   jobId?: string | null;
-  status?: HighImpactActionRankingStatus | null;
+  status?: HighImpactActionRankingStatus;
+  errorMessage?: string | null;
+  isBulk?: boolean;
 }
 
 export type HighImpactActionRankingPk = "id";
@@ -30,7 +32,9 @@ export class HighImpactActionRanking
   created?: Date;
   lastUpdated?: Date;
   jobId?: string | null;
-  status?: HighImpactActionRankingStatus | null;
+  status?: HighImpactActionRankingStatus;
+  errorMessage?: string | null;
+  isBulk?: boolean;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof HighImpactActionRanking {
     return HighImpactActionRanking.init(
@@ -65,12 +69,24 @@ export class HighImpactActionRanking
         },
         status: {
           type: DataTypes.ENUM(
+            HighImpactActionRankingStatus.TO_DO,
             HighImpactActionRankingStatus.PENDING,
             HighImpactActionRankingStatus.SUCCESS,
-            HighImpactActionRankingStatus.FAILURE
+            HighImpactActionRankingStatus.FAILURE,
           ),
           allowNull: true,
           field: "status",
+        },
+        errorMessage: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+          field: "error_message",
+        },
+        isBulk: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
+          field: "is_bulk",
         },
       },
       {

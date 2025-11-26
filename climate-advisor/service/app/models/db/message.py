@@ -2,17 +2,15 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum as PyEnum
-from typing import Optional
+from typing import Any, Optional
+from uuid import UUID
 
 from sqlalchemy import DateTime, Enum, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-try:
-    from sqlalchemy.dialects.postgresql import JSONB
-except ImportError:  # pragma: no cover
-    from sqlalchemy import JSON as JSONB  # type: ignore
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 
 from ...db import Base
+from .types import JSONBCompat
 
 
 class MessageRole(str, PyEnum):
@@ -24,16 +22,16 @@ class MessageRole(str, PyEnum):
 class Message(Base):
     __tablename__ = "messages"
 
-    message_id: Mapped[str] = mapped_column(String(64), primary_key=True)
-    thread_id: Mapped[str] = mapped_column(
+    message_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True)
+    thread_id: Mapped[UUID] = mapped_column(
         ForeignKey("threads.thread_id", ondelete="CASCADE"), nullable=False, index=True
     )
     user_id: Mapped[str] = mapped_column(String(255), nullable=False)
     text: Mapped[str] = mapped_column(Text, nullable=False)
-    tools_used: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
+    tools_used: Mapped[Optional[Any]] = mapped_column(JSONBCompat(), nullable=True)
     role: Mapped[MessageRole] = mapped_column(
-        Enum(MessageRole, name="message_role"), 
-        nullable=False, 
+        Enum(MessageRole, name="message_role", values_callable=lambda x: [e.value for e in x]),
+        nullable=False,
         default=MessageRole.USER
     )
     created_at: Mapped[datetime] = mapped_column(

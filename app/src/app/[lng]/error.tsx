@@ -6,9 +6,9 @@ import { Button, Center, VStack } from "@chakra-ui/react";
 
 import { useTranslation } from "@/i18n/client";
 import { fallbackLng } from "@/i18n/settings";
-import { TitleLarge, TitleMedium } from "@/components/Texts/Title";
+import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
 import { logger } from "@/services/logger";
-import { BodyMedium } from "@/components/Texts/Body";
+import { BodyMedium } from "@/components/package/Texts/Body";
 
 export default function Error({
   error,

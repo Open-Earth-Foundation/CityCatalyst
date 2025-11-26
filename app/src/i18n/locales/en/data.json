@@ -48,6 +48,8 @@
   "scope-unavailable-description": "Some emissions activities may not be relevant for your city, or maybe they're accounted for in a different section. Check the reason that fits and provide details if needed. This helps keep your inventory accurate and tailored to your city.",
   "select-reason": "Select Reason",
   "reason-NO": "The activity or process does not occur or exist within the city",
+  "not-estimated-progress": "Not Estimated",
+  "not-occurring": "Not Occurring",
   "reason-NE": "The emissions for this activity are not estimated",
   "reason-C": "The emissions could lead to the disclosure of confidential information",
   "reason-IE": "The emissions for this activity are estimated and presented elsewhere",
@@ -1256,5 +1258,12 @@
   "invalid-request": "Invalid Request",
   "emission-factor-too-large": "Emission factor cannot exceed {{max}}. Please enter a smaller value.",
   "emission-factor-required": "Emission factor required",
-  "emission-factor-negative": "Emission factor cannot be negative. Please enter a positive value."
+  "emission-factor-negative": "Emission factor cannot be negative. Please enter a positive value.",
+  "fuel-type-kerosene": "Kerosene",
+  "fuel-type-crude-petroleum": "Crude Petroleum",
+  "fuel-type-biodiesel": "Biodiesel",
+  "fuel-type-fuel-oil": "Fuel Oil",
+  "fuel-type-not-applicable": "Not applicable",
+  "on-road-transportation-fuel-type": "Fuel type",
+  "water-transportation-outside-fuel-type": "Fuel type"
 }

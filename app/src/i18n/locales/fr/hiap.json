@@ -25,7 +25,18 @@
   "no-actions-found-title": "Vos principales actions climatiques sont en cours de traitement",
   "no-actions-found-description": "Ce processus peut prendre jusqu'à 15 minutes. Vous recevrez un email et les verrez ici une fois terminé",
   "generate-climate-actions-widget-description": "Vous pouvez créer des plans d'implémentation pour chacune des actions sélectionnées. N'hésitez pas à parcourir la liste complète des actions ci-dessous et à choisir celles que vous souhaitez afficher ici.",
+  "action-plan": "Plan d'action",
   "download-action-plan": "télécharger",
+  "additional-info": "Informations supplémentaires",
+  "action-type-label": "Type d'action",
+  "actions-of": {
+    "mitigation": "Actions d'atténuation",
+    "adaptation": "Actions d'adaptation"
+  },
+  "action-type": {
+    "mitigation": "Atténuation",
+    "adaptation": "Adaptation"
+  },
   "top-pick-action-title": "choix principal",
   "integrate-renewables-into-municipal-water-systems": "intégrer les énergies renouvelables dans les systèmes d'eau municipaux",
   "reduction-potential": "Potentiel de réduction",
@@ -118,5 +129,42 @@
   "plan-generation-started-description": "Votre plan d'action est en cours de génération. Vous recevrez une notification par email quand il sera prêt.",
   "plan-generation-failed": "Échec de la Génération",
   "plan-generation-failed-description": "Échec du démarrage de la génération du plan. Veuillez réessayer.",
-  "exit-selection": "Sélection de sortie"
+  "reprioritization-started": "Repriorisation Commencée",
+  "reprioritization-started-description": "Vos actions climatiques sont en cours de repriorisation avec les dernières données. Vous recevrez un email à la fin.",
+  "reprioritization-failed": "Échec de la Repriorisation",
+  "reprioritization-failed-description": "Échec du démarrage de la repriorisation. Veuillez réessayer.",
+  "exit-selection": "Sélection de sortie",
+  "download-csv": "CSV",
+  "export-as-csv": "Exporter en CSV",
+  "unknown": "Inconnu",
+  "implementation-plan": "Plan de mise en œuvre",
+  "pdf": {
+    "title": "Plan de Mise en Œuvre de l'Action Climatique",
+    "sections": {
+      "overview": "Aperçu",
+      "implementation-steps": "Étapes de Mise en Œuvre",
+      "key-institutions": "Institutions Clés",
+      "milestones": "Jalons",
+      "mitigation-measures": "Mesures d'Atténuation",
+      "adaptation-measures": "Mesures d'Adaptation",
+      "sustainable-development-goals": "Objectifs de Développement Durable"
+    },
+    "labels": {
+      "city-context": "Contexte de la Ville",
+      "action-description": "Description de l'Action",
+      "national-strategy": "Stratégie Nationale",
+      "item": "Article"
+    },
+    "footer": {
+      "generated-by": "Généré par CityCatalyst",
+      "page": "Page",
+      "of": "de",
+      "generated-on": "Généré le"
+    }
+  },
+  "error-generating-actions-title": "Quelque chose a mal tourné",
+  "error-generating-actions-description": "Nous avons rencontré une erreur lors de la génération de vos actions climatiques. Veuillez réessayer.",
+  "inventory-year": "Année d'Inventaire",
+  "action-explanation": "Explication",
+  "no-explanation-available": "Aucune explication disponible"
 }

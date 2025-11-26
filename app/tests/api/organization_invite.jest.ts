@@ -10,7 +10,7 @@ import {
 import {
   GET as getOrganizationInvites,
   POST as createOrganizationInvite,
-} from "@/app/api/v0/organizations/[organization]/invitations/route";
+} from "@/app/api/v1/organizations/[organization]/invitations/route";
 import { db } from "@/models";
 import { mockRequest, setupTests, testUserID } from "../helpers";
 import { Organization } from "@/models/Organization";
@@ -53,8 +53,12 @@ describe("Organization Invitations API", () => {
     setupTests();
     await db.initialize();
     EmailService.sendOrganizationInvitationEmail = jest
-      .fn<() => Promise<SentMessageInfo>>()
-      .mockResolvedValue(true);
+      .fn<() => Promise<{ success: SentMessageInfo; inviteUrl: string }>>()
+      .mockResolvedValue({
+        success: { messageId: "test-message-id" } as SentMessageInfo,
+        inviteUrl:
+          "http://localhost:3000/organization/invites?organizationId=test&token=test&email=test&role=test",
+      });
   });
 
   beforeEach(async () => {
@@ -84,6 +88,8 @@ describe("Organization Invitations API", () => {
     expect(res.status).toEqual(200);
     const data = await res.json();
     expect(data.success).toEqual(true);
+    expect(data.inviteUrls).toBeDefined();
+    expect(typeof data.inviteUrls).toBe("object");
   });
 
   it("should reject non-admin from inviting a consultant", async () => {

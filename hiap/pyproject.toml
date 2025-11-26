@@ -1,0 +1,48 @@
+[project]
+name = "hiap"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "boto3>=1.40.45",
+    "chromadb>=1.1.0",
+    "fastapi>=0.118.0",
+    "httpx>=0.28.1",
+    "langchain>=0.3.27",
+    "langchain-chroma>=1.0.0",
+    "langchain-community>=0.3.30",
+    "langchain-core>=0.3.77",
+    "langchain-openai>=0.3.34",
+    "langchain-text-splitters>=0.3.11",
+    "langgraph>=0.6.8",
+    "langgraph-checkpoint>=2.1.1",
+    "langgraph-prebuilt>=0.6.4",
+    "langgraph-sdk>=0.2.9",
+    "langsmith>=0.4.31",
+    "limits>=5.6.0",
+    "openai>=2.0.0",
+    "pandas>=2.3.3",
+    "pydantic>=2.11.9",
+    "pydantic-settings>=2.11.0",
+    "pytest>=8.4.2",
+    "python-dotenv>=1.1.1",
+    "requests>=2.32.5",
+    "scikit-learn>=1.7.2",
+    "slowapi>=0.1.9",
+    "tiktoken>=0.11.0",
+    "uvicorn[standard]>=0.37.0",
+    "xgboost>=3.0.5",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.30.1",
+    "matplotlib>=3.10.6",
+    "numpy>=2.3.3",
+    "pandas>=2.3.3",
+    "scikit-learn>=1.7.2",
+    "seaborn>=0.13.2",
+    "shap>=0.48.0",
+    "xgboost>=3.0.5",
+]

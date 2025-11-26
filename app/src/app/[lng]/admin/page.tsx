@@ -37,6 +37,7 @@ import { useRouter } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
 import BulkInventoryCreationTabContent from "./bulk-inventory-actions/BulkInventoryCreationTabContent";
 import BulkDownloadTabContent from "./bulk-inventory-actions/BulkDownloadTabContent";
+import BulkHiapPrioritizationTabContent from "./bulk-inventory-actions/BulkHiapPrioritizationTabContent";
 import { OrganizationRole } from "@/util/types";
 import { toaster } from "@/components/ui/toaster";
 import ProgressLoader from "@/components/ProgressLoader";
@@ -120,9 +121,23 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
         inviteeEmails: [email],
         role: OrganizationRole.ORG_ADMIN,
       }).unwrap();
+
+      // Copy invite URLs to clipboard
+      if (inviteResponse.inviteUrls) {
+        const inviteUrls = Object.values(inviteResponse.inviteUrls);
+        if (inviteUrls.length > 0) {
+          const urlsText = inviteUrls.join('\n');
+          navigator.clipboard.writeText(urlsText).catch(() => {
+            // Fallback if clipboard API fails
+            console.warn('Failed to copy to clipboard');
+          });
+        }
+      }
+
       toaster.dismiss();
       toaster.create({
         title: t("invite-sent-success"),
+        description: t("invite-link-copied-to-clipboard"),
         type: "success",
         duration: 3000,
       });
@@ -514,6 +529,7 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
                   title="bulk-inventory-removing"
                   disabled
                 />
+                <BulkActionsTabTrigger title="bulk-hiap-prioritization" />
                 <Tabs.Indicator rounded="l2" />
               </Tabs.List>
               <BulkInventoryCreationTabContent
@@ -521,6 +537,9 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
                 onTabReset={() => setBulkActionsTab("bulk-inventory-creation")}
               />
               <BulkDownloadTabContent t={t} />
+              <Tabs.Content value="bulk-hiap-prioritization">
+                <BulkHiapPrioritizationTabContent t={t} lng={lng} />
+              </Tabs.Content>
 
               {/* TODO add more actions */}
               <Tabs.Content value="bulk-data-connection">

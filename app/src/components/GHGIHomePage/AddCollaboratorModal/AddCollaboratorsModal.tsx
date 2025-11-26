@@ -14,16 +14,16 @@ import {
   NativeSelectRoot,
 } from "@/components/ui/native-select";
 import { MdPersonAdd } from "react-icons/md";
-import { TitleLarge } from "@/components/Texts/Title";
-import { BodyLarge } from "@/components/Texts/Body";
-import { HeadlineSmall } from "@/components/Texts/Headline";
+import { TitleLarge } from "@/components/package/Texts/Title";
+import { BodyLarge } from "@/components/package/Texts/Body";
+import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import {
   useCreateOrganizationInviteMutation,
   useGetProjectsQuery,
   useGetUserProjectsQuery,
   useInviteUsersMutation,
 } from "@/services/api";
-import LabelLarge from "@/components/Texts/Label";
+import LabelLarge from "@/components/package/Texts/Label";
 import MultipleEmailInput from "./MultipleEmailInput";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useTranslation } from "@/i18n/client";
@@ -174,14 +174,33 @@ const AddCollaboratorsDialog = ({
       role: OrganizationRole.ORG_ADMIN,
     });
     if (inviteResponse.data) {
+      // Copy invite URLs to clipboard
+      if (inviteResponse.data.inviteUrls) {
+        const inviteUrls = Object.values(inviteResponse.data.inviteUrls);
+        if (inviteUrls.length > 0) {
+          const urlsText = inviteUrls.join('\n');
+          navigator.clipboard.writeText(urlsText).catch(() => {
+            // Fallback if clipboard API fails
+            console.warn('Failed to copy to clipboard');
+          });
+        }
+      }
+
       // Track admin invitation
       trackEvent("admin_invited", {
         num_invitees: emails.length,
         organization_id: organizationId,
         role: "admin",
+        invited_emails: emails,
       });
 
-      showSuccessToast();
+      showSuccessToast({
+        title: t("invite-success-toast-title"),
+        description: t("invite-link-copied-to-clipboard"),
+      });
+      setEmails([]);
+      setSelectedCities([]);
+      setSelectedProject([]);
       onClose();
     } else {
       showErrorToast();

@@ -1,9 +1,8 @@
 import { SectorEmission } from "@/util/types";
-import { BarCustomLayerProps, ResponsiveBar } from "@nivo/bar";
+import { BarCustomLayerProps, ResponsiveBar, BarDatum } from "@nivo/bar";
 import { allSectorColors, SECTORS } from "@/util/constants";
-import { convertKgToTonnes } from "@/util/helpers";
+import { shortSectorNameToKebabCase, convertKgToTonnes } from "@/util/helpers";
 import { useTranslation } from "@/i18n/client";
-import { toKebabCaseModified } from "@/app/[lng]/[inventory]/InventoryResultTab/index";
 import { Badge, Box, Card, HStack, Text } from "@chakra-ui/react";
 import { useTooltip } from "@nivo/tooltip";
 import { useMemo, useState } from "react";
@@ -80,11 +79,12 @@ export interface CombinedPoint {
   };
 }
 
-export interface CustomCombinedBarLayerProps<D> extends BarCustomLayerProps<D> {
+export interface CustomCombinedBarLayerProps<D extends BarDatum>
+  extends BarCustomLayerProps<D> {
   customTooltip: (point: CombinedPoint) => React.ReactNode;
 }
 
-function CustomCombinedBarLayer<D>({
+function CustomCombinedBarLayer<D extends BarDatum>({
   bars,
   customTooltip,
 }: CustomCombinedBarLayerProps<D>) {
@@ -217,16 +217,22 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
   lng,
 }) => {
   const { t: tData } = useTranslation(lng, "data");
+  const { t: tDashboard } = useTranslation(lng, "dashboard");
   const defaultBreakdown = SECTORS.reduce((acc, sector) => {
     return {
       ...acc,
-      [toKebabCaseModified(sector.name)]: 0,
+      [shortSectorNameToKebabCase(sector.name)]: 0,
     };
   }, {});
 
   const customTooltip = (point: CombinedPoint) => {
     return (
-      <Box backgroundColor="white" borderRadius="8px" boxShadow="2dp">
+      <Box
+        backgroundColor="white"
+        borderRadius="8px"
+        boxShadow="2dp"
+        minW="420px"
+      >
         <Box>
           <Box
             py={3}
@@ -259,37 +265,39 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
                 <Box
                   key={segment.id}
                   display="flex"
-                  flexDirection="column"
+                  flexDirection="row"
+                  alignItems="center"
                   gap={2}
                   justifyContent="space-between"
                 >
-                  <Box
-                    boxSize="4"
-                    style={{ backgroundColor: segment.color }}
-                  ></Box>
-                  <Text
-                    fontSize="body.md"
-                    textAlign="left"
-                    flex={1}
-                    color="content.secondary"
-                  >
-                    {tData(toKebabCaseModified(segment.id))}
-                  </Text>
-                  <Text
-                    fontSize="body.md"
-                    px={2}
-                    textAlign="right"
-                    color="content.primary"
-                  >
-                    {segment.percentage.toFixed(2)}%
-                  </Text>
-                  <Text
-                    fontSize="body.md"
-                    textAlign="right"
-                    color="content.primary"
-                  >
-                    {convertKgToTonnes(segment.value)}
-                  </Text>
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <Box boxSize="4" bgColor={segment.color}></Box>
+                    <Text
+                      fontSize="body.md"
+                      textAlign="left"
+                      flex={1}
+                      color="content.secondary"
+                    >
+                      {tDashboard(segment.id)}
+                    </Text>
+                  </Box>
+                  <Box display="flex" justifyContent="flex-end" gap={4}>
+                    <Text
+                      fontSize="body.md"
+                      px={2}
+                      textAlign="right"
+                      color="content.primary"
+                    >
+                      {segment.percentage.toFixed(2)}%
+                    </Text>
+                    <Text
+                      fontSize="body.md"
+                      textAlign="right"
+                      color="content.primary"
+                    >
+                      {convertKgToTonnes(segment.value)}
+                    </Text>
+                  </Box>
                 </Box>
               ))}
           </Box>
@@ -331,7 +339,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
       const sectorBreakDown = item.bySector.reduce((acc, sector) => {
         return {
           ...acc,
-          [toKebabCaseModified(sector.sectorName)]: sector.co2eq,
+          [shortSectorNameToKebabCase(sector.sectorName)]: sector.co2eq,
         };
       }, defaultBreakdown);
       return {
@@ -342,14 +350,14 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
     .reverse();
 
   const chartDataKeys = SECTORS.map((sector) =>
-    toKebabCaseModified(sector.name),
+    shortSectorNameToKebabCase(sector.name),
   );
 
   const margin = { top: 50, right: 130, bottom: 50, left: 120 };
 
   return (
-    <Box h="600px">
-      <Box h="600px" position="relative">
+    <Box h="auto">
+      <Box h="500px" position="relative">
         <ResponsiveBar
           borderRadius={5}
           enableLabel={false}
@@ -461,7 +469,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
               style={{ backgroundColor: allSectorColors[index] }}
             ></Box>
             <Text fontSize="body.md" ml={2} color="content.alternative">
-              {tData(toKebabCaseModified(sector.name))}
+              {tDashboard(shortSectorNameToKebabCase(sector.name))}
             </Text>
           </Box>
         ))}

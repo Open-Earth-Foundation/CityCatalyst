@@ -3,7 +3,7 @@ from typing import Tuple, Union, Optional, Dict, Any, Literal
 from langchain.tools import tool
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
-from langchain.schema import Document
+from langchain_core.documents import Document
 from openai import OpenAI
 from utils.get_vectorstore_local import get_vectorstore
 from utils.get_json_file import get_json_from_file
@@ -65,8 +65,8 @@ def retriever_main_action_tool(
 
     metadata_filter = {"main_action": {"$eq": True}}
 
-    logger.info("search_query", search_query)
-    logger.info("metadata_filter", metadata_filter)
+    logger.info("search_query: %s", search_query)
+    logger.info("metadata_filter: %s", metadata_filter)
 
     docs_and_scores = vector_store.similarity_search_with_relevance_scores(
         query=search_query,

@@ -6,7 +6,7 @@ import FooterLink from "../Navigation/FooterLink";
 import { useTranslation } from "@/i18n/client";
 import { getCurrentVersion } from "@/util/helpers";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
-import { TitleSmall } from "../Texts/Title";
+import { TitleSmall } from "@/components/package/Texts/Title";
 
 const Footer = ({ lng }: { lng: string }) => {
   const currentVersion = getCurrentVersion();
@@ -119,34 +119,6 @@ const Footer = ({ lng }: { lng: string }) => {
           >
             {/* eslint-disable-next-line i18next/no-literal-string */}
             <>v{currentVersion}</>
-          </Text>
-          <Box
-            h={"20px"}
-            w={"61px"}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            bg="border.neutral"
-            borderRadius="20px"
-          >
-            <Text
-              fontFamily="heading"
-              fontSize="label.sm"
-              color="content.primary"
-              fontWeight="medium"
-              letterSpacing="wide"
-            >
-              BETA
-            </Text>
-          </Box>
-          <Text
-            color="base.light"
-            fontSize="body.md"
-            letterSpacing="wide"
-            lineHeight="20"
-            fontWeight="regular"
-          >
-            {t("beta-text")}
           </Text>
           <Link
             href="/"

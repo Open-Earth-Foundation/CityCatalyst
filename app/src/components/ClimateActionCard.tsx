@@ -18,10 +18,10 @@ import { useGenerateActionPlanMutation } from "@/services/api";
 import { RiFile3Line } from "react-icons/ri";
 import { GoLocation } from "react-icons/go";
 import { LevelBadge } from "@/components/LevelBadge";
-import { TitleLarge, TitleMedium, TitleSmall } from "./Texts/Title";
-import { BodyLarge, BodySmall } from "./Texts/Body";
-import { LabelMedium } from "./Texts/Label";
-import { HeadlineMedium } from "./Texts/Headline";
+import { TitleLarge, TitleMedium, TitleSmall } from "./package/Texts/Title";
+import { BodyLarge, BodySmall } from "./package/Texts/Body";
+import { LabelMedium } from "./package/Texts/Label";
+import { HeadlineMedium } from "./package/Texts/Headline";
 import { useActionPlan } from "@/hooks/use-action-plan";
 import { PDFExportService } from "@/services/PDFExportService";
 import { toaster } from "@/components/ui/toaster";
@@ -111,6 +111,7 @@ export const ClimateActionCard = ({
           whiteSpace="nowrap"
           lineClamp={2}
           color="content.secondary"
+          minHeight="56px"
         >
           {action.name}
         </TitleLarge>
@@ -242,11 +243,7 @@ const GeneratePlanDialog = ({
 }) => {
   const [generateActionPlan, { isLoading, error }] =
     useGenerateActionPlanMutation();
-  const [generatedPlan, setGeneratedPlan] = useState<any | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
-  const [shouldOpenDialogAfterGeneration, setShouldOpenDialogAfterGeneration] =
-    useState(false);
 
   // Check if an action plan already exists
   const {
@@ -259,8 +256,7 @@ const GeneratePlanDialog = ({
     language: action.lang || "en",
   });
 
-  // Use existing plan data if available, otherwise use generated plan
-  const planToDisplay = existingPlan?.planData || generatedPlan;
+  const planToDisplay = existingPlan?.planData;
   const hasExistingPlan = !!existingPlan;
 
   const handleGeneratePlan = async () => {
@@ -319,6 +315,7 @@ const GeneratePlanDialog = ({
         planToDisplay,
         actionTitle,
         cityName,
+        t,
       );
     } catch (error) {
       console.error("Failed to export PDF:", error);
@@ -446,8 +443,7 @@ const GeneratePlanDialog = ({
                       color="content.primary"
                       pb="12px"
                     >
-                      {planToDisplay.metadata?.actionName || action.name} -{" "}
-                      {t("implementation-plan")}
+                      {action.name} - {t("implementation-plan")}
                     </HeadlineMedium>
 
                     {/* Introduction */}

@@ -1,15 +1,18 @@
 import type { AppSession } from "@/lib/auth";
-import { createPermissionError, PERMISSION_ERRORS } from "@/util/permission-errors";
+import {
+  createPermissionError,
+  PERMISSION_ERRORS,
+} from "@/util/permission-errors";
 import createHttpError from "http-errors";
 import { Roles } from "@/util/types";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
 
-import { 
-  UserRole, 
-  PermissionContext, 
-  ResourceAccess, 
-  PermissionOptions 
+import {
+  UserRole,
+  PermissionContext,
+  ResourceAccess,
+  PermissionOptions,
 } from "./PermissionTypes";
 import { PermissionResolver } from "./PermissionResolver";
 import { RoleChecker } from "./RoleChecker";
@@ -39,68 +42,82 @@ HOW TO EXTEND:
  * - COLLABORATOR: Can do anything within their assigned cities (except creation/deletion)
  */
 export class PermissionService {
-  
   // =============================================================================
   // CORE PERMISSION CHECKING
   // =============================================================================
-  
+
   /**
    * Main permission check with session
    */
   static async checkAccess(
     session: AppSession | null,
     context: PermissionContext,
-    options: PermissionOptions = {}
+    options: PermissionOptions = {},
   ): Promise<ResourceAccess> {
-    // Check for public inventory access before requiring authentication
-    if (!session?.user && context.inventoryId) {
-      logger.debug('Checking public inventory access', { inventoryId: context.inventoryId });
-      
+    // Check for public inventory access first, regardless of authentication
+    if (context.inventoryId) {
+      logger.debug(
+        { inventoryId: context.inventoryId },
+        "Checking public inventory access",
+      );
+
       // Load inventory to check if it's public
       const inventory = await db.models.Inventory.findByPk(context.inventoryId);
-      
+
       if (inventory?.isPublic) {
-        logger.debug('Public inventory access granted', { inventoryId: context.inventoryId });
-        
-        const shouldLoadResource = options.excludeResource ? false : (options.includeResource !== false);
-        const resource = shouldLoadResource 
-          ? await ResourceLoader.getResource(context) 
+        logger.debug(
+          { inventoryId: context.inventoryId },
+          "Public inventory access granted",
+        );
+
+        const shouldLoadResource = options.excludeResource
+          ? false
+          : options.includeResource !== false;
+        const resource = shouldLoadResource
+          ? await ResourceLoader.getResource(context)
           : undefined;
-          
+
         return {
           hasAccess: true,
           userRole: UserRole.PUBLIC_READER,
-          organizationId: await PermissionResolver.resolveOrganizationId(context) || 'public',
-          resource
+          organizationId:
+            (await PermissionResolver.resolveOrganizationId(context)) ||
+            "public",
+          resource,
         };
       }
     }
-    
+
     if (!session?.user) {
-      logger.warn('Permission check failed: No authenticated session', { context });
+      logger.warn(
+        { context },
+        "Permission check failed: No authenticated session",
+      );
       throw new createHttpError.Unauthorized("Authentication required");
     }
-    
-    logger.debug('Permission check initiated', {
-      userId: session.user.id,
-      context,
-      options
-    });
+
+    logger.debug(
+      { userId: session.user.id, context, options },
+      "Permission check initiated",
+    );
 
     // Default includeResource to true unless explicitly excluded
-    const shouldLoadResource = options.excludeResource ? false : (options.includeResource !== false);
+    const shouldLoadResource = options.excludeResource
+      ? false
+      : options.includeResource !== false;
 
     // System admins bypass all checks
     if (session.user.role === Roles.Admin) {
-      logger.debug('System admin access granted', { userId: session.user.id });
-      const resource = shouldLoadResource 
-        ? await ResourceLoader.getResource(context) 
+      logger.debug({ userId: session.user.id }, "System admin access granted");
+      const resource = shouldLoadResource
+        ? await ResourceLoader.getResource(context)
         : undefined;
       return {
         hasAccess: true,
         userRole: UserRole.ORG_ADMIN,
-        organizationId: await PermissionResolver.resolveOrganizationId(context) || 'system',
-        resource
+        organizationId:
+          (await PermissionResolver.resolveOrganizationId(context)) || "system",
+        resource,
       };
     }
 
@@ -113,7 +130,7 @@ export class PermissionService {
   static async checkUserAccess(
     userId: string,
     context: PermissionContext,
-    options: PermissionOptions = {}
+    options: PermissionOptions = {},
   ): Promise<ResourceAccess> {
     // Resolve organization context
     const orgId = await PermissionResolver.resolveOrganizationId(context);
@@ -129,40 +146,52 @@ export class PermissionService {
     }
 
     // Get user's role in this organization
-    const userRole = await RoleChecker.getUserRoleInOrganization(userId, orgId, context);
-    
-    if (userRole === UserRole.NO_ACCESS) {
-      logger.warn('User has no access to resource', {
-        userId,
-        organizationId: orgId,
-        context
-      });
-      throw createPermissionError(PERMISSION_ERRORS.NO_ACCESS_TO_RESOURCE, 403, {
-        userId,
-        organizationId: orgId,
-        context
-      });
-    }
-    
-    logger.debug('Permission check successful', {
+    const userRole = await RoleChecker.getUserRoleInOrganization(
       userId,
-      userRole,
-      organizationId: orgId
-    });
+      orgId,
+      context,
+    );
+
+    if (userRole === UserRole.NO_ACCESS) {
+      logger.warn(
+        {
+          userId,
+          organizationId: orgId,
+          context,
+        },
+        "User has no access to resource",
+      );
+      throw createPermissionError(
+        PERMISSION_ERRORS.NO_ACCESS_TO_RESOURCE,
+        403,
+        {
+          userId,
+          organizationId: orgId,
+          context,
+        },
+      );
+    }
+
+    logger.debug(
+      { userId, userRole, organizationId: orgId },
+      "Permission check successful",
+    );
 
     // Default includeResource to true unless explicitly excluded
-    const shouldLoadResource = options.excludeResource ? false : (options.includeResource !== false);
-    
+    const shouldLoadResource = options.excludeResource
+      ? false
+      : options.includeResource !== false;
+
     // Load resource if requested
-    const resource = shouldLoadResource 
-      ? await ResourceLoader.getResource(context) 
+    const resource = shouldLoadResource
+      ? await ResourceLoader.getResource(context)
       : undefined;
-    
+
     return {
       hasAccess: true,
       userRole,
       organizationId: orgId,
-      resource
+      resource,
     };
   }
 
@@ -177,22 +206,26 @@ export class PermissionService {
   static async canAccessOrganization(
     session: AppSession | null,
     organizationId: string,
-    options: PermissionOptions = {}
+    options: PermissionOptions = {},
   ): Promise<ResourceAccess> {
     const access = await this.checkAccess(session, { organizationId }, options);
-    
+
     if (access.userRole !== UserRole.ORG_ADMIN) {
-      logger.warn('Organization access denied: Not an org admin', {
-        organizationId,
-        userRole: access.userRole
-      });
-      throw createPermissionError(PERMISSION_ERRORS.CANNOT_ACCESS_ORGANIZATION, 403, {
-        organizationId,
-        requiredRole: UserRole.ORG_ADMIN,
-        actualRole: access.userRole
-      });
+      logger.warn(
+        { organizationId, userRole: access.userRole },
+        "Organization access denied: Not an org admin",
+      );
+      throw createPermissionError(
+        PERMISSION_ERRORS.CANNOT_ACCESS_ORGANIZATION,
+        403,
+        {
+          organizationId,
+          requiredRole: UserRole.ORG_ADMIN,
+          actualRole: access.userRole,
+        },
+      );
     }
-    
+
     return access;
   }
 
@@ -202,22 +235,28 @@ export class PermissionService {
   static async canAccessProject(
     session: AppSession | null,
     projectId: string,
-    options: PermissionOptions = {}
+    options: PermissionOptions = {},
   ): Promise<ResourceAccess> {
     const access = await this.checkAccess(session, { projectId }, options);
-    
-    if (![UserRole.ORG_ADMIN, UserRole.PROJECT_ADMIN].includes(access.userRole)) {
-      logger.warn('Project access denied: Insufficient role', {
-        projectId,
-        userRole: access.userRole
-      });
-      throw createPermissionError(PERMISSION_ERRORS.CANNOT_ACCESS_PROJECT, 403, {
-        projectId,
-        requiredRoles: [UserRole.ORG_ADMIN, UserRole.PROJECT_ADMIN],
-        actualRole: access.userRole
-      });
+
+    if (
+      ![UserRole.ORG_ADMIN, UserRole.PROJECT_ADMIN].includes(access.userRole)
+    ) {
+      logger.warn(
+        { projectId, userRole: access.userRole },
+        "Project access denied: Insufficient role",
+      );
+      throw createPermissionError(
+        PERMISSION_ERRORS.CANNOT_ACCESS_PROJECT,
+        403,
+        {
+          projectId,
+          requiredRoles: [UserRole.ORG_ADMIN, UserRole.PROJECT_ADMIN],
+          actualRole: access.userRole,
+        },
+      );
     }
-    
+
     return access;
   }
 
@@ -226,10 +265,10 @@ export class PermissionService {
    */
   static async canCreateCity(
     session: AppSession | null,
-    projectId: string
+    projectId: string,
   ): Promise<ResourceAccess> {
-    const access = await this.canAccessProject(session, projectId, { 
-      requireActive: true
+    const access = await this.canAccessProject(session, projectId, {
+      requireActive: true,
     });
     return access;
   }
@@ -244,7 +283,7 @@ export class PermissionService {
   static async canAccessCity(
     session: AppSession | null,
     cityId: string,
-    options: PermissionOptions = {}
+    options: PermissionOptions = {},
   ): Promise<ResourceAccess> {
     return this.checkAccess(session, { cityId }, options);
   }
@@ -254,22 +293,31 @@ export class PermissionService {
    */
   static async canCreateInventory(
     session: AppSession | null,
-    cityId: string
+    cityId: string,
   ): Promise<ResourceAccess> {
     const access = await this.checkAccess(session, { cityId });
-    
-    if (![UserRole.ORG_ADMIN, UserRole.PROJECT_ADMIN].includes(access.userRole)) {
-      logger.warn('Create inventory denied: Insufficient role', {
-        cityId,
-        userRole: access.userRole
-      });
-      throw createPermissionError(PERMISSION_ERRORS.CANNOT_CREATE_INVENTORY, 403, {
-        cityId,
-        requiredRoles: [UserRole.ORG_ADMIN, UserRole.PROJECT_ADMIN],
-        actualRole: access.userRole
-      });
+
+    if (
+      ![UserRole.ORG_ADMIN, UserRole.PROJECT_ADMIN].includes(access.userRole)
+    ) {
+      logger.warn(
+        {
+          cityId,
+          userRole: access.userRole,
+        },
+        "Create inventory denied: Insufficient role",
+      );
+      throw createPermissionError(
+        PERMISSION_ERRORS.CANNOT_CREATE_INVENTORY,
+        403,
+        {
+          cityId,
+          requiredRoles: [UserRole.ORG_ADMIN, UserRole.PROJECT_ADMIN],
+          actualRole: access.userRole,
+        },
+      );
     }
-    
+
     return access;
   }
 
@@ -278,22 +326,22 @@ export class PermissionService {
    */
   static async canDeleteCity(
     session: AppSession | null,
-    cityId: string
+    cityId: string,
   ): Promise<ResourceAccess> {
     const access = await this.checkAccess(session, { cityId });
-    
+
     if (access.userRole !== UserRole.ORG_ADMIN) {
-      logger.warn('Delete city denied: Not an org admin', {
-        cityId,
-        userRole: access.userRole
-      });
+      logger.warn(
+        { cityId, userRole: access.userRole },
+        "Delete city denied: Not an org admin",
+      );
       throw createPermissionError(PERMISSION_ERRORS.CANNOT_DELETE_CITY, 403, {
         cityId,
         requiredRole: UserRole.ORG_ADMIN,
-        actualRole: access.userRole
+        actualRole: access.userRole,
       });
     }
-    
+
     return access;
   }
 
@@ -307,7 +355,7 @@ export class PermissionService {
   static async canAccessInventory(
     session: AppSession | null,
     inventoryId: string,
-    options: PermissionOptions = {}
+    options: PermissionOptions = {},
   ): Promise<ResourceAccess> {
     return this.checkAccess(session, { inventoryId }, options);
   }
@@ -317,7 +365,7 @@ export class PermissionService {
    */
   static async canEditInventory(
     session: AppSession | null,
-    inventoryId: string
+    inventoryId: string,
   ): Promise<ResourceAccess> {
     return this.canAccessInventory(session, inventoryId);
   }
@@ -327,22 +375,29 @@ export class PermissionService {
    */
   static async canDeleteInventory(
     session: AppSession | null,
-    inventoryId: string
+    inventoryId: string,
   ): Promise<ResourceAccess> {
     const access = await this.checkAccess(session, { inventoryId });
-    
+
     if (access.userRole !== UserRole.ORG_ADMIN) {
-      logger.warn('Delete inventory denied: Not an org admin', {
-        inventoryId,
-        userRole: access.userRole
-      });
-      throw createPermissionError(PERMISSION_ERRORS.CANNOT_DELETE_INVENTORY, 403, {
-        inventoryId,
-        requiredRole: UserRole.ORG_ADMIN,
-        actualRole: access.userRole
-      });
+      logger.warn(
+        {
+          inventoryId,
+          userRole: access.userRole,
+        },
+        "Delete inventory denied: Not an org admin",
+      );
+      throw createPermissionError(
+        PERMISSION_ERRORS.CANNOT_DELETE_INVENTORY,
+        403,
+        {
+          inventoryId,
+          requiredRole: UserRole.ORG_ADMIN,
+          actualRole: access.userRole,
+        },
+      );
     }
-    
+
     return access;
   }
 }

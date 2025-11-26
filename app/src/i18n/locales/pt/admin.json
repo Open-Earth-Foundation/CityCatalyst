@@ -269,5 +269,6 @@
   "clear-exclusions": "Limpar exclusões",
   "unexclude-cities": "Desexcluir {{count}} {{count, plural, one {cidade} other {cidades}}}",
   "exclude-column-header": "Excluir",
-  "check-cities-to-exclude-tooltip": "Marque as cidades para excluí-las da repetição"
+  "check-cities-to-exclude-tooltip": "Marque as cidades para excluí-las da repetição",
+  "search-by-city-or-country": "Pesquisar por cidade ou país"
 }

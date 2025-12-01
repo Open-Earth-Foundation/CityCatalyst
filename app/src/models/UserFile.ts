@@ -45,33 +45,33 @@ export class UserFile
   extends Model<UserFileAttributes, UserFileCreationAttributes>
   implements Partial<UserFileAttributes>
 {
-  id!: string;
-  userId!: string;
-  cityId!: string;
-  fileReference?: string;
-  data?: Buffer;
-  fileType?: string;
-  fileName?: string;
-  sector?: string;
-  subsectors?: string[];
-  scopes?: string[];
-  url?: string;
-  status?: string;
-  gpcRefNo?: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare id: string;
+  declare userId: string;
+  declare cityId: string;
+  declare fileReference?: string;
+  declare data?: Buffer;
+  declare fileType?: string;
+  declare fileName?: string;
+  declare sector?: string;
+  declare subsectors?: string[];
+  declare scopes?: string[];
+  declare url?: string;
+  declare status?: string;
+  declare gpcRefNo?: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   //UserFile belongs to User via id
-  user!: User;
-  getUser!: Sequelize.BelongsToGetAssociationMixin<User>;
-  setUser!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
-  createUser!: Sequelize.BelongsToCreateAssociationMixin<User>;
+  declare user: User;
+  declare getUser: Sequelize.BelongsToGetAssociationMixin<User>;
+  declare setUser: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
+  declare createUser: Sequelize.BelongsToCreateAssociationMixin<User>;
 
   //UserFile belongs to City via cityId
-  city!: City;
-  getCity!: Sequelize.BelongsToGetAssociationMixin<City>;
-  setCity!: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
-  createCity!: Sequelize.BelongsToCreateAssociationMixin<City>;
+  declare city: City;
+  declare getCity: Sequelize.BelongsToGetAssociationMixin<City>;
+  declare setCity: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
+  declare createCity: Sequelize.BelongsToCreateAssociationMixin<City>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof UserFile {
     return UserFile.init(

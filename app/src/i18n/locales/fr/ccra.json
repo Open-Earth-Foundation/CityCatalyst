@@ -57,5 +57,13 @@
   "impact-sea-level-rise-general": "La montée progressive du niveau de la mer pose des menaces à long terme pour les communautés côtières et les infrastructures.",
   "impact-general-default": "Ce risque présente des risques significatifs pour le secteur affecté, nécessitant des mesures d'adaptation ciblées.",
   "your-city": "Votre Ville",
-  "see-full-risk-results": "Voir tous les résultats de l'évaluation des risques"
+  "see-full-risk-results": "Voir tous les résultats de l'évaluation des risques",
+  "hazard-heatwaves": "Vagues de chaleur",
+  "hazard-diseases": "Maladies",
+  "hazard-landslides": "Glissements de terrain",
+  "sector-public-health": "Santé Publique",
+  "sector-food-security": "Sécurité Alimentaire",
+  "sector-water-resources": "Ressources en Eau",
+  "sector-energy-security": "Sécurité Énergétique",
+  "sector-biodiversity": "Biodiversité"
 }

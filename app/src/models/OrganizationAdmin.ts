@@ -26,15 +26,15 @@ export class OrganizationAdmin
   >
   implements OrganizationAdminAttributes
 {
-  organizationAdminId!: string;
-  organizationId!: string;
-  userId!: string;
-  user!: User;
-  created?: Date;
-  lastUpdated?: Date;
+  declare organizationAdminId: string;
+  declare organizationId: string;
+  declare userId: string;
+  declare user: User;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // OrganizationAdmin belongsTo Organization via organizationId
-  organization!: Organization;
+  declare organization: Organization;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof OrganizationAdmin {
     return OrganizationAdmin.init(

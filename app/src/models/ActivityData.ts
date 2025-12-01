@@ -40,101 +40,101 @@ export class ActivityData
   extends Model<ActivityDataAttributes, ActivityDataCreationAttributes>
   implements Partial<ActivityDataAttributes>
 {
-  activitydataId!: string;
-  activitydata?: string;
-  subcategoryId?: string;
-  scopeId?: string;
-  reportinglevelId?: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare activitydataId: string;
+  declare activitydata?: string;
+  declare subcategoryId?: string;
+  declare scopeId?: string;
+  declare reportinglevelId?: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // ActivityData belongsToMany DataSource via activitydataId and datasourceId
-  datasourceIdDataSources!: DataSource[];
-  getDatasourceIdDataSources!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
-  setDatasourceIdDataSources!: Sequelize.BelongsToManySetAssociationsMixin<
+  declare datasourceIdDataSources: DataSource[];
+  declare getDatasourceIdDataSources: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
+  declare setDatasourceIdDataSources: Sequelize.BelongsToManySetAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  addDatasourceIdDataSource!: Sequelize.BelongsToManyAddAssociationMixin<
+  declare addDatasourceIdDataSource: Sequelize.BelongsToManyAddAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  addDatasourceIdDataSources!: Sequelize.BelongsToManyAddAssociationsMixin<
+  declare addDatasourceIdDataSources: Sequelize.BelongsToManyAddAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  createDatasourceIdDataSource!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
-  removeDatasourceIdDataSource!: Sequelize.BelongsToManyRemoveAssociationMixin<
+  declare createDatasourceIdDataSource: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
+  declare removeDatasourceIdDataSource: Sequelize.BelongsToManyRemoveAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  removeDatasourceIdDataSources!: Sequelize.BelongsToManyRemoveAssociationsMixin<
+  declare removeDatasourceIdDataSources: Sequelize.BelongsToManyRemoveAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  hasDatasourceIdDataSource!: Sequelize.BelongsToManyHasAssociationMixin<
+  declare hasDatasourceIdDataSource: Sequelize.BelongsToManyHasAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  hasDatasourceIdDataSources!: Sequelize.BelongsToManyHasAssociationsMixin<
+  declare hasDatasourceIdDataSources: Sequelize.BelongsToManyHasAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  countDatasourceIdDataSources!: Sequelize.BelongsToManyCountAssociationsMixin;
+  declare countDatasourceIdDataSources: Sequelize.BelongsToManyCountAssociationsMixin;
   // ActivityData hasMany DataSourceActivityData via activitydataId
-  dataSourceActivityData!: DataSourceActivityData[];
-  getDataSourceActivityData!: Sequelize.HasManyGetAssociationsMixin<DataSourceActivityData>;
-  setDataSourceActivityData!: Sequelize.HasManySetAssociationsMixin<
+  declare dataSourceActivityData: DataSourceActivityData[];
+  declare getDataSourceActivityData: Sequelize.HasManyGetAssociationsMixin<DataSourceActivityData>;
+  declare setDataSourceActivityData: Sequelize.HasManySetAssociationsMixin<
     DataSourceActivityData,
     DataSourceActivityDataId
   >;
-  addDataSourceActivityDatum!: Sequelize.HasManyAddAssociationMixin<
+  declare addDataSourceActivityDatum: Sequelize.HasManyAddAssociationMixin<
     DataSourceActivityData,
     DataSourceActivityDataId
   >;
-  addDataSourceActivityData!: Sequelize.HasManyAddAssociationsMixin<
+  declare addDataSourceActivityData: Sequelize.HasManyAddAssociationsMixin<
     DataSourceActivityData,
     DataSourceActivityDataId
   >;
-  createDataSourceActivityDatum!: Sequelize.HasManyCreateAssociationMixin<DataSourceActivityData>;
-  removeDataSourceActivityDatum!: Sequelize.HasManyRemoveAssociationMixin<
+  declare createDataSourceActivityDatum: Sequelize.HasManyCreateAssociationMixin<DataSourceActivityData>;
+  declare removeDataSourceActivityDatum: Sequelize.HasManyRemoveAssociationMixin<
     DataSourceActivityData,
     DataSourceActivityDataId
   >;
-  removeDataSourceActivityData!: Sequelize.HasManyRemoveAssociationsMixin<
+  declare removeDataSourceActivityData: Sequelize.HasManyRemoveAssociationsMixin<
     DataSourceActivityData,
     DataSourceActivityDataId
   >;
-  hasDataSourceActivityDatum!: Sequelize.HasManyHasAssociationMixin<
+  declare hasDataSourceActivityDatum: Sequelize.HasManyHasAssociationMixin<
     DataSourceActivityData,
     DataSourceActivityDataId
   >;
-  hasDataSourceActivityData!: Sequelize.HasManyHasAssociationsMixin<
+  declare hasDataSourceActivityData: Sequelize.HasManyHasAssociationsMixin<
     DataSourceActivityData,
     DataSourceActivityDataId
   >;
-  countDataSourceActivityData!: Sequelize.HasManyCountAssociationsMixin;
+  declare countDataSourceActivityData: Sequelize.HasManyCountAssociationsMixin;
   // ActivityData belongsTo ReportingLevel via reportinglevelId
-  reportinglevel!: ReportingLevel;
-  getReportinglevel!: Sequelize.BelongsToGetAssociationMixin<ReportingLevel>;
-  setReportinglevel!: Sequelize.BelongsToSetAssociationMixin<
+  declare reportinglevel: ReportingLevel;
+  declare getReportinglevel: Sequelize.BelongsToGetAssociationMixin<ReportingLevel>;
+  declare setReportinglevel: Sequelize.BelongsToSetAssociationMixin<
     ReportingLevel,
     ReportingLevelId
   >;
-  createReportinglevel!: Sequelize.BelongsToCreateAssociationMixin<ReportingLevel>;
+  declare createReportinglevel: Sequelize.BelongsToCreateAssociationMixin<ReportingLevel>;
   // ActivityData belongsTo Scope via scopeId
-  scope!: Scope;
-  getScope!: Sequelize.BelongsToGetAssociationMixin<Scope>;
-  setScope!: Sequelize.BelongsToSetAssociationMixin<Scope, ScopeId>;
-  createScope!: Sequelize.BelongsToCreateAssociationMixin<Scope>;
+  declare scope: Scope;
+  declare getScope: Sequelize.BelongsToGetAssociationMixin<Scope>;
+  declare setScope: Sequelize.BelongsToSetAssociationMixin<Scope, ScopeId>;
+  declare createScope: Sequelize.BelongsToCreateAssociationMixin<Scope>;
   // ActivityData belongsTo SubCategory via subcategoryId
-  subcategory!: SubCategory;
-  getSubcategory!: Sequelize.BelongsToGetAssociationMixin<SubCategory>;
-  setSubcategory!: Sequelize.BelongsToSetAssociationMixin<
+  declare subcategory: SubCategory;
+  declare getSubcategory: Sequelize.BelongsToGetAssociationMixin<SubCategory>;
+  declare setSubcategory: Sequelize.BelongsToSetAssociationMixin<
     SubCategory,
     SubCategoryId
   >;
-  createSubcategory!: Sequelize.BelongsToCreateAssociationMixin<SubCategory>;
+  declare createSubcategory: Sequelize.BelongsToCreateAssociationMixin<SubCategory>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof ActivityData {
     return ActivityData.init(

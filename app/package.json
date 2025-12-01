@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
-    "start": "next start --turbopack",
+    "start": "next start",
     "lint": "eslint .",
     "test": "npm run jest & npm run e2e:test",
     "api:test": "npm run jest",

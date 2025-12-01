@@ -28,13 +28,13 @@ export class AssistantMessage
   extends Model<AssistantMessageAttributes, AssistantMessageCreationAttributes>
   implements Partial<AssistantMessageAttributes>
 {
-  assistantMessageId!: string;
-  threadId!: string;
-  role!: AssistantMessageRole;
-  timestamp!: Date;
-  content!: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare assistantMessageId: string;
+  declare threadId: string;
+  declare role: AssistantMessageRole;
+  declare timestamp: Date;
+  declare content: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof AssistantMessage {
     return AssistantMessage.init(

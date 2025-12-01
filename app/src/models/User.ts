@@ -48,108 +48,108 @@ export class User
   extends Model<UserAttributes, UserCreationAttributes>
   implements Partial<UserAttributes>
 {
-  userId!: string;
-  name?: string;
-  pictureUrl?: string;
-  email?: string;
-  passwordHash?: string;
-  role?: Roles;
-  created?: Date;
-  lastUpdated?: Date;
-  defaultInventoryId?: string;
-  title?: string;
-  preferredLanguage?: LANGUAGES;
-  defaultCityId?: string | null;
+  declare userId: string;
+  declare name?: string;
+  declare pictureUrl?: string;
+  declare email?: string;
+  declare passwordHash?: string;
+  declare role?: Roles;
+  declare created?: Date;
+  declare lastUpdated?: Date;
+  declare defaultInventoryId?: string;
+  declare title?: string;
+  declare preferredLanguage?: LANGUAGES;
+  declare defaultCityId?: string | null;
 
   // User belongsTo Inventory via defaultInventoryId
-  defaultInventory!: Inventory;
-  getDefaultInventory!: Sequelize.BelongsToGetAssociationMixin<Inventory>;
-  setDefaultInventory!: Sequelize.BelongsToSetAssociationMixin<
+  declare defaultInventory: Inventory;
+  declare getDefaultInventory: Sequelize.BelongsToGetAssociationMixin<Inventory>;
+  declare setDefaultInventory: Sequelize.BelongsToSetAssociationMixin<
     Inventory,
     InventoryId
   >;
-  createDefaultInventory!: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
+  declare createDefaultInventory: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
   // User hasMany CityInvite via invitingUserId
-  cityInvites!: CityInvite[];
-  getCityInvites!: Sequelize.HasManyGetAssociationsMixin<CityInvite>;
-  setCityInvites!: Sequelize.HasManySetAssociationsMixin<
+  declare cityInvites: CityInvite[];
+  declare getCityInvites: Sequelize.HasManyGetAssociationsMixin<CityInvite>;
+  declare setCityInvites: Sequelize.HasManySetAssociationsMixin<
     CityInvite,
     CityInviteId
   >;
-  addCityInvite!: Sequelize.HasManyAddAssociationMixin<
+  declare addCityInvite: Sequelize.HasManyAddAssociationMixin<
     CityInvite,
     CityInviteId
   >;
-  addCityInvites!: Sequelize.HasManyAddAssociationsMixin<
+  declare addCityInvites: Sequelize.HasManyAddAssociationsMixin<
     CityInvite,
     CityInviteId
   >;
-  createCityInvite!: Sequelize.HasManyCreateAssociationMixin<CityInvite>;
-  removeCityInvite!: Sequelize.HasManyRemoveAssociationMixin<
+  declare createCityInvite: Sequelize.HasManyCreateAssociationMixin<CityInvite>;
+  declare removeCityInvite: Sequelize.HasManyRemoveAssociationMixin<
     CityInvite,
     CityInviteId
   >;
-  removeCityInvites!: Sequelize.HasManyRemoveAssociationsMixin<
+  declare removeCityInvites: Sequelize.HasManyRemoveAssociationsMixin<
     CityInvite,
     CityInviteId
   >;
-  hasCityInvite!: Sequelize.HasManyHasAssociationMixin<
+  declare hasCityInvite: Sequelize.HasManyHasAssociationMixin<
     CityInvite,
     CityInviteId
   >;
-  hasCityInvites!: Sequelize.HasManyHasAssociationsMixin<
+  declare hasCityInvites: Sequelize.HasManyHasAssociationsMixin<
     CityInvite,
     CityInviteId
   >;
-  countCityInvites!: Sequelize.HasManyCountAssociationsMixin;
+  declare countCityInvites: Sequelize.HasManyCountAssociationsMixin;
   // User hasMany CityUser via userId
-  cityUsers!: CityUser[];
-  getCityUsers!: Sequelize.HasManyGetAssociationsMixin<CityUser>;
-  setCityUsers!: Sequelize.HasManySetAssociationsMixin<CityUser, CityUserId>;
-  addCityUser!: Sequelize.HasManyAddAssociationMixin<CityUser, CityUserId>;
-  addCityUsers!: Sequelize.HasManyAddAssociationsMixin<CityUser, CityUserId>;
-  createCityUser!: Sequelize.HasManyCreateAssociationMixin<CityUser>;
-  removeCityUser!: Sequelize.HasManyRemoveAssociationMixin<
+  declare cityUsers: CityUser[];
+  declare getCityUsers: Sequelize.HasManyGetAssociationsMixin<CityUser>;
+  declare setCityUsers: Sequelize.HasManySetAssociationsMixin<CityUser, CityUserId>;
+  declare addCityUser: Sequelize.HasManyAddAssociationMixin<CityUser, CityUserId>;
+  declare addCityUsers: Sequelize.HasManyAddAssociationsMixin<CityUser, CityUserId>;
+  declare createCityUser: Sequelize.HasManyCreateAssociationMixin<CityUser>;
+  declare removeCityUser: Sequelize.HasManyRemoveAssociationMixin<
     CityUser,
     CityUserId
   >;
-  removeCityUsers!: Sequelize.HasManyRemoveAssociationsMixin<
+  declare removeCityUsers: Sequelize.HasManyRemoveAssociationsMixin<
     CityUser,
     CityUserId
   >;
-  hasCityUser!: Sequelize.HasManyHasAssociationMixin<CityUser, CityUserId>;
-  hasCityUsers!: Sequelize.HasManyHasAssociationsMixin<CityUser, CityUserId>;
-  countCityUsers!: Sequelize.HasManyCountAssociationsMixin;
+  declare hasCityUser: Sequelize.HasManyHasAssociationMixin<CityUser, CityUserId>;
+  declare hasCityUsers: Sequelize.HasManyHasAssociationsMixin<CityUser, CityUserId>;
+  declare countCityUsers: Sequelize.HasManyCountAssociationsMixin;
   // User hasMany UserFile via userId
-  userFiles!: UserFile[];
-  getUserFiles!: Sequelize.HasManyGetAssociationsMixin<UserFile>;
-  setUserFiles!: Sequelize.HasManySetAssociationsMixin<UserFile, UserFileId>;
-  addUserFile!: Sequelize.HasManyAddAssociationMixin<UserFile, UserFileId>;
-  addUserFiles!: Sequelize.HasManyAddAssociationsMixin<UserFile, UserFileId>;
-  createUserFile!: Sequelize.HasManyCreateAssociationMixin<UserFile>;
-  removeUserFile!: Sequelize.HasManyRemoveAssociationMixin<
+  declare userFiles: UserFile[];
+  declare getUserFiles: Sequelize.HasManyGetAssociationsMixin<UserFile>;
+  declare setUserFiles: Sequelize.HasManySetAssociationsMixin<UserFile, UserFileId>;
+  declare addUserFile: Sequelize.HasManyAddAssociationMixin<UserFile, UserFileId>;
+  declare addUserFiles: Sequelize.HasManyAddAssociationsMixin<UserFile, UserFileId>;
+  declare createUserFile: Sequelize.HasManyCreateAssociationMixin<UserFile>;
+  declare removeUserFile: Sequelize.HasManyRemoveAssociationMixin<
     UserFile,
     UserFileId
   >;
-  removeUserFiles!: Sequelize.HasManyRemoveAssociationsMixin<
+  declare removeUserFiles: Sequelize.HasManyRemoveAssociationsMixin<
     UserFile,
     UserFileId
   >;
-  hasUserFile!: Sequelize.HasManyHasAssociationMixin<UserFile, UserFileId>;
-  hasUserFiles!: Sequelize.HasManyHasAssociationsMixin<UserFile, UserFileId>;
-  countUserFiles!: Sequelize.HasManyCountAssociationsMixin;
+  declare hasUserFile: Sequelize.HasManyHasAssociationMixin<UserFile, UserFileId>;
+  declare hasUserFiles: Sequelize.HasManyHasAssociationsMixin<UserFile, UserFileId>;
+  declare countUserFiles: Sequelize.HasManyCountAssociationsMixin;
   // User hasMany City via userId
-  cities!: City[];
-  getCities!: Sequelize.HasManyGetAssociationsMixin<City>;
-  setCities!: Sequelize.HasManySetAssociationsMixin<City, CityId>;
-  addCity!: Sequelize.HasManyAddAssociationMixin<City, CityId>;
-  addCities!: Sequelize.HasManyAddAssociationsMixin<City, CityId>;
-  createCity!: Sequelize.HasManyCreateAssociationMixin<City>;
-  removeCity!: Sequelize.HasManyRemoveAssociationMixin<City, CityId>;
-  removeCities!: Sequelize.HasManyRemoveAssociationsMixin<City, CityId>;
-  hasCity!: Sequelize.HasManyHasAssociationMixin<City, CityId>;
-  hasCities!: Sequelize.HasManyHasAssociationsMixin<City, CityId>;
-  countCities!: Sequelize.HasManyCountAssociationsMixin;
+  declare cities: City[];
+  declare getCities: Sequelize.HasManyGetAssociationsMixin<City>;
+  declare setCities: Sequelize.HasManySetAssociationsMixin<City, CityId>;
+  declare addCity: Sequelize.HasManyAddAssociationMixin<City, CityId>;
+  declare addCities: Sequelize.HasManyAddAssociationsMixin<City, CityId>;
+  declare createCity: Sequelize.HasManyCreateAssociationMixin<City>;
+  declare removeCity: Sequelize.HasManyRemoveAssociationMixin<City, CityId>;
+  declare removeCities: Sequelize.HasManyRemoveAssociationsMixin<City, CityId>;
+  declare hasCity: Sequelize.HasManyHasAssociationMixin<City, CityId>;
+  declare hasCities: Sequelize.HasManyHasAssociationsMixin<City, CityId>;
+  declare countCities: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof User {
     return User.init(

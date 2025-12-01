@@ -30,37 +30,37 @@ export class GasValue
   extends Model<GasValueAttributes, GasValueCreationAttributes>
   implements Partial<GasValueAttributes>
 {
-  id!: string;
-  inventoryValueId?: string;
-  emissionsFactorId?: string;
-  gas?: string;
-  gasAmount?: bigint | null;
-  activityValueId?: string;
+  declare id: string;
+  declare inventoryValueId?: string;
+  declare emissionsFactorId?: string;
+  declare gas?: string;
+  declare gasAmount?: bigint | null;
+  declare activityValueId?: string;
 
   // GasValue belongsTo ActivityValue via activityValueId
-  activityValue!: ActivityValue;
-  getActivityValue!: Sequelize.BelongsToGetAssociationMixin<ActivityValue>;
-  setActivityValue!: Sequelize.BelongsToSetAssociationMixin<
+  declare activityValue: ActivityValue;
+  declare getActivityValue: Sequelize.BelongsToGetAssociationMixin<ActivityValue>;
+  declare setActivityValue: Sequelize.BelongsToSetAssociationMixin<
     ActivityValue,
     ActivityValueId
   >;
-  createActivityValue!: Sequelize.BelongsToCreateAssociationMixin<ActivityValue>;
+  declare createActivityValue: Sequelize.BelongsToCreateAssociationMixin<ActivityValue>;
   // GasValue belongsTo EmissionsFactor via emissionsFactorId
-  emissionsFactor!: EmissionsFactor;
-  getEmissionsFactor!: Sequelize.BelongsToGetAssociationMixin<EmissionsFactor>;
-  setEmissionsFactor!: Sequelize.BelongsToSetAssociationMixin<
+  declare emissionsFactor: EmissionsFactor;
+  declare getEmissionsFactor: Sequelize.BelongsToGetAssociationMixin<EmissionsFactor>;
+  declare setEmissionsFactor: Sequelize.BelongsToSetAssociationMixin<
     EmissionsFactor,
     EmissionsFactorId
   >;
-  createEmissionsFactor!: Sequelize.BelongsToCreateAssociationMixin<EmissionsFactor>;
+  declare createEmissionsFactor: Sequelize.BelongsToCreateAssociationMixin<EmissionsFactor>;
   // GasValue belongsTo InventoryValue via inventoryValueId
-  inventoryValue!: InventoryValue;
-  getInventoryValue!: Sequelize.BelongsToGetAssociationMixin<InventoryValue>;
-  setInventoryValue!: Sequelize.BelongsToSetAssociationMixin<
+  declare inventoryValue: InventoryValue;
+  declare getInventoryValue: Sequelize.BelongsToGetAssociationMixin<InventoryValue>;
+  declare setInventoryValue: Sequelize.BelongsToSetAssociationMixin<
     InventoryValue,
     InventoryValueId
   >;
-  createInventoryValue!: Sequelize.BelongsToCreateAssociationMixin<InventoryValue>;
+  declare createInventoryValue: Sequelize.BelongsToCreateAssociationMixin<InventoryValue>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof GasValue {
     return GasValue.init(

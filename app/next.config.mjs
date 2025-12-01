@@ -62,18 +62,26 @@ function generateOpenAPISpec() {
   }
 }
 
+// Generate OpenAPI spec during build for both webpack and turbopack
+function setupBuildHook(options) {
+  const { isServer, dev } = options;
+  if (isServer && !dev) {
+    generateOpenAPISpec();
+  }
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: true,
   serverExternalPackages: ["sequelize"],
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
+    turbo: {
+      rules: {},
+    },
   },
-  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Generate OpenAPI spec during build (only once, on server-side build)
-    if (isServer && !dev) {
-      generateOpenAPISpec();
-    }
+  webpack: (config, options) => {
+    setupBuildHook(options);
     return config;
   },
   env: {

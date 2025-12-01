@@ -28,161 +28,161 @@ export class Scope
   extends Model<ScopeAttributes, ScopeCreationAttributes>
   implements Partial<ScopeAttributes>
 {
-  scopeId!: string;
-  scopeName?: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare scopeId: string;
+  declare scopeName?: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // Scope hasMany ActivityData via scopeId
-  activityData!: ActivityData[];
-  getActivityData!: Sequelize.HasManyGetAssociationsMixin<ActivityData>;
-  setActivityData!: Sequelize.HasManySetAssociationsMixin<
+  declare activityData: ActivityData[];
+  declare getActivityData: Sequelize.HasManyGetAssociationsMixin<ActivityData>;
+  declare setActivityData: Sequelize.HasManySetAssociationsMixin<
     ActivityData,
     ActivityDataId
   >;
-  addActivityDatum!: Sequelize.HasManyAddAssociationMixin<
+  declare addActivityDatum: Sequelize.HasManyAddAssociationMixin<
     ActivityData,
     ActivityDataId
   >;
-  addActivityData!: Sequelize.HasManyAddAssociationsMixin<
+  declare addActivityData: Sequelize.HasManyAddAssociationsMixin<
     ActivityData,
     ActivityDataId
   >;
-  createActivityDatum!: Sequelize.HasManyCreateAssociationMixin<ActivityData>;
-  removeActivityDatum!: Sequelize.HasManyRemoveAssociationMixin<
+  declare createActivityDatum: Sequelize.HasManyCreateAssociationMixin<ActivityData>;
+  declare removeActivityDatum: Sequelize.HasManyRemoveAssociationMixin<
     ActivityData,
     ActivityDataId
   >;
-  removeActivityData!: Sequelize.HasManyRemoveAssociationsMixin<
+  declare removeActivityData: Sequelize.HasManyRemoveAssociationsMixin<
     ActivityData,
     ActivityDataId
   >;
-  hasActivityDatum!: Sequelize.HasManyHasAssociationMixin<
+  declare hasActivityDatum: Sequelize.HasManyHasAssociationMixin<
     ActivityData,
     ActivityDataId
   >;
-  hasActivityData!: Sequelize.HasManyHasAssociationsMixin<
+  declare hasActivityData: Sequelize.HasManyHasAssociationsMixin<
     ActivityData,
     ActivityDataId
   >;
-  countActivityData!: Sequelize.HasManyCountAssociationsMixin;
+  declare countActivityData: Sequelize.HasManyCountAssociationsMixin;
   // Scope belongsToMany DataSource via scopeId and datasourceId
-  dataSources!: DataSource[];
-  getDataSources!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
-  setDataSources!: Sequelize.BelongsToManySetAssociationsMixin<
+  declare dataSources: DataSource[];
+  declare getDataSources: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
+  declare setDataSources: Sequelize.BelongsToManySetAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  addDataSource!: Sequelize.BelongsToManyAddAssociationMixin<
+  declare addDataSource: Sequelize.BelongsToManyAddAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  addDataSources!: Sequelize.BelongsToManyAddAssociationsMixin<
+  declare addDataSources: Sequelize.BelongsToManyAddAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  createDataSource!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
-  removeDataSource!: Sequelize.BelongsToManyRemoveAssociationMixin<
+  declare createDataSource: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
+  declare removeDataSource: Sequelize.BelongsToManyRemoveAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  removeDataSources!: Sequelize.BelongsToManyRemoveAssociationsMixin<
+  declare removeDataSources: Sequelize.BelongsToManyRemoveAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  hasDataSource!: Sequelize.BelongsToManyHasAssociationMixin<
+  declare hasDataSource: Sequelize.BelongsToManyHasAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  hasDataSources!: Sequelize.BelongsToManyHasAssociationsMixin<
+  declare hasDataSources: Sequelize.BelongsToManyHasAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  countDataSources!: Sequelize.BelongsToManyCountAssociationsMixin;
+  declare countDataSources: Sequelize.BelongsToManyCountAssociationsMixin;
   // Scope hasMany DataSourceScope via scopeId
-  dataSourceScopes!: DataSourceScope[];
-  getDataSourceScopes!: Sequelize.HasManyGetAssociationsMixin<DataSourceScope>;
-  setDataSourceScopes!: Sequelize.HasManySetAssociationsMixin<
+  declare dataSourceScopes: DataSourceScope[];
+  declare getDataSourceScopes: Sequelize.HasManyGetAssociationsMixin<DataSourceScope>;
+  declare setDataSourceScopes: Sequelize.HasManySetAssociationsMixin<
     DataSourceScope,
     DataSourceScopeId
   >;
-  addDataSourceScope!: Sequelize.HasManyAddAssociationMixin<
+  declare addDataSourceScope: Sequelize.HasManyAddAssociationMixin<
     DataSourceScope,
     DataSourceScopeId
   >;
-  addDataSourceScopes!: Sequelize.HasManyAddAssociationsMixin<
+  declare addDataSourceScopes: Sequelize.HasManyAddAssociationsMixin<
     DataSourceScope,
     DataSourceScopeId
   >;
-  createDataSourceScope!: Sequelize.HasManyCreateAssociationMixin<DataSourceScope>;
-  removeDataSourceScope!: Sequelize.HasManyRemoveAssociationMixin<
+  declare createDataSourceScope: Sequelize.HasManyCreateAssociationMixin<DataSourceScope>;
+  declare removeDataSourceScope: Sequelize.HasManyRemoveAssociationMixin<
     DataSourceScope,
     DataSourceScopeId
   >;
-  removeDataSourceScopes!: Sequelize.HasManyRemoveAssociationsMixin<
+  declare removeDataSourceScopes: Sequelize.HasManyRemoveAssociationsMixin<
     DataSourceScope,
     DataSourceScopeId
   >;
-  hasDataSourceScope!: Sequelize.HasManyHasAssociationMixin<
+  declare hasDataSourceScope: Sequelize.HasManyHasAssociationMixin<
     DataSourceScope,
     DataSourceScopeId
   >;
-  hasDataSourceScopes!: Sequelize.HasManyHasAssociationsMixin<
+  declare hasDataSourceScopes: Sequelize.HasManyHasAssociationsMixin<
     DataSourceScope,
     DataSourceScopeId
   >;
-  countDataSourceScopes!: Sequelize.HasManyCountAssociationsMixin;
+  declare countDataSourceScopes: Sequelize.HasManyCountAssociationsMixin;
   // Scope hasMany SubCategory via scopeId
-  subCategories!: SubCategory[];
-  getSubCategories!: Sequelize.HasManyGetAssociationsMixin<SubCategory>;
-  setSubCategories!: Sequelize.HasManySetAssociationsMixin<
+  declare subCategories: SubCategory[];
+  declare getSubCategories: Sequelize.HasManyGetAssociationsMixin<SubCategory>;
+  declare setSubCategories: Sequelize.HasManySetAssociationsMixin<
     SubCategory,
     SubCategoryId
   >;
-  addSubCategory!: Sequelize.HasManyAddAssociationMixin<
+  declare addSubCategory: Sequelize.HasManyAddAssociationMixin<
     SubCategory,
     SubCategoryId
   >;
-  addSubCategories!: Sequelize.HasManyAddAssociationsMixin<
+  declare addSubCategories: Sequelize.HasManyAddAssociationsMixin<
     SubCategory,
     SubCategoryId
   >;
-  createSubCategory!: Sequelize.HasManyCreateAssociationMixin<SubCategory>;
-  removeSubCategory!: Sequelize.HasManyRemoveAssociationMixin<
+  declare createSubCategory: Sequelize.HasManyCreateAssociationMixin<SubCategory>;
+  declare removeSubCategory: Sequelize.HasManyRemoveAssociationMixin<
     SubCategory,
     SubCategoryId
   >;
-  removeSubCategories!: Sequelize.HasManyRemoveAssociationsMixin<
+  declare removeSubCategories: Sequelize.HasManyRemoveAssociationsMixin<
     SubCategory,
     SubCategoryId
   >;
-  hasSubCategory!: Sequelize.HasManyHasAssociationMixin<
+  declare hasSubCategory: Sequelize.HasManyHasAssociationMixin<
     SubCategory,
     SubCategoryId
   >;
-  hasSubCategories!: Sequelize.HasManyHasAssociationsMixin<
+  declare hasSubCategories: Sequelize.HasManyHasAssociationsMixin<
     SubCategory,
     SubCategoryId
   >;
-  countSubCategories!: Sequelize.HasManyCountAssociationsMixin;
+  declare countSubCategories: Sequelize.HasManyCountAssociationsMixin;
   // Scope hasMany SubSector via scopeId and subsectorId
-  subSectors!: SubSector[];
-  getSubSectors!: Sequelize.HasManyGetAssociationsMixin<SubSector>;
-  setSubSectors!: Sequelize.HasManySetAssociationsMixin<SubSector, SubSectorId>;
-  addSubSector!: Sequelize.HasManyAddAssociationMixin<SubSector, SubSectorId>;
-  addSubSectors!: Sequelize.HasManyAddAssociationsMixin<SubSector, SubSectorId>;
-  createSubSector!: Sequelize.HasManyCreateAssociationMixin<SubSector>;
-  removeSubSector!: Sequelize.HasManyRemoveAssociationMixin<
+  declare subSectors: SubSector[];
+  declare getSubSectors: Sequelize.HasManyGetAssociationsMixin<SubSector>;
+  declare setSubSectors: Sequelize.HasManySetAssociationsMixin<SubSector, SubSectorId>;
+  declare addSubSector: Sequelize.HasManyAddAssociationMixin<SubSector, SubSectorId>;
+  declare addSubSectors: Sequelize.HasManyAddAssociationsMixin<SubSector, SubSectorId>;
+  declare createSubSector: Sequelize.HasManyCreateAssociationMixin<SubSector>;
+  declare removeSubSector: Sequelize.HasManyRemoveAssociationMixin<
     SubSector,
     SubSectorId
   >;
-  removeSubSectors!: Sequelize.HasManyRemoveAssociationsMixin<
+  declare removeSubSectors: Sequelize.HasManyRemoveAssociationsMixin<
     SubSector,
     SubSectorId
   >;
-  hasSubSector!: Sequelize.HasManyHasAssociationMixin<SubSector, SubSectorId>;
-  hasSubSectors!: Sequelize.HasManyHasAssociationsMixin<SubSector, SubSectorId>;
-  countSubSectors!: Sequelize.HasManyCountAssociationsMixin;
+  declare hasSubSector: Sequelize.HasManyHasAssociationMixin<SubSector, SubSectorId>;
+  declare hasSubSectors: Sequelize.HasManyHasAssociationsMixin<SubSector, SubSectorId>;
+  declare countSubSectors: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Scope {
     return Scope.init(

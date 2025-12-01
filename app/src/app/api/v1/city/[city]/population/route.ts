@@ -156,7 +156,6 @@ export const POST = apiHandler(async (req, { session, params }) => {
 
 export const GET = apiHandler(async (_req: Request, { session, params }) => {
   const city = await UserService.findUserCity(params.city, session, true);
-  console.log("city", city);
   const cityPopulationData =
     await PopulationService.getMostRecentPopulationDataForCity(city.cityId);
 

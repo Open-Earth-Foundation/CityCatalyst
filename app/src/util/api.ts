@@ -5,7 +5,6 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { H } from "@/lib/highlight";
-import rateLimit from "express-rate-limit";
 
 import { StreamingTextResponse } from "ai";
 import OpenAI from "openai";

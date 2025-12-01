@@ -3,7 +3,7 @@ import AdminNotificationTemplate from "@/lib/emails/AdminNotificationTemplate";
 import { City } from "@/models/City";
 import { LANGUAGES, UserFileResponse } from "@/util/types";
 import { render } from "@react-email/components";
-import nodemailer, { Transporter } from "nodemailer";
+import { createTransport, type Transporter } from "nodemailer";
 import { logger } from "@/services/logger";
 import EmailService from "./EmailService";
 
@@ -50,7 +50,7 @@ class NotificationService {
 
     try {
       // TODO use cached `transporter` from class
-      const transporter = nodemailer.createTransport({ ...smtpOptions });
+      const transporter = createTransport({ ...smtpOptions });
       const info = await transporter.sendMail(mailOptions);
       return { success: true, messageId: info.messageId };
     } catch (error) {

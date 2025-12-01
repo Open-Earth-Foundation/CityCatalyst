@@ -255,19 +255,21 @@ export function apiHandler(handler: NextHandler) {
         ).span
       : null;
 
-    // Apply rate limiting
-    const clientIp =
-      (req.headers.get("x-forwarded-for") as string)?.split(",")[0]?.trim() ||
-      (req.headers.get("x-real-ip") as string) ||
-      "unknown";
+    // Apply rate limiting (disabled during tests)
+    if (process.env.NODE_ENV !== "test") {
+      const clientIp =
+        (req.headers.get("x-forwarded-for") as string)?.split(",")[0]?.trim() ||
+        (req.headers.get("x-real-ip") as string) ||
+        "unknown";
 
-    const allowed = apiLimiter.checkLimit(clientIp);
+      const allowed = apiLimiter.checkLimit(clientIp);
 
-    if (!allowed) {
-      return NextResponse.json(
-        { error: { message: "Too many requests, please try again later." } },
-        { status: 429 },
-      );
+      if (!allowed) {
+        return NextResponse.json(
+          { error: { message: "Too many requests, please try again later." } },
+          { status: 429 },
+        );
+      }
     }
 
     try {

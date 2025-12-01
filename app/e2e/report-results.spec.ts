@@ -131,6 +131,7 @@ test.describe("Report Results", () => {
 
     // select scope 1 tab
     await page.getByText("Scope 2").click();
+    await page.waitForTimeout(3000);
     // select methodology when cards exist, otherwise verify existing data table
     const visibleMethodologyCards = page.getByTestId("methodology-card");
     const visibleMethodologyCount = await visibleMethodologyCards.count();

@@ -1,6 +1,6 @@
 import os
 import json
-from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from plan_creator_bundle.plan_creator_legacy.state.agent_state import AgentState
 from langchain_openai import ChatOpenAI
@@ -30,10 +30,10 @@ system_prompt_agent_1 = SystemMessage(agent_1_system_prompt)
 
 
 def build_custom_agent_1():
-    """Wrap create_react_agent to store final output in AgentState."""
+    """Wrap create_agent to store final output in AgentState."""
 
-    # The chain returned by create_react_agent
-    react_chain = create_react_agent(model, tools, prompt=system_prompt_agent_1)
+    # The chain returned by create_agent
+    react_chain = create_agent(model, tools, system_prompt=system_prompt_agent_1)
 
     def custom_agent_1(state: AgentState) -> AgentState:
 

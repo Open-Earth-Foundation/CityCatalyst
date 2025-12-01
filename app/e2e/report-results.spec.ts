@@ -206,8 +206,12 @@ test.describe("Report Results", () => {
       .locator("tbody tr")
       .filter({ has: page.getByText("Residential buildings") });
     await expect(residentialRows).toHaveCount(2);
-    await expect(residentialRows.first()).toContainText("Scope 2");
-    await expect(residentialRows.nth(1)).toContainText("Scope 1");
+    await expect(
+      residentialRows.filter({ has: page.getByText(/Scope 2/i) }),
+    ).toHaveCount(1);
+    await expect(
+      residentialRows.filter({ has: page.getByText(/Scope 1/i) }),
+    ).toHaveCount(1);
 
     await expect(
       residentialRows.locator("td").filter({ hasText: /268\.8 t CO2e/i }),

@@ -26,7 +26,9 @@ import { OAuthClient } from "@/models/OAuthClient";
 import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
 
 // Rate limiting configuration
-const apiLimiter = new RateLimiter(60 * 1000, 60); // 60 requests per minute
+// Skip during Playwright runs via feature flag to avoid hitting limits
+const isPlaywrightTest = process.env.PLAYWRIGHT_TEST === "1";
+const apiLimiter = isPlaywrightTest ? null : new RateLimiter(60 * 1000, 60);
 
 export type ApiResponse = NextResponse | StreamingTextResponse;
 
@@ -256,7 +258,7 @@ export function apiHandler(handler: NextHandler) {
       : null;
 
     // Apply rate limiting (disabled during tests)
-    if (process.env.NODE_ENV !== "test") {
+    if (apiLimiter) {
       const clientIp =
         (req.headers.get("x-forwarded-for") as string)?.split(",")[0]?.trim() ||
         (req.headers.get("x-real-ip") as string) ||

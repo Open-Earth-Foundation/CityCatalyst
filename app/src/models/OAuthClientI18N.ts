@@ -26,12 +26,12 @@ export class OAuthClientI18N
   extends Model<OAuthClientI18NAttributes, OAuthClientI18NCreationAttributes>
   implements OAuthClientI18NAttributes
 {
-  clientId!: string;
-  language!: string;
-  name!: string;
-  description?: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare clientId: string;
+  declare language: string;
+  declare name: string;
+  declare description?: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof OAuthClientI18N {
     return OAuthClientI18N.init(

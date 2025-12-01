@@ -31,26 +31,26 @@ export class GDP
   extends Model<GDPAttributes, GDPCreationAttributes>
   implements Partial<GDPAttributes>
 {
-  cityId!: string;
-  gdp?: number;
-  year!: number;
-  created?: Date;
-  lastUpdated?: Date;
-  datasourceId?: string;
+  declare cityId: string;
+  declare gdp?: number;
+  declare year: number;
+  declare created?: Date;
+  declare lastUpdated?: Date;
+  declare datasourceId?: string;
 
   // GDP belongsTo City via cityId
-  city!: City;
-  getCity!: Sequelize.BelongsToGetAssociationMixin<City>;
-  setCity!: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
-  createCity!: Sequelize.BelongsToCreateAssociationMixin<City>;
+  declare city: City;
+  declare getCity: Sequelize.BelongsToGetAssociationMixin<City>;
+  declare setCity: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
+  declare createCity: Sequelize.BelongsToCreateAssociationMixin<City>;
   // GDP belongsTo DataSource via datasourceId
-  datasource!: DataSource;
-  getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
-  setDatasource!: Sequelize.BelongsToSetAssociationMixin<
+  declare datasource: DataSource;
+  declare getDatasource: Sequelize.BelongsToGetAssociationMixin<DataSource>;
+  declare setDatasource: Sequelize.BelongsToSetAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  createDatasource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
+  declare createDatasource: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof GDP {
     return GDP.init(

@@ -19,9 +19,9 @@ export class GasToCO2Eq
   extends Model<GasToCO2EqAttributes, GasToCO2EqCreationAttributes>
   implements Partial<GasToCO2EqAttributes>
 {
-  gas!: string;
-  co2eqPerKg?: number;
-  co2eqYears?: number;
+  declare gas: string;
+  declare co2eqPerKg?: number;
+  declare co2eqYears?: number;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof GasToCO2Eq {
     return GasToCO2Eq.init(

@@ -62,122 +62,122 @@ export class EmissionsFactor
   extends Model<EmissionsFactorAttributes, EmissionsFactorCreationAttributes>
   implements Partial<EmissionsFactorAttributes>
 {
-  id!: string;
-  gpcReferenceNumber?: string;
-  emissionsPerActivity?: number;
-  url?: string;
-  gas?: string;
-  units?: string;
-  inventoryId?: string | null;
-  region?: string | null;
-  actorId?: string | null;
-  methodologyName?: string | null;
-  methodologyId?: string | null;
-  metadata?: Record<string, any>;
-  reference?: string | null;
-  deprecated?: boolean;
-  created?: Date;
-  lastUpdated?: Date;
+  declare id: string;
+  declare gpcReferenceNumber?: string;
+  declare emissionsPerActivity?: number;
+  declare url?: string;
+  declare gas?: string;
+  declare units?: string;
+  declare inventoryId?: string | null;
+  declare region?: string | null;
+  declare actorId?: string | null;
+  declare methodologyName?: string | null;
+  declare methodologyId?: string | null;
+  declare metadata?: Record<string, any>;
+  declare reference?: string | null;
+  declare deprecated?: boolean;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // EmissionsFactor belongsTo Inventory via inventoryId
-  inventory!: Inventory;
-  getInventory!: Sequelize.BelongsToGetAssociationMixin<Inventory>;
-  setInventory!: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
-  createInventory!: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
+  declare inventory: Inventory;
+  declare getInventory: Sequelize.BelongsToGetAssociationMixin<Inventory>;
+  declare setInventory: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
+  declare createInventory: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
 
   // EmissionsFactor belongsTo Methodology via methodologyId
-  methodology!: Methodology;
-  getMethodology!: Sequelize.BelongsToGetAssociationMixin<Methodology>;
-  setMethodology!: Sequelize.BelongsToSetAssociationMixin<
+  declare methodology: Methodology;
+  declare getMethodology: Sequelize.BelongsToGetAssociationMixin<Methodology>;
+  declare setMethodology: Sequelize.BelongsToSetAssociationMixin<
     Methodology,
     MethodologyId
   >;
-  createMethodology!: Sequelize.BelongsToCreateAssociationMixin<Methodology>;
+  declare createMethodology: Sequelize.BelongsToCreateAssociationMixin<Methodology>;
 
   // EmissionsFactor belongsToMany DataSource via emissionsFactorId and datasourceId
-  dataSources!: DataSource[];
-  getDataSources!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
-  setDataSources!: Sequelize.BelongsToManySetAssociationsMixin<
+  declare dataSources: DataSource[];
+  declare getDataSources: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
+  declare setDataSources: Sequelize.BelongsToManySetAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  addDataSource!: Sequelize.BelongsToManyAddAssociationMixin<
+  declare addDataSource: Sequelize.BelongsToManyAddAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  addDataSources!: Sequelize.BelongsToManyAddAssociationsMixin<
+  declare addDataSources: Sequelize.BelongsToManyAddAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  createDataSource!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
-  removeDataSource!: Sequelize.BelongsToManyRemoveAssociationMixin<
+  declare createDataSource: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
+  declare removeDataSource: Sequelize.BelongsToManyRemoveAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  removeDataSources!: Sequelize.BelongsToManyRemoveAssociationsMixin<
+  declare removeDataSources: Sequelize.BelongsToManyRemoveAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  hasDataSource!: Sequelize.BelongsToManyHasAssociationMixin<
+  declare hasDataSource: Sequelize.BelongsToManyHasAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  hasDataSources!: Sequelize.BelongsToManyHasAssociationsMixin<
+  declare hasDataSources: Sequelize.BelongsToManyHasAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  countDataSources!: Sequelize.BelongsToManyCountAssociationsMixin;
+  declare countDataSources: Sequelize.BelongsToManyCountAssociationsMixin;
   // EmissionsFactor hasMany DataSourceEmissionsFactor via emissionsFactorId
-  dataSourceEmissionsFactors!: DataSourceEmissionsFactor[];
-  getDataSourceEmissionsFactors!: Sequelize.HasManyGetAssociationsMixin<DataSourceEmissionsFactor>;
-  setDataSourceEmissionsFactors!: Sequelize.HasManySetAssociationsMixin<
+  declare dataSourceEmissionsFactors: DataSourceEmissionsFactor[];
+  declare getDataSourceEmissionsFactors: Sequelize.HasManyGetAssociationsMixin<DataSourceEmissionsFactor>;
+  declare setDataSourceEmissionsFactors: Sequelize.HasManySetAssociationsMixin<
     DataSourceEmissionsFactor,
     DataSourceEmissionsFactorId
   >;
-  addDataSourceEmissionsFactor!: Sequelize.HasManyAddAssociationMixin<
+  declare addDataSourceEmissionsFactor: Sequelize.HasManyAddAssociationMixin<
     DataSourceEmissionsFactor,
     DataSourceEmissionsFactorId
   >;
-  addDataSourceEmissionsFactors!: Sequelize.HasManyAddAssociationsMixin<
+  declare addDataSourceEmissionsFactors: Sequelize.HasManyAddAssociationsMixin<
     DataSourceEmissionsFactor,
     DataSourceEmissionsFactorId
   >;
-  createDataSourceEmissionsFactor!: Sequelize.HasManyCreateAssociationMixin<DataSourceEmissionsFactor>;
-  removeDataSourceEmissionsFactor!: Sequelize.HasManyRemoveAssociationMixin<
+  declare createDataSourceEmissionsFactor: Sequelize.HasManyCreateAssociationMixin<DataSourceEmissionsFactor>;
+  declare removeDataSourceEmissionsFactor: Sequelize.HasManyRemoveAssociationMixin<
     DataSourceEmissionsFactor,
     DataSourceEmissionsFactorId
   >;
-  removeDataSourceEmissionsFactors!: Sequelize.HasManyRemoveAssociationsMixin<
+  declare removeDataSourceEmissionsFactors: Sequelize.HasManyRemoveAssociationsMixin<
     DataSourceEmissionsFactor,
     DataSourceEmissionsFactorId
   >;
-  hasDataSourceEmissionsFactor!: Sequelize.HasManyHasAssociationMixin<
+  declare hasDataSourceEmissionsFactor: Sequelize.HasManyHasAssociationMixin<
     DataSourceEmissionsFactor,
     DataSourceEmissionsFactorId
   >;
-  hasDataSourceEmissionsFactors!: Sequelize.HasManyHasAssociationsMixin<
+  declare hasDataSourceEmissionsFactors: Sequelize.HasManyHasAssociationsMixin<
     DataSourceEmissionsFactor,
     DataSourceEmissionsFactorId
   >;
-  countDataSourceEmissionsFactors!: Sequelize.HasManyCountAssociationsMixin;
+  declare countDataSourceEmissionsFactors: Sequelize.HasManyCountAssociationsMixin;
   // EmissionsFactor hasMany GasValue via emissionsFactorId
-  gasValues!: GasValue[];
-  getGasValues!: Sequelize.HasManyGetAssociationsMixin<GasValue>;
-  setGasValues!: Sequelize.HasManySetAssociationsMixin<GasValue, GasValueId>;
-  addGasValue!: Sequelize.HasManyAddAssociationMixin<GasValue, GasValueId>;
-  addGasValues!: Sequelize.HasManyAddAssociationsMixin<GasValue, GasValueId>;
-  createGasValue!: Sequelize.HasManyCreateAssociationMixin<GasValue>;
-  removeGasValue!: Sequelize.HasManyRemoveAssociationMixin<
+  declare gasValues: GasValue[];
+  declare getGasValues: Sequelize.HasManyGetAssociationsMixin<GasValue>;
+  declare setGasValues: Sequelize.HasManySetAssociationsMixin<GasValue, GasValueId>;
+  declare addGasValue: Sequelize.HasManyAddAssociationMixin<GasValue, GasValueId>;
+  declare addGasValues: Sequelize.HasManyAddAssociationsMixin<GasValue, GasValueId>;
+  declare createGasValue: Sequelize.HasManyCreateAssociationMixin<GasValue>;
+  declare removeGasValue: Sequelize.HasManyRemoveAssociationMixin<
     GasValue,
     GasValueId
   >;
-  removeGasValues!: Sequelize.HasManyRemoveAssociationsMixin<
+  declare removeGasValues: Sequelize.HasManyRemoveAssociationsMixin<
     GasValue,
     GasValueId
   >;
-  hasGasValue!: Sequelize.HasManyHasAssociationMixin<GasValue, GasValueId>;
-  hasGasValues!: Sequelize.HasManyHasAssociationsMixin<GasValue, GasValueId>;
-  countGasValues!: Sequelize.HasManyCountAssociationsMixin;
+  declare hasGasValue: Sequelize.HasManyHasAssociationMixin<GasValue, GasValueId>;
+  declare hasGasValues: Sequelize.HasManyHasAssociationsMixin<GasValue, GasValueId>;
+  declare countGasValues: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof EmissionsFactor {
     return EmissionsFactor.init(

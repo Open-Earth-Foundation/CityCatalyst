@@ -31,27 +31,27 @@ export class DataSourceReportingLevel
   >
   implements Partial<DataSourceReportingLevelAttributes>
 {
-  datasourceId!: string;
-  reportinglevelId!: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare datasourceId: string;
+  declare reportinglevelId: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // DataSourceReportingLevel belongsTo DataSource via datasourceId
-  datasource!: DataSource;
-  getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
-  setDatasource!: Sequelize.BelongsToSetAssociationMixin<
+  declare datasource: DataSource;
+  declare getDatasource: Sequelize.BelongsToGetAssociationMixin<DataSource>;
+  declare setDatasource: Sequelize.BelongsToSetAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  createDatasource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
+  declare createDatasource: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
   // DataSourceReportingLevel belongsTo ReportingLevel via reportinglevelId
-  reportinglevel!: ReportingLevel;
-  getReportinglevel!: Sequelize.BelongsToGetAssociationMixin<ReportingLevel>;
-  setReportinglevel!: Sequelize.BelongsToSetAssociationMixin<
+  declare reportinglevel: ReportingLevel;
+  declare getReportinglevel: Sequelize.BelongsToGetAssociationMixin<ReportingLevel>;
+  declare setReportinglevel: Sequelize.BelongsToSetAssociationMixin<
     ReportingLevel,
     ReportingLevelId
   >;
-  createReportinglevel!: Sequelize.BelongsToCreateAssociationMixin<ReportingLevel>;
+  declare createReportinglevel: Sequelize.BelongsToCreateAssociationMixin<ReportingLevel>;
 
   static initModel(
     sequelize: Sequelize.Sequelize,

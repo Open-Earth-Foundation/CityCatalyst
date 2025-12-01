@@ -23,10 +23,10 @@ export class AssistantThread
   extends Model<AssistantThreadAttributes, AssistantThreadCreationAttributes>
   implements Partial<AssistantThreadAttributes>
 {
-  assistantThreadId!: string;
-  assistantId?: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare assistantThreadId: string;
+  declare assistantId?: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof AssistantThread {
     return AssistantThread.init(

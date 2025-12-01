@@ -31,27 +31,27 @@ export class DataSourceFormulaInput
   >
   implements Partial<DataSourceFormulaInputAttributes>
 {
-  datasourceId!: string;
-  formulaInputId!: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare datasourceId: string;
+  declare formulaInputId: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // DataSourceFormulaInput belongsTo DataSource via datasourceId
-  datasource!: DataSource;
-  getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
-  setDatasource!: Sequelize.BelongsToSetAssociationMixin<
+  declare datasource: DataSource;
+  declare getDatasource: Sequelize.BelongsToGetAssociationMixin<DataSource>;
+  declare setDatasource: Sequelize.BelongsToSetAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  createDatasource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
+  declare createDatasource: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
   // DataSourceFormulaInput belongsTo FormulaInput via formulaInputId
-  formulaInput!: FormulaInput;
-  getFormulaInput!: Sequelize.BelongsToGetAssociationMixin<FormulaInput>;
-  setFormulaInput!: Sequelize.BelongsToSetAssociationMixin<
+  declare formulaInput: FormulaInput;
+  declare getFormulaInput: Sequelize.BelongsToGetAssociationMixin<FormulaInput>;
+  declare setFormulaInput: Sequelize.BelongsToSetAssociationMixin<
     FormulaInput,
     FormulaInputId
   >;
-  createFormulaInput!: Sequelize.BelongsToCreateAssociationMixin<FormulaInput>;
+  declare createFormulaInput: Sequelize.BelongsToCreateAssociationMixin<FormulaInput>;
 
   static initModel(
     sequelize: Sequelize.Sequelize,

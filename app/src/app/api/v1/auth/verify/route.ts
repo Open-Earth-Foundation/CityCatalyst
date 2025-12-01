@@ -136,7 +136,7 @@ export const POST = apiHandler(async (req: Request) => {
     body.token,
     process.env.VERIFICATION_TOKEN_SECRET,
   );
-  const email = (<any>verificationTokenData).email;
+  const email = (verificationTokenData as any).email;
   const user = await db.models.User.findOne({ where: { email } });
 
   if (!user) {

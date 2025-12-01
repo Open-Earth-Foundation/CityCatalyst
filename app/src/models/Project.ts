@@ -28,16 +28,16 @@ export class Project
   extends Model<ProjectAttributes, ProjectCreationAttributes>
   implements Partial<ProjectAttributes>
 {
-  organizationId!: string;
-  cityCountLimit!: Number;
-  projectId!: string;
-  name!: string;
-  description?: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare organizationId: string;
+  declare cityCountLimit: Number;
+  declare projectId: string;
+  declare name: string;
+  declare description?: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
-  organization!: Organization;
-  cities!: City[];
+  declare organization: Organization;
+  declare cities: City[];
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Project {
     return Project.init(

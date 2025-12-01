@@ -24,11 +24,11 @@ export class Theme
   extends Model<ThemeAttributes, ThemeCreationAttributes>
   implements Partial<ThemeAttributes>
 {
-  themeId!: string;
-  themeKey!: string;
-  primaryColor!: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare themeId: string;
+  declare themeKey: string;
+  declare primaryColor: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Theme {
     return Theme.init(

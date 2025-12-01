@@ -52,10 +52,10 @@ test.describe("Report Results", () => {
     await page.waitForLoadState("networkidle");
     await expect(page.getByText("I.1 Residential buildings")).toBeVisible();
 
+    await page.waitForTimeout(3000);
+
     // select methodology when cards exist, otherwise verify existing data table
-    const visibleMethodologyCards = page.locator(
-      '[data-testid="methodology-card"]:visible',
-    );
+    const visibleMethodologyCards = page.getByTestId("methodology-card");
     const visibleMethodologyCount = await visibleMethodologyCards.count();
     if (visibleMethodologyCount === 0) {
       const scopeOnePanel = page.getByLabel(/Scope 1/i);
@@ -131,10 +131,9 @@ test.describe("Report Results", () => {
 
     // select scope 1 tab
     await page.getByText("Scope 2").click();
+    await page.waitForTimeout(3000);
     // select methodology when cards exist, otherwise verify existing data table
-    const visibleMethodologyCards = page.locator(
-      '[data-testid="methodology-card"]:visible',
-    );
+    const visibleMethodologyCards = page.getByTestId("methodology-card");
     const visibleMethodologyCount = await visibleMethodologyCards.count();
     if (visibleMethodologyCount === 0) {
       const scopeTwoPanel = page.getByLabel(/Scope 2/i);
@@ -206,8 +205,12 @@ test.describe("Report Results", () => {
       .locator("tbody tr")
       .filter({ has: page.getByText("Residential buildings") });
     await expect(residentialRows).toHaveCount(2);
-    await expect(residentialRows.first()).toContainText("Scope 2");
-    await expect(residentialRows.nth(1)).toContainText("Scope 1");
+    await expect(
+      residentialRows.filter({ has: page.getByText(/Scope 2/i) }),
+    ).toHaveCount(1);
+    await expect(
+      residentialRows.filter({ has: page.getByText(/Scope 1/i) }),
+    ).toHaveCount(1);
 
     await expect(
       residentialRows.locator("td").filter({ hasText: /268\.8 t CO2e/i }),

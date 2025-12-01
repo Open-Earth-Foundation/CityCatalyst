@@ -1,5 +1,5 @@
 aiohttp==3.13.*
-alembic==1.17.1
+alembic==1.17.2
 fastapi==0.123.0
 black==25.11.0
 flake8==7.3.0

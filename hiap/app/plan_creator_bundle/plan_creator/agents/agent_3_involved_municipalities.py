@@ -2,7 +2,7 @@ import os
 import json
 import logging
 from langchain.agents import create_agent
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from langchain_core.messages import HumanMessage, AIMessage
 from plan_creator_bundle.plan_creator.state.agent_state import AgentState
 from langchain_openai import ChatOpenAI
 from plan_creator_bundle.plan_creator.models import InstitutionList
@@ -23,8 +23,6 @@ model = ChatOpenAI(model=OPENAI_MODEL_NAME_PLAN_CREATOR, temperature=0.0, seed=4
 
 tools = [openai_web_search_tool]
 
-system_prompt_agent_3 = SystemMessage(agent_3_system_prompt)
-
 
 def build_custom_agent_3():
     """Wrap create_agent to store final output in AgentState."""
@@ -33,7 +31,7 @@ def build_custom_agent_3():
     react_chain = create_agent(
         model=model,
         tools=tools,
-        system_prompt=system_prompt_agent_3,
+        system_prompt=agent_3_system_prompt,
         response_format=InstitutionList,
     )
 

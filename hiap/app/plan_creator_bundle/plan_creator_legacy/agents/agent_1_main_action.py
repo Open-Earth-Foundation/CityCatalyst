@@ -1,7 +1,7 @@
 import os
 import json
 from langchain.agents import create_agent
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from langchain_core.messages import HumanMessage, AIMessage
 from plan_creator_bundle.plan_creator_legacy.state.agent_state import AgentState
 from langchain_openai import ChatOpenAI
 from plan_creator_bundle.plan_creator_legacy.prompts.agent_1_prompt import (
@@ -25,15 +25,12 @@ model = ChatOpenAI(
 # Define tools for the agent
 tools = [retriever_main_action_tool]
 
-# Define prompts for each agent
-system_prompt_agent_1 = SystemMessage(agent_1_system_prompt)
-
 
 def build_custom_agent_1():
     """Wrap create_agent to store final output in AgentState."""
 
     # The chain returned by create_agent
-    react_chain = create_agent(model, tools, system_prompt=system_prompt_agent_1)
+    react_chain = create_agent(model, tools, system_prompt=agent_1_system_prompt)
 
     def custom_agent_1(state: AgentState) -> AgentState:
 

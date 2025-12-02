@@ -60,6 +60,7 @@ import { MdArrowDropDown } from "react-icons/md";
 import { ButtonMedium } from "@/components/package/Texts/Button";
 import { ButtonSmall } from "@/components/package/Texts/Button";
 import { toaster } from "@/components/ui/toaster";
+import { trackEvent } from "@/lib/analytics";
 
 const BarVisualization = ({
   value,
@@ -436,6 +437,18 @@ export function HiapTab({
       type === ACTION_TYPES.Adaptation ? "Adaptation" : "Mitigation";
     link.download = `${(cityData?.name || cityData?.locode || "actions").replace(/\s+/g, "_")}_${typePart}_actions.pdf`;
     link.click();
+    
+    // Track HIAP report download
+    trackEvent("hiap_report_downloaded", {
+      format: "pdf",
+      action_type: type,
+      city_id: cityData?.cityId,
+      city_name: cityData?.name || cityData?.locode,
+      inventory_id: inventory?.inventoryId,
+      actions_count: toExport.length,
+      selected_actions_only: selectedActions.length > 0,
+    });
+    
     URL.revokeObjectURL(link.href);
   };
 
@@ -450,6 +463,17 @@ export function HiapTab({
         t,
         type,
         cityName: cityData?.name || cityData?.locode,
+      });
+      
+      // Track HIAP report download
+      trackEvent("hiap_report_downloaded", {
+        format: "csv",
+        action_type: type,
+        city_id: cityData?.cityId,
+        city_name: cityData?.name || cityData?.locode,
+        inventory_id: inventory?.inventoryId,
+        actions_count: toExport.length,
+        selected_actions_only: selectedActions.length > 0,
       });
     })();
   };

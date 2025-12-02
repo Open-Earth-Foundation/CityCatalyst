@@ -16,6 +16,7 @@ import { BodyLarge } from "@/components/package/Texts/Body";
 import { TitleSmall } from "@/components/package/Texts/Title";
 import { logger } from "@/services/logger";
 import { toaster } from "../ui/toaster";
+import { trackEvent } from "@/lib/analytics";
 
 interface ClimateActionsSectionProps {
   t: (key: string) => string;
@@ -54,6 +55,15 @@ export function ClimateActionsSection({
     }
 
     try {
+      // Track HIAP reprioritization
+      trackEvent("hiap_plan_generated", {
+        action_type: actionType,
+        inventory_id: inventory.inventoryId,
+        is_retry: false,
+        is_reprioritization: true,
+        existing_actions_count: actions?.rankedActions?.length || 0,
+      });
+
       logger.info(
         {
           inventoryId: inventory.inventoryId,

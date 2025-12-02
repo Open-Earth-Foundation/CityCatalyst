@@ -20,15 +20,17 @@ export class Module
   extends Model<ModuleAttributes, ModuleCreationAttributes>
   implements ModuleAttributes
 {
-  public id!: string;
-  public stage!: string;
-  public name!: { [lng: string]: string };
-  public description?: { [lng: string]: string };
-  public tagline?: { [lng: string]: string };
-  public type!: string;
-  public url!: string;
-  public author!: string;
-  public logo?: string;
+  declare id: string;
+  declare stage: string;
+  declare name: { [lng: string]: string };
+  declare description?: { [lng: string]: string };
+  declare tagline?: { [lng: string]: string };
+  declare type: string;
+  declare url: string;
+  declare author: string;
+  declare logo?: string;
+  declare created?: Date;
+  declare last_updated?: Date;
 
   static initModel(sequelize: Sequelize): typeof Module {
     Module.init(

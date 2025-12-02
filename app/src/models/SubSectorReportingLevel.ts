@@ -28,24 +28,24 @@ export class SubSectorReportingLevel
   >
   implements Partial<SubSectorReportingLevelAttributes>
 {
-  subsectorId!: string;
-  reportinglevelId!: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare subsectorId: string;
+  declare reportinglevelId: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // SubSectorReportingLevel belongsTo ReportingLevel via reportinglevelId
-  reportinglevel!: ReportingLevel;
-  getReportinglevel!: Sequelize.BelongsToGetAssociationMixin<ReportingLevel>;
-  setReportinglevel!: Sequelize.BelongsToSetAssociationMixin<
+  declare reportinglevel: ReportingLevel;
+  declare getReportinglevel: Sequelize.BelongsToGetAssociationMixin<ReportingLevel>;
+  declare setReportinglevel: Sequelize.BelongsToSetAssociationMixin<
     ReportingLevel,
     ReportingLevelId
   >;
-  createReportinglevel!: Sequelize.BelongsToCreateAssociationMixin<ReportingLevel>;
+  declare createReportinglevel: Sequelize.BelongsToCreateAssociationMixin<ReportingLevel>;
   // SubSectorReportingLevel belongsTo SubSector via subsectorId
-  subsector!: SubSector;
-  getSubsector!: Sequelize.BelongsToGetAssociationMixin<SubSector>;
-  setSubsector!: Sequelize.BelongsToSetAssociationMixin<SubSector, SubSectorId>;
-  createSubsector!: Sequelize.BelongsToCreateAssociationMixin<SubSector>;
+  declare subsector: SubSector;
+  declare getSubsector: Sequelize.BelongsToGetAssociationMixin<SubSector>;
+  declare setSubsector: Sequelize.BelongsToSetAssociationMixin<SubSector, SubSectorId>;
+  declare createSubsector: Sequelize.BelongsToCreateAssociationMixin<SubSector>;
 
   static initModel(
     sequelize: Sequelize.Sequelize,

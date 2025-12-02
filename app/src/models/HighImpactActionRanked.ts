@@ -44,33 +44,33 @@ export class HighImpactActionRanked
   >
   implements HighImpactActionRankedAttributes
 {
-  id!: string;
-  hiaRankingId!: string;
-  actionId!: string;
-  rank!: number;
-  explanation!: { [key in keyof typeof languages]: string };
-  lang!: string;
-  isSelected?: boolean;
-  type!: string;
-  name!: string;
-  hazard?: string[];
-  sector?: string[];
-  subsector?: string[];
-  primaryPurpose?: string[];
-  description?: string;
-  dependencies?: string[];
-  cobenefits?: Record<string, any>;
-  equityAndInclusionConsiderations?: string;
-  GHGReductionPotential?: Record<string, any>;
-  adaptationEffectiveness?: string;
-  adaptationEffectivenessPerHazard?: Record<string, any>;
-  costInvestmentNeeded?: string;
-  timelineForImplementation?: string;
-  keyPerformanceIndicators?: string[];
-  powersAndMandates?: string[];
-  biome?: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare id: string;
+  declare hiaRankingId: string;
+  declare actionId: string;
+  declare rank: number;
+  declare explanation: { [key in keyof typeof languages]: string };
+  declare lang: string;
+  declare isSelected?: boolean;
+  declare type: string;
+  declare name: string;
+  declare hazard?: string[];
+  declare sector?: string[];
+  declare subsector?: string[];
+  declare primaryPurpose?: string[];
+  declare description?: string;
+  declare dependencies?: string[];
+  declare cobenefits?: Record<string, any>;
+  declare equityAndInclusionConsiderations?: string;
+  declare GHGReductionPotential?: Record<string, any>;
+  declare adaptationEffectiveness?: string;
+  declare adaptationEffectivenessPerHazard?: Record<string, any>;
+  declare costInvestmentNeeded?: string;
+  declare timelineForImplementation?: string;
+  declare keyPerformanceIndicators?: string[];
+  declare powersAndMandates?: string[];
+  declare biome?: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   static initModel(
     sequelize: Sequelize.Sequelize,

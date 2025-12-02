@@ -33,30 +33,30 @@ export class CityInvite
   extends Model<CityInviteAttributes, CityInviteCreationAttributes>
   implements Partial<CityInviteAttributes>
 {
-  id!: string;
-  cityId!: string;
-  userId?: string | undefined;
-  email?: string | undefined;
-  invitingUserId?: string | undefined;
-  status?: InviteStatus | undefined;
-  created?: Date | undefined;
-  lastUpdated?: Date | undefined;
+  declare id: string;
+  declare cityId: string;
+  declare userId?: string | undefined;
+  declare email?: string | undefined;
+  declare invitingUserId?: string | undefined;
+  declare status?: InviteStatus | undefined;
+  declare created?: Date | undefined;
+  declare lastUpdated?: Date | undefined;
 
   //   CityInvite belongs to City via cityId
-  city!: City;
-  getCity!: Sequelize.BelongsToGetAssociationMixin<City>;
-  setCity!: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
-  createCity!: Sequelize.BelongsToCreateAssociationMixin<City>;
+  declare city: City;
+  declare getCity: Sequelize.BelongsToGetAssociationMixin<City>;
+  declare setCity: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
+  declare createCity: Sequelize.BelongsToCreateAssociationMixin<City>;
 
   //   CityInvite belongs to User via userId
-  user!: User;
-  getUser!: Sequelize.BelongsToGetAssociationMixin<User>;
-  setUser!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
+  declare user: User;
+  declare getUser: Sequelize.BelongsToGetAssociationMixin<User>;
+  declare setUser: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
 
   //   CityInvite belongs to User via invitingUserId
-  invitingUser!: User;
-  getInvitingUser!: Sequelize.BelongsToGetAssociationMixin<User>;
-  setInvitingUser!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
+  declare invitingUser: User;
+  declare getInvitingUser: Sequelize.BelongsToGetAssociationMixin<User>;
+  declare setInvitingUser: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof CityInvite {
     return CityInvite.init(

@@ -17,9 +17,9 @@ export class Catalogue
   extends Model<CatalogueAttributes, CatalogueCreationAttributes>
   implements Partial<CatalogueAttributes>
 {
-  type?: string;
-  lastUpdate?: Date;
-  createdAt?: Date;
+  declare type?: string;
+  declare lastUpdate?: Date;
+  declare createdAt?: Date;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Catalogue {
     return Catalogue.init(

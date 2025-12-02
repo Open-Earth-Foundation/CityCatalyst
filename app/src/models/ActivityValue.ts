@@ -38,50 +38,50 @@ export class ActivityValue
   extends Model<ActivityValueAttributes, ActivityValueCreationAttributes>
   implements Partial<ActivityValueAttributes>
 {
-  id!: string;
-  activityData?: Record<string, any>;
-  co2eq?: bigint;
-  co2eqYears?: number;
-  inventoryValueId?: string;
-  datasourceId?: string;
-  metadata?: Record<string, any>;
-  created?: Date;
-  lastUpdated?: Date;
+  declare id: string;
+  declare activityData?: Record<string, any>;
+  declare co2eq?: bigint;
+  declare co2eqYears?: number;
+  declare inventoryValueId?: string;
+  declare datasourceId?: string;
+  declare metadata?: Record<string, any>;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // ActivityValue hasMany GasValue via activityValueId
-  gasValues!: GasValue[];
-  getGasValues!: Sequelize.HasManyGetAssociationsMixin<GasValue>;
-  setGasValues!: Sequelize.HasManySetAssociationsMixin<GasValue, GasValueId>;
-  addGasValue!: Sequelize.HasManyAddAssociationMixin<GasValue, GasValueId>;
-  addGasValues!: Sequelize.HasManyAddAssociationsMixin<GasValue, GasValueId>;
-  createGasValue!: Sequelize.HasManyCreateAssociationMixin<GasValue>;
-  removeGasValue!: Sequelize.HasManyRemoveAssociationMixin<
+  declare gasValues: GasValue[];
+  declare getGasValues: Sequelize.HasManyGetAssociationsMixin<GasValue>;
+  declare setGasValues: Sequelize.HasManySetAssociationsMixin<GasValue, GasValueId>;
+  declare addGasValue: Sequelize.HasManyAddAssociationMixin<GasValue, GasValueId>;
+  declare addGasValues: Sequelize.HasManyAddAssociationsMixin<GasValue, GasValueId>;
+  declare createGasValue: Sequelize.HasManyCreateAssociationMixin<GasValue>;
+  declare removeGasValue: Sequelize.HasManyRemoveAssociationMixin<
     GasValue,
     GasValueId
   >;
-  removeGasValues!: Sequelize.HasManyRemoveAssociationsMixin<
+  declare removeGasValues: Sequelize.HasManyRemoveAssociationsMixin<
     GasValue,
     GasValueId
   >;
-  hasGasValue!: Sequelize.HasManyHasAssociationMixin<GasValue, GasValueId>;
-  hasGasValues!: Sequelize.HasManyHasAssociationsMixin<GasValue, GasValueId>;
-  countGasValues!: Sequelize.HasManyCountAssociationsMixin;
+  declare hasGasValue: Sequelize.HasManyHasAssociationMixin<GasValue, GasValueId>;
+  declare hasGasValues: Sequelize.HasManyHasAssociationsMixin<GasValue, GasValueId>;
+  declare countGasValues: Sequelize.HasManyCountAssociationsMixin;
   // ActivityValue belongsTo InventoryValue via inventoryValueId
-  inventoryValue!: InventoryValue;
-  getInventoryValue!: Sequelize.BelongsToGetAssociationMixin<InventoryValue>;
-  setInventoryValue!: Sequelize.BelongsToSetAssociationMixin<
+  declare inventoryValue: InventoryValue;
+  declare getInventoryValue: Sequelize.BelongsToGetAssociationMixin<InventoryValue>;
+  declare setInventoryValue: Sequelize.BelongsToSetAssociationMixin<
     InventoryValue,
     InventoryValueId
   >;
-  createInventoryValue!: Sequelize.BelongsToCreateAssociationMixin<InventoryValue>;
+  declare createInventoryValue: Sequelize.BelongsToCreateAssociationMixin<InventoryValue>;
   // ActivityValue belongsTo DataSource via DataSourceId
-  dataSource!: DataSource;
-  getDataSource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
-  setDataSource!: Sequelize.BelongsToSetAssociationMixin<
+  declare dataSource: DataSource;
+  declare getDataSource: Sequelize.BelongsToGetAssociationMixin<DataSource>;
+  declare setDataSource: Sequelize.BelongsToSetAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  createDataSource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
+  declare createDataSource: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof ActivityValue {
     return ActivityValue.init(

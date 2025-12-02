@@ -162,6 +162,16 @@ export function HiapTab({
 
   // Event Handlers
   const handleHiapGeneration = () => {
+    // Track HIAP plan generation
+    trackEvent("hiap_plan_generated", {
+      action_type: type,
+      city_id: cityData?.cityId,
+      city_name: cityData?.name || cityData?.locode,
+      inventory_id: inventory?.inventoryId,
+      is_retry: !!error,
+      existing_actions_count: actions?.length || 0,
+    });
+
     if (error) {
       // Retry with ignoreExisting flag
       setIgnoreExisting(true);

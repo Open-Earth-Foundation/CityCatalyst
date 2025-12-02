@@ -29,45 +29,45 @@ export class Publisher
   extends Model<PublisherAttributes, PublisherCreationAttributes>
   implements Partial<PublisherAttributes>
 {
-  publisherId!: string;
-  name?: string;
-  url?: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare publisherId: string;
+  declare name?: string;
+  declare url?: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // Publisher hasMany DataSource via publisherId
-  dataSources!: DataSource[];
-  getDataSources!: Sequelize.HasManyGetAssociationsMixin<DataSource>;
-  setDataSources!: Sequelize.HasManySetAssociationsMixin<
+  declare dataSources: DataSource[];
+  declare getDataSources: Sequelize.HasManyGetAssociationsMixin<DataSource>;
+  declare setDataSources: Sequelize.HasManySetAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  addDataSource!: Sequelize.HasManyAddAssociationMixin<
+  declare addDataSource: Sequelize.HasManyAddAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  addDataSources!: Sequelize.HasManyAddAssociationsMixin<
+  declare addDataSources: Sequelize.HasManyAddAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  createDataSource!: Sequelize.HasManyCreateAssociationMixin<DataSource>;
-  removeDataSource!: Sequelize.HasManyRemoveAssociationMixin<
+  declare createDataSource: Sequelize.HasManyCreateAssociationMixin<DataSource>;
+  declare removeDataSource: Sequelize.HasManyRemoveAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  removeDataSources!: Sequelize.HasManyRemoveAssociationsMixin<
+  declare removeDataSources: Sequelize.HasManyRemoveAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  hasDataSource!: Sequelize.HasManyHasAssociationMixin<
+  declare hasDataSource: Sequelize.HasManyHasAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  hasDataSources!: Sequelize.HasManyHasAssociationsMixin<
+  declare hasDataSources: Sequelize.HasManyHasAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  countDataSources!: Sequelize.HasManyCountAssociationsMixin;
+  declare countDataSources: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Publisher {
     return Publisher.init(

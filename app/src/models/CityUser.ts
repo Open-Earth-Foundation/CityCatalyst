@@ -23,22 +23,22 @@ export class CityUser
   extends Model<CityUserAttributes, CityUserCreationAttributes>
   implements Partial<CityUserAttributes>
 {
-  cityUserId!: string;
-  userId!: string;
-  cityId!: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare cityUserId: string;
+  declare userId: string;
+  declare cityId: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // CityUser belongsTo City via cityId
-  city!: City;
-  getCity!: Sequelize.BelongsToGetAssociationMixin<City>;
-  setCity!: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
-  createCity!: Sequelize.BelongsToCreateAssociationMixin<City>;
+  declare city: City;
+  declare getCity: Sequelize.BelongsToGetAssociationMixin<City>;
+  declare setCity: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
+  declare createCity: Sequelize.BelongsToCreateAssociationMixin<City>;
   // CityUser belongsTo User via userId
-  user!: User;
-  getUser!: Sequelize.BelongsToGetAssociationMixin<User>;
-  setUser!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
-  createUser!: Sequelize.BelongsToCreateAssociationMixin<User>;
+  declare user: User;
+  declare getUser: Sequelize.BelongsToGetAssociationMixin<User>;
+  declare setUser: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
+  declare createUser: Sequelize.BelongsToCreateAssociationMixin<User>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof CityUser {
     return CityUser.init(

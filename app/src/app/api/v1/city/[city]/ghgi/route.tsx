@@ -41,7 +41,7 @@ import { validate } from "uuid";
 import { InventoryService } from "@/backend/InventoryService";
 
 export const GET = apiHandler(async (req, { session, params }) => {
-  let cityId = params.city;
+  let cityId = await params.city;
 
   if (cityId === "null") {
     throw new createHttpError.BadRequest("'null' is an invalid city id");

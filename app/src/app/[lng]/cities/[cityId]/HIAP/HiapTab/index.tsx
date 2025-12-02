@@ -217,6 +217,15 @@ export function HiapTab({
       const selectedActionIds = Object.keys(newRowSelection).filter(
         (id) => newRowSelection[id],
       );
+      
+      // Track custom action selection (user didn't use default expert suggestions)
+      trackEvent("hiap_expert_suggestions_overridden", {
+        action_type: type,
+        city_id: cityData?.cityId,
+        inventory_id: inventory.inventoryId,
+        selected_actions_count: selectedActionIds.length,
+      });
+
       await updateHiapSelection({
         inventoryId: inventory.inventoryId,
         selectedActionIds,

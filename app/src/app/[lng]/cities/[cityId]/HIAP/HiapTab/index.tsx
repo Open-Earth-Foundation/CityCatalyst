@@ -60,6 +60,7 @@ import { MdArrowDropDown } from "react-icons/md";
 import { ButtonMedium } from "@/components/package/Texts/Button";
 import { ButtonSmall } from "@/components/package/Texts/Button";
 import { toaster } from "@/components/ui/toaster";
+import { trackEvent } from "@/lib/analytics";
 
 const BarVisualization = ({
   value,
@@ -161,6 +162,16 @@ export function HiapTab({
 
   // Event Handlers
   const handleHiapGeneration = () => {
+    // Track HIAP plan generation
+    trackEvent("hiap_plan_generated", {
+      action_type: type,
+      city_id: cityData?.cityId,
+      city_name: cityData?.name || cityData?.locode,
+      inventory_id: inventory?.inventoryId,
+      is_retry: !!error,
+      existing_actions_count: actions?.length || 0,
+    });
+
     if (error) {
       // Retry with ignoreExisting flag
       setIgnoreExisting(true);
@@ -206,6 +217,15 @@ export function HiapTab({
       const selectedActionIds = Object.keys(newRowSelection).filter(
         (id) => newRowSelection[id],
       );
+      
+      // Track custom action selection (user didn't use default expert suggestions)
+      trackEvent("hiap_expert_suggestions_overridden", {
+        action_type: type,
+        city_id: cityData?.cityId,
+        inventory_id: inventory.inventoryId,
+        selected_actions_count: selectedActionIds.length,
+      });
+
       await updateHiapSelection({
         inventoryId: inventory.inventoryId,
         selectedActionIds,
@@ -436,6 +456,18 @@ export function HiapTab({
       type === ACTION_TYPES.Adaptation ? "Adaptation" : "Mitigation";
     link.download = `${(cityData?.name || cityData?.locode || "actions").replace(/\s+/g, "_")}_${typePart}_actions.pdf`;
     link.click();
+    
+    // Track HIAP report download
+    trackEvent("hiap_report_downloaded", {
+      format: "pdf",
+      action_type: type,
+      city_id: cityData?.cityId,
+      city_name: cityData?.name || cityData?.locode,
+      inventory_id: inventory?.inventoryId,
+      actions_count: toExport.length,
+      selected_actions_only: selectedActions.length > 0,
+    });
+    
     URL.revokeObjectURL(link.href);
   };
 
@@ -450,6 +482,17 @@ export function HiapTab({
         t,
         type,
         cityName: cityData?.name || cityData?.locode,
+      });
+      
+      // Track HIAP report download
+      trackEvent("hiap_report_downloaded", {
+        format: "csv",
+        action_type: type,
+        city_id: cityData?.cityId,
+        city_name: cityData?.name || cityData?.locode,
+        inventory_id: inventory?.inventoryId,
+        actions_count: toExport.length,
+        selected_actions_only: selectedActions.length > 0,
       });
     })();
   };

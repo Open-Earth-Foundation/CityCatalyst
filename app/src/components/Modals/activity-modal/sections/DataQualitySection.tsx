@@ -1,11 +1,4 @@
-import {
-  Box,
-  HStack,
-  Icon,
-  Input,
-  Text,
-  Textarea,
-} from "@chakra-ui/react";
+import { Box, HStack, Icon, Input, Text, Textarea } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import {
   Control,
@@ -41,7 +34,7 @@ export const DataQualitySection = ({
   fields,
 }: DataQualitySectionProps) => {
   const prefix = "";
-  
+
   const sourceField = fields.find(
     (f) => f.id.includes("-source") && f.type === "text",
   );
@@ -84,6 +77,7 @@ export const DataQualitySection = ({
                 shadow="1dp"
               >
                 <NativeSelectField
+                  aria-label={t("data-quality")}
                   placeholder={t("data-quality-placeholder")}
                   value={field.value}
                   onChange={(e: any) => {
@@ -107,7 +101,7 @@ export const DataQualitySection = ({
             </Box>
           )}
         </Field>
-        
+
         {sourceField && (
           <Field w="full" label={t("data-source")}>
             <Input
@@ -136,9 +130,7 @@ export const DataQualitySection = ({
               }}
               {...register(`activity.${sourceField.id}` as any, {
                 required:
-                  sourceField.required === false
-                    ? false
-                    : t("value-required"),
+                  sourceField.required === false ? false : t("value-required"),
               })}
             />
 
@@ -152,7 +144,7 @@ export const DataQualitySection = ({
             )}
           </Field>
         )}
-        
+
         <Field
           invalid={!!resolve(prefix + "dataComments", errors)}
           mb={12}
@@ -166,14 +158,10 @@ export const DataQualitySection = ({
             shadow="1dp"
             h="96px"
             borderColor={
-              errors?.activity?.dataComments
-                ? "sentiment.negativeDefault"
-                : ""
+              errors?.activity?.dataComments ? "sentiment.negativeDefault" : ""
             }
             background={
-              errors?.activity?.dataComments
-                ? "sentiment.negativeOverlay"
-                : ""
+              errors?.activity?.dataComments ? "sentiment.negativeOverlay" : ""
             }
             _focus={{
               borderWidth: "1px",
@@ -195,7 +183,7 @@ export const DataQualitySection = ({
           )}
         </Field>
       </HStack>
-      
+
       <HStack alignItems="flex-start" mb={13}>
         <Icon as={MdInfoOutline} mt={1} color="content.link" />
         <Text color="content.tertiary">

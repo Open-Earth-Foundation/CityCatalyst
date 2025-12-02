@@ -43,7 +43,9 @@ export function SegmentedProgress({
         }
       : { ...v, color: colorValues[i] },
   );
-  const shownValues = normalizedValues.filter((v) => v.percentage != 0);
+  const shownValues = normalizedValues
+    .map((v, originalIndex) => ({ ...v, originalIndex }))
+    .filter((v) => v.percentage != 0);
   const tooltipContent = (
     <Table.Root size="sm">
       <Table.Body>
@@ -98,23 +100,31 @@ export function SegmentedProgress({
         borderRightRadius="10px"
         borderLeftRadius="10px"
       >
-        {shownValues.map((value, i) => (
+        {shownValues.length === 0 ? (
           <Box
-            key={i}
-            backgroundColor={
-              colors[i] === "striped" ? "transparent" : value.color
-            }
-            backgroundImage={
-              colors[i] === "striped"
-                ? "repeating-linear-gradient(45deg, #C5CBF5, #C5CBF5 4px, transparent 4px, transparent 8px)"
-                : undefined
-            }
             h={height}
-            w={`${(100 * value.percentage) / max}%`}
-            borderStartRadius={i === 0 ? "10px" : undefined}
-            borderEndRadius={i === shownValues.length - 1 ? "10px" : undefined}
+            w="full"
+            borderRadius="10px"
           />
-        ))}
+        ) : (
+          shownValues.map((value, i) => (
+            <Box
+              key={i}
+              backgroundColor={
+                colors[value.originalIndex] === "striped" ? "transparent" : value.color
+              }
+              backgroundImage={
+                colors[value.originalIndex] === "striped"
+                  ? "repeating-linear-gradient(45deg, #C5CBF5, #C5CBF5 4px, transparent 4px, transparent 8px)"
+                  : undefined
+              }
+              h={height}
+              w={`${(100 * value.percentage) / max}%`}
+              borderStartRadius={i === 0 ? "10px" : undefined}
+              borderEndRadius={i === shownValues.length - 1 ? "10px" : undefined}
+            />
+          ))
+        )}
       </Box>
     </Tooltip>
   );

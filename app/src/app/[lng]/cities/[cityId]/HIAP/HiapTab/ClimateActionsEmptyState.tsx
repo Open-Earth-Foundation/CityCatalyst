@@ -11,6 +11,7 @@ import { TFunction } from "i18next";
 import i18next from "i18next";
 import { useState } from "react";
 import { BiSolidError } from "react-icons/bi";
+import { trackEvent } from "@/lib/analytics";
 
 // Renders different screens for data states:
 // 1. No activity level data found to generate actions (disable generate actions button)
@@ -75,7 +76,7 @@ const TopActionsDataState = ({
     }
 
     if (error) {
-      return <ErrorGeneratingActions t={t} onRefetch={onRefetch} />;
+      return <ErrorGeneratingActions t={t} onRefetch={onRefetch} actionType={actionType} inventory={inventory} />;
     }
 
     if (isActionsPending) {
@@ -93,6 +94,8 @@ const TopActionsDataState = ({
         t={t}
         isLoading={isLoading}
         onRefetch={onRefetch}
+        actionType={actionType}
+        inventory={inventory}
       />
     );
   };
@@ -175,16 +178,28 @@ const GenerateActionsPrompt = ({
   t,
   isLoading,
   onRefetch,
+  actionType,
+  inventory,
 }: {
   t: TFunction;
   isLoading: boolean;
   onRefetch: () => void;
+  actionType: ACTION_TYPES;
+  inventory: InventoryResponse | null;
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isCheckingData, setIsCheckingData] = useState(false);
 
   const handleGenerateActions = async () => {
     try {
+      // Track HIAP plan generation from empty state
+      trackEvent("hiap_plan_generated", {
+        action_type: actionType,
+        inventory_id: inventory?.inventoryId,
+        is_retry: false,
+        is_empty_state: true,
+      });
+
       // First, show checking activity data
       setIsCheckingData(true);
 
@@ -328,10 +343,26 @@ const GeneratingClimateActions = ({
 const ErrorGeneratingActions = ({
   t,
   onRefetch,
+  actionType,
+  inventory,
 }: {
   t: TFunction;
   onRefetch: () => void;
+  actionType: ACTION_TYPES;
+  inventory: InventoryResponse | null;
 }) => {
+  const handleRetry = () => {
+    // Track HIAP plan generation retry from error state
+    trackEvent("hiap_plan_generated", {
+      action_type: actionType,
+      inventory_id: inventory?.inventoryId,
+      is_retry: true,
+      is_error_retry: true,
+    });
+
+    onRefetch();
+  };
+
   return (
     <Box
       display="flex"
@@ -365,7 +396,7 @@ const ErrorGeneratingActions = ({
         mt="24px"
         bg="content.link"
         color="white"
-        onClick={onRefetch}
+        onClick={handleRetry}
         py="32px"
         w="400px"
         _hover={{ bg: "content.linkHover" }}

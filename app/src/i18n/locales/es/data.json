@@ -1263,6 +1263,7 @@
   "percentage": "Porcentaje",
   "go-to-source": "Ir a la fuente",
   "calculated-emission-values-too-large": "Los valores de emisiones calculados son demasiado grandes para almacenar. Por favor, reduzca las cantidades de actividad o los factores de emisión para evitar el desbordamiento.",
+  "incompatible-unit-conversion-solid-fuels": "No se puede convertir entre unidades de volumen y masa para combustibles sólidos sin información de densidad. Por favor, use unidades de masa (kg, toneladas, libras) para factores de emisión de combustibles sólidos.",
   "invalid-request": "Solicitud Inválida",
   "emission-factor-too-large": "El factor de emisión no puede exceder {{max}}. Por favor, ingrese un valor menor.",
   "emission-factor-required": "Factor de emisión requerido",

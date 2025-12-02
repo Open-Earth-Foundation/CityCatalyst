@@ -72,7 +72,6 @@
     "decimal.js": "^10.4.3",
     "dotenv": "^16.5.0",
     "exceljs": "^4.4.0",
-    "express-rate-limit": "^8.2.1",
     "fetch-blob": "^4.0.0",
     "framer-motion": "^12.12.1",
     "fuse.js": "^7.1.0",

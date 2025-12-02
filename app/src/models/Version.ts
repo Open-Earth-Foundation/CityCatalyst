@@ -28,18 +28,18 @@ export class Version
   extends Model<VersionAttributes, VersionCreationAttributes>
   implements Partial<VersionAttributes>
 {
-  versionId!: string;
-  year?: number;
-  version?: string;
-  inventoryId?: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare versionId: string;
+  declare year?: number;
+  declare version?: string;
+  declare inventoryId?: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // Version belongsTo Inventory via inventoryId
-  inventory!: Inventory;
-  getInventory!: Sequelize.BelongsToGetAssociationMixin<Inventory>;
-  setInventory!: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
-  createInventory!: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
+  declare inventory: Inventory;
+  declare getInventory: Sequelize.BelongsToGetAssociationMixin<Inventory>;
+  declare setInventory: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
+  declare createInventory: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Version {
     return Version.init(

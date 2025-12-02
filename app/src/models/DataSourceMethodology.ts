@@ -29,27 +29,27 @@ export class DataSourceMethodology
   >
   implements Partial<DataSourceMethodologyAttributes>
 {
-  datasourceId!: string;
-  methodologyId!: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare datasourceId: string;
+  declare methodologyId: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // DataSourceMethodology belongsTo DataSource via datasourceId
-  datasource!: DataSource;
-  getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
-  setDatasource!: Sequelize.BelongsToSetAssociationMixin<
+  declare datasource: DataSource;
+  declare getDatasource: Sequelize.BelongsToGetAssociationMixin<DataSource>;
+  declare setDatasource: Sequelize.BelongsToSetAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  createDatasource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
+  declare createDatasource: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
   // DataSourceMethodology belongsTo Methodology via methodologyId
-  methodology!: Methodology;
-  getMethodology!: Sequelize.BelongsToGetAssociationMixin<Methodology>;
-  setMethodology!: Sequelize.BelongsToSetAssociationMixin<
+  declare methodology: Methodology;
+  declare getMethodology: Sequelize.BelongsToGetAssociationMixin<Methodology>;
+  declare setMethodology: Sequelize.BelongsToSetAssociationMixin<
     Methodology,
     MethodologyId
   >;
-  createMethodology!: Sequelize.BelongsToCreateAssociationMixin<Methodology>;
+  declare createMethodology: Sequelize.BelongsToCreateAssociationMixin<Methodology>;
 
   static initModel(
     sequelize: Sequelize.Sequelize,

@@ -26,16 +26,16 @@ export class Organization
   extends Model<OrganizationAttributes, OrganizationCreationAttributes>
   implements Partial<OrganizationAttributes>
 {
-  organizationId!: string;
-  name?: string;
-  contactEmail?: string;
-  created?: Date;
-  lastUpdated?: Date;
-  themeId?: string | null;
-  logoUrl?: string | null;
-  active!: boolean;
-  theme!: Theme;
-  projects!: Project[];
+  declare organizationId: string;
+  declare name?: string;
+  declare contactEmail?: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
+  declare themeId?: string | null;
+  declare logoUrl?: string | null;
+  declare active: boolean;
+  declare theme: Theme;
+  declare projects: Project[];
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Organization {
     return Organization.init(

@@ -385,14 +385,19 @@ jobs:
             "AWS_ACCESS_KEY_ID"=${{secrets.AWS_ACCESS_KEY_ID}} \
             "AWS_SECRET_ACCESS_KEY"=${{secrets.AWS_SECRET_ACCESS_KEY}} \
             "AWS_S3_BUCKET_ID"=${{secrets.AWS_S3_BUCKET_ID}} \
-            CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}}
+            CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}} \
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl apply -f k8s/cc-sync-catalogue.yml -n default # cronjob
           kubectl create -f k8s/cc-sync-catalogue-manual.yml -n default # on deployment
           # TODO this (running cronjob on deploy) doesn't work since it can't randomize names. Needs own randomness source
           # once it works cc-sync-catalogue-manual.yml can be removed
           # kubectl create job --from=cronjob/cc-sync-catalogue cc-sync-catalogue-manual -n default
           kubectl create -f k8s/cc-create-admin.yml -n default
+          kubectl set env cronjob/citycatalyst-check-hiap-jobs \
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
+          kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default
+
   notifyDeploymentFailure:
     needs: [runTests, pushToGHCR, deployToEKS]
     runs-on: ubuntu-latest

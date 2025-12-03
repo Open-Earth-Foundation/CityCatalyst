@@ -393,7 +393,7 @@ jobs:
           # once it works cc-sync-catalogue-manual.yml can be removed
           # kubectl create job --from=cronjob/cc-sync-catalogue cc-sync-catalogue-manual -n default
           kubectl create -f k8s/cc-create-admin.yml -n default
-          kubectl set env deployment/citycatalyst-check-hiap-jobs \
+          kubectl set env cronjob/citycatalyst-check-hiap-jobs \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default

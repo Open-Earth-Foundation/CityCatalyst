@@ -1,98 +1,128 @@
-import os
 import json
-import glob
+import logging
+import os
+from typing import Any, Dict, Optional, Type, cast
+
+from dotenv import load_dotenv
+from langsmith import traceable
+from langsmith.wrappers import wrap_openai
 from openai import OpenAI
-import sys
+from pydantic import BaseModel, create_model
 
-# Debug: Print execution context to verify the script is running
-import os as _os
-print(f"[script start] __name__={__name__}, file={__file__}, cwd={_os.getcwd()}")
+from prioritizer.models import Explanation
+from utils.logging_config import setup_logger
 
-sys.stdout.write("=== DEBUG LOG: translate_explanations.py loaded ===\n")
-sys.stdout.flush()
+load_dotenv()
+setup_logger()
+logger = logging.getLogger(__name__)
 
-print("DEBUG: translate_explanations starting...")
-import dotenv
-dotenv.load_dotenv()
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise ValueError("OPENAI_API_KEY is not set")
 
-# Initialize OpenAI client with API key
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+OPENAI_MODEL_NAME_TRANSLATIONS = os.getenv(
+    "OPENAI_MODEL_NAME_TRANSLATIONS", os.getenv("OPENAI_MODEL_NAME_EXPLANATIONS")
+)
+if not OPENAI_MODEL_NAME_TRANSLATIONS:
+    raise ValueError(
+        "Neither OPENAI_MODEL_NAME_TRANSLATIONS nor OPENAI_MODEL_NAME_EXPLANATIONS is set"
+    )
 
-# Determine project root and data directory
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.dirname(SCRIPT_DIR)
-DATA_DIR = os.path.join(ROOT_DIR, 'data', 'frontend')
+LANGCHAIN_PROJECT_NAME_PRIORITIZER = os.getenv("LANGCHAIN_PROJECT_NAME_PRIORITIZER")
+if not LANGCHAIN_PROJECT_NAME_PRIORITIZER:
+    raise ValueError("LANGCHAIN_PROJECT_NAME_PRIORITIZER is not set")
 
-def translate_text(text: str, target_lang: str, model: str = 'gpt-4.1') -> str:
-    """Translate given text into the target language using OpenAI GPT-4.1"""
-    print(f"[translate_text] Translating to {target_lang}: {text[:60]}...")
-    messages = [
-        {'role': 'system', 'content': 'You are an expert translator.'},
-        {'role': 'user', 'content': f"Please translate the following text to {target_lang}:"},
-        {'role': 'user', 'content': text}
-    ]
+
+def _get_openai_timeout_seconds() -> float:
     try:
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            temperature=0
+        return float(os.getenv("OPENAI_TIMEOUT_SECONDS", "60"))
+    except Exception:
+        return 60.0
+
+
+def _get_openai_max_retries() -> int:
+    try:
+        return int(os.getenv("OPENAI_MAX_RETRIES", "3"))
+    except Exception:
+        return 3
+
+
+openai_client = wrap_openai(
+    OpenAI(
+        api_key=OPENAI_API_KEY,
+        timeout=_get_openai_timeout_seconds(),
+        max_retries=_get_openai_max_retries(),
+    )
+)
+
+
+def _build_translation_model(language_codes: list[str]) -> Type[BaseModel]:
+    """
+    Build a dynamic schema that enforces one string field per target language.
+    """
+    fields: Dict[str, tuple[type, Any]] = {code: (str, ...) for code in language_codes}
+    model = create_model("ExplanationTranslation", **fields)  # type: ignore[arg-type]
+    return cast(Type[BaseModel], model)
+
+
+TRANSLATION_SYSTEM_PROMPT = (
+    "You are an expert climate policy translator. Translate the provided explanation "
+    "from {source_language} into each requested language. Return ONLY JSON that matches "
+    "the provided schema, filling every language key with natural, fluent text."
+)
+
+
+@traceable(run_type="llm", project_name=LANGCHAIN_PROJECT_NAME_PRIORITIZER)
+def translate_explanation_text(
+    explanation_text: str,
+    source_language: str,
+    target_languages: list[str],
+) -> Optional[Explanation]:
+    """
+    Translate an existing explanation text from source_language into target_languages.
+    """
+    if not explanation_text.strip():
+        logger.warning("translate_explanation_text received empty explanation text.")
+        return None
+
+    TranslationModel = _build_translation_model(target_languages)
+    system_prompt = TRANSLATION_SYSTEM_PROMPT.format(source_language=source_language)
+
+    # Chat completions expect message content to be a string or structured list, so we
+    # serialize the payload to JSON.
+    user_payload = json.dumps(
+        {
+            "source_language": source_language,
+            "target_languages": target_languages,
+            "text": explanation_text,
+        },
+        ensure_ascii=False,
+    )
+
+    try:
+        completion = openai_client.beta.chat.completions.parse(
+            model=OPENAI_MODEL_NAME_TRANSLATIONS,  # type: ignore[arg-type]
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_prompt,
+                },
+                {
+                    "role": "user",
+                    "content": user_payload,
+                },
+            ],
+            temperature=0,
+            response_format=TranslationModel,
+            timeout=_get_openai_timeout_seconds(),
         )
-    except Exception as e:
-        print(f"[translate_text] Error during translation: {e}")
-        return text
-    translated = response.choices[0].message.content.strip()
-    print(f"[translate_text] Result: {translated[:60]}...")
-    return translated
-
-
-def translate_file_explanations(file_path: str):
-    """Load JSON file, translate each 'explanation' entry, and overwrite with translation."""
-    print(f"[translate_file_explanations] Processing {file_path}")
-    # Determine language from filename suffix
-    if file_path.endswith('_es.json'):
-        target_lang = 'Spanish'
-    elif file_path.endswith('_pt.json'):
-        target_lang = 'Portuguese'
-    else:
-        return
-
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-    except Exception as e:
-        print(f"[translate_file_explanations] Failed to load {file_path}: {e}")
-        return
-    print(f"[translate_file_explanations] Loaded {len(data)} entries")
-
-    for entry in data:
-        original = entry.get('explanation')
-        if original:
-            print(f"[translate_file_explanations] Original: {original[:60]}...")
-            translated = translate_text(original, target_lang)
-            print(f"[translate_file_explanations] Translated: {translated[:60]}...")
-            entry['explanation'] = translated
-
-    # Write translated data back to the same file
-    try:
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        print(f"[translate_file_explanations] Wrote updated data to {file_path}")
-    except Exception as e:
-        print(f"[translate_file_explanations] Failed to write {file_path}: {e}")
-
-
-def main():
-    # Find all files with '_es.json' or '_pt.json' in the frontend data directory
-    pattern_es = os.path.join(DATA_DIR, '*_es.json')
-    pattern_pt = os.path.join(DATA_DIR, '*_pt.json')
-    files = glob.glob(pattern_es) + glob.glob(pattern_pt)
-    print(f"[main] DATA_DIR={DATA_DIR}")
-    print(f"[main] Found {len(files)} files: {files}")
-    for file_path in files:
-        print(f'Translating explanations in {file_path}')
-        translate_file_explanations(file_path)
-
-
-if __name__ == '__main__':
-    print(f"[script __main__] __name__={__name__}")
-    main()
+        parsed = completion.choices[0].message.parsed
+        if not isinstance(parsed, TranslationModel):
+            logger.error(
+                "translate_explanation_text received unexpected payload: %s", parsed
+            )
+            return None
+        return Explanation(explanations=parsed.model_dump())
+    except Exception as exc:
+        logger.error("Translation generation failed: %s", str(exc), exc_info=True)
+        return None

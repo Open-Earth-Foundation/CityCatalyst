@@ -12,6 +12,7 @@ from services.get_context import get_context
 from services.get_ccra import get_ccra
 from prioritizer.utils.filter_actions_by_biome import filter_actions_by_biome
 from prioritizer.utils.add_explanations import generate_multilingual_explanation
+from prioritizer.utils.translate_explanations import translate_explanation_text
 import os
 from prioritizer.models import (
     RankedAction,
@@ -613,3 +614,258 @@ def _update_bulk_task_status(main_task_id: str):
         task_storage[main_task_id]["status"] = "running"
     else:
         task_storage[main_task_id]["status"] = "pending"
+
+
+def _execute_create_explanations(task_uuid: str, background_task_input: Dict) -> None:
+    """
+    Background worker to generate first-time explanations for already ranked actions.
+
+    Expected background_task_input keys:
+      - locode: str
+      - cityData: CityData
+      - countryCode: str
+      - languages: List[str]
+      - rankedActionsMitigation: List[RankedAction]
+      - rankedActionsAdaptation: List[RankedAction]
+      - actions: List[dict]  (canonical action definitions from Global API)
+    """
+    try:
+        task_storage[task_uuid]["status"] = "running"
+
+        locode: str = background_task_input["locode"]
+        city_data: CityData = background_task_input["cityData"]
+        country_code: str = background_task_input["countryCode"]
+        languages: List[str] = background_task_input["languages"]
+        mitigation_actions: List[RankedAction] = background_task_input[
+            "rankedActionsMitigation"
+        ]
+        adaptation_actions: List[RankedAction] = background_task_input[
+            "rankedActionsAdaptation"
+        ]
+        actions_cached: List[dict] = background_task_input["actions"]
+
+        action_lookup = {str(action["ActionID"]): action for action in actions_cached}
+
+        # Build flat request data from CityData payload
+        requestData: Dict[str, Union[str, int]] = {
+            "locode": city_data.cityContextData.locode,
+            "populationSize": city_data.cityContextData.populationSize,
+            "stationaryEnergyEmissions": city_data.cityEmissionsData.stationaryEnergyEmissions,
+            "transportationEmissions": city_data.cityEmissionsData.transportationEmissions,
+            "wasteEmissions": city_data.cityEmissionsData.wasteEmissions,
+            "ippuEmissions": city_data.cityEmissionsData.ippuEmissions,
+            "afoluEmissions": city_data.cityEmissionsData.afoluEmissions,
+        }
+
+        city_context = None
+        try:
+            city_context = get_context(locode)
+            if not city_context:
+                logger.warning(
+                    "Task %s: No city context data found from global API while creating explanations for %s.",
+                    task_uuid,
+                    locode,
+                )
+        except Exception as exc:
+            logger.error(
+                "Task %s: Failed to fetch city context for %s: %s",
+                task_uuid,
+                locode,
+                str(exc),
+                exc_info=True,
+            )
+
+        city_ccra = None
+        if adaptation_actions:
+            try:
+                city_ccra = get_ccra(locode, "current")
+            except Exception as exc:
+                msg = (
+                    f"Unable to retrieve CCRA data required for adaptation explanations "
+                    f"for {locode}: {str(exc)}"
+                )
+                logger.error("Task %s: %s", task_uuid, msg, exc_info=True)
+                task_storage[task_uuid]["status"] = "failed"
+                task_storage[task_uuid]["error"] = msg
+                return
+
+            if not city_ccra:
+                msg = (
+                    "CCRA data unavailable for this city. "
+                    "Cannot create adaptation explanations."
+                )
+                logger.error("Task %s: %s (locode=%s)", task_uuid, msg, locode)
+                task_storage[task_uuid]["status"] = "failed"
+                task_storage[task_uuid]["error"] = msg
+                return
+
+        city_data_dict = build_city_data(requestData, city_context, city_ccra)
+
+        def _build_explanations(actions: List[RankedAction]) -> List[RankedAction]:
+            for ranked_action in actions:
+                action_payload = action_lookup.get(ranked_action.actionId)
+                if not action_payload:
+                    msg = f"Unknown actionId {ranked_action.actionId} provided."
+                    logger.error("Task %s: %s", task_uuid, msg)
+                    raise ValueError(msg)
+
+                explanation = generate_multilingual_explanation(
+                    country_code=country_code,
+                    city_data=city_data_dict,
+                    single_action=action_payload,
+                    rank=ranked_action.rank,
+                    languages=languages,
+                )
+
+                if not explanation:
+                    msg = (
+                        f"Failed to generate explanation for actionId="
+                        f"{ranked_action.actionId}"
+                    )
+                    logger.error("Task %s: %s", task_uuid, msg)
+                    raise RuntimeError(msg)
+
+                ranked_action.explanation = explanation
+
+            return actions
+
+        if mitigation_actions:
+            mitigation_actions = _build_explanations(mitigation_actions)
+        if adaptation_actions:
+            adaptation_actions = _build_explanations(adaptation_actions)
+
+        prioritizer_response = PrioritizerResponse(
+            metadata=MetaData(locode=locode, rankedDate=datetime.now()),
+            rankedActionsMitigation=mitigation_actions,
+            rankedActionsAdaptation=adaptation_actions,
+        )
+
+        task_storage[task_uuid]["status"] = "completed"
+        task_storage[task_uuid]["prioritizer_response"] = prioritizer_response
+        logger.info(
+            "Task %s: Created explanations for locode=%s | mitigation=%d | adaptation=%d",
+            task_uuid,
+            locode,
+            len(mitigation_actions),
+            len(adaptation_actions),
+        )
+    except Exception as exc:
+        logger.error(
+            "Task %s: Unexpected error during explanation creation: %s",
+            task_uuid,
+            str(exc),
+            exc_info=True,
+        )
+        task_storage[task_uuid]["status"] = "failed"
+        task_storage[task_uuid][
+            "error"
+        ] = f"Error during explanation creation: {str(exc)}"
+
+
+def _execute_translate_explanations(
+    task_uuid: str, background_task_input: Dict
+) -> None:
+    """
+    Background worker to translate existing explanations from a source language
+    into a set of target languages.
+
+    Expected background_task_input keys:
+      - locode: str
+      - sourceLanguage: str
+      - targetLanguages: List[str]
+      - rankedActionsMitigation: List[RankedAction]
+      - rankedActionsAdaptation: List[RankedAction]
+    """
+    try:
+        task_storage[task_uuid]["status"] = "running"
+
+        locode: str = background_task_input["locode"]
+        source_language: str = background_task_input["sourceLanguage"]
+        target_languages: List[str] = background_task_input["targetLanguages"]
+        mitigation_actions: List[RankedAction] = background_task_input[
+            "rankedActionsMitigation"
+        ]
+        adaptation_actions: List[RankedAction] = background_task_input[
+            "rankedActionsAdaptation"
+        ]
+
+        def _extract_source_text(ranked_action: RankedAction) -> str:
+            explanation = ranked_action.explanation
+            if not explanation or not explanation.explanations:
+                raise ValueError(
+                    f"Action '{ranked_action.actionId}' does not contain any "
+                    f"explanation to translate."
+                )
+            source_text = explanation.explanations.get(source_language)
+            if not source_text or not source_text.strip():
+                raise ValueError(
+                    f"Action '{ranked_action.actionId}' is missing source language "
+                    f"'{source_language}'."
+                )
+            for lang in target_languages:
+                existing = explanation.explanations.get(lang)
+                if existing and existing.strip():
+                    raise ValueError(
+                        f"Action '{ranked_action.actionId}' already contains "
+                        f"language '{lang}'. Remove it before requesting translation."
+                    )
+            return source_text
+
+        def _translate_actions(actions: List[RankedAction]) -> List[RankedAction]:
+            for ranked_action in actions:
+                source_text = _extract_source_text(ranked_action)
+                translations = translate_explanation_text(
+                    explanation_text=source_text,
+                    source_language=source_language,
+                    target_languages=target_languages,
+                )
+                if not translations:
+                    raise RuntimeError(
+                        f"Failed to translate explanation for actionId="
+                        f"{ranked_action.actionId}."
+                    )
+                existing_map = ranked_action.explanation.explanations.copy()  # type: ignore[union-attr]
+                existing_map.update(translations.explanations)
+                ranked_action.explanation = Explanation(explanations=existing_map)
+            return actions
+
+        if mitigation_actions:
+            mitigation_actions = _translate_actions(mitigation_actions)
+        if adaptation_actions:
+            adaptation_actions = _translate_actions(adaptation_actions)
+
+        prioritizer_response = PrioritizerResponse(
+            metadata=MetaData(locode=locode, rankedDate=datetime.now()),
+            rankedActionsMitigation=mitigation_actions,
+            rankedActionsAdaptation=adaptation_actions,
+        )
+
+        task_storage[task_uuid]["status"] = "completed"
+        task_storage[task_uuid]["prioritizer_response"] = prioritizer_response
+        logger.info(
+            "Task %s: Translated explanations for locode=%s | mitigation=%d | adaptation=%d",
+            task_uuid,
+            locode,
+            len(mitigation_actions),
+            len(adaptation_actions),
+        )
+    except ValueError as ve:
+        # Semantic validation errors: mark task as failed with message
+        logger.error(
+            "Task %s: Validation error during explanation translation: %s",
+            task_uuid,
+            str(ve),
+        )
+        task_storage[task_uuid]["status"] = "failed"
+        task_storage[task_uuid]["error"] = str(ve)
+    except Exception as exc:
+        logger.error(
+            "Task %s: Unexpected error during explanation translation: %s",
+            task_uuid,
+            str(exc),
+            exc_info=True,
+        )
+        task_storage[task_uuid]["status"] = "failed"
+        task_storage[task_uuid][
+            "error"
+        ] = f"Error during explanation translation: {str(exc)}"

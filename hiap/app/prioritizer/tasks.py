@@ -824,7 +824,12 @@ def _execute_translate_explanations(
                         f"Failed to translate explanation for actionId="
                         f"{ranked_action.actionId}."
                     )
-                existing_map = ranked_action.explanation.explanations.copy()  # type: ignore[union-attr]
+                if not ranked_action.explanation:
+                    raise ValueError(
+                        f"Action '{ranked_action.actionId}' does not contain an "
+                        f"explanation after source extraction."
+                    )
+                existing_map = ranked_action.explanation.explanations.copy()
                 existing_map.update(translations.explanations)
                 ranked_action.explanation = Explanation(explanations=existing_map)
             return actions

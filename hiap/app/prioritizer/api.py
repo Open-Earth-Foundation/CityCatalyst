@@ -715,7 +715,7 @@ async def create_explanations(request: Request, req: CreateExplanationsRequest):
         if conflict:
             break
     if conflict:
-        action_id, lang = conflict
+        _, lang = conflict
         message = (
             f"Actions already contains explanation text for language '{lang}'. "
             "Use the translation endpoint to add new languages."

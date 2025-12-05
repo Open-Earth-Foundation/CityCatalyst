@@ -855,7 +855,7 @@ async def translate_explanations(
         relevant_lists.append(adaptation_actions)
     if not relevant_lists:
         raise HTTPException(
-            status_code=400,
+            status_code=422,
             detail=(
                 "At least one of rankedActionsMitigation or rankedActionsAdaptation "
                 "must contain actions."
@@ -867,19 +867,19 @@ async def translate_explanations(
             explanation = ranked_action.explanation
             if not explanation or not explanation.explanations:
                 raise HTTPException(
-                    status_code=400,
+                    status_code=422,
                     detail=(
-                        f"Action '{ranked_action.actionId}' does not contain "
-                        f"any explanation to translate."
+                        "All actions must contain an explanation object with at least "
+                        "one language before translation can be requested."
                     ),
                 )
             source_text = explanation.explanations.get(source_language)
             if not source_text or not source_text.strip():
                 raise HTTPException(
-                    status_code=400,
+                    status_code=422,
                     detail=(
-                        f"Action '{ranked_action.actionId}' is missing source language "
-                        f"'{source_language}'."
+                        f"Requested source language '{source_language}' must be present "
+                        "with non-empty text in the explanations for all actions."
                     ),
                 )
 

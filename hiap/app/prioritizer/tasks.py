@@ -705,8 +705,16 @@ def _execute_create_explanations(task_uuid: str, background_task_input: Dict) ->
             for ranked_action in actions:
                 action_payload = action_lookup.get(ranked_action.actionId)
                 if not action_payload:
-                    msg = f"Unknown actionId {ranked_action.actionId} provided."
-                    logger.error("Task %s: %s", task_uuid, msg)
+                    msg = (
+                        "One or more provided action IDs could not be matched to the "
+                        "action list from the Global API."
+                    )
+                    logger.error(
+                        "Task %s: %s (unknown actionId=%s)",
+                        task_uuid,
+                        msg,
+                        ranked_action.actionId,
+                    )
                     raise ValueError(msg)
 
                 explanation = generate_multilingual_explanation(
@@ -718,11 +726,13 @@ def _execute_create_explanations(task_uuid: str, background_task_input: Dict) ->
                 )
 
                 if not explanation:
-                    msg = (
-                        f"Failed to generate explanation for actionId="
-                        f"{ranked_action.actionId}"
+                    msg = "Failed to generate explanations for one or more actions. "
+                    logger.error(
+                        "Task %s: %s (failed actionId=%s)",
+                        task_uuid,
+                        msg,
+                        ranked_action.actionId,
                     )
-                    logger.error("Task %s: %s", task_uuid, msg)
                     raise RuntimeError(msg)
 
                 ranked_action.explanation = explanation
@@ -793,21 +803,22 @@ def _execute_translate_explanations(
             explanation = ranked_action.explanation
             if not explanation or not explanation.explanations:
                 raise ValueError(
-                    f"Action '{ranked_action.actionId}' does not contain any "
-                    f"explanation to translate."
+                    "All actions must contain an explanation object with at least one "
+                    "language before translation can be requested."
                 )
             source_text = explanation.explanations.get(source_language)
             if not source_text or not source_text.strip():
                 raise ValueError(
-                    f"Action '{ranked_action.actionId}' is missing source language "
-                    f"'{source_language}'."
+                    f"Requested source language '{source_language}' must be present "
+                    "with non-empty text in the explanations for all actions."
                 )
             for lang in target_languages:
                 existing = explanation.explanations.get(lang)
                 if existing and existing.strip():
                     raise ValueError(
-                        f"Action '{ranked_action.actionId}' already contains "
-                        f"language '{lang}'. Remove it before requesting translation."
+                        "One or more target languages are already present in the "
+                        "existing explanations. Remove these languages before "
+                        "requesting translation."
                     )
             return source_text
 

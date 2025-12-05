@@ -18,16 +18,28 @@ from prioritizer.models import (
     StartPrioritizationResponse,
     PrioritizerRequestBulk,
     PrioritizerResponseBulk,
+    CreateExplanationsRequest,
+    TranslateExplanationsRequest,
+    RankedAction,
+    Explanation,
+    MetaData,
 )
 from prioritizer.tasks import (
     _execute_prioritization,
     _compute_prioritization_bulk_subtask,
     _update_bulk_task_status,
+    _execute_create_explanations,
+    _execute_translate_explanations,
 )
 from prioritizer.task_storage import task_storage
 from limiter import limiter
 from fastapi.encoders import jsonable_encoder
 from services.get_actions import get_actions
+from services.get_context import get_context
+from services.get_ccra import get_ccra
+from prioritizer.utils.add_explanations import generate_multilingual_explanation
+from prioritizer.utils.translate_explanations import translate_explanation_text
+from utils.build_city_data import build_city_data
 
 # Setup logging configuration
 setup_logger()
@@ -99,6 +111,23 @@ def _load_actions_for_request():
 )
 @limiter.limit("10/minute")
 async def start_prioritization(request: Request, req: PrioritizerRequest):
+    """
+    Start an asynchronous prioritization run for a single city.
+
+    **Body**
+    - `cityData` (`CityData`): Minimal context/emissions payload sent from the frontend.
+    - `countryCode` (`str`, ISO 3166-1 alpha-2): Used to fetch national strategies.
+    - `prioritizationType` (`PrioritizationType`): `mitigation`, `adaptation`, or `both`.
+    - `language` (`List[str]`, ISO 639-1): Languages for generated explanations.
+
+    **Returns**
+    - `StartPrioritizationResponse`: contains `taskId` to poll plus initial `status`.
+
+    **Typical errors**
+    - `422`: Request validation failed.
+    - `429`: Rate limit exceeded.
+    - `500`: Unable to start the worker thread.
+    """
     task_uuid = str(uuid.uuid4())
 
     # Log the request
@@ -187,6 +216,21 @@ async def start_prioritization(request: Request, req: PrioritizerRequest):
 )
 @limiter.limit("10/minute")
 async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBulk):
+    """
+    Start an asynchronous prioritization run for multiple cities.
+
+    **Body**
+    - `cityDataList` (`List[CityData]`): Cities to process.
+    - `countryCode` / `prioritizationType` / `language`: Same semantics as the single endpoint.
+
+    **Returns**
+    - `StartPrioritizationResponse`: Main `taskId` tracked via progress + bulk result endpoints.
+
+    **Typical errors**
+    - `422`: Invalid payload.
+    - `429`: Rate limit exceeded.
+    - `500`: Unable to submit subtasks.
+    """
     main_task_id = str(uuid.uuid4())
 
     # Log the request
@@ -379,9 +423,10 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
 @router.get(
     "/v1/check_prioritization_progress/{task_uuid}",
     response_model=CheckProgressResponse,
-    summary="Check prioritization task progress",
+    summary="Check background task progress",
     description=(
-        "Returns the current status of a prioritization task. "
+        "Returns the current status of an asynchronous task, including single and bulk "
+        "prioritization runs as well as explanation creation and translation jobs. "
         "If the task has failed, an error message is included in the payload."
     ),
     responses={
@@ -395,6 +440,24 @@ async def start_prioritization_bulk(request: Request, req: PrioritizerRequestBul
 )
 @limiter.limit("10/minute")
 async def check_prioritization_progress(request: Request, task_uuid: str):
+    """
+    Check the current status of an asynchronous task.
+
+    Works for single and bulk prioritization, explanation creation, and explanation
+    translation because every task shares the same in-memory store.
+
+    **Path params**
+    - `task_uuid` (`str`): Identifier returned by `/v1/start_prioritization`,
+      `/v1/start_prioritization_bulk`, `/v1/create_explanations`, or
+      `/v1/translate_explanations`.
+
+    **Returns**
+    - `CheckProgressResponse`: contains `status` plus optional `error` if failed.
+
+    **Typical errors**
+    - `404`: Unknown `task_uuid`.
+    - `429`: Rate limit exceeded.
+    """
     logger.info(f"Task {task_uuid}: Checking prioritization progress")
     if task_uuid not in task_storage:
         logger.warning(f"Task {task_uuid}: Task not found")
@@ -413,10 +476,12 @@ async def check_prioritization_progress(request: Request, task_uuid: str):
 @router.get(
     "/v1/get_prioritization/{task_uuid}",
     response_model=PrioritizerResponse,
-    summary="Get single prioritization result",
+    summary="Get single task result (prioritization/explanations)",
     description=(
-        "Returns the computed prioritization for a single task once completed. "
-        "Use the progress endpoint to check readiness."
+        "Returns the computed result for a single task once completed. This includes "
+        "single-city prioritization as well as explanation creation and explanation "
+        "translation jobs that all share the same response model. Use the progress "
+        "endpoint to check readiness."
     ),
     responses={
         200: {"description": "OK. Prioritization result returned."},
@@ -432,6 +497,23 @@ async def check_prioritization_progress(request: Request, task_uuid: str):
 )
 @limiter.limit("10/minute")
 async def get_prioritization(request: Request, task_uuid: str):
+    """
+    Retrieve the finished result for a single task.
+
+    **Path params**
+    - `task_uuid` (`str`): Identifier returned by `/v1/start_prioritization`,
+      `/v1/create_explanations`, or `/v1/translate_explanations`.
+
+    **Returns**
+    - `PrioritizerResponse`: Ranked mitigation/adaptation actions plus metadata,
+      optionally enriched with explanations or their translations.
+
+    **Typical errors**
+    - `400`: Provided ID refers to a bulk task.
+    - `404`: Unknown `task_uuid`.
+    - `409`: Task not completed yet.
+    - `500`: Task failed or response could not be serialized.
+    """
     logger.info(f"Task {task_uuid}: Retrieving prioritization result")
     if task_uuid not in task_storage:
         logger.warning(f"Task {task_uuid}: Task not found")
@@ -493,6 +575,21 @@ async def get_prioritization(request: Request, task_uuid: str):
 )
 @limiter.limit("10/minute")
 async def get_prioritization_bulk(request: Request, task_uuid: str):
+    """
+    Retrieve the finished prioritization results for a bulk task.
+
+    **Path params**
+    - `task_uuid` (`str`): Identifier returned by `/v1/start_prioritization_bulk`.
+
+    **Returns**
+    - `PrioritizerResponseBulk`: List of per-city `PrioritizerResponse` objects.
+
+    **Typical errors**
+    - `400`: Provided ID refers to a single task.
+    - `404`: Unknown `task_uuid`.
+    - `409`: Task still running.
+    - `500`: Task failed or result unavailable.
+    """
     logger.info(f"Task {task_uuid}: Retrieving bulk prioritization result")
     if task_uuid not in task_storage:
         logger.warning(f"Task {task_uuid}: Task not found")
@@ -532,6 +629,307 @@ async def get_prioritization_bulk(request: Request, task_uuid: str):
         )
 
 
+@router.post(
+    "/v1/create_explanations",
+    response_model=StartPrioritizationResponse,
+    status_code=202,
+    summary="Start explanation creation (asynchronous)",
+    description=(
+        "Accepts previously ranked actions along with city data and starts an "
+        "asynchronous job to generate first-time explanations for the requested "
+        "languages. Use the progress and result endpoints to monitor completion "
+        "and retrieve the enriched action list."
+    ),
+    responses={
+        202: {
+            "description": "Accepted. Task created. Response contains taskId and initial status."
+        },
+        422: {
+            "description": "Unprocessable Entity. Explanations already present or request validation error."
+        },
+        429: {"description": "Too Many Requests (rate limited)"},
+        500: {"description": "Internal Server Error"},
+        503: {
+            "description": "Service Unavailable. Required upstream data not available."
+        },
+    },
+)
+@limiter.limit("10/minute")
+async def create_explanations(request: Request, req: CreateExplanationsRequest):
+    """
+    Start an asynchronous job to generate first-time explanations for ranked actions.
+
+    **Body**
+    - `cityData`, `countryCode`, `prioritizationType`, `language`: Same shape as prioritization request.
+    - `rankedActionsMitigation` / `rankedActionsAdaptation`: Ranked actions without explanations.
+
+    **Returns**
+    - `StartPrioritizationResponse`: contains `taskId` to poll plus initial `status`.
+
+    **Typical errors**
+    - `422`: Any action already has explanation text or request payload is invalid.
+    - `503`: Upstream actions or CCRA/context unavailable.
+    - `500`: Failed to start background worker.
+    """
+    task_uuid = str(uuid.uuid4())
+
+    locode = req.cityData.cityContextData.locode
+    languages = req.language
+    # Copy lists so we never mutate the incoming Pydantic objects directly.
+    mitigation_actions = list(req.rankedActionsMitigation or [])
+    adaptation_actions = list(req.rankedActionsAdaptation or [])
+
+    logger.info(
+        "Received create_explanations request for locode=%s | mitigation=%d | adaptation=%d | languages=%s",
+        locode,
+        len(mitigation_actions),
+        len(adaptation_actions),
+        ",".join(languages),
+    )
+
+    def _find_existing_language(actions: list[RankedAction]) -> tuple[str, str] | None:
+        """
+        Return the first (actionId, language) pair that already carries a
+        non-empty explanation, regardless of whether the language was requested.
+        """
+        for ranked_action in actions:
+            explanation = ranked_action.explanation
+            if not explanation or not explanation.explanations:
+                continue
+            for lang, text in explanation.explanations.items():
+                if isinstance(text, str) and text.strip():
+                    return ranked_action.actionId, lang
+        return None
+
+    relevant_lists: list[list[RankedAction]] = []
+    if mitigation_actions:
+        relevant_lists.append(mitigation_actions)
+    if adaptation_actions:
+        relevant_lists.append(adaptation_actions)
+
+    # Guardrail: if *any* existing explanation text is present we refuse the request.
+    # Subsequent translation API will handle extending languages from an existing base.
+    conflict = None
+    for action_list in relevant_lists:
+        conflict = _find_existing_language(action_list)
+        if conflict:
+            break
+    if conflict:
+        _, lang = conflict
+        message = (
+            f"Actions already contains explanation text for language '{lang}'. "
+            "Use the translation endpoint to add new languages."
+        )
+        logger.warning("create_explanations aborted: %s", message)
+        raise HTTPException(status_code=422, detail=message)
+
+    # Initialize task in storage
+    task_storage[task_uuid] = {
+        "status": "pending",
+        "created_at": datetime.now().isoformat(),
+        "locode": locode,
+    }
+
+    # Use the canonical Global API actions to resolve metadata for each actionId.
+    actions_cached = _load_actions_for_request()
+    if not actions_cached:
+        logger.error(
+            "No actions data available from global API while creating explanations."
+        )
+        task_storage[task_uuid]["status"] = "failed"
+        task_storage[task_uuid][
+            "error"
+        ] = "No actions data available from global API. Please try again later."
+        return StartPrioritizationResponse(
+            taskId=task_uuid, status=task_storage[task_uuid]["status"]
+        )
+
+    # Prepare background payload
+    background_task_input = {
+        "locode": locode,
+        "cityData": req.cityData,
+        "countryCode": req.countryCode,
+        "languages": languages,
+        "rankedActionsMitigation": mitigation_actions,
+        "rankedActionsAdaptation": adaptation_actions,
+        "actions": actions_cached,
+    }
+
+    # Start background worker
+    try:
+        thread = threading.Thread(
+            target=_execute_create_explanations,
+            args=(task_uuid, background_task_input),
+        )
+        thread.daemon = True
+        thread.start()
+        logger.info(
+            "Task %s: Started background processing for create_explanations", task_uuid
+        )
+    except Exception as e:
+        logger.error(
+            "Task %s: Failed to start background thread for create_explanations: %s",
+            task_uuid,
+            str(e),
+            exc_info=True,
+        )
+        task_storage[task_uuid]["status"] = "failed"
+        task_storage[task_uuid][
+            "error"
+        ] = f"Failed to start background thread for create_explanations: {str(e)}"
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to start background thread for create_explanations.",
+        )
+
+    return StartPrioritizationResponse(
+        taskId=task_uuid, status=task_storage[task_uuid]["status"]
+    )
+
+
+@router.post(
+    "/v1/translate_explanations",
+    response_model=StartPrioritizationResponse,
+    status_code=202,
+    summary="Start explanation translation (asynchronous)",
+    description=(
+        "Accepts ranked actions that already contain explanations in a source "
+        "language and starts an asynchronous job to translate them into the "
+        "specified target languages. Use the progress and result endpoints to "
+        "monitor completion and retrieve the updated actions."
+    ),
+    responses={
+        202: {
+            "description": "Accepted. Task created. Response contains taskId and initial status."
+        },
+        400: {
+            "description": "Bad Request. Missing source text or target languages already populated."
+        },
+        422: {"description": "Validation error"},
+        429: {"description": "Too Many Requests (rate limited)"},
+        500: {"description": "Internal Server Error"},
+    },
+)
+@limiter.limit("10/minute")
+async def translate_explanations(
+    request: Request, req: TranslateExplanationsRequest
+) -> StartPrioritizationResponse:
+    """
+    Start an asynchronous job to translate existing explanations into new languages.
+
+    **Body**
+    - `locode` (`str`): City identifier (used for metadata only).
+    - `rankedActionsMitigation` / `rankedActionsAdaptation`: Actions that already have explanations.
+    - `sourceLanguage` (`str`, ISO 639-1): Language that currently exists in each action.
+    - `targetLanguages` (`List[str]`): Languages to append; must NOT include the source language.
+
+    **Returns**
+    - `StartPrioritizationResponse`: contains `taskId` to poll plus initial `status`.
+
+    **Typical errors**
+    - `400`: Missing source text or a target language is already present.
+    - `500`: Failed to start background worker.
+    """
+    task_uuid = str(uuid.uuid4())
+
+    source_language = req.sourceLanguage
+    target_languages = req.targetLanguages
+    mitigation_actions = list(req.rankedActionsMitigation or [])
+    adaptation_actions = list(req.rankedActionsAdaptation or [])
+
+    logger.info(
+        "Received translate_explanations request for locode=%s | mitigation=%d | adaptation=%d | source=%s | targets=%s",
+        req.locode,
+        len(mitigation_actions),
+        len(adaptation_actions),
+        source_language,
+        ",".join(target_languages),
+    )
+
+    # Basic validation of presence of explanations and source language;
+    # detailed checks (including target language collisions) are performed in the task.
+    relevant_lists: list[list[RankedAction]] = []
+    if mitigation_actions:
+        relevant_lists.append(mitigation_actions)
+    if adaptation_actions:
+        relevant_lists.append(adaptation_actions)
+    if not relevant_lists:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "At least one of rankedActionsMitigation or rankedActionsAdaptation "
+                "must contain actions."
+            ),
+        )
+
+    for actions in relevant_lists:
+        for ranked_action in actions:
+            explanation = ranked_action.explanation
+            if not explanation or not explanation.explanations:
+                raise HTTPException(
+                    status_code=422,
+                    detail=(
+                        "All actions must contain an explanation object with at least "
+                        "one language before translation can be requested."
+                    ),
+                )
+            source_text = explanation.explanations.get(source_language)
+            if not source_text or not source_text.strip():
+                raise HTTPException(
+                    status_code=422,
+                    detail=(
+                        f"Requested source language '{source_language}' must be present "
+                        "with non-empty text in the explanations for all actions."
+                    ),
+                )
+
+    # Initialize task in storage
+    task_storage[task_uuid] = {
+        "status": "pending",
+        "created_at": datetime.now().isoformat(),
+        "locode": req.locode,
+    }
+
+    background_task_input = {
+        "locode": req.locode,
+        "sourceLanguage": source_language,
+        "targetLanguages": target_languages,
+        "rankedActionsMitigation": mitigation_actions,
+        "rankedActionsAdaptation": adaptation_actions,
+    }
+
+    try:
+        thread = threading.Thread(
+            target=_execute_translate_explanations,
+            args=(task_uuid, background_task_input),
+        )
+        thread.daemon = True
+        thread.start()
+        logger.info(
+            "Task %s: Started background processing for translate_explanations",
+            task_uuid,
+        )
+    except Exception as e:
+        logger.error(
+            "Task %s: Failed to start background thread for translate_explanations: %s",
+            task_uuid,
+            str(e),
+            exc_info=True,
+        )
+        task_storage[task_uuid]["status"] = "failed"
+        task_storage[task_uuid][
+            "error"
+        ] = f"Failed to start background thread for translate_explanations: {str(e)}"
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to start background thread for translate_explanations.",
+        )
+
+    return StartPrioritizationResponse(
+        taskId=task_uuid, status=task_storage[task_uuid]["status"]
+    )
+
+
 @router.get(
     "/v1/debug/tasks",
     summary="Debug: list all tasks",
@@ -545,7 +943,11 @@ async def get_prioritization_bulk(request: Request, task_uuid: str):
 )
 @limiter.limit("30/minute")
 async def debug_list_tasks(request: Request):
-    """Return the full task_storage for debugging (json-encoded)."""
+    """
+    Debug-only endpoint that dumps the in-memory `task_storage`.
+
+    Not intended for production use; exposes all task metadata for troubleshooting.
+    """
     try:
         return jsonable_encoder(task_storage)
     except Exception as e:

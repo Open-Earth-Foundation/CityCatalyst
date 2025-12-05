@@ -233,6 +233,157 @@ class TestPrioritizerAPI:
         )
         assert response.status_code == 422
 
+    @patch("services.get_ccra.get_ccra")
+    @patch("services.get_context.get_context")
+    @patch("services.get_actions.get_actions")
+    @patch("prioritizer.utils.add_explanations.generate_multilingual_explanation")
+    def test_create_explanations_start_success(
+        self,
+        mock_generate_explanations,
+        mock_get_actions,
+        mock_get_context,
+        mock_get_ccra,
+        client,
+        sample_city_data_request,
+    ):
+        """Start explanation creation task when no explanations are present."""
+        # Mock external dependencies so the background worker has stable inputs
+        mock_get_context.return_value = {
+            "locode": "BR RIO",
+            "name": "Rio de Janeiro",
+            "biome": "Atlantic Forest",
+        }
+        mock_get_ccra.return_value = []
+        mock_get_actions.return_value = [
+            {
+                "ActionID": "MIT001",
+                "ActionName": "Solar Installation",
+                "ActionType": ["mitigation"],
+                "BiomeCompatibility": ["Atlantic Forest"],
+            }
+        ]
+        mock_generate_explanations.return_value = {
+            "explanations": {"en": "Test explanation"}
+        }
+
+        payload = {
+            "cityData": sample_city_data_request["cityData"],
+            "countryCode": "BR",
+            "prioritizationType": "mitigation",
+            "language": ["en"],
+            "rankedActionsMitigation": [
+                {"actionId": "MIT001", "rank": 1},
+            ],
+            "rankedActionsAdaptation": [],
+        }
+
+        response = client.post(
+            "/prioritizer/v1/create_explanations",
+            json=payload,
+        )
+
+        assert response.status_code == 202
+        data = response.json()
+        assert "taskId" in data
+        assert "status" in data
+
+    @patch("prioritizer.utils.translate_explanations.translate_explanation_text")
+    def test_translate_explanations_start_success(
+        self,
+        mock_translate,
+        client,
+    ):
+        """Start translation task when source language is present on all actions."""
+        from prioritizer.models import Explanation
+
+        mock_translate.return_value = Explanation(explanations={"de": "Übersetzt"})
+
+        payload = {
+            "locode": "BR RIO",
+            "rankedActionsMitigation": [
+                {
+                    "actionId": "MIT001",
+                    "rank": 1,
+                    "explanation": {"explanations": {"en": "Source text"}},
+                }
+            ],
+            "rankedActionsAdaptation": [],
+            "sourceLanguage": "en",
+            "targetLanguages": ["de"],
+        }
+
+        response = client.post(
+            "/prioritizer/v1/translate_explanations",
+            json=payload,
+        )
+
+        assert response.status_code == 202
+        data = response.json()
+        assert "taskId" in data
+        assert "status" in data
+
+    def test_translate_explanations_missing_source_language(self, client):
+        """Return a general error when requested source language is missing."""
+        payload = {
+            "locode": "BR RIO",
+            "rankedActionsMitigation": [
+                {
+                    "actionId": "MIT001",
+                    "rank": 1,
+                    "explanation": {"explanations": {"pt": "Texto de origem"}},
+                }
+            ],
+            "rankedActionsAdaptation": [],
+            "sourceLanguage": "en",
+            "targetLanguages": ["de"],
+        }
+
+        response = client.post(
+            "/prioritizer/v1/translate_explanations",
+            json=payload,
+        )
+
+        assert response.status_code == 422
+        body = response.json()
+        assert "detail" in body
+        assert "Requested source language 'en' must be present" in body["detail"]
+
+    def test_create_explanations_rejects_existing_explanations(self, client):
+        """Reject explanation creation when any action already has explanations."""
+        payload = {
+            "cityData": {
+                "cityContextData": {"locode": "BR RIO", "populationSize": 6748000},
+                "cityEmissionsData": {
+                    "stationaryEnergyEmissions": 1500,
+                    "transportationEmissions": 2200,
+                    "wasteEmissions": 800,
+                    "ippuEmissions": 300,
+                    "afoluEmissions": 150,
+                },
+            },
+            "countryCode": "BR",
+            "prioritizationType": "mitigation",
+            "language": ["en"],
+            "rankedActionsMitigation": [
+                {
+                    "actionId": "MIT001",
+                    "rank": 1,
+                    "explanation": {"explanations": {"en": "Already present"}},
+                }
+            ],
+            "rankedActionsAdaptation": [],
+        }
+
+        response = client.post(
+            "/prioritizer/v1/create_explanations",
+            json=payload,
+        )
+
+        assert response.status_code == 422
+        body = response.json()
+        assert "detail" in body
+        assert "explanation text" in body["detail"]
+
 
 @pytest.mark.integration
 class TestPrioritizerWorkflow:

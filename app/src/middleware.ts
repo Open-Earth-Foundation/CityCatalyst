@@ -10,7 +10,7 @@ acceptLanguage.languages(languages);
 export const config = {
   matcher: [
     "/api/:path*",
-    "/((?!docs|_next/static|_next/image|assets|favicon.ico|sw.js|fonts).*)",
+    "/((?!docs|_next/static|_next/image|assets|favicon.ico|sw.js).*)",
   ],
   pages: { signIn: "/auth/login" },
   session: { strategy: "jwt" },

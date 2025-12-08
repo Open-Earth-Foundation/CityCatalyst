@@ -1,14 +1,11 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Box, Card, Heading, HStack, Table, Text } from "@chakra-ui/react";
+import React from "react";
+import { Box, Text } from "@chakra-ui/react";
 import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
 import {
   getReferenceNumberByName,
   getSubSectorByName,
   ISector,
 } from "@/util/constants";
-import { ColoredCircle } from "@/components/ColoredCircle";
-import { ButtonSmall } from "@/components/package/Texts/Button";
-import { TitleMedium } from "@/components/package/Texts/Title";
 import { getColorForSeries } from "./EmissionsForecastChart";
 import type { TFunction } from "i18next";
 import { EmissionsForecastData } from "@/util/types";
@@ -27,94 +24,62 @@ interface TooltipCardProps {
   t: TFunction;
 }
 
-function debounce(func: Function, wait: number) {
-  let timeout: NodeJS.Timeout;
-  return function (this: void, ...args: any[]) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), wait);
-  };
-}
-
 const TooltipCard = ({ point, data, forecast, t }: TooltipCardProps) => {
-  const [containerWidth, setContainerWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 0,
-  );
-
-  const handleResize = useCallback(() => {
-    setContainerWidth(window.innerWidth);
-  }, []);
-
-  useEffect(() => {
-    const debouncedResize = debounce(handleResize, 100);
-    window.addEventListener("resize", debouncedResize);
-    return () => {
-      window.removeEventListener("resize", debouncedResize);
-    };
-  }, [handleResize]);
-
+  console.log("Rendering TooltipCard for point:", point);
   const year = point.data.x;
   const sumOfYs = data.reduce((sum, series) => {
     const yearData = series.data.find(({ x }) => x === year);
     return sum + parseInt((yearData?.y as unknown as string) || "0");
   }, 0);
 
-  const xPosition = point.x;
-  const GRAPH_RATIO = 0.68;
-  const isLeftHalf = xPosition < (containerWidth * GRAPH_RATIO) / 2;
   return (
-    <div
-      style={{
-        background: "white",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-        borderRadius: "4px",
-        transform: isLeftHalf
-          ? "translateX(10px)" // Small offset to the right when on left half
-          : "translateX(-10px)", // Move left by its width plus small offset when on right half
-      }}
+    <Box
+      backgroundColor="white"
+      borderRadius="8px"
+      boxShadow="2dp"
+      minW="420px"
+      data-testid="tooltip-card-forecast"
     >
-      <Card.Root py={2} px={2}>
-        <Box padding="4" borderBottom="1px solid">
-          <Heading size="sm">{t("year")}</Heading>
-          <Text
-            fontFamily="heading"
-            fontSize="label.lg"
-            fontStyle="normal"
-            lineHeight="20px"
-            letterSpacing="wide"
+        <Box>
+          <Box
+            py={3}
+            px={4}
+            borderBottom="1px solid"
+            borderColor="border.overlay"
           >
-            {year as unknown as string}
-          </Text>
-        </Box>
-        <Box padding="4">
-          <Table.Root size={"sm"}>
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeader>
-                  <ButtonSmall>{t("sector").toUpperCase()}</ButtonSmall>
-                </Table.ColumnHeader>
-                <Table.ColumnHeader>
-                  <ButtonSmall>{t("rate").toUpperCase()}</ButtonSmall>
-                </Table.ColumnHeader>
-                <Table.ColumnHeader>
-                  <ButtonSmall>%</ButtonSmall>
-                </Table.ColumnHeader>
-                <Table.ColumnHeader>
-                  <ButtonSmall>
-                    {t("total-emissions").toUpperCase()}
-                  </ButtonSmall>
-                </Table.ColumnHeader>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {data.map(({ data, id }) => {
-                const yearData = data.find(({ x }) => x === point.data.x);
+            <Text
+              fontSize="title.sm"
+              fontWeight="600"
+              color="content.secondary"
+            >
+              {year as unknown as string}
+            </Text>
+            <Text fontSize="label.sm" fontWeight="500" color="content.tertiary">
+              {t("emissions-forecast")}
+            </Text>
+          </Box>
+          <Box
+            py={3}
+            px={4}
+            display="flex"
+            flexDirection="column"
+            gap={2.5}
+            mt={2}
+          >
+            {data
+              .filter((series) => {
+                const yearData = series.data.find(({ x }) => x === year);
+                return yearData && yearData.y !== 0;
+              })
+              .map((series) => {
+                const yearData = series.data.find(({ x }) => x === year);
                 const percentage = yearData
                   ? ((yearData.y / sumOfYs) * 100).toFixed(2)
                   : 0;
                 const sectorRefNo =
                   getReferenceNumberByName(
-                    toKebabCase(id as string) as keyof ISector,
-                  ) || getSubSectorByName(id)?.referenceNumber;
+                    toKebabCase(series.id as string) as keyof ISector,
+                  ) || getSubSectorByName(series.id)?.referenceNumber;
 
                 const yearGrowthRates =
                   yearData && forecast.growthRates[yearData.x as string];
@@ -123,41 +88,78 @@ const TooltipCard = ({ point, data, forecast, t }: TooltipCardProps) => {
                   yearGrowthRates?.[point.seriesId as string];
 
                 return (
-                  <Table.Row key={id}>
-                    <Table.Cell>
-                      <HStack>
-                        <ColoredCircle
-                          size="10px"
-                          color={getColorForSeries(id)}
-                        />
-                        {t(id)}
-                      </HStack>
-                    </Table.Cell>
-                    <Table.Cell>{growthRate}</Table.Cell>
-                    <Table.Cell>{percentage}%</Table.Cell>
-                    <Table.Cell>
-                      {convertKgToTonnes(
-                        parseInt(yearData?.y as unknown as string),
-                      )}
-                    </Table.Cell>
-                  </Table.Row>
+                  <Box
+                    key={series.id}
+                    display="flex"
+                    flexDirection="row"
+                    alignItems="center"
+                    gap={2}
+                    justifyContent="space-between"
+                  >
+                    <Box display="flex" alignItems="center" gap={2}>
+                      <Box boxSize="4" bgColor={getColorForSeries(series.id)}></Box>
+                      <Text
+                        fontSize="body.md"
+                        textAlign="left"
+                        flex={1}
+                        color="content.secondary"
+                      >
+                        {t(series.id)}
+                      </Text>
+                    </Box>
+                    <Box display="flex" justifyContent="flex-end" gap={4}>
+                      <Text
+                        fontSize="body.md"
+                        px={2}
+                        textAlign="right"
+                        color="content.primary"
+                      >
+                        {percentage}%
+                      </Text>
+                      <Text
+                        fontSize="body.md"
+                        textAlign="right"
+                        color="content.primary"
+                      >
+                        {convertKgToTonnes(
+                          parseInt(yearData?.y as unknown as string) || 0,
+                        )}
+                      </Text>
+                    </Box>
+                  </Box>
                 );
               })}
-              <Table.Row>
-                <Table.ColumnHeader>
-                  <TitleMedium>{t("total").toUpperCase()}</TitleMedium>
-                </Table.ColumnHeader>
-                <Table.ColumnHeader></Table.ColumnHeader>
-                <Table.ColumnHeader></Table.ColumnHeader>
-                <Table.ColumnHeader>
-                  <TitleMedium>{convertKgToTonnes(sumOfYs)}</TitleMedium>
-                </Table.ColumnHeader>
-              </Table.Row>
-            </Table.Body>
-          </Table.Root>
+          </Box>
+          <Box
+            mt={2}
+            display="flex"
+            justifyContent="space-between"
+            py={3}
+            px={4}
+            borderTop="1px solid"
+            borderColor="border.overlay"
+            alignItems="center"
+          >
+            <Text
+              fontSize="body.md"
+              fontWeight="600"
+              textAlign="left"
+              textTransform="capitalize"
+              color="content.primary"
+            >
+              {t("total")}
+            </Text>
+            <Text
+              fontSize="body.md"
+              fontWeight="600"
+              textAlign="right"
+              color="content.primary"
+            >
+              {convertKgToTonnes(sumOfYs)}
+            </Text>
+          </Box>
         </Box>
-      </Card.Root>
-    </div>
+    </Box>
   );
 };
 

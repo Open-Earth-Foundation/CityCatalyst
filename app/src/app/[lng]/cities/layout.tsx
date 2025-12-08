@@ -38,8 +38,6 @@ export default function CitiesLayout(props: {
         setOrganization(newOrgState);
       }
       setTheme(orgData?.theme?.themeKey ?? "blue_theme");
-      console.log("orgData", orgData);
-      console.log("theme", theme);
     } else {
       setTheme("blue_theme");
     }

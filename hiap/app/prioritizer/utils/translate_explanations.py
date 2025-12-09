@@ -20,13 +20,11 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY is not set")
 
-OPENAI_MODEL_NAME_TRANSLATIONS = os.getenv(
-    "OPENAI_MODEL_NAME_TRANSLATIONS", os.getenv("OPENAI_MODEL_NAME_EXPLANATIONS")
+OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION = os.getenv(
+    "OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION"
 )
-if not OPENAI_MODEL_NAME_TRANSLATIONS:
-    raise ValueError(
-        "Neither OPENAI_MODEL_NAME_TRANSLATIONS nor OPENAI_MODEL_NAME_EXPLANATIONS is set"
-    )
+if not OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION:
+    raise ValueError("OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION is not set")
 
 LANGCHAIN_PROJECT_NAME_PRIORITIZER = os.getenv("LANGCHAIN_PROJECT_NAME_PRIORITIZER")
 if not LANGCHAIN_PROJECT_NAME_PRIORITIZER:
@@ -101,7 +99,7 @@ def translate_explanation_text(
 
     try:
         completion = openai_client.beta.chat.completions.parse(
-            model=OPENAI_MODEL_NAME_TRANSLATIONS,  # type: ignore[arg-type]
+            model=OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION,
             messages=[
                 {
                     "role": "system",

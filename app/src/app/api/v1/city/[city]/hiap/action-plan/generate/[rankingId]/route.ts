@@ -18,7 +18,7 @@ const generateRankingRequest = z.object({
  * @swagger
  * /api/v1/city/{city}/hiap/action-plan/generate/{rankingId}:
  *   post:
- *     operationId: postCityCityHiapActionplanGenerateRankingid
+ *     operationId: postCityCityHiapActionPlanGenerateRankingId
  *     summary: Generate action plan for a specific ranking
  *     description: Generate a new action plan based on the provided action and ranking ID. The city ID is extracted from the route parameter.
  *     parameters:

@@ -76,7 +76,7 @@ def _build_translation_model(language_codes: list[str]) -> Type[BaseModel]:
     ``"en"``, ``"de"``, and ``"fr"`` filled with translated text.
     """
     fields: Dict[str, tuple[type, Any]] = {code: (str, ...) for code in language_codes}
-    model = create_model("ExplanationTranslation", **fields)  # type: ignore[arg-type]
+    model = create_model("ExplanationTranslation", **fields)
     return cast(Type[BaseModel], model)
 
 
@@ -104,7 +104,7 @@ def translate_explanation_text(
     system_prompt = TRANSLATION_SYSTEM_PROMPT.format(source_language=source_language)
 
     # Chat completions expect message content to be a string or structured list, so we
-    # serialize the payload to JSON.
+    # serialize the payload to JSON. This is stable and safe to reuse across attempts.
     user_payload = json.dumps(
         {
             "source_language": source_language,
@@ -114,30 +114,53 @@ def translate_explanation_text(
         ensure_ascii=False,
     )
 
+    # We perform a *small*, explicit retry loop only for the case where the parsed
+    # message is not an instance of `TranslationModel`. Low-level transport/API
+    # retries are still handled by the OpenAI client configuration itself.
+    max_attempts = 2
+
     try:
-        completion = openai_client.beta.chat.completions.parse(
-            model=OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION,
-            messages=[
-                {
-                    "role": "system",
-                    "content": system_prompt,
-                },
-                {
-                    "role": "user",
-                    "content": user_payload,
-                },
-            ],
-            temperature=0,
-            response_format=TranslationModel,
-            timeout=_get_openai_timeout_seconds(),
-        )
-        parsed = completion.choices[0].message.parsed
-        if not isinstance(parsed, TranslationModel):
-            logger.error(
-                "translate_explanation_text received unexpected payload: %s", parsed
+        for attempt in range(1, max_attempts + 1):
+            completion = openai_client.beta.chat.completions.parse(
+                model=OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": system_prompt,
+                    },
+                    {
+                        "role": "user",
+                        "content": user_payload,
+                    },
+                ],
+                temperature=0,
+                response_format=TranslationModel,
+                timeout=_get_openai_timeout_seconds(),
             )
-            return None
-        return Explanation(explanations=parsed.model_dump())
+            parsed = completion.choices[0].message.parsed
+
+            # If parsing into the expected Pydantic model fails (wrong type), we log
+            # and, if there's another attempt left, try again. Exceptions are *not*
+            # retried here; they are handled by the surrounding except block.
+            if isinstance(parsed, TranslationModel):
+                return Explanation(explanations=parsed.model_dump())
+
+            logger.warning(
+                "translate_explanation_text received unexpected payload on attempt %s: %s",
+                attempt,
+                parsed,
+            )
+
+            if attempt == max_attempts:
+                logger.error(
+                    "translate_explanation_text failed to obtain valid TranslationModel "
+                    "after %s attempts.",
+                    max_attempts,
+                )
+                return None
+
+        # Defensive fallback; in practice we should always have returned inside loop.
+        return None
     except Exception as exc:
         logger.error("Translation generation failed: %s", str(exc), exc_info=True)
         return None

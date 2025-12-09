@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - User
+ *     operationId: getUserProjects
  *     summary: List projects the current user belongs to
  *     responses:
  *       200:

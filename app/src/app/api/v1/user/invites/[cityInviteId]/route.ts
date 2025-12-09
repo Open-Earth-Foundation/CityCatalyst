@@ -4,6 +4,7 @@
  *   delete:
  *     tags:
  *       - User Invites
+ *     operationId: deleteUserInvitesCityinviteid
  *     summary: Cancel a city invite
  *     parameters:
  *       - in: path
@@ -20,6 +21,7 @@
  *   patch:
  *     tags:
  *       - User Invites
+ *     operationId: patchUserInvitesCityinviteid
  *     summary: Re-send a city invite (reset to pending)
  *     parameters:
  *       - in: path

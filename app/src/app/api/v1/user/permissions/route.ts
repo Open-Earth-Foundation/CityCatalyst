@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - User
+ *     operationId: getUserPermissions
  *     summary: Check user's access for a resource context
  *     parameters:
  *       - in: query

@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - Mock
+ *     operationId: getMockData
  *     summary: Return a small authenticated mock dataset.
  *     description: Returns a static list of mock building fuel/emissions rows. Requires a signed‑in session; unauthorized requests receive 401. Response is wrapped in '{' data: Row[] '}'.
  *     responses:
@@ -85,6 +86,7 @@ export const GET = apiHandler(async (_req, { session }) => {
  *   post:
  *     tags:
  *       - Mock
+ *     operationId: createMockData
  *     summary: Echo a simple mock response for authenticated users.
  *     description: Returns a static object for testing write endpoints. Requires a signed‑in session; unauthorized requests receive 401. Response is wrapped in { data }.
  *     responses:

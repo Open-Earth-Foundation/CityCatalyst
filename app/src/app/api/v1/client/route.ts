@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - OAuth Clients
+ *     operationId: getClient
  *     summary: List registered OAuth clients with localized names.
  *     description: Returns all OAuth clients configured on the server, merging i18n name/description records per language. Requires a signed‑in session and OAUTH_ENABLED. Response is wrapped in '{' data: Client[] '}'.
  *     responses:
@@ -113,6 +114,7 @@ const NewClientRequest = z.object({
  *   post:
  *     tags:
  *       - OAuth Clients
+ *     operationId: postClient
  *     summary: Create a new OAuth client with localized metadata.
  *     description: Creates a client id with redirect URI and localized name/description entries. Requires a signed‑in session and OAUTH_ENABLED. Returns the created client in { data } and sets a Location header to the new resource.
  *     requestBody:

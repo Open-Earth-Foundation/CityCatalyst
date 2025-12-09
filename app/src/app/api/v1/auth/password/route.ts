@@ -4,6 +4,7 @@
  *   post:
  *     tags:
  *       - Auth
+ *     operationId: postAuthPassword
  *     summary: Set a new password using a valid reset token.
  *     description: Verifies the provided reset token and updates the user’s password. No authentication is required for this flow, only a valid token. Returns 200 with an empty object on success.
  *     requestBody:

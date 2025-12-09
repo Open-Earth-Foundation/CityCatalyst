@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - Inventory Values
+ *     operationId: getInventoryInventoryValue
  *     summary: List inventory values by subcategories
  *     parameters:
  *       - in: path

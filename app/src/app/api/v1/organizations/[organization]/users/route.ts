@@ -4,6 +4,7 @@
  *   delete:
  *     tags:
  *       - Organization Users
+ *     operationId: deleteOrganizationsOrganizationUsers
  *     summary: Remove a user from an organization (admin/org-admin).
  *     description: Removes the given email from the organization’s owners/admins. Requires an admin or org_admin session for the organization. Returns an empty body on success.
  *     parameters:

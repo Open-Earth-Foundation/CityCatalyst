@@ -4,6 +4,7 @@
  *   post:
  *     tags:
  *       - City Invites
+ *     operationId: postCityInvite
  *     summary: Invite a user to a city with access to a specific inventory
  *     description: Creates an invitation for a user to join a city with access to a specific inventory. The inviting user ID is automatically determined from the authenticated session. An email is sent to the specified user with an invitation link.
  *     requestBody:

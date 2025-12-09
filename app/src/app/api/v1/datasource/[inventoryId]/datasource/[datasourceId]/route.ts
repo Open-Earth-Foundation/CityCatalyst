@@ -4,6 +4,7 @@
  *   delete:
  *     tags:
  *       - Data Sources
+ *     operationId: deleteDatasourceInventoryidDatasourceDatasourceid
  *     summary: Disconnect a data source and remove related inventory values (edit access).
  *     parameters:
  *       - in: path
@@ -66,6 +67,7 @@ import DataSourceService from "@/backend/DataSourceService";
  *   get:
  *     tags:
  *       - Data Sources
+ *     operationId: getDatasourceInventoryidDatasourceDatasourceid
  *     summary: Get a single data source with scaled data for an inventory (edit access).
  *     parameters:
  *       - in: path

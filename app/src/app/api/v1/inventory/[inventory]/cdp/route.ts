@@ -4,6 +4,7 @@
  *   post:
  *     tags:
  *       - Inventory CDP
+ *     operationId: postInventoryInventoryCdp
  *     summary: Submit inventory emissions to CDP questionnaire
  *     parameters:
  *       - in: path

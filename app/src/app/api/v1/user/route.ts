@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - User
+ *     operationId: getUser
  *     summary: Get current user info
  *     responses:
  *       200:
@@ -58,6 +59,7 @@ const updateUserRequest = z.object({
  *   patch:
  *     tags:
  *       - User
+ *     operationId: patchUser
  *     summary: Update default inventory and city for current user
  *     requestBody:
  *       required: true

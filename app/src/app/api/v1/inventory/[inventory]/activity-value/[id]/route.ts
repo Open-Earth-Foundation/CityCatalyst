@@ -4,6 +4,7 @@
  *   patch:
  *     tags:
  *       - Inventory Activity
+ *     operationId: patchInventoryInventoryActivityvalueId
  *     summary: Update an activity value by ID (edit access).
  *     description: Updates the activity value and related gas/emissions factors as needed. Requires a signed‑in user with edit access. Returns a success flag with the updated value.
  *     parameters:
@@ -160,6 +161,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
  *   delete:
  *     tags:
  *       - Inventory Activity
+ *     operationId: deleteInventoryInventoryActivityvalueId
  *     summary: Delete an activity value by ID (edit access).
  *     description: Removes the activity value row. Requires a signed‑in user with edit access. Returns a success flag.
  *     parameters:
@@ -202,6 +204,7 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
  *   get:
  *     tags:
  *       - Inventory Activity
+ *     operationId: getInventoryInventoryActivityvalueId
  *     summary: Get a single activity value by ID (edit access).
  *     description: Fetches the activity value with nested inventory/gas values for the inventory. Requires a signed‑in user with edit access to the inventory. Response is wrapped in '{' data '}'.
  *     parameters:

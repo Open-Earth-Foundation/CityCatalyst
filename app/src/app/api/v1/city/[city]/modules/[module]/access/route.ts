@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - City Modules
+ *     operationId: getCityCityModulesModuleAccess
  *     summary: Check if user has access to a specific module for a city
  *     parameters:
  *       - in: path

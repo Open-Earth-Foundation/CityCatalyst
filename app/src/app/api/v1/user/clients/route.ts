@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - User Clients
+ *     operationId: getUserClients
  *     summary: List OAuth client authorizations for current user
  *     responses:
  *       200:

@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - Inventory Download
+ *     operationId: getInventoryInventoryDownload
  *     summary: Download inventory data
  *     description: Downloads inventory data in various formats. If `format` is omitted or `json`, returns JSON. Other formats stream binary.
  *     parameters:

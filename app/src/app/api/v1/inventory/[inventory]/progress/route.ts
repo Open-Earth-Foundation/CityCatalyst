@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - Inventory Progress
+ *     operationId: getInventoryInventoryProgress
  *     summary: Get data entry progress for an inventory
  *     parameters:
  *       - in: path

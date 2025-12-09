@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - Organizations
+ *     operationId: getOrganizationsOrganization
  *     summary: Get a single organization with projects and theme (admin only).
  *     description: Returns the organization record with related projects and theme fields. Requires an admin session. Response is an object (not wrapped).
  *     parameters:
@@ -81,6 +82,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  *   patch:
  *     tags:
  *       - Organizations
+ *     operationId: patchOrganizationsOrganization
  *     summary: Update organization properties (admin only).
  *     description: Updates organization fields such as name and contactEmail. Requires an admin session. Response is the updated organization object (not wrapped).
  *     parameters:
@@ -152,6 +154,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
  *   delete:
  *     tags:
  *       - Organizations
+ *     operationId: deleteOrganizationsOrganization
  *     summary: Delete an organization (admin only).
  *     description: Deletes an organization unless it is the default. Requires an admin session. Response is { deleted: true } on success.
  *     parameters:

@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - Project Modules
+ *     operationId: getProjectsProjectModules
  *     summary: List modules enabled for a specific project
  *     description: Retrieves all modules that have been enabled for the specified project. Returns a list of module objects with their localized metadata and configuration details. Requires authentication to access project module information.
  *     parameters:

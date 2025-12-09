@@ -4,6 +4,7 @@
  *   post:
  *     tags:
  *       - City
+ *     operationId: postCity
  *     summary: Create a new city within a permitted project.
  *     description: Creates a city associated to a project the user can manage, adds the current user to it, and triggers admin notifications. Requires a signed‑in session and project‑level permission. Returns the created (or existing) city in { data }.
  *     requestBody:
@@ -273,6 +274,7 @@ export const POST = apiHandler(async (req, { session }) => {
  *   get:
  *     tags:
  *       - City
+ *     operationId: getCity
  *     summary: List cities that the current user is a member of.
  *     description: Returns all cities linked to the authenticated user via CityUser membership. Requires a signed‑in session; unauthorized users receive 401. Response is wrapped in '{' data: City[] '}'.
  *     responses:

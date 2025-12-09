@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - Inventory HIAP
+ *     operationId: getInventoryInventoryHiapStatus
  *     summary: Check HIAP job status and get actions if available
  *     description: Returns the current status of any HIAP ranking job and existing actions without starting a new job
  *     parameters:

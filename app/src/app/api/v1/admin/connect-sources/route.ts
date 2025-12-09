@@ -4,6 +4,7 @@
  *   post:
  *     tags:
  *       - Admin
+ *     operationId: connectAdminSources
  *     summary: Connect prioritized data sources to many inventories.
  *     description: Finds inventories for the given user and cities/years and attempts to connect the best available data source per GPC reference number. Requires an admin session; non-admins receive an authorization error. Use this to auto-populate inventories with external datasets.
  *     requestBody:

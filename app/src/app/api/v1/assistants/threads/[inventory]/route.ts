@@ -4,6 +4,7 @@
  *   post:
  *     tags:
  *       - Assistants Threads
+ *     operationId: postAssistantsThreadsInventory
  *     summary: Create a new assistant thread for a specific inventory.
  *     description: Creates a thread and seeds it with inventory context plus an initial message. Requires a signed-in user with access to the target inventory; access is enforced via inventory permissions. Use this to start a chat session tied to a given inventory.
  *     parameters:

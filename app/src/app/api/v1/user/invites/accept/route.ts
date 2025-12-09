@@ -4,6 +4,7 @@
  *   patch:
  *     tags:
  *       - User Invites
+ *     operationId: patchUserInvitesAccept
  *     summary: Accept invites to join cities
  *     requestBody:
  *       required: true

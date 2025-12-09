@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - User
+ *     operationId: getUserWhoami
  *     summary: Get the current session user object.
  *     description: Returns the session's user payload (id, email, name, image, role). Requires a signed‑in session. Response is wrapped in '{' data '}'.
  *     responses:

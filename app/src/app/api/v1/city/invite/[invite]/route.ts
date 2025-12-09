@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - City Invites
+ *     operationId: getCityInviteInvite
  *     summary: Accept a city invite
  *     parameters:
  *       - in: path

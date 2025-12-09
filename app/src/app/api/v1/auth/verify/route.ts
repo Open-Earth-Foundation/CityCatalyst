@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - Auth
+ *     operationId: getAuthVerify
  *     summary: Create a verification token for the current user.
  *     description: Issues a JWT verification token (valid for 1 hour) for the authenticated user. The token is used to verify the user's identity without exposing sensitive session data. Requires an authenticated session with a valid email. Use the returned token with the POST route to verify passwords without requiring re-authentication.
  *     responses:
@@ -83,6 +84,7 @@ export const GET = apiHandler(async (_req, { session }) => {
  *   post:
  *     tags:
  *       - Auth
+ *     operationId: postAuthVerify
  *     summary: Check if a password matches the user referenced by a token.
  *     description: Verifies the supplied password against the user identified by the JWT verification token. This endpoint doesn't require authentication - the token serves as proof of identity. Useful for password verification in scenarios where you want to avoid exposing session cookies or API keys. Returns true if the password matches the user's stored password hash.
  *     requestBody:

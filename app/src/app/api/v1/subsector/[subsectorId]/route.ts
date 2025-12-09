@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - Subsector
- *     operationId: getSubsectorSubsectorid
+ *     operationId: getSubsectorSubsectorId
  *     summary: Get a subsector record by ID.
  *     description: Public endpoint that fetches a subsector by its identifier. No authentication is enforced. Response is wrapped in '{' data '}' containing the subsector fields.
  *     parameters:

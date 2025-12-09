@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - Projects
- *     operationId: getProjectsProjectBulkdownload
+ *     operationId: getProjectsProjectBulkDownload
  *     summary: Bulk download inventories for a project (CSV)
  *     parameters:
  *       - in: path

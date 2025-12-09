@@ -56,7 +56,24 @@ openai_client = wrap_openai(
 
 def _build_translation_model(language_codes: list[str]) -> Type[BaseModel]:
     """
-    Build a dynamic schema that enforces one string field per target language.
+    Build a dynamic Pydantic schema with one required string field per target language.
+
+    The model is created on the fly so that its fields exactly match the requested
+    target languages and nothing else. This is important for the OpenAI
+    `response_format` parameter: it tells the model to return JSON that has *only*
+    these keys and validates that all of them are present.
+
+    Example
+    -------
+    If ``language_codes = ["en", "de", "fr"]``, this function is roughly equivalent to
+
+        class ExplanationTranslation(BaseModel):
+            en: str
+            de: str
+            fr: str
+
+    which ensures that the LLM must output a JSON object with the keys
+    ``"en"``, ``"de"``, and ``"fr"`` filled with translated text.
     """
     fields: Dict[str, tuple[type, Any]] = {code: (str, ...) for code in language_codes}
     model = create_model("ExplanationTranslation", **fields)  # type: ignore[arg-type]

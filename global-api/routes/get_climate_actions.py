@@ -40,6 +40,7 @@ def db_climate_actions() -> List[Dict[str, Any]]:
                 timeline_for_implementation,
                 dependencies,
                 key_performance_indicators,
+                key_impacts,
                 powers_and_mandates,
                 json_build_object(
                     'droughts', adaptation_effectiveness_droughts,
@@ -103,6 +104,7 @@ def get_climate_actions(
                 "TimelineForImplementation": response.get("timeline_for_implementation"),
                 "Dependencies": dependencies,
                 "KeyPerformanceIndicators": key_performance_indicators,
+                "KeyImpacts": response.get("key_impacts"),
                 "PowersAndMandates": response.get("powers_and_mandates"),
                 "AdaptationEffectivenessPerHazard": response.get("adaptationeffectivenessperhazard"),
                 "biome": response.get("biome"),

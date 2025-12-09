@@ -20,10 +20,10 @@ export class OAuthClient
   extends Model<OAuthClientAttributes, OAuthClientCreationAttributes>
   implements OAuthClientAttributes
 {
-  clientId!: string;
-  redirectURI!: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare clientId: string;
+  declare redirectURI: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof OAuthClient {
     return OAuthClient.init(

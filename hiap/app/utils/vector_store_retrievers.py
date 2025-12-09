@@ -1,6 +1,6 @@
 import logging
 from typing import Tuple, Union, Any, Optional
-from langchain.schema import Document
+from langchain_core.documents import Document
 from utils.get_vectorstore_local import get_vectorstore
 
 logger = logging.getLogger(__name__)

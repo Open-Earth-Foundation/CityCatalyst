@@ -164,5 +164,7 @@
   },
   "error-generating-actions-title": "Quelque chose a mal tourné",
   "error-generating-actions-description": "Nous avons rencontré une erreur lors de la génération de vos actions climatiques. Veuillez réessayer.",
-  "inventory-year": "Année d'Inventaire"
+  "inventory-year": "Année d'Inventaire",
+  "action-explanation": "Explication",
+  "no-explanation-available": "Aucune explication disponible"
 }

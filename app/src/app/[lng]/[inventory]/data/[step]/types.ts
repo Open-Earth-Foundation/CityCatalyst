@@ -14,6 +14,8 @@ export interface DataStep {
   icon: any;
   connectedProgress: number;
   addedProgress: number;
+  reasonNEProgress: number;
+  reasonNOProgress: number;
   totalSubSectors: number;
   referenceNumber: string;
   sector: SectorAttributes | null;

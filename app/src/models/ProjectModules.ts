@@ -16,9 +16,9 @@ export class ProjectModules
   extends Model<ProjectModulesAttributes, ProjectModulesCreationAttributes>
   implements ProjectModulesAttributes
 {
-  public id!: string;
-  public projectId!: string;
-  public moduleId!: string;
+  public declare id: string;
+  public declare projectId: string;
+  public declare moduleId: string;
   public expiresOn?: Date;
 
   static initModel(sequelize: Sequelize): typeof ProjectModules {

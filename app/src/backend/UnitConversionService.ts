@@ -161,9 +161,23 @@ export default class UnitConversionService {
       // Safe conversion within same unit type
       return this.convertUnits(value, fromUnit, toUnit);
     } else {
-      throw new createHttpError.BadRequest(
-        `Cannot convert ${fromUnit} to ${toUnit} without density for solid fuels`,
-      );
+      const customError = new createHttpError.BadRequest(
+        "Invalid request",
+      ) as createHttpError.HttpError & {
+        data?: {
+          type: string;
+          errorKey: string;
+          fromUnit: string;
+          toUnit: string;
+        };
+      };
+      customError.data = {
+        type: "CalculationError",
+        errorKey: "incompatible-unit-conversion-solid-fuels",
+        fromUnit,
+        toUnit,
+      };
+      throw customError;
     }
   }
 }

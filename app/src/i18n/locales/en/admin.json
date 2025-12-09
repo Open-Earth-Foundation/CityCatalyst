@@ -269,5 +269,6 @@
   "clear-exclusions": "Clear exclusions",
   "unexclude-cities": "Un-exclude {{count}} {{count, plural, one {city} other {cities}}}",
   "exclude-column-header": "Exclude",
-  "check-cities-to-exclude-tooltip": "Check cities to exclude them from retry"
+  "check-cities-to-exclude-tooltip": "Check cities to exclude them from retry",
+  "search-by-city-or-country": "Search by city or country"
 }

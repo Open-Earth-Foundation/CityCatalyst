@@ -145,7 +145,7 @@
     "step1": "<1>Set up your first inventory</1> - You can start with one city during this trial.",
     "step2": "<1>Invite collaborators</1> - Work as a team to build and review your data.",
     "step3": "<1>Explore key features</1> - From building your GHG inventory to customize your logo and colors.",
-    "step4": "<1>Ask AI</1> - Our Climate Assistant is ready to answer your questions and support you in the process. reviewing suggested impact actions.",
+    "step4": "<1>Ask AI</1> - Our Climate Assistant is ready to answer your questions and support you in the process of reviewing suggested impact actions.",
     "cta": "Log in to get started",
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   },
@@ -187,7 +187,7 @@
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   },
   "hiap-ranking-ready": {
-    "subject": "City Catalyst - HIAP Ranking Ready",
+    "subject": "CityCatalyst - HIAP Ranking Ready",
     "preview": "CityCatalyst: HIAP Ranking Ready",
     "brand": "CityCatalyst",
     "title": "Your mitigation actions are ready!",
@@ -199,7 +199,7 @@
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   },
   "action-plan-ready": {
-    "subject": "City Catalyst - Action Plan Ready",
+    "subject": "CityCatalyst - Action Plan Ready",
     "preview": "CityCatalyst: Your climate action plan is ready!",
     "brand": "CityCatalyst",
     "title": "Your climate action plan is ready!",

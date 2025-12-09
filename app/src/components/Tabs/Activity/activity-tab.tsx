@@ -240,7 +240,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
             checked={
               showUnavailableForm || !!inventoryValue?.unavailableExplanation
             }
-            onChange={() => (isFrozenCheck() ? null : handleSwitch)}
+            onChange={(e) => (isFrozenCheck() ? null : handleSwitch(e))}
           />
           <Text
             opacity={!!externalInventoryValue ? 0.4 : 1}

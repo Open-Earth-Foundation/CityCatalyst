@@ -69,6 +69,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   }
 
   const error = activity.split(".").reduce((acc, key) => acc?.[key], errors);
+  const labelText = t(title);
   return (
     <Box display="flex" flexDirection="column" gap="8px" w="full">
       <Text
@@ -78,7 +79,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
         letterSpacing="wide"
         fontFamily="heading"
       >
-        {t(title)}
+        {labelText}
       </Text>
       <Controller
         name={activity as any}
@@ -109,6 +110,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
               })}
             >
               <NativeSelectField
+                aria-label={labelText}
                 placeholder={placeholder}
                 value={field.value || ""}
                 onChange={(e) => {

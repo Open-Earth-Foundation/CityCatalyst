@@ -1255,6 +1255,7 @@
   "percentage": "Porcentagem",
   "go-to-source": "Vá para a fonte",
   "calculated-emission-values-too-large": "Os valores de emissões calculados são muito grandes para armazenar. Por favor, reduza suas quantidades de atividade ou fatores de emissão para evitar estouro.",
+  "incompatible-unit-conversion-solid-fuels": "Não é possível converter entre unidades de volume e massa para combustíveis sólidos sem informações de densidade. Por favor, use unidades de massa (kg, toneladas, libras) para fatores de emissão de combustíveis sólidos.",
   "invalid-request": "Solicitação Inválida",
   "emission-factor-too-large": "O fator de emissão não pode exceder {{max}}. Por favor, insira um valor menor.",
   "emission-factor-required": "Fator de emissão obrigatório",
@@ -1265,5 +1266,7 @@
   "fuel-type-fuel-oil": "Óleo Combustível",
   "fuel-type-not-applicable": "Não aplicável",
   "on-road-transportation-fuel-type": "Tipo de combustível",
-  "water-transportation-outside-fuel-type": "Tipo de combustível"
+  "water-transportation-outside-fuel-type": "Tipo de combustível",
+  "not-occurring": "Não Ocorrendo",
+  "not-estimated-progress": "Não Estimado"
 }

@@ -24,7 +24,7 @@ const createActionPlanSchema = z.object({
  * @swagger
  * /api/v1/city/{city}/hiap/action-plan:
  *   get:
- *     operationId: getCityCityHiapActionplan
+ *     operationId: getCityCityHiapActionPlan
  *     summary: Get or translate action plans for a city
  *     description: Retrieve action plans for a specific city, language, and action. Automatically translates if the plan doesn't exist in the requested language.
  *     parameters:

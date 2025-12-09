@@ -92,7 +92,7 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
  * @swagger
  * /api/v1/city/{city}/hiap/action-plan:
  *   post:
- *     operationId: postCityCityHiapActionplan
+ *     operationId: postCityCityHiapActionPlan
  *     summary: Create or update an action plan for a city
  *     description: Upsert an action plan with the provided data. The cityId is extracted from the route parameter.
  *     parameters:

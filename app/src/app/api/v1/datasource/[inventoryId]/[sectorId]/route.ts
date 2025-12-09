@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - Data Sources
- *     operationId: getDatasourceInventoryidSectorid
+ *     operationId: getDatasourceInventoryIdSectorId
  *     summary: List applicable data sources and data for a specific sector.
  *     description: Retrieves the sector with its data sources, filters them by applicability to the inventory, and fetches data. No explicit authentication is enforced in this handler. Returns { data: successfulSources[], removedSources, failedSources }.
  *     parameters:

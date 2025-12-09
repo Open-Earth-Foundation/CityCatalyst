@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - City Files
- *     operationId: getCityCityFileFileDownloadfile
+ *     operationId: getCityCityFileFileDownloadFile
  *     summary: Download a city file by ID
  *     parameters:
  *       - in: path

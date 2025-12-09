@@ -4,7 +4,7 @@
  *   patch:
  *     tags:
  *       - User
- *     operationId: patchUserUserid
+ *     operationId: patchUserUserId
  *     summary: Update a user's profile
  *     parameters:
  *       - in: path

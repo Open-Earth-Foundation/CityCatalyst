@@ -62,6 +62,7 @@ tools:
     enabled: true
     top_k: 5
     min_score: 0.6
+    timeout_seconds: 20
     description: "Search the climate knowledge base for relevant information about climate change, emissions, GHG, carbon, sustainability, environmental policies, renewable energy, net zero goals, climate adaptation, and mitigation strategies."
 
 # Conversation Configuration

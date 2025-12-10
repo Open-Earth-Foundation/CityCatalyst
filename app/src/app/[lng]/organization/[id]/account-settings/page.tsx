@@ -7,6 +7,7 @@ import Link from "next/link";
 import AccountSettingsTab from "./account";
 import TeamSettings from "./team";
 import ProjectSettings from "./project/index";
+import MyAppsSettings from "./MyAppsSettings";
 
 const selectedTabStyles = {
   borderColor: "content.link",
@@ -22,7 +23,7 @@ const selectedTabStyles = {
 const AccountSettingsPage = (props: {
   params: Promise<{ lng: string; id: string }>;
 }) => {
-  const { lng, id } = use(props.params);
+  const { lng, id: organizationId } = use(props.params);
   const { t } = useTranslation(lng, "settings");
 
   return (
@@ -77,6 +78,11 @@ const AccountSettingsPage = (props: {
                   {t("projects")}
                 </Text>
               </Tabs.Trigger>
+              <Tabs.Trigger value="my-apps" _selected={selectedTabStyles}>
+                <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
+                  {t("my-apps")}
+                </Text>
+              </Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value="account">
               <Box
@@ -102,10 +108,13 @@ const AccountSettingsPage = (props: {
               </Box>
             </Tabs.Content>
             <Tabs.Content value="team">
-              <TeamSettings lng={lng} id={id} />
+              <TeamSettings lng={lng} id={organizationId} />
             </Tabs.Content>
             <Tabs.Content value="project">
-              <ProjectSettings lng={lng} id={id} />
+              <ProjectSettings lng={lng} id={organizationId} />
+            </Tabs.Content>
+            <Tabs.Content value="my-apps">
+              <MyAppsSettings lng={lng} />
             </Tabs.Content>
           </Tabs.Root>
         </Box>

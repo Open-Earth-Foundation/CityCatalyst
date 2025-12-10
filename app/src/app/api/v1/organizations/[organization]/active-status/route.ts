@@ -4,7 +4,7 @@
  *   patch:
  *     tags:
  *       - Organizations
- *     operationId: patchOrganizationsOrganizationActivestatus
+ *     operationId: patchOrganizationsOrganizationActiveStatus
  *     summary: Update organization active status
  *     parameters:
  *       - in: path

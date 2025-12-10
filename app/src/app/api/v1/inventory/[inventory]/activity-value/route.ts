@@ -4,7 +4,7 @@
  *   post:
  *     tags:
  *       - Inventory Activity
- *     operationId: postInventoryInventoryActivityValue
+ *     operationId: postInventoryActivityValue
  *     summary: Create an activity value (edit access).
  *     description: Creates an activity and associated inventory/gas values as needed. Requires a signed‑in user with edit access to the inventory. Returns a success flag and the created value in { success, data }.
  *     parameters:
@@ -178,7 +178,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
  *   get:
  *     tags:
  *       - Inventory Activity
- *     operationId: getInventoryInventoryActivityValue
+ *     operationId: getInventoryActivityValue
  *     summary: List activity values for an inventory (edit access).
  *     description: Returns activity values filtered by subCategoryIds or subSectorId, optionally by methodology. Requires a signed‑in user with edit access to the inventory. Response is wrapped in '{' data: ActivityValue[] '}'.
  *     parameters:
@@ -390,7 +390,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
  *   delete:
  *     tags:
  *       - Inventory Activity
- *     operationId: deleteInventoryInventoryActivityValue
+ *     operationId: deleteInventoryActivityValue
  *     summary: Delete activities by subsector or reference number (edit access).
  *     description: Deletes activity rows within a subsector or by GPC reference number. Requires a signed‑in user with edit access. Returns a success flag and deletedCount in { success, data }.
  *     parameters:

@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - Inventory Values
- *     operationId: getInventoryInventoryValueSubcategory
+ *     operationId: getInventoryValueSubcategory
  *     summary: Get inventory value for a subcategory
  *     parameters:
  *       - in: path
@@ -84,7 +84,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  *   patch:
  *     tags:
  *       - Inventory Values
- *     operationId: patchInventoryInventoryValueSubcategory
+ *     operationId: patchInventoryValueSubcategory
  *     summary: Upsert inventory value for a subcategory
  *     parameters:
  *       - in: path

@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - Inventory Results
- *     operationId: getInventoryInventoryResultsSectorName
+ *     operationId: getInventoryResultsSectorName
  *     summary: Get emissions breakdown for a specific sector.
  *     description: Computes the breakdown for the chosen sector (by name) within the inventory. Requires a signed‑in user with access to the inventory. Response is wrapped in '{' data '}' (shape depends on sector).
  *     parameters:

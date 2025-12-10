@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - City
- *     operationId: getCityCityYears
+ *     operationId: getCityYears
  *     summary: List inventory identifiers and years for a city.
  *     description: Returns the basic city info plus a list of inventory IDs with years and last update timestamps. Requires a signed‑in user (future: public if inventory is public). Response is wrapped in data object.
  *     parameters:

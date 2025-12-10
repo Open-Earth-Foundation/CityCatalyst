@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - Inventory HIAP
- *     operationId: getInventoryInventoryHiap
+ *     operationId: getInventoryHiap
  *     summary: Get HIAP ranking or related data for an inventory.
  *     description: Returns HIAP insights for the selected actionType and language. Requires a signed‑in user with access to the inventory. Response is wrapped in '{' data '}' (actionType‑dependent shape).
  *     parameters:
@@ -135,7 +135,7 @@ const updateSelectionRequest = z.object({
  *   patch:
  *     tags:
  *       - Inventory HIAP
- *     operationId: patchInventoryInventoryHiap
+ *     operationId: patchInventoryHiap
  *     summary: Update selection status of ranked actions.
  *     description: Updates the isSelected field for ranked actions. All actions not in the selectedActionIds array will be set to false.
  *     parameters:

@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - Projects
- *     operationId: getProjectsProjectSummary
+ *     operationId: getProjectSummary
  *     summary: Get totals for cities, emissions, population, and data sources in a project.
  *     description: Computes high‑level aggregates for the project, including city count, emissions sum, total population (based on most recent inventory years per city), and total data sources. No explicit authentication is enforced in this handler currently. Response is a plain object (not wrapped).
  *     parameters:

@@ -4,7 +4,7 @@
  *   patch:
  *     tags:
  *       - Organizations
- *     operationId: patchOrganizationsOrganizationBranding
+ *     operationId: patchOrganizationBranding
  *     summary: Update organization branding (theme and logos)
  *     parameters:
  *       - in: path

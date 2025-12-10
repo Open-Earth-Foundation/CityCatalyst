@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - Organization Invitations
- *     operationId: getOrganizationsOrganizationInvitations
+ *     operationId: getOrganizationInvitations
  *     summary: List organization invitations
  *     parameters:
  *       - in: path
@@ -65,7 +65,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  *   post:
  *     tags:
  *       - Organization Invitations
- *     operationId: postOrganizationsOrganizationInvitations
+ *     operationId: postOrganizationInvitations
  *     summary: Invite users to an organization
  *     parameters:
  *       - in: path

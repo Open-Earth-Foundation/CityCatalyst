@@ -62,7 +62,7 @@
     "@reduxjs/toolkit": "^2.2.7",
     "@tanstack/react-table": "^8.21.2",
     "accept-language": "^3.0.20",
-    "ai": "^3.4.7",
+    "ai": "^5.0.106",
     "bcrypt": "^6.0.0",
     "chakra-react-select": "^6.1.1",
     "csv-parse": "^5.6.0",

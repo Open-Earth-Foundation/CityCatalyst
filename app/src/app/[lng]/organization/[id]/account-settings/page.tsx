@@ -2,11 +2,21 @@
 import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
-import { Box, Heading, HStack, Tabs, Text } from "@chakra-ui/react";
+import { Box, Heading, Tabs, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import AccountSettingsTab from "./account";
 import TeamSettings from "./team";
 import ProjectSettings from "./project/index";
+
+const selectedTabStyles = {
+  borderColor: "content.link",
+  borderBottomWidth: "2px",
+  boxShadow: "none",
+  fontWeight: "bold",
+  borderRadius: "0",
+  color: "content.link",
+  backgroundColor: "background.backgroundLight",
+};
 
 // TODO create tabs component with recipe
 const AccountSettingsPage = (props: {
@@ -52,50 +62,17 @@ const AccountSettingsPage = (props: {
               w="full"
               backgroundColor="background.backgroundLight"
             >
-              <Tabs.Trigger
-                value="account"
-                _selected={{
-                  borderColor: "content.link",
-                  borderBottomWidth: "2px",
-                  boxShadow: "none",
-                  fontWeight: "bold",
-                  borderRadius: "0",
-                  color: "content.link",
-                  backgroundColor: "background.backgroundLight",
-                }}
-              >
+              <Tabs.Trigger value="account" _selected={selectedTabStyles}>
                 <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
                   {t("account")}
                 </Text>
               </Tabs.Trigger>
-              <Tabs.Trigger
-                value="team"
-                _selected={{
-                  borderColor: "content.link",
-                  borderBottomWidth: "2px",
-                  boxShadow: "none",
-                  fontWeight: "bold",
-                  borderRadius: "0",
-                  color: "content.link",
-                  backgroundColor: "background.backgroundLight",
-                }}
-              >
+              <Tabs.Trigger value="team" _selected={selectedTabStyles}>
                 <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
                   {t("team")}
                 </Text>
               </Tabs.Trigger>
-              <Tabs.Trigger
-                value="project"
-                _selected={{
-                  borderColor: "content.link",
-                  borderBottomWidth: "2px",
-                  boxShadow: "none",
-                  fontWeight: "bold",
-                  borderRadius: "0",
-                  color: "content.link",
-                  backgroundColor: "background.backgroundLight",
-                }}
-              >
+              <Tabs.Trigger value="project" _selected={selectedTabStyles}>
                 <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
                   {t("projects")}
                 </Text>

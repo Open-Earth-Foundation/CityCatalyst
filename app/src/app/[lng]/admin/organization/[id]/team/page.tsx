@@ -63,7 +63,7 @@ const AdminOrganizationTeamPage = (props: {
   const TagMapping = {
     [OrganizationRole.ORG_ADMIN]: {
       color: "blue",
-      text: t("admin"),
+      text: t("organization-admin"),
     },
     [OrganizationRole.ADMIN]: {
       color: "blue",

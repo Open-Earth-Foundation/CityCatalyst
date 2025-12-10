@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - City Files
- *     operationId: getCityFile
+ *     operationId: getCityFiles
  *     summary: List uploaded files for a city.
  *     description: Returns metadata for files users have uploaded to the specified city, including derived size/type info. Requires a signed‑in session; unauthorized users receive 401. Response is wrapped in data object.
  *     parameters:

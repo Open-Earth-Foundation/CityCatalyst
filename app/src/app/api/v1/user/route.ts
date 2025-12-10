@@ -59,7 +59,7 @@ const updateUserRequest = z.object({
  *   patch:
  *     tags:
  *       - User
- *     operationId: patchUser
+ *     operationId: patchUserDefaults
  *     summary: Update default inventory and city for current user
  *     requestBody:
  *       required: true

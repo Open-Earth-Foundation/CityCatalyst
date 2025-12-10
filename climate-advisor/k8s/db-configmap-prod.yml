@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: climate-advisor-db-configmap-prod
+  namespace: default
+data:
+  DB_HOST: "dev-db-aurora.cluster-c5ipsfxjhb0m.us-east-1.rds.amazonaws.com"
+  DB_PORT: "5432"
+  DB_USER: "climateadvisor"
+  DB_PASSWORD: "climateadvisor"
+  DB_NAME: "climateadvisor"
+  DB_URL: "postgresql://climateadvisor:climateadvisor@dev-db-aurora.cluster-c5ipsfxjhb0m.us-east-1.rds.amazonaws.com/climateadvisor"
+  CA_DATABASE_URL: "postgresql://climateadvisor:climateadvisor@dev-db-aurora.cluster-c5ipsfxjhb0m.us-east-1.rds.amazonaws.com/climateadvisor"

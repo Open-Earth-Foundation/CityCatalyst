@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: climate-advisor-service-prod
+  namespace: default
+  labels:
+    app: climate-advisor-prod
+spec:
+  selector:
+    app: climate-advisor-prod
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+      name: http
+  type: ClusterIP

@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - City
- *     operationId: getCityCityBoundary
+ *     operationId: getCityBoundary
  *     summary: Get city boundary data
  *     parameters:
  *       - in: path

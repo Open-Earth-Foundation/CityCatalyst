@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - City Population
- *     operationId: getCityCityPopulationYear
+ *     operationId: getCityPopulationYear
  *     summary: Get population data for a specific city and year
  *     parameters:
  *       - in: path

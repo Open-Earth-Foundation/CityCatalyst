@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - Projects
- *     operationId: getProjectsProjectUsers
+ *     operationId: getProjectUsers
  *     summary: List users who belong to a project (admin only).
  *     description: Returns all users who have access to the specified project. Requires a signed‑in session with admin or organization admin privileges for the project's organization. Response is an array of user objects with their roles and join timestamps.
  *     parameters:
@@ -49,7 +49,7 @@
  *   delete:
  *     tags:
  *       - Projects
- *     operationId: deleteProjectsProjectUsers
+ *     operationId: deleteProjectUsers
  *     summary: Remove a user from a project by email (admin only).
  *     description: Removes the user with the specified email address from the project membership. Requires a signed‑in session with admin or organization admin privileges for the project's organization. The user will lose access to all project resources.
  *     parameters:

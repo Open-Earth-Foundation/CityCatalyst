@@ -12,7 +12,7 @@ import { randomUUID } from "node:crypto";
  *   post:
  *     tags:
  *       - City Users
- *     operationId: postCityCityUser
+ *     operationId: postCityUsers
  *     summary: Look up a user by email
  *     description: Returns an existing user if found; otherwise returns a message.
  *     parameters:
@@ -59,7 +59,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
  *   get:
  *     tags:
  *       - City Users
- *     operationId: getCityCityUser
+ *     operationId: getCityUsers
  *     summary: List users for a city
  *     parameters:
  *       - in: path
@@ -103,7 +103,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
  *   delete:
  *     tags:
  *       - City Users
- *     operationId: deleteCityCityUser
+ *     operationId: deleteCityUsers
  *     summary: Remove a user from a city by email
  *     parameters:
  *       - in: path

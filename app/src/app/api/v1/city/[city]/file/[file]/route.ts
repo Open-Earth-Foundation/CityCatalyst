@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - City Files
- *     operationId: getCityCityFileFile
+ *     operationId: getCityFile
  *     summary: Get a single uploaded city file by ID.
  *     description: Returns the stored file metadata for the given city and file ID. Requires a signed‑in user with access to the city. Response is wrapped in '{' data '}'.
  *     parameters:
@@ -66,7 +66,7 @@ export const GET = apiHandler(async (_req: Request, { session, params }) => {
  *   delete:
  *     tags:
  *       - City Files
- *     operationId: deleteCityCityFileFile
+ *     operationId: deleteCityFile
  *     summary: Delete an uploaded city file by ID.
  *     description: Removes the file metadata record. Requires a signed‑in user with access to the city. Returns the deleted record in { data } and a deleted flag.
  *     parameters:

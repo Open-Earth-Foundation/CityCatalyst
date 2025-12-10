@@ -53,7 +53,9 @@ function generateOpenAPISpec() {
     fs.writeFileSync(outputPath, JSON.stringify(spec, null, 2));
 
     console.log(`✅ OpenAPI spec generated: ${outputPath}`);
-    console.log(`📊 Found ${Object.keys(spec.paths || {}).length} API endpoints`);
+    console.log(
+      `📊 Found ${Object.keys(spec.paths || {}).length} API endpoints`,
+    );
 
     return spec;
   } catch (error) {
@@ -62,18 +64,26 @@ function generateOpenAPISpec() {
   }
 }
 
+// Generate OpenAPI spec during build for both webpack and turbopack
+function setupBuildHook(options) {
+  const { isServer, dev } = options;
+  if (isServer && !dev) {
+    generateOpenAPISpec();
+  }
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: true,
   serverExternalPackages: ["sequelize"],
+  turbopack: {
+    rules: {},
+  },
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
   },
-  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Generate OpenAPI spec during build (only once, on server-side build)
-    if (isServer && !dev) {
-      generateOpenAPISpec();
-    }
+  webpack: (config, options) => {
+    setupBuildHook(options);
     return config;
   },
   env: {

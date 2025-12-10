@@ -24,13 +24,13 @@ export class ProjectAdmin
   extends Model<ProjectAdminAttributes, ProjectAdminCreationAttributes>
   implements ProjectAdminAttributes
 {
-  projectAdminId!: string;
-  projectId!: string;
-  userId!: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare projectAdminId: string;
+  declare projectId: string;
+  declare userId: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
-  project!: Project;
+  declare project: Project;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof ProjectAdmin {
     return ProjectAdmin.init(

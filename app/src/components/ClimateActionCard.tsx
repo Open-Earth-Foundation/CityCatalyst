@@ -25,6 +25,7 @@ import { HeadlineMedium } from "./package/Texts/Headline";
 import { useActionPlan } from "@/hooks/use-action-plan";
 import { PDFExportService } from "@/services/PDFExportService";
 import { toaster } from "@/components/ui/toaster";
+import { toTranslationString } from "@/util/helpers";
 
 export const ClimateActionCard = ({
   action,
@@ -79,6 +80,7 @@ export const ClimateActionCard = ({
   };
 
   const reductionLevel = getReductionPotentialLevel();
+  const actionSector = action.sectors?.[0];
 
   return (
     <Card.Root
@@ -111,6 +113,7 @@ export const ClimateActionCard = ({
           whiteSpace="nowrap"
           lineClamp={2}
           color="content.secondary"
+          minHeight="56px"
         >
           {action.name}
         </TitleLarge>
@@ -160,7 +163,9 @@ export const ClimateActionCard = ({
               {t("sector-name")}
             </LabelMedium>
             <TitleSmall color="content.tertiary" textTransform="capitalize">
-              {action.sectors?.[0] || "N/A"}
+              {actionSector
+                ? t("sector." + toTranslationString(actionSector))
+                : t("n-a")}
             </TitleSmall>
           </Box>
 
@@ -188,7 +193,9 @@ export const ClimateActionCard = ({
               {t("implementation-time")}
             </LabelMedium>
             <TitleSmall color="content.tertiary">
-              {t(action.timelineForImplementation)}
+              {action.timelineForImplementation
+                ? t("timeline." + action.timelineForImplementation)
+                : t("n-a")}
             </TitleSmall>
           </Box>
 
@@ -255,7 +262,6 @@ const GeneratePlanDialog = ({
     language: action.lang || "en",
   });
 
-  
   const planToDisplay = existingPlan?.planData;
   const hasExistingPlan = !!existingPlan;
 

@@ -1,34 +1,46 @@
-from pydantic import BaseModel, Field
-from typing import Optional, List, Dict
+from pydantic import BaseModel, Field, StrictStr
+from typing import Optional, List, Dict, Annotated
 from datetime import datetime, date
 
 # --- Request models ---
 
 
+# Strict type aliases
+NonNegativeInteger = Annotated[
+    int,
+    Field(ge=0, strict=True, description="Non-negative integer value"),
+]
+
+
 class CityContextData(BaseModel):
-    locode: str = Field(..., min_length=1, description="UN/LOCODE identifier")
-    populationSize: Optional[int] = Field(
-        default=None, ge=0, description="Population size of the city"
+    locode: Annotated[
+        str,
+        Field(
+            pattern=r"^[A-Za-z]{2}\s[A-Za-z]{3}$",
+            strict=True,
+            description="UN/LOCODE identifier in the format 'AA BBB'",
+        ),
+    ]
+    populationSize: NonNegativeInteger = Field(
+        description="Population size of the city"
     )
 
 
 class CityEmissionsData(BaseModel):
-    stationaryEnergyEmissions: Optional[float] = Field(
-        default=None, ge=0, description="Stationary energy emissions"
+    stationaryEnergyEmissions: NonNegativeInteger = Field(
+        description="Stationary energy emissions (integer, >= 0)"
     )
-    transportationEmissions: Optional[float] = Field(
-        default=None, ge=0, description="Transportation emissions"
+    transportationEmissions: NonNegativeInteger = Field(
+        description="Transportation emissions (integer, >= 0)"
     )
-    wasteEmissions: Optional[float] = Field(
-        default=None, ge=0, description="Waste emissions"
+    wasteEmissions: NonNegativeInteger = Field(
+        description="Waste emissions (integer, >= 0)"
     )
-    ippuEmissions: Optional[float] = Field(
-        default=None, ge=0, description="Industrial processes and product use emissions"
+    ippuEmissions: NonNegativeInteger = Field(
+        description="Industrial processes and product use emissions (integer, >= 0)"
     )
-    afoluEmissions: Optional[float] = Field(
-        default=None,
-        ge=0,
-        description="Agriculture, forestry, and other land use emissions",
+    afoluEmissions: Annotated[int, Field(strict=True)] = Field(
+        description="Agriculture, forestry, and other land use emissions (integer; can be negative, zero, or positive)"
     )
 
 
@@ -41,13 +53,16 @@ class PlanRequest(BaseModel):
     cityData: CityData
     countryCode: str = Field(
         default="BR",  # TODO: Field should be required but for now we default to Brazil
-        min_length=2,
-        max_length=2,
+        pattern=r"^[A-Za-z]{2}$",
+        strict=True,
         description="ISO 3166-1 alpha-2 code",
     )
-    actionId: str = Field(..., min_length=1, description="Action ID")
+    actionId: StrictStr = Field(..., min_length=1, description="Action ID")
     language: str = Field(
-        default="en", min_length=2, max_length=2, description="ISO Language code"
+        default="en",
+        pattern=r"^[A-Za-z]{2}$",
+        strict=True,
+        description="ISO 639-1 two-letter language code",
     )
 
 
@@ -186,13 +201,27 @@ class PlanContent(BaseModel):
 
 
 class PlanCreatorMetadata(BaseModel):
-    locode: str  # Locode comes from frontend request, there it is always known, even if the city is not found in global API
+    locode: Annotated[
+        str,
+        Field(
+            pattern=r"^[A-Za-z]{2}\s[A-Za-z]{3}$",
+            strict=True,
+            description="UN/LOCODE identifier in the format 'AA BBB'",
+        ),
+    ]  # Locode comes from frontend request, there it is always known, even if the city is not found in global API
     cityName: Optional[str] = (
         None  # If the locode is not found in global API, this will be None
     )
-    actionId: str
+    actionId: StrictStr = Field(min_length=1, description="Action ID")
     actionName: str
-    language: str
+    language: Annotated[
+        str,
+        Field(
+            pattern=r"^[A-Za-z]{2}$",
+            strict=True,
+            description="ISO 639-1 two-letter language code",
+        ),
+    ]
     createdAt: datetime
 
 
@@ -211,8 +240,14 @@ class TranslatePlanRequest(BaseModel):
         description="The plan to translate. It is a PlanResponse object like the one returned by the get_plan endpoint."
     )
     inputLanguage: str = Field(
-        ..., min_length=2, max_length=2, description="ISO Language code"
+        ...,
+        pattern=r"^[A-Za-z]{2}$",
+        strict=True,
+        description="ISO 639-1 two-letter language code",
     )
     outputLanguage: str = Field(
-        ..., min_length=2, max_length=2, description="ISO Language code"
+        ...,
+        pattern=r"^[A-Za-z]{2}$",
+        strict=True,
+        description="ISO 639-1 two-letter language code",
     )

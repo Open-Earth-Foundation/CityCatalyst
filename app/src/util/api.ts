@@ -20,8 +20,14 @@ import { Organization } from "@/models/Organization";
 import { Roles } from "@/util/types";
 import jwt from "jsonwebtoken";
 import { FeatureFlags, hasFeatureFlag } from "./feature-flags";
+import { RateLimiter } from "./rate-limiter";
 import { OAuthClient } from "@/models/OAuthClient";
 import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
+
+// Rate limiting configuration
+// Skip during Playwright runs via feature flag to avoid hitting limits
+const isPlaywrightTest = process.env.PLAYWRIGHT_TEST === "1";
+const apiLimiter = isPlaywrightTest ? null : new RateLimiter(60 * 1000, 60);
 
 export type ApiResponse = NextResponse | StreamingTextResponse;
 
@@ -249,6 +255,23 @@ export function apiHandler(handler: NextHandler) {
           req.headers,
         ).span
       : null;
+
+    // Apply rate limiting (disabled during tests)
+    if (apiLimiter) {
+      const clientIp =
+        (req.headers.get("x-forwarded-for") as string)?.split(",")[0]?.trim() ||
+        (req.headers.get("x-real-ip") as string) ||
+        "unknown";
+
+      const allowed = apiLimiter.checkLimit(clientIp);
+
+      if (!allowed) {
+        return NextResponse.json(
+          { error: { message: "Too many requests, please try again later." } },
+          { status: 429 },
+        );
+      }
+    }
 
     try {
       if (!db.initialized) {

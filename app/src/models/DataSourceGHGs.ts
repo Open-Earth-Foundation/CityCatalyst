@@ -25,24 +25,24 @@ export class DataSourceGHGs
   extends Model<DataSourceGHGsAttributes, DataSourceGHGsCreationAttributes>
   implements Partial<DataSourceGHGsAttributes>
 {
-  datasourceId!: string;
-  ghgId!: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare datasourceId: string;
+  declare ghgId: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // DataSourceGHGs belongsTo DataSource via datasourceId
-  datasource!: DataSource;
-  getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
-  setDatasource!: Sequelize.BelongsToSetAssociationMixin<
+  declare datasource: DataSource;
+  declare getDatasource: Sequelize.BelongsToGetAssociationMixin<DataSource>;
+  declare setDatasource: Sequelize.BelongsToSetAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  createDatasource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
+  declare createDatasource: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
   // DataSourceGHGs belongsTo GHGs via ghgId
-  ghg!: GHGs;
-  getGhg!: Sequelize.BelongsToGetAssociationMixin<GHGs>;
-  setGhg!: Sequelize.BelongsToSetAssociationMixin<GHGs, GHGsId>;
-  createGhg!: Sequelize.BelongsToCreateAssociationMixin<GHGs>;
+  declare ghg: GHGs;
+  declare getGhg: Sequelize.BelongsToGetAssociationMixin<GHGs>;
+  declare setGhg: Sequelize.BelongsToSetAssociationMixin<GHGs, GHGsId>;
+  declare createGhg: Sequelize.BelongsToCreateAssociationMixin<GHGs>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof DataSourceGHGs {
     return DataSourceGHGs.init(

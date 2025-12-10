@@ -24,17 +24,17 @@ export class HighImpactActionRanking
   extends Model<HighImpactActionRankingAttributes, HighImpactActionRankingCreationAttributes>
   implements HighImpactActionRankingAttributes
 {
-  id!: string;
-  locode!: string;
-  inventoryId!: string;
-  type!: ACTION_TYPES;
-  langs!: string[];
-  created?: Date;
-  lastUpdated?: Date;
-  jobId?: string | null;
-  status?: HighImpactActionRankingStatus;
-  errorMessage?: string | null;
-  isBulk?: boolean;
+  declare id: string;
+  declare locode: string;
+  declare inventoryId: string;
+  declare type: ACTION_TYPES;
+  declare langs: string[];
+  declare created?: Date;
+  declare lastUpdated?: Date;
+  declare jobId?: string | null;
+  declare status?: HighImpactActionRankingStatus;
+  declare errorMessage?: string | null;
+  declare isBulk?: boolean;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof HighImpactActionRanking {
     return HighImpactActionRanking.init(

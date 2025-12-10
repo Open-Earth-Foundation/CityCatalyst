@@ -1255,6 +1255,7 @@
   "percentage": "Percentage",
   "go-to-source": "Go to source",
   "calculated-emission-values-too-large": "Calculated emission values are too large to store. Please reduce your activity amounts or emission factors to avoid overflow.",
+  "incompatible-unit-conversion-solid-fuels": "Cannot convert between volume and mass units for solid fuels without density information. Please use mass units (kg, tonnes, pounds) for solid fuel emission factors.",
   "invalid-request": "Invalid Request",
   "emission-factor-too-large": "Emission factor cannot exceed {{max}}. Please enter a smaller value.",
   "emission-factor-required": "Emission factor required",

@@ -57,5 +57,13 @@
   "impact-sea-level-rise-general": "O aumento gradual do nível do mar representa ameaças de longo prazo para as comunidades costeiras e infraestruturas.",
   "impact-general-default": "Este perigo representa riscos significativos para o setor afetado, exigindo medidas de adaptação direcionadas.",
   "your-city": "Sua Cidade",
-  "see-full-risk-results": "Ver todos os resultados da avaliação de riscos"
+  "see-full-risk-results": "Ver todos os resultados da avaliação de riscos",
+  "hazard-heatwaves": "Ondas de Calor",
+  "hazard-diseases": "Doenças",
+  "hazard-landslides": "Deslizamentos de terra",
+  "sector-public-health": "Saúde Pública",
+  "sector-food-security": "Segurança Alimentar",
+  "sector-water-resources": "Recursos Hídricos",
+  "sector-energy-security": "Segurança Energética",
+  "sector-biodiversity": "Biodiversidade"
 }

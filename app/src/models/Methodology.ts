@@ -36,100 +36,100 @@ export class Methodology
   extends Model<MethodologyAttributes, MethodologyCreationAttributes>
   implements Partial<MethodologyAttributes>
 {
-  methodologyId!: string;
-  methodology?: string;
-  methodologyUrl?: string;
-  datasourceId?: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare methodologyId: string;
+  declare methodology?: string;
+  declare methodologyUrl?: string;
+  declare datasourceId?: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // Methodology belongsTo DataSource via datasourceId
-  datasource!: DataSource;
-  getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
-  setDatasource!: Sequelize.BelongsToSetAssociationMixin<
+  declare datasource: DataSource;
+  declare getDatasource: Sequelize.BelongsToGetAssociationMixin<DataSource>;
+  declare setDatasource: Sequelize.BelongsToSetAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  createDatasource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
+  declare createDatasource: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
   // Methodology belongsToMany DataSource via methodologyId and datasourceId
-  datasourceIdDataSourceDataSourceMethodologies!: DataSource[];
-  getDatasourceIdDataSourceDataSourceMethodologies!: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
-  setDatasourceIdDataSourceDataSourceMethodologies!: Sequelize.BelongsToManySetAssociationsMixin<
+  declare datasourceIdDataSourceDataSourceMethodologies: DataSource[];
+  declare getDatasourceIdDataSourceDataSourceMethodologies: Sequelize.BelongsToManyGetAssociationsMixin<DataSource>;
+  declare setDatasourceIdDataSourceDataSourceMethodologies: Sequelize.BelongsToManySetAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  addDatasourceIdDataSourceDataSourceMethodology!: Sequelize.BelongsToManyAddAssociationMixin<
+  declare addDatasourceIdDataSourceDataSourceMethodology: Sequelize.BelongsToManyAddAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  addDatasourceIdDataSourceDataSourceMethodologies!: Sequelize.BelongsToManyAddAssociationsMixin<
+  declare addDatasourceIdDataSourceDataSourceMethodologies: Sequelize.BelongsToManyAddAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  createDatasourceIdDataSourceDataSourceMethodology!: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
-  removeDatasourceIdDataSourceDataSourceMethodology!: Sequelize.BelongsToManyRemoveAssociationMixin<
+  declare createDatasourceIdDataSourceDataSourceMethodology: Sequelize.BelongsToManyCreateAssociationMixin<DataSource>;
+  declare removeDatasourceIdDataSourceDataSourceMethodology: Sequelize.BelongsToManyRemoveAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  removeDatasourceIdDataSourceDataSourceMethodologies!: Sequelize.BelongsToManyRemoveAssociationsMixin<
+  declare removeDatasourceIdDataSourceDataSourceMethodologies: Sequelize.BelongsToManyRemoveAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  hasDatasourceIdDataSourceDataSourceMethodology!: Sequelize.BelongsToManyHasAssociationMixin<
+  declare hasDatasourceIdDataSourceDataSourceMethodology: Sequelize.BelongsToManyHasAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  hasDatasourceIdDataSourceDataSourceMethodologies!: Sequelize.BelongsToManyHasAssociationsMixin<
+  declare hasDatasourceIdDataSourceDataSourceMethodologies: Sequelize.BelongsToManyHasAssociationsMixin<
     DataSource,
     DataSourceId
   >;
-  countDatasourceIdDataSourceDataSourceMethodologies!: Sequelize.BelongsToManyCountAssociationsMixin;
+  declare countDatasourceIdDataSourceDataSourceMethodologies: Sequelize.BelongsToManyCountAssociationsMixin;
   // Methodology hasMany DataSourceMethodology via methodologyId
-  dataSourceMethodologies!: DataSourceMethodology[];
-  getDataSourceMethodologies!: Sequelize.HasManyGetAssociationsMixin<DataSourceMethodology>;
-  setDataSourceMethodologies!: Sequelize.HasManySetAssociationsMixin<
+  declare dataSourceMethodologies: DataSourceMethodology[];
+  declare getDataSourceMethodologies: Sequelize.HasManyGetAssociationsMixin<DataSourceMethodology>;
+  declare setDataSourceMethodologies: Sequelize.HasManySetAssociationsMixin<
     DataSourceMethodology,
     DataSourceMethodologyId
   >;
-  addDataSourceMethodology!: Sequelize.HasManyAddAssociationMixin<
+  declare addDataSourceMethodology: Sequelize.HasManyAddAssociationMixin<
     DataSourceMethodology,
     DataSourceMethodologyId
   >;
-  addDataSourceMethodologies!: Sequelize.HasManyAddAssociationsMixin<
+  declare addDataSourceMethodologies: Sequelize.HasManyAddAssociationsMixin<
     DataSourceMethodology,
     DataSourceMethodologyId
   >;
-  createDataSourceMethodology!: Sequelize.HasManyCreateAssociationMixin<DataSourceMethodology>;
-  removeDataSourceMethodology!: Sequelize.HasManyRemoveAssociationMixin<
+  declare createDataSourceMethodology: Sequelize.HasManyCreateAssociationMixin<DataSourceMethodology>;
+  declare removeDataSourceMethodology: Sequelize.HasManyRemoveAssociationMixin<
     DataSourceMethodology,
     DataSourceMethodologyId
   >;
-  removeDataSourceMethodologies!: Sequelize.HasManyRemoveAssociationsMixin<
+  declare removeDataSourceMethodologies: Sequelize.HasManyRemoveAssociationsMixin<
     DataSourceMethodology,
     DataSourceMethodologyId
   >;
-  hasDataSourceMethodology!: Sequelize.HasManyHasAssociationMixin<
+  declare hasDataSourceMethodology: Sequelize.HasManyHasAssociationMixin<
     DataSourceMethodology,
     DataSourceMethodologyId
   >;
-  hasDataSourceMethodologies!: Sequelize.HasManyHasAssociationsMixin<
+  declare hasDataSourceMethodologies: Sequelize.HasManyHasAssociationsMixin<
     DataSourceMethodology,
     DataSourceMethodologyId
   >;
-  countDataSourceMethodologies!: Sequelize.HasManyCountAssociationsMixin;
+  declare countDataSourceMethodologies: Sequelize.HasManyCountAssociationsMixin;
 
   // EmissionsFactor belongsTo Methodology via methodologyId
-  getEmissionsFactors!: Sequelize.HasManyGetAssociationsMixin<EmissionsFactor>;
-  addEmissionsFactor!: Sequelize.HasManyAddAssociationMixin<
+  declare getEmissionsFactors: Sequelize.HasManyGetAssociationsMixin<EmissionsFactor>;
+  declare addEmissionsFactor: Sequelize.HasManyAddAssociationMixin<
     EmissionsFactor,
     number
   >;
-  hasEmissionsFactor!: Sequelize.HasManyHasAssociationMixin<
+  declare hasEmissionsFactor: Sequelize.HasManyHasAssociationMixin<
     EmissionsFactor,
     number
   >;
-  countEmissionsFactors!: Sequelize.HasManyCountAssociationsMixin;
-  createEmissionsFactor!: Sequelize.HasManyCreateAssociationMixin<EmissionsFactor>;
+  declare countEmissionsFactors: Sequelize.HasManyCountAssociationsMixin;
+  declare createEmissionsFactor: Sequelize.HasManyCreateAssociationMixin<EmissionsFactor>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Methodology {
     return Methodology.init(

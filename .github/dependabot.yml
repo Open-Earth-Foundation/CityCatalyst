@@ -10,18 +10,26 @@ updates:
     directory: "/app" # Location of package manifests
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
   # ── Global API (pip)
   - package-ecosystem: "pip"
     directory: "global-api"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
   # ── HIAP (uv)
   - package-ecosystem: "uv"
     directory: "/hiap"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
   # ── Climate Advisor (pip)
   - package-ecosystem: "pip"
     directory: "/climate-advisor"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7

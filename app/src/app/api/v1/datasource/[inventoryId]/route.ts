@@ -4,7 +4,7 @@
  *   get:
  *     tags:
  *       - Data Sources
- *     operationId: getDatasourceInventoryid
+ *     operationId: getDatasourceInventoryId
  *     summary: List applicable data sources and fetched data for an inventory.
  *     description: Finds candidate sources for the inventory, filters by applicability, and fetches data (including population scaling). No explicit authentication is enforced here in code; adjust middleware if needed. Returns { data: successfulSources[], removedSources, failedSources }.
  *     parameters:

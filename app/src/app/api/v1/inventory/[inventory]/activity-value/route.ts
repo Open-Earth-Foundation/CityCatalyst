@@ -4,7 +4,7 @@
  *   post:
  *     tags:
  *       - Inventory Activity
- *     operationId: postInventoryInventoryActivityvalue
+ *     operationId: postInventoryInventoryActivityValue
  *     summary: Create an activity value (edit access).
  *     description: Creates an activity and associated inventory/gas values as needed. Requires a signed‑in user with edit access to the inventory. Returns a success flag and the created value in { success, data }.
  *     parameters:

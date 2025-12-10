@@ -4,6 +4,7 @@
  *   patch:
  *     tags:
  *       - Organizations
+ *     operationId: patchOrganizationRole
  *     summary: Promote a user to organization admin or invite by email
  *     parameters:
  *       - in: path

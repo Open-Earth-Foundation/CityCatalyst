@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - User
+ *     operationId: getUserCitiesIdResults
  *     summary: Get year‑over‑year emissions results for a user’s city.
  *     parameters:
  *       - in: path

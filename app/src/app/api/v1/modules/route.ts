@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - Modules
+ *     operationId: getModules
  *     summary: List all available modules with localized metadata.
  *     description: Public endpoint that retrieves every configured module record. No authentication is required. Response is wrapped in '{' data: Module[] '}' including localized fields.
  *     responses:

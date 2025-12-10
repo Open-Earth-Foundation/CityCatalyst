@@ -4,6 +4,7 @@
  *   post:
  *     tags:
  *       - Emissions Factors
+ *     operationId: postEmissionsFactor
  *     summary: Query emissions factors filtered by location, methodology, and metadata.
  *     description: Looks up emissions factors by reference number, methodology, and optional metadata, deriving location context from either an inventoryId or a regionLocode. Public endpoint (no authentication enforced) in current implementation. Returns results wrapped in { data: EmissionsFactor[] }.
  *     requestBody:

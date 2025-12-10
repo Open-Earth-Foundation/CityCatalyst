@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - Sector
+ *     operationId: getSectorSectorIdRequiredScopes
  *     summary: List required GPC scopes for a sector.
  *     description: Returns the distinct scope names used by subcategories within the sector. Public endpoint (no authentication enforced). Response is wrapped in '{' data: { requiredScopes: string[] } '}'.
  *     parameters:

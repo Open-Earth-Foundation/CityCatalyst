@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - Assistants Files
+ *     operationId: getAssistantsFilesFileId
  *     summary: Retrieve metadata for an Assistant file by ID.
  *     description: Fetches an OpenAI File object by its ID using the Assistant client. Requires a signed-in user; no elevated role is needed. Use this to inspect file metadata referenced by a thread.
  *     parameters:

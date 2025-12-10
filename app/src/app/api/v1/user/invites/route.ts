@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - User Invites
+ *     operationId: getUserInvites
  *     summary: List city invites sent by current user
  *     responses:
  *       200:
@@ -74,6 +75,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
  *   post:
  *     tags:
  *       - User Invites
+ *     operationId: postUserInvites
  *     summary: Invite users to multiple cities
  *     requestBody:
  *       required: true

@@ -4,6 +4,7 @@
  *   post:
  *     tags:
  *       - Organization Projects
+ *     operationId: postOrganizationProjects
  *     summary: Create a new project in the organization (admin only).
  *     description: Creates a project with a name and cityCountLimit and notifies organization admins. Requires an admin session. Response is the created project (not wrapped).
  *     parameters:
@@ -109,6 +110,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
  *   get:
  *     tags:
  *       - Organization Projects
+ *     operationId: getOrganizationProjects
  *     summary: List projects for an organization visible to the current user.
  *     description: Returns the projects in the organization filtered by the user’s access (admin, org admin, project admin, or city membership). Requires a signed‑in session. Response is a JSON array or context object (not wrapped).
  *     parameters:

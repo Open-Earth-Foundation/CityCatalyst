@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - City Modules
+ *     operationId: getCityModulesGhgiDashboard
  *     summary: Get Greenhouse Gas Inventory (GHGI) dashboard data for a city inventory
  *     parameters:
  *       - in: path

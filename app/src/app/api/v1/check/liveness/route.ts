@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - Check
+ *     operationId: getCheckLiveness
  *     summary: Report liveness status and version.
  *     description: Public endpoint that reports if the service process is responsive and includes the version string. Does not require authentication. Use it for container/process liveness checks.
  *     responses:

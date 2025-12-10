@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - Inventory Values
+ *     operationId: getInventoryValueSubsector
  *     summary: List inventory values for a subsector
  *     parameters:
  *       - in: path
@@ -64,6 +65,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  *   patch:
  *     tags:
  *       - Inventory Values
+ *     operationId: patchInventoryValueSubsector
  *     summary: Upsert inventory value in a subsector by GPC reference number
  *     parameters:
  *       - in: path
@@ -173,6 +175,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
  *   delete:
  *     tags:
  *       - Inventory Values
+ *     operationId: deleteInventoryValueSubsector
  *     summary: Delete inventory value for a subsector
  *     parameters:
  *       - in: path

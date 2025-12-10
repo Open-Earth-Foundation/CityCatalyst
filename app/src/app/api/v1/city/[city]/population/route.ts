@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - City Population
+ *     operationId: getCityPopulation
  *     summary: Get most recent population data for a specific city
  *     parameters:
  *       - in: path
@@ -27,6 +28,7 @@
  *   post:
  *     tags:
  *       - City Population
+ *     operationId: postCityPopulation
  *     summary: Upsert population values for a city
  *     parameters:
  *       - in: path

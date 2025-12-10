@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - Inventory Results
+ *     operationId: getInventoryResults
  *     summary: Get emissions totals by sector and top emitters for an inventory.
  *     description: Computes the inventory's total emissions and top sub-sector emitters. Requires a signed‑in user with access to the inventory. Response is wrapped in '{' data: { totalEmissions, topEmissions } '}'.
  *     parameters:

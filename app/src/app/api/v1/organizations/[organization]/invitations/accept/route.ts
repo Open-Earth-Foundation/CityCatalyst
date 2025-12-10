@@ -4,6 +4,7 @@
  *   patch:
  *     tags:
  *       - Organization Invitations
+ *     operationId: patchOrganizationInvitationsAccept
  *     summary: Accept organization admin invitation
  *     parameters:
  *       - in: path

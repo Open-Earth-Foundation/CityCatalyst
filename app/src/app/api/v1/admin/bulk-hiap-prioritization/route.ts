@@ -34,6 +34,7 @@ const bulkPrioritizationSchema = z.object({
  *   get:
  *     tags:
  *       - Admin
+ *     operationId: getBulkHiapPrioritizationStatus
  *     summary: Get batch status for bulk HIAP prioritization
  *     description: Returns status of all batches for a project, grouped by jobId
  *     parameters:
@@ -105,6 +106,7 @@ export const GET = apiHandler(async (req: NextRequest, { session, searchParams }
  *   post:
  *     tags:
  *       - Admin
+ *     operationId: startBulkHiapPrioritization
  *     summary: Start HIAP prioritization for all cities in a project
  *     description: Starts HIAP prioritization jobs for all cities in a project that have inventories for the specified year
  *     requestBody:
@@ -222,6 +224,7 @@ const retrySchema = z.object({
  *   patch:
  *     tags:
  *       - Admin
+ *     operationId: retryBulkHiapPrioritization
  *     summary: Retry failed HIAP prioritization batches
  *     description: Resets failed rankings back to TO_DO status so they can be reprocessed by the cron job. Can exclude specific cities that are causing failures.
  *     requestBody:
@@ -325,6 +328,7 @@ const unexcludeSchema = z.object({
  *   put:
  *     tags:
  *       - Admin
+ *     operationId: unexcludeHiapCities
  *     summary: Un-exclude cities from HIAP prioritization
  *     description: Moves excluded cities back to TO_DO status so they can be retried
  *     requestBody:

@@ -4,6 +4,7 @@
  *   post:
  *     tags:
  *       - Chat
+ *     operationId: postChatInventory
  *     summary: Stream chat responses grounded in a specific inventory context.
  *     description: Uses either OpenAI or HuggingFace models to generate a streamed response, prepending inventory context derived from the city and its population data. Requires a signed‑in user with access to the target inventory; unauthorized users receive 401/404. The response is a text/event-stream of incremental tokens/events, not a JSON object.
  *     parameters:

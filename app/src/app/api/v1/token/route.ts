@@ -4,6 +4,7 @@
  *   post:
  *     tags:
  *       - Auth
+ *     operationId: postToken
  *     summary: Exchange an authorization code for access and refresh tokens (OAuth 2.0 PKCE).
  *     description: Accepts a short‑lived authorization code issued by the server and returns a bearer access token plus a refresh token. Requires the OAUTH_ENABLED feature flag and the content type application/x-www-form-urlencoded; no user session is required for this exchange. Validates client_id/redirect_uri, token issuer/audience, single‑use code, and PKCE S256 challenge.
  *     requestBody:

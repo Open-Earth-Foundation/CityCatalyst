@@ -16,7 +16,6 @@ import React, { useEffect, useMemo, useState, use } from "react";
 import { useTranslation } from "@/i18n/client";
 import { useFuzzySearch } from "@/hooks/useFuzzySearch";
 import {
-  api,
   useGetOrganizationQuery,
   useGetProjectsQuery,
   useGetProjectUsersQuery,
@@ -30,11 +29,9 @@ import {
   AccordionRoot,
 } from "@/components/ui/accordion";
 import { InputGroup } from "@/components/ui/input-group";
-import { convertKgToTonnes } from "@/util/helpers";
 import { LuChevronDown } from "react-icons/lu";
 import DataTable from "@/components/ui/data-table";
 import {
-  InviteStatus,
   OrganizationRole,
   ProjectUserResponse,
   ProjectWithCities,
@@ -45,7 +42,7 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
-import { RiDeleteBin6Line, RiEditLine } from "react-icons/ri";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import { Tag } from "@/components/ui/tag";
 import AddCollaboratorsModal from "@/components/GHGIHomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { uniqBy } from "lodash";

@@ -23,7 +23,7 @@ function generateOpenAPISpec() {
         openapi: "3.0.0",
         info: {
           title: "CityCatalyst API",
-          version: "0.1.0",
+          version: packageInfo.version,
           description:
             "CityCatalyst API for managing greenhouse gas inventories, city data, and climate action planning",
           contact: {

@@ -53,7 +53,9 @@ function generateOpenAPISpec() {
     fs.writeFileSync(outputPath, JSON.stringify(spec, null, 2));
 
     console.log(`✅ OpenAPI spec generated: ${outputPath}`);
-    console.log(`📊 Found ${Object.keys(spec.paths || {}).length} API endpoints`);
+    console.log(
+      `📊 Found ${Object.keys(spec.paths || {}).length} API endpoints`,
+    );
 
     return spec;
   } catch (error) {
@@ -74,11 +76,11 @@ function setupBuildHook(options) {
 const nextConfig = {
   trailingSlash: true,
   serverExternalPackages: ["sequelize"],
+  turbopack: {
+    rules: {},
+  },
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
-    turbo: {
-      rules: {},
-    },
   },
   webpack: (config, options) => {
     setupBuildHook(options);

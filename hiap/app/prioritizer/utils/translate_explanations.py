@@ -1,98 +1,166 @@
-import os
 import json
-import glob
+import logging
+import os
+from typing import Any, Dict, Optional, Type, cast
+
+from dotenv import load_dotenv
+from langsmith import traceable
+from langsmith.wrappers import wrap_openai
 from openai import OpenAI
-import sys
+from pydantic import BaseModel, create_model
 
-# Debug: Print execution context to verify the script is running
-import os as _os
-print(f"[script start] __name__={__name__}, file={__file__}, cwd={_os.getcwd()}")
+from prioritizer.models import Explanation
+from utils.logging_config import setup_logger
 
-sys.stdout.write("=== DEBUG LOG: translate_explanations.py loaded ===\n")
-sys.stdout.flush()
+load_dotenv()
+setup_logger()
+logger = logging.getLogger(__name__)
 
-print("DEBUG: translate_explanations starting...")
-import dotenv
-dotenv.load_dotenv()
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise ValueError("OPENAI_API_KEY is not set")
 
-# Initialize OpenAI client with API key
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION = os.getenv(
+    "OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION"
+)
+if not OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION:
+    raise ValueError("OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION is not set")
 
-# Determine project root and data directory
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.dirname(SCRIPT_DIR)
-DATA_DIR = os.path.join(ROOT_DIR, 'data', 'frontend')
+LANGCHAIN_PROJECT_NAME_PRIORITIZER = os.getenv("LANGCHAIN_PROJECT_NAME_PRIORITIZER")
+if not LANGCHAIN_PROJECT_NAME_PRIORITIZER:
+    raise ValueError("LANGCHAIN_PROJECT_NAME_PRIORITIZER is not set")
 
-def translate_text(text: str, target_lang: str, model: str = 'gpt-4.1') -> str:
-    """Translate given text into the target language using OpenAI GPT-4.1"""
-    print(f"[translate_text] Translating to {target_lang}: {text[:60]}...")
-    messages = [
-        {'role': 'system', 'content': 'You are an expert translator.'},
-        {'role': 'user', 'content': f"Please translate the following text to {target_lang}:"},
-        {'role': 'user', 'content': text}
-    ]
+
+def _get_openai_timeout_seconds() -> float:
     try:
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            temperature=0
-        )
-    except Exception as e:
-        print(f"[translate_text] Error during translation: {e}")
-        return text
-    translated = response.choices[0].message.content.strip()
-    print(f"[translate_text] Result: {translated[:60]}...")
-    return translated
+        return float(os.getenv("OPENAI_TIMEOUT_SECONDS", "60"))
+    except Exception:
+        return 60.0
 
 
-def translate_file_explanations(file_path: str):
-    """Load JSON file, translate each 'explanation' entry, and overwrite with translation."""
-    print(f"[translate_file_explanations] Processing {file_path}")
-    # Determine language from filename suffix
-    if file_path.endswith('_es.json'):
-        target_lang = 'Spanish'
-    elif file_path.endswith('_pt.json'):
-        target_lang = 'Portuguese'
-    else:
-        return
+def _get_openai_max_retries() -> int:
+    try:
+        return int(os.getenv("OPENAI_MAX_RETRIES", "3"))
+    except Exception:
+        return 3
+
+
+openai_client = wrap_openai(
+    OpenAI(
+        api_key=OPENAI_API_KEY,
+        timeout=_get_openai_timeout_seconds(),
+        max_retries=_get_openai_max_retries(),
+    )
+)
+
+
+def _build_translation_model(language_codes: list[str]) -> Type[BaseModel]:
+    """
+    Build a dynamic Pydantic schema with one required string field per target language.
+
+    The model is created on the fly so that its fields exactly match the requested
+    target languages and nothing else. This is important for the OpenAI
+    `response_format` parameter: it tells the model to return JSON that has *only*
+    these keys and validates that all of them are present.
+
+    Example
+    -------
+    If ``language_codes = ["en", "de", "fr"]``, this function is roughly equivalent to
+
+        class ExplanationTranslation(BaseModel):
+            en: str
+            de: str
+            fr: str
+
+    which ensures that the LLM must output a JSON object with the keys
+    ``"en"``, ``"de"``, and ``"fr"`` filled with translated text.
+    """
+    fields: Dict[str, tuple[type, Any]] = {code: (str, ...) for code in language_codes}
+    model = create_model("ExplanationTranslation", **fields)
+    return cast(Type[BaseModel], model)
+
+
+TRANSLATION_SYSTEM_PROMPT = (
+    "You are an expert climate policy translator. Translate the provided explanation "
+    "from {source_language} into each requested language. Return ONLY JSON that matches "
+    "the provided schema, filling every language key with natural, fluent text."
+)
+
+
+@traceable(run_type="llm", project_name=LANGCHAIN_PROJECT_NAME_PRIORITIZER)
+def translate_explanation_text(
+    explanation_text: str,
+    source_language: str,
+    target_languages: list[str],
+) -> Optional[Explanation]:
+    """
+    Translate an existing explanation text from source_language into target_languages.
+    """
+    if not explanation_text.strip():
+        logger.warning("translate_explanation_text received empty explanation text.")
+        return None
+
+    TranslationModel = _build_translation_model(target_languages)
+    system_prompt = TRANSLATION_SYSTEM_PROMPT.format(source_language=source_language)
+
+    # Chat completions expect message content to be a string or structured list, so we
+    # serialize the payload to JSON. This is stable and safe to reuse across attempts.
+    user_payload = json.dumps(
+        {
+            "source_language": source_language,
+            "target_languages": target_languages,
+            "text": explanation_text,
+        },
+        ensure_ascii=False,
+    )
+
+    # We perform a *small*, explicit retry loop only for the case where the parsed
+    # message is not an instance of `TranslationModel`. Low-level transport/API
+    # retries are still handled by the OpenAI client configuration itself.
+    max_attempts = 2
 
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-    except Exception as e:
-        print(f"[translate_file_explanations] Failed to load {file_path}: {e}")
-        return
-    print(f"[translate_file_explanations] Loaded {len(data)} entries")
+        for attempt in range(1, max_attempts + 1):
+            completion = openai_client.beta.chat.completions.parse(
+                model=OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": system_prompt,
+                    },
+                    {
+                        "role": "user",
+                        "content": user_payload,
+                    },
+                ],
+                temperature=0,
+                response_format=TranslationModel,
+                timeout=_get_openai_timeout_seconds(),
+            )
+            parsed = completion.choices[0].message.parsed
 
-    for entry in data:
-        original = entry.get('explanation')
-        if original:
-            print(f"[translate_file_explanations] Original: {original[:60]}...")
-            translated = translate_text(original, target_lang)
-            print(f"[translate_file_explanations] Translated: {translated[:60]}...")
-            entry['explanation'] = translated
+            # If parsing into the expected Pydantic model fails (wrong type), we log
+            # and, if there's another attempt left, try again. Exceptions are *not*
+            # retried here; they are handled by the surrounding except block.
+            if isinstance(parsed, TranslationModel):
+                return Explanation(explanations=parsed.model_dump())
 
-    # Write translated data back to the same file
-    try:
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        print(f"[translate_file_explanations] Wrote updated data to {file_path}")
-    except Exception as e:
-        print(f"[translate_file_explanations] Failed to write {file_path}: {e}")
+            logger.warning(
+                "translate_explanation_text received unexpected payload on attempt %s: %s",
+                attempt,
+                parsed,
+            )
 
+            if attempt == max_attempts:
+                logger.error(
+                    "translate_explanation_text failed to obtain valid TranslationModel "
+                    "after %s attempts.",
+                    max_attempts,
+                )
+                return None
 
-def main():
-    # Find all files with '_es.json' or '_pt.json' in the frontend data directory
-    pattern_es = os.path.join(DATA_DIR, '*_es.json')
-    pattern_pt = os.path.join(DATA_DIR, '*_pt.json')
-    files = glob.glob(pattern_es) + glob.glob(pattern_pt)
-    print(f"[main] DATA_DIR={DATA_DIR}")
-    print(f"[main] Found {len(files)} files: {files}")
-    for file_path in files:
-        print(f'Translating explanations in {file_path}')
-        translate_file_explanations(file_path)
-
-
-if __name__ == '__main__':
-    print(f"[script __main__] __name__={__name__}")
-    main()
+        # Defensive fallback; in practice we should always have returned inside loop.
+        return None
+    except Exception as exc:
+        logger.error("Translation generation failed: %s", str(exc), exc_info=True)
+        return None

@@ -35,6 +35,18 @@
  *                 type: array
  *                 items:
  *                   type: object
+ *           examples:
+ *             example:
+ *               value:
+ *                 gasValues:
+ *                   - gas: "CO2"
+ *                     value: 1000.5
+ *                 inventoryValueId: "550e8400-e29b-41d4-a716-446655440000"
+ *                 inventoryValue:
+ *                   gpcReferenceNumber: "1.1.1"
+ *                   value: 50000
+ *                   inputMethodology: "550e8400-e29b-41d4-a716-446655440001"
+ *                   subCategoryId: "550e8400-e29b-41d4-a716-446655440002"
  *     responses:
  *       200:
  *         description: Success flag and created value.
@@ -87,17 +99,6 @@
  *                   description: Created activity value with all properties
  *       400:
  *         description: Invalid data.
- *     examples:
- *       application/json:
- *         gasValues:
- *           - gas: "CO2"
- *             value: 1000.5
- *         inventoryValueId: "550e8400-e29b-41d4-a716-446655440000"
- *         inventoryValue:
- *           gpcReferenceNumber: "1.1.1"
- *           value: 50000
- *           inputMethodology: "550e8400-e29b-41d4-a716-446655440001"
- *           subCategoryId: "550e8400-e29b-41d4-a716-446655440002"
  * */
 import ActivityService from "@/backend/ActivityService";
 import { PermissionService } from "@/backend/permissions";

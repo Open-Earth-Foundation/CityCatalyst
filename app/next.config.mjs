@@ -23,8 +23,28 @@ function generateOpenAPISpec() {
         openapi: "3.0.0",
         info: {
           title: "CityCatalyst API",
-          version: "0.1.0",
+          version: packageInfo.version,
+          description:
+            "CityCatalyst API for managing greenhouse gas inventories, city data, and climate action planning",
+          contact: {
+            name: "CityCatalyst Support",
+            email: "info@openearth.org",
+          },
         },
+        servers: [
+          {
+            url: "https://citycatalyst.io/",
+            description: "Production",
+          },
+          {
+            url: "https://citycatalyst.openearth.dev/",
+            description: "Development",
+          },
+          {
+            url: "https://citycatalyst-test.openearth.dev/",
+            description: "Test",
+          },
+        ],
         components: {
           securitySchemes: {
             BearerAuth: {

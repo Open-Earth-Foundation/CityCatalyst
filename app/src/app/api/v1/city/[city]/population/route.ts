@@ -33,6 +33,7 @@
  *       - population
  *     operationId: postCityPopulation
  *     summary: Upsert population values for a city
+ *     description: Creates or updates population values (city, region, and country) for a specific city. Requires authentication and access to the city.
  *     parameters:
  *       - in: path
  *         name: city

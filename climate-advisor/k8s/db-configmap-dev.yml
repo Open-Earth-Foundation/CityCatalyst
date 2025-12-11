@@ -11,3 +11,6 @@ data:
   DB_NAME: "climateadvisor"
   DB_URL: "postgresql://climateadvisor:climateadvisor@dev-db-aurora.cluster-c5ipsfxjhb0m.us-east-1.rds.amazonaws.com/climateadvisor"
   CA_DATABASE_URL: "postgresql://climateadvisor:climateadvisor@dev-db-aurora.cluster-c5ipsfxjhb0m.us-east-1.rds.amazonaws.com/climateadvisor"
+  CC_BASE_URL: "https://citycatalyst.openearth.dev"
+  CA_LOG_LEVEL: "info"
+  CA_PORT: "8080"

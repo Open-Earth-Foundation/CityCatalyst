@@ -165,7 +165,12 @@ function CustomCombinedBarLayer<D extends BarDatum>({
           radius: 16,
         });
         return (
-          <g key={year}>
+          <g
+            key={year}
+            onMouseEnter={handleMouseEnter}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          >
             {bars
               .filter((bar) => bar.index !== topSegment.index)
               .map((bar: any, index) => {
@@ -201,9 +206,6 @@ function CustomCombinedBarLayer<D extends BarDatum>({
                 pointerEvents: "all",
                 transition: "transform 0.3s ease, fill 0.3s ease",
               }}
-              onMouseEnter={handleMouseEnter}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
             />
           </g>
         );

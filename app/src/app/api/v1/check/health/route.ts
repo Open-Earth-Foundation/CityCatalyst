@@ -3,7 +3,7 @@
  * /api/v1/check/health:
  *   get:
  *     tags:
- *       - Check
+ *       - check
  *     operationId: getCheckHealth
  *     summary: Report service health and database connectivity.
  *     description: Public endpoint that validates database connectivity and returns the service version. Does not require authentication. Use it for readiness/health probes in deployments.

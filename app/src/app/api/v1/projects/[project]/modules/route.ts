@@ -3,7 +3,8 @@
  * /api/v1/projects/{project}/modules:
  *   get:
  *     tags:
- *       - Project Modules
+ *       - project
+ *       - modules
  *     operationId: getProjectModules
  *     summary: List modules enabled for a specific project
  *     description: Retrieves all modules that have been enabled for the specified project. Returns a list of module objects with their localized metadata and configuration details. Requires authentication to access project module information.

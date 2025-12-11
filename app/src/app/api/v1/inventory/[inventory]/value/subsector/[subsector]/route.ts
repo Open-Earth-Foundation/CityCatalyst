@@ -3,7 +3,8 @@
  * /api/v1/inventory/{inventory}/value/subsector/{subsector}:
  *   get:
  *     tags:
- *       - Inventory Values
+ *       - inventory
+ *       - values
  *     operationId: getInventoryValueSubsector
  *     summary: List inventory values for a subsector
  *     parameters:
@@ -64,7 +65,8 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  * /api/v1/inventory/{inventory}/value/subsector/{subsector}:
  *   patch:
  *     tags:
- *       - Inventory Values
+ *       - inventory
+ *       - values
  *     operationId: patchInventoryValueSubsector
  *     summary: Upsert inventory value in a subsector by GPC reference number
  *     parameters:
@@ -174,7 +176,8 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
  * /api/v1/inventory/{inventory}/value/subsector/{subsector}:
  *   delete:
  *     tags:
- *       - Inventory Values
+ *       - inventory
+ *       - values
  *     operationId: deleteInventoryValueSubsector
  *     summary: Delete inventory value for a subsector
  *     parameters:

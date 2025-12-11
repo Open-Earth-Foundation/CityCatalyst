@@ -11,7 +11,8 @@ import { Client } from "@/util/types";
  * /api/v1/client/{client}:
  *   get:
  *     tags:
- *       - OAuth Clients
+ *       - oauth
+ *       - clients
  *     operationId: getClient
  *     summary: Get a single OAuth client by ID with localized metadata.
  *     description: Fetches a client and merges its i18n name/description entries by language. Requires a signed‑in session and OAUTH_ENABLED. Response is wrapped in '{' data '}'.
@@ -108,7 +109,8 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  * /api/v1/client/{client}:
  *   delete:
  *     tags:
- *       - OAuth Clients
+ *       - oauth
+ *       - clients
  *     operationId: deleteClient
  *     summary: Delete an OAuth client by ID.
  *     description: Permanently removes a client record. Requires a signed‑in session and OAUTH_ENABLED. Returns 204 with no body on success.

@@ -3,7 +3,8 @@
  * /api/v1/inventory/{inventory}/download:
  *   get:
  *     tags:
- *       - Inventory Download
+ *       - inventory
+ *       - download
  *     operationId: getInventoryDownload
  *     summary: Download inventory data
  *     description: Downloads inventory data in various formats. If `format` is omitted or `json`, returns JSON. Other formats stream binary.

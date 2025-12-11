@@ -6,7 +6,7 @@
  *     summary: Get inventory details by ID
  *     description: Returns inventory details including total emissions for the specified inventory ID. If 'default' is provided, returns the user's default inventory.
  *     tags:
- *       - Inventory
+ *       - inventory
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -92,7 +92,7 @@ export const GET = apiHandler(async (req, { session, params }) => {
  *     summary: Delete an inventory by ID
  *     description: Deletes the specified inventory. Only users with ORG_ADMIN permission can delete inventories.
  *     tags:
- *       - Inventory
+ *       - inventory
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -138,7 +138,7 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
  *     summary: Update inventory details
  *     description: Updates the specified inventory. Only users with edit permission can update inventories.
  *     tags:
- *       - Inventory
+ *       - inventory
  *     parameters:
  *       - in: path
  *         name: inventory

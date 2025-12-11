@@ -3,7 +3,7 @@
  * /api/v1/auth/code:
  *   post:
  *     tags:
- *       - Auth
+ *       - auth
  *     operationId: postAuthCode
  *     summary: Issue a short‑lived OAuth authorization code for the current user.
  *     description: Validates the OAuth client credentials and CSRF token, then generates a signed JWT authorization code using PKCE for enhanced security. The code is valid for 5 minutes and must be exchanged for tokens immediately. Requires an authenticated user session and the OAUTH_ENABLED feature flag. Use this endpoint as part of the OAuth 2.0 Authorization Code flow before exchanging the code for access tokens at `/api/v1/token`.

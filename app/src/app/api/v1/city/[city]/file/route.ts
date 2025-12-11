@@ -3,7 +3,8 @@
  * /api/v1/city/{city}/file:
  *   get:
  *     tags:
- *       - City Files
+ *       - city
+         - files
  *     operationId: getCityFiles
  *     summary: List uploaded files for a city.
  *     description: Returns metadata for files users have uploaded to the specified city, including derived size/type info. Requires a signed‑in session; unauthorized users receive 401. Response is wrapped in data object.
@@ -126,7 +127,8 @@ export const GET = apiHandler(async (_req: Request, context) => {
  * /api/v1/city/{city}/file:
  *   post:
  *     tags:
- *       - City Files
+ *       - city
+         - files
  *     operationId: postCityFile
  *     summary: Upload a file for a city to attach to inventory data.
  *     description: Accepts multipart/form-data to upload and register a file with sector/scopes metadata. Requires a signed‑in session and the UPLOAD_OWN_DATA_ENABLED feature flag. Returns the normalized file metadata in data object.

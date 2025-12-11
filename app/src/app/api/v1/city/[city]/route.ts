@@ -13,7 +13,7 @@ import { DEFAULT_PROJECT_ID } from "@/util/constants";
  * /api/v1/city/{city}:
  *   get:
  *     tags:
- *       - City
+ *       - city
  *     operationId: getCity
  *     summary: Get a single city by ID for the current user.
  *     parameters:
@@ -79,7 +79,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  * /api/v1/city/{city}:
  *   delete:
  *     tags:
- *       - City
+ *       - city
  *     operationId: deleteCity
  *     summary: Delete a city by ID for the current user.
  *     parameters:
@@ -166,7 +166,7 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
  * /api/v1/city/{city}:
  *   patch:
  *     tags:
- *       - City
+ *       - city
  *     operationId: patchCity
  *     summary: Update city fields by ID.
  *     parameters:

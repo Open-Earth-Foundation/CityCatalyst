@@ -3,7 +3,8 @@
  * /api/v1/city/{city}/file/{file}/download-file:
  *   get:
  *     tags:
- *       - City Files
+ *       - city
+ *       - files
  *     operationId: getCityFileDownloadFile
  *     summary: Download a city file by ID
  *     parameters:

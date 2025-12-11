@@ -3,7 +3,8 @@
  * /api/v1/user/clients/{client}:
  *   get:
  *     tags:
- *       - User Clients
+ *       - user
+ *       - clients
  *     operationId: getUserClientsClient
  *     summary: Get OAuth client authorization for current user
  *     parameters:
@@ -102,7 +103,8 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  * /api/v1/user/clients/{client}:
  *   delete:
  *     tags:
- *       - User Clients
+ *       - user
+ *       - clients
  *     operationId: deleteUserClientsClient
  *     summary: Revoke OAuth client authorization for current user
  *     parameters:

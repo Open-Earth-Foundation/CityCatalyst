@@ -3,7 +3,8 @@
  * /api/v1/city/{city}/population:
  *   get:
  *     tags:
- *       - City Population
+ *       - city
+ *       - population
  *     operationId: getCityPopulation
  *     summary: Get most recent population data for a specific city
  *     parameters:
@@ -27,7 +28,8 @@
  *                   description: Most recent population data for the city
  *   post:
  *     tags:
- *       - City Population
+ *       - city
+ *       - population
  *     operationId: postCityPopulation
  *     summary: Upsert population values for a city
  *     parameters:

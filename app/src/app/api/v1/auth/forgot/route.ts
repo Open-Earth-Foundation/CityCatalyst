@@ -3,7 +3,7 @@
  * /api/v1/auth/forgot:
  *   post:
  *     tags:
- *       - Auth
+ *       - auth
  *     operationId: postAuthForgot
  *     summary: Request a password reset email for a user account.
  *     description: Generates a short‑lived JWT reset token (valid for 1 hour) and sends a password reset email if the user exists. For security, this endpoint always returns 200 regardless of whether the email exists to prevent account enumeration. Requires proper email configuration and RESET_TOKEN_SECRET environment variable.

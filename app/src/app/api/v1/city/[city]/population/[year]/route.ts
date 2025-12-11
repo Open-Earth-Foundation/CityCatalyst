@@ -3,7 +3,8 @@
  * /api/v1/city/{city}/population/{year}:
  *   get:
  *     tags:
- *       - City Population
+ *       - city
+ *       - population
  *     operationId: getCityPopulationYear
  *     summary: Get population data for a specific city and year
  *     parameters:

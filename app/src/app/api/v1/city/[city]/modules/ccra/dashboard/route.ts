@@ -3,7 +3,8 @@
  * /api/v1/city/{city}/modules/ccra/dashboard:
  *   get:
  *     tags:
- *       - City Modules
+ *       - city
+ *       - modules
  *     operationId: getCityModulesCcraDashboard
  *     summary: Get Climate Change Risk Assessment (CCRA) dashboard data for a city inventory
  *     parameters:

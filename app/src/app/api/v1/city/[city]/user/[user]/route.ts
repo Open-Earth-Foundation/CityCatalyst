@@ -3,7 +3,8 @@
  * /api/v1/city/{city}/user/{user}:
  *   get:
  *     tags:
- *       - City Users
+ *       - city
+ *       - users
  *     operationId: getCityUser
  *     summary: Get a user in a city
  *     parameters:
@@ -49,7 +50,8 @@ const updateUserRequest = z.object({
  * /api/v1/city/{city}/user/{user}:
  *   patch:
  *     tags:
- *       - City Users
+ *       - city
+ *       - users
  *     operationId: patchCityUser
  *     summary: Update a user in a city
  *     parameters:
@@ -102,7 +104,8 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
  * /api/v1/city/{city}/user/{user}:
  *   delete:
  *     tags:
- *       - City Users
+ *       - city
+ *       - users
  *     operationId: deleteCityUser
  *     summary: Delete a user in a city
  *     parameters:

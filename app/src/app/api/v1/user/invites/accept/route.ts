@@ -3,7 +3,8 @@
  * /api/v1/user/invites/accept:
  *   patch:
  *     tags:
- *       - User Invites
+ *       - user
+ *       - invites
  *     operationId: patchUserInvitesAccept
  *     summary: Accept invites to join cities
  *     requestBody:

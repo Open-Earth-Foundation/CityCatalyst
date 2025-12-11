@@ -3,7 +3,7 @@
  * /api/v1/admin/update-inventories:
  *   post:
  *     tags:
- *       - Admin
+ *       - admin
  *     operationId: updateInventoriesAdmin
  *     summary: Update inventories’ population context for many cities/years.
  *     description: Regenerates population and location context for inventories that match the provided cities and years, and optionally reassigns them to a project. Requires an admin session; non-admins receive an authorization error. Use this to refresh inventory context data in bulk.

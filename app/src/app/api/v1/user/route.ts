@@ -3,7 +3,7 @@
  * /api/v1/user:
  *   get:
  *     tags:
- *       - User
+ *       - user
  *     operationId: getUser
  *     summary: Get current user info
  *     responses:
@@ -58,7 +58,7 @@ const updateUserRequest = z.object({
  * /api/v1/user:
  *   patch:
  *     tags:
- *       - User
+ *       - user
  *     operationId: patchUserDefaults
  *     summary: Update default inventory and city for current user
  *     requestBody:

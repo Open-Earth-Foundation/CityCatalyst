@@ -3,7 +3,7 @@
  * /api/v1/chat/messages:
  *   post:
  *     tags:
- *       - Chat
+ *       - chat
  *     operationId: postChatMessages
  *     summary: Send message to chat thread and stream AI response
  *     description: Sends a user message to an existing CA thread and streams the AI response back. Handles token refresh and error bubbling automatically.

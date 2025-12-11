@@ -3,7 +3,7 @@
  * /api/v1/user/{userId}:
  *   patch:
  *     tags:
- *       - User
+ *       - user
  *     operationId: patchUserProfile
  *     summary: Update a user's profile
  *     parameters:

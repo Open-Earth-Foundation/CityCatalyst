@@ -3,7 +3,8 @@
  * /api/v1/user/clients:
  *   get:
  *     tags:
- *       - User Clients
+ *       - user
+ *       - clients
  *     operationId: getUserClients
  *     summary: List OAuth client authorizations for current user
  *     responses:

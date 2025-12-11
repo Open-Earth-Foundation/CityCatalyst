@@ -3,7 +3,7 @@
  * /api/v1/auth/register:
  *   post:
  *     tags:
- *       - Auth
+ *       - auth
  *     operationId: postAuthRegister
  *     summary: Create a new user account and send a welcome email.
  *     description: Registers a user with name, email, password, and preferred language and optionally associates them to an inventory’s city. Public endpoint; no prior authentication required. Returns a minimal user object on success.

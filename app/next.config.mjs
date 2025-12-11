@@ -33,15 +33,15 @@ function generateOpenAPISpec() {
         },
         servers: [
           {
-            url: "https://citycatalyst.io/",
+            url: "https://citycatalyst.io",
             description: "Production",
           },
           {
-            url: "https://citycatalyst.openearth.dev/",
+            url: "https://citycatalyst.openearth.dev",
             description: "Development",
           },
           {
-            url: "https://citycatalyst-test.openearth.dev/",
+            url: "https://citycatalyst-test.openearth.dev",
             description: "Test",
           },
         ],

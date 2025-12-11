@@ -70,6 +70,12 @@ const bulkLocationRequest = z.object({
  *                           longitude:
  *                             type: number
  *                             description: Center longitude calculated from city boundary
+ *                         required:
+ *                           - locode
+ *                           - name
+ *                           - country
+ *                           - latitude
+ *                           - longitude
  *                       - type: object
  *                         description: Error entry for a city that failed to load
  *                         properties:
@@ -81,6 +87,9 @@ const bulkLocationRequest = z.object({
  *                             type: string
  *                             format: uuid
  *                             description: UUID of the city that failed to load
+ *                         required:
+ *                           - error
+ *                           - cityId
  *             examples:
  *               example:
  *                 value:

@@ -41,6 +41,9 @@
  *                       enum: [pending, success, failure, not_found]
  *                     rankedActions:
  *                       type: array
+ *                       items:
+ *                         type: object
+ *                         description: Ranked action item
  *                     rankingId:
  *                       type: string
  *                       format: uuid
@@ -201,7 +204,7 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
       type,
       lng,
     }, "Error checking HIAP status");
-    
+
     throw new Error(
       `Failed to check HIAP status for city ${inventory.city.locode}: ${(error as Error).message}`,
       { cause: error },

@@ -5,6 +5,7 @@
  *     tags:
  *       - ghg
  *       - inventory
+ *     operationId: getCityGhgi
  *     summary: Get GHG inventory data for a city
  *     description: Retrieves greenhouse gas inventory data for a specified city. The city parameter can be a UUID or "default" to use the user's default city.
  *     parameters:

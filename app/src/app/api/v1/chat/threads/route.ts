@@ -41,7 +41,6 @@ import { z } from "zod";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import { logger } from "@/services/logger";
-import { log } from "node:console";
 
 interface TokenResponse {
   access_token: string;

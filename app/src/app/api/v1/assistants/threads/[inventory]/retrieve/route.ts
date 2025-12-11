@@ -3,7 +3,8 @@
  * /api/v1/assistants/threads/{inventory}/retrieve:
  *   post:
  *     tags:
- *       - Assistants Threads
+ *       - assistants
+ *       - threads
  *     operationId: postAssistantsThreadsInventoryRetrieve
  *     summary: Retrieve details for an existing assistant thread.
  *     description: Looks up a thread by ID using the Assistant API. Requires a signed-in user with access to the referenced inventory. Use this to restore a thread session on page reload.

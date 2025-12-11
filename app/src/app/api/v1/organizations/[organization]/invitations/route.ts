@@ -3,7 +3,8 @@
  * /api/v1/organizations/{organization}/invitations:
  *   get:
  *     tags:
- *       - Organization Invitations
+ *       - organization
+ *       - invitations
  *     operationId: getOrganizationInvitations
  *     summary: List organization invitations
  *     parameters:
@@ -64,7 +65,8 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  * /api/v1/organizations/{organization}/invitations:
  *   post:
  *     tags:
- *       - Organization Invitations
+ *       - organization
+ *       - invitations
  *     operationId: postOrganizationInvitations
  *     summary: Invite users to an organization
  *     parameters:

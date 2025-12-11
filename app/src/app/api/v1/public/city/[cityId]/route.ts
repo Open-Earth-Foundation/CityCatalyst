@@ -3,7 +3,7 @@
  * /api/v1/public/city/{cityId}:
  *   get:
  *     tags:
- *       - Public
+ *       - public
  *     operationId: getPublicCity
  *     summary: Get public city information by ID.
  *     description: Public endpoint that returns city details only if the city has at least one public inventory. No authentication is required. Response is wrapped in '{' data '}' and includes basic project/organization branding fields.

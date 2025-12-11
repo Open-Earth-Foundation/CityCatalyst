@@ -3,7 +3,8 @@
  * /api/v1/waste-composition:
  *   get:
  *     tags:
- *       - Waste Composition
+ *       - waste
+ *       - composition
  *     operationId: getWasteComposition
  *     summary: Get waste composition formula inputs for an inventory and methodology.
  *     description: Returns formula input values (WCF_*) used by waste composition calculations for the specified methodology, using the inventory's city country LOCODE when available. Requires a signed‑in session with access to the inventory. Response is wrapped in data object.

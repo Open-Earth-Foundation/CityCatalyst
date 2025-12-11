@@ -3,7 +3,7 @@
  * /api/v1/auth/role:
  *   post:
  *     tags:
- *       - Auth
+ *       - auth
  *     operationId: postAuthRole
  *     summary: Update a user’s role (admin only).
  *     description: Sets the role for the target user to either admin or user. Requires an admin session; non‑admins receive 403. Returns a simple success flag on completion.

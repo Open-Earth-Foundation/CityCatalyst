@@ -3,7 +3,7 @@
  * /api/v1/admin/all-cities:
  *   get:
  *     tags:
- *       - Admin
+ *       - admin
  *     operationId: getAllCitiesAdmin
  *     summary: List all cities with project and organization context.
  *     description: Returns all cities in the system including basic project and organization fields. Requires an admin session to succeed; non-admin users receive an authorization error. Use this to audit cities and their parent project/organization mapping.

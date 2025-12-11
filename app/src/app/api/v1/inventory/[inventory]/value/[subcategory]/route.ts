@@ -3,7 +3,8 @@
  * /api/v1/inventory/{inventory}/value/{subcategory}:
  *   get:
  *     tags:
- *       - Inventory Values
+ *       - inventory
+ *       - values
  *     operationId: getInventoryValueSubcategory
  *     summary: Get inventory value for a subcategory
  *     parameters:
@@ -83,7 +84,8 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  * /api/v1/inventory/{inventory}/value/{subcategory}:
  *   patch:
  *     tags:
- *       - Inventory Values
+ *       - inventory
+ *       - values
  *     operationId: patchInventoryValueSubcategory
  *     summary: Upsert inventory value for a subcategory
  *     parameters:

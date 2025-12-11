@@ -3,7 +3,7 @@
  * /api/v1/city/{city}/boundary:
  *   get:
  *     tags:
- *       - City
+ *       - city
  *     operationId: getCityBoundary
  *     summary: Get city boundary data
  *     parameters:

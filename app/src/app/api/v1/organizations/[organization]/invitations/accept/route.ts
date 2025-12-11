@@ -3,7 +3,8 @@
  * /api/v1/organizations/{organization}/invitations/accept:
  *   patch:
  *     tags:
- *       - Organization Invitations
+ *       - organization
+ *       - invitations
  *     operationId: patchOrganizationInvitationsAccept
  *     summary: Accept organization admin invitation
  *     parameters:

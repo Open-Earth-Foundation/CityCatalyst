@@ -30,7 +30,7 @@ import { checkSingleActionRankingJob } from "@/backend/hiap/HiapService";
  * /api/v1/cron/check-hiap-jobs:
  *   get:
  *     tags:
- *       - Cron
+ *       - cron
  *     operationId: getCronCheckHiapJobs
  *     summary: Check pending HIAP jobs and continue batch processing
  *     description: |

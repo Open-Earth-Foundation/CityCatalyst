@@ -3,7 +3,7 @@
  * /api/v1/organizations/{organization}/active-status:
  *   patch:
  *     tags:
- *       - Organizations
+ *       - organizations
  *     operationId: patchOrganizationActiveStatus
  *     summary: Update organization active status
  *     parameters:

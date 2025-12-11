@@ -3,7 +3,7 @@
  * /api/v1/user/cities/{id}/results:
  *   get:
  *     tags:
- *       - User
+ *       - user
  *     operationId: getUserCitiesIdResults
  *     summary: Get year‑over‑year emissions results for a user’s city.
  *     parameters:

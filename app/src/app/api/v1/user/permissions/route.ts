@@ -3,7 +3,7 @@
  * /api/v1/user/permissions:
  *   get:
  *     tags:
- *       - User
+ *       - user
  *     operationId: getUserPermissions
  *     summary: Check user's access for a resource context
  *     parameters:

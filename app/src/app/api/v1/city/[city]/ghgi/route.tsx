@@ -3,7 +3,8 @@
  * /api/v1/city/{city}/ghgi:
  *   get:
  *     tags:
- *       - GHG Inventory
+ *       - ghg
+ *       - inventory
  *     summary: Get GHG inventory data for a city
  *     description: Retrieves greenhouse gas inventory data for a specified city. The city parameter can be a UUID or "default" to use the user's default city.
  *     parameters:

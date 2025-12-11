@@ -3,7 +3,8 @@
  * /api/v1/city/{city}/modules/{module}/access:
  *   get:
  *     tags:
- *       - City Modules
+ *       - city
+ *       - modules
  *     operationId: getCityModuleAccess
  *     summary: Check if user has access to a specific module for a city
  *     parameters:

@@ -3,7 +3,8 @@
  * /api/v1/datasource/{inventoryId}/datasource/{datasourceId}:
  *   delete:
  *     tags:
- *       - Data Sources
+ *       - data
+ *       - sources
  *     operationId: deleteDatasourceInventoryIdDatasource
  *     summary: Disconnect a data source and remove related inventory values (edit access).
  *     parameters:
@@ -66,7 +67,8 @@ import DataSourceService from "@/backend/DataSourceService";
  * /api/v1/datasource/{inventoryId}/datasource/{datasourceId}:
  *   get:
  *     tags:
- *       - Data Sources
+ *       - data
+ *       - sources
  *     operationId: getDatasourceInventoryIdDatasource
  *     summary: Get a single data source with scaled data for an inventory (edit access).
  *     parameters:

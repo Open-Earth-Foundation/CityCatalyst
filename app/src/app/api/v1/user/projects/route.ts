@@ -3,7 +3,7 @@
  * /api/v1/user/projects:
  *   get:
  *     tags:
- *       - User
+ *       - user
  *     operationId: getUserProjects
  *     summary: List projects the current user belongs to
  *     responses:

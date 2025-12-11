@@ -3,7 +3,7 @@
  * /api/v1/inventory/{inventory}/country-emissions:
  *   get:
  *     tags:
- *       - Inventory
+ *       - inventory
  *     operationId: getInventoryCountryEmissions
  *     summary: Get country emissions data for inventory comparison
  *     description: Returns country-level emissions data for the year closest to the inventory's year. Uses data from OpenClimate API (UNFCCC preferred).

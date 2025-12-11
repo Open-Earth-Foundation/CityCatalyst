@@ -3,7 +3,7 @@
  * /api/v1/projects/{project}:
  *   get:
  *     tags:
- *       - Projects
+ *       - projects
  *     operationId: getProject
  *     summary: Get a single project by ID (admin only).
  *     description: Returns the project object for the given ID. Requires an admin session; non‑admins receive an authorization error. Response is the project object (not wrapped).
@@ -67,7 +67,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
  * /api/v1/projects/{project}:
  *   patch:
  *     tags:
- *       - Projects
+ *       - projects
  *     operationId: patchProject
  *     summary: Update a project by ID (admin only).
  *     description: Updates project properties (name, description, cityCountLimit). If cityCountLimit is changed, organization admins are notified via email. Cannot update the default project. Requires an admin session. Response is the updated project object (not wrapped).
@@ -170,7 +170,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
  * /api/v1/projects/{project}:
  *   delete:
  *     tags:
- *       - Projects
+ *       - projects
  *     operationId: deleteProject
  *     summary: Delete a project by ID (admin only).
  *     description: Permanently deletes the project and all associated cities. Organization admins are notified via email about the deletion. Cannot delete the default project. Requires an admin session. Response is { deleted: true }.

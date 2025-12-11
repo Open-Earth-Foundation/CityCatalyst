@@ -3,7 +3,8 @@
  * /api/v1/inventory/{inventory}/value:
  *   get:
  *     tags:
- *       - Inventory Values
+ *       - inventory
+ *       - values
  *     operationId: getInventoryValue
  *     summary: List inventory values by subcategories
  *     parameters:

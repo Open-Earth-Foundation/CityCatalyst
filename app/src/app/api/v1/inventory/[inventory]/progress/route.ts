@@ -3,7 +3,8 @@
  * /api/v1/inventory/{inventory}/progress:
  *   get:
  *     tags:
- *       - Inventory Progress
+ *       - inventory
+ *       - progress
  *     operationId: getInventoryProgress
  *     summary: Get data entry progress for an inventory
  *     parameters:

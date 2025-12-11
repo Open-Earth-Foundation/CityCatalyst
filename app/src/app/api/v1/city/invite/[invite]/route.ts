@@ -3,7 +3,8 @@
  * /api/v1/city/invite/{invite}:
  *   get:
  *     tags:
- *       - City Invites
+ *       - city
+ *       - invites
  *     operationId: getCityInviteInvite
  *     summary: Accept a city invite
  *     parameters:

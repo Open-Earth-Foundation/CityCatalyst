@@ -3,7 +3,7 @@
  * /api/v1/organizations/{organization}/role:
  *   patch:
  *     tags:
- *       - Organizations
+ *       - organizations
  *     operationId: patchOrganizationRole
  *     summary: Promote a user to organization admin or invite by email
  *     parameters:

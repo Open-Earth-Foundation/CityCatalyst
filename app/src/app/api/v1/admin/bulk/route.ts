@@ -3,7 +3,7 @@
  * /api/v1/admin/bulk:
  *   post:
  *     tags:
- *       - Admin
+ *       - admin
  *     operationId: createInventoriesBulk
  *     summary: Create inventories in bulk for multiple cities and years.
  *     description: Creates city records (if needed) and inventories for each provided LOCODE and year, and adds the specified users to those cities. Requires an admin session; non-admins receive an authorization error. Use this to seed projects quickly across many locations.

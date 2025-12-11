@@ -3,7 +3,7 @@
  * /api/v1/projects/{project}/bulk-download:
  *   get:
  *     tags:
- *       - Projects
+ *       - projects
  *     operationId: getProjectBulkDownload
  *     summary: Bulk download inventories for a project (CSV)
  *     parameters:

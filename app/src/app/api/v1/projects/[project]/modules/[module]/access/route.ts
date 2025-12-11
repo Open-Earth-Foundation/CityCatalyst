@@ -3,7 +3,8 @@
  * /api/v1/projects/{project}/modules/{module}/access:
  *   get:
  *     tags:
- *       - Project Modules
+ *       - project
+ *       - modules
  *     operationId: getProjectModuleAccess
  *     summary: Check if a project has access to a module
  *     parameters:
@@ -111,7 +112,8 @@ export const GET = apiHandler(async (_req: Request, context) => {
  * /api/v1/projects/{project}/modules/{module}/access:
  *   post:
  *     tags:
- *       - Project Modules
+ *       - project
+ *       - modules
  *     operationId: postProjectModuleAccess
  *     summary: Enable module access for a project (admin only).
  *     description: Grants a project access to a specific module. Requires admin or organization admin privileges. Returns the created project-module relationship.
@@ -195,7 +197,8 @@ export const POST = apiHandler(async (_req: Request, context) => {
  * /api/v1/projects/{project}/modules/{module}/access:
  *   delete:
  *     tags:
- *       - Project Modules
+ *       - project
+ *       - modules
  *     operationId: deleteProjectModuleAccess
  *     summary: Disable module access for a project (admin only).
  *     description: Revokes a project's access to a specific module. Requires admin or organization admin privileges. Returns the updated project-module relationship.

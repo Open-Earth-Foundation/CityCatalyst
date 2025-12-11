@@ -3,7 +3,8 @@
  * /api/v1/user/invites/{cityInviteId}:
  *   delete:
  *     tags:
- *       - User Invites
+ *       - user
+ *       - invites
  *     operationId: deleteUserInvitesCityInviteId
  *     summary: Cancel a city invite
  *     parameters:
@@ -20,7 +21,8 @@
  *         description: Unauthorized.
  *   patch:
  *     tags:
- *       - User Invites
+ *       - user
+ *       - invites
  *     operationId: patchUserInvitesCityInviteId
  *     summary: Re-send a city invite (reset to pending)
  *     parameters:

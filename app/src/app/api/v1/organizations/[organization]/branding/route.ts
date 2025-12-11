@@ -3,7 +3,7 @@
  * /api/v1/organizations/{organization}/branding:
  *   patch:
  *     tags:
- *       - Organizations
+ *       - organizations
  *     operationId: patchOrganizationBranding
  *     summary: Update organization branding (theme and logos)
  *     parameters:

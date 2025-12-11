@@ -3,7 +3,8 @@
  * /api/v1/inventory/{inventory}/cdp:
  *   post:
  *     tags:
- *       - Inventory CDP
+ *       - inventory
+ *       - cdp
  *     operationId: postInventoryCdp
  *     summary: Submit inventory emissions to CDP questionnaire
  *     parameters:

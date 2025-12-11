@@ -63,6 +63,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
  *       - users
  *     operationId: getCityUsers
  *     summary: List users for a city
+ *     description: Retrieves a list of all users associated with a specific city. Returns user information for all users who have access to the city. Requires authentication and access to the city.
  *     parameters:
  *       - in: path
  *         name: city
@@ -108,6 +109,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
  *       - users
  *     operationId: deleteCityUsers
  *     summary: Remove a user from a city by email
+ *     description: Removes a user from a city by their email address. This disassociates the user from the city and removes their access. Requires admin privileges. The email is provided as a query parameter.
  *     parameters:
  *       - in: path
  *         name: city

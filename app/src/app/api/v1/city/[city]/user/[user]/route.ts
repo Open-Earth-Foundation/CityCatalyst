@@ -7,6 +7,7 @@
  *       - users
  *     operationId: getCityUser
  *     summary: Get a user in a city
+ *     description: Retrieves user information for a specific user within a city context. Returns user details including their association with the city. Requires authentication and access to the city.
  *     parameters:
  *       - in: path
  *         name: city
@@ -54,6 +55,7 @@ const updateUserRequest = z.object({
  *       - users
  *     operationId: patchCityUser
  *     summary: Update a user in a city
+ *     description: Updates user information within a city context, including name and role. Requires authentication and appropriate permissions. Returns the updated user data.
  *     parameters:
  *       - in: path
  *         name: city
@@ -108,6 +110,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
  *       - users
  *     operationId: deleteCityUser
  *     summary: Delete a user in a city
+ *     description: Permanently deletes a user from the system. This action removes the user and all associated data. Requires authentication and appropriate permissions. Returns the deleted user data with a deleted flag.
  *     parameters:
  *       - in: path
  *         name: city

@@ -7,6 +7,7 @@
  *       - files
  *     operationId: getCityFileDownloadFile
  *     summary: Download a city file by ID
+ *     description: Downloads a file that was previously uploaded to a city. Returns the file as a binary stream with appropriate Content-Type and Content-Disposition headers. Requires authentication and access to the city.
  *     parameters:
  *       - in: path
  *         name: city

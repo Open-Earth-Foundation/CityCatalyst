@@ -7,6 +7,7 @@
  *       - invites
  *     operationId: getCityInviteInvite
  *     summary: Accept a city invite
+ *     description: Accepts a city invitation using a verification token. Validates the token and email, then associates the user with the city and redirects to the specified inventory. The invite status is updated to ACCEPTED upon successful acceptance.
  *     parameters:
  *       - in: path
  *         name: invite

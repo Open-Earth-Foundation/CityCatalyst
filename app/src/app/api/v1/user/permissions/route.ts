@@ -6,6 +6,7 @@
  *       - user
  *     operationId: getUserPermissions
  *     summary: Check user's access for a resource context
+ *     description: Checks the current user's access permissions and role for a specific resource context (organization, project, city, or inventory). Returns access status, user role, organization ID, and the context that was checked. Supports checking at different hierarchy levels with inventory being the most specific. Requires authentication.
  *     parameters:
  *       - in: query
  *         name: organizationId

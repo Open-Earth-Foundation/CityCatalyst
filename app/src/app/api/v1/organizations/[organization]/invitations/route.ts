@@ -7,6 +7,7 @@
  *       - invitations
  *     operationId: getOrganizationInvitations
  *     summary: List organization invitations
+ *     description: Retrieves all invitations for an organization, including pending, accepted, and declined invitations. Returns invitation details including email, role, status, and timestamps. Requires admin or organization admin privileges.
  *     parameters:
  *       - in: path
  *         name: organization
@@ -69,6 +70,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  *       - invitations
  *     operationId: postOrganizationInvitations
  *     summary: Invite users to an organization
+ *     description: Sends organization admin invitations to one or more email addresses. Creates or updates invitation records and sends invitation emails with verification tokens. Prevents inviting users who are already organization admins. Returns success status and invite URLs. Requires admin or organization admin privileges.
  *     parameters:
  *       - in: path
  *         name: organization
@@ -207,8 +209,8 @@ export const POST = apiHandler(async (req, { params, session }) => {
       `Failed to send invitations to: ${failedInvites.map((f) => f.email).join(", ")}`,
     );
   }
-  return NextResponse.json({ 
+  return NextResponse.json({
     success: failedInvites.length === 0,
-    inviteUrls: inviteUrls 
+    inviteUrls: inviteUrls,
   });
 });

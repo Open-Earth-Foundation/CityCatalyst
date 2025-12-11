@@ -7,6 +7,7 @@
  *       - progress
  *     operationId: getInventoryProgress
  *     summary: Get data entry progress for an inventory
+ *     description: Retrieves data entry progress information for an inventory, showing completion status across different sectors, subsectors, and data sources. Returns progress metrics that help track how much of the inventory data has been entered. Supports 'default' as inventory ID to use the user's default inventory. Requires authentication and access to the inventory.
  *     parameters:
  *       - in: path
  *         name: inventory

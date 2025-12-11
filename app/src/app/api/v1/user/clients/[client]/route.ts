@@ -7,6 +7,7 @@
  *       - clients
  *     operationId: getUserClientsClient
  *     summary: Get OAuth client authorization for current user
+ *     description: Retrieves OAuth client authorization information for the current user and a specific client. Returns authorization details including client metadata, scopes, and internationalized client names and descriptions. Requires authentication and OAuth feature flag to be enabled.
  *     parameters:
  *       - in: path
  *         name: client
@@ -107,6 +108,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  *       - clients
  *     operationId: deleteUserClientsClient
  *     summary: Revoke OAuth client authorization for current user
+ *     description: Revokes OAuth client authorization for the current user and a specific client. Permanently removes the authorization, preventing the client from accessing the user's resources. Requires authentication and OAuth feature flag to be enabled.
  *     parameters:
  *       - in: path
  *         name: client

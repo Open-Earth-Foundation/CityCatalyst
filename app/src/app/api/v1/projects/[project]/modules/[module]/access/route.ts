@@ -7,6 +7,7 @@
  *       - modules
  *     operationId: getProjectModuleAccess
  *     summary: Check if a project has access to a module
+ *     description: Checks whether a project has access to a specific module. Validates that the user has appropriate permissions (admin, organization admin, project admin, or city membership) to access the project. Returns a boolean indicating module access status.
  *     parameters:
  *       - in: path
  *         name: project

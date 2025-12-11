@@ -6,6 +6,7 @@
  *       - user
  *     operationId: getUserCitiesIdResults
  *     summary: Get year‑over‑year emissions results for a user’s city.
+ *     description: Retrieves year-over-year emissions results for all inventories associated with a specific city. Returns aggregated emissions data including total emissions and sector-level breakdowns for each inventory year. Requires authentication and access to the city.
  *     parameters:
  *       - in: path
  *         name: id

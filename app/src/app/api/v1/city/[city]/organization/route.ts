@@ -3,7 +3,9 @@
  * /api/v1/city/{city}/organization:
  *   get:
  *     tags:
- *       - City Organization
+ *       - city
+ *       - organization
+ *     operationId: getCityOrganization
  *     summary: Get organization details and branding for a city.
  *     description: Retrieves organization information including identifier, name, logo URL, active status, and theme configuration for the city's project. Theme data includes both custom themes and default styling. Requires a signed‑in user with access to the city. Response is returned as a plain object (not wrapped in data).
  *     parameters:

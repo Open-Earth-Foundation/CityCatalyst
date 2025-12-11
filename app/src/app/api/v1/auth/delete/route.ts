@@ -3,7 +3,8 @@
  * /api/v1/auth/delete:
  *   post:
  *     tags:
- *       - Auth
+ *       - auth
+ *     operationId: postAuthDelete
  *     summary: Delete the authenticated user’s account.
  *     description: Removes the user record for the currently signed‑in session. Requires a signed‑in user; requests without a session return 401. Use with caution as this operation is irreversible.
  *     responses:

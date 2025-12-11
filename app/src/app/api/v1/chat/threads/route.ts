@@ -3,7 +3,8 @@
  * /api/v1/chat/threads:
  *   post:
  *     tags:
- *       - Chat
+ *       - chat
+ *     operationId: postChatThreads
  *     summary: Create a new chat thread via Climate Advisor
  *     description: Creates a persistent conversation thread in the Climate Advisor service with auto-issued user token. The thread maintains context and conversation history across multiple message exchanges.
  *     requestBody:

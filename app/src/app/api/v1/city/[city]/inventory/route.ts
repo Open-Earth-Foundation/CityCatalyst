@@ -13,7 +13,9 @@ import { QueryTypes } from "sequelize";
  * /api/v1/city/{city}/inventory:
  *   post:
  *     tags:
- *       - City Inventory
+ *       - city
+ *       - inventory
+ *     operationId: postCityInventory
  *     summary: Create a new inventory for a city.
  *     description: Creates a new inventory for the specified city. Requires appropriate permissions.
  *     parameters:
@@ -93,7 +95,9 @@ export const POST = apiHandler(
  * /api/v1/city/{city}/inventory:
  *   get:
  *     tags:
- *       - City Inventory
+ *       - city
+ *       - inventory
+ *     operationId: getCityInventory
  *     summary: List inventories for a city the user can access.
  *     description: Returns all inventories for the given city after access is validated. Requires a signed‑in user with access to the city. Response is wrapped in data object.
  *     parameters:

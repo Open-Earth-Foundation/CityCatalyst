@@ -7,6 +7,7 @@
  *       - invitations
  *     operationId: patchOrganizationInvitationsAccept
  *     summary: Accept organization admin invitation
+ *     description: Accepts an organization admin invitation using a verification token. Validates the token, email, and organization ID, then creates an OrganizationAdmin record and updates the invite status to ACCEPTED. Sends a welcome email to the newly promoted admin. Requires authentication and a valid verification token.
  *     parameters:
  *       - in: path
  *         name: organization

@@ -7,6 +7,7 @@
  *       - population
  *     operationId: getCityPopulationYear
  *     summary: Get population data for a specific city and year
+ *     description: Retrieves population data for a specific city and year. Returns population information including city, region, and country population values for the specified year. Requires authentication and access to the city.
  *     parameters:
  *       - in: path
  *         name: city

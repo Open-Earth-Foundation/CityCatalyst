@@ -7,6 +7,7 @@
  *       - population
  *     operationId: getCityPopulation
  *     summary: Get most recent population data for a specific city
+ *     description: Retrieves the most recent population data available for a specific city. Returns population information including city, region, and country population values. Requires authentication and access to the city.
  *     parameters:
  *       - in: path
  *         name: city

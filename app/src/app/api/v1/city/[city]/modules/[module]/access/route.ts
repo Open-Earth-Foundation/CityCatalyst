@@ -7,6 +7,7 @@
  *       - modules
  *     operationId: getCityModuleAccess
  *     summary: Check if user has access to a specific module for a city
+ *     description: Verifies whether the authenticated user has access to a specific module (e.g., CCRA, GHGI, HIAP) for the given city. Access is determined by the user's permissions within the city's project. Returns a boolean flag indicating access status.
  *     parameters:
  *       - in: path
  *         name: city

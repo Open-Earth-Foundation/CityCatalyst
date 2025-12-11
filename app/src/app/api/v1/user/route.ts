@@ -6,6 +6,7 @@
  *       - user
  *     operationId: getUser
  *     summary: Get current user info
+ *     description: Retrieves information about the currently authenticated user including user ID, name, email, role, title, preferred language, and default inventory and city IDs. Requires authentication. Returns user data wrapped in a data object.
  *     responses:
  *       200:
  *         description: User info returned.
@@ -61,6 +62,7 @@ const updateUserRequest = z.object({
  *       - user
  *     operationId: patchUserDefaults
  *     summary: Update default inventory and city for current user
+ *     description: Updates the default inventory and city for the current user. These defaults are used when the user accesses the application without specifying a particular inventory or city. Only updates if the user has access to the specified inventory. Requires authentication.
  *     requestBody:
  *       required: true
  *       content:

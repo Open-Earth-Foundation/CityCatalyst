@@ -7,6 +7,7 @@
  *       - sources
  *     operationId: deleteDatasourceInventoryIdDatasource
  *     summary: Disconnect a data source and remove related inventory values (edit access).
+ *     description: Disconnects a data source from an inventory and removes all associated inventory values. This operation permanently deletes the connection and all data values that were derived from this data source for the specified inventory. Requires edit access to the inventory.
  *     parameters:
  *       - in: path
  *         name: inventoryId
@@ -71,6 +72,7 @@ import DataSourceService from "@/backend/DataSourceService";
  *       - sources
  *     operationId: getDatasourceInventoryIdDatasource
  *     summary: Get a single data source with scaled data for an inventory (edit access).
+ *     description: Retrieves a single data source for an inventory with scaled data based on population factors. The data is automatically scaled using country and region population scale factors to match the inventory's geographic context. Returns the data source with processed data, scaling factors, and any population-related issues. Requires edit access to the inventory.
  *     parameters:
  *       - in: path
  *         name: inventoryId

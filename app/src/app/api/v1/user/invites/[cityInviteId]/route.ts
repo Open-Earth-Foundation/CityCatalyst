@@ -7,6 +7,7 @@
  *       - invites
  *     operationId: deleteUserInvitesCityInviteId
  *     summary: Cancel a city invite
+ *     description: Cancels a city invitation that was sent by the current user. Updates the invite status to CANCELED and removes any associated city-user relationships. If the city was the user's default, updates the default to another accessible city. Requires authentication and ownership of the invite.
  *     parameters:
  *       - in: path
  *         name: cityInviteId
@@ -25,6 +26,7 @@
  *       - invites
  *     operationId: patchUserInvitesCityInviteId
  *     summary: Re-send a city invite (reset to pending)
+ *     description: Resets a city invitation status back to PENDING, allowing it to be re-sent. This is useful when an invite has expired or needs to be resent. Requires authentication and ownership of the invite.
  *     parameters:
  *       - in: path
  *         name: cityInviteId

@@ -365,7 +365,7 @@ jobs:
             "DEFAULT_ADMIN_EMAIL=${{secrets.DEFAULT_ADMIN_EMAIL}}" \
             "DEFAULT_ADMIN_PASSWORD=${{secrets.DEFAULT_ADMIN_PASSWORD}}" \
             "CC_SERVICE_API_KEY=${{secrets.CC_SERVICE_API_KEY}}" \
-            "CA_BASE_URL=http://climate-advisor-dev" \
+            "CA_BASE_URL=http://climate-advisor-service-dev" \
             "HOST=https://citycatalyst.openearth.dev" \
             "NEXTAUTH_URL=https://citycatalyst.openearth.dev" \
             "NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev" \

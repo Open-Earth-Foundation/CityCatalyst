@@ -1,3 +1,14 @@
+import { apiHandler } from "@/util/api";
+import { NextResponse } from "next/server";
+import { ModuleDashboardService } from "@/backend/ModuleDashboardService";
+import PopulationService from "@/backend/PopulationService";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+import { db } from "@/models";
+import createHttpError from "http-errors";
+import { validate } from "uuid";
+import { CityDashboardResponse } from "@/util/types";
+import { Inventory } from "@/models/Inventory";
+
 /**
  * @swagger
  * /api/v1/public/city/{cityId}/dashboard:
@@ -57,16 +68,6 @@
  *       404:
  *         description: City not found or no public data available
  */
-import { apiHandler } from "@/util/api";
-import { NextResponse } from "next/server";
-import { ModuleDashboardService } from "@/backend/ModuleDashboardService";
-import PopulationService from "@/backend/PopulationService";
-import { PermissionService } from "@/backend/permissions/PermissionService";
-import { db } from "@/models";
-import createHttpError from "http-errors";
-import { validate } from "uuid";
-import { CityDashboardResponse } from "@/util/types";
-import { Inventory } from "@/models/Inventory";
 
 export const GET = apiHandler(async (req, { params }) => {
   const { cityId } = params;

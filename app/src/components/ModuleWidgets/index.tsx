@@ -14,6 +14,12 @@ interface ModuleDashboardWidgetsProps {
   t: TFunction;
   isPublic?: boolean;
   year?: number;
+  ghgiData?: any;
+  hiapData?: any;
+  ccraData?: any;
+  inventories?: any[]; // Pre-fetched inventories
+  city?: any; // Pre-fetched city data
+  population?: any; // Pre-fetched population data
 }
 
 const WIDGET_COUNT = 3;
@@ -24,6 +30,12 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
   t,
   isPublic = false,
   year,
+  ghgiData,
+  hiapData,
+  ccraData,
+  inventories,
+  city,
+  population,
 }) => {
   const [widgetVisibility, setWidgetVisibility] = useState<
     Record<string, boolean>
@@ -66,6 +78,9 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
         onVisibilityChange={handleGHGIVisibility}
         isPublic={isPublic}
         year={year}
+        ghgiData={ghgiData}
+        inventories={inventories}
+        population={population}
       />
       <HIAPWidget
         cityId={cityId}
@@ -73,6 +88,8 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
         onVisibilityChange={handleHIAPVisibility}
         isPublic={isPublic}
         year={year}
+        hiapData={hiapData}
+        inventories={inventories}
       />
       <CCRAWidget
         cityId={cityId}
@@ -80,6 +97,9 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
         onVisibilityChange={handleCCRAVisibility}
         isPublic={isPublic}
         year={year}
+        ccraData={ccraData}
+        inventories={inventories}
+        city={city}
       />
     </VStack>
   );

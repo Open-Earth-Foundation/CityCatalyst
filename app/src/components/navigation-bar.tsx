@@ -249,7 +249,7 @@ export function NavigationBar({
             <Separator
               orientation="vertical"
               height="6"
-              backgroundColor="black"
+              backgroundColor="background.overlay"
             />
           </>
         )}

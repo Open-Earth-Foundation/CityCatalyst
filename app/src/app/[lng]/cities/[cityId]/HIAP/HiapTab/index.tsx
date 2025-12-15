@@ -113,6 +113,7 @@ export function HiapTab({
   // HIAP Query State
   const [userTriggeredHiap, setUserTriggeredHiap] = useState(false);
   const [ignoreExisting, setIgnoreExisting] = useState(false);
+  const [localIsPending, setLocalIsPending] = useState(false);
 
   // API Queries
   // Status check query - runs on page load to detect existing jobs
@@ -120,6 +121,7 @@ export function HiapTab({
     data: statusData,
     isLoading: isStatusLoading,
     error: statusError,
+    refetch: refetchStatus,
   } = useGetHiapStatusQuery(
     {
       inventoryId: inventory?.inventoryId || "",
@@ -164,7 +166,7 @@ export function HiapTab({
   const actions = rankedActions; // Keep only ranked actions for the main table
   const isAdaptation = type === ACTION_TYPES.Adaptation;
   const isPending =
-    currentData?.status === HighImpactActionRankingStatus.PENDING;
+    currentData?.status === HighImpactActionRankingStatus.PENDING || localIsPending;
   const isFailure =
     currentData?.status === HighImpactActionRankingStatus.FAILURE;
   const hasActions = actions && actions.length > 0;
@@ -175,26 +177,55 @@ export function HiapTab({
   const currentError = error || statusError;
 
   // Event Handlers
-  const handleHiapGeneration = () => {
-    // Track HIAP plan generation
-    trackEvent("hiap_plan_generated", {
-      action_type: type,
-      city_id: cityData?.cityId,
-      city_name: cityData?.name || cityData?.locode,
-      inventory_id: inventory?.inventoryId,
-      is_retry: !!error,
-      existing_actions_count: actions?.length || 0,
-    });
+  const handleHiapGeneration = async () => {
+    setLocalIsPending(true);
+    
+    try {
+      // Track HIAP plan generation
+      trackEvent("hiap_plan_generated", {
+        action_type: type,
+        city_id: cityData?.cityId,
+        city_name: cityData?.name || cityData?.locode,
+        inventory_id: inventory?.inventoryId,
+        is_retry: !!error,
+        existing_actions_count: actions?.length || 0,
+      });
 
-    if (error) {
-      // Retry with ignoreExisting flag
-      setIgnoreExisting(true);
-      refetch();
-    } else {
-      // Initial trigger - always ignore existing for empty state generation
-      setIgnoreExisting(true);
-      setUserTriggeredHiap(true);
+      // Show immediate feedback to user
+      toaster.create({
+        title: t("generating-climate-actions"),
+        description: t("generating-climate-actions-description"),
+        type: "info",
+        duration: 5000,
+      });
+
+      if (error) {
+        // Retry with ignoreExisting flag
+        setIgnoreExisting(true);
+        await refetch();
+      } else {
+        // Initial trigger - always ignore existing for empty state generation
+        setIgnoreExisting(true);
+        setUserTriggeredHiap(true);
+      }
+      
+      // After triggering HIAP generation, refetch status multiple times to ensure we catch the pending state
+      setTimeout(() => refetchStatus(), 500);
+      setTimeout(() => refetchStatus(), 2000);
+      
+    } catch (error) {
+      // Clear pending on error
+      setLocalIsPending(false);
+      toaster.create({
+        title: t("error-generating-actions-title"),
+        description: t("error-generating-actions-description"),
+        type: "error",
+      });
+      logger.error(error, "Failed to generate HIAP actions");
     }
+    
+    // Safety net: clear local pending after timeout
+    setTimeout(() => setLocalIsPending(false), 30000);
   };
 
   // Initialize selection state from database
@@ -698,6 +729,21 @@ export function HiapTab({
     ];
     setSelectedActions(newSelectedActions);
   }, [rowSelection, unrankedRowSelection, actions, unrankedActions]);
+
+  // When main HIAP query completes, refetch status to ensure UI is in sync
+  useEffect(() => {
+    if (hiapData && userTriggeredHiap) {
+      // Refetch status to ensure the UI shows the latest state
+      refetchStatus();
+    }
+  }, [hiapData, userTriggeredHiap, refetchStatus]);
+
+  // Clear local pending when we get any definitive response
+  useEffect(() => {
+    if (currentData?.status || currentError) {
+      setLocalIsPending(false);
+    }
+  }, [currentData?.status, currentError]);
 
   // If no inventory, show empty state (after all hooks)
   if (!inventory) {

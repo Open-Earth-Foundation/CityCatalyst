@@ -235,6 +235,9 @@ async function getOrganizationForInventory(
                   "organizationId",
                   "name",
                   "active",
+                  "contactEmail",
+                  "created",
+                  "lastUpdated",
                 ],
               },
             ],
@@ -261,12 +264,15 @@ async function getOrganizationForInventory(
 
   return {
     organizationId: organization.organizationId,
-    organizationName: organization.name,
-    logoUrl: organization.logoUrl,
+    name: organization.name ?? "",
+    logoUrl: organization.logoUrl ?? undefined,
     active: organization.active,
+    contactEmail: organization.contactEmail ?? "",
+    created: organization.created?.toISOString() ?? "",
+    last_updated: organization.lastUpdated?.toISOString() ?? "",
     theme: {
-      themeId: theme?.themeId || null,
-      themeKey: theme?.themeKey || null,
+      themeId: theme?.themeId ?? "",
+      themeKey: theme?.themeKey ?? "",
     },
   };
 }

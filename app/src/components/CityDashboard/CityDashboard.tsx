@@ -70,7 +70,7 @@ export default function CitiesDashboardPage({
   // Use inventory organization hook for theming - pass pre-fetched organization data if available
   const { isInventoryOrgDataLoading } = useInventoryOrganization(
     latestInventory?.inventoryId ?? "",
-    organization, // Pass pre-fetched organization data to skip API call
+    organization ?? undefined, // Pass pre-fetched organization data to skip API call
   );
 
   if (isFetchBaseQueryError(dashboardError)) {
@@ -129,12 +129,12 @@ export default function CitiesDashboardPage({
               lng={lng}
               t={t}
               isPublic={isPublic}
-              ghgiData={widgets?.ghgi}
-              hiapData={widgets?.hiap}
-              ccraData={widgets?.ccra}
+              ghgiData={widgets?.ghgi ?? undefined}
+              hiapData={widgets?.hiap ?? undefined}
+              ccraData={widgets?.ccra ?? undefined}
               inventories={inventories}
-              city={city}
-              population={population}
+              city={city as CityWithProjectDataResponse | undefined}
+              population={population ?? undefined}
             />
           </Box>
         </>

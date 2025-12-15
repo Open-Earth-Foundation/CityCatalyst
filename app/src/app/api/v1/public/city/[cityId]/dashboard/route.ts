@@ -6,7 +6,12 @@ import { PermissionService } from "@/backend/permissions/PermissionService";
 import { db } from "@/models";
 import createHttpError from "http-errors";
 import { validate } from "uuid";
-import { CityDashboardResponse } from "@/util/types";
+import type {
+  CityDashboardResponse,
+  GHGInventorySummary,
+  HIAPSummary,
+  CCRASummary,
+} from "@/util/types";
 import { Inventory } from "@/models/Inventory";
 
 /**
@@ -193,7 +198,7 @@ export const GET = apiHandler(async (req, { params }) => {
   }
 
   const response: CityDashboardResponse = {
-    city: city as any,
+    city: city as CityDashboardResponse["city"],
     inventories: publicInventories.map((inv) => inv.toJSON()),
     population:
       populationData &&
@@ -209,9 +214,9 @@ export const GET = apiHandler(async (req, { params }) => {
         : null,
     organization: null, // Public dashboards don't include organization data
     widgets: {
-      ghgi: ghgiData as any,
-      hiap: hiapData as any,
-      ccra: ccraData as any,
+      ghgi: ghgiData as GHGInventorySummary | null,
+      hiap: hiapData as HIAPSummary | null,
+      ccra: ccraData as CCRASummary | null,
     },
   };
 

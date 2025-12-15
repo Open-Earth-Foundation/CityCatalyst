@@ -7,7 +7,11 @@ import {
 } from "@/services/api";
 import { useLatestInventory } from "@/hooks/use-latest-inventory";
 import ReportResults from "../GHGI/ReportResults";
-import { InventoryResponse } from "@/util/types";
+import { InventoryResponse, GHGInventorySummary } from "@/util/types";
+import type {
+  InventoryAttributes,
+  PopulationAttributes,
+} from "@/models/init-models";
 
 interface GHGIWidgetProps {
   cityId: string;
@@ -15,9 +19,9 @@ interface GHGIWidgetProps {
   onVisibilityChange?: (hasContent: boolean) => void;
   isPublic?: boolean;
   year?: number;
-  ghgiData?: any; // Pre-fetched GHGI dashboard data
-  inventories?: any[]; // Pre-fetched inventories
-  population?: any; // Pre-fetched population data
+  ghgiData?: GHGInventorySummary;
+  inventories?: InventoryAttributes[];
+  population?: PopulationAttributes;
 }
 
 export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
@@ -59,7 +63,7 @@ export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
   // Use pre-fetched population if available, otherwise fetch
   const { data: fetchedPopulation } = useGetCityPopulationQuery(
     { cityId: cityId, year: ghgiData?.year as number },
-    { 
+    {
       skip: !cityId || !ghgiData?.year || !!preFetchedPopulation, // Skip if pre-fetched population available
     },
   );

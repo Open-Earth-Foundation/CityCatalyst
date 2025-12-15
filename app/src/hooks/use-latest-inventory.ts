@@ -1,10 +1,11 @@
 import { useGetInventoriesQuery, api } from "@/services/api";
+import type { InventoryAttributes } from "@/models/init-models";
 
 interface UseLatestInventoryProps {
   cityId: string;
   isPublic?: boolean;
   year?: number;
-  preFetchedInventories?: any[]; // Pre-fetched inventories to skip API calls
+  preFetchedInventories?: InventoryAttributes[];
 }
 
 export const useLatestInventory = ({
@@ -29,7 +30,9 @@ export const useLatestInventory = ({
     });
 
   // Use pre-fetched inventories if available, otherwise use fetched data
-  const inventories = preFetchedInventories || (isPublic ? publicInventories : privateInventories);
+  const inventories =
+    preFetchedInventories ||
+    (isPublic ? publicInventories : privateInventories);
   const isInventoriesLoading = shouldSkipFetch
     ? false
     : isPublic
@@ -43,7 +46,6 @@ export const useLatestInventory = ({
       )
     : inventories?.[0];
   const inventoryId = latestInventory?.inventoryId;
-
 
   return {
     inventoryId,

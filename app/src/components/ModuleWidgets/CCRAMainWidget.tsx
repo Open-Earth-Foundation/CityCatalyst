@@ -12,6 +12,8 @@ import {
   HeadlineSmall,
 } from "@/components/package/Texts/Headline";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
+import type { CCRASummary, CityWithProjectDataResponse } from "@/util/types";
+import type { InventoryAttributes } from "@/models/init-models";
 
 interface CCRAWidgetProps {
   cityId: string;
@@ -19,9 +21,9 @@ interface CCRAWidgetProps {
   onVisibilityChange?: (hasContent: boolean) => void;
   isPublic?: boolean;
   year?: number;
-  ccraData?: any; // Pre-fetched CCRA dashboard data
-  inventories?: any[]; // Pre-fetched inventories
-  city?: any; // Pre-fetched city data
+  ccraData?: CCRASummary;
+  inventories?: InventoryAttributes[];
+  city?: CityWithProjectDataResponse;
 }
 
 const CCRA_REPLIT_URL =

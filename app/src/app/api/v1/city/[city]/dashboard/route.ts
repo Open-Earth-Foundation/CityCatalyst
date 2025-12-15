@@ -5,8 +5,15 @@ import { ModuleDashboardService } from "@/backend/ModuleDashboardService";
 import PopulationService from "@/backend/PopulationService";
 import { db } from "@/models";
 import createHttpError from "http-errors";
-import { CityDashboardResponse } from "@/util/types";
+import type {
+  CityDashboardResponse,
+  GHGInventorySummary,
+  HIAPSummary,
+  CCRASummary,
+  OrganizationWithThemeResponse,
+} from "@/util/types";
 import { Inventory } from "@/models/Inventory";
+import type { AppSession } from "@/lib/auth";
 
 /**
  * @swagger
@@ -175,7 +182,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
   });
 
   const response: CityDashboardResponse = {
-    city: cityWithRelations as any,
+    city: cityWithRelations as CityDashboardResponse["city"],
     inventories: inventories.map((inv) => inv.toJSON()),
     population:
       populationData &&
@@ -189,11 +196,11 @@ export const GET = apiHandler(async (req, { params, session }) => {
             population: populationData.population as number,
           }
         : null,
-    organization: organization as any,
+    organization: organization as OrganizationWithThemeResponse | null,
     widgets: {
-      ghgi: ghgiData as any,
-      hiap: hiapData as any,
-      ccra: ccraData as any,
+      ghgi: ghgiData as GHGInventorySummary | null,
+      hiap: hiapData as HIAPSummary | null,
+      ccra: ccraData as CCRASummary | null,
     },
   };
 
@@ -205,8 +212,8 @@ export const GET = apiHandler(async (req, { params, session }) => {
  */
 async function getOrganizationForInventory(
   inventoryId: string,
-  session: any,
-): Promise<any> {
+  session: AppSession | null,
+): Promise<OrganizationWithThemeResponse | null> {
   const inventory = await UserService.findUserInventory(
     inventoryId,
     session,

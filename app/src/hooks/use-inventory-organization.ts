@@ -6,10 +6,11 @@ import {
 } from "@/hooks/organization-context-provider/use-organizational-context";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
+import type { OrganizationWithThemeResponse } from "@/util/types";
 
 export function useInventoryOrganization(
   inventoryId: string,
-  preFetchedOrgData?: any,
+  preFetchedOrgData?: OrganizationWithThemeResponse,
 ) {
   const { data: inventoryOrgData, isLoading: isInventoryOrgDataLoading } =
     useGetOrganizationForInventoryQuery(inventoryId, {

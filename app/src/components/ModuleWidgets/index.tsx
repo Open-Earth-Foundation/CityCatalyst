@@ -7,6 +7,16 @@ import { HIAPWidget } from "./HIAPWidget";
 import { CCRAWidget } from "./CCRAMainWidget";
 import { EmptyDashboard } from "../CityDashboard/EmptyDashboard";
 import { TFunction } from "i18next";
+import type {
+  InventoryAttributes,
+  PopulationAttributes,
+} from "@/models/init-models";
+import type {
+  GHGInventorySummary,
+  HIAPSummary,
+  CCRASummary,
+  CityWithProjectDataResponse,
+} from "@/util/types";
 
 interface ModuleDashboardWidgetsProps {
   cityId: string;
@@ -14,12 +24,12 @@ interface ModuleDashboardWidgetsProps {
   t: TFunction;
   isPublic?: boolean;
   year?: number;
-  ghgiData?: any;
-  hiapData?: any;
-  ccraData?: any;
-  inventories?: any[]; // Pre-fetched inventories
-  city?: any; // Pre-fetched city data
-  population?: any; // Pre-fetched population data
+  ghgiData?: GHGInventorySummary;
+  hiapData?: HIAPSummary;
+  ccraData?: CCRASummary;
+  inventories?: InventoryAttributes[];
+  city?: CityWithProjectDataResponse;
+  population?: PopulationAttributes;
 }
 
 const WIDGET_COUNT = 3;

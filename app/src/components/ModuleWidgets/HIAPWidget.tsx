@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Box, Text, HStack, Tabs, Icon } from "@chakra-ui/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/i18n/client";
-import { ACTION_TYPES, HIAction } from "@/util/types";
+import { ACTION_TYPES, HIAction, HIAPSummary } from "@/util/types";
 import { ClimateActionCard } from "@/components/ClimateActionCard";
 import { ActionDrawer } from "@/components/ActionDrawer";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
@@ -13,6 +13,7 @@ import { AdaptationTabIcon, MitigationTabIcon } from "../icons";
 import { useGetCityHIAPDashboardQuery } from "@/services/api";
 import { getTopPickActions } from "@/util/helpers";
 import { useLatestInventory } from "@/hooks/use-latest-inventory";
+import type { InventoryAttributes } from "@/models/init-models";
 
 interface HIAPWidgetProps {
   cityId: string;
@@ -20,8 +21,8 @@ interface HIAPWidgetProps {
   onVisibilityChange?: (hasContent: boolean) => void;
   isPublic?: boolean;
   year?: number;
-  hiapData?: any; // Pre-fetched HIAP dashboard data
-  inventories?: any[]; // Pre-fetched inventories
+  hiapData?: HIAPSummary;
+  inventories?: InventoryAttributes[];
 }
 
 export const HIAPWidget: React.FC<HIAPWidgetProps> = ({

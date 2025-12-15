@@ -2,10 +2,11 @@
  * @swagger
  * /api/v1/inventory/{inventory}:
  *   get:
+ *     operationId: getInventory
  *     summary: Get inventory details by ID
  *     description: Returns inventory details including total emissions for the specified inventory ID. If 'default' is provided, returns the user's default inventory.
  *     tags:
- *       - Inventory
+ *       - inventory
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -22,7 +23,48 @@
  *               type: object
  *               properties:
  *                 data:
- *                   $ref: '#/components/schemas/Inventory'
+ *                   type: object
+ *                   properties:
+ *                     inventoryId:
+ *                       type: string
+ *                       format: uuid
+ *                     inventoryName:
+ *                       type: string
+ *                       nullable: true
+ *                     year:
+ *                       type: integer
+ *                       nullable: true
+ *                     totalEmissions:
+ *                       type: integer
+ *                       format: int64
+ *                       nullable: true
+ *                     cityId:
+ *                       type: string
+ *                       format: uuid
+ *                       nullable: true
+ *                     totalCountryEmissions:
+ *                       type: integer
+ *                       format: int64
+ *                       nullable: true
+ *                     isPublic:
+ *                       type: boolean
+ *                       nullable: true
+ *                     publishedAt:
+ *                       type: string
+ *                       format: date-time
+ *                       nullable: true
+ *                     inventoryType:
+ *                       type: string
+ *                       enum: [gpc_basic, gpc_basic_plus]
+ *                       nullable: true
+ *                     globalWarmingPotentialType:
+ *                       type: string
+ *                       enum: [ar6, ar5]
+ *                       nullable: true
+ *                     lastUpdated:
+ *                       type: string
+ *                       format: date-time
+ *                       nullable: true
  *       400:
  *         description: Invalid inventory ID
  *       404:
@@ -87,10 +129,11 @@ export const GET = apiHandler(async (req, { session, params }) => {
  * @swagger
  * /api/v1/inventory/{inventory}:
  *   delete:
+ *     operationId: deleteInventory
  *     summary: Delete an inventory by ID
  *     description: Deletes the specified inventory. Only users with ORG_ADMIN permission can delete inventories.
  *     tags:
- *       - Inventory
+ *       - inventory
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -107,7 +150,48 @@ export const GET = apiHandler(async (req, { session, params }) => {
  *               type: object
  *               properties:
  *                 data:
- *                   $ref: '#/components/schemas/Inventory'
+ *                   type: object
+ *                   properties:
+ *                     inventoryId:
+ *                       type: string
+ *                       format: uuid
+ *                     inventoryName:
+ *                       type: string
+ *                       nullable: true
+ *                     year:
+ *                       type: integer
+ *                       nullable: true
+ *                     totalEmissions:
+ *                       type: integer
+ *                       format: int64
+ *                       nullable: true
+ *                     cityId:
+ *                       type: string
+ *                       format: uuid
+ *                       nullable: true
+ *                     totalCountryEmissions:
+ *                       type: integer
+ *                       format: int64
+ *                       nullable: true
+ *                     isPublic:
+ *                       type: boolean
+ *                       nullable: true
+ *                     publishedAt:
+ *                       type: string
+ *                       format: date-time
+ *                       nullable: true
+ *                     inventoryType:
+ *                       type: string
+ *                       enum: [gpc_basic, gpc_basic_plus]
+ *                       nullable: true
+ *                     globalWarmingPotentialType:
+ *                       type: string
+ *                       enum: [ar6, ar5]
+ *                       nullable: true
+ *                     lastUpdated:
+ *                       type: string
+ *                       format: date-time
+ *                       nullable: true
  *                 deleted:
  *                   type: boolean
  *       403:
@@ -132,10 +216,11 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
  * @swagger
  * /api/v1/inventory/{inventory}:
  *   patch:
+ *     operationId: patchInventory
  *     summary: Update inventory details
  *     description: Updates the specified inventory. Only users with edit permission can update inventories.
  *     tags:
- *       - Inventory
+ *       - inventory
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -148,7 +233,34 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/UpsertInventoryRequest'
+ *             oneOf:
+ *               - type: object
+ *                 required:
+ *                   - inventoryName
+ *                   - year
+ *                   - inventoryType
+ *                   - globalWarmingPotentialType
+ *                 properties:
+ *                   inventoryName:
+ *                     type: string
+ *                     minLength: 1
+ *                   year:
+ *                     type: integer
+ *                     minimum: 2000
+ *                   totalEmissions:
+ *                     type: integer
+ *                   totalCountryEmissions:
+ *                     type: integer
+ *                   inventoryType:
+ *                     type: string
+ *                     enum: [gpc_basic, gpc_basic_plus]
+ *                   globalWarmingPotentialType:
+ *                     type: string
+ *                     enum: [ar6, ar5]
+ *               - type: object
+ *                 properties:
+ *                   isPublic:
+ *                     type: boolean
  *     responses:
  *       200:
  *         description: Inventory updated successfully
@@ -158,7 +270,48 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
  *               type: object
  *               properties:
  *                 data:
- *                   $ref: '#/components/schemas/Inventory'
+ *                   type: object
+ *                   properties:
+ *                     inventoryId:
+ *                       type: string
+ *                       format: uuid
+ *                     inventoryName:
+ *                       type: string
+ *                       nullable: true
+ *                     year:
+ *                       type: integer
+ *                       nullable: true
+ *                     totalEmissions:
+ *                       type: integer
+ *                       format: int64
+ *                       nullable: true
+ *                     cityId:
+ *                       type: string
+ *                       format: uuid
+ *                       nullable: true
+ *                     totalCountryEmissions:
+ *                       type: integer
+ *                       format: int64
+ *                       nullable: true
+ *                     isPublic:
+ *                       type: boolean
+ *                       nullable: true
+ *                     publishedAt:
+ *                       type: string
+ *                       format: date-time
+ *                       nullable: true
+ *                     inventoryType:
+ *                       type: string
+ *                       enum: [gpc_basic, gpc_basic_plus]
+ *                       nullable: true
+ *                     globalWarmingPotentialType:
+ *                       type: string
+ *                       enum: [ar6, ar5]
+ *                       nullable: true
+ *                     lastUpdated:
+ *                       type: string
+ *                       format: date-time
+ *                       nullable: true
  *       400:
  *         description: Invalid request body
  *       403:

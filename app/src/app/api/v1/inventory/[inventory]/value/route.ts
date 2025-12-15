@@ -3,8 +3,11 @@
  * /api/v1/inventory/{inventory}/value:
  *   get:
  *     tags:
- *       - Inventory Values
+ *       - inventory
+ *       - values
+ *     operationId: getInventoryValue
  *     summary: List inventory values by subcategories
+ *     description: Retrieves inventory values filtered by one or more subcategory IDs. Returns detailed inventory value data including associated data sources, activity values, gas values, and emissions factors. Supports querying multiple subcategories by providing comma-separated IDs. Requires edit access to the inventory.
  *     parameters:
  *       - in: path
  *         name: inventory

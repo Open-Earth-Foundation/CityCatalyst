@@ -1,3 +1,4 @@
+import React from "react";
 import { EmissionsForecastData } from "@/util/types";
 import type { TFunction } from "i18next";
 import {
@@ -11,6 +12,7 @@ import { convertKgToTonnes } from "@/util/helpers";
 import { ResponsiveLine } from "@nivo/line";
 import CustomLegend from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/CustomLegend";
 import TooltipCard from "./TooltipCard";
+import { TooltipProvider, useCustomTooltip } from "./CustomTooltipContext";
 
 interface LineChartData {
   id: string;
@@ -24,7 +26,86 @@ export const getColorForSeries = (seriesId: string) => {
   return sectorOrSubsector?.color || "semantic.dangerOverlay";
 };
 
-export const EmissionsForecastChart = ({
+function CustomTooltipLayer(props: any) {
+  const {
+    innerWidth,
+    innerHeight,
+    xScale,
+    yScale,
+    series,
+    data,
+    forecast,
+    t,
+  } = props;
+
+  // Get all unique x values (years) from all series
+  const allXValues = series[0]?.data?.map((d: any) => d.data.x) || [];
+  const sliceWidth = innerWidth / Math.max(allXValues.length - 1, 1);
+
+  const { showTooltipFromEvent, hideTooltip } = useCustomTooltip();
+
+  return (
+    <g>
+      {allXValues.map((xValue: any, index: number) => {
+        const x = xScale(xValue) ?? 0;
+        const sliceX = index === 0 ? 0 : x - sliceWidth / 2;
+        const width =
+          index === 0 || index === allXValues.length - 1
+            ? sliceWidth / 2
+            : sliceWidth;
+
+        const handleMouseMove = (event: React.MouseEvent) => {
+          // Find the first series' point at this x position to use as the primary point
+          const primaryPoint = series[0]?.data?.find(
+            (d: any) => d.data.x === xValue,
+          );
+
+          if (!primaryPoint) return;
+
+          const tooltipData = {
+            point: {
+              ...primaryPoint,
+              x: xScale(xValue) ?? 0,
+              y: yScale(primaryPoint.data.y) ?? 0,
+              data: primaryPoint.data,
+              seriesId: series[0]?.id,
+            },
+            data,
+            forecast,
+            t,
+          };
+
+          showTooltipFromEvent(
+            <TooltipCard {...tooltipData} />,
+            event,
+            "right"
+          );
+        };
+
+        const handleMouseLeave = () => {
+          hideTooltip();
+        };
+
+        return (
+          <rect
+            key={xValue}
+            x={sliceX}
+            y={0}
+            width={width}
+            height={innerHeight}
+            fill="transparent"
+            style={{ pointerEvents: "all" }}
+            onMouseEnter={handleMouseMove}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          />
+        );
+      })}
+    </g>
+  );
+}
+
+const EmissionsForecastChartInner = ({
   forecast,
   t,
 }: {
@@ -89,18 +170,6 @@ export const EmissionsForecastChart = ({
             format: (value: number) => convertKgToTonnes(value),
           }}
           colors={colors}
-          tooltip={({ point }) => (
-            <TooltipCard point={point} data={data} forecast={forecast} t={t} />
-          )}
-          enableSlices="x"
-          sliceTooltip={({ slice }) => (
-            <TooltipCard
-              point={slice.points[0]}
-              data={data}
-              forecast={forecast}
-              t={t}
-            />
-          )}
           enableGridX={false}
           enableGridY={false}
           enablePoints={false}
@@ -112,11 +181,43 @@ export const EmissionsForecastChart = ({
           pointLabelYOffset={-12}
           enableArea={true}
           areaOpacity={1}
-          enableTouchCrosshair={true}
-          useMesh={true}
+          isInteractive={false}
+          layers={[
+            "grid",
+            "markers",
+            "axes",
+            "areas",
+            "crosshair",
+            "lines",
+            "points",
+            "slices",
+            "mesh",
+            "legends",
+            (layerProps) =>
+              CustomTooltipLayer({
+                ...layerProps,
+                data,
+                forecast,
+                t,
+              }),
+          ]}
         />
       </Box>
       <CustomLegend data={data} t={t} />
     </>
+  );
+};
+
+export const EmissionsForecastChart = ({
+  forecast,
+  t,
+}: {
+  forecast: EmissionsForecastData;
+  t: TFunction;
+}) => {
+  return (
+    <TooltipProvider>
+      <EmissionsForecastChartInner forecast={forecast} t={t} />
+    </TooltipProvider>
   );
 };

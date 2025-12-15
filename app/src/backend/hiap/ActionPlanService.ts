@@ -11,6 +11,8 @@ export interface CreateActionPlanInput {
   actionId: string;
   highImpactActionRankedId?: string;
   cityLocode: string;
+  cityId?: string;
+  inventoryId?: string;
   actionName: string;
   language: string;
 
@@ -69,6 +71,7 @@ export interface UpsertActionPlanInput {
   highImpactActionRankedId?: string;
   cityId: string;
   cityLocode: string;
+  inventoryId?: string;
   actionName: string;
   language: string;
   planData: any; // Legacy HIAP API format - will be transformed
@@ -160,6 +163,8 @@ export default class ActionPlanService {
         actionId: input.actionId,
         highImpactActionRankedId: input.highImpactActionRankedId,
         cityLocode: input.cityLocode,
+        cityId: input.cityId,
+        inventoryId: input.inventoryId,
         actionName: input.actionName,
         language: input.language,
         cityName: input.cityName,
@@ -360,6 +365,8 @@ export default class ActionPlanService {
           actionId: input.actionId,
           highImpactActionRankedId: input.highImpactActionRankedId,
           cityLocode: input.cityLocode,
+          cityId: input.cityId,
+          inventoryId: input.inventoryId,
           actionName: input.actionName,
           language: input.language,
           createdBy: input.createdBy,

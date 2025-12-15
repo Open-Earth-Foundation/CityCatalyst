@@ -3,8 +3,11 @@
  * /api/v1/inventory/{inventory}/value/{subcategory}:
  *   get:
  *     tags:
- *       - Inventory Values
+ *       - inventory
+ *       - values
+ *     operationId: getInventoryValueSubcategory
  *     summary: Get inventory value for a subcategory
+ *     description: Retrieves a single inventory value for a specific subcategory within an inventory. Returns detailed information including associated data sources, activity values, gas values, and emissions factors. Requires edit access to the inventory.
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -82,8 +85,11 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  * /api/v1/inventory/{inventory}/value/{subcategory}:
  *   patch:
  *     tags:
- *       - Inventory Values
+ *       - inventory
+ *       - values
+ *     operationId: patchInventoryValueSubcategory
  *     summary: Upsert inventory value for a subcategory
+ *     description: Creates or updates an inventory value for a specific subcategory. Handles gas values, emissions factors, and activity values. Automatically calculates CO2 equivalent values based on gas amounts and global warming potentials. Supports marking data as unavailable with reason and explanation. Requires edit access to the inventory.
  *     parameters:
  *       - in: path
  *         name: inventory

@@ -1,34 +1,32 @@
-# Climate Advisor deployment configuration
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: climate-advisor-deploy
+  name: climate-advisor-test
   namespace: default
   labels:
-    app: climate-advisor-deploy
+    app: climate-advisor-test
 spec:
-  strategy:
-    type: Recreate
   replicas: 1
   selector:
     matchLabels:
-      app: climate-advisor-deploy
+      app: climate-advisor-test
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
-        app: climate-advisor-deploy
+        app: climate-advisor-test
     spec:
       containers:
-        - name: climate-advisor-deploy
+        - name: climate-advisor-test
           image: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor:latest
-          # Set to Never for local
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
               name: http
           envFrom:
             - configMapRef:
-                name: climate-advisor-db-configmap
+                name: climate-advisor-db-configmap-test
           env:
             - name: PROJECT_NAME
               value: "CityCatalyst Climate Advisor"
@@ -46,8 +44,8 @@ spec:
               httpHeaders:
                 - name: X-Liveness-Probe
                   value: "True"
-            initialDelaySeconds: 5
-            periodSeconds: 5
+            initialDelaySeconds: 30
+            periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /health
@@ -64,6 +62,5 @@ spec:
               httpHeaders:
                 - name: X-Liveness-Probe
                   value: "True"
-            initialDelaySeconds: 5
-            periodSeconds: 5
+            periodSeconds: 10
             failureThreshold: 30

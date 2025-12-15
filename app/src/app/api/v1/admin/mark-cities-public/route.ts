@@ -10,7 +10,8 @@ import { markCitiesPublicRequest } from "@/util/validation";
  * /api/v1/admin/mark-cities-public:
  *   put:
  *     tags:
- *       - Admin
+ *       - admin
+ *     operationId: markCitiesPublic
  *     summary: Mark cities as public by making their inventories public for a specific project.
  *     description: Updates all inventories for cities in a specific project to have isPublic=true, effectively making those cities public. Requires admin or OEF admin session and projectId in request body. Cities are considered public when they have at least one public inventory.
  *     requestBody:

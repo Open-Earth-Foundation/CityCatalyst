@@ -3,7 +3,9 @@
  * /api/v1/inventory/{inventory}/notation-keys:
  *   get:
  *     tags:
- *       - Inventory Notation Keys
+ *       - inventory
+ *       - notation-keys
+ *     operationId: getInventoryNotationKeys
  *     summary: List notation key candidates grouped by sector reference number.
  *     description: Returns unfilled or notation-key-filled subcategory entries grouped by sector ref number to help populate notation keys. Requires a signed‑in user with read access to the inventory. Response is { success, result }.
  *     parameters:
@@ -148,7 +150,9 @@ const saveNotationKeysRequest = z.object({
  * /api/v1/inventory/{inventory}/notation-keys:
  *   post:
  *     tags:
- *       - Inventory Notation Keys
+ *       - inventory
+ *       - notation-keys
+ *     operationId: postInventoryNotationKeys
  *     summary: Set notation keys for subcategories in an inventory.
  *     description: Saves notation keys for the inventory’s subcategories, creating inventory values where necessary. Requires a signed‑in user with access to the inventory. Returns { success, result } listing affected values.
  *     parameters:

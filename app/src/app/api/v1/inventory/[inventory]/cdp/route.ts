@@ -3,8 +3,11 @@
  * /api/v1/inventory/{inventory}/cdp:
  *   post:
  *     tags:
- *       - Inventory CDP
+ *       - inventory
+ *       - cdp
+ *     operationId: postInventoryCdp
  *     summary: Submit inventory emissions to CDP questionnaire
+ *     description: Submits greenhouse gas inventory emissions data to the Carbon Disclosure Project (CDP) questionnaire. Calculates emissions totals by scope (1, 2, 3) and category (Stationary Energy, Transportation, Waste) using GPC reference numbers, then submits the data to CDP's API. Requires the CDP service to be enabled and configured. Returns success status of the submission.
  *     parameters:
  *       - in: path
  *         name: inventory

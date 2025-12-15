@@ -160,7 +160,7 @@ alembic history             # Show migration history
 Or use the Kubernetes migration job:
 
 ```bash
-kubectl create -f k8s/climate-advisor-migrate.yml
+kubectl create -f climate-advisor/k8s/climate-advisor-migrate.yml
 ```
 
 ## Usage Examples

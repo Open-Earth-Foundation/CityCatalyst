@@ -270,5 +270,6 @@
   "unexclude-cities": "Un-exclude {{count}} {{count, plural, one {city} other {cities}}}",
   "exclude-column-header": "Exclude",
   "check-cities-to-exclude-tooltip": "Check cities to exclude them from retry",
-  "search-by-city-or-country": "Search by city or country"
+  "search-by-city-or-country": "Search by city or country",
+  "organization-admin": "Organization Admin"
 }

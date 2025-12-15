@@ -3,8 +3,10 @@
  * /api/v1/user/{userId}:
  *   patch:
  *     tags:
- *       - User
+ *       - user
+ *     operationId: patchUserProfile
  *     summary: Update a user's profile
+ *     description: Updates a user's profile information including name, title, and preferred language. Allows users to modify their personal information and language preferences. Returns the updated user data.
  *     parameters:
  *       - in: path
  *         name: userId

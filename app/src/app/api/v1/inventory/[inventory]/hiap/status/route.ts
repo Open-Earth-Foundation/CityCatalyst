@@ -3,7 +3,9 @@
  * /api/v1/inventory/{inventory}/hiap/status:
  *   get:
  *     tags:
- *       - Inventory HIAP
+ *       - inventory
+ *       - hiap
+ *     operationId: getInventoryHiapStatus
  *     summary: Check HIAP job status and get actions if available
  *     description: Returns the current status of any HIAP ranking job and existing actions without starting a new job
  *     parameters:
@@ -39,6 +41,9 @@
  *                       enum: [pending, success, failure, not_found]
  *                     rankedActions:
  *                       type: array
+ *                       items:
+ *                         type: object
+ *                         description: Ranked action item
  *                       description: Actions that have been ranked for this inventory
  *                     unrankedActions:
  *                       type: array
@@ -185,7 +190,7 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
     let unrankedActions = [];
     try {
       const allActions = await GlobalAPIService.fetchAllClimateActions(lng);
-      
+
       // Filter actions by the requested action type (mitigation or adaptation)
       const actionsOfType = allActions.filter((action: any) => {
         return action.ActionType && action.ActionType.includes(type);
@@ -205,7 +210,7 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
           isSelected: true,
         },
       });
-      
+
       const selectedUnrankedActionIds = new Set(
         unrankedSelections.map((selection: any) => selection.actionId)
       );
@@ -329,7 +334,7 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
       type,
       lng,
     }, "Error checking HIAP status");
-    
+
     throw new Error(
       `Failed to check HIAP status for city ${inventory.city.locode}: ${(error as Error).message}`,
       { cause: error },

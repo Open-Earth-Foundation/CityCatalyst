@@ -3,8 +3,10 @@
  * /api/v1/organizations/{organization}/role:
  *   patch:
  *     tags:
- *       - Organizations
+ *       - organizations
+ *     operationId: patchOrganizationRole
  *     summary: Promote a user to organization admin or invite by email
+ *     description: Promotes an existing user to organization admin role or sends an invitation email if the user doesn't exist. If the user exists, creates an OrganizationAdmin record and removes their city-level associations. If the user doesn't exist, creates or updates a pending organization invitation. Sends appropriate notification emails. Requires admin privileges.
  *     parameters:
  *       - in: path
  *         name: organization

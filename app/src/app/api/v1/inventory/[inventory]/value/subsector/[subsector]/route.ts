@@ -3,8 +3,11 @@
  * /api/v1/inventory/{inventory}/value/subsector/{subsector}:
  *   get:
  *     tags:
- *       - Inventory Values
+ *       - inventory
+ *       - values
+ *     operationId: getInventoryValueSubsector
  *     summary: List inventory values for a subsector
+ *     description: Retrieves all inventory values for a specific subsector within an inventory. Returns values with associated data sources, subcategories, sectors, and subsectors. Requires edit access to the inventory.
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -63,8 +66,11 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  * /api/v1/inventory/{inventory}/value/subsector/{subsector}:
  *   patch:
  *     tags:
- *       - Inventory Values
+ *       - inventory
+ *       - values
+ *     operationId: patchInventoryValueSubsector
  *     summary: Upsert inventory value in a subsector by GPC reference number
+ *     description: Creates or updates an inventory value within a subsector using a GPC reference number. Supports marking data as unavailable with reason and explanation. If the value already exists, it is updated; otherwise, a new value is created. Requires edit access to the inventory.
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -172,8 +178,11 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
  * /api/v1/inventory/{inventory}/value/subsector/{subsector}:
  *   delete:
  *     tags:
- *       - Inventory Values
+ *       - inventory
+ *       - values
+ *     operationId: deleteInventoryValueSubsector
  *     summary: Delete inventory value for a subsector
+ *     description: Deletes an inventory value for a specific subsector within an inventory. Permanently removes the value and all associated data. Requires edit access to the inventory.
  *     parameters:
  *       - in: path
  *         name: inventory

@@ -3,8 +3,10 @@
  * /api/v1/organizations/{organization}/active-status:
  *   patch:
  *     tags:
- *       - Organizations
+ *       - organizations
+ *     operationId: patchOrganizationActiveStatus
  *     summary: Update organization active status
+ *     description: Updates the active status of an organization. When activated, sends activation notification emails to all organization admins. When deactivated, sends account frozen notification emails. Requires admin privileges.
  *     parameters:
  *       - in: path
  *         name: organization

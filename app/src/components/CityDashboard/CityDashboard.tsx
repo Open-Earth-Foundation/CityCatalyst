@@ -1,11 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
-import {
-  api,
-  useGetMostRecentCityPopulationQuery,
-  useGetInventoriesQuery,
-} from "@/services/api";
+import { api } from "@/services/api";
 import { useInventoryOrganization } from "@/hooks/use-inventory-organization";
 import { Box, HStack, useDisclosure, Image } from "@chakra-ui/react";
 import { useParams } from "next/navigation";
@@ -15,7 +11,7 @@ import { Hero } from "../HomePageJN/Hero";
 import { MdBarChart } from "react-icons/md";
 import { HeadlineMedium } from "@/components/package/Texts/Headline";
 import ModalPublish from "../GHGIHomePage/DownloadAndShareModals/ModalPublish";
-import { InventoryResponse } from "@/util/types";
+import { CityWithProjectDataResponse, InventoryResponse } from "@/util/types";
 import { Button } from "../ui/button";
 import { ModuleDashboardWidgets } from "../ModuleWidgets";
 import MissingCityDashboard from "../missing-city-dashboard";
@@ -46,75 +42,49 @@ export default function CitiesDashboardPage({
     onClose: onPublishClose,
   } = useDisclosure();
 
-  // Use different API calls based on public mode
+  // Single consolidated API call for all dashboard data
   const {
-    data: privateCity,
-    isLoading: isPrivateCityLoading,
-    error: privateCityError,
-  } = api.useGetCityQuery(cityId!, {
-    skip: !cityIdFromParam || isPublic,
-  });
-
-  const {
-    data: publicCity,
-    isLoading: isPublicCityLoading,
-    error: publicCityError,
-  } = api.useGetPublicCityQuery(cityId!, {
-    skip: !cityIdFromParam || !isPublic,
-  });
-
-  // Use the appropriate data based on mode
-  const city = isPublic ? publicCity : privateCity;
-  const isCityLoading = isPublic ? isPublicCityLoading : isPrivateCityLoading;
-  const cityError = isPublic ? publicCityError : privateCityError;
-
-  const { data: population } = useGetMostRecentCityPopulationQuery(
-    { cityId: cityIdFromParam! },
-    { skip: !cityIdFromParam },
+    data: dashboardData,
+    isLoading: isDashboardLoading,
+    error: dashboardError,
+  } = api.useGetCityDashboardQuery(
+    {
+      cityId: cityIdFromParam!,
+      lng,
+      isPublic,
+    },
+    {
+      skip: !cityIdFromParam,
+    },
   );
 
-  // Use different inventory queries based on public mode
-  const { data: privateInventories, isLoading: isPrivateInventoriesLoading } =
-    useGetInventoriesQuery(
-      { cityId: cityIdFromParam! },
-      { skip: !cityIdFromParam || isPublic },
-    );
+  // Extract data from consolidated response
+  const city = dashboardData?.city;
+  const inventories = dashboardData?.inventories || [];
+  const population = dashboardData?.population;
+  const organization = dashboardData?.organization;
+  const widgets = dashboardData?.widgets;
 
-  const { data: publicInventories, isLoading: isPublicInventoriesLoading } =
-    api.useGetPublicCityInventoriesQuery(cityIdFromParam!, {
-      skip: !cityIdFromParam || !isPublic,
-    });
+  const latestInventory = inventories?.[0] as InventoryResponse | undefined;
 
-  // Use the appropriate data based on mode
-  const inventories = isPublic ? publicInventories : privateInventories;
-  const isInventoriesLoading = isPublic
-    ? isPublicInventoriesLoading
-    : isPrivateInventoriesLoading;
-
-  const latestInventory = inventories?.[0];
-
-  // Use inventory organization hook for theming - only when inventory exists
+  // Use inventory organization hook for theming - pass pre-fetched organization data if available
   const { isInventoryOrgDataLoading } = useInventoryOrganization(
     latestInventory?.inventoryId ?? "",
+    organization ?? undefined, // Pass pre-fetched organization data to skip API call
   );
 
-  if (isFetchBaseQueryError(cityError)) {
+  if (isFetchBaseQueryError(dashboardError)) {
     return (
       <MissingCityDashboard
         lng={lng}
         cityId={cityIdFromParam}
-        error={cityError}
+        error={dashboardError}
         isPublic={isPublic}
       />
     );
   }
 
-  if (
-    isInventoryOrgDataLoading ||
-    isUserInfoLoading ||
-    isCityLoading ||
-    isInventoriesLoading
-  ) {
+  if (isDashboardLoading || isUserInfoLoading || isInventoryOrgDataLoading) {
     return <ProgressLoader />;
   }
 
@@ -124,13 +94,13 @@ export default function CitiesDashboardPage({
       {cityIdFromParam && city && (
         <>
           <Hero
-            city={city}
+            city={city as CityWithProjectDataResponse}
             year={parsedYear}
             ghgiCityData={latestInventory as InventoryResponse}
             isPublic={isPublic}
-            isLoading={isInventoryOrgDataLoading || isCityLoading}
+            isLoading={isInventoryOrgDataLoading}
             t={t}
-            population={population}
+            population={population ?? undefined}
           />
           <Box maxW="1090px" mx="auto">
             <HStack justifyContent="space-between" w="full">
@@ -159,6 +129,12 @@ export default function CitiesDashboardPage({
               lng={lng}
               t={t}
               isPublic={isPublic}
+              ghgiData={widgets?.ghgi}
+              hiapData={widgets?.hiap}
+              ccraData={widgets?.ccra}
+              inventories={inventories}
+              city={city as CityWithProjectDataResponse | undefined}
+              population={population}
             />
           </Box>
         </>

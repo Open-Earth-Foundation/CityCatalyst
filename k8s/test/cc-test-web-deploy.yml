@@ -49,6 +49,8 @@ spec:
               value: "openai"
             - name: OPEN_AI_MODEL
               value: "gpt-4o-mini"
+            - name: CA_BASE_URL
+              value: "http://climate-advisor-service-test"
           resources:
             limits:
               memory: "1024Mi"

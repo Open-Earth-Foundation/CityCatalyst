@@ -3,7 +3,8 @@
  * /api/v1/user/access-status:
  *   get:
  *     tags:
- *       - User
+ *       - user
+ *     operationId: getUserAccessStatus
  *     summary: Get the current user’s access status across resources.
  *     description: Returns a summary of the user’s access and roles across organizations/projects/cities. Requires a signed‑in session. Response is wrapped in '{' data '}' with access metadata.
  *     responses:

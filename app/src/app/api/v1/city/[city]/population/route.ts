@@ -3,8 +3,11 @@
  * /api/v1/city/{city}/population:
  *   get:
  *     tags:
- *       - City Population
+ *       - city
+ *       - population
+ *     operationId: getCityPopulation
  *     summary: Get most recent population data for a specific city
+ *     description: Retrieves the most recent population data available for a specific city. Returns population information including city, region, and country population values. Requires authentication and access to the city.
  *     parameters:
  *       - in: path
  *         name: city
@@ -26,8 +29,11 @@
  *                   description: Most recent population data for the city
  *   post:
  *     tags:
- *       - City Population
+ *       - city
+ *       - population
+ *     operationId: postCityPopulation
  *     summary: Upsert population values for a city
+ *     description: Creates or updates population values (city, region, and country) for a specific city. Requires authentication and access to the city.
  *     parameters:
  *       - in: path
  *         name: city

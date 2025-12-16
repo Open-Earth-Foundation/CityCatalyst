@@ -60,6 +60,7 @@ import {
   LangMap,
   PermissionCheckResponse,
   Authz,
+  CityDashboardResponse,
 } from "@/util/types";
 import type {
   CityLocationResponse,
@@ -1624,6 +1625,25 @@ export const api = createApi({
         transformResponse: (response: { data: CCRASummary }) => response.data,
         providesTags: ["CityDashboard", "Modules", "CCRADashboard"],
       }),
+      getCityDashboard: builder.query<
+        CityDashboardResponse,
+        { cityId: string; lng?: string; isPublic?: boolean }
+      >({
+        query: ({ cityId, lng = "en", isPublic = false }) => {
+          const basePath = isPublic
+            ? `public/city/${cityId}/dashboard`
+            : `city/${cityId}/dashboard`;
+          return `${basePath}?lng=${lng}`;
+        },
+        transformResponse: (response: { data: CityDashboardResponse }) =>
+          response.data,
+        providesTags: [
+          "CityDashboard",
+          "CitiesAndInventories",
+          "Inventories",
+          "CityData",
+        ],
+      }),
       getClient: builder.query<Client, string>({
         query: (clientId: string) => `client/${clientId}/`,
         transformResponse: (response: { data: Client }) => response.data,
@@ -1896,6 +1916,7 @@ export const {
   useGetCityGHGIDashboardQuery,
   useGetCityHIAPDashboardQuery,
   useGetCityCCRADashboardQuery,
+  useGetCityDashboardQuery,
   useGetClientQuery,
   useGenerateCodeMutation,
   useGetUserPermissionsQuery,

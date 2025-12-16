@@ -12,6 +12,8 @@ import {
   HeadlineSmall,
 } from "@/components/package/Texts/Headline";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
+import type { CCRASummary, CityWithProjectDataResponse } from "@/util/types";
+import type { InventoryAttributes } from "@/models/init-models";
 
 interface CCRAWidgetProps {
   cityId: string;
@@ -19,6 +21,9 @@ interface CCRAWidgetProps {
   onVisibilityChange?: (hasContent: boolean) => void;
   isPublic?: boolean;
   year?: number;
+  ccraData?: CCRASummary | null;
+  inventories?: InventoryAttributes[];
+  city?: CityWithProjectDataResponse;
 }
 
 const CCRA_REPLIT_URL =
@@ -31,31 +36,44 @@ export const CCRAWidget: React.FC<CCRAWidgetProps> = ({
   isPublic = false,
   onVisibilityChange,
   year,
+  ccraData: preFetchedCcraData,
+  inventories: preFetchedInventories,
+  city: preFetchedCity,
 }) => {
   const { t } = useTranslation(lng, "ccra");
 
+  // Use pre-fetched inventories if available, otherwise fetch
   const { inventoryId, isLoading: isInventoryLoading } = useLatestInventory({
     cityId,
     isPublic,
     year,
+    preFetchedInventories, // Pass pre-fetched inventories to skip API calls
   });
 
-  // Fetch CCRA dashboard data
+  // Use inventoryId from hook (it will use pre-fetched data if available)
+  const finalInventoryId = inventoryId;
+
+  // Fetch CCRA dashboard data only if not provided (fallback for direct widget access)
   const {
-    data: ccraData,
+    data: fetchedCcraData,
     isLoading: isCcraLoading,
     error,
   } = useGetCityCCRADashboardQuery(
-    { cityId, inventoryId: inventoryId! },
+    { cityId, inventoryId: finalInventoryId! },
     {
-      skip: !inventoryId,
+      skip: !finalInventoryId || !!preFetchedCcraData, // Skip if pre-fetched data is available
     },
   );
 
-  // Get city by cityId
-  const { data: city } = useGetCityQuery(cityId, {
-    skip: !cityId,
+  // Use pre-fetched data if available, otherwise use fetched data
+  const ccraData = preFetchedCcraData || fetchedCcraData;
+
+  // Use pre-fetched city if available, otherwise fetch (needed for locode)
+  const { data: fetchedCity } = useGetCityQuery(cityId, {
+    skip: !cityId || !!preFetchedCity, // Skip if pre-fetched city available
   });
+
+  const city = preFetchedCity || fetchedCity;
 
   const isLoading = isInventoryLoading || isCcraLoading;
 

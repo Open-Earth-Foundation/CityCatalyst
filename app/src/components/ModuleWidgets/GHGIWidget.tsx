@@ -7,7 +7,11 @@ import {
 } from "@/services/api";
 import { useLatestInventory } from "@/hooks/use-latest-inventory";
 import ReportResults from "../GHGI/ReportResults";
-import { InventoryResponse } from "@/util/types";
+import { InventoryResponse, GHGInventorySummary } from "@/util/types";
+import type {
+  InventoryAttributes,
+  PopulationAttributes,
+} from "@/models/init-models";
 
 interface GHGIWidgetProps {
   cityId: string;
@@ -15,6 +19,9 @@ interface GHGIWidgetProps {
   onVisibilityChange?: (hasContent: boolean) => void;
   isPublic?: boolean;
   year?: number;
+  ghgiData?: GHGInventorySummary | null;
+  inventories?: InventoryAttributes[];
+  population?: PopulationAttributes | null;
 }
 
 export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
@@ -23,30 +30,46 @@ export const GHGIWidget: React.FC<GHGIWidgetProps> = ({
   onVisibilityChange,
   isPublic = false,
   year,
+  ghgiData: preFetchedGhgiData,
+  inventories: preFetchedInventories,
+  population: preFetchedPopulation,
 }) => {
+  // Use pre-fetched inventories if available, otherwise fetch
   const { inventoryId, isLoading: isInventoryLoading } = useLatestInventory({
     cityId,
     isPublic,
     year,
+    preFetchedInventories, // Pass pre-fetched inventories to skip API calls
   });
 
-  // Fetch GHGI dashboard data
+  // Use inventoryId from hook (it will use pre-fetched data if available)
+  const finalInventoryId = inventoryId;
+
+  // Fetch GHGI dashboard data only if not provided (fallback for direct widget access)
   const {
-    data: ghgiData,
+    data: fetchedGhgiData,
     isLoading: isGhgiLoading,
     error,
   } = useGetCityGHGIDashboardQuery(
-    { cityId, inventoryId: inventoryId! },
+    { cityId, inventoryId: finalInventoryId! },
     {
-      skip: !inventoryId,
+      skip: !finalInventoryId || !!preFetchedGhgiData, // Skip if pre-fetched data is available
     },
   );
 
-  const isLoading = isInventoryLoading || isGhgiLoading;
-  const { data: population } = useGetCityPopulationQuery(
+  // Use pre-fetched data if available, otherwise use fetched data
+  const ghgiData = preFetchedGhgiData || fetchedGhgiData;
+
+  // Use pre-fetched population if available, otherwise fetch
+  const { data: fetchedPopulation } = useGetCityPopulationQuery(
     { cityId: cityId, year: ghgiData?.year as number },
-    { skip: !cityId || !ghgiData?.year },
+    {
+      skip: !cityId || !ghgiData?.year || !!preFetchedPopulation, // Skip if pre-fetched population available
+    },
   );
+
+  const population = preFetchedPopulation || fetchedPopulation;
+  const isLoading = isInventoryLoading || isGhgiLoading;
 
   const hasContent =
     ghgiData &&

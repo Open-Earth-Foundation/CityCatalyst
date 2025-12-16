@@ -766,6 +766,37 @@ export interface DashboardResponseType {
   };
 }
 
+export interface CityDashboardResponse {
+  city: CityAttributes & {
+    project?: {
+      projectId: string;
+      name: string;
+      organizationId: string;
+      organization?: {
+        organizationId: string;
+        name: string;
+        logoUrl: string | null;
+        active: boolean;
+        theme?: {
+          themeKey: string | null;
+        };
+      };
+    };
+  };
+  inventories: InventoryAttributes[];
+  population: {
+    cityId: string;
+    year: number;
+    population: number;
+  } | null;
+  organization: OrganizationWithThemeResponse | null;
+  widgets: {
+    ghgi: GHGInventorySummary | null;
+    hiap: HIAPSummary | null;
+    ccra: CCRASummary | null;
+  };
+}
+
 export interface Authz {
   lastUsed: string | null;
   created: string;

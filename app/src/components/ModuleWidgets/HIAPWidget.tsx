@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Box, Text, HStack, Tabs, Icon } from "@chakra-ui/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/i18n/client";
-import { ACTION_TYPES, HIAction } from "@/util/types";
+import { ACTION_TYPES, HIAction, HIAPSummary } from "@/util/types";
 import { ClimateActionCard } from "@/components/ClimateActionCard";
 import { ActionDrawer } from "@/components/ActionDrawer";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
@@ -13,6 +13,7 @@ import { AdaptationTabIcon, MitigationTabIcon } from "../icons";
 import { useGetCityHIAPDashboardQuery } from "@/services/api";
 import { getTopPickActions } from "@/util/helpers";
 import { useLatestInventory } from "@/hooks/use-latest-inventory";
+import type { InventoryAttributes } from "@/models/init-models";
 
 interface HIAPWidgetProps {
   cityId: string;
@@ -20,6 +21,8 @@ interface HIAPWidgetProps {
   onVisibilityChange?: (hasContent: boolean) => void;
   isPublic?: boolean;
   year?: number;
+  hiapData?: HIAPSummary | null;
+  inventories?: InventoryAttributes[];
 }
 
 export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
@@ -28,6 +31,8 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
   onVisibilityChange,
   isPublic = false,
   year,
+  hiapData: preFetchedHiapData,
+  inventories: preFetchedInventories,
 }) => {
   const { t } = useTranslation(lng, "hiap");
   const router = useRouter();
@@ -36,23 +41,31 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
   );
   const [selectedAction, setSelectedAction] = useState<HIAction | null>(null);
 
+  // Use pre-fetched inventories if available, otherwise fetch
   const { inventoryId, isLoading: isInventoryLoading } = useLatestInventory({
     cityId,
     isPublic,
     year,
+    preFetchedInventories, // Pass pre-fetched inventories to skip API calls
   });
 
-  // Fetch HIAP dashboard data
+  // Use inventoryId from hook (it will use pre-fetched data if available)
+  const finalInventoryId = inventoryId;
+
+  // Fetch HIAP dashboard data only if not provided (fallback for direct widget access)
   const {
-    data: hiapData,
+    data: fetchedHiapData,
     isLoading: isHiapLoading,
     error,
   } = useGetCityHIAPDashboardQuery(
-    { cityId, inventoryId: inventoryId!, lng },
+    { cityId, inventoryId: finalInventoryId!, lng },
     {
-      skip: !inventoryId,
+      skip: !finalInventoryId || !!preFetchedHiapData, // Skip if pre-fetched data is available
     },
   );
+
+  // Use pre-fetched data if available, otherwise use fetched data
+  const hiapData = preFetchedHiapData || fetchedHiapData;
 
   const isLoading = isInventoryLoading || isHiapLoading;
 

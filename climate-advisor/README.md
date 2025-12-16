@@ -201,8 +201,8 @@ Agent Continue (with tool result)
 
 ```bash
 cd climate-advisor
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
 ### 2. Configure Environment

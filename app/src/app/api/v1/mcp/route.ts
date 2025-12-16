@@ -58,17 +58,12 @@
 import { apiHandler } from "@/util/api";
 import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/services/logger";
-import { 
-  McpError, 
-  ErrorCode,
-  Tool,
-} from "@modelcontextprotocol/sdk/types.js";
+import { McpError, ErrorCode, Tool } from "@modelcontextprotocol/sdk/types.js";
 import { AppSession } from "@/lib/auth";
 
 // Import tool implementations
 import * as inventoriesTools from "@/lib/mcp/tools/inventories";
 import * as emissionsTools from "@/lib/mcp/tools/emissions";
-import * as forecastTools from "@/lib/mcp/tools/forecast";
 import * as citiesTools from "@/lib/mcp/tools/cities";
 import * as cityProfileTools from "@/lib/mcp/tools/city-profile";
 import * as actionPlansTools from "@/lib/mcp/tools/action-plans";
@@ -84,34 +79,29 @@ function registerTools() {
     definition: inventoriesTools.getUserInventoriesTool,
     handler: inventoriesTools,
   });
-  
+
   toolRegistry.set("get_inventory_emissions", {
     definition: emissionsTools.getInventoryEmissionsTool,
     handler: emissionsTools,
   });
-  
-  toolRegistry.set("get_emissions_forecast", {
-    definition: forecastTools.getEmissionsForecastTool,
-    handler: forecastTools,
-  });
-  
+
   // City tools
   toolRegistry.set("get_user_cities", {
     definition: citiesTools.getUserCitiesTool,
     handler: citiesTools,
   });
-  
+
   toolRegistry.set("get_city_profile", {
     definition: cityProfileTools.getCityProfileTool,
     handler: cityProfileTools,
   });
-  
+
   // Strategy tools
   toolRegistry.set("get_climate_action_plans", {
     definition: actionPlansTools.getClimateActionPlansTool,
     handler: actionPlansTools,
   });
-  
+
   toolRegistry.set("get_climate_risk_assessment", {
     definition: riskAssessmentTools.getClimateRiskAssessmentTool,
     handler: riskAssessmentTools,
@@ -123,40 +113,49 @@ registerTools();
 
 export const POST = async (req: NextRequest) => {
   const hasAuthHeader = !!req.headers.get("Authorization");
-  
+
   // Check if this is an unauthenticated request
   if (!hasAuthHeader) {
     const url = new URL(req.url);
     const origin = process.env.HOST || url.origin;
-    
-    logger.debug("MCP request without authentication - returning 401 with WWW-Authenticate header");
-    
-    return new NextResponse(JSON.stringify({
-      jsonrpc: "2.0",
-      error: {
-        code: ErrorCode.InvalidRequest,
-        message: "Authentication required. This MCP server requires OAuth 2.0 authentication.",
+
+    logger.debug(
+      "MCP request without authentication - returning 401 with WWW-Authenticate header",
+    );
+
+    return new NextResponse(
+      JSON.stringify({
+        jsonrpc: "2.0",
+        error: {
+          code: ErrorCode.InvalidRequest,
+          message:
+            "Authentication required. This MCP server requires OAuth 2.0 authentication.",
+        },
+        id: null,
+      }),
+      {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json",
+          "WWW-Authenticate": `Bearer realm="CityCatalyst MCP Server", resource_metadata="${origin}/.well-known/oauth-authorization-server"`,
+        },
       },
-      id: null,
-    }), {
-      status: 401,
-      headers: {
-        'Content-Type': 'application/json',
-        'WWW-Authenticate': `Bearer realm="CityCatalyst MCP Server", resource_metadata="${origin}/.well-known/oauth-authorization-server"`,
-      },
-    });
+    );
   }
 
   // If we have auth header, delegate to apiHandler for normal processing
   return apiHandler(async (req: NextRequest, { session }) => {
     const body = await req.json();
-    
-    logger.debug({ 
-      method: body.method, 
-      hasSession: !!session,
-      hasAuthHeader: true,
-      userId: session?.user?.id 
-    }, "Processing authenticated MCP request");
+
+    logger.debug(
+      {
+        method: body.method,
+        hasSession: !!session,
+        hasAuthHeader: true,
+        userId: session?.user?.id,
+      },
+      "Processing authenticated MCP request",
+    );
 
     // Validate JSON-RPC format
     if (!body.jsonrpc || body.jsonrpc !== "2.0") {
@@ -174,17 +173,17 @@ export const POST = async (req: NextRequest) => {
       switch (body.method) {
         case "initialize":
           return handleInitialize(body);
-        
+
         case "initialized":
           return NextResponse.json({
             jsonrpc: "2.0",
             result: {},
             id: body.id,
           });
-        
+
         case "tools/list":
           return handleListTools(body);
-        
+
         case "tools/call":
           // Tool calls require authentication
           if (!session) {
@@ -192,20 +191,21 @@ export const POST = async (req: NextRequest) => {
               jsonrpc: "2.0",
               error: {
                 code: ErrorCode.InvalidRequest,
-                message: "Authentication required for tool calls. Invalid or expired token.",
+                message:
+                  "Authentication required for tool calls. Invalid or expired token.",
               },
               id: body.id,
             });
           }
           return await handleCallTool(body, session);
-        
+
         case "ping":
           return NextResponse.json({
             jsonrpc: "2.0",
             result: {},
             id: body.id,
           });
-        
+
         default:
           return NextResponse.json({
             jsonrpc: "2.0",
@@ -217,13 +217,17 @@ export const POST = async (req: NextRequest) => {
           });
       }
     } catch (error) {
-      logger.error({ error, method: body.method }, "Error processing MCP request");
-      
+      logger.error(
+        { error, method: body.method },
+        "Error processing MCP request",
+      );
+
       return NextResponse.json({
         jsonrpc: "2.0",
         error: {
           code: ErrorCode.InternalError,
-          message: error instanceof Error ? error.message : "Internal server error",
+          message:
+            error instanceof Error ? error.message : "Internal server error",
         },
         id: body.id,
       });
@@ -233,7 +237,7 @@ export const POST = async (req: NextRequest) => {
 
 function handleInitialize(request: any) {
   const { protocolVersion, capabilities, clientInfo } = request.params || {};
-  
+
   logger.info({ clientInfo, protocolVersion }, "MCP client initializing");
 
   return NextResponse.json({
@@ -246,7 +250,8 @@ function handleInitialize(request: any) {
       serverInfo: {
         name: "citycatalyst-mcp-server",
         version: "1.0.0",
-        instructions: "This server requires OAuth 2.0 authentication. Please ensure your client is configured with OAuth credentials and is sending the Authorization header with bearer tokens.",
+        instructions:
+          "This server requires OAuth 2.0 authentication. Please ensure your client is configured with OAuth credentials and is sending the Authorization header with bearer tokens.",
       },
     },
     id: request.id,
@@ -254,8 +259,8 @@ function handleInitialize(request: any) {
 }
 
 function handleListTools(request: any) {
-  const tools = Array.from(toolRegistry.values()).map(t => t.definition);
-  
+  const tools = Array.from(toolRegistry.values()).map((t) => t.definition);
+
   logger.debug({ toolCount: tools.length }, "Listing MCP tools");
 
   return NextResponse.json({
@@ -269,7 +274,7 @@ function handleListTools(request: any) {
 
 async function handleCallTool(request: any, session: AppSession) {
   const { name, arguments: args } = request.params || {};
-  
+
   if (!name) {
     return NextResponse.json({
       jsonrpc: "2.0",
@@ -294,11 +299,14 @@ async function handleCallTool(request: any, session: AppSession) {
   }
 
   try {
-    logger.info({ 
-      tool: name, 
-      userId: session.user.id,
-      hasArgs: !!args 
-    }, "Executing MCP tool");
+    logger.info(
+      {
+        tool: name,
+        userId: session.user.id,
+        hasArgs: !!args,
+      },
+      "Executing MCP tool",
+    );
 
     // Execute the tool with the session
     const result = await tool.handler.execute(args || {}, session);
@@ -317,17 +325,23 @@ async function handleCallTool(request: any, session: AppSession) {
     });
   } catch (error) {
     logger.error({ error, tool: name }, "Tool execution failed");
-    
+
     // Map error to appropriate MCP error code
     let errorCode = ErrorCode.InternalError;
     let errorMessage = "Tool execution failed";
-    
+
     if (error instanceof Error) {
       errorMessage = error.message;
-      
-      if (error.message.includes("Unauthorized") || error.message.includes("Authentication")) {
+
+      if (
+        error.message.includes("Unauthorized") ||
+        error.message.includes("Authentication")
+      ) {
         errorCode = ErrorCode.InvalidRequest;
-      } else if (error.message.includes("not found") || error.message.includes("Not found")) {
+      } else if (
+        error.message.includes("not found") ||
+        error.message.includes("Not found")
+      ) {
         errorCode = ErrorCode.InvalidParams;
       }
     }

@@ -3,8 +3,10 @@
  * /api/v1/organizations/{organization}/branding:
  *   patch:
  *     tags:
- *       - Organizations
+ *       - organizations
+ *     operationId: patchOrganizationBranding
  *     summary: Update organization branding (theme and logos)
+ *     description: Updates organization branding including theme selection and logo upload. Accepts multipart form data with an optional logo file (JPEG or PNG, max 10MB). Can clear the existing logo by setting clearLogoUrl to true. Updates the organization's theme ID and logo URL. Requires appropriate permissions.
  *     parameters:
  *       - in: path
  *         name: organization

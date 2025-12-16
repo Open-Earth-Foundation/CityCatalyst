@@ -10,10 +10,10 @@ const ProgressLoader = () => {
       justifyContent="center"
       alignItems="center"
     >
-      <ProgressCircle.Root value={null} size="md">
+      <ProgressCircle.Root value={null} size="md" color="interactive.secondary">
         <ProgressCircle.Circle>
           <ProgressCircle.Track />
-          <ProgressCircle.Range />
+          <ProgressCircle.Range stroke="interactive.secondary" />
         </ProgressCircle.Circle>
       </ProgressCircle.Root>
     </Box>

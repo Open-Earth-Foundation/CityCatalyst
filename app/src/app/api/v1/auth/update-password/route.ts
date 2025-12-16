@@ -3,7 +3,8 @@
  * /api/v1/auth/update-password:
  *   post:
  *     tags:
- *       - Auth
+ *       - auth
+ *     operationId: postAuthUpdatePassword
  *     summary: Change the current user’s password.
  *     description: Validates the current password and sets a new one for the authenticated user. Requires a signed‑in session; non‑authenticated requests fail with 401/404. Returns a success flag indicating if the update persisted.
  *     requestBody:

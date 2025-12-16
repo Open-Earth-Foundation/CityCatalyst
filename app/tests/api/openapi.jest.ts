@@ -2,6 +2,7 @@ import { GET as getOpenAPISpec } from "@/app/api/openapi/json/route";
 import { db } from "@/models";
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { mockRequest, setupTests } from "../helpers";
+import packageJson from "@/../package.json";
 
 describe("OpenAPI Specification Endpoint", () => {
   beforeAll(async () => {
@@ -38,7 +39,7 @@ describe("OpenAPI Specification Endpoint", () => {
 
     it("should have correct API metadata", () => {
       expect(openApiSpec.info.title).toBe("CityCatalyst API");
-      expect(openApiSpec.info.version).toBe("0.1.0");
+      expect(openApiSpec.info.version).toBe(packageJson.version);
     });
 
     it("should have security schemes defined", () => {

@@ -25,6 +25,7 @@ export const EmissionsForecastCard = ({
 }) => {
   const [isExplanationModalOpen, setIsExplanationModalOpen] = useState(false);
 
+
   return (
     <>
       <GrowthRatesExplanationModal
@@ -66,7 +67,6 @@ export const EmissionsForecastCard = ({
           paddingRight={0}
           height="600px"
           width="100%"
-          overflow="hidden"
         >
           <EmissionsForecastChart forecast={forecast} t={t} />
         </CardBody>

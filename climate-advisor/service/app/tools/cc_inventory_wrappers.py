@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+from functools import lru_cache
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 from uuid import UUID
 
@@ -16,6 +17,17 @@ from .payload_trimmers import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+@lru_cache(maxsize=64)
+def _compile_city_pattern(city_name: str) -> re.Pattern[str]:
+    """
+    Compile and cache case-insensitive regex patterns for city names.
+
+    A small LRU cache keeps patterns for recently searched cities to avoid
+    recompiling when the same city name is used repeatedly.
+    """
+    return re.compile(re.escape(city_name.strip()), re.IGNORECASE)
 
 
 def _serialize(action: str, result: CCInventoryToolResult) -> str:
@@ -98,8 +110,8 @@ def _search_inventories_by_city(
     if not city_name or not city_name.strip():
         return []
     
-    # Case-insensitive regex pattern for flexible city name matching
-    pattern = re.compile(re.escape(city_name.strip()), re.IGNORECASE)
+    # Case-insensitive regex pattern for flexible city name matching (cached per city)
+    pattern = _compile_city_pattern(city_name)
     
     matches: List[Dict[str, Any]] = []
     for inventory in inventories:

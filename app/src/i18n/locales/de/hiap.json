@@ -167,5 +167,12 @@
   "error-generating-actions-description": "Wir haben einen Fehler beim Generieren Ihrer Klimaschutzmaßnahmen festgestellt. Bitte versuchen Sie es erneut.",
   "inventory-year": "Inventarjahr",
   "action-explanation": "Erläuterung",
-  "no-explanation-available": "Keine Erklärung verfügbar"
+  "no-explanation-available": "Keine Erklärung verfügbar",
+  "ranked-actions": "Rangierte Aktionen",
+  "unranked-actions": "Nicht eingestufte Aktionen",
+  "updating-selection": "Auswahl aktualisieren...",
+  "selection-updated": "Auswahl erfolgreich aktualisiert",
+  "selection-update-failed": "Aktualisierung der Auswahl fehlgeschlagen",
+  "other-available-actions": "Andere verfügbare Aktionen",
+  "other-available-actions-description": "Unten sind zusätzliche Klimaschutzmaßnahmen für Ihre Stadt aufgeführt, die nicht in der Top-Rangliste enthalten waren. Diese Maßnahmen können je nach den spezifischen Prioritäten und dem Kontext Ihrer Stadt immer noch relevant sein."
 }

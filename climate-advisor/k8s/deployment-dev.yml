@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: climate-advisor-dev
+  namespace: default
+  labels:
+    app: climate-advisor-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: climate-advisor-dev
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: climate-advisor-dev
+    spec:
+      containers:
+        - name: climate-advisor-dev
+          image: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+          envFrom:
+            - configMapRef:
+                name: climate-advisor-db-configmap-dev
+          env:
+            - name: PROJECT_NAME
+              value: "CityCatalyst Climate Advisor"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+              httpHeaders:
+                - name: X-Liveness-Probe
+                  value: "True"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+              httpHeaders:
+                - name: X-Liveness-Probe
+                  value: "True"
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+              httpHeaders:
+                - name: X-Liveness-Probe
+                  value: "True"
+            periodSeconds: 10
+            failureThreshold: 30

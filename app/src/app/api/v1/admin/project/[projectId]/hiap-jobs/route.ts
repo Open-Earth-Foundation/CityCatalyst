@@ -38,7 +38,8 @@ const hiapJobsQuerySchema = z.object({
  * /api/v1/admin/project/{projectId}/hiap-jobs:
  *   get:
  *     tags:
- *       - Admin
+ *       - admin
+ *     operationId: getProjectHiapJobs
  *     summary: Get all HIAP prioritization jobs for a project
  *     description: Returns all HIAP prioritization jobs (both completed and in-progress) for all cities in a project
  *     parameters:

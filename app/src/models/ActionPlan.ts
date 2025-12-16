@@ -6,6 +6,8 @@ export interface ActionPlanAttributes {
   actionId: string;
   highImpactActionRankedId?: string | null;
   cityLocode: string;
+  cityId?: string | null;
+  inventoryId?: string | null;
   actionName: string;
   language: string;
 
@@ -40,6 +42,8 @@ export type ActionPlanId = ActionPlan[ActionPlanPk];
 export type ActionPlanOptionalAttributes =
   | "id"
   | "highImpactActionRankedId"
+  | "cityId"
+  | "inventoryId"
   | "cityName"
   | "createdAtTimestamp"
   | "cityDescription"
@@ -70,6 +74,8 @@ export class ActionPlan
   declare actionId: string;
   declare highImpactActionRankedId?: string | null;
   declare cityLocode: string;
+  declare cityId?: string | null;
+  declare inventoryId?: string | null;
   declare actionName: string;
   declare language: string;
 
@@ -121,6 +127,16 @@ export class ActionPlan
           type: DataTypes.STRING,
           allowNull: false,
           field: "city_locode",
+        },
+        cityId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          field: "city_id",
+        },
+        inventoryId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          field: "inventory_id",
         },
         actionName: {
           type: DataTypes.STRING,

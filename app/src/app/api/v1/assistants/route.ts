@@ -3,7 +3,8 @@
  * /api/v1/assistants:
  *   post:
  *     tags:
- *       - Assistants
+ *       - assistants
+ *     operationId: postAssistants
  *     summary: Create a configured Assistant instance for the application.
  *     description: Creates a configured Assistant instance for the application with file search resources. Requires an admin session. Returns an OpenAI Assistant ID that can be used for climate-related queries and document analysis.
  *     responses:

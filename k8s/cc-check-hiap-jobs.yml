@@ -26,8 +26,12 @@ spec:
                 - /bin/sh
                 - -c
                 - |
+                  if [ -n "$(CC_CRON_JOB_API_KEY)" ]; then
+                    echo "Missing env var CC_CRON_JOB_API_KEY"
+                    exit 1
+                  fi
                   echo "Checking HIAP jobs at $(date)"
-                  curl -f -L -X GET http://cc-web:3000/api/v1/cron/check-hiap-jobs
+                  curl -f -L --header "Authorization: Bearer $(CC_CRON_JOB_API_KEY)" -X GET http://cc-web:3000/api/v1/cron/check-hiap-jobs
                   EXIT_CODE=$?
                   if [ $EXIT_CODE -eq 0 ]; then
                     echo "Cron job completed successfully"
@@ -35,4 +39,3 @@ spec:
                     echo "Cron job failed with exit code $EXIT_CODE"
                     exit $EXIT_CODE
                   fi
-

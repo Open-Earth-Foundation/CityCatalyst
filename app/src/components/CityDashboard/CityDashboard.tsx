@@ -129,12 +129,12 @@ export default function CitiesDashboardPage({
               lng={lng}
               t={t}
               isPublic={isPublic}
-              ghgiData={widgets?.ghgi ?? undefined}
-              hiapData={widgets?.hiap ?? undefined}
-              ccraData={widgets?.ccra ?? undefined}
+              ghgiData={widgets?.ghgi}
+              hiapData={widgets?.hiap}
+              ccraData={widgets?.ccra}
               inventories={inventories}
               city={city as CityWithProjectDataResponse | undefined}
-              population={population ?? undefined}
+              population={population}
             />
           </Box>
         </>

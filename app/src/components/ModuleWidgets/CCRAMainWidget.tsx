@@ -21,7 +21,7 @@ interface CCRAWidgetProps {
   onVisibilityChange?: (hasContent: boolean) => void;
   isPublic?: boolean;
   year?: number;
-  ccraData?: CCRASummary;
+  ccraData?: CCRASummary | null;
   inventories?: InventoryAttributes[];
   city?: CityWithProjectDataResponse;
 }

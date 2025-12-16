@@ -21,7 +21,7 @@ interface HIAPWidgetProps {
   onVisibilityChange?: (hasContent: boolean) => void;
   isPublic?: boolean;
   year?: number;
-  hiapData?: HIAPSummary;
+  hiapData?: HIAPSummary | null;
   inventories?: InventoryAttributes[];
 }
 

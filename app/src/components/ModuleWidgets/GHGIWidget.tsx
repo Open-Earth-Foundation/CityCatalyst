@@ -19,9 +19,9 @@ interface GHGIWidgetProps {
   onVisibilityChange?: (hasContent: boolean) => void;
   isPublic?: boolean;
   year?: number;
-  ghgiData?: GHGInventorySummary;
+  ghgiData?: GHGInventorySummary | null;
   inventories?: InventoryAttributes[];
-  population?: PopulationAttributes;
+  population?: PopulationAttributes | null;
 }
 
 export const GHGIWidget: React.FC<GHGIWidgetProps> = ({

@@ -24,12 +24,12 @@ interface ModuleDashboardWidgetsProps {
   t: TFunction;
   isPublic?: boolean;
   year?: number;
-  ghgiData?: GHGInventorySummary;
-  hiapData?: HIAPSummary;
-  ccraData?: CCRASummary;
+  ghgiData?: GHGInventorySummary | null;
+  hiapData?: HIAPSummary | null;
+  ccraData?: CCRASummary | null;
   inventories?: InventoryAttributes[];
   city?: CityWithProjectDataResponse;
-  population?: PopulationAttributes;
+  population?: PopulationAttributes | null;
 }
 
 const WIDGET_COUNT = 3;
@@ -88,9 +88,9 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
         onVisibilityChange={handleGHGIVisibility}
         isPublic={isPublic}
         year={year}
-        ghgiData={ghgiData}
+        ghgiData={ghgiData as GHGInventorySummary | undefined | null}
         inventories={inventories}
-        population={population}
+        population={population as PopulationAttributes | undefined | null}
       />
       <HIAPWidget
         cityId={cityId}
@@ -98,7 +98,7 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
         onVisibilityChange={handleHIAPVisibility}
         isPublic={isPublic}
         year={year}
-        hiapData={hiapData}
+        hiapData={hiapData as HIAPSummary | undefined | null}
         inventories={inventories}
       />
       <CCRAWidget
@@ -107,7 +107,7 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
         onVisibilityChange={handleCCRAVisibility}
         isPublic={isPublic}
         year={year}
-        ccraData={ccraData}
+        ccraData={ccraData as CCRASummary | undefined | null}
         inventories={inventories}
         city={city}
       />

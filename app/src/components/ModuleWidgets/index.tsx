@@ -7,6 +7,16 @@ import { HIAPWidget } from "./HIAPWidget";
 import { CCRAWidget } from "./CCRAMainWidget";
 import { EmptyDashboard } from "../CityDashboard/EmptyDashboard";
 import { TFunction } from "i18next";
+import type {
+  InventoryAttributes,
+  PopulationAttributes,
+} from "@/models/init-models";
+import type {
+  GHGInventorySummary,
+  HIAPSummary,
+  CCRASummary,
+  CityWithProjectDataResponse,
+} from "@/util/types";
 
 interface ModuleDashboardWidgetsProps {
   cityId: string;
@@ -14,6 +24,12 @@ interface ModuleDashboardWidgetsProps {
   t: TFunction;
   isPublic?: boolean;
   year?: number;
+  ghgiData?: GHGInventorySummary | null;
+  hiapData?: HIAPSummary | null;
+  ccraData?: CCRASummary | null;
+  inventories?: InventoryAttributes[];
+  city?: CityWithProjectDataResponse;
+  population?: PopulationAttributes | null;
 }
 
 const WIDGET_COUNT = 3;
@@ -24,6 +40,12 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
   t,
   isPublic = false,
   year,
+  ghgiData,
+  hiapData,
+  ccraData,
+  inventories,
+  city,
+  population,
 }) => {
   const [widgetVisibility, setWidgetVisibility] = useState<
     Record<string, boolean>
@@ -66,6 +88,9 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
         onVisibilityChange={handleGHGIVisibility}
         isPublic={isPublic}
         year={year}
+        ghgiData={ghgiData as GHGInventorySummary | undefined | null}
+        inventories={inventories}
+        population={population as PopulationAttributes | undefined | null}
       />
       <HIAPWidget
         cityId={cityId}
@@ -73,6 +98,8 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
         onVisibilityChange={handleHIAPVisibility}
         isPublic={isPublic}
         year={year}
+        hiapData={hiapData as HIAPSummary | undefined | null}
+        inventories={inventories}
       />
       <CCRAWidget
         cityId={cityId}
@@ -80,6 +107,9 @@ export const ModuleDashboardWidgets: React.FC<ModuleDashboardWidgetsProps> = ({
         onVisibilityChange={handleCCRAVisibility}
         isPublic={isPublic}
         year={year}
+        ccraData={ccraData as CCRASummary | undefined | null}
+        inventories={inventories}
+        city={city}
       />
     </VStack>
   );

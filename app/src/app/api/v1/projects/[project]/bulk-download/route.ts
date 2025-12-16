@@ -3,8 +3,10 @@
  * /api/v1/projects/{project}/bulk-download:
  *   get:
  *     tags:
- *       - Projects
+ *       - projects
+ *     operationId: getProjectBulkDownload
  *     summary: Bulk download inventories for a project (CSV)
+ *     description: Generates and downloads a CSV file containing all inventories for a project. The CSV includes city information (name, locode, region, country), inventory metadata (ID, year), and all inventory data with expanded headers. Supports optional language parameter for localized column headers. Requires admin privileges. Returns the CSV file as a downloadable attachment.
  *     parameters:
  *       - in: path
  *         name: project

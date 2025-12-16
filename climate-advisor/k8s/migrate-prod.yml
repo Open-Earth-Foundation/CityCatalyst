@@ -1,0 +1,25 @@
+# Climate Advisor migration job - runs database migrations on deployment (PROD)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: climate-advisor-migrate-prod-
+  namespace: default
+spec:
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: climate-advisor-migrate
+          image: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor:stable
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: climate-advisor-db-configmap-prod
+          env:
+            - name: ALEMBIC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: climate-advisor-db-configmap-prod
+                  key: DB_URL
+          command: ["alembic", "upgrade", "head"]

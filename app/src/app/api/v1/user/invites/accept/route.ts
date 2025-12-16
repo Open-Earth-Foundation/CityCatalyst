@@ -3,8 +3,11 @@
  * /api/v1/user/invites/accept:
  *   patch:
  *     tags:
- *       - User Invites
+ *       - user
+ *       - invites
+ *     operationId: patchUserInvitesAccept
  *     summary: Accept invites to join cities
+ *     description: Accepts one or more city invitations using a verification token. Validates the token and email, creates CityUser relationships for each accepted invite, and updates invite statuses to ACCEPTED. If the user has no default inventory, sets the first available inventory from the accepted cities as the default. Requires authentication and valid verification tokens.
  *     requestBody:
  *       required: true
  *       content:

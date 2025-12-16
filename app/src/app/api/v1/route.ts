@@ -6,7 +6,8 @@ import { NextResponse } from "next/server";
  * /api/v1:
  *   get:
  *     tags:
- *       - Root
+ *       - root
+ *     operationId: getApiRoot
  *     summary: API root endpoint with a welcome banner.
  *     description: Public endpoint that returns a simple welcome message indicating the API is reachable. No authentication is required. The response is a plain object with a message field.
  *     responses:

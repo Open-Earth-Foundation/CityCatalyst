@@ -3,7 +3,9 @@
  * /api/v1/assistants/threads/messages:
  *   post:
  *     tags:
- *       - Assistants Threads
+ *       - assistants
+ *       - threads
+ *     operationId: postAssistantsThreadsMessages
  *     summary: Append a user message to a thread and stream the run output.
  *     description: Adds a message to an existing thread and starts a run that streams incremental events (tool calls, deltas, completions). Requires a signed-in user who owns or can access the thread’s inventory context. The response is a streamed sequence of events, not a JSON object.
  *     requestBody:

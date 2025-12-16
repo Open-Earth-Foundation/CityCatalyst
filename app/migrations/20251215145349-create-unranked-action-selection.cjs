@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('UnrankedActionSelection', {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable("UnrankedActionSelection", {
       id: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -14,18 +14,18 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'Inventory',
-          key: 'inventory_id',
+          model: "Inventory",
+          key: "inventory_id",
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
       action_id: {
         type: Sequelize.TEXT,
         allowNull: false,
       },
       action_type: {
-        type: Sequelize.ENUM('mitigation', 'adaptation'),
+        type: Sequelize.ENUM("mitigation", "adaptation"),
         allowNull: false,
       },
       lang: {
@@ -50,14 +50,14 @@ module.exports = {
     });
 
     // Add unique constraint for inventory_id, action_id, and lang combination
-    await queryInterface.addIndex('UnrankedActionSelection', {
-      fields: ['inventory_id', 'action_id', 'lang'],
+    await queryInterface.addIndex("UnrankedActionSelection", {
+      fields: ["inventory_id", "action_id", "lang"],
       unique: true,
-      name: 'UnrankedActionSelection_unique',
+      name: "UnrankedActionSelection_unique",
     });
   },
 
-  async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('UnrankedActionSelection');
-  }
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable("UnrankedActionSelection");
+  },
 };

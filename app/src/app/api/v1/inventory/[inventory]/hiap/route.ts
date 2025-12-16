@@ -114,6 +114,8 @@ import { db } from "@/models";
 import { z } from "zod";
 import GlobalAPIService from "@/backend/GlobalAPIService";
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
   if (!session) {
     throw new Error("Unauthorized");
@@ -188,9 +190,9 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
         isSelected: selectedUnrankedActionIds.has(action.ActionID),
         hiaRankingId: "", // Not applicable for unranked
         lang: lng,
-        primaryPurposes: [],
-        dependencies: [],
-        cobenefits: [],
+        primaryPurposes: action.PrimaryPurpose || [],
+        dependencies: action.Dependencies || [],
+        cobenefits: action.CoBenefits || [],
         timeline: "",
         cost: "",
         costEvidence: "",
@@ -202,8 +204,8 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
         monitoringAndEvaluation: "",
         costInvestmentNeeded: action.CostInvestmentNeeded || action.Cost || "",
         timelineForImplementation: action.TimelineForImplementation || action.Timeline || "",
-        keyPerformanceIndicators: [],
-        powersAndMandates: [],
+        keyPerformanceIndicators: action.KeyPerformanceIndicators || [],
+        powersAndMandates: action.PowersAndMandates || [],
       };
 
       if (type === "adaptation") {
@@ -212,18 +214,18 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
           type: "adaptation",
           hazards: action.Hazard || [],
           adaptationEffectiveness: action.AdaptationEffectiveness || "medium",
-          adaptationEffectivenessPerHazard: {},
+          adaptationEffectivenessPerHazard: action.AdaptationEffectivenessPerHazard || {},
           qualitativeEffectivenessEvidence: "",
           quantitativeEffectivenessEvidence: "",
-          equityAndInclusionConsiderations: "",
+          equityAndInclusionConsiderations: action.EquityAndInclusionConsiderations || "",
           vulnerabilityAnalysisEvidence: "",
           riskReductionEvidence: "",
           socioEconomicImpacts: "",
           liveabilityCobenefits: "",
           ecosystemServices: "",
-          GHGReductionPotential: {},
-          sectors: [],
-          subsectors: [],
+          GHGReductionPotential: action.GHGReductionPotential || {},
+          sectors: action.Sector || [],
+          subsectors: action.Subsector || [],
         };
       } else {
         return {
@@ -237,7 +239,7 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
           adaptationEffectivenessPerHazard: {},
           qualitativeEffectivenessEvidence: "",
           quantitativeEffectivenessEvidence: "",
-          equityAndInclusionConsiderations: "",
+          equityAndInclusionConsiderations: action.EquityAndInclusionConsiderations || "",
           vulnerabilityAnalysisEvidence: "",
           riskReductionEvidence: "",
           socioEconomicImpacts: "",
@@ -340,7 +342,7 @@ export const PATCH = apiHandler(
       
       for (const actionId of body.selectedActionIds) {
         // Check if it's a UUID (ranked action database record ID)
-        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(actionId);
+        const isUuid = UUID_REGEX.test(actionId);
         
         if (isUuid) {
           rankedActionIds.push(actionId);

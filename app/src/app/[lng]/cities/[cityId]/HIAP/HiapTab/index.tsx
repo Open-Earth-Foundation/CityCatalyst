@@ -552,30 +552,107 @@ export function HiapTab({
 
   // Columns for unranked actions table
   const unrankedColumns: ColumnDef<HIAction>[] = useMemo(
-    () => [
-      ...(isSelectionMode
-        ? [
-            {
-              id: "select",
-              header: ({ table }: { table: TanStackTable<HIAction> }) => (
-                <Checkbox
-                  checked={table.getIsAllRowsSelected()}
-                  onChange={table.getToggleAllRowsSelectedHandler()}
-                />
-              ),
-              cell: ({ row }: { row: Row<HIAction> }) => (
-                <Checkbox
-                  checked={row.getIsSelected()}
-                  disabled={!row.getCanSelect()}
-                  onChange={row.getToggleSelectedHandler()}
-                />
-              ),
-              enableSorting: false,
-              enableHiding: false,
-            },
-          ]
-        : []),
-      {
+    () => {
+      // Selection column (only shown in selection mode)
+      const selectionColumn = {
+        id: "select",
+        header: ({ table }: { table: TanStackTable<HIAction> }) => (
+          <Checkbox
+            checked={table.getIsAllRowsSelected()}
+            onChange={table.getToggleAllRowsSelectedHandler()}
+          />
+        ),
+        cell: ({ row }: { row: Row<HIAction> }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            disabled={!row.getCanSelect()}
+            onChange={row.getToggleSelectedHandler()}
+          />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+      };
+
+      // Type-specific columns for adaptation
+      const adaptationColumns = [
+        {
+          id: "hazards-covered",
+          header: t("hazards-covered"),
+          cell: ({ row }: { row: Row<HIAction> }) => {
+            const action = row.original as AdaptationAction;
+            const hazardCount = action.hazards?.length || 0;
+            return (
+              <Badge colorScheme="orange">
+                {hazardCount} {t("hazards")}
+              </Badge>
+            );
+          },
+        },
+        {
+          id: "adaptation-effectiveness",
+          header: t("effectiveness"),
+          cell: ({ row }: { row: Row<HIAction> }) => {
+            const action = row.original as AdaptationAction;
+            const effectivenessMap: Record<string, number> = {
+              low: 1,
+              medium: 2,
+              high: 3,
+            };
+            const blueBars =
+              effectivenessMap[action.adaptationEffectiveness] || 0;
+            return <BarVisualization value={blueBars} total={3} />;
+          },
+        },
+      ];
+
+      // Type-specific columns for mitigation
+      const mitigationColumns = [
+        {
+          id: "sector",
+          header: t("sector-label"),
+          cell: ({ row }: { row: Row<HIAction> }) => {
+            const action = row.original as MitigationAction;
+            return (
+              <HStack gap={1} flexWrap="wrap">
+                {action.sectors.map((sector) => (
+                  <Text key={sector} color="content.secondary">
+                    {t(`sector.${sector}`)}
+                  </Text>
+                ))}
+              </HStack>
+            );
+          },
+        },
+        {
+          id: "reduction-potential",
+          header: t("ghg-reduction"),
+          cell: ({ row }: { row: Row<HIAction> }) => {
+            const action = row.original as MitigationAction;
+            const totalReduction = Object.values(
+              action.GHGReductionPotential,
+            )
+              .filter((value): value is string => value !== null)
+              .map((value) => {
+                // Parse range like "80-100" and take the average
+                if (value.includes("-")) {
+                  const [min, max] = value
+                    .split("-")
+                    .map((v) => parseFloat(v));
+                  return (min + max) / 2;
+                }
+                return parseFloat(value);
+              })
+              .reduce((sum, value) => sum + value, 0);
+            const blueBars = Math.min(Math.ceil(totalReduction / 20), 5);
+            return (
+              <BarVisualization value={blueBars} total={5} width="60px" />
+            );
+          },
+        },
+      ];
+
+      // Common name column
+      const nameColumn = {
         accessorKey: "name",
         header: t("action"),
         cell: ({ row }: { row: Row<HIAction> }) => (
@@ -593,83 +670,10 @@ export function HiapTab({
             <Text color="content.secondary">{row.original.name}</Text>
           </HStack>
         ),
-      },
-      ...(isAdaptation
-        ? [
-            {
-              id: "hazards-covered",
-              header: t("hazards-covered"),
-              cell: ({ row }: { row: Row<HIAction> }) => {
-                const action = row.original as AdaptationAction;
-                const hazardCount = action.hazards?.length || 0;
-                return (
-                  <Badge colorScheme="orange">
-                    {hazardCount} {t("hazards")}
-                  </Badge>
-                );
-              },
-            },
-            {
-              id: "adaptation-effectiveness",
-              header: t("effectiveness"),
-              cell: ({ row }: { row: Row<HIAction> }) => {
-                const action = row.original as AdaptationAction;
-                const effectivenessMap: Record<string, number> = {
-                  low: 1,
-                  medium: 2,
-                  high: 3,
-                };
-                const blueBars =
-                  effectivenessMap[action.adaptationEffectiveness] || 0;
-                return <BarVisualization value={blueBars} total={3} />;
-              },
-            },
-          ]
-        : [
-            {
-              id: "sector",
-              header: t("sector-label"),
-              cell: ({ row }: { row: Row<HIAction> }) => {
-                const action = row.original as MitigationAction;
-                return (
-                  <HStack gap={1} flexWrap="wrap">
-                    {action.sectors.map((sector) => (
-                      <Text key={sector} color="content.secondary">
-                        {t(`sector.${sector}`)}
-                      </Text>
-                    ))}
-                  </HStack>
-                );
-              },
-            },
-            {
-              id: "reduction-potential",
-              header: t("ghg-reduction"),
-              cell: ({ row }: { row: Row<HIAction> }) => {
-                const action = row.original as MitigationAction;
-                const totalReduction = Object.values(
-                  action.GHGReductionPotential,
-                )
-                  .filter((value): value is string => value !== null)
-                  .map((value) => {
-                    // Parse range like "80-100" and take the average
-                    if (value.includes("-")) {
-                      const [min, max] = value
-                        .split("-")
-                        .map((v) => parseFloat(v));
-                      return (min + max) / 2;
-                    }
-                    return parseFloat(value);
-                  })
-                  .reduce((sum, value) => sum + value, 0);
-                const blueBars = Math.min(Math.ceil(totalReduction / 20), 5);
-                return (
-                  <BarVisualization value={blueBars} total={5} width="60px" />
-                );
-              },
-            },
-          ]),
-      {
+      };
+
+      // Actions column
+      const actionsColumn = {
         id: "actions",
         header: "",
         cell: ({ row }: { row: Row<HIAction> }) => (
@@ -685,8 +689,22 @@ export function HiapTab({
             <Icon as={RiExpandDiagonalFill} color="interactive.control" />
           </IconButton>
         ),
-      },
-    ],
+      };
+
+      // Determine which selection columns to include
+      const selectionColumns = isSelectionMode ? [selectionColumn] : [];
+      
+      // Determine which type-specific columns to include
+      const typeSpecificColumns = isAdaptation ? adaptationColumns : mitigationColumns;
+
+      // Assemble all columns in order
+      return [
+        ...selectionColumns,
+        nameColumn,
+        ...typeSpecificColumns,
+        actionsColumn,
+      ];
+    },
     [isSelectionMode, isAdaptation, t],
   );
 

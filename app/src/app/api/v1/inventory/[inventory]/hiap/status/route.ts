@@ -232,9 +232,9 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
           isSelected: selectedUnrankedActionIds.has(action.ActionID),
           hiaRankingId: "", // Not applicable for unranked
           lang: lng,
-          primaryPurposes: [],
-          dependencies: [],
-          cobenefits: [],
+          primaryPurposes: action.PrimaryPurpose || [],
+          dependencies: action.Dependencies || [],
+          cobenefits: action.CoBenefits || [],
           timeline: "",
           cost: "",
           costEvidence: "",
@@ -246,8 +246,8 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
           monitoringAndEvaluation: "",
           costInvestmentNeeded: action.CostInvestmentNeeded || action.Cost || "",
           timelineForImplementation: action.TimelineForImplementation || action.Timeline || "",
-          keyPerformanceIndicators: [],
-          powersAndMandates: [],
+          keyPerformanceIndicators: action.KeyPerformanceIndicators || [],
+          powersAndMandates: action.PowersAndMandates || [],
         };
 
         if (type === "adaptation") {
@@ -256,18 +256,18 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
             type: "adaptation",
             hazards: action.Hazard || [],
             adaptationEffectiveness: action.AdaptationEffectiveness || "medium",
-            adaptationEffectivenessPerHazard: {},
+            adaptationEffectivenessPerHazard: action.AdaptationEffectivenessPerHazard || {},
             qualitativeEffectivenessEvidence: "",
             quantitativeEffectivenessEvidence: "",
-            equityAndInclusionConsiderations: "",
+            equityAndInclusionConsiderations: action.EquityAndInclusionConsiderations || "",
             vulnerabilityAnalysisEvidence: "",
             riskReductionEvidence: "",
             socioEconomicImpacts: "",
             liveabilityCobenefits: "",
             ecosystemServices: "",
-            GHGReductionPotential: {},
-            sectors: [],
-            subsectors: [],
+            GHGReductionPotential: action.GHGReductionPotential || {},
+            sectors: action.Sector || [],
+            subsectors: action.Subsector || [],
           };
         } else {
           return {
@@ -281,7 +281,7 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
             adaptationEffectivenessPerHazard: {},
             qualitativeEffectivenessEvidence: "",
             quantitativeEffectivenessEvidence: "",
-            equityAndInclusionConsiderations: "",
+            equityAndInclusionConsiderations: action.EquityAndInclusionConsiderations || "",
             vulnerabilityAnalysisEvidence: "",
             riskReductionEvidence: "",
             socioEconomicImpacts: "",

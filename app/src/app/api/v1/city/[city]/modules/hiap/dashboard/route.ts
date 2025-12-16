@@ -3,8 +3,11 @@
  * /api/v1/city/{city}/modules/hiap/dashboard:
  *   get:
  *     tags:
- *       - City Modules
+ *       - city
+ *       - modules
+ *     operationId: getCityModulesHiapDashboard
  *     summary: Get Heatwave Impact Assessment Plan (HIAP) dashboard data for a city inventory
+ *     description: Retrieves Heatwave Impact Assessment Plan dashboard data for a specific inventory within a city. Validates that the inventory belongs to the specified city and that the user has access to it. Supports optional language parameter for localized content and can ignore existing data to force recalculation. Returns dashboard data along with metadata including city ID, inventory ID, year, and module ID.
  *     parameters:
  *       - in: path
  *         name: city

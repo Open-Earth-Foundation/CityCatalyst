@@ -1,8 +1,8 @@
-# Climate Advisor migration job - runs database migrations on deployment
+# Climate Advisor migration job - runs database migrations on deployment (DEV)
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: climate-advisor-migrate-
+  generateName: climate-advisor-migrate-dev-
   namespace: default
 spec:
   ttlSecondsAfterFinished: 86400
@@ -15,11 +15,11 @@ spec:
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
-                name: climate-advisor-db-configmap
+                name: climate-advisor-db-configmap-dev
           env:
             - name: ALEMBIC_URL
               valueFrom:
                 configMapKeyRef:
-                  name: climate-advisor-db-configmap
+                  name: climate-advisor-db-configmap-dev
                   key: DB_URL
           command: ["alembic", "upgrade", "head"]

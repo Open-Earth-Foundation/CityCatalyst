@@ -3,7 +3,9 @@
  * /api/v1/assistants/threads/export:
  *   post:
  *     tags:
- *       - Assistants Threads
+ *       - assistants
+ *       - threads
+ *     operationId: postAssistantsThreadsExport
  *     summary: Save an assistant thread reference in the database.
  *     description: Persists the external Assistant thread ID associated with the configured Assistant. Requires a signed-in user (standard user is sufficient). Use this to keep a record of threads created via the Assistant API.
  *     requestBody:

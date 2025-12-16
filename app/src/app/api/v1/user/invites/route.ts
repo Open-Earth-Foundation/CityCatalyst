@@ -3,8 +3,11 @@
  * /api/v1/user/invites:
  *   get:
  *     tags:
- *       - User Invites
+ *       - user
+ *       - invites
+ *     operationId: getUserInvites
  *     summary: List city invites sent by current user
+ *     description: Retrieves all city invitations sent by the current user. Automatically updates invites that have been pending for more than 30 days to EXPIRED status. Returns invite details including associated cities and user information. Requires authentication.
  *     responses:
  *       200:
  *         description: Invites returned with status updates.
@@ -73,8 +76,11 @@ export const GET = apiHandler(async (req, { params, session }) => {
  * /api/v1/user/invites:
  *   post:
  *     tags:
- *       - User Invites
+ *       - user
+ *       - invites
+ *     operationId: postUserInvites
  *     summary: Invite users to multiple cities
+ *     description: Sends city invitations to one or more email addresses for multiple cities. Creates or updates invitation records and sends invitation emails with verification tokens. Validates that the user has access to all specified cities (unless they are an admin). Supports organization branding in invitation emails. Requires authentication and access to all specified cities.
  *     requestBody:
  *       required: true
  *       content:

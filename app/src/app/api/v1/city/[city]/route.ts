@@ -13,8 +13,10 @@ import { DEFAULT_PROJECT_ID } from "@/util/constants";
  * /api/v1/city/{city}:
  *   get:
  *     tags:
- *       - City
+ *       - city
+ *     operationId: getCity
  *     summary: Get a single city by ID for the current user.
+ *     description: Retrieves detailed information about a single city including its ID, name, region, country, location code (locode), population data, and boundary information. Requires authentication and access to the city. Returns the city data wrapped in a data object.
  *     parameters:
  *       - in: path
  *         name: city
@@ -78,8 +80,10 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  * /api/v1/city/{city}:
  *   delete:
  *     tags:
- *       - City
+ *       - city
+ *     operationId: deleteCity
  *     summary: Delete a city by ID for the current user.
+ *     description: Deletes a city and all associated data. If the deleted city was the user's default city, the system automatically selects another city from the user's accessible cities as the new default. Requires authentication and access to the city. Returns the deleted city data with a deleted flag.
  *     parameters:
  *       - in: path
  *         name: city
@@ -164,8 +168,10 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
  * /api/v1/city/{city}:
  *   patch:
  *     tags:
- *       - City
+ *       - city
+ *     operationId: patchCity
  *     summary: Update city fields by ID.
+ *     description: Updates city information including location code (locode), name, geographic shape, area, and associated project. If no project ID is provided, defaults to the default project. Requires authentication and access to the city. Returns the updated city data wrapped in a data object.
  *     parameters:
  *       - in: path
  *         name: city

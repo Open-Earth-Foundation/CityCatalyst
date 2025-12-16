@@ -3,7 +3,8 @@
  * /api/v1/internal/ca/user-token:
  *   post:
  *     tags:
- *       - Internal
+ *       - internal
+ *     operationId: postInternalCaUserToken
  *     summary: Issue user-scoped token for Climate Advisor service
  *     description: Internal endpoint for CA service to get user-scoped tokens. CA authenticates with service API key, gets token with full user permissions.
  *     requestBody:

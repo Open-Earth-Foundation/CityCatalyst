@@ -3,7 +3,8 @@
  * /api/v1/organizations/themes:
  *   get:
  *     tags:
- *       - Organizations
+ *       - organizations
+ *     operationId: getOrganizationsThemes
  *     summary: List available branding themes.
  *     description: Returns the list of themes that can be assigned to organizations. Requires a signed‑in session. Response is an array of theme objects (not wrapped).
  *     responses:

@@ -11,7 +11,9 @@ import { randomUUID } from "node:crypto";
  * /api/v1/city/{city}/user:
  *   post:
  *     tags:
- *       - City Users
+ *       - city
+ *       - users
+ *     operationId: postCityUsers
  *     summary: Look up a user by email
  *     description: Returns an existing user if found; otherwise returns a message.
  *     parameters:
@@ -57,8 +59,11 @@ export const POST = apiHandler(async (req, { params, session }) => {
  * /api/v1/city/{city}/user:
  *   get:
  *     tags:
- *       - City Users
+ *       - city
+ *       - users
+ *     operationId: getCityUsers
  *     summary: List users for a city
+ *     description: Retrieves a list of all users associated with a specific city. Returns user information for all users who have access to the city. Requires authentication and access to the city.
  *     parameters:
  *       - in: path
  *         name: city
@@ -100,8 +105,11 @@ export const GET = apiHandler(async (req, { params, session }) => {
  * /api/v1/city/{city}/user:
  *   delete:
  *     tags:
- *       - City Users
+ *       - city
+ *       - users
+ *     operationId: deleteCityUsers
  *     summary: Remove a user from a city by email
+ *     description: Removes a user from a city by their email address. This disassociates the user from the city and removes their access. Requires admin privileges. The email is provided as a query parameter.
  *     parameters:
  *       - in: path
  *         name: city

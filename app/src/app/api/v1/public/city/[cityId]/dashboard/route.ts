@@ -13,6 +13,7 @@ import type {
   CCRASummary,
 } from "@/util/types";
 import { Inventory } from "@/models/Inventory";
+import { logger } from "@/services/logger";
 
 /**
  * @swagger
@@ -167,7 +168,7 @@ export const GET = apiHandler(async (req, { params }) => {
           // GHGI dashboard data
           ModuleDashboardService.getGHGIDashboardData(cityId, inventory).catch(
             (err) => {
-              console.error("Error fetching GHGI dashboard:", err);
+              logger.error({ error: err }, "Error fetching GHGI dashboard");
               return null;
             },
           ),
@@ -179,13 +180,13 @@ export const GET = apiHandler(async (req, { params }) => {
             undefined, // No session for public
             false,
           ).catch((err) => {
-            console.error("Error fetching HIAP dashboard:", err);
+            logger.error({ error: err }, "Error fetching HIAP dashboard");
             return null;
           }),
           // CCRA dashboard data
           ModuleDashboardService.getCCRADashboardData(cityId, inventory).catch(
             (err) => {
-              console.error("Error fetching CCRA dashboard:", err);
+              logger.error({ error: err }, "Error fetching CCRA dashboard");
               return null;
             },
           ),
@@ -193,7 +194,7 @@ export const GET = apiHandler(async (req, { params }) => {
       }
     } catch (err) {
       // If access check fails, widgets will be null
-      console.error("Error checking inventory access:", err);
+      logger.error({ error: err }, "Error checking inventory access");
     }
   }
 

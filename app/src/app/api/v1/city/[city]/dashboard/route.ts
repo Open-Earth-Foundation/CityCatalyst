@@ -14,6 +14,7 @@ import type {
 } from "@/util/types";
 import { Inventory } from "@/models/Inventory";
 import type { AppSession } from "@/lib/auth";
+import { logger } from "@/services/logger";
 
 /**
  * @swagger
@@ -118,7 +119,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
           latestInventory,
         ).catch((err) => {
           // Log error but don't fail the entire request
-          console.error("Error fetching GHGI dashboard:", err);
+          logger.error({ error: err }, "Error fetching GHGI dashboard");
           return null;
         }),
         // HIAP dashboard data
@@ -129,7 +130,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
           session,
           false,
         ).catch((err) => {
-          console.error("Error fetching HIAP dashboard:", err);
+          logger.error({ error: err }, "Error fetching HIAP dashboard");
           return null;
         }),
         // CCRA dashboard data
@@ -137,12 +138,12 @@ export const GET = apiHandler(async (req, { params, session }) => {
           cityId,
           latestInventory,
         ).catch((err) => {
-          console.error("Error fetching CCRA dashboard:", err);
+          logger.error({ error: err }, "Error fetching CCRA dashboard");
           return null;
         }),
         // Organization data
         getOrganizationForInventory(inventoryId, session).catch((err) => {
-          console.error("Error fetching organization:", err);
+          logger.error({ error: err }, "Error fetching organization");
           return null;
         }),
       ]

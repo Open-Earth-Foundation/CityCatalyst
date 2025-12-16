@@ -29,6 +29,7 @@ jobs:
         run: npm run build
 
       - name: Lint the OpenAPI spec
+        working-directory: app
         run: npm run openapi:lint
 
       - name: Upload OpenAPI spec artifact

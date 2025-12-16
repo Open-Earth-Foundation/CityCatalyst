@@ -166,5 +166,12 @@
   "error-generating-actions-description": "Nous avons rencontré une erreur lors de la génération de vos actions climatiques. Veuillez réessayer.",
   "inventory-year": "Année d'Inventaire",
   "action-explanation": "Explication",
-  "no-explanation-available": "Aucune explication disponible"
+  "no-explanation-available": "Aucune explication disponible",
+  "ranked-actions": "Actions classées",
+  "unranked-actions": "Actions non classées",
+  "updating-selection": "Mise à jour de la sélection...",
+  "selection-updated": "Sélection mise à jour avec succès",
+  "selection-update-failed": "Échec de la mise à jour de la sélection",
+  "other-available-actions": "Autres Actions Disponibles",
+  "other-available-actions-description": "Voici d'autres actions climatiques disponibles pour votre ville qui n'ont pas été incluses dans la liste des actions les mieux classées. Ces actions peuvent toujours être pertinentes en fonction des priorités spécifiques et du contexte de votre ville."
 }

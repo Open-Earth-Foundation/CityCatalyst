@@ -44,18 +44,6 @@ def trim_inventory_for_listing(inventory: Dict[str, Any]) -> Dict[str, Any]:
         Returns empty dict if input is invalid.
     """
     try:
-        # Validate input type
-        if inventory is None:
-            logger.warning("trim_inventory_for_listing: received None inventory")
-            return {}
-        
-        if not isinstance(inventory, dict):
-            logger.error(f"trim_inventory_for_listing: expected dict, got {type(inventory).__name__}")
-            return {}
-        
-        if not inventory:
-            logger.debug("trim_inventory_for_listing: received empty inventory dict")
-            return {}
         
         # Extract city info with type checking
         city_obj = inventory.get("city")
@@ -133,18 +121,6 @@ def trim_inventory_detailed(inventory: Dict[str, Any]) -> Dict[str, Any]:
         Returns empty dict if input is invalid.
     """
     try:
-        # Validate input type
-        if inventory is None:
-            logger.warning("trim_inventory_detailed: received None inventory")
-            return {}
-        
-        if not isinstance(inventory, dict):
-            logger.error(f"trim_inventory_detailed: expected dict, got {type(inventory).__name__}")
-            return {}
-        
-        if not inventory:
-            logger.debug("trim_inventory_detailed: received empty inventory dict")
-            return {}
         
         # Extract and trim city info (no GeoJSON shape)
         city_obj = inventory.get("city")
@@ -215,18 +191,6 @@ def trim_datasource_entry(source: Dict[str, Any]) -> Dict[str, Any]:
         Trimmed datasource dictionary. Returns empty dict if input is invalid.
     """
     try:
-        # Validate input type
-        if source is None:
-            logger.warning("trim_datasource_entry: received None source")
-            return {}
-        
-        if not isinstance(source, dict):
-            logger.error(f"trim_datasource_entry: expected dict, got {type(source).__name__}")
-            return {}
-        
-        if not source:
-            logger.debug("trim_datasource_entry: received empty source dict")
-            return {}
         
         trimmed: Dict[str, Any] = {}
         
@@ -355,18 +319,6 @@ def trim_datasources_response(response: Dict[str, Any]) -> Dict[str, Any]:
         Dictionary with trimmed sources. Returns empty data array if invalid.
     """
     try:
-        # Validate input type
-        if response is None:
-            logger.warning("trim_datasources_response: received None response")
-            return {"data": []}
-        
-        if not isinstance(response, dict):
-            logger.error(f"trim_datasources_response: expected dict, got {type(response).__name__}")
-            return {"data": []}
-        
-        if not response:
-            logger.debug("trim_datasources_response: received empty response dict")
-            return {"data": []}
         
         data_obj = response.get("data")
         if data_obj is None:

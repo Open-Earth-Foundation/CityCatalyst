@@ -10,11 +10,12 @@ from typing import Any, Dict, List, Optional, Sequence
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from ..db.session import get_session_factory
+from app.config.settings import _load_llm_config
+from app.db.session import get_session_factory
 
 # Import models and services from the service package
-from ..models.db.document_embedding import DocumentEmbedding
-from ..services.embedding_service import EmbeddingResult, EmbeddingService
+from app.models.db.document_embedding import DocumentEmbedding
+from app.services.embedding_service import EmbeddingResult, EmbeddingService
 
 logger = logging.getLogger(__name__)
 
@@ -80,12 +81,13 @@ class ClimateVectorSearchTool:
     when called by an LLM. The LLM decides when to use this tool based on
     the conversation context.
     """
+
     tool_name = "climate_vector_search"
 
     def __init__(
         self,
         *,
-        settings = None,
+        settings=None,
         session_factory: Optional[async_sessionmaker[AsyncSession]] = None,
         embedding_service: Optional[EmbeddingService] = None,
     ) -> None:
@@ -97,14 +99,13 @@ class ClimateVectorSearchTool:
             embedding_service: Embedding service for generating question embeddings
         """
         # Get configuration from settings
-        if settings and hasattr(settings, 'llm') and hasattr(settings.llm, 'tools'):
+        if settings and hasattr(settings, "llm") and hasattr(settings.llm, "tools"):
             config = settings.llm.tools.climate_vector_search
         else:
             # Load defaults from llm_config.yaml when settings not provided
-            from ..config.settings import _load_llm_config
             llm_config = _load_llm_config()
             config = llm_config.tools.climate_vector_search
-        
+
         # Apply configuration values from llm_config.yaml
         self.top_k = config.get("top_k", 5)
         self.min_score = config.get("min_score", 0.6)
@@ -118,7 +119,9 @@ class ClimateVectorSearchTool:
         try:
             self._session_factory = get_session_factory()
         except Exception as exc:
-            logger.warning("Unable to create session factory for %s: %s", self.tool_name, exc)
+            logger.warning(
+                "Unable to create session factory for %s: %s", self.tool_name, exc
+            )
             return None
         return self._session_factory
 
@@ -128,7 +131,9 @@ class ClimateVectorSearchTool:
         try:
             self._embedding_service = EmbeddingService()
         except Exception as exc:
-            logger.warning("Embedding service unavailable for %s: %s", self.tool_name, exc)
+            logger.warning(
+                "Embedding service unavailable for %s: %s", self.tool_name, exc
+            )
             return None
         return self._embedding_service
 
@@ -156,16 +161,14 @@ class ClimateVectorSearchTool:
         if not text:
             logger.warning("Vector search called with empty question")
             return ClimateToolResult(
-                used=False,
-                prompt_context=None,
-                reason="empty_question"
+                used=False, prompt_context=None, reason="empty_question"
             )
-        
+
         logger.info(
             "Vector search initiated - question: '%s', top_k: %s, min_score: %s",
             text,
             top_k or self.top_k,
-            self.min_score
+            self.min_score,
         )
 
         # Get embedding service
@@ -191,7 +194,7 @@ class ClimateVectorSearchTool:
         if not embedding_result.success or not embedding_result.embedding:
             logger.error(
                 "Failed to generate embedding for vector search - error: %s",
-                embedding_result.error or "unknown"
+                embedding_result.error or "unknown",
             )
             invocation = ToolInvocationRecord(
                 name=self.tool_name,
@@ -206,11 +209,11 @@ class ClimateVectorSearchTool:
                 invocation=invocation,
                 reason=embedding_result.error or "embedding_failed",
             )
-        
+
         logger.info(
             "Embedding generated successfully - model: %s, dimension: %s",
             embedding_result.model,
-            len(embedding_result.embedding) if embedding_result.embedding else 0
+            len(embedding_result.embedding) if embedding_result.embedding else 0,
         )
 
         # Use provided top_k or default
@@ -261,10 +264,12 @@ class ClimateVectorSearchTool:
             "Executing vector database search - model: %s, limit: %s, min_score: %s",
             embedding.model,
             limit,
-            self.min_score
+            self.min_score,
         )
-        
-        distance_expr = DocumentEmbedding.embedding_vector.cosine_distance(embedding.embedding)
+
+        distance_expr = DocumentEmbedding.embedding_vector.cosine_distance(
+            embedding.embedding
+        )
         stmt = (
             select(
                 DocumentEmbedding.embedding_id,
@@ -284,7 +289,7 @@ class ClimateVectorSearchTool:
 
         result = await session.execute(stmt)
         rows = result.fetchall()
-        
+
         logger.info("Vector search returned %s raw results from database", len(rows))
 
         matches: List[VectorSearchMatch] = []
@@ -313,21 +318,21 @@ class ClimateVectorSearchTool:
             logger.info(
                 "Filtered out %s results below min_score threshold (%s)",
                 filtered_count,
-                self.min_score
+                self.min_score,
             )
-        
+
         if matches:
             match_scores = [f"{m.score:.3f}" for m in matches]
             logger.info(
                 "Vector search completed - %s matches found with scores: %s",
                 len(matches),
-                ", ".join(match_scores)
+                ", ".join(match_scores),
             )
             logger.info(
                 "Top match: filename='%s', chunk_index=%s, score=%.3f",
                 matches[0].filename,
                 matches[0].chunk_index,
-                matches[0].score
+                matches[0].score,
             )
 
         if not matches:
@@ -335,7 +340,7 @@ class ClimateVectorSearchTool:
                 "Vector search completed with no matches - question: '%s', raw_results: %s, filtered: %s",
                 question,
                 len(rows),
-                filtered_count
+                filtered_count,
             )
             invocation = ToolInvocationRecord(
                 name=self.tool_name,
@@ -386,5 +391,7 @@ class ClimateVectorSearchTool:
                 f"{idx}. Source: {match.filename} (chunk {match.chunk_index}, score {match.score:.2f})"
             )
             lines.append(f"   Full Content: {content}")
-        lines.append("Always cite insights as coming from the internal climate knowledge base, not from personal memory.")
+        lines.append(
+            "Always cite insights as coming from the internal climate knowledge base, not from personal memory."
+        )
         return "\n".join(lines)

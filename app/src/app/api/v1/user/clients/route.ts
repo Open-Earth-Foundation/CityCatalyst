@@ -3,8 +3,11 @@
  * /api/v1/user/clients:
  *   get:
  *     tags:
- *       - User Clients
+ *       - user
+ *       - clients
+ *     operationId: getUserClients
  *     summary: List OAuth client authorizations for current user
+ *     description: Retrieves all OAuth client authorizations for the current user. Returns a list of authorized clients with their metadata, scopes, and internationalized names and descriptions. Requires authentication and OAuth feature flag to be enabled.
  *     responses:
  *       200:
  *         description: Client authorizations returned.

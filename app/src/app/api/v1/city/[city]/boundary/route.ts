@@ -3,8 +3,10 @@
  * /api/v1/city/{city}/boundary:
  *   get:
  *     tags:
- *       - City
+ *       - city
+ *     operationId: getCityBoundary
  *     summary: Get city boundary data
+ *     description: Retrieves geographic boundary data for a city using its location code (locode). Returns boundary information including geometry data that can be used for mapping and spatial analysis.
  *     parameters:
  *       - in: path
  *         name: city

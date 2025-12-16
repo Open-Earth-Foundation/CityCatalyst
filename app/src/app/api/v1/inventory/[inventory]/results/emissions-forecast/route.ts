@@ -3,7 +3,9 @@
  * /api/v1/inventory/{inventory}/results/emissions-forecast:
  *   get:
  *     tags:
- *       - Inventory Results
+ *       - inventory
+ *       - results
+ *     operationId: getInventoryResultsEmissionsForecast
  *     summary: Get emissions forecast with confidence metrics for an inventory.
  *     description: Generates and returns emissions forecast data for the specified inventory using advanced forecasting models. Includes yearly predictions with confidence levels and methodology information. Requires a signed‑in user with read access to the inventory. Response is wrapped in '{' data '}'.
  *     parameters:

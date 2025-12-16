@@ -3,7 +3,9 @@
  * /api/v1/inventory/{inventory}/organization:
  *   get:
  *     tags:
- *       - Inventory Organization
+ *       - inventory
+ *       - organization
+ *     operationId: getInventoryOrganization
  *     summary: Get organization branding and theme information for an inventory
  *     description: Retrieves organization details including identifier, name, logo URL, active status, and theme configuration for the inventory's associated organization. Requires a signed‑in user with access to the inventory.
  *     parameters:

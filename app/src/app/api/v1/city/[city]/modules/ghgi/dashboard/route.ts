@@ -3,8 +3,11 @@
  * /api/v1/city/{city}/modules/ghgi/dashboard:
  *   get:
  *     tags:
- *       - City Modules
+ *       - city
+ *       - modules
+ *     operationId: getCityModulesGhgiDashboard
  *     summary: Get Greenhouse Gas Inventory (GHGI) dashboard data for a city inventory
+ *     description: Retrieves Greenhouse Gas Inventory dashboard data for a specific inventory within a city. Validates that the inventory belongs to the specified city and that the user has access to it. Returns dashboard data along with metadata including city ID, inventory ID, year, and module ID.
  *     parameters:
  *       - in: path
  *         name: city

@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: climate-advisor
+  name: climate-advisor-service-test
   namespace: default
   labels:
-    app: climate-advisor-deploy
+    app: climate-advisor-test
 spec:
   selector:
-    app: climate-advisor-deploy
+    app: climate-advisor-test
   ports:
     - protocol: TCP
       port: 80

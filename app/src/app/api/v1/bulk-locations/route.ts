@@ -20,7 +20,9 @@ const bulkLocationRequest = z.object({
  * /api/v1/bulk-locations:
  *   get:
  *     tags:
- *       - Bulk Locations
+ *       - bulk
+ *       - locations
+ *     operationId: getBulkLocations
  *     summary: List approximate lat/lng for accessible cities by organization or project.
  *     description: Returns a list of city location center points computed from city boundary polygon data. For each city, the center latitude and longitude are calculated as the midpoint of the bounding box. Requires an authenticated user with proper access permissions to the specified organization or project. Cities with missing locode or boundary data will return error entries instead of location data. This endpoint is useful for mapping applications that need approximate city centers.
  *     parameters:
@@ -68,6 +70,12 @@ const bulkLocationRequest = z.object({
  *                           longitude:
  *                             type: number
  *                             description: Center longitude calculated from city boundary
+ *                         required:
+ *                           - locode
+ *                           - name
+ *                           - country
+ *                           - latitude
+ *                           - longitude
  *                       - type: object
  *                         description: Error entry for a city that failed to load
  *                         properties:
@@ -79,6 +87,9 @@ const bulkLocationRequest = z.object({
  *                             type: string
  *                             format: uuid
  *                             description: UUID of the city that failed to load
+ *                         required:
+ *                           - error
+ *                           - cityId
  *             examples:
  *               example:
  *                 value:

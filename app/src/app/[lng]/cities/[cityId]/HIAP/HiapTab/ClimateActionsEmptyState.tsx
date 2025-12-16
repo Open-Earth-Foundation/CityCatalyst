@@ -45,7 +45,11 @@ const TopActionsDataState = ({
 
   // Check if there's meaningful activity data across sectors
   const totalUploadedData = inventoryProgress?.totalProgress?.uploaded || 0;
-  const hasActivityLevelData = hasInventoryData && totalUploadedData > 0;
+  
+  // Also check if inventory has total emissions (can be positive or negative)
+  const hasTotalEmissions = !!(inventory?.totalEmissions !== null && inventory?.totalEmissions !== undefined);
+  
+  const hasActivityLevelData = (hasInventoryData && totalUploadedData > 0) || hasTotalEmissions;
 
   const renderCurrentState = () => {
     if (isLoading) {

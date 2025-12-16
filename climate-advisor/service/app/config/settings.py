@@ -204,9 +204,9 @@ class APIConfig(BaseModel):
 class ToolConfig(BaseModel):
     climate_vector_search: Dict[str, Any] = Field(
         default={"top_k": 3, "min_score": 0.6},
-        description="Climate vector search tool configuration (loaded from llm_config.yaml)"
+        description="Climate vector search tool configuration (loaded from llm_config.yaml if present, otherwise uses this fallback default)"
     )
-    # Numbers here are just fallback if the llm_config.yaml is not present
+    # Numbers here are just a fallback if the llm_config.yaml is not present
 
 
 class ConversationConfig(BaseModel):

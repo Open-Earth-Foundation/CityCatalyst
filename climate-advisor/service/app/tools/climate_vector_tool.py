@@ -107,7 +107,7 @@ class ClimateVectorSearchTool:
             config = llm_config.tools.climate_vector_search
 
         # Apply configuration values from llm_config.yaml
-        self.top_k = config.get("top_k", 5)
+        self.top_k = config.get("top_k", 3)
         self.min_score = config.get("min_score", 0.6)
 
         self._session_factory = session_factory

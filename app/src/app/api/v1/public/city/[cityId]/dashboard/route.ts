@@ -87,14 +87,14 @@ export const GET = apiHandler(async (req, { params }) => {
   }
 
   // Check if city has any public inventories
-  const hasPublicInventories = await db.models.Inventory.count({
+  const publicInventoriesCount = await db.models.Inventory.count({
     where: {
       cityId: cityId,
       isPublic: true,
     },
   });
 
-  if (hasPublicInventories === 0) {
+  if (publicInventoriesCount === 0) {
     throw new createHttpError.NotFound(
       "No public data available for this city",
     );

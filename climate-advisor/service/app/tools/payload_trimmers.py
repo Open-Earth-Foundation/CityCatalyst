@@ -20,16 +20,6 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 
-class PayloadTrimmerError(Exception):
-    """Base exception for payload trimming operations."""
-    pass
-
-
-class InvalidDataStructureError(PayloadTrimmerError):
-    """Raised when input data structure is invalid or malformed."""
-    pass
-
-
 def trim_inventory_for_listing(inventory: Dict[str, Any]) -> Dict[str, Any]:
     """
     Trim an inventory object for list/summary contexts.

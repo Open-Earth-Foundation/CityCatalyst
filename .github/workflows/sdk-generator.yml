@@ -28,6 +28,9 @@ jobs:
         working-directory: app
         run: npm run build
 
+      - name: Lint the OpenAPI spec
+        run: npm run openapi:lint
+
       - name: Upload OpenAPI spec artifact
         uses: actions/upload-artifact@v4
         with:

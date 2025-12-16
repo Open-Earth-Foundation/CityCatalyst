@@ -206,7 +206,7 @@ class ToolConfig(BaseModel):
         default={"top_k": 3, "min_score": 0.6},
         description="Climate vector search tool configuration (loaded from llm_config.yaml if present, otherwise uses this fallback default)"
     )
-    # Numbers here are just fallback if the llm_config.yaml is not present
+    # Numbers here are just a fallback if the llm_config.yaml is not present
 
 
 class ConversationConfig(BaseModel):

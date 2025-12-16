@@ -203,7 +203,7 @@ class APIConfig(BaseModel):
 
 class ToolConfig(BaseModel):
     climate_vector_search: Dict[str, Any] = {
-        "top_k": 5,
+        "top_k": 3,  # Reduced from 5 to minimize token consumption
         "min_score": 0.6,
     }
 

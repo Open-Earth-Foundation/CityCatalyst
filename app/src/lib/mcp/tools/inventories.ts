@@ -8,7 +8,7 @@ import { Op } from "sequelize";
 
 export const getUserInventoriesTool: Tool = {
   name: "get_user_inventories",
-  description: "List all GHG inventories accessible to the authenticated user",
+  description: "List GHG inventories accessible to the authenticated user. Use this tool to get inventory details, including for a specific city using the cityId parameter. Returns paginated results - check pagination.hasMore to see if there are more results, and use offset parameter to fetch the next page (e.g., offset=50 for page 2). Default limit is 50 inventories per page.",
   inputSchema: {
     type: "object",
     properties: {
@@ -24,6 +24,25 @@ export const getUserInventoriesTool: Tool = {
         type: "boolean",
         description: "Include public inventories from other cities (default: false)",
       },
+      limit: {
+        type: "number",
+        description: "Maximum number of inventories to return (default: 50, max: 100)",
+        minimum: 1,
+        maximum: 100,
+      },
+      offset: {
+        type: "number",
+        description: "Number of inventories to skip for pagination (default: 0)",
+        minimum: 0,
+      },
+      includeEmissions: {
+        type: "boolean",
+        description: "Include total emissions calculation (slower, default: false)",
+      },
+      includeDetails: {
+        type: "boolean",
+        description: "Include full city/project/organization details (default: false)",
+      },
     },
   },
 };
@@ -33,11 +52,18 @@ export async function execute(
     cityId?: string;
     year?: number;
     includePublic?: boolean;
+    limit?: number;
+    offset?: number;
+    includeEmissions?: boolean;
+    includeDetails?: boolean;
   },
   session: AppSession
 ): Promise<any> {
   try {
     const userId = session.user.id;
+    const limit = Math.min(params.limit || 50, 100);
+    const offset = params.offset || 0;
+    
     logger.debug({ userId, params }, "MCP: Fetching user inventories");
 
     // Get all accessible inventories using permission service
@@ -105,10 +131,10 @@ export async function execute(
         whereConditions.year = params.year;
       }
       
-      // Fetch inventories
-      const userInventories = await db.models.Inventory.findAll({
-        where: whereConditions,
-        include: [{
+      // Fetch inventories with optional includes
+      const includeOptions: any[] = [];
+      if (params.includeDetails) {
+        includeOptions.push({
           model: db.models.City,
           as: "city",
           include: [{
@@ -119,8 +145,21 @@ export async function execute(
               as: "organization",
             }],
           }],
-        }],
+        });
+      } else {
+        includeOptions.push({
+          model: db.models.City,
+          as: "city",
+          attributes: ["cityId", "name", "locode", "country"],
+        });
+      }
+      
+      const userInventories = await db.models.Inventory.findAll({
+        where: whereConditions,
+        include: includeOptions,
         order: [["year", "DESC"], ["created", "DESC"]],
+        limit,
+        offset,
       });
       
       inventories.push(...userInventories);
@@ -157,46 +196,60 @@ export async function execute(
       });
     }
 
-    // Enrich inventories with total emissions using the service
+    // Apply pagination
+    const totalCount = inventories.length;
+    const paginatedInventories = inventories.slice(offset, offset + limit);
+    
+    // Enrich inventories based on requested details
     const enrichedInventories = await Promise.all(
-      inventories.map(async (inv) => {
-        let totalEmissions = null;
-        try {
-          const fullInventory = await InventoryService.getInventoryWithTotalEmissions(
-            inv.inventoryId,
-            session
-          );
-          totalEmissions = fullInventory.totalEmissions;
-        } catch (error) {
-          // Permission denied or error getting emissions
-          logger.debug({ inventoryId: inv.inventoryId }, "Could not fetch emissions");
-        }
-
-        return {
+      paginatedInventories.map(async (inv) => {
+        const result: any = {
           inventoryId: inv.inventoryId,
           inventoryName: inv.inventoryName,
           year: inv.year,
-          totalEmissions,
           isPublic: inv.isPublic,
-          city: {
+          cityId: inv.city?.cityId,
+          cityName: inv.city?.name,
+          cityLocode: inv.city?.locode,
+        };
+        
+        // Only include emissions if requested
+        if (params.includeEmissions) {
+          try {
+            const fullInventory = await InventoryService.getInventoryWithTotalEmissions(
+              inv.inventoryId,
+              session
+            );
+            result.totalEmissions = fullInventory.totalEmissions;
+          } catch (error) {
+            logger.debug({ inventoryId: inv.inventoryId }, "Could not fetch emissions");
+            result.totalEmissions = null;
+          }
+        }
+        
+        // Only include full details if requested
+        if (params.includeDetails) {
+          result.city = {
             id: inv.city?.cityId,
             name: inv.city?.name,
             country: inv.city?.country,
             region: inv.city?.region,
             locode: inv.city?.locode,
-          },
-          project: {
+          };
+          result.project = {
             id: inv.city?.project?.projectId,
             name: inv.city?.project?.name,
-          },
-          organization: {
+          };
+          result.organization = {
             id: inv.city?.project?.organization?.organizationId,
             name: inv.city?.project?.organization?.name,
             active: inv.city?.project?.organization?.active,
-          },
-          created: inv.created,
-          lastUpdated: inv.lastUpdated,
-        };
+          };
+          result.created = inv.created;
+          result.lastUpdated = inv.lastUpdated;
+        }
+        
+        return result;
       })
     );
 
@@ -208,7 +261,12 @@ export async function execute(
     return {
       success: true,
       data: enrichedInventories,
-      count: enrichedInventories.length,
+      pagination: {
+        total: totalCount,
+        limit,
+        offset,
+        hasMore: offset + limit < totalCount,
+      },
     };
   } catch (error) {
     logger.error({ error }, "MCP: Error fetching inventories");

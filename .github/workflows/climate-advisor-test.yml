@@ -28,7 +28,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY_TEST }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY_CLIMATE_ADVISOR }}
       CA_LOG_LEVEL: debug
       CA_CORS_ORIGINS: "*"

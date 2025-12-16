@@ -166,5 +166,12 @@
   "error-generating-actions-description": "Encontramos um erro ao gerar suas ações climáticas. Por favor, tente novamente.",
   "inventory-year": "Ano do Inventário",
   "action-explanation": "Explicação",
-  "no-explanation-available": "Sem explicação disponível"
+  "no-explanation-available": "Sem explicação disponível",
+  "ranked-actions": "Ações classificadas",
+  "unranked-actions": "Ações não classificadas",
+  "updating-selection": "Atualizando seleção...",
+  "selection-updated": "Seleção atualizada com sucesso",
+  "selection-update-failed": "Falha ao atualizar a seleção",
+  "other-available-actions": "Outras Ações Disponíveis",
+  "other-available-actions-description": "Abaixo estão ações climáticas adicionais disponíveis para a sua cidade que não foram incluídas na lista de melhores classificadas. Essas ações ainda podem ser relevantes dependendo das prioridades específicas e do contexto da sua cidade."
 }

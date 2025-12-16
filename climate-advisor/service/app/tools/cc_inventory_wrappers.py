@@ -107,11 +107,12 @@ def _search_inventories_by_city(
     Returns:
         List of matching inventories (trimmed for listing), sorted by year desc
     """
-    if not city_name or not city_name.strip():
+    city_name_stripped = city_name.strip() if city_name else ""
+    if not city_name_stripped:
         return []
     
     # Case-insensitive regex pattern for flexible city name matching (cached per city)
-    pattern = _compile_city_pattern(city_name)
+    pattern = _compile_city_pattern(city_name_stripped)
     
     matches: List[Dict[str, Any]] = []
     for inventory in inventories:

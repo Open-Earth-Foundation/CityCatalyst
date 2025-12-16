@@ -5,7 +5,8 @@ import { ProjectService } from "@/backend/ProjectsService";
 
 export const getUserCitiesTool: Tool = {
   name: "get_user_cities",
-  description: "List cities accessible to the authenticated user. Returns paginated results - check pagination.hasMore to see if there are more results, and use offset parameter to fetch the next page. Default limit is 50 cities per page.",
+  description:
+    "List cities accessible to the authenticated user. Returns paginated results - check pagination.hasMore to see if there are more results, and use offset parameter to fetch the next page. Default limit is 50 cities per page.",
   inputSchema: {
     type: "object",
     properties: {
@@ -14,12 +15,13 @@ export const getUserCitiesTool: Tool = {
         description: "Filter cities by country",
       },
       region: {
-        type: "string", 
+        type: "string",
         description: "Filter cities by region",
       },
       limit: {
         type: "number",
-        description: "Maximum number of cities to return (default: 50, max: 100)",
+        description:
+          "Maximum number of cities to return (default: 50, max: 100)",
         minimum: 1,
         maximum: 100,
       },
@@ -30,7 +32,8 @@ export const getUserCitiesTool: Tool = {
       },
       includeInventories: {
         type: "boolean",
-        description: "Include basic inventory list (just ID and year). For full inventory details, use get_user_inventories tool instead (default: false)",
+        description:
+          "Include basic inventory list (just ID and year). For full inventory details, use get_user_inventories tool instead (default: false)",
       },
     },
   },
@@ -44,7 +47,7 @@ export async function execute(
     offset?: number;
     includeInventories?: boolean;
   },
-  session: AppSession
+  session: AppSession,
 ): Promise<any> {
   try {
     const userId = session.user.id;
@@ -57,8 +60,8 @@ export async function execute(
     const projects = await ProjectService.fetchUserProjects(userId);
 
     // Flatten cities from all projects and apply filters
-    const allCities = projects.flatMap(project => 
-      project.cities.map(city => {
+    const allCities = projects.flatMap((project) =>
+      project.cities.map((city) => {
         const cityData: any = {
           cityId: city.cityId,
           name: city.name,
@@ -73,41 +76,48 @@ export async function execute(
         if (params.includeInventories) {
           cityData.inventories = {
             count: city.inventories?.length || 0,
-            list: city.inventories?.map(inv => ({
-              inventoryId: inv.inventoryId,
-              year: inv.year,
-            })) || [],
+            list:
+              city.inventories?.map((inv) => ({
+                inventoryId: inv.inventoryId,
+                year: inv.year,
+              })) || [],
           };
         } else {
           cityData.inventoryCount = city.inventories?.length || 0;
         }
 
         return cityData;
-      })
+      }),
     );
 
     // Apply filters
     let filteredCities = allCities;
-    
+
     if (params.country) {
-      filteredCities = filteredCities.filter(city => 
-        city.country?.toLowerCase().includes(params.country!.toLowerCase())
+      filteredCities = filteredCities.filter((city) =>
+        city.country?.toLowerCase().includes(params.country!.toLowerCase()),
       );
     }
-    
+
     // Note: ProjectService.fetchUserProjects doesn't include region data
     // Region filtering would need to be implemented by enhancing the ProjectService
     if (params.region) {
-      logger.warn({ region: params.region }, "Region filtering not supported - ProjectService doesn't include region data");
+      logger.warn(
+        { region: params.region },
+        "Region filtering not supported - ProjectService doesn't include region data",
+      );
     }
 
     // Remove duplicates (user might have access to same city through multiple roles)
-    const uniqueCities = filteredCities.reduce((unique, city) => {
-      if (!unique.find(c => c.cityId === city.cityId)) {
-        unique.push(city);
-      }
-      return unique;
-    }, [] as typeof filteredCities);
+    const uniqueCities = filteredCities.reduce(
+      (unique, city) => {
+        if (!unique.find((c: { cityId: any }) => c.cityId === city.cityId)) {
+          unique.push(city);
+        }
+        return unique;
+      },
+      [] as typeof filteredCities,
+    );
 
     // Apply pagination
     const totalCount = uniqueCities.length;
@@ -115,7 +125,7 @@ export async function execute(
 
     logger.info(
       { userId, cityCount: paginatedCities.length, totalCount },
-      "MCP: Successfully fetched user cities"
+      "MCP: Successfully fetched user cities",
     );
 
     return {

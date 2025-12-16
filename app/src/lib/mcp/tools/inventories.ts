@@ -63,7 +63,7 @@ export async function execute(
     const userId = session.user.id;
     const limit = Math.min(params.limit || 50, 100);
     const offset = params.offset || 0;
-    
+
     logger.debug({ userId, params }, "MCP: Fetching user inventories");
 
     // Get all accessible inventories using permission service
@@ -153,7 +153,7 @@ export async function execute(
           attributes: ["cityId", "name", "locode", "country"],
         });
       }
-      
+
       const userInventories = await db.models.Inventory.findAll({
         where: whereConditions,
         include: includeOptions,
@@ -199,7 +199,7 @@ export async function execute(
     // Apply pagination
     const totalCount = inventories.length;
     const paginatedInventories = inventories.slice(offset, offset + limit);
-    
+
     // Enrich inventories based on requested details
     const enrichedInventories = await Promise.all(
       paginatedInventories.map(async (inv) => {
@@ -212,7 +212,7 @@ export async function execute(
           cityName: inv.city?.name,
           cityLocode: inv.city?.locode,
         };
-        
+
         // Only include emissions if requested
         if (params.includeEmissions) {
           try {
@@ -226,7 +226,7 @@ export async function execute(
             result.totalEmissions = null;
           }
         }
-        
+
         // Only include full details if requested
         if (params.includeDetails) {
           result.city = {
@@ -244,11 +244,11 @@ export async function execute(
             id: inv.city?.project?.organization?.organizationId,
             name: inv.city?.project?.organization?.name,
             active: inv.city?.project?.organization?.active,
-          };
+          },
           result.created = inv.created;
           result.lastUpdated = inv.lastUpdated;
         }
-        
+
         return result;
       })
     );

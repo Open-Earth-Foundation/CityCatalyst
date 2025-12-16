@@ -50,7 +50,7 @@ export async function execute(
     const userId = session.user.id;
     const limit = Math.min(params.limit || 50, 100);
     const offset = params.offset || 0;
-    
+
     logger.debug({ userId, params }, "MCP: Fetching user cities");
 
     // Use the existing ProjectService to get user's projects with cities
@@ -68,7 +68,7 @@ export async function execute(
           projectId: project.projectId,
           projectName: project.name,
         };
-        
+
         // Only include inventory details if requested
         if (params.includeInventories) {
           cityData.inventories = {
@@ -81,7 +81,7 @@ export async function execute(
         } else {
           cityData.inventoryCount = city.inventories?.length || 0;
         }
-        
+
         return cityData;
       })
     );

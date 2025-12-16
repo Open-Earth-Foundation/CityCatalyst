@@ -204,6 +204,11 @@ import {
   HighImpactActionRankedAttributes,
   HighImpactActionRankedCreationAttributes,
 } from "./HighImpactActionRanked";
+import {
+  UnrankedActionSelection as _UnrankedActionSelection,
+  UnrankedActionSelectionAttributes,
+  UnrankedActionSelectionCreationAttributes,
+} from "./UnrankedActionSelection";
 
 import { OAuthClient as _OAuthClient } from "./OAuthClient";
 import {
@@ -274,6 +279,7 @@ export {
   _Theme as Theme,
   _HighImpactActionRanking as HighImpactActionRanking,
   _HighImpactActionRanked as HighImpactActionRanked,
+  _UnrankedActionSelection as UnrankedActionSelection,
   _Module as Module,
   _ProjectModules as ProjectModules,
   _OAuthClient as OAuthClient,
@@ -370,6 +376,8 @@ export type {
   HighImpactActionRankingCreationAttributes,
   HighImpactActionRankedAttributes,
   HighImpactActionRankedCreationAttributes,
+  UnrankedActionSelectionAttributes,
+  UnrankedActionSelectionCreationAttributes,
   ModuleAttributes,
   ModuleCreationAttributes,
   ProjectModulesAttributes,
@@ -436,6 +444,8 @@ export function initModels(sequelize: Sequelize) {
     _HighImpactActionRanking.initModel(sequelize);
   const HighImpactActionRankedModel =
     _HighImpactActionRanked.initModel(sequelize);
+  const UnrankedActionSelectionModel =
+    _UnrankedActionSelection.initModel(sequelize);
   const Module = _Module.initModel(sequelize);
   const ProjectModules = _ProjectModules.initModel(sequelize);
   const OAuthClient = _OAuthClient.initModel(sequelize);
@@ -1046,6 +1056,16 @@ export function initModels(sequelize: Sequelize) {
     as: "highImpactActionRanked",
     foreignKey: "hiaRankingId",
   });
+
+  // Associations for UnrankedActionSelection
+  UnrankedActionSelectionModel.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(UnrankedActionSelectionModel, {
+    as: "unrankedActionSelections",
+    foreignKey: "inventoryId",
+  });
   OAuthClient.hasMany(OAuthClientI18N, { as: "i18n", foreignKey: "clientId" });
 
   OAuthClientAuthz.belongsTo(OAuthClient, {
@@ -1110,6 +1130,7 @@ export function initModels(sequelize: Sequelize) {
     Theme: Theme,
     HighImpactActionRanking: HighImpactActionRankingModel,
     HighImpactActionRanked: HighImpactActionRankedModel,
+    UnrankedActionSelection: UnrankedActionSelectionModel,
     Module: Module,
     ProjectModules: ProjectModules,
     OAuthClient: OAuthClient,

@@ -14,10 +14,10 @@ on:
       - "climate-advisor/llm_config.yaml"
       - "climate-advisor/prompts/**"
       - "climate-advisor/vector_db/**"
-      - "k8s/climate-advisor-deploy.yml"
-      - "k8s/climate-advisor-migrate.yml"
-      - "k8s/climate-advisor-service.yml"
-      - "k8s/climate-advisor-db-configmap.yml"
+      - "climate-advisor/k8s/deployment-test.yml"
+      - "climate-advisor/k8s/migrate-test.yml"
+      - "climate-advisor/k8s/service-test.yml"
+      - "climate-advisor/k8s/db-configmap-test.yml"
       - ".github/workflows/climate-advisor-test.yml"
 
 concurrency:
@@ -28,7 +28,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY_TEST }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY_CLIMATE_ADVISOR }}
       CA_LOG_LEVEL: debug
       CA_CORS_ORIGINS: "*"
@@ -163,12 +163,12 @@ jobs:
 
       - name: Deploy test service
         run: |
-          kubectl create -f k8s/climate-advisor-migrate.yml -n default
-          kubectl apply -f k8s/climate-advisor-db-configmap.yml -n default
-          kubectl apply -f k8s/climate-advisor-service.yml -n default
-          kubectl apply -f k8s/climate-advisor-deploy.yml -n default
+          kubectl apply -f climate-advisor/k8s/db-configmap-test.yml -n default
+          kubectl create -f climate-advisor/k8s/migrate-test.yml -n default
+          kubectl apply -f climate-advisor/k8s/service-test.yml -n default
+          kubectl apply -f climate-advisor/k8s/deployment-test.yml -n default
 
-          kubectl set env deployment/climate-advisor-deploy \
+          kubectl set env deployment/climate-advisor-test \
             OPENROUTER_API_KEY=${{secrets.OPENROUTER_API_KEY}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_CLIMATE_ADVISOR}} \
             CC_API_KEY=${{secrets.CC_SERVICE_API_KEY}} \
@@ -179,5 +179,5 @@ jobs:
             LANGSMITH_WORKSPACE_ID=${{secrets.LANGSMITH_WORKSPACE_ID}} \
             -n default
 
-          kubectl rollout restart deployment climate-advisor-deploy -n default
-          kubectl rollout status deployment/climate-advisor-deploy -n default --timeout=300s
+          kubectl rollout restart deployment climate-advisor-test -n default
+          kubectl rollout status deployment/climate-advisor-test -n default --timeout=300s

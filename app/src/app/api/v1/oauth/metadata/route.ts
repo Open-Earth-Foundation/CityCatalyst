@@ -3,7 +3,8 @@
  * /api/v1/oauth/metadata:
  *   get:
  *     tags:
- *       - OAuth
+ *       - oauth
+ *     operationId: getOauthMetadata
  *     summary: Advertise OAuth 2.0 Authorization Server metadata (RFC 8414).
  *     description: Public endpoint that returns the discovery document for OAuth clients, including issuer, authorization endpoint, token endpoint, supported scopes, response types, grant types, and PKCE methods. Requires the OAUTH_ENABLED feature flag; otherwise returns a 500 configuration error. Useful for dynamic client configuration and interoperability.
  *     responses:

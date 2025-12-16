@@ -3,7 +3,9 @@
  * /api/v1/inventory/{inventory}/hiap/status:
  *   get:
  *     tags:
- *       - Inventory HIAP
+ *       - inventory
+ *       - hiap
+ *     operationId: getInventoryHiapStatus
  *     summary: Check HIAP job status and get actions if available
  *     description: Returns the current status of any HIAP ranking job and existing actions without starting a new job
  *     parameters:
@@ -39,6 +41,13 @@
  *                       enum: [pending, success, failure, not_found]
  *                     rankedActions:
  *                       type: array
+ *                       items:
+ *                         type: object
+ *                         description: Ranked action item
+ *                       description: Actions that have been ranked for this inventory
+ *                     unrankedActions:
+ *                       type: array
+ *                       description: All other available actions of the requested type that are not ranked
  *                     rankingId:
  *                       type: string
  *                       format: uuid
@@ -52,6 +61,7 @@ import { db } from "@/models";
 import { InventoryService } from "@/backend/InventoryService";
 import { Op } from "sequelize";
 import { copyRankedActionsToLang } from "@/backend/hiap/HiapService";
+import GlobalAPIService from "@/backend/GlobalAPIService";
 
 export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
   if (!session) {
@@ -176,10 +186,134 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
       }
     }
 
+    // Get all available climate actions and filter out ranked ones to get unranked actions
+    let unrankedActions = [];
+    try {
+      const allActions = await GlobalAPIService.fetchAllClimateActions(lng);
+
+      // Filter actions by the requested action type (mitigation or adaptation)
+      const actionsOfType = allActions.filter((action: any) => {
+        return action.ActionType && action.ActionType.includes(type);
+      });
+
+      // Extract ranked action IDs to filter them out from unranked
+      const rankedActionIds = new Set(
+        existingActions.map((action: any) => action.actionId)
+      );
+
+      // Get unranked action selections from database
+      const unrankedSelections = await db.models.UnrankedActionSelection.findAll({
+        where: {
+          inventoryId: params.inventory,
+          actionType: type,
+          lang: lng,
+          isSelected: true,
+        },
+      });
+
+      const selectedUnrankedActionIds = new Set(
+        unrankedSelections.map((selection: any) => selection.actionId)
+      );
+
+      // Get unranked actions (all actions of this type minus ranked ones) and transform them
+      const rawUnrankedActions = actionsOfType.filter((action: any) => {
+        return !rankedActionIds.has(action.ActionID);
+      });
+
+      // Transform unranked actions to HIAction format
+      unrankedActions = rawUnrankedActions.map((action: any, index: number) => {
+        const baseAction = {
+          id: action.ActionID,
+          actionId: action.ActionID,
+          name: action.ActionName,
+          rank: existingActions.length + index + 1,
+          description: action.Description || "",
+          explanation: action.Explanation || {},
+          isSelected: selectedUnrankedActionIds.has(action.ActionID),
+          hiaRankingId: "", // Not applicable for unranked
+          lang: lng,
+          primaryPurposes: action.PrimaryPurpose || [],
+          dependencies: action.Dependencies || [],
+          cobenefits: action.CoBenefits || [],
+          timeline: "",
+          cost: "",
+          costEvidence: "",
+          implementationBarriers: "",
+          otherConsiderations: "",
+          feasibility: "",
+          institutionalRequirements: "",
+          subActions: [],
+          monitoringAndEvaluation: "",
+          costInvestmentNeeded: action.CostInvestmentNeeded || action.Cost || "",
+          timelineForImplementation: action.TimelineForImplementation || action.Timeline || "",
+          keyPerformanceIndicators: action.KeyPerformanceIndicators || [],
+          powersAndMandates: action.PowersAndMandates || [],
+        };
+
+        if (type === "adaptation") {
+          return {
+            ...baseAction,
+            type: "adaptation",
+            hazards: action.Hazard || [],
+            adaptationEffectiveness: action.AdaptationEffectiveness || "medium",
+            adaptationEffectivenessPerHazard: action.AdaptationEffectivenessPerHazard || {},
+            qualitativeEffectivenessEvidence: "",
+            quantitativeEffectivenessEvidence: "",
+            equityAndInclusionConsiderations: action.EquityAndInclusionConsiderations || "",
+            vulnerabilityAnalysisEvidence: "",
+            riskReductionEvidence: "",
+            socioEconomicImpacts: "",
+            liveabilityCobenefits: "",
+            ecosystemServices: "",
+            GHGReductionPotential: action.GHGReductionPotential || {},
+            sectors: action.Sector || [],
+            subsectors: action.Subsector || [],
+          };
+        } else {
+          return {
+            ...baseAction,
+            type: "mitigation",
+            sectors: action.Sector || [],
+            subsectors: action.Subsector || [],
+            GHGReductionPotential: action.GHGReductionPotential || {},
+            hazards: [],
+            adaptationEffectiveness: "medium",
+            adaptationEffectivenessPerHazard: {},
+            qualitativeEffectivenessEvidence: "",
+            quantitativeEffectivenessEvidence: "",
+            equityAndInclusionConsiderations: action.EquityAndInclusionConsiderations || "",
+            vulnerabilityAnalysisEvidence: "",
+            riskReductionEvidence: "",
+            socioEconomicImpacts: "",
+            liveabilityCobenefits: "",
+            ecosystemServices: "",
+          };
+        }
+      });
+
+      logger.info({
+        inventoryId: params.inventory,
+        type,
+        lng,
+        totalActionsOfType: actionsOfType.length,
+        rankedCount: existingActions.length,
+        unrankedCount: unrankedActions.length,
+      }, "Fetched unranked actions for status endpoint");
+    } catch (error) {
+      logger.error({
+        err: error,
+        inventoryId: params.inventory,
+        type,
+        lng,
+      }, "Failed to fetch unranked actions for status endpoint");
+      // Continue with empty unranked actions rather than failing the request
+    }
+
     const response = {
       ...ranking.toJSON(),
       status: ranking.status || HighImpactActionRankingStatus.PENDING,
       rankedActions: existingActions,
+      unrankedActions: unrankedActions,
     };
 
     logger.info({
@@ -187,7 +321,8 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
       locode,
       type,
       lng,
-      actionCount: existingActions.length,
+      rankedActionCount: existingActions.length,
+      unrankedActionCount: unrankedActions.length,
       status: ranking.status,
     }, "HIAP status check completed");
 
@@ -199,7 +334,7 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
       type,
       lng,
     }, "Error checking HIAP status");
-    
+
     throw new Error(
       `Failed to check HIAP status for city ${inventory.city.locode}: ${(error as Error).message}`,
       { cause: error },

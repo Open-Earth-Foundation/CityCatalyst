@@ -16,7 +16,8 @@ const migrateSelectionsSchema = z.object({
  * /api/v1/admin/project/{projectId}/migrate-hiap-selections:
  *   post:
  *     tags:
- *       - Admin
+ *       - admin
+ *     operationId: migrateHiapSelections
  *     summary: Migrate HIAP action selections for a project
  *     description: Reads selected action files from S3 and updates the database for all cities in the project
  *     parameters:

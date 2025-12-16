@@ -96,15 +96,18 @@ class ClimateVectorSearchTool:
             session_factory: Database session factory
             embedding_service: Embedding service for generating question embeddings
         """
-        # Get configuration from settings or use defaults
+        # Get configuration from settings
         if settings and hasattr(settings, 'llm') and hasattr(settings.llm, 'tools'):
             config = settings.llm.tools.climate_vector_search
-            self.top_k = config.get("top_k", 3)  # Default: 3 (reduced from 5)
-            self.min_score = config.get("min_score", 0.6)
         else:
-            # Fallback defaults
-            self.top_k = 3  # Reduced from 5 to minimize token consumption
-            self.min_score = 0.6
+            # Load defaults from llm_config.yaml when settings not provided
+            from ..config.settings import _load_llm_config
+            llm_config = _load_llm_config()
+            config = llm_config.tools.climate_vector_search
+        
+        # Apply configuration values from llm_config.yaml
+        self.top_k = config.get("top_k", 5)
+        self.min_score = config.get("min_score", 0.6)
 
         self._session_factory = session_factory
         self._embedding_service = embedding_service

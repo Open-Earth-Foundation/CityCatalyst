@@ -30,7 +30,7 @@ from typing import Dict, List, Optional, Any
 
 import yaml
 from dotenv import find_dotenv, load_dotenv, dotenv_values
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 _ENV_LOADED = False
 
@@ -202,10 +202,11 @@ class APIConfig(BaseModel):
 
 
 class ToolConfig(BaseModel):
-    climate_vector_search: Dict[str, Any] = {
-        "top_k": 3,  # Reduced from 5 to minimize token consumption
-        "min_score": 0.6,
-    }
+    climate_vector_search: Dict[str, Any] = Field(
+        default={"top_k": 3, "min_score": 0.6},
+        description="Climate vector search tool configuration (loaded from llm_config.yaml)"
+    )
+    # Numbers here are just fallback if the llm_config.yaml is not present
 
 
 class ConversationConfig(BaseModel):

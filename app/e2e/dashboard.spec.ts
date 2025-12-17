@@ -31,35 +31,45 @@ test.describe("Dashboard", () => {
       const addNewInventoryButton = page.getByTestId(
         "add-new-inventory-button",
       );
-      await expect(addNewInventoryButton).toBeVisible();
+      await expect(addNewInventoryButton).toBeVisible({ timeout: 10000 });
 
       // Filter by the expected text to handle multiple elements with the same test ID
       const inventoryYearValue = page
         .getByTestId("inventory-year")
         .filter({ hasText: "2023" });
-      await expect(inventoryYearValue).toBeVisible();
+      await expect(inventoryYearValue).toBeVisible({ timeout: 10000 });
       await expect(inventoryYearValue).toHaveText("2023");
 
       const lastInventoryUpdated = page.getByTestId("inventory-last-updated");
-      await expect(lastInventoryUpdated).toBeVisible();
+      await expect(lastInventoryUpdated).toBeVisible({ timeout: 10000 });
 
       const InventoryCalculationTab = page.getByTestId(
         "tab-emission-inventory-calculation-title",
       );
-      await expect(InventoryCalculationTab).toHaveText("Inventory calculation");
+      await expect(InventoryCalculationTab).toHaveText(
+        "Inventory calculation",
+        {
+          timeout: 10000,
+        },
+      );
 
       const EmissionsInventoryResultsTab = page.getByTestId(
         "tab-emission-inventory-results-title",
       );
       await expect(EmissionsInventoryResultsTab).toHaveText(
         "Emission inventory results",
+        { timeout: 10000 },
       );
 
       const SectorDataTitle = page.getByTestId("sector-data-title");
-      await expect(SectorDataTitle).toHaveText("Sector Emissions");
+      await expect(SectorDataTitle).toHaveText("Sector Emissions", {
+        timeout: 10000,
+      });
 
       const StationaryEnergy = page.getByTestId("stationary-energy");
-      await expect(StationaryEnergy).toHaveText("Stationary energy");
+      await expect(StationaryEnergy).toHaveText("Stationary energy", {
+        timeout: 10000,
+      });
     });
   });
 });

@@ -7,7 +7,7 @@ test.describe("Dashboard", () => {
       page,
     }) => {
       // Create inventory through onboarding
-      const {cityId} = await createCityAndInventoryThroughOnboarding(page, "Chicago");
+      const { cityId } = await createCityAndInventoryThroughOnboarding(page);
       await page.goto(`/en/cities/${cityId}/GHGI`);
       // Verify Dashboard
       await page.waitForLoadState("networkidle");
@@ -33,7 +33,10 @@ test.describe("Dashboard", () => {
       );
       await expect(addNewInventoryButton).toBeVisible();
 
-      const inventoryYearValue = page.getByTestId("inventory-year");
+      // Filter by the expected text to handle multiple elements with the same test ID
+      const inventoryYearValue = page
+        .getByTestId("inventory-year")
+        .filter({ hasText: "2023" });
       await expect(inventoryYearValue).toBeVisible();
       await expect(inventoryYearValue).toHaveText("2023");
 

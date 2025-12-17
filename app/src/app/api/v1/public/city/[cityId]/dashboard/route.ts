@@ -19,8 +19,10 @@ import { logger } from "@/services/logger";
  * @swagger
  * /api/v1/public/city/{cityId}/dashboard:
  *   get:
+ *     operationId: getPublicCityDashboard
  *     tags:
- *       - Public Dashboard
+ *       - public
+ *       - dashboard
  *     summary: Get consolidated public dashboard data for a city
  *     description: Returns all public dashboard data in a single response including city info, public inventories, population, and widget data. No authentication required, but only returns data for cities with public inventories.
  *     parameters:

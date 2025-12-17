@@ -30,7 +30,6 @@
  *                 oneOf:
  *                   - type: string
  *                   - type: number
- *                   - type: "null"
  *     responses:
  *       200:
  *         description: MCP response
@@ -49,7 +48,6 @@
  *                   oneOf:
  *                     - type: string
  *                     - type: number
- *                     - type: "null"
  *       401:
  *         description: Authentication required for tool calls
  *       500:

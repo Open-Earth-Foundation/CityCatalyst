@@ -1,4 +1,4 @@
-name: Test Climate Advisor and Deploy to EKS Test
+name: Push CA to GHCR and deploy to EKS Test
 permissions:
   contents: read
   packages: write

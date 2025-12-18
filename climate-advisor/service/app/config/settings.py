@@ -277,7 +277,7 @@ def _load_llm_config() -> LLMConfig:
 
 class Settings(BaseModel):
     app_name: str = "Climate Advisor Service"
-    port: int = int(os.getenv("CA_PORT", "8080"))
+    port: int = int(os.getenv("CA_PORT", "8000"))
     log_level: str = os.getenv("CA_LOG_LEVEL", "info")
     cors_origins: List[str] = []
 

@@ -52,24 +52,24 @@ echo "✅ Database schema created successfully"
 
 # Test the service
 echo "🧪 Testing service health..."
-if curl -s http://localhost:8080/health | grep -q '"status":"ok"'; then
+if curl -s http://localhost:8000/health | grep -q '"status":"ok"'; then
     echo "✅ Service health check passed"
 else
     echo "❌ Service health check failed"
     echo "   The service may not be running. Try starting it manually:"
-    echo "   uvicorn app.main:app --host 0.0.0.0 --port 8080"
+    echo "   uvicorn app.main:app --host 0.0.0.0 --port 8000"
 fi
 
 echo ""
 echo "🎉 Climate Advisor setup complete!"
 echo ""
 echo "📋 Next steps:"
-echo "   1. Start the service: uvicorn app.main:app --host 0.0.0.0 --port 8080"
-echo "   2. Visit http://localhost:8080/playground to test the API"
-echo "   3. Check API docs at http://localhost:8080/docs"
+echo "   1. Start the service: uvicorn app.main:app --host 0.0.0.0 --port 8000"
+echo "   2. Visit http://localhost:8000/playground to test the API"
+echo "   3. Check API docs at http://localhost:8000/docs"
 echo ""
 echo "🔗 Useful endpoints:"
 echo "   - Health: GET /health"
 echo "   - Create Thread: POST /v1/threads"
 echo "   - Send Message: POST /v1/messages"
-echo "   - Playground: http://localhost:8080/playground"
+echo "   - Playground: http://localhost:8000/playground"

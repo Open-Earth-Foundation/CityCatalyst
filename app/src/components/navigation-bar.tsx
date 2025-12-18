@@ -423,36 +423,7 @@ export function NavigationBar({
                     </>
                   )}
 
-                  {!restrictAccess && !userAccessStatus?.isOrgOwner && (
-                    <MenuItem
-                      value="settings"
-                      paddingTop="12px"
-                      paddingBottom="12px"
-                      px="16px"
-                      onClick={() =>
-                        router.push(
-                          `/${inventory ? inventory.inventoryId : currentInventoryId}/settings`,
-                        )
-                      }
-                    >
-                      <Box display="flex" alignItems="center">
-                        {" "}
-                        <Icon
-                          as={FiSettings}
-                          boxSize={6}
-                          color={
-                            userMenuHighlight === "settings"
-                              ? "background.neutral"
-                              : "content.alternative"
-                          }
-                          mr={4}
-                        />
-                        <Text fontSize="title.md">{t("settings")}</Text>
-                      </Box>
-                    </MenuItem>
-                  )}
-                  {userAccessStatus?.isOrgOwner &&
-                    !restrictAccess &&
+                  {!restrictAccess &&
                     hasFeatureFlag(FeatureFlags.ACCOUNT_SETTINGS_ENABLED) && (
                       <MenuItem
                         paddingTop="12px"

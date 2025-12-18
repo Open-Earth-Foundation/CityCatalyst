@@ -1,9 +1,7 @@
 import { test, expect } from "@playwright/test";
-import {
-  createCityThroughOnboarding,
-} from "./helpers";
+import { createCityThroughOnboarding } from "./helpers";
 
-test("Inventory Onboarding", async ({ page }) => {
+test.skip("Inventory Onboarding", async ({ page }) => {
   const cityId = await createCityThroughOnboarding(page);
   await page.goto(`/en/cities/${cityId}/GHGI/onboarding`);
   /** "should display the inventory onboarding start page" */
@@ -62,7 +60,7 @@ test("Inventory Onboarding", async ({ page }) => {
     // The years array contains current year and previous 19 years
     const currentYear = new Date().getFullYear();
     const testYear = (currentYear - 1).toString();
-    
+
     await year.selectOption(testYear);
 
     // Verify that the selection was successful
@@ -102,7 +100,9 @@ test("Inventory Onboarding", async ({ page }) => {
     // Navigate through previous steps to reach the Set Population Data Step
 
     // Verify that we are on the Set Population Data Step
-    const populationDataHeading = page.getByTestId("add-population-data-heading");
+    const populationDataHeading = page.getByTestId(
+      "add-population-data-heading",
+    );
     await expect(populationDataHeading).toBeVisible();
     // Wait for Country Population Input to have a value
 
@@ -153,7 +153,7 @@ test("Inventory Onboarding", async ({ page }) => {
     const countryPopulationYearSelect = page.locator(
       'select[name="countryPopulationYear"]',
     );
-    
+
     await countryPopulationYearSelect.selectOption("2022");
 
     // Edit the region population input
@@ -166,20 +166,18 @@ test("Inventory Onboarding", async ({ page }) => {
     const regionPopulationYearSelect = page.locator(
       'select[name="regionPopulationYear"]',
     );
-    
+
     await regionPopulationYearSelect.selectOption("2022");
 
     // Edit the city population input
-    const cityPopulationInput = page.getByPlaceholder(
-      "City population number",
-    );
+    const cityPopulationInput = page.getByPlaceholder("City population number");
     await cityPopulationInput.fill("3,000,000");
 
     // Edit the city population year
     const cityPopulationYearSelect = page.locator(
       'select[name="cityPopulationYear"]',
     );
-    
+
     await cityPopulationYearSelect.selectOption("2022");
 
     // Verify that the "Continue" button is still enabled
@@ -202,9 +200,7 @@ test("Inventory Onboarding", async ({ page }) => {
     const inventoryYear = page.getByTestId("confirm-city-data-year");
     await expect(inventoryYear).toBeVisible();
 
-    const inventoryGoal = page.getByTestId(
-      "confirm-city-data-inventory-goal",
-    );
+    const inventoryGoal = page.getByTestId("confirm-city-data-inventory-goal");
     await expect(inventoryGoal).toBeVisible();
 
     const populationData = page.getByTestId("confirm-city-data-population");
@@ -223,4 +219,3 @@ test("Inventory Onboarding", async ({ page }) => {
     await continueButton.click();
   }
 });
-

@@ -62,6 +62,9 @@ jobs:
       - name: Run NextJS build
         run: npm run build
 
+      - name: Lint the OpenAPI spec
+        run: npm run openapi:lint
+
       - name: Run tests and generate coverage file
         run: npm run api:test
 

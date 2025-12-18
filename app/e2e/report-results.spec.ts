@@ -191,15 +191,18 @@ test.describe("Report Results", () => {
     await navigateToDashboard(page, cityId);
     await expect(page.getByText("Chicago")).toBeVisible();
 
+    // Wait for the results API call to complete by waiting for the table to appear
+    // The table only appears when data is loaded, ensuring the widget is no longer in loading state
+    const topEmissionsTable = page.locator("table").filter({
+      has: page.getByText(/Total emissions \(CO2eq\)/i),
+    });
+    await expect(topEmissionsTable).toBeVisible({ timeout: 30000 });
+
+    // Now that data is loaded, check for the heading
     const topEmissionsHeading = page.getByRole("heading", {
       name: /Top Emissions/i,
     });
     await expect(topEmissionsHeading).toBeVisible();
-
-    const topEmissionsTable = page.locator("table").filter({
-      has: page.getByText(/Total emissions \(CO2eq\)/i),
-    });
-    await expect(topEmissionsTable).toBeVisible();
 
     const residentialRows = topEmissionsTable
       .locator("tbody tr")

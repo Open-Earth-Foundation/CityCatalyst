@@ -47,6 +47,9 @@
  *                       description: Actions that have been ranked for this inventory
  *                     unrankedActions:
  *                       type: array
+ *                       items:
+ *                         type: object
+ *                         description: Unranked action item
  *                       description: All other available actions of the requested type that are not ranked
  *                     rankingId:
  *                       type: string

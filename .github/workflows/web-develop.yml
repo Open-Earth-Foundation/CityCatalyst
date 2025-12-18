@@ -85,6 +85,9 @@ jobs:
       - name: Run NextJS build
         run: npm run build
 
+      - name: Lint the OpenAPI spec
+        run: npm run openapi:lint
+
       # - name: Run Cypress tests
       #   run: npm run cy:test
 

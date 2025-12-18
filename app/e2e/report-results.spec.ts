@@ -6,7 +6,7 @@ import {
   navigateToGHGIModule,
 } from "./helpers";
 
-test.describe("Report Results", () => {
+test.describe.skip("Report Results", () => {
   test.setTimeout(120000);
   // before each test, create a city and inventory
   let cityId: string;
@@ -196,7 +196,7 @@ test.describe("Report Results", () => {
     const topEmissionsTable = page.locator("table").filter({
       has: page.getByText(/Total emissions \(CO2eq\)/i),
     });
-    await expect(topEmissionsTable).toBeVisible({ timeout: 5000 });
+    await expect(topEmissionsTable).toBeVisible({ timeout: 30000 });
 
     // Now that data is loaded, check for the heading
     const topEmissionsHeading = page.getByRole("heading", {

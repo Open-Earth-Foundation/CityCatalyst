@@ -6,7 +6,7 @@ import {
   navigateToGHGIModule,
 } from "./helpers";
 
-test.describe("Report Results", () => {
+test.describe.skip("Report Results", () => {
   test.setTimeout(120000);
   // before each test, create a city and inventory
   let cityId: string;

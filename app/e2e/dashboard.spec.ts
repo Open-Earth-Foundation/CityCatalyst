@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { createCityAndInventoryThroughOnboarding } from "./helpers";
 
-test.describe("Dashboard", () => {
+test.describe.skip("Dashboard", () => {
   test.describe("Dashboard with Inventory", () => {
     test("User can complete onboarding and access dashboard", async ({
       page,

@@ -305,7 +305,7 @@ For more information, see: climate-advisor/README.md
             if not args.check:
                 print("\nNext steps:")
                 print("   1. Start the service: cd service && uvicorn app.main:app --reload")
-                print("   2. Visit: http://localhost:8080/docs")
+                print("   2. Visit: http://localhost:8000/docs")
         else:
             print("\n" + "=" * 50)
             print("[!] Database setup failed!")

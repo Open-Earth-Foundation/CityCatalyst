@@ -1211,6 +1211,7 @@
   "success": "Success",
   "notation-keys-updated": "Notation keys updated",
   "error-updating-notation-keys": "Failed to update notation keys",
+  "error-existing-notation-key-found": "Existing notation key found for this subcategory, remove it before setting notation key",
   "quick-action-applied": "Quick action applied",
   "changes-can-be-lost": "Your changes can be lost",
   "changes-can-be-lost-description": "Do you want to discard all changes made since last edit? This cannot be undone.",

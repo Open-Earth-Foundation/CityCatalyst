@@ -242,7 +242,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
       });
       if (existingInventoryValue) {
         throw new createHttpError.BadRequest(
-          "Existing notation key found for this subcategory, remove it before setting notation key",
+          "error-existing-notation-key-found",
         );
         /* TODO decide if this behavior is desirable - UI warning/ confirmation would need to be implemented
         // reset emissions values of inventory value as notation key was used for it

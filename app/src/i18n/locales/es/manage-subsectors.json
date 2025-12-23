@@ -1211,6 +1211,7 @@
   "success": "Éxito",
   "notation-keys-updated": "Claves de notación actualizadas",
   "error-updating-notation-keys": "Error al actualizar las claves de notación",
+  "error-existing-notation-key-found": "Se encontró una clave de notación existente para esta subcategoría, elimínela antes de establecer una clave de notación",
   "quick-action-applied": "Acción rápida aplicada",
   "changes-can-be-lost": "Tus cambios pueden perderse",
   "changes-can-be-lost-description": "¿Desea descartar todos los cambios realizados desde la última edición? Esto no se puede deshacer.",

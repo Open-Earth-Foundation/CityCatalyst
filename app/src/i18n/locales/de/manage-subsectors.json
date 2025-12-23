@@ -1211,6 +1211,7 @@
   "success": "Erfolg",
   "notation-keys-updated": "Notenschlüssel aktualisiert",
   "error-updating-notation-keys": "Fehler beim Aktualisieren der Notenschlüssel",
+  "error-existing-notation-key-found": "Bestehender Notationsschlüssel für diese Unterkategorie gefunden, entfernen Sie ihn, bevor Sie einen Notationsschlüssel setzen",
   "quick-action-applied": "Schnellaktion angewendet",
   "changes-can-be-lost": "Ihre Änderungen können verloren gehen",
   "changes-can-be-lost-description": "Möchten Sie alle Änderungen seit der letzten Bearbeitung verwerfen? Dies kann nicht rückgängig gemacht werden.",

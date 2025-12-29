@@ -17,5 +17,6 @@ langchain-openai==1.1.6
 langchain==1.2.0
 langchain-text-splitters==1.0.0
 langsmith==0.4.58
+
 pgvector==0.4.1
 tiktoken==0.12.0

@@ -119,6 +119,7 @@ export const GET = apiHandler(async (_req, { session, params }) => {
         // For sectors IV and V: return subsectors (they don't have subcategories)
         // Create a subcategory-like structure from subsector data for compatibility
         const inventoryValues = sector.subSectors
+          .filter((subSector) => subSector.referenceNumber != null) // Filter out subsectors without referenceNumber
           .map((subSector) => {
             const inventoryValue = inventoryValuesByGpcRef.get(
               subSector.referenceNumber!,
@@ -128,14 +129,22 @@ export const GET = apiHandler(async (_req, { session, params }) => {
             const subCategoryLike = {
               subcategoryId: subSector.subsectorId, // Use subsectorId as identifier
               subcategoryName: subSector.subsectorName,
-              referenceNumber: subSector.referenceNumber,
+              referenceNumber: subSector.referenceNumber!,
               subsectorId: subSector.subsectorId,
               scopeId: subSector.scopeId,
               reportinglevelId: null,
             };
+            // Ensure subSector includes sector info for frontend compatibility
+            // The frontend's groupScopesBySector expects sector info on subSector
+            const subSectorWithSector = {
+              ...subSector,
+              sectorId: sector.sectorId,
+              sectorName: sector.sectorName,
+              referenceNumber: sector.referenceNumber,
+            };
             return {
               inventoryValue,
-              subSector,
+              subSector: subSectorWithSector,
               subCategory: subCategoryLike,
             };
           })
@@ -154,9 +163,17 @@ export const GET = apiHandler(async (_req, { session, params }) => {
               const inventoryValue = inventoryValuesBySubCategoryId.get(
                 subCategory.subcategoryId,
               );
+              // Ensure subSector includes sector info for frontend compatibility
+              // The frontend's groupScopesBySector expects sector info on subSector
+              const subSectorWithSector = {
+                ...subSector,
+                sectorId: sector.sectorId,
+                sectorName: sector.sectorName,
+                referenceNumber: sector.referenceNumber,
+              };
               return {
                 inventoryValue,
-                subSector,
+                subSector: subSectorWithSector,
                 subCategory,
               };
             })
@@ -267,7 +284,8 @@ export const POST = apiHandler(async (req, { session, params }) => {
   const result = await db.sequelize!.transaction(async (transaction) => {
     const result: InventoryValue[] = [];
     for (const notationKey of body.notationKeys) {
-      const subCategory = await db.models.SubCategory.findOne({
+      // Try to find SubCategory first (for sectors I-III)
+      let subCategory = await db.models.SubCategory.findOne({
         where: { subcategoryId: notationKey.subCategoryId },
         include: [
           {
@@ -277,7 +295,42 @@ export const POST = apiHandler(async (req, { session, params }) => {
           },
         ],
       });
-      const gpcReferenceNumber = subCategory?.referenceNumber;
+
+      let subSector;
+      let gpcReferenceNumber: string | undefined;
+      let sectorId: string | undefined;
+      let subSectorId: string | undefined;
+
+      if (subCategory) {
+        // For sectors I-III: use subcategory reference number
+        gpcReferenceNumber = subCategory.referenceNumber;
+        sectorId = subCategory.subsector?.sectorId;
+        subSectorId = subCategory.subsectorId;
+      } else {
+        // For sectors IV-V: the subCategoryId is actually a subsectorId
+        subSector = await db.models.SubSector.findOne({
+          where: { subsectorId: notationKey.subCategoryId },
+          attributes: ["subsectorId", "sectorId", "referenceNumber"],
+        });
+
+        if (!subSector) {
+          throw new createHttpError.NotFound(
+            `SubCategory or SubSector not found: ${notationKey.subCategoryId}`,
+          );
+        }
+
+        // For sectors IV-V: use subsector reference number
+        gpcReferenceNumber = subSector.referenceNumber;
+        sectorId = subSector.sectorId;
+        subSectorId = subSector.subsectorId;
+      }
+
+      if (!gpcReferenceNumber) {
+        throw new createHttpError.BadRequest(
+          `Missing reference number for ${notationKey.subCategoryId}`,
+        );
+      }
+
       // Lookup by inventoryId + gpcReferenceNumber (matches unique constraint)
       const existingInventoryValue = await db.models.InventoryValue.findOne({
         where: {
@@ -297,8 +350,8 @@ export const POST = apiHandler(async (req, { session, params }) => {
           {
             unavailableReason: notationKey.unavailableReason,
             unavailableExplanation: notationKey.unavailableExplanation,
-            subSectorId: subCategory?.subsectorId,
-            sectorId: subCategory?.subsector?.sectorId,
+            subSectorId,
+            sectorId,
             co2eq: undefined,
             co2eqYears: undefined,
           },
@@ -317,10 +370,12 @@ export const POST = apiHandler(async (req, { session, params }) => {
           {
             ...notationKey,
             id: randomUUID(),
-            subSectorId: subCategory?.subsectorId,
-            sectorId: subCategory?.subsector?.sectorId,
+            subSectorId,
+            sectorId,
             inventoryId,
             gpcReferenceNumber,
+            // For sectors IV-V, subCategoryId should be undefined (not null)
+            subCategoryId: subCategory ? notationKey.subCategoryId : undefined,
           },
           { transaction },
         );

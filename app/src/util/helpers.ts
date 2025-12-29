@@ -2,7 +2,9 @@ import Decimal from "decimal.js";
 import { HIAction } from "./types";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
-export function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
+export function isFetchBaseQueryError(
+  error: unknown,
+): error is FetchBaseQueryError {
   return typeof error === "object" && error != null && "status" in error;
 }
 
@@ -413,7 +415,9 @@ export const getTopPickActions = (actions: HIAction[]): HIAction[] => {
  * @param param - The parameter value from useParams() (can be string | string[] | undefined)
  * @returns The parameter value as a string, or undefined if not available
  */
-export const getParamValue = (param: string | string[] | undefined): string | undefined => {
+export const getParamValue = (
+  param: string | string[] | undefined,
+): string | undefined => {
   if (!param) return undefined;
   return Array.isArray(param) ? param[0] : param;
 };
@@ -423,7 +427,9 @@ export const getParamValue = (param: string | string[] | undefined): string | un
  * @param param - The parameter value from useParams() (can be string | string[] | undefined)
  * @returns The parameter value as a string, throws error if not available
  */
-export const getParamValueRequired = (param: string | string[] | undefined): string => {
+export const getParamValueRequired = (
+  param: string | string[] | undefined,
+): string => {
   const value = getParamValue(param);
   if (!value) {
     throw new Error(`Required parameter is missing or undefined`);
@@ -434,3 +440,10 @@ export const getParamValueRequired = (param: string | string[] | undefined): str
 export const shortSectorNameToKebabCase = (sectorName: string) => {
   return toKebabCase(sectorName.toLowerCase() + "-short");
 };
+
+export function toTranslationString(str?: string): string {
+  return (str ?? "")
+    .toLowerCase()
+    .replaceAll(" ", "-")
+    .replaceAll(/[^a-zA-Z\d-]/g, "");
+}

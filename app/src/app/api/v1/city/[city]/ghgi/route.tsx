@@ -3,7 +3,9 @@
  * /api/v1/city/{city}/ghgi:
  *   get:
  *     tags:
- *       - GHG Inventory
+ *       - ghg
+ *       - inventory
+ *     operationId: getCityGhgi
  *     summary: Get GHG inventory data for a city
  *     description: Retrieves greenhouse gas inventory data for a specified city. The city parameter can be a UUID or "default" to use the user's default city.
  *     parameters:
@@ -41,7 +43,7 @@ import { validate } from "uuid";
 import { InventoryService } from "@/backend/InventoryService";
 
 export const GET = apiHandler(async (req, { session, params }) => {
-  let cityId = params.city;
+  let cityId = await params.city;
 
   if (cityId === "null") {
     throw new createHttpError.BadRequest("'null' is an invalid city id");

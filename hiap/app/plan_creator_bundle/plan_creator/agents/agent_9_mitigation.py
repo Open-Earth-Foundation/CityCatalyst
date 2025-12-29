@@ -1,8 +1,8 @@
 import json
 import logging
 import os
-from langgraph.prebuilt import create_react_agent
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from langchain.agents import create_agent
+from langchain_core.messages import HumanMessage, AIMessage
 from plan_creator_bundle.plan_creator.state.agent_state import AgentState
 from plan_creator_bundle.plan_creator.data.context import mitigation
 from langchain_openai import ChatOpenAI
@@ -25,15 +25,16 @@ model = ChatOpenAI(model=OPENAI_MODEL_NAME_PLAN_CREATOR, temperature=0.0, seed=4
 # Define tools for the agent
 tools = [placeholder_tool]
 
-system_prompt_agent_9 = SystemMessage(agent_9_system_prompt)
-
 
 def build_custom_agent_9():
-    """Wrap create_react_agent to store final output in AgentState."""
+    """Wrap create_agent to store final output in AgentState."""
 
-    # The chain returned by create_react_agent
-    react_chain = create_react_agent(
-        model, tools, prompt=system_prompt_agent_9, response_format=MitigationList
+    # The chain returned by create_agent
+    react_chain = create_agent(
+        model,
+        tools,
+        system_prompt=agent_9_system_prompt,
+        response_format=MitigationList,
     )
 
     def custom_agent_9(state: AgentState) -> AgentState:

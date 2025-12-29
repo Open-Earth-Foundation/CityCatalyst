@@ -165,7 +165,12 @@ function CustomCombinedBarLayer<D extends BarDatum>({
           radius: 16,
         });
         return (
-          <g key={year}>
+          <g
+            key={year}
+            onMouseEnter={handleMouseEnter}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          >
             {bars
               .filter((bar) => bar.index !== topSegment.index)
               .map((bar: any, index) => {
@@ -201,9 +206,6 @@ function CustomCombinedBarLayer<D extends BarDatum>({
                 pointerEvents: "all",
                 transition: "transform 0.3s ease, fill 0.3s ease",
               }}
-              onMouseEnter={handleMouseEnter}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
             />
           </g>
         );
@@ -227,7 +229,12 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
 
   const customTooltip = (point: CombinedPoint) => {
     return (
-      <Box backgroundColor="white" borderRadius="8px" boxShadow="2dp">
+      <Box
+        backgroundColor="white"
+        borderRadius="8px"
+        boxShadow="2dp"
+        minW="420px"
+      >
         <Box>
           <Box
             py={3}
@@ -260,37 +267,39 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
                 <Box
                   key={segment.id}
                   display="flex"
-                  flexDirection="column"
+                  flexDirection="row"
+                  alignItems="center"
                   gap={2}
                   justifyContent="space-between"
                 >
-                  <Box
-                    boxSize="4"
-                    style={{ backgroundColor: segment.color }}
-                  ></Box>
-                  <Text
-                    fontSize="body.md"
-                    textAlign="left"
-                    flex={1}
-                    color="content.secondary"
-                  >
-                    {tDashboard(segment.id)}
-                  </Text>
-                  <Text
-                    fontSize="body.md"
-                    px={2}
-                    textAlign="right"
-                    color="content.primary"
-                  >
-                    {segment.percentage.toFixed(2)}%
-                  </Text>
-                  <Text
-                    fontSize="body.md"
-                    textAlign="right"
-                    color="content.primary"
-                  >
-                    {convertKgToTonnes(segment.value)}
-                  </Text>
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <Box boxSize="4" bgColor={segment.color}></Box>
+                    <Text
+                      fontSize="body.md"
+                      textAlign="left"
+                      flex={1}
+                      color="content.secondary"
+                    >
+                      {tDashboard(segment.id)}
+                    </Text>
+                  </Box>
+                  <Box display="flex" justifyContent="flex-end" gap={4}>
+                    <Text
+                      fontSize="body.md"
+                      px={2}
+                      textAlign="right"
+                      color="content.primary"
+                    >
+                      {segment.percentage.toFixed(2)}%
+                    </Text>
+                    <Text
+                      fontSize="body.md"
+                      textAlign="right"
+                      color="content.primary"
+                    >
+                      {convertKgToTonnes(segment.value)}
+                    </Text>
+                  </Box>
                 </Box>
               ))}
           </Box>

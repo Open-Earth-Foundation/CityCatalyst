@@ -31,27 +31,27 @@ export class DataSourceEmissionsFactor
   >
   implements Partial<DataSourceEmissionsFactorAttributes>
 {
-  datasourceId!: string;
-  emissionsFactorId!: string;
-  created?: Date;
-  lastUpdated?: Date;
+  declare datasourceId: string;
+  declare emissionsFactorId: string;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // DataSourceEmissionsFactor belongsTo DataSource via datasourceId
-  datasource!: DataSource;
-  getDatasource!: Sequelize.BelongsToGetAssociationMixin<DataSource>;
-  setDatasource!: Sequelize.BelongsToSetAssociationMixin<
+  declare datasource: DataSource;
+  declare getDatasource: Sequelize.BelongsToGetAssociationMixin<DataSource>;
+  declare setDatasource: Sequelize.BelongsToSetAssociationMixin<
     DataSource,
     DataSourceId
   >;
-  createDatasource!: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
+  declare createDatasource: Sequelize.BelongsToCreateAssociationMixin<DataSource>;
   // DataSourceEmissionsFactor belongsTo EmissionsFactor via emissionsFactorId
-  emissionsFactor!: EmissionsFactor;
-  getEmissionsFactor!: Sequelize.BelongsToGetAssociationMixin<EmissionsFactor>;
-  setEmissionsFactor!: Sequelize.BelongsToSetAssociationMixin<
+  declare emissionsFactor: EmissionsFactor;
+  declare getEmissionsFactor: Sequelize.BelongsToGetAssociationMixin<EmissionsFactor>;
+  declare setEmissionsFactor: Sequelize.BelongsToSetAssociationMixin<
     EmissionsFactor,
     EmissionsFactorId
   >;
-  createEmissionsFactor!: Sequelize.BelongsToCreateAssociationMixin<EmissionsFactor>;
+  declare createEmissionsFactor: Sequelize.BelongsToCreateAssociationMixin<EmissionsFactor>;
 
   static initModel(
     sequelize: Sequelize.Sequelize,

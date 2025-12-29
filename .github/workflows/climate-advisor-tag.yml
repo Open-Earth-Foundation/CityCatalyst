@@ -1,4 +1,4 @@
-name: Push tagged Climate Advisor to GHCR and deploy to production
+name: Push tagged CA to GHCR and deploy to EKS Prod
 
 permissions:
   contents: read
@@ -12,10 +12,10 @@ on:
       - climate-advisor/service/**
       - climate-advisor/llm_config.yaml
       - climate-advisor/prompts/**
-      - k8s/climate-advisor-deploy.yml
-      - k8s/climate-advisor-migrate.yml
-      - k8s/climate-advisor-service.yml
-      - k8s/climate-advisor-db-configmap.yml
+      - climate-advisor/k8s/deployment-prod.yml
+      - climate-advisor/k8s/migrate-prod.yml
+      - climate-advisor/k8s/service-prod.yml
+      - climate-advisor/k8s/db-configmap-prod.yml
       - .github/workflows/climate-advisor-tag.yml
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
@@ -177,12 +177,12 @@ jobs:
       - name: Deploying service
         run: |
           export VERSION=${REF#refs/tags/v}
-          kubectl create -f k8s/climate-advisor-migrate.yml -n default
-          kubectl apply -f k8s/climate-advisor-db-configmap.yml -n default
-          kubectl apply -f k8s/climate-advisor-service.yml -n default
-          kubectl apply -f k8s/climate-advisor-deploy.yml -n default
-          kubectl set image deployment/climate-advisor-deploy climate-advisor-deploy=$IMAGE:$VERSION -n default
-          kubectl set env deployment/climate-advisor-deploy \
+          kubectl apply -f climate-advisor/k8s/db-configmap-prod.yml -n default
+          kubectl create -f climate-advisor/k8s/migrate-prod.yml -n default
+          kubectl apply -f climate-advisor/k8s/service-prod.yml -n default
+          kubectl apply -f climate-advisor/k8s/deployment-prod.yml -n default
+          kubectl set image deployment/climate-advisor-prod climate-advisor-prod=$IMAGE:$VERSION -n default
+          kubectl set env deployment/climate-advisor-prod \
             OPENROUTER_API_KEY=${{secrets.OPENROUTER_API_KEY}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_CLIMATE_ADVISOR}} \
             CC_API_KEY=${{secrets.CC_SERVICE_API_KEY}} \
@@ -192,5 +192,5 @@ jobs:
             LANGSMITH_API_KEY=${{secrets.LANGSMITH_API_KEY}} \
             LANGSMITH_WORKSPACE_ID=${{secrets.LANGSMITH_WORKSPACE_ID}} \
             -n default
-          kubectl rollout restart deployment climate-advisor-deploy -n default
-          kubectl rollout status deployment/climate-advisor-deploy -n default --timeout=300s
+          kubectl rollout restart deployment climate-advisor-prod -n default
+          kubectl rollout status deployment/climate-advisor-prod -n default --timeout=300s

@@ -5,23 +5,26 @@ import { ClimateActionCard } from "@/components/ClimateActionCard";
 import { ActionDrawer } from "@/components/ActionDrawer";
 import { useState } from "react";
 
-// Helper function to get top picks
-const getTopPickActions = (actions: HIAction[]): HIAction[] => {
-  // First, check if any actions are selected
-  const selectedActions = actions.filter((action) => action.isSelected);
+// Helper function to get top picks from both ranked and unranked actions
+const getTopPickActions = (rankedActions: HIAction[], unrankedActions: HIAction[]): HIAction[] => {
+  // Get selected actions from both ranked and unranked
+  const selectedRankedActions = rankedActions.filter((action) => action.isSelected);
+  const selectedUnrankedActions = unrankedActions.filter((action) => action.isSelected);
+  const allSelectedActions = [...selectedRankedActions, ...selectedUnrankedActions];
 
-  if (selectedActions.length > 0) {
+  if (allSelectedActions.length > 0) {
     // If there are selected actions, show them (sorted by rank)
-    return [...selectedActions].sort((a, b) => a.rank - b.rank);
+    return [...allSelectedActions].sort((a, b) => a.rank - b.rank);
   } else {
-    // If no actions are selected, show top 3 by rank
-    return [...actions].sort((a, b) => a.rank - b.rank).slice(0, 3);
+    // If no actions are selected, show top 3 ranked actions by rank
+    return [...rankedActions].sort((a, b) => a.rank - b.rank).slice(0, 3);
   }
 };
 
 const ActionPlanSection = ({
   t,
   rankedActions = [],
+  unrankedActions = [],
   cityLocode,
   cityId,
   cityData,
@@ -30,13 +33,14 @@ const ActionPlanSection = ({
 }: {
   t: TFunction;
   rankedActions?: HIAction[];
+  unrankedActions?: HIAction[];
   cityLocode?: string;
   cityId?: string;
   cityData?: CityWithProjectDataResponse;
   inventoryId?: string;
   lng: string;
 }) => {
-  const topPickActions = getTopPickActions(rankedActions);
+  const topPickActions = getTopPickActions(rankedActions, unrankedActions);
   const [selectedAction, setSelectedAction] = useState<HIAction | null>(null);
 
   return (

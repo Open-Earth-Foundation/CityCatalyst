@@ -251,7 +251,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         reference_number: referenceNumber,
         inventory_id: inventoryId,
       });
-      
+
       setHasActivityData(!hasActivityData);
       showSuccessToast();
       reset();

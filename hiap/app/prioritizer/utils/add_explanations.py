@@ -65,9 +65,24 @@ openai_client = wrap_openai(
 
 def build_explanation_model(language_codes: list[str]) -> Type[BaseModel]:
     """
-    Build a dynamic Pydantic model with the given language codes as fields.
-    OpenAI API requires models with defined fields for structured output.
-    We build a dynamic model with the given language codes as fields.
+    Build a dynamic Pydantic schema with one required string field per language code.
+
+    The model is created on the fly so that its fields exactly match the provided
+    language codes and nothing else. This is important for the OpenAI
+    `response_format` parameter: it tells the model to return JSON that has *only*
+    these keys and validates that all of them are present.
+
+    Example
+    -------
+    If ``language_codes = ["en", "de", "fr"]``, this function is roughly equivalent to
+
+        class Explanation(BaseModel):
+            en: str
+            de: str
+            fr: str
+
+    which ensures that the LLM must output a JSON object with the keys
+    ``"en"``, ``"de"``, and ``"fr"`` filled with explanation text.
 
     Args:
         language_codes (list[str]): List of 2-letter ISO language codes.

@@ -127,8 +127,8 @@ const startPrioritizationImpl = async (
   if (!response.ok) {
     const errorText = await response.text();
     logger.error(
-      { 
-        status: response.status, 
+      {
+        status: response.status,
         statusText: response.statusText,
         error: errorText,
         requestBody: body,
@@ -352,6 +352,7 @@ const startActionPlanJobImpl = async ({
         actionId: action.actionId,
         highImpactActionRankedId: action.hiaRankingId, // This should be the ranked ID, not ranking ID
         cityLocode,
+        inventoryId,
         actionName: action.name,
         language: lng,
         planData,
@@ -470,10 +471,12 @@ const startBulkPrioritizationImpl = async (
         prioritizationType: type,
         language: languages,
       },
-      sampleCityData: citiesData[0] ? {
-        cityContextData: citiesData[0].cityContextData,
-        cityEmissionsData: citiesData[0].cityEmissionsData,
-      } : null,
+      sampleCityData: citiesData[0]
+        ? {
+            cityContextData: citiesData[0].cityContextData,
+            cityEmissionsData: citiesData[0].cityEmissionsData,
+          }
+        : null,
     },
     "🔍 DETAILED startBulkPrioritization request payload",
   );
@@ -495,7 +498,7 @@ const startBulkPrioritizationImpl = async (
   if (!response.ok) {
     const errorText = await response.text();
     logger.error(
-      { 
+      {
         status: response.status,
         statusText: response.statusText,
         error: errorText,

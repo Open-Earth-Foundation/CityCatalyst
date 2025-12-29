@@ -37,28 +37,28 @@ export class OrganizationInvite
   >
   implements Partial<OrganizationInviteAttributes>
 {
-  id!: string;
-  organizationId?: string;
-  userId?: string;
-  email?: string;
-  status?: InviteStatus;
-  created?: Date;
-  lastUpdated?: Date;
-  role?: OrganizationRole;
+  declare id: string;
+  declare organizationId?: string;
+  declare userId?: string;
+  declare email?: string;
+  declare status?: InviteStatus;
+  declare created?: Date;
+  declare lastUpdated?: Date;
+  declare role?: OrganizationRole;
 
   //   OrganizationInvite belongs to Organization via organizationId
-  organization!: Organization;
-  getOrganization!: Sequelize.BelongsToGetAssociationMixin<Organization>;
-  setOrganization!: Sequelize.BelongsToSetAssociationMixin<
+  declare organization: Organization;
+  declare getOrganization: Sequelize.BelongsToGetAssociationMixin<Organization>;
+  declare setOrganization: Sequelize.BelongsToSetAssociationMixin<
     Organization,
     OrganizationId
   >;
-  createOrganization!: Sequelize.BelongsToCreateAssociationMixin<Organization>;
+  declare createOrganization: Sequelize.BelongsToCreateAssociationMixin<Organization>;
 
   //   OrganizationInvite belongs to User via userId
-  user!: User;
-  getUser!: Sequelize.BelongsToGetAssociationMixin<User>;
-  setUser!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
+  declare user: User;
+  declare getUser: Sequelize.BelongsToGetAssociationMixin<User>;
+  declare setUser: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof OrganizationInvite {
     return OrganizationInvite.init(

@@ -9,7 +9,8 @@ import { db } from "@/models";
  * /api/v1/public/project/{projectId}/cities:
  *   get:
  *     tags:
- *       - Public
+ *       - public
+ *     operationId: getPublicProjectCities
  *     summary: Get all public cities within a project by project ID.
  *     description: Public endpoint that returns all cities within a project that have at least one public inventory. No authentication is required. Response is wrapped in '{' data '}' and includes basic city information.
  *     parameters:

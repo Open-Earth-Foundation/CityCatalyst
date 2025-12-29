@@ -3,7 +3,9 @@
  * /api/v1/city/transfer:
  *   patch:
  *     tags:
- *       - City Transfer
+ *       - city
+ *       - transfer
+ *     operationId: patchCityTransfer
  *     summary: Transfer multiple cities to a target project (admin only).
  *     description: Moves the specified cities into a different project after validating limits and existence, and notifies organization admins. Requires an admin session; non‑admins receive an authorization error. Returns a success flag when the transfer completes.
  *     requestBody:

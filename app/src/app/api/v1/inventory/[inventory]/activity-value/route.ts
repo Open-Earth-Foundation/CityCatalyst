@@ -3,7 +3,9 @@
  * /api/v1/inventory/{inventory}/activity-value:
  *   post:
  *     tags:
- *       - Inventory Activity
+ *       - inventory
+ *       - activity
+ *     operationId: postInventoryActivityValue
  *     summary: Create an activity value (edit access).
  *     description: Creates an activity and associated inventory/gas values as needed. Requires a signed‑in user with edit access to the inventory. Returns a success flag and the created value in { success, data }.
  *     parameters:
@@ -33,6 +35,18 @@
  *                 type: array
  *                 items:
  *                   type: object
+ *           examples:
+ *             example:
+ *               value:
+ *                 gasValues:
+ *                   - gas: "CO2"
+ *                     value: 1000.5
+ *                 inventoryValueId: "550e8400-e29b-41d4-a716-446655440000"
+ *                 inventoryValue:
+ *                   gpcReferenceNumber: "1.1.1"
+ *                   value: 50000
+ *                   inputMethodology: "550e8400-e29b-41d4-a716-446655440001"
+ *                   subCategoryId: "550e8400-e29b-41d4-a716-446655440002"
  *     responses:
  *       200:
  *         description: Success flag and created value.
@@ -85,17 +99,6 @@
  *                   description: Created activity value with all properties
  *       400:
  *         description: Invalid data.
- *     examples:
- *       application/json:
- *         gasValues:
- *           - gas: "CO2"
- *             value: 1000.5
- *         inventoryValueId: "550e8400-e29b-41d4-a716-446655440000"
- *         inventoryValue:
- *           gpcReferenceNumber: "1.1.1"
- *           value: 50000
- *           inputMethodology: "550e8400-e29b-41d4-a716-446655440001"
- *           subCategoryId: "550e8400-e29b-41d4-a716-446655440002"
  * */
 import ActivityService from "@/backend/ActivityService";
 import { PermissionService } from "@/backend/permissions";
@@ -176,7 +179,9 @@ export const POST = apiHandler(async (req, { params, session }) => {
  * /api/v1/inventory/{inventory}/activity-value:
  *   get:
  *     tags:
- *       - Inventory Activity
+ *       - inventory
+ *       - activity
+ *     operationId: getInventoryActivityValue
  *     summary: List activity values for an inventory (edit access).
  *     description: Returns activity values filtered by subCategoryIds or subSectorId, optionally by methodology. Requires a signed‑in user with edit access to the inventory. Response is wrapped in '{' data: ActivityValue[] '}'.
  *     parameters:
@@ -387,7 +392,9 @@ export const GET = apiHandler(async (req, { params, session }) => {
  * /api/v1/inventory/{inventory}/activity-value:
  *   delete:
  *     tags:
- *       - Inventory Activity
+ *       - inventory
+ *       - activity
+ *     operationId: deleteInventoryActivityValue
  *     summary: Delete activities by subsector or reference number (edit access).
  *     description: Deletes activity rows within a subsector or by GPC reference number. Requires a signed‑in user with edit access. Returns a success flag and deletedCount in { success, data }.
  *     parameters:

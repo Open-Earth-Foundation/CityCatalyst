@@ -45,68 +45,68 @@ export class Inventory
   extends Model<InventoryAttributes, InventoryCreationAttributes>
   implements Partial<InventoryAttributes>
 {
-  inventoryId!: string;
-  inventoryName?: string;
-  year?: number;
-  totalEmissions?: number;
-  cityId?: string;
-  totalCountryEmissions?: number;
-  isPublic?: boolean;
-  publishedAt?: Date | null;
-  created?: Date;
-  lastUpdated?: Date | null;
-  inventoryType?: InventoryTypeEnum;
-  globalWarmingPotentialType?: GlobalWarmingPotentialTypeEnum;
+  declare inventoryId: string;
+  declare inventoryName?: string;
+  declare year?: number;
+  declare totalEmissions?: number;
+  declare cityId?: string;
+  declare totalCountryEmissions?: number;
+  declare isPublic?: boolean;
+  declare publishedAt?: Date | null;
+  declare created?: Date;
+  declare lastUpdated?: Date | null;
+  declare inventoryType?: InventoryTypeEnum;
+  declare globalWarmingPotentialType?: GlobalWarmingPotentialTypeEnum;
   // Inventory belongsTo City via cityId
-  city!: City;
-  getCity!: Sequelize.BelongsToGetAssociationMixin<City>;
-  setCity!: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
-  createCity!: Sequelize.BelongsToCreateAssociationMixin<City>;
+  declare city: City;
+  declare getCity: Sequelize.BelongsToGetAssociationMixin<City>;
+  declare setCity: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
+  declare createCity: Sequelize.BelongsToCreateAssociationMixin<City>;
   // Inventory hasMany InventoryValue via inventoryId
-  inventoryValues!: InventoryValue[];
-  getInventoryValues!: Sequelize.HasManyGetAssociationsMixin<InventoryValue>;
-  setInventoryValues!: Sequelize.HasManySetAssociationsMixin<
+  declare inventoryValues: InventoryValue[];
+  declare getInventoryValues: Sequelize.HasManyGetAssociationsMixin<InventoryValue>;
+  declare setInventoryValues: Sequelize.HasManySetAssociationsMixin<
     InventoryValue,
     InventoryValueId
   >;
-  addInventoryValue!: Sequelize.HasManyAddAssociationMixin<
+  declare addInventoryValue: Sequelize.HasManyAddAssociationMixin<
     InventoryValue,
     InventoryValueId
   >;
-  addInventoryValues!: Sequelize.HasManyAddAssociationsMixin<
+  declare addInventoryValues: Sequelize.HasManyAddAssociationsMixin<
     InventoryValue,
     InventoryValueId
   >;
-  createInventoryValue!: Sequelize.HasManyCreateAssociationMixin<InventoryValue>;
-  removeInventoryValue!: Sequelize.HasManyRemoveAssociationMixin<
+  declare createInventoryValue: Sequelize.HasManyCreateAssociationMixin<InventoryValue>;
+  declare removeInventoryValue: Sequelize.HasManyRemoveAssociationMixin<
     InventoryValue,
     InventoryValueId
   >;
-  removeInventoryValues!: Sequelize.HasManyRemoveAssociationsMixin<
+  declare removeInventoryValues: Sequelize.HasManyRemoveAssociationsMixin<
     InventoryValue,
     InventoryValueId
   >;
-  hasInventoryValue!: Sequelize.HasManyHasAssociationMixin<
+  declare hasInventoryValue: Sequelize.HasManyHasAssociationMixin<
     InventoryValue,
     InventoryValueId
   >;
-  hasInventoryValues!: Sequelize.HasManyHasAssociationsMixin<
+  declare hasInventoryValues: Sequelize.HasManyHasAssociationsMixin<
     InventoryValue,
     InventoryValueId
   >;
-  countInventoryValues!: Sequelize.HasManyCountAssociationsMixin;
+  declare countInventoryValues: Sequelize.HasManyCountAssociationsMixin;
   // Inventory hasMany Version via inventoryId
-  versions!: Version[];
-  getVersions!: Sequelize.HasManyGetAssociationsMixin<Version>;
-  setVersions!: Sequelize.HasManySetAssociationsMixin<Version, VersionId>;
-  addVersion!: Sequelize.HasManyAddAssociationMixin<Version, VersionId>;
-  addVersions!: Sequelize.HasManyAddAssociationsMixin<Version, VersionId>;
-  createVersion!: Sequelize.HasManyCreateAssociationMixin<Version>;
-  removeVersion!: Sequelize.HasManyRemoveAssociationMixin<Version, VersionId>;
-  removeVersions!: Sequelize.HasManyRemoveAssociationsMixin<Version, VersionId>;
-  hasVersion!: Sequelize.HasManyHasAssociationMixin<Version, VersionId>;
-  hasVersions!: Sequelize.HasManyHasAssociationsMixin<Version, VersionId>;
-  countVersions!: Sequelize.HasManyCountAssociationsMixin;
+  declare versions: Version[];
+  declare getVersions: Sequelize.HasManyGetAssociationsMixin<Version>;
+  declare setVersions: Sequelize.HasManySetAssociationsMixin<Version, VersionId>;
+  declare addVersion: Sequelize.HasManyAddAssociationMixin<Version, VersionId>;
+  declare addVersions: Sequelize.HasManyAddAssociationsMixin<Version, VersionId>;
+  declare createVersion: Sequelize.HasManyCreateAssociationMixin<Version>;
+  declare removeVersion: Sequelize.HasManyRemoveAssociationMixin<Version, VersionId>;
+  declare removeVersions: Sequelize.HasManyRemoveAssociationsMixin<Version, VersionId>;
+  declare hasVersion: Sequelize.HasManyHasAssociationMixin<Version, VersionId>;
+  declare hasVersions: Sequelize.HasManyHasAssociationsMixin<Version, VersionId>;
+  declare countVersions: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Inventory {
     return Inventory.init(

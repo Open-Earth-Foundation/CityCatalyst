@@ -3,7 +3,9 @@
  * /api/v1/assistants/threads/actions:
  *   post:
  *     tags:
- *       - Assistants Threads
+ *       - assistants
+ *       - threads
+ *     operationId: postAssistantsThreadsActions
  *     summary: Submit tool outputs for an in‑flight run and stream updated events.
  *     description: Provides tool call outputs to a running thread and resumes streaming of events. Requires a signed-in user with access to the underlying inventory/thread. The response is a streamed sequence of events, not a JSON object.
  *     requestBody:

@@ -3,7 +3,8 @@
  * /api/v1/chat/threads:
  *   post:
  *     tags:
- *       - Chat
+ *       - chat
+ *     operationId: postChatThreads
  *     summary: Create a new chat thread via Climate Advisor
  *     description: Creates a persistent conversation thread in the Climate Advisor service with auto-issued user token. The thread maintains context and conversation history across multiple message exchanges.
  *     requestBody:
@@ -111,6 +112,14 @@ export const POST = apiHandler(async (req, { session }) => {
     );
 
     // Create CA thread with token and context
+    logger.info(
+      {
+        user_id: session.user.id,
+        inventory_id,
+        ca_base_url: process.env.CA_BASE_URL,
+      },
+      "Creating CA chat thread via CA service",
+    );
     const caResponse = await fetch(`${process.env.CA_BASE_URL}/v1/threads`, {
       method: "POST",
       headers: {

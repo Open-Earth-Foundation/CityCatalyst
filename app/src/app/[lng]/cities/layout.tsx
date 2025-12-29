@@ -3,11 +3,16 @@
 import { NavigationBar } from "@/components/navigation-bar";
 import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
-import { api, useGetOrganizationForCityQuery } from "@/services/api";
+import { useGetOrganizationQuery } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import { use } from "react";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
+import {
+  useOrganizationContext,
+  hasOrganizationChanged,
+  normalizeOrganizationState,
+} from "@/hooks/organization-context-provider/use-organizational-context";
 
 export default function CitiesLayout(props: {
   children: React.ReactNode;
@@ -16,26 +21,29 @@ export default function CitiesLayout(props: {
   const { lng } = use(props.params);
   const { children } = props;
 
-  const { data: userInfo, isLoading: isUserInfoLoading } =
-    api.useGetUserInfoQuery();
+  const { setOrganization, organization } = useOrganizationContext();
+  const { setTheme, theme } = useTheme();
 
-  // Get organization data for the user's default city
-  const { data: cityOrgData, isLoading: isCityOrgDataLoading } =
-    useGetOrganizationForCityQuery(userInfo?.defaultCityId!, {
-      skip: !userInfo?.defaultCityId,
+  // Get organization data using organizationId from context
+  const { data: orgData, isLoading: isOrgDataLoading } =
+    useGetOrganizationQuery(organization?.organizationId!, {
+      skip: !organization?.organizationId,
     });
 
-  const { setTheme } = useTheme();
-
   useEffect(() => {
-    if (cityOrgData) {
-      setTheme(cityOrgData?.theme?.themeKey ?? ("blue_theme" as string));
+    if (orgData) {
+      const newOrgState = normalizeOrganizationState(orgData);
+
+      if (hasOrganizationChanged(organization, newOrgState)) {
+        setOrganization(newOrgState);
+      }
+      setTheme(orgData?.theme?.themeKey ?? "blue_theme");
     } else {
       setTheme("blue_theme");
     }
-  }, [cityOrgData, setTheme]);
+  }, [isOrgDataLoading, orgData, organization, setOrganization, setTheme]);
 
-  if (isUserInfoLoading || isCityOrgDataLoading) {
+  if (isOrgDataLoading) {
     return <ProgressLoader />;
   }
 

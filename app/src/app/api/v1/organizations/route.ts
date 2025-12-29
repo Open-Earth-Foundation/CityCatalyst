@@ -18,7 +18,8 @@ import { Op } from "sequelize";
  * /api/v1/organizations:
  *   post:
  *     tags:
- *       - Organizations
+ *       - organizations
+ *     operationId: postOrganizations
  *     summary: Create a new organization (admin only).
  *     description: Creates an active organization with name and contactEmail. Requires an admin session. Response is the created organization object (not wrapped).
  *     requestBody:
@@ -113,7 +114,8 @@ export const POST = apiHandler(async (req, { params, session }) => {
  * /api/v1/organizations:
  *   get:
  *     tags:
- *       - Organizations
+ *       - organizations
+ *     operationId: getOrganizations
  *     summary: List organizations with projects and pending admin invites (admin only).
  *     description: Returns all organizations including selected project fields and pending org_admin invites. Requires an admin session; non‑admins receive 401/403 via middleware handlers. Response is a JSON array (not wrapped).
  *     responses:

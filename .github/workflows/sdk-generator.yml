@@ -18,7 +18,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install app dependencies
         working-directory: app
@@ -27,6 +27,10 @@ jobs:
       - name: Build app
         working-directory: app
         run: npm run build
+
+      - name: Lint the OpenAPI spec
+        working-directory: app
+        run: npm run openapi:lint
 
       - name: Upload OpenAPI spec artifact
         uses: actions/upload-artifact@v4
@@ -58,7 +62,7 @@ jobs:
       - name: Set up Node.js for npm publish
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Initialise package
@@ -125,6 +129,7 @@ jobs:
           path: python-client/dist/*
 
   build-ruby-sdk:
+    if: false
     runs-on: ubuntu-latest
     needs: build-and-generate-openapi-spec
 
@@ -165,6 +170,7 @@ jobs:
           path: ruby-client/citycatalyst_client-*.gem
 
   build-swift-sdk:
+    if: false
     runs-on: ubuntu-latest
     needs: build-and-generate-openapi-spec
 
@@ -195,6 +201,7 @@ jobs:
           path: swift-sdk.tar.gz
 
   build-kotlin-sdk:
+    if: false
     runs-on: ubuntu-latest
     needs: build-and-generate-openapi-spec
 

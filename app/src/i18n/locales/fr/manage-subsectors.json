@@ -1211,6 +1211,7 @@
   "success": "Succès",
   "notation-keys-updated": "Clés de notation mises à jour",
   "error-updating-notation-keys": "Échec de la mise à jour des clés de notation",
+  "error-existing-notation-key-found": "Clé de notation existante trouvée pour cette sous-catégorie, supprimez-la avant de définir une clé de notation",
   "quick-action-applied": "Action rapide appliquée",
   "changes-can-be-lost": "Vos modifications peuvent être perdues",
   "changes-can-be-lost-description": "Voulez-vous jeter toutes les modifications effectuées depuis la dernière édition ? Cela ne peut pas être annulé.",

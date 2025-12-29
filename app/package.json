@@ -1,6 +1,6 @@
 {
   "name": "city-catalyst",
-  "version": "1.6.0-dev.0",
+  "version": "1.7.0-dev.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -53,6 +53,7 @@
     "@hookform/resolvers": "^5.1.1",
     "@huggingface/inference": "^4.7.1",
     "@isaacs/ttlcache": "^1.4.1",
+    "@modelcontextprotocol/sdk": "^1.25.0",
     "@next/env": "^14.2.5",
     "@nivo/bar": "^0.99.0",
     "@nivo/line": "^0.99.0",

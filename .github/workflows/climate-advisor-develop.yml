@@ -1,5 +1,5 @@
 # Climate Advisor deployment workflow
-name: Push Climate Advisor to latest and deploy to EKS
+name: Push CA to GHCR and deploy to EKS Develop
 permissions:
   contents: read
   packages: write

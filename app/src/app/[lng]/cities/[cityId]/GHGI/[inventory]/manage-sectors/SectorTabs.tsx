@@ -261,7 +261,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     } catch (error) {
       toaster.error({
         title: t("error"),
-        description: t("error-updating-notation-keys"),
+        description: t("error-existing-notation-key-found"),
       });
       logger.error({ err: error }, "Failed to update notation keys");
     }

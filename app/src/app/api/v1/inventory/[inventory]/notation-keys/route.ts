@@ -366,9 +366,15 @@ export const POST = apiHandler(async (req, { session, params }) => {
             ? subCategory.subcategoryName
             : subSector?.subsectorName || gpcReferenceNumber;
 
-          throw new createHttpError.BadRequest(
+          const error = new createHttpError.BadRequest(
             `Cannot set notation key for "${itemName}" because it already has emissions data. Please remove the emissions data first.`,
           );
+          // Include translation key and itemName for frontend
+          (error as any).data = {
+            translationKey: "error-cannot-set-notation-key-emissions-data",
+            itemName,
+          };
+          throw error;
         }
 
         // Update existing inventory value with notation key

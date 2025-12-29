@@ -320,16 +320,24 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         });
     } catch (error: any) {
       // Check if error is about emissions data
-      const errorMessage = error?.data?.error?.message || error?.message || "";
-      const hasEmissionsData = errorMessage.includes(
-        "already has emissions data",
-      );
+      const errorData = error?.data?.error || {};
+      const translationKey = errorData.data?.translationKey;
+      const itemName = errorData.data?.itemName;
+      const errorMessage = errorData.message || error?.message || "";
+      const hasEmissionsData =
+        translationKey === "error-cannot-set-notation-key-emissions-data" ||
+        errorMessage.includes("already has emissions data");
 
       if (hasEmissionsData) {
         // Show warning for emissions data conflict
+        // Use translation key with interpolation if available, otherwise use error message
+        const description =
+          translationKey && itemName
+            ? t(translationKey, { itemName })
+            : errorMessage;
         toaster.create({
           title: t("warning") || "Warning",
-          description: errorMessage,
+          description,
           type: "warning",
           duration: 7000,
         });

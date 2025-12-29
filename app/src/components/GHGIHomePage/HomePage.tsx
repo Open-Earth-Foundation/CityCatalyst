@@ -182,6 +182,8 @@ export default function HomePage({
       skip: !inventoryIdFromParam,
     });
 
+  console.log(inventoryProgress);
+
   const { data: city } = api.useGetCityQuery(inventory?.cityId!, {
     skip: !inventory?.cityId,
   });

@@ -83,8 +83,19 @@ export const GET = apiHandler(async (_req, { session, params }) => {
       inventoryId: inventory.inventoryId,
     },
   });
-  const inventoryValuesMap = new Map(
-    existingInventoryValues.map((value) => [value.subCategoryId, value]),
+
+  // Map by subCategoryId for sectors I-III (which have subcategories)
+  const inventoryValuesBySubCategoryId = new Map(
+    existingInventoryValues
+      .filter((value) => value.subCategoryId != null)
+      .map((value) => [value.subCategoryId, value]),
+  );
+
+  // Map by gpcReferenceNumber for sectors IV-V (which don't have subcategories, only subsectors)
+  const inventoryValuesByGpcRef = new Map(
+    existingInventoryValues
+      .filter((value) => value.gpcReferenceNumber != null)
+      .map((value) => [value.gpcReferenceNumber, value]),
   );
 
   const inventoryStructure =
@@ -101,16 +112,31 @@ export const GET = apiHandler(async (_req, { session, params }) => {
 
   const inventoryValuesBySector = Object.fromEntries(
     applicableSectors.map((sector) => {
-      const inventoryValues = sector.subSectors.flatMap((subSector) => {
-        return subSector.subCategories
-          .map((subCategory) => {
-            const inventoryValue = inventoryValuesMap.get(
-              subCategory.subcategoryId,
+      const isSectorIVOrV =
+        sector.referenceNumber === "IV" || sector.referenceNumber === "V";
+
+      if (isSectorIVOrV) {
+        // For sectors IV and V: return subsectors (they don't have subcategories)
+        // Create a subcategory-like structure from subsector data for compatibility
+        const inventoryValues = sector.subSectors
+          .map((subSector) => {
+            const inventoryValue = inventoryValuesByGpcRef.get(
+              subSector.referenceNumber!,
             );
+            // Create a subcategory-like object from subsector for IV and V
+            // since the frontend expects subcategory structure
+            const subCategoryLike = {
+              subcategoryId: subSector.subsectorId, // Use subsectorId as identifier
+              subcategoryName: subSector.subsectorName,
+              referenceNumber: subSector.referenceNumber,
+              subsectorId: subSector.subsectorId,
+              scopeId: subSector.scopeId,
+              reportinglevelId: null,
+            };
             return {
               inventoryValue,
               subSector,
-              subCategory,
+              subCategory: subCategoryLike,
             };
           })
           .filter(({ inventoryValue }) => {
@@ -119,9 +145,30 @@ export const GET = apiHandler(async (_req, { session, params }) => {
               inventoryValue && inventoryValue.unavailableReason != null;
             return !isFilled || hasNotationKey;
           });
-      });
-
-      return [sector.referenceNumber, inventoryValues];
+        return [sector.referenceNumber, inventoryValues];
+      } else {
+        // For sectors I-III: return subcategories (current behavior)
+        const inventoryValues = sector.subSectors.flatMap((subSector) => {
+          return subSector.subCategories
+            .map((subCategory) => {
+              const inventoryValue = inventoryValuesBySubCategoryId.get(
+                subCategory.subcategoryId,
+              );
+              return {
+                inventoryValue,
+                subSector,
+                subCategory,
+              };
+            })
+            .filter(({ inventoryValue }) => {
+              const isFilled = inventoryValue != null;
+              const hasNotationKey =
+                inventoryValue && inventoryValue.unavailableReason != null;
+              return !isFilled || hasNotationKey;
+            });
+        });
+        return [sector.referenceNumber, inventoryValues];
+      }
     }),
   );
   return NextResponse.json({

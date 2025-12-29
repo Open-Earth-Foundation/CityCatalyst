@@ -217,8 +217,8 @@ const saveNotationKeysRequest = z.object({
  *       - inventory
  *       - notation-keys
  *     operationId: postInventoryNotationKeys
- *     summary: Set notation keys for subcategories in an inventory.
- *     description: Saves notation keys for the inventory’s subcategories, creating inventory values where necessary. Requires a signed‑in user with access to the inventory. Returns { success, result } listing affected values.
+ *     summary: Set or update notation keys for subcategories in an inventory.
+ *     description: Saves or updates notation keys for the inventory's subcategories, creating or updating inventory values as needed. Existing inventory values will be updated with the notation key data and emissions values will be cleared. Requires a signed‑in user with access to the inventory. Returns { success, result } listing affected values.
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -287,6 +287,12 @@ export const POST = apiHandler(async (req, { session, params }) => {
       // Try to find SubCategory first (for sectors I-III)
       let subCategory = await db.models.SubCategory.findOne({
         where: { subcategoryId: notationKey.subCategoryId },
+        attributes: [
+          "subcategoryId",
+          "subcategoryName",
+          "referenceNumber",
+          "subsectorId",
+        ],
         include: [
           {
             model: db.models.SubSector,
@@ -310,7 +316,12 @@ export const POST = apiHandler(async (req, { session, params }) => {
         // For sectors IV-V: the subCategoryId is actually a subsectorId
         subSector = await db.models.SubSector.findOne({
           where: { subsectorId: notationKey.subCategoryId },
-          attributes: ["subsectorId", "sectorId", "referenceNumber"],
+          attributes: [
+            "subsectorId",
+            "subsectorName",
+            "sectorId",
+            "referenceNumber",
+          ],
         });
 
         if (!subSector) {
@@ -340,13 +351,29 @@ export const POST = apiHandler(async (req, { session, params }) => {
         transaction,
         lock: true,
       });
+
+      let inventoryValue: InventoryValue;
       if (existingInventoryValue) {
-        throw new createHttpError.BadRequest(
-          "Existing notation key found for this subcategory, remove it before setting notation key",
-        );
-        /* TODO decide if this behavior is desirable - UI warning/ confirmation would need to be implemented
-        // reset emissions values of inventory value as notation key was used for it
-        const inventoryValue = await existingInventoryValue.update(
+        // Check if existing inventory value has emissions data
+        // If it has emissions data, we should not update with notation key
+        const hasEmissionsData =
+          existingInventoryValue.co2eq != null ||
+          existingInventoryValue.co2eqYears != null;
+
+        if (hasEmissionsData) {
+          // Get a user-friendly name for the error message
+          const itemName = subCategory
+            ? subCategory.subcategoryName
+            : subSector?.subsectorName || gpcReferenceNumber;
+
+          throw new createHttpError.BadRequest(
+            `Cannot set notation key for "${itemName}" because it already has emissions data. Please remove the emissions data first.`,
+          );
+        }
+
+        // Update existing inventory value with notation key
+        // Reset emissions values as notation key takes precedence
+        inventoryValue = await existingInventoryValue.update(
           {
             unavailableReason: notationKey.unavailableReason,
             unavailableExplanation: notationKey.unavailableExplanation,
@@ -354,19 +381,23 @@ export const POST = apiHandler(async (req, { session, params }) => {
             sectorId,
             co2eq: undefined,
             co2eqYears: undefined,
+            datasourceId: null, // Clear datasource when setting notation key
+            // For sectors IV-V, subCategoryId should be undefined (not null)
+            subCategoryId: subCategory ? notationKey.subCategoryId : undefined,
           },
           { transaction },
         );
-        result.push(inventoryValue);
 
-        // destroy existing activity values in this subsector, making sure no data is left behind
+        // Destroy existing activity values, making sure no data is left behind
         await db.models.ActivityValue.destroy({
           where: { inventoryValueId: existingInventoryValue.id },
           transaction,
         });
-        */
+
+        result.push(inventoryValue);
       } else {
-        const inventoryValue = await db.models.InventoryValue.create(
+        // Create new inventory value with notation key
+        inventoryValue = await db.models.InventoryValue.create(
           {
             ...notationKey,
             id: randomUUID(),

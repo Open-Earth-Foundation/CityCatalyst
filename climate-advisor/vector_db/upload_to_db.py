@@ -137,9 +137,8 @@ async def store_document_with_embeddings(
                 continue
 
             # Create embedding record with document metadata and chunk content
-            # Note: Convert UUID to string to match database column type
             embedding = DocumentEmbedding(
-                embedding_id=str(uuid4()),
+                embedding_id=uuid4(),
                 model_name=embedding_result.model,
                 embedding_vector=embedding_result.embedding,
                 # Document metadata

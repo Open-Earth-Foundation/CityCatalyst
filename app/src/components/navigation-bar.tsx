@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useTranslation } from "@/i18n/client";
 import { languages } from "@/i18n/settings";
 import {
@@ -47,6 +47,7 @@ import { useOrganizationContext } from "@/hooks/organization-context-provider/us
 import { Trans } from "react-i18next";
 import JNDrawer from "./HomePage/JNDrawer";
 import { getDashboardPath, getHomePath } from "@/util/routes";
+import { useRouteParams } from "@/hooks/useRouteParams";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -74,13 +75,16 @@ export function NavigationBar({
   const { organization, clearOrganization } = useOrganizationContext();
   const logoUrl = organization?.logoUrl;
   const isFrozen = organization != null && !organization.active;
-  const { inventory: inventoryParam, city: cityIdParam } = useParams();
-  let inventoryIdFromParam = inventoryParam !== "null" ? inventoryParam : null;
-  if (Array.isArray(inventoryIdFromParam)) {
-    inventoryIdFromParam = inventoryIdFromParam[0];
-  }
+  // Use custom hook to extract route params - more reliable for route changes
+  const {
+    cityId: cityIdFromRoute,
+    inventoryId: inventoryIdFromRoute,
+    pathname,
+  } = useRouteParams();
+  const fullPath = pathname.replace(/^\/[A-Za-z]+/, "");
+
   const { data: inventory, isLoading: isInventoryLoading } =
-    api.useGetInventoryQuery(inventoryIdFromParam ?? "default");
+    api.useGetInventoryQuery(inventoryIdFromRoute ?? "default");
 
   const { data: userAccessStatus } = useGetUserAccessStatusQuery(
     {},
@@ -101,10 +105,6 @@ export function NavigationBar({
     const newPath = currentPath.replace(/^\/[a-z]{2}/, `/${language}`);
     router.replace(newPath);
   };
-
-  // get pathname
-  const pathname = usePathname();
-  const fullPath = pathname.replace(/^\/[A-Za-z]+/, "");
 
   // Checks if language is set in cookie and updates URL if not
   useEffect(() => {
@@ -131,14 +131,27 @@ export function NavigationBar({
   const { data: session, status } = useSession();
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
-  const currentInventoryId =
-    inventoryIdFromParam ?? userInfo?.defaultInventoryId;
-  const currentCityId = cityIdParam ?? userInfo?.defaultCityId;
   const router = useRouter();
-  const inventoryStub = inventoryIdFromParam ?? currentInventoryId;
-  const cityStub = cityIdParam ?? currentCityId;
-  const dashboardPath = getDashboardPath(lng, cityStub, inventoryStub);
-  const homePath = getHomePath(lng, cityStub, inventoryStub);
+
+  // Memoize city and inventory IDs to ensure they update when route changes
+  const currentInventoryId = useMemo(
+    () => inventoryIdFromRoute ?? userInfo?.defaultInventoryId,
+    [inventoryIdFromRoute, userInfo?.defaultInventoryId, pathname],
+  );
+  const currentCityId = useMemo(
+    () => cityIdFromRoute ?? userInfo?.defaultCityId,
+    [cityIdFromRoute, userInfo?.defaultCityId, pathname],
+  );
+
+  // Memoize paths to recompute when pathname or IDs change
+  const dashboardPath = useMemo(
+    () => getDashboardPath(lng, currentCityId ?? "", currentInventoryId ?? ""),
+    [lng, currentCityId, currentInventoryId, pathname],
+  );
+  const homePath = useMemo(
+    () => getHomePath(lng, currentCityId ?? "", currentInventoryId ?? ""),
+    [lng, currentCityId, currentInventoryId, pathname],
+  );
   const { setTheme } = useTheme();
 
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);

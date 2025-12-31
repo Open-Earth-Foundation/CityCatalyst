@@ -106,6 +106,16 @@ jobs:
         run: npm run test:coverage:check
         continue-on-error: true
 
+      - name: Add coverage summary
+        run: |
+          if [ -f coverage/coverage-summary.json ]; then
+            LINES=$(node -p "require('./coverage/coverage-summary.json').total.lines.pct.toFixed(2)")
+            BRANCHES=$(node -p "require('./coverage/coverage-summary.json').total.branches.pct.toFixed(2)")
+            FUNCTIONS=$(node -p "require('./coverage/coverage-summary.json').total.functions.pct.toFixed(2)")
+            echo "## Test Coverage" >> $GITHUB_STEP_SUMMARY
+            echo "**Lines:** ${LINES}% | **Branches:** ${BRANCHES}% | **Functions:** ${FUNCTIONS}%" >> $GITHUB_STEP_SUMMARY
+          fi
+
       - name: Save coverage for next run
         if: always()
         uses: actions/cache@v4

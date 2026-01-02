@@ -33,6 +33,7 @@
     "test:coverage": "npm run jest --coverage",
     "test:coverage:watch": "npm run jest --coverage --watch",
     "test:coverage:open": "npm run jest --coverage; npx open-cli coverage/index.html",
+    "test:coverage:check": "node scripts/check-coverage-regression.js",
     "prettier": "npx prettier . --write",
     "email": "email dev --dir src/lib/emails",
     "create-admin": "tsx scripts/create-admin.ts",

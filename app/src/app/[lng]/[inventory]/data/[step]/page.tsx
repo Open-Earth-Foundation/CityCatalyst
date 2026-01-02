@@ -37,6 +37,7 @@ import {
   Icon,
   IconButton,
   Link,
+  ProgressCircle,
   SimpleGrid,
   Spinner,
   Stack,
@@ -856,7 +857,7 @@ export default function AddDataSteps() {
                       >
                         {subSector.completedCount > 0 &&
                         subSector.completedCount < subSector.totalCount ? (
-                          <ProgressCircleRoot
+                          <ProgressCircle.Root
                             size="xs"
                             mr={1}
                             value={
@@ -865,8 +866,11 @@ export default function AddDataSteps() {
                               100
                             }
                           >
-                            <ProgressCircleRing />
-                          </ProgressCircleRoot>
+                            <ProgressCircle.Circle>
+                              <ProgressCircle.Track />
+                              <ProgressCircle.Range stroke="interactive.secondary" />
+                            </ProgressCircle.Circle>
+                          </ProgressCircle.Root>
                         ) : (
                           <Icon
                             as={

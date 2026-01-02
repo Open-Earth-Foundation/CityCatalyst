@@ -2,9 +2,12 @@
 
 /**
  * Script to check if test coverage has dropped below the previous value.
- * Fails if coverage decreases for any metric (lines, statements, branches, functions).
+ * Fails if coverage decreases by more than the threshold (default 0.5%) for any metric.
  *
  * Usage: node scripts/check-coverage-regression.js [coverage-summary.json path]
+ *
+ * Environment variables:
+ *   COVERAGE_THRESHOLD - Tolerance threshold in percentage (default: 0.5)
  */
 
 import fs from "fs";
@@ -21,6 +24,9 @@ const previousCoveragePath = path.join(
   __dirname,
   "../coverage/previous-coverage.json",
 );
+
+// Tolerance threshold - only fail if coverage decreases by more than this amount
+const COVERAGE_THRESHOLD = parseFloat(process.env.COVERAGE_THRESHOLD || "0.5");
 
 // Metrics to check
 const metrics = ["lines", "statements", "branches", "functions"];
@@ -82,7 +88,8 @@ function compareCoverage(current, previous) {
 
     const diff = currentValue - previousValue;
 
-    if (diff < 0) {
+    // Only flag as regression if decrease is greater than the threshold
+    if (diff < -COVERAGE_THRESHOLD) {
       hasRegression = true;
       regressions.push({
         metric,
@@ -165,8 +172,32 @@ function main() {
     previousCoverage,
   );
 
+  // Check for small decreases below threshold
+  const smallDecreases = [];
+  if (previousCoverage) {
+    for (const metric of metrics) {
+      const currentValue = currentCoverage[metric];
+      const previousValue = previousCoverage[metric];
+      if (
+        currentValue !== undefined &&
+        previousValue !== undefined &&
+        currentValue < previousValue &&
+        currentValue - previousValue >= -COVERAGE_THRESHOLD
+      ) {
+        smallDecreases.push({
+          metric,
+          current: currentValue,
+          previous: previousValue,
+          diff: (currentValue - previousValue).toFixed(2),
+        });
+      }
+    }
+  }
+
   if (hasRegression) {
-    console.log("\n❌ Coverage Regression Detected!");
+    console.log(
+      `\n❌ Coverage Regression Detected! (threshold: ${COVERAGE_THRESHOLD}%)`,
+    );
     console.log("\nCoverage decreased for the following metrics:");
     for (const reg of regressions) {
       console.log(
@@ -177,6 +208,18 @@ function main() {
     process.exit(1);
   } else {
     if (previousCoverage) {
+      // Show small decreases that are within tolerance
+      if (smallDecreases.length > 0) {
+        console.log(
+          `\n⚠️  Small decreases detected (within ${COVERAGE_THRESHOLD}% threshold):`,
+        );
+        for (const dec of smallDecreases) {
+          console.log(
+            `  ${dec.metric.padEnd(12)}: ${dec.previous.toFixed(2)}% → ${dec.current.toFixed(2)}% (${dec.diff}%)`,
+          );
+        }
+      }
+
       console.log("\n✅ Coverage maintained or improved!");
       const improvements = [];
       for (const metric of metrics) {

@@ -1,4 +1,11 @@
-import { Box, Card, Heading, Icon, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Card,
+  Heading,
+  Icon,
+  ProgressCircle,
+  Text,
+} from "@chakra-ui/react";
 import React, { FC } from "react";
 import { MdOutlineCheckCircle } from "react-icons/md";
 import { DataAlertIcon } from "../icons";
@@ -37,17 +44,17 @@ const SubSectorCard: FC<SubSectorCardProps> = ({
       shadow="none"
     >
       {percentageCompletion > 0 && percentageCompletion < 100 ? (
-        <ProgressCircleRoot
+        <ProgressCircle.Root
           size="xs"
           value={clamp(percentageCompletion, 0, 100)}
           color="background.neutral"
           mr={4}
         >
-          <ProgressCircleRing
-            color="interactive.secondary"
-            css={{ "--thickness": "4px" }}
-          />
-        </ProgressCircleRoot>
+          <ProgressCircle.Circle>
+            <ProgressCircle.Track />
+            <ProgressCircle.Range stroke="interactive.secondary" />
+          </ProgressCircle.Circle>
+        </ProgressCircle.Root>
       ) : (
         <Icon
           as={isCompleted ? MdOutlineCheckCircle : DataAlertIcon}

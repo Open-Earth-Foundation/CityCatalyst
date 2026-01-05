@@ -293,11 +293,8 @@ class TestMessageToDict:
         
         assert msg_dict["role"] == "assistant"
         assert msg_dict["content"] == "Response text"
-        # Should have trimmed tools
-        assert "tools_used" in msg_dict
-        assert msg_dict["tools_used"][0] == {"name": "tool1", "status": "success"}
-        assert "result" not in msg_dict["tools_used"][0]
-
+        # Tools should be omitted when include_tools is False
+        assert "tools_used" not in msg_dict
     def test_message_to_dict_user_message(self):
         """Test converting user message (no tools)."""
         msg = MockMessage("msg1", MessageRole.USER, "User question")

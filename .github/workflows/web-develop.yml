@@ -432,6 +432,7 @@ jobs:
             "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,JN_ENABLED,CA_SERVICE_INTEGRATION,HIGHLIGHT_ENABLED" \
             "NEXT_PUBLIC_POSTHOG_KEY=${{secrets.NEXT_PUBLIC_POSTHOG_KEY}}" \
             "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" \
+            "ALLOWED_ORIGINS=https://citycatalyst.openearth.dev,https://www.citycatalyst.openearth.dev" \
             "NEXT_PUBLIC_DEPLOYMENT_ENV=development" \
             "AWS_FILE_UPLOAD_S3_BUCKET_ID=citycatalyst-files" \
             "AWS_FILE_UPLOAD_REGION=us-east-1" \

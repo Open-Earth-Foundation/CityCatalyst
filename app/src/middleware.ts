@@ -7,6 +7,23 @@ import { NextResponse } from "next/server";
 
 acceptLanguage.languages(languages);
 
+// CORS configuration
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [
+  process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+];
+
+function isOriginAllowed(origin: string | null): boolean {
+  if (!origin) return false;
+  return allowedOrigins.some((allowed) => {
+    if (allowed.includes("*")) {
+      // Support wildcard subdomains like *.example.com
+      const pattern = allowed.replace("*", ".*");
+      return new RegExp(`^${pattern}$`).test(origin);
+    }
+    return origin === allowed;
+  });
+}
+
 export const config = {
   matcher: [
     "/api/:path*",
@@ -30,6 +47,18 @@ const excludedApi = [
 ];
 
 export async function middleware(req: NextRequestWithAuth) {
+  // Handle Content-Type for static files
+  if (req.nextUrl.pathname === "/robots.txt") {
+    const response = NextResponse.next();
+    response.headers.set("Content-Type", "text/plain; charset=utf-8");
+    return response;
+  }
+  if (req.nextUrl.pathname.includes("/sitemap")) {
+    const response = NextResponse.next();
+    response.headers.set("Content-Type", "application/xml; charset=utf-8");
+    return response;
+  }
+
   if (
     req.nextUrl.pathname.startsWith("/api") ||
     req.nextUrl.pathname.startsWith("/.well-known")
@@ -37,20 +66,34 @@ export async function middleware(req: NextRequestWithAuth) {
     if (excludedApi.some((ptrn) => req.nextUrl.pathname.match(ptrn))) {
       return NextResponse.next();
     }
+
+    const origin = req.headers.get("origin");
+    const isAllowed = isOriginAllowed(origin);
+
     if (req.method === "OPTIONS") {
       return new Response(null, {
         status: 200,
         headers: {
-          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Origin": isAllowed
+            ? origin!
+            : allowedOrigins[0],
           "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type, Authorization",
           "Access-Control-Max-Age": "86400", // 24 hours
-          "Access-Control-Allow-Credentials": "false",
+          "Access-Control-Allow-Credentials": isAllowed ? "true" : "false",
+          Vary: "Origin",
         },
       });
     }
+
     const response = NextResponse.next();
-    response.headers.set("Access-Control-Allow-Origin", "*");
+    if (isAllowed) {
+      response.headers.set("Access-Control-Allow-Origin", origin!);
+      response.headers.set("Access-Control-Allow-Credentials", "true");
+    } else {
+      response.headers.set("Access-Control-Allow-Origin", allowedOrigins[0]);
+      response.headers.set("Access-Control-Allow-Credentials", "false");
+    }
     response.headers.set(
       "Access-Control-Allow-Methods",
       "GET,POST,PUT,PATCH,DELETE,OPTIONS",
@@ -59,7 +102,7 @@ export async function middleware(req: NextRequestWithAuth) {
       "Access-Control-Allow-Headers",
       "Content-Type, Authorization",
     );
-    response.headers.set("Access-Control-Allow-Credentials", "false");
+    response.headers.set("Vary", "Origin");
     return response;
   }
 
@@ -113,6 +156,12 @@ export async function middleware(req: NextRequestWithAuth) {
     }
   } else {
     response = await next(req);
+  }
+
+  // Add security headers to all responses
+  if (response instanceof NextResponse) {
+    // Remove X-Powered-By header if present (should be disabled in next.config.mjs, but ensure it's removed)
+    response.headers.delete("X-Powered-By");
   }
 
   return response;

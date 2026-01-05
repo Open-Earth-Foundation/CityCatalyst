@@ -794,6 +794,8 @@ export function initModels(sequelize: Sequelize) {
   });
   Version.belongsTo(Inventory, { as: "inventory", foreignKey: "inventoryId" });
   Inventory.hasMany(Version, { as: "versions", foreignKey: "inventoryId" });
+  Version.belongsTo(User, { as: "author", foreignKey: "authorId" });
+  User.hasMany(Version, { as: "versions", foreignKey: "authorId" });
   DataSourceMethodology.belongsTo(Methodology, {
     as: "methodology",
     foreignKey: "methodologyId",

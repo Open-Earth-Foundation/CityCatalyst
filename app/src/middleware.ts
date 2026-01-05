@@ -17,7 +17,10 @@ function isOriginAllowed(origin: string | null): boolean {
   return allowedOrigins.some((allowed) => {
     if (allowed.includes("*")) {
       // Support wildcard subdomains like *.example.com
-      const pattern = allowed.replace("*", ".*");
+      // Escape regex metacharacters to prevent regex injection
+      const escaped = allowed.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+      // Replace all occurrences of * with .*
+      const pattern = escaped.replaceAll("*", ".*");
       return new RegExp(`^${pattern}$`).test(origin);
     }
     return origin === allowed;

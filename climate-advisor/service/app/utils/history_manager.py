@@ -181,9 +181,9 @@ class HistoryManager:
             "content": message.text,
         }
 
-        # Include tools if requested and available
-        # If include_tools=False, we strip tools from LLM context
-        # (but they remain in the database for audit trail)
+        # Include tools in LLM context only if requested
+        # When include_tools=False, tools_used field is excluded entirely from LLM context
+        # (but full tools_used remain in the database for audit trail)
         if include_tools and message.tools_used:
             msg_dict["tools_used"] = message.tools_used
 

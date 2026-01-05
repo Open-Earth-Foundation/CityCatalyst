@@ -20,6 +20,7 @@ from ..services.thread_service import ThreadService
 from .sse import format_sse
 from .tool_handler import persist_assistant_message
 from .token_handler import TokenHandler
+from .history_manager import load_conversation_history
 
 logger = logging.getLogger(__name__)
 
@@ -126,36 +127,35 @@ class StreamingHandler:
                 await self.agent_service.close()
 
     async def _load_conversation_history(self, settings) -> List[Dict[str, str]]:
-        """Load conversation history from database if available."""
-        conversation_history = []
+        """Load conversation history from database with pruning applied.
         
-        if not (self.session_factory and settings.llm.conversation and 
-                settings.llm.conversation.include_history):
-            return conversation_history
+        This method:
+        1. Calls load_conversation_history which loads messages from DB
+        2. Applies history pruning based on retention config (preserve latest N turns)
+        3. Strips tool metadata from older messages to reduce context size
+        4. Falls back gracefully if DB is unavailable
         
-        try:
-            async with self.session_factory() as hist_session:
-                message_service = MessageService(hist_session)
-                history_limit = settings.llm.conversation.history_limit or 5
-                
-                messages = await message_service.get_thread_messages(
-                    thread_id=self.thread_id,
-                    limit=history_limit
-                )
-                
-                for msg in messages:
-                    conversation_history.append({
-                        "role": msg.role.value,
-                        "content": msg.text
-                    })
-                
-                logger.info(
-                    "Loaded %d messages from conversation history for thread_id=%s",
-                    len(conversation_history),
-                    self.thread_id
-                )
-        except Exception as e:
-            logger.warning("Failed to load conversation history: %s", e)
+        Returns:
+            List of message dicts ready for LLM, with pruning applied.
+            Empty list if history is disabled or DB is unavailable.
+        """
+        conversation_history = await load_conversation_history(
+            thread_id=self.thread_id,
+            user_id=self.user_id,
+            session_factory=self.session_factory,
+        )
+        
+        if conversation_history:
+            logger.info(
+                "Loaded and pruned conversation history: %d messages for thread_id=%s",
+                len(conversation_history),
+                self.thread_id
+            )
+        else:
+            logger.debug(
+                "No conversation history available (disabled or DB unavailable) for thread_id=%s",
+                self.thread_id
+            )
         
         return conversation_history
 

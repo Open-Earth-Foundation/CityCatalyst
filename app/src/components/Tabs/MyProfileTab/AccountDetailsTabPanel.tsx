@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { Box, Button, HStack } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ProfileInputs } from "@/app/[lng]/[inventory]/settings/page";
 import FormInput from "../../form-input";
 import EmailInput from "../../email-input";
 import { useSetCurrentUserDataMutation } from "@/services/api";
@@ -19,6 +18,17 @@ interface AccountDetailsFormProps {
   userInfo: any;
   showTitle?: boolean;
 }
+
+type ProfileInputs = {
+  name: string;
+  email: string;
+  city: string;
+  role: string;
+  locode: string;
+  userId: string;
+  title?: string | null;
+  preferredLanguage?: string;
+};
 
 const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
   t,

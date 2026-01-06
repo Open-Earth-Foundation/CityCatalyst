@@ -424,6 +424,7 @@ export function NavigationBar({
                   )}
 
                   {!restrictAccess &&
+                    userAccessStatus &&
                     hasFeatureFlag(FeatureFlags.ACCOUNT_SETTINGS_ENABLED) && (
                       <MenuItem
                         paddingTop="12px"

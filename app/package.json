@@ -46,7 +46,7 @@
     "openapi:lint": "spectral lint public/openapi-spec.json"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.802.0",
+    "@aws-sdk/client-s3": "^3.958.0",
     "@chakra-ui/react": "^3.8.0",
     "@emotion/react": "^11.14.0",
     "@highlight-run/next": "^7.9.38",

@@ -1212,6 +1212,7 @@
   "notation-keys-updated": "Clés de notation mises à jour",
   "error-updating-notation-keys": "Échec de la mise à jour des clés de notation",
   "error-existing-notation-key-found": "Clé de notation existante trouvée pour cette sous-catégorie, supprimez-la avant de définir une clé de notation",
+  "error-cannot-set-notation-key-emissions-data": "Impossible de définir la clé de notation pour \"{{itemName}}\" car elle contient déjà des données d'émissions. Veuillez supprimer les données d'émissions d'abord.",
   "quick-action-applied": "Action rapide appliquée",
   "changes-can-be-lost": "Vos modifications peuvent être perdues",
   "changes-can-be-lost-description": "Voulez-vous jeter toutes les modifications effectuées depuis la dernière édition ? Cela ne peut pas être annulé.",

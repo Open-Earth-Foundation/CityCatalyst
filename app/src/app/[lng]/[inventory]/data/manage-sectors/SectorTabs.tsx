@@ -226,7 +226,6 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       unavailableReason: string;
       unavailableExplanation: string;
     }[] = [];
-    console.log(cardInputs);
     if (subCategoryId) {
       // Update a single card
       const cardData = cardInputs[subCategoryId];
@@ -253,7 +252,6 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
           unavailableExplanation: cardData.explanation.trim(),
         },
       ];
-      console.log(notationKeys);
     } else {
       // Bulk update all cards that have been edited
       const currentSectorSubCategoryIds =

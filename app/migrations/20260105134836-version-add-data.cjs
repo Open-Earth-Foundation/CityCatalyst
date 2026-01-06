@@ -31,6 +31,30 @@ module.exports = {
       );
       await queryInterface.addColumn(
         "Version",
+        "entry_id",
+        {
+          type: Sequelize.UUID,
+          allowNull: false,
+          comment: "ID of the table entry that was changed",
+        },
+        { transaction },
+      );
+      await queryInterface.addColumn(
+        "Version",
+        "previous_version_id",
+        {
+          type: Sequelize.UUID,
+          allowNull: true,
+          references: {
+            model: "Version",
+            key: "version_id",
+            comment: "ID of the previous version entry of the same table entry",
+          },
+        },
+        { transaction },
+      );
+      await queryInterface.addColumn(
+        "Version",
         "table",
         {
           type: Sequelize.STRING,
@@ -89,12 +113,18 @@ module.exports = {
         "inventory_id",
         {
           type: Sequelize.UUID,
-          allowNull: true,
+          allowNull: false,
         },
         { transaction },
       );
 
       await queryInterface.removeColumn("Version", "author_id", {
+        transaction,
+      });
+      await queryInterface.removeColumn("Version", "entry_id", {
+        transaction,
+      });
+      await queryInterface.removeColumn("Version", "previous_version_id", {
         transaction,
       });
       await queryInterface.removeColumn("Version", "table", { transaction });

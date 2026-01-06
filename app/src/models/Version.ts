@@ -7,6 +7,8 @@ export interface VersionAttributes {
   versionId: string;
   inventoryId?: string;
   authorId?: string;
+  entryId?: string;
+  previousVersionId?: string;
   table?: string;
   data?: Record<string, any>;
   created?: Date;
@@ -18,6 +20,8 @@ export type VersionId = Version[VersionPk];
 export type VersionOptionalAttributes =
   | "inventoryId"
   | "authorId"
+  | "entryId"
+  | "previousVersionId"
   | "table"
   | "data"
   | "created"
@@ -34,6 +38,8 @@ export class Version
   declare versionId: string;
   declare inventoryId?: string;
   declare authorId?: string;
+  declare entryId?: string;
+  declare previousVersionId?: string;
   declare table?: string;
   declare data?: Record<string, any>;
   declare created?: Date;
@@ -52,7 +58,14 @@ export class Version
   declare author: User;
   declare getAuthor: Sequelize.BelongsToGetAssociationMixin<User>;
   declare setAuthor: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
-  declare createAuthor: Sequelize.BelongsToCreateAssociationMixin<User>;
+
+  // Version hasOne Version via previousVersionId
+  declare previousVersion: Version;
+  declare getPreviousVersion: Sequelize.BelongsToGetAssociationMixin<Version>;
+  declare setPreviousVersion: Sequelize.BelongsToSetAssociationMixin<
+    Version,
+    VersionId
+  >;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Version {
     return Version.init(
@@ -80,6 +93,20 @@ export class Version
             key: "user_id",
           },
           field: "author_id",
+        },
+        entryId: {
+          type: DataTypes.UUID,
+          allowNull: false,
+          field: "entry_id",
+        },
+        previousVersionId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "Version",
+            key: "version_id",
+          },
+          field: "previous_version_id",
         },
         table: {
           type: DataTypes.STRING,

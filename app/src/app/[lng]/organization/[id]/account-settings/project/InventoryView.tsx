@@ -30,7 +30,6 @@ import { BsDownload } from "react-icons/bs";
 import { formatEmissions } from "@/util/helpers";
 import { MdArrowOutward, MdGroup, MdOutlineAspectRatio } from "react-icons/md";
 import { useSession } from "next-auth/react";
-import MyFilesTab from "@/components/Tabs/my-files-tab";
 import FilesTable from "@/components/Files/fileTable";
 
 interface InventoryViewProps {

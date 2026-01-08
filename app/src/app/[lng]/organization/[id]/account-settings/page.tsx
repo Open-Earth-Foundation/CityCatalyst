@@ -2,28 +2,17 @@
 import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
-import { Box, Heading, Tabs, Text } from "@chakra-ui/react";
+import { Box, Heading, HStack, Tabs, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import AccountSettingsTab from "./account";
 import TeamSettings from "./team";
 import ProjectSettings from "./project/index";
-import MyAppsSettings from "./MyAppsSettings";
-
-const selectedTabStyles = {
-  borderColor: "content.link",
-  borderBottomWidth: "2px",
-  boxShadow: "none",
-  fontWeight: "bold",
-  borderRadius: "0",
-  color: "content.link",
-  backgroundColor: "background.backgroundLight",
-};
 
 // TODO create tabs component with recipe
 const AccountSettingsPage = (props: {
   params: Promise<{ lng: string; id: string }>;
 }) => {
-  const { lng, id: organizationId } = use(props.params);
+  const { lng, id } = use(props.params);
   const { t } = useTranslation(lng, "settings");
 
   return (
@@ -63,24 +52,52 @@ const AccountSettingsPage = (props: {
               w="full"
               backgroundColor="background.backgroundLight"
             >
-              <Tabs.Trigger value="account" _selected={selectedTabStyles}>
+              <Tabs.Trigger
+                value="account"
+                _selected={{
+                  borderColor: "content.link",
+                  borderBottomWidth: "2px",
+                  boxShadow: "none",
+                  fontWeight: "bold",
+                  borderRadius: "0",
+                  color: "content.link",
+                  backgroundColor: "background.backgroundLight",
+                }}
+              >
                 <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
                   {t("account")}
                 </Text>
               </Tabs.Trigger>
-              <Tabs.Trigger value="team" _selected={selectedTabStyles}>
+              <Tabs.Trigger
+                value="team"
+                _selected={{
+                  borderColor: "content.link",
+                  borderBottomWidth: "2px",
+                  boxShadow: "none",
+                  fontWeight: "bold",
+                  borderRadius: "0",
+                  color: "content.link",
+                  backgroundColor: "background.backgroundLight",
+                }}
+              >
                 <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
                   {t("team")}
                 </Text>
               </Tabs.Trigger>
-              <Tabs.Trigger value="project" _selected={selectedTabStyles}>
+              <Tabs.Trigger
+                value="project"
+                _selected={{
+                  borderColor: "content.link",
+                  borderBottomWidth: "2px",
+                  boxShadow: "none",
+                  fontWeight: "bold",
+                  borderRadius: "0",
+                  color: "content.link",
+                  backgroundColor: "background.backgroundLight",
+                }}
+              >
                 <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
                   {t("projects")}
-                </Text>
-              </Tabs.Trigger>
-              <Tabs.Trigger value="my-apps" _selected={selectedTabStyles}>
-                <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
-                  {t("my-apps")}
                 </Text>
               </Tabs.Trigger>
             </Tabs.List>
@@ -108,13 +125,10 @@ const AccountSettingsPage = (props: {
               </Box>
             </Tabs.Content>
             <Tabs.Content value="team">
-              <TeamSettings lng={lng} id={organizationId} />
+              <TeamSettings lng={lng} id={id} />
             </Tabs.Content>
             <Tabs.Content value="project">
-              <ProjectSettings lng={lng} id={organizationId} />
-            </Tabs.Content>
-            <Tabs.Content value="my-apps">
-              <MyAppsSettings lng={lng} />
+              <ProjectSettings lng={lng} id={id} />
             </Tabs.Content>
           </Tabs.Root>
         </Box>

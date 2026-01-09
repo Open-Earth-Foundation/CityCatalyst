@@ -7,8 +7,8 @@ export interface VersionAttributes {
   versionId: string;
   inventoryId?: string;
   authorId?: string;
-  entryId?: string;
-  previousVersionId?: string;
+  entryId?: string; // ID of the table entry that was changed
+  previousVersionId?: string; // ID of the previous version entry of the same table entry
   table?: string;
   data?: Record<string, any>;
   created?: Date;
@@ -38,8 +38,8 @@ export class Version
   declare versionId: string;
   declare inventoryId?: string;
   declare authorId?: string;
-  declare entryId?: string;
-  declare previousVersionId?: string;
+  declare entryId?: string; // ID of the table entry that was changed
+  declare previousVersionId?: string; // ID of the previous version entry of the same table entry
   declare table?: string;
   declare data?: Record<string, any>;
   declare created?: Date;

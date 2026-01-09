@@ -113,7 +113,7 @@ module.exports = {
         "inventory_id",
         {
           type: Sequelize.UUID,
-          allowNull: false,
+          allowNull: true,
         },
         { transaction },
       );

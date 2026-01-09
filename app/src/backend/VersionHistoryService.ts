@@ -92,14 +92,12 @@ export default class VersionHistoryService {
           });
         } else {
           // delete table entry as it didn't exist previously
-          await model.destroy(
-            {
-              where: {
-                [idColumn]: version.entryId,
-              },
+          await model.destroy({
+            where: {
+              [idColumn]: version.entryId,
             },
-            { transaction },
-          );
+            transaction,
+          });
         }
 
         // delete version entry

@@ -46,6 +46,7 @@ export default class VersionHistoryService {
     // find previous version (if available)
     const previousVersion = await db.models.Version.findOne({
       where: { inventoryId, entryId, table },
+      order: [["created", "DESC"]],
     });
 
     // save version entry

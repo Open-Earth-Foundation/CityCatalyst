@@ -213,6 +213,14 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   const [createNotationKeys, { isLoading, isError, data, status }] =
     api.useUpdateOrCreateNotationKeysMutation();
   const handleUpdateNotationKeys = async (subCategoryId?: string) => {
+    // Valid enum values for unavailableReason
+    const validReasons = [
+      "no-occurrance",
+      "not-estimated",
+      "confidential-information",
+      "included-elsewhere",
+    ];
+
     let notationKeys: {
       subCategoryId: string;
       unavailableReason: string;
@@ -222,25 +230,77 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       // Update a single card
       const cardData = cardInputs[subCategoryId];
       if (!cardData) return;
+
+      // Validate that both fields are filled
+      if (
+        !cardData.notationKey ||
+        !validReasons.includes(cardData.notationKey) ||
+        !cardData.explanation ||
+        cardData.explanation.trim().length === 0
+      ) {
+        toaster.error({
+          title: t("error"),
+          description: t("error-updating-notation-keys"),
+        });
+        return;
+      }
+
       notationKeys = [
         {
           subCategoryId,
           unavailableReason: cardData.notationKey,
-          unavailableExplanation: cardData.explanation,
+          unavailableExplanation: cardData.explanation.trim(),
         },
       ];
     } else {
-      // Bulk update all cards that have been edited (or, if you prefer, all selected ones)
-      const currentSectorSubCategoryIds = sectorData?.result[
-        selectedSector
-      ].map((scope: any) => scope.subCategory.subcategoryId);
+      // Bulk update all cards that have been edited
+      const currentSectorSubCategoryIds =
+        sectorData?.result[selectedSector]?.map(
+          (scope: any) => scope.subCategory.subcategoryId,
+        ) || [];
+
       notationKeys = Object.entries(cardInputs)
-        .filter(([id, _value]) => currentSectorSubCategoryIds.includes(id))
+        .filter(([id, value]) => {
+          // Only include cards in the current sector
+          if (!currentSectorSubCategoryIds.includes(id)) {
+            return false;
+          }
+          // Validate that the value exists and has required fields
+          if (!value || typeof value !== "object") {
+            return false;
+          }
+          // Check that notationKey is a valid enum value
+          if (
+            !value.notationKey ||
+            typeof value.notationKey !== "string" ||
+            !validReasons.includes(value.notationKey)
+          ) {
+            return false;
+          }
+          // Check that explanation is a non-empty string
+          if (
+            !value.explanation ||
+            typeof value.explanation !== "string" ||
+            value.explanation.trim().length === 0
+          ) {
+            return false;
+          }
+          return true;
+        })
         .map(([id, value]) => ({
           subCategoryId: id,
-          unavailableReason: value.notationKey,
-          unavailableExplanation: value.explanation,
+          unavailableReason: value.notationKey as string,
+          unavailableExplanation: value.explanation.trim(),
         }));
+    }
+
+    // Check if we have any valid notation keys to update
+    if (notationKeys.length === 0) {
+      toaster.error({
+        title: t("error"),
+        description: t("error-updating-notation-keys"),
+      });
+      return;
     }
 
     try {
@@ -258,11 +318,36 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
           description: t("notation-keys-updated"),
           duration: 5000,
         });
-    } catch (error) {
-      toaster.error({
-        title: t("error"),
-        description: t("error-existing-notation-key-found"),
-      });
+    } catch (error: any) {
+      // Check if error is about emissions data
+      const errorData = error?.data?.error || {};
+      const translationKey = errorData.data?.translationKey;
+      const itemName = errorData.data?.itemName;
+      const errorMessage = errorData.message || error?.message || "";
+      const hasEmissionsData =
+        translationKey === "error-cannot-set-notation-key-emissions-data" ||
+        errorMessage.includes("already has emissions data");
+
+      if (hasEmissionsData) {
+        // Show warning for emissions data conflict
+        // Use translation key with interpolation if available, otherwise use error message
+        const description =
+          translationKey && itemName
+            ? t(translationKey, { itemName })
+            : errorMessage;
+        toaster.create({
+          title: t("warning") || "Warning",
+          description,
+          type: "warning",
+          duration: 7000,
+        });
+      } else {
+        // Show generic error for other failures
+        toaster.error({
+          title: t("error"),
+          description: errorMessage || t("error-updating-notation-keys"),
+        });
+      }
       logger.error({ err: error }, "Failed to update notation keys");
     }
   };

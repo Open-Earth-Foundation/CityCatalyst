@@ -70,7 +70,7 @@
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "decimal.js": "^10.4.3",
-    "dotenv": "^16.5.0",
+    "dotenv": "^17.2.3",
     "exceljs": "^4.4.0",
     "fetch-blob": "^4.0.0",
     "framer-motion": "^12.12.1",

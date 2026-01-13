@@ -14,7 +14,7 @@ export default function PrivateHome(props: {
   const cityIdValue = Array.isArray(cityId) ? cityId[0] : cityId;
 
   // Get user info to check for default city
-  const { data: userInfo, isLoading: userInfoLoading } =
+  const { data: userInfo, isLoading: userInfoLoading, isError: userInfoError } =
     api.useGetUserInfoQuery();
 
   // Get city data to validate if the city exists and user has access
@@ -24,8 +24,16 @@ export default function PrivateHome(props: {
     isLoading: cityLoading,
   } = api.useGetCityQuery(cityIdValue!, { skip: !cityIdValue });
 
+  // Check if error is a rate limit error (429)
+  const isRateLimitError =
+    (cityError && "status" in cityError && cityError.status === 429) ||
+    userInfoError;
+
   useEffect(() => {
     if (userInfoLoading || cityLoading) return;
+
+    // Don't redirect if it's a rate limit error - user should retry
+    if (isRateLimitError) return;
 
     // If city doesn't exist or user doesn't have access, redirect to default city
     if (cityError || !city) {
@@ -35,11 +43,16 @@ export default function PrivateHome(props: {
         router.replace(`/${lng}/cities/onboarding`);
       }
     }
-  }, [cityError, city, userInfo, userInfoLoading, cityLoading, lng, router]);
+  }, [cityError, city, userInfo, userInfoLoading, cityLoading, lng, router, isRateLimitError]);
 
   // Show loading state while validating
   if (userInfoLoading || cityLoading) {
     return <div>Loading...</div>;
+  }
+
+  // If rate limited, show a message instead of redirecting
+  if (isRateLimitError) {
+    return <div>Too many requests. Please wait a moment and refresh.</div>;
   }
 
   // If city doesn't exist, don't render (will redirect)

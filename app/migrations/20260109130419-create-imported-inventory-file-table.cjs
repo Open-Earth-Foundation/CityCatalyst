@@ -43,6 +43,7 @@ module.exports = {
       file_name: {
         type: Sequelize.STRING(255),
         allowNull: false,
+        // Sanitized file name for storage (e.g., special characters removed/replaced)
       },
       file_type: {
         type: Sequelize.ENUM("xlsx", "csv"),
@@ -52,21 +53,22 @@ module.exports = {
         type: Sequelize.BIGINT,
         allowNull: false,
       },
-      file_path: {
-        type: Sequelize.TEXT,
-        allowNull: false,
+      data: {
+        type: Sequelize.BLOB,
+        allowNull: true,
       },
       original_file_name: {
         type: Sequelize.STRING(255),
         allowNull: false,
+        // Original user-provided filename (preserved as-is)
       },
       import_status: {
         type: Sequelize.ENUM(
           "uploaded",
-          "validating",
-          "mapping",
+          "processing", // Combined validating + mapping step
+          "waiting_for_approval",
           "approved",
-          "processing",
+          "importing", // Processing the import after approval
           "completed",
           "failed",
         ),
@@ -93,12 +95,12 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true,
       },
-      created_at: {
+      created: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.NOW,
       },
-      updated_at: {
+      last_updated: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.NOW,

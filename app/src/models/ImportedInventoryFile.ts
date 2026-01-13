@@ -13,7 +13,7 @@ export interface ImportedInventoryFileAttributes {
   fileName: string;
   fileType: "xlsx" | "csv";
   fileSize: number;
-  filePath: string;
+  data?: Buffer | any;
   originalFileName: string;
   importStatus: ImportStatusEnum;
   mappingConfiguration?: Record<string, any> | null;
@@ -21,8 +21,8 @@ export interface ImportedInventoryFileAttributes {
   errorLog?: string | null;
   rowCount?: number | null;
   processedRowCount?: number | null;
-  createdAt?: Date;
-  updatedAt?: Date;
+  created?: Date;
+  lastUpdated?: Date;
   completedAt?: Date | null;
 }
 
@@ -30,13 +30,14 @@ export type ImportedInventoryFilePk = "id";
 export type ImportedInventoryFileId =
   ImportedInventoryFile[ImportedInventoryFilePk];
 export type ImportedInventoryFileOptionalAttributes =
+  | "data"
   | "mappingConfiguration"
   | "validationResults"
   | "errorLog"
   | "rowCount"
   | "processedRowCount"
-  | "createdAt"
-  | "updatedAt"
+  | "created"
+  | "lastUpdated"
   | "completedAt";
 export type ImportedInventoryFileCreationAttributes = Optional<
   ImportedInventoryFileAttributes,
@@ -57,7 +58,7 @@ export class ImportedInventoryFile
   declare fileName: string;
   declare fileType: "xlsx" | "csv";
   declare fileSize: number;
-  declare filePath: string;
+  declare data?: Buffer | any;
   declare originalFileName: string;
   declare importStatus: ImportStatusEnum;
   declare mappingConfiguration?: Record<string, any> | null;
@@ -65,8 +66,8 @@ export class ImportedInventoryFile
   declare errorLog?: string | null;
   declare rowCount?: number | null;
   declare processedRowCount?: number | null;
-  declare createdAt?: Date;
-  declare updatedAt?: Date;
+  declare created?: Date;
+  declare lastUpdated?: Date;
   declare completedAt?: Date | null;
 
   // ImportedInventoryFile belongsTo User via userId
@@ -143,10 +144,9 @@ export class ImportedInventoryFile
           allowNull: false,
           field: "file_size",
         },
-        filePath: {
-          type: DataTypes.TEXT,
-          allowNull: false,
-          field: "file_path",
+        data: {
+          type: DataTypes.BLOB,
+          allowNull: true,
         },
         originalFileName: {
           type: DataTypes.STRING(255),
@@ -184,17 +184,17 @@ export class ImportedInventoryFile
           allowNull: true,
           field: "processed_row_count",
         },
-        createdAt: {
+        created: {
           type: DataTypes.DATE,
           allowNull: false,
           defaultValue: DataTypes.NOW,
-          field: "created_at",
+          field: "created",
         },
-        updatedAt: {
+        lastUpdated: {
           type: DataTypes.DATE,
           allowNull: false,
           defaultValue: DataTypes.NOW,
-          field: "updated_at",
+          field: "last_updated",
         },
         completedAt: {
           type: DataTypes.DATE,
@@ -207,8 +207,8 @@ export class ImportedInventoryFile
         tableName: "ImportedInventoryFile",
         schema: "public",
         timestamps: true,
-        createdAt: "created_at",
-        updatedAt: "updated_at",
+        createdAt: "created",
+        updatedAt: "last_updated",
         underscored: true,
         indexes: [
           {

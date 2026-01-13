@@ -10,10 +10,10 @@ export enum GlobalWarmingPotentialTypeEnum {
 
 export enum ImportStatusEnum {
   UPLOADED = "uploaded",
-  VALIDATING = "validating",
-  MAPPING = "mapping",
+  PROCESSING = "processing", // Combined validating + mapping step
+  WAITING_FOR_APPROVAL = "waiting_for_approval",
   APPROVED = "approved",
-  PROCESSING = "processing",
+  IMPORTING = "importing", // Processing the import after approval
   COMPLETED = "completed",
   FAILED = "failed",
 }

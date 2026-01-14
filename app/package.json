@@ -132,7 +132,7 @@
     "@types/lodash": "^4.17.17",
     "@types/node": "24.10.1",
     "@types/nodemailer": "^7.0.4",
-    "@types/pg": "^8.15.4",
+    "@types/pg": "^8.16.0",
     "@types/react": "^19.1.8",
     "@types/react-table": "^7.7.20",
     "@types/swagger-ui-react": "^5.18.0",

@@ -153,8 +153,9 @@ export default class FileParserService {
 
   /**
    * Detect column index by name (case-insensitive, fuzzy matching)
+   * Prioritizes exact matches and longer/more specific terms
    * @param headers - Array of header strings
-   * @param searchTerms - Array of search terms to match
+   * @param searchTerms - Array of search terms to match (in priority order)
    * @returns Column index if found, -1 otherwise
    */
   public static detectColumn(headers: string[], searchTerms: string[]): number {
@@ -163,10 +164,46 @@ export default class FileParserService {
       t.toLowerCase().trim(),
     );
 
+    // First pass: Look for exact matches (highest priority)
     for (let i = 0; i < normalizedHeaders.length; i++) {
       const header = normalizedHeaders[i];
       for (const term of normalizedSearchTerms) {
-        if (header.includes(term) || term.includes(header)) {
+        // Exact match has highest priority
+        if (header === term) {
+          return i;
+        }
+      }
+    }
+
+    // Second pass: Look for contains matches, prioritizing longer/more specific terms
+    // Sort terms by length (longest first) to prioritize more specific matches
+    const sortedTerms = [...normalizedSearchTerms].sort(
+      (a, b) => b.length - a.length,
+    );
+
+    for (const term of sortedTerms) {
+      for (let i = 0; i < normalizedHeaders.length; i++) {
+        const header = normalizedHeaders[i];
+        // Prefer matches where the term is contained in the header (more specific)
+        if (header.includes(term)) {
+          // Exclude "emission factor" columns when looking for total CO2e
+          if (
+            term.includes("total co2e") &&
+            header.includes("emission factor") &&
+            !header.includes("ghgs")
+          ) {
+            continue; // Skip emission factor columns for total CO2e
+          }
+          return i;
+        }
+      }
+    }
+
+    // Third pass: Fallback to reverse contains (term contains header)
+    for (let i = 0; i < normalizedHeaders.length; i++) {
+      const header = normalizedHeaders[i];
+      for (const term of sortedTerms) {
+        if (term.includes(header)) {
           return i;
         }
       }

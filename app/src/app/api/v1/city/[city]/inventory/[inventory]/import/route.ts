@@ -83,6 +83,8 @@
 
 import UserService from "@/backend/UserService";
 import FileValidatorService from "@/backend/FileValidatorService";
+import FileParserService from "@/backend/FileParserService";
+import ECRFImportService from "@/backend/ECRFImportService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { ImportStatusEnum } from "@/util/enums";
@@ -90,6 +92,7 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
+import { logger } from "@/services/logger";
 
 export const POST = apiHandler(
   async (req: NextRequest, { session, params }) => {
@@ -143,8 +146,83 @@ export const POST = apiHandler(
       fileSize: validationResult.fileSize!,
       data: buffer,
       originalFileName,
-      importStatus: ImportStatusEnum.UPLOADED,
+      importStatus: ImportStatusEnum.PROCESSING,
+      validationResults: {
+        errors: validationResult.errors,
+        warnings: validationResult.warnings,
+        detectedColumns: validationResult.detectedColumns,
+      },
     });
+
+    try {
+      // Process the file: parse and extract eCRF data
+      const parsedData = await FileParserService.parseFile(
+        buffer,
+        validationResult.fileType!,
+      );
+
+      const importResult = await ECRFImportService.processECRFFile(
+        parsedData,
+        validationResult.detectedColumns || {},
+      );
+
+      // Update file with processing results
+      await importedFile.update({
+        importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+        validationResults: {
+          errors: validationResult.errors,
+          warnings: [...validationResult.warnings, ...importResult.warnings],
+          detectedColumns: validationResult.detectedColumns,
+          processingResults: {
+            rowCount: importResult.rowCount,
+            validRowCount: importResult.validRowCount,
+            errors: importResult.errors,
+            warnings: importResult.warnings,
+          },
+        },
+        rowCount: importResult.rowCount,
+        mappingConfiguration: {
+          rows: importResult.rows.map((row) => ({
+            gpcRefNo: row.gpcRefNo,
+            sectorId: row.sectorId,
+            subsectorId: row.subsectorId,
+            subcategoryId: row.subcategoryId,
+            scopeId: row.scopeId,
+            hasErrors: !!row.errors && row.errors.length > 0,
+            hasWarnings: !!row.warnings && row.warnings.length > 0,
+          })),
+        },
+        lastUpdated: new Date(),
+      });
+
+      logger.info(
+        {
+          importedFileId: importedFile.id,
+          rowCount: importResult.rowCount,
+          validRowCount: importResult.validRowCount,
+        },
+        "File processed and ready for approval",
+      );
+    } catch (error) {
+      // If processing fails, mark as failed
+      await importedFile.update({
+        importStatus: ImportStatusEnum.FAILED,
+        errorLog: error instanceof Error ? error.message : "Unknown error",
+        lastUpdated: new Date(),
+      });
+
+      logger.error(
+        { err: error, importedFileId: importedFile.id },
+        "Failed to process imported file",
+      );
+
+      throw new createHttpError.InternalServerError(
+        `Failed to process file: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
+    }
+
+    // Reload to get updated status
+    await importedFile.reload();
 
     // Return response with metadata (excluding the binary data)
     return NextResponse.json({

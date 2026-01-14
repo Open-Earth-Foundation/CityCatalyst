@@ -396,12 +396,89 @@ export default class FileValidatorService {
       },
       {
         key: "totalCO2e",
+        // Prioritize the exact eCRF format first, then fallback to other variations
         terms: [
-          "ghgs (metric tonnes co2e) - total co2e",
-          "total co2e",
-          "co2e",
-          "total emissions",
-          "co2 equivalent",
+          "ghgs (metric tonnes co2e) - total co2e", // Exact eCRF format - highest priority
+          "ghgs (metric tonnes co2e) - total", // Alternative eCRF format
+          "total co2e", // Fallback
+          "co2e", // Fallback
+          "total emissions", // Fallback
+          "co2 equivalent", // Fallback
+        ],
+      },
+      // Activity data columns (optional)
+      {
+        key: "activityType",
+        terms: ["activity type", "activity_type", "fuel type", "fuel_type"],
+      },
+      {
+        key: "activityAmount",
+        terms: [
+          "activity data - amount",
+          "activity_data - amount",
+          "activity data-amount",
+          "activity_data-amount",
+          "activity amount",
+          "activity_amount",
+          "activity value",
+          "activity_value",
+        ],
+      },
+      {
+        key: "activityUnit",
+        terms: [
+          "activity data - unit",
+          "activity_data - unit",
+          "activity data-unit",
+          "activity_data-unit",
+          "activity unit",
+          "activity_unit",
+          "activity units",
+          "activity_units",
+        ],
+      },
+      {
+        key: "methodology",
+        terms: ["methodology", "input methodology", "input_methodology"],
+      },
+      {
+        key: "activityDataSource",
+        terms: [
+          "activity data - source",
+          "activity_data - source",
+          "activity data-source",
+          "activity_data-source",
+          "activity data source",
+          "activity_data_source",
+          "data source",
+          "data_source",
+        ],
+      },
+      {
+        key: "activityDataQuality",
+        terms: [
+          "activity data quality",
+          "activity_data_quality",
+          "data quality",
+          "data_quality",
+        ],
+      },
+      {
+        key: "emissionFactorSource",
+        terms: [
+          "emission factor source",
+          "emission_factor_source",
+          "ef source",
+          "ef_source",
+        ],
+      },
+      {
+        key: "emissionFactorDescription",
+        terms: [
+          "emission factor description",
+          "emission_factor_description",
+          "ef description",
+          "ef_description",
         ],
       },
     ];
@@ -410,6 +487,15 @@ export default class FileValidatorService {
       const index = FileParserService.detectColumn(headers, column.terms);
       if (index !== -1) {
         mapping[column.key] = index;
+        console.log(
+          `[FileValidator] Detected column "${column.key}" at index ${index} (header: "${headers[index]}")`,
+        );
+      } else {
+        if (column.key === "totalCO2e" || column.key === "gpcRefNo") {
+          console.log(
+            `[FileValidator] Column "${column.key}" NOT FOUND. Searched terms: ${column.terms.join(", ")}`,
+          );
+        }
       }
     }
 

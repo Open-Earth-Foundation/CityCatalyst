@@ -7,11 +7,15 @@ export default class VersionHistoryService {
   static MODELS: Record<string, any> = {
     InventoryValue: db.models.InventoryValue,
     ActivityValue: db.models.ActivityValue,
+    GasValue: db.models.GasValue,
+    EmissionsFactor: db.models.EmissionsFactor,
   };
 
   static MODEL_ID_COLUMNS: Record<string, string> = {
     InventoryValue: "id",
     ActivityValue: "id",
+    GasValue: "id",
+    EmissionsFactor: "id",
   };
 
   static async getVersionHistory(inventoryId: string) {

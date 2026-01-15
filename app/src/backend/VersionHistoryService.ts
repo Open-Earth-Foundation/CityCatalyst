@@ -1,7 +1,7 @@
 import { db } from "@/models";
 import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
-import { Op } from "sequelize";
+import { Op, Transaction } from "sequelize";
 
 export default class VersionHistoryService {
   static MODELS: Record<string, any> = {
@@ -41,13 +41,21 @@ export default class VersionHistoryService {
   }
 
   static async createVersion(
-    inventoryId: string,
+    inventoryId: string | undefined,
     table: string,
     entryId: string,
-    authorId: string,
-    data: Record<string, any>,
+    authorId?: string,
+    data: Record<string, any> = {},
     isDeleted: boolean = false,
+    transaction?: Transaction,
   ) {
+    if (!inventoryId) {
+      throw new createHttpError.BadRequest("missing-inventory-id");
+    }
+    if (!authorId) {
+      throw new createHttpError.BadRequest("missing-user-id");
+    }
+
     // find previous version (if available)
     const previousVersion = await db.models.Version.findOne({
       where: { inventoryId, entryId, table },
@@ -55,16 +63,19 @@ export default class VersionHistoryService {
     });
 
     // save version entry
-    await db.models.Version.create({
-      versionId: randomUUID(),
-      inventoryId,
-      authorId,
-      table,
-      entryId,
-      previousVersionId: previousVersion?.versionId,
-      data,
-      isDeleted,
-    });
+    await db.models.Version.create(
+      {
+        versionId: randomUUID(),
+        inventoryId,
+        authorId,
+        table,
+        entryId,
+        previousVersionId: previousVersion?.versionId,
+        data,
+        isDeleted,
+      },
+      { transaction },
+    );
   }
 
   static async restoreVersion(versionId: string) {

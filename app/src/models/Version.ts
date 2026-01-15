@@ -61,7 +61,7 @@ export class Version
   declare author: User;
   declare getAuthor: Sequelize.BelongsToGetAssociationMixin<User>;
   declare setAuthor: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
-  data;
+
   // Version hasOne Version via previousVersionId
   declare previousVersion: Version;
   declare getPreviousVersion: Sequelize.BelongsToGetAssociationMixin<Version>;

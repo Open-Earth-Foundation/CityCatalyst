@@ -501,17 +501,31 @@ export default class ActivityService {
   ): Promise<void> {
     return await db.sequelize?.transaction(async (transaction) => {
       const activityValue = await db.models.ActivityValue.findByPk(id, {
-        include: {
-          model: db.models.InventoryValue,
-          as: "inventoryValue",
-          include: [
-            {
-              model: db.models.ActivityValue,
-              as: "activityValues",
-              attributes: ["id", "co2eqYears"],
-            },
-          ],
-        },
+        include: [
+          {
+            model: db.models.InventoryValue,
+            as: "inventoryValue",
+            include: [
+              {
+                model: db.models.ActivityValue,
+                as: "activityValues",
+                attributes: ["id", "co2eqYears"],
+              },
+            ],
+          },
+          {
+            model: db.models.GasValue,
+            as: "gasValues",
+            attributes: ["id"],
+            include: [
+              {
+                model: db.models.EmissionsFactor,
+                as: "emissionsFactor",
+                attributes: ["id"],
+              },
+            ],
+          },
+        ],
       });
 
       if (!activityValue) {
@@ -534,7 +548,29 @@ export default class ActivityService {
         transaction,
       );
 
-      // TODO add version entries for GasValue and EmissionsFactor tables
+      // add version for deleted GasValue and EmissionsFactor entries
+      await Promise.all(
+        activityValue.gasValues.map(async (gasValue) => {
+          await VersionHistoryService.createVersion(
+            inventoryValue.inventoryId,
+            "GasValue",
+            gasValue.id,
+            userId,
+            {},
+            true,
+            transaction,
+          );
+          await VersionHistoryService.createVersion(
+            inventoryValue.inventoryId,
+            "EmissionsFactor",
+            gasValue.emissionsFactor.id,
+            userId,
+            {},
+            true,
+            transaction,
+          );
+        }),
+      );
 
       // delete the InventoryValue when its last ActivityValue is deleted
       if (activityCount <= 1) {
@@ -609,6 +645,20 @@ export default class ActivityService {
           const activityValues = await db.models.ActivityValue.findAll({
             where: { inventoryValueId: inventoryValue.id },
             attributes: ["id"],
+            include: [
+              {
+                model: db.models.GasValue,
+                as: "gasValues",
+                attributes: ["id"],
+                include: [
+                  {
+                    model: db.models.EmissionsFactor,
+                    as: "emissionsFactor",
+                    attributes: ["id"],
+                  },
+                ],
+              },
+            ],
           });
           await VersionHistoryService.createVersion(
             inventoryId,
@@ -621,7 +671,6 @@ export default class ActivityService {
           );
           await Promise.all(
             activityValues.map(async (activityValue) => {
-              // TODO add version entries for GasValue and EmissionsFactor tables
               await VersionHistoryService.createVersion(
                 inventoryId,
                 "ActivityValue",
@@ -630,6 +679,30 @@ export default class ActivityService {
                 {},
                 true,
                 transaction,
+              );
+
+              // add version for deleted GasValue and EmissionsFactor entries
+              await Promise.all(
+                activityValue.gasValues.map(async (gasValue) => {
+                  await VersionHistoryService.createVersion(
+                    inventoryValue.inventoryId,
+                    "GasValue",
+                    gasValue.id,
+                    userId,
+                    {},
+                    true,
+                    transaction,
+                  );
+                  await VersionHistoryService.createVersion(
+                    inventoryValue.inventoryId,
+                    "EmissionsFactor",
+                    gasValue.emissionsFactor.id,
+                    userId,
+                    {},
+                    true,
+                    transaction,
+                  );
+                }),
               );
             }),
           );

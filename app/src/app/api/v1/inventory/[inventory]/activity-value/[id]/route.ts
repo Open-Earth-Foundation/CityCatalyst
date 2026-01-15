@@ -196,7 +196,7 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
   // just for access control
   await PermissionService.canEditInventory(session, params.inventory);
 
-  await ActivityService.deleteActivity(id);
+  await ActivityService.deleteActivity(id, session?.user.id);
 
   return NextResponse.json({ success: true });
 });

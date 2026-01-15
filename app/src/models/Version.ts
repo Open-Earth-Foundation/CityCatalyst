@@ -11,6 +11,7 @@ export interface VersionAttributes {
   previousVersionId?: string; // ID of the previous version entry of the same table entry
   table?: string;
   data?: Record<string, any>;
+  isDeleted?: boolean;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -24,6 +25,7 @@ export type VersionOptionalAttributes =
   | "previousVersionId"
   | "table"
   | "data"
+  | "isDeleted"
   | "created"
   | "lastUpdated";
 export type VersionCreationAttributes = Optional<
@@ -42,6 +44,7 @@ export class Version
   declare previousVersionId?: string; // ID of the previous version entry of the same table entry
   declare table?: string;
   declare data?: Record<string, any>;
+  declare isDeleted?: boolean;
   declare created?: Date;
   declare lastUpdated?: Date;
 
@@ -58,7 +61,7 @@ export class Version
   declare author: User;
   declare getAuthor: Sequelize.BelongsToGetAssociationMixin<User>;
   declare setAuthor: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
-
+  data;
   // Version hasOne Version via previousVersionId
   declare previousVersion: Version;
   declare getPreviousVersion: Sequelize.BelongsToGetAssociationMixin<Version>;
@@ -115,6 +118,11 @@ export class Version
         data: {
           type: DataTypes.JSONB,
           allowNull: false,
+        },
+        isDeleted: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          field: "is_deleted",
         },
       },
       {

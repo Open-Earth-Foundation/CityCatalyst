@@ -73,6 +73,16 @@ module.exports = {
       );
       await queryInterface.addColumn(
         "Version",
+        "is_deleted",
+        {
+          type: Sequelize.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
+        },
+        { transaction },
+      );
+      await queryInterface.addColumn(
+        "Version",
         "created",
         {
           type: Sequelize.DATE,
@@ -129,6 +139,9 @@ module.exports = {
       });
       await queryInterface.removeColumn("Version", "table", { transaction });
       await queryInterface.removeColumn("Version", "data", { transaction });
+      await queryInterface.removeColumn("Version", "is_deleted", {
+        transaction,
+      });
       await queryInterface.removeColumn("Version", "created", { transaction });
       await queryInterface.removeColumn("Version", "last_updated", {
         transaction,

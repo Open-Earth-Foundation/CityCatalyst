@@ -42,6 +42,7 @@ export default class VersionHistoryService {
     entryId: string,
     authorId: string,
     data: Record<string, any>,
+    isDeleted: boolean = false,
   ) {
     // find previous version (if available)
     const previousVersion = await db.models.Version.findOne({
@@ -58,6 +59,7 @@ export default class VersionHistoryService {
       entryId,
       previousVersionId: previousVersion?.versionId,
       data,
+      isDeleted,
     });
   }
 
@@ -85,12 +87,23 @@ export default class VersionHistoryService {
       for (const version of newerVersions) {
         const model = VersionHistoryService.MODELS[version.table!];
         const idColumn = VersionHistoryService.MODEL_ID_COLUMNS[version.table!];
-        if (version.previousVersionId) {
-          // restore previous version of table entry
-          await model.update(version.previousVersion.data as any, {
-            where: { [idColumn]: version.entryId },
-            transaction,
-          });
+        if (
+          version.previousVersionId &&
+          version.previousVersion.data &&
+          !version.previousVersion.data.isDeleted
+        ) {
+          // re-create entry in case it was deleted previously
+          if (version.isDeleted) {
+            await model.create(version.previousVersion.data, {
+              transaction,
+            });
+          } else {
+            // restore previous version of table entry
+            await model.update(version.previousVersion.data, {
+              where: { [idColumn]: version.entryId },
+              transaction,
+            });
+          }
         } else {
           // delete table entry as it didn't exist previously
           await model.destroy({

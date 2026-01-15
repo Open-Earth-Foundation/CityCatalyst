@@ -75,7 +75,7 @@ describe("Version History API", () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
-  it("should update a user", async () => {
+  it("should create a version history entry when adding an InventoryValue", async () => {
     const req = mockRequest(userUpdate);
     const res = await updateUser(req, emptyParams);
     expect(res.status).toBe(200);
@@ -89,7 +89,7 @@ describe("Version History API", () => {
     expect(user!.defaultCityId).toBe(cityId);
   });
 
-  it("should not update a user with invalid data", async () => {
+  it("should allow restoring a previous version", async () => {
     const req = mockRequest(invalidUserUpdate);
     const res = await updateUser(req, emptyParams);
     expect(res.status).toBe(400);

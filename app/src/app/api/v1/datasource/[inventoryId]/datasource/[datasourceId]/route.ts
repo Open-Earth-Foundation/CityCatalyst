@@ -1,3 +1,13 @@
+import { db } from "@/models";
+import { apiHandler } from "@/util/api";
+import createHttpError from "http-errors";
+import { NextResponse } from "next/server";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+
+import { City } from "@/models/City";
+import DataSourceService from "@/backend/DataSourceService";
+import VersionHistoryService from "@/backend/VersionHistoryService";
+
 /**
  * @swagger
  * /api/v1/datasource/{inventoryId}/datasource/{datasourceId}:
@@ -54,14 +64,40 @@
  *       404:
  *         description: Inventory value not found.
  */
-import { db } from "@/models";
-import { apiHandler } from "@/util/api";
-import createHttpError from "http-errors";
-import { NextResponse } from "next/server";
-import { PermissionService } from "@/backend/permissions/PermissionService";
+export const DELETE = apiHandler(async (_req, { params, session }) => {
+  await PermissionService.canEditInventory(session, params.inventoryId);
 
-import { City } from "@/models/City";
-import DataSourceService from "@/backend/DataSourceService";
+  const inventoryValues = await db.models.InventoryValue.findAll({
+    where: {
+      datasourceId: params.datasourceId,
+      inventoryId: params.inventoryId,
+    },
+  });
+  if (inventoryValues.length === 0) {
+    throw new createHttpError.NotFound("Inventory value not found");
+  }
+
+  await db.sequelize?.transaction(async (transaction) => {
+    await db.models.InventoryValue.destroy({
+      where: {
+        datasourceId: params.datasourceId,
+        inventoryId: params.inventoryId,
+      },
+      transaction,
+    });
+
+    await VersionHistoryService.bulkCreateVersions(
+      params.inventoryId,
+      "InventoryValue",
+      session?.user.id,
+      inventoryValues,
+      true,
+      transaction,
+    );
+  });
+
+  return NextResponse.json({ data: inventoryValues, deleted: true });
+});
 
 /**
  * @swagger
@@ -128,31 +164,6 @@ import DataSourceService from "@/backend/DataSourceService";
  *       404:
  *         description: Inventory or data source not found.
  */
-/** disconnects a datasource from an inventory */
-export const DELETE = apiHandler(async (_req, { params, session }) => {
-  await PermissionService.canEditInventory(session, params.inventoryId);
-
-  const inventoryValues = await db.models.InventoryValue.findAll({
-    where: {
-      datasourceId: params.datasourceId,
-      inventoryId: params.inventoryId,
-    },
-  });
-  if (inventoryValues.length === 0) {
-    throw new createHttpError.NotFound("Inventory value not found");
-  }
-
-  await db.models.InventoryValue.destroy({
-    where: {
-      datasourceId: params.datasourceId,
-      inventoryId: params.inventoryId,
-    },
-  });
-
-  return NextResponse.json({ data: inventoryValues, deleted: true });
-});
-
-/** gets a datasource from an inventory and scales it if necessary */
 export const GET = apiHandler(async (_req, { params, session }) => {
   await PermissionService.canEditInventory(session, params.inventoryId);
 

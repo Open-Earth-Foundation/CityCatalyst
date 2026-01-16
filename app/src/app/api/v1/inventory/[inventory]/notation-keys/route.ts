@@ -59,6 +59,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { InventoryTypeEnum } from "@/util/constants";
 import createHttpError from "http-errors";
+import VersionHistoryService from "@/backend/VersionHistoryService";
 
 const validSectorRefNos = {
   [InventoryTypeEnum.GPC_BASIC]: ["I", "II", "III"],
@@ -280,6 +281,15 @@ export const POST = apiHandler(async (req, { session, params }) => {
         result.push(inventoryValue);
       }
     }
+
+    await VersionHistoryService.bulkCreateVersions(
+      inventoryId,
+      "InventoryValue",
+      session?.user.id,
+      result,
+      false,
+      transaction,
+    );
 
     return result;
   });

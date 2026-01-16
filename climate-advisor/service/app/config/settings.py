@@ -30,7 +30,7 @@ from typing import Dict, List, Optional, Any
 
 import yaml
 from dotenv import find_dotenv, load_dotenv, dotenv_values
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 _ENV_LOADED = False
 
@@ -202,15 +202,35 @@ class APIConfig(BaseModel):
 
 
 class ToolConfig(BaseModel):
-    climate_vector_search: Dict[str, Any] = {
-        "top_k": 5,
-        "min_score": 0.6,
-    }
+    climate_vector_search: Dict[str, Any] = Field(
+        default={"top_k": 3, "min_score": 0.6},
+        description="Climate vector search tool configuration (loaded from llm_config.yaml if present, otherwise uses this fallback default)"
+    )
+    # Numbers here are just a fallback if the llm_config.yaml is not present
+
+
+class RetentionConfig(BaseModel):
+    """Configuration for conversation history pruning and retention.
+    
+    Note: Full tool metadata is ALWAYS persisted to the database.
+    Pruning only affects what is sent to the LLM context.
+    """
+    # Number of most recent turns to preserve with full tool metadata in LLM context
+    # Older turns have tools stripped before sending to LLM, but full tools remain in DB
+    preserve_turns: Optional[int] = 2
+    
+    # Maximum number of messages to load from database per request
+    max_loaded_messages: Optional[int] = 20
+    
+    # Whether to strip tool metadata from older messages before sending to LLM
+    # Full metadata is always saved to DB regardless of this setting
+    prune_tools_for_llm: Optional[bool] = True
 
 
 class ConversationConfig(BaseModel):
     history_limit: Optional[int] = 5
     include_history: Optional[bool] = True
+    retention: Optional[RetentionConfig] = RetentionConfig()
 
 
 class FeaturesConfig(BaseModel):

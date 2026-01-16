@@ -671,6 +671,7 @@ export type HIAPResponse = {
   created: Date;
   last_updated: Date;
   rankedActions: HIAction[];
+  unrankedActions?: HIAction[]; // Transformed actions from Global API
 };
 
 export interface LangMap {

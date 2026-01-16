@@ -244,6 +244,14 @@ function generateOpenAPISpec() {
             name: "waste",
             description: "Waste composition operations",
           },
+          {
+            name: "dashboard",
+            description: "endpoints specifically for dashboards"
+          },
+          {
+            name: "mcp",
+            description: "endpoints for the Model Context Protocol"
+          }
         ],
       },
     });

@@ -20,6 +20,12 @@ for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
         sys.path.insert(0, path_str)
 
 from app.tools.climate_vector_tool import ClimateToolResult, ClimateVectorSearchTool
+from app.config.settings import _load_llm_config
+
+# Load configuration from llm_config.yaml
+_llm_config = _load_llm_config()
+_default_top_k = _llm_config.tools.climate_vector_search.get("top_k", 3)
+_default_min_score = _llm_config.tools.climate_vector_search.get("min_score", 0.6)
 
 
 class _FakeRow:
@@ -94,8 +100,8 @@ class ClimateVectorSearchToolConfigTests(unittest.TestCase):
     def test_tool_initialization_defaults(self) -> None:
         tool = ClimateVectorSearchTool()
         self.assertEqual(tool.tool_name, "climate_vector_search")
-        self.assertEqual(tool.top_k, 5)
-        self.assertAlmostEqual(tool.min_score, 0.6)
+        self.assertEqual(tool.top_k, _default_top_k)
+        self.assertAlmostEqual(tool.min_score, _default_min_score)
 
 
 class ClimateVectorSearchToolBehaviorTests(unittest.IsolatedAsyncioTestCase):
@@ -147,14 +153,14 @@ class ClimateVectorSearchToolBehaviorTests(unittest.IsolatedAsyncioTestCase):
         self.embedding_service.generate_embedding.assert_awaited_once_with(question)
         self.assertTrue(result.used)
         self.assertIsInstance(result, ClimateToolResult)
-        self.assertEqual(len(result.matches), 5)
-        self.assertEqual(self.session_factory.session.received_limits, [5])
+        self.assertEqual(len(result.matches), _default_top_k)
+        self.assertEqual(self.session_factory.session.received_limits, [_default_top_k])
         self.assertIsNotNone(result.prompt_context)
         assert result.prompt_context is not None  # mypy/type-check friendly
         self.assertTrue(result.prompt_context.startswith("Relevant climate knowledge base excerpts"))
-        self.assertEqual(result.prompt_context.count("Full Content:"), 5)
+        self.assertEqual(result.prompt_context.count("Full Content:"), _default_top_k)
 
-        for match, row in zip(result.matches, self.rows[:5]):
+        for match, row in zip(result.matches, self.rows[:_default_top_k]):
             self.assertEqual(match.filename, row["filename"])
             self.assertEqual(match.chunk_index, row["chunk_index"])
             self.assertEqual(match.content, row["chunk_content"])
@@ -165,9 +171,9 @@ class ClimateVectorSearchToolBehaviorTests(unittest.IsolatedAsyncioTestCase):
         assert result.invocation is not None
         self.assertEqual(result.invocation.name, self.tool.tool_name)
         self.assertEqual(result.invocation.status, "success")
-        self.assertEqual(result.invocation.arguments.get("top_k"), 5)
-        self.assertEqual(len(result.invocation.results), 5)
-        for record, row in zip(result.invocation.results, self.rows[:5]):
+        self.assertEqual(result.invocation.arguments.get("top_k"), _default_top_k)
+        self.assertEqual(len(result.invocation.results), _default_top_k)
+        for record, row in zip(result.invocation.results, self.rows[:_default_top_k]):
             self.assertIn("content", record)
             self.assertEqual(record["content"], row["chunk_content"])
             self.assertNotIn("excerpt", record)
@@ -207,7 +213,7 @@ class ClimateVectorSearchToolBehaviorTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNotNone(result.invocation)
         assert result.invocation is not None
         self.assertEqual(result.invocation.status, "no_results")
-        self.assertEqual(result.invocation.arguments.get("top_k"), 5)
+        self.assertEqual(result.invocation.arguments.get("top_k"), _default_top_k)
         self.assertEqual(result.invocation.results, [])
 
 

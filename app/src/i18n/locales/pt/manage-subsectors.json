@@ -1211,6 +1211,8 @@
   "success": "Sucesso",
   "notation-keys-updated": "Chaves de notação atualizadas",
   "error-updating-notation-keys": "Falha ao atualizar as chaves de notação",
+  "error-existing-notation-key-found": "Chave de notação existente encontrada para esta subcategoria, remova-a antes de definir uma chave de notação",
+  "error-cannot-set-notation-key-emissions-data": "Não é possível definir a chave de notação para \"{{itemName}}\" porque ela já possui dados de emissões. Remova os dados de emissões primeiro.",
   "quick-action-applied": "Ação rápida aplicada",
   "changes-can-be-lost": "As suas alterações podem ser perdidas",
   "changes-can-be-lost-description": "Deseja descartar todas as alterações feitas desde a última edição? Isso não pode ser desfeito.",

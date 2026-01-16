@@ -20,8 +20,10 @@ import { logger } from "@/services/logger";
  * @swagger
  * /api/v1/city/{city}/dashboard:
  *   get:
+ *     operationId: getCityDashboard
  *     tags:
- *       - City Dashboard
+ *       - city
+ *       - dashboard
  *     summary: Get consolidated dashboard data for a city
  *     description: Returns all dashboard data in a single response including city info, inventories, population, organization, and widget data (GHGI, HIAP, CCRA). Requires authentication and user access to the city.
  *     parameters:

@@ -1,4 +1,10 @@
-"""Utility helpers for persistence of assistant messages (post-stream)."""
+"""Utility helpers for persistence of assistant messages (post-stream).
+
+Handles:
+- Persisting assistant messages with tool invocation metadata
+- Always stores full tool details to database (for audit trail)
+- Note: Trimming of tool metadata for LLM context happens in history_manager
+"""
 
 from __future__ import annotations
 
@@ -18,8 +24,15 @@ async def persist_assistant_message(
     assistant_content: str,
     tool_invocations: Optional[List[dict]],
 ) -> bool:
-    """
-    Persist the assistant message to the database.
+    """Persist the assistant message to the database with full tool metadata.
+
+    Always persists the complete tool invocation details to the database for:
+    - Complete audit trail of all tools used
+    - Future retrieval with full context
+    - Potential re-analysis or debugging
+    
+    Note: Trimming of tool metadata for LLM context is handled separately in
+    history_manager.build_context() when loading messages for the LLM.
 
     Returns True if successful, False otherwise.
     """
@@ -39,6 +52,7 @@ async def persist_assistant_message(
             thread_service = ThreadService(session)
             thread = await thread_service.get_thread_for_user(thread_id, user_id)
             try:
+                # Always persist full tool metadata to database
                 await message_service.create_assistant_message(
                     thread_id=thread.thread_id,
                     user_id=user_id,
@@ -47,6 +61,12 @@ async def persist_assistant_message(
                 )
                 await thread_service.touch_thread(thread)
                 await session.commit()
+                
+                logger.info(
+                    "Assistant message persisted: thread_id=%s, tools_count=%d",
+                    thread_id,
+                    len(tool_invocations) if tool_invocations else 0,
+                )
                 return True
             except Exception:
                 await session.rollback()

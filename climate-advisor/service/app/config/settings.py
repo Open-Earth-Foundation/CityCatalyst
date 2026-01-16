@@ -209,9 +209,28 @@ class ToolConfig(BaseModel):
     # Numbers here are just a fallback if the llm_config.yaml is not present
 
 
+class RetentionConfig(BaseModel):
+    """Configuration for conversation history pruning and retention.
+    
+    Note: Full tool metadata is ALWAYS persisted to the database.
+    Pruning only affects what is sent to the LLM context.
+    """
+    # Number of most recent turns to preserve with full tool metadata in LLM context
+    # Older turns have tools stripped before sending to LLM, but full tools remain in DB
+    preserve_turns: Optional[int] = 2
+    
+    # Maximum number of messages to load from database per request
+    max_loaded_messages: Optional[int] = 20
+    
+    # Whether to strip tool metadata from older messages before sending to LLM
+    # Full metadata is always saved to DB regardless of this setting
+    prune_tools_for_llm: Optional[bool] = True
+
+
 class ConversationConfig(BaseModel):
     history_limit: Optional[int] = 5
     include_history: Optional[bool] = True
+    retention: Optional[RetentionConfig] = RetentionConfig()
 
 
 class FeaturesConfig(BaseModel):

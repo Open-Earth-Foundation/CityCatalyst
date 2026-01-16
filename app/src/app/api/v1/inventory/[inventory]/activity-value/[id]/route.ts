@@ -113,6 +113,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
       inventoryValueId,
       inventoryValueParams,
       gasValues: gasValues as UpdateGasValueInput[],
+      userId: session?.user.id,
     });
 
     return NextResponse.json({ success: true, data: result });

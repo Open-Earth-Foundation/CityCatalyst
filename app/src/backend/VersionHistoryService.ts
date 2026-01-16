@@ -44,7 +44,7 @@ export default class VersionHistoryService {
     inventoryId: string | undefined,
     table: string,
     entryId: string,
-    authorId?: string,
+    authorId: string | undefined,
     data: Record<string, any> = {},
     isDeleted: boolean = false,
     transaction?: Transaction,
@@ -71,10 +71,33 @@ export default class VersionHistoryService {
         table,
         entryId,
         previousVersionId: previousVersion?.versionId,
-        data,
+        data: isDeleted ? {} : data,
         isDeleted,
       },
       { transaction },
+    );
+  }
+
+  static bulkCreateVersions(
+    inventoryId: string | undefined,
+    table: string,
+    authorId: string | undefined,
+    dataEntries: Record<string, any>[],
+    isDeleted: boolean = false,
+    transaction?: Transaction,
+  ) {
+    return Promise.all(
+      dataEntries.map((entry) => {
+        this.createVersion(
+          inventoryId,
+          table,
+          entry[this.MODEL_ID_COLUMNS[table]],
+          authorId,
+          isDeleted ? {} : entry,
+          isDeleted,
+          transaction,
+        );
+      }),
     );
   }
 

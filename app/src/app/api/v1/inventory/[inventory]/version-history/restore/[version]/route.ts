@@ -2,9 +2,8 @@ import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import createHttpError from "http-errors";
 import VersionHistoryService from "@/backend/VersionHistoryService";
-import UserService from "@/backend/UserService";
+import { PermissionService } from "@/backend/permissions/PermissionService";
 
 /**
  * @swagger
@@ -38,18 +37,12 @@ import UserService from "@/backend/UserService";
  *         description: Version not found.
  */
 export const POST = apiHandler(async (_req, { session, params }) => {
-  if (!session?.user.id) {
-    throw new createHttpError.Unauthorized("Unauthorized");
-  }
   let inventoryId = params.inventory;
-  if (!inventoryId) {
-    throw new createHttpError.NotFound("Inventory not found");
-  }
+  let versionId = z.string().uuid().parse(params.version);
 
   // perform access control
-  await UserService.findUserInventory(inventoryId, session, [], false);
+  await PermissionService.canEditInventory(session, inventoryId);
 
-  let versionId = z.string().uuid().parse(params.version);
   await VersionHistoryService.restoreVersion(versionId);
 
   return NextResponse.json({

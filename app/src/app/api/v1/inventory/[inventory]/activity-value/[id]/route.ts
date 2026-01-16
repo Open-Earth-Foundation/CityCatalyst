@@ -103,7 +103,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     ...data
   } = body;
 
-  // just for access control
+  // perform access control
   await PermissionService.canEditInventory(session, params.inventory);
 
   try {

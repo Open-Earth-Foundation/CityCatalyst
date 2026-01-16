@@ -121,6 +121,10 @@ export default class VersionHistoryService {
       include: [{ model: db.models.Version, as: "previousVersion" }],
     });
 
+    if (newerVersions.length == 0) {
+      throw new createHttpError.BadRequest("no-newer-versions-found");
+    }
+
     await db.sequelize?.transaction(async (transaction) => {
       for (const version of newerVersions) {
         const model = VersionHistoryService.MODELS[version.table!];

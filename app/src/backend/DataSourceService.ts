@@ -496,24 +496,33 @@ export default class DataSourceService {
 
       // store values for co2, ch4, n2o separately for accounting and editing
       const gasValues = [
-        await db.models.GasValue.create({
-          id: randomUUID(),
-          inventoryValueId: inventoryValue.id,
-          gas: "CO2",
-          gasAmount: decimalToBigInt(co2Amount),
-        }),
-        await db.models.GasValue.create({
-          id: randomUUID(),
-          inventoryValueId: inventoryValue.id,
-          gas: "N2O",
-          gasAmount: decimalToBigInt(n2oAmount),
-        }),
-        await db.models.GasValue.create({
-          id: randomUUID(),
-          inventoryValueId: inventoryValue.id,
-          gas: "CH4",
-          gasAmount: decimalToBigInt(ch4Amount),
-        }),
+        await db.models.GasValue.create(
+          {
+            id: randomUUID(),
+            inventoryValueId: inventoryValue.id,
+            gas: "CO2",
+            gasAmount: decimalToBigInt(co2Amount),
+          },
+          { transaction },
+        ),
+        await db.models.GasValue.create(
+          {
+            id: randomUUID(),
+            inventoryValueId: inventoryValue.id,
+            gas: "N2O",
+            gasAmount: decimalToBigInt(n2oAmount),
+          },
+          { transaction },
+        ),
+        await db.models.GasValue.create(
+          {
+            id: randomUUID(),
+            inventoryValueId: inventoryValue.id,
+            gas: "CH4",
+            gasAmount: decimalToBigInt(ch4Amount),
+          },
+          { transaction },
+        ),
       ];
       await VersionHistoryService.bulkCreateVersions(
         inventory.inventoryId,

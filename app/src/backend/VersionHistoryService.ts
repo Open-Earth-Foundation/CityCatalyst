@@ -88,7 +88,7 @@ export default class VersionHistoryService {
   ) {
     return Promise.all(
       dataEntries.map((entry) => {
-        this.createVersion(
+        return this.createVersion(
           inventoryId,
           table,
           entry[this.MODEL_ID_COLUMNS[table]],

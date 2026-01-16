@@ -1,3 +1,14 @@
+import { db } from "@/models";
+import { apiHandler } from "@/util/api";
+import { createActivityValueRequest } from "@/util/validation";
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import ActivityService, {
+  UpdateGasValueInput,
+} from "@/backend/ActivityService";
+import { PermissionService } from "@/backend/permissions";
+import createHttpError from "http-errors";
+
 /**
  * @swagger
  * /api/v1/inventory/{inventory}/activity-value/{id}:
@@ -81,18 +92,6 @@
  *       400:
  *         description: Invalid request (e.g., values too large).
  */
-import UserService from "@/backend/UserService";
-import { db } from "@/models";
-import { apiHandler } from "@/util/api";
-import { createActivityValueRequest } from "@/util/validation";
-import { NextResponse } from "next/server";
-import { z } from "zod";
-import ActivityService, {
-  UpdateGasValueInput,
-} from "@/backend/ActivityService";
-import { PermissionService } from "@/backend/permissions";
-import createHttpError from "http-errors";
-
 export const PATCH = apiHandler(async (req, { params, session }) => {
   const id = z.string().uuid().parse(params.id);
   const body = createActivityValueRequest.parse(await req.json());

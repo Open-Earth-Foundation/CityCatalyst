@@ -6,7 +6,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { H } from "@/lib/highlight";
 
-import { StreamingTextResponse } from "ai";
 import OpenAI from "openai";
 
 import { db } from "@/models";
@@ -29,7 +28,7 @@ import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
 const isPlaywrightTest = process.env.PLAYWRIGHT_TEST === "1";
 const apiLimiter = isPlaywrightTest ? null : new RateLimiter(60 * 1000, 60);
 
-export type ApiResponse = NextResponse | StreamingTextResponse;
+export type ApiResponse = NextResponse | Response;
 
 export type NextHandler = (
   req: NextRequest,

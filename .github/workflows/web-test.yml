@@ -65,8 +65,62 @@ jobs:
       - name: Lint the OpenAPI spec
         run: npm run openapi:lint
 
+      - name: Restore previous coverage
+        uses: actions/cache@v4
+        id: coverage_cache
+        with:
+          path: app/coverage/previous-coverage.json
+          key: coverage-${{ github.ref }}
+
       - name: Run tests and generate coverage file
         run: npm run api:test
+
+      - name: Check coverage regression
+        id: coverage_check
+        run: npm run test:coverage:check
+        continue-on-error: true
+
+      - name: Add coverage summary
+        run: |
+          if [ -f coverage/coverage-summary.json ]; then
+            LINES=$(node -p "require('./coverage/coverage-summary.json').total.lines.pct.toFixed(2)")
+            BRANCHES=$(node -p "require('./coverage/coverage-summary.json').total.branches.pct.toFixed(2)")
+            FUNCTIONS=$(node -p "require('./coverage/coverage-summary.json').total.functions.pct.toFixed(2)")
+            echo "## Test Coverage" >> $GITHUB_STEP_SUMMARY
+            echo "**Lines:** ${LINES}% | **Branches:** ${BRANCHES}% | **Functions:** ${FUNCTIONS}%" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Save coverage for next run
+        if: always()
+        uses: actions/cache@v4
+        with:
+          path: app/coverage/previous-coverage.json
+          key: coverage-${{ github.ref }}
+
+      - name: Upload coverage reports to Coveralls
+        continue-on-error: true
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage/lcov.info
+          flag-name: unittests
+          parallel: false
+
+      - name: Upload coverage reports to Codecov
+        continue-on-error: true
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          fail_ci_if_error: false
+          flags: unittests
+          name: citycatalyst-backend
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: Open-Earth-Foundation/CityCatalyst
+
+      - name: Fail if coverage regression detected
+        if: steps.coverage_check.outcome == 'failure'
+        run: |
+          echo "::error::Test coverage has decreased. Please add tests to maintain or improve coverage."
+          exit 1
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
@@ -79,15 +133,13 @@ jobs:
           path: playwright-report/
           retention-days: 30
 
-      - name: Upload coverage reports to Codecov
-        continue-on-error: true
-        uses: codecov/codecov-action@v4.0.1
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        if: always()
         with:
-          fail_ci_if_error: false
-          flags: unittests
-          name: citycatalyst-backend
-          token: ${{ secrets.CODECOV_TOKEN }}
-          slug: Open-Earth-Foundation/CityCatalyst
+          name: coverage-report
+          path: app/coverage/
+          retention-days: 30
 
       - name: Shut down database
         run: docker stop github_action_postgresql
@@ -195,6 +247,7 @@ jobs:
             "NEXT_PUBLIC_POSTHOG_KEY=${{secrets.NEXT_PUBLIC_POSTHOG_KEY}}" \
             "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" \
             "NEXT_PUBLIC_DEPLOYMENT_ENV=staging" \
+            "ALLOWED_ORIGINS=https://citycatalyst-test.openearth.dev,https://www.citycatalyst-test.openearth.dev" \
             "AWS_FILE_UPLOAD_S3_BUCKET_ID=citycatalyst-files" \
             "AWS_FILE_UPLOAD_REGION=us-east-1" \
             "NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID=${{secrets.NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID}}" \

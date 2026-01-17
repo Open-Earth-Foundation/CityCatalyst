@@ -3,5 +3,6 @@
   "error-details": "Détails de l'erreur",
   "try-again": "Essayez à nouveau",
   "module-access-denied-ghgi": "Votre ville n'a pas accès au module Inventaires de GES",
-  "module-access-denied-hiap": "Votre ville n'a pas accès au module Actions & Plans"
+  "module-access-denied-hiap": "Votre ville n'a pas accès au module Actions & Plans",
+  "rate-limit-error": "Trop de requêtes. Veuillez patienter un moment et actualiser la page."
 }

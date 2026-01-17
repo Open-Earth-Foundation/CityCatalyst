@@ -1,13 +1,16 @@
 "use client";
 import { use, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { Center, Spinner } from "@chakra-ui/react";
 import { api } from "@/services/api";
+import { useTranslation } from "@/i18n/client";
 import HomePage from "@/components/HomePageJN/HomePage";
 
 export default function PrivateHome(props: {
   params: Promise<{ lng: string }>;
 }) {
   const { lng } = use(props.params);
+  const { t } = useTranslation(lng, "error");
   const router = useRouter();
   const { cityId } = useParams();
 
@@ -47,12 +50,16 @@ export default function PrivateHome(props: {
 
   // Show loading state while validating
   if (userInfoLoading || cityLoading) {
-    return <div>Loading...</div>;
+    return (
+      <Center h="100vh">
+        <Spinner />
+      </Center>
+    );
   }
 
   // If rate limited, show a message instead of redirecting
   if (isRateLimitError) {
-    return <div>Too many requests. Please wait a moment and refresh.</div>;
+    return <div>{t("rate-limit-error")}</div>;
   }
 
   // If city doesn't exist, don't render (will redirect)

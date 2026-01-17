@@ -3,5 +3,6 @@
   "error-details": "Detalhes do erro",
   "try-again": "Tente novamente",
   "module-access-denied-ghgi": "A sua cidade não tem acesso ao módulo de Inventários de GEE",
-  "module-access-denied-hiap": "A sua cidade não tem acesso ao módulo Ações & Planos"
+  "module-access-denied-hiap": "A sua cidade não tem acesso ao módulo Ações & Planos",
+  "rate-limit-error": "Muitas solicitações. Por favor, aguarde um momento e atualize a página."
 }

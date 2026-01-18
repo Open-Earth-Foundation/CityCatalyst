@@ -121,7 +121,9 @@ const Footer = ({ lng }: { lng: string }) => {
             <>v{currentVersion}</>
           </Text>
           <Link
-            href="/"
+            href="https://forms.gle/bAbjwLuDV9bvS5w88"
+            target="_blank"
+            rel="noopener noreferrer"
             color="base.light"
             fontSize="body.md"
             fontWeight="medium"

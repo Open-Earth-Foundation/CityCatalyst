@@ -23,7 +23,7 @@ export function ModuleCard({
   language: string;
 }) {
   const { name, author, description, tagline, url, logo } = module;
-  
+
   const getTranslationInLanguage = (
     obj: { [lng: string]: string } | undefined,
   ) => {
@@ -57,15 +57,16 @@ export function ModuleCard({
       <Card.Body gap={2}>
         <VStack w="full" align="start" gap={2}>
           <HStack justify="space-between" w="full">
-            <Image 
-              src={logo || "/assets/icon_inverted.svg"} 
-              boxSize={8} 
-              alt={`${name} module logo`} 
+            <Image
+              src={logo || "/assets/icon_inverted.svg"}
+              boxSize={8}
+              alt={`${name} module logo`}
             />
 
             <Tooltip
               content={getTranslationInLanguage(description)}
               showArrow
+              closeDelay={1000}
               contentProps={{
                 bg: "content.secondary",
                 color: "background.default",
@@ -77,7 +78,7 @@ export function ModuleCard({
             >
               <Icon
                 as={MdInfoOutline}
-                boxSize={5}
+                boxSize={6}
                 color="interactive.control"
                 cursor="pointer"
               />
@@ -85,7 +86,13 @@ export function ModuleCard({
           </HStack>
           <HStack align="start" gap={4} justify="space-between">
             <HStack align="start" gap={4}>
-              <Card.Title mt={2} as="div" minH="60px" display="flex" alignItems="flex-start">
+              <Card.Title
+                mt={2}
+                as="div"
+                minH="60px"
+                display="flex"
+                alignItems="flex-start"
+              >
                 <TitleLarge>{getTranslationInLanguage(name)}</TitleLarge>
               </Card.Title>
             </HStack>

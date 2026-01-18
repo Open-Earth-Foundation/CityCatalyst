@@ -2,6 +2,7 @@ import { Box, Button, Heading, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
 import { Link } from "@chakra-ui/react";
 import React from "react";
+import { useParams } from "next/navigation";
 import FooterLink from "../Navigation/FooterLink";
 import { useTranslation } from "@/i18n/client";
 import { getCurrentVersion } from "@/util/helpers";
@@ -13,6 +14,8 @@ const Footer = ({ lng }: { lng: string }) => {
   const { t } = useTranslation(lng, "footer");
   const { organization } = useOrganizationContext();
   const logoUrl = organization?.logoUrl;
+  const params = useParams();
+  const isInInventoryContext = !!params?.inventory;
   return (
     <Box as="footer" w="full" h="320px" bg="#00001f" pt={"48px"}>
       <Box w="full" px={"64px"}>
@@ -81,7 +84,9 @@ const Footer = ({ lng }: { lng: string }) => {
                 {t("resources")}
               </TitleSmall>
               <FooterLink url="/methodologies" title={t("methodologies")} />
-              <FooterLink url="./cdp" title={t("submit-to-cdp")} />
+              {isInInventoryContext && (
+                <FooterLink url="./cdp" title={t("submit-to-cdp")} />
+              )}
             </VStack>
           </Box>
           <Box>

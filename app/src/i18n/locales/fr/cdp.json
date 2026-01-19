@@ -1,4 +1,10 @@
 {
-  "add-data": "Ajouter des données",
-  "submit-data-to-cdp": "Soumettez des données au CDP"
+  "page-title": "Soumettre au CDP",
+  "page-description": "Soumettez les données de votre inventaire de gaz à effet de serre directement au CDP (Carbon Disclosure Project) pour les rapports de divulgation climatique.",
+  "submit-button": "Soumettre au CDP",
+  "submitting": "Envoi en cours...",
+  "success-title": "Soumission Réussie",
+  "success-description": "Les données de votre inventaire ont été soumises avec succès au CDP.",
+  "error-title": "Échec de la Soumission",
+  "error-description": "Une erreur s'est produite lors de l'envoi de vos données au CDP. Veuillez réessayer."
 }

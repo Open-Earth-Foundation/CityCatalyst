@@ -211,6 +211,8 @@
   "enter-to-add": "Enter to add",
   "choose-a-role": "Choose a role",
   "select-role": "Select role",
+  "collaborator": "Collaborator",
+  "admin": "Admin",
   "collaborator-rule": "Collaborators can only edit inventories",
   "admin-rule": "Admins can add cities to all projects, and edit all inventories",
   "all-cities": "All cities",

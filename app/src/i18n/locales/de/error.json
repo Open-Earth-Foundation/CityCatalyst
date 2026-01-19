@@ -3,5 +3,6 @@
   "error-details": "Fehlerdetails",
   "try-again": "Versuchen Sie es erneut",
   "module-access-denied-ghgi": "Ihre Stadt hat keinen Zugang zum GHG-Inventarmodul",
-  "module-access-denied-hiap": "Ihre Stadt hat keinen Zugang zum Modul Aktionen & Pläne"
+  "module-access-denied-hiap": "Ihre Stadt hat keinen Zugang zum Modul Aktionen & Pläne",
+  "rate-limit-error": "Zu viele Anfragen. Bitte warten Sie einen Moment und aktualisieren Sie die Seite."
 }

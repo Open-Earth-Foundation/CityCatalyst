@@ -15,7 +15,7 @@ numpy==2.3.4
 PyPDF2==3.0.1
 langchain-openai==1.1.6
 langchain==1.2.0
-langchain-text-splitters==1.0.0
+langchain-text-splitters==1.1.0
 langsmith==0.4.58
 
 pgvector==0.4.1

@@ -18,18 +18,6 @@ const userData: UserAttributes = {
   name: "TEST_USER_USER",
 };
 
-const userUpdate = {
-  defaultInventoryId: inventoryId,
-  defaultCityId: cityId,
-};
-
-const invalidUserUpdate = {
-  defaultInventoryId: "invalid",
-  defaultCityId: "invalid",
-};
-
-const emptyParams = { params: Promise.resolve({}) };
-
 describe("Version History API", () => {
   beforeAll(async () => {
     setupTests();

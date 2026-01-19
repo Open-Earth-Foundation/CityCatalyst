@@ -16,7 +16,7 @@ import assert from "node:assert";
 import { NextRequest } from "next/server";
 import { mock } from "node:test";
 import { AppSession, Auth } from "@/lib/auth";
-import { loadEnvConfig } from "@next/env";
+import env from "@next/env";
 import { Roles } from "@/util/types";
 import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
@@ -102,8 +102,9 @@ export function mockRequest(
 export function setupTests() {
   const projectDir = process.cwd();
   // Load env config - this is essential for database connection
+  // Use default import pattern that matches helpers.ts for CI compatibility
   try {
-    loadEnvConfig(projectDir);
+    env.loadEnvConfig(projectDir);
   } catch (error) {
     // If env loading fails, continue - might be already loaded
     console.warn("Could not load env config:", error);
@@ -266,7 +267,12 @@ describe("Import Routes API", () => {
     if (subsectorScope?.scopeId) {
       await db.models.Scope.destroy({ where: { scopeId: subsectorScope.scopeId } });
     }
-    if (db.sequelize) await db.sequelize.close();
+    // Close database connection to prevent hanging async operations in CI
+    if (db.sequelize) {
+      await db.sequelize.close();
+      // Give sequelize a moment to fully close all connections
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
   });
 
   describe("POST /api/v1/city/[city]/inventory/[inventory]/import", () => {

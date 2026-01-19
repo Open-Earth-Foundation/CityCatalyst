@@ -5,7 +5,7 @@ SQLAlchemy[asyncio]==2.0.44
 psycopg2-binary==2.9.11
 asyncpg==0.30.0
 alembic==1.17.0
-python-dotenv==1.1.1
+python-dotenv==1.2.1
 PyYAML==6.0.3
 aiosqlite==0.21.0
 openai==2.9.0

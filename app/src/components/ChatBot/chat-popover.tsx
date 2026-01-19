@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { OpenChangeDetails } from "@zag-js/popover";
 import { api } from "@/services/api";
 import { useAIButtonPosition } from "@/hooks/useAIButtonPosition";
+import { usePathname } from "next/navigation";
 
 export default function ChatPopover({
   lng,
@@ -77,6 +78,13 @@ export default function ChatPopover({
 
   // Use the new hook to position the AI button
   const dynamicBottomPosition = useAIButtonPosition();
+
+  const pathname = usePathname();
+
+  // Hide the ChatPopover on auth pages
+  if (pathname.startsWith(`/${lng}/auth`)) {
+    return null;
+  }
 
   return (
     <>

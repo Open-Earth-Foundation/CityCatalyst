@@ -16,12 +16,16 @@ export default function PrivateHome(props: {
   const router = useRouter();
 
   // Get user info to check if they have default city/inventory
-  const { data: userInfo, isLoading: userInfoLoading } =
+  const { data: userInfo, isLoading: userInfoLoading, isError } =
     api.useGetUserInfoQuery();
 
   // Handle routing based on user's default city/inventory status
   useEffect(() => {
     if (userInfoLoading) return; // Wait for user info to load
+
+    // Don't redirect to onboarding if there was an API error (e.g., rate limiting)
+    // The user should stay on the current page and retry
+    if (isError) return;
 
     if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
       router.replace(`/${lng}/cities/`);
@@ -35,7 +39,7 @@ export default function PrivateHome(props: {
         router.replace(`/${lng}/onboarding`);
       }
     }
-  }, [lng, router, userInfo, userInfoLoading]);
+  }, [lng, router, userInfo, userInfoLoading, isError]);
 
   // Show loading state while determining where to redirect
   if (userInfoLoading) {

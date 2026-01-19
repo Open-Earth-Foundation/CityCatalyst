@@ -1,4 +1,5 @@
-import { PATCH as updateUser } from "@/app/api/v1/user/route";
+import { GET as getVersionHistory } from "@/app/api/v1/inventory/[inventory]/version-history/route";
+import { POST as restoreVersion } from "@/app/api/v1/inventory/[inventory]/version-history/restore/[version]/route";
 import { db } from "@/models";
 import { UserAttributes } from "@/models/User";
 import { beforeAll, afterAll, describe, it, expect } from "@jest/globals";
@@ -75,31 +76,37 @@ describe("Version History API", () => {
     if (db.sequelize) await db.sequelize.close();
   });
 
-  it("should create a version history entry when adding an InventoryValue", async () => {
-    const req = mockRequest(userUpdate);
-    const res = await updateUser(req, emptyParams);
+  /* it("should create a version history entry when adding an InventoryValue", async () => {
+    // TODO implement
+  }); */
+
+  it("should allow retrieving the version history for an inventory", async () => {
+    // TODO create and delete inventory data so there is a version history to query here
+    const res = await getVersionHistory(mockRequest(), {
+      params: Promise.resolve({
+        inventory: inventoryId,
+      }),
+    });
     expect(res.status).toBe(200);
     const data = await res.json();
-    expect(data.success).toBeTruthy();
-    const user = await db.models.User.findOne({
-      where: { userId: userData.userId },
-    });
-    expect(user).not.toBeNull();
-    expect(user!.defaultInventoryId).toBe(inventoryId);
-    expect(user!.defaultCityId).toBe(cityId);
+    console.log("VERSION HISTORY", data);
+    // TODO confirm the history data is correctly created, previousVersionId has been correctly assigned to the entries where there was a version for the same ID in the same table etc.
   });
 
   it("should allow restoring a previous version", async () => {
-    const req = mockRequest(invalidUserUpdate);
-    const res = await updateUser(req, emptyParams);
-    expect(res.status).toBe(400);
-    const user = await db.models.User.findOne({
-      where: { userId: userData.userId },
+    // TODO create and delete inventory data so there is a version to restore here
+    const restoredVersionId = "82b7a7b6-61c1-4974-b8a7-65677a88e738"; // TODO get this from the Version table (older version that is supposed to be restored, but not the oldest one)
+
+    const res = await restoreVersion(mockRequest(), {
+      params: Promise.resolve({
+        inventory: inventoryId,
+        version: restoredVersionId,
+      }),
     });
-    expect(user).not.toBeNull();
-    expect(user!.defaultInventoryId).not.toBe(
-      invalidUserUpdate.defaultInventoryId,
-    );
-    expect(user!.defaultCityId).not.toBe(invalidUserUpdate.defaultCityId);
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.success).toBeTruthy();
+
+    // TODO confirm the older version has been successfully restored (old data is back and deleted table entries have been re-added)
   });
 });

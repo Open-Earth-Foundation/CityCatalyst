@@ -1,7 +1,7 @@
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import FileParserService from "@/backend/FileParserService";
 import ECRFImportService from "@/backend/ECRFImportService";
-import type { Inventory } from "@/models";
+import type { Inventory } from "@/models/Inventory";
 import { getScopesForInventoryAndSector } from "@/util/constants";
 import type { ParsedFileData } from "@/backend/FileParserService";
 
@@ -113,11 +113,11 @@ export default class ImportMappingService {
               requiredRows.push({
                 gpcReferenceNumber: subCategory.referenceNumber!,
                 sectorId: sector.sectorId,
-                sectorName: sector.sectorName,
+                sectorName: sector.sectorName || "",
                 subsectorId: subSector.subsectorId,
-                subsectorName: subSector.subsectorName,
+                subsectorName: subSector.subsectorName || null,
                 subcategoryId: subCategory.subcategoryId,
-                subcategoryName: subCategory.subcategoryName,
+                subcategoryName: subCategory.subcategoryName || null,
                 scopeId: subCategory.scopeId || null,
                 scopeName: subCategory.scope?.scopeName || null,
               });
@@ -152,11 +152,11 @@ export default class ImportMappingService {
                 requiredRows.push({
                   gpcReferenceNumber: subCategory.referenceNumber!,
                   sectorId: sector.sectorId,
-                  sectorName: sector.sectorName,
+                  sectorName: sector.sectorName || "",
                   subsectorId: subSector.subsectorId,
-                  subsectorName: subSector.subsectorName,
+                  subsectorName: subSector.subsectorName || null,
                   subcategoryId: subCategory.subcategoryId,
-                  subcategoryName: subCategory.subcategoryName,
+                  subcategoryName: subCategory.subcategoryName || null,
                   scopeId: subCategory.scopeId || null,
                   scopeName: subCategory.scope?.scopeName || null,
                 });
@@ -184,9 +184,9 @@ export default class ImportMappingService {
             requiredRows.push({
               gpcReferenceNumber: subSector.referenceNumber!,
               sectorId: sector.sectorId,
-              sectorName: sector.sectorName,
+              sectorName: sector.sectorName || "",
               subsectorId: subSector.subsectorId,
-              subsectorName: subSector.subsectorName,
+              subsectorName: subSector.subsectorName || null,
               subcategoryId: null,
               subcategoryName: null,
               scopeId: null,
@@ -200,9 +200,9 @@ export default class ImportMappingService {
             requiredRows.push({
               gpcReferenceNumber: subSector.referenceNumber!,
               sectorId: sector.sectorId,
-              sectorName: sector.sectorName,
+              sectorName: sector.sectorName || "",
               subsectorId: subSector.subsectorId,
-              subsectorName: subSector.subsectorName,
+              subsectorName: subSector.subsectorName || null,
               subcategoryId: null,
               subcategoryName: null,
               scopeId: null,

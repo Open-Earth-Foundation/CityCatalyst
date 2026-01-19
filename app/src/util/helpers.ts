@@ -443,7 +443,11 @@ export const shortSectorNameToKebabCase = (sectorName: string) => {
 
 export function toTranslationString(str?: string): string {
   return (str ?? "")
+    // Convert camelCase/PascalCase to snake_case (e.g., "StationaryEnergy" -> "Stationary_Energy")
+    .replace(/([a-z])([A-Z])/g, "$1_$2")
     .toLowerCase()
-    .replaceAll(" ", "-")
-    .replaceAll(/[^a-zA-Z\d-]/g, "");
+    // Replace spaces with underscores
+    .replaceAll(" ", "_")
+    // Remove any characters that aren't alphanumeric or underscores
+    .replaceAll(/[^a-z\d_]/g, "");
 }

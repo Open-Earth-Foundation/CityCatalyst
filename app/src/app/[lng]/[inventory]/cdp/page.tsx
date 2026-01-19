@@ -1,20 +1,15 @@
 "use client";
 
-import {
-  Box,
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
-import React, { useState } from "react";
+import { Box, Button, Card, Icon, VStack } from "@chakra-ui/react";
+import React from "react";
 import { useParams } from "next/navigation";
+import { MdCloudUpload } from "react-icons/md";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import { getParamValueRequired } from "@/util/helpers";
+import { HeadlineMedium } from "@/components/package/Texts/Headline";
+import { BodyLarge } from "@/components/package/Texts/Body";
+import { UseSuccessToast, UseErrorToast } from "@/hooks/Toasts";
 
 function Page() {
   const params = useParams();
@@ -22,60 +17,106 @@ function Page() {
   const inventory = getParamValueRequired(params.inventory);
 
   const { t } = useTranslation(lng, "cdp");
-  const [statusMessage, setStatusMessage] = useState(t("submit-data-to-cdp"));
-  const [wasSuccessful, setWasSuccessful] = useState(true);
+
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("success-title"),
+    description: t("success-description"),
+  });
+
+  const { showErrorToast } = UseErrorToast({
+    title: t("error-title"),
+    description: t("error-description"),
+  });
 
   const [connectToCDP, { isLoading }] = api.useConnectToCDPMutation();
-  const handleConnectToCDP = async () => {
-    const res: { data?: any; error?: any } = await connectToCDP({
-      inventoryId: inventory,
-    });
 
-    if (res.error) {
-      const message = res.error.data.error.message;
-      setStatusMessage(message);
-      setWasSuccessful(false);
-    } else {
-      setStatusMessage("Success");
-      setWasSuccessful(true);
+  const handleConnectToCDP = async () => {
+    try {
+      const res: { data?: any; error?: any } = await connectToCDP({
+        inventoryId: inventory,
+      });
+
+      if (res.error) {
+        const message =
+          res.error?.data?.error?.message ||
+          res.error?.message ||
+          t("error-description");
+        showErrorToast({ title: t("error-title"), description: message });
+      } else {
+        showSuccessToast();
+      }
+    } catch (error: any) {
+      showErrorToast({
+        title: t("error-title"),
+        description: error?.message || t("error-description"),
+      });
     }
   };
+
   return (
     <Box
-      h="100vh"
+      minH="calc(100vh - 200px)"
       w="full"
       display="flex"
       justifyContent="center"
       alignItems="center"
+      bg="background.default"
+      py="64px"
     >
-      <Card.Root minH="300px" minW="300px">
-        <CardHeader
-          fontFamily="heading"
-          fontWeight="bold"
-          fontSize="headline.lg"
+      <Card.Root
+        maxW="500px"
+        w="full"
+        mx="24px"
+        borderRadius="8px"
+        borderWidth="1px"
+        borderColor="border.overlay"
+        shadow="lg"
+        overflow="hidden"
+      >
+        <Box
+          bg="interactive.secondary"
+          py="32px"
           display="flex"
           justifyContent="center"
           alignItems="center"
         >
-          <Text>{t("add-data")}</Text>
-        </CardHeader>
-        <CardBody display="flex" justifyContent="center" alignItems="center">
-          <VStack>
-            <Text color={wasSuccessful ? "green" : "red"} textAlign="center">
-              {statusMessage}
-            </Text>
-          </VStack>
-        </CardBody>
-        <CardFooter px="0">
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            h="80px"
+            w="80px"
+            borderRadius="full"
+            bg="base.light"
+          >
+            <Icon
+              as={MdCloudUpload}
+              boxSize="40px"
+              color="interactive.secondary"
+            />
+          </Box>
+        </Box>
+
+        <VStack gap="16px" p="32px" align="center">
+          <HeadlineMedium textAlign="center">{t("page-title")}</HeadlineMedium>
+
+          <BodyLarge textAlign="center" color="content.secondary">
+            {t("page-description")}
+          </BodyLarge>
+
           <Button
             onClick={handleConnectToCDP}
             loading={isLoading}
+            loadingText={t("submitting")}
             w="full"
-            size="lg"
+            h="48px"
+            mt="16px"
+            colorPalette="blue"
+            size="md"
           >
-            {t("submit-data-to-cdp")}
+            {t("submit-button")}
           </Button>
-        </CardFooter>
+        </VStack>
       </Card.Root>
     </Box>
   );

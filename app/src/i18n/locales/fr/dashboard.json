@@ -208,6 +208,8 @@
   "enter-to-add": "Appuyez pour ajouter",
   "choose-a-role": "Choisissez un rôle",
   "select-role": "Sélectionnez le rôle",
+  "collaborator": "Collaborateur",
+  "admin": "Admin",
   "collaborator-rule": "Les collaborateurs peuvent uniquement modifier les inventaires",
   "admin-rule": "Les administrateurs peuvent ajouter des villes à tous les projets et modifier tous les inventaires",
   "all-cities": "Toutes les villes",

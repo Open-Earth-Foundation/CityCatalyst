@@ -297,7 +297,10 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
                   searchable={true}
                   pagination={true}
                   filterProperty={"status"}
-                  filterOptions={["accepted", "invite sent"]}
+                  filterOptions={[
+                    { label: t("accepted"), value: "accepted" },
+                    { label: t("invite-sent"), value: "invite sent" }
+                  ]}
                   data={[...orgData].reverse()}
                   title={t("manage-oef-clients")}
                   columns={[

@@ -3,5 +3,6 @@
   "error-details": "Error details",
   "try-again": "Try again",
   "module-access-denied-ghgi": "Your city does not have access to the GHG Inventories module",
-  "module-access-denied-hiap": "Your city does not have access to the Actions & Plans module"
+  "module-access-denied-hiap": "Your city does not have access to the Actions & Plans module",
+  "rate-limit-error": "Too many requests. Please wait a moment and refresh."
 }

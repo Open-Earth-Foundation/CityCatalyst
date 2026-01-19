@@ -96,7 +96,10 @@
     "transportation": "Transportation",
     "waste": "Waste",
     "ippu": "IPPU",
-    "afolu": "AFOLU"
+    "afolu": "AFOLU",
+    "public_health": "Public Health",
+    "water_resources": "Water Resources",
+    "food_security": "Food Security"
   },
   "effectiveness-level": {
     "high": "High",

@@ -667,6 +667,7 @@ const JNDrawer = ({
                         icon={stageIcons[stage]}
                         items={modules.map((mod) => ({
                           label:
+                            mod.name[lng] ||
                             mod.name.en ||
                             mod.name[Object.keys(mod.name)[0]] ||
                             mod.id,

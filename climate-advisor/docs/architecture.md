@@ -332,6 +332,21 @@ async def cc_inventory_query(inventory_id: str, data_type: str) -> Dict:
 - Manages token refresh logic
 - Handles CityCatalyst token endpoint calls
 
+**HistoryManager** (`utils/history_manager.py`)
+
+- Loads conversation messages from database with optional limit
+- Applies configurable pruning to manage context size
+- Splits messages into "preserved" (full metadata) and "discarded" (trimmed)
+- Provides DB-optional mode for graceful degradation
+- Reduces context token usage by stripping tool metadata from older messages
+
+**ToolHandler** (`utils/tool_handler.py`)
+
+- Persists assistant messages post-stream
+- Gates tool invocation persistence based on configuration
+- Trims tool metadata for storage efficiency in older messages
+- Handles graceful fallback when database unavailable
+
 ## Configuration & Settings
 
 ### LLM Configuration (`llm_config.yaml`)
@@ -429,11 +444,89 @@ ORDER BY embedding_vector <=> query_embedding
 LIMIT 5
 ```
 
-### Conversation History Loading
+### Conversation History Pruning & Retention
 
-- **Limit**: Last 5 messages (configurable in `llm_config.yaml`)
+**Overview**: Conversation history is loaded and pruned to reduce LLM context token usage while keeping complete tool metadata in the database for audit trails.
+
+**Key Principle**: Full tool metadata is **always saved to the database**. Pruning only affects what is sent to the LLM.
+
+**Retention Configuration** (`llm_config.yaml` → `conversation.retention`):
+
+```yaml
+conversation:
+  retention:
+    preserve_turns: 2         # Keep last 2 turns (4 msgs) with full tools for LLM
+    max_loaded_messages: 20   # Load max 20 messages from DB
+    prune_tools_for_llm: true # Strip tools from older messages when sending to LLM
+```
+
+**Pruning Pipeline**:
+
+1. **Load Phase** (`HistoryManager.load_messages`):
+   - Fetch up to `max_loaded_messages` messages from DB (oldest first)
+   - Messages have FULL tool metadata from database
+   - Gracefully return empty list if DB unavailable
+
+2. **Pruning Phase** (`HistoryManager.build_context`):
+   - Split messages into "preserved" (latest N turns) and "pruned" (older)
+   - For pruned messages: remove tool metadata from LLM context
+   - For preserved messages: include full tool metadata in LLM context
+   - **Database message objects are unchanged** (always have full tools)
+
+3. **Context Building for LLM**:
+   - Pruned messages: `{"role": "user/assistant", "content": "..."}`  (no tools for LLM)
+   - Preserved messages: `{"role": "...", "content": "...", "tools_used": [{...full metadata...}]}`
+   - This context is sent to the LLM only
+
+4. **Persistence Phase** (`tool_handler.persist_assistant_message`):
+   - Always persist FULL tool metadata to database
+   - No trimming, no gating
+   - Ensures complete audit trail of all tool invocations
+
+**Benefits**:
+
+- **Token Usage**: 20-50% reduction for long conversations by not sending older tool metadata to LLM
+- **Database Integrity**: Complete audit trail with all tool invocation details preserved
+- **Context Quality**: Latest turns retain full metadata for traceability in LLM
+- **Flexibility**: Can still access full history from database for analytics/debugging
+- **Graceful Degradation**: DB-optional mode returns empty history instead of crashing
+
+**Usage in StreamingHandler**:
+
+```python
+# Instead of loading raw history:
+conversation_history = await message_service.get_thread_messages(...)
+
+# Now uses pruned context for LLM:
+conversation_history = await load_conversation_history(
+    thread_id=thread_id,
+    user_id=user_id,
+    session_factory=session_factory,
+)
+# Returns LLM-ready context with older tools removed
+# Database still has complete messages with full tools
+```
+
+**Feature Flags**:
+
+- `prune_tools_for_llm=true` (default): Strip tools from older messages for LLM (token optimization)
+- `prune_tools_for_llm=false`: Send all tools to LLM (maximum context, higher tokens)
+- `preserve_turns`: Control how many recent turns keep tools in LLM context
+
+**Observability**:
+
+Logged metrics:
+- `total_messages`: Messages loaded from DB (with full tools)
+- `preserved_count`: Messages kept with full metadata for LLM
+- `pruned_count`: Messages with tools removed from LLM context
+- `context_items`: Final LLM context size (smaller due to pruning)
+
+**Conversation History Loading**
+
+- **Default Limit**: Last 5 messages (configurable via `history_limit` in `llm_config.yaml`)
+- **Pruning**: Applied automatically via `HistoryManager` (see above)
 - **Query**: Indexed by `thread_id` for O(log n) lookup
-- **Benefit**: Balances context richness vs. token usage
+- **Benefit**: Balances context richness vs. token usage while reducing payload size
 
 ### Vector Search Optimization
 

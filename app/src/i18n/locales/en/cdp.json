@@ -1,4 +1,10 @@
 {
-  "add-data": "Add Data",
-  "submit-data-to-cdp": "Submit data into CDP"
+  "page-title": "Submit to CDP",
+  "page-description": "Submit your greenhouse gas inventory data directly to CDP (Carbon Disclosure Project) for climate disclosure reporting.",
+  "submit-button": "Submit to CDP",
+  "submitting": "Submitting...",
+  "success-title": "Submission Successful",
+  "success-description": "Your inventory data has been successfully submitted to CDP.",
+  "error-title": "Submission Failed",
+  "error-description": "There was an error submitting your data to CDP. Please try again."
 }

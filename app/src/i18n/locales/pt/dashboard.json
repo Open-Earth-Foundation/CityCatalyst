@@ -209,6 +209,8 @@
   "enter-to-add": "Pressione enter para adicionar",
   "choose-a-role": "Escolha um papel",
   "select-role": "Selecione o papel",
+  "collaborator": "Colaborador",
+  "admin": "Administrador",
   "collaborator-rule": "Colaboradores só podem editar inventários",
   "admin-rule": "Os administradores podem adicionar cidades a todos os projetos e editar todos os inventários",
   "all-cities": "Todas as cidades",

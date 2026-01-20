@@ -411,7 +411,7 @@ def main() -> int:
             error_messages: List[str] = []
             attempts = 0
 
-            while attempts < max(1, args.retries):
+            while attempts <= args.retries:
                 attempts += 1
                 response = client.post("/v1/messages", json=rendered_payload)
                 events = _parse_sse_events(response.text)
@@ -422,7 +422,7 @@ def main() -> int:
                 if assistant_text and done_payload:
                     break
 
-                if attempts < args.retries and _is_retryable_error(error_messages):
+                if attempts <= args.retries and _is_retryable_error(error_messages):
                     time.sleep(args.retry_delay)
                     continue
                 break

@@ -186,7 +186,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                       </IconButton>
                     </PopoverTrigger>
                     <PopoverContent
-                      h="128px"
+                      h="64px"
                       w="300px"
                       borderRadius="8px"
                       shadow="2dp"
@@ -227,7 +227,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                               {t("download-city-data")}
                             </Text>
                           </List.Item>
-                          <List.Item
+                          {/* <List.Item
                             display="flex"
                             cursor="pointer"
                             gap="16px"
@@ -257,7 +257,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                             >
                               {t("remove-city")}
                             </Text>
-                          </List.Item>
+                          </List.Item> */}
                         </List.Root>
                       </PopoverBody>
                     </PopoverContent>

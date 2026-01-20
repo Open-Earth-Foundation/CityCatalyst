@@ -6,7 +6,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { H } from "@/lib/highlight";
 
-import { StreamingTextResponse } from "ai";
 import OpenAI from "openai";
 
 import { db } from "@/models";
@@ -26,10 +25,11 @@ import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
 
 // Rate limiting configuration
 // Skip during Playwright runs via feature flag to avoid hitting limits
+// 200 requests per minute allows for ~28 page loads (each page makes ~7 API calls)
 const isPlaywrightTest = process.env.PLAYWRIGHT_TEST === "1";
-const apiLimiter = isPlaywrightTest ? null : new RateLimiter(60 * 1000, 60);
+const apiLimiter = isPlaywrightTest ? null : new RateLimiter(60 * 1000, 200);
 
-export type ApiResponse = NextResponse | StreamingTextResponse;
+export type ApiResponse = NextResponse | Response;
 
 export type NextHandler = (
   req: NextRequest,

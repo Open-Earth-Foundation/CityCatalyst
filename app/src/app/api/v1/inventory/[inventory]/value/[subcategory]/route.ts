@@ -28,6 +28,7 @@
  *         description: Not found.
  */
 import { PermissionService } from "@/backend/permissions/PermissionService";
+import VersionHistoryService from "@/backend/VersionHistoryService";
 import { db } from "@/models";
 import { Inventory } from "@/models/Inventory";
 import { logger } from "@/services/logger";
@@ -117,6 +118,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
  */
 export const PATCH = apiHandler(async (req, { params, session }) => {
   const body = createInventoryValue.parse(await req.json());
+  const userId = session?.user.id;
 
   const { resource } = await PermissionService.canEditInventory(
     session,
@@ -152,65 +154,138 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     );
   }
 
-  // check if data is marked as not occurring/ otherwise unavailable
-  if (body.unavailableReason || body.unavailableExplanation) {
-    if (!body.unavailableReason || !body.unavailableExplanation) {
-      throw new createHttpError.BadRequest(
-        "unavailableReason and unavailableExplanation need to both be provided if one is used",
-      );
+  await db.sequelize?.transaction(async (transaction) => {
+    // check if data is marked as not occurring/ otherwise unavailable
+    if (body.unavailableReason || body.unavailableExplanation) {
+      if (!body.unavailableReason || !body.unavailableExplanation) {
+        throw new createHttpError.BadRequest(
+          "unavailableReason and unavailableExplanation need to both be provided if one is used",
+        );
+      }
+
+      body.co2eq = undefined;
+      body.co2eqYears = undefined;
+
+      // for existing data, delete left over ActivityValues
+      if (inventoryValue) {
+        const existingActivityValues = await db.models.ActivityValue.findAll({
+          where: { inventoryValueId: inventoryValue.id },
+        });
+        await db.models.ActivityValue.destroy({
+          where: { inventoryValueId: inventoryValue.id },
+          transaction,
+        });
+        await VersionHistoryService.bulkCreateVersions(
+          inventory.inventoryId,
+          "ActivityValue",
+          userId,
+          existingActivityValues,
+          true,
+          transaction,
+        );
+      }
     }
 
-    body.co2eq = undefined;
-    body.co2eqYears = undefined;
-
-    // for existing data, delete left over ActivityValues
     if (inventoryValue) {
-      await db.models.ActivityValue.destroy({
-        where: { inventoryValueId: inventoryValue.id },
+      inventoryValue = await inventoryValue.update(
+        {
+          ...body,
+          id: inventoryValue.id,
+          datasourceId: body.unavailableReason
+            ? null
+            : inventoryValue.datasourceId,
+        },
+        { transaction },
+      );
+    } else {
+      inventoryValue = await db.models.InventoryValue.create({
+        ...body,
+        id: randomUUID(),
+        subCategoryId: params.subcategory,
+        subSectorId: subCategory.subsectorId,
+        sectorId: subCategory.subsector.sectorId,
+        inventoryId: params.inventory,
+        gpcReferenceNumber: subCategory.referenceNumber,
       });
     }
-  }
 
-  if (inventoryValue) {
-    inventoryValue = await inventoryValue.update({
-      ...body,
-      id: inventoryValue.id,
-      datasourceId: body.unavailableReason ? null : inventoryValue.datasourceId,
+    const gasValues = await db.models.GasValue.findAll({
+      where: { inventoryValueId: inventoryValue.id },
+      include: { model: db.models.EmissionsFactor, as: "emissionsFactor" },
     });
-  } else {
-    inventoryValue = await db.models.InventoryValue.create({
-      ...body,
-      id: randomUUID(),
-      subCategoryId: params.subcategory,
-      subSectorId: subCategory.subsectorId,
-      sectorId: subCategory.subsector.sectorId,
-      inventoryId: params.inventory,
-      gpcReferenceNumber: subCategory.referenceNumber,
-    });
-  }
+    // only update gas values when data is passed
+    if (gasValuesData) {
+      for (const gasValue of gasValues) {
+        // remove deleted values or update
+        const gasData = gasValuesData.find((data) => data.gas === gasValue.gas);
+        if (!gasData) {
+          await gasValue.destroy();
+          await VersionHistoryService.createVersion(
+            inventory.inventoryId,
+            "GasValue",
+            gasValue.id,
+            userId,
+            {},
+            true,
+            transaction,
+          );
+        } else {
+          // create user emissions factors if necessary
+          let emissionsFactorId = gasData.emissionsFactorId;
+          const emissionsFactorData = gasData.emissionsFactor;
+          delete gasData.emissionsFactor;
+          if (emissionsFactorData) {
+            let emissionsFactor;
 
-  const gasValues = await db.models.GasValue.findAll({
-    where: { inventoryValueId: inventoryValue.id },
-    include: { model: db.models.EmissionsFactor, as: "emissionsFactor" },
-  });
-  // only update gas values when data is passed
-  if (gasValuesData) {
-    for (const gasValue of gasValues) {
-      // remove deleted values or update
-      const gasData = gasValuesData.find((data) => data.gas === gasValue.gas);
-      if (!gasData) {
-        await gasValue.destroy();
-      } else {
-        // create user emissions factors if necessary
-        let emissionsFactorId = gasData.emissionsFactorId;
-        const emissionsFactorData = gasData.emissionsFactor;
-        delete gasData.emissionsFactor;
-        if (emissionsFactorData) {
-          // has existing emissions factor with inventoryId (= defined by user)?
-          if (gasValue.emissionsFactor?.inventoryId) {
-            gasValue.emissionsFactor.update(emissionsFactorData);
-            emissionsFactorId = gasValue.emissionsFactorId;
-          } else {
+            // has existing emissions factor with inventoryId (= defined by user)?
+            if (gasValue.emissionsFactor?.inventoryId) {
+              emissionsFactor =
+                await gasValue.emissionsFactor.update(emissionsFactorData);
+              emissionsFactorId = gasValue.emissionsFactorId;
+            } else {
+              emissionsFactor = await db.models.EmissionsFactor.create({
+                ...emissionsFactorData,
+                id: randomUUID(),
+                inventoryId: params.inventory,
+              });
+              emissionsFactorId = emissionsFactor.id;
+            }
+            await VersionHistoryService.createVersion(
+              inventory.inventoryId,
+              "EmissionsFactor",
+              emissionsFactor.id,
+              userId,
+              emissionsFactor,
+              false,
+              transaction,
+            );
+          }
+
+          const updatedGasValue = await gasValue.update({
+            ...gasData,
+            emissionsFactorId,
+          });
+          await VersionHistoryService.createVersion(
+            inventory.inventoryId,
+            "GasValue",
+            updatedGasValue.id,
+            userId,
+            updatedGasValue,
+            false,
+            transaction,
+          );
+        }
+      }
+
+      // create new gas values if necessary
+      for (const gasData of gasValuesData) {
+        const value = gasValues.find((value) => value.gas === gasData.gas);
+        if (!value) {
+          // create user emissions factors if necessary
+          let emissionsFactorId = gasData.emissionsFactorId;
+          const emissionsFactorData = gasData.emissionsFactor;
+          delete gasData.emissionsFactor;
+          if (emissionsFactorData) {
             const emissionsFactor = await db.models.EmissionsFactor.create({
               ...emissionsFactorData,
               id: randomUUID(),
@@ -218,97 +293,99 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
             });
             emissionsFactorId = emissionsFactor.id;
           }
-        }
-        await gasValue.update({ ...gasData, emissionsFactorId });
-      }
-    }
 
-    // create new gas values if necessary
-    for (const gasData of gasValuesData) {
-      const value = gasValues.find((value) => value.gas === gasData.gas);
-      if (!value) {
-        // create user emissions factors if necessary
-        let emissionsFactorId = gasData.emissionsFactorId;
-        const emissionsFactorData = gasData.emissionsFactor;
-        delete gasData.emissionsFactor;
-        if (emissionsFactorData) {
-          const emissionsFactor = await db.models.EmissionsFactor.create({
-            ...emissionsFactorData,
+          const gasValue = await db.models.GasValue.create({
+            ...gasData,
             id: randomUUID(),
-            inventoryId: params.inventory,
+            inventoryValueId: inventoryValue.id,
+            emissionsFactorId,
           });
-          emissionsFactorId = emissionsFactor.id;
+          await VersionHistoryService.createVersion(
+            inventory.inventoryId,
+            "GasValue",
+            gasValue.id,
+            userId,
+            gasValue,
+            false,
+            transaction,
+          );
         }
-
-        await db.models.GasValue.create({
-          ...gasData,
-          id: randomUUID(),
-          inventoryValueId: inventoryValue.id,
-          emissionsFactorId,
-        });
       }
     }
-  }
 
-  // calculate new co2eq value
-  // load gas values again to take any modifications into account
-  if (body.co2eq == null && !body.unavailableReason) {
-    const newGasValues = await db.models.GasValue.findAll({
-      where: { inventoryValueId: inventoryValue.id },
-      include: { model: db.models.EmissionsFactor, as: "emissionsFactor" },
-    });
-    const gases: string[] = newGasValues
-      .map((value) => value.gas!)
-      .filter((value) => !!value);
-    const gasesToCo2Eq =
-      gases.length === 0
-        ? []
-        : await db.models.GasToCO2Eq.findAll({
-            where: { gas: { [Op.any]: gases } },
-          });
-    inventoryValue.co2eqYears = gasesToCo2Eq.reduce(
-      (acc, gasToCO2Eq) => Math.max(acc, gasToCO2Eq.co2eqYears || 0),
-      0,
-    );
-    inventoryValue.co2eq = newGasValues.reduce((acc, gasValue) => {
-      const hasActivityValue = inventoryValue?.activityValue != null;
-      const gasToCo2Eq = gasesToCo2Eq.find(
-        (entry) => entry.gas === gasValue.gas,
+    // calculate new co2eq value
+    // load gas values again to take any modifications into account
+    if (body.co2eq == null && !body.unavailableReason) {
+      const newGasValues = await db.models.GasValue.findAll({
+        where: { inventoryValueId: inventoryValue.id },
+        include: { model: db.models.EmissionsFactor, as: "emissionsFactor" },
+      });
+      const gases: string[] = newGasValues
+        .map((value) => value.gas!)
+        .filter((value) => !!value);
+      const gasesToCo2Eq =
+        gases.length === 0
+          ? []
+          : await db.models.GasToCO2Eq.findAll({
+              where: { gas: { [Op.any]: gases } },
+            });
+      inventoryValue.co2eqYears = gasesToCo2Eq.reduce(
+        (acc, gasToCO2Eq) => Math.max(acc, gasToCO2Eq.co2eqYears || 0),
+        0,
       );
-      if (gasToCo2Eq == null) {
-        logger.error(`Failed to find GasToCo2Eq entry for gas ${gasValue.gas}`);
-        return acc;
-      }
-      if (!hasActivityValue && gasValue.gasAmount == null) {
-        logger.error(
-          `Neither activityValue nor GasValue.gasAmount present for InventoryValue ${inventoryValue?.id}`,
+      inventoryValue.co2eq = newGasValues.reduce((acc, gasValue) => {
+        const hasActivityValue = inventoryValue?.activityValue != null;
+        const gasToCo2Eq = gasesToCo2Eq.find(
+          (entry) => entry.gas === gasValue.gas,
         );
-        return acc;
-      }
-      if (hasActivityValue && gasValue.emissionsFactor == null) {
-        logger.error(
-          `No emissions factor present for InventoryValue ${inventoryValue?.id} and gas ${gasValue.gas}`,
-        );
-        return acc;
-      }
+        if (gasToCo2Eq == null) {
+          logger.error(
+            `Failed to find GasToCo2Eq entry for gas ${gasValue.gas}`,
+          );
+          return acc;
+        }
+        if (!hasActivityValue && gasValue.gasAmount == null) {
+          logger.error(
+            `Neither activityValue nor GasValue.gasAmount present for InventoryValue ${inventoryValue?.id}`,
+          );
+          return acc;
+        }
+        if (hasActivityValue && gasValue.emissionsFactor == null) {
+          logger.error(
+            `No emissions factor present for InventoryValue ${inventoryValue?.id} and gas ${gasValue.gas}`,
+          );
+          return acc;
+        }
 
-      let gasAmount: bigint;
-      if (hasActivityValue) {
-        gasAmount = BigInt(
-          Math.floor(
-            inventoryValue!.activityValue! *
-              gasValue.emissionsFactor.emissionsPerActivity!,
-          ),
-        );
-      } else {
-        gasAmount = BigInt(gasValue.gasAmount!);
-      }
+        let gasAmount: bigint;
+        if (hasActivityValue) {
+          gasAmount = BigInt(
+            Math.floor(
+              // TODO sum all activity values in InventoryValue here
+              inventoryValue!.activityValue! *
+                gasValue.emissionsFactor.emissionsPerActivity!,
+            ),
+          );
+        } else {
+          gasAmount = BigInt(gasValue.gasAmount!);
+        }
 
-      // this assumes GWP values in the GasToCO2Eq table are always ints
-      return acc + gasAmount * BigInt(gasToCo2Eq.co2eqPerKg!);
-    }, 0n);
-    await inventoryValue.save();
-  }
+        // this assumes GWP values in the GasToCO2Eq table are always ints
+        return acc + gasAmount * BigInt(gasToCo2Eq.co2eqPerKg!);
+      }, 0n);
+      await inventoryValue.save();
+    }
+
+    await VersionHistoryService.createVersion(
+      params.inventory,
+      "InventoryValue",
+      inventoryValue.id,
+      userId,
+      inventoryValue,
+      false,
+      transaction,
+    );
+  });
 
   return NextResponse.json({ data: inventoryValue });
 });

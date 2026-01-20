@@ -19,6 +19,7 @@ import createHttpError from "http-errors";
 import type { Transaction } from "sequelize";
 import ManualInputValidationService from "./ManualnputValidationService";
 import { decimalToBigInt } from "@/util/big_int";
+import VersionHistoryService from "./VersionHistoryService";
 
 type GasValueInput = Omit<GasValueCreationAttributes, "id"> & {
   emissionsFactor?: Omit<EmissionsFactorAttributes, "id">;
@@ -93,11 +94,15 @@ export default class ActivityService {
     activityValue,
     transaction,
     gases,
+    userId,
+    inventoryId,
   }: {
     gasValues: UpdateGasValueInput[];
     activityValue: ActivityValue;
     transaction: Transaction;
     gases: Gas[];
+    userId?: string;
+    inventoryId?: string;
   }) {
     for (const gasValue of gasValues) {
       let emissionsFactor: EmissionsFactor | null = null;
@@ -117,6 +122,16 @@ export default class ActivityService {
       // Update the EmissionsFactor if needed
       if (gasValue.emissionsFactor) {
         await emissionsFactor.update(gasValue.emissionsFactor, { transaction });
+
+        await VersionHistoryService.createVersion(
+          inventoryId,
+          "EmissionsFactor",
+          emissionsFactor.id,
+          userId,
+          emissionsFactor,
+          false,
+          transaction,
+        );
       }
 
       delete gasValue.emissionsFactor;
@@ -138,6 +153,16 @@ export default class ActivityService {
         },
         { transaction },
       );
+
+      await VersionHistoryService.createVersion(
+        inventoryId,
+        "GasValue",
+        gasValue.id,
+        userId,
+        gasValue,
+        false,
+        transaction,
+      );
     }
   }
 
@@ -147,12 +172,14 @@ export default class ActivityService {
     inventoryValueParams,
     activityValueParams,
     gasValues,
+    userId,
   }: {
     id: string;
     activityValueParams: Omit<ActivityValueAttributes, "id">;
     inventoryValueId: string | undefined;
     inventoryValueParams: Omit<InventoryValueAttributes, "id"> | undefined;
     gasValues: UpdateGasValueInput[] | undefined;
+    userId: string | undefined;
   }): Promise<ActivityValue | undefined> {
     const activityValue = await db.models.ActivityValue.findOne({
       where: { id },
@@ -216,12 +243,33 @@ export default class ActivityService {
         activityValue.co2eqYears = totalCO2eYears;
         await activityValue.save({ transaction });
 
+        await VersionHistoryService.createVersion(
+          inventoryValue.inventoryId,
+          "ActivityValue",
+          activityValue.id,
+          userId,
+          activityValue,
+          false,
+          transaction,
+        );
+        await VersionHistoryService.createVersion(
+          inventoryValue.inventoryId,
+          "InventoryValue",
+          inventoryValue.id,
+          userId,
+          inventoryValue,
+          false,
+          transaction,
+        );
+
         if (gasValues) {
           await this.updateGasValues({
             gasValues,
             activityValue: updatedActivityValue,
             gases,
             transaction,
+            userId,
+            inventoryId: inventoryValue.inventoryId,
           });
         }
         return updatedActivityValue;
@@ -235,6 +283,7 @@ export default class ActivityService {
     inventoryValueId: string | undefined,
     inventoryValueParams: Omit<InventoryValueAttributes, "id"> | undefined,
     gasValues: GasValueInput[] | undefined,
+    userId?: string,
   ): Promise<ActivityValue | undefined> {
     // validate using the ManualInputValidationService
     await ManualInputValidationService.validateActivity({
@@ -355,6 +404,25 @@ export default class ActivityService {
         activityValue.co2eqYears = totalCO2eYears;
         await activityValue.save({ transaction });
 
+        await VersionHistoryService.createVersion(
+          inventoryId,
+          "ActivityValue",
+          activityValue.id,
+          userId,
+          activityValue,
+          false,
+          transaction,
+        );
+        await VersionHistoryService.createVersion(
+          inventoryId,
+          "InventoryValue",
+          inventoryValue.id,
+          userId,
+          inventoryValue,
+          false,
+          transaction,
+        );
+
         if (gasValues) {
           for (const gasValue of gasValues) {
             let emissionsFactor: EmissionsFactor | null = null;
@@ -371,6 +439,15 @@ export default class ActivityService {
                   inventoryId,
                 },
                 { transaction },
+              );
+              await VersionHistoryService.createVersion(
+                inventoryId,
+                "EmissionsFactor",
+                emissionsFactor.id,
+                userId,
+                emissionsFactor,
+                false,
+                transaction,
               );
             }
 
@@ -391,7 +468,7 @@ export default class ActivityService {
               );
             }
 
-            await db.models.GasValue.create(
+            const createdGasValue = await db.models.GasValue.create(
               {
                 ...gasValue,
                 id: randomUUID(),
@@ -401,6 +478,15 @@ export default class ActivityService {
               },
               { transaction },
             );
+            await VersionHistoryService.createVersion(
+              inventoryId,
+              "GasValue",
+              createdGasValue.id,
+              userId,
+              gasValue,
+              false,
+              transaction,
+            );
           }
         }
 
@@ -409,20 +495,37 @@ export default class ActivityService {
     );
   }
 
-  public static async deleteActivity(id: string): Promise<void> {
+  public static async deleteActivity(
+    id: string,
+    userId?: string,
+  ): Promise<void> {
     return await db.sequelize?.transaction(async (transaction) => {
       const activityValue = await db.models.ActivityValue.findByPk(id, {
-        include: {
-          model: db.models.InventoryValue,
-          as: "inventoryValue",
-          include: [
-            {
-              model: db.models.ActivityValue,
-              as: "activityValues",
-              attributes: ["id", "co2eqYears"],
-            },
-          ],
-        },
+        include: [
+          {
+            model: db.models.InventoryValue,
+            as: "inventoryValue",
+            include: [
+              {
+                model: db.models.ActivityValue,
+                as: "activityValues",
+                attributes: ["id", "co2eqYears"],
+              },
+            ],
+          },
+          {
+            model: db.models.GasValue,
+            as: "gasValues",
+            attributes: ["id"],
+            include: [
+              {
+                model: db.models.EmissionsFactor,
+                as: "emissionsFactor",
+                attributes: ["id"],
+              },
+            ],
+          },
+        ],
       });
 
       if (!activityValue) {
@@ -435,10 +538,52 @@ export default class ActivityService {
 
       const activityCount = inventoryValue?.activityValues.length;
       await activityValue.destroy({ transaction });
+      await VersionHistoryService.createVersion(
+        inventoryValue.inventoryId,
+        "ActivityValue",
+        activityValue.id,
+        userId,
+        {},
+        true,
+        transaction,
+      );
+
+      // add version for deleted GasValue and EmissionsFactor entries
+      await Promise.all(
+        activityValue.gasValues.map(async (gasValue) => {
+          await VersionHistoryService.createVersion(
+            inventoryValue.inventoryId,
+            "GasValue",
+            gasValue.id,
+            userId,
+            {},
+            true,
+            transaction,
+          );
+          await VersionHistoryService.createVersion(
+            inventoryValue.inventoryId,
+            "EmissionsFactor",
+            gasValue.emissionsFactor.id,
+            userId,
+            {},
+            true,
+            transaction,
+          );
+        }),
+      );
 
       // delete the InventoryValue when its last ActivityValue is deleted
       if (activityCount <= 1) {
         await inventoryValue.destroy({ transaction });
+        await VersionHistoryService.createVersion(
+          inventoryValue.inventoryId,
+          "InventoryValue",
+          inventoryValue.id,
+          userId,
+          {},
+          true,
+          transaction,
+        );
       } else {
         inventoryValue.co2eq =
           BigInt(inventoryValue.co2eq ?? 0n) -
@@ -455,23 +600,34 @@ export default class ActivityService {
         inventoryValue.co2eqYears = maxCo2eqYears;
 
         await inventoryValue.save({ transaction });
+        await VersionHistoryService.createVersion(
+          inventoryValue.inventoryId,
+          "InventoryValue",
+          inventoryValue.id,
+          userId,
+          inventoryValue,
+          false,
+          transaction,
+        );
       }
     });
   }
 
   public static async deleteAllActivitiesInSubsector({
-    subsectorId,
+    subSectorId,
     inventoryId,
     referenceNumber,
+    userId,
   }: {
-    subsectorId?: string;
+    subSectorId?: string;
     inventoryId: string;
     referenceNumber?: string;
+    userId?: string;
   }): Promise<number> {
     const inventoryValues = await db.models.InventoryValue.findAll({
       where: {
         inventoryId,
-        subSectorId: subsectorId,
+        subSectorId,
       },
     });
 
@@ -481,15 +637,88 @@ export default class ActivityService {
       );
     }
 
-    // delete all the inventory values in subsector
+    return await db.sequelize?.transaction(async (transaction) => {
+      // create Version history entries for all InventoryValues and ActivityValues that are being deleted
+      // to be able to undo this change later if necessary
+      await Promise.all(
+        inventoryValues.map(async (inventoryValue) => {
+          const activityValues = await db.models.ActivityValue.findAll({
+            where: { inventoryValueId: inventoryValue.id },
+            attributes: ["id"],
+            include: [
+              {
+                model: db.models.GasValue,
+                as: "gasValues",
+                attributes: ["id"],
+                include: [
+                  {
+                    model: db.models.EmissionsFactor,
+                    as: "emissionsFactor",
+                    attributes: ["id"],
+                  },
+                ],
+              },
+            ],
+          });
+          await VersionHistoryService.createVersion(
+            inventoryId,
+            "InventoryValue",
+            inventoryValue.id,
+            userId,
+            {},
+            true,
+            transaction,
+          );
+          await Promise.all(
+            activityValues.map(async (activityValue) => {
+              await VersionHistoryService.createVersion(
+                inventoryId,
+                "ActivityValue",
+                activityValue.id,
+                userId,
+                {},
+                true,
+                transaction,
+              );
 
-    return await db.models.InventoryValue.destroy({
-      where: {
-        inventoryId,
-        ...(referenceNumber
-          ? { gpcReferenceNumber: referenceNumber }
-          : { subSectorId: subsectorId }),
-      },
-    });
+              // add version for deleted GasValue and EmissionsFactor entries
+              await Promise.all(
+                activityValue.gasValues.map(async (gasValue) => {
+                  await VersionHistoryService.createVersion(
+                    inventoryValue.inventoryId,
+                    "GasValue",
+                    gasValue.id,
+                    userId,
+                    {},
+                    true,
+                    transaction,
+                  );
+                  await VersionHistoryService.createVersion(
+                    inventoryValue.inventoryId,
+                    "EmissionsFactor",
+                    gasValue.emissionsFactor.id,
+                    userId,
+                    {},
+                    true,
+                    transaction,
+                  );
+                }),
+              );
+            }),
+          );
+        }),
+      );
+
+      // delete all the inventory values in subsector
+      return await db.models.InventoryValue.destroy({
+        where: {
+          inventoryId,
+          ...(referenceNumber
+            ? { gpcReferenceNumber: referenceNumber }
+            : { subSectorId }),
+        },
+        transaction,
+      });
+    })!;
   }
 }

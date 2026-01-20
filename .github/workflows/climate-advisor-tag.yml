@@ -1,4 +1,4 @@
-name: Push tagged Climate Advisor to GHCR and deploy to production
+name: Push tagged CA to GHCR and deploy to EKS Prod
 
 permissions:
   contents: read

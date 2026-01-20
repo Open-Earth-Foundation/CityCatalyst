@@ -61,14 +61,14 @@ export function ActionDrawer({
       justify="space-between"
       w="full"
     >
-      <ButtonMedium>{t(`hazard.${hazard}`)}</ButtonMedium>
+      <ButtonMedium>{hazard ? t(`hazard.${hazard}`) : t("n-a")}</ButtonMedium>
       <HStack gap={2} align={align}>
         <BarVisualization
           value={getEffectivenessValue(effectiveness)}
           total={3}
         />
         <Text fontSize="sm" color="gray.600">
-          {t(`effectiveness-level.${effectiveness}`)}
+          {effectiveness ? t(`effectiveness-level.${effectiveness}`) : t("n-a")}
         </Text>
       </HStack>
     </HStack>
@@ -160,9 +160,9 @@ export function ActionDrawer({
                     <HStack>
                       <TitleMedium>{t("adaptation-effectiveness")}</TitleMedium>
                       <Text>
-                        {t(
-                          `effectiveness-level.${(action as AdaptationAction).adaptationEffectiveness}`,
-                        )}
+                        {(action as AdaptationAction).adaptationEffectiveness
+                          ? t(`effectiveness-level.${(action as AdaptationAction).adaptationEffectiveness}`)
+                          : t("n-a")}
                       </Text>
                     </HStack>
                     <HStack gap={2} align="center" width="full">
@@ -180,13 +180,17 @@ export function ActionDrawer({
                   <VStack align="start">
                     <TitleMedium>{t("cost")}</TitleMedium>
                     <DisplayMedium color="black">
-                      {t(`cost-level.${action.costInvestmentNeeded}`)}
+                      {action.costInvestmentNeeded
+                        ? t(`cost-level.${action.costInvestmentNeeded}`)
+                        : t("n-a")}
                     </DisplayMedium>
                   </VStack>
                   <VStack align="start">
                     <TitleMedium>{t("timeline-label")}</TitleMedium>
                     <DisplayMedium color="black">
-                      {t(`timeline.${action.timelineForImplementation}`)}
+                      {action.timelineForImplementation
+                        ? t(`timeline.${action.timelineForImplementation}`)
+                        : t("n-a")}
                     </DisplayMedium>
                   </VStack>
                 </HStack>

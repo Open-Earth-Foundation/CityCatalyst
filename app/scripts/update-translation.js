@@ -2,8 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { generateText } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import OpenAI from 'openai';
 
 // Convert the module's URL to a file path
 const __filename = fileURLToPath(import.meta.url);
@@ -14,19 +13,29 @@ if (!process.env.OPENAI_API_KEY) {
   process.exit(1)
 }
 
-const model = openai('gpt-4');
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 function stripQuotes(s) {
   return s.replace(/^"(.*)"$/, '$1')
 }
 
 async function translateString(sourceLanguage, targetLanguage, key, sourceValue) {
-  const { text } = await generateText({
-    model: model,
-    system: `You are a climate tech translator concentrating on ${sourceLanguage}-${targetLanguage} translations. You return only the translated strings, no explanations or excuses. If you cannot translate the text, you return an empty string.`,
-    prompt: `Translate the following text from ${sourceLanguage} to ${targetLanguage} for the key ${key}:\n\n"${sourceValue}"`,
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4',
+    messages: [
+      {
+        role: 'system',
+        content: `You are a climate tech translator concentrating on ${sourceLanguage}-${targetLanguage} translations. You return only the translated strings, no explanations or excuses. If you cannot translate the text, you return an empty string.`
+      },
+      {
+        role: 'user',
+        content: `Translate the following text from ${sourceLanguage} to ${targetLanguage} for the key ${key}:\n\n"${sourceValue}"`
+      }
+    ],
   });
-  return stripQuotes(text);
+  return stripQuotes(response.choices[0].message.content);
 }
 
 async function pathExists(path) {

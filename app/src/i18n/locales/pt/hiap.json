@@ -80,7 +80,10 @@
     "transportation": "Transporte",
     "waste": "Resíduos",
     "ippu": "IPPU",
-    "afolu": "AFOLU"
+    "afolu": "AFOLU",
+    "public_health": "Saúde Pública",
+    "water_resources": "Recursos Hídricos",
+    "food_security": "Segurança Alimentar"
   },
   "effectiveness-level": {
     "high": "Alta",

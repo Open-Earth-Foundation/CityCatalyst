@@ -96,6 +96,11 @@ import type {
 } from "./Inventory";
 import { Inventory as _Inventory } from "./Inventory";
 import type {
+  ImportedInventoryFileAttributes,
+  ImportedInventoryFileCreationAttributes,
+} from "./ImportedInventoryFile";
+import { ImportedInventoryFile as _ImportedInventoryFile } from "./ImportedInventoryFile";
+import type {
   MethodologyAttributes,
   MethodologyCreationAttributes,
 } from "./Methodology";
@@ -254,6 +259,7 @@ export {
   _GDP as GDP,
   _GHGs as GHGs,
   _Inventory as Inventory,
+  _ImportedInventoryFile as ImportedInventoryFile,
   _Methodology as Methodology,
   _Organization as Organization,
   _Project as Project,
@@ -417,6 +423,7 @@ export function initModels(sequelize: Sequelize) {
   const GDP = _GDP.initModel(sequelize);
   const GHGs = _GHGs.initModel(sequelize);
   const Inventory = _Inventory.initModel(sequelize);
+  const ImportedInventoryFile = _ImportedInventoryFile.initModel(sequelize);
   const Methodology = _Methodology.initModel(sequelize);
   const Organization = _Organization.initModel(sequelize);
   const Project = _Project.initModel(sequelize);
@@ -794,6 +801,12 @@ export function initModels(sequelize: Sequelize) {
   });
   Version.belongsTo(Inventory, { as: "inventory", foreignKey: "inventoryId" });
   Inventory.hasMany(Version, { as: "versions", foreignKey: "inventoryId" });
+  Version.belongsTo(User, { as: "author", foreignKey: "authorId" });
+  User.hasMany(Version, { as: "versions", foreignKey: "authorId" });
+  Version.hasOne(Version, {
+    as: "previousVersion",
+    foreignKey: "previousVersionId",
+  });
   DataSourceMethodology.belongsTo(Methodology, {
     as: "methodology",
     foreignKey: "methodologyId",
@@ -1083,6 +1096,46 @@ export function initModels(sequelize: Sequelize) {
     onUpdate: "CASCADE",
   });
 
+  // Associations for ImportedInventoryFile
+  ImportedInventoryFile.belongsTo(User, {
+    as: "user",
+    foreignKey: "userId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  User.hasMany(ImportedInventoryFile, {
+    as: "importedInventoryFiles",
+    foreignKey: "userId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+
+  ImportedInventoryFile.belongsTo(City, {
+    as: "city",
+    foreignKey: "cityId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  City.hasMany(ImportedInventoryFile, {
+    as: "importedInventoryFiles",
+    foreignKey: "cityId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+
+  ImportedInventoryFile.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  Inventory.hasOne(ImportedInventoryFile, {
+    as: "importedInventoryFile",
+    foreignKey: "inventoryId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+
   return {
     ActionPlan: ActionPlan,
     ActivityData: ActivityData,
@@ -1104,6 +1157,7 @@ export function initModels(sequelize: Sequelize) {
     GDP: GDP,
     GHGs: GHGs,
     Inventory: Inventory,
+    ImportedInventoryFile: ImportedInventoryFile,
     Methodology: Methodology,
     Organization: Organization,
     Project: Project,

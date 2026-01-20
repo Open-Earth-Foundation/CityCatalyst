@@ -1,4 +1,10 @@
 {
-  "add-data": "Daten hinzufügen",
-  "submit-data-to-cdp": "Daten an CDP übermitteln"
+  "page-title": "An CDP übermitteln",
+  "page-description": "Übermitteln Sie Ihre Treibhausgasinventardaten direkt an CDP (Carbon Disclosure Project) für die Klimaberichterstattung.",
+  "submit-button": "An CDP übermitteln",
+  "submitting": "Wird übermittelt...",
+  "success-title": "Übermittlung Erfolgreich",
+  "success-description": "Ihre Inventardaten wurden erfolgreich an CDP übermittelt.",
+  "error-title": "Übermittlung Fehlgeschlagen",
+  "error-description": "Beim Übermitteln Ihrer Daten an CDP ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
 }

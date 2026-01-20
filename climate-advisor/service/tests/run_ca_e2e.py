@@ -25,7 +25,7 @@ Getting a user_id and JWT token for CA_E2E_CC_TOKEN:
      - From the app helper script (requires node):
        npx tsx app/scripts/print-user-id.ts --email <email>
   2) Mint a non-expired JWT token and save it to climate-advisor/.env:
-       python scripts/mint_ca_e2e_token.py --user-id <user_id>
+       python -m scripts.mint_ca_e2e_token --user-id <user_id>
      This requires CC_BASE_URL and CC_API_KEY in climate-advisor/.env.
   3) Confirm CA_E2E_CC_TOKEN is set before running this script.
   4) (Optional) Run automatic verification on the output:

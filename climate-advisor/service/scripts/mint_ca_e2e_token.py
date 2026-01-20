@@ -1,8 +1,11 @@
 """
 Mint a CityCatalyst JWT token for CA E2E runs and optionally write it to .env.
 
-Usage (from climate-advisor, with venv activated):
-  python scripts/mint_ca_e2e_token.py --user-id <user_id>
+Usage (from climate-advisor/service directory, with venv activated):
+  python -m scripts.mint_ca_e2e_token --user-id <user_id>
+
+Or from project root:
+  cd climate-advisor/service && python -m scripts.mint_ca_e2e_token --user-id <user_id>
 
 Optional flags:
   --env-path   Path to the .env file to update (default: climate-advisor/.env)
@@ -19,16 +22,8 @@ from __future__ import annotations
 import argparse
 import asyncio
 import logging
-import sys
 from pathlib import Path
 from typing import Optional
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
-SERVICE_ROOT = REPO_ROOT / "service"
-for extra_path in (REPO_ROOT, SERVICE_ROOT):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
 
 from app.services.citycatalyst_client import CityCatalystClient, TokenRefreshError
 from app.utils.token_manager import redact_token
@@ -73,7 +68,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--env-path",
-        default=str(REPO_ROOT / ".env"),
+        default=str(Path(__file__).resolve().parent.parent.parent / ".env"),
         help="Path to climate-advisor .env file.",
     )
     parser.add_argument(

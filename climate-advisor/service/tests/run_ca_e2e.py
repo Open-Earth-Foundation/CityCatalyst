@@ -19,6 +19,9 @@ Getting a user_id and JWT token for CA_E2E_CC_TOKEN:
      - From CC DB (local Docker Postgres):
        psql -h localhost -U citycatalyst -d citycatalyst \
          -c "SELECT user_id, email, name FROM \"User\" ORDER BY created DESC LIMIT 20;"
+       OR using docker exec:
+       docker exec citycatalyst-postgres psql -U citycatalyst -d citycatalyst \
+         -c "SELECT user_id, email, name FROM \"User\" ORDER BY created DESC LIMIT 20;"
      - From the app helper script (requires node):
        npx tsx app/scripts/print-user-id.ts --email <email>
   2) Mint a non-expired JWT token and save it to climate-advisor/.env:

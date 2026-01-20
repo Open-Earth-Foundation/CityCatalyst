@@ -134,7 +134,7 @@ export default function Settings() {
                     {t("my-profile")}
                   </Text>
                 </Tabs.Trigger>
-                <Tabs.Trigger
+                {/* <Tabs.Trigger
                   _selected={{
                     borderColor: "content.link",
                     borderBottomWidth: "2px",
@@ -153,7 +153,7 @@ export default function Settings() {
                   >
                     {t("my-files")}
                   </Text>
-                </Tabs.Trigger>
+                </Tabs.Trigger> */}
                 <Tabs.Trigger
                   _selected={{
                     borderColor: "content.link",
@@ -199,7 +199,7 @@ export default function Settings() {
               </Tabs.List>
 
               <MyProfileTab t={t} userInfo={userInfo} lng={lng} />
-              <MyFilesTab t={t} userFiles={userFiles!} inventory={inventory!} />
+              {/* <MyFilesTab t={t} userFiles={userFiles!} inventory={inventory!} /> */}
               <MyInventoriesTab
                 lng={lng}
                 cities={cities}

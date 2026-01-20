@@ -17,6 +17,7 @@ import {
   useGetUserProjectsQuery,
   useGetModulesQuery,
   useGetProjectModulesQuery,
+  useGetUserAccessStatusQuery,
 } from "@/services/api";
 import React, { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -212,6 +213,9 @@ const ProjectFilterSection = ({
 }) => {
   const router = useRouter();
   const [selectedProject, setSelectedProject] = useState<string>("");
+
+  // Check user access status for permission-based UI
+  const { data: userAccessStatus } = useGetUserAccessStatusQuery({});
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
@@ -477,31 +481,34 @@ const ProjectFilterSection = ({
             t={t}
             label={t("city")}
           />
-          <Box w="full" display="flex" justifyContent="flex-start">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                router.push(
-                  `/cities/onboarding/setup?project=${selectedProject}`,
-                );
-              }}
-              rounded={0}
-              w="full"
-              h="48px"
-              display="flex"
-              justifyContent="flex-start"
-              textTransform="capitalize"
-              px={0}
-              ml={-1}
-              fontWeight="normal"
-              fontFamily="body"
-            >
-              <Icon as={MdAdd} color={"content.secondary"} boxSize={6} />
-              <Text fontSize="body.lg" color="content.secondary">
-                {t("add-new-city")}
-              </Text>
-            </Button>
-          </Box>
+          {/* Only show add city button for ORG_ADMIN and PROJECT_ADMIN */}
+          {(userAccessStatus?.isOrgOwner || userAccessStatus?.isProjectAdmin) && (
+            <Box w="full" display="flex" justifyContent="flex-start">
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  router.push(
+                    `/cities/onboarding/setup?project=${selectedProject}`,
+                  );
+                }}
+                rounded={0}
+                w="full"
+                h="48px"
+                display="flex"
+                justifyContent="flex-start"
+                textTransform="capitalize"
+                px={0}
+                ml={-1}
+                fontWeight="normal"
+                fontFamily="body"
+              >
+                <Icon as={MdAdd} color={"content.secondary"} boxSize={6} />
+                <Text fontSize="body.lg" color="content.secondary">
+                  {t("add-new-city")}
+                </Text>
+              </Button>
+            </Box>
+          )}
         </Box>
       </Box>
     </Box>

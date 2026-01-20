@@ -118,7 +118,13 @@ export default class VersionHistoryService {
         inventoryId: restoredVersion.inventoryId,
         created: { [Op.gt]: restoredVersion?.created },
       },
-      include: [{ model: db.models.Version, as: "previousVersion" }],
+      include: [
+        {
+          model: db.models.Version,
+          as: "previousVersion",
+          foreignKey: "previousVersionId",
+        },
+      ],
     });
 
     if (newerVersions.length == 0) {
@@ -130,9 +136,9 @@ export default class VersionHistoryService {
         const model = VersionHistoryService.MODELS[version.table!];
         const idColumn = VersionHistoryService.MODEL_ID_COLUMNS[version.table!];
         if (
-          version.previousVersionId &&
-          version.previousVersion.data &&
-          !version.previousVersion.data.isDeleted
+          version.previousVersion &&
+          !version.previousVersion?.isDeleted &&
+          version.previousVersion?.data
         ) {
           // re-create entry in case it was deleted previously
           if (version.isDeleted) {

@@ -167,5 +167,8 @@
   "my-apps-authorized-on": "Authorized on",
   "my-apps-last-used": "Last used",
   "my-apps-never": "(Never)",
-  "my-apps-error-loading-apps": "Error loading apps."
+  "my-apps-error-loading-apps": "Error loading apps.",
+  "preparing-download": "Preparing your download...",
+  "download-success": "Download completed!",
+  "download-failed": "There was an error during download"
 }

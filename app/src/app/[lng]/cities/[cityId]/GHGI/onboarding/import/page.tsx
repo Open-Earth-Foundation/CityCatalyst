@@ -57,38 +57,7 @@ export default function ImportPage(props: {
   };
 
   const handleFileUpload = async (file: File) => {
-    if (!inventoryId) {
-      makeErrorToast("Error", "Inventory ID is required");
-      return;
-    }
 
-    setIsUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch(
-        `/api/v1/city/${cityId}/inventory/${inventoryId}/import`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to upload file");
-      }
-
-      const result = await response.json();
-      setUploadedFile(file);
-      setImportedFileId(result.data.id);
-      goToNextStep();
-    } catch (error: any) {
-      makeErrorToast("Upload failed", error.message);
-    } finally {
-      setIsUploading(false);
-    }
   };
 
   const handleContinue = () => {

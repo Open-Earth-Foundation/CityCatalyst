@@ -27,6 +27,7 @@ export default function ReviewConfirmStep({
   cityId,
   importedFileId,
   onImport,
+  inventoryId
 }: ReviewConfirmStepProps) {
   const [reviewData, setReviewData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,56 +35,13 @@ export default function ReviewConfirmStep({
 
   useEffect(() => {
     const fetchReviewData = async () => {
-      try {
-        const response = await fetch(
-          `/api/v1/city/${cityId}/inventory/${inventoryId}/import/${importedFileId}`,
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch review data");
-        }
-
-        const result = await response.json();
-        if (result.data?.reviewData) {
-          setReviewData(result.data.reviewData);
-        }
-      } catch (error) {
-        console.error("Error fetching review data:", error);
-      } finally {
-        setIsLoading(false);
-      }
     };
 
     fetchReviewData();
-  }, [cityId, inventoryId, importedFileId]);
+  }, [cityId, importedFileId]);
 
   const handleImport = async () => {
     setIsImporting(true);
-    try {
-      const response = await fetch(
-        `/api/v1/city/${cityId}/inventory/${inventoryId}/import/approve`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            importedFileId,
-            mappingOverrides: {},
-          }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to approve import");
-      }
-
-      onImport();
-    } catch (error) {
-      console.error("Error approving import:", error);
-    } finally {
-      setIsImporting(false);
-    }
   };
 
   if (isLoading) {

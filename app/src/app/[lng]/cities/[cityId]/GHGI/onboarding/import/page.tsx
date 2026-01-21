@@ -3,8 +3,8 @@
 import { useTranslation } from "@/i18n/client";
 import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
-import { useRouter, useSearchParams } from "next/navigation";
-import React, { use, useState } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import React, { use, useState, useEffect, useRef } from "react";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
 import { UseErrorToast } from "@/hooks/Toasts";
@@ -12,6 +12,7 @@ import UploadFileStep from "@/components/steps/GHGI/import/upload-file-step";
 import ValidationResultsStep from "@/components/steps/GHGI/import/validation-results-step";
 import MappingColumnsStep from "@/components/steps/GHGI/import/mapping-columns-step";
 import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-step";
+import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
 
 export default function ImportPage(props: {
   params: Promise<{ lng: string; cityId: string }>;
@@ -42,6 +43,13 @@ export default function ImportPage(props: {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [importedFileId, setImportedFileId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [showDataLossModal, setShowDataLossModal] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
+  const pathname = usePathname();
+  const prevPathnameRef = useRef<string | null>(null);
+
+  // Check if there's unsaved progress
+  const hasUnsavedProgress = uploadedFile !== null || importedFileId !== null;
 
   const makeErrorToast = (title: string, description?: string) => {
     const { showErrorToast } = UseErrorToast({ description, title });
@@ -95,13 +103,62 @@ export default function ImportPage(props: {
     setStep(0);
   };
 
+  // Handle beforeunload event (browser refresh/close)
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedProgress) {
+        e.preventDefault();
+        // Modern browsers ignore custom messages, but we still need to call preventDefault
+        e.returnValue = "";
+        return "";
+      }
+    };
+
+    if (hasUnsavedProgress) {
+      window.addEventListener("beforeunload", handleBeforeUnload);
+      return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }
+  }, [hasUnsavedProgress]);
+
+  // Handle route changes
+  useEffect(() => {
+    prevPathnameRef.current = pathname;
+  }, [pathname]);
+
+  // Handle navigation attempts (back button, router.push, etc.)
+  const handleNavigation = (navigationFn: () => void) => {
+    if (hasUnsavedProgress) {
+      setPendingNavigation(() => navigationFn);
+      setShowDataLossModal(true);
+    } else {
+      navigationFn();
+    }
+  };
+
+  const handleConfirmLeave = () => {
+    setShowDataLossModal(false);
+    if (pendingNavigation) {
+      pendingNavigation();
+      setPendingNavigation(null);
+    }
+  };
+
+  const handleCancelLeave = () => {
+    setShowDataLossModal(false);
+    setPendingNavigation(null);
+  };
+
   return (
     <>
       <Box pt={16} pb={16} maxW="full" mx="auto" w="1090px">
         <Button
           variant="ghost"
           onClick={() => {
-            activeStep === 0 ? router.back() : goToPrevStep();
+            if (activeStep === 0) {
+              handleNavigation(() => router.back());
+            } else {
+              goToPrevStep();
+            }
           }}
           pl={0}
           color="content.link"
@@ -241,6 +298,13 @@ export default function ImportPage(props: {
           </Box>
         </Box>
       </Box>
+      <DataLossWarningModal
+        isOpen={showDataLossModal}
+        onOpenChange={setShowDataLossModal}
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
+        t={t}
+      />
     </>
   );
 }

@@ -7,7 +7,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import React, { use, useState, useEffect, useRef } from "react";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
-import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import { UseErrorToast, UseInfoToast } from "@/hooks/Toasts";
 import UploadFileStep from "@/components/steps/GHGI/import/upload-file-step";
 import ValidationResultsStep from "@/components/steps/GHGI/import/validation-results-step";
 import MappingColumnsStep from "@/components/steps/GHGI/import/mapping-columns-step";
@@ -56,6 +56,11 @@ export default function ImportPage(props: {
     showErrorToast();
   };
 
+  const makeInfoToast = (title: string, description?: string) => {
+    const { showInfoToast } = UseInfoToast({ description, title });
+    showInfoToast();
+  };
+
   const [uploadFile, { isLoading: isUploadingFile }] =
     api.useUploadInventoryFileMutation();
 
@@ -64,6 +69,12 @@ export default function ImportPage(props: {
       makeErrorToast("Error", "Inventory ID is required");
       return;
     }
+
+    // Show info toast when upload starts
+    makeInfoToast(
+      t("upload-started"),
+      t("upload-started-description", { fileName: file.name }),
+    );
 
     try {
       const result = await uploadFile({
@@ -74,7 +85,11 @@ export default function ImportPage(props: {
 
       setUploadedFile(file);
       setImportedFileId(result.id);
-      goToNextStep();
+      
+      // Small delay for smooth transition
+      setTimeout(() => {
+        goToNextStep();
+      }, 300);
     } catch (error: any) {
       makeErrorToast(
         "Upload failed",
@@ -85,7 +100,10 @@ export default function ImportPage(props: {
 
   const handleContinue = () => {
     if (activeStep < steps.length - 1) {
-      goToNextStep();
+      // Small delay for smooth transition
+      setTimeout(() => {
+        goToNextStep();
+      }, 150);
     }
   };
 
@@ -168,46 +186,78 @@ export default function ImportPage(props: {
           mb={48}
           w={"1090px"}
           mx="auto"
+          position="relative"
+          minH="400px"
         >
-          {activeStep === 0 && (
-            <UploadFileStep
-              t={t}
-              uploadedFile={uploadedFile}
-              onFileUpload={handleFileUpload}
-              onRemoveFile={handleRemoveFile}
-              isUploading={isUploadingFile}
-            />
-          )}
-          {activeStep === 1 && importedFileId && inventoryId && (
-            <ValidationResultsStep
-              t={t}
-              cityId={cityId}
-              inventoryId={inventoryId}
-              importedFileId={importedFileId}
-              onContinue={handleContinue}
-            />
-          )}
-          {activeStep === 2 && importedFileId && inventoryId && (
-            <MappingColumnsStep
-              t={t}
-              cityId={cityId}
-              inventoryId={inventoryId}
-              importedFileId={importedFileId}
-              onContinue={handleContinue}
-            />
-          )}
-          {activeStep === 3 && importedFileId && inventoryId && (
-            <ReviewConfirmStep
-              t={t}
-              cityId={cityId}
-              inventoryId={inventoryId}
-              importedFileId={importedFileId}
-              onImport={() => {
-                // Handle final import
-                router.push(`/${lng}/cities/${cityId}/GHGI`);
-              }}
-            />
-          )}
+          <Box w="full">
+            {activeStep === 0 && (
+              <Box
+                key="step-0"
+                style={{
+                  animation: "fadeIn 0.3s ease-in-out",
+                }}
+              >
+                <UploadFileStep
+                  t={t}
+                  uploadedFile={uploadedFile}
+                  onFileUpload={handleFileUpload}
+                  onRemoveFile={handleRemoveFile}
+                  isUploading={isUploadingFile}
+                />
+              </Box>
+            )}
+            {activeStep === 1 && importedFileId && inventoryId && (
+              <Box
+                key="step-1"
+                style={{
+                  animation: "fadeIn 0.3s ease-in-out",
+                }}
+              >
+                <ValidationResultsStep
+                  t={t}
+                  cityId={cityId}
+                  inventoryId={inventoryId}
+                  importedFileId={importedFileId}
+                  onContinue={handleContinue}
+                />
+              </Box>
+            )}
+            {activeStep === 2 && importedFileId && inventoryId && (
+              <Box
+                key="step-2"
+                style={{
+                  animation: "fadeIn 0.3s ease-in-out",
+                }}
+              >
+                <MappingColumnsStep
+                  t={t}
+                  cityId={cityId}
+                  inventoryId={inventoryId}
+                  importedFileId={importedFileId}
+                  onContinue={handleContinue}
+                />
+              </Box>
+            )}
+            {activeStep === 3 && importedFileId && inventoryId && (
+              <Box
+                key="step-3"
+                style={{
+                  animation: "fadeIn 0.3s ease-in-out",
+                }}
+              >
+                <ReviewConfirmStep
+                  t={t}
+                  cityId={cityId}
+                  inventoryId={inventoryId}
+                  importedFileId={importedFileId}
+                  onImport={() => {
+                    // Handle final import
+                    router.push(`/${lng}/cities/${cityId}/GHGI`);
+                  }}
+                />
+              </Box>
+            )}
+          </Box>
         </Box>
         <Box
           bg="white"

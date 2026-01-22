@@ -117,5 +117,9 @@
   "data-loss-warning-title": "Unsaved Changes",
   "data-loss-warning-message": "You have unsaved changes. If you leave this page, your progress will be lost. Are you sure you want to continue?",
   "cancel": "Cancel",
-  "leave-page": "Leave Page"
+  "leave-page": "Leave Page",
+  "uploading-file": "Uploading file...",
+  "please-wait": "Please wait",
+  "upload-started": "Upload started",
+  "upload-started-description": "Uploading {{fileName}}..."
 }

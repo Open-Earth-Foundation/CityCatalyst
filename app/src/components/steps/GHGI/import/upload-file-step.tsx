@@ -8,6 +8,7 @@ import {
   Icon,
   IconButton,
   Input,
+  Spinner,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -79,7 +80,27 @@ export default function UploadFileStep({
         borderWidth="1px"
         borderColor="border.default"
       >
-        {uploadedFile ? (
+        {isUploading ? (
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            gap="16px"
+            py={8}
+          >
+            <Spinner size="md" color="interactive.primary" />
+            <Box>
+              <Text fontWeight="medium" fontSize="body.md">
+                {t("uploading-file")}
+              </Text>
+              <Text fontSize="body.sm" color="content.tertiary">
+                {uploadedFile
+                  ? `${uploadedFile.name} - ${bytesToMB(uploadedFile.size)}`
+                  : t("please-wait")}
+              </Text>
+            </Box>
+          </Box>
+        ) : uploadedFile ? (
           <Box
             display="flex"
             alignItems="center"
@@ -104,7 +125,7 @@ export default function UploadFileStep({
               colorScheme="gray"
               size="md"
             >
-              <Icon as={MdClose} boxSize={5} color="content.tertiary"/>
+              <Icon as={MdClose} boxSize={5} color="content.tertiary" />
             </IconButton>
           </Box>
         ) : (

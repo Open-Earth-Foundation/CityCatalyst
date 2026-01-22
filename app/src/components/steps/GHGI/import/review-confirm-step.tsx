@@ -45,15 +45,15 @@ export default function ReviewConfirmStep({
   };
 
   if (isLoading) {
-    return <Box>Loading...</Box>;
+    return <Box>{t("loading")}</Box>;
   }
 
   return (
     <Box w="full">
       <Box display="flex" flexDir="column" gap="24px" mb={6}>
-        <Heading size="lg">Review and confirm</Heading>
+        <Heading size="lg">{t("review-confirm-heading")}</Heading>
         <Text fontSize="body.lg" color="content.tertiary">
-          Review the import summary before finalizing.
+          {t("review-confirm-description")}
         </Text>
       </Box>
 
@@ -69,12 +69,12 @@ export default function ReviewConfirmStep({
           borderColor="border.default"
         >
           <Heading size="md" mb={6}>
-            Import Summary
+            {t("import-summary")}
           </Heading>
           <VStack gap="16px" alignItems="flex-start">
             <Box>
               <Text fontSize="body.sm" color="content.tertiary" mb={1}>
-                Source file
+                {t("source-file")}
               </Text>
               <Text fontWeight="medium">
                 {reviewData?.importSummary?.sourceFile || "-"}
@@ -82,7 +82,7 @@ export default function ReviewConfirmStep({
             </Box>
             <Box>
               <Text fontSize="body.sm" color="content.tertiary" mb={1}>
-                Format detected
+                {t("format-detected")}
               </Text>
               <Text fontWeight="medium">
                 {reviewData?.importSummary?.formatDetected || "-"}
@@ -90,7 +90,7 @@ export default function ReviewConfirmStep({
             </Box>
             <Box>
               <Text fontSize="body.sm" color="content.tertiary" mb={1}>
-                Fields found
+                {t("fields-found")}
               </Text>
               <Text fontWeight="medium">
                 {reviewData?.importSummary?.rowsFound || 0}
@@ -98,7 +98,7 @@ export default function ReviewConfirmStep({
             </Box>
             <Box>
               <Text fontSize="body.sm" color="content.tertiary" mb={1}>
-                Fields mapped
+                {t("fields-mapped")}
               </Text>
               <Text fontWeight="medium">
                 {reviewData?.importSummary?.fieldsMapped || 0}
@@ -118,7 +118,7 @@ export default function ReviewConfirmStep({
           borderColor="border.default"
         >
           <Heading size="md" mb={6}>
-            Field Mappings
+            {t("field-mappings")}
           </Heading>
           <VStack gap="12px" alignItems="flex-start" maxH="400px" overflowY="auto">
             {reviewData?.fieldMappings?.map((mapping: any, index: number) => (
@@ -155,7 +155,7 @@ export default function ReviewConfirmStep({
             fontWeight="600"
             letterSpacing="wider"
           >
-            IMPORT INVENTORY
+            {t("import-inventory")}
           </Text>
           <Icon as={MdArrowForward} boxSize={6} />
         </Button>

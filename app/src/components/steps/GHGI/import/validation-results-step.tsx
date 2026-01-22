@@ -48,10 +48,9 @@ export default function ValidationResultsStep({
   return (
     <Box w="full">
       <Box display="flex" flexDir="column" gap="24px" mb={6}>
-        <Heading size="lg">Validation results</Heading>
+        <Heading size="lg">{t("validation-results-heading")}</Heading>
         <Text fontSize="body.lg" color="content.tertiary">
-          A key-value format with {columns.length} fields has been detected.
-          Review the interpretations below.
+          {t("validation-results-description", { count: columns.length })}
         </Text>
       </Box>
 
@@ -78,10 +77,13 @@ export default function ValidationResultsStep({
             <Icon as={MdCheck} boxSize={5} color="success.default" />
             <Box>
               <Text fontWeight="medium" color="success.default">
-                Key-value format detected successfully
+                {t("key-value-format-detected")}
               </Text>
               <Text fontSize="body.sm" color="content.secondary">
-                {detectedCount} of {columns.length} fields detected automatically
+                {t("fields-detected-automatically", {
+                  detected: detectedCount,
+                  total: columns.length,
+                })}
               </Text>
             </Box>
           </Box>
@@ -90,10 +92,10 @@ export default function ValidationResultsStep({
         <Table.Root>
           <Table.Header>
             <Table.Row>
-              <Table.ColumnHeader>Field Name</Table.ColumnHeader>
-              <Table.ColumnHeader>Value</Table.ColumnHeader>
-              <Table.ColumnHeader>Interpreted As</Table.ColumnHeader>
-              <Table.ColumnHeader>Status</Table.ColumnHeader>
+              <Table.ColumnHeader>{t("field-name")}</Table.ColumnHeader>
+              <Table.ColumnHeader>{t("value")}</Table.ColumnHeader>
+              <Table.ColumnHeader>{t("interpreted-as")}</Table.ColumnHeader>
+              <Table.ColumnHeader>{t("status")}</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>

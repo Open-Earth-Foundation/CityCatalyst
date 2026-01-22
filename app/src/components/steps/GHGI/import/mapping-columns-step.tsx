@@ -53,9 +53,9 @@ export default function MappingColumnsStep({
   return (
     <Box w="full">
       <Box display="flex" flexDir="column" gap="24px" mb={6}>
-        <Heading size="lg">Map rows to inventory fields</Heading>
+        <Heading size="lg">{t("map-rows-heading")}</Heading>
         <Text fontSize="body.lg" color="content.tertiary">
-          Review and adjust the mapping of your data to the inventory fields.
+          {t("map-rows-description")}
         </Text>
       </Box>
 
@@ -72,9 +72,9 @@ export default function MappingColumnsStep({
         <Table.Root>
           <Table.Header>
             <Table.Row>
-              <Table.ColumnHeader>Field Name</Table.ColumnHeader>
-              <Table.ColumnHeader>Value</Table.ColumnHeader>
-              <Table.ColumnHeader>Map To</Table.ColumnHeader>
+              <Table.ColumnHeader>{t("field-name")}</Table.ColumnHeader>
+              <Table.ColumnHeader>{t("value")}</Table.ColumnHeader>
+              <Table.ColumnHeader>{t("map-to")}</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -94,7 +94,7 @@ export default function MappingColumnsStep({
                         handleMappingChange(index, e.target.value)
                       }
                     >
-                      <option value="">Select mapping</option>
+                      <option value="">{t("select-mapping")}</option>
                       {column.options.map((option, optIndex) => (
                         <option key={optIndex} value={option}>
                           {option}

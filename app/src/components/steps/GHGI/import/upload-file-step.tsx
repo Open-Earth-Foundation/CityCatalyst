@@ -54,10 +54,9 @@ export default function UploadFileStep({
   return (
     <Box w="full">
       <Box display="flex" flexDir="column" gap="24px" mb={6}>
-        <Heading size="lg">Upload your inventory file</Heading>
+        <Heading size="lg">{t("upload-inventory-file-heading")}</Heading>
         <Text fontSize="body.lg" color="content.tertiary">
-          Upload your existing GHG inventory file. We support CSV and XLSX
-          formats.
+          {t("upload-inventory-file-description")}
         </Text>
       </Box>
 
@@ -91,7 +90,7 @@ export default function UploadFileStep({
             </Box>
             <IconButton
               variant="ghost"
-              aria-label="Remove file"
+              aria-label={t("remove-file")}
               onClick={onRemoveFile}
             >
               <MdClose />
@@ -118,10 +117,10 @@ export default function UploadFileStep({
               <Icon as={MdUpload} boxSize={8} color="content.tertiary" />
               <Box>
                 <Text fontWeight="medium" fontSize="body.md">
-                  Click to upload or drag and drop
+                  {t("click-to-upload")}
                 </Text>
                 <Text fontSize="body.sm" color="content.tertiary" mt={2}>
-                  CSV, XLSX (Max 20MB)
+                  {t("file-formats")}
                 </Text>
               </Box>
             </VStack>

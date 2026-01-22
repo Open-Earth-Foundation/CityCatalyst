@@ -56,7 +56,7 @@ const DataLossWarningModal = ({
           borderStyle="solid"
           borderColor="background.neutral"
         >
-          {t("data-loss-warning-title") || "Warning: Unsaved Changes"}
+          {t("data-loss-warning-title")}
         </DialogHeader>
         <DialogCloseTrigger mt={"2"} color="interactive.control" mr={"2"} />
         <HStack flexDirection="column" alignItems="center" padding="24px">
@@ -74,8 +74,7 @@ const DataLossWarningModal = ({
           </Badge>
           <Box w="70%" mt={6}>
             <Text fontSize="body.lg" textAlign="center">
-              {t("data-loss-warning-message") ||
-                "You have unsaved changes. If you leave this page, your progress will be lost. Are you sure you want to continue?"}
+              {t("data-loss-warning-message")}
             </Text>
           </Box>
         </HStack>
@@ -95,7 +94,7 @@ const DataLossWarningModal = ({
             w="200px"
             onClick={onCancel}
           >
-            {t("cancel") || "Cancel"}
+            {t("cancel")}
           </Button>
           <Button
             variant="solid"
@@ -104,7 +103,7 @@ const DataLossWarningModal = ({
             onClick={onConfirm}
             bg="sentiment.negativeDefault"
           >
-            {t("leave-page") || "Leave Page"}
+            {t("leave-page")}
           </Button>
         </DialogFooter>
       </DialogContent>

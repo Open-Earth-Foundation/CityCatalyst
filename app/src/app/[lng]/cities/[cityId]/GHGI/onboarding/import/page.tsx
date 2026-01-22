@@ -7,12 +7,13 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import React, { use, useState, useEffect, useRef } from "react";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
-import { UseErrorToast } from "@/hooks/Toasts";
+import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import UploadFileStep from "@/components/steps/GHGI/import/upload-file-step";
 import ValidationResultsStep from "@/components/steps/GHGI/import/validation-results-step";
 import MappingColumnsStep from "@/components/steps/GHGI/import/mapping-columns-step";
 import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-step";
 import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
+import { api } from "@/services/api";
 
 export default function ImportPage(props: {
   params: Promise<{ lng: string; cityId: string }>;
@@ -42,7 +43,6 @@ export default function ImportPage(props: {
 
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [importedFileId, setImportedFileId] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
   const [showDataLossModal, setShowDataLossModal] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
   const pathname = usePathname();
@@ -56,8 +56,31 @@ export default function ImportPage(props: {
     showErrorToast();
   };
 
-  const handleFileUpload = async (file: File) => {
+  const [uploadFile, { isLoading: isUploadingFile }] =
+    api.useUploadInventoryFileMutation();
 
+  const handleFileUpload = async (file: File) => {
+    if (!inventoryId) {
+      makeErrorToast("Error", "Inventory ID is required");
+      return;
+    }
+
+    try {
+      const result = await uploadFile({
+        cityId,
+        inventoryId,
+        file,
+      }).unwrap();
+
+      setUploadedFile(file);
+      setImportedFileId(result.id);
+      goToNextStep();
+    } catch (error: any) {
+      makeErrorToast(
+        "Upload failed",
+        error?.data?.message || error?.message || "Failed to upload file",
+      );
+    }
   };
 
   const handleContinue = () => {
@@ -152,7 +175,7 @@ export default function ImportPage(props: {
               uploadedFile={uploadedFile}
               onFileUpload={handleFileUpload}
               onRemoveFile={handleRemoveFile}
-              isUploading={isUploading}
+              isUploading={isUploadingFile}
             />
           )}
           {activeStep === 1 && importedFileId && inventoryId && (

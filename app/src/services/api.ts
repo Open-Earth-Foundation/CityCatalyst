@@ -78,6 +78,74 @@ import type {
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+// Import-related types
+export interface ImportedFileResponse {
+  id: string;
+  userId: string;
+  cityId: string;
+  inventoryId: string;
+  fileName: string;
+  fileType: "xlsx" | "csv";
+  fileSize: number;
+  originalFileName: string;
+  importStatus: string;
+  created: string;
+  lastUpdated: string;
+}
+
+export interface ColumnInfo {
+  columnName: string;
+  interpretedAs: string | null;
+  status: "detected" | "manual";
+  exampleValue: string | null;
+}
+
+export interface ValidationResults {
+  totalColumnsDetected: number;
+  columns: ColumnInfo[];
+  errors: string[];
+  warnings: string[];
+}
+
+export interface ImportSummary {
+  sourceFile: string;
+  formatDetected: string;
+  rowsFound: number;
+  fieldsMapped: number;
+}
+
+export interface FieldMapping {
+  sourceColumn: string;
+  mappedField: string;
+}
+
+export interface ReviewData {
+  importSummary: ImportSummary;
+  fieldMappings: FieldMapping[];
+  mappingPreview?: any;
+}
+
+export interface ImportStatusResponse {
+  id: string;
+  importStatus: string;
+  currentStep: 1 | 2 | 3 | 4;
+  fileInfo: {
+    fileName: string;
+    originalFileName: string;
+    fileType: "xlsx" | "csv";
+    fileSize: number;
+  };
+  validationResults: ValidationResults | null;
+  columnMappings: ValidationResults | null;
+  reviewData: ReviewData | null;
+  rowCount: number;
+  processedRowCount: number;
+  errorLog: string | null;
+  created: string;
+  lastUpdated: string;
+  completedAt: string | null;
+}
+
 export const api = createApi({
   reducerPath: "api",
   tagTypes: [
@@ -1789,6 +1857,55 @@ export const api = createApi({
           }),
         }),
         transformResponse: (response: { threadId: string }) => response,
+      }),
+
+      // Inventory Import Endpoints
+      uploadInventoryFile: builder.mutation<
+        ImportedFileResponse,
+        { cityId: string; inventoryId: string; file: File }
+      >({
+        query: ({ cityId, inventoryId, file }) => {
+          const formData = new FormData();
+          formData.append("file", file);
+          return {
+            url: `city/${cityId}/inventory/${inventoryId}/import`,
+            method: "POST",
+            body: formData,
+          };
+        },
+        transformResponse: (response: { data: ImportedFileResponse }) =>
+          response.data,
+        invalidatesTags: ["Inventory"],
+      }),
+      getImportStatus: builder.query<
+        ImportStatusResponse,
+        { cityId: string; inventoryId: string; importedFileId: string }
+      >({
+        query: ({ cityId, inventoryId, importedFileId }) =>
+          `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}`,
+        transformResponse: (response: { data: ImportStatusResponse }) =>
+          response.data,
+      }),
+      approveImport: builder.mutation<
+        ImportedFileResponse,
+        {
+          cityId: string;
+          inventoryId: string;
+          importedFileId: string;
+          mappingOverrides?: Record<string, any>;
+        }
+      >({
+        query: ({ cityId, inventoryId, importedFileId, mappingOverrides }) => ({
+          url: `city/${cityId}/inventory/${inventoryId}/import/approve`,
+          method: "POST",
+          body: {
+            importedFileId,
+            mappingOverrides,
+          },
+        }),
+        transformResponse: (response: { data: ImportedFileResponse }) =>
+          response.data,
+        invalidatesTags: ["Inventory"],
       }),
     };
   },

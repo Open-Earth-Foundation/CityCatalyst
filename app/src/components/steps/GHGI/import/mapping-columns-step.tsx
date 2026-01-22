@@ -9,7 +9,8 @@ import {
   Table,
   Text,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { api } from "@/services/api";
+import type { ColumnInfo } from "@/services/api";
 
 interface MappingColumnsStepProps {
   t: TFunction;
@@ -19,13 +20,6 @@ interface MappingColumnsStepProps {
   onContinue: () => void;
 }
 
-interface ColumnMapping {
-  columnName: string;
-  value: string;
-  mappedTo: string;
-  options: string[];
-}
-
 export default function MappingColumnsStep({
   t,
   cityId,
@@ -33,21 +27,23 @@ export default function MappingColumnsStep({
   importedFileId,
   onContinue,
 }: MappingColumnsStepProps) {
-  const [columns, setColumns] = useState<ColumnMapping[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data, isLoading } = api.useGetImportStatusQuery(
+    {
+      cityId,
+      inventoryId,
+      importedFileId,
+    },
+    {
+      skip: !cityId || !inventoryId || !importedFileId,
+    },
+  );
 
-  useEffect(() => {
-    const fetchColumnMappings = async () => {};
-
-    fetchColumnMappings();
-  }, [cityId, inventoryId, importedFileId]);
+  const columns: ColumnInfo[] = data?.columnMappings?.columns || [];
 
   const handleMappingChange = (index: number, newMapping: string) => {
-    setColumns((prev) =>
-      prev.map((col, i) =>
-        i === index ? { ...col, mappedTo: newMapping } : col,
-      ),
-    );
+    // TODO: Implement mapping change logic
+    // This would typically update the mapping configuration
+    console.log("Mapping change:", index, newMapping);
   };
 
   return (
@@ -84,22 +80,22 @@ export default function MappingColumnsStep({
                   <Text fontWeight="medium">{column.columnName}</Text>
                 </Table.Cell>
                 <Table.Cell>
-                  <Text color="content.secondary">{column.value}</Text>
+                  <Text color="content.secondary">
+                    {column.exampleValue || "-"}
+                  </Text>
                 </Table.Cell>
                 <Table.Cell>
                   <NativeSelect.Root>
                     <NativeSelect.Field
-                      value={column.mappedTo || ""}
+                      value={column.interpretedAs || ""}
                       onChange={(e) =>
                         handleMappingChange(index, e.target.value)
                       }
                     >
                       <option value="">{t("select-mapping")}</option>
-                      {column.options.map((option, optIndex) => (
-                        <option key={optIndex} value={option}>
-                          {option}
-                        </option>
-                      ))}
+                      <option value={column.interpretedAs || ""}>
+                        {column.interpretedAs || t("select-mapping")}
+                      </option>
                     </NativeSelect.Field>
                     <NativeSelect.Indicator />
                   </NativeSelect.Root>

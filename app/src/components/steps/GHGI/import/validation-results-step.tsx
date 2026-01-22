@@ -10,7 +10,8 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { MdCheck } from "react-icons/md";
-import { useEffect, useState } from "react";
+import { api } from "@/services/api";
+import type { ColumnInfo } from "@/services/api";
 
 interface ValidationResultsStepProps {
   t: TFunction;
@@ -20,13 +21,6 @@ interface ValidationResultsStepProps {
   onContinue: () => void;
 }
 
-interface ColumnInfo {
-  columnName: string;
-  interpretedAs: string | null;
-  status: "detected" | "manual";
-  exampleValue: string | null;
-}
-
 export default function ValidationResultsStep({
   t,
   cityId,
@@ -34,14 +28,18 @@ export default function ValidationResultsStep({
   importedFileId,
   onContinue,
 }: ValidationResultsStepProps) {
-  const [columns, setColumns] = useState<ColumnInfo[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data, isLoading, error } = api.useGetImportStatusQuery(
+    {
+      cityId,
+      inventoryId,
+      importedFileId,
+    },
+    {
+      skip: !cityId || !inventoryId || !importedFileId,
+    },
+  );
 
-  useEffect(() => {
-    const fetchValidationResults = async () => {};
-
-    fetchValidationResults();
-  }, [cityId, inventoryId, importedFileId]);
+  const columns: ColumnInfo[] = data?.validationResults?.columns || [];
 
   const detectedCount = columns.filter((col) => col.status === "detected").length;
 

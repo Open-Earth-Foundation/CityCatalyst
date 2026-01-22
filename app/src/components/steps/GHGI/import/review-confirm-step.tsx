@@ -11,8 +11,10 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { MdArrowForward } from "react-icons/md";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { api } from "@/services/api";
+import { useRouter } from "next/navigation";
+import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 
 interface ReviewConfirmStepProps {
   t: TFunction;
@@ -27,26 +29,58 @@ export default function ReviewConfirmStep({
   cityId,
   importedFileId,
   onImport,
-  inventoryId
+  inventoryId,
 }: ReviewConfirmStepProps) {
-  const [reviewData, setReviewData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isImporting, setIsImporting] = useState(false);
+  const router = useRouter();
+  const { data, isLoading } = api.useGetImportStatusQuery(
+    {
+      cityId,
+      inventoryId,
+      importedFileId,
+    },
+    {
+      skip: !cityId || !inventoryId || !importedFileId,
+    },
+  );
 
-  useEffect(() => {
-    const fetchReviewData = async () => {
-    };
+  const [approveImport, { isLoading: isImporting }] =
+    api.useApproveImportMutation();
 
-    fetchReviewData();
-  }, [cityId, importedFileId]);
+  const makeErrorToast = (title: string, description?: string) => {
+    const { showErrorToast } = UseErrorToast({ description, title });
+    showErrorToast();
+  };
+
+  const makeSuccessToast = (title: string, description?: string) => {
+    const { showSuccessToast } = UseSuccessToast({ description, title });
+    showSuccessToast();
+  };
 
   const handleImport = async () => {
-    setIsImporting(true);
+    if (!importedFileId) return;
+
+    try {
+      await approveImport({
+        cityId,
+        inventoryId,
+        importedFileId,
+      }).unwrap();
+
+      makeSuccessToast("Import completed", "Your inventory data has been imported successfully.");
+      onImport();
+    } catch (error: any) {
+      makeErrorToast(
+        "Import failed",
+        error?.data?.message || error?.message || "Failed to import data",
+      );
+    }
   };
 
   if (isLoading) {
     return <Box>{t("loading")}</Box>;
   }
+
+  const reviewData = data?.reviewData;
 
   return (
     <Box w="full">

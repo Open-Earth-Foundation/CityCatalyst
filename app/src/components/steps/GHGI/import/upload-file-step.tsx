@@ -51,6 +51,15 @@ export default function UploadFileStep({
     event.preventDefault();
   };
 
+  const handleRemoveFile = () => {
+    // Clear the file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    // Call the parent's remove handler
+    onRemoveFile();
+  };
+
   return (
     <Box w="full">
       <Box display="flex" flexDir="column" gap="24px" mb={6}>
@@ -91,9 +100,11 @@ export default function UploadFileStep({
             <IconButton
               variant="ghost"
               aria-label={t("remove-file")}
-              onClick={onRemoveFile}
+              onClick={handleRemoveFile}
+              colorScheme="gray"
+              size="md"
             >
-              <MdClose />
+              <Icon as={MdClose} boxSize={5} color="content.tertiary"/>
             </IconButton>
           </Box>
         ) : (

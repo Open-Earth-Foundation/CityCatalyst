@@ -38,26 +38,7 @@ export default function ValidationResultsStep({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchValidationResults = async () => {
-      try {
-        const response = await fetch(
-          `/api/v1/city/${cityId}/inventory/${inventoryId}/import/${importedFileId}`,
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch validation results");
-        }
-
-        const result = await response.json();
-        if (result.data?.validationResults?.columns) {
-          setColumns(result.data.validationResults.columns);
-        }
-      } catch (error) {
-        console.error("Error fetching validation results:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    const fetchValidationResults = async () => {};
 
     fetchValidationResults();
   }, [cityId, inventoryId, importedFileId]);

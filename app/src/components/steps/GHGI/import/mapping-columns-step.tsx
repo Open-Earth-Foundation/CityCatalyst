@@ -5,17 +5,11 @@ import {
   Box,
   Card,
   Heading,
+  NativeSelect,
   Table,
   Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import {
-  SelectContent,
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from "@/components/ui/select";
 
 interface MappingColumnsStepProps {
   t: TFunction;
@@ -43,34 +37,7 @@ export default function MappingColumnsStep({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchColumnMappings = async () => {
-      try {
-        const response = await fetch(
-          `/api/v1/city/${cityId}/inventory/${inventoryId}/import/${importedFileId}`,
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch column mappings");
-        }
-
-        const result = await response.json();
-        if (result.data?.validationResults?.columns) {
-          const mapped = result.data.validationResults.columns.map(
-            (col: any) => ({
-              columnName: col.columnName,
-              value: col.exampleValue || "-",
-              mappedTo: col.interpretedAs || "",
-              options: ["Type of Economy", "Geographic Boundary", "Country", "Region / State", "City Name"],
-            }),
-          );
-          setColumns(mapped);
-        }
-      } catch (error) {
-        console.error("Error fetching column mappings:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    const fetchColumnMappings = async () => {};
 
     fetchColumnMappings();
   }, [cityId, inventoryId, importedFileId]);
@@ -120,23 +87,22 @@ export default function MappingColumnsStep({
                   <Text color="content.secondary">{column.value}</Text>
                 </Table.Cell>
                 <Table.Cell>
-                  <SelectRoot
-                    value={[column.mappedTo]}
-                    onValueChange={(e) =>
-                      handleMappingChange(index, e.value[0])
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValueText placeholder="Select mapping" />
-                    </SelectTrigger>
-                    <SelectContent>
+                  <NativeSelect.Root>
+                    <NativeSelect.Field
+                      value={column.mappedTo || ""}
+                      onChange={(e) =>
+                        handleMappingChange(index, e.target.value)
+                      }
+                    >
+                      <option value="">Select mapping</option>
                       {column.options.map((option, optIndex) => (
-                        <SelectItem key={optIndex} item={option}>
+                        <option key={optIndex} value={option}>
                           {option}
-                        </SelectItem>
+                        </option>
                       ))}
-                    </SelectContent>
-                  </SelectRoot>
+                    </NativeSelect.Field>
+                    <NativeSelect.Indicator />
+                  </NativeSelect.Root>
                 </Table.Cell>
               </Table.Row>
             ))}

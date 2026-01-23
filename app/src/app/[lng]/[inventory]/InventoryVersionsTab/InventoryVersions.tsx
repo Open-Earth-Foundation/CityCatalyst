@@ -8,6 +8,7 @@ import {
   HStack,
   Icon,
   Spacer,
+  Table,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -28,6 +29,22 @@ function VersionEntry({ t, isCurrent }: { t: TFunction; isCurrent: boolean }) {
   const formattedDate = `${month} ${date.getDate()}, ${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()}`;
   const [isExpanded, setExpanded] = useState(false);
   const userName = "Maria Rossi";
+
+  const changes = [
+    {
+      subSector: "I.1 Residential Buildings",
+      totalEmissions: 342.5,
+      sectorPercentage: 0.453,
+      scope1: 456.7,
+      scope2: 901.2,
+      scope3: 12.34,
+      source: "IEA",
+      author: "Maria Rossi",
+      date: new Date(),
+    },
+  ];
+  changes[1] = changes[0];
+  changes[2] = changes[0];
 
   return (
     <Box
@@ -143,7 +160,8 @@ function VersionEntry({ t, isCurrent }: { t: TFunction; isCurrent: boolean }) {
             ))}
           </VStack>
 
-          <Text
+          <HStack
+            gap={0}
             color="content.secondary"
             fontSize="14px"
             fontWeight="400"
@@ -152,47 +170,109 @@ function VersionEntry({ t, isCurrent }: { t: TFunction; isCurrent: boolean }) {
             fontFamily="Open Sans"
             verticalAlign="center"
           >
-            <HStack gap={0}>
-              <Box
-                borderWidth="1px"
-                borderRadius="4px"
-                borderColor="sentiment.positiveDefault"
-                background="sentiment.positiveOverlay"
-                width={4}
-                height={4}
-                display="inline-block"
-                mr={2}
-                mt={0.5}
-              />
-              {t("inventory-versions-value-increased")}
-              <Box
-                borderWidth="1px"
-                borderRadius="4px"
-                borderColor="sentiment.negativeDefault"
-                background="sentiment.negativeOverlay"
-                width={4}
-                height={4}
-                display="inline-block"
-                ml={4}
-                mr={2}
-                mt={0.5}
-              />
-              {t("inventory-versions-value-decreased")}
-              <Box
-                borderWidth="1px"
-                borderRadius="4px"
-                borderColor="sentiment.warningDefault"
-                background="sentiment.warningOverlay"
-                width={4}
-                height={4}
-                display="inline-block"
-                ml={4}
-                mr={2}
-                mt={0.5}
-              />
-              {t("inventory-versions-value-source-changed")}
-            </HStack>
-          </Text>
+            <Box
+              borderWidth="1px"
+              borderRadius="4px"
+              borderColor="sentiment.positiveDefault"
+              background="sentiment.positiveOverlay"
+              width={4}
+              height={4}
+              display="inline-block"
+              mr={2}
+              mt={0.5}
+            />
+            {t("inventory-versions-value-increased")}
+            <Box
+              borderWidth="1px"
+              borderRadius="4px"
+              borderColor="sentiment.negativeDefault"
+              background="sentiment.negativeOverlay"
+              width={4}
+              height={4}
+              display="inline-block"
+              ml={4}
+              mr={2}
+              mt={0.5}
+            />
+            {t("inventory-versions-value-decreased")}
+            <Box
+              borderWidth="1px"
+              borderRadius="4px"
+              borderColor="sentiment.warningDefault"
+              background="sentiment.warningOverlay"
+              width={4}
+              height={4}
+              display="inline-block"
+              ml={4}
+              mr={2}
+              mt={0.5}
+            />
+            {t("inventory-versions-value-source-changed")}
+          </HStack>
+
+          <Table.Root
+            variant="outline"
+            borderStyle="solid"
+            borderWidth="1px"
+            borderColor="border.overlay"
+            borderRadius="12px"
+          >
+            <Table.Header
+              bg="background.backgroundLight"
+              textTransform="uppercase"
+            >
+              <Table.Row>
+                <Table.ColumnHeader>{t("subsector")}</Table.ColumnHeader>
+                <Table.ColumnHeader>{t("total-emissions")}</Table.ColumnHeader>
+                <Table.ColumnHeader>
+                  {t("sector-percentage")}
+                </Table.ColumnHeader>
+                <Table.ColumnHeader>{t("scope-1")}</Table.ColumnHeader>
+                <Table.ColumnHeader>{t("scope-2")}</Table.ColumnHeader>
+                <Table.ColumnHeader>{t("scope-3")}</Table.ColumnHeader>
+                <Table.ColumnHeader>{t("source")}</Table.ColumnHeader>
+                <Table.ColumnHeader>{t("last-modified-by")}</Table.ColumnHeader>
+                <Table.ColumnHeader>{t("date")}</Table.ColumnHeader>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body
+              fontFamily="heading"
+              color="content.primary"
+              fontSize="body.md"
+            >
+              {changes.map((change, i) => (
+                <Table.Row key={i}>
+                  <Table.Cell>{change.subSector}</Table.Cell>
+                  <Table.Cell
+                    bgColor="sentiment.positiveOverlay"
+                    color="sentiment.positiveDefault"
+                  >
+                    {change.totalEmissions} {"kT CO2e"}
+                  </Table.Cell>
+                  <Table.Cell
+                    bgColor="sentiment.negativeOverlay"
+                    color="sentiment.negativeDefault"
+                  >
+                    {(change.sectorPercentage * 100).toFixed(1)}%
+                  </Table.Cell>
+                  <Table.Cell>
+                    {change.scope1} {"kT CO2e"}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {change.scope2} {"kT CO2e"}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {change.scope3} {"kT CO2e"}
+                  </Table.Cell>
+                  <Table.Cell>{change.source}</Table.Cell>
+                  <Table.Cell>{change.author}</Table.Cell>
+                  <Table.Cell>
+                    {change.date.toLocaleString("default")}
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table.Root>
         </VStack>
       )}
     </Box>

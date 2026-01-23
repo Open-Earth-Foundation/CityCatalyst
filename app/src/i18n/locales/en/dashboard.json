@@ -73,6 +73,7 @@
   "tab-emission-inventory-calculation-title": "Inventory calculation",
   "emission-inventory-calculation-title": "Emission inventory calculation",
   "tab-emission-inventory-results-title": "Emission inventory results",
+  "tab-emission-versions-title": "Versions",
   "inventory-format-basic": "Inventory format: GPC BASIC",
   "inventory-format-basic+": "Inventory format: GPC BASIC+",
   "view-progress-in-each-sector": "View the progress of data collection in each GPC-required sector.",
@@ -268,5 +269,9 @@
   "publish-error-description": "There was an error publishing your inventory. Please try again.",
   "unpublish-error-title": "Unpublishing Failed",
   "unpublish-error-description": "There was an error unpublishing your inventory. Please try again.",
-  "invite-link-copied-to-clipboard": "Invite link copied to clipboard"
+  "invite-link-copied-to-clipboard": "Invite link copied to clipboard",
+  "inventory-versions-title": "Inventory Version History",
+  "inventory-versions-description": "Review and compare previous versions of your GHG inventory data",
+  "inventory-versions-current": "Current",
+  "inventory-versions-from": "Version from"
 }

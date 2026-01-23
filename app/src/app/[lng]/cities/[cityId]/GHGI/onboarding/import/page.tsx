@@ -5,15 +5,87 @@ import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import React, { use, useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
-import { UseErrorToast, UseInfoToast } from "@/hooks/Toasts";
+import { UseErrorToast, UseInfoToast, UseSuccessToast } from "@/hooks/Toasts";
 import UploadFileStep from "@/components/steps/GHGI/import/upload-file-step";
 import ValidationResultsStep from "@/components/steps/GHGI/import/validation-results-step";
 import MappingColumnsStep from "@/components/steps/GHGI/import/mapping-columns-step";
 import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-step";
 import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
 import { api } from "@/services/api";
+import { TFunction } from "i18next";
+
+// Import button component for step 3
+function ImportButton({
+  cityId,
+  inventoryId,
+  importedFileId,
+  onImport,
+  t,
+}: {
+  cityId: string;
+  inventoryId: string;
+  importedFileId: string;
+  onImport: () => void;
+  t: TFunction;
+}) {
+  const [approveImport, { isLoading: isImporting }] =
+    api.useApproveImportMutation();
+
+  const makeErrorToast = (title: string, description?: string) => {
+    const { showErrorToast } = UseErrorToast({ description, title });
+    showErrorToast();
+  };
+
+  const makeSuccessToast = (title: string, description?: string) => {
+    const { showSuccessToast } = UseSuccessToast({ description, title });
+    showSuccessToast();
+  };
+
+  const handleImport = async () => {
+    if (!importedFileId) return;
+
+    try {
+      await approveImport({
+        cityId,
+        inventoryId,
+        importedFileId,
+      }).unwrap();
+
+      makeSuccessToast("Import completed", "Your inventory data has been imported successfully.");
+      onImport();
+    } catch (error: any) {
+      makeErrorToast(
+        "Import failed",
+        error?.data?.message || error?.message || "Failed to import data",
+      );
+    }
+  };
+
+  return (
+    <Button
+      w="auto"
+      gap="8px"
+      py="16px"
+      px="24px"
+      onClick={handleImport}
+      h="64px"
+      loading={isImporting}
+      disabled={isImporting}
+    >
+      <Text
+        fontFamily="button.md"
+        fontWeight="600"
+        letterSpacing="wider"
+      >
+        {t("import-inventory")}
+      </Text>
+      <MdArrowForward height="24px" width="24px" />
+    </Button>
+  );
+}
 
 export default function ImportPage(props: {
   params: Promise<{ lng: string; cityId: string }>;
@@ -89,7 +161,7 @@ export default function ImportPage(props: {
       // Small delay for smooth transition
       setTimeout(() => {
         goToNextStep();
-      }, 300);
+      }, 150);
     } catch (error: any) {
       makeErrorToast(
         "Upload failed",
@@ -103,7 +175,7 @@ export default function ImportPage(props: {
       // Small delay for smooth transition
       setTimeout(() => {
         goToNextStep();
-      }, 150);
+      }, 80);
     }
   };
 
@@ -189,74 +261,79 @@ export default function ImportPage(props: {
           position="relative"
           minH="400px"
         >
-          <Box w="full">
-            {activeStep === 0 && (
-              <Box
-                key="step-0"
-                style={{
-                  animation: "fadeIn 0.3s ease-in-out",
-                }}
-              >
-                <UploadFileStep
-                  t={t}
-                  uploadedFile={uploadedFile}
-                  onFileUpload={handleFileUpload}
-                  onRemoveFile={handleRemoveFile}
-                  isUploading={isUploadingFile}
-                />
-              </Box>
-            )}
-            {activeStep === 1 && importedFileId && inventoryId && (
-              <Box
-                key="step-1"
-                style={{
-                  animation: "fadeIn 0.3s ease-in-out",
-                }}
-              >
-                <ValidationResultsStep
-                  t={t}
-                  cityId={cityId}
-                  inventoryId={inventoryId}
-                  importedFileId={importedFileId}
-                  onContinue={handleContinue}
-                />
-              </Box>
-            )}
-            {activeStep === 2 && importedFileId && inventoryId && (
-              <Box
-                key="step-2"
-                style={{
-                  animation: "fadeIn 0.3s ease-in-out",
-                }}
-              >
-                <MappingColumnsStep
-                  t={t}
-                  cityId={cityId}
-                  inventoryId={inventoryId}
-                  importedFileId={importedFileId}
-                  onContinue={handleContinue}
-                />
-              </Box>
-            )}
-            {activeStep === 3 && importedFileId && inventoryId && (
-              <Box
-                key="step-3"
-                style={{
-                  animation: "fadeIn 0.3s ease-in-out",
-                }}
-              >
-                <ReviewConfirmStep
-                  t={t}
-                  cityId={cityId}
-                  inventoryId={inventoryId}
-                  importedFileId={importedFileId}
-                  onImport={() => {
-                    // Handle final import
-                    router.push(`/${lng}/cities/${cityId}/GHGI`);
-                  }}
-                />
-              </Box>
-            )}
+          <Box w="full" position="relative" minH="400px" overflow="hidden">
+            <AnimatePresence mode="wait">
+              {activeStep === 0 && (
+                <motion.div
+                  key="step-0"
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                >
+                  <UploadFileStep
+                    t={t}
+                    uploadedFile={uploadedFile}
+                    onFileUpload={handleFileUpload}
+                    onRemoveFile={handleRemoveFile}
+                    isUploading={isUploadingFile}
+                  />
+                </motion.div>
+              )}
+              {activeStep === 1 && importedFileId && inventoryId && (
+                <motion.div
+                  key="step-1"
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                >
+                  <ValidationResultsStep
+                    t={t}
+                    cityId={cityId}
+                    inventoryId={inventoryId}
+                    importedFileId={importedFileId}
+                    onContinue={handleContinue}
+                  />
+                </motion.div>
+              )}
+              {activeStep === 2 && importedFileId && inventoryId && (
+                <motion.div
+                  key="step-2"
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                >
+                  <MappingColumnsStep
+                    t={t}
+                    cityId={cityId}
+                    inventoryId={inventoryId}
+                    importedFileId={importedFileId}
+                    onContinue={handleContinue}
+                  />
+                </motion.div>
+              )}
+              {activeStep === 3 && importedFileId && inventoryId && (
+                <motion.div
+                  key="step-3"
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                >
+                  <ReviewConfirmStep
+                    t={t}
+                    cityId={cityId}
+                    inventoryId={inventoryId}
+                    importedFileId={importedFileId}
+                    onImport={() => {
+                      // This is no longer used but kept for interface compatibility
+                    }}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </Box>
         </Box>
         <Box
@@ -335,6 +412,17 @@ export default function ImportPage(props: {
                   </Text>
                   <MdArrowForward height="24px" width="24px" />
                 </Button>
+              )}
+              {activeStep === 3 && importedFileId && inventoryId && (
+                <ImportButton
+                  cityId={cityId}
+                  inventoryId={inventoryId}
+                  importedFileId={importedFileId}
+                  onImport={() => {
+                    router.push(`/${lng}/cities/${cityId}/GHGI`);
+                  }}
+                  t={t}
+                />
               )}
             </Box>
           </Box>

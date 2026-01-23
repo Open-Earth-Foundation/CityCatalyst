@@ -6,8 +6,10 @@ import {
   Card,
   Heading,
   Icon,
+  Spinner,
   Table,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import { MdCheck } from "react-icons/md";
 import { api } from "@/services/api";
@@ -42,6 +44,37 @@ export default function ValidationResultsStep({
   const columns: ColumnInfo[] = data?.validationResults?.columns || [];
 
   const detectedCount = columns.filter((col) => col.status === "detected").length;
+
+  if (isLoading) {
+    return (
+      <Box w="full">
+        <Box display="flex" flexDir="column" gap="24px" mb={6}>
+          <Heading size="lg">{t("validation-results-heading")}</Heading>
+          <Text fontSize="body.lg" color="content.tertiary">
+            {t("validation-results-description", { count: 0 })}
+          </Text>
+        </Box>
+
+        <Card.Root
+          px={6}
+          py={8}
+          shadow="none"
+          bg="white"
+          w="full"
+          borderRadius="lg"
+          borderWidth="1px"
+          borderColor="border.default"
+        >
+          <VStack gap="16px" py={12} alignItems="center" justifyContent="center">
+            <Spinner size="lg" color="interactive.primary" />
+            <Text fontSize="body.md" color="content.secondary">
+              {t("loading-validation-results")}
+            </Text>
+          </VStack>
+        </Card.Root>
+      </Box>
+    );
+  }
 
   return (
     <Box w="full">

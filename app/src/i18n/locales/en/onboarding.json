@@ -121,5 +121,7 @@
   "uploading-file": "Uploading file...",
   "please-wait": "Please wait",
   "upload-started": "Upload started",
-  "upload-started-description": "Uploading {{fileName}}..."
+  "upload-started-description": "Uploading {{fileName}}...",
+  "loading-validation-results": "Loading validation results...",
+  "no-field-mappings": "No field mappings available"
 }

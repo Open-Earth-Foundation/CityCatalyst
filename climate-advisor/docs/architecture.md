@@ -455,9 +455,9 @@ LIMIT 5
 ```yaml
 conversation:
   retention:
-    preserve_turns: 2         # Keep last 2 turns (4 msgs) with full tools for LLM
+    preserve_turns: 4         # Keep last 4 turns in LLM context
     max_loaded_messages: 20   # Load max 20 messages from DB
-    prune_tools_for_llm: true # Strip tools from older messages when sending to LLM
+    prune_tools_for_llm: true # Apply pruning window for tool-output injection
 ```
 
 **Pruning Pipeline**:
@@ -469,14 +469,16 @@ conversation:
 
 2. **Pruning Phase** (`HistoryManager.build_context`):
    - Split messages into "preserved" (latest N turns) and "pruned" (older)
-   - For pruned messages: remove tool metadata from LLM context
-   - For preserved messages: include full tool metadata in LLM context
+   - For pruned messages: do not inject tool outputs into LLM context
+   - For preserved assistant messages: inject tool outputs as additional SYSTEM messages
    - **Database message objects are unchanged** (always have full tools)
 
 3. **Context Building for LLM**:
-   - Pruned messages: `{"role": "user/assistant", "content": "..."}`  (no tools for LLM)
-   - Preserved messages: `{"role": "...", "content": "...", "tools_used": [{...full metadata...}]}`
-   - This context is sent to the LLM only
+   - Messages sent to the model are always role/content only:
+     - Base messages: `{"role": "user/assistant", "content": "..."}`
+     - Tool grounding: a SYSTEM message is appended after preserved assistant messages:
+       `{"role": "system", "content": "INTERNAL_TOOL_OUTPUT_JSON\\n{...}"}`
+   - This context is sent to the LLM only; the DB rows do not include these SYSTEM items.
 
 4. **Persistence Phase** (`tool_handler.persist_assistant_message`):
    - Always persist FULL tool metadata to database
@@ -510,8 +512,8 @@ conversation_history = await load_conversation_history(
 **Feature Flags**:
 
 - `prune_tools_for_llm=true` (default): Strip tools from older messages for LLM (token optimization)
-- `prune_tools_for_llm=false`: Send all tools to LLM (maximum context, higher tokens)
-- `preserve_turns`: Control how many recent turns keep tools in LLM context
+- `prune_tools_for_llm=false`: Treat all loaded messages as preserved for tool-output injection (higher tokens)
+- `preserve_turns`: Control how many recent turns get tool-output SYSTEM messages injected
 
 **Observability**:
 

@@ -1,4 +1,5 @@
 "use client";
+
 import { InventoryResponse } from "@/util/types";
 import {
   Box,
@@ -26,48 +27,122 @@ function VersionEntry({ t, isCurrent }: { t: TFunction; isCurrent: boolean }) {
   const month = date.toLocaleString("default", { month: "long" });
   const formattedDate = `${month} ${date.getDate()}, ${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()}`;
   const [isExpanded, setExpanded] = useState(false);
+  const userName = "Maria Rossi";
 
   return (
     <Box
-      borderRadius="8px"
-      borderWidth="2px"
-      borderColor={isExpanded ? "interactive.secondary" : "border.neutral"}
-      background="background.alternativeLight"
-      _hover={{
-        borderColor: "interactive.secondary",
-      }}
-      p={6}
       w="full"
-      onClick={() => setExpanded(!isExpanded)}
+      borderRadius="8px"
+      background="background.alternativeLight"
+      borderColor="border.neutral"
+      borderWidth="1px"
     >
-      <HStack>
-        <VStack gap="0" alignItems="start">
-          <HStack gap="19px">
-            <Text fontSize="16px" fontWeight="699" lineHeight="24px">
-              {t("inventory-versions-from")} {formattedDate}
-            </Text>
-            <Box
-              padding="4px 16px"
-              background="interactive.secondary"
-              color="base.light"
-              borderRadius="100px"
-              fontWeight="600"
-            >
-              V3.1
-            </Box>
-            {isCurrent && (
+      <Box
+        w="full"
+        borderRadius="8px"
+        borderWidth="2px"
+        borderColor={isExpanded ? "interactive.secondary" : "border.neutral"}
+        background="background.alternativeLight"
+        _hover={{
+          borderColor: "interactive.secondary",
+        }}
+        p={6}
+        onClick={() => setExpanded(!isExpanded)}
+      >
+        <HStack>
+          <VStack gap="0" alignItems="start">
+            <HStack gap="19px">
+              <Text fontSize="16px" fontWeight="600" lineHeight="24px">
+                {t("inventory-versions-from")} {formattedDate}
+              </Text>
               <Box
                 padding="4px 16px"
-                background="background.neutral"
-                color="interactive.secondary"
+                background="interactive.secondary"
+                color="base.light"
                 borderRadius="100px"
                 fontWeight="600"
-                textTransform="uppercase"
               >
-                {t("inventory-versions-current")}
+                V3.1
               </Box>
-            )}
-          </HStack>
+              {isCurrent && (
+                <Box
+                  padding="4px 16px"
+                  background="background.neutral"
+                  color="interactive.secondary"
+                  borderRadius="100px"
+                  fontWeight="600"
+                  textTransform="uppercase"
+                >
+                  {t("inventory-versions-current")}
+                </Box>
+              )}
+            </HStack>
+            <Text
+              color="content.secondary"
+              fontSize="14px"
+              fontWeight="400"
+              lineHeight="20px"
+              letterSpacing="0.5px"
+              fontFamily="Open Sans"
+            >
+              <Icon
+                as={MdPersonOutline}
+                boxSize={6}
+                color="interactive.control"
+              />
+              {userName}
+            </Text>
+          </VStack>
+          <Spacer />
+          {!isCurrent && (
+            <Button variant="outline">
+              <Icon as={MdReplay} />
+              {t("inventory-versions-restore")}
+            </Button>
+          )}
+          <Icon
+            as={isExpanded ? MdKeyboardArrowUp : MdKeyboardArrowDown}
+            boxSize={6}
+            color="interactive.control"
+          />
+        </HStack>
+      </Box>
+      {isExpanded && (
+        <VStack p={6} gap={6} alignItems="start">
+          <VStack
+            w="full"
+            alignItems="start"
+            borderRadius="8px"
+            borderColor="border.neutral"
+            borderWidth="1px"
+            gap={2}
+            p={6}
+          >
+            <Text fontSize="16px" fontWeight="600" lineHeight="24px">
+              {t("inventory-versions-changes")}
+            </Text>
+            {[0, 1, 2].map((i) => (
+              <Text
+                key={i}
+                color="content.secondary"
+                fontSize="14px"
+                fontWeight="400"
+                lineHeight="20px"
+                letterSpacing="0.5px"
+                fontFamily="Open Sans"
+              >
+                {t("inventory-versions-value-source-change-entry", {
+                  name: userName,
+                  refNo: "I.1.1",
+                  sourceA: "GPC",
+                  sourceB: "IEA",
+                  totalA: 15.22,
+                  totalB: 22.91,
+                })}
+              </Text>
+            ))}
+          </VStack>
+
           <Text
             color="content.secondary"
             fontSize="14px"
@@ -75,28 +150,51 @@ function VersionEntry({ t, isCurrent }: { t: TFunction; isCurrent: boolean }) {
             lineHeight="20px"
             letterSpacing="0.5px"
             fontFamily="Open Sans"
+            verticalAlign="center"
           >
-            <Icon
-              as={MdPersonOutline}
-              boxSize={6}
-              color="interactive.control"
-            />
-            Maria Rossi
+            <HStack gap={0}>
+              <Box
+                borderWidth="1px"
+                borderRadius="4px"
+                borderColor="sentiment.positiveDefault"
+                background="sentiment.positiveOverlay"
+                width={4}
+                height={4}
+                display="inline-block"
+                mr={2}
+                mt={0.5}
+              />
+              {t("inventory-versions-value-increased")}
+              <Box
+                borderWidth="1px"
+                borderRadius="4px"
+                borderColor="sentiment.negativeDefault"
+                background="sentiment.negativeOverlay"
+                width={4}
+                height={4}
+                display="inline-block"
+                ml={4}
+                mr={2}
+                mt={0.5}
+              />
+              {t("inventory-versions-value-decreased")}
+              <Box
+                borderWidth="1px"
+                borderRadius="4px"
+                borderColor="sentiment.warningDefault"
+                background="sentiment.warningOverlay"
+                width={4}
+                height={4}
+                display="inline-block"
+                ml={4}
+                mr={2}
+                mt={0.5}
+              />
+              {t("inventory-versions-value-source-changed")}
+            </HStack>
           </Text>
         </VStack>
-        <Spacer />
-        {!isCurrent && (
-          <Button variant="outline">
-            <Icon as={MdReplay} />
-            Restore
-          </Button>
-        )}
-        <Icon
-          as={isExpanded ? MdKeyboardArrowUp : MdKeyboardArrowDown}
-          boxSize={6}
-          color="interactive.control"
-        />
-      </HStack>
+      )}
     </Box>
   );
 }

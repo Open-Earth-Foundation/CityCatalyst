@@ -273,5 +273,11 @@
   "inventory-versions-title": "Inventory Version History",
   "inventory-versions-description": "Review and compare previous versions of your GHG inventory data",
   "inventory-versions-current": "Current",
-  "inventory-versions-from": "Version from"
+  "inventory-versions-from": "Version from",
+  "inventory-versions-restore": "Restore",
+  "inventory-versions-changes": "Changes in this version",
+  "inventory-versions-value-increased": "Value increased",
+  "inventory-versions-value-decreased": "Value decreased",
+  "inventory-versions-value-source-changed": "Source changed",
+  "inventory-versions-value-source-change-entry": "{{name}} changed GPC ref no {{refNo}} (total) from {{sourceA}} ({{totalA}} kT CO2e) to {{sourceB}} ({{totalB}} kT CO2e)"
 }

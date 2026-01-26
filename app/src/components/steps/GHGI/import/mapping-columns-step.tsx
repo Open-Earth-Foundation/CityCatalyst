@@ -10,7 +10,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { api } from "@/services/api";
-import type { ColumnInfo } from "@/services/api";
+import { ColumnInfo } from "@/util/types";
 
 interface MappingColumnsStepProps {
   t: TFunction;

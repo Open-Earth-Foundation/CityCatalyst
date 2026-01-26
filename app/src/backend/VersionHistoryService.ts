@@ -27,7 +27,7 @@ export default class VersionHistoryService {
         {
           model: db.models.User,
           as: "author",
-          attributes: ["name", "user_id"],
+          attributes: ["name", "userId"],
         },
         {
           model: db.models.Version,

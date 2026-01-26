@@ -105,7 +105,7 @@
     "react-hook-form": "^7.67.0",
     "react-i18next": "^16.3.5",
     "react-icons": "^5.5.0",
-    "react-intersection-observer": "^10.0.0",
+    "react-intersection-observer": "^10.0.2",
     "react-latex-next": "^3.0.0",
     "react-markdown": "^10.1.0",
     "react-redux": "^9.2.0",

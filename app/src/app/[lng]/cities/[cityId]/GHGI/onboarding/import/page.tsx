@@ -17,7 +17,6 @@ import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
 import { api } from "@/services/api";
 import { TFunction } from "i18next";
 
-// Import button component for step 3
 function ImportButton({
   cityId,
   inventoryId,

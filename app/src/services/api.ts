@@ -74,77 +74,11 @@ import type {
   HighImpactActionRankingStatus,
   BulkHiapPrioritizationResult,
   HiapJob,
+  ImportedFileResponse,
+  ImportStatusResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-// Import-related types
-export interface ImportedFileResponse {
-  id: string;
-  userId: string;
-  cityId: string;
-  inventoryId: string;
-  fileName: string;
-  fileType: "xlsx" | "csv";
-  fileSize: number;
-  originalFileName: string;
-  importStatus: string;
-  created: string;
-  lastUpdated: string;
-}
-
-export interface ColumnInfo {
-  columnName: string;
-  interpretedAs: string | null;
-  status: "detected" | "manual";
-  exampleValue: string | null;
-}
-
-export interface ValidationResults {
-  totalColumnsDetected: number;
-  columns: ColumnInfo[];
-  errors: string[];
-  warnings: string[];
-}
-
-export interface ImportSummary {
-  sourceFile: string;
-  formatDetected: string;
-  rowsFound: number;
-  fieldsMapped: number;
-}
-
-export interface FieldMapping {
-  sourceColumn: string;
-  mappedField: string;
-}
-
-export interface ReviewData {
-  importSummary: ImportSummary;
-  fieldMappings: FieldMapping[];
-  mappingPreview?: any;
-}
-
-export interface ImportStatusResponse {
-  id: string;
-  importStatus: string;
-  currentStep: 1 | 2 | 3 | 4;
-  fileInfo: {
-    fileName: string;
-    originalFileName: string;
-    fileType: "xlsx" | "csv";
-    fileSize: number;
-  };
-  validationResults: ValidationResults | null;
-  columnMappings: ValidationResults | null;
-  reviewData: ReviewData | null;
-  rowCount: number;
-  processedRowCount: number;
-  errorLog: string | null;
-  created: string;
-  lastUpdated: string;
-  completedAt: string | null;
-}
 
 export const api = createApi({
   reducerPath: "api",

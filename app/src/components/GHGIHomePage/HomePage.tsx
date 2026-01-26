@@ -368,7 +368,10 @@ export default function HomePage({
                       />
                     </Tabs.Content>
                     <Tabs.Content value="tab-emission-versions-title">
-                      <InventoryVersions lng={language} inventory={inventory} />
+                      <InventoryVersions
+                        lng={language}
+                        inventoryId={inventory?.inventoryId}
+                      />
                     </Tabs.Content>
                   </Tabs.Root>
                 </>

@@ -22,6 +22,13 @@ import {
 } from "react-icons/md";
 import { TFunction } from "i18next";
 import { useState } from "react";
+import { formatEmissions } from "@/util/helpers";
+import { api } from "@/services/api";
+
+function toEmissionsString(totalEmissions: number): string {
+  const { value, unit } = formatEmissions(totalEmissions);
+  return `${value} ${unit}CO2e`;
+}
 
 function VersionEntry({ t, isCurrent }: { t: TFunction; isCurrent: boolean }) {
   const date = new Date();
@@ -281,12 +288,18 @@ function VersionEntry({ t, isCurrent }: { t: TFunction; isCurrent: boolean }) {
 
 export default function InventoryVersions({
   lng,
-  inventory,
+  inventoryId,
 }: {
   lng: string;
-  inventory?: InventoryResponse;
+  inventoryId?: string;
 }) {
   const { t } = useTranslation(lng, "dashboard");
+
+  const { data, isLoading } = api.useGetVersionHistoryQuery(
+    { inventoryId: inventoryId! },
+    { skip: !inventoryId },
+  );
+
   return (
     <VStack alignItems="start" gap={4} mt={1}>
       <HStack gap={4} mb={4}>

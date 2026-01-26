@@ -837,3 +837,70 @@ export interface CCRATopRisksData {
   cityName?: string;
   region?: string;
 }
+
+export interface ImportedFileResponse {
+  id: string;
+  userId: string;
+  cityId: string;
+  inventoryId: string;
+  fileName: string;
+  fileType: "xlsx" | "csv";
+  fileSize: number;
+  originalFileName: string;
+  importStatus: string;
+  created: string;
+  lastUpdated: string;
+}
+
+export interface ColumnInfo {
+  columnName: string;
+  interpretedAs: string | null;
+  status: "detected" | "manual";
+  exampleValue: string | null;
+}
+
+export interface ValidationResults {
+  totalColumnsDetected: number;
+  columns: ColumnInfo[];
+  errors: string[];
+  warnings: string[];
+}
+
+export interface ImportSummary {
+  sourceFile: string;
+  formatDetected: string;
+  rowsFound: number;
+  fieldsMapped: number;
+}
+
+export interface FieldMapping {
+  sourceColumn: string;
+  mappedField: string;
+}
+
+export interface ReviewData {
+  importSummary: ImportSummary;
+  fieldMappings: FieldMapping[];
+  mappingPreview?: any;
+}
+
+export interface ImportStatusResponse {
+  id: string;
+  importStatus: string;
+  currentStep: 1 | 2 | 3 | 4;
+  fileInfo: {
+    fileName: string;
+    originalFileName: string;
+    fileType: "xlsx" | "csv";
+    fileSize: number;
+  };
+  validationResults: ValidationResults | null;
+  columnMappings: ValidationResults | null;
+  reviewData: ReviewData | null;
+  rowCount: number;
+  processedRowCount: number;
+  errorLog: string | null;
+  created: string;
+  lastUpdated: string;
+  completedAt: string | null;
+}

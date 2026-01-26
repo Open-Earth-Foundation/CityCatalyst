@@ -1,0 +1,992 @@
+manifest:
+  version: "0.1.2"
+  schema: https://a2as.org/cert/schema
+  subject:
+    name: open-earth-foundation/citycatalyst
+    source: https://github.com/open-earth-foundation/citycatalyst
+    branch: develop
+    commit: "8bdc2a4e"
+    scope: [climate-advisor/service/app/config/settings.py, climate-advisor/service/app/services/agent_service.py, climate-advisor/service/app/tools/__init__.py,
+      climate-advisor/service/app/tools/cc_inventory_wrappers.py, climate-advisor/service/app/tools/climate_vector_sync.py,
+      climate-advisor/service/app/tools/climate_vector_tool.py, climate-advisor/service/app/utils/streaming_handler.py, hiap/app/plan_creator_bundle/plan_creator/agents/agent_10_sdgs.py,
+      hiap/app/plan_creator_bundle/plan_creator/agents/agent_1_main_action.py, hiap/app/plan_creator_bundle/plan_creator/agents/agent_2_sub_actions.py,
+      hiap/app/plan_creator_bundle/plan_creator/agents/agent_3_involved_municipalities.py, hiap/app/plan_creator_bundle/plan_creator/agents/agent_4_goals_milestones.py,
+      hiap/app/plan_creator_bundle/plan_creator/agents/agent_5_timeline.py, hiap/app/plan_creator_bundle/plan_creator/agents/agent_6_cost_budget.py,
+      hiap/app/plan_creator_bundle/plan_creator/agents/agent_7_mer.py, hiap/app/plan_creator_bundle/plan_creator/agents/agent_8_adaptation.py,
+      hiap/app/plan_creator_bundle/plan_creator/agents/agent_9_mitigation.py, hiap/app/plan_creator_bundle/plan_creator_legacy/agents/agent_10_sdgs.py,
+      hiap/app/plan_creator_bundle/plan_creator_legacy/agents/agent_1_main_action.py, hiap/app/plan_creator_bundle/plan_creator_legacy/agents/agent_2_sub_actions.py,
+      hiap/app/plan_creator_bundle/plan_creator_legacy/agents/agent_3_involved_municipalities.py, hiap/app/plan_creator_bundle/plan_creator_legacy/agents/agent_4_goals_milestones.py,
+      hiap/app/plan_creator_bundle/plan_creator_legacy/agents/agent_5_timeline.py, hiap/app/plan_creator_bundle/plan_creator_legacy/agents/agent_6_cost_budget.py,
+      hiap/app/plan_creator_bundle/plan_creator_legacy/agents/agent_7_mer.py, hiap/app/plan_creator_bundle/plan_creator_legacy/agents/agent_8_adaptation.py,
+      hiap/app/plan_creator_bundle/plan_creator_legacy/agents/agent_9_mitigation.py]
+  issued:
+    by: A2AS.org
+    at: '2026-01-26T16:13:07Z'
+  signatures:
+    digest: sha256:HvwKkFBBySHKdPdf271Z-epvzRj4NMlQ3FEvLi1lTr8
+    key: ed25519:qH7G7YceNwrBF1j8f7q9kOnUc29CqaWf7Qgwim_Yr24
+    sig: ed25519:MghObFI06VWNlaBinzLkM5b7jLznniFVMoMqzZt558HqFjzdn1REB2-ZhPFxnisT93TunHCTC9TiBS-KkpqbCg
+
+agents:
+  agent:
+    type: instance
+    models: [agent_model]
+    tools: [tools]
+    params:
+      function: create_agent
+      name: Climate Advisor
+      instructions: [agent_instructions]
+
+models:
+  agent_model:
+    type: variable
+    agents: [agent]
+
+tools:
+  cc_city_inventory_search:
+    type: decorator
+    params:
+      description: |-
+        Search for inventories by city name with optional year filtering.
+
+        Use this tool when the user names a city and wants to see inventories for that location.
+
+        Args:
+            city_name: Name of the city to search for (case-insensitive, e.g., "New York", "paris")
+            year: Optional specific year to filter results to. If omitted, returns all years for the city.
+
+        Returns:
+            JSON string containing matching inventories trimmed for listing context:
+              - `action`: always "city_inventory_search"
+              - `success`: boolean flag
+              - `data`: array of matching inventories (sorted by year descending)
+              - `error` / `error_code`: populated on failure
+
+        Examples of queries that should use this tool:
+            - "Show me inventories for New York"
+            - "What data do I have for Paris?"
+            - "List 2023 emissions for London"
+            - "Find all inventories in Tokyo"
+
+        **Note:** This tool searches the user's accessible inventories by city name.
+        Results are automatically sorted by year (newest first) when multiple inventories
+        exist for the same city.
+  cc_get_all_datasources:
+    type: decorator
+    params:
+      description: |-
+        Retrieve all available data sources for the currently active inventory.
+
+        Use this tool when you need to see what data sources are available for a specific inventory.
+        This includes third-party datasets, external data sources, and other reference data
+        that can be applied to populate inventory values automatically.
+
+        Args:
+            inventory_id: The ID of the inventory to get data sources for. This must be a valid
+                inventory ID that the user has access to.
+
+        Returns:
+            JSON string containing the data sources response from CityCatalyst, wrapped with
+            the standard tool payload fields:
+              - `action`: always "get_all_datasources"
+              - `success`: boolean flag
+              - `data`: array of successfully fetched data sources (trimmed to essential fields)
+              - `error` / `error_code`: populated on failure (missing token, invalid arguments, API errors, etc.)
+
+        The response includes only successfully fetched data sources with their key metadata
+        (name, type, coverage, emissions summary) trimmed for efficiency.
+        Removed and failed sources are not included.
+
+        This tool is essential for understanding what external data is available to populate
+        inventory values and for helping users make informed decisions about data source selection.
+  cc_get_inventory:
+    type: decorator
+    params:
+      description: |-
+        Fetch detailed data for a specific CityCatalyst inventory by ID.
+
+        Use this OPERATIONAL tool when the user:
+        - References a specific `inventory_id` (e.g., "Show inventory abc-123")
+        - Wants details about a particular inventory from their list
+        - Follows up after using `get_user_inventories` to select one inventory
+        - Asks to "view", "show", "get", or "access" a specific inventory
+
+        Args:
+            inventory_id: Identifier issued by CityCatalyst for the user's inventory. The
+                value must be non-empty and typically comes from prior tool output.
+
+        Returns:
+            JSON string shaped like the CityCatalyst `InventoryResponse` containing:
+              - `action`: always "get_inventory"
+              - `success`: boolean flag
+              - `data`: inventory payload when successful (trimmed to essential fields)
+              - `error` / `error_code`: populated on failure (missing token, invalid
+                arguments, CityCatalyst API errors, etc.)
+
+        Examples of queries that should use this tool:
+            - "Show me inventory abc-123"
+            - "Get details for my 2023 inventory"
+            - "What's in inventory xyz-456?"
+  cc_list_user_inventories:
+    type: decorator
+    params:
+      description: |-
+        List the inventories the authenticated user can access in CityCatalyst.
+
+        **PRIMARY TOOL for any user inventory queries.** Use this tool whenever the user:
+        - Asks about "my inventories", "my data", "what inventories do I have"
+        - Wants to see, list, view, access, or browse their inventories
+        - Asks "How do I list/view/see/get my inventories?"
+        - Needs help choosing an inventory but hasn't supplied an `inventory_id`
+        - Asks questions like "show me what data I have" or "what can I access"
+
+        This is an OPERATIONAL tool that fetches actual user data from CityCatalyst.
+        Running it first gives you the inventory IDs, years, and city context required
+        for follow-up queries.
+
+        Returns:
+            JSON string matching CityCatalyst's `InventoryWithCity[]` response structure,
+            wrapped with the standard tool payload fields:
+              - `action`: always "get_user_inventories"
+              - `success`: boolean flag
+              - `data`: list of inventories when successful (trimmed to essential fields)
+              - `error` / `error_code`: populated on failure (missing token, API error, etc.)
+
+        Examples of queries that should use this tool:
+            - "List my inventories"
+            - "What inventories can I access?"
+            - "Show me my data"
+            - "How do I see my inventories?"
+  climate_vector_search:
+    type: decorator
+    params:
+      description: "Search the climate knowledge base for relevant climate science and policy information.\n\nThis tool searches\
+        \ a vector database containing climate-related documents,\nresearch papers, and information about climate change,\
+        \ emissions, GHG protocols,\ncarbon accounting, sustainability, environmental policies, renewable energy,\nnet zero\
+        \ goals, climate adaptation, and mitigation strategies.\n\n**WHEN TO USE:**\n- Questions about climate science concepts,\
+        \ definitions, or methodologies\n- Requests for citations, research, or verified climate facts\n- General climate\
+        \ knowledge or educational content\n\n**DO NOT USE FOR:**\n- ANY CityCatalyst operational requests (listing, viewing,\
+        \ fetching, accessing user data)\n- Questions starting with \"How do I...\", \"Can I...\", \"Show me...\" related\
+        \ to CityCatalyst features\n- Inventory operations - use get_user_inventories or get_inventory tools instead\n- User-specific\
+        \ data queries - these require the CC inventory tools\n- Product workflows or feature usage questions about CityCatalyst\n\
+        \nArgs:\n    question: The search query to find relevant climate information.\n             Should be a clear, specific\
+        \ question or topic related to climate.\n\nReturns:\n    A formatted string containing relevant climate information\
+        \ from the knowledge base,\n    including source references and content excerpts. If no relevant information is found,\n\
+        \    returns a message indicating so.\n\nExamples of CORRECT usage:\n    - \"What is Scope 2 emissions?\"\n    - \"\
+        What are the IPCC guidelines for carbon accounting?\"\n    - \"Explain the GHG Protocol methodology\"\n    \nExamples\
+        \ of INCORRECT usage (use CC inventory tools instead):\n    - \"How do I list my inventories?\"\n    - \"Show me my\
+        \ inventory data\"\n    - \"What inventories do I have access to?\""
+  tools:
+    type: variable
+    agents: [agent]
+    params:
+      dynamic: "True"
+
+imports:
+  _load_llm_config: app.config.settings._load_llm_config
+  adaptation: plan_creator_bundle.plan_creator_legacy.data.context.adaptation
+  AdaptationList: plan_creator_bundle.plan_creator.models.AdaptationList
+  Agent: agents.Agent
+  agent_10_system_prompt: plan_creator_bundle.plan_creator_legacy.prompts.agent_10_prompt.agent_10_system_prompt
+  agent_10_user_prompt: plan_creator_bundle.plan_creator_legacy.prompts.agent_10_prompt.agent_10_user_prompt
+  agent_1_system_prompt: plan_creator_bundle.plan_creator_legacy.prompts.agent_1_prompt.agent_1_system_prompt
+  agent_1_user_prompt: plan_creator_bundle.plan_creator_legacy.prompts.agent_1_prompt.agent_1_user_prompt
+  agent_2_system_prompt: plan_creator_bundle.plan_creator_legacy.prompts.agent_2_prompt.agent_2_system_prompt
+  agent_2_user_prompt: plan_creator_bundle.plan_creator_legacy.prompts.agent_2_prompt.agent_2_user_prompt
+  agent_3_system_prompt: plan_creator_bundle.plan_creator.prompts.agent_3_prompt.agent_3_system_prompt
+  agent_3_user_prompt: plan_creator_bundle.plan_creator.prompts.agent_3_prompt.agent_3_user_prompt
+  agent_4_system_prompt: plan_creator_bundle.plan_creator.prompts.agent_4_prompt.agent_4_system_prompt
+  agent_4_user_prompt: plan_creator_bundle.plan_creator.prompts.agent_4_prompt.agent_4_user_prompt
+  agent_5_system_prompt: plan_creator_bundle.plan_creator_legacy.prompts.agent_5_prompt.agent_5_system_prompt
+  agent_5_user_prompt: plan_creator_bundle.plan_creator_legacy.prompts.agent_5_prompt.agent_5_user_prompt
+  agent_6_system_prompt: plan_creator_bundle.plan_creator_legacy.prompts.agent_6_prompt.agent_6_system_prompt
+  agent_6_user_prompt: plan_creator_bundle.plan_creator_legacy.prompts.agent_6_prompt.agent_6_user_prompt
+  agent_7_system_prompt: plan_creator_bundle.plan_creator.prompts.agent_7_prompt.agent_7_system_prompt
+  agent_7_user_prompt: plan_creator_bundle.plan_creator.prompts.agent_7_prompt.agent_7_user_prompt
+  agent_8_system_prompt: plan_creator_bundle.plan_creator_legacy.prompts.agent_8_prompt.agent_8_system_prompt
+  agent_8_user_prompt: plan_creator_bundle.plan_creator_legacy.prompts.agent_8_prompt.agent_8_user_prompt
+  agent_9_system_prompt: plan_creator_bundle.plan_creator_legacy.prompts.agent_9_prompt.agent_9_system_prompt
+  agent_9_user_prompt: plan_creator_bundle.plan_creator_legacy.prompts.agent_9_prompt.agent_9_user_prompt
+  AgentService: services.agent_service.AgentService
+  AgentState: plan_creator_bundle.plan_creator_legacy.state.agent_state.AgentState
+  AIMessage: langchain_core.messages.AIMessage
+  annotations: __future__.annotations
+  Any: typing.Any
+  APIRouter: fastapi.APIRouter
+  async_sessionmaker: sqlalchemy.ext.asyncio.async_sessionmaker
+  asyncio: asyncio
+  AsyncIterator: typing.AsyncIterator
+  AsyncOpenAI: openai.AsyncOpenAI
+  AsyncSession: sqlalchemy.ext.asyncio.AsyncSession
+  base64: base64
+  BaseModel: pydantic.BaseModel
+  build_cc_inventory_tools: cc_inventory_wrappers.build_cc_inventory_tools
+  build_custom_agent_1: plan_creator_bundle.plan_creator.agents.agent_1_main_action.build_custom_agent_1
+  build_custom_agent_10: plan_creator_bundle.plan_creator.agents.agent_10_sdgs.build_custom_agent_10
+  build_custom_agent_2: plan_creator_bundle.plan_creator.agents.agent_2_sub_actions.build_custom_agent_2
+  build_custom_agent_3: plan_creator_bundle.plan_creator.agents.agent_3_involved_municipalities.build_custom_agent_3
+  build_custom_agent_4: plan_creator_bundle.plan_creator.agents.agent_4_goals_milestones.build_custom_agent_4
+  build_custom_agent_7: plan_creator_bundle.plan_creator.agents.agent_7_mer.build_custom_agent_7
+  build_custom_agent_8: plan_creator_bundle.plan_creator.agents.agent_8_adaptation.build_custom_agent_8
+  build_custom_agent_9: plan_creator_bundle.plan_creator.agents.agent_9_mitigation.build_custom_agent_9
+  build_prompt_inputs: utils.prompt_data_filters.build_prompt_inputs
+  CCInventoryTool: cc_inventory_tool.CCInventoryTool
+  CCInventoryToolResult: app.tools.cc_inventory_tool.CCInventoryToolResult
+  ChatOpenAI: langchain_openai.ChatOpenAI
+  CityCatalystClient: services.citycatalyst_client.CityCatalystClient
+  CityCatalystClientError: services.citycatalyst_client.CityCatalystClientError
+  climate_vector_search: climate_vector_sync.climate_vector_search
+  climate_vector_search_sync: climate_vector_sync.climate_vector_search_sync
+  ClimateToolResult: climate_vector_tool.ClimateToolResult
+  ClimateVectorSearchTool: climate_vector_tool.ClimateVectorSearchTool
+  CostBudget: plan_creator_bundle.plan_creator.models.CostBudget
+  create_agent: langchain.agents.create_agent
+  create_token_context: utils.token_manager.create_token_context
+  custom_agent_combine: plan_creator_bundle.plan_creator_legacy.agents.agent_combine.custom_agent_combine
+  custom_agent_translate: plan_creator_bundle.plan_creator.agents.agent_translate.custom_agent_translate
+  dataclass: dataclasses.dataclass
+  datetime: datetime.datetime
+  Depends: fastapi.Depends
+  Dict: typing.Dict
+  DocumentEmbedding: app.models.db.document_embedding.DocumentEmbedding
+  dotenv_values: dotenv.dotenv_values
+  EmbeddingResult: app.services.embedding_service.EmbeddingResult
+  EmbeddingService: app.services.embedding_service.EmbeddingService
+  END: langgraph.graph.END
+  field: dataclasses.field
+  Field: pydantic.Field
+  find_dotenv: dotenv.find_dotenv
+  format_sse: sse.format_sse
+  function_tool: agents.function_tool
+  get_national_strategy_for_prompt: utils.vector_store_retrievers.get_national_strategy_for_prompt
+  get_request_id: middleware.get_request_id
+  get_session_factory: db.session.get_session_factory
+  get_session_optional: db.session.get_session_optional
+  get_settings: config.get_settings
+  get_token_expiry: utils.token_manager.get_token_expiry
+  HTTPException: fastapi.HTTPException
+  httpx: httpx
+  HumanMessage: langchain_core.messages.HumanMessage
+  inspect: inspect
+  InstitutionList: plan_creator_bundle.plan_creator.models.InstitutionList
+  Introduction: plan_creator_bundle.plan_creator.models.Introduction
+  is_token_expired: utils.token_manager.is_token_expired
+  json: json
+  List: typing.List
+  load_conversation_history: history_manager.load_conversation_history
+  load_dotenv: dotenv.load_dotenv
+  logging: logging
+  MerIndicatorList: plan_creator_bundle.plan_creator.models.MerIndicatorList
+  MessageCreateRequest: models.requests.MessageCreateRequest
+  MessageService: services.message_service.MessageService
+  MilestoneList: plan_creator_bundle.plan_creator.models.MilestoneList
+  mitigation: plan_creator_bundle.plan_creator_legacy.data.context.mitigation
+  MitigationList: plan_creator_bundle.plan_creator.models.MitigationList
+  openai: openai
+  openai_web_search_tool: plan_creator_bundle.tools.tools.openai_web_search_tool
+  OpenAIAgentsTracingProcessor: langsmith.wrappers.OpenAIAgentsTracingProcessor
+  Optional: typing.Optional
+  os: os
+  parse_jwt_claims: utils.token_manager.parse_jwt_claims
+  Path: pathlib.Path
+  persist_assistant_message: tool_handler.persist_assistant_message
+  placeholder_tool: plan_creator_bundle.tools.tools.placeholder_tool
+  re: re
+  redact_token: utils.token_manager.redact_token
+  Response: fastapi.Response
+  retriever_indicators_tool: plan_creator_bundle.tools.tools.retriever_indicators_tool
+  retriever_main_action_tool: plan_creator_bundle.tools.tools.retriever_main_action_tool
+  retriever_sub_action_tool: plan_creator_bundle.tools.tools.retriever_sub_action_tool
+  Runner: agents.Runner
+  SDGList: plan_creator_bundle.plan_creator.models.SDGList
+  sdgs: plan_creator_bundle.plan_creator_legacy.data.context.sdgs
+  select: sqlalchemy.select
+  Sequence: typing.Sequence
+  set_trace_processors: agents.set_trace_processors
+  Settings: settings.Settings
+  START: langgraph.graph.START
+  StateGraph: langgraph.graph.StateGraph
+  StreamingHandler: utils.streaming_handler.StreamingHandler
+  StreamingResponse: fastapi.responses.StreamingResponse
+  SubactionList: plan_creator_bundle.plan_creator.models.SubactionList
+  sys: sys
+  ThreadResolver: utils.thread_resolver.ThreadResolver
+  ThreadService: services.thread_service.ThreadService
+  timedelta: datetime.timedelta
+  Timeline: plan_creator_bundle.plan_creator.models.Timeline
+  timezone: datetime.timezone
+  TokenHandler: token_handler.TokenHandler
+  trim_datasources_response: app.tools.payload_trimmers.trim_datasources_response
+  trim_inventory_detailed: app.tools.payload_trimmers.trim_inventory_detailed
+  trim_inventory_for_listing: app.tools.payload_trimmers.trim_inventory_for_listing
+  Tuple: typing.Tuple
+  TYPE_CHECKING: typing.TYPE_CHECKING
+  Union: typing.Union
+  UUID: uuid.UUID
+  yaml: yaml
+
+functions:
+  __aenter__:
+    type: async
+    module: climate-advisor.service.app.services.citycatalyst_client
+    args: [self]
+  __aexit__:
+    type: async
+    module: climate-advisor.service.app.services.citycatalyst_client
+    args: [self, exc_type, exc_val, exc_tb]
+  __init__:
+    type: sync
+    module: climate-advisor.service.app.utils.streaming_handler
+    args: [self, thread_id, user_id, session_factory, cc_access_token, inventory_id]
+  _argument_error:
+    type: sync
+    module: climate-advisor.service.app.tools.cc_inventory_wrappers
+    args: [action, message]
+    params:
+      returns: CCInventoryToolResult
+  _auth_headers:
+    type: sync
+    module: climate-advisor.service.app.services.citycatalyst_client
+    args: [self, token]
+    params:
+      returns: Dict
+  _build_inventory_prompt:
+    type: async
+    module: climate-advisor.service.app.services.agent_service
+    args: [self]
+    params:
+      returns: Optional[str]
+  _build_prompt_context:
+    type: sync
+    module: climate-advisor.service.app.tools.climate_vector_tool
+    args: [self, matches]
+    params:
+      returns: str
+  _compile_city_pattern:
+    type: sync
+    module: climate-advisor.service.app.tools.cc_inventory_wrappers
+    args: [city_name]
+    params:
+      returns: re.Pattern[str]
+  _create_openrouter_client:
+    type: sync
+    module: climate-advisor.service.app.services.agent_service
+    args: [self]
+    params:
+      returns: AsyncOpenAI
+  _fallback_stream:
+    type: async
+    module: climate-advisor.service.app.utils.streaming_handler
+    args: [self, agent, payload]
+    params:
+      returns: AsyncIterator[bytes]
+  _format_completion_event:
+    type: sync
+    module: climate-advisor.service.app.utils.streaming_handler
+    args: [self, req_id, ok]
+    params:
+      returns: bytes
+  _format_inventory_context:
+    type: sync
+    module: climate-advisor.service.app.services.agent_service
+    args: [self, inventory]
+    params:
+      returns: Optional[str]
+  _format_tool_result_for_llm:
+    type: sync
+    module: climate-advisor.service.app.tools.climate_vector_sync
+    args: [result]
+    params:
+      returns: str
+  _get_client:
+    type: async
+    module: climate-advisor.service.app.services.citycatalyst_client
+    args: [self]
+    params:
+      returns: httpx.AsyncClient
+  _get_embedding_service:
+    type: sync
+    module: climate-advisor.service.app.tools.climate_vector_tool
+    args: [self]
+    params:
+      returns: Optional[EmbeddingService]
+  _get_session_factory:
+    type: sync
+    module: climate-advisor.service.app.tools.climate_vector_tool
+    args: [self]
+    params:
+      returns: Optional[async_sessionmaker[AsyncSession]]
+  _handle_raw_response:
+    type: async
+    module: climate-advisor.service.app.utils.streaming_handler
+    args: [self, chunk]
+    params:
+      returns: AsyncIterator[bytes]
+  _handle_run_item:
+    type: async
+    module: climate-advisor.service.app.utils.streaming_handler
+    args: [self, chunk]
+    params:
+      returns: AsyncIterator[bytes]
+  _handle_tool_called:
+    type: async
+    module: climate-advisor.service.app.utils.streaming_handler
+    args: [self, run_item]
+    params:
+      returns: AsyncIterator[bytes]
+  _handle_tool_output:
+    type: async
+    module: climate-advisor.service.app.utils.streaming_handler
+    args: [self, run_item]
+    params:
+      returns: AsyncIterator[bytes]
+  _handle_tool_result_metadata:
+    type: async
+    module: climate-advisor.service.app.utils.streaming_handler
+    args: [self, parsed_output]
+    params:
+      returns: AsyncIterator[bytes]
+  _load_conversation_history:
+    type: async
+    module: climate-advisor.service.app.utils.streaming_handler
+    args: [self, settings]
+    params:
+      returns: List[Dict]
+  _load_environment:
+    type: sync
+    module: climate-advisor.service.app.config.settings
+    params:
+      returns: None
+  _load_llm_config:
+    type: sync
+    module: climate-advisor.service.app.config.settings
+    params:
+      returns: LLMConfig
+  _nearest_population:
+    type: sync
+    module: climate-advisor.service.app.services.agent_service
+    args: [populations, target_year, value_key]
+    params:
+      returns: tuple
+  _parse_bool:
+    type: sync
+    module: climate-advisor.service.app.config.settings
+    args: [value, default]
+    params:
+      returns: bool
+  _parse_cors_origins:
+    type: sync
+    module: climate-advisor.service.app.config.settings
+    args: [env_value]
+    params:
+      returns: List[str]
+  _parse_int:
+    type: sync
+    module: climate-advisor.service.app.config.settings
+    args: [value, default]
+    params:
+      returns: Optional[int]
+  _process_chunk:
+    type: async
+    module: climate-advisor.service.app.utils.streaming_handler
+    args: [self, chunk]
+    params:
+      returns: AsyncIterator[bytes]
+  _run_vector_search:
+    type: async
+    module: climate-advisor.service.app.tools.climate_vector_sync
+    args: [question]
+    params:
+      returns: str
+  _run_with_session:
+    type: async
+    module: climate-advisor.service.app.tools.climate_vector_tool
+    args: [self]
+    params:
+      returns: ClimateToolResult
+  _search_inventories_by_city:
+    type: sync
+    module: climate-advisor.service.app.tools.cc_inventory_wrappers
+    args: [inventories, city_name, year]
+    params:
+      returns: List[Dict]
+  _serialize:
+    type: sync
+    module: climate-advisor.service.app.tools.cc_inventory_wrappers
+    args: [action, result]
+    params:
+      returns: str
+  _stream_agent_events:
+    type: async
+    module: climate-advisor.service.app.utils.streaming_handler
+    args: [self, agent, payload, conversation_history]
+    params:
+      returns: AsyncIterator[bytes]
+  _trim_datasources_data:
+    type: sync
+    module: climate-advisor.service.app.tools.cc_inventory_wrappers
+    args: [data]
+    params:
+      returns: Any
+  _trim_inventory_data:
+    type: sync
+    module: climate-advisor.service.app.tools.cc_inventory_wrappers
+    args: [data]
+    params:
+      returns: Any
+  _trim_user_inventories_data:
+    type: sync
+    module: climate-advisor.service.app.tools.cc_inventory_wrappers
+    args: [data]
+    params:
+      returns: Any
+  _within_service:
+    type: sync
+    module: climate-advisor.service.app.config.settings
+    args: [path]
+    params:
+      returns: bool
+  build_cc_inventory_tools:
+    type: sync
+    module: climate-advisor.service.app.tools.cc_inventory_wrappers
+    params:
+      returns: Tuple
+  build_custom_agent_1:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator_legacy.agents.agent_1_main_action
+  build_custom_agent_10:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator_legacy.agents.agent_10_sdgs
+  build_custom_agent_2:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator_legacy.agents.agent_2_sub_actions
+  build_custom_agent_3:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator.agents.agent_3_involved_municipalities
+  build_custom_agent_4:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator.agents.agent_4_goals_milestones
+  build_custom_agent_5:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator_legacy.agents.agent_5_timeline
+  build_custom_agent_6:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator_legacy.agents.agent_6_cost_budget
+  build_custom_agent_7:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator.agents.agent_7_mer
+  build_custom_agent_8:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator_legacy.agents.agent_8_adaptation
+  build_custom_agent_9:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator_legacy.agents.agent_9_mitigation
+  cc_city_inventory_search:
+    type: tool
+    module: climate-advisor.service.app.tools.cc_inventory_wrappers
+    args: [city_name, year]
+    params:
+      returns: str
+  cc_get_all_datasources:
+    type: tool
+    module: climate-advisor.service.app.tools.cc_inventory_wrappers
+    args: [inventory_id]
+    params:
+      returns: str
+  cc_get_inventory:
+    type: tool
+    module: climate-advisor.service.app.tools.cc_inventory_wrappers
+    args: [inventory_id]
+    params:
+      returns: str
+  cc_list_user_inventories:
+    type: tool
+    module: climate-advisor.service.app.tools.cc_inventory_wrappers
+    params:
+      returns: str
+  climate_vector_search:
+    type: tool
+    module: climate-advisor.service.app.tools.climate_vector_sync
+    args: [question]
+    params:
+      returns: str
+  climate_vector_search_sync:
+    type: sync
+    module: climate-advisor.service.app.tools.climate_vector_sync
+    args: [question]
+    params:
+      returns: str
+  close:
+    type: async
+    module: climate-advisor.service.app.services.agent_service
+    args: [self]
+  create_agent:
+    type: async
+    module: climate-advisor.service.app.services.agent_service
+    args: [self]
+    params:
+      returns: Agent
+  create_graph:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator.graph_definition
+  create_token_context:
+    type: sync
+    module: climate-advisor.service.app.utils.token_manager
+    args: [access_token, expires_in, issued_at]
+    params:
+      returns: Dict
+  custom_agent_1:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator_legacy.agents.agent_1_main_action
+    args: [state]
+    params:
+      returns: AgentState
+  custom_agent_10:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator_legacy.agents.agent_10_sdgs
+    args: [state]
+    params:
+      returns: AgentState
+  custom_agent_2:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator_legacy.agents.agent_2_sub_actions
+    args: [state]
+    params:
+      returns: AgentState
+  custom_agent_3:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator.agents.agent_3_involved_municipalities
+    args: [state]
+    params:
+      returns: AgentState
+  custom_agent_4:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator.agents.agent_4_goals_milestones
+    args: [state]
+    params:
+      returns: AgentState
+  custom_agent_5:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator_legacy.agents.agent_5_timeline
+    args: [state]
+    params:
+      returns: AgentState
+  custom_agent_6:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator_legacy.agents.agent_6_cost_budget
+    args: [state]
+    params:
+      returns: AgentState
+  custom_agent_7:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator.agents.agent_7_mer
+    args: [state]
+    params:
+      returns: AgentState
+  custom_agent_8:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator_legacy.agents.agent_8_adaptation
+    args: [state]
+    params:
+      returns: AgentState
+  custom_agent_9:
+    type: sync
+    module: hiap.app.plan_creator_bundle.plan_creator_legacy.agents.agent_9_mitigation
+    args: [state]
+    params:
+      returns: AgentState
+  fetch_inventory:
+    type: async
+    module: climate-advisor.service.app.tools.cc_inventory_tool
+    args: [self, inventory_id]
+    params:
+      returns: CCInventoryToolResult
+  fetch_inventory_datasources:
+    type: async
+    module: climate-advisor.service.app.tools.cc_inventory_tool
+    args: [self]
+    params:
+      returns: CCInventoryToolResult
+  fetch_user_inventories:
+    type: async
+    module: climate-advisor.service.app.tools.cc_inventory_tool
+    args: [self]
+    params:
+      returns: CCInventoryToolResult
+  get_city:
+    type: async
+    module: climate-advisor.service.app.services.citycatalyst_client
+    args: [self, city_id, token, user_id]
+    params:
+      returns: Dict
+  get_inventory:
+    type: async
+    module: climate-advisor.service.app.services.citycatalyst_client
+    args: [self, inventory_id, token, user_id]
+    params:
+      returns: Dict
+  get_inventory_datasources:
+    type: async
+    module: climate-advisor.service.app.services.citycatalyst_client
+    args: [self, inventory_id, token, user_id]
+    params:
+      returns: Dict
+  get_prompt:
+    type: sync
+    module: climate-advisor.service.app.config.settings
+    args: [self, prompt_type]
+    params:
+      returns: str
+  get_settings:
+    type: sync
+    module: climate-advisor.service.app.config.settings
+    params:
+      returns: Settings
+  get_token_expiry:
+    type: sync
+    module: climate-advisor.service.app.utils.token_manager
+    args: [token]
+  get_token_subject:
+    type: sync
+    module: climate-advisor.service.app.utils.token_manager
+    args: [token]
+  get_user_inventories:
+    type: async
+    module: climate-advisor.service.app.services.citycatalyst_client
+    args: [self]
+    params:
+      returns: Dict
+  get_with_auto_refresh:
+    type: async
+    module: climate-advisor.service.app.services.citycatalyst_client
+    args: [self, url]
+    params:
+      returns: httpx.Response
+  handle_refreshed_token:
+    type: async
+    module: climate-advisor.service.app.utils.token_handler
+    args: [self, refreshed_token, agent_service]
+    params:
+      returns: bool
+  is_token_expired:
+    type: sync
+    module: climate-advisor.service.app.utils.token_manager
+    args: [token, buffer_seconds]
+    params:
+      returns: bool
+  load_token_from_thread:
+    type: async
+    module: climate-advisor.service.app.utils.token_handler
+    args: [self]
+    params:
+      returns: Optional[str]
+  model_post_init:
+    type: sync
+    module: climate-advisor.service.app.config.settings
+    args: [self, __context]
+    params:
+      returns: None
+  options_messages:
+    type: async
+    module: climate-advisor.service.app.routes.messages
+    params:
+      returns: Response
+  parse_jwt_claims:
+    type: sync
+    module: climate-advisor.service.app.utils.token_manager
+    args: [token]
+  persist_message:
+    type: async
+    module: climate-advisor.service.app.utils.streaming_handler
+    args: [self]
+    params:
+      returns: bool
+  post_message:
+    type: async
+    module: climate-advisor.service.app.routes.messages
+    args: [payload, session, session_factory]
+    params:
+      returns: StreamingResponse
+  post_with_auto_refresh:
+    type: async
+    module: climate-advisor.service.app.services.citycatalyst_client
+    args: [self, url]
+    params:
+      returns: httpx.Response
+  redact_token:
+    type: sync
+    module: climate-advisor.service.app.utils.token_manager
+    args: [token, length]
+    params:
+      returns: str
+  redact_tokens:
+    type: sync
+    module: climate-advisor.service.app.utils.token_manager
+    args: [message]
+    params:
+      returns: str
+  refresh_token:
+    type: async
+    module: climate-advisor.service.app.services.citycatalyst_client
+    args: [self, user_id]
+    params:
+      returns: Tuple
+  replacer:
+    type: sync
+    module: climate-advisor.service.app.utils.token_manager
+    args: [match]
+  run:
+    type: async
+    module: climate-advisor.service.app.tools.climate_vector_tool
+    args: [self, question]
+    params:
+      returns: ClimateToolResult
+  stream_response:
+    type: async
+    module: climate-advisor.service.app.utils.streaming_handler
+    args: [self, payload, history_warning]
+    params:
+      returns: AsyncIterator[bytes]
+  stream_wrapper:
+    type: async
+    module: climate-advisor.service.app.routes.messages
+  to_dict:
+    type: sync
+    module: climate-advisor.service.app.tools.cc_inventory_tool
+    args: [self]
+    params:
+      returns: Dict
+  update_cc_token:
+    type: sync
+    module: climate-advisor.service.app.services.agent_service
+    args: [self, token]
+    params:
+      returns: None
+
+variables:
+  CA_CORS_ORIGINS:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  CA_DATABASE_ECHO:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  CA_DATABASE_MAX_OVERFLOW:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  CA_DATABASE_POOL_SIZE:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  CA_DATABASE_POOL_TIMEOUT:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  CA_DATABASE_URL:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  CA_LOG_LEVEL:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  CA_PORT:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  CC_API_KEY:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  CC_BASE_URL:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  CC_OAUTH_CLIENT_ID:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  CC_OAUTH_CLIENT_SECRET:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  CC_OAUTH_TOKEN_URL:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  key:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  LANGSMITH_API_KEY:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  OPENAI_API_KEY:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  OPENROUTER_API_KEY:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  OPENROUTER_REFERER:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+  OPENROUTER_TITLE:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [resolved]
+
+files:
+  .env:
+    type: literal
+    actions: [read]
+    params:
+      caller: [_load_environment]
+      path: [service_root]
+  config_path:
+    type: variable
+    actions: [read]
+    params:
+      caller: [open, yaml.safe_load]
+      alias: [f]
+  dotenv_path:
+    type: variable
+    actions: [read]
+    params:
+      caller: [Path]
+  full_path:
+    type: variable
+    actions: [read]
+    params:
+      caller: [open]
+      alias: [f]
+  llm_config.yaml:
+    type: literal
+    actions: [read]
+    params:
+      caller: [get_prompt, _load_llm_config]
+      path: [current]

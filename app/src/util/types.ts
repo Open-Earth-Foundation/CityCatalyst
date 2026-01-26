@@ -27,6 +27,7 @@ import type {
 } from "@/backend/DataSourceService";
 import type { ProjectAttributes } from "@/models/Project";
 import type { OrganizationAttributes } from "@/models/Organization";
+import { VersionAttributes } from "@/models/Version";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -904,3 +905,8 @@ export interface ImportStatusResponse {
   lastUpdated: string;
   completedAt: string | null;
 }
+
+export type VersionHistoryResponse = (VersionAttributes & {
+  author: { name: string; userId: string };
+  previousVersion: VersionAttributes;
+})[];

@@ -76,6 +76,7 @@ import type {
   HiapJob,
   ImportedFileResponse,
   ImportStatusResponse,
+  VersionHistoryResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -121,6 +122,7 @@ export const api = createApi({
     "ProjectModules",
     "Modules",
     "ActionPlan",
+    "VersionHistory",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1840,6 +1842,33 @@ export const api = createApi({
         transformResponse: (response: { data: ImportedFileResponse }) =>
           response.data,
         invalidatesTags: ["Inventory"],
+      }),
+
+      // Version Control Endpoints
+      getVersionHistory: builder.query<
+        VersionHistoryResponse,
+        { inventoryId: string }
+      >({
+        query: ({ inventoryId }) => `inventory/${inventoryId}/version-history`,
+        transformResponse: (response: { data: VersionHistoryResponse }) =>
+          response.data,
+        providesTags: ["VersionHistory"],
+      }),
+
+      restoreVersion: builder.mutation<
+        { success: boolean },
+        {
+          inventoryId: string;
+          versionId: string;
+        }
+      >({
+        query: ({ inventoryId, versionId }) => ({
+          url: `inventory/${inventoryId}/version-history/restore-version/${versionId}`,
+          method: "POST",
+        }),
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
+        invalidatesTags: ["VersionHistory"],
       }),
     };
   },

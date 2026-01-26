@@ -174,7 +174,7 @@ jobs:
             CC_API_KEY=${{secrets.CC_SERVICE_API_KEY}} \
             CA_LOG_LEVEL=info \
             CA_CORS_ORIGINS="*" \
-            CC_BASE_URL=https://citycatalyst.openearth.dev \
+            CC_BASE_URL=https://citycatalyst-test.openearth.dev \
             LANGSMITH_API_KEY=${{secrets.LANGSMITH_API_KEY}} \
             LANGSMITH_WORKSPACE_ID=${{secrets.LANGSMITH_WORKSPACE_ID}} \
             -n default

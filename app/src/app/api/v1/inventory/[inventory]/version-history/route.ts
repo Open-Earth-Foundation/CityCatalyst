@@ -83,20 +83,37 @@ export const GET = apiHandler(async (_req, { session, params }) => {
   });
 
   // add metadata required by frontend to version history data
-  const versions = inventoryValueVersions.map((version) => ({
-    version,
-    activities: version.entryId && activitiesByInventoryValue[version.entryId],
-    subSector: findSubSector(version.data?.subSectorId),
-    dataSource: dataSources.find(
+  const versions = inventoryValueVersions.map((version) => {
+    const subSector = findSubSector(version.data?.subSectorId);
+    let activities = version.entryId
+      ? activitiesByInventoryValue[version.entryId]
+      : undefined;
+
+    const dataSource = dataSources.find(
       (source) => source.datasourceId === version.data?.datasourceId,
-    ),
-    previousDataSource: version.previousVersion
+    );
+    const previousDataSource = version.previousVersion
       ? dataSources.find(
           (source) =>
             source.datasourceId === version.previousVersion.data?.datasourceId,
         )
-      : undefined,
-  }));
+      : undefined;
+
+    const subCategory = subSector.subCategories.find(
+      (subCategory) =>
+        subCategory.subcategoryId === version.data?.subcategoryId,
+    );
+    const scope = subCategory ? subCategory.scope.scopeName : undefined;
+
+    return {
+      version,
+      activities,
+      subSector,
+      dataSource,
+      previousDataSource,
+      scope,
+    };
+  });
 
   return NextResponse.json({
     data: versions,

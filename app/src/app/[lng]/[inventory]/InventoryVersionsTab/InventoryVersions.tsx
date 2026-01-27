@@ -1,6 +1,6 @@
 "use client";
 
-import { InventoryResponse } from "@/util/types";
+import { VersionHistoryEntry } from "@/util/types";
 import {
   Box,
   Button,
@@ -24,34 +24,89 @@ import { TFunction } from "i18next";
 import { useState } from "react";
 import { formatEmissions } from "@/util/helpers";
 import { api } from "@/services/api";
+import ProgressLoader from "@/components/ProgressLoader";
 
 function toEmissionsString(totalEmissions: number): string {
   const { value, unit } = formatEmissions(totalEmissions);
   return `${value} ${unit}CO2e`;
 }
 
-function VersionEntry({ t, isCurrent }: { t: TFunction; isCurrent: boolean }) {
-  const date = new Date();
+const maxVersionGroupSecondsElapsed = 60 * 60; // 1 hour
+
+// groups version history by same author and max time elapsed since the start of the session
+function groupInventoryHistory(
+  versionEntries: VersionHistoryEntry[] | undefined,
+): VersionHistoryEntry[][] {
+  if (!versionEntries || versionEntries.length === 0) {
+    return [];
+  }
+
+  let currentGroup = 0;
+  const results = [[versionEntries[versionEntries.length - 1]]];
+
+  for (let i = versionEntries.length - 2; i >= 0; i--) {
+    console.log("At", i, versionEntries.length);
+    const previousVersion = versionEntries[i + 1];
+    const version = versionEntries[i];
+    const firstGroupVersion = results[currentGroup][0];
+
+    let timeSinceFirstGroupVersion = 0;
+    if (version.created && firstGroupVersion.created) {
+      const versionTime = new Date(version.created).getTime();
+      const firstGroupTime = new Date(firstGroupVersion.created).getTime();
+      timeSinceFirstGroupVersion = (versionTime - firstGroupTime) / 1000; // convert to seconds
+    }
+
+    if (
+      previousVersion.author.userId !== version.author.userId ||
+      timeSinceFirstGroupVersion > maxVersionGroupSecondsElapsed
+    ) {
+      currentGroup++;
+      results.push([]);
+    }
+
+    results[currentGroup].push(version);
+  }
+
+  results.reverse();
+
+  return results;
+}
+
+function VersionEntry({
+  t,
+  isCurrent,
+  versionEntries,
+  versionNumber,
+}: {
+  t: TFunction;
+  isCurrent: boolean;
+  versionEntries: VersionHistoryEntry[];
+  versionNumber: number;
+}) {
+  const lastEntry = versionEntries[versionEntries.length - 1];
+
+  const date = new Date(lastEntry.created ?? 0);
   const month = date.toLocaleString("default", { month: "long" });
   const formattedDate = `${month} ${date.getDate()}, ${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()}`;
   const [isExpanded, setExpanded] = useState(false);
-  const userName = "Maria Rossi";
+  const userName = lastEntry.author.name;
 
-  const changes = [
-    {
-      subSector: "I.1 Residential Buildings",
-      totalEmissions: 342.5,
-      sectorPercentage: 0.453,
-      scope1: 456.7,
-      scope2: 901.2,
-      scope3: 12.34,
-      source: "IEA",
-      author: "Maria Rossi",
-      date: new Date(),
-    },
-  ];
-  changes[1] = changes[0];
-  changes[2] = changes[0];
+  const changes = versionEntries.map((entry) => ({
+    subSector: entry.data?.subSectorId, // TODO get subsectors and format as "I.1 Residential Buildings",
+    totalEmissions: entry.data?.co2eq
+      ? toEmissionsString(entry.data.co2eq)
+      : "-",
+    sectorPercentage: 0.453,
+    scope1: toEmissionsString(4567000), // TODO group changes of ActivityValue with InventoryValue to extract this, figure out correct scope for each
+    scope2: toEmissionsString(901200),
+    scope3: toEmissionsString(12.34),
+    source: entry.data?.datasourceId, // TODO get data source name, e.g. "IEA",
+    author: entry.author.name,
+    date: new Date(entry.created ?? 0),
+  }));
+
+  const formattedVersionNumber = ((versionNumber + 10) / 10).toFixed(1);
 
   return (
     <Box
@@ -86,7 +141,7 @@ function VersionEntry({ t, isCurrent }: { t: TFunction; isCurrent: boolean }) {
                 borderRadius="100px"
                 fontWeight="600"
               >
-                V3.1
+                V{formattedVersionNumber}
               </Box>
               {isCurrent && (
                 <Box
@@ -254,7 +309,7 @@ function VersionEntry({ t, isCurrent }: { t: TFunction; isCurrent: boolean }) {
                     bgColor="sentiment.positiveOverlay"
                     color="sentiment.positiveDefault"
                   >
-                    {change.totalEmissions} {"kT CO2e"}
+                    {change.totalEmissions}
                   </Table.Cell>
                   <Table.Cell
                     bgColor="sentiment.negativeOverlay"
@@ -262,15 +317,9 @@ function VersionEntry({ t, isCurrent }: { t: TFunction; isCurrent: boolean }) {
                   >
                     {(change.sectorPercentage * 100).toFixed(1)}%
                   </Table.Cell>
-                  <Table.Cell>
-                    {change.scope1} {"kT CO2e"}
-                  </Table.Cell>
-                  <Table.Cell>
-                    {change.scope2} {"kT CO2e"}
-                  </Table.Cell>
-                  <Table.Cell>
-                    {change.scope3} {"kT CO2e"}
-                  </Table.Cell>
+                  <Table.Cell>{change.scope1}</Table.Cell>
+                  <Table.Cell>{change.scope2}</Table.Cell>
+                  <Table.Cell>{change.scope3}</Table.Cell>
                   <Table.Cell>{change.source}</Table.Cell>
                   <Table.Cell>{change.author}</Table.Cell>
                   <Table.Cell>
@@ -299,6 +348,8 @@ export default function InventoryVersions({
     { inventoryId: inventoryId! },
     { skip: !inventoryId },
   );
+  const groupedVersions = groupInventoryHistory(data);
+  console.log("IH data", groupedVersions);
 
   return (
     <VStack alignItems="start" gap={4} mt={1}>
@@ -318,9 +369,21 @@ export default function InventoryVersions({
           </Text>
         </VStack>
       </HStack>
-      {[0, 1, 2].map((i) => (
-        <VersionEntry key={i} t={t} isCurrent={i === 0} />
-      ))}
+      {isLoading && <ProgressLoader />}
+      {data != null &&
+        (data?.length === 0 ? (
+          <Text>{t("no-history")}</Text>
+        ) : (
+          groupedVersions.map((entries, i) => (
+            <VersionEntry
+              key={i}
+              t={t}
+              versionEntries={entries}
+              isCurrent={i === 0}
+              versionNumber={groupedVersions.length - i - 1}
+            />
+          ))
+        ))}
     </VStack>
   );
 }

@@ -906,9 +906,17 @@ export interface ImportStatusResponse {
   completedAt: string | null;
 }
 
-export type VersionHistoryEntry = VersionAttributes & {
+type VersionChange = VersionAttributes & {
   author: { name: string; userId: string };
   previousVersion: VersionAttributes;
+};
+
+export type VersionHistoryEntry = {
+  version: VersionChange;
+  activities: VersionChange[];
+  subSector: SubSectorAttributes;
+  dataSource: { datasourceName: string; datasetName: string };
+  previousDataSource: { datasourceName: string; datasetName: string };
 };
 
 export type VersionHistoryResponse = VersionHistoryEntry[];

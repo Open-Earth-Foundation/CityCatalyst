@@ -1,8 +1,31 @@
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
+import { groupBy } from "lodash";
 
 import VersionHistoryService from "@/backend/VersionHistoryService";
 import { PermissionService } from "@/backend/permissions/PermissionService";
+import { Inventory_Sector_Hierarchy } from "@/backend/InventoryProgressService";
+import createHttpError from "http-errors";
+import { logger } from "@/services/logger";
+import type { SubSector } from "@/models/SubSector";
+import { db } from "@/models";
+import { Op } from "sequelize";
+
+function findSubSector(subSectorId: string): SubSector {
+  const subSectors = Inventory_Sector_Hierarchy.flatMap(
+    (sector) => sector.subSectors,
+  );
+  const subSector = subSectors.find(
+    (subSector) => subSector.subsectorId === subSectorId,
+  );
+
+  if (!subSector) {
+    logger.error({ subSectorId }, "Sub-sector not found for version history!");
+    throw new createHttpError.NotFound("sub-sector-not-found");
+  }
+
+  return subSector;
+}
 
 /**
  * @swagger
@@ -38,7 +61,44 @@ export const GET = apiHandler(async (_req, { session, params }) => {
   const versionHistory =
     await VersionHistoryService.getVersionHistory(inventoryId);
 
+  const inventoryValueVersions = versionHistory.filter(
+    (version) => version.table === "InventoryValue",
+  );
+  const activityValueVersions = versionHistory.filter(
+    (version) => version.table === "ActivityValue",
+  );
+  const activitiesByInventoryValue = groupBy(
+    activityValueVersions,
+    (version) => version.data?.inventoryValueId,
+  );
+  const dataSourcesUsed = inventoryValueVersions.map(
+    (version) => version.data?.datasourceId,
+  );
+
+  const dataSources = await db.models.DataSource.findAll({
+    where: {
+      datasourceId: { [Op.in]: dataSourcesUsed },
+    },
+    attributes: ["datasourceName", "datasetName"],
+  });
+
+  // add metadata required by frontend to version history data
+  const versions = inventoryValueVersions.map((version) => ({
+    version,
+    activities: version.entryId && activitiesByInventoryValue[version.entryId],
+    subSector: findSubSector(version.data?.subSectorId),
+    dataSource: dataSources.find(
+      (source) => source.datasourceId === version.data?.datasourceId,
+    ),
+    previousDataSource: version.previousVersion
+      ? dataSources.find(
+          (source) =>
+            source.datasourceId === version.previousVersion.data?.datasourceId,
+        )
+      : undefined,
+  }));
+
   return NextResponse.json({
-    data: versionHistory,
+    data: versions,
   });
 });

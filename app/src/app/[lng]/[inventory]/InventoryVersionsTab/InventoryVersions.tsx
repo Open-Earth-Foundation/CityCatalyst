@@ -45,10 +45,9 @@ function groupInventoryHistory(
   const results = [[versionEntries[versionEntries.length - 1]]];
 
   for (let i = versionEntries.length - 2; i >= 0; i--) {
-    console.log("At", i, versionEntries.length);
-    const previousVersion = versionEntries[i + 1];
-    const version = versionEntries[i];
-    const firstGroupVersion = results[currentGroup][0];
+    const previousVersion = versionEntries[i + 1].version;
+    const version = versionEntries[i].version;
+    const firstGroupVersion = results[currentGroup][0].version;
 
     let timeSinceFirstGroupVersion = 0;
     if (version.created && firstGroupVersion.created) {
@@ -65,7 +64,7 @@ function groupInventoryHistory(
       results.push([]);
     }
 
-    results[currentGroup].push(version);
+    results[currentGroup].push(versionEntries[i]);
   }
 
   results.reverse();
@@ -86,24 +85,27 @@ function VersionEntry({
 }) {
   const lastEntry = versionEntries[versionEntries.length - 1];
 
-  const date = new Date(lastEntry.created ?? 0);
+  const date = new Date(lastEntry.version.created ?? 0);
   const month = date.toLocaleString("default", { month: "long" });
   const formattedDate = `${month} ${date.getDate()}, ${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()}`;
   const [isExpanded, setExpanded] = useState(false);
-  const userName = lastEntry.author.name;
+  const userName = lastEntry.version.author.name;
 
   const changes = versionEntries.map((entry) => ({
-    subSector: entry.data?.subSectorId, // TODO get subsectors and format as "I.1 Residential Buildings",
-    totalEmissions: entry.data?.co2eq
-      ? toEmissionsString(entry.data.co2eq)
+    subSector:
+      entry.subSector?.referenceNumber +
+      " " +
+      t(entry.subSector?.subsectorName ?? ""),
+    totalEmissions: entry.version.data?.co2eq
+      ? toEmissionsString(entry.version.data.co2eq)
       : "-",
-    sectorPercentage: 0.453,
+    sectorPercentage: 0.453, // TODO calculate from full sector emissions? Would need to be at the time when this entry was current?
     scope1: toEmissionsString(4567000), // TODO group changes of ActivityValue with InventoryValue to extract this, figure out correct scope for each
     scope2: toEmissionsString(901200),
     scope3: toEmissionsString(12.34),
-    source: entry.data?.datasourceId, // TODO get data source name, e.g. "IEA",
-    author: entry.author.name,
-    date: new Date(entry.created ?? 0),
+    source: entry.dataSource?.datasourceName ?? "-",
+    author: entry.version.author.name,
+    date: new Date(entry.version.created ?? 0),
   }));
 
   const formattedVersionNumber = ((versionNumber + 10) / 10).toFixed(1);

@@ -368,12 +368,22 @@ export default class FileValidatorService {
       },
       { key: "scope", terms: ["scope"] },
       {
+        key: "year",
+        terms: [
+          "year",
+          "inventory year",
+          "reporting year",
+          "reference year",
+          "inventory_year",
+          "reporting_year",
+        ],
+      },
+      {
         key: "co2",
         terms: [
           "ghgs (metric tonnes co2e) - co2",
           "co2",
           "ghg co2",
-          "emission co2",
         ],
       },
       {
@@ -382,7 +392,6 @@ export default class FileValidatorService {
           "ghgs (metric tonnes co2e) - ch4",
           "ch4",
           "ghg ch4",
-          "emission ch4",
         ],
       },
       {
@@ -391,7 +400,6 @@ export default class FileValidatorService {
           "ghgs (metric tonnes co2e) - n2o",
           "n2o",
           "ghg n2o",
-          "emission n2o",
         ],
       },
       {
@@ -405,6 +413,10 @@ export default class FileValidatorService {
           "total emissions", // Fallback
           "co2 equivalent", // Fallback
         ],
+      },
+      {
+        key: "notationKey",
+        terms: ["notation key", "notation_key", "notation"],
       },
       // Activity data columns (optional)
       {
@@ -479,6 +491,52 @@ export default class FileValidatorService {
           "emission_factor_description",
           "ef description",
           "ef_description",
+        ],
+      },
+      // Emission factor value columns (CO2, CH4, N2O, Unit, Total CO2e)
+      {
+        key: "emissionFactorUnit",
+        terms: [
+          "emission factor - unit",
+          "emission factor unit",
+          "ef unit",
+          "ef_unit",
+        ],
+      },
+      {
+        key: "emissionFactorCO2",
+        terms: [
+          "emission factor - co2",
+          "emission factor co2",
+          "ef co2",
+          "ef_co2",
+        ],
+      },
+      {
+        key: "emissionFactorCH4",
+        terms: [
+          "emission factor - ch4",
+          "emission factor ch4",
+          "ef ch4",
+          "ef_ch4",
+        ],
+      },
+      {
+        key: "emissionFactorN2O",
+        terms: [
+          "emission factor - n2o",
+          "emission factor n2o",
+          "ef n2o",
+          "ef_n2o",
+        ],
+      },
+      {
+        key: "emissionFactorTotalCO2e",
+        terms: [
+          "emission factor - total co2e",
+          "emission factor total co2e",
+          "ef total co2e",
+          "ef_total co2e",
         ],
       },
     ];

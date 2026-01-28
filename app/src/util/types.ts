@@ -859,9 +859,15 @@ export interface ColumnInfo {
   exampleValue: string | null;
 }
 
+export interface RequiredMappingOption {
+  key: string;
+  label: string;
+}
+
 export interface ValidationResults {
   totalColumnsDetected: number;
   columns: ColumnInfo[];
+  requiredMappings?: RequiredMappingOption[];
   errors: string[];
   warnings: string[];
 }

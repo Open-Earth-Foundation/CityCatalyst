@@ -228,6 +228,7 @@ export const GET = apiHandler(
       ch4: "CH4",
       n2o: "N2O",
       totalCO2e: "Total CO2e",
+      notationKey: "Notation Key",
       activityType: "Activity Type / Fuel Type",
       activityAmount: "Activity Amount",
       activityUnit: "Activity Unit",
@@ -253,6 +254,7 @@ export const GET = apiHandler(
       "ch4",
       "n2o",
       "totalCO2e",
+      "notationKey",
       "activityType",
       "activityAmount",
       "activityUnit",
@@ -267,6 +269,27 @@ export const GET = apiHandler(
       "emissionFactorN2O",
       "emissionFactorTotalCO2e",
     ].map((key) => ({ key, label: gpcFieldNames[key] ?? key }));
+
+    /** Column names to hide from validation/mapping UI (not required for import). */
+    const EXCLUDED_COLUMN_NAMES = [
+      "GHGs (metric tonnes CO2e) - Biogenic CO2",
+      "Activity data conversion - original activity",
+      "Activity data conversion - original unit",
+      "Activity data conversion - conversion value",
+      "Activity data conversion - override used?",
+      "Emission factor - Biogenic CO2",
+      "Oxidation factor",
+      "Emission factor - Year",
+      "Emission factor - Data Quality",
+      "Emission factor - Scale",
+      "Emission factor - Description",
+      "Emission factor - Source",
+    ].map((s) => s.toLowerCase().trim());
+
+    const isExcludedColumn = (header: string) => {
+      const n = header.toLowerCase().trim();
+      return EXCLUDED_COLUMN_NAMES.some((e) => n === e);
+    };
 
     // Step 2: Validation Results - Get detected columns with interpretations
     let validationStepData = null;
@@ -290,9 +313,9 @@ export const GET = apiHandler(
             const headers = parsedData.primarySheet.headers;
             const firstRow = parsedData.primarySheet.rows[0] || {};
 
-            // Build detected columns list
+            // Build detected columns list (exclude non-required columns)
             for (const header of headers) {
-              if (!header) continue;
+              if (!header || isExcludedColumn(header)) continue;
 
               // Find which GPC field this column maps to
               let interpretedAs: string | null = null;

@@ -339,21 +339,32 @@ export default class InventoryImportService {
           },
         });
 
-        // Calculate total CO2e first (use totalCO2e if available, otherwise sum individual gases)
-        let totalCO2e: number | undefined = row.totalCO2e;
+        // If any of CO2, CH4, N2O exist: store them and use their sum as totalCO2e.
+        // Otherwise: use totalCO2e only (no per-gas storage).
+        const co2Val =
+          row.co2 != null ? Number(row.co2) : undefined;
+        const ch4Val =
+          row.ch4 != null ? Number(row.ch4) : undefined;
+        const n2oVal =
+          row.n2o != null ? Number(row.n2o) : undefined;
+        const hasAnyGas =
+          (typeof co2Val === "number" && !isNaN(co2Val)) ||
+          (typeof ch4Val === "number" && !isNaN(ch4Val)) ||
+          (typeof n2oVal === "number" && !isNaN(n2oVal));
 
-        console.log(
-          `[Import] GPC ${row.gpcRefNo} - Initial totalCO2e: ${totalCO2e}, CO2: ${row.co2}, CH4: ${row.ch4}, N2O: ${row.n2o}, NotationKey: ${row.notationKey}`,
-        );
-
-        if (!totalCO2e) {
-          // Sum individual gas values (already in CO2e from eCRF)
-          const co2 = row.co2 || 0;
-          const ch4 = row.ch4 || 0;
-          const n2o = row.n2o || 0;
+        let totalCO2e: number | undefined;
+        if (hasAnyGas) {
+          const co2 = co2Val ?? 0;
+          const ch4 = ch4Val ?? 0;
+          const n2o = n2oVal ?? 0;
           totalCO2e = co2 + ch4 + n2o;
           console.log(
-            `[Import] GPC ${row.gpcRefNo} - Calculated totalCO2e from individual gases: ${totalCO2e}`,
+            `[Import] GPC ${row.gpcRefNo} - Using gas sum as totalCO2e: CO2=${co2}, CH4=${ch4}, N2O=${n2o} -> ${totalCO2e}`,
+          );
+        } else {
+          totalCO2e = row.totalCO2e;
+          console.log(
+            `[Import] GPC ${row.gpcRefNo} - Using totalCO2e only: ${totalCO2e}, CO2/CH4/N2O: none`,
           );
         }
 
@@ -420,7 +431,36 @@ export default class InventoryImportService {
             });
             importedRows++;
           }
-          console.log(row);
+
+          // Sync per-gas storage: store CO2, CH4, N2O as GasValues when present; otherwise clear any existing.
+          const existingGasValues = await db.models.GasValue.findAll({
+            where: { inventoryValueId: inventoryValue.id },
+          });
+          for (const gv of existingGasValues) {
+            await gv.destroy();
+          }
+          if (hasAnyGas && (typeof co2Val === "number" || typeof ch4Val === "number" || typeof n2oVal === "number")) {
+            const toKg = (t: number) =>
+              decimalToBigInt(new Decimal(t).mul(1000));
+            const gases: { gas: "CO2" | "CH4" | "N2O"; val: number }[] = [];
+            if (typeof co2Val === "number" && !isNaN(co2Val)) {
+              gases.push({ gas: "CO2", val: co2Val });
+            }
+            if (typeof ch4Val === "number" && !isNaN(ch4Val)) {
+              gases.push({ gas: "CH4", val: ch4Val });
+            }
+            if (typeof n2oVal === "number" && !isNaN(n2oVal)) {
+              gases.push({ gas: "N2O", val: n2oVal });
+            }
+            for (const { gas, val } of gases) {
+              await db.models.GasValue.create({
+                id: randomUUID(),
+                inventoryValueId: inventoryValue.id,
+                gas,
+                gasAmount: toKg(val),
+              });
+            }
+          }
 
           // Create ActivityValue if activity data or metadata is present
           // For direct-measure methodology, we need to store metadata (data source, data quality) even without activity data

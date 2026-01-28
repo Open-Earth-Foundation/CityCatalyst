@@ -414,6 +414,10 @@ export default class FileValidatorService {
           "co2 equivalent", // Fallback
         ],
       },
+      {
+        key: "notationKey",
+        terms: ["notation key", "notation_key", "notation"],
+      },
       // Activity data columns (optional)
       {
         key: "activityType",

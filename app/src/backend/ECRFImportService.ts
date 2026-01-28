@@ -193,11 +193,14 @@ export default class ECRFImportService {
       }
 
       // Extract notation key if present
-      const notationKeyHeader = this.findHeader(headers, [
-        "notation key",
-        "notation_key",
-        "notation",
-      ]);
+      const notationKeyHeader =
+        detectedColumns.notationKey !== undefined
+          ? headers[detectedColumns.notationKey]
+          : this.findHeader(headers, [
+              "notation key",
+              "notation_key",
+              "notation",
+            ]);
       const notationKey = notationKeyHeader
         ? row[notationKeyHeader]?.toString().trim()
         : undefined;

@@ -339,8 +339,8 @@ export default class InventoryImportService {
           },
         });
 
-        // If any of CO2, CH4, N2O exist: store them and use their sum as totalCO2e.
-        // Otherwise: use totalCO2e only (no per-gas storage).
+        // If any of CO2, CH4, N2O exist: store totalCO2e and gas values together.
+        // Otherwise: store only totalCO2e (no per-gas storage).
         const co2Val =
           row.co2 != null ? Number(row.co2) : undefined;
         const ch4Val =
@@ -352,19 +352,22 @@ export default class InventoryImportService {
           (typeof ch4Val === "number" && !isNaN(ch4Val)) ||
           (typeof n2oVal === "number" && !isNaN(n2oVal));
 
+        const gasSum =
+          (co2Val ?? 0) + (ch4Val ?? 0) + (n2oVal ?? 0);
+
         let totalCO2e: number | undefined;
         if (hasAnyGas) {
-          const co2 = co2Val ?? 0;
-          const ch4 = ch4Val ?? 0;
-          const n2o = n2oVal ?? 0;
-          totalCO2e = co2 + ch4 + n2o;
+          totalCO2e =
+            row.totalCO2e != null && !isNaN(Number(row.totalCO2e))
+              ? Number(row.totalCO2e)
+              : gasSum;
           console.log(
-            `[Import] GPC ${row.gpcRefNo} - Using gas sum as totalCO2e: CO2=${co2}, CH4=${ch4}, N2O=${n2o} -> ${totalCO2e}`,
+            `[Import] GPC ${row.gpcRefNo} - Storing totalCO2e and gas values: totalCO2e=${totalCO2e}, CO2=${co2Val ?? "-"}, CH4=${ch4Val ?? "-"}, N2O=${n2oVal ?? "-"}`,
           );
         } else {
           totalCO2e = row.totalCO2e;
           console.log(
-            `[Import] GPC ${row.gpcRefNo} - Using totalCO2e only: ${totalCO2e}, CO2/CH4/N2O: none`,
+            `[Import] GPC ${row.gpcRefNo} - Storing totalCO2e only (no gas values): ${totalCO2e}`,
           );
         }
 
@@ -567,6 +570,20 @@ export default class InventoryImportService {
                 activityData["data-source"] = row.activityDataSource;
               }
 
+              // Store gas amounts in activityData for Direct Measure UI (co2_amount, ch4_amount, n2o_amount; units-tonnes)
+              if (typeof co2Val === "number" && !isNaN(co2Val)) {
+                activityData.co2_amount = co2Val;
+                activityData.co2_unit = "units-tonnes";
+              }
+              if (typeof ch4Val === "number" && !isNaN(ch4Val)) {
+                activityData.ch4_amount = ch4Val;
+                activityData.ch4_unit = "units-tonnes";
+              }
+              if (typeof n2oVal === "number" && !isNaN(n2oVal)) {
+                activityData.n2o_amount = n2oVal;
+                activityData.n2o_unit = "units-tonnes";
+              }
+
               // Set group-by field default value if available
               if (groupByField && groupByDefaultValue) {
                 activityData[groupByField] = groupByDefaultValue;
@@ -588,9 +605,8 @@ export default class InventoryImportService {
                 metadata.sourceExplanation = row.activityDataSource;
               }
 
-              if (row.activityDataQuality) {
-                metadata.dataQuality = row.activityDataQuality;
-              }
+              metadata.dataQuality =
+                row.activityDataQuality?.trim() || "low";
 
               if (row.emissionFactorSource) {
                 metadata.emissionFactorName = row.emissionFactorSource;

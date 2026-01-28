@@ -295,6 +295,23 @@ export default class InventoryImportService {
     let importedRows = 0;
     let skippedRows = 0;
 
+    // Set inventory year from file when missing (year column mapped as "Year")
+    const inventory = await db.models.Inventory.findByPk(inventoryId);
+    if (
+      inventory &&
+      inventory.year == null &&
+      importResult.inferredYearFromFile != null
+    ) {
+      await inventory.update({ year: importResult.inferredYearFromFile });
+      logger.info(
+        {
+          inventoryId,
+          year: importResult.inferredYearFromFile,
+        },
+        "Set inventory year from imported file",
+      );
+    }
+
     // Filter to only valid rows (no errors)
     const validRows = importResult.rows.filter(
       (row) => !row.errors || row.errors.length === 0,
@@ -542,6 +559,23 @@ export default class InventoryImportService {
               if (row.emissionFactorDescription) {
                 metadata.emissionFactorTypeReference =
                   row.emissionFactorDescription;
+              }
+
+              if (row.emissionFactorUnit) {
+                metadata.emissionFactorUnit = row.emissionFactorUnit;
+              }
+
+              if (row.emissionFactorCO2 != null) {
+                metadata.emissionFactorCO2 = row.emissionFactorCO2;
+              }
+              if (row.emissionFactorCH4 != null) {
+                metadata.emissionFactorCH4 = row.emissionFactorCH4;
+              }
+              if (row.emissionFactorN2O != null) {
+                metadata.emissionFactorN2O = row.emissionFactorN2O;
+              }
+              if (row.emissionFactorTotalCO2e != null) {
+                metadata.emissionFactorTotalCO2e = row.emissionFactorTotalCO2e;
               }
 
               // emissionFactorType is a UUID field that we don't have in eCRF files

@@ -21,12 +21,14 @@ function ImportButton({
   cityId,
   inventoryId,
   importedFileId,
+  mappingOverrides,
   onImport,
   t,
 }: {
   cityId: string;
   inventoryId: string;
   importedFileId: string;
+  mappingOverrides: Record<string, string>;
   onImport: () => void;
   t: TFunction;
 }) {
@@ -46,11 +48,18 @@ function ImportButton({
   const handleImport = async () => {
     if (!importedFileId) return;
 
+    const overridesToSend = Object.fromEntries(
+      Object.entries(mappingOverrides).filter(([, v]) => v !== ""),
+    );
+
     try {
       await approveImport({
         cityId,
         inventoryId,
         importedFileId,
+        mappingOverrides: Object.keys(overridesToSend).length
+          ? overridesToSend
+          : undefined,
       }).unwrap();
 
       makeSuccessToast("Import completed", "Your inventory data has been imported successfully.");
@@ -114,6 +123,9 @@ export default function ImportPage(props: {
 
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [importedFileId, setImportedFileId] = useState<string | null>(null);
+  const [mappingOverrides, setMappingOverrides] = useState<
+    Record<string, string>
+  >({});
   const [showDataLossModal, setShowDataLossModal] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
   const pathname = usePathname();
@@ -310,6 +322,13 @@ export default function ImportPage(props: {
                     inventoryId={inventoryId}
                     importedFileId={importedFileId}
                     onContinue={handleContinue}
+                    mappingOverrides={mappingOverrides}
+                    onMappingChange={(columnName, mappedKey) => {
+                      setMappingOverrides((prev) => ({
+                        ...prev,
+                        [columnName]: mappedKey,
+                      }));
+                    }}
                   />
                 </motion.div>
               )}
@@ -417,6 +436,7 @@ export default function ImportPage(props: {
                   cityId={cityId}
                   inventoryId={inventoryId}
                   importedFileId={importedFileId}
+                  mappingOverrides={mappingOverrides}
                   onImport={() => {
                     router.push(`/${lng}/cities/${cityId}/GHGI`);
                   }}

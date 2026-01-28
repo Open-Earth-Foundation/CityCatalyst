@@ -137,11 +137,27 @@ export const POST = apiHandler(
         importedFile.fileType,
       );
 
-      // Get detected columns from validation results
       const validationResults = importedFile.validationResults as any;
-      const detectedColumns = validationResults?.detectedColumns || {};
+      let detectedColumns: Record<string, number> = {
+        ...(validationResults?.detectedColumns || {}),
+      };
 
-      // Process eCRF file
+      // Apply mapping overrides: columnName -> key; resolve column name to index
+      if (
+        mappingOverrides &&
+        Object.keys(mappingOverrides).length > 0 &&
+        parsedData.primarySheet
+      ) {
+        const headers = parsedData.primarySheet.headers;
+        for (const [columnName, key] of Object.entries(mappingOverrides)) {
+          if (!key) continue;
+          const idx = headers.findIndex((h) => h === columnName);
+          if (idx !== -1) {
+            detectedColumns[key] = idx;
+          }
+        }
+      }
+
       const importResult = await ECRFImportService.processECRFFile(
         parsedData,
         detectedColumns,

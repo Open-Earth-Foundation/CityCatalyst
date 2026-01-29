@@ -82,7 +82,7 @@ export const GET = apiHandler(async (_req, { session, params }) => {
     where: {
       datasourceId: { [Op.in]: dataSourcesUsed },
     },
-    attributes: ["datasourceName", "datasetName"],
+    attributes: ["datasourceId", "datasourceName", "datasetName"],
   });
 
   // add metadata required by frontend to version history data

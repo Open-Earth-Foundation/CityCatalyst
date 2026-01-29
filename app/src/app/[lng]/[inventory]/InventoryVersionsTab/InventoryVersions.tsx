@@ -127,6 +127,7 @@ function VersionEntry({
       : "-",
     totalEmissionsChangeSign: getChangeSign(entry),
     source: entry.dataSource?.datasourceName ?? "-",
+    previousSource: entry.dataSource?.datasourceName ?? "-",
     author: entry.version.author.name,
     date: new Date(entry.version.created ?? 0),
   }));
@@ -334,6 +335,14 @@ function VersionEntry({
                     : change.totalEmissionsChangeSign === -1
                       ? "sentiment.negativeDefault"
                       : undefined;
+                const sourceBgColor =
+                  change.source != change.previousSource
+                    ? "sentiment.warningOverlay"
+                    : undefined;
+                const sourceColor =
+                  change.source != change.previousSource
+                    ? "sentiment.warningDefault"
+                    : undefined;
 
                 return (
                   <Table.Row key={change.versionId}>
@@ -341,7 +350,9 @@ function VersionEntry({
                     <Table.Cell bgColor={totalBgColor} color={totalColor}>
                       {change.totalEmissions}
                     </Table.Cell>
-                    <Table.Cell>{change.source}</Table.Cell>
+                    <Table.Cell bgColor={sourceBgColor} color={sourceColor}>
+                      {change.source}
+                    </Table.Cell>
                     <Table.Cell>{change.author}</Table.Cell>
                     <Table.Cell>
                       {change.date.toLocaleString("default")}

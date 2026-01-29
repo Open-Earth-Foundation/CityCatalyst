@@ -104,12 +104,20 @@ function renderChangeText(t: TFunction, change: any): string {
   }
 
   if (change.previousTotalEmissions == "-") {
-    return t("inventory-versions-value-added-entry", {
-      name: change.author,
-      refNo: change.referenceNumber,
-      sourceA: change.source,
-      totalA: change.totalEmissions,
-    });
+    if (change.source != "-") {
+      return t("inventory-versions-value-source-added-entry", {
+        name: change.author,
+        refNo: change.referenceNumber,
+        sourceA: change.source,
+        totalA: change.totalEmissions,
+      });
+    } else {
+      return t("inventory-versions-value-added-entry", {
+        name: change.author,
+        refNo: change.referenceNumber,
+        totalA: change.totalEmissions,
+      });
+    }
   }
 
   if (

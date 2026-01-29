@@ -914,7 +914,7 @@ type VersionChange = VersionAttributes & {
 export type VersionHistoryEntry = {
   version: VersionChange;
   activities: VersionChange[];
-  subSector: SubSectorAttributes;
+  subCategory: SubCategoryAttributes;
   dataSource: { datasourceName: string; datasetName: string };
   previousDataSource: { datasourceName: string; datasetName: string };
 };

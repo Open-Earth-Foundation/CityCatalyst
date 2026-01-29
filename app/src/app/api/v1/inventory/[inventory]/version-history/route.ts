@@ -7,24 +7,27 @@ import { PermissionService } from "@/backend/permissions/PermissionService";
 import { Inventory_Sector_Hierarchy } from "@/backend/InventoryProgressService";
 import createHttpError from "http-errors";
 import { logger } from "@/services/logger";
-import type { SubSector } from "@/models/SubSector";
 import { db } from "@/models";
 import { Op } from "sequelize";
+import type { SubCategory } from "@/models/SubCategory";
 
-function findSubSector(subSectorId: string): SubSector {
-  const subSectors = Inventory_Sector_Hierarchy.flatMap(
-    (sector) => sector.subSectors,
+function findSubCategory(subCategoryId: string): SubCategory {
+  const subCategories = Inventory_Sector_Hierarchy.flatMap((sector) =>
+    sector.subSectors.flatMap((subSector) => subSector.subCategories),
   );
-  const subSector = subSectors.find(
-    (subSector) => subSector.subsectorId === subSectorId,
+  const subCategory = subCategories.find(
+    (subCategory) => subCategory.subcategoryId === subCategoryId,
   );
 
-  if (!subSector) {
-    logger.error({ subSectorId }, "Sub-sector not found for version history!");
-    throw new createHttpError.NotFound("sub-sector-not-found");
+  if (!subCategory) {
+    logger.error(
+      { subCategoryId },
+      "Sub-category not found for version history!",
+    );
+    throw new createHttpError.NotFound("sub-category-not-found");
   }
 
-  return subSector;
+  return subCategory;
 }
 
 /**
@@ -84,7 +87,7 @@ export const GET = apiHandler(async (_req, { session, params }) => {
 
   // add metadata required by frontend to version history data
   const versions = inventoryValueVersions.map((version) => {
-    const subSector = findSubSector(version.data?.subSectorId);
+    const subCategory = findSubCategory(version.data?.subCategoryId);
     let activities = version.entryId
       ? activitiesByInventoryValue[version.entryId]
       : undefined;
@@ -99,16 +102,12 @@ export const GET = apiHandler(async (_req, { session, params }) => {
         )
       : undefined;
 
-    const subCategory = subSector.subCategories.find(
-      (subCategory) =>
-        subCategory.subcategoryId === version.data?.subcategoryId,
-    );
     const scope = subCategory ? subCategory.scope.scopeName : undefined;
 
     return {
       version,
       activities,
-      subSector,
+      subCategory,
       dataSource,
       previousDataSource,
       scope,

@@ -72,13 +72,38 @@ function groupInventoryHistory(
   return results;
 }
 
+// check if total emissions value was increased or decreased
+// returns 1 if increased, 0 if there was no change and -1 if decreased
+function getChangeSign(entry: VersionHistoryEntry): number {
+  const previousVersion = entry.version.previousVersion;
+  const co2eq = entry.version.data?.co2eq;
+  if (!previousVersion && co2eq != null && co2eq > 0) {
+    return 1;
+  }
+  if (!previousVersion || co2eq == null || co2eq === 0) {
+    return 0;
+  }
+
+  const previousCo2eq = previousVersion.data?.co2eq;
+  if (previousCo2eq == null) {
+    return 1;
+  }
+  if (previousCo2eq === co2eq) {
+    return 0;
+  }
+
+  return co2eq > previousCo2eq ? 1 : -1;
+}
+
 function VersionEntry({
   t,
+  tData,
   isCurrent,
   versionEntries,
   versionNumber,
 }: {
   t: TFunction;
+  tData: TFunction;
   isCurrent: boolean;
   versionEntries: VersionHistoryEntry[];
   versionNumber: number;
@@ -93,12 +118,13 @@ function VersionEntry({
 
   const changes = versionEntries.map((entry) => ({
     subSector:
-      entry.subSector?.referenceNumber +
+      entry.subCategory?.referenceNumber +
       " " +
-      t(entry.subSector?.subsectorName ?? ""),
+      tData(entry.subCategory?.subcategoryName ?? ""),
     totalEmissions: entry.version.data?.co2eq
       ? toEmissionsString(entry.version.data.co2eq)
       : "-",
+    totalEmissionsChangeSign: getChangeSign(entry),
     sectorPercentage: 0.453, // TODO calculate from full sector emissions? Would need to be at the time when this entry was current?
     scope1: toEmissionsString(4567000), // TODO group changes of ActivityValue with InventoryValue to extract this, figure out correct scope for each
     scope2: toEmissionsString(901200),
@@ -286,7 +312,7 @@ function VersionEntry({
               textTransform="uppercase"
             >
               <Table.Row>
-                <Table.ColumnHeader>{t("subsector")}</Table.ColumnHeader>
+                <Table.ColumnHeader>{t("subcategory")}</Table.ColumnHeader>
                 <Table.ColumnHeader>{t("total-emissions")}</Table.ColumnHeader>
                 <Table.ColumnHeader>
                   {t("sector-percentage")}
@@ -304,31 +330,43 @@ function VersionEntry({
               color="content.primary"
               fontSize="body.md"
             >
-              {changes.map((change, i) => (
-                <Table.Row key={i}>
-                  <Table.Cell>{change.subSector}</Table.Cell>
-                  <Table.Cell
-                    bgColor="sentiment.positiveOverlay"
-                    color="sentiment.positiveDefault"
-                  >
-                    {change.totalEmissions}
-                  </Table.Cell>
-                  <Table.Cell
-                    bgColor="sentiment.negativeOverlay"
-                    color="sentiment.negativeDefault"
-                  >
-                    {(change.sectorPercentage * 100).toFixed(1)}%
-                  </Table.Cell>
-                  <Table.Cell>{change.scope1}</Table.Cell>
-                  <Table.Cell>{change.scope2}</Table.Cell>
-                  <Table.Cell>{change.scope3}</Table.Cell>
-                  <Table.Cell>{change.source}</Table.Cell>
-                  <Table.Cell>{change.author}</Table.Cell>
-                  <Table.Cell>
-                    {change.date.toLocaleString("default")}
-                  </Table.Cell>
-                </Table.Row>
-              ))}
+              {changes.map((change, i) => {
+                const totalBgColor =
+                  change.totalEmissionsChangeSign === 1
+                    ? "sentiment.positiveOverlay"
+                    : change.totalEmissionsChangeSign === -1
+                      ? "sentiment.negativeOverlay"
+                      : undefined;
+                const totalColor =
+                  change.totalEmissionsChangeSign === 1
+                    ? "sentiment.positiveDefault"
+                    : change.totalEmissionsChangeSign === -1
+                      ? "sentiment.negativeDefault"
+                      : undefined;
+
+                return (
+                  <Table.Row key={i}>
+                    <Table.Cell>{change.subSector}</Table.Cell>
+                    <Table.Cell bgColor={totalBgColor} color={totalColor}>
+                      {change.totalEmissions}
+                    </Table.Cell>
+                    <Table.Cell
+                      bgColor="sentiment.negativeOverlay"
+                      color="sentiment.negativeDefault"
+                    >
+                      {(change.sectorPercentage * 100).toFixed(1)}%
+                    </Table.Cell>
+                    <Table.Cell>{change.scope1}</Table.Cell>
+                    <Table.Cell>{change.scope2}</Table.Cell>
+                    <Table.Cell>{change.scope3}</Table.Cell>
+                    <Table.Cell>{change.source}</Table.Cell>
+                    <Table.Cell>{change.author}</Table.Cell>
+                    <Table.Cell>
+                      {change.date.toLocaleString("default")}
+                    </Table.Cell>
+                  </Table.Row>
+                );
+              })}
             </Table.Body>
           </Table.Root>
         </VStack>
@@ -345,6 +383,7 @@ export default function InventoryVersions({
   inventoryId?: string;
 }) {
   const { t } = useTranslation(lng, "dashboard");
+  const { t: tData } = useTranslation(lng, "data");
 
   const { data, isLoading } = api.useGetVersionHistoryQuery(
     { inventoryId: inventoryId! },
@@ -380,6 +419,7 @@ export default function InventoryVersions({
             <VersionEntry
               key={i}
               t={t}
+              tData={tData}
               versionEntries={entries}
               isCurrent={i === 0}
               versionNumber={groupedVersions.length - i - 1}

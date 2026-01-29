@@ -286,5 +286,6 @@
   "scope-3": "Scope 3",
   "last-modified-by": "Last modified by",
   "date": "Date",
-  "no-history": "No version history entries found."
+  "no-history": "No version history entries found.",
+  "subcategory": "Sub-category"
 }

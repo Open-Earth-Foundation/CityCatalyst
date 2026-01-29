@@ -152,7 +152,7 @@ function VersionEntry({
 
   const date = new Date(lastEntry.version.created ?? 0);
   const month = date.toLocaleString("default", { month: "long" });
-  const formattedDate = `${month} ${date.getDate()}, ${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()}`;
+  const formattedDate = `${month} ${date.getDate()}, ${date.getFullYear()} - ${date.getHours()}:${date.getMinutes().toString().padStart(2, "0")}`;
   const [isExpanded, setExpanded] = useState(false);
   const userName = lastEntry.version.author.name;
 

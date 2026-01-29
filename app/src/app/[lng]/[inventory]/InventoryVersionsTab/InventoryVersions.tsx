@@ -314,12 +314,6 @@ function VersionEntry({
               <Table.Row>
                 <Table.ColumnHeader>{t("subcategory")}</Table.ColumnHeader>
                 <Table.ColumnHeader>{t("total-emissions")}</Table.ColumnHeader>
-                <Table.ColumnHeader>
-                  {t("sector-percentage")}
-                </Table.ColumnHeader>
-                <Table.ColumnHeader>{t("scope-1")}</Table.ColumnHeader>
-                <Table.ColumnHeader>{t("scope-2")}</Table.ColumnHeader>
-                <Table.ColumnHeader>{t("scope-3")}</Table.ColumnHeader>
                 <Table.ColumnHeader>{t("source")}</Table.ColumnHeader>
                 <Table.ColumnHeader>{t("last-modified-by")}</Table.ColumnHeader>
                 <Table.ColumnHeader>{t("date")}</Table.ColumnHeader>
@@ -350,15 +344,6 @@ function VersionEntry({
                     <Table.Cell bgColor={totalBgColor} color={totalColor}>
                       {change.totalEmissions}
                     </Table.Cell>
-                    <Table.Cell
-                      bgColor="sentiment.negativeOverlay"
-                      color="sentiment.negativeDefault"
-                    >
-                      {(change.sectorPercentage * 100).toFixed(1)}%
-                    </Table.Cell>
-                    <Table.Cell>{change.scope1}</Table.Cell>
-                    <Table.Cell>{change.scope2}</Table.Cell>
-                    <Table.Cell>{change.scope3}</Table.Cell>
                     <Table.Cell>{change.source}</Table.Cell>
                     <Table.Cell>{change.author}</Table.Cell>
                     <Table.Cell>

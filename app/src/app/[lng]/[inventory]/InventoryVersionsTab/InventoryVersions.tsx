@@ -95,6 +95,46 @@ function getChangeSign(entry: VersionHistoryEntry): number {
   return co2eq < previousCo2eq ? 1 : -1;
 }
 
+function renderChangeText(t: TFunction, change: any): string {
+  if (change.isDeleted) {
+    return t("inventory-versions-value-deleted-entry", {
+      name: change.author,
+      refNo: change.referenceNumber,
+    });
+  }
+
+  if (change.previousTotalEmissions == "-") {
+    return t("inventory-versions-value-added-entry", {
+      name: change.author,
+      refNo: change.referenceNumber,
+      sourceA: change.source,
+      totalA: change.totalEmissions,
+    });
+  }
+
+  if (
+    change.source != "-" &&
+    change.previousSource != "-" &&
+    change.source != change.previousSource
+  ) {
+    return t("inventory-versions-value-source-change-entry", {
+      name: change.author,
+      refNo: change.referenceNumber,
+      sourceA: change.previousSource,
+      sourceB: change.source,
+      totalA: change.totalEmissions,
+      totalB: change.previousTotalEmissions,
+    });
+  }
+
+  return t("inventory-versions-value-general-change-entry", {
+    name: change.author,
+    refNo: change.referenceNumber,
+    totalA: change.previousTotalEmissions,
+    totalB: change.totalEmissions,
+  });
+}
+
 function VersionEntry({
   t,
   tData,
@@ -118,18 +158,23 @@ function VersionEntry({
 
   const changes = versionEntries.map((entry) => ({
     versionId: entry.version.versionId,
-    subSector:
+    referenceNumber: entry.subCategory?.referenceNumber,
+    subCategory:
       entry.subCategory?.referenceNumber +
       " " +
       tData(entry.subCategory?.subcategoryName ?? ""),
     totalEmissions: entry.version.data?.co2eq
       ? toEmissionsString(entry.version.data.co2eq)
       : "-",
+    previousTotalEmissions: entry.version.previousVersion?.data?.co2eq
+      ? toEmissionsString(entry.version.previousVersion?.data?.co2eq)
+      : "-",
     totalEmissionsChangeSign: getChangeSign(entry),
     source: entry.dataSource?.datasourceName ?? "-",
     previousSource: entry.dataSource?.datasourceName ?? "-",
     author: entry.version.author.name,
     date: new Date(entry.version.created ?? 0),
+    isDeleted: entry.version.isDeleted,
   }));
 
   const formattedVersionNumber = ((versionNumber + 10) / 10).toFixed(1);
@@ -226,9 +271,9 @@ function VersionEntry({
             <Text fontSize="16px" fontWeight="600" lineHeight="24px">
               {t("inventory-versions-changes")}
             </Text>
-            {[0, 1, 2].map((i) => (
+            {changes.map((change) => (
               <Text
-                key={i}
+                key={change.versionId}
                 color="content.secondary"
                 fontSize="14px"
                 fontWeight="400"
@@ -236,14 +281,7 @@ function VersionEntry({
                 letterSpacing="0.5px"
                 fontFamily="Open Sans"
               >
-                {t("inventory-versions-value-source-change-entry", {
-                  name: userName,
-                  refNo: "I.1.1",
-                  sourceA: "GPC",
-                  sourceB: "IEA",
-                  totalA: 15.22,
-                  totalB: 22.91,
-                })}
+                {renderChangeText(t, change)}
               </Text>
             ))}
           </VStack>
@@ -322,44 +360,46 @@ function VersionEntry({
               color="content.primary"
               fontSize="body.md"
             >
-              {changes.map((change) => {
-                const totalBgColor =
-                  change.totalEmissionsChangeSign === 1
-                    ? "sentiment.positiveOverlay"
-                    : change.totalEmissionsChangeSign === -1
-                      ? "sentiment.negativeOverlay"
+              {changes
+                .filter((change) => !change.isDeleted)
+                .map((change) => {
+                  const totalBgColor =
+                    change.totalEmissionsChangeSign === 1
+                      ? "sentiment.positiveOverlay"
+                      : change.totalEmissionsChangeSign === -1
+                        ? "sentiment.negativeOverlay"
+                        : undefined;
+                  const totalColor =
+                    change.totalEmissionsChangeSign === 1
+                      ? "sentiment.positiveDefault"
+                      : change.totalEmissionsChangeSign === -1
+                        ? "sentiment.negativeDefault"
+                        : undefined;
+                  const sourceBgColor =
+                    change.source != change.previousSource
+                      ? "sentiment.warningOverlay"
                       : undefined;
-                const totalColor =
-                  change.totalEmissionsChangeSign === 1
-                    ? "sentiment.positiveDefault"
-                    : change.totalEmissionsChangeSign === -1
-                      ? "sentiment.negativeDefault"
+                  const sourceColor =
+                    change.source != change.previousSource
+                      ? "sentiment.warningDefault"
                       : undefined;
-                const sourceBgColor =
-                  change.source != change.previousSource
-                    ? "sentiment.warningOverlay"
-                    : undefined;
-                const sourceColor =
-                  change.source != change.previousSource
-                    ? "sentiment.warningDefault"
-                    : undefined;
 
-                return (
-                  <Table.Row key={change.versionId}>
-                    <Table.Cell>{change.subSector}</Table.Cell>
-                    <Table.Cell bgColor={totalBgColor} color={totalColor}>
-                      {change.totalEmissions}
-                    </Table.Cell>
-                    <Table.Cell bgColor={sourceBgColor} color={sourceColor}>
-                      {change.source}
-                    </Table.Cell>
-                    <Table.Cell>{change.author}</Table.Cell>
-                    <Table.Cell>
-                      {change.date.toLocaleString("default")}
-                    </Table.Cell>
-                  </Table.Row>
-                );
-              })}
+                  return (
+                    <Table.Row key={change.versionId}>
+                      <Table.Cell>{change.subCategory}</Table.Cell>
+                      <Table.Cell bgColor={totalBgColor} color={totalColor}>
+                        {change.totalEmissions}
+                      </Table.Cell>
+                      <Table.Cell bgColor={sourceBgColor} color={sourceColor}>
+                        {change.source}
+                      </Table.Cell>
+                      <Table.Cell>{change.author}</Table.Cell>
+                      <Table.Cell>
+                        {change.date.toLocaleString("default")}
+                      </Table.Cell>
+                    </Table.Row>
+                  );
+                })}
             </Table.Body>
           </Table.Root>
         </VStack>

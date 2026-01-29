@@ -71,7 +71,7 @@ export default class VersionHistoryService {
         table,
         entryId,
         previousVersionId: previousVersion?.versionId,
-        data: isDeleted ? {} : data,
+        data,
         isDeleted,
       },
       { transaction },
@@ -93,7 +93,7 @@ export default class VersionHistoryService {
           table,
           entry[this.MODEL_ID_COLUMNS[table]],
           authorId,
-          isDeleted ? {} : entry,
+          entry,
           isDeleted,
           transaction,
         );

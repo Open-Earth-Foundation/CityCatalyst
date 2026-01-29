@@ -543,7 +543,7 @@ export default class ActivityService {
         "ActivityValue",
         activityValue.id,
         userId,
-        {},
+        activityValue,
         true,
         transaction,
       );
@@ -556,7 +556,7 @@ export default class ActivityService {
             "GasValue",
             gasValue.id,
             userId,
-            {},
+            gasValue,
             true,
             transaction,
           );
@@ -565,7 +565,7 @@ export default class ActivityService {
             "EmissionsFactor",
             gasValue.emissionsFactor.id,
             userId,
-            {},
+            gasValue.emissionsFactor,
             true,
             transaction,
           );
@@ -580,7 +580,7 @@ export default class ActivityService {
           "InventoryValue",
           inventoryValue.id,
           userId,
-          {},
+          inventoryValue,
           true,
           transaction,
         );
@@ -665,7 +665,7 @@ export default class ActivityService {
             "InventoryValue",
             inventoryValue.id,
             userId,
-            {},
+            inventoryValue,
             true,
             transaction,
           );
@@ -676,7 +676,7 @@ export default class ActivityService {
                 "ActivityValue",
                 activityValue.id,
                 userId,
-                {},
+                activityValue,
                 true,
                 transaction,
               );
@@ -689,7 +689,7 @@ export default class ActivityService {
                     "GasValue",
                     gasValue.id,
                     userId,
-                    {},
+                    gasValue,
                     true,
                     transaction,
                   );
@@ -698,7 +698,7 @@ export default class ActivityService {
                     "EmissionsFactor",
                     gasValue.emissionsFactor.id,
                     userId,
-                    {},
+                    gasValue,
                     true,
                     transaction,
                   );

@@ -87,7 +87,16 @@ export const GET = apiHandler(async (_req, { session, params }) => {
 
   // add metadata required by frontend to version history data
   const versions = inventoryValueVersions.map((version) => {
-    const subCategory = findSubCategory(version.data?.subCategoryId);
+    let subCategoryId = version.data?.subCategoryId;
+    // try to get the subCategoryId from the previous version if available (necessary for deletes)
+    if (!subCategoryId && version.previousVersion?.data) {
+      subCategoryId = version.previousVersion.data?.subCategoryId;
+    }
+    let subCategory = undefined;
+    if (subCategoryId) {
+      subCategory = findSubCategory(subCategoryId);
+    }
+
     let activities = version.entryId
       ? activitiesByInventoryValue[version.entryId]
       : undefined;

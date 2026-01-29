@@ -92,7 +92,7 @@ function getChangeSign(entry: VersionHistoryEntry): number {
     return 0;
   }
 
-  return co2eq > previousCo2eq ? 1 : -1;
+  return co2eq < previousCo2eq ? 1 : -1;
 }
 
 function VersionEntry({
@@ -117,6 +117,7 @@ function VersionEntry({
   const userName = lastEntry.version.author.name;
 
   const changes = versionEntries.map((entry) => ({
+    versionId: entry.version.versionId,
     subSector:
       entry.subCategory?.referenceNumber +
       " " +
@@ -125,10 +126,6 @@ function VersionEntry({
       ? toEmissionsString(entry.version.data.co2eq)
       : "-",
     totalEmissionsChangeSign: getChangeSign(entry),
-    sectorPercentage: 0.453, // TODO calculate from full sector emissions? Would need to be at the time when this entry was current?
-    scope1: toEmissionsString(4567000), // TODO group changes of ActivityValue with InventoryValue to extract this, figure out correct scope for each
-    scope2: toEmissionsString(901200),
-    scope3: toEmissionsString(12.34),
     source: entry.dataSource?.datasourceName ?? "-",
     author: entry.version.author.name,
     date: new Date(entry.version.created ?? 0),
@@ -324,7 +321,7 @@ function VersionEntry({
               color="content.primary"
               fontSize="body.md"
             >
-              {changes.map((change, i) => {
+              {changes.map((change) => {
                 const totalBgColor =
                   change.totalEmissionsChangeSign === 1
                     ? "sentiment.positiveOverlay"
@@ -339,7 +336,7 @@ function VersionEntry({
                       : undefined;
 
                 return (
-                  <Table.Row key={i}>
+                  <Table.Row key={change.versionId}>
                     <Table.Cell>{change.subSector}</Table.Cell>
                     <Table.Cell bgColor={totalBgColor} color={totalColor}>
                       {change.totalEmissions}
@@ -375,7 +372,6 @@ export default function InventoryVersions({
     { skip: !inventoryId },
   );
   const groupedVersions = groupInventoryHistory(data);
-  console.log("IH data", groupedVersions);
 
   return (
     <VStack alignItems="start" gap={4} mt={1}>

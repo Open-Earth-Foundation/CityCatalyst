@@ -25,6 +25,7 @@ import { useState } from "react";
 import { formatEmissions } from "@/util/helpers";
 import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
+import { UseErrorToast } from "@/hooks/Toasts";
 
 function toEmissionsString(totalEmissions: number): string {
   const { value, unit } = formatEmissions(totalEmissions);
@@ -263,13 +264,22 @@ function VersionEntry({
             <Button
               variant="outline"
               onClick={(event) => {
-                inventoryId &&
-                  mostRecentAssociatedVersionId &&
-                  restoreVersion({
-                    inventoryId,
-                    versionId: mostRecentAssociatedVersionId,
-                  });
                 event.stopPropagation();
+                if (!inventoryId || !mostRecentAssociatedVersionId) {
+                  return;
+                }
+                restoreVersion({
+                  inventoryId,
+                  versionId: mostRecentAssociatedVersionId,
+                })
+                  .unwrap()
+                  .catch((error) => {
+                    const { showErrorToast } = UseErrorToast({
+                      title: t("inventory-versions-restore-failed"),
+                      description: t(error.data.error.error),
+                    });
+                    showErrorToast();
+                  });
               }}
               loading={isRestoreVersionLoading}
               loadingText={t("inventory-versions-restoring")}

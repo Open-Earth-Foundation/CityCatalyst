@@ -1868,7 +1868,13 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: { success: boolean } }) =>
           response.data,
-        invalidatesTags: ["VersionHistory"],
+        invalidatesTags: [
+          "VersionHistory",
+          "Inventory",
+          "InventoryProgress",
+          "ReportResults",
+          "YearlyReportResults",
+        ],
       }),
     };
   },

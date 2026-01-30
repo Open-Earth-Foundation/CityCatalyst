@@ -68,6 +68,11 @@ function groupInventoryHistory(
     results[currentGroup].push(versionEntries[i]);
   }
 
+  // reverse each group internally to show most recent changes first
+  for (const resultGroup of results) {
+    resultGroup.reverse();
+  }
+
   results.reverse();
 
   return results;

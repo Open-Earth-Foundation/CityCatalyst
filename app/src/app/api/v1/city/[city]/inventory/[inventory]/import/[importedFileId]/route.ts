@@ -217,6 +217,80 @@ export const GET = apiHandler(
       }
     }
 
+    // Map of detected column keys to GPC field names (display labels). Shared across steps.
+    const gpcFieldNames: Record<string, string> = {
+      gpcRefNo: "GPC Reference Number",
+      sector: "Sector",
+      subsector: "Subsector",
+      scope: "Scope",
+      year: "Year",
+      co2: "CO2",
+      ch4: "CH4",
+      n2o: "N2O",
+      totalCO2e: "Total CO2e",
+      notationKey: "Notation Key",
+      activityType: "Activity Type / Fuel Type",
+      activityAmount: "Activity Amount",
+      activityUnit: "Activity Unit",
+      methodology: "Methodology",
+      activityDataSource: "Activity Data Source",
+      activityDataQuality: "Activity Data Quality",
+      emissionFactorSource: "Emission Factor Source",
+      emissionFactorDescription: "Emission Factor Description",
+      emissionFactorUnit: "Emission Factor - Unit",
+      emissionFactorCO2: "Emission Factor - CO2",
+      emissionFactorCH4: "Emission Factor - CH4",
+      emissionFactorN2O: "Emission Factor - N2O",
+      emissionFactorTotalCO2e: "Emission Factor - Total CO2e",
+    };
+
+    const requiredMappings = [
+      "gpcRefNo",
+      "sector",
+      "subsector",
+      "scope",
+      "year",
+      "co2",
+      "ch4",
+      "n2o",
+      "totalCO2e",
+      "notationKey",
+      "activityType",
+      "activityAmount",
+      "activityUnit",
+      "methodology",
+      "activityDataSource",
+      "activityDataQuality",
+      "emissionFactorSource",
+      "emissionFactorDescription",
+      "emissionFactorUnit",
+      "emissionFactorCO2",
+      "emissionFactorCH4",
+      "emissionFactorN2O",
+      "emissionFactorTotalCO2e",
+    ].map((key) => ({ key, label: gpcFieldNames[key] ?? key }));
+
+    /** Column names to hide from validation/mapping UI (not required for import). */
+    const EXCLUDED_COLUMN_NAMES = [
+      "GHGs (metric tonnes CO2e) - Biogenic CO2",
+      "Activity data conversion - original activity",
+      "Activity data conversion - original unit",
+      "Activity data conversion - conversion value",
+      "Activity data conversion - override used?",
+      "Emission factor - Biogenic CO2",
+      "Oxidation factor",
+      "Emission factor - Year",
+      "Emission factor - Data Quality",
+      "Emission factor - Scale",
+      "Emission factor - Description",
+      "Emission factor - Source",
+    ].map((s) => s.toLowerCase().trim());
+
+    const isExcludedColumn = (header: string) => {
+      const n = header.toLowerCase().trim();
+      return EXCLUDED_COLUMN_NAMES.some((e) => n === e);
+    };
+
     // Step 2: Validation Results - Get detected columns with interpretations
     let validationStepData = null;
     if (currentStep >= 2 && importedFile.validationResults?.detectedColumns) {
@@ -239,29 +313,9 @@ export const GET = apiHandler(
             const headers = parsedData.primarySheet.headers;
             const firstRow = parsedData.primarySheet.rows[0] || {};
 
-            // Map of detected column keys to GPC field names
-            const gpcFieldNames: Record<string, string> = {
-              gpcRefNo: "GPC Reference Number",
-              sector: "Sector",
-              subsector: "Subsector",
-              scope: "Scope",
-              co2: "CO2",
-              ch4: "CH4",
-              n2o: "N2O",
-              totalCO2e: "Total CO2e",
-              activityType: "Activity Type / Fuel Type",
-              activityAmount: "Activity Amount",
-              activityUnit: "Activity Unit",
-              methodology: "Methodology",
-              activityDataSource: "Activity Data Source",
-              activityDataQuality: "Activity Data Quality",
-              emissionFactorSource: "Emission Factor Source",
-              emissionFactorDescription: "Emission Factor Description",
-            };
-
-            // Build detected columns list
+            // Build detected columns list (exclude non-required columns)
             for (const header of headers) {
-              if (!header) continue;
+              if (!header || isExcludedColumn(header)) continue;
 
               // Find which GPC field this column maps to
               let interpretedAs: string | null = null;
@@ -297,6 +351,7 @@ export const GET = apiHandler(
       validationStepData = {
         totalColumnsDetected: detectedColumnsList.length,
         columns: detectedColumnsList,
+        requiredMappings,
         errors: importedFile.validationResults?.errors || [],
         warnings: importedFile.validationResults?.warnings || [],
       };

@@ -22,7 +22,7 @@ spec:
           image: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor:dev
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 8000
               name: http
           envFrom:
             - configMapRef:

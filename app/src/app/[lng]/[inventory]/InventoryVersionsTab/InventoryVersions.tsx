@@ -174,7 +174,7 @@ function VersionEntry({
     api.useRestoreVersionMutation();
 
   const mostRecentAssociatedVersionId =
-    lastEntry.mostRecentAssociatedVersion?.versionId; // TODO does this need to be first entry?
+    versionEntries[0].mostRecentAssociatedVersion?.versionId;
   const inventoryId = lastEntry.version.inventoryId;
 
   const changes = versionEntries.map((entry) => ({

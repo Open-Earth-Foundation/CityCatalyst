@@ -225,7 +225,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
             "GasValue",
             gasValue.id,
             userId,
-            {},
+            gasValue,
             true,
             transaction,
           );

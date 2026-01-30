@@ -162,20 +162,20 @@ function VersionEntry({
   versionEntries: VersionHistoryEntry[];
   versionNumber: number;
 }) {
-  const lastEntry = versionEntries[versionEntries.length - 1];
+  const firstEntry = versionEntries[versionEntries.length - 1];
 
-  const date = new Date(lastEntry.version.created ?? 0);
+  const date = new Date(firstEntry.version.created ?? 0);
   const month = date.toLocaleString("default", { month: "long" });
   const formattedDate = `${month} ${date.getDate()}, ${date.getFullYear()} - ${date.getHours()}:${date.getMinutes().toString().padStart(2, "0")}`;
   const [isExpanded, setExpanded] = useState(false);
-  const userName = lastEntry.version.author.name;
+  const userName = firstEntry.version.author.name;
 
   const [restoreVersion, { isLoading: isRestoreVersionLoading }] =
     api.useRestoreVersionMutation();
 
   const mostRecentAssociatedVersionId =
-    versionEntries[0].mostRecentAssociatedVersion?.versionId;
-  const inventoryId = lastEntry.version.inventoryId;
+    firstEntry.mostRecentAssociatedVersion?.versionId;
+  const inventoryId = firstEntry.version.inventoryId;
 
   const changes = versionEntries.map((entry) => ({
     versionId: entry.version.versionId,

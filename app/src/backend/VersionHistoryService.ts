@@ -118,6 +118,9 @@ export default class VersionHistoryService {
         inventoryId: restoredVersion.inventoryId,
         created: { [Op.gt]: restoredVersion?.created },
       },
+      // make sure newest versions are deleted first because of previousVersion constraint
+      // so a newer version doesn't refer to a previous version still while being deleted
+      order: [["created", "DESC"]],
       include: [
         {
           model: db.models.Version,

@@ -192,7 +192,7 @@ function VersionEntry({
       : "-",
     totalEmissionsChangeSign: getChangeSign(entry),
     source: entry.dataSource?.datasourceName ?? "-",
-    previousSource: entry.dataSource?.datasourceName ?? "-",
+    previousSource: entry.previousDataSource?.datasourceName ?? "-",
     author: entry.version.author.name,
     date: new Date(entry.version.created ?? 0),
     isDeleted: entry.version.isDeleted,

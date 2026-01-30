@@ -698,7 +698,7 @@ export default class ActivityService {
                     "EmissionsFactor",
                     gasValue.emissionsFactor.id,
                     userId,
-                    gasValue,
+                    gasValue.emissionsFactor,
                     true,
                     transaction,
                   );

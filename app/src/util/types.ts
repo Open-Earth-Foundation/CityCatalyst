@@ -27,7 +27,7 @@ import type {
 } from "@/backend/DataSourceService";
 import type { ProjectAttributes } from "@/models/Project";
 import type { OrganizationAttributes } from "@/models/Organization";
-import { VersionAttributes } from "@/models/Version";
+import type { VersionAttributes } from "@/models/Version";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;

@@ -1863,7 +1863,7 @@ export const api = createApi({
         }
       >({
         query: ({ inventoryId, versionId }) => ({
-          url: `inventory/${inventoryId}/version-history/restore-version/${versionId}`,
+          url: `inventory/${inventoryId}/version-history/restore/${versionId}`,
           method: "POST",
         }),
         transformResponse: (response: { data: { success: boolean } }) =>

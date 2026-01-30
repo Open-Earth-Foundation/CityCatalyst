@@ -295,6 +295,23 @@ export default class InventoryImportService {
     let importedRows = 0;
     let skippedRows = 0;
 
+    // Set inventory year from file when missing (year column mapped as "Year")
+    const inventory = await db.models.Inventory.findByPk(inventoryId);
+    if (
+      inventory &&
+      inventory.year == null &&
+      importResult.inferredYearFromFile != null
+    ) {
+      await inventory.update({ year: importResult.inferredYearFromFile });
+      logger.info(
+        {
+          inventoryId,
+          year: importResult.inferredYearFromFile,
+        },
+        "Set inventory year from imported file",
+      );
+    }
+
     // Filter to only valid rows (no errors)
     const validRows = importResult.rows.filter(
       (row) => !row.errors || row.errors.length === 0,
@@ -322,21 +339,35 @@ export default class InventoryImportService {
           },
         });
 
-        // Calculate total CO2e first (use totalCO2e if available, otherwise sum individual gases)
-        let totalCO2e: number | undefined = row.totalCO2e;
+        // If any of CO2, CH4, N2O exist: store totalCO2e and gas values together.
+        // Otherwise: store only totalCO2e (no per-gas storage).
+        const co2Val =
+          row.co2 != null ? Number(row.co2) : undefined;
+        const ch4Val =
+          row.ch4 != null ? Number(row.ch4) : undefined;
+        const n2oVal =
+          row.n2o != null ? Number(row.n2o) : undefined;
+        const hasAnyGas =
+          (typeof co2Val === "number" && !isNaN(co2Val)) ||
+          (typeof ch4Val === "number" && !isNaN(ch4Val)) ||
+          (typeof n2oVal === "number" && !isNaN(n2oVal));
 
-        console.log(
-          `[Import] GPC ${row.gpcRefNo} - Initial totalCO2e: ${totalCO2e}, CO2: ${row.co2}, CH4: ${row.ch4}, N2O: ${row.n2o}, NotationKey: ${row.notationKey}`,
-        );
+        const gasSum =
+          (co2Val ?? 0) + (ch4Val ?? 0) + (n2oVal ?? 0);
 
-        if (!totalCO2e) {
-          // Sum individual gas values (already in CO2e from eCRF)
-          const co2 = row.co2 || 0;
-          const ch4 = row.ch4 || 0;
-          const n2o = row.n2o || 0;
-          totalCO2e = co2 + ch4 + n2o;
+        let totalCO2e: number | undefined;
+        if (hasAnyGas) {
+          totalCO2e =
+            row.totalCO2e != null && !isNaN(Number(row.totalCO2e))
+              ? Number(row.totalCO2e)
+              : gasSum;
           console.log(
-            `[Import] GPC ${row.gpcRefNo} - Calculated totalCO2e from individual gases: ${totalCO2e}`,
+            `[Import] GPC ${row.gpcRefNo} - Storing totalCO2e and gas values: totalCO2e=${totalCO2e}, CO2=${co2Val ?? "-"}, CH4=${ch4Val ?? "-"}, N2O=${n2oVal ?? "-"}`,
+          );
+        } else {
+          totalCO2e = row.totalCO2e;
+          console.log(
+            `[Import] GPC ${row.gpcRefNo} - Storing totalCO2e only (no gas values): ${totalCO2e}`,
           );
         }
 
@@ -403,7 +434,36 @@ export default class InventoryImportService {
             });
             importedRows++;
           }
-          console.log(row);
+
+          // Sync per-gas storage: store CO2, CH4, N2O as GasValues when present; otherwise clear any existing.
+          const existingGasValues = await db.models.GasValue.findAll({
+            where: { inventoryValueId: inventoryValue.id },
+          });
+          for (const gv of existingGasValues) {
+            await gv.destroy();
+          }
+          if (hasAnyGas && (typeof co2Val === "number" || typeof ch4Val === "number" || typeof n2oVal === "number")) {
+            const toKg = (t: number) =>
+              decimalToBigInt(new Decimal(t).mul(1000));
+            const gases: { gas: "CO2" | "CH4" | "N2O"; val: number }[] = [];
+            if (typeof co2Val === "number" && !isNaN(co2Val)) {
+              gases.push({ gas: "CO2", val: co2Val });
+            }
+            if (typeof ch4Val === "number" && !isNaN(ch4Val)) {
+              gases.push({ gas: "CH4", val: ch4Val });
+            }
+            if (typeof n2oVal === "number" && !isNaN(n2oVal)) {
+              gases.push({ gas: "N2O", val: n2oVal });
+            }
+            for (const { gas, val } of gases) {
+              await db.models.GasValue.create({
+                id: randomUUID(),
+                inventoryValueId: inventoryValue.id,
+                gas,
+                gasAmount: toKg(val),
+              });
+            }
+          }
 
           // Create ActivityValue if activity data or metadata is present
           // For direct-measure methodology, we need to store metadata (data source, data quality) even without activity data
@@ -510,6 +570,20 @@ export default class InventoryImportService {
                 activityData["data-source"] = row.activityDataSource;
               }
 
+              // Store gas amounts in activityData for Direct Measure UI (co2_amount, ch4_amount, n2o_amount; units-tonnes)
+              if (typeof co2Val === "number" && !isNaN(co2Val)) {
+                activityData.co2_amount = co2Val;
+                activityData.co2_unit = "units-tonnes";
+              }
+              if (typeof ch4Val === "number" && !isNaN(ch4Val)) {
+                activityData.ch4_amount = ch4Val;
+                activityData.ch4_unit = "units-tonnes";
+              }
+              if (typeof n2oVal === "number" && !isNaN(n2oVal)) {
+                activityData.n2o_amount = n2oVal;
+                activityData.n2o_unit = "units-tonnes";
+              }
+
               // Set group-by field default value if available
               if (groupByField && groupByDefaultValue) {
                 activityData[groupByField] = groupByDefaultValue;
@@ -531,9 +605,8 @@ export default class InventoryImportService {
                 metadata.sourceExplanation = row.activityDataSource;
               }
 
-              if (row.activityDataQuality) {
-                metadata.dataQuality = row.activityDataQuality;
-              }
+              metadata.dataQuality =
+                row.activityDataQuality?.trim() || "low";
 
               if (row.emissionFactorSource) {
                 metadata.emissionFactorName = row.emissionFactorSource;
@@ -542,6 +615,23 @@ export default class InventoryImportService {
               if (row.emissionFactorDescription) {
                 metadata.emissionFactorTypeReference =
                   row.emissionFactorDescription;
+              }
+
+              if (row.emissionFactorUnit) {
+                metadata.emissionFactorUnit = row.emissionFactorUnit;
+              }
+
+              if (row.emissionFactorCO2 != null) {
+                metadata.emissionFactorCO2 = row.emissionFactorCO2;
+              }
+              if (row.emissionFactorCH4 != null) {
+                metadata.emissionFactorCH4 = row.emissionFactorCH4;
+              }
+              if (row.emissionFactorN2O != null) {
+                metadata.emissionFactorN2O = row.emissionFactorN2O;
+              }
+              if (row.emissionFactorTotalCO2e != null) {
+                metadata.emissionFactorTotalCO2e = row.emissionFactorTotalCO2e;
               }
 
               // emissionFactorType is a UUID field that we don't have in eCRF files

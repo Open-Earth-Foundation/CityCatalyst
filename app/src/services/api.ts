@@ -74,6 +74,8 @@ import type {
   HighImpactActionRankingStatus,
   BulkHiapPrioritizationResult,
   HiapJob,
+  ImportedFileResponse,
+  ImportStatusResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -1789,6 +1791,55 @@ export const api = createApi({
           }),
         }),
         transformResponse: (response: { threadId: string }) => response,
+      }),
+
+      // Inventory Import Endpoints
+      uploadInventoryFile: builder.mutation<
+        ImportedFileResponse,
+        { cityId: string; inventoryId: string; file: File }
+      >({
+        query: ({ cityId, inventoryId, file }) => {
+          const formData = new FormData();
+          formData.append("file", file);
+          return {
+            url: `city/${cityId}/inventory/${inventoryId}/import`,
+            method: "POST",
+            body: formData,
+          };
+        },
+        transformResponse: (response: { data: ImportedFileResponse }) =>
+          response.data,
+        invalidatesTags: ["Inventory"],
+      }),
+      getImportStatus: builder.query<
+        ImportStatusResponse,
+        { cityId: string; inventoryId: string; importedFileId: string }
+      >({
+        query: ({ cityId, inventoryId, importedFileId }) =>
+          `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}`,
+        transformResponse: (response: { data: ImportStatusResponse }) =>
+          response.data,
+      }),
+      approveImport: builder.mutation<
+        ImportedFileResponse,
+        {
+          cityId: string;
+          inventoryId: string;
+          importedFileId: string;
+          mappingOverrides?: Record<string, any>;
+        }
+      >({
+        query: ({ cityId, inventoryId, importedFileId, mappingOverrides }) => ({
+          url: `city/${cityId}/inventory/${inventoryId}/import/approve`,
+          method: "POST",
+          body: {
+            importedFileId,
+            mappingOverrides,
+          },
+        }),
+        transformResponse: (response: { data: ImportedFileResponse }) =>
+          response.data,
+        invalidatesTags: ["Inventory"],
       }),
     };
   },

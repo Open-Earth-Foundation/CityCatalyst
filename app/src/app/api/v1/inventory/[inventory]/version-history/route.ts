@@ -70,6 +70,9 @@ export const GET = apiHandler(async (_req, { session, params }) => {
   const activityValueVersions = versionHistory.filter(
     (version) => version.table === "ActivityValue",
   );
+  const otherVersions = versionHistory.filter(
+    (version) => version.table !== "InventoryValue",
+  );
   const activitiesByInventoryValue = groupBy(
     activityValueVersions,
     (version) => version.data?.inventoryValueId,
@@ -112,6 +115,16 @@ export const GET = apiHandler(async (_req, { session, params }) => {
       : undefined;
 
     const scope = subCategory ? subCategory.scope.scopeName : undefined;
+    const mostRecentAssociatedVersion = versionHistory.find(
+      (historyVersion) => {
+        if (!historyVersion.created || !version.created) {
+          return false;
+        }
+        const timeDelta =
+          historyVersion.created?.getTime() - version.created?.getTime();
+        return Math.abs(timeDelta) < 100;
+      },
+    );
 
     return {
       version,
@@ -120,6 +133,7 @@ export const GET = apiHandler(async (_req, { session, params }) => {
       dataSource,
       previousDataSource,
       scope,
+      mostRecentAssociatedVersion,
     };
   });
 

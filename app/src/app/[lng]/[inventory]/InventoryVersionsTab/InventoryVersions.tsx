@@ -164,6 +164,13 @@ function VersionEntry({
   const [isExpanded, setExpanded] = useState(false);
   const userName = lastEntry.version.author.name;
 
+  const [restoreVersion, { isLoading: isRestoreVersionLoading }] =
+    api.useRestoreVersionMutation();
+
+  const mostRecentAssociatedVersionId =
+    lastEntry.mostRecentAssociatedVersion?.versionId; // TODO does this need to be first entry?
+  const inventoryId = lastEntry.version.inventoryId;
+
   const changes = versionEntries.map((entry) => ({
     versionId: entry.version.versionId,
     referenceNumber: entry.subCategory?.referenceNumber,
@@ -253,7 +260,20 @@ function VersionEntry({
           </VStack>
           <Spacer />
           {!isCurrent && (
-            <Button variant="outline">
+            <Button
+              variant="outline"
+              onClick={(event) => {
+                inventoryId &&
+                  mostRecentAssociatedVersionId &&
+                  restoreVersion({
+                    inventoryId,
+                    versionId: mostRecentAssociatedVersionId,
+                  });
+                event.stopPropagation();
+              }}
+              loading={isRestoreVersionLoading}
+              loadingText={t("inventory-versions-restoring")}
+            >
               <Icon as={MdReplay} />
               {t("inventory-versions-restore")}
             </Button>

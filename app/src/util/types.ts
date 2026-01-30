@@ -915,8 +915,9 @@ export type VersionHistoryEntry = {
   version: VersionChange;
   activities: VersionChange[];
   subCategory: SubCategoryAttributes;
-  dataSource: { datasourceName: string; datasetName: string };
-  previousDataSource: { datasourceName: string; datasetName: string };
+  dataSource?: { datasourceName: string; datasetName: string };
+  previousDataSource?: { datasourceName: string; datasetName: string };
+  mostRecentAssociatedVersion?: VersionChange;
 };
 
 export type VersionHistoryResponse = VersionHistoryEntry[];

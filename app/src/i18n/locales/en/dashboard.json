@@ -275,6 +275,7 @@
   "inventory-versions-current": "Current",
   "inventory-versions-from": "Version from",
   "inventory-versions-restore": "Restore",
+  "inventory-versions-restoring": "Restoring...",
   "inventory-versions-changes": "Changes in this version",
   "inventory-versions-value-increased": "Value increased",
   "inventory-versions-value-decreased": "Value decreased",

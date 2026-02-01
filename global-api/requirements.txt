@@ -3,7 +3,7 @@ alembic==1.18.1
 fastapi==0.128.0
 black==25.12.0
 flake8==7.3.0
-fsspec==2025.*
+fsspec==2026.*
 geopandas>=0.12,<1.2
 mypy==1.19.1
 osmnx==2.0.7
@@ -12,7 +12,7 @@ psycopg2-binary==2.9.11
 pydantic-settings==2.*
 pytest==9.0.2
 rioxarray>=0.15.0,<1.0
-scipy==1.16.*
+scipy==1.17.*
 shapely==2.1.2
 SQLAlchemy==2.0.45
 tqdm==4.67.*

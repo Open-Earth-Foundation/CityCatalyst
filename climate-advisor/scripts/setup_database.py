@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """
 Climate Advisor Database Setup Utility
@@ -44,11 +45,10 @@ from pathlib import Path
 
 from dotenv import find_dotenv, load_dotenv
 
-# Ensure `app` package is importable when the script runs from repo root
-REPO_ROOT = Path(__file__).resolve().parents[1]
-SERVICE_ROOT = REPO_ROOT / "service"
-if str(SERVICE_ROOT) not in sys.path:
-    sys.path.insert(0, str(SERVICE_ROOT))
+# Add service directory to path so we can import from app
+_service_path = Path(__file__).resolve().parent.parent / "service"
+if str(_service_path) not in sys.path:
+    sys.path.insert(0, str(_service_path))
 
 
 def _load_env() -> None:
@@ -58,8 +58,9 @@ def _load_env() -> None:
         print(f"[+] Loading environment from: {env_path}")
         load_dotenv(env_path)
     else:
-        # Try repo root .env
-        repo_env = REPO_ROOT / ".env"
+        # Try climate-advisor root .env
+        ca_root = Path(__file__).resolve().parent.parent
+        repo_env = ca_root / ".env"
         if repo_env.exists():
             print(f"[+] Loading environment from: {repo_env}")
             load_dotenv(repo_env)
@@ -156,11 +157,12 @@ def _run_alembic_migrations() -> bool:
     """Run Alembic migrations to set up/update the database schema."""
     try:
         # Change to service directory where alembic.ini is located
+        service_root = Path(__file__).resolve().parent.parent / "service"
         original_dir = os.getcwd()
-        os.chdir(SERVICE_ROOT)
+        os.chdir(service_root)
         
         print("[*] Running Alembic migrations...")
-        print(f"    Working directory: {SERVICE_ROOT}")
+        print(f"    Working directory: {service_root}")
         
         # Run alembic upgrade head
         result = subprocess.run(
@@ -202,8 +204,9 @@ def _run_alembic_migrations() -> bool:
 def _show_migration_status() -> None:
     """Show current migration status."""
     try:
+        service_root = Path(__file__).resolve().parent.parent / "service"
         original_dir = os.getcwd()
-        os.chdir(SERVICE_ROOT)
+        os.chdir(service_root)
         
         print("\n[i] Current migration status:")
         result = subprocess.run(
@@ -323,4 +326,3 @@ For more information, see: climate-advisor/README.md
 
 if __name__ == "__main__":
     main()
-

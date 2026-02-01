@@ -204,7 +204,16 @@ export default function OnboardingSetup(props: {
         defaultCityId: cityId,
       }).unwrap();
       setConfirming(false);
-      router.push(`/${lng}/cities/${cityId}/GHGI/${inventory.inventoryId}`);
+      
+      // Check if we're in upload mode
+      const mode = params.get("mode");
+      if (mode === "upload") {
+        // Route to import page with the newly created inventory ID
+        router.push(`/${lng}/cities/${cityId}/GHGI/onboarding/import?inventory=${inventory.inventoryId}`);
+      } else {
+        // Default behavior: route to home page
+        router.push(`/${lng}/cities/${cityId}/GHGI/${inventory.inventoryId}`);
+      }
     } catch (err: any) {
       logger.error({ err: err }, "Failed to create new inventory!");
       makeErrorToast("failed-to-create-inventory", err.data?.error?.message);

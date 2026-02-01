@@ -1,4 +1,10 @@
 {
-  "add-data": "Adicionar Dados",
-  "submit-data-to-cdp": "Enviar dados para o CDP"
+  "page-title": "Enviar para o CDP",
+  "page-description": "Envie os dados do seu inventário de gases de efeito estufa diretamente para o CDP (Carbon Disclosure Project) para relatórios de divulgação climática.",
+  "submit-button": "Enviar para o CDP",
+  "submitting": "Enviando...",
+  "success-title": "Envio Bem-sucedido",
+  "success-description": "Os dados do seu inventário foram enviados com sucesso para o CDP.",
+  "error-title": "Falha no Envio",
+  "error-description": "Ocorreu um erro ao enviar seus dados para o CDP. Por favor, tente novamente."
 }

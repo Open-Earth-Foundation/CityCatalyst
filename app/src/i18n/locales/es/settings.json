@@ -168,5 +168,8 @@
   "my-apps-last-used": "Último usado",
   "my-apps-never": "(Nunca)",
   "my-apps-error-loading-apps": "Error al cargar las aplicaciones.",
-  "search-by-city-or-country": "Buscar por nombre de ciudad o país"
+  "search-by-city-or-country": "Buscar por nombre de ciudad o país",
+  "preparing-download": "Preparando tu descarga...",
+  "download-success": "¡Descarga completada!",
+  "download-failed": "Hubo un error durante la descarga"
 }

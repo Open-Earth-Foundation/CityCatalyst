@@ -15,7 +15,8 @@ import { logger } from "@/services/logger";
 import { findClosestYear, PopulationEntry } from "@/util/helpers";
 import { PopulationAttributes } from "@/models/Population";
 import { maxPopulationYearDifference } from "@/util/constants";
-import { Op } from "sequelize";
+import { Op, Transaction } from "sequelize";
+import VersionHistoryService from "./VersionHistoryService";
 
 const EARTH_LOCATION = "EARTH";
 
@@ -207,6 +208,7 @@ export default class DataSourceService {
     source: DataSource,
     inventory: Inventory,
     populationScaleFactors: PopulationScaleFactorResponse, // obtained from findPopulationScaleFactors
+    userId: string | undefined,
     forceReplace: boolean = false,
   ): Promise<ApplySourceResult> {
     const result: ApplySourceResult = {
@@ -225,6 +227,7 @@ export default class DataSourceService {
       const sourceStatus = await DataSourceService.applyGlobalAPISource(
         source,
         inventory,
+        userId,
         1.0,
         forceReplace,
       );
@@ -237,6 +240,7 @@ export default class DataSourceService {
         await DataSourceService.applyGlobalAPINotationKeySource(
           source,
           inventory,
+          userId,
           forceReplace,
         );
       if (typeof sourceStatus === "string") {
@@ -260,6 +264,7 @@ export default class DataSourceService {
       const sourceStatus = await DataSourceService.applyGlobalAPISource(
         source,
         inventory,
+        userId,
         scaleFactor,
         forceReplace,
       );
@@ -401,6 +406,7 @@ export default class DataSourceService {
   public static async applyGlobalAPISource(
     source: DataSource,
     inventory: Inventory,
+    userId: string | undefined,
     scaleFactor: number = 1.0,
     forceReplace: boolean = false,
   ): Promise<string | boolean> {
@@ -452,43 +458,80 @@ export default class DataSourceService {
     const n2oAmount = new Decimal(emissions.n2o_mass).times(scaleFactor);
     const ch4Amount = new Decimal(emissions.ch4_mass).times(scaleFactor);
 
-    // TODO what to do with existing InventoryValues and GasValues?
-    const inventoryValue = await db.models.InventoryValue.create({
-      datasourceId: source.datasourceId,
-      inventoryId: inventory.inventoryId,
-      co2eq: decimalToBigInt(co2eq),
-      co2eqYears: 100,
-      id: randomUUID(),
-      subCategoryId: source.subcategoryId,
-      subSectorId: subSector.subsectorId,
-      sectorId: subSector.sectorId,
-      gpcReferenceNumber,
-    });
-    if (data.records) {
-      await DataSourceService.saveActivityValues({
-        inventoryValueId: inventoryValue.id,
-        records: data.records,
-        gpcReferenceNumber,
-      });
-    }
-    // store values for co2, ch4, n2o separately for accounting and editing
-    await db.models.GasValue.create({
-      id: randomUUID(),
-      inventoryValueId: inventoryValue.id,
-      gas: "CO2",
-      gasAmount: decimalToBigInt(co2Amount),
-    });
-    await db.models.GasValue.create({
-      id: randomUUID(),
-      inventoryValueId: inventoryValue.id,
-      gas: "N2O",
-      gasAmount: decimalToBigInt(n2oAmount),
-    });
-    await db.models.GasValue.create({
-      id: randomUUID(),
-      inventoryValueId: inventoryValue.id,
-      gas: "CH4",
-      gasAmount: decimalToBigInt(ch4Amount),
+    await db.sequelize?.transaction(async (transaction) => {
+      const inventoryValue = await db.models.InventoryValue.create(
+        {
+          datasourceId: source.datasourceId,
+          inventoryId: inventory.inventoryId,
+          co2eq: decimalToBigInt(co2eq),
+          co2eqYears: 100,
+          id: randomUUID(),
+          subCategoryId: source.subcategoryId,
+          subSectorId: subSector.subsectorId,
+          sectorId: subSector.sectorId,
+          gpcReferenceNumber,
+        },
+        { transaction },
+      );
+      await VersionHistoryService.createVersion(
+        inventory.inventoryId,
+        "InventoryValue",
+        inventoryValue.id,
+        userId,
+        inventoryValue,
+        false,
+        transaction,
+      );
+
+      if (data.records) {
+        await DataSourceService.saveActivityValues({
+          inventoryValueId: inventoryValue.id,
+          records: data.records,
+          gpcReferenceNumber,
+          inventoryId: inventory.inventoryId,
+          userId,
+          transaction,
+        });
+      }
+
+      // store values for co2, ch4, n2o separately for accounting and editing
+      const gasValues = [
+        await db.models.GasValue.create(
+          {
+            id: randomUUID(),
+            inventoryValueId: inventoryValue.id,
+            gas: "CO2",
+            gasAmount: decimalToBigInt(co2Amount),
+          },
+          { transaction },
+        ),
+        await db.models.GasValue.create(
+          {
+            id: randomUUID(),
+            inventoryValueId: inventoryValue.id,
+            gas: "N2O",
+            gasAmount: decimalToBigInt(n2oAmount),
+          },
+          { transaction },
+        ),
+        await db.models.GasValue.create(
+          {
+            id: randomUUID(),
+            inventoryValueId: inventoryValue.id,
+            gas: "CH4",
+            gasAmount: decimalToBigInt(ch4Amount),
+          },
+          { transaction },
+        ),
+      ];
+      await VersionHistoryService.bulkCreateVersions(
+        inventory.inventoryId,
+        "GasValue",
+        userId,
+        gasValues,
+        false,
+        transaction,
+      );
     });
 
     return true;
@@ -538,6 +581,7 @@ export default class DataSourceService {
   public static async applyGlobalAPINotationKeySource(
     source: DataSource,
     inventory: Inventory,
+    userId: string | undefined,
     forceReplace: boolean = false,
   ): Promise<string | { gpcReferenceNumber: string; subSector: SubSector }> {
     const { gpcReferenceNumber, subSector } =
@@ -592,22 +636,36 @@ export default class DataSourceService {
       return "invalid_notation_key_data"; // returned as error with translation key
     }
 
-    const inventoryValue = await db.models.InventoryValue.create({
-      datasourceId: source.datasourceId,
-      inventoryId: inventory.inventoryId,
-      id: randomUUID(),
-      subCategoryId: source.subcategoryId,
-      subSectorId: subSector.subsectorId,
-      sectorId: subSector.sectorId,
-      gpcReferenceNumber,
-      unavailableReason,
-      unavailableExplanation,
-    });
+    await db.sequelize?.transaction(async (transaction) => {
+      const inventoryValue = await db.models.InventoryValue.create(
+        {
+          datasourceId: source.datasourceId,
+          inventoryId: inventory.inventoryId,
+          id: randomUUID(),
+          subCategoryId: source.subcategoryId,
+          subSectorId: subSector.subsectorId,
+          sectorId: subSector.sectorId,
+          gpcReferenceNumber,
+          unavailableReason,
+          unavailableExplanation,
+        },
+        { transaction },
+      );
+      logger.debug(
+        { inventoryValue },
+        "InventoryValue created for notation key source",
+      );
 
-    logger.debug(
-      { inventoryValue },
-      "InventoryValue created for notation key source",
-    );
+      await VersionHistoryService.createVersion(
+        inventory.inventoryId,
+        "InventoryValue",
+        inventoryValue.id,
+        userId,
+        inventoryValue,
+        false,
+        transaction,
+      );
+    });
 
     return { gpcReferenceNumber: gpcReferenceNumber!, subSector };
   }
@@ -616,31 +674,51 @@ export default class DataSourceService {
     inventoryValueId,
     activity,
     gpcReferenceNumber,
+    inventoryId,
+    userId,
+    transaction,
   }: {
     inventoryValueId: string;
     activity: DataSourceActivityDataRecord;
     gpcReferenceNumber: string | undefined;
+    inventoryId: string;
+    userId?: string;
+    transaction?: Transaction;
   }) {
     const co2eq = activity.gases.reduce(
       (sum, gas) => sum.plus(new Decimal(gas.emissions_value_100yr)),
       new Decimal(0),
     );
 
-    const activityValue = await db.models.ActivityValue.create({
-      id: randomUUID(),
-      inventoryValueId,
-      co2eq: BigInt(decimalToBigInt(co2eq)),
-      co2eqYears: 100,
-      metadata: {
-        activityId: activity.activity_name + "-activity",
-        ...activity.activity_subcategory_type,
+    const activityValue = await db.models.ActivityValue.create(
+      {
+        id: randomUUID(),
+        inventoryValueId,
+        co2eq: BigInt(decimalToBigInt(co2eq)),
+        co2eqYears: 100,
+        metadata: {
+          activityId: activity.activity_name + "-activity",
+          ...activity.activity_subcategory_type,
+        },
+        activityData: {
+          "activity-value":
+            activity.gases.reduce((acc, gas) => acc + gas.activity_value, 0) ??
+            0,
+          "activity-unit": activity.activity_units,
+        },
       },
-      activityData: {
-        "activity-value":
-          activity.gases.reduce((acc, gas) => acc + gas.activity_value, 0) ?? 0,
-        "activity-unit": activity.activity_units,
-      },
-    });
+      { transaction },
+    );
+    await VersionHistoryService.createVersion(
+      inventoryId,
+      "InventoryValue",
+      activityValue.id,
+      userId,
+      activityValue,
+      false,
+      transaction,
+    );
+
     const emissionsFactors = activity.gases.map((gas) => ({
       id: randomUUID(),
       gas: gas.gas_name,
@@ -651,7 +729,15 @@ export default class DataSourceService {
 
     const createdEmissionsFactors = await db.models.EmissionsFactor.bulkCreate(
       emissionsFactors,
-      { returning: true },
+      { returning: true, transaction },
+    );
+    await VersionHistoryService.bulkCreateVersions(
+      inventoryId,
+      "EmissionsFactor",
+      userId,
+      createdEmissionsFactors,
+      false,
+      transaction,
     );
 
     const gasValues = activity.gases.map((gas, index) => ({
@@ -662,17 +748,33 @@ export default class DataSourceService {
       emissionsFactorId: createdEmissionsFactors[index].id,
     }));
 
-    await db.models.GasValue.bulkCreate(gasValues);
+    const createdGasValues = await db.models.GasValue.bulkCreate(gasValues, {
+      transaction,
+    });
+    await VersionHistoryService.bulkCreateVersions(
+      inventoryId,
+      "GasValue",
+      userId,
+      createdGasValues,
+      false,
+      transaction,
+    );
   }
 
   private static async saveActivityValues({
     inventoryValueId,
     records,
     gpcReferenceNumber,
+    inventoryId,
+    userId,
+    transaction,
   }: {
     inventoryValueId: string;
     records: DataSourceActivityDataRecord[];
     gpcReferenceNumber: string | undefined;
+    inventoryId: string;
+    userId?: string;
+    transaction?: Transaction;
   }) {
     await Promise.all(
       records.map((activity) =>
@@ -680,6 +782,9 @@ export default class DataSourceService {
           activity,
           inventoryValueId,
           gpcReferenceNumber,
+          inventoryId,
+          userId,
+          transaction,
         }),
       ),
     );

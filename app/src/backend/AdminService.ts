@@ -9,7 +9,11 @@ import { City } from "@/models/City";
 import { groupBy } from "@/util/helpers";
 import OpenClimateService from "./OpenClimateService";
 import { Op } from "sequelize";
-import { DEFAULT_PROJECT_ID, InventoryTypeEnum, getScopesForInventoryAndSector } from "@/util/constants";
+import {
+  DEFAULT_PROJECT_ID,
+  InventoryTypeEnum,
+  getScopesForInventoryAndSector,
+} from "@/util/constants";
 import { InventoryAttributes } from "@/models/Inventory";
 import { GlobalWarmingPotentialTypeEnum } from "@/util/enums";
 import CityBoundaryService from "./CityBoundaryService";
@@ -178,6 +182,7 @@ export default class AdminService {
       const sourceErrors = await this.connectAllDataSources(
         inventory.inventoryId,
         inventory.city.locode,
+        session?.user.id,
       );
       errors.push(...sourceErrors);
     }
@@ -292,6 +297,7 @@ export default class AdminService {
   private static async connectAllDataSources(
     inventoryId: string,
     cityLocode: string,
+    userId: string | undefined,
   ): Promise<{ locode: string; error: string }[]> {
     const errors: any[] = [];
     logger.info(
@@ -304,17 +310,15 @@ export default class AdminService {
     if (!inventory) {
       throw new createHttpError.NotFound("Inventory not found");
     }
-    
+
     // Find all data sources for the inventory
     const sources = await DataSourceService.findAllSources(inventoryId);
     logger.debug(
       `Found ${sources.length} data sources for inventory ${inventoryId}`,
     );
     // Filter by locally available criteria (e.g. geographical location, year of inventory etc.)
-    const { applicableSources, removedSources } = DataSourceService.filterSources(
-      inventory,
-      sources,
-    );
+    const { applicableSources, removedSources } =
+      DataSourceService.filterSources(inventory, sources);
     logger.debug(
       `Found ${applicableSources.length} applicable data sources for inventory ${inventoryId}`,
     );
@@ -323,7 +327,7 @@ export default class AdminService {
         `Data source ${removedSource.source.datasourceName} was filtered out for inventory ${inventoryId}: ${removedSource.reason}`,
       );
     }
-    
+
     // Group sources by GPC reference number so we can prioritize for each choice individually
     const sourcesByReferenceNumber = groupBy(
       applicableSources.filter(
@@ -345,38 +349,42 @@ export default class AdminService {
 
     // Get all possible GPC sectors, subsectors, and scope combinations for this inventory
     const allGPCCombinations = await this.getAllPossibleGPCCombinations(
-      inventory.inventoryType!
+      inventory.inventoryType!,
     );
-    
+
     logger.debug(
       `Processing ${allGPCCombinations.length} possible GPC combinations for inventory ${inventoryId}`,
     );
 
     // Loop over all possible GPC combinations, not just available sources
     for (const combination of allGPCCombinations) {
-      const { gpcReferenceNumber, sectorId, subSectorId, subCategoryId } = combination;
-      
+      const { gpcReferenceNumber, sectorId, subSectorId, subCategoryId } =
+        combination;
+
       // Check if we have data sources available for this GPC reference number
-      const sourcesForReference = sourcesByReferenceNumber[gpcReferenceNumber] || [];
-      
+      const sourcesForReference =
+        sourcesByReferenceNumber[gpcReferenceNumber] || [];
+
       if (sourcesForReference.length > 0) {
         // Sort by priority and try to apply data sources
         const prioritizedSources = sourcesForReference.sort(
           (a, b) =>
-            (b.priority ?? DEFAULT_PRIORITY) -
-            (a.priority ?? DEFAULT_PRIORITY),
+            (b.priority ?? DEFAULT_PRIORITY) - (a.priority ?? DEFAULT_PRIORITY),
         );
 
         let isSuccessful = false;
         for (const source of prioritizedSources) {
-          logger.debug(`Trying data source ${source.datasourceId} for inventory ${inventoryId}`);
-          
+          logger.debug(
+            `Trying data source ${source.datasourceId} for inventory ${inventoryId}`,
+          );
+
           // Handle notation key sources differently
           if (source.retrievalMethod === "global_api_notation_key") {
             const result = await DataSourceService.applySource(
               source,
               inventory,
               populationScaleFactors,
+              userId,
               true, // force replace existing InventoryValue entries
             );
             if (result.success) {
@@ -405,12 +413,13 @@ export default class AdminService {
               });
             } else {
               logger.debug(
-                `Applying source ${source.datasourceId} for inventory ${inventoryId}`
+                `Applying source ${source.datasourceId} for inventory ${inventoryId}`,
               );
               const result = await DataSourceService.applySource(
                 source,
                 inventory,
                 populationScaleFactors,
+                userId,
                 true, // force replace existing InventoryValue entries
               );
               if (result.success) {
@@ -427,7 +436,7 @@ export default class AdminService {
             }
           }
         }
-        
+
         if (!isSuccessful) {
           logger.error(
             `${cityLocode} - Wasn't able to apply any data source for GPC reference number ${gpcReferenceNumber}`,
@@ -439,7 +448,7 @@ export default class AdminService {
             sectorId,
             subSectorId,
             subCategoryId,
-            "reason-NE"
+            "reason-NE",
           );
         }
       } else {
@@ -453,7 +462,7 @@ export default class AdminService {
           sectorId,
           subSectorId,
           subCategoryId,
-          "reason-NE"
+          "reason-NE",
         );
       }
     }
@@ -463,23 +472,30 @@ export default class AdminService {
 
   private static async getAllPossibleGPCCombinations(
     inventoryType: string,
-  ): Promise<Array<{
-    gpcReferenceNumber: string;
-    sectorId: string;
-    subSectorId: string | null;
-    subCategoryId: string | null;
-  }>> {
+  ): Promise<
+    Array<{
+      gpcReferenceNumber: string;
+      sectorId: string;
+      subSectorId: string | null;
+      subCategoryId: string | null;
+    }>
+  > {
     const validSectorRefNos = {
       gpc_basic: ["I", "II", "III"],
       gpc_basic_plus: ["I", "II", "III", "IV", "V"],
     };
 
-    const inventoryStructure = await InventoryProgressService.getSortedInventoryStructure();
+    const inventoryStructure =
+      await InventoryProgressService.getSortedInventoryStructure();
     const applicableSectors = inventoryStructure.filter((sector) => {
       if (!sector.referenceNumber) {
         return false;
       }
-      return validSectorRefNos[inventoryType as keyof typeof validSectorRefNos]?.includes(sector.referenceNumber) ?? false;
+      return (
+        validSectorRefNos[
+          inventoryType as keyof typeof validSectorRefNos
+        ]?.includes(sector.referenceNumber) ?? false
+      );
     });
 
     const combinations: Array<{
@@ -505,10 +521,12 @@ export default class AdminService {
               });
             } else {
               // For GPC_BASIC, filter by scope
-              const scope = subCategory.scope?.scopeName && /^\d+$/.test(subCategory.scope.scopeName)
-                ? Number(subCategory.scope.scopeName)
-                : null;
-              
+              const scope =
+                subCategory.scope?.scopeName &&
+                /^\d+$/.test(subCategory.scope.scopeName)
+                  ? Number(subCategory.scope.scopeName)
+                  : null;
+
               if (!sector.referenceNumber) {
                 continue;
               }
@@ -517,17 +535,17 @@ export default class AdminService {
                 inventoryType as any,
                 sector.referenceNumber,
               );
-              
+
               // If allowedScopes is empty (like for sectors IV and V in GPC_BASIC), skip all subcategories
               if (allowedScopes.length === 0) {
                 continue;
               }
-              
+
               // If scope is null but allowedScopes has values, skip this subcategory
               if (scope === null) {
                 continue;
               }
-              
+
               if (allowedScopes.includes(scope)) {
                 combinations.push({
                   gpcReferenceNumber: subCategory.referenceNumber!,
@@ -550,7 +568,10 @@ export default class AdminService {
           );
 
           // For sectors IV and V, check if they're allowed for this inventory type
-          if (inventoryType === "gpc_basic_plus" && (sector.referenceNumber === "IV" || sector.referenceNumber === "V")) {
+          if (
+            inventoryType === "gpc_basic_plus" &&
+            (sector.referenceNumber === "IV" || sector.referenceNumber === "V")
+          ) {
             // Include subsector for GPC_BASIC_PLUS
             combinations.push({
               gpcReferenceNumber: subSector.referenceNumber!,
@@ -558,7 +579,10 @@ export default class AdminService {
               subSectorId: subSector.subsectorId,
               subCategoryId: null,
             });
-          } else if (inventoryType === "gpc_basic" && allowedScopes.length > 0) {
+          } else if (
+            inventoryType === "gpc_basic" &&
+            allowedScopes.length > 0
+          ) {
             // For GPC_BASIC, only include if the sector has allowed scopes
             combinations.push({
               gpcReferenceNumber: subSector.referenceNumber!,

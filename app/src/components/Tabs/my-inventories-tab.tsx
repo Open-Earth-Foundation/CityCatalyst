@@ -7,15 +7,12 @@ import {
   Input,
   List,
   Popover,
-  PopoverArrow,
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
-  Progress,
   Table,
   Tabs,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react";
 import {
   AccordionRoot,
@@ -33,17 +30,58 @@ import {
   MdOutlineFolder,
   MdSearch,
 } from "react-icons/md";
-import { FiTrash2 } from "react-icons/fi";
+import { Toaster, toaster } from "@/components/ui/toaster";
+import { logger } from "@/services/logger";
 
 import type { TFunction } from "i18next";
-import DeleteInventoryModal from "../Modals/delete-inventory-modal";
-import type { UserAttributes } from "@/models/User";
 import type { CityAttributes } from "@/models/City";
 import { api } from "@/services/api";
 import type { InventoryAttributes } from "@/models/Inventory";
 import { CircleFlag } from "react-circle-flags";
-import { Roles } from "@/util/types";
 import SettingsSkeleton from "../Skeletons/settings-skeleton";
+import { clamp } from "@/util/helpers";
+
+// Component to fetch and display inventory progress
+const InventoryProgressCell: FC<{ inventoryId: string }> = ({ inventoryId }) => {
+  const { data: inventoryProgress, isLoading } =
+    api.useGetInventoryProgressQuery(inventoryId);
+
+  const totalProgress = useMemo(() => {
+    if (inventoryProgress && inventoryProgress.totalProgress.total > 0) {
+      const { uploaded, thirdParty, total } = inventoryProgress.totalProgress;
+      return Math.round(clamp((uploaded + thirdParty) / total) * 100);
+    }
+    return 0;
+  }, [inventoryProgress]);
+
+  return (
+    <Box display="flex" alignItems="center" gap="12px">
+      <Box
+        w="137px"
+        h="8px"
+        bg="background.neutral"
+        borderRadius="8px"
+        overflow="hidden"
+      >
+        <Box
+          h="100%"
+          w={`${isLoading ? 0 : totalProgress}%`}
+          bg="interactive.tertiary"
+          borderRadius="8px"
+          transition="width 0.3s ease"
+        />
+      </Box>
+      <Text
+        fontSize="body.md"
+        fontWeight="medium"
+        color="content.secondary"
+        minW="40px"
+      >
+        {isLoading ? "-" : `${totalProgress}%`}
+      </Text>
+    </Box>
+  );
+};
 
 interface MyInventoriesTabProps {
   t: TFunction;
@@ -70,7 +108,6 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
   }, [projects]);
 
   const [cityId, setCityId] = useState<string | undefined>(defaultCityId);
-  const [inventoryId, setInventoryId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
   // Use fuzzy search hook for filtering cities
@@ -102,21 +139,55 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
     }
   }, [defaultCityId, cityId]);
 
-  const { data: inventories, isLoading: isInventoriesLoading } =
-    api.useGetInventoriesQuery({ cityId: cityId! }, { skip: !cityId });
+  const { data: inventories } = api.useGetInventoriesQuery(
+    { cityId: cityId! },
+    { skip: !cityId },
+  );
 
-  const {
-    open: isInventoryDeleteModalOpen,
-    onOpen: onInventoryDeleteModalOpen,
-    onClose: onInventoryDeleteModalClose,
-  } = useDisclosure();
+  // Handle CSV download for an inventory
+  const handleDownloadCSV = (inventoryId: string) => {
+    toaster.create({
+      description: t("preparing-download"),
+      type: "info",
+      duration: 3000,
+    });
 
-  const [userData, setUserData] = useState<UserAttributes>({
-    email: "",
-    userId: "",
-    name: "",
-    role: Roles.User,
-  });
+    fetch(`/api/v1/inventory/${inventoryId}/download?format=csv&lng=${lng}`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const contentDisposition = res.headers.get("Content-Disposition");
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename="(.+)"/);
+          const filename = match ? match[1] : `inventory_${inventoryId}.csv`;
+          return res.blob().then((blob) => {
+            const downloadLink = document.createElement("a");
+            downloadLink.href = URL.createObjectURL(blob);
+            downloadLink.download = filename;
+            downloadLink.click();
+
+            toaster.create({
+              description: t("download-success"),
+              type: "success",
+              duration: 3000,
+            });
+
+            URL.revokeObjectURL(downloadLink.href);
+            downloadLink.remove();
+          });
+        }
+      })
+      .catch((error) => {
+        logger.error({ err: error, inventoryId }, "Failed to download inventory CSV");
+        toaster.create({
+          description: t("download-failed"),
+          type: "error",
+          duration: 3000,
+        });
+      });
+  };
 
   // Converts the lastUpdated string to a Date object and returns a formatted date
   function InventoryLastUpdated(lastUpdated: Date) {
@@ -335,15 +406,15 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                       <CircleFlag
                         countryCode={
                           cities
-                            .find((c: CityAttributes) => c.cityId === cityId)
+                            ?.find((c: CityAttributes) => c.cityId === cityId)
                             ?.countryLocode?.substring(0, 2)
                             ?.toLowerCase() ||
                           cities
-                            .find((c: CityAttributes) => c.cityId === cityId)
+                            ?.find((c: CityAttributes) => c.cityId === cityId)
                             ?.locode?.substring(0, 2)
                             ?.toLowerCase() ||
                           cities
-                            .find((c: CityAttributes) => c.cityId === cityId)
+                            ?.find((c: CityAttributes) => c.cityId === cityId)
                             ?.regionLocode?.substring(0, 2)
                             ?.toLowerCase() ||
                           ""
@@ -360,7 +431,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                         fontStyle="normal"
                       >
                         {
-                          cities.find(
+                          cities?.find(
                             (c: CityAttributes) => c.cityId === cityId,
                           )?.name
                         }
@@ -420,20 +491,9 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                               <Text>{inventory.year}</Text>
                             </Table.Cell>
                             <Table.Cell>
-                              {/* TODO */}
-                              {/* generate status from progress API */}
-                              <Progress.Root
-                                maxW="137px"
-                                value={0}
-                                borderRadius="8px"
-                                colorScheme="baseStyle"
-                                height="8px"
-                                width="137px"
-                              >
-                                <Progress.Track>
-                                  <Progress.Range />
-                                </Progress.Track>
-                              </Progress.Root>
+                              <InventoryProgressCell
+                                inventoryId={inventory.inventoryId}
+                              />
                             </Table.Cell>
                             {/* TODO remove hardcoded date https://openearth.atlassian.net/browse/ON-3350 */}
                             <Table.Cell align="right">
@@ -453,7 +513,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                   </IconButton>
                                 </PopoverTrigger>
                                 <PopoverContent
-                                  h="128px"
+                                  h="64px"
                                   w="260px"
                                   borderRadius="8px"
                                   shadow="2dp"
@@ -464,7 +524,6 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                   px="0"
                                   pos="absolute"
                                 >
-                                  <PopoverArrow />
                                   <PopoverBody padding="0">
                                     <List.Root padding="0">
                                       <List.Item
@@ -480,9 +539,11 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                           background: "content.link",
                                           color: "white",
                                         }}
+                                        onClick={() =>
+                                          handleDownloadCSV(inventory.inventoryId)
+                                        }
                                       >
                                         <MdOutlineFileDownload size={24} />
-
                                         <Text
                                           color="content.secondary"
                                           fontFamily="heading"
@@ -492,37 +553,6 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                           _groupHover={{ color: "white" }}
                                         >
                                           {t("download-csv")}
-                                        </Text>
-                                      </List.Item>
-                                      <List.Item
-                                        display="flex"
-                                        cursor="pointer"
-                                        gap="16px"
-                                        className="group "
-                                        color="sentiment.negativeDefault"
-                                        alignItems="center"
-                                        px="16px"
-                                        paddingTop="12px"
-                                        paddingBottom="12px"
-                                        _hover={{
-                                          background: "content.link",
-                                          color: "white",
-                                        }}
-                                        onClick={() => {
-                                          setInventoryId(inventory.inventoryId);
-                                          onInventoryDeleteModalOpen();
-                                        }}
-                                      >
-                                        <FiTrash2 size={24} />
-                                        <Text
-                                          color="content.secondary"
-                                          fontFamily="heading"
-                                          letterSpacing="wide"
-                                          fontWeight="normal"
-                                          fontSize="body.lg"
-                                          _groupHover={{ color: "white" }}
-                                        >
-                                          {t("delete-inventory")}
                                         </Text>
                                       </List.Item>
                                     </List.Root>
@@ -541,14 +571,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
           </Box>
         </Box>
       </Tabs.Content>
-
-      <DeleteInventoryModal
-        inventoryId={inventoryId}
-        isOpen={isInventoryDeleteModalOpen}
-        onClose={onInventoryDeleteModalClose}
-        userData={userData}
-        t={t}
-      />
+      <Toaster />
     </>
   );
 };

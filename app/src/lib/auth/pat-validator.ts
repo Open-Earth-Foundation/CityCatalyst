@@ -59,7 +59,7 @@ export async function validatePAT(
   if (["GET", "HEAD"].includes(upperMethod)) {
     if (!scopes.includes("read")) {
       throw new createHttpError.Forbidden(
-        "Token does not have read permission"
+        "Token does not have read scope"
       );
     }
   }
@@ -68,7 +68,7 @@ export async function validatePAT(
   if (["PUT", "PATCH", "POST", "DELETE"].includes(upperMethod)) {
     if (!scopes.includes("write")) {
       throw new createHttpError.Forbidden(
-        "Token does not have write permission"
+        "Token does not have write scope"
       );
     }
   }

@@ -1,15 +1,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hiap-test
+  name: hiap-meed-prod
   namespace: default
   labels:
-    app: hiap-test
+    app: hiap-meed-prod
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hiap-test
+      app: hiap-meed-prod
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -18,11 +18,11 @@ spec:
   template:
     metadata:
       labels:
-        app: hiap-test
+        app: hiap-meed-prod
     spec:
       containers:
-        - name: hiap-test
-          image: ghcr.io/open-earth-foundation/citycatalyst-hiap:test
+        - name: hiap-meed-prod
+          image: ghcr.io/open-earth-foundation/citycatalyst-hiap-meed:stable
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
@@ -34,16 +34,16 @@ spec:
               value: "8000"
           resources:
             requests:
-              cpu: "250m"
-              memory: "1Gi"
-              ephemeral-storage: "1Gi"
+              cpu: "50m"
+              memory: "128Mi"
+              ephemeral-storage: "256Mi"
             limits:
-              cpu: "500m"
-              memory: "2Gi"
-              ephemeral-storage: "2Gi"
+              cpu: "250m"
+              memory: "256Mi"
+              ephemeral-storage: "512Mi"
           livenessProbe:
             httpGet:
-              path: /
+              path: /health
               port: http
             initialDelaySeconds: 30
             periodSeconds: 10
@@ -51,7 +51,7 @@ spec:
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /
+              path: /health
               port: http
             initialDelaySeconds: 5
             periodSeconds: 5
@@ -60,8 +60,9 @@ spec:
             successThreshold: 1
           startupProbe:
             httpGet:
-              path: /
+              path: /health
               port: http
             periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 30
+

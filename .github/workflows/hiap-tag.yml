@@ -1,4 +1,4 @@
-name: Push tagged HIAP to GHCR and deploy to EKS Prod
+name: Prod - Push tagged HIAP to GHCR and deploy to EKS
 permissions:
   contents: read
   packages: write
@@ -14,7 +14,7 @@ on:
       - "v[0-9]+.[0-9]+.[0-9]+"
 
 concurrency:
-  group: hiap-main
+  group: hiap-prod
   cancel-in-progress: true
 
 jobs:
@@ -57,7 +57,7 @@ jobs:
 
       - name: Install dependencies (uv)
         working-directory: hiap
-        run: uv sync --frozen --no-dev
+        run: uv sync --frozen
 
       - name: Run all tests
         working-directory: hiap

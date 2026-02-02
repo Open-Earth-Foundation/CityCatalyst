@@ -1,4 +1,4 @@
-name: Push HIAP to GHCR and deploy to EKS Test
+name: Test - Push HIAP to GHCR and deploy to EKS
 permissions:
   contents: read
   packages: write
@@ -56,7 +56,7 @@ jobs:
 
       - name: Install dependencies (uv)
         working-directory: hiap
-        run: uv sync --frozen --no-dev
+        run: uv sync --frozen
 
       - name: Run all tests
         working-directory: hiap
@@ -96,7 +96,7 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ steps.vars.outputs.commit_hash }}
-            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:latest
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:test
 
   deploy:
     needs: build

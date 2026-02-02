@@ -19,8 +19,19 @@ on:
       - ".github/workflows/hiap-develop.yml"
     types: [opened, synchronize, reopened]
 
+# Notes:
+# - This workflow runs for both PRs targeting `develop` and pushes to `develop`.
+# - Only pushes to `develop` can run build/deploy (those jobs are gated by `if: github.ref == 'refs/heads/develop'`).
+# - Concurrency is intentionally scoped so PR test runs cannot cancel deploy-capable push runs.
 concurrency:
-  group: hiap-develop
+  # Separate PR runs from deploy-capable push runs, so a PR test run can't cancel an
+  # in-flight push build/deploy run.
+  #
+  # Examples:
+  # - push to develop:       hiap-develop-push-develop
+  # - PR #2358 to develop:   hiap-develop-pull_request-2358
+  # - manual on develop:     hiap-develop-workflow_dispatch-develop
+  group: hiap-develop-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 jobs:

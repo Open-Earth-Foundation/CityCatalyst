@@ -13,7 +13,11 @@ on:
       - ".github/workflows/hiap-meed-test.yml"
 
 concurrency:
-  group: hiap-meed-test
+  # Concurrency is scoped per event/ref so a manual run can't cancel an in-flight push run.
+  # Examples:
+  # - push to main:      hiap-meed-test-push-main
+  # - manual on main:    hiap-meed-test-workflow_dispatch-main
+  group: hiap-meed-test-${{ github.event_name }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:

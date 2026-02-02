@@ -333,16 +333,6 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                       {t("read-scope-description") || "Access to read data (GET requests)"}
                     </Text>
                   </Checkbox>
-                  <Checkbox
-                    checked={writeScope}
-                    onCheckedChange={(e) => setWriteScope(!!e.checked)}
-                  >
-                    <Text>
-                      <Text as="span" fontWeight="medium">{t("scope-write")}</Text>
-                      {" - "}
-                      {t("write-scope-description") || "Access to modify data (POST, PUT, DELETE)"}
-                    </Text>
-                  </Checkbox>
                 </VStack>
               </Field>
 
@@ -462,6 +452,60 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                       </IconButton>
                     </HStack>
                   </HStack>
+                </Box>
+              </Field>
+
+              <Field label={t("mcp-usage-example") || "MCP Client Configuration Example:"}>
+                <Box
+                  p="16px"
+                  bg="background.neutral"
+                  borderRadius="8px"
+                  fontFamily="mono"
+                  fontSize="body.xs"
+                  whiteSpace="pre-wrap"
+                  w="full"
+                  position="relative"
+                >
+                  <IconButton
+                    aria-label="Copy config"
+                    variant="ghost"
+                    size="sm"
+                    position="absolute"
+                    top="8px"
+                    right="8px"
+                    onClick={() => copyToClipboard(`{
+  "mcpServers": {
+    "citycatalyst": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "${typeof window !== 'undefined' ? window.location.origin : ''}/api/v1/mcp",
+        "--header",
+        "Authorization: Bearer ${createdToken}"
+      ]
+    }
+  }
+}`)}
+                  >
+                    <Icon as={MdContentCopy} />
+                  </IconButton>
+                  <Text color="content.secondary">
+{`{
+  "mcpServers": {
+    "citycatalyst": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "${typeof window !== 'undefined' ? window.location.origin : ''}/api/v1/mcp",
+        "--header",
+        "Authorization: Bearer <your-token>"
+      ]
+    }
+  }
+}`}
+                  </Text>
                 </Box>
               </Field>
             </VStack>

@@ -292,7 +292,8 @@ export function apiHandler(handler: NextHandler) {
 
         // Check if it's a Personal Access Token
         if (isPATToken(bearerToken)) {
-          const { session: patSession } = await validatePAT(bearerToken, req.method);
+          const url = new URL(req.url);
+          const { session: patSession } = await validatePAT(bearerToken, req.method, url.pathname);
           session = patSession;
         } else {
           // Existing JWT/OAuth validation

@@ -21,7 +21,8 @@ export interface PATValidationResult {
 
 export async function validatePAT(
   token: string,
-  method: string
+  method: string,
+  pathname?: string
 ): Promise<PATValidationResult> {
   // 1. Hash the token
   const tokenHash = hashToken(token);
@@ -65,8 +66,12 @@ export async function validatePAT(
   }
 
   // PUT/PATCH/POST/DELETE need "write" scope
+  // Exception: MCP endpoint uses POST for JSON-RPC but all tools are read-only
+  const isMcpEndpoint = pathname?.includes("/api/v1/mcp");
   if (["PUT", "PATCH", "POST", "DELETE"].includes(upperMethod)) {
-    if (!scopes.includes("write")) {
+    if (isMcpEndpoint && upperMethod === "POST" && scopes.includes("read")) {
+      // Allow read scope for MCP POST requests (JSON-RPC transport)
+    } else if (!scopes.includes("write")) {
       throw new createHttpError.Forbidden(
         "Token does not have write scope"
       );

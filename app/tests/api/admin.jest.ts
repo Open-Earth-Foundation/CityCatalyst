@@ -47,7 +47,7 @@ const mockBulkInventoriesRequest: BulkInventoryCreateProps = {
 const mockConnectSourcesRequest: BulkInventoryUpdateProps = {
   cityLocodes: ["US NYC"],
   userEmail: testUserData.email,
-  years: [2022, 2023],
+  years: [2022],
 };
 
 const emptyParams = { params: Promise.resolve({}) };

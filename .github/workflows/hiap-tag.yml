@@ -1,4 +1,4 @@
-name: Push tagged HIAP to GHCR and deploy to EKS Prod
+name: Prod - Push tagged HIAP to GHCR and deploy to EKS
 permissions:
   contents: read
   packages: write

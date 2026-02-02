@@ -28,7 +28,7 @@ const previousCoveragePath = path.join(
 // Tolerance threshold - only fail if coverage decreases by more than this amount
 // Temporarily increased to 7.0% to allow for expected coverage regression from new import functionality
 
-const COVERAGE_THRESHOLD = parseFloat(process.env.COVERAGE_THRESHOLD || "5.0");
+const COVERAGE_THRESHOLD = parseFloat(process.env.COVERAGE_THRESHOLD || "2.0");
 
 // Metrics to check
 const metrics = ["lines", "statements", "branches", "functions"];

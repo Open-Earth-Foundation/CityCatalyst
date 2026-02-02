@@ -40,7 +40,7 @@ jobs:
 
       - name: Install dependencies (uv)
         working-directory: hiap-meed
-        run: uv sync --frozen --no-dev
+        run: uv sync --frozen
 
       - name: Run all tests
         working-directory: hiap-meed

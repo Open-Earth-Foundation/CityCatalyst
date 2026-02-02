@@ -171,5 +171,6 @@
   "search-by-city-or-country": "Suche nach Stadt- oder Ländername",
   "preparing-download": "Download wird vorbereitet...",
   "download-success": "Download abgeschlossen!",
-  "download-failed": "Beim Download ist ein Fehler aufgetreten"
+  "download-failed": "Beim Download ist ein Fehler aufgetreten",
+  "green_theme": "Grün"
 }

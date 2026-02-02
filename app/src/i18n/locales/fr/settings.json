@@ -170,5 +170,6 @@
   "search-by-city-or-country": "Recherche par nom de ville ou de pays",
   "preparing-download": "Préparation du téléchargement...",
   "download-success": "Téléchargement terminé !",
-  "download-failed": "Une erreur s'est produite lors du téléchargement"
+  "download-failed": "Une erreur s'est produite lors du téléchargement",
+  "green_theme": "Vert"
 }

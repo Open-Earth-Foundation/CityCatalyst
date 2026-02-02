@@ -1,44 +1,27 @@
-name: Prod - Push tagged HIAP to GHCR and deploy to EKS
+name: Prod - Push tagged HIAP-MEED to GHCR and deploy to EKS
 permissions:
   contents: read
   packages: write
 
 on:
   workflow_dispatch:
-
   push:
     paths:
-      - "hiap/**"
-      - ".github/workflows/hiap-tag.yml"
+      - "hiap-meed/**"
+      - ".github/workflows/hiap-meed-tag.yml"
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
 
 concurrency:
   # Concurrency is scoped per event/ref so manual runs can't cancel tag deploys,
   # and tag deploys don't cancel each other across different tags.
-  # Example: hiap-prod-push-v1.2.3
-  group: hiap-prod-${{ github.event_name }}-${{ github.ref_name }}
+  # Example: hiap-meed-prod-push-v1.2.3
+  group: hiap-meed-prod-${{ github.event_name }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY_HIAP_PROD }}
-      LANGCHAIN_PROJECT: hiap-prod
-      LANGCHAIN_PROJECT_NAME_PRIORITIZER: hiap-prod-prioritizer
-      LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION: hiap-prod-plan-translation
-      LANGCHAIN_ENDPOINT: https://api.smith.langchain.com
-      LANGCHAIN_TRACING_V2: false
-      OPENAI_MODEL_NAME_PLAN_CREATOR: gpt-4.1
-      OPENAI_MODEL_NAME_EXPLANATIONS: gpt-4.1-mini
-      OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION: gpt-4.1-mini
-      OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY: gpt-4.1
-      OPENAI_MODEL_NAME_PLAN_TRANSLATION: gpt-4.1-mini
-      EXPLANATIONS_ENABLED: false
-      BULK_CONCURRENCY: 1
-      XGBOOST_NUM_THREADS: 1
-
     steps:
       - uses: actions/checkout@v4
 
@@ -54,18 +37,18 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/uv
-          key: ${{ runner.os }}-uv-${{ hashFiles('hiap/uv.lock') }}
+          key: ${{ runner.os }}-uv-${{ hashFiles('hiap-meed/uv.lock') }}
           restore-keys: |
             ${{ runner.os }}-uv-
 
       - name: Install dependencies (uv)
-        working-directory: hiap
+        working-directory: hiap-meed
         run: uv sync --frozen
 
       - name: Run all tests
-        working-directory: hiap
+        working-directory: hiap-meed
         run: |
-          uv run pytest -c pytest.ini -m "not slow"
+          uv run pytest -c pytest.ini
 
   build:
     needs: test
@@ -73,7 +56,7 @@ jobs:
     if: ${{ !contains(github.ref, '-') }}
     env:
       REGISTRY: ghcr.io
-      REPOSITORY: open-earth-foundation/citycatalyst-hiap
+      REPOSITORY: open-earth-foundation/citycatalyst-hiap-meed
 
     steps:
       - name: Checkout repository
@@ -102,7 +85,7 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          context: hiap
+          context: hiap-meed
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ github.sha }}
@@ -132,42 +115,19 @@ jobs:
       - name: Deploying production service
         run: |
           export VERSION=${REF#refs/tags/v}
-          export IMAGE=ghcr.io/open-earth-foundation/citycatalyst-hiap
+          export IMAGE=ghcr.io/open-earth-foundation/citycatalyst-hiap-meed
 
-          # Apply production Kubernetes manifests
-          kubectl apply -f hiap/k8s/deployment-prod.yml
-          kubectl apply -f hiap/k8s/service-prod.yml
+          kubectl apply -f hiap-meed/k8s/deployment-prod.yml
+          kubectl apply -f hiap-meed/k8s/service-prod.yml
 
-          # Update image to the semver tag
-          kubectl set image deployment/hiap-prod \
-            hiap-prod=$IMAGE:$VERSION \
+          kubectl set image deployment/hiap-meed-prod \
+            hiap-meed-prod=$IMAGE:$VERSION \
             -n default
 
-          # Set production environment variables
-          kubectl set env deployment/hiap-prod \
-            OPENAI_MODEL_NAME_EXPLANATIONS=gpt-4.1-mini \
-            OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION=gpt-4.1-mini \
-            OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY=gpt-4.1 \
-            OPENAI_MODEL_NAME_PLAN_CREATOR=gpt-4.1 \
-            OPENAI_MODEL_NAME_PLAN_TRANSLATION=gpt-4.1-mini \
-            LANGCHAIN_PROJECT=hiap-prod \
-            LANGCHAIN_PROJECT_NAME_PRIORITIZER=hiap-prod-prioritizer \
-            LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION=hiap-prod-plan-translation \
-            LANGCHAIN_ENDPOINT=https://api.smith.langchain.com \
-            LANGCHAIN_TRACING_V2=false \
-            S3_BUCKET_NAME=openearth.cap \
-            EXPLANATIONS_ENABLED=true \
-            BULK_CONCURRENCY=10 \
-            XGBOOST_NUM_THREADS=1 \
-            LOG_PARALLELISM=1 \
-            LOG_LEVEL=INFO \
-            SUBTASK_TIMEOUT_SECONDS=300 \
-            OPENAI_TIMEOUT_SECONDS=60 \
-            OPENAI_MAX_RETRIES=3 \
-            OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_HIAP_PROD}} \
-            LANGCHAIN_API_KEY=${{secrets.LANGCHAIN_API_KEY}} \
-            AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID_HIAP}} \
-            AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_HIAP}}
+          kubectl set env deployment/hiap-meed-prod \
+            API_HOST=0.0.0.0 \
+            API_PORT=8000 \
+            LOG_LEVEL=INFO
 
-          kubectl rollout restart deployment hiap-prod -n default
-          kubectl rollout status deployment/hiap-prod -n default
+          kubectl rollout restart deployment hiap-meed-prod -n default
+          kubectl rollout status deployment/hiap-meed-prod -n default

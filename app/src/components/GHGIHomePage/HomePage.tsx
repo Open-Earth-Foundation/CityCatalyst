@@ -32,6 +32,7 @@ import { UserRole } from "@/util/types";
 import { logger } from "@/services/logger";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { useInventoryOrganization } from "@/hooks/use-inventory-organization";
+import InventoryVersions from "@/app/[lng]/[inventory]/InventoryVersionsTab/InventoryVersions";
 
 function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
   return typeof error === "object" && error != null && "status" in error;
@@ -336,6 +337,7 @@ export default function HomePage({
                       {[
                         "tab-emission-inventory-calculation-title",
                         "tab-emission-inventory-results-title",
+                        "tab-emission-versions-title",
                       ].map((tab, index) => (
                         <Tabs.Trigger key={index} value={tab}>
                           <Text
@@ -363,6 +365,12 @@ export default function HomePage({
                         lng={language}
                         population={population}
                         inventory={inventory}
+                      />
+                    </Tabs.Content>
+                    <Tabs.Content value="tab-emission-versions-title">
+                      <InventoryVersions
+                        lng={language}
+                        inventoryId={inventory?.inventoryId}
                       />
                     </Tabs.Content>
                   </Tabs.Root>

@@ -1,0 +1,10 @@
+# global
+.git
+__pycache__
+.env
+.venv
+
+# build artifacts
+.pytest_cache
+.mypy_cache
+

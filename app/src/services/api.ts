@@ -61,6 +61,8 @@ import {
   PermissionCheckResponse,
   Authz,
   CityDashboardResponse,
+  PersonalAccessToken,
+  PersonalAccessTokenCreateResponse,
 } from "@/util/types";
 import type {
   CityLocationResponse,
@@ -121,6 +123,7 @@ export const api = createApi({
     "ProjectModules",
     "Modules",
     "ActionPlan",
+    "PersonalAccessTokens",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1841,6 +1844,32 @@ export const api = createApi({
           response.data,
         invalidatesTags: ["Inventory"],
       }),
+
+      // Personal Access Token Endpoints
+      getPersonalAccessTokens: builder.query<PersonalAccessToken[], void>({
+        query: () => "/user/tokens",
+        transformResponse: (response: { tokens: PersonalAccessToken[] }) =>
+          response.tokens,
+        providesTags: ["PersonalAccessTokens"],
+      }),
+      createPersonalAccessToken: builder.mutation<
+        PersonalAccessTokenCreateResponse,
+        { name: string; scopes: string[]; expiresAt?: string | null }
+      >({
+        query: (data) => ({
+          url: "/user/tokens",
+          method: "POST",
+          body: data,
+        }),
+        invalidatesTags: ["PersonalAccessTokens"],
+      }),
+      deletePersonalAccessToken: builder.mutation<{ success: boolean }, string>({
+        query: (tokenId) => ({
+          url: `/user/tokens/${tokenId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["PersonalAccessTokens"],
+      }),
     };
   },
 });
@@ -1978,5 +2007,8 @@ export const {
   useDisableProjectModuleAccessMutation,
   useGetHiapJobsQuery,
   useGetHiapStatusQuery,
+  useGetPersonalAccessTokensQuery,
+  useCreatePersonalAccessTokenMutation,
+  useDeletePersonalAccessTokenMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

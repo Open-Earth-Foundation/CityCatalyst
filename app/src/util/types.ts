@@ -910,3 +910,24 @@ export interface ImportStatusResponse {
   lastUpdated: string;
   completedAt: string | null;
 }
+
+// Personal Access Token types
+export interface PersonalAccessToken {
+  id: string;
+  name: string;
+  tokenPrefix: string;
+  scopes: string[];
+  expiresAt: string | null;
+  lastUsedAt: string | null;
+  created: string;
+}
+
+export interface PersonalAccessTokenCreateResponse {
+  id: string;
+  token: string;
+  name: string;
+  tokenPrefix: string;
+  scopes: string[];
+  expiresAt: string | null;
+  created: string;
+}

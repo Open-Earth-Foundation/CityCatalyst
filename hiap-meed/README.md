@@ -65,4 +65,3 @@ From the `hiap-meed` directory:
 ```bash
 uv run pytest -c pytest.ini
 ```
-

@@ -27,4 +27,3 @@ app = main.app
 def client():
     """FastAPI test client fixture."""
     return TestClient(app)
-

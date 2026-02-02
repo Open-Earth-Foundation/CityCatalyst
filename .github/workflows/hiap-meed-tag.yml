@@ -1,0 +1,130 @@
+name: Prod - Push tagged HIAP-MEED to GHCR and deploy to EKS
+permissions:
+  contents: read
+  packages: write
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "hiap-meed/**"
+      - ".github/workflows/hiap-meed-tag.yml"
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+concurrency:
+  group: hiap-meed-main
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Cache uv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('hiap-meed/uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
+
+      - name: Install dependencies (uv)
+        working-directory: hiap-meed
+        run: uv sync --frozen --no-dev
+
+      - name: Run all tests
+        working-directory: hiap-meed
+        run: |
+          uv run pytest -c pytest.ini
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.ref, '-') }}
+    env:
+      REGISTRY: ghcr.io
+      REPOSITORY: open-earth-foundation/citycatalyst-hiap-meed
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "full_version=$VERSION" >> $GITHUB_OUTPUT
+          MAJOR=$(echo $VERSION | cut -d. -f1)
+          echo "major_version=$MAJOR" >> $GITHUB_OUTPUT
+          MINOR=$(echo $VERSION | cut -d. -f1-2)
+          echo "minor_version=$MINOR" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: hiap-meed
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:stable
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ steps.version.outputs.major_version }}
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ steps.version.outputs.minor_version }}
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ steps.version.outputs.full_version }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.ref, '-') }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_PROD_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_PROD_USER }}
+      EKS_PROD_NAME: ${{ secrets.EKS_PROD_NAME }}
+      REF: ${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_PROD_NAME}} --region us-east-1
+
+      - name: Testing connection to EKS
+        run: kubectl get pods -n default
+
+      - name: Deploying production service
+        run: |
+          export VERSION=${REF#refs/tags/v}
+          export IMAGE=ghcr.io/open-earth-foundation/citycatalyst-hiap-meed
+
+          kubectl apply -f hiap-meed/k8s/deployment-prod.yml
+          kubectl apply -f hiap-meed/k8s/service-prod.yml
+
+          kubectl set image deployment/hiap-meed-prod \
+            hiap-meed-prod=$IMAGE:$VERSION \
+            -n default
+
+          kubectl set env deployment/hiap-meed-prod \
+            API_HOST=0.0.0.0 \
+            API_PORT=8000 \
+            LOG_LEVEL=INFO
+
+          kubectl rollout restart deployment hiap-meed-prod -n default
+          kubectl rollout status deployment/hiap-meed-prod -n default

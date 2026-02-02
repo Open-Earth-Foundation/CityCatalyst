@@ -212,5 +212,7 @@
   "token-create-error": "Error al crear el token",
   "token-deleted-success": "Token eliminado exitosamente",
   "token-delete-error": "Error al eliminar el token",
-  "copied-to-clipboard": "Copiado al portapapeles"
+  "copied-to-clipboard": "Copiado al portapapeles",
+  "download-failed": "Hubo un error durante la descarga",
+  "green_theme": "Verde"
 }

@@ -211,5 +211,7 @@
   "token-create-error": "Échec de la création du jeton",
   "token-deleted-success": "Jeton supprimé avec succès",
   "token-delete-error": "Échec de la suppression du jeton",
-  "copied-to-clipboard": "Copié dans le presse-papiers"
+  "copied-to-clipboard": "Copié dans le presse-papiers",
+  "download-failed": "Une erreur s'est produite lors du téléchargement",
+  "green_theme": "Vert"
 }

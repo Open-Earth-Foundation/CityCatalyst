@@ -212,5 +212,7 @@
   "token-create-error": "Token konnte nicht erstellt werden",
   "token-deleted-success": "Token erfolgreich gelöscht",
   "token-delete-error": "Token konnte nicht gelöscht werden",
-  "copied-to-clipboard": "In die Zwischenablage kopiert"
+  "copied-to-clipboard": "In die Zwischenablage kopiert",
+  "download-failed": "Beim Download ist ein Fehler aufgetreten",
+  "green_theme": "Grün"
 }

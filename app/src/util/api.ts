@@ -22,6 +22,7 @@ import { FeatureFlags, hasFeatureFlag } from "./feature-flags";
 import { RateLimiter } from "./rate-limiter";
 import { OAuthClient } from "@/models/OAuthClient";
 import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
+import { isPATToken, validatePAT } from "@/lib/auth/pat-validator";
 
 // Rate limiting configuration
 // Skip during Playwright runs via feature flag to avoid hitting limits
@@ -283,75 +284,88 @@ export function apiHandler(handler: NextHandler) {
       const serviceKey = req.headers.get("X-Service-Key");
 
       if (authorization) {
-        const token = getBearerToken(authorization);
-        if (!token) {
-          throw new createHttpError.Unauthorized(
-            "Invalid or expired access token",
-          );
+        const match = authorization.match(/^Bearer\s+(.*)$/);
+        if (!match) {
+          throw new createHttpError.BadRequest("Malformed Authorization header");
         }
+        const bearerToken = match[1];
 
-        const origin = process.env.HOST || new URL(req.url).origin;
-        if (token.aud !== origin) {
-          throw new createHttpError.Unauthorized("Wrong server for token");
-        }
-
-        // Check if this is service-to-service authentication
-        if (serviceName && serviceKey) {
-          // Validate service credentials
-          const isValidService = await validateServiceCredentials(
-            serviceName,
-            serviceKey,
-          );
-          if (!isValidService) {
+        // Check if it's a Personal Access Token
+        if (isPATToken(bearerToken)) {
+          const { session: patSession } = await validatePAT(bearerToken, req.method);
+          session = patSession;
+        } else {
+          // Existing JWT/OAuth validation
+          const token = getBearerToken(authorization);
+          if (!token) {
             throw new createHttpError.Unauthorized(
-              "Invalid service credentials",
+              "Invalid or expired access token",
             );
           }
 
-          // For service tokens, we only need basic JWT validation (no OAuth checks)
-          session = await makeServiceUserSession(token);
-          logger.debug(
-            {
-              user_id: token.sub,
-              service_name: serviceName,
-              endpoint: new URL(req.url).pathname,
-            },
-            "Service-to-service token validated",
-          );
-        } else if (hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
-          // OAuth validation path for regular client tokens
-          const client = await OAuthClient.findByPk(token.client_id);
-          if (!client) {
-            throw new createHttpError.Unauthorized("Invalid client");
+          const origin = process.env.HOST || new URL(req.url).origin;
+          if (token.aud !== origin) {
+            throw new createHttpError.Unauthorized("Wrong server for token");
           }
-          const scopes = token.scope.split(" ");
-          if (
-            ["GET", "HEAD"].includes(req.method) &&
-            !scopes.includes("read")
-          ) {
-            throw new createHttpError.Unauthorized("No read scope available");
+
+          // Check if this is service-to-service authentication
+          if (serviceName && serviceKey) {
+            // Validate service credentials
+            const isValidService = await validateServiceCredentials(
+              serviceName,
+              serviceKey,
+            );
+            if (!isValidService) {
+              throw new createHttpError.Unauthorized(
+                "Invalid service credentials",
+              );
+            }
+
+            // For service tokens, we only need basic JWT validation (no OAuth checks)
+            session = await makeServiceUserSession(token);
+            logger.debug(
+              {
+                user_id: token.sub,
+                service_name: serviceName,
+                endpoint: new URL(req.url).pathname,
+              },
+              "Service-to-service token validated",
+            );
+          } else if (hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
+            // OAuth validation path for regular client tokens
+            const client = await OAuthClient.findByPk(token.client_id);
+            if (!client) {
+              throw new createHttpError.Unauthorized("Invalid client");
+            }
+            const scopes = token.scope.split(" ");
+            if (
+              ["GET", "HEAD"].includes(req.method) &&
+              !scopes.includes("read")
+            ) {
+              throw new createHttpError.Unauthorized("No read scope available");
+            }
+            if (
+              ["PUT", "PATCH", "POST", "DELETE"].includes(req.method) &&
+              !scopes.includes("write")
+            ) {
+              throw new createHttpError.Unauthorized("No write scope available");
+            }
+            const authz = await OAuthClientAuthz.findOne({
+              where: {
+                clientId: token.client_id,
+                userId: token.sub,
+              },
+            });
+            if (!authz) {
+              throw new createHttpError.Unauthorized("Authorization revoked");
+            }
+            await authz.update({ lastUsed: new Date() });
+            session = await makeOAuthUserSession(token);
+          } else {
+            throw new createHttpError.Unauthorized(
+              "OAuth not enabled and no service credentials provided",
+            );
           }
-          if (
-            ["PUT", "PATCH", "POST", "DELETE"].includes(req.method) &&
-            !scopes.includes("write")
-          ) {
-            throw new createHttpError.Unauthorized("No write scope available");
-          }
-          const authz = await OAuthClientAuthz.findOne({
-            where: {
-              clientId: token.client_id,
-              userId: token.sub,
-            },
-          });
-          if (!authz) {
-            throw new createHttpError.Unauthorized("Authorization revoked");
-          }
-          await authz.update({ lastUsed: new Date() });
-          session = await makeOAuthUserSession(token);
-        } else {
-          throw new createHttpError.Unauthorized(
-            "OAuth not enabled and no service credentials provided",
-          );
         }
       } else {
         session = await Auth.getServerSession();

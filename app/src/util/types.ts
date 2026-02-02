@@ -27,6 +27,7 @@ import type {
 } from "@/backend/DataSourceService";
 import type { ProjectAttributes } from "@/models/Project";
 import type { OrganizationAttributes } from "@/models/Organization";
+import type { VersionAttributes } from "@/models/Version";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -910,3 +911,19 @@ export interface ImportStatusResponse {
   lastUpdated: string;
   completedAt: string | null;
 }
+
+type VersionChange = VersionAttributes & {
+  author: { name: string; userId: string };
+  previousVersion: VersionAttributes;
+};
+
+export type VersionHistoryEntry = {
+  version: VersionChange;
+  activities: VersionChange[];
+  subCategory: SubCategoryAttributes;
+  dataSource?: { datasourceName: string; datasetName: string };
+  previousDataSource?: { datasourceName: string; datasetName: string };
+  mostRecentAssociatedVersion?: VersionChange;
+};
+
+export type VersionHistoryResponse = VersionHistoryEntry[];

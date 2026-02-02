@@ -79,7 +79,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
 
     if (scopes.length === 0) {
       toaster.create({
-        description: t("token-scope-required") || "At least one scope is required",
+        description: t("token-scope-required"),
         type: "error",
         duration: 3000,
       });
@@ -88,7 +88,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
 
     if (!tokenName.trim()) {
       toaster.create({
-        description: t("token-name-required") || "Token name is required",
+        description: t("token-name-required"),
         type: "error",
         duration: 3000,
       });
@@ -122,13 +122,13 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
       setExpiresIn("90");
 
       toaster.create({
-        description: t("token-created-success") || "Token created successfully",
+        description: t("token-created-success"),
         type: "success",
         duration: 3000,
       });
     } catch (err) {
       toaster.create({
-        description: t("token-create-error") || "Failed to create token",
+        description: t("token-create-error"),
         type: "error",
         duration: 3000,
       });
@@ -141,7 +141,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
     try {
       await deleteToken(tokenToDelete.id).unwrap();
       toaster.create({
-        description: t("token-deleted-success") || "Token deleted successfully",
+        description: t("token-deleted-success"),
         type: "success",
         duration: 3000,
       });
@@ -149,7 +149,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
       setTokenToDelete(null);
     } catch (err) {
       toaster.create({
-        description: t("token-delete-error") || "Failed to delete token",
+        description: t("token-delete-error"),
         type: "error",
         duration: 3000,
       });
@@ -159,7 +159,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toaster.create({
-      description: t("copied-to-clipboard") || "Copied to clipboard",
+      description: t("copied-to-clipboard"),
       type: "success",
       duration: 2000,
     });
@@ -250,7 +250,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
               <DataTableCore<PersonalAccessToken>
                 data={tokens}
                 columns={[
-                  { header: t("name") || "Name", accessor: "name" },
+                  { header: t("token-name"), accessor: "name" },
                   { header: t("token-prefix") || "Token", accessor: "tokenPrefix" },
                   { header: t("scopes") || "Scopes", accessor: "scopes" },
                   { header: t("expires") || "Expires", accessor: "expiresAt" },

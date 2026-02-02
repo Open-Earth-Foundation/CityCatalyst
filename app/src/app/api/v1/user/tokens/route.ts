@@ -1,9 +1,112 @@
+/**
+ * @swagger
+ * /api/v1/user/tokens:
+ *   get:
+ *     tags:
+ *       - user
+ *     operationId: listPersonalAccessTokens
+ *     summary: List user's personal access tokens
+ *     description: Returns all personal access tokens for the authenticated user
+ *     security:
+ *       - bearerAuth: []
+ *       - sessionAuth: []
+ *     responses:
+ *       200:
+ *         description: List of tokens
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 tokens:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                       tokenPrefix:
+ *                         type: string
+ *                       scopes:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                       expiresAt:
+ *                         type: string
+ *                         nullable: true
+ *                       lastUsedAt:
+ *                         type: string
+ *                         nullable: true
+ *                       created:
+ *                         type: string
+ *       401:
+ *         description: Not authenticated
+ *   post:
+ *     tags:
+ *       - user
+ *     operationId: createPersonalAccessToken
+ *     summary: Create a new personal access token
+ *     description: Creates a new PAT for API access. The token is only returned once.
+ *     security:
+ *       - bearerAuth: []
+ *       - sessionAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, scopes]
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: A descriptive name for the token
+ *               scopes:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   enum: [read, write]
+ *               expiresAt:
+ *                 type: string
+ *                 format: date-time
+ *                 nullable: true
+ *     responses:
+ *       201:
+ *         description: Token created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 token:
+ *                   type: string
+ *                   description: The plaintext token (only shown once)
+ *                 name:
+ *                   type: string
+ *                 tokenPrefix:
+ *                   type: string
+ *                 scopes:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 expiresAt:
+ *                   type: string
+ *                   nullable: true
+ *                 created:
+ *                   type: string
+ *       401:
+ *         description: Not authenticated
+ */
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import { db } from "@/models";
 import { z } from "zod";
 import { nanoid } from "nanoid";
-import { hashToken } from "@/lib/auth/pat-validator";
+import { hashToken } from "@/lib/auth/access-token-validator";
 import createHttpError from "http-errors";
 
 const PAT_PREFIX = "cc_pat_";
@@ -14,7 +117,6 @@ const createTokenSchema = z.object({
   expiresAt: z.string().datetime().optional().nullable(),
 });
 
-// Safe attributes for listing (no tokenHash!)
 const SAFE_ATTRIBUTES = [
   "id",
   "name",
@@ -25,46 +127,32 @@ const SAFE_ATTRIBUTES = [
   "created",
 ];
 
-// GET /api/v1/user/tokens - List user's tokens
 export const GET = apiHandler(async (_req, { session }) => {
-  // 1. Check session.user.id exists, else 401 "Must be logged in"
   if (!session?.user?.id) {
     throw new createHttpError.Unauthorized("Must be logged in");
   }
 
-  // 2. Find all tokens for user, only select safe fields (no tokenHash)
-  // 3. Order by created DESC
   const tokens = await db.models.PersonalAccessToken.findAll({
     where: { userId: session.user.id },
     attributes: SAFE_ATTRIBUTES,
     order: [["created", "DESC"]],
   });
 
-  // 4. Return { tokens: [...] }
   return NextResponse.json({ tokens });
 });
 
-// POST /api/v1/user/tokens - Create new token
 export const POST = apiHandler(async (req, { session }) => {
-  // 1. Check session.user.id exists, else 401 "Must be logged in"
   if (!session?.user?.id) {
     throw new createHttpError.Unauthorized("Must be logged in");
   }
 
-  // 2. Parse body with createTokenSchema
   const body = await req.json();
   const { name, scopes, expiresAt } = createTokenSchema.parse(body);
 
-  // 3. Generate token: cc_pat_ + nanoid(32)
   const plainToken = PAT_PREFIX + nanoid(32);
-
-  // 4. Hash token with hashToken()
   const tokenHash = hashToken(plainToken);
-
-  // 5. Token prefix = first 12 chars of plainToken
   const tokenPrefix = plainToken.substring(0, 12);
 
-  // 6. Create PersonalAccessToken in DB
   const token = await db.models.PersonalAccessToken.create({
     userId: session.user.id,
     name,
@@ -74,7 +162,6 @@ export const POST = apiHandler(async (req, { session }) => {
     expiresAt: expiresAt ? new Date(expiresAt) : null,
   });
 
-  // 7. Return 201 with { id, token (plaintext!), name, tokenPrefix, scopes, expiresAt, created }
   return NextResponse.json(
     {
       id: token.id,

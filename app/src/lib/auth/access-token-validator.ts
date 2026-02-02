@@ -24,13 +24,7 @@ export async function validatePAT(
   method: string,
   pathname?: string
 ): Promise<PATValidationResult> {
-  // 1. Hash the token
   const tokenHash = hashToken(token);
-
-  // 2. Find PersonalAccessToken by tokenHash, include User
-  if (!db.initialized) {
-    await db.initialize();
-  }
 
   const pat = await db.models.PersonalAccessToken.findOne({
     where: { tokenHash },
@@ -42,21 +36,17 @@ export async function validatePAT(
     ],
   });
 
-  // 3. If not found: throw 401 "Invalid access token"
   if (!pat) {
     throw new createHttpError.Unauthorized("Invalid access token");
   }
 
-  // 4. If expired (expiresAt < now): throw 401 "Access token expired"
   if (pat.expiresAt && new Date(pat.expiresAt) < new Date()) {
     throw new createHttpError.Unauthorized("Access token expired");
   }
 
-  // 5. Check scopes
   const scopes = pat.scopes || [];
   const upperMethod = method.toUpperCase();
 
-  // GET/HEAD need "read" scope
   if (["GET", "HEAD"].includes(upperMethod)) {
     if (!scopes.includes("read")) {
       throw new createHttpError.Forbidden(
@@ -65,8 +55,6 @@ export async function validatePAT(
     }
   }
 
-  // PUT/PATCH/POST/DELETE need "write" scope
-  // Exception: MCP endpoint uses POST for JSON-RPC but all tools are read-only
   const isMcpEndpoint = pathname?.includes("/api/v1/mcp");
   if (["PUT", "PATCH", "POST", "DELETE"].includes(upperMethod)) {
     if (isMcpEndpoint && upperMethod === "POST" && scopes.includes("read")) {
@@ -78,18 +66,15 @@ export async function validatePAT(
     }
   }
 
-  // 6. Update lastUsedAt (fire and forget, catch errors)
   pat.update({ lastUsedAt: new Date() }).catch(() => {
     // Silently ignore errors when updating lastUsedAt
   });
 
-  // 7. If no user: throw 401 "User not found for token"
   const user = pat.user;
   if (!user) {
     throw new createHttpError.Unauthorized("User not found for token");
   }
 
-  // 8. Build AppSession with user data
   const session: AppSession = {
     expires: pat.expiresAt
       ? new Date(pat.expiresAt).toISOString()
@@ -103,6 +88,5 @@ export async function validatePAT(
     },
   };
 
-  // 9. Return { session, scopes }
   return { session, scopes };
 }

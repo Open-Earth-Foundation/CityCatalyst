@@ -125,7 +125,7 @@ export const api = createApi({
     "Modules",
     "ActionPlan",
     "VersionHistory",
-    "PersonalAccessTokens",
+    "PersonalAccessToken",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1885,7 +1885,7 @@ export const api = createApi({
         query: () => "/user/tokens",
         transformResponse: (response: { tokens: PersonalAccessToken[] }) =>
           response.tokens,
-        providesTags: ["PersonalAccessTokens"],
+        providesTags: ["PersonalAccessToken"],
       }),
       createPersonalAccessToken: builder.mutation<
         PersonalAccessTokenCreateResponse,
@@ -1896,14 +1896,14 @@ export const api = createApi({
           method: "POST",
           body: data,
         }),
-        invalidatesTags: ["PersonalAccessTokens"],
+        invalidatesTags: ["PersonalAccessToken"],
       }),
       deletePersonalAccessToken: builder.mutation<{ success: boolean }, string>({
         query: (tokenId) => ({
           url: `/user/tokens/${tokenId}`,
           method: "DELETE",
         }),
-        invalidatesTags: ["PersonalAccessTokens"],
+        invalidatesTags: ["PersonalAccessToken"],
       }),
     };
   },

@@ -22,7 +22,7 @@ import { FeatureFlags, hasFeatureFlag } from "./feature-flags";
 import { RateLimiter } from "./rate-limiter";
 import { OAuthClient } from "@/models/OAuthClient";
 import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
-import { isPATToken, validatePAT } from "@/lib/auth/pat-validator";
+import { isPATToken, validatePAT } from "@/lib/auth/access-token-validator";
 
 // Rate limiting configuration
 // Skip during Playwright runs via feature flag to avoid hitting limits

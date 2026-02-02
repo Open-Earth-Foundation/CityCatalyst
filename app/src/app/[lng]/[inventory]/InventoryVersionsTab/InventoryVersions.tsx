@@ -254,7 +254,7 @@ function VersionEntry({
               fontWeight="400"
               lineHeight="20px"
               letterSpacing="0.5px"
-              fontFamily="Open Sans"
+              fontFamily="body"
             >
               <Icon
                 as={MdPersonOutline}
@@ -322,7 +322,7 @@ function VersionEntry({
                 fontWeight="400"
                 lineHeight="20px"
                 letterSpacing="0.5px"
-                fontFamily="Open Sans"
+                fontFamily="body"
               >
                 {renderChangeText(t, change)}
               </Text>
@@ -336,7 +336,7 @@ function VersionEntry({
             fontWeight="400"
             lineHeight="20px"
             letterSpacing="0.5px"
-            fontFamily="Open Sans"
+            fontFamily="body"
             verticalAlign="center"
           >
             <Box

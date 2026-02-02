@@ -13,7 +13,7 @@ on:
       - "v[0-9]+.[0-9]+.[0-9]+"
 
 concurrency:
-  group: hiap-meed-main
+  group: hiap-meed-prod
   cancel-in-progress: true
 
 jobs:

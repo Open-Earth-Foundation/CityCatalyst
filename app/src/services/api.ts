@@ -61,6 +61,8 @@ import {
   PermissionCheckResponse,
   Authz,
   CityDashboardResponse,
+  PersonalAccessToken,
+  PersonalAccessTokenCreateResponse,
 } from "@/util/types";
 import type {
   CityLocationResponse,
@@ -74,6 +76,9 @@ import type {
   HighImpactActionRankingStatus,
   BulkHiapPrioritizationResult,
   HiapJob,
+  ImportedFileResponse,
+  ImportStatusResponse,
+  VersionHistoryResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -119,6 +124,8 @@ export const api = createApi({
     "ProjectModules",
     "Modules",
     "ActionPlan",
+    "VersionHistory",
+    "PersonalAccessToken",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1790,6 +1797,114 @@ export const api = createApi({
         }),
         transformResponse: (response: { threadId: string }) => response,
       }),
+
+      // Inventory Import Endpoints
+      uploadInventoryFile: builder.mutation<
+        ImportedFileResponse,
+        { cityId: string; inventoryId: string; file: File }
+      >({
+        query: ({ cityId, inventoryId, file }) => {
+          const formData = new FormData();
+          formData.append("file", file);
+          return {
+            url: `city/${cityId}/inventory/${inventoryId}/import`,
+            method: "POST",
+            body: formData,
+          };
+        },
+        transformResponse: (response: { data: ImportedFileResponse }) =>
+          response.data,
+        invalidatesTags: ["Inventory"],
+      }),
+      getImportStatus: builder.query<
+        ImportStatusResponse,
+        { cityId: string; inventoryId: string; importedFileId: string }
+      >({
+        query: ({ cityId, inventoryId, importedFileId }) =>
+          `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}`,
+        transformResponse: (response: { data: ImportStatusResponse }) =>
+          response.data,
+      }),
+      approveImport: builder.mutation<
+        ImportedFileResponse,
+        {
+          cityId: string;
+          inventoryId: string;
+          importedFileId: string;
+          mappingOverrides?: Record<string, any>;
+        }
+      >({
+        query: ({ cityId, inventoryId, importedFileId, mappingOverrides }) => ({
+          url: `city/${cityId}/inventory/${inventoryId}/import/approve`,
+          method: "POST",
+          body: {
+            importedFileId,
+            mappingOverrides,
+          },
+        }),
+        transformResponse: (response: { data: ImportedFileResponse }) =>
+          response.data,
+        invalidatesTags: ["Inventory"],
+      }),
+
+      // Version Control Endpoints
+      getVersionHistory: builder.query<
+        VersionHistoryResponse,
+        { inventoryId: string }
+      >({
+        query: ({ inventoryId }) => `inventory/${inventoryId}/version-history`,
+        transformResponse: (response: { data: VersionHistoryResponse }) =>
+          response.data,
+        providesTags: ["VersionHistory"],
+      }),
+
+      restoreVersion: builder.mutation<
+        { success: boolean },
+        {
+          inventoryId: string;
+          versionId: string;
+        }
+      >({
+        query: ({ inventoryId, versionId }) => ({
+          url: `inventory/${inventoryId}/version-history/restore/${versionId}`,
+          method: "POST",
+        }),
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
+        invalidatesTags: [
+          "VersionHistory",
+          "Inventory",
+          "InventoryProgress",
+          "ReportResults",
+          "YearlyReportResults",
+        ],
+      }),
+
+      // Personal Access Token Endpoints
+      getPersonalAccessTokens: builder.query<PersonalAccessToken[], void>({
+        query: () => "/user/tokens",
+        transformResponse: (response: { tokens: PersonalAccessToken[] }) =>
+          response.tokens,
+        providesTags: ["PersonalAccessToken"],
+      }),
+      createPersonalAccessToken: builder.mutation<
+        PersonalAccessTokenCreateResponse,
+        { name: string; scopes: string[]; expiresAt?: string | null }
+      >({
+        query: (data) => ({
+          url: "/user/tokens",
+          method: "POST",
+          body: data,
+        }),
+        invalidatesTags: ["PersonalAccessToken"],
+      }),
+      deletePersonalAccessToken: builder.mutation<{ success: boolean }, string>({
+        query: (tokenId) => ({
+          url: `/user/tokens/${tokenId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["PersonalAccessToken"],
+      }),
     };
   },
 });
@@ -1927,5 +2042,8 @@ export const {
   useDisableProjectModuleAccessMutation,
   useGetHiapJobsQuery,
   useGetHiapStatusQuery,
+  useGetPersonalAccessTokensQuery,
+  useCreatePersonalAccessTokenMutation,
+  useDeletePersonalAccessTokenMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

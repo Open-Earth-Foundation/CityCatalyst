@@ -21,9 +21,12 @@ export interface ECRFRowData {
   activityDataQuality?: string;
   emissionFactorSource?: string;
   emissionFactorDescription?: string;
+  emissionFactorUnit?: string;
   emissionFactorCO2?: number;
   emissionFactorCH4?: number;
   emissionFactorN2O?: number;
+  emissionFactorTotalCO2e?: number;
+  year?: number;
   rowIndex: number;
   errors?: string[];
   warnings?: string[];
@@ -35,6 +38,8 @@ export interface ECRFImportResult {
   warnings: string[];
   rowCount: number;
   validRowCount: number;
+  /** First non-null year from file when a year column is mapped (inventory year). */
+  inferredYearFromFile?: number;
 }
 
 /**
@@ -188,14 +193,38 @@ export default class ECRFImportService {
       }
 
       // Extract notation key if present
-      const notationKeyHeader = this.findHeader(headers, [
-        "notation key",
-        "notation_key",
-        "notation",
-      ]);
+      const notationKeyHeader =
+        detectedColumns.notationKey !== undefined
+          ? headers[detectedColumns.notationKey]
+          : this.findHeader(headers, [
+              "notation key",
+              "notation_key",
+              "notation",
+            ]);
       const notationKey = notationKeyHeader
         ? row[notationKeyHeader]?.toString().trim()
         : undefined;
+
+      // Extract year (inventory year) if present
+      const yearHeader =
+        detectedColumns.year !== undefined
+          ? headers[detectedColumns.year]
+          : this.findHeader(headers, [
+              "year",
+              "inventory year",
+              "reporting year",
+              "reference year",
+            ]);
+      let year: number | undefined;
+      if (yearHeader) {
+        const raw = row[yearHeader];
+        if (raw != null && raw !== "") {
+          const n = typeof raw === "number" ? raw : parseInt(String(raw), 10);
+          if (!isNaN(n) && n >= 1900 && n <= 2100) {
+            year = n;
+          }
+        }
+      }
 
       // Extract activity data fields (optional)
       const activityTypeHeader = this.findHeader(headers, [
@@ -289,71 +318,124 @@ export default class ECRFImportService {
         ? row[activityDataQualityHeader]?.toString().trim()
         : undefined;
 
-      const emissionFactorSourceHeader = this.findHeader(headers, [
-        "emission factor source",
-        "emission_factor_source",
-        "ef source",
-        "ef_source",
-      ]);
+      const emissionFactorSourceHeader =
+        detectedColumns.emissionFactorSource !== undefined
+          ? headers[detectedColumns.emissionFactorSource]
+          : this.findHeader(headers, [
+              "emission factor source",
+              "emission_factor_source",
+              "ef source",
+              "ef_source",
+            ]);
       const emissionFactorSource = emissionFactorSourceHeader
         ? row[emissionFactorSourceHeader]?.toString().trim()
         : undefined;
 
-      const emissionFactorDescriptionHeader = this.findHeader(headers, [
-        "emission factor description",
-        "emission_factor_description",
-        "ef description",
-        "ef_description",
-      ]);
+      const emissionFactorDescriptionHeader =
+        detectedColumns.emissionFactorDescription !== undefined
+          ? headers[detectedColumns.emissionFactorDescription]
+          : this.findHeader(headers, [
+              "emission factor description",
+              "emission_factor_description",
+              "ef description",
+              "ef_description",
+            ]);
       const emissionFactorDescription = emissionFactorDescriptionHeader
         ? row[emissionFactorDescriptionHeader]?.toString().trim()
         : undefined;
 
-      // Extract emission factors (optional)
-      const emissionFactorCO2Header = this.findHeader(headers, [
-        "emission co2",
-        "emission_co2",
-        "ef co2",
-        "ef_co2",
-      ]);
-      const emissionFactorCO2 = emissionFactorCO2Header
-        ? this.extractGasValue(
-            row,
-            headers,
-            headers.indexOf(emissionFactorCO2Header),
-            "Emission Factor CO2",
-          )
+      const emissionFactorUnitHeader =
+        detectedColumns.emissionFactorUnit !== undefined
+          ? headers[detectedColumns.emissionFactorUnit]
+          : this.findHeader(headers, [
+              "emission factor - unit",
+              "emission factor unit",
+              "ef unit",
+              "ef_unit",
+            ]);
+      const emissionFactorUnit = emissionFactorUnitHeader
+        ? row[emissionFactorUnitHeader]?.toString().trim()
         : undefined;
 
-      const emissionFactorCH4Header = this.findHeader(headers, [
-        "emission ch4",
-        "emission_ch4",
-        "ef ch4",
-        "ef_ch4",
-      ]);
-      const emissionFactorCH4 = emissionFactorCH4Header
-        ? this.extractGasValue(
-            row,
-            headers,
-            headers.indexOf(emissionFactorCH4Header),
-            "Emission Factor CH4",
-          )
-        : undefined;
+      const emissionFactorCO2Idx =
+        detectedColumns.emissionFactorCO2 ?? (() => {
+          const h = this.findHeader(headers, [
+            "emission factor - co2",
+            "emission factor co2",
+            "ef co2",
+            "ef_co2",
+          ]);
+          return h ? headers.indexOf(h) : undefined;
+        })();
+      const emissionFactorCO2 =
+        emissionFactorCO2Idx !== undefined
+          ? this.extractGasValue(
+              row,
+              headers,
+              emissionFactorCO2Idx,
+              "Emission Factor CO2",
+            )
+          : undefined;
 
-      const emissionFactorN2OHeader = this.findHeader(headers, [
-        "emission n2o",
-        "emission_n2o",
-        "ef n2o",
-        "ef_n2o",
-      ]);
-      const emissionFactorN2O = emissionFactorN2OHeader
-        ? this.extractGasValue(
-            row,
-            headers,
-            headers.indexOf(emissionFactorN2OHeader),
-            "Emission Factor N2O",
-          )
-        : undefined;
+      const emissionFactorCH4Idx =
+        detectedColumns.emissionFactorCH4 ?? (() => {
+          const h = this.findHeader(headers, [
+            "emission factor - ch4",
+            "emission factor ch4",
+            "ef ch4",
+            "ef_ch4",
+          ]);
+          return h ? headers.indexOf(h) : undefined;
+        })();
+      const emissionFactorCH4 =
+        emissionFactorCH4Idx !== undefined
+          ? this.extractGasValue(
+              row,
+              headers,
+              emissionFactorCH4Idx,
+              "Emission Factor CH4",
+            )
+          : undefined;
+
+      const emissionFactorN2OIdx =
+        detectedColumns.emissionFactorN2O ?? (() => {
+          const h = this.findHeader(headers, [
+            "emission factor - n2o",
+            "emission factor n2o",
+            "ef n2o",
+            "ef_n2o",
+          ]);
+          return h ? headers.indexOf(h) : undefined;
+        })();
+      const emissionFactorN2O =
+        emissionFactorN2OIdx !== undefined
+          ? this.extractGasValue(
+              row,
+              headers,
+              emissionFactorN2OIdx,
+              "Emission Factor N2O",
+            )
+          : undefined;
+
+      const emissionFactorTotalCO2eIdx =
+        detectedColumns.emissionFactorTotalCO2e ?? (() => {
+          const h = this.findHeader(headers, [
+            "emission factor - total co2e",
+            "emission factor total co2e",
+            "ef total co2e",
+            "ef_total co2e",
+          ]);
+          return h ? headers.indexOf(h) : undefined;
+        })();
+      const emissionFactorTotalCO2e =
+        emissionFactorTotalCO2eIdx !== undefined
+          ? this.extractGasValue(
+              row,
+              headers,
+              emissionFactorTotalCO2eIdx,
+              "Emission Factor Total CO2e",
+            )
+          : undefined;
 
       // Validate that at least one gas value is present
       if (!co2 && !ch4 && !n2o && !totalCO2e && !notationKey) {
@@ -371,6 +453,7 @@ export default class ECRFImportService {
         n2o,
         totalCO2e: totalCO2e,
         notationKey,
+        year,
         activityType,
         activityAmount,
         activityUnit,
@@ -379,9 +462,11 @@ export default class ECRFImportService {
         activityDataQuality,
         emissionFactorSource,
         emissionFactorDescription,
+        emissionFactorUnit,
         emissionFactorCO2,
         emissionFactorCH4,
         emissionFactorN2O,
+        emissionFactorTotalCO2e,
         rowIndex: i,
         errors: rowErrors.length > 0 ? rowErrors : undefined,
         warnings: rowWarnings.length > 0 ? rowWarnings : undefined,
@@ -393,12 +478,15 @@ export default class ECRFImportService {
       errors.push("No valid rows found in file");
     }
 
+    const inferredYearFromFile = rows.find((r) => r.year != null)?.year;
+
     return {
       rows,
       errors,
       warnings,
       rowCount: rows.length,
       validRowCount: validRows.length,
+      inferredYearFromFile,
     };
   }
 

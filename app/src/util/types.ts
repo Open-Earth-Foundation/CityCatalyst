@@ -27,6 +27,7 @@ import type {
 } from "@/backend/DataSourceService";
 import type { ProjectAttributes } from "@/models/Project";
 import type { OrganizationAttributes } from "@/models/Organization";
+import type { VersionAttributes } from "@/models/Version";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -836,4 +837,114 @@ export interface CCRATopRisksData {
   indicators?: Indicator[];
   cityName?: string;
   region?: string;
+}
+
+export interface ImportedFileResponse {
+  id: string;
+  userId: string;
+  cityId: string;
+  inventoryId: string;
+  fileName: string;
+  fileType: "xlsx" | "csv";
+  fileSize: number;
+  originalFileName: string;
+  importStatus: string;
+  created: string;
+  lastUpdated: string;
+}
+
+export interface ColumnInfo {
+  columnName: string;
+  interpretedAs: string | null;
+  status: "detected" | "manual";
+  exampleValue: string | null;
+}
+
+export interface RequiredMappingOption {
+  key: string;
+  label: string;
+}
+
+export interface ValidationResults {
+  totalColumnsDetected: number;
+  columns: ColumnInfo[];
+  requiredMappings?: RequiredMappingOption[];
+  errors: string[];
+  warnings: string[];
+}
+
+export interface ImportSummary {
+  sourceFile: string;
+  formatDetected: string;
+  rowsFound: number;
+  fieldsMapped: number;
+}
+
+export interface FieldMapping {
+  sourceColumn: string;
+  mappedField: string;
+}
+
+export interface ReviewData {
+  importSummary: ImportSummary;
+  fieldMappings: FieldMapping[];
+  mappingPreview?: any;
+}
+
+export interface ImportStatusResponse {
+  id: string;
+  importStatus: string;
+  currentStep: 1 | 2 | 3 | 4;
+  fileInfo: {
+    fileName: string;
+    originalFileName: string;
+    fileType: "xlsx" | "csv";
+    fileSize: number;
+  };
+  validationResults: ValidationResults | null;
+  columnMappings: ValidationResults | null;
+  reviewData: ReviewData | null;
+  rowCount: number;
+  processedRowCount: number;
+  errorLog: string | null;
+  created: string;
+  lastUpdated: string;
+  completedAt: string | null;
+}
+
+type VersionChange = VersionAttributes & {
+  author: { name: string; userId: string };
+  previousVersion: VersionAttributes;
+};
+
+export type VersionHistoryEntry = {
+  version: VersionChange;
+  activities: VersionChange[];
+  subCategory: SubCategoryAttributes;
+  dataSource?: { datasourceName: string; datasetName: string };
+  previousDataSource?: { datasourceName: string; datasetName: string };
+  mostRecentAssociatedVersion?: VersionChange;
+};
+
+export type VersionHistoryResponse = VersionHistoryEntry[];
+
+// Personal Access Token types
+export interface PersonalAccessToken {
+  id: string;
+  name: string;
+  tokenPrefix: string;
+  scopes: string[];
+  expiresAt: string | null;
+  lastUsedAt: string | null;
+  created: string;
+}
+
+export interface PersonalAccessTokenCreateResponse {
+  id: string;
+  token: string;
+  name: string;
+  tokenPrefix: string;
+  scopes: string[];
+  expiresAt: string | null;
+  created: string;
 }

@@ -6,9 +6,6 @@ import {
   IconButton,
   Input,
   List,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
   Table,
   Text,
   useDisclosure,
@@ -27,7 +24,12 @@ import { TFunction } from "i18next";
 import { api } from "@/services/api";
 import DeleteCityModal from "@/components/Modals/delete-city-modal";
 import { CityAttributes } from "@/models/City";
-import { PopoverRoot } from "@/components/ui/popover";
+import {
+  PopoverRoot,
+  PopoverContent,
+  PopoverBody,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { InputGroup } from "@/components/ui/input-group";
 import { useFuzzySearch } from "@/hooks/useFuzzySearch";
 import { Toaster, toaster } from "@/components/ui/toaster";
@@ -273,6 +275,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                       </IconButton>
                     </PopoverTrigger>
                     <PopoverContent
+                      portalled
                       w="300px"
                       borderRadius="8px"
                       shadow="2dp"

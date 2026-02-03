@@ -22,6 +22,7 @@ import {
 } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
 import NextLink from "next/link";
+import { useParams } from "next/navigation";
 import { TFunction } from "i18next";
 import { api } from "@/services/api";
 import DeleteCityModal from "@/components/Modals/delete-city-modal";
@@ -29,12 +30,16 @@ import { CityAttributes } from "@/models/City";
 import { PopoverRoot } from "@/components/ui/popover";
 import { InputGroup } from "@/components/ui/input-group";
 import { useFuzzySearch } from "@/hooks/useFuzzySearch";
+import { Toaster, toaster } from "@/components/ui/toaster";
+import { logger } from "@/services/logger";
+import { CityYearData } from "@/util/types";
 
 interface ManageCitiesProps {
   t: TFunction;
 }
 
 const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
+  const { lng } = useParams();
   const { data: citiesAndYears, isLoading: isCitiesLoading } =
     api.useGetCitiesAndYearsQuery();
 
@@ -45,6 +50,88 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
   } = useDisclosure();
   const [cityData, setCityData] = useState<CityAttributes>();
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [isDownloading, setIsDownloading] = useState<string | null>(null);
+
+  const getLatestInventoryId = (years: CityYearData[]): string | null => {
+    if (!years || years.length === 0) return null;
+    const latestYear = years.reduce((latest, current) =>
+      current.year > latest.year ? current : latest
+    );
+    return latestYear.inventoryId;
+  };
+
+  const handleDownloadECRF = async (
+    cityId: string,
+    cityLocode: string,
+    years: CityYearData[],
+  ) => {
+    const inventoryId = getLatestInventoryId(years);
+    if (!inventoryId) {
+      toaster.create({
+        description: t("no-inventory-data"),
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    const latestYear = years.reduce((latest, current) =>
+      current.year > latest.year ? current : latest
+    );
+
+    setIsDownloading(cityId);
+    toaster.create({
+      description: t("preparing-download"),
+      type: "info",
+      duration: 60000,
+    });
+
+    try {
+      const res = await fetch(
+        `/api/v1/inventory/${inventoryId}/download?format=ecrf&lng=${lng}`,
+      );
+
+      if (!res.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const contentDisposition = res.headers.get("Content-Disposition");
+      const blob = await res.blob();
+
+      let filename = `${cityLocode}_${latestYear.year}.xlsx`;
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="(.+)"/);
+        if (match) {
+          filename = match[1];
+        }
+      }
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = filename;
+      downloadLink.click();
+
+      toaster.dismiss();
+      toaster.create({
+        description: t("download-complete"),
+        type: "success",
+        duration: 3000,
+      });
+
+      URL.revokeObjectURL(downloadLink.href);
+      downloadLink.remove();
+    } catch (error) {
+      logger.error({ err: error, cityId, inventoryId }, "Failed to download ECRF");
+      toaster.dismiss();
+      toaster.create({
+        description: t("download-failed"),
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsDownloading(null);
+    }
+  };
 
   // Use fuzzy search hook
   const filteredCitiesAndYears = useFuzzySearch({
@@ -146,7 +233,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
             </Table.Row>
           </Table.Header>
           <Table.Body fontFamily="heading">
-            {filteredCitiesAndYears?.map(({ city }) => (
+            {filteredCitiesAndYears?.map(({ city, years }) => (
               <Table.Row key={city.cityId}>
                 <Table.Cell>
                   <Box
@@ -202,7 +289,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                         <List.Root padding="0">
                           <List.Item
                             display="flex"
-                            cursor="pointer"
+                            cursor={isDownloading === city.cityId ? "wait" : "pointer"}
                             gap="16px"
                             color="content.tertiary"
                             alignItems="center"
@@ -212,6 +299,15 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                             _hover={{
                               background: "content.link",
                               color: "white",
+                            }}
+                            onClick={() => {
+                              if (isDownloading !== city.cityId) {
+                                handleDownloadECRF(
+                                  city.cityId,
+                                  city.locode || city.name || "city",
+                                  years,
+                                );
+                              }
                             }}
                           >
                             <MdOutlineFileDownload size={24} />
@@ -224,7 +320,9 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                               _groupHover={{ color: "white" }}
                               textTransform="capitalize"
                             >
-                              {t("download-city-data")}
+                              {isDownloading === city.cityId
+                                ? t("downloading")
+                                : t("download-city-data")}
                             </Text>
                           </List.Item>
                           {/* <List.Item
@@ -276,6 +374,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
           t={t}
         />
       )}
+      <Toaster />
     </>
   );
 };

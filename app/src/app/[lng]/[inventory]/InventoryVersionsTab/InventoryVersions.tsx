@@ -162,7 +162,7 @@ function VersionEntry({
   versionEntries: VersionHistoryEntry[];
   versionNumber: number;
 }) {
-  const firstEntry = versionEntries[versionEntries.length - 1];
+  const firstEntry = versionEntries[0];
 
   const date = new Date(firstEntry.version.created ?? 0);
   const month = date.toLocaleString("default", { month: "long" });

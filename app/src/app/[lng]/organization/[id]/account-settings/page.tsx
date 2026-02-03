@@ -7,6 +7,7 @@ import Link from "next/link";
 import AccountSettingsTab from "./account";
 import TeamSettings from "./team";
 import ProjectSettings from "./project/index";
+import MyTokensTab from "@/components/Tabs/my-tokens-tab";
 
 // TODO create tabs component with recipe
 const AccountSettingsPage = (props: {
@@ -100,6 +101,22 @@ const AccountSettingsPage = (props: {
                   {t("projects")}
                 </Text>
               </Tabs.Trigger>
+              <Tabs.Trigger
+                value="my-tokens"
+                _selected={{
+                  borderColor: "content.link",
+                  borderBottomWidth: "2px",
+                  boxShadow: "none",
+                  fontWeight: "bold",
+                  borderRadius: "0",
+                  color: "content.link",
+                  backgroundColor: "background.backgroundLight",
+                }}
+              >
+                <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
+                  {t("api-tokens")}
+                </Text>
+              </Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value="account">
               <Box
@@ -130,6 +147,7 @@ const AccountSettingsPage = (props: {
             <Tabs.Content value="project">
               <ProjectSettings lng={lng} id={id} />
             </Tabs.Content>
+            <MyTokensTab lng={lng} />
           </Tabs.Root>
         </Box>
       </Box>

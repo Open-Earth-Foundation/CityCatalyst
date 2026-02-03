@@ -260,7 +260,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                   </Text>
                 </Table.Cell>
                 <Table.Cell>
-                  <PopoverRoot>
+                  <PopoverRoot positioning={{ placement: "bottom-end", flip: true }}>
                     <PopoverTrigger asChild>
                       <IconButton
                         aria-label="action-button"
@@ -273,7 +273,6 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                       </IconButton>
                     </PopoverTrigger>
                     <PopoverContent
-                      h="64px"
                       w="300px"
                       borderRadius="8px"
                       shadow="2dp"
@@ -282,8 +281,6 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                       borderColor="border.neutral"
                       padding="10px"
                       px="0"
-                      pos="absolute"
-                      right="0"
                     >
                       <PopoverBody padding="0">
                         <List.Root padding="0">

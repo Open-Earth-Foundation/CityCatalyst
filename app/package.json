@@ -83,7 +83,7 @@
     "jspdf": "^4.0.0",
     "jspdf-autotable": "^5.0.7",
     "katex": "^0.16.25",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "nanoid": "^5.1.6",
     "next": "^15.5.2",
     "next-auth": "^4.24.13",

@@ -172,7 +172,6 @@
   "preparing-download": "Preparando seu download...",
   "download-success": "Download concluído!",
   "download-failed": "Ocorreu um erro durante o download",
-
   "api-tokens": "Tokens de API",
   "all-tokens": "Todos os Tokens",
   "add": "Adicionar",
@@ -213,6 +212,5 @@
   "token-deleted-success": "Token excluído com sucesso",
   "token-delete-error": "Falha ao excluir o token",
   "copied-to-clipboard": "Copiado para a área de transferência",
-  "download-failed": "Ocorreu um erro durante o download",
   "green_theme": "Verde"
 }

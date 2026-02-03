@@ -171,7 +171,6 @@
   "preparing-download": "Préparation du téléchargement...",
   "download-success": "Téléchargement terminé !",
   "download-failed": "Une erreur s'est produite lors du téléchargement",
-
   "api-tokens": "Jetons API",
   "all-tokens": "Tous les Jetons",
   "add": "Ajouter",
@@ -212,6 +211,5 @@
   "token-deleted-success": "Jeton supprimé avec succès",
   "token-delete-error": "Échec de la suppression du jeton",
   "copied-to-clipboard": "Copié dans le presse-papiers",
-  "download-failed": "Une erreur s'est produite lors du téléchargement",
   "green_theme": "Vert"
 }

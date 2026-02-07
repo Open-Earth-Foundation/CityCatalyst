@@ -85,7 +85,7 @@
     "katex": "^0.16.25",
     "lodash": "^4.17.21",
     "nanoid": "^5.1.6",
-    "next": "^15.5.2",
+    "next": "^16.1.4",
     "next-auth": "^4.24.13",
     "next-runtime-env": "^3.3.0",
     "next-swagger-doc": "^0.4.1",

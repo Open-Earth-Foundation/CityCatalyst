@@ -43,7 +43,7 @@
  */
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
-import pkg from "@/components/package.json";
+import pkg from "@/../package.json";
 import { db } from "@/models/index";
 import { logger } from "@/services/logger";
 

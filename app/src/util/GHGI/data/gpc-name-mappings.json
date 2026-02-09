@@ -1,10 +1,5 @@
 {
   "sector": {
-    "1": "stationary-energy",
-    "2": "transportation",
-    "3": "waste",
-    "4": "industrial-processes-and-product-uses-ippu",
-    "5": "agriculture-forestry-and-other-land-use-afolu",
     "I": "stationary-energy",
     "II": "transportation",
     "III": "waste",

@@ -103,12 +103,26 @@ export default class ECRFImportService {
       if (gpcRefNo === "") gpcRefNo = undefined;
 
       if (!gpcRefNo && (hasSectorColumn || hasSubsectorColumn)) {
-        const rawSector = hasSectorColumn
+        let rawSector = hasSectorColumn
           ? row[headers[detectedColumns.sector!]]?.toString().trim()
           : "";
-        const rawSubsector = hasSubsectorColumn
+        let rawSubsector = hasSubsectorColumn
           ? row[headers[detectedColumns.subsector!]]?.toString().trim()
           : "";
+        if (rawSector && rawSector.includes(" > ")) {
+          const [left, right] = rawSector.split(" > ").map((s: string) => s.trim());
+          if (left && right) {
+            rawSector = left;
+            if (!rawSubsector) rawSubsector = right;
+          }
+        }
+        if (rawSubsector && rawSubsector.includes(" > ")) {
+          const [left, right] = rawSubsector.split(" > ").map((s: string) => s.trim());
+          if (left && right) {
+            if (!rawSector) rawSector = left;
+            rawSubsector = right;
+          }
+        }
         if (rawSector && rawSubsector) {
           const activityHeader = this.findHeader(headers, [
             "activity type",

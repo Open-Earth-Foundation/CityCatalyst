@@ -25,6 +25,31 @@ A table of all possible GPC rows with:
 npx tsx scripts/generate-gpc-reference-table.ts
 ```
 
+## Name mappings (sector / subsector)
+
+**File:** `gpc-name-mappings.json`
+
+Maps file values (e.g. "Stationary Energy", "1", "Residential buildings") to canonical sector/subsector slugs so rows with missing or different names still resolve to a GPC ref.
+
+- **sector** – map from file sector string → `stationary-energy` | `transportation` | `waste` | etc.
+- **subsector** – map from file subsector string → `residential-buildings` | `on-road-transportation` | etc.
+
+The resolver uses these first; if no key matches, it falls back to normalizing the value to a slug. Add entries here when imports miss sectors/subsectors due to name mismatches.
+
+**Extract and add mappings from an eCRF:** From the `app` directory:
+
+```bash
+npx tsx scripts/extract-ecrf-names-and-mappings.ts path/to/ecrf.xlsx
+```
+
+This prints unique sector/subsector/activity values and suggested slugs. Use `--write` to merge suggested mappings into `gpc-name-mappings.json`:
+
+```bash
+npx tsx scripts/extract-ecrf-names-and-mappings.ts path/to/ecrf.xlsx --write
+```
+
+Add manual entries in `gpc-name-mappings.json` for any values that show as `NO_MATCH`.
+
 ## Example eCRF file
 
 **File:** `A_Kothapalle_CRF_2013_GPC_Filled_ALL_Sheet3.xlsx`

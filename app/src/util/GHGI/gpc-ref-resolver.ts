@@ -1,7 +1,14 @@
 import gpcReferenceTable from "./data/gpc-reference-table.json";
+import nameMappings from "./data/gpc-name-mappings.json";
 import type { GPCReferenceRow } from "./types";
 
 const table = gpcReferenceTable as GPCReferenceRow[];
+
+export interface GPCNameMappings {
+  sector: Record<string, string>;
+  subsector: Record<string, string>;
+}
+const mappings = nameMappings as GPCNameMappings;
 
 /**
  * Normalize a file value (e.g. "Stationary Energy", "Residential buildings")
@@ -13,6 +20,22 @@ export function normalizeToSlug(value: string): string {
     .toLowerCase()
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9-]/g, "");
+}
+
+/**
+ * Map a file value to canonical sector or subsector slug using gpc-name-mappings.json.
+ * Falls back to normalizeToSlug when no mapping exists.
+ */
+function mapToCanonicalSlug(
+  type: "sector" | "subsector",
+  fileValue: string,
+): string {
+  const trimmed = fileValue.trim();
+  const lower = trimmed.toLowerCase();
+  const map = type === "sector" ? mappings.sector : mappings.subsector;
+  if (map[trimmed]) return map[trimmed];
+  if (map[lower]) return map[lower];
+  return normalizeToSlug(fileValue);
 }
 
 /**
@@ -29,8 +52,8 @@ export function resolveGpcRefNo(
   subsector: string,
   fuelTypeOrActivity?: string,
 ): string | null {
-  const sectorSlug = normalizeToSlug(sector);
-  const subsectorSlug = normalizeToSlug(subsector);
+  const sectorSlug = mapToCanonicalSlug("sector", sector);
+  const subsectorSlug = mapToCanonicalSlug("subsector", subsector);
   const activitySlug =
     fuelTypeOrActivity != null && fuelTypeOrActivity !== ""
       ? normalizeToSlug(fuelTypeOrActivity)

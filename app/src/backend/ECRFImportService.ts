@@ -1,4 +1,5 @@
 import { db } from "@/models";
+import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
 import FileParserService, { type ParsedFileData } from "./FileParserService";
 
 export interface ECRFRowData {
@@ -73,10 +74,14 @@ export default class ECRFImportService {
 
     const sheet = parsedData.primarySheet;
     const headers = sheet.headers;
+    const hasGpcRefNoColumn = detectedColumns.gpcRefNo !== undefined;
+    const hasSectorColumn = detectedColumns.sector !== undefined;
+    const hasSubsectorColumn = detectedColumns.subsector !== undefined;
 
-    // Validate required columns
-    if (detectedColumns.gpcRefNo === undefined) {
-      errors.push("GPC reference number column not found");
+    if (!hasGpcRefNoColumn && (!hasSectorColumn || !hasSubsectorColumn)) {
+      errors.push(
+        "When GPC ref. no. column is missing, both Sector and Sub-sector columns are required",
+      );
       return {
         rows: [],
         errors,
@@ -92,9 +97,53 @@ export default class ECRFImportService {
       const rowErrors: string[] = [];
       const rowWarnings: string[] = [];
 
-      // Extract GPC reference number
-      const gpcRefNoHeader = headers[detectedColumns.gpcRefNo];
-      const gpcRefNo = row[gpcRefNoHeader]?.toString().trim();
+      let gpcRefNo: string | undefined = hasGpcRefNoColumn
+        ? row[headers[detectedColumns.gpcRefNo!]]?.toString().trim()
+        : undefined;
+      if (gpcRefNo === "") gpcRefNo = undefined;
+
+      if (!gpcRefNo && (hasSectorColumn || hasSubsectorColumn)) {
+        const rawSector = hasSectorColumn
+          ? row[headers[detectedColumns.sector!]]?.toString().trim()
+          : "";
+        const rawSubsector = hasSubsectorColumn
+          ? row[headers[detectedColumns.subsector!]]?.toString().trim()
+          : "";
+        if (rawSector && rawSubsector) {
+          const activityHeader = this.findHeader(headers, [
+            "activity type",
+            "activity_type",
+            "fuel type",
+            "fuel_type",
+          ]);
+          const activityType = activityHeader
+            ? row[activityHeader]?.toString().trim()
+            : undefined;
+          const resolved = resolveGpcRefNo(
+            rawSector,
+            rawSubsector,
+            activityType,
+          );
+          if (resolved) {
+            gpcRefNo = resolved;
+          } else {
+            rowErrors.push(
+              `Could not resolve GPC ref from sector "${rawSector}" and subsector "${rawSubsector}"`,
+            );
+            rows.push({
+              gpcRefNo: "",
+              sectorId: "",
+              subsectorId: "",
+              subcategoryId: null,
+              scopeId: "",
+              rowIndex: i,
+              errors: rowErrors,
+              warnings: rowWarnings,
+            });
+            continue;
+          }
+        }
+      }
 
       if (!gpcRefNo) {
         rowWarnings.push("No GPC reference number found");
@@ -358,7 +407,8 @@ export default class ECRFImportService {
         : undefined;
 
       const emissionFactorCO2Idx =
-        detectedColumns.emissionFactorCO2 ?? (() => {
+        detectedColumns.emissionFactorCO2 ??
+        (() => {
           const h = this.findHeader(headers, [
             "emission factor - co2",
             "emission factor co2",
@@ -378,7 +428,8 @@ export default class ECRFImportService {
           : undefined;
 
       const emissionFactorCH4Idx =
-        detectedColumns.emissionFactorCH4 ?? (() => {
+        detectedColumns.emissionFactorCH4 ??
+        (() => {
           const h = this.findHeader(headers, [
             "emission factor - ch4",
             "emission factor ch4",
@@ -398,7 +449,8 @@ export default class ECRFImportService {
           : undefined;
 
       const emissionFactorN2OIdx =
-        detectedColumns.emissionFactorN2O ?? (() => {
+        detectedColumns.emissionFactorN2O ??
+        (() => {
           const h = this.findHeader(headers, [
             "emission factor - n2o",
             "emission factor n2o",
@@ -418,7 +470,8 @@ export default class ECRFImportService {
           : undefined;
 
       const emissionFactorTotalCO2eIdx =
-        detectedColumns.emissionFactorTotalCO2e ?? (() => {
+        detectedColumns.emissionFactorTotalCO2e ??
+        (() => {
           const h = this.findHeader(headers, [
             "emission factor - total co2e",
             "emission factor total co2e",

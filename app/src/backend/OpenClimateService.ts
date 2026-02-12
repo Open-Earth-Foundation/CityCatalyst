@@ -1,11 +1,18 @@
 import { logger } from "@/services/logger";
 import { findClosestYear, PopulationEntry } from "@/util/helpers";
-
-const OPENCLIMATE_BASE_URL =
-  process.env.NEXT_PUBLIC_OPENCLIMATE_API_URL ||
-  "https://app.openclimate.network";
+import * as dotenv from "dotenv";
 
 const numberOfYearsDisplayed = 10;
+
+const OPENCLIMATE_BASE_URL = getOpenClimateApiUrl();
+
+function getOpenClimateApiUrl() {
+  dotenv.config();
+  return (
+    process.env.NEXT_PUBLIC_OPENCLIMATE_API_URL ||
+    "https://app.openclimate.network"
+  );
+}
 
 interface PopulationDataResult {
   error?: string;

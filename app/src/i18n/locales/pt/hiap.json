@@ -119,6 +119,7 @@
   "actions": "Ações",
   "open-cc-actions": "Ações Abertas do CC",
   "top-climate-actions": "Principais Ações de Alto Impacto",
+  "no-actions-generated": "Nenhuma ação de {{type}} foi gerada ainda",
   "ranked-and-unranked-actions": "Ações classificadas e não classificadas",
   "pick-actions": "Escolher principais ações",
   "clear-selection": "Limpar seleção",

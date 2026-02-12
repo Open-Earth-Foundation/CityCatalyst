@@ -145,7 +145,7 @@ describe("Action Plan Generation", () => {
     });
 
     await db.models.City.update(
-      { locode: "XXAPT" },
+      { locode: "XX APT" },
       { where: { cityId: testData.cityId } },
     );
 

@@ -1,6 +1,6 @@
 import gpcReferenceTable from "./data/gpc-reference-table.json";
 import nameMappings from "./data/gpc-name-mappings.json";
-import type { GPCReferenceRow } from "./types";
+import { GPCReferenceRow } from "scripts/generate-gpc-reference-table";
 
 const table = gpcReferenceTable as GPCReferenceRow[];
 

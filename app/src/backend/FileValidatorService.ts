@@ -199,36 +199,38 @@ export default class FileValidatorService {
       errors.push("Data sheet is empty");
     }
 
-    // Check for required columns
-    const requiredColumns = [
-      {
-        name: "GPC ref. no.",
-        alternatives: [
-          "gpc ref",
-          "gpc ref no",
-          "reference number",
-          "gpc reference",
-        ],
-      },
-      { name: "CRF - Sector", alternatives: ["sector", "crf sector"] },
-      {
-        name: "CRF - Sub-sector",
-        alternatives: ["subsector", "sub-sector", "crf sub-sector"],
-      },
-      { name: "Scope", alternatives: ["scope"] },
-    ];
+    // GPC ref no is required OR sector + subsector (to resolve ref from reference table)
+    const gpcRefFound =
+      FileParserService.detectColumn(sheet.headers, [
+        "GPC ref. no.",
+        "gpc ref",
+        "gpc ref no",
+        "reference number",
+        "gpc reference",
+      ]) !== -1;
+    const sectorFound =
+      FileParserService.detectColumn(sheet.headers, [
+        "CRF - Sector",
+        "sector",
+        "crf sector",
+      ]) !== -1;
+    const subsectorFound =
+      FileParserService.detectColumn(sheet.headers, [
+        "CRF - Sub-sector",
+        "subsector",
+        "sub-sector",
+        "crf sub-sector",
+      ]) !== -1;
+    const scopeFound =
+      FileParserService.detectColumn(sheet.headers, ["scope"]) !== -1;
 
-    for (const column of requiredColumns) {
-      const found = FileParserService.detectColumn(sheet.headers, [
-        column.name,
-        ...column.alternatives,
-      ]);
-
-      if (found === -1) {
-        errors.push(
-          `Required column not found: ${column.name} (or similar: ${column.alternatives.join(", ")})`,
-        );
-      }
+    if (!scopeFound) {
+      errors.push("Required column not found: Scope (or similar: scope)");
+    }
+    if (!gpcRefFound && (!sectorFound || !subsectorFound)) {
+      errors.push(
+        "Either GPC ref. no. column or both CRF - Sector and CRF - Sub-sector columns are required",
+      );
     }
 
     // Check for at least one gas value column
@@ -380,27 +382,15 @@ export default class FileValidatorService {
       },
       {
         key: "co2",
-        terms: [
-          "ghgs (metric tonnes co2e) - co2",
-          "co2",
-          "ghg co2",
-        ],
+        terms: ["ghgs (metric tonnes co2e) - co2", "co2", "ghg co2"],
       },
       {
         key: "ch4",
-        terms: [
-          "ghgs (metric tonnes co2e) - ch4",
-          "ch4",
-          "ghg ch4",
-        ],
+        terms: ["ghgs (metric tonnes co2e) - ch4", "ch4", "ghg ch4"],
       },
       {
         key: "n2o",
-        terms: [
-          "ghgs (metric tonnes co2e) - n2o",
-          "n2o",
-          "ghg n2o",
-        ],
+        terms: ["ghgs (metric tonnes co2e) - n2o", "n2o", "ghg n2o"],
       },
       {
         key: "totalCO2e",

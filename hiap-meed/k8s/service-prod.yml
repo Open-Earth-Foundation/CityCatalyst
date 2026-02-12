@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hiap-meed-service-prod
+  namespace: default
+  labels:
+    app: hiap-meed-prod
+spec:
+  selector:
+    app: hiap-meed-prod
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+      name: http
+  type: ClusterIP
+

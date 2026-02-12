@@ -324,27 +324,72 @@ jobs:
             exit 1
           fi
 
-          # Pod exists, now wait for job to complete
+          # Pod exists, now stream logs while waiting for completion
           echo ""
-          echo "Waiting for migration to complete (timeout: 10 minutes)..."
+          echo "Waiting for migration to complete (timeout: 5 minutes)..."
           echo "Started at: $(date)"
 
-          if kubectl wait --for=condition=complete --timeout=300s job/$JOB_NAME -n default; then
+          # Stream logs to file in background (captures everything before pod is deleted)
+          LOG_FILE="/tmp/migration-logs-$JOB_NAME.txt"
+          kubectl logs -f job/$JOB_NAME -n default > "$LOG_FILE" 2>&1 &
+          LOG_PID=$!
+
+          # Wait for job to complete or fail (check both conditions)
+          echo "Monitoring job status..."
+          TIMEOUT=300
+          ELAPSED=0
+          while [ $ELAPSED -lt $TIMEOUT ]; do
+            JOB_STATUS=$(kubectl get job $JOB_NAME -n default -o jsonpath='{.status.conditions[?(@.type=="Complete")].status}' 2>/dev/null)
+            JOB_FAILED=$(kubectl get job $JOB_NAME -n default -o jsonpath='{.status.conditions[?(@.type=="Failed")].status}' 2>/dev/null)
+
+            if [ "$JOB_STATUS" = "True" ]; then
+              echo "Job completed successfully after ${ELAPSED}s"
+              break
+            fi
+
+            if [ "$JOB_FAILED" = "True" ]; then
+              FAIL_REASON=$(kubectl get job $JOB_NAME -n default -o jsonpath='{.status.conditions[?(@.type=="Failed")].reason}' 2>/dev/null)
+              FAIL_MSG=$(kubectl get job $JOB_NAME -n default -o jsonpath='{.status.conditions[?(@.type=="Failed")].message}' 2>/dev/null)
+              echo "Job FAILED after ${ELAPSED}s"
+              echo "Reason: $FAIL_REASON"
+              echo "Message: $FAIL_MSG"
+              break
+            fi
+
+            sleep 5
+            ELAPSED=$((ELAPSED + 5))
+          done
+
+          if [ $ELAPSED -ge $TIMEOUT ]; then
+            echo "Job timed out after ${TIMEOUT}s (neither completed nor failed)"
+          fi
+
+          # Stop log streaming
+          kill $LOG_PID 2>/dev/null || true
+          sleep 1
+
+          # Get job status
+          JOB_STATUS=$(kubectl get job $JOB_NAME -n default -o jsonpath='{.status.conditions[?(@.type=="Complete")].status}' 2>/dev/null)
+          JOB_FAILED=$(kubectl get job $JOB_NAME -n default -o jsonpath='{.status.conditions[?(@.type=="Failed")].status}' 2>/dev/null)
+
+          echo ""
+          echo "=========================================="
+          echo "Migration Logs (captured in real-time):"
+          echo "=========================================="
+          cat "$LOG_FILE" 2>/dev/null || echo "(No logs captured)"
+
+          if [ "$JOB_STATUS" = "True" ]; then
+            echo ""
             echo "========================================="
             echo "Migration Completed Successfully"
             echo "========================================="
-
             echo "status=success" >> $GITHUB_OUTPUT
 
-            echo ""
-            echo "Migration output:"
-            kubectl logs job/$JOB_NAME -n default --tail=50
-
           else
+            echo ""
             echo "=========================================="
             echo "Migration Failed"
             echo "=========================================="
-
             echo "status=failed" >> $GITHUB_OUTPUT
 
             echo ""
@@ -352,23 +397,19 @@ jobs:
             kubectl get job $JOB_NAME -n default -o wide
 
             echo ""
-            echo "Pod Status:"
-            kubectl get pods -n default -l job-name=$JOB_NAME -o wide
+            echo "Job Events:"
+            kubectl describe job $JOB_NAME -n default | grep -A 20 "Events:" || true
 
-            echo ""
-            echo "Pod Description:"
-            kubectl describe pod $POD_NAME -n default | tail -50
-
-            echo ""
-            echo "Migration Error Logs:"
-            MIGRATION_LOGS=$(kubectl logs $POD_NAME -n default --tail=200 2>&1 || echo "Could not retrieve error logs")
-            echo "$MIGRATION_LOGS"
-
-            # Extract key error for Slack
+            # Extract key error for Slack from captured logs
+            MIGRATION_LOGS=$(cat "$LOG_FILE" 2>/dev/null || echo "No logs available")
             KEY_ERROR=$(echo "$MIGRATION_LOGS" | grep -iE "error|failed|exception" | tail -5 | head -3)
 
             if [ -z "$KEY_ERROR" ]; then
-              KEY_ERROR=$(echo "$MIGRATION_LOGS" | tail -3)
+              KEY_ERROR=$(echo "$MIGRATION_LOGS" | tail -5)
+            fi
+
+            if [ -z "$KEY_ERROR" ]; then
+              KEY_ERROR="Migration timed out or failed. Check job events above."
             fi
 
             {

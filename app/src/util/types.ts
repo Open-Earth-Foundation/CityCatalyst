@@ -27,6 +27,7 @@ import type {
 } from "@/backend/DataSourceService";
 import type { ProjectAttributes } from "@/models/Project";
 import type { OrganizationAttributes } from "@/models/Organization";
+import type { VersionAttributes } from "@/models/Version";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -909,4 +910,41 @@ export interface ImportStatusResponse {
   created: string;
   lastUpdated: string;
   completedAt: string | null;
+}
+
+type VersionChange = VersionAttributes & {
+  author: { name: string; userId: string };
+  previousVersion: VersionAttributes;
+};
+
+export type VersionHistoryEntry = {
+  version: VersionChange;
+  activities: VersionChange[];
+  subCategory: SubCategoryAttributes;
+  dataSource?: { datasourceName: string; datasetName: string };
+  previousDataSource?: { datasourceName: string; datasetName: string };
+  mostRecentAssociatedVersion?: VersionChange;
+};
+
+export type VersionHistoryResponse = VersionHistoryEntry[];
+
+// Personal Access Token types
+export interface PersonalAccessToken {
+  id: string;
+  name: string;
+  tokenPrefix: string;
+  scopes: string[];
+  expiresAt: string | null;
+  lastUsedAt: string | null;
+  created: string;
+}
+
+export interface PersonalAccessTokenCreateResponse {
+  id: string;
+  token: string;
+  name: string;
+  tokenPrefix: string;
+  scopes: string[];
+  expiresAt: string | null;
+  created: string;
 }

@@ -22,7 +22,7 @@ describe("Models", () => {
       expect(user.email).toEqual(email);
       await expect(() => {
         return db.models.User.create({ userId: randomUUID(), email });
-      }).rejects.toThrowError();
+      }).rejects.toThrow();
     });
   });
 });

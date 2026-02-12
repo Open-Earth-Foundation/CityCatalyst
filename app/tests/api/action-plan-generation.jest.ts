@@ -23,7 +23,7 @@ import {
 import { hiapApiWrapper } from "@/backend/hiap/HiapApiService";
 import { hiapServiceWrapper } from "@/backend/hiap/HiapService";
 import ActionPlanEmailService from "@/backend/ActionPlanEmailService";
-import { ACTION_TYPES, HighImpactActionRankingStatus } from "@/util/types";
+import { ACTION_TYPES, HighImpactActionRankingStatus, LANGUAGES } from "@/util/types";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 
@@ -183,7 +183,8 @@ describe("Action Plan Generation", () => {
 
   beforeEach(() => {
     originalFetch = globalThis.fetch;
-    mockFetch = createMockFetch();
+    // Type assertion needed: jest.fn() with fetch signature doesn't match jest.Mock's UnknownFunction
+    mockFetch = createMockFetch() as unknown as jest.Mock;
     globalThis.fetch = mockFetch as typeof fetch;
 
     jest.spyOn(hiapServiceWrapper, "getCityContextAndEmissionsData").mockResolvedValue(MOCK_CITY_DATA as any);
@@ -212,7 +213,7 @@ describe("Action Plan Generation", () => {
         } as any,
         cityId: testData.cityId,
         cityLocode: "XX APT",
-        lng: "en",
+        lng: LANGUAGES.en,
         inventoryId,
         createdBy: testData.userId,
       });
@@ -260,7 +261,7 @@ describe("Action Plan Generation", () => {
         } as any,
         cityId: testData.cityId,
         cityLocode: "BR SAO",
-        lng: "es",
+        lng: LANGUAGES.es,
         inventoryId,
       });
 
@@ -289,7 +290,7 @@ describe("Action Plan Generation", () => {
         } as any,
         cityId: testData.cityId,
         cityLocode: "XX APT",
-        lng: "en",
+        lng: LANGUAGES.en,
         inventoryId,
         createdBy: testData.userId,
       });
@@ -316,7 +317,7 @@ describe("Action Plan Generation", () => {
         } as any,
         cityId: testData.cityId,
         cityLocode: "XX APT",
-        lng: "en",
+        lng: LANGUAGES.en,
         inventoryId,
         createdBy: testData.userId,
       });
@@ -333,7 +334,7 @@ describe("Action Plan Generation", () => {
         } as any,
         cityId: testData.cityId,
         cityLocode: "XX APT",
-        lng: "en",
+        lng: LANGUAGES.en,
         inventoryId,
       });
 
@@ -362,7 +363,7 @@ describe("Action Plan Generation", () => {
           } as any,
           cityId: testData.cityId,
           cityLocode: "XX APT",
-          lng: "en",
+          lng: LANGUAGES.en,
           inventoryId,
         }),
       ).rejects.toThrow(/Failed to start plan generation/);
@@ -387,7 +388,7 @@ describe("Action Plan Generation", () => {
           } as any,
           cityId: testData.cityId,
           cityLocode: "XX APT",
-          lng: "en",
+          lng: LANGUAGES.en,
           inventoryId,
         }),
       ).rejects.toThrow(/Invalid JSON/);
@@ -412,7 +413,7 @@ describe("Action Plan Generation", () => {
           } as any,
           cityId: testData.cityId,
           cityLocode: "XX APT",
-          lng: "en",
+          lng: LANGUAGES.en,
           inventoryId,
         }),
       ).rejects.toThrow(/No task_id in response/);
@@ -434,7 +435,7 @@ describe("Action Plan Generation", () => {
           } as any,
           cityId: testData.cityId,
           cityLocode: "XX APT",
-          lng: "en",
+          lng: LANGUAGES.en,
           inventoryId,
         }),
       ).rejects.toThrow(/Plan generation failed|AI model error/);
@@ -456,7 +457,7 @@ describe("Action Plan Generation", () => {
           } as any,
           cityId: testData.cityId,
           cityLocode: "XX APT",
-          lng: "en",
+          lng: LANGUAGES.en,
           inventoryId,
         }),
       ).rejects.toThrow(/Failed to retrieve plan/);
@@ -475,7 +476,7 @@ describe("Action Plan Generation", () => {
         } as any,
         cityId: testData.cityId,
         cityLocode: "XX APT",
-        lng: "en",
+        lng: LANGUAGES.en,
         inventoryId,
       });
 
@@ -491,7 +492,7 @@ describe("Action Plan Generation", () => {
         } as any,
         cityId: testData.cityId,
         cityLocode: "CR SJ",
-        lng: "en",
+        lng: LANGUAGES.en,
         inventoryId,
       });
 

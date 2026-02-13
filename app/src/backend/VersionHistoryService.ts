@@ -18,10 +18,14 @@ export default class VersionHistoryService {
     EmissionsFactor: "id",
   };
 
-  static async getVersionHistory(inventoryId: string) {
+  static async getVersionHistory(
+    inventoryId: string,
+    moduleName: string = "ghgi",
+  ) {
     const versions = await db.models.Version.findAll({
       where: {
         inventoryId,
+        moduleName,
       },
       include: [
         {
@@ -48,6 +52,7 @@ export default class VersionHistoryService {
     data: Record<string, any> = {},
     isDeleted: boolean = false,
     transaction?: Transaction,
+    moduleName: string = "ghgi",
   ) {
     if (!inventoryId) {
       throw new createHttpError.BadRequest("missing-inventory-id");
@@ -58,7 +63,7 @@ export default class VersionHistoryService {
 
     // find previous version (if available)
     const previousVersion = await db.models.Version.findOne({
-      where: { inventoryId, entryId, table },
+      where: { inventoryId, entryId, table, moduleName },
       order: [["created", "DESC"]],
     });
 
@@ -69,6 +74,7 @@ export default class VersionHistoryService {
         inventoryId,
         authorId,
         table,
+        moduleName,
         entryId,
         previousVersionId: previousVersion?.versionId,
         data,
@@ -85,6 +91,7 @@ export default class VersionHistoryService {
     dataEntries: Record<string, any>[],
     isDeleted: boolean = false,
     transaction?: Transaction,
+    module: string = "ghgi",
   ) {
     return Promise.all(
       dataEntries.map((entry) => {
@@ -96,6 +103,7 @@ export default class VersionHistoryService {
           entry,
           isDeleted,
           transaction,
+          module,
         );
       }),
     );
@@ -117,6 +125,7 @@ export default class VersionHistoryService {
       where: {
         inventoryId: restoredVersion.inventoryId,
         created: { [Op.gt]: restoredVersion?.created },
+        moduleName: restoredVersion.moduleName,
       },
       // make sure newest versions are deleted first because of previousVersion constraint
       // so a newer version doesn't refer to a previous version still while being deleted

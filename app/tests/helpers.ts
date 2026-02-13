@@ -1,7 +1,7 @@
 import { AppSession, Auth } from "@/lib/auth";
 import env from "@next/env";
 import { NextRequest } from "next/server";
-import { mock } from "node:test";
+import { jest } from "@jest/globals";
 import stream from "stream";
 import { Blob } from "fetch-blob";
 import { promisify } from "node:util";
@@ -20,7 +20,7 @@ const mockUrl = "http://localhost:3000/api/v1";
 
 export function createRequest(url: string, body?: any) {
   const request = new NextRequest(new URL(url));
-  request.json = mock.fn(() => Promise.resolve(body));
+  request.json = jest.fn(() => Promise.resolve(body)) as any;
   return request;
 }
 
@@ -30,7 +30,7 @@ export function mockRequest(
   headers?: Record<string, string>,
 ): NextRequest {
   const request = new NextRequest(new URL(mockUrl));
-  request.json = mock.fn(() => Promise.resolve(body));
+  request.json = jest.fn(() => Promise.resolve(body)) as any;
   for (const param in searchParams) {
     request.nextUrl.searchParams.append(param, searchParams[param]);
   }
@@ -42,7 +42,7 @@ export function mockRequest(
 
 export function mockRequestFormData(formData: FormData) {
   const request = new NextRequest(new URL(mockUrl));
-  request.formData = mock.fn(() => Promise.resolve(formData));
+  request.formData = jest.fn(() => Promise.resolve(formData)) as any;
   return request;
 }
 
@@ -106,14 +106,14 @@ export function setupTests() {
   env.loadEnvConfig(projectDir);
 
   // mock getServerSession from NextAuth, since NextJS headers() isn't available outside of the server context (needs async storage)
-  mock.method(Auth, "getServerSession", (): AppSession => {
+  jest.spyOn(Auth, "getServerSession").mockResolvedValue((() => {
     const expires = new Date();
     expires.setDate(expires.getDate() + 1);
     return {
       user: testUserData,
       expires: expires.toISOString(),
-    };
-  });
+    } as AppSession;
+  })());
 }
 
 export async function expectStatusCode(

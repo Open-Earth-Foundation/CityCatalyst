@@ -5,7 +5,7 @@ info:
   description: |
     API for the Climate Advisor microservice. Provides health checks and chat endpoints.
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:8000
 paths:
   /health:
     get:

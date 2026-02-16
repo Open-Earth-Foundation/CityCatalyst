@@ -29,6 +29,7 @@ from routes.ghgi_emission_forecast import api_router as emission_forecast
 from routes.ghgi_notation_key import api_router as ghgi_notation_key_route
 from routes.city_context import api_router as city_context_route
 from routes.get_climate_actions import api_router as climate_actions_route
+from routes.population_endpoint import api_router as population_route
 from routes.emissionfactor_publisher_endpoint import api_router as emissionfactor_publisher_route
 from routes.emissionfactor_methodology_endpoint import api_router as emissionfactor_methodology_route
 from routes.emissionfactor_datasource_endpoint import api_router as emissionfactor_datasource_route
@@ -257,6 +258,11 @@ app.include_router(
 app.include_router(
     climate_actions_route,
     tags=["Climate Actions"],
+)
+
+app.include_router(
+    population_route,
+    tags=["City Definitions"],
 )
 
 """

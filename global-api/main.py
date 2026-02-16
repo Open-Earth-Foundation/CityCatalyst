@@ -132,6 +132,11 @@ app.include_router(
     tags=["City Definitions"],
 )
 
+app.include_router(
+    population_route,
+    tags=["City Definitions"],
+)
+
 ## Endpoints for Catalogue Definitions
 
 app.include_router(
@@ -258,11 +263,6 @@ app.include_router(
 app.include_router(
     climate_actions_route,
     tags=["Climate Actions"],
-)
-
-app.include_router(
-    population_route,
-    tags=["City Definitions"],
 )
 
 """

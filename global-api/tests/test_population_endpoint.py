@@ -56,7 +56,8 @@ def test_get_population_by_actor_success(monkeypatch):
     assert len(payload["population"]) == 2
     assert payload["population"][0]["year"] == 2020
     assert payload["population"][0]["population"] == 873965
-    assert payload["population"][0]["datasource"]["name"] == "US Census Bureau"
+    assert payload["population"][0]["datasource"]["publisher_name"] == "US Census Bureau"
+    assert payload["population"][0]["datasource"]["datasource_name"] == "US Census Bureau"
     assert payload["population"][0]["datasource"]["dataset"] == "Annual Population Estimates"
     assert payload["population"][0]["datasource"]["url"] == "https://example.com/dataset"
     assert payload["population"][0]["source_type"] == "national census"

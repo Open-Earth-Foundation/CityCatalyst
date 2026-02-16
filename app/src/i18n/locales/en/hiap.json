@@ -99,7 +99,11 @@
     "afolu": "AFOLU",
     "public_health": "Public Health",
     "water_resources": "Water Resources",
-    "food_security": "Food Security"
+    "food_security": "Food Security",
+    "biodiversity": "Biodiversity",
+    "road_infrastructure": "Road Infrastructure",
+    "energy_security": "Energy Security",
+    "geo-hydrological_disasters": "Geo-Hydrological Disasters"
   },
   "effectiveness-level": {
     "high": "High",

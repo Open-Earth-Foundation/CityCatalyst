@@ -61,6 +61,8 @@ import {
   PermissionCheckResponse,
   Authz,
   CityDashboardResponse,
+  PersonalAccessToken,
+  PersonalAccessTokenCreateResponse,
 } from "@/util/types";
 import type {
   CityLocationResponse,
@@ -76,6 +78,7 @@ import type {
   HiapJob,
   ImportedFileResponse,
   ImportStatusResponse,
+  VersionHistoryResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -121,6 +124,8 @@ export const api = createApi({
     "ProjectModules",
     "Modules",
     "ActionPlan",
+    "VersionHistory",
+    "PersonalAccessToken",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1841,6 +1846,65 @@ export const api = createApi({
           response.data,
         invalidatesTags: ["Inventory"],
       }),
+
+      // Version Control Endpoints
+      getVersionHistory: builder.query<
+        VersionHistoryResponse,
+        { inventoryId: string }
+      >({
+        query: ({ inventoryId }) => `inventory/${inventoryId}/version-history`,
+        transformResponse: (response: { data: VersionHistoryResponse }) =>
+          response.data,
+        providesTags: ["VersionHistory"],
+      }),
+
+      restoreVersion: builder.mutation<
+        { success: boolean },
+        {
+          inventoryId: string;
+          versionId: string;
+        }
+      >({
+        query: ({ inventoryId, versionId }) => ({
+          url: `inventory/${inventoryId}/version-history/restore/${versionId}`,
+          method: "POST",
+        }),
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
+        invalidatesTags: [
+          "VersionHistory",
+          "Inventory",
+          "InventoryProgress",
+          "ReportResults",
+          "YearlyReportResults",
+        ],
+      }),
+
+      // Personal Access Token Endpoints
+      getPersonalAccessTokens: builder.query<PersonalAccessToken[], void>({
+        query: () => "/user/tokens",
+        transformResponse: (response: { tokens: PersonalAccessToken[] }) =>
+          response.tokens,
+        providesTags: ["PersonalAccessToken"],
+      }),
+      createPersonalAccessToken: builder.mutation<
+        PersonalAccessTokenCreateResponse,
+        { name: string; scopes: string[]; expiresAt?: string | null }
+      >({
+        query: (data) => ({
+          url: "/user/tokens",
+          method: "POST",
+          body: data,
+        }),
+        invalidatesTags: ["PersonalAccessToken"],
+      }),
+      deletePersonalAccessToken: builder.mutation<{ success: boolean }, string>({
+        query: (tokenId) => ({
+          url: `/user/tokens/${tokenId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["PersonalAccessToken"],
+      }),
     };
   },
 });
@@ -1978,5 +2042,8 @@ export const {
   useDisableProjectModuleAccessMutation,
   useGetHiapJobsQuery,
   useGetHiapStatusQuery,
+  useGetPersonalAccessTokensQuery,
+  useCreatePersonalAccessTokenMutation,
+  useDeletePersonalAccessTokenMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

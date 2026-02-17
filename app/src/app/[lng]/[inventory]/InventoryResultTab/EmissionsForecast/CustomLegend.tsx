@@ -1,7 +1,6 @@
 import React from "react";
-import { Flex, Text, Badge, Box } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 import { getColorForSeries } from "./EmissionsForecastChart";
-import { ColoredCircle } from "@/components/ColoredCircle";
 
 interface CustomLegendProps {
   data: { id: string; color: string }[];
@@ -10,14 +9,46 @@ interface CustomLegendProps {
 
 const CustomLegend: React.FC<CustomLegendProps> = ({ data, t }) => {
   return (
-    <Flex wrap="wrap" justifyContent="center" marginBottom={4}>
-      {data.map((series) => (
-        <Flex key={series.id} alignItems="center" mx={2}>
-          <ColoredCircle size="10px" color={getColorForSeries(series.id)} />
-          <Text>{t(series.id)}</Text>
-        </Flex>
-      ))}
-    </Flex>
+    <Box>
+      <Text
+        color="content.secondary"
+        fontSize="label.large"
+        textTransform="capitalize"
+        fontWeight="500"
+      >
+        {t("legend")}
+      </Text>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="flex-start"
+        flexWrap="wrap"
+        mt={3}
+        gap={2}
+      >
+        {data.map((series) => (
+          <Box
+            key={series.id}
+            backgroundColor="background.neutral"
+            borderRadius="50px"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            px={3}
+            py={1.5}
+            mr={4}
+          >
+            <Box
+              boxSize="4"
+              style={{ backgroundColor: getColorForSeries(series.id) }}
+            />
+            <Text fontSize="body.md" ml={2} color="content.alternative">
+              {t(series.id)}
+            </Text>
+          </Box>
+        ))}
+      </Box>
+    </Box>
   );
 };
 

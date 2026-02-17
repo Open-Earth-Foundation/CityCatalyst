@@ -125,6 +125,7 @@
   "actions": "Actions",
   "open-cc-actions": "Open CC Actions",
   "top-climate-actions": "Top High-Impact Actions",
+  "no-actions-generated": "No {{type}} actions have been generated yet",
   "ranked-and-unranked-actions": "Ranked and unranked actions",
   "ranked-actions": "Ranked actions",
   "unranked-actions": "Unranked actions",

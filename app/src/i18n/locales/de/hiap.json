@@ -120,6 +120,7 @@
   "actions": "Maßnahmen",
   "open-cc-actions": "Öffne CC-Aktionen",
   "top-climate-actions": "Top Hochwirksame Maßnahmen",
+  "no-actions-generated": "Es wurden noch keine {{type}}-Maßnahmen generiert",
   "ranked-and-unranked-actions": "Bewertete und unbewertete Maßnahmen",
   "pick-actions": "Top-Maßnahmen auswählen",
   "clear-selection": "Auswahl löschen",

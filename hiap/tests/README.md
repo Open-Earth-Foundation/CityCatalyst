@@ -7,8 +7,11 @@ This directory contains the test suite for the HIAP (High Impact Actions Priorit
 ### Install Dependencies
 
 ```bash
-# Install dev dependencies including pytest
-pip install -r requirements-dev.txt
+# From the `hiap/` directory, install dependencies (includes the `dev` group by default)
+uv sync --frozen
+
+# Run tests
+uv run pytest -c pytest.ini
 ```
 
 ## Test Structure

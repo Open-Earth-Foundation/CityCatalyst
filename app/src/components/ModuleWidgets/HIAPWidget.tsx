@@ -75,14 +75,21 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
     return getTopPickActions(actions);
   }, [actionType, hiapData]);
 
-  const hasContent: boolean =
+  // Check if there are ANY actions (either Mitigation or Adaptation)
+  const hasAnyContent: boolean =
+    !!hiapData &&
+    (hiapData?.[ACTION_TYPES.Mitigation]?.rankedActions?.length > 0 ||
+      hiapData?.[ACTION_TYPES.Adaptation]?.rankedActions?.length > 0);
+
+  // Check if current tab has content
+  const currentTabHasContent: boolean =
     !!hiapData && hiapData?.[actionType]?.rankedActions?.length > 0;
 
   React.useEffect(() => {
     if (!isLoading) {
-      onVisibilityChange?.(hasContent);
+      onVisibilityChange?.(hasAnyContent);
     }
-  }, [hasContent, isLoading, onVisibilityChange]);
+  }, [hasAnyContent, isLoading, onVisibilityChange]);
 
   if (isLoading) {
     return (
@@ -92,7 +99,7 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
     );
   }
 
-  if (error || !hasContent) {
+  if (error || !hasAnyContent) {
     return null;
   }
 
@@ -163,25 +170,48 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
               </Tabs.Trigger>
             ))}
           </Tabs.List>
-          {Object.values(ACTION_TYPES).map((type) => (
-            <Tabs.Content key={type} value={type} mt={10} p="0" w="full">
-              <Box
-                display="grid"
-                gridTemplateColumns="repeat(auto-fit, minmax(280px, 1fr))"
-                gap="24px"
-              >
-                {topPickActions.map((action) => (
-                  <ClimateActionCard
-                    key={action.id}
-                    viewOnly
-                    action={action}
-                    t={t}
-                    onSeeMoreClick={() => setSelectedAction(action)}
-                  />
-                ))}
-              </Box>
-            </Tabs.Content>
-          ))}
+          {Object.values(ACTION_TYPES).map((type) => {
+            const tabActions = hiapData?.[type]?.rankedActions || [];
+            const tabTopPicks = getTopPickActions(tabActions);
+            const tabHasContent = tabTopPicks.length > 0;
+
+            return (
+              <Tabs.Content key={type} value={type} mt={10} p="0" w="full">
+                {tabHasContent ? (
+                  <Box
+                    display="grid"
+                    gridTemplateColumns="repeat(auto-fit, minmax(280px, 1fr))"
+                    gap="24px"
+                  >
+                    {tabTopPicks.map((action) => (
+                      <ClimateActionCard
+                        key={action.id}
+                        viewOnly
+                        action={action}
+                        t={t}
+                        onSeeMoreClick={() => setSelectedAction(action)}
+                      />
+                    ))}
+                  </Box>
+                ) : (
+                  <Box
+                    p="48px"
+                    textAlign="center"
+                    borderWidth="1px"
+                    borderStyle="dashed"
+                    borderColor="border.neutral"
+                    borderRadius="12px"
+                  >
+                    <Text color="content.tertiary" fontSize="body.lg">
+                      {t("no-actions-generated", {
+                        type: t(`action-type-${type}`).toLowerCase(),
+                      })}
+                    </Text>
+                  </Box>
+                )}
+              </Tabs.Content>
+            );
+          })}
         </Tabs.Root>
       </Box>
     </>

@@ -25,10 +25,10 @@ const previousCoveragePath = path.join(
   "../coverage/previous-coverage.json",
 );
 
-// Tolerance threshold - only fail if coverage decreases by more than this amount
-// Temporarily increased to 7.0% to allow for expected coverage regression from new import functionality
+// Tolerance threshold - only fail if coverage decreases by more than this amount.
+// Default is 2.0%, configurable via the COVERAGE_THRESHOLD environment variable.
 
-const COVERAGE_THRESHOLD = parseFloat(process.env.COVERAGE_THRESHOLD || "7.0");
+const COVERAGE_THRESHOLD = parseFloat(process.env.COVERAGE_THRESHOLD || "2.0");
 
 // Metrics to check
 const metrics = ["lines", "statements", "branches", "functions"];

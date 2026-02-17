@@ -27,7 +27,7 @@ export default class VersionHistoryService {
         {
           model: db.models.User,
           as: "author",
-          attributes: ["name", "user_id"],
+          attributes: ["name", "userId"],
         },
         {
           model: db.models.Version,
@@ -71,7 +71,7 @@ export default class VersionHistoryService {
         table,
         entryId,
         previousVersionId: previousVersion?.versionId,
-        data: isDeleted ? {} : data,
+        data,
         isDeleted,
       },
       { transaction },
@@ -93,7 +93,7 @@ export default class VersionHistoryService {
           table,
           entry[this.MODEL_ID_COLUMNS[table]],
           authorId,
-          isDeleted ? {} : entry,
+          entry,
           isDeleted,
           transaction,
         );
@@ -118,6 +118,9 @@ export default class VersionHistoryService {
         inventoryId: restoredVersion.inventoryId,
         created: { [Op.gt]: restoredVersion?.created },
       },
+      // make sure newest versions are deleted first because of previousVersion constraint
+      // so a newer version doesn't refer to a previous version still while being deleted
+      order: [["created", "DESC"]],
       include: [
         {
           model: db.models.Version,

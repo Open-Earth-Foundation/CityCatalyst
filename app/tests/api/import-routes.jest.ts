@@ -14,7 +14,6 @@ import {
 import { db } from "@/models";
 import assert from "node:assert";
 import { NextRequest } from "next/server";
-import { mock } from "node:test";
 import { AppSession, Auth } from "@/lib/auth";
 import env from "@next/env";
 import { Roles } from "@/util/types";
@@ -89,7 +88,9 @@ export function mockRequest(
   headers?: Record<string, string>,
 ): NextRequest {
   const request = new NextRequest(new URL(mockUrl));
-  request.json = mock.fn(() => Promise.resolve(body));
+  request.json = jest.fn(() =>
+    Promise.resolve(body),
+  ) as unknown as typeof request.json;
   for (const param in searchParams) {
     request.nextUrl.searchParams.append(param, searchParams[param]);
   }
@@ -111,7 +112,7 @@ export function setupTests() {
   }
 
   // mock getServerSession from NextAuth
-  mock.method(Auth, "getServerSession", (): AppSession => {
+  jest.spyOn(Auth, "getServerSession").mockResolvedValue((() => {
     const expires = new Date();
     expires.setDate(expires.getDate() + 1);
     return {
@@ -123,8 +124,8 @@ export function setupTests() {
         role: Roles.User,
       },
       expires: expires.toISOString(),
-    };
-  });
+    } as AppSession;
+  })());
 }
 
 const testCityLocode = "XX_IMPORT_TEST";

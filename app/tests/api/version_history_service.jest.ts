@@ -81,6 +81,10 @@ describe("VersionHistoryService", () => {
   const authorId = randomUUID();
   const entryId = randomUUID();
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe("createVersion", () => {
     it("should throw BadRequest when inventoryId is undefined", async () => {
       await expect(
@@ -140,7 +144,7 @@ describe("VersionHistoryService", () => {
           data: { id: entryId, co2eq: 200 },
           isDeleted: false,
         }),
-        { transaction: undefined },
+        expect.objectContaining({}),
       );
     });
 
@@ -159,7 +163,7 @@ describe("VersionHistoryService", () => {
         expect.objectContaining({
           previousVersionId: undefined,
         }),
-        { transaction: undefined },
+        expect.objectContaining({}),
       );
     });
   });

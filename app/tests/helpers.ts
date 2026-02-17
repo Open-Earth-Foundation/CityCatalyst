@@ -20,7 +20,9 @@ const mockUrl = "http://localhost:3000/api/v1";
 
 export function createRequest(url: string, body?: any) {
   const request = new NextRequest(new URL(url));
-  request.json = jest.fn(() => Promise.resolve(body)) as any;
+  request.json = jest.fn(() =>
+    Promise.resolve(body),
+  ) as unknown as typeof request.json;
   return request;
 }
 
@@ -30,7 +32,9 @@ export function mockRequest(
   headers?: Record<string, string>,
 ): NextRequest {
   const request = new NextRequest(new URL(mockUrl));
-  request.json = jest.fn(() => Promise.resolve(body)) as any;
+  request.json = jest.fn(() =>
+    Promise.resolve(body),
+  ) as unknown as typeof request.json;
   for (const param in searchParams) {
     request.nextUrl.searchParams.append(param, searchParams[param]);
   }
@@ -42,7 +46,9 @@ export function mockRequest(
 
 export function mockRequestFormData(formData: FormData) {
   const request = new NextRequest(new URL(mockUrl));
-  request.formData = jest.fn(() => Promise.resolve(formData)) as any;
+  request.formData = jest.fn(() =>
+    Promise.resolve(formData),
+  ) as unknown as typeof request.formData;
   return request;
 }
 
@@ -101,12 +107,17 @@ export const testUserData = {
   role: Roles.User,
 };
 
+let sessionSpy: ReturnType<typeof jest.spyOn> | undefined;
+
 export function setupTests() {
   const projectDir = process.cwd();
   env.loadEnvConfig(projectDir);
 
+  // Restore any previous spy before creating a new one to avoid "already spied on" errors
+  sessionSpy?.mockRestore();
+
   // mock getServerSession from NextAuth, since NextJS headers() isn't available outside of the server context (needs async storage)
-  jest.spyOn(Auth, "getServerSession").mockResolvedValue((() => {
+  sessionSpy = jest.spyOn(Auth, "getServerSession").mockResolvedValue((() => {
     const expires = new Date();
     expires.setDate(expires.getDate() + 1);
     return {
@@ -114,6 +125,11 @@ export function setupTests() {
       expires: expires.toISOString(),
     } as AppSession;
   })());
+}
+
+export function teardownTests() {
+  sessionSpy?.mockRestore();
+  sessionSpy = undefined;
 }
 
 export async function expectStatusCode(

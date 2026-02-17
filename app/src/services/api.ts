@@ -126,6 +126,7 @@ export const api = createApi({
     "ActionPlan",
     "VersionHistory",
     "PersonalAccessToken",
+    "AdminModules",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1905,6 +1906,64 @@ export const api = createApi({
         }),
         invalidatesTags: ["PersonalAccessToken"],
       }),
+
+      // Admin Modules endpoints
+      getAdminModules: builder.query<ModuleAttributes[], void>({
+        query: () => "admin/modules",
+        transformResponse: (response: { data: ModuleAttributes[] }) =>
+          response.data,
+        providesTags: ["AdminModules"],
+      }),
+      createModule: builder.mutation<
+        ModuleAttributes,
+        {
+          name: string;
+          description?: string;
+          tagline?: string;
+          stage: string;
+          url: string;
+          logo?: string;
+        }
+      >({
+        query: (data) => ({
+          url: "admin/modules",
+          method: "POST",
+          body: data,
+        }),
+        transformResponse: (response: { data: ModuleAttributes }) =>
+          response.data,
+        invalidatesTags: ["AdminModules", "Modules"],
+      }),
+      updateModule: builder.mutation<
+        ModuleAttributes,
+        {
+          id: string;
+          data: {
+            name?: string;
+            description?: string;
+            tagline?: string;
+            stage?: string;
+            url?: string;
+            logo?: string;
+          };
+        }
+      >({
+        query: ({ id, data }) => ({
+          url: `admin/modules/${id}`,
+          method: "PUT",
+          body: data,
+        }),
+        transformResponse: (response: { data: ModuleAttributes }) =>
+          response.data,
+        invalidatesTags: ["AdminModules", "Modules"],
+      }),
+      deleteModule: builder.mutation<void, string>({
+        query: (id) => ({
+          url: `admin/modules/${id}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["AdminModules", "Modules"],
+      }),
     };
   },
 });
@@ -2045,5 +2104,9 @@ export const {
   useGetPersonalAccessTokensQuery,
   useCreatePersonalAccessTokenMutation,
   useDeletePersonalAccessTokenMutation,
+  useGetAdminModulesQuery,
+  useCreateModuleMutation,
+  useUpdateModuleMutation,
+  useDeleteModuleMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

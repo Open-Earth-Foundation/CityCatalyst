@@ -1,0 +1,972 @@
+[
+  {
+    "gpcRefNo": "I.1.1",
+    "sector": "stationary-energy",
+    "subsector": "residential-buildings",
+    "subcategoryName": "emissions-from-fuel-combustion-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "building-type-all",
+      "building-type-single-family-home",
+      "building-type-multi-family-home",
+      "building-type-high-rise-residential-buildings",
+      "building-type-informal-housing",
+      "fuel-type-propane",
+      "fuel-type-natural-gas",
+      "fuel-type-charcoal",
+      "fuel-type-peat",
+      "fuel-type-anthracite",
+      "fuel-type-gasoline",
+      "fuel-type-diesel",
+      "fuel-type-liquefied-petroleum-gases",
+      "fuel-type-firewood",
+      "fuel-type-kerosene",
+      "fuel-type-all"
+    ]
+  },
+  {
+    "gpcRefNo": "I.1.2",
+    "sector": "stationary-energy",
+    "subsector": "residential-buildings",
+    "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary",
+    "scope": 2,
+    "fuelTypeOrActivity": [
+      "building-type-all",
+      "building-type-single-family-home",
+      "building-type-multi-family-home",
+      "building-type-high-rise-residential-buildings",
+      "building-type-informal-housing",
+      "energy-usage-all",
+      "energy-usage-electricity",
+      "energy-usage-heating",
+      "energy-usage-steam",
+      "energy-usage-refrigeration"
+    ]
+  },
+  {
+    "gpcRefNo": "I.1.3",
+    "sector": "stationary-energy",
+    "subsector": "residential-buildings",
+    "subcategoryName": "emissions-from-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
+    "scope": 3,
+    "fuelTypeOrActivity": [
+      "building-type-all",
+      "building-type-single-family-home",
+      "building-type-multi-family-home",
+      "building-type-high-rise-residential-buildings",
+      "building-type-informal-housing",
+      "energy-usage-all",
+      "energy-usage-electricity",
+      "energy-usage-heating",
+      "energy-usage-steam",
+      "energy-usage-refrigeration"
+    ]
+  },
+  {
+    "gpcRefNo": "I.2.1",
+    "sector": "stationary-energy",
+    "subsector": "commercial-and-institutional-buildings-and-facilities",
+    "subcategoryName": "emissions-from-fuel-combustion-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "type-all",
+      "type-commercial-institutional",
+      "type-commercial-buildings",
+      "type-institutional-buildings",
+      "type-street-lighting",
+      "type-municipal-public-buildings",
+      "type-non-municipal-public-buildings",
+      "fuel-type-propane",
+      "fuel-type-wood-wood-waste",
+      "fuel-type-natural-gas",
+      "fuel-type-liquefied-petroleum-gases",
+      "fuel-type-anthracite",
+      "fuel-type-gasoline",
+      "fuel-type-diesel",
+      "fuel-type-firewood",
+      "fuel-type-kerosene",
+      "fuel-type-charcoal",
+      "fuel-type-all"
+    ]
+  },
+  {
+    "gpcRefNo": "I.2.2",
+    "sector": "stationary-energy",
+    "subsector": "commercial-and-institutional-buildings-and-facilities",
+    "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary",
+    "scope": 2,
+    "fuelTypeOrActivity": [
+      "type-all",
+      "type-commercial-institutional",
+      "type-commercial-buildings",
+      "type-institutional-buildings",
+      "type-street-lighting",
+      "type-municipal-public-buildings",
+      "type-non-municipal-public-buildings",
+      "energy-usage-all",
+      "energy-usage-electricity",
+      "energy-usage-heating",
+      "energy-usage-steam",
+      "energy-usage-refrigeration"
+    ]
+  },
+  {
+    "gpcRefNo": "I.2.3",
+    "sector": "stationary-energy",
+    "subsector": "commercial-and-institutional-buildings-and-facilities",
+    "subcategoryName": "emissions-from-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
+    "scope": 3,
+    "fuelTypeOrActivity": [
+      "type-all",
+      "type-commercial-institutional",
+      "type-commercial-buildings",
+      "type-institutional-buildings",
+      "type-street-lighting",
+      "type-municipal-public-buildings",
+      "type-non-municipal-public-buildings",
+      "energy-usage-all",
+      "energy-usage-electricity",
+      "energy-usage-heating",
+      "energy-usage-steam",
+      "energy-usage-refrigeration"
+    ]
+  },
+  {
+    "gpcRefNo": "I.3.1",
+    "sector": "stationary-energy",
+    "subsector": "manufacturing-industries-and-construction",
+    "subcategoryName": "emissions-from-fuel-combustion-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "type-all",
+      "type-manufacturing-industries-and-construction",
+      "type-steel",
+      "type-cement",
+      "type-iron",
+      "type-non-ferrous-metals",
+      "type-chemical-products",
+      "type-pulp-paper-and-printing",
+      "type-non-metallic-minerals",
+      "type-transport-equipment",
+      "type-machinery",
+      "type-mining-and-quarrying",
+      "type-wood-and-wood-products",
+      "type-construction",
+      "type-textiles-and-leather",
+      "type-unspecified-industry",
+      "type-food-beverages-tobacco",
+      "fuel-type-anthracite",
+      "fuel-type-natural-other-bituminous-coal",
+      "fuel-type-sub-bituminous-coal",
+      "fuel-type-lignite",
+      "fuel-type-coking-coal",
+      "fuel-type-coke-oven-coke-and-lignite-coke",
+      "fuel-type-natural-gas",
+      "fuel-type-residual-fuel-oil",
+      "fuel-type-gas-oil",
+      "fuel-type-diesel-oil",
+      "fuel-type-other-kerosene",
+      "fuel-type-crude-oil",
+      "fuel-type-naphtha",
+      "fuel-type-refinery-gas",
+      "fuel-type-coke-oven-gas",
+      "fuel-type-oxygen-steel-furnace-gas",
+      "fuel-type-natural-gas-liquids",
+      "fuel-type-liquefied-petroleum-gases",
+      "fuel-type-industrial-wastes",
+      "fuel-type-waste-oils",
+      "fuel-type-bitumen",
+      "fuel-type-municipal-wastes",
+      "fuel-type-charcoal",
+      "fuel-type-firewood",
+      "fuel-type-all"
+    ]
+  },
+  {
+    "gpcRefNo": "I.3.2",
+    "sector": "stationary-energy",
+    "subsector": "manufacturing-industries-and-construction",
+    "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary",
+    "scope": 2,
+    "fuelTypeOrActivity": [
+      "type-all",
+      "type-manufacturing-industries-and-construction",
+      "type-steel",
+      "type-cement",
+      "type-iron",
+      "type-non-ferrous-metals",
+      "type-chemical-products",
+      "type-pulp-paper-and-printing",
+      "type-non-metallic-minerals",
+      "type-transport-equipment",
+      "type-machinery",
+      "type-mining-and-quarrying",
+      "type-wood-and-wood-products",
+      "type-construction",
+      "type-textiles-and-leather",
+      "type-unspecified-industry",
+      "energy-usage-all",
+      "energy-usage-electricity",
+      "energy-usage-heating",
+      "energy-usage-steam",
+      "energy-usage-refrigeration",
+      "manufacturing-and-construction-type-all",
+      "manufacturing-and-construction-type-manufacturing-industries-and-construction",
+      "manufacturing-and-construction-type-steel",
+      "manufacturing-and-construction-type-cement",
+      "manufacturing-and-construction-type-iron",
+      "manufacturing-and-construction-type-non-ferrous-metals",
+      "manufacturing-and-construction-type-chemical-products",
+      "manufacturing-and-construction-type-pulp-paper-and-printing",
+      "manufacturing-and-construction-type-non-metallic-minerals",
+      "manufacturing-and-construction-type-transport-equipment",
+      "manufacturing-and-construction-type-machinery",
+      "manufacturing-and-construction-type-mining-and-quarrying",
+      "manufacturing-and-construction-type-wood-and-wood-products",
+      "manufacturing-and-construction-type-construction",
+      "manufacturing-and-construction-type-textiles-and-leather",
+      "manufacturing-and-construction-type-unspecified-industry"
+    ]
+  },
+  {
+    "gpcRefNo": "I.3.3",
+    "sector": "stationary-energy",
+    "subsector": "manufacturing-industries-and-construction",
+    "subcategoryName": "emissions-from-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
+    "scope": 3,
+    "fuelTypeOrActivity": [
+      "manufacturing-and-construction-type-all",
+      "manufacturing-and-construction-type-manufacturing-industries-and-construction",
+      "manufacturing-and-construction-type-steel",
+      "manufacturing-and-construction-type-cement",
+      "manufacturing-and-construction-type-iron",
+      "manufacturing-and-construction-type-non-ferrous-metals",
+      "manufacturing-and-construction-type-chemical-products",
+      "manufacturing-and-construction-type-pulp-paper-and-printing",
+      "manufacturing-and-construction-type-non-metallic-minerals",
+      "manufacturing-and-construction-type-transport-equipment",
+      "manufacturing-and-construction-type-machinery",
+      "manufacturing-and-construction-type-mining-and-quarrying",
+      "manufacturing-and-construction-type-wood-and-wood-products",
+      "manufacturing-and-construction-type-construction",
+      "manufacturing-and-construction-type-textiles-and-leather",
+      "manufacturing-and-construction-type-unspecified-industry",
+      "energy-usage-all",
+      "energy-usage-electricity",
+      "energy-usage-heating",
+      "energy-usage-steam",
+      "energy-usage-refrigeration"
+    ]
+  },
+  {
+    "gpcRefNo": "I.4.1",
+    "sector": "stationary-energy",
+    "subsector": "energy-industries",
+    "subcategoryName": "emissions-from-energy-used-in-power-plant-auxiliary-operations-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "type-all",
+      "type-electricity-generation",
+      "type-combined-heat-and-power-generation",
+      "type-heat-plants",
+      "type-pretroleum-refining",
+      "type-non-ferrous-manufacture-of-solid-fuels",
+      "type-chemical-other-energy-industries",
+      "type-other",
+      "fuel-type-anthracite",
+      "fuel-type-natural-other-bituminous-coal",
+      "fuel-type-sub-bituminous-coal",
+      "fuel-type-lignite",
+      "fuel-type-coking-coal",
+      "fuel-type-coke-oven-coke-and-lignite-coke",
+      "fuel-type-natural-gas",
+      "fuel-type-residual-fuel-oil",
+      "fuel-type-crude-oil",
+      "fuel-type-refinery-gas",
+      "fuel-type-coke-oven-gas",
+      "fuel-type-oxygen-steel-furnace-gas",
+      "fuel-type-natural-gas-liquids",
+      "fuel-type-jet-kerosene",
+      "fuel-type-municipal-wastes",
+      "fuel-type-liquefied-petroleum-gases",
+      "fuel-type-charcoal",
+      "fuel-type-firewood",
+      "fuel-type-all"
+    ]
+  },
+  {
+    "gpcRefNo": "I.4.2",
+    "sector": "stationary-energy",
+    "subsector": "energy-industries",
+    "subcategoryName": "emissions-from-grid-supplied-energy-consumed-in-power-plant-auxiliary-operations-within-the-city-boundary",
+    "scope": 2,
+    "fuelTypeOrActivity": [
+      "type-all",
+      "type-electricity-generation",
+      "type-combined-heat-and-power-generation",
+      "type-heat-plants",
+      "type-pretroleum-refining",
+      "type-non-ferrous-manufacture-of-solid-fuels",
+      "type-chemical-other-energy-industries",
+      "energy-usage-all",
+      "energy-usage-electricity",
+      "energy-usage-heating",
+      "energy-usage-steam",
+      "energy-usage-refrigeration"
+    ]
+  },
+  {
+    "gpcRefNo": "I.4.3",
+    "sector": "stationary-energy",
+    "subsector": "energy-industries",
+    "subcategoryName": "emissions-from-transmission-and-distribution-losses-from-grid-supplied-energy-consumption-in-power-plant-auxiliary-operations",
+    "scope": 3,
+    "fuelTypeOrActivity": [
+      "type-all",
+      "type-electricity-generation",
+      "type-combined-heat-and-power-generation",
+      "type-heat-plants",
+      "type-pretroleum-refining",
+      "type-non-ferrous-manufacture-of-solid-fuels",
+      "type-chemical-other-energy-industries",
+      "energy-usage-all",
+      "energy-usage-electricity",
+      "energy-usage-heating",
+      "energy-usage-steam",
+      "energy-usage-refrigeration"
+    ]
+  },
+  {
+    "gpcRefNo": "I.4.4",
+    "sector": "stationary-energy",
+    "subsector": "energy-industries",
+    "subcategoryName": "emissions-from-energy-generation-supplied-to-the-grid",
+    "fuelTypeOrActivity": []
+  },
+  {
+    "gpcRefNo": "I.5.1",
+    "sector": "stationary-energy",
+    "subsector": "agriculture-forestry-and-fishing-activities",
+    "subcategoryName": "emissions-from-fuel-combustion-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "type-all",
+      "type-agriculture",
+      "type-forestry",
+      "type-fishing",
+      "type-aquaculture",
+      "fuel-type-diesel-oil",
+      "fuel-type-natural-gas",
+      "fuel-type-liquefied-petroleum-gases",
+      "fuel-type-wood-wood-waste",
+      "fuel-type-other-primary-solid-biomass",
+      "fuel-type-charcoal",
+      "fuel-type-gas-oil",
+      "fuel-type-peat",
+      "fuel-type-natural-gas-liquids",
+      "fuel-type-firewood",
+      "fuel-type-biodiesel",
+      "fuel-type-all"
+    ]
+  },
+  {
+    "gpcRefNo": "I.5.2",
+    "sector": "stationary-energy",
+    "subsector": "agriculture-forestry-and-fishing-activities",
+    "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary",
+    "scope": 2,
+    "fuelTypeOrActivity": [
+      "type-all",
+      "type-agriculture",
+      "type-forestry",
+      "type-fishing",
+      "type-aquaculture",
+      "energy-usage-all",
+      "energy-usage-electricity",
+      "energy-usage-heating",
+      "energy-usage-steam",
+      "energy-usage-refrigeration"
+    ]
+  },
+  {
+    "gpcRefNo": "I.5.3",
+    "sector": "stationary-energy",
+    "subsector": "agriculture-forestry-and-fishing-activities",
+    "subcategoryName": "emissions-from-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
+    "scope": 3,
+    "fuelTypeOrActivity": [
+      "type-all",
+      "type-agriculture",
+      "type-forestry",
+      "type-fishing",
+      "type-aquaculture",
+      "energy-usage-all",
+      "energy-usage-electricity",
+      "energy-usage-heating",
+      "energy-usage-steam",
+      "energy-usage-refrigeration"
+    ]
+  },
+  {
+    "gpcRefNo": "I.6.1",
+    "sector": "stationary-energy",
+    "subsector": "non-specified-sources",
+    "subcategoryName": "emissions-from-fuel-combustion-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "non-specific-sources-type-all",
+      "non-specific-sources-type-stationary",
+      "non-specific-sources-type-mobile",
+      "fuel-type-gas-oil",
+      "fuel-type-naphtha",
+      "fuel-type-diesel-oil",
+      "fuel-type-natural-gas",
+      "fuel-type-liquefied-petroleum-gases",
+      "fuel-type-wood-wood-waste",
+      "fuel-type-other-primary-solid-biomass",
+      "fuel-type-charcoal",
+      "fuel-type-peat",
+      "fuel-type-kerosene",
+      "fuel-type-crude-petroleum",
+      "fuel-type-fuel-oil",
+      "type-all",
+      "type-stationary",
+      "type-mobile",
+      "fuel-type-all"
+    ]
+  },
+  {
+    "gpcRefNo": "I.6.2",
+    "sector": "stationary-energy",
+    "subsector": "non-specified-sources",
+    "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary",
+    "scope": 2,
+    "fuelTypeOrActivity": [
+      "type-all",
+      "type-stationary",
+      "type-mobile",
+      "energy-usage-all",
+      "energy-usage-electricity",
+      "energy-usage-heating",
+      "energy-usage-steam",
+      "energy-usage-refrigeration"
+    ]
+  },
+  {
+    "gpcRefNo": "I.6.3",
+    "sector": "stationary-energy",
+    "subsector": "non-specified-sources",
+    "subcategoryName": "emissions-from-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
+    "scope": 3,
+    "fuelTypeOrActivity": [
+      "type-all",
+      "type-stationary",
+      "type-mobile",
+      "energy-usage-all",
+      "energy-usage-electricity",
+      "energy-usage-heating",
+      "energy-usage-steam",
+      "energy-usage-refrigeration"
+    ]
+  },
+  {
+    "gpcRefNo": "I.7.1",
+    "sector": "stationary-energy",
+    "subsector": "fugitive-emissions-from-mining-processing-storage-and-transportation-of-coal",
+    "subcategoryName": "emissions-from-fugitive-emissions-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "type-all",
+      "type-underground-mining",
+      "type-surface-mining",
+      "type-post-mining",
+      "type-flaring-recovered-ch4",
+      "type-abandoned-mines"
+    ]
+  },
+  {
+    "gpcRefNo": "I.8.1",
+    "sector": "stationary-energy",
+    "subsector": "fugitive-emissions-from-oil-and-natural-gas-systems",
+    "subcategoryName": "emissions-from-fugitive-emissions-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "fugitive-emissions-oil-gas-type-all",
+      "fugitive-emissions-oil-gas-type-oil",
+      "fugitive-emissions-oil-gas-type-natural-gas",
+      "type-all",
+      "type-extraction",
+      "type-processing",
+      "type-storage",
+      "type-distribution"
+    ]
+  },
+  {
+    "gpcRefNo": "II.1.1",
+    "sector": "transportation",
+    "subsector": "on-road-transportation",
+    "subcategoryName": "emissions-from-fuel-combustion-on-road-transportation-occurring-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "fuel-type-gasoline",
+      "fuel-type-diesel",
+      "fuel-type-liquefied-petroleum-gases",
+      "fuel-type-cng",
+      "fuel-type-biofuel",
+      "vehicle-type-all",
+      "vehicle-type-passenger-vehicles",
+      "vehicle-type-commercial-vehicles",
+      "vehicle-type-public-transport-vehicles",
+      "vehicle-type-emergency-vehicles",
+      "vehicle-type-service-vehicles",
+      "vehicle-type-other",
+      "fuel-type-all"
+    ]
+  },
+  {
+    "gpcRefNo": "II.1.2",
+    "sector": "transportation",
+    "subsector": "on-road-transportation",
+    "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary-for-on-road-transportation",
+    "scope": 2,
+    "fuelTypeOrActivity": [
+      "vehicle-type-all",
+      "vehicle-type-passenger-vehicles",
+      "vehicle-type-commercial-vehicles",
+      "vehicle-type-public-transport-vehicles",
+      "vehicle-type-emergency-vehicles",
+      "vehicle-type-service-vehicles"
+    ]
+  },
+  {
+    "gpcRefNo": "II.1.3",
+    "sector": "transportation",
+    "subsector": "on-road-transportation",
+    "subcategoryName": "emissions-from-portion-of-transboundary-journeys-occurring-outside-the-city-boundary-and-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
+    "scope": 3,
+    "fuelTypeOrActivity": [
+      "vehicle-type-all",
+      "vehicle-type-passenger-vehicles",
+      "vehicle-type-commercial-vehicles",
+      "vehicle-type-public-transport-vehicles",
+      "vehicle-type-emergency-vehicles",
+      "vehicle-type-service-vehicles",
+      "activity-type-transmission-and-distribution-losses",
+      "activity-type-transboundary-journeys"
+    ]
+  },
+  {
+    "gpcRefNo": "II.2.1",
+    "sector": "transportation",
+    "subsector": "railways",
+    "subcategoryName": "emissions-from-fuel-combustion-for-railway-transportation-occurring-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "fuel-type-gasoline",
+      "fuel-type-diesel",
+      "fuel-type-liquefied-petroleum-gases",
+      "fuel-type-cng",
+      "fuel-type-biofuel",
+      "vehicle-type-all",
+      "vehicle-type-passenger-trains",
+      "vehicle-type-freight-trains",
+      "vehicle-type-high-speed-trains",
+      "vehicle-type-tourist-trains"
+    ]
+  },
+  {
+    "gpcRefNo": "II.2.2",
+    "sector": "transportation",
+    "subsector": "railways",
+    "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary-for-railways",
+    "scope": 2,
+    "fuelTypeOrActivity": [
+      "vehicle-type-all",
+      "vehicle-type-passenger-trains",
+      "vehicle-type-freight-trains",
+      "vehicle-type-high-speed-trains",
+      "vehicle-type-tourist-trains"
+    ]
+  },
+  {
+    "gpcRefNo": "II.2.3",
+    "sector": "transportation",
+    "subsector": "railways",
+    "subcategoryName": "emissions-from-portion-of-transboundary-journeys-occurring-outside-the-city-boundary-and-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
+    "scope": 3,
+    "fuelTypeOrActivity": [
+      "vehicle-type-all",
+      "vehicle-type-passenger-trains",
+      "vehicle-type-freight-trains",
+      "vehicle-type-high-speed-trains",
+      "vehicle-type-tourist-trains",
+      "activity-type-transmission-and-distribution-losses",
+      "activity-type-transboundary-journeys"
+    ]
+  },
+  {
+    "gpcRefNo": "II.3.1",
+    "sector": "transportation",
+    "subsector": "waterborne-navigation",
+    "subcategoryName": "emissions-from-fuel-combustion-for-waterborne-navigation-occurring-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "fuel-type-gasoline",
+      "fuel-type-diesel",
+      "fuel-type-liquefied-petroleum-gases",
+      "fuel-type-cng",
+      "fuel-type-biofuel",
+      "vehicle-type-all",
+      "vehicle-type-ferries",
+      "vehicle-type-boats",
+      "vehicle-type-marine-vessels",
+      "vehicle-type-other"
+    ]
+  },
+  {
+    "gpcRefNo": "II.3.2",
+    "sector": "transportation",
+    "subsector": "waterborne-navigation",
+    "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary-for-waterborne-navigation",
+    "scope": 2,
+    "fuelTypeOrActivity": [
+      "vehicle-type-all",
+      "vehicle-type-ferries",
+      "vehicle-type-boats",
+      "vehicle-type-marine-vessels"
+    ]
+  },
+  {
+    "gpcRefNo": "II.3.3",
+    "sector": "transportation",
+    "subsector": "waterborne-navigation",
+    "subcategoryName": "emissions-from-portion-of-transboundary-journeys-occurring-outside-the-city-boundary-and-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
+    "scope": 3,
+    "fuelTypeOrActivity": [
+      "vehicle-type-all",
+      "vehicle-type-ferries",
+      "vehicle-type-boats",
+      "vehicle-type-marine-vessels",
+      "activity-type-transmission-and-distribution-losses",
+      "activity-type-transboundary-journeys"
+    ]
+  },
+  {
+    "gpcRefNo": "II.4.1",
+    "sector": "transportation",
+    "subsector": "aviation",
+    "subcategoryName": "emissions-from-fuel-combustion-for-aviation-occurring-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "fuel-type-aviation-gasoline",
+      "fuel-type-diesel",
+      "fuel-type-jet-gasoline",
+      "fuel-type-jet-kerosene",
+      "fuel-type-liquefied-petroleum-gases",
+      "fuel-type-gasoline",
+      "fuel-type-natural-gas-liquids",
+      "vehicle-type-all",
+      "vehicle-type-passenger-aircraft",
+      "vehicle-type-cargo-aircraft",
+      "vehicle-type-private-and-business-aircraft",
+      "vehicle-type-helicopters",
+      "vehicle-type-national-flights",
+      "vehicle-type-international-flights"
+    ]
+  },
+  {
+    "gpcRefNo": "II.4.2",
+    "sector": "transportation",
+    "subsector": "aviation",
+    "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary-for-aviation",
+    "scope": 2,
+    "fuelTypeOrActivity": [
+      "vehicle-type-all",
+      "vehicle-type-passenger-aircraft",
+      "vehicle-type-cargo-aircraft",
+      "vehicle-type-private-and-business-aircraft",
+      "vehicle-type-helicopters",
+      "vehicle-type-national-flights",
+      "vehicle-type-international-flights"
+    ]
+  },
+  {
+    "gpcRefNo": "II.4.3",
+    "sector": "transportation",
+    "subsector": "aviation",
+    "subcategoryName": "emissions-from-portion-of-transboundary-journeys-occurring-outside-the-city-boundary-and-transmission-and-distribution-losses-from-grid-supplied-energy-consumption",
+    "scope": 3,
+    "fuelTypeOrActivity": [
+      "vehicle-type-all",
+      "vehicle-type-passenger-aircraft",
+      "vehicle-type-cargo-aircraft",
+      "vehicle-type-private-and-business-aircraft",
+      "vehicle-type-helicopters",
+      "vehicle-type-national-flights",
+      "vehicle-type-international-flights",
+      "activity-type-transmission-and-distribution-losses",
+      "activity-type-transboundary-journeys"
+    ]
+  },
+  {
+    "gpcRefNo": "II.5.1",
+    "sector": "transportation",
+    "subsector": "off-road-transportation",
+    "subcategoryName": "emissions-from-fuel-combustion-for-off-road-transportation-occurring-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "fuel-type-gasoline",
+      "fuel-type-diesel",
+      "fuel-type-liquefied-petroleum-gases",
+      "fuel-type-cng",
+      "fuel-type-biofuel",
+      "vehicle-type-all",
+      "vehicle-type-construction-machinery",
+      "vehicle-type-agricultural-machinery",
+      "vehicle-type-mining-equipment",
+      "vehicle-type-forestry-equipment"
+    ]
+  },
+  {
+    "gpcRefNo": "II.5.2",
+    "sector": "transportation",
+    "subsector": "off-road-transportation",
+    "subcategoryName": "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary-for-off-road-transportation",
+    "scope": 2,
+    "fuelTypeOrActivity": [
+      "vehicle-type-all",
+      "vehicle-type-construction-machinery",
+      "vehicle-type-agricultural-machinery",
+      "vehicle-type-mining-equipment",
+      "vehicle-type-forestry-equipment"
+    ]
+  },
+  {
+    "gpcRefNo": "III.1.1",
+    "sector": "waste",
+    "subsector": "solid-waste-disposal",
+    "subcategoryName": "emissions-from-solid-waste-generated-within-the-city-boundary-and-disposed-in-landfills-or-open-dumps-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "oxidation-factor-well-managed-landfill",
+      "oxidation-factor-unmanaged-landfill"
+    ]
+  },
+  {
+    "gpcRefNo": "III.1.2",
+    "sector": "waste",
+    "subsector": "solid-waste-disposal",
+    "subcategoryName": "emissions-from-solid-waste-generated-within-the-city-boundary-but-disposed-in-landfills-or-open-dumps-outside-the-city-boundary",
+    "scope": 3,
+    "fuelTypeOrActivity": [
+      "oxidation-factor-well-managed-landfill",
+      "oxidation-factor-unmanaged-landfill"
+    ]
+  },
+  {
+    "gpcRefNo": "III.2.1",
+    "sector": "waste",
+    "subsector": "biological-treatment-of-waste",
+    "subcategoryName": "emissions-from-solid-waste-generated-within-the-city-boundary-that-is-treated-biologically-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "treatment-type-all-organic-waste",
+      "treatment-type-composting",
+      "treatment-type-anaerobic-digestion",
+      "waste-state-dry-waste",
+      "waste-state-wet-waste"
+    ]
+  },
+  {
+    "gpcRefNo": "III.2.2",
+    "sector": "waste",
+    "subsector": "biological-treatment-of-waste",
+    "subcategoryName": "emissions-from-solid-waste-generated-within-the-city-boundary-but-treated-biologically-outside-of-the-city-boundary",
+    "scope": 3,
+    "fuelTypeOrActivity": [
+      "treatment-type-all-organic-waste",
+      "treatment-type-composting",
+      "treatment-type-anaerobic-digestion",
+      "waste-state-dry-waste",
+      "waste-state-wet-waste"
+    ]
+  },
+  {
+    "gpcRefNo": "III.3.1",
+    "sector": "waste",
+    "subsector": "incineration-and-open-burning",
+    "subcategoryName": "emissions-from-solid-waste-generated-and-treated-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "technology-continuous-incineration",
+      "technology-semi-continuous-incineration",
+      "technology-batch-type-incineration",
+      "boiler-type-stoker",
+      "boiler-type-fluidised-bed"
+    ]
+  },
+  {
+    "gpcRefNo": "III.3.2",
+    "sector": "waste",
+    "subsector": "incineration-and-open-burning",
+    "subcategoryName": "emissions-from-solid-waste-generated-within-the-city-boundary-but-treated-outside-of-the-city-boundary",
+    "scope": 3,
+    "fuelTypeOrActivity": [
+      "technology-continuous-incineration",
+      "technology-semi-continuous-incineration",
+      "technology-batch-type-incineration",
+      "boiler-type-stoker",
+      "boiler-type-fluidised-bed"
+    ]
+  },
+  {
+    "gpcRefNo": "III.4.1",
+    "sector": "waste",
+    "subsector": "wastewater-treatment-and-discharge",
+    "subcategoryName": "emissions-from-wastewater-generated-and-treated-within-the-city-boundary",
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "income-group-type-rural",
+      "income-group-type-urban-high-income",
+      "income-group-type-urban-low-income",
+      "garbage-disposal-type-non-garbage-disposals",
+      "garbage-disposal-type-garbage-disposals",
+      "collection-status-type-wastewater-collected",
+      "collection-status-type-wastewater-not-collected",
+      "treatment-status-type-wastewater-treated",
+      "treatment-status-type-wastewater-untreated",
+      "industry-type-alcohol-refining",
+      "industry-type-coffee",
+      "industry-type-dairy-products",
+      "industry-type-fish-processing",
+      "industry-type-meat-and-poultry",
+      "industry-type-organic-chemicals",
+      "industry-type-petroleum-refineries",
+      "industry-type-plastics-and-resins",
+      "industry-type-pulp-and-paper",
+      "industry-type-soap-and-detergents",
+      "industry-type-starch-production",
+      "industry-type-sugar-refining",
+      "industry-type-vegetable-oils",
+      "industry-type-vegetables-fruits-juices",
+      "industry-type-wine-and-vinegar",
+      "source-type-domestic-wastewater",
+      "source-type-industrial-wastewater",
+      "source-type-all-wastewater"
+    ]
+  },
+  {
+    "gpcRefNo": "III.4.2",
+    "sector": "waste",
+    "subsector": "wastewater-treatment-and-discharge",
+    "subcategoryName": "emissions-from-wastewater-generated-within-the-city-boundary-but-treated-outside-of-the-city-boundary",
+    "scope": 3,
+    "fuelTypeOrActivity": [
+      "income-group-type-rural",
+      "income-group-type-urban-high-income",
+      "income-group-type-urban-low-income",
+      "garbage-disposal-type-non-garbage-disposals",
+      "garbage-disposal-type-garbage-disposals",
+      "collection-status-type-wastewater-collected",
+      "collection-status-type-wastewater-not-collected",
+      "collection-status-type-wastewater-treated",
+      "collection-status-type-wastewater-untreated",
+      "industry-type-alcohol-refining",
+      "industry-type-coffee",
+      "industry-type-dairy-products",
+      "industry-type-fish-processing",
+      "industry-type-meat-and-poultry",
+      "industry-type-organic-chemicals",
+      "industry-type-petroleum-refineries",
+      "industry-type-plastics-and-resins",
+      "industry-type-pulp-and-paper",
+      "industry-type-soap-and-detergents",
+      "industry-type-starch-production",
+      "industry-type-sugar-refining",
+      "industry-type-vegetable-oils",
+      "industry-type-vegetables-fruits-juices",
+      "industry-type-wine-and-vinegar",
+      "source-type-domestic-wastewater",
+      "source-type-industrial-wastewater",
+      "source-type-all-wastewater"
+    ]
+  },
+  {
+    "gpcRefNo": "IV.1",
+    "sector": "industrial-processes-and-product-uses-ippu",
+    "subsector": "emissions-from-industrial-processes-occurring-within-the-city-boundary",
+    "subcategoryName": null,
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "industry-type-mineral-industry",
+      "industry-type-chemical-industry",
+      "industry-type-metal-industry",
+      "industry-type-electronics-industry",
+      "industry-type-substitutes-for-ozone-depleting-substances",
+      "industry-type-other-industries"
+    ]
+  },
+  {
+    "gpcRefNo": "IV.2",
+    "sector": "industrial-processes-and-product-uses-ippu",
+    "subsector": "emissions-from-product-use-occurring-within-the-city-boundary",
+    "subcategoryName": null,
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "product-use-lubricants",
+      "product-use-paraffin-waxes"
+    ]
+  },
+  {
+    "gpcRefNo": "V.1",
+    "sector": "agriculture-forestry-and-other-land-use-afolu",
+    "subsector": "emissions-from-livestock-within-the-city-boundary",
+    "subcategoryName": null,
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "type-enteric-fermentation",
+      "type-manure-management",
+      "species-all",
+      "species-cattle",
+      "species-buffalo",
+      "species-sheep",
+      "species-goat",
+      "species-camels",
+      "species-horses",
+      "species-mules-and-asses",
+      "species-swine",
+      "species-other"
+    ]
+  },
+  {
+    "gpcRefNo": "V.2",
+    "sector": "agriculture-forestry-and-other-land-use-afolu",
+    "subsector": "emissions-from-land-within-the-city-boundary",
+    "subcategoryName": null,
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "land-classification-type-forest-land",
+      "land-classification-type-cropland",
+      "land-classification-type-grassland",
+      "land-classification-type-wetland",
+      "land-classification-type-settlements",
+      "land-classification-type-other-land"
+    ]
+  },
+  {
+    "gpcRefNo": "V.3",
+    "sector": "agriculture-forestry-and-other-land-use-afolu",
+    "subsector": "emissions-from-aggregate-sources-and-non-co2-emission-sources-on-land-within-the-city-boundary",
+    "subcategoryName": null,
+    "scope": 1,
+    "fuelTypeOrActivity": [
+      "activity-type-biomass-burning",
+      "activity-type-liming",
+      "activity-type-urea-application",
+      "activity-type-direct-N2O-from-managed-soils",
+      "activity-type-indirect-N2O-from-managed-soils",
+      "activity-type-rice-cultivations",
+      "activity-type-harvested-wood-products"
+    ]
+  }
+]

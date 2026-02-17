@@ -9,13 +9,13 @@ export const PUT = apiHandler(async (req, { session, params }) => {
   UserService.validateIsAdmin(session);
 
   const moduleId = params.module;
-  const module = await db.models.Module.findByPk(moduleId);
+  const record = await db.models.Module.findByPk(moduleId);
 
-  if (!module) {
+  if (!record) {
     throw createHttpError(404, "Module not found");
   }
 
-  if (module.type !== "POC") {
+  if (record.type !== "POC") {
     throw createHttpError(403, "Only POC modules can be edited");
   }
 
@@ -26,9 +26,9 @@ export const PUT = apiHandler(async (req, { session, params }) => {
 
   if (name !== undefined || description !== undefined || tagline !== undefined) {
     const translated = await translateModuleFields({
-      name: name ?? module.name?.en ?? "",
-      description: description ?? module.description?.en ?? "",
-      tagline: tagline ?? module.tagline?.en ?? "",
+      name: name ?? record.name?.en ?? "",
+      description: description ?? record.description?.en ?? "",
+      tagline: tagline ?? record.tagline?.en ?? "",
     });
 
     if (name !== undefined) updateData.name = translated.name;
@@ -40,27 +40,27 @@ export const PUT = apiHandler(async (req, { session, params }) => {
   if (url !== undefined) updateData.url = url;
   if (logo !== undefined) updateData.logo = logo;
 
-  await module.update(updateData);
+  await record.update(updateData);
 
-  return NextResponse.json({ data: module });
+  return NextResponse.json({ data: record });
 });
 
 export const DELETE = apiHandler(async (_req, { session, params }) => {
   UserService.validateIsAdmin(session);
 
   const moduleId = params.module;
-  const module = await db.models.Module.findByPk(moduleId);
+  const record = await db.models.Module.findByPk(moduleId);
 
-  if (!module) {
+  if (!record) {
     throw createHttpError(404, "Module not found");
   }
 
-  if (module.type !== "POC") {
+  if (record.type !== "POC") {
     throw createHttpError(403, "Only POC modules can be deleted");
   }
 
   await db.models.ProjectModules.destroy({ where: { moduleId } });
-  await module.destroy();
+  await record.destroy();
 
   return NextResponse.json({ message: "Module deleted successfully" });
 });

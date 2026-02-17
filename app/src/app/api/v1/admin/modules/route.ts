@@ -24,7 +24,7 @@ export const POST = apiHandler(async (req, { session }) => {
     tagline: tagline || "",
   });
 
-  const module = await db.models.Module.create({
+  const record = await db.models.Module.create({
     name: translated.name,
     description: translated.description,
     tagline: translated.tagline,
@@ -35,5 +35,5 @@ export const POST = apiHandler(async (req, { session }) => {
     logo: logo || "",
   });
 
-  return NextResponse.json({ data: module }, { status: 201 });
+  return NextResponse.json({ data: record }, { status: 201 });
 });

@@ -643,7 +643,7 @@ export interface BaseAction {
   isSelected: boolean;
   actionId: string;
   rank: number;
-  explanation: Record<string, string>;
+  explanation: { explanations?: Record<string, string> };
   created: Date;
   last_updated: Date;
 }

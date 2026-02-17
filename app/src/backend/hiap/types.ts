@@ -13,9 +13,7 @@ export interface PrioritizerRankedAction {
   actionId: string;
   rank: number;
   explanation: {
-    en: string;
-    es: string;
-    pt: string;
+    explanations?: Record<string, string>;
   };
 }
 

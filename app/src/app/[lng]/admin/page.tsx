@@ -17,6 +17,7 @@ import { BsPlus } from "react-icons/bs";
 import React, { FC, useState, use } from "react";
 import CreateOrganizationModal from "@/app/[lng]/admin/CreateOrganizationModal";
 import OAuthClientList from "@/app/[lng]/admin/OAuthClientList";
+import ManageModulesList from "@/app/[lng]/admin/ManageModulesList";
 import { api } from "@/services/api";
 import DataTable from "@/components/ui/data-table";
 import { Tag } from "@/components/ui/tag";
@@ -245,6 +246,7 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
           <Tabs.List bg="bg.muted" border="none" rounded="l3" p="1">
             <TabTrigger title="organizations" />
             <TabTrigger title="bulk-actions" />
+            <TabTrigger title="manage-modules" />
             {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
               <TabTrigger title="oauth-clients" />
             )}
@@ -555,6 +557,9 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
                 {/* Bulk actions */}
               </Tabs.Content>
             </Tabs.Root>
+          </Tabs.Content>
+          <Tabs.Content value="manage-modules">
+            <ManageModulesList lng={lng} />
           </Tabs.Content>
           {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
             <Tabs.Content value="oauth-clients">

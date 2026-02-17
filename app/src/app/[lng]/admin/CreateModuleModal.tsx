@@ -242,6 +242,7 @@ const CreateModuleModal: FC<CreateModuleModalProps> = ({
                   gap={2}
                 >
                   <Image
+                    key={watchLogo}
                     src={watchLogo}
                     alt="Logo preview"
                     maxH="80px"

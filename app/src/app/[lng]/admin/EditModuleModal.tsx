@@ -255,6 +255,7 @@ const EditModuleModal: FC<EditModuleModalProps> = ({
                   gap={2}
                 >
                   <Image
+                    key={watchLogo}
                     src={watchLogo}
                     alt="Logo preview"
                     maxH="80px"

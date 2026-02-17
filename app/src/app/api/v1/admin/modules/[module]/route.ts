@@ -24,16 +24,20 @@ export const PUT = apiHandler(async (req, { session, params }) => {
 
   const updateData: Record<string, unknown> = {};
 
-  if (name !== undefined || description !== undefined || tagline !== undefined) {
+  const nameChanged = name !== undefined && name !== (record.name?.en ?? "");
+  const descChanged = description !== undefined && description !== (record.description?.en ?? "");
+  const taglineChanged = tagline !== undefined && tagline !== (record.tagline?.en ?? "");
+
+  if (nameChanged || descChanged || taglineChanged) {
     const translated = await translateModuleFields({
-      name: name ?? record.name?.en ?? "",
-      description: description ?? record.description?.en ?? "",
-      tagline: tagline ?? record.tagline?.en ?? "",
+      name: nameChanged ? name : "",
+      description: descChanged ? description : "",
+      tagline: taglineChanged ? tagline : "",
     });
 
-    if (name !== undefined) updateData.name = translated.name;
-    if (description !== undefined) updateData.description = translated.description;
-    if (tagline !== undefined) updateData.tagline = translated.tagline;
+    if (nameChanged) updateData.name = translated.name;
+    if (descChanged) updateData.description = translated.description;
+    if (taglineChanged) updateData.tagline = translated.tagline;
   }
 
   if (stage !== undefined) updateData.stage = stage;

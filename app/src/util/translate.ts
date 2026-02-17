@@ -50,7 +50,7 @@ export async function translateModuleFields(
   fields: TranslatableFields,
 ): Promise<TranslatedMaps> {
   const openai = new OpenAI({
-    apiKey: process.env.TRANSLATION_OPENAI_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY,
   });
 
   const nameMap: Record<string, string> = { en: fields.name };

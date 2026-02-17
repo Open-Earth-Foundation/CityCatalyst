@@ -198,14 +198,14 @@ const ManageModulesList = ({ lng }: { lng: string }) => {
                           onClick={() => handleEdit(item)}
                         >
                           <Icon
-                            _groupHover={{ color: "white" }}
+                            _groupHover={{ color: "base.light" }}
                             color="interactive.control"
                             as={MdEdit}
                             h="24px"
                             w="24px"
                           />
                           <Text
-                            _groupHover={{ color: "white" }}
+                            _groupHover={{ color: "base.light" }}
                             color="content.primary"
                           >
                             {t("edit-module")}
@@ -226,14 +226,14 @@ const ManageModulesList = ({ lng }: { lng: string }) => {
                           onClick={() => handleDelete(item)}
                         >
                           <Icon
-                            _groupHover={{ color: "white" }}
+                            _groupHover={{ color: "base.light" }}
                             color="interactive.control"
                             as={MdDelete}
                             h="24px"
                             w="24px"
                           />
                           <Text
-                            _groupHover={{ color: "white" }}
+                            _groupHover={{ color: "base.light" }}
                             color="content.primary"
                           >
                             {t("delete-module")}

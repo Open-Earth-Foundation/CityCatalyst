@@ -88,9 +88,6 @@ export const GET = apiHandler(
     const activityValueVersions = versionHistory.filter(
       (version) => version.table === "ActivityValue",
     );
-    const otherVersions = versionHistory.filter(
-      (version) => version.table !== "InventoryValue",
-    );
     const activitiesByInventoryValue = groupBy(
       activityValueVersions,
       (version) => version.data?.inventoryValueId,

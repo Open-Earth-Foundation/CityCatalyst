@@ -1,3 +1,4 @@
+import { env } from "next-runtime-env";
 import {
   type CityAttributes,
   type InventoryAttributes,
@@ -1899,13 +1900,15 @@ export const api = createApi({
         }),
         invalidatesTags: ["PersonalAccessToken"],
       }),
-      deletePersonalAccessToken: builder.mutation<{ success: boolean }, string>({
-        query: (tokenId) => ({
-          url: `/user/tokens/${tokenId}`,
-          method: "DELETE",
-        }),
-        invalidatesTags: ["PersonalAccessToken"],
-      }),
+      deletePersonalAccessToken: builder.mutation<{ success: boolean }, string>(
+        {
+          query: (tokenId) => ({
+            url: `/user/tokens/${tokenId}`,
+            method: "DELETE",
+          }),
+          invalidatesTags: ["PersonalAccessToken"],
+        },
+      ),
 
       // Admin Modules endpoints
       getAdminModules: builder.query<ModuleAttributes[], void>({
@@ -1972,7 +1975,7 @@ export const openclimateAPI = createApi({
   reducerPath: "openclimateapi",
   baseQuery: fetchBaseQuery({
     baseUrl:
-      process.env.NEXT_PUBLIC_OPENCLIMATE_API_URL ||
+      env("NEXT_PUBLIC_OPENCLIMATE_API_URL") ??
       "https://app.openclimate.network",
   }),
   endpoints: (builder) => ({

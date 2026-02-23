@@ -36,7 +36,8 @@ function normalizeError(err: unknown): LLMError {
   if (
     (typeof openaiError?.code === "string" &&
       openaiError.code.toLowerCase().includes("timeout")) ||
-    message.toLowerCase().includes("timeout")
+    message.toLowerCase().includes("timeout") ||
+    message.toLowerCase().includes("request was aborted")
   ) {
     return new LLMError(message, LLMErrorCode.TIMEOUT, err);
   }
@@ -94,7 +95,11 @@ export async function openaiComplete(
     return { content, usage, raw: response };
   } catch (err) {
     clearTimeout(timeoutId);
-    if (err instanceof Error && err.name === "AbortError") {
+    const msg = err instanceof Error ? err.message : String(err);
+    const isAbort =
+      (err instanceof Error && err.name === "AbortError") ||
+      /request was aborted|aborted/i.test(msg);
+    if (isAbort) {
       throw new LLMError("Request timed out", LLMErrorCode.TIMEOUT, err);
     }
     throw normalizeError(err);

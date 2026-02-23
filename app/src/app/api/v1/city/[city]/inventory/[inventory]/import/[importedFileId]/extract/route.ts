@@ -59,7 +59,7 @@ import {
 import { LLMError } from "@/backend/llm";
 import { logger } from "@/services/logger";
 
-/** Allow long-running PDF + LLM extraction (e.g. Vercel Pro 300s); avoid 502 from platform timeout. */
+/** Allow long-running PDF + LLM extraction. */
 export const maxDuration = 120;
 
 export const POST = apiHandler(
@@ -148,6 +148,7 @@ export const POST = apiHandler(
       importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
       mappingConfiguration,
       rowCount: rows.length,
+      lastUpdated: new Date(),
     });
 
     return NextResponse.json({

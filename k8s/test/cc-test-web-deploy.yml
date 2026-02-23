@@ -48,7 +48,7 @@ spec:
             - name: CHAT_PROVIDER
               value: "openai"
             - name: OPEN_AI_MODEL
-              value: "gpt-4o-mini"
+              value: "gpt-5-mini"
             - name: CA_BASE_URL
               value: "http://climate-advisor-service-test"
           resources:

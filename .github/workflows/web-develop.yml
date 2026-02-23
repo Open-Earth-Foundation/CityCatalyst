@@ -33,6 +33,9 @@ jobs:
       CDP_API_KEY: ${{ secrets.CDP_API_KEY_TEST }}
       CDP_MODE: "test"
       NEXT_PUBLIC_FEATURE_FLAGS: "ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,JN_ENABLED"
+      LLM_PROVIDER: openai
+      LLM_MODEL: gpt-5-mini
+      LLM_API_KEY: ${{ secrets.OPENAI_API_KEY_DEV }}
     defaults:
       run:
         working-directory: ./app
@@ -80,7 +83,10 @@ jobs:
           echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" >> .env && \
           echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,JN_ENABLED" >> .env && \
           echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env && \
-          echo "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" >> .env
+          echo "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" >> .env && \
+          echo "LLM_PROVIDER=openai" >> .env && \
+          echo "LLM_MODEL=gpt-5-mini" >> .env && \
+          echo "LLM_API_KEY=${{ secrets.OPENAI_API_KEY_DEV }}" >> .env
 
       - name: Run NextJS build
         run: npm run build
@@ -454,6 +460,9 @@ jobs:
             RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}} \
             VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_DEV}} \
+            "LLM_PROVIDER=openai" \
+            "LLM_MODEL=gpt-5-mini" \
+            "LLM_API_KEY=${{secrets.OPENAI_API_KEY_DEV}}" \
             "OPENAI_ASSISTANT_ID=asst_saoKNCVqCX7adTMoLqPxPHvB" \
             HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}} \
             "ADMIN_EMAILS=${{secrets.ADMIN_EMAILS}}" \

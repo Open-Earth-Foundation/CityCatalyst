@@ -93,7 +93,17 @@ export function createLLMClient(
           throw err;
         }
         log.debug(
-          { provider: resolvedConfig.provider, attempt, maxAttempts, code },
+          {
+            provider: resolvedConfig.provider,
+            attempt,
+            maxAttempts,
+            code,
+            err: lastError,
+            ...(lastError instanceof Error && {
+              errorMessage: lastError.message,
+              errorStack: lastError.stack,
+            }),
+          },
           "LLM request failed, retrying",
         );
       }

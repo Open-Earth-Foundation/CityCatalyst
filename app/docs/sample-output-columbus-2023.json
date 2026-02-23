@@ -1,0 +1,14 @@
+[
+  { "year": 2023, "sector": "Stationary Energy", "subsector": "Residential", "category": "Residential Energy", "totalCO2e": 1957279, "gpcRefNo": null, "source": "Columbus 2023" },
+  { "year": 2023, "sector": "Stationary Energy", "subsector": "Commercial", "category": "Commercial Energy", "totalCO2e": 3079165, "gpcRefNo": null, "source": "Columbus 2023" },
+  { "year": 2023, "sector": "Stationary Energy", "subsector": "Industrial", "category": "Industrial Energy", "totalCO2e": 514566, "gpcRefNo": null, "source": "Columbus 2023" },
+  { "year": 2023, "sector": "Transportation", "subsector": "On-Road", "category": "Transportation On Road Fuel Use", "totalCO2e": 4638166, "gpcRefNo": null, "source": "Columbus 2023" },
+  { "year": 2023, "sector": "Waste", "subsector": "Solid Waste", "category": "Municipal Solid Waste", "totalCO2e": 326053, "gpcRefNo": null, "source": "Columbus 2023" },
+  { "year": 2023, "sector": "Stationary Energy", "subsector": null, "category": "Fugitive Emissions from Natural Gas Distribution", "totalCO2e": 97150, "gpcRefNo": null, "source": "Columbus 2023" },
+  { "year": 2023, "sector": "Waste", "subsector": "Wastewater", "category": "Water and Wastewater Treatment Facilities", "totalCO2e": 88180, "gpcRefNo": null, "source": "Columbus 2023" },
+  { "year": 2023, "sector": null, "subsector": null, "category": "Total Community-Scale Emissions", "totalCO2e": 10700559, "gpcRefNo": null, "source": "Columbus 2023" },
+  { "year": 2022, "sector": "Stationary Energy", "subsector": "Residential", "category": "Residential Energy", "totalCO2e": 2206771, "gpcRefNo": null, "source": "Columbus 2023" },
+  { "year": 2022, "sector": "Transportation", "subsector": "On-Road", "category": "Transportation On Road Fuel Use", "totalCO2e": 4442566, "gpcRefNo": null, "source": "Columbus 2023" },
+  { "year": 2013, "sector": "Stationary Energy", "subsector": "Residential", "category": "Residential Energy", "totalCO2e": 2641935, "gpcRefNo": null, "source": "Columbus 2023" },
+  { "year": 2013, "sector": null, "subsector": null, "category": "Total Community-Scale Emissions", "totalCO2e": 11265023, "gpcRefNo": null, "source": "Columbus 2023" }
+]

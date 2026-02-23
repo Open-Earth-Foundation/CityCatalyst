@@ -1,0 +1,21 @@
+[
+  { "year": 2021, "sector": "Stationary Energy", "subsector": "Residential", "category": "Residential Natural Gas", "totalCO2e": 20516, "gpcRefNo": "I.1.1", "source": "Miami 2021" },
+  { "year": 2021, "sector": "Stationary Energy", "subsector": "Residential", "category": "Residential Electricity", "totalCO2e": 618160, "gpcRefNo": "I.1.2", "source": "Miami 2021" },
+  { "year": 2021, "sector": "Stationary Energy", "subsector": "Commercial", "category": "Commercial and Institutional Natural Gas", "totalCO2e": 126252, "gpcRefNo": "I.2.1", "source": "Miami 2021" },
+  { "year": 2021, "sector": "Stationary Energy", "subsector": "Commercial", "category": "Commercial and Institutional Electricity", "totalCO2e": 980695, "gpcRefNo": "I.2.2", "source": "Miami 2021" },
+  { "year": 2021, "sector": "Stationary Energy", "subsector": "Industrial", "category": "Industrial Natural Gas", "totalCO2e": 4128, "gpcRefNo": "I.3.1", "source": "Miami 2021" },
+  { "year": 2021, "sector": "Stationary Energy", "subsector": "Industrial", "category": "Industrial Electricity", "totalCO2e": 1660, "gpcRefNo": "I.3.2", "source": "Miami 2021" },
+  { "year": 2021, "sector": "Transportation", "subsector": "On-Road", "category": "On-road Gasoline and Diesel Vehicles", "totalCO2e": 1080960, "gpcRefNo": "II.1.1", "source": "Miami 2021" },
+  { "year": 2021, "sector": "Transportation", "subsector": "On-Road", "category": "Trolley System", "totalCO2e": 5132, "gpcRefNo": "II.1.1", "source": "Miami 2021" },
+  { "year": 2021, "sector": "Transportation", "subsector": "Public Transit", "category": "Metrorail and Metromover", "totalCO2e": 13013, "gpcRefNo": "II.2.2", "source": "Miami 2021" },
+  { "year": 2021, "sector": "Transportation", "subsector": "Waterborne", "category": "Waterborne Navigation", "totalCO2e": 7383, "gpcRefNo": "II.3.1", "source": "Miami 2021" },
+  { "year": 2021, "sector": "Transportation", "subsector": "Off-Road", "category": "Off-road Vehicles", "totalCO2e": 168081, "gpcRefNo": "II.5.1", "source": "Miami 2021" },
+  { "year": 2021, "sector": "Waste", "subsector": "Solid Waste", "category": "Disposal in Landfills Outside the City", "totalCO2e": 60442, "gpcRefNo": "III.1.2", "source": "Miami 2021" },
+  { "year": 2021, "sector": "Waste", "subsector": "Wastewater", "category": "Wastewater Treatment Process", "totalCO2e": 12741, "gpcRefNo": "III.4.2", "source": "Miami 2021" },
+  { "year": 2021, "sector": "Waste", "subsector": "Wastewater", "category": "Septic Treatment", "totalCO2e": 1553, "gpcRefNo": "III.4.2", "source": "Miami 2021" },
+  { "year": 2021, "sector": null, "subsector": null, "category": "Citywide Total", "totalCO2e": 3105635, "gpcRefNo": null, "source": "Miami 2021" },
+  { "year": 2019, "sector": "Stationary Energy", "subsector": "Residential", "category": "Residential Electricity", "totalCO2e": 651569, "gpcRefNo": "I.1.2", "source": "Miami 2019" },
+  { "year": 2019, "sector": "Transportation", "subsector": "On-Road", "category": "On-road Gasoline and Diesel Vehicles", "totalCO2e": 1223458, "gpcRefNo": "II.1.1", "source": "Miami 2019" },
+  { "year": 2019, "sector": null, "subsector": null, "category": "Citywide Total", "totalCO2e": 3437247, "gpcRefNo": null, "source": "Miami 2019" },
+  { "year": 2018, "sector": null, "subsector": null, "category": "Citywide Total", "totalCO2e": 3336638, "gpcRefNo": null, "source": "Miami 2018" }
+]

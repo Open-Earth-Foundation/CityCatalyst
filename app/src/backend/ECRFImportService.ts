@@ -562,7 +562,7 @@ export default class ECRFImportService {
    * For sectors I-III: looks up SubCategory by referenceNumber
    * For sectors IV-V (IPPU and AFOLU): looks up SubSector by referenceNumber (no subcategories)
    */
-  private static async lookupGPCReference(gpcRefNo: string): Promise<{
+  public static async lookupGPCReference(gpcRefNo: string): Promise<{
     sectorId: string;
     subsectorId: string;
     subcategoryId: string | null;

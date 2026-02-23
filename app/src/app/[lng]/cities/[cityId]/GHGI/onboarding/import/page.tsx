@@ -123,6 +123,7 @@ export default function ImportPage(props: {
 
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [importedFileId, setImportedFileId] = useState<string | null>(null);
+  const [pdfPendingExtraction, setPdfPendingExtraction] = useState(false);
   const [mappingOverrides, setMappingOverrides] = useState<
     Record<string, string>
   >({});
@@ -146,6 +147,9 @@ export default function ImportPage(props: {
 
   const [uploadFile, { isLoading: isUploadingFile }] =
     api.useUploadInventoryFileMutation();
+  const [extractImport, { isLoading: isExtracting }] =
+    api.useExtractImportMutation();
+  const [getImportStatus] = api.useLazyGetImportStatusQuery();
 
   const handleFileUpload = async (file: File) => {
     if (!inventoryId) {
@@ -168,11 +172,14 @@ export default function ImportPage(props: {
 
       setUploadedFile(file);
       setImportedFileId(result.id);
-      
-      // Small delay for smooth transition
-      setTimeout(() => {
-        goToNextStep();
-      }, 150);
+      setPdfPendingExtraction(
+        result.importStatus === "pending_ai_extraction" || result.fileType === "pdf",
+      );
+
+      // PDF (Path C): stay on step 0 for "Extract with AI"; xlsx/csv advance to step 1
+      if (result.importStatus !== "pending_ai_extraction") {
+        setTimeout(() => goToNextStep(), 150);
+      }
     } catch (error: any) {
       makeErrorToast(
         "Upload failed",
@@ -193,7 +200,31 @@ export default function ImportPage(props: {
   const handleRemoveFile = () => {
     setUploadedFile(null);
     setImportedFileId(null);
+    setPdfPendingExtraction(false);
     setStep(0);
+  };
+
+  const handleExtractWithAi = async () => {
+    if (!importedFileId || !inventoryId) return;
+    try {
+      await extractImport({
+        cityId,
+        inventoryId,
+        importedFileId,
+      }).unwrap();
+      setPdfPendingExtraction(false);
+      await getImportStatus({
+        cityId,
+        inventoryId,
+        importedFileId,
+      }).unwrap();
+      // Go to Validation results (step 1) so user can review and map extracted rows
+      setTimeout(() => goToNextStep(), 150);
+    } catch (error: any) {
+      const message =
+        error?.data?.message || error?.message || "AI extraction failed";
+      makeErrorToast("Extraction failed", message);
+    }
   };
 
   // Handle beforeunload event (browser refresh/close)
@@ -379,16 +410,25 @@ export default function ImportPage(props: {
                   gap="8px"
                   py="16px"
                   px="24px"
-                  onClick={handleContinue}
+                  onClick={
+                    pdfPendingExtraction ? handleExtractWithAi : handleContinue
+                  }
                   h="64px"
-                  disabled={!uploadedFile || !importedFileId}
+                  disabled={
+                    !uploadedFile ||
+                    !importedFileId ||
+                    (pdfPendingExtraction && isExtracting)
+                  }
+                  loading={pdfPendingExtraction && isExtracting}
                 >
                   <Text
                     fontFamily="button.md"
                     fontWeight="600"
                     letterSpacing="wider"
                   >
-                    {t("continue")}
+                    {pdfPendingExtraction
+                      ? t("extract-with-ai")
+                      : t("continue")}
                   </Text>
                   <MdArrowForward height="24px" width="24px" />
                 </Button>

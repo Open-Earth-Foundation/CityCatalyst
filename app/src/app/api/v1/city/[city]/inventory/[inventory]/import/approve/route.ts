@@ -48,8 +48,12 @@
 
 import UserService from "@/backend/UserService";
 import FileParserService from "@/backend/FileParserService";
-import ECRFImportService from "@/backend/ECRFImportService";
+import ECRFImportService, {
+  type ECRFImportResult,
+  type ECRFRowData,
+} from "@/backend/ECRFImportService";
 import InventoryImportService from "@/backend/InventoryImportService";
+import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { ImportStatusEnum } from "@/util/enums";
@@ -57,6 +61,7 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { logger } from "@/services/logger";
+import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 
 const approveImportSchema = z.object({
   importedFileId: z.string().uuid(),
@@ -126,47 +131,154 @@ export const POST = apiHandler(
         lastUpdated: new Date(),
       });
 
-      // Process and import the data
-      if (!importedFile.data) {
-        throw new Error("File data not found");
-      }
+      const validationResults = (importedFile.validationResults as any) || {};
+      let importResult: ECRFImportResult;
 
-      const buffer = Buffer.from(importedFile.data as any);
-      const parsedData = await FileParserService.parseFile(
-        buffer,
-        importedFile.fileType,
-      );
-
-      const validationResults = importedFile.validationResults as any;
-      let detectedColumns: Record<string, number> = {
-        ...(validationResults?.detectedColumns || {}),
-      };
-
-      // Apply mapping overrides: columnName -> key; resolve column name to index
+      // Path C: PDF with AI-extracted rows – skip file parse, convert rows to ECRF format
+      const extractedRows = mappingConfiguration.rows as
+        | ExtractedRow[]
+        | undefined;
       if (
-        mappingOverrides &&
-        Object.keys(mappingOverrides).length > 0 &&
-        parsedData.primarySheet
+        importedFile.fileType === "pdf" &&
+        Array.isArray(extractedRows) &&
+        extractedRows.length > 0
       ) {
-        const headers = parsedData.primarySheet.headers;
-        for (const [columnName, key] of Object.entries(mappingOverrides)) {
-          if (!key) continue;
-          const idx = headers.findIndex((h) => h === columnName);
-          if (idx !== -1) {
-            detectedColumns[key] = idx;
+        const errors: string[] = [];
+        const warnings: string[] = [];
+        const rows: ECRFRowData[] = [];
+        let inferredYear: number | undefined;
+
+        for (let i = 0; i < extractedRows.length; i++) {
+          const row = extractedRows[i];
+          const sector = row.sector?.trim() ?? "";
+          const subsector = row.subsector?.trim() ?? "";
+          let gpcRefNo =
+            row.gpcRefNo?.trim() ||
+            resolveGpcRefNo(sector, subsector, row.category?.trim()) ||
+            null;
+
+          if (!gpcRefNo) {
+            errors.push(
+              `Row ${i + 1}: Could not resolve GPC ref from sector "${sector}" and subsector "${subsector}"`,
+            );
+            rows.push({
+              gpcRefNo: "",
+              sectorId: "",
+              subsectorId: "",
+              subcategoryId: null,
+              scopeId: "",
+              rowIndex: i,
+              errors: [
+                `Could not resolve GPC ref from sector "${sector}" and subsector "${subsector}"`,
+              ],
+            });
+            continue;
+          }
+
+          const gpcMapping =
+            await ECRFImportService.lookupGPCReference(gpcRefNo);
+          if (!gpcMapping) {
+            errors.push(`Row ${i + 1}: GPC reference "${gpcRefNo}" not in taxonomy`);
+            rows.push({
+              gpcRefNo,
+              sectorId: "",
+              subsectorId: "",
+              subcategoryId: null,
+              scopeId: "",
+              rowIndex: i,
+              errors: [`GPC reference "${gpcRefNo}" not found in taxonomy`],
+            });
+            continue;
+          }
+
+          const num = (v: number | null | undefined): number | undefined =>
+            v != null && Number.isFinite(v) ? Number(v) : undefined;
+          if (row.year != null && Number.isFinite(row.year)) {
+            inferredYear =
+              inferredYear != null
+                ? inferredYear
+                : (row.year as number);
+          }
+
+          rows.push({
+            gpcRefNo,
+            sectorId: gpcMapping.sectorId,
+            subsectorId: gpcMapping.subsectorId,
+            subcategoryId: gpcMapping.subcategoryId,
+            scopeId: gpcMapping.scopeId,
+            co2: num(row.co2),
+            ch4: num(row.ch4),
+            n2o: num(row.n2o),
+            totalCO2e: num(row.totalCO2e),
+            year: row.year != null && Number.isFinite(row.year) ? row.year : undefined,
+            rowIndex: i,
+            methodology: row.methodology?.trim() || undefined,
+            activityAmount: row.activityAmount != null && Number.isFinite(row.activityAmount) ? row.activityAmount : undefined,
+            activityUnit: row.activityUnit?.trim() || undefined,
+            activityType: (row.activityType?.trim() || row.category?.trim()) || undefined,
+            activityDataSource: row.activityDataSource?.trim() || undefined,
+            activityDataQuality: row.activityDataQuality?.trim() || undefined,
+          });
+        }
+
+        importResult = {
+          rows,
+          errors,
+          warnings,
+          rowCount: extractedRows.length,
+          validRowCount: rows.filter((r) => !r.errors?.length).length,
+          inferredYearFromFile: inferredYear,
+        };
+      } else {
+        // xlsx/csv: parse file and process with ECRF pipeline
+        if (!importedFile.data) {
+          throw new Error("File data not found");
+        }
+
+        const buffer = Buffer.from(importedFile.data as any);
+        const parsedData = await FileParserService.parseFile(
+          buffer,
+          importedFile.fileType,
+        );
+
+        const validationResults = importedFile.validationResults as any;
+        let detectedColumns: Record<string, number> = {
+          ...(validationResults?.detectedColumns || {}),
+        };
+
+        // Apply mapping overrides: columnName -> key; resolve column name to index
+        if (
+          mappingOverrides &&
+          Object.keys(mappingOverrides).length > 0 &&
+          parsedData.primarySheet
+        ) {
+          const headers = parsedData.primarySheet.headers;
+          for (const [columnName, key] of Object.entries(mappingOverrides)) {
+            if (!key) continue;
+            const idx = headers.findIndex((h) => h === columnName);
+            if (idx !== -1) {
+              detectedColumns[key] = idx;
+            }
           }
         }
+
+        importResult = await ECRFImportService.processECRFFile(
+          parsedData,
+          detectedColumns,
+        );
       }
 
-      const importResult = await ECRFImportService.processECRFFile(
-        parsedData,
-        detectedColumns,
-      );
-
-      // Import data into inventory
+      // Import data into inventory (default data source from file name, data quality low)
+      const defaultActivityDataSource =
+        (importedFile.originalFileName as string) ||
+        (importedFile.fileName as string) ||
+        (importedFile.fileType === "pdf"
+          ? "Imported from PDF"
+          : "Imported from file");
       const importSummary = await InventoryImportService.importECRFData(
         inventoryId,
         importResult,
+        { defaultActivityDataSource },
       );
 
       // Update status to COMPLETED

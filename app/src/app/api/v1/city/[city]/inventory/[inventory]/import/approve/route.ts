@@ -215,7 +215,7 @@ export const POST = apiHandler(
             methodology: row.methodology?.trim() || undefined,
             activityAmount: row.activityAmount != null && Number.isFinite(row.activityAmount) ? row.activityAmount : undefined,
             activityUnit: row.activityUnit?.trim() || undefined,
-            activityType: (row.activityType?.trim() || row.category?.trim()) || undefined,
+            activityType: (row.category?.trim() || row.activityType?.trim()) || undefined,
             activityDataSource: row.activityDataSource?.trim() || undefined,
             activityDataQuality: row.activityDataQuality?.trim() || undefined,
           });

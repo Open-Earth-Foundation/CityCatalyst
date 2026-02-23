@@ -53,14 +53,21 @@ export async function openaiComplete(
   });
 
   const model = options.model ?? config.model;
+  // Some models (e.g. gpt-5-mini) only support default temperature (1); omit when 0.1 to avoid 400
+  const sendTemperature =
+    options.temperature !== undefined && options.temperature !== 0.1;
+
   const body: OpenAI.Chat.ChatCompletionCreateParams = {
     model,
     messages: options.messages.map((m) => ({
       role: toOpenAIRole(m.role),
       content: m.content,
     })),
-    ...(options.temperature !== undefined && { temperature: options.temperature }),
-    ...(options.maxTokens !== undefined && { max_tokens: options.maxTokens }),
+    ...(sendTemperature && { temperature: options.temperature }),
+    // Newer models (e.g. gpt-5-mini) require max_completion_tokens; older accept both
+    ...(options.maxTokens !== undefined && {
+      max_completion_tokens: options.maxTokens,
+    }),
     ...(options.jsonMode && { response_format: { type: "json_object" } }),
   };
 

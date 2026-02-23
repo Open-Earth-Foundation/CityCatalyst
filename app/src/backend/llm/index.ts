@@ -6,7 +6,7 @@
  *
  * Config (env):
  *   LLM_PROVIDER   - e.g. "openai"
- *   LLM_MODEL      - e.g. "gpt-4o-mini"
+ *   LLM_MODEL      - e.g. "gpt-5-mini"
  *   LLM_API_KEY    - API key for the provider
  *   LLM_BASE_URL   - (optional) override API base URL
  *   LLM_TIMEOUT_MS - (optional) request timeout, default 60000

@@ -142,7 +142,7 @@ export default class FileParserService {
    */
   public static async parseFile(
     buffer: Buffer,
-    fileType: "xlsx" | "csv",
+    fileType: "xlsx" | "csv" | "pdf",
   ): Promise<ParsedFileData> {
     if (fileType === "xlsx") {
       return this.parseXLSX(buffer);

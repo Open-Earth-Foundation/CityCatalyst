@@ -59,6 +59,9 @@ import {
 import { LLMError } from "@/backend/llm";
 import { logger } from "@/services/logger";
 
+/** Allow long-running PDF + LLM extraction (e.g. Vercel Pro 300s); avoid 502 from platform timeout. */
+export const maxDuration = 120;
+
 export const POST = apiHandler(
   async (_req, { session, params }) => {
     if (!session) {

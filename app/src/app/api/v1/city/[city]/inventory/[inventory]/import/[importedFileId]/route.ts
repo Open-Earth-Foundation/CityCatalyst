@@ -360,9 +360,12 @@ export const GET = apiHandler(
         exampleValue: string | null;
       }> = [];
 
-      if (importedFile.data) {
+      if (
+        importedFile.data &&
+        (importedFile.fileType === "xlsx" || importedFile.fileType === "csv")
+      ) {
         try {
-          // Parse file to get actual headers and sample values
+          // Parse file to get actual headers and sample values (xlsx/csv only; PDF uses extracted rows)
           const parsedData = await FileParserService.parseFile(
             importedFile.data,
             importedFile.fileType,

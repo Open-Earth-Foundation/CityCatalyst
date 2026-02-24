@@ -161,6 +161,13 @@ export default class VersionHistoryService {
       for (const version of newerVersions) {
         const model = VersionHistoryService.MODELS[version.table!];
         const idColumn = VersionHistoryService.MODEL_ID_COLUMNS[version.table!];
+
+        if (!model || !idColumn) {
+          throw new createHttpError.InternalServerError(
+            "table-model-not-configured: " + version.table!,
+          );
+        }
+
         if (
           version.previousVersion &&
           !version.previousVersion?.isDeleted &&

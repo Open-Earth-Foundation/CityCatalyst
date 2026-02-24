@@ -5,17 +5,31 @@ import { Op, Transaction } from "sequelize";
 
 export default class VersionHistoryService {
   static MODELS: Record<string, any> = {
+    // GHGI module
     InventoryValue: db.models.InventoryValue,
     ActivityValue: db.models.ActivityValue,
     GasValue: db.models.GasValue,
     EmissionsFactor: db.models.EmissionsFactor,
+
+    // HIAP module
+    ActionPlan: db.models.ActionPlan,
+    UnrankedActionSelection: db.models.UnrankedActionSelection,
+    HighImpactActionRanked: db.models.HighImpactActionRanked,
+    HighImpactActionRanking: db.models.HighImpactActionRanking,
   };
 
   static MODEL_ID_COLUMNS: Record<string, string> = {
+    // GHGI module
     InventoryValue: "id",
     ActivityValue: "id",
     GasValue: "id",
     EmissionsFactor: "id",
+
+    // HIAP module
+    ActionPlan: "id",
+    UnrankedActionSelection: "id",
+    HighImpactActionRanked: "id",
+    HighImpactActionRanking: "id",
   };
 
   static async getVersionHistory(

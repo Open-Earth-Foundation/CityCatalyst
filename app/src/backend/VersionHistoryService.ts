@@ -91,7 +91,7 @@ export default class VersionHistoryService {
     dataEntries: Record<string, any>[],
     isDeleted: boolean = false,
     transaction?: Transaction,
-    module: string = "ghgi",
+    moduleName: string = "ghgi",
   ) {
     return Promise.all(
       dataEntries.map((entry) => {
@@ -103,7 +103,7 @@ export default class VersionHistoryService {
           entry,
           isDeleted,
           transaction,
-          module,
+          moduleName,
         );
       }),
     );

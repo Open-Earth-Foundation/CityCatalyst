@@ -14,15 +14,22 @@ This repository contains a single AI project. All contributions must optimize fo
 
 This repo includes **project-level Cursor skills** under `.cursor/skills/` (version-controlled). These skills are available to anyone who checks out the repository and opens it in Cursor. See [Cursor Skills docs](https://cursor.com/docs/context/skills).
 
-### Mandatory after code changes
-
-After **any code change** (add/edit/delete/rename), you must apply the `docs-after-change` skill before ending your turn.
-
 Skills included:
 
+- `simplify-after-change`: **Mandatory** after any code change. Simplifies the changed code, removes unnecessary complexity, and keeps behavior identical.
 - `docs-after-change`: **Mandatory** after any code change. Keeps docstrings/README/architecture accurate.
 - `script-quality-gate`: Use when adding/changing a runnable script or CLI entrypoint.
+- `prompt-schema-authoring`: Use when creating/updating agent prompts to enforce `<role>/<task>/<input>/<output>` structure and model-aligned output contracts.
 - `repo-doc-audit`: One-off full repo documentation audit (**manual** via `/repo-doc-audit`).
+
+### Mandatory after code changes
+
+After **any code change** (add/edit/delete/rename), you must apply BOTH skills before ending your turn:
+
+1. `simplify-after-change`
+2. `docs-after-change`
+
+If you intentionally skip a mandatory skill, leave a one-line justification in your response message.
 
 ---
 
@@ -53,6 +60,7 @@ Every script intended to be executed must include a **top-level docstring** desc
 Brief: <one-liner description>
 
 Inputs:
+- <list inputs, files, env vars, args>
 - CLI args: list each `--flag` with a short description of what it does and the expected format.
   - Example: `--input-dir`: Directory containing JSON files produced by the previous step.
   - Example: `--mode`: `validate` (no writes) or `apply` (writes enabled).
@@ -251,6 +259,9 @@ __all__ = ["setup_logger"]
 
 - Strictly use **absolute imports**, for example `from app.utils.foo import bar`. Do not use relative imports.
 - Always run scripts as modules using `python -m ...` from the project root.
+- **Never use wildcard imports** (`from module import *`). Always explicitly name the functions, classes, or objects you are importing.
+  - Bad: `from app.utils.helpers import *`
+  - Good: `from app.utils.helpers import parse_config, validate_input`
 
 ### Prefer clarity over cleverness
 
@@ -308,6 +319,7 @@ docker run -it --rm -p 8000:8000 --env-file .env my-great-app
 When making changes:
 
 - Keep changes minimal and scoped to the task.
+- Do not add backward-compatibility layers, legacy adapters, or dual-path behavior unless the user explicitly requests backward compatibility.
 - Respect the existing folder structure and move files if they are in the wrong place.
 - Update `README.md` if setup or run behavior changes.
 - If you add a runnable script, ensure it follows the standalone script rules.

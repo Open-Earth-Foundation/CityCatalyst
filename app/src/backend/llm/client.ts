@@ -15,6 +15,22 @@ import { LLMError, LLMErrorCode } from "./types";
 
 const log = logger.child({ module: "llm" });
 
+const BASE_BACKOFF_MS = 1000;
+const MAX_BACKOFF_MS = 30_000;
+const JITTER_FRACTION = 0.25;
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** Exponential backoff with jitter: 1s, 2s, 4s, ... capped at MAX_BACKOFF_MS. */
+function getBackoffMs(attempt: number): number {
+  const exponential = BASE_BACKOFF_MS * Math.pow(2, attempt - 1);
+  const capped = Math.min(exponential, MAX_BACKOFF_MS);
+  const jitter = capped * JITTER_FRACTION * Math.random();
+  return Math.round(capped + jitter);
+}
+
 function getAdapter(provider: string): ILLMAdapter {
   const p = provider.toLowerCase();
   if (p === "openai") {
@@ -92,20 +108,22 @@ export function createLLMClient(
         if (!retryable || attempt === maxAttempts) {
           throw err;
         }
+        const backoffMs = getBackoffMs(attempt);
         log.debug(
           {
             provider: resolvedConfig.provider,
             attempt,
             maxAttempts,
             code,
-            err: lastError,
+            backoffMs,
             ...(lastError instanceof Error && {
               errorMessage: lastError.message,
               errorStack: lastError.stack,
             }),
           },
-          "LLM request failed, retrying",
+          "LLM request failed, retrying after backoff",
         );
+        await delay(backoffMs);
       }
     }
 

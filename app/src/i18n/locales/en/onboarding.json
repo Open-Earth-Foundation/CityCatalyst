@@ -121,6 +121,7 @@
   "import-summary": "Import Summary",
   "source-file": "Source file",
   "format-detected": "Format detected",
+  "rows-found": "Rows found",
   "fields-found": "Fields found",
   "fields-mapped": "Fields mapped",
   "field-mappings": "Field Mappings",

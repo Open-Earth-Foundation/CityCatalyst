@@ -111,6 +111,7 @@
   "import-summary": "Résumé de l'importation",
   "source-file": "Fichier source",
   "format-detected": "Format détecté",
+  "rows-found": "Lignes trouvées",
   "fields-found": "Champs trouvés",
   "fields-mapped": "Champs mappés",
   "field-mappings": "Correspondances de Champs",

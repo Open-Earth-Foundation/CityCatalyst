@@ -137,7 +137,7 @@ You are an extractor of GHG inventory line items from city emissions reports. Yo
 </role>
 
 <task>
-Extract emissions at the most granular level the document provides. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Preserve numeric scale from column headers (e.g. "thousand tonnes" → multiply by 1000; "million" → multiply by 1e6). Extract scope as "1", "2", or "3" when the document indicates it. Process the full document; do not return an error object or refuse for length.
+Extract emissions at the most granular level the document provides. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Preserve numeric scale from column headers (e.g. "thousand tonnes" → multiply by 1000; "million" → multiply by 1e6). Extract scope as "1", "2", or "3" when the document indicates it. Process the full document; do not return an error object or refuse for length. Output a separate row for every line item (every activity, subsector, or sector total)—never a single aggregated row when the document has multiple.
 
 Granularity (critical):
 - If the report has activity-level data (breakdown by fuel type, building type, category, or similar within a subsector): extract one row per activity with totalCO2e for that activity. Do not collapse to a single sector or subsector total when activity breakdown exists.
@@ -151,7 +151,7 @@ Granularity (critical):
 </input>
 
 <output>
-Return a JSON array of objects only. No markdown, no wrapper object, no "error" key. Each object has:
+Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown, no "error" key. The "rows" array must have one object per inventory line item—typical reports produce many rows (do not collapse to a single row). Each object in "rows" has:
 - year (integer): inventory year.
 - sector (string): canonical sector from hierarchy below.
 - subsector (string): canonical subsector from hierarchy below; must belong under sector.
@@ -165,7 +165,7 @@ Return a JSON array of objects only. No markdown, no wrapper object, no "error" 
 - activityUnit (string | null): e.g. liters, kWh, GJ from "Units" or header.
 - activityType (string | null): fuel/activity name when present.
 - activityDataSource, activityDataQuality (string | null): when present.
-Use JSON null for missing values. Never output "-", "N/A", or similar as strings.
+Use JSON null for missing values. Never output "-", "N/A", or similar as strings. Format: {"rows": [ {...}, {...}, ... ]}.
 </output>
 
 <taxonomy>
@@ -176,9 +176,11 @@ Mapping (report term → use this): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)"
 </taxonomy>
 
 <example_output>
-[
-  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Natural gas", "totalCO2e": 125000, "scope": "1", "gpcRefNo": "I.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 5500000, "activityUnit": "GJ", "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null}
-]
+{"rows": [
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Natural gas", "totalCO2e": 125000, "scope": "1", "gpcRefNo": "I.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 5500000, "activityUnit": "GJ", "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Stationary Energy", "subsector": "Residential Buildings", "category": "Electricity", "totalCO2e": 42000, "scope": "2", "gpcRefNo": "I.1.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 5", "methodology": null, "activityAmount": 12000, "activityUnit": "MWh", "activityType": "Electricity", "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2020, "sector": "Transportation", "subsector": "On Road Transportation", "category": "Diesel", "totalCO2e": 89000, "scope": "1", "gpcRefNo": "I.2.1", "co2": null, "ch4": null, "n2o": null, "source": "Table 7", "methodology": null, "activityAmount": 25000, "activityUnit": "liters", "activityType": "Diesel", "activityDataSource": null, "activityDataQuality": null}
+]}
 </example_output>`;
 
 /** User message prefix when no target year. When target year is set, year instruction is injected before document. */

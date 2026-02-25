@@ -114,6 +114,7 @@
   "import-summary": "Resumen de Importación",
   "source-file": "Archivo fuente",
   "format-detected": "Formato detectado",
+  "rows-found": "Filas encontradas",
   "fields-found": "Campos encontrados",
   "fields-mapped": "Campos mapeados",
   "field-mappings": "Mapeo de Campos",

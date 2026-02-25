@@ -130,7 +130,7 @@ export default function ReviewConfirmStep({
             </Box>
             <Box w="full">
               <Text fontSize="body.sm" color="content.tertiary" mb={1}>
-                {t("fields-found")}
+                {t("rows-found")}
               </Text>
               <Text fontWeight="medium">
                 {importSummary.rowsFound}

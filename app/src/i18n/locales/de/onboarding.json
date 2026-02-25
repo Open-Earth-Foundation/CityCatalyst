@@ -113,6 +113,7 @@
   "import-summary": "Importübersicht",
   "source-file": "Quelldatei",
   "format-detected": "Format erkannt",
+  "rows-found": "Zeilen gefunden",
   "fields-found": "Gefundene Felder",
   "fields-mapped": "Zugeordnete Felder",
   "field-mappings": "Feldzuordnungen",

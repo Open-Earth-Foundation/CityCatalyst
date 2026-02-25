@@ -146,6 +146,16 @@ export const POST = apiHandler(
       throw err;
     }
 
+    if (!rows || rows.length === 0) {
+      logger.warn(
+        { importedFileId },
+        "LLM extraction produced no inventory rows",
+      );
+      throw new createHttpError.BadRequest(
+        "PDF does not contain extractable inventory data",
+      );
+    }
+
     const mappingConfiguration = {
       ...(importedFile.mappingConfiguration || {}),
       rows,

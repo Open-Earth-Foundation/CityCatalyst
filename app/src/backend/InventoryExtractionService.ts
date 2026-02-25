@@ -205,7 +205,7 @@ export async function extractInventoryRowsFromDocument(
         "\n\n[Document truncated for length.]"
       : documentContent;
 
-  const targetYear = 2021;
+  const targetYear = 2022;
   const yearInstruction =
     targetYear != null
       ? `Extract only emissions data for the year ${targetYear}. Set year to ${targetYear} for every row; do not include other years.\n\n`

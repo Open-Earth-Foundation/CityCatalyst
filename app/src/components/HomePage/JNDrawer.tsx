@@ -242,7 +242,10 @@ const ProjectFilterSection = ({
   // Transform projectsData into options for the project select
   const projectOptions = projectsData.map((project) => ({
     value: project.projectId,
-    label: project.name,
+    label:
+      project.name === "cc_project_default"
+        ? t("default-project")
+        : project.name,
   }));
 
   // Get cities for the selected project
@@ -482,7 +485,8 @@ const ProjectFilterSection = ({
             label={t("city")}
           />
           {/* Only show add city button for ORG_ADMIN and PROJECT_ADMIN */}
-          {(userAccessStatus?.isOrgOwner || userAccessStatus?.isProjectAdmin) && (
+          {(userAccessStatus?.isOrgOwner ||
+            userAccessStatus?.isProjectAdmin) && (
             <Box w="full" display="flex" justifyContent="flex-start">
               <Button
                 variant="ghost"

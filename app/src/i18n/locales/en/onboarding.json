@@ -10,6 +10,8 @@
   "go-back": "Go Back",
   "continue": "Continue",
   "extract-with-ai": "Extract with AI",
+  "extraction-failed": "Extraction failed",
+  "ai-extraction-failed-default": "AI extraction failed",
   "pdf-ready-for-extraction": "PDF ready for extraction",
   "setup-step": "Setting up your Inventory",
   "setup-inventory-details-heading": "Set up inventory details",

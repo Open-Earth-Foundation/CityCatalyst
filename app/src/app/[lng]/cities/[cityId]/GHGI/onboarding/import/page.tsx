@@ -222,8 +222,10 @@ export default function ImportPage(props: {
       setTimeout(() => goToNextStep(), 150);
     } catch (error: any) {
       const message =
-        error?.data?.message || error?.message || "AI extraction failed";
-      makeErrorToast("Extraction failed", message);
+        error?.data?.message ||
+        error?.message ||
+        t("ai-extraction-failed-default");
+      makeErrorToast(t("extraction-failed"), message);
     }
   };
 

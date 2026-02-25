@@ -45,6 +45,8 @@
   "no-results-details": "Versuchen Sie, nach einer anderen Stadt zu suchen",
   "setup-city-details": "Suchen und wählen Sie die Stadt oder Gemeinde aus, für die Sie Ihr Treibhausgas-Emissionsinventar erstellen möchten.",
   "continue": "Weiter",
+  "extraction-failed": "Extraktion fehlgeschlagen",
+  "ai-extraction-failed-default": "KI-Extraktion fehlgeschlagen",
   "setup-inventory-details-heading": "Einrichten von Inventardetails",
   "setup-inventory-details-description": "Geben Sie einige grundlegende Details über das Inventar an, das Sie erstellen möchten. Sie können diese Einstellungen später bearbeiten.",
   "inventory-goal": "Inventarziel",

@@ -72,7 +72,7 @@ export const POST = apiHandler(
     const inventoryId = z.string().uuid().parse(params.inventory);
     const importedFileId = z.string().uuid().parse(params.importedFileId);
 
-    await UserService.findUserInventory(inventoryId, session);
+    const inventory = await UserService.findUserInventory(inventoryId, session);
 
     const importedFile = await db.models.ImportedInventoryFile.findOne({
       where: {
@@ -123,9 +123,16 @@ export const POST = apiHandler(
       );
     }
 
+    const targetYear =
+      inventory.year != null && Number.isInteger(Number(inventory.year))
+        ? Number(inventory.year)
+        : undefined;
+
     let rows: ExtractedRow[];
     try {
-      rows = await extractInventoryRowsFromDocument(text);
+      rows = await extractInventoryRowsFromDocument(text, {
+        targetYear,
+      });
     } catch (err) {
       if (err instanceof LLMError) {
         logger.warn(

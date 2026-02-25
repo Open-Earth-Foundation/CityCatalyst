@@ -311,6 +311,7 @@ export const GET = apiHandler(
           { key: "gpcRefNo", label: "GPC Reference Number" },
           { key: "sector", label: "Sector" },
           { key: "subsector", label: "Subsector" },
+          { key: "scope", label: "Scope" },
           { key: "category", label: "Category" },
           { key: "totalCO2e", label: "Total CO2e" },
           { key: "co2", label: "CO2" },

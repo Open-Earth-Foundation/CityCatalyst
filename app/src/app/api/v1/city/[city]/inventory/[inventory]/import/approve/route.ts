@@ -61,6 +61,7 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { logger } from "@/services/logger";
+import { Op } from "sequelize";
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 
 const approveImportSchema = z.object({
@@ -148,6 +149,15 @@ export const POST = apiHandler(
         const rows: ECRFRowData[] = [];
         let inferredYear: number | undefined;
 
+        const scopeByName = new Map<string, string>();
+        const scopeRecords = await db.models.Scope.findAll({
+          attributes: ["scopeId", "scopeName"],
+          where: { scopeName: { [Op.in]: ["1", "2", "3"] } },
+        });
+        for (const s of scopeRecords) {
+          if (s.scopeName) scopeByName.set(s.scopeName, s.scopeId);
+        }
+
         for (let i = 0; i < extractedRows.length; i++) {
           const row = extractedRows[i];
           const sector = row.sector?.trim() ?? "";
@@ -191,6 +201,12 @@ export const POST = apiHandler(
             continue;
           }
 
+          const scopeFromFile = row.scope?.trim();
+          const resolvedScopeId =
+            scopeFromFile && scopeByName.has(scopeFromFile)
+              ? scopeByName.get(scopeFromFile)!
+              : gpcMapping.scopeId;
+
           const num = (v: number | null | undefined): number | undefined =>
             v != null && Number.isFinite(v) ? Number(v) : undefined;
           if (row.year != null && Number.isFinite(row.year)) {
@@ -205,7 +221,7 @@ export const POST = apiHandler(
             sectorId: gpcMapping.sectorId,
             subsectorId: gpcMapping.subsectorId,
             subcategoryId: gpcMapping.subcategoryId,
-            scopeId: gpcMapping.scopeId,
+            scopeId: resolvedScopeId,
             co2: num(row.co2),
             ch4: num(row.ch4),
             n2o: num(row.n2o),

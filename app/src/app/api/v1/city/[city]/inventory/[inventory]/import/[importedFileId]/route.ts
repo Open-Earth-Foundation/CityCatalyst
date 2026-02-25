@@ -164,6 +164,27 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+/** PDF extraction column definitions (key = extracted field, label = display in mapping UI). Add or reorder here to support new columns. */
+const PDF_IMPORT_FIELD_DEFS: Array<{ key: string; label: string }> = [
+  { key: "year", label: "Year" },
+  { key: "gpcRefNo", label: "GPC Reference Number" },
+  { key: "sector", label: "Sector" },
+  { key: "subsector", label: "Subsector" },
+  { key: "scope", label: "Scope" },
+  { key: "category", label: "Category" },
+  { key: "totalCO2e", label: "Total CO2e" },
+  { key: "co2", label: "CO2" },
+  { key: "ch4", label: "CH4" },
+  { key: "n2o", label: "N2O" },
+  { key: "source", label: "Source" },
+  { key: "methodology", label: "Methodology" },
+  { key: "activityAmount", label: "Activity Amount" },
+  { key: "activityUnit", label: "Activity Unit" },
+  { key: "activityType", label: "Activity Type" },
+  { key: "activityDataSource", label: "Activity Data Source" },
+  { key: "activityDataQuality", label: "Activity Data Quality" },
+];
+
 export const GET = apiHandler(
   async (req: NextRequest, { session, params }) => {
     if (!session) {
@@ -303,30 +324,8 @@ export const GET = apiHandler(
         pdfExtractedRows.length > 0
       ) {
         // PDF: use actual JSON keys from extraction response as Field Name; label = Interpreted As / Map To
-        const pdfFieldDefs: Array<{
-          key: string;
-          label: string;
-        }> = [
-          { key: "year", label: "Year" },
-          { key: "gpcRefNo", label: "GPC Reference Number" },
-          { key: "sector", label: "Sector" },
-          { key: "subsector", label: "Subsector" },
-          { key: "scope", label: "Scope" },
-          { key: "category", label: "Category" },
-          { key: "totalCO2e", label: "Total CO2e" },
-          { key: "co2", label: "CO2" },
-          { key: "ch4", label: "CH4" },
-          { key: "n2o", label: "N2O" },
-          { key: "source", label: "Source" },
-          { key: "methodology", label: "Methodology" },
-          { key: "activityAmount", label: "Activity Amount" },
-          { key: "activityUnit", label: "Activity Unit" },
-          { key: "activityType", label: "Activity Type" },
-          { key: "activityDataSource", label: "Activity Data Source" },
-          { key: "activityDataQuality", label: "Activity Data Quality" },
-        ];
         const first = (pdfExtractedRows[0] as Record<string, unknown>) || {};
-        const detectedColumnsList = pdfFieldDefs.map(({ key, label }) => {
+        const detectedColumnsList = PDF_IMPORT_FIELD_DEFS.map(({ key, label }) => {
           const raw = first[key];
           let exampleValue: string | null = null;
           if (raw != null && raw !== "") {

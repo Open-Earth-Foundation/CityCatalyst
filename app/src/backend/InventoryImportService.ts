@@ -596,15 +596,13 @@ export default class InventoryImportService {
                 activityData.n2o_unit = "units-tonnes";
               }
 
-              // Set group-by field so the UI can show sector→subsector→activity: use exclusive default when available, else use extracted category/activityType so the accordion title is not "undefined"
+              // Set group-by field so the UI can show sector→subsector→activity: use exclusive default when available, else use activityType so the accordion title is not "undefined"
               if (groupByField) {
                 if (groupByDefaultValue) {
                   activityData[groupByField] = groupByDefaultValue;
                 } else {
                   const activityLabel =
-                    row.category?.trim() ||
-                    row.activityType?.trim() ||
-                    "Uncategorized";
+                    row.activityType?.trim() || "Uncategorized";
                   activityData[groupByField] = activityLabel;
                 }
               }

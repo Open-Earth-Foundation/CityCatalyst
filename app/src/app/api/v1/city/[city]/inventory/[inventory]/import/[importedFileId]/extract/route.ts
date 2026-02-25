@@ -56,7 +56,7 @@ import {
   extractInventoryRowsFromDocument,
   type ExtractedRow,
 } from "@/backend/InventoryExtractionService";
-import { LLMError } from "@/backend/llm";
+import { LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
 
 /** Allow long-running PDF + LLM extraction. */
@@ -139,6 +139,11 @@ export const POST = apiHandler(
           { code: err.code, message: err.message, importedFileId },
           "LLM extraction failed",
         );
+        if (err.code === LLMErrorCode.BAD_REQUEST) {
+          throw new createHttpError.BadRequest(
+            err.message || "Document content could not be processed",
+          );
+        }
         throw new createHttpError.BadGateway(
           err.message || "AI extraction failed",
         );

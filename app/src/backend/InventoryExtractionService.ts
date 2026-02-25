@@ -184,6 +184,24 @@ const USER_PROMPT_PREFIX = `Document text:\n\n`;
 /** Max document length to send to LLM (chars) to avoid token limits. */
 const MAX_DOCUMENT_CHARS = 120_000;
 
+/**
+ * Document content is user-controlled; callers should enforce rate limiting and monitor
+ * for suspicious extraction patterns. We reject content that clearly looks like
+ * prompt-injection (instruction-like text at the start of the document).
+ */
+const PROMPT_INJECTION_LOOKUP_LENGTH = 400;
+const PROMPT_INJECTION_PREFIXES = [
+  "ignore previous instructions",
+  "ignore all previous",
+  "disregard all previous",
+  "you are now",
+  "new instructions:",
+  "system:",
+  "assistant:",
+  "### instruction",
+  "### system",
+];
+
 export type ExtractOptions = {
   /** When set, prompt and filter so only rows for this year are returned (inventory year). */
   targetYear?: number;
@@ -191,21 +209,39 @@ export type ExtractOptions = {
 
 /**
  * Extract inventory rows from document text using the configured LLM.
- * @param documentContent - Raw text from PDF (or other source)
+ * Document content is user-controlled; prompt-injection risk is mitigated by rejecting
+ * content that starts with instruction-like text. API layer should use rate limiting
+ * and monitor for suspicious extraction patterns.
+ *
+ * @param documentContent - Raw text from PDF (or other source); must be end-user content
  * @param options - Optional targetYear to extract only that year (e.g. inventory year)
  * @returns Array of normalized row objects; throws on parse or LLM failure
+ * @throws LLMError with BAD_REQUEST if content appears to be prompt-injection
  */
 export async function extractInventoryRowsFromDocument(
   documentContent: string,
   options?: ExtractOptions,
 ): Promise<ExtractedRow[]> {
+  const trimmed = documentContent.trim();
+  const lookup = trimmed.slice(0, PROMPT_INJECTION_LOOKUP_LENGTH).toLowerCase();
+  const looksLikeInjection = PROMPT_INJECTION_PREFIXES.some((prefix) =>
+    lookup.startsWith(prefix) || lookup.includes("\n" + prefix),
+  );
+  if (looksLikeInjection) {
+    logger.warn("Extraction rejected: document starts with instruction-like content (possible prompt injection)");
+    throw new LLMError(
+      "Document content could not be processed",
+      LLMErrorCode.BAD_REQUEST,
+    );
+  }
+
   const content =
     documentContent.length > MAX_DOCUMENT_CHARS
       ? documentContent.slice(0, MAX_DOCUMENT_CHARS) +
         "\n\n[Document truncated for length.]"
       : documentContent;
 
-  const targetYear = 2022;
+  const targetYear = options?.targetYear;
   const yearInstruction =
     targetYear != null
       ? `Extract only emissions data for the year ${targetYear}. Set year to ${targetYear} for every row; do not include other years.\n\n`

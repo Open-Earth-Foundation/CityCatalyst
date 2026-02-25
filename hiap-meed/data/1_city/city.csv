@@ -1,0 +1,346 @@
+comuna_name,locode,region_name,comuna_code,region_code
+Iquique,CL IQQ,Tarapacá,CL01101,CL01
+Alto Hospicio,CL AHP,Tarapacá,CL01107,CL01
+Tocopilla,,Tarapacá,CL01401,CL01
+Camiña,CL CMA,Tarapacá,CL01402,CL01
+Colchane,CL CNE,Tarapacá,CL01403,CL01
+Huara,CL HUA,Tarapacá,CL01404,CL01
+Pica,CL PIC,Tarapacá,CL01405,CL01
+Antofagasta,CL ANF,Antofagasta,CL02101,CL02
+Mejillones,CL MJS,Antofagasta,CL02102,CL02
+Sierra Gorda,CL SIG,Antofagasta,CL02103,CL02
+Taltal,CL TTC,Antofagasta,CL02104,CL02
+Calama,CL CJC,Antofagasta,CL02201,CL02
+Ollagüe,CL OLL,Antofagasta,CL02202,CL02
+San Pedro de Atacama,CL SPA,Antofagasta,CL02203,CL02
+Tocopilla,CL TOQ,Antofagasta,CL02301,CL02
+María Elena,CL MAE,Antofagasta,CL02302,CL02
+Copiapó,CL CPO,Atacama,CL03101,CL03
+Caldera,CL CLD,Atacama,CL03102,CL03
+Tierra Amarilla,CL TAM,Atacama,CL03103,CL03
+Chañaral,CL CNR,Atacama,CL03201,CL03
+Diego de Almagro,CL DDA,Atacama,CL03202,CL03
+Vallenar,CL VLR,Atacama,CL03301,CL03
+Alto del Carmen,CL ADC,Atacama,CL03302,CL03
+Freirina,CL FRN,Atacama,CL03303,CL03
+Huasco,,Atacama,CL03304,CL03
+La Serena,CL LSC,Coquimbo,CL04101,CL04
+Coquimbo,CL CQQ,Coquimbo,CL04102,CL04
+Andacollo,CL AND,Coquimbo,CL04103,CL04
+La Higuera,,Coquimbo,CL04104,CL04
+Paihuano,,Coquimbo,CL04105,CL04
+Vicuña,CL VIC,Coquimbo,CL04106,CL04
+Illapel,CL ILL,Coquimbo,CL04201,CL04
+Canela,CL CAN,Coquimbo,CL04202,CL04
+Los Vilos,CL LOS,Coquimbo,CL04203,CL04
+Salamanca,CL SAL,Coquimbo,CL04204,CL04
+Ovalle,CL OVL,Coquimbo,CL04301,CL04
+Combarbalá,CL CBB,Coquimbo,CL04302,CL04
+Monte Patria,CL MTP,Coquimbo,CL04303,CL04
+Punitaqui,CL PUN,Coquimbo,CL04304,CL04
+Río Hurtado,CL RHU,Coquimbo,CL04305,CL04
+Valparaíso,CL VAP,Valparaíso,CL05101,CL05
+Casablanca,CL CAS,Valparaíso,CL05102,CL05
+Concón,CL CON,Valparaíso,CL05103,CL05
+Juan Fernández,,Valparaíso,CL05104,CL05
+Puchuncaví,CL PCI,Valparaíso,CL05105,CL05
+Quintero,,Valparaíso,CL05107,CL05
+Viña del Mar,CL KNA,Valparaíso,CL05109,CL05
+Isla de Pascua,CL IPC,Valparaíso,CL05201,CL05
+Los Andes,CL LIB,Valparaíso,CL05301,CL05
+Calle Larga,CL CLL,Valparaíso,CL05302,CL05
+Rinconada,CL RIN,Valparaíso,CL05303,CL05
+San Esteban,CL SES,Valparaíso,CL05304,CL05
+La Ligua,CL LIG,Valparaíso,CL05401,CL05
+Cabildo,,Valparaíso,CL05402,CL05
+Papudo,CL PAP,Valparaíso,CL05403,CL05
+Petorca,CL PET,Valparaíso,CL05404,CL05
+Zapallar,,Valparaíso,CL05405,CL05
+Quillota,CL QTA,Valparaíso,CL05501,CL05
+Calera,CL LCL,Valparaíso,CL05502,CL05
+Hijuelas,CL HIJ,Valparaíso,CL05503,CL05
+La Cruz,CL LCZ,Valparaíso,CL05504,CL05
+Nogales,CL NOG,Valparaíso,CL05506,CL05
+San Antonio,CL SAI,Valparaíso,CL05601,CL05
+Algarrobo,CL ALG,Valparaíso,CL05602,CL05
+Cartagena,CL CGN,Valparaíso,CL05603,CL05
+El Quisco,CL ELQ,Valparaíso,CL05604,CL05
+El Tabo,CL ELT,Valparaíso,CL05605,CL05
+Santo Domingo,CL RSD,Valparaíso,CL05606,CL05
+San Felipe,CL SFP,Valparaíso,CL05701,CL05
+Catemu,CL CAT,Valparaíso,CL05702,CL05
+Llaillay,CL LLA,Valparaíso,CL05703,CL05
+Panquehue,CL PQH,Valparaíso,CL05704,CL05
+Putaendo,CL PTO,Valparaíso,CL05705,CL05
+Santa María,CL SMA,Valparaíso,CL05706,CL05
+Quilpué,CL QIL,Valparaíso,CL05801,CL05
+Limache,CL LIM,Valparaíso,CL05802,CL05
+Olmué,CL OLM,Valparaíso,CL05803,CL05
+Villa Alemana,CL VIA,Valparaíso,CL05804,CL05
+Rancagua,CL QRC,Libertador Bernardo O'Higgins,CL06101,CL06
+Codegua,CL COD,Libertador Bernardo O'Higgins,CL06102,CL06
+Coinco,CL COO,Libertador Bernardo O'Higgins,CL06103,CL06
+Coltauco,CL CTC,Libertador Bernardo O'Higgins,CL06104,CL06
+Doñihue,CL DOH,Libertador Bernardo O'Higgins,CL06105,CL06
+Graneros,CL GRA,Libertador Bernardo O'Higgins,CL06106,CL06
+Las Cabras,CL LCB,Libertador Bernardo O'Higgins,CL06107,CL06
+Machalí,CL MCI,Libertador Bernardo O'Higgins,CL06108,CL06
+Malloa,CL MAL,Libertador Bernardo O'Higgins,CL06109,CL06
+Mostazal,CL MOS,Libertador Bernardo O'Higgins,CL06110,CL06
+Olivar,CL OLI,Libertador Bernardo O'Higgins,CL06111,CL06
+Peumo,CL PEU,Libertador Bernardo O'Higgins,CL06112,CL06
+Pichidegua,CL PDH,Libertador Bernardo O'Higgins,CL06113,CL06
+Quinta de Tilcoco,CL QDT,Libertador Bernardo O'Higgins,CL06114,CL06
+Rengo,CL RGO,Libertador Bernardo O'Higgins,CL06115,CL06
+Requínoa,CL REQ,Libertador Bernardo O'Higgins,CL06116,CL06
+San Vicente,CL SVT,Libertador Bernardo O'Higgins,CL06117,CL06
+Pichilemu,CL PLM,Libertador Bernardo O'Higgins,CL06201,CL06
+La Estrella,CL LES,Libertador Bernardo O'Higgins,CL06202,CL06
+Litueche,,Libertador Bernardo O'Higgins,CL06203,CL06
+Marchigüe,,Libertador Bernardo O'Higgins,CL06204,CL06
+Navidad,CL NAV,Libertador Bernardo O'Higgins,CL06205,CL06
+Paredones,CL PAR,Libertador Bernardo O'Higgins,CL06206,CL06
+San Fernando,CL SFD,Libertador Bernardo O'Higgins,CL06301,CL06
+Chépica,CL CHE,Libertador Bernardo O'Higgins,CL06302,CL06
+Chimbarongo,CL CBG,Libertador Bernardo O'Higgins,CL06303,CL06
+Lolol,CL LOL,Libertador Bernardo O'Higgins,CL06304,CL06
+Nancagua,CL NCG,Libertador Bernardo O'Higgins,CL06305,CL06
+Palmilla,CL PMA,Libertador Bernardo O'Higgins,CL06306,CL06
+Peralillo,CL PER,Libertador Bernardo O'Higgins,CL06307,CL06
+Placilla,CL PLA,Libertador Bernardo O'Higgins,CL06308,CL06
+Pumanque,CL PUM,Libertador Bernardo O'Higgins,CL06309,CL06
+Santa Cruz,CL SCZ,Libertador Bernardo O'Higgins,CL06310,CL06
+Talca,CL TLX,Maule,CL07101,CL07
+Constitución,CL CST,Maule,CL07102,CL07
+Curepto,CL CRT,Maule,CL07103,CL07
+Empedrado,CL EMP,Maule,CL07104,CL07
+Maule,CL MAU,Maule,CL07105,CL07
+Pelarco,CL PEL,Maule,CL07106,CL07
+Pencahue,CL PEN,Maule,CL07107,CL07
+Río Claro,CL RCL,Maule,CL07108,CL07
+San Clemente,CL SCT,Maule,CL07109,CL07
+San Rafael,CL SRA,Maule,CL07110,CL07
+Cauquenes,CL CAU,Maule,CL07201,CL07
+Chanco,CL CHA,Maule,CL07202,CL07
+Pelluhue,CL PLH,Maule,CL07203,CL07
+Curicó,CL CUR,Maule,CL07301,CL07
+Hualañé,CL HLE,Maule,CL07302,CL07
+Licantén,CL LIC,Maule,CL07303,CL07
+Molina,CL MOL,Maule,CL07304,CL07
+Rauco,CL RAU,Maule,CL07305,CL07
+Romeral,CL ROM,Maule,CL07306,CL07
+Sagrada Familia,CL SAF,Maule,CL07307,CL07
+Teno,CL TEN,Maule,CL07308,CL07
+Vichuquén,CL VCQ,Maule,CL07309,CL07
+Linares,CL LIN,Maule,CL07401,CL07
+Colbún,CL COB,Maule,CL07402,CL07
+Longaví,CL LON,Maule,CL07403,CL07
+Parral,CL PRL,Maule,CL07404,CL07
+Retiro,CL RET,Maule,CL07405,CL07
+San Javier,CL SJV,Maule,CL07406,CL07
+Villa Alegre,CL VAG,Maule,CL07407,CL07
+Yerbas Buenas,CL YBU,Maule,CL07408,CL07
+Concepción,CL CCP,Bío-Bío,CL08101,CL08
+Coronel,CL CNL,Bío-Bío,CL08102,CL08
+Chiguayante,CL CHI,Bío-Bío,CL08103,CL08
+Florida,CL FLO,Bío-Bío,CL08104,CL08
+Hualqui,CL HQI,Bío-Bío,CL08105,CL08
+Lota,CL LTA,Bío-Bío,CL08106,CL08
+Penco,CL PEO,Bío-Bío,CL08107,CL08
+San Pedro de la Paz,CL SPP,Bío-Bío,CL08108,CL08
+Santa Juana,CL SJU,Bío-Bío,CL08109,CL08
+Talcahuano,CL TAL,Bío-Bío,CL08110,CL08
+Tomé,CL TOM,Bío-Bío,CL08111,CL08
+Hualpén,CL HPN,Bío-Bío,CL08112,CL08
+Lebu,CL LEB,Bío-Bío,CL08201,CL08
+Arauco,CL ARA,Bío-Bío,CL08202,CL08
+Cañete,CL CTE,Bío-Bío,CL08203,CL08
+Contulmo,CL CTM,Bío-Bío,CL08204,CL08
+Curanilahue,CL CRN,Bío-Bío,CL08205,CL08
+Los Alamos,CL LAL,Bío-Bío,CL08206,CL08
+Tirúa,CL TIR,Bío-Bío,CL08207,CL08
+Los Angeles,CL LSQ,Bío-Bío,CL08301,CL08
+Antuco,CL ANT,Bío-Bío,CL08302,CL08
+Cabrero,CL CAB,Bío-Bío,CL08303,CL08
+Laja,CL LAJ,Bío-Bío,CL08304,CL08
+Mulchén,CL MUL,Bío-Bío,CL08305,CL08
+Nacimiento,CL NAC,Bío-Bío,CL08306,CL08
+Negrete,CL NEG,Bío-Bío,CL08307,CL08
+Quilaco,,Bío-Bío,CL08308,CL08
+Quilleco,CL QLO,Bío-Bío,CL08309,CL08
+San Rosendo,CL SRO,Bío-Bío,CL08310,CL08
+Santa Bárbara,CL SBA,Bío-Bío,CL08311,CL08
+Tucapel,CL TUC,Bío-Bío,CL08312,CL08
+Yumbel,CL YUM,Bío-Bío,CL08313,CL08
+Alto Biobío,,Bío-Bío,CL08314,CL08
+Temuco,CL ZCO,La Araucanía,CL09101,CL09
+Carahue,CL CAR,La Araucanía,CL09102,CL09
+Cunco,CL CUN,La Araucanía,CL09103,CL09
+Curarrehue,CL CRE,La Araucanía,CL09104,CL09
+Freire,CL FRE,La Araucanía,CL09105,CL09
+Galvarino,CL GAL,La Araucanía,CL09106,CL09
+Gorbea,CL GOR,La Araucanía,CL09107,CL09
+Lautaro,CL LAU,La Araucanía,CL09108,CL09
+Loncoche,CL LNC,La Araucanía,CL09109,CL09
+Melipeuco,CL MLP,La Araucanía,CL09110,CL09
+Nueva Imperial,CL NIM,La Araucanía,CL09111,CL09
+Padre Las Casas,CL PLC,La Araucanía,CL09112,CL09
+Perquenco,CL PQC,La Araucanía,CL09113,CL09
+Pitrufquén,CL PIT,La Araucanía,CL09114,CL09
+Pucón,CL PUC,La Araucanía,CL09115,CL09
+Saavedra,CL SAA,La Araucanía,CL09116,CL09
+Teodoro Schmidt,CL TEO,La Araucanía,CL09117,CL09
+Toltén,CL TOL,La Araucanía,CL09118,CL09
+Vilcún,CL VCN,La Araucanía,CL09119,CL09
+Villarrica,CL VIL,La Araucanía,CL09120,CL09
+Cholchol,CL CHL,La Araucanía,CL09121,CL09
+Angol,CL ANG,La Araucanía,CL09201,CL09
+Collipulli,CL CPI,La Araucanía,CL09202,CL09
+Curacautín,CL CCN,La Araucanía,CL09203,CL09
+Ercilla,CL ERC,La Araucanía,CL09204,CL09
+Lonquimay,CL LQY,La Araucanía,CL09205,CL09
+Los Sauces,CL LSA,La Araucanía,CL09206,CL09
+Lumaco,CL LUM,La Araucanía,CL09207,CL09
+Purén,CL PUR,La Araucanía,CL09208,CL09
+Renaico,CL RNO,La Araucanía,CL09209,CL09
+Traiguén,CL TRA,La Araucanía,CL09210,CL09
+Victoria,CL ZIC,La Araucanía,CL09211,CL09
+Puerto Montt,CL PMC,Los Lagos,CL10101,CL10
+Calbuco,CL CBC,Los Lagos,CL10102,CL10
+Cochamó,,Los Lagos,CL10103,CL10
+Fresia,CL FRS,Los Lagos,CL10104,CL10
+Frutillar,CL FRT,Los Lagos,CL10105,CL10
+Los Muermos,CL LMU,Los Lagos,CL10106,CL10
+Llanquihue,CL LIA,Los Lagos,CL10107,CL10
+Maullín,CL MLL,Los Lagos,CL10108,CL10
+Puerto Varas,CL PVS,Los Lagos,CL10109,CL10
+Castro,CL WCA,Los Lagos,CL10201,CL10
+Ancud,CL ZUD,Los Lagos,CL10202,CL10
+Chonchi,CL CHO,Los Lagos,CL10203,CL10
+Curaco de Vélez,CL CDV,Los Lagos,CL10204,CL10
+Dalcahue,CL DCH,Los Lagos,CL10205,CL10
+Puqueldón,CL PQD,Los Lagos,CL10206,CL10
+Queilén,CL QLN,Los Lagos,CL10207,CL10
+Quellón,CL PTE,Los Lagos,CL10208,CL10
+Quemchi,CL QMC,Los Lagos,CL10209,CL10
+Quinchao,CL QCO,Los Lagos,CL10210,CL10
+Osorno,CL ZOS,Los Lagos,CL10301,CL10
+Puerto Octay,CL POC,Los Lagos,CL10302,CL10
+Purranque,CL PRQ,Los Lagos,CL10303,CL10
+Puyehue,CL CSA,Los Lagos,CL10304,CL10
+Río Negro,CL RNE,Los Lagos,CL10305,CL10
+San Juan de la Costa,CL SJC,Los Lagos,CL10306,CL10
+San Pablo,CL SPB,Los Lagos,CL10307,CL10
+Chaitén,CL WCH,Los Lagos,CL10401,CL10
+Futaleufú,CL FFU,Los Lagos,CL10402,CL10
+Hualaihué,,Los Lagos,CL10403,CL10
+Palena,CL PAL,Los Lagos,CL10404,CL10
+Coyhaique,CL CXQ,Aysén del Gral. Ibañez del Campo,CL11101,CL11
+Lago Verde,CL LVD,Aysén del Gral. Ibañez del Campo,CL11102,CL11
+Aysén,CL PSN,Aysén del Gral. Ibañez del Campo,CL11201,CL11
+Cisnes,,Aysén del Gral. Ibañez del Campo,CL11202,CL11
+Guaitecas,,Aysén del Gral. Ibañez del Campo,CL11203,CL11
+Cochrane,CL COC,Aysén del Gral. Ibañez del Campo,CL11301,CL11
+O'Higgins,CL OHI,Aysén del Gral. Ibañez del Campo,CL11302,CL11
+Tortel,,Aysén del Gral. Ibañez del Campo,CL11303,CL11
+Chile Chico,CL CCH,Aysén del Gral. Ibañez del Campo,CL11401,CL11
+Río Ibáñez,CL RIB,Aysén del Gral. Ibañez del Campo,CL11402,CL11
+Punta Arenas,CL PUQ,Magallanes y Antártica Chilena,CL12101,CL12
+Laguna Blanca,,Magallanes y Antártica Chilena,CL12102,CL12
+Río Verde,CL RVE,Magallanes y Antártica Chilena,CL12103,CL12
+San Gregorio,CL SGR,Magallanes y Antártica Chilena,CL12104,CL12
+Cabo de Hornos,,Magallanes y Antártica Chilena,CL12201,CL12
+Porvenir,CL PVR,Magallanes y Antártica Chilena,CL12301,CL12
+Primavera,CL PRI,Magallanes y Antártica Chilena,CL12302,CL12
+Timaukel,CL TIM,Magallanes y Antártica Chilena,CL12303,CL12
+Natales,CL CVJ,Magallanes y Antártica Chilena,CL12401,CL12
+Torres del Paine,CL TDP,Magallanes y Antártica Chilena,CL12402,CL12
+Santiago,CL SCL,Metropolitana de Santiago,CL13101,CL13
+Cerrillos,CL CER,Metropolitana de Santiago,CL13102,CL13
+Cerro Navia,,Metropolitana de Santiago,CL13103,CL13
+Conchalí,,Metropolitana de Santiago,CL13104,CL13
+El Bosque,,Metropolitana de Santiago,CL13105,CL13
+Estación Central,,Metropolitana de Santiago,CL13106,CL13
+Huechuraba,CL HUE,Metropolitana de Santiago,CL13107,CL13
+Independencia,CL IND,Metropolitana de Santiago,CL13108,CL13
+La Cisterna,CL LCI,Metropolitana de Santiago,CL13109,CL13
+La Florida,CL LFL,Metropolitana de Santiago,CL13110,CL13
+La Granja,,Metropolitana de Santiago,CL13111,CL13
+La Pintana,,Metropolitana de Santiago,CL13112,CL13
+La Reina,CL REI,Metropolitana de Santiago,CL13113,CL13
+Las Condes,,Metropolitana de Santiago,CL13114,CL13
+Lo Barnechea,CL LBA,Metropolitana de Santiago,CL13115,CL13
+Lo Espejo,CL LEJ,Metropolitana de Santiago,CL13116,CL13
+Lo Prado,CL LPR,Metropolitana de Santiago,CL13117,CL13
+Macul,CL MAC,Metropolitana de Santiago,CL13118,CL13
+Maipú,CL MAI,Metropolitana de Santiago,CL13119,CL13
+Ñuñoa,CL NUN,Metropolitana de Santiago,CL13120,CL13
+Pedro Aguirre Cerda,,Metropolitana de Santiago,CL13121,CL13
+Peñalolén,CL PLN,Metropolitana de Santiago,CL13122,CL13
+Providencia,CL PRO,Metropolitana de Santiago,CL13123,CL13
+Pudahuel,CL PUD,Metropolitana de Santiago,CL13124,CL13
+Quilicura,CL QUI,Metropolitana de Santiago,CL13125,CL13
+Quinta Normal,,Metropolitana de Santiago,CL13126,CL13
+Recoleta,CL REC,Metropolitana de Santiago,CL13127,CL13
+Renca,CL REN,Metropolitana de Santiago,CL13128,CL13
+San Joaquín,CL SJQ,Metropolitana de Santiago,CL13129,CL13
+San Miguel,CL SMG,Metropolitana de Santiago,CL13130,CL13
+San Ramón,,Metropolitana de Santiago,CL13131,CL13
+Vitacura,CL VIT,Metropolitana de Santiago,CL13132,CL13
+Puente Alto,CL PTA,Metropolitana de Santiago,CL13201,CL13
+Pirque,CL PIR,Metropolitana de Santiago,CL13202,CL13
+San José de Maipo,CL SJM,Metropolitana de Santiago,CL13203,CL13
+Colina,CL CLN,Metropolitana de Santiago,CL13301,CL13
+Lampa,CL LAM,Metropolitana de Santiago,CL13302,CL13
+Tiltil,CL TIL,Metropolitana de Santiago,CL13303,CL13
+San Bernardo,CL SBD,Metropolitana de Santiago,CL13401,CL13
+Buin,CL BUI,Metropolitana de Santiago,CL13402,CL13
+Calera de Tango,CL CDT,Metropolitana de Santiago,CL13403,CL13
+Paine,CL PNE,Metropolitana de Santiago,CL13404,CL13
+Melipilla,CL MEL,Metropolitana de Santiago,CL13501,CL13
+Alhué,CL ALH,Metropolitana de Santiago,CL13502,CL13
+Curacaví,CL CRV,Metropolitana de Santiago,CL13503,CL13
+María Pinto,CL MPI,Metropolitana de Santiago,CL13504,CL13
+San Pedro,CL SPE,Metropolitana de Santiago,CL13505,CL13
+Talagante,CL TLG,Metropolitana de Santiago,CL13601,CL13
+El Monte,CL ELM,Metropolitana de Santiago,CL13602,CL13
+Isla de Maipo,CL IDM,Metropolitana de Santiago,CL13603,CL13
+Padre Hurtado,CL PHU,Metropolitana de Santiago,CL13604,CL13
+Peñaflor,CL PFL,Metropolitana de Santiago,CL13605,CL13
+Valdivia,CL ZAL,Los Ríos,CL14101,CL14
+Corral,CL CRR,Los Ríos,CL14102,CL14
+Lanco,CL LAN,Los Ríos,CL14103,CL14
+Los Lagos,CL LLG,Los Ríos,CL14104,CL14
+Máfil,CL MAF,Los Ríos,CL14105,CL14
+Mariquina,,Los Ríos,CL14106,CL14
+Paillaco,CL PAO,Los Ríos,CL14107,CL14
+Panguipulli,CL PAN,Los Ríos,CL14108,CL14
+La Unión,CL LUN,Los Ríos,CL14201,CL14
+Futrono,CL FUT,Los Ríos,CL14202,CL14
+Lago Ranco,CL RNC,Los Ríos,CL14203,CL14
+Río Bueno,,Los Ríos,CL14204,CL14
+Arica,CL ARI,Arica y Parinacota,CL15101,CL15
+Camarones,CL CAM,Arica y Parinacota,CL15102,CL15
+Putre,CL PUT,Arica y Parinacota,CL15201,CL15
+General Lagos,CL GLG,Arica y Parinacota,CL15202,CL15
+Chillán,CL YAI,Ñuble,CL16101,CL16
+Bulnes,CL BUL,Ñuble,CL16102,CL16
+Chillán Viejo,CL CHV,Ñuble,CL16103,CL16
+El Carmen,CL ELC,Ñuble,CL16104,CL16
+Pemuco,CL PEM,Ñuble,CL16105,CL16
+Pinto,CL PIN,Ñuble,CL16106,CL16
+Quillón,CL QIN,Ñuble,CL16107,CL16
+San Ignacio,CL SIN,Ñuble,CL16108,CL16
+Yungay,CL YUN,Ñuble,CL16109,CL16
+Quirihue,CL QRH,Ñuble,CL16201,CL16
+Cobquecura,CL CBQ,Ñuble,CL16202,CL16
+Coelemu,CL COE,Ñuble,CL16203,CL16
+Ninhue,CL NIN,Ñuble,CL16204,CL16
+Portezuelo,CL POR,Ñuble,CL16205,CL16
+Ranquil,CL RAN,Ñuble,CL16206,CL16
+Treguaco,CL TRE,Ñuble,CL16207,CL16
+San Carlos,CL SCR,Ñuble,CL16301,CL16
+Coihueco,CL COI,Ñuble,CL16302,CL16
+Ñiquén,CL NQN,Ñuble,CL16303,CL16
+San Fabián,CL SFN,Ñuble,CL16304,CL16
+San Nicolás,CL SNI,Ñuble,CL16305,CL16

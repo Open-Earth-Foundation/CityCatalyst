@@ -135,6 +135,8 @@ export const POST = apiHandler(
     const originalFileName = file.name;
     const fileName = `${randomUUID()}-${originalFileName}`;
 
+    const isPdf = validationResult.fileType === "pdf";
+
     // Create ImportedInventoryFile record
     const importedFile = await db.models.ImportedInventoryFile.create({
       id: randomUUID(),
@@ -146,7 +148,9 @@ export const POST = apiHandler(
       fileSize: validationResult.fileSize!,
       data: buffer,
       originalFileName,
-      importStatus: ImportStatusEnum.PROCESSING,
+      importStatus: isPdf
+        ? ImportStatusEnum.PENDING_AI_EXTRACTION
+        : ImportStatusEnum.PROCESSING,
       validationResults: {
         errors: validationResult.errors,
         warnings: validationResult.warnings,
@@ -154,8 +158,31 @@ export const POST = apiHandler(
       },
     });
 
+    // Path C (PDF): stop here; user will call Extract API to run AI extraction
+    if (isPdf) {
+      logger.info(
+        { importedFileId: importedFile.id },
+        "PDF uploaded, pending AI extraction",
+      );
+      return NextResponse.json({
+        data: {
+          id: importedFile.id,
+          userId: importedFile.userId,
+          cityId: importedFile.cityId,
+          inventoryId: importedFile.inventoryId,
+          fileName: importedFile.fileName,
+          fileType: importedFile.fileType,
+          fileSize: importedFile.fileSize,
+          originalFileName: importedFile.originalFileName,
+          importStatus: importedFile.importStatus,
+          created: importedFile.created,
+          lastUpdated: importedFile.lastUpdated,
+        },
+      });
+    }
+
     try {
-      // Process the file: parse and extract eCRF data
+      // Process the file: parse and extract eCRF data (xlsx/csv only)
       const parsedData = await FileParserService.parseFile(
         buffer,
         validationResult.fileType!,

@@ -4,8 +4,8 @@ import FileParserService from "./FileParserService";
 // File size limit: 20MB (in bytes)
 export const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
-// Accepted file formats for inventory import
-export const ACCEPTED_FILE_FORMATS = ["xlsx", "csv"] as const;
+// Accepted file formats for inventory import (xlsx/csv = eCRF; pdf = Path C AI extraction)
+export const ACCEPTED_FILE_FORMATS = ["xlsx", "csv", "pdf"] as const;
 
 export type AcceptedFileFormat = (typeof ACCEPTED_FILE_FORMATS)[number];
 
@@ -121,6 +121,17 @@ export default class FileValidatorService {
 
     if (!basicValidation.isValid || !basicValidation.fileType) {
       return basicValidation;
+    }
+
+    // PDF (Path C): no eCRF structure validation; accept for AI extraction only
+    if (basicValidation.fileType === "pdf") {
+      return {
+        isValid: true,
+        errors: [],
+        warnings: [],
+        fileType: "pdf",
+        fileSize: basicValidation.fileSize,
+      };
     }
 
     const errors: string[] = [...basicValidation.errors];

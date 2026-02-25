@@ -44,6 +44,8 @@
   "no-results-details": "Tente procurar por outra cidade",
   "setup-city-details": "Pesquise e selecione a cidade ou município para o qual você deseja criar seu inventário de emissões de GEE.",
   "continue": "Continuar",
+  "extraction-failed": "Extração falhou",
+  "ai-extraction-failed-default": "Extração por IA falhou",
   "setup-inventory-details-heading": "Configure os detalhes do inventário",
   "setup-inventory-details-description": "Forneça alguns detalhes básicos sobre o inventário que deseja criar. Você pode editar essas configurações posteriormente.",
   "inventory-goal": "Meta de inventário",

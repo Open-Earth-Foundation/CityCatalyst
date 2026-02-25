@@ -164,6 +164,27 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+/** PDF extraction column definitions (key = extracted field, label = display in mapping UI). Add or reorder here to support new columns. */
+const PDF_IMPORT_FIELD_DEFS: Array<{ key: string; label: string }> = [
+  { key: "year", label: "Year" },
+  { key: "gpcRefNo", label: "GPC Reference Number" },
+  { key: "sector", label: "Sector" },
+  { key: "subsector", label: "Subsector" },
+  { key: "scope", label: "Scope" },
+  { key: "category", label: "Category" },
+  { key: "totalCO2e", label: "Total CO2e" },
+  { key: "co2", label: "CO2" },
+  { key: "ch4", label: "CH4" },
+  { key: "n2o", label: "N2O" },
+  { key: "source", label: "Source" },
+  { key: "methodology", label: "Methodology" },
+  { key: "activityAmount", label: "Activity Amount" },
+  { key: "activityUnit", label: "Activity Unit" },
+  { key: "activityType", label: "Activity Type" },
+  { key: "activityDataSource", label: "Activity Data Source" },
+  { key: "activityDataQuality", label: "Activity Data Quality" },
+];
+
 export const GET = apiHandler(
   async (req: NextRequest, { session, params }) => {
     if (!session) {
@@ -291,9 +312,47 @@ export const GET = apiHandler(
       return EXCLUDED_COLUMN_NAMES.some((e) => n === e);
     };
 
-    // Step 2: Validation Results - Get detected columns with interpretations
+    // Step 2: Validation Results - Get detected columns (xlsx/csv) or extracted rows (PDF)
     let validationStepData = null;
-    if (currentStep >= 2 && importedFile.validationResults?.detectedColumns) {
+    const pdfExtractedRows = Array.isArray(importedFile.mappingConfiguration?.rows)
+      ? (importedFile.mappingConfiguration.rows as any[])
+      : [];
+
+    if (currentStep >= 2) {
+      if (
+        importedFile.fileType === "pdf" &&
+        pdfExtractedRows.length > 0
+      ) {
+        // PDF: use actual JSON keys from extraction response as Field Name; label = Interpreted As / Map To
+        const first = (pdfExtractedRows[0] as Record<string, unknown>) || {};
+        const detectedColumnsList = PDF_IMPORT_FIELD_DEFS.map(({ key, label }) => {
+          const raw = first[key];
+          let exampleValue: string | null = null;
+          if (raw != null && raw !== "") {
+            exampleValue = typeof raw === "number" ? String(raw) : String(raw);
+            if (exampleValue.length > 50) exampleValue = exampleValue.substring(0, 50);
+          }
+          const hasMultipleValues = pdfExtractedRows.some(
+            (r: any) => r[key] != null && r[key] !== "" && r[key] !== raw,
+          );
+          if (exampleValue && hasMultipleValues) {
+            exampleValue = exampleValue + " (and others)";
+          }
+          return {
+            columnName: key,
+            interpretedAs: label,
+            status: "detected" as const,
+            exampleValue: exampleValue || "-",
+          };
+        });
+        validationStepData = {
+          totalColumnsDetected: detectedColumnsList.length,
+          columns: detectedColumnsList,
+          requiredMappings,
+          errors: [],
+          warnings: [],
+        };
+      } else if (importedFile.validationResults?.detectedColumns) {
       let detectedColumnsList: Array<{
         columnName: string;
         interpretedAs: string | null;
@@ -301,9 +360,12 @@ export const GET = apiHandler(
         exampleValue: string | null;
       }> = [];
 
-      if (importedFile.data) {
+      if (
+        importedFile.data &&
+        (importedFile.fileType === "xlsx" || importedFile.fileType === "csv")
+      ) {
         try {
-          // Parse file to get actual headers and sample values
+          // Parse file to get actual headers and sample values (xlsx/csv only; PDF uses extracted rows)
           const parsedData = await FileParserService.parseFile(
             importedFile.data,
             importedFile.fileType,
@@ -355,63 +417,87 @@ export const GET = apiHandler(
         errors: importedFile.validationResults?.errors || [],
         warnings: importedFile.validationResults?.warnings || [],
       };
+      }
     }
 
-    // Step 3: Column Mapping - Get columns that need mapping
+    // Step 3: Column Mapping - Get columns (xlsx/csv) or extracted rows (PDF)
     let columnMappingStepData = null;
-    if (currentStep >= 3 && importedFile.validationResults?.detectedColumns) {
-      // For now, same as validation step, but this could include user-editable mappings
-      columnMappingStepData = validationStepData;
+    if (currentStep >= 3) {
+      if (
+        importedFile.fileType === "pdf" &&
+        pdfExtractedRows.length > 0
+      ) {
+        columnMappingStepData = validationStepData;
+      } else if (importedFile.validationResults?.detectedColumns) {
+        columnMappingStepData = validationStepData;
+      }
     }
 
     // Step 4: Review and Confirm - Generate mapping preview and summary
     let reviewStepData = null;
-    if (
-      currentStep === 4 &&
-      importedFile.importStatus === "waiting_for_approval" &&
-      importedFile.data &&
-      importedFile.validationResults?.detectedColumns
-    ) {
+
+    if (currentStep === 4 && importedFile.importStatus === "waiting_for_approval") {
       try {
-        // Parse the file and create mapping preview
-        const parsedData = await FileParserService.parseFile(
-          importedFile.data,
-          importedFile.fileType,
-        );
+        // Path C: PDF with AI-extracted rows – no file parse, use stored rows for summary
+        if (
+          importedFile.fileType === "pdf" &&
+          pdfExtractedRows.length > 0
+        ) {
+          reviewStepData = {
+            importSummary: {
+              sourceFile: importedFile.originalFileName,
+              formatDetected: "PDF",
+              rowsFound: pdfExtractedRows.length,
+              fieldsMapped: 0,
+            },
+            fieldMappings: [],
+            mappingPreview: null,
+            extractedRows: pdfExtractedRows,
+          };
+        } else if (
+          importedFile.data &&
+          importedFile.validationResults?.detectedColumns
+        ) {
+          // xlsx/csv: Parse the file and create mapping preview
+          const parsedData = await FileParserService.parseFile(
+            importedFile.data,
+            importedFile.fileType,
+          );
 
-        const mappingPreview = await ImportMappingService.createMappingPreview(
-          inventory,
-          parsedData,
-          importedFile.validationResults.detectedColumns,
-        );
+          const mappingPreview =
+            await ImportMappingService.createMappingPreview(
+              inventory,
+              parsedData,
+              importedFile.validationResults.detectedColumns,
+            );
 
-        // Build field mappings summary
-        const fieldMappings: Array<{
-          sourceColumn: string;
-          mappedField: string;
-        }> = [];
+          const fieldMappings: Array<{
+            sourceColumn: string;
+            mappedField: string;
+          }> = [];
 
-        if (validationStepData?.columns) {
-          for (const col of validationStepData.columns) {
-            if (col.interpretedAs) {
-              fieldMappings.push({
-                sourceColumn: col.columnName,
-                mappedField: col.interpretedAs,
-              });
+          if (validationStepData?.columns) {
+            for (const col of validationStepData.columns) {
+              if (col.interpretedAs) {
+                fieldMappings.push({
+                  sourceColumn: col.columnName,
+                  mappedField: col.interpretedAs,
+                });
+              }
             }
           }
-        }
 
-        reviewStepData = {
-          importSummary: {
-            sourceFile: importedFile.originalFileName,
-            formatDetected: importedFile.fileType.toUpperCase(),
-            rowsFound: importedFile.rowCount || 0,
-            fieldsMapped: fieldMappings.length,
-          },
-          fieldMappings,
-          mappingPreview,
-        };
+          reviewStepData = {
+            importSummary: {
+              sourceFile: importedFile.originalFileName,
+              formatDetected: importedFile.fileType.toUpperCase(),
+              rowsFound: importedFile.rowCount || 0,
+              fieldsMapped: fieldMappings.length,
+            },
+            fieldMappings,
+            mappingPreview,
+          };
+        }
       } catch (error) {
         console.error("Failed to generate review step data:", error);
       }

@@ -1827,6 +1827,23 @@ export const api = createApi({
         transformResponse: (response: { data: ImportStatusResponse }) =>
           response.data,
       }),
+      extractImport: builder.mutation<
+        { id: string; importStatus: string; rowCount: number },
+        {
+          cityId: string;
+          inventoryId: string;
+          importedFileId: string;
+        }
+      >({
+        query: ({ cityId, inventoryId, importedFileId }) => ({
+          url: `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}/extract`,
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data: { id: string; importStatus: string; rowCount: number };
+        }) => response.data,
+        invalidatesTags: ["Inventory"],
+      }),
       approveImport: builder.mutation<
         ImportedFileResponse,
         {
@@ -1846,7 +1863,13 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: ImportedFileResponse }) =>
           response.data,
-        invalidatesTags: ["Inventory"],
+        invalidatesTags: [
+          "Inventory",
+          "InventoryProgress",
+          "InventoryValue",
+          "ReportResults",
+          "YearlyReportResults",
+        ],
       }),
 
       // Version Control Endpoints

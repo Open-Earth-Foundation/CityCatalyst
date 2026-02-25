@@ -13,3 +13,6 @@ __pycache__/
 # Testing
 .pytest_cache/
 
+# Runtime artifacts
+logs/
+

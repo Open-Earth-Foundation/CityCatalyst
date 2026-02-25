@@ -40,10 +40,10 @@ hiap-meed/
       timing.py                    # NEW
     services/
       __init__.py
-      repositories.py              # NEW (protocols only; DB integration later)
+      data_clients.py              # NEW (protocols only; DB integration later)
     modules/
       __init__.py                  # NEW
-      meed_prioritizer/
+      prioritizer/
         __init__.py
         api.py                     # NEW: APIRouter for /v1/prioritize
         config.py                  # NEW: weights + mappings + env flags
@@ -83,7 +83,7 @@ hiap-meed/
 Rules (from `AGENTS.md`):
 
 - All code folders have `__init__.py`.
-- Absolute imports only: `from app.modules.meed_prioritizer.models import ...`.
+- Absolute imports only: `from app.modules.prioritizer.models import ...`.
 - No `print` for logging; use `logging`.
 - Use `pathlib.Path`.
 
@@ -107,7 +107,7 @@ This repo currently runs the app from `hiap-meed/app` and tests use a `sys.path`
 
 ## 3) Domain + API Models (Pydantic, stable contracts)
 
-Implement in `app/modules/meed_prioritizer/models.py`.
+Implement in `app/modules/prioritizer/models.py`.
 
 ### 3.1 Domain inputs (architecture-aligned, seeded from `hiap-meed/data/*`)
 
@@ -134,7 +134,7 @@ Design principle (for now):
 
 #### 3.2.1 City data model (`CityData`)
 
-Pydantic contract (to implement in `app/modules/meed_prioritizer/models.py`):
+Pydantic contract (to implement in `app/modules/prioritizer/models.py`):
 
 ```python
 from __future__ import annotations
@@ -180,7 +180,7 @@ Expected `city_context[*]` keys (from `data/1_city/city_context.csv`):
 
 #### 3.2.2 Action model (`Action`)
 
-Pydantic contract (to implement in `app/modules/meed_prioritizer/models.py`):
+Pydantic contract (to implement in `app/modules/prioritizer/models.py`):
 
 ```python
 from __future__ import annotations
@@ -305,7 +305,7 @@ Validation rules:
 
 ## 4) Configuration (weights, mappings, env)
 
-Implement in `app/modules/meed_prioritizer/config.py`:
+Implement in `app/modules/prioritizer/config.py`:
 
 - Default weights:
   - impact: 0.55
@@ -364,7 +364,7 @@ Repo hygiene:
 
 ## 6) Block Implementations (stubs now, stable interfaces)
 
-Each block is a module in `app/modules/meed_prioritizer/blocks/` with a typed `run(...)` function.
+Each block is a module in `app/modules/prioritizer/blocks/` with a typed `run(...)` function.
 
 ### 6.1 Hard Filter (`hard_filter.py`)
 
@@ -458,7 +458,7 @@ Behavior:
 
 ## 7) Orchestrator Pipeline
 
-Implement in `app/modules/meed_prioritizer/orchestrator.py`:
+Implement in `app/modules/prioritizer/orchestrator.py`:
 
 `run_prioritization(request: PrioritizationRequest, request_id: UUID) -> PrioritizationResponse`
 
@@ -481,7 +481,7 @@ Each step:
 
 ## 8) API Endpoint
 
-Implement router in `app/modules/meed_prioritizer/api.py`:
+Implement router in `app/modules/prioritizer/api.py`:
 
 - `POST /v1/prioritize`
   - request: `PrioritizationRequest`
@@ -502,22 +502,23 @@ Error behavior:
 
 ---
 
-## 9) External Data Client (assumed; API-based, no CSV imports)
+## 9) External Data Clients (assumed; API-based, no CSV imports)
 
 We will **not** import `hiap-meed/data/*.csv` in the service. Those files are only to inform model fields during early development.
 
-With the current assumption, all inputs come from a single upstream Data API. Define a Protocol in `app/services/repositories.py` so the orchestrator can swap implementations (HTTP client, cached client, mock client) without changing block interfaces.
+With the current assumption, inputs come from two upstream APIs. Define two Protocols in `app/services/data_clients.py` so the orchestrator can swap implementations (HTTP client, cached client, mock client) without changing block interfaces.
 
-Recommended Protocol:
+Recommended Protocols:
 
-- `DataApiClient`
+- `CityDataApiClient`
   - `get_city(locode: str) -> CityData`
+- `ActionDataApiClient`
   - `list_actions() -> list[Action]`
 
 Suggested upstream endpoints (informational, not binding):
 
-- `GET /v1/cities/{locode}` -> `CityData`
-- `GET /v1/actions` -> `list[Action]`
+- City API: `GET /v1/cities/{locode}` -> `CityData`
+- Action API: `GET /v1/actions` -> `list[Action]`
 
 You can also check hiap\app\services for example APIs (the provider will be the same, but the endpoints will be different). Orrientate on this and maybe improve the API endpoints and the protocol.
 
@@ -529,7 +530,7 @@ Add `tests/integration/test_prioritize_smoke.py`:
 
 - request with:
   - `locode`
-  - 2 actions returned by the `DataApiClient` mock (1 excluded via `excluded_action_ids`)
+  - 2 actions returned by the `ActionDataApiClient` mock (1 excluded via `excluded_action_ids`)
 - assert excluded is discarded and remaining is ranked (present in `ranked_action_ids`)
 - assert metadata includes timings and discarded counts
 
@@ -550,7 +551,7 @@ Also update `tests/conftest.py` to avoid `sys.path` hacks once module-run layout
 
 ## 12) Implementation Order Checklist
 
-1. Create module skeleton (`app/modules/meed_prioritizer/*`)
+1. Create module skeleton (`app/modules/prioritizer/*`)
 2. Add Pydantic models
 3. Add config + weight validation + impact mapping
 4. Add timing + artifacts utilities

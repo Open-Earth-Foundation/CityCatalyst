@@ -1291,5 +1291,6 @@
   "on-road-transportation-fuel-type": "Kraftstoffart",
   "water-transportation-outside-fuel-type": "Kraftstoffart",
   "not-occurring": "Nicht auftretend",
-  "not-estimated-progress": "Nicht Geschätzt"
+  "not-estimated-progress": "Nicht Geschätzt",
+  "uncategorized": "Unkategorisiert"
 }

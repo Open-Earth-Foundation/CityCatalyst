@@ -34,7 +34,9 @@
  *                 format: uuid
  *               mappingOverrides:
  *                 type: object
- *                 description: Optional mapping overrides for specific rows
+ *                 description: |
+ *                   Optional overrides. For xlsx/csv, maps column header to internal key (e.g. {"Sector Name": "sector"}).
+ *                   For PDF imports, per-row field overrides keyed by row index (e.g. {"0": {"sector": "Stationary Energy", "subsector": "Residential Buildings"}}) to correct extracted values.
  *     responses:
  *       200:
  *         description: Import approved successfully.
@@ -68,6 +70,33 @@ const approveImportSchema = z.object({
   importedFileId: z.string().uuid(),
   mappingOverrides: z.record(z.any()).optional(),
 });
+
+/**
+ * Apply user overrides to a PDF-extracted row. Only allowed keys are applied;
+ * used for manual correction of sector/subsector/category etc. per row.
+ */
+function applyPdfFieldOverrides(
+  base: ExtractedRow,
+  overrides: Record<string, unknown>,
+  allowedKeys: Set<string>,
+): ExtractedRow {
+  const out = { ...base };
+  for (const [key, value] of Object.entries(overrides)) {
+    if (!allowedKeys.has(key)) continue;
+    if (value === null || value === undefined) {
+      (out as Record<string, unknown>)[key] = null;
+      continue;
+    }
+    if (typeof value === "number" && Number.isFinite(value)) {
+      (out as Record<string, unknown>)[key] = value;
+      continue;
+    }
+    if (typeof value === "string") {
+      (out as Record<string, unknown>)[key] = value;
+    }
+  }
+  return out;
+}
 
 export const POST = apiHandler(
   async (req: NextRequest, { session, params }) => {
@@ -135,7 +164,8 @@ export const POST = apiHandler(
       const validationResults = (importedFile.validationResults as any) || {};
       let importResult: ECRFImportResult;
 
-      // Path C: PDF with AI-extracted rows – skip file parse, convert rows to ECRF format
+      // Path C: PDF with AI-extracted rows – skip file parse, convert rows to ECRF format.
+      // mappingOverrides for PDF: per-row field overrides, keyed by row index (e.g. { "0": { sector: "X", subsector: "Y" } }).
       const extractedRows = mappingConfiguration.rows as
         | ExtractedRow[]
         | undefined;
@@ -158,8 +188,21 @@ export const POST = apiHandler(
           if (s.scopeName) scopeByName.set(s.scopeName, s.scopeId);
         }
 
+        const allowedPdfOverrideKeys = new Set([
+          "year", "sector", "subsector", "scope", "category", "totalCO2e",
+          "co2", "ch4", "n2o", "gpcRefNo", "source", "methodology",
+          "activityAmount", "activityUnit", "activityType", "activityDataSource", "activityDataQuality",
+        ]);
+
         for (let i = 0; i < extractedRows.length; i++) {
-          const row = extractedRows[i];
+          const baseRow = extractedRows[i];
+          const rowOverrides = mappingOverrides && typeof mappingOverrides[String(i)] === "object" && mappingOverrides[String(i)] !== null
+            ? (mappingOverrides[String(i)] as Record<string, unknown>)
+            : null;
+          const row: ExtractedRow = rowOverrides
+            ? applyPdfFieldOverrides(baseRow, rowOverrides, allowedPdfOverrideKeys)
+            : baseRow;
+
           const sector = row.sector?.trim() ?? "";
           const subsector = row.subsector?.trim() ?? "";
           let gpcRefNo =

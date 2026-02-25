@@ -22,7 +22,10 @@ const nameMappings = gpcNameMappings as NameMappings;
 /** Max chars of extraction LLM response to include in logs (avoids huge payloads). */
 const EXTRACTION_LOG_LIMIT = 4000;
 
-/** Turn a slug (e.g. "on-road-transportation") into display form for the prompt ("On-road transportation"). */
+/**
+ * Turn a slug (e.g. "on-road-transportation") into display form for the prompt ("On Road Transportation").
+ * All hyphens are replaced with spaces and each word is capitalized, so subsector names with hyphens (e.g. "waste-water-treatment") work correctly.
+ */
 function slugToDisplay(slug: string): string {
   return slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }

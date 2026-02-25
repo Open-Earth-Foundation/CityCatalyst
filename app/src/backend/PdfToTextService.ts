@@ -2,8 +2,6 @@
  * PDF to text for Path C (AI extraction). Extracts raw text from PDF buffer for LLM input.
  * Uses pdf-parse; enforces max pages and size to avoid timeouts.
  */
-/// <reference path="./pdf-parse.d.ts" />
-
 import pdfParse from "pdf-parse";
 import { MAX_FILE_SIZE } from "./FileValidatorService";
 

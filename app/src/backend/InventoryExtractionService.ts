@@ -205,7 +205,7 @@ export async function extractInventoryRowsFromDocument(
         "\n\n[Document truncated for length.]"
       : documentContent;
 
-  const targetYear = 2015;
+  const targetYear = 2021;
   const yearInstruction =
     targetYear != null
       ? `Extract only emissions data for the year ${targetYear}. Set year to ${targetYear} for every row; do not include other years.\n\n`
@@ -259,6 +259,56 @@ function logExtractionFailure(raw: string, msg: string): void {
   logger.error({ rawExtractionResponse: truncated }, msg);
 }
 
+/**
+ * Find the index past the matching closing bracket, respecting brackets inside
+ * double-quoted string literals and backslash escapes. Prevents values like
+ * "Buildings [Commercial]" from breaking depth tracking.
+ */
+function findMatchingBracketEnd(
+  str: string,
+  startIndex: number,
+  open: "[" | "{",
+): number {
+  const close = open === "[" ? "]" : "}";
+  let depth = 0;
+  let inString = false;
+  let i = startIndex;
+  while (i < str.length) {
+    const c = str[i];
+    if (inString) {
+      if (c === "\\") {
+        i += 2;
+        continue;
+      }
+      if (c === '"') {
+        inString = false;
+        i++;
+        continue;
+      }
+      i++;
+      continue;
+    }
+    if (c === '"') {
+      inString = true;
+      i++;
+      continue;
+    }
+    if (c === open) {
+      depth++;
+      i++;
+      continue;
+    }
+    if (c === close) {
+      depth--;
+      if (depth === 0) return i + 1;
+      i++;
+      continue;
+    }
+    i++;
+  }
+  return -1;
+}
+
 function parseExtractionResponse(content: string): Record<string, unknown>[] {
   const trimmed = content.trim();
 
@@ -274,22 +324,10 @@ function parseExtractionResponse(content: string): Record<string, unknown>[] {
     jsonStr = jsonStr.slice(firstBracket);
   }
 
-  // If there's trailing text after the JSON, extract the outermost bracket pair
-  const open = jsonStr[0];
-  const close = open === "[" ? "]" : "}";
+  // Extract the outermost bracket pair; ignore brackets inside string literals
+  const open = jsonStr[0] as "[" | "{" | undefined;
   if (open === "[" || open === "{") {
-    let depth = 0;
-    let end = -1;
-    for (let i = 0; i < jsonStr.length; i++) {
-      if (jsonStr[i] === open) depth++;
-      else if (jsonStr[i] === close) {
-        depth--;
-        if (depth === 0) {
-          end = i + 1;
-          break;
-        }
-      }
-    }
+    const end = findMatchingBracketEnd(jsonStr, 0, open);
     if (end > 0) jsonStr = jsonStr.slice(0, end);
   }
 
@@ -297,22 +335,15 @@ function parseExtractionResponse(content: string): Record<string, unknown>[] {
   try {
     parsed = JSON.parse(jsonStr);
   } catch {
-    // Last resort: find a top-level JSON array in the string (e.g. "Text\n[...]")
+    // Last resort: find a top-level JSON array, respecting string literals
     const arrayStart = jsonStr.indexOf("[");
     if (arrayStart >= 0) {
-      let depth = 0;
-      for (let i = arrayStart; i < jsonStr.length; i++) {
-        if (jsonStr[i] === "[") depth++;
-        else if (jsonStr[i] === "]") {
-          depth--;
-          if (depth === 0) {
-            try {
-              parsed = JSON.parse(jsonStr.slice(arrayStart, i + 1));
-              break;
-            } catch {
-              /* ignore */
-            }
-          }
+      const end = findMatchingBracketEnd(jsonStr, arrayStart, "[");
+      if (end > 0) {
+        try {
+          parsed = JSON.parse(jsonStr.slice(arrayStart, end));
+        } catch {
+          /* ignore */
         }
       }
     }

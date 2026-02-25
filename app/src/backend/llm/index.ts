@@ -5,9 +5,9 @@
  * Scope: New code only;
  *
  * Config (env):
- *   LLM_PROVIDER   - e.g. "openai"
- *   LLM_MODEL      - e.g. "gpt-5-mini"
- *   LLM_API_KEY    - API key for the provider
+ *   OPENAI_API_KEY - API key (required)
+ *   LLM_PROVIDER   - e.g. "openai" (default)
+ *   LLM_MODEL      - e.g. "gpt-5.2" (default)
  *   LLM_BASE_URL   - (optional) override API base URL
  *   LLM_TIMEOUT_MS - (optional) request timeout, default 60000
  *   LLM_MAX_RETRIES - (optional) retries on timeout/rate-limit/provider error, default 1

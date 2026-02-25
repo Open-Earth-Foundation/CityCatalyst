@@ -1,6 +1,7 @@
 /**
  * Load LLM config from environment. Used by createLLMClient.
- * Env vars: LLM_PROVIDER, LLM_MODEL, LLM_API_KEY, LLM_BASE_URL (optional), LLM_TIMEOUT_MS, LLM_MAX_RETRIES.
+ * Env vars: OPENAI_API_KEY (required), LLM_PROVIDER, LLM_MODEL, LLM_BASE_URL (optional), LLM_TIMEOUT_MS, LLM_MAX_RETRIES.
+ * Defaults: provider "openai", model "gpt-5.2". API key is read from OPENAI_API_KEY.
  */
 
 import { LLMError, LLMErrorCode } from "./types";
@@ -8,15 +9,18 @@ import type { LLMConfig } from "./types";
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 const DEFAULT_MAX_RETRIES = 1;
+const DEFAULT_PROVIDER = "openai";
+const DEFAULT_MODEL = "gpt-5.2";
 
 export function loadLLMConfigFromEnv(): LLMConfig {
-  const provider = process.env.LLM_PROVIDER?.trim() ?? "";
-  const model = process.env.LLM_MODEL?.trim() ?? "";
-  const apiKey = process.env.LLM_API_KEY?.trim() ?? "";
+  const provider =
+    (process.env.LLM_PROVIDER?.trim() ?? "").toLowerCase() || DEFAULT_PROVIDER;
+  const model = process.env.LLM_MODEL?.trim() || DEFAULT_MODEL;
+  const apiKey = process.env.OPENAI_API_KEY?.trim() || "";
 
-  if (!provider || !model || !apiKey) {
+  if (!apiKey) {
     throw new LLMError(
-      "Missing LLM config: set LLM_PROVIDER, LLM_MODEL, and LLM_API_KEY",
+      "Missing LLM API key: set OPENAI_API_KEY",
       LLMErrorCode.CONFIG,
     );
   }
@@ -29,8 +33,13 @@ export function loadLLMConfigFromEnv(): LLMConfig {
     model,
     apiKey,
     baseURL: process.env.LLM_BASE_URL?.trim() || undefined,
-    timeoutMs: Number.isFinite(timeoutMs) && timeoutMs > 0 ? timeoutMs : DEFAULT_TIMEOUT_MS,
+    timeoutMs:
+      Number.isFinite(timeoutMs) && timeoutMs > 0
+        ? timeoutMs
+        : DEFAULT_TIMEOUT_MS,
     maxRetries:
-      Number.isFinite(maxRetries) && maxRetries >= 0 ? maxRetries : DEFAULT_MAX_RETRIES,
+      Number.isFinite(maxRetries) && maxRetries >= 0
+        ? maxRetries
+        : DEFAULT_MAX_RETRIES,
   };
 }

@@ -54,7 +54,7 @@ export interface CreateLLMClientOptions {
 }
 
 /**
- * Create an LLM client. If config is omitted, loads from env (LLM_PROVIDER, LLM_MODEL, LLM_API_KEY, etc.).
+ * Create an LLM client. If config is omitted, loads from env (OPENAI_API_KEY, LLM_PROVIDER, LLM_MODEL, etc.).
  */
 
 export function createLLMClient(

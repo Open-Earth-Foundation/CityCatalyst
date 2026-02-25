@@ -54,9 +54,10 @@ export async function openaiComplete(
   });
 
   const model = options.model ?? config.model;
-  // Some models (e.g. gpt-5-mini) only support default temperature (1); omit when 0.1 to avoid 400
+  // GPT-5 models only support default temperature (1); omit temperature for these models
+  const isGPT5Model = model.toLowerCase().startsWith("gpt-5") || model.toLowerCase().startsWith("o1") || model.toLowerCase().startsWith("o3");
   const sendTemperature =
-    options.temperature !== undefined && options.temperature !== 0.1;
+    options.temperature !== undefined && !isGPT5Model;
 
   const body: OpenAI.Chat.ChatCompletionCreateParams = {
     model,

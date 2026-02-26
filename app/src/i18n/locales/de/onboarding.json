@@ -131,5 +131,15 @@
   "upload-started": "Upload gestartet",
   "upload-started-description": "Hochladen von {{fileName}}...",
   "loading-validation-results": "Lade Validierungsergebnisse...",
-  "no-field-mappings": "Keine Feldzuordnungen verfügbar"
+  "no-field-mappings": "Keine Feldzuordnungen verfügbar",
+  "extract-with-ai": "Extrahieren mit KI",
+  "pdf-ready-for-extraction": "PDF bereit für Extraktion",
+  "validation-results-description-pdf": "{{count}} Reihen wurden aus der PDF extrahiert. Überprüfen Sie die untenstehenden Daten.",
+  "fields-extracted-from-pdf": "{{count}} Reihen aus PDF extrahiert",
+  "year": "Jahr",
+  "sector": "Sektor",
+  "subsector": "Teilsektor",
+  "category": "Kategorie",
+  "total-co2e": "Gesamte CO2e",
+  "map-rows-description-pdf": "Extrahierte Zeilen sind bereits auf Bestandsfelder abgebildet. Überprüfen Sie die untenstehenden Daten und fahren Sie mit dem letzten Schritt fort."
 }

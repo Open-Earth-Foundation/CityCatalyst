@@ -221,7 +221,8 @@ export default function ImportPage(props: {
           importedFileId,
         }).unwrap();
         const progress = (res as { mappingConfiguration?: { extractionProgress?: { current: number; total?: number } } })?.mappingConfiguration?.extractionProgress;
-        if (progress != null && progress.total != null && progress.total > 1) setExtractionProgress(progress);
+        const total = progress?.total;
+        if (progress != null && total != null && total > 1) setExtractionProgress({ current: progress.current, total });
       } catch {
         // ignore poll errors
       }
@@ -385,22 +386,28 @@ export default function ImportPage(props: {
                             overflow="hidden"
                             position="relative"
                           >
-                            <Box
-                              as={motion.div}
-                              position="absolute"
-                              left={0}
-                              top={0}
-                              h="full"
-                              w="40%"
-                              bg="interactive.primary"
-                              borderRadius="10px"
+                            <motion.div
+                              style={{
+                                position: "absolute",
+                                left: 0,
+                                top: 0,
+                                height: "100%",
+                                width: "40%",
+                              }}
                               animate={{ x: ["0%", "250%"] }}
                               transition={{
                                 duration: 1.5,
                                 repeat: Infinity,
                                 ease: "easeInOut",
                               }}
-                            />
+                            >
+                              <Box
+                                h="full"
+                                w="full"
+                                bg="interactive.primary"
+                                borderRadius="10px"
+                              />
+                            </motion.div>
                           </Box>
                         )}
                       </Box>

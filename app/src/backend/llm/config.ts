@@ -10,7 +10,7 @@ import type { LLMConfig } from "./types";
 
 /** Default request timeout; increase for long PDF extraction (e.g. LLM_TIMEOUT_MS=120000). */
 const DEFAULT_TIMEOUT_MS = 90_000;
-const DEFAULT_MAX_RETRIES = 1;
+const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_PROVIDER = "openai";
 const DEFAULT_MODEL = "gpt-4o-mini";
 

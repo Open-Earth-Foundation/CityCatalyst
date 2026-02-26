@@ -155,7 +155,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
     if (isNaN(total)) {
       total = 0;
     } else {
-      total = Math.ceil(total); // Round to two decimal places
+      total = Math.min(Math.round(total), 100);
     }
 
     if (total === 100) {

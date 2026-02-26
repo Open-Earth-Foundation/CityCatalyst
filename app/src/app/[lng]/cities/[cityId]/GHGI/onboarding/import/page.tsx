@@ -350,29 +350,59 @@ export default function ImportPage(props: {
                       onRemoveFile={handleRemoveFile}
                       isUploading={isUploadingFile}
                     />
-                    {pdfPendingExtraction && isExtracting && extractionProgress && extractionProgress.total > 1 && (
+                    {pdfPendingExtraction && isExtracting && (
                       <Box w="full" mt={2}>
                         <Text fontSize="sm" color="content.tertiary" mb={2}>
-                          {t("extracting-chunk-progress", {
-                            current: extractionProgress.current,
-                            total: extractionProgress.total,
-                          })}
+                          {extractionProgress && extractionProgress.total > 1
+                            ? t("extracting-chunk-progress", {
+                                current: extractionProgress.current,
+                                total: extractionProgress.total,
+                              })
+                            : t("breaking-into-chunks")}
                         </Text>
-                        <Box
-                          w="full"
-                          h="8px"
-                          bg="background.subtle"
-                          borderRadius="full"
-                          overflow="hidden"
-                        >
+                        {extractionProgress && extractionProgress.total > 1 ? (
                           <Box
-                            h="full"
-                            bg="interactive.primary"
-                            borderRadius="full"
-                            transition="width 0.3s ease"
-                            w={`${(extractionProgress.current / extractionProgress.total) * 100}%`}
-                          />
-                        </Box>
+                            w="full"
+                            h="8px"
+                            bg="background.subtle"
+                            borderRadius="10px"
+                            overflow="hidden"
+                          >
+                            <Box
+                              h="full"
+                              bg="interactive.primary"
+                              borderRadius="10px"
+                              transition="width 0.3s ease"
+                              w={`${(extractionProgress.current / extractionProgress.total) * 100}%`}
+                            />
+                          </Box>
+                        ) : (
+                          <Box
+                            w="full"
+                            h="8px"
+                            bg="background.subtle"
+                            borderRadius="10px"
+                            overflow="hidden"
+                            position="relative"
+                          >
+                            <Box
+                              as={motion.div}
+                              position="absolute"
+                              left={0}
+                              top={0}
+                              h="full"
+                              w="40%"
+                              bg="interactive.primary"
+                              borderRadius="10px"
+                              animate={{ x: ["0%", "250%"] }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                              }}
+                            />
+                          </Box>
+                        )}
                       </Box>
                     )}
                   </Box>

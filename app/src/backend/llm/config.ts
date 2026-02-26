@@ -1,7 +1,7 @@
 /**
  * Load LLM config from environment. Used by createLLMClient.
  * Env vars: OPENAI_API_KEY (required), LLM_PROVIDER, LLM_MODEL, LLM_BASE_URL (optional), LLM_TIMEOUT_MS, LLM_MAX_RETRIES.
- * Defaults: provider "openai", model "gpt-5.2". API key is read from OPENAI_API_KEY.
+ * Defaults: provider "openai", model "gpt-4o-mini". API key is read from OPENAI_API_KEY.
  * For long PDF extraction, set LLM_TIMEOUT_MS=120000 (or higher) if chunked extraction still times out.
  */
 
@@ -12,7 +12,7 @@ import type { LLMConfig } from "./types";
 const DEFAULT_TIMEOUT_MS = 90_000;
 const DEFAULT_MAX_RETRIES = 1;
 const DEFAULT_PROVIDER = "openai";
-const DEFAULT_MODEL = "gpt-5.2";
+const DEFAULT_MODEL = "gpt-4o-mini";
 
 export function loadLLMConfigFromEnv(): LLMConfig {
   const provider =

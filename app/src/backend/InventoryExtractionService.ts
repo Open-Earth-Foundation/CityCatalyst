@@ -615,7 +615,7 @@ function parseExtractionResponse(content: string): Record<string, unknown>[] {
             );
           }
         } else {
-          // Model returned a single row object instead of an array (e.g. gpt-5.2)
+          // Model returned a single row object instead of an array (e.g. gpt-4o-mini)
           const rowLikeKeys = [
             "sector",
             "subsector",

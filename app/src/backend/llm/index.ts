@@ -7,7 +7,7 @@
  * Config (env):
  *   OPENAI_API_KEY - API key (required)
  *   LLM_PROVIDER   - e.g. "openai" (default)
- *   LLM_MODEL      - e.g. "gpt-5.2" (default)
+ *   LLM_MODEL      - e.g. "gpt-4o-mini" (default)
  *   LLM_BASE_URL   - (optional) override API base URL
  *   LLM_TIMEOUT_MS - (optional) request timeout, default 60000
  *   LLM_MAX_RETRIES - (optional) retries on timeout/rate-limit/provider error, default 1

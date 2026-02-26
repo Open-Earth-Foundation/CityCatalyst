@@ -1,0 +1,554 @@
+{
+  "meta": {
+    "generated_at_utc": "2026-02-26T11:38:45.183100+00:00",
+    "backend_consumer": "hiap-meed",
+    "upstream_provider": "global-api",
+    "api_context": {
+      "endpoint": "GET /v1/cities/{locode}",
+      "locodes": [
+        "CL IQQ",
+        "CL AHP",
+        "CL CMA",
+        "CL CNE",
+        "CL HUA",
+        "CL PIC",
+        "CL ANF",
+        "CL MJS",
+        "CL SIG",
+        "CL TTC",
+        "CL ARI"
+      ]
+    },
+    "total_records": 11
+  },
+  "cities": [
+    {
+      "comuna_name": "Iquique",
+      "locode": "CL IQQ",
+      "countryCode": "CL",
+      "region_name": "Tarapacá",
+      "comuna_code": "CL01101",
+      "region_code": "CL01",
+      "unemployment_rate": {
+        "attribute_value": 9.44,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "renter_share": {
+        "attribute_value": 43.48,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "transport_logistics_employment": {
+        "attribute_value": 7.35,
+        "attribute_units": "percent",
+        "attribute_category": "low"
+      },
+      "electricity_access": {
+        "attribute_value": 100.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      },
+      "industry_construction_employment": {
+        "attribute_value": 22.79,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "median_household_income": {
+        "attribute_value": 1200000.0,
+        "attribute_units": "CLP",
+        "attribute_category": "high"
+      },
+      "public_transport_share": {
+        "attribute_value": 31.84,
+        "attribute_units": "percent",
+        "attribute_category": "medium"
+      },
+      "poverty_rate": {
+        "attribute_value": 26.77,
+        "attribute_units": "percent",
+        "attribute_category": "very high"
+      },
+      "home_ownership": {
+        "attribute_value": 40.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      }
+    },
+    {
+      "comuna_name": "Alto Hospicio",
+      "locode": "CL AHP",
+      "countryCode": "CL",
+      "region_name": "Tarapacá",
+      "comuna_code": "CL01107",
+      "region_code": "CL01",
+      "electricity_access": {
+        "attribute_value": 100.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      },
+      "median_household_income": {
+        "attribute_value": 1200000.0,
+        "attribute_units": "CLP",
+        "attribute_category": "high"
+      },
+      "renter_share": {
+        "attribute_value": 18.03,
+        "attribute_units": "percent",
+        "attribute_category": "low"
+      },
+      "industry_construction_employment": {
+        "attribute_value": 30.67,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "home_ownership": {
+        "attribute_value": 62.3,
+        "attribute_units": "percent",
+        "attribute_category": "low"
+      },
+      "unemployment_rate": {
+        "attribute_value": 9.44,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "poverty_rate": {
+        "attribute_value": 26.77,
+        "attribute_units": "percent",
+        "attribute_category": "very high"
+      },
+      "public_transport_share": {
+        "attribute_value": 31.84,
+        "attribute_units": "percent",
+        "attribute_category": "medium"
+      },
+      "transport_logistics_employment": {
+        "attribute_value": 6.67,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      }
+    },
+    {
+      "comuna_name": "Camiña",
+      "locode": "CL CMA",
+      "countryCode": "CL",
+      "region_name": "Tarapacá",
+      "comuna_code": "CL01402",
+      "region_code": "CL01",
+      "industry_construction_employment": {
+        "attribute_value": 0.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      },
+      "public_transport_share": {
+        "attribute_value": 31.84,
+        "attribute_units": "percent",
+        "attribute_category": "medium"
+      },
+      "poverty_rate": {
+        "attribute_value": 26.77,
+        "attribute_units": "percent",
+        "attribute_category": "very high"
+      },
+      "home_ownership": {
+        "attribute_value": 100.0,
+        "attribute_units": "percent",
+        "attribute_category": "very high"
+      },
+      "transport_logistics_employment": {
+        "attribute_value": 0.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      },
+      "median_household_income": {
+        "attribute_value": 1200000.0,
+        "attribute_units": "CLP",
+        "attribute_category": "high"
+      },
+      "unemployment_rate": {
+        "attribute_value": 9.44,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "renter_share": {
+        "attribute_value": 0.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      }
+    },
+    {
+      "comuna_name": "Colchane",
+      "locode": "CL CNE",
+      "countryCode": "CL",
+      "region_name": "Tarapacá",
+      "comuna_code": "CL01403",
+      "region_code": "CL01",
+      "public_transport_share": {
+        "attribute_value": 31.84,
+        "attribute_units": "percent",
+        "attribute_category": "medium"
+      },
+      "median_household_income": {
+        "attribute_value": 1200000.0,
+        "attribute_units": "CLP",
+        "attribute_category": "high"
+      },
+      "poverty_rate": {
+        "attribute_value": 26.77,
+        "attribute_units": "percent",
+        "attribute_category": "very high"
+      },
+      "unemployment_rate": {
+        "attribute_value": 9.44,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      }
+    },
+    {
+      "comuna_name": "Huara",
+      "locode": "CL HUA",
+      "countryCode": "CL",
+      "region_name": "Tarapacá",
+      "comuna_code": "CL01404",
+      "region_code": "CL01",
+      "median_household_income": {
+        "attribute_value": 1200000.0,
+        "attribute_units": "CLP",
+        "attribute_category": "high"
+      },
+      "public_transport_share": {
+        "attribute_value": 31.84,
+        "attribute_units": "percent",
+        "attribute_category": "medium"
+      },
+      "electricity_access": {
+        "attribute_value": 100.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      },
+      "unemployment_rate": {
+        "attribute_value": 9.44,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "industry_construction_employment": {
+        "attribute_value": 50.0,
+        "attribute_units": "percent",
+        "attribute_category": "very high"
+      },
+      "home_ownership": {
+        "attribute_value": 66.67,
+        "attribute_units": "percent",
+        "attribute_category": "medium"
+      },
+      "transport_logistics_employment": {
+        "attribute_value": 0.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      },
+      "poverty_rate": {
+        "attribute_value": 26.77,
+        "attribute_units": "percent",
+        "attribute_category": "very high"
+      },
+      "renter_share": {
+        "attribute_value": 33.33,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      }
+    },
+    {
+      "comuna_name": "Pica",
+      "locode": "CL PIC",
+      "countryCode": "CL",
+      "region_name": "Tarapacá",
+      "comuna_code": "CL01405",
+      "region_code": "CL01",
+      "transport_logistics_employment": {
+        "attribute_value": 0.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      },
+      "poverty_rate": {
+        "attribute_value": 26.77,
+        "attribute_units": "percent",
+        "attribute_category": "very high"
+      },
+      "unemployment_rate": {
+        "attribute_value": 9.44,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "home_ownership": {
+        "attribute_value": 0.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      },
+      "median_household_income": {
+        "attribute_value": 1200000.0,
+        "attribute_units": "CLP",
+        "attribute_category": "high"
+      },
+      "renter_share": {
+        "attribute_value": 100.0,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "electricity_access": {
+        "attribute_value": 100.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      },
+      "public_transport_share": {
+        "attribute_value": 31.84,
+        "attribute_units": "percent",
+        "attribute_category": "medium"
+      },
+      "industry_construction_employment": {
+        "attribute_value": 0.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      }
+    },
+    {
+      "comuna_name": "Antofagasta",
+      "locode": "CL ANF",
+      "countryCode": "CL",
+      "region_name": "Antofagasta",
+      "comuna_code": "CL02101",
+      "region_code": "CL02",
+      "home_ownership": {
+        "attribute_value": 40.09,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      },
+      "public_transport_share": {
+        "attribute_value": 34.19,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "transport_logistics_employment": {
+        "attribute_value": 10.98,
+        "attribute_units": "percent",
+        "attribute_category": "low"
+      },
+      "industry_construction_employment": {
+        "attribute_value": 37.25,
+        "attribute_units": "percent",
+        "attribute_category": "very high"
+      },
+      "median_household_income": {
+        "attribute_value": 1303632.0,
+        "attribute_units": "CLP",
+        "attribute_category": "high"
+      },
+      "poverty_rate": {
+        "attribute_value": 19.53,
+        "attribute_units": "percent",
+        "attribute_category": "low"
+      },
+      "renter_share": {
+        "attribute_value": 42.29,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "unemployment_rate": {
+        "attribute_value": 9.26,
+        "attribute_units": "percent",
+        "attribute_category": "medium"
+      },
+      "electricity_access": {
+        "attribute_value": 100.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      }
+    },
+    {
+      "comuna_name": "Mejillones",
+      "locode": "CL MJS",
+      "countryCode": "CL",
+      "region_name": "Antofagasta",
+      "comuna_code": "CL02102",
+      "region_code": "CL02",
+      "unemployment_rate": {
+        "attribute_value": 9.26,
+        "attribute_units": "percent",
+        "attribute_category": "medium"
+      },
+      "renter_share": {
+        "attribute_value": 16.67,
+        "attribute_units": "percent",
+        "attribute_category": "low"
+      },
+      "industry_construction_employment": {
+        "attribute_value": 57.14,
+        "attribute_units": "percent",
+        "attribute_category": "very high"
+      },
+      "electricity_access": {
+        "attribute_value": 100.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      },
+      "transport_logistics_employment": {
+        "attribute_value": 14.29,
+        "attribute_units": "percent",
+        "attribute_category": "medium"
+      },
+      "public_transport_share": {
+        "attribute_value": 34.19,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "median_household_income": {
+        "attribute_value": 1303632.0,
+        "attribute_units": "CLP",
+        "attribute_category": "high"
+      },
+      "home_ownership": {
+        "attribute_value": 83.33,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "poverty_rate": {
+        "attribute_value": 19.53,
+        "attribute_units": "percent",
+        "attribute_category": "low"
+      }
+    },
+    {
+      "comuna_name": "Sierra Gorda",
+      "locode": "CL SIG",
+      "countryCode": "CL",
+      "region_name": "Antofagasta",
+      "comuna_code": "CL02103",
+      "region_code": "CL02",
+      "public_transport_share": {
+        "attribute_value": 34.19,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "median_household_income": {
+        "attribute_value": 1303632.0,
+        "attribute_units": "CLP",
+        "attribute_category": "high"
+      },
+      "poverty_rate": {
+        "attribute_value": 19.53,
+        "attribute_units": "percent",
+        "attribute_category": "low"
+      },
+      "unemployment_rate": {
+        "attribute_value": 9.26,
+        "attribute_units": "percent",
+        "attribute_category": "medium"
+      }
+    },
+    {
+      "comuna_name": "Taltal",
+      "locode": "CL TTC",
+      "countryCode": "CL",
+      "region_name": "Antofagasta",
+      "comuna_code": "CL02104",
+      "region_code": "CL02",
+      "poverty_rate": {
+        "attribute_value": 19.53,
+        "attribute_units": "percent",
+        "attribute_category": "low"
+      },
+      "unemployment_rate": {
+        "attribute_value": 9.26,
+        "attribute_units": "percent",
+        "attribute_category": "medium"
+      },
+      "transport_logistics_employment": {
+        "attribute_value": 0.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      },
+      "median_household_income": {
+        "attribute_value": 1303632.0,
+        "attribute_units": "CLP",
+        "attribute_category": "high"
+      },
+      "renter_share": {
+        "attribute_value": 0.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      },
+      "industry_construction_employment": {
+        "attribute_value": 50.0,
+        "attribute_units": "percent",
+        "attribute_category": "very high"
+      },
+      "home_ownership": {
+        "attribute_value": 87.5,
+        "attribute_units": "percent",
+        "attribute_category": "very high"
+      },
+      "electricity_access": {
+        "attribute_value": 100.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      },
+      "public_transport_share": {
+        "attribute_value": 34.19,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      }
+    },
+    {
+      "comuna_name": "Arica",
+      "locode": "CL ARI",
+      "countryCode": "CL",
+      "region_name": "Arica y Parinacota",
+      "comuna_code": "CL15101",
+      "region_code": "CL15",
+      "industry_construction_employment": {
+        "attribute_value": 22.4,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "renter_share": {
+        "attribute_value": 31.78,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "electricity_access": {
+        "attribute_value": 100.0,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      },
+      "unemployment_rate": {
+        "attribute_value": 9.44,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "poverty_rate": {
+        "attribute_value": 25.28,
+        "attribute_units": "percent",
+        "attribute_category": "high"
+      },
+      "median_household_income": {
+        "attribute_value": 1150000.0,
+        "attribute_units": "CLP",
+        "attribute_category": "high"
+      },
+      "public_transport_share": {
+        "attribute_value": 24.92,
+        "attribute_units": "percent",
+        "attribute_category": "low"
+      },
+      "home_ownership": {
+        "attribute_value": 52.34,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      },
+      "transport_logistics_employment": {
+        "attribute_value": 5.6,
+        "attribute_units": "percent",
+        "attribute_category": "very low"
+      }
+    }
+  ]
+}

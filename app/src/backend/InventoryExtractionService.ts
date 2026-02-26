@@ -139,6 +139,15 @@ You are an extractor of GHG inventory line items from city emissions reports. Yo
 <task>
 Extract emissions at the most granular level the document provides. Use only sector and subsector names from the hierarchy below; map report terms using the dictionary when given. Preserve numeric scale from column headers (e.g. "thousand tonnes" → multiply by 1000; "million" → multiply by 1e6). Extract scope as "1", "2", or "3" when the document indicates it. Process the full document; do not return an error object or refuse for length. Output a separate row for every line item (every activity, subsector, or sector total)—never a single aggregated row when the document has multiple.
 
+Tables to use (full coverage only): Use only tables that present a full-coverage summary of emissions—i.e. a comprehensive inventory that covers multiple sectors and/or the full scope (e.g. citywide, all scopes, or a complete sector breakdown with multiple subsectors and activities). Typical titles: "Citywide GHG Emissions Summary", "Emissions by sector", "City-wide GHG emissions", "Full inventory", "Inventory summary", "Emissions by category" (when it covers all categories). Do NOT use: executive summary tables with only a single total; partial tables that cover only one sector or one topic; methodology-only text; targets/projections without full inventory figures; narrative sections; or any table that does not give a full-coverage emissions summary with row-by-row data for multiple sectors/subsectors/activities.
+
+Tables with year columns (critical): Many full-coverage tables have columns grouped by year (e.g. "CY 2005", "CY 2014", "CY 2015"), each with sub-columns like Consumed, tCO₂e, Source MMBtu. In that case:
+- The year in your output is the year from the column header (e.g. 2015 from "CY 2015"), not a cell value. Set year to that integer for every row you extract from that column.
+- For each table row (each sector/subsector/activity or fuel type), output one row with: year = the column's year; totalCO2e = the tCO₂e (or CO2e) value from that year column for that row only; activityAmount = the Consumed value from that year column for that row; activityUnit = the row's unit (liters, KWh, GJ, kg, VMT from the "Units" column or row context).
+- Wrong: one or few rows with year=2015 and totalCO2e set to a single large total (e.g. sum of all 2015 column). Right: many rows—one per table row—each with year=2015 and totalCO2e = the tCO₂e value in the 2015 column for that specific row (e.g. Residential Natural gas 2015 → 9297070, Residential Electricity 2015 → 4035680, etc.).
+- Do not treat the year label ("2015") as the only data point. Do not collapse all values from the 2015 column into one total. Output one row per table row, each with year=2015 (or the relevant column year) and that row's tCO₂e and Consumed from the 2015 column.
+- If a target year is requested (e.g. 2015), extract only from the column(s) for that year; ignore other year columns for this extraction.
+
 Granularity (critical):
 - If the report has activity-level data (breakdown by fuel type, building type, category, or similar within a subsector): extract one row per activity with totalCO2e for that activity. Do not collapse to a single sector or subsector total when activity breakdown exists.
 - If the report has only subsector-level data (no activity breakdown): extract one row per subsector with totalCO2e for that subsector; set category to a label like "Subsector total" or the subsector name.
@@ -147,12 +156,12 @@ Granularity (critical):
 </task>
 
 <input>
-- documentText (string): Full or truncated report text. May contain tables with emissions by category, fuel type, building type, and year. Focus on tables; ignore narrative-only content with no numbers.
+- documentText (string): Full report text, or a segment of a longer report. Use only tables that are full-coverage emissions summaries (comprehensive inventory). Tables may have year as columns (e.g. CY 2005, CY 2015 with sub-columns Consumed, tCO₂e)—then take the year from the column header and, for each table row, take totalCO2e and Consumed from that year column for that row only (many output rows, each with that row's value). Ignore partial tables, single-total summaries, and narrative. When the input is a segment, apply the same granularity rules (one row per activity/subsector/sector—never collapse to one total).
 </input>
 
 <output>
 Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown, no "error" key. The "rows" array must have one object per inventory line item—typical reports produce many rows (do not collapse to a single row). Each object in "rows" has:
-- year (integer): inventory year.
+- year (integer): inventory year. When the table has columns by year (e.g. CY 2015), use the year from the column header (2015), not a cell value; every row extracted from that column gets that year.
 - sector (string): canonical sector from hierarchy below.
 - subsector (string): canonical subsector from hierarchy below; must belong under sector.
 - category (string): activity/category name when at activity level (e.g. "Natural gas", "Diesel"); or "Subsector total" / subsector name when only subsector-level data exists.
@@ -161,10 +170,12 @@ Return a single JSON object with one key "rows" whose value is an array of row o
 - gpcRefNo (string | null): e.g. I.1.1, II.2.1 when present; else null.
 - co2, ch4, n2o (number | null): gas breakdown when present.
 - source, methodology (string | null): when present.
-- activityAmount (number | null): consumption/quantity value when table has such column; strip commas.
+- activityAmount (number | null): consumption/quantity value when table has such column.
 - activityUnit (string | null): e.g. liters, kWh, GJ from "Units" or header.
 - activityType (string | null): fuel/activity name when present.
 - activityDataSource, activityDataQuality (string | null): when present.
+
+Numbers: Output all numeric fields (totalCO2e, co2, ch4, n2o, activityAmount) as JSON numbers. Strip thousand separators (commas or spaces in "48,000" or "48 000" → 48000). Use a decimal point for decimals (e.g. 1.5); if the source uses a comma as decimal separator (e.g. "1,5"), convert to 1.5. Do not output numbers as strings or with commas/spaces inside them.
 Use JSON null for missing values. Never output "-", "N/A", or similar as strings. Format: {"rows": [ {...}, {...}, ... ]}.
 </output>
 
@@ -186,8 +197,22 @@ Mapping (report term → use this): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)"
 /** User message prefix when no target year. When target year is set, year instruction is injected before document. */
 const USER_PROMPT_PREFIX = `Document text:\n\n`;
 
-/** Max document length to send to LLM (chars) to avoid token limits. */
-const MAX_DOCUMENT_CHARS = 120_000;
+/** Prefix when sending a segment of a longer document (chunked extraction). Reinforces same granularity as full-document. */
+const SEGMENT_PROMPT_PREFIX = `The following text is one segment of a longer emissions report. Use only tables that present a full-coverage emissions summary (comprehensive inventory with multiple sectors/subsectors/activities)—e.g. "Citywide GHG Emissions Summary", "Emissions by sector", "Inventory summary". Ignore partial tables (single sector only), executive summary totals, methodology-only text, and tables that are not full-coverage. Apply the same granularity rules as for a full document:
+- If this segment contains activity-level data (e.g. breakdown by fuel type, building type, category): extract one row per activity with totalCO2e for that activity; do not collapse to a single subsector or sector total.
+- If this segment contains only subsector-level data: extract one row per subsector with totalCO2e for that subsector; set category to "Subsector total" or the subsector name.
+- If this segment contains only sector-level totals: output one row per sector.
+- Never output a single aggregated row when the segment shows multiple line items (multiple activities, subsectors, or sectors). Extract every row you see in the inventory tables.
+- If the table has columns by year (e.g. CY 2015): year = the column header (2015); totalCO2e = tCO₂e from that column for that row; activityAmount = Consumed from that column; one output row per table row, do not collapse the year column into one total.
+- Numbers: output numeric fields as JSON numbers; strip thousand separators (e.g. 48,000 → 48000); use decimal point for decimals (1,5 → 1.5).\n\nSegment text:\n\n`;
+
+/** Max document length in a single LLM request; above CHUNK_THRESHOLD we split into chunks. */
+const MAX_DOCUMENT_CHARS = 80_000;
+
+/** When content exceeds this length, we extract in chunks to avoid timeouts and token limits. */
+const CHUNK_THRESHOLD = 50_000;
+const CHUNK_SIZE = 40_000;
+const CHUNK_OVERLAP = 4_000;
 
 /**
  * Document content is user-controlled; callers should enforce rate limiting and monitor
@@ -210,6 +235,8 @@ const PROMPT_INJECTION_PREFIXES = [
 export type ExtractOptions = {
   /** When set, prompt and filter so only rows for this year are returned (inventory year). */
   targetYear?: number;
+  /** Called after each chunk when extraction runs in chunks (current 1-based, total). Used for progress polling. */
+  onChunkProgress?: (current: number, total: number) => void | Promise<void>;
 };
 
 /**
@@ -229,22 +256,18 @@ export async function extractInventoryRowsFromDocument(
 ): Promise<ExtractedRow[]> {
   const trimmed = documentContent.trim();
   const lookup = trimmed.slice(0, PROMPT_INJECTION_LOOKUP_LENGTH).toLowerCase();
-  const looksLikeInjection = PROMPT_INJECTION_PREFIXES.some((prefix) =>
-    lookup.startsWith(prefix) || lookup.includes("\n" + prefix),
+  const looksLikeInjection = PROMPT_INJECTION_PREFIXES.some(
+    (prefix) => lookup.startsWith(prefix) || lookup.includes("\n" + prefix),
   );
   if (looksLikeInjection) {
-    logger.warn("Extraction rejected: document starts with instruction-like content (possible prompt injection)");
+    logger.warn(
+      "Extraction rejected: document starts with instruction-like content (possible prompt injection)",
+    );
     throw new LLMError(
       "Document content could not be processed",
       LLMErrorCode.BAD_REQUEST,
     );
   }
-
-  const content =
-    documentContent.length > MAX_DOCUMENT_CHARS
-      ? documentContent.slice(0, MAX_DOCUMENT_CHARS) +
-        "\n\n[Document truncated for length.]"
-      : documentContent;
 
   const targetYear = options?.targetYear;
   const yearInstruction =
@@ -252,7 +275,119 @@ export async function extractInventoryRowsFromDocument(
       ? `Extract only emissions data for the year ${targetYear}. Set year to ${targetYear} for every row; do not include other years.\n\n`
       : "";
 
-  const userContent = yearInstruction + USER_PROMPT_PREFIX + content;
+  let allRows: ExtractedRow[];
+
+  if (documentContent.length <= CHUNK_THRESHOLD) {
+    const content =
+      documentContent.length > MAX_DOCUMENT_CHARS
+        ? documentContent.slice(0, MAX_DOCUMENT_CHARS) +
+          "\n\n[Document truncated for length.]"
+        : documentContent;
+    allRows = await extractSegment(content, yearInstruction, false);
+  } else {
+    const chunks = splitIntoChunks(documentContent, CHUNK_SIZE, CHUNK_OVERLAP);
+    logger.info(
+      { chunkCount: chunks.length, totalChars: documentContent.length },
+      "Extraction using chunks to avoid timeout",
+    );
+    const segmentPrefix = yearInstruction + SEGMENT_PROMPT_PREFIX;
+    const perChunkRows: ExtractedRow[][] = [];
+    const onProgress = options?.onChunkProgress;
+    for (let i = 0; i < chunks.length; i++) {
+      const rows = await extractSegment(chunks[i], segmentPrefix, true);
+      perChunkRows.push(rows);
+      if (onProgress) {
+        await Promise.resolve(onProgress(i + 1, chunks.length));
+      }
+    }
+    allRows = mergeAndDedupeRows(perChunkRows);
+  }
+
+  const withGpc = fillMissingGpcRefNo(allRows);
+  let result = fillActivityTypeFromCategory(withGpc);
+
+  if (targetYear != null && Number.isInteger(targetYear)) {
+    const before = result.length;
+    result = result.filter(
+      (row) => row.year == null || row.year === targetYear,
+    );
+    result = result.map((row) => ({ ...row, year: targetYear }));
+    if (before > 0 && result.length === 0) {
+      logger.warn(
+        { targetYear, rowsBeforeFilter: before },
+        "All extracted rows dropped by targetYear filter (no matching year)",
+      );
+      throw new LLMError(
+        "Inventory not found for the target year",
+        LLMErrorCode.BAD_REQUEST,
+      );
+    }
+  }
+
+  if (result.length === 0) {
+    logger.warn(
+      {
+        totalRowsBeforeFilter: allRows.length,
+        targetYear: targetYear ?? null,
+      },
+      "Extraction produced zero rows: LLM may have returned empty array or no parseable rows",
+    );
+  }
+
+  return result;
+}
+
+/**
+ * Split content into overlapping chunks so no row is cut in the middle.
+ */
+function splitIntoChunks(
+  content: string,
+  chunkSize: number,
+  overlap: number,
+): string[] {
+  const chunks: string[] = [];
+  let start = 0;
+  while (start < content.length) {
+    const end = Math.min(start + chunkSize, content.length);
+    chunks.push(content.slice(start, end));
+    if (end >= content.length) break;
+    start = end - overlap;
+  }
+  return chunks;
+}
+
+/**
+ * Dedupe rows from multiple chunks (overlap can produce duplicates). Use a simple key.
+ */
+function mergeAndDedupeRows(perChunkRows: ExtractedRow[][]): ExtractedRow[] {
+  const seen = new Set<string>();
+  const out: ExtractedRow[] = [];
+  for (const rows of perChunkRows) {
+    for (const row of rows) {
+      const key = [
+        row.year ?? "",
+        row.sector ?? "",
+        row.subsector ?? "",
+        row.category ?? "",
+        String(row.totalCO2e ?? ""),
+      ].join("\t");
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(row);
+    }
+  }
+  return out;
+}
+
+/**
+ * Run one LLM extraction on a single document or segment. Returns normalized rows only.
+ */
+async function extractSegment(
+  content: string,
+  prefix: string,
+  isSegment: boolean,
+): Promise<ExtractedRow[]> {
+  const userContent = prefix + (isSegment ? "" : USER_PROMPT_PREFIX) + content;
 
   const client = createLLMClient();
   const { content: responseContent } = await client.complete({
@@ -261,7 +396,7 @@ export async function extractInventoryRowsFromDocument(
       { role: "user", content: userContent },
     ],
     jsonMode: true,
-    temperature: 0,
+    temperature: 1,
     maxTokens: 16000,
   });
 
@@ -270,21 +405,14 @@ export async function extractInventoryRowsFromDocument(
       ? responseContent.slice(0, EXTRACTION_LOG_LIMIT) +
         `...[truncated, total ${responseContent.length} chars]`
       : responseContent;
+  logger.debug(
+    { isSegment, responseLength: responseContent.length },
+    "Extraction LLM output",
+  );
   logger.debug({ extractionResponse: truncated }, "Extraction LLM output");
 
   const parsed = parseExtractionResponse(responseContent);
-  const rows = normalizeRows(parsed);
-  const withGpc = fillMissingGpcRefNo(rows);
-  let result = fillActivityTypeFromCategory(withGpc);
-
-  if (targetYear != null && Number.isInteger(targetYear)) {
-    result = result.filter(
-      (row) => row.year == null || row.year === targetYear,
-    );
-    result = result.map((row) => ({ ...row, year: targetYear }));
-  }
-
-  return result;
+  return normalizeRows(parsed);
 }
 
 /**
@@ -372,19 +500,34 @@ function parseExtractionResponse(content: string): Record<string, unknown>[] {
     if (end > 0) jsonStr = jsonStr.slice(0, end);
   }
 
+  // Strip trailing commas before ] or } (LLMs sometimes output these)
+  jsonStr = jsonStr.replace(/,(\s*[}\]])/g, "$1");
+
   let parsed: unknown;
   try {
     parsed = JSON.parse(jsonStr);
   } catch {
-    // Last resort: find a top-level JSON array, respecting string literals
-    const arrayStart = jsonStr.indexOf("[");
-    if (arrayStart >= 0) {
-      const end = findMatchingBracketEnd(jsonStr, arrayStart, "[");
-      if (end > 0) {
-        try {
-          parsed = JSON.parse(jsonStr.slice(arrayStart, end));
-        } catch {
-          /* ignore */
+    // Truncated response: try closing {"rows": [ ... with ]}
+    const trimmedEnd = jsonStr.trimEnd();
+    if (trimmedEnd.endsWith("}") && jsonStr.includes('"rows"')) {
+      try {
+        parsed = JSON.parse(trimmedEnd + "]}");
+        logger.debug("Repaired truncated extraction JSON by appending ]}");
+      } catch {
+        /* ignore */
+      }
+    }
+    if (parsed === undefined) {
+      // Last resort: find a top-level JSON array
+      const arrayStart = jsonStr.indexOf("[");
+      if (arrayStart >= 0) {
+        const end = findMatchingBracketEnd(jsonStr, arrayStart, "[");
+        if (end > 0) {
+          try {
+            parsed = JSON.parse(jsonStr.slice(arrayStart, end));
+          } catch {
+            /* ignore */
+          }
         }
       }
     }

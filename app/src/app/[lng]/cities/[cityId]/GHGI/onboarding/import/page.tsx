@@ -129,6 +129,11 @@ export default function ImportPage(props: {
   >({});
   const [showDataLossModal, setShowDataLossModal] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
+  const [extractionProgress, setExtractionProgress] = useState<{
+    current: number;
+    total: number;
+  } | null>(null);
+  const extractionPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pathname = usePathname();
   const prevPathnameRef = useRef<string | null>(null);
 
@@ -206,6 +211,21 @@ export default function ImportPage(props: {
 
   const handleExtractWithAi = async () => {
     if (!importedFileId || !inventoryId) return;
+    setExtractionProgress(null);
+    extractionPollRef.current = setInterval(async () => {
+      if (!cityId || !inventoryId || !importedFileId) return;
+      try {
+        const res = await getImportStatus({
+          cityId,
+          inventoryId,
+          importedFileId,
+        }).unwrap();
+        const progress = (res as { mappingConfiguration?: { extractionProgress?: { current: number; total: number } } })?.mappingConfiguration?.extractionProgress;
+        if (progress?.total > 1) setExtractionProgress(progress);
+      } catch {
+        // ignore poll errors
+      }
+    }, 3000);
     try {
       await extractImport({
         cityId,
@@ -221,11 +241,18 @@ export default function ImportPage(props: {
       // Go to Validation results (step 1) so user can review and map extracted rows
       setTimeout(() => goToNextStep(), 150);
     } catch (error: any) {
+      const apiMessage = error?.data?.message || error?.message || "";
       const message =
-        error?.data?.message ||
-        error?.message ||
-        t("ai-extraction-failed-default");
+        apiMessage === "Inventory not found for the target year"
+          ? t("inventory-not-found-for-target-year")
+          : apiMessage || t("ai-extraction-failed-default");
       makeErrorToast(t("extraction-failed"), message);
+    } finally {
+      if (extractionPollRef.current) {
+        clearInterval(extractionPollRef.current);
+        extractionPollRef.current = null;
+      }
+      setExtractionProgress(null);
     }
   };
 
@@ -315,13 +342,40 @@ export default function ImportPage(props: {
                   exit={{ opacity: 0, x: -100 }}
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
-                  <UploadFileStep
-                    t={t}
-                    uploadedFile={uploadedFile}
-                    onFileUpload={handleFileUpload}
-                    onRemoveFile={handleRemoveFile}
-                    isUploading={isUploadingFile}
-                  />
+                  <Box w="full" display="flex" flexDirection="column" gap="24px">
+                    <UploadFileStep
+                      t={t}
+                      uploadedFile={uploadedFile}
+                      onFileUpload={handleFileUpload}
+                      onRemoveFile={handleRemoveFile}
+                      isUploading={isUploadingFile}
+                    />
+                    {pdfPendingExtraction && isExtracting && extractionProgress && extractionProgress.total > 1 && (
+                      <Box w="full" mt={2}>
+                        <Text fontSize="sm" color="content.tertiary" mb={2}>
+                          {t("extracting-chunk-progress", {
+                            current: extractionProgress.current,
+                            total: extractionProgress.total,
+                          })}
+                        </Text>
+                        <Box
+                          w="full"
+                          h="8px"
+                          bg="background.subtle"
+                          borderRadius="full"
+                          overflow="hidden"
+                        >
+                          <Box
+                            h="full"
+                            bg="interactive.primary"
+                            borderRadius="full"
+                            transition="width 0.3s ease"
+                            w={`${(extractionProgress.current / extractionProgress.total) * 100}%`}
+                          />
+                        </Box>
+                      </Box>
+                    )}
+                  </Box>
                 </motion.div>
               )}
               {activeStep === 1 && importedFileId && inventoryId && (

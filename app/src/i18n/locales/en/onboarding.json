@@ -12,6 +12,8 @@
   "extract-with-ai": "Extract with AI",
   "extraction-failed": "Extraction failed",
   "ai-extraction-failed-default": "AI extraction failed",
+  "inventory-not-found-for-target-year": "Inventory not found for the target year",
+  "extracting-chunk-progress": "Extracting... (chunk {{current}} of {{total}})",
   "pdf-ready-for-extraction": "PDF ready for extraction",
   "setup-step": "Setting up your Inventory",
   "setup-inventory-details-heading": "Set up inventory details",

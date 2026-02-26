@@ -47,6 +47,8 @@
   "continue": "Continuar",
   "extraction-failed": "Extracción fallida",
   "ai-extraction-failed-default": "Extracción con IA fallida",
+  "inventory-not-found-for-target-year": "Inventario no encontrado para el año objetivo",
+  "extracting-chunk-progress": "Extrayendo... (parte {{current}} de {{total}})",
   "setup-inventory-details-heading": "Configura los detalles del inventario",
   "setup-inventory-details-description": "Proporcione algunos detalles básicos sobre el inventario que desea crear. Puede editar estos ajustes después.",
   "inventory-goal": "Objetivo de inventario",

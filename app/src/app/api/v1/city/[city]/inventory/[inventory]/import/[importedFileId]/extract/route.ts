@@ -132,6 +132,13 @@ export const POST = apiHandler(
     try {
       rows = await extractInventoryRowsFromDocument(text, {
         targetYear,
+        onChunkProgress: (current, total) =>
+          importedFile.update({
+            mappingConfiguration: {
+              ...(importedFile.mappingConfiguration || {}),
+              extractionProgress: { current, total },
+            },
+          }),
       });
     } catch (err) {
       if (err instanceof LLMError) {
@@ -164,6 +171,7 @@ export const POST = apiHandler(
     const mappingConfiguration = {
       ...(importedFile.mappingConfiguration || {}),
       rows,
+      extractionProgress: undefined,
     };
 
     await importedFile.update({

@@ -220,8 +220,8 @@ export default function ImportPage(props: {
           inventoryId,
           importedFileId,
         }).unwrap();
-        const progress = (res as { mappingConfiguration?: { extractionProgress?: { current: number; total: number } } })?.mappingConfiguration?.extractionProgress;
-        if (progress?.total > 1) setExtractionProgress(progress);
+        const progress = (res as { mappingConfiguration?: { extractionProgress?: { current: number; total?: number } } })?.mappingConfiguration?.extractionProgress;
+        if (progress != null && progress.total != null && progress.total > 1) setExtractionProgress(progress);
       } catch {
         // ignore poll errors
       }

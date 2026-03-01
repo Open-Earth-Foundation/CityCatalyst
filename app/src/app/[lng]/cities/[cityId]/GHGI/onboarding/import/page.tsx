@@ -15,6 +15,7 @@ import MappingColumnsStep from "@/components/steps/GHGI/import/mapping-columns-s
 import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-step";
 import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
 import { api } from "@/services/api";
+import { logger } from "@/services/logger";
 import { TFunction } from "i18next";
 
 function ImportButton({
@@ -223,8 +224,8 @@ export default function ImportPage(props: {
         const progress = (res as { mappingConfiguration?: { extractionProgress?: { current: number; total?: number } } })?.mappingConfiguration?.extractionProgress;
         const total = progress?.total;
         if (progress != null && total != null && total > 1) setExtractionProgress({ current: progress.current, total });
-      } catch {
-        // ignore poll errors
+      } catch (err) {
+        logger.debug({ err, cityId, inventoryId, importedFileId }, "Import status poll failed");
       }
     }, 3000);
     try {

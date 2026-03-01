@@ -396,7 +396,7 @@ async function extractSegment(
       { role: "user", content: userContent },
     ],
     jsonMode: true,
-    temperature: 1,
+    temperature: 0, // Deterministic output for factual extraction; reduces hallucinations
     maxTokens: 16000,
   });
 

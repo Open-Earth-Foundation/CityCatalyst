@@ -16,7 +16,7 @@ test.describe("Dashboard", () => {
 
       // Verify project name is displayed
       const projectName = page.getByTestId("hero-project-name");
-      await expect(projectName).toHaveText("Default Project");
+      await expect(projectName).toHaveText("CityCatalyst Demo");
 
       // Verify city name is displayed
       const cityName = page.getByTestId("hero-city-name");

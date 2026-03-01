@@ -132,5 +132,15 @@
   "upload-started": "Inicio de subida",
   "upload-started-description": "Subiendo {{fileName}}...",
   "loading-validation-results": "Cargando resultados de validación...",
-  "no-field-mappings": "No hay mapeos de campos disponibles"
+  "no-field-mappings": "No hay mapeos de campos disponibles",
+  "extract-with-ai": "Extraer con IA",
+  "pdf-ready-for-extraction": "PDF listo para extracción",
+  "validation-results-description-pdf": "Se extrajeron {{count}} filas del PDF. Revisa los datos a continuación.",
+  "fields-extracted-from-pdf": "{{count}} filas extraídas del PDF",
+  "year": "Año",
+  "sector": "Sector",
+  "subsector": "Subsector",
+  "category": "Categoría",
+  "total-co2e": "Total de CO2e",
+  "map-rows-description-pdf": "Las filas extraídas ya están asignadas a los campos del inventario. Revisa los datos a continuación y continúa hasta el último paso."
 }

@@ -448,9 +448,12 @@ export const GET = apiHandler(
               sourceFile: importedFile.originalFileName,
               formatDetected: "PDF",
               rowsFound: pdfExtractedRows.length,
-              fieldsMapped: 0,
+              fieldsMapped: PDF_IMPORT_FIELD_DEFS.length,
             },
-            fieldMappings: [],
+            fieldMappings: PDF_IMPORT_FIELD_DEFS.map(({ key, label }) => ({
+              sourceColumn: key,
+              mappedField: label,
+            })),
             mappingPreview: null,
             extractedRows: pdfExtractedRows,
           };

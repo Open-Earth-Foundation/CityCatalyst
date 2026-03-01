@@ -15,6 +15,7 @@ import MappingColumnsStep from "@/components/steps/GHGI/import/mapping-columns-s
 import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-step";
 import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
 import { api } from "@/services/api";
+import { logger } from "@/services/logger";
 import { TFunction } from "i18next";
 
 function ImportButton({
@@ -129,6 +130,11 @@ export default function ImportPage(props: {
   >({});
   const [showDataLossModal, setShowDataLossModal] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
+  const [extractionProgress, setExtractionProgress] = useState<{
+    current: number;
+    total: number;
+  } | null>(null);
+  const extractionPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pathname = usePathname();
   const prevPathnameRef = useRef<string | null>(null);
 
@@ -206,6 +212,22 @@ export default function ImportPage(props: {
 
   const handleExtractWithAi = async () => {
     if (!importedFileId || !inventoryId) return;
+    setExtractionProgress(null);
+    extractionPollRef.current = setInterval(async () => {
+      if (!cityId || !inventoryId || !importedFileId) return;
+      try {
+        const res = await getImportStatus({
+          cityId,
+          inventoryId,
+          importedFileId,
+        }).unwrap();
+        const progress = (res as { mappingConfiguration?: { extractionProgress?: { current: number; total?: number } } })?.mappingConfiguration?.extractionProgress;
+        const total = progress?.total;
+        if (progress != null && total != null && total > 1) setExtractionProgress({ current: progress.current, total });
+      } catch (err) {
+        logger.debug({ err, cityId, inventoryId, importedFileId }, "Import status poll failed");
+      }
+    }, 3000);
     try {
       await extractImport({
         cityId,
@@ -221,11 +243,18 @@ export default function ImportPage(props: {
       // Go to Validation results (step 1) so user can review and map extracted rows
       setTimeout(() => goToNextStep(), 150);
     } catch (error: any) {
+      const apiMessage = error?.data?.message || error?.message || "";
       const message =
-        error?.data?.message ||
-        error?.message ||
-        t("ai-extraction-failed-default");
+        apiMessage === "Inventory not found for the target year"
+          ? t("inventory-not-found-for-target-year")
+          : apiMessage || t("ai-extraction-failed-default");
       makeErrorToast(t("extraction-failed"), message);
+    } finally {
+      if (extractionPollRef.current) {
+        clearInterval(extractionPollRef.current);
+        extractionPollRef.current = null;
+      }
+      setExtractionProgress(null);
     }
   };
 
@@ -315,13 +344,76 @@ export default function ImportPage(props: {
                   exit={{ opacity: 0, x: -100 }}
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
-                  <UploadFileStep
-                    t={t}
-                    uploadedFile={uploadedFile}
-                    onFileUpload={handleFileUpload}
-                    onRemoveFile={handleRemoveFile}
-                    isUploading={isUploadingFile}
-                  />
+                  <Box w="full" display="flex" flexDirection="column" gap="24px">
+                    <UploadFileStep
+                      t={t}
+                      uploadedFile={uploadedFile}
+                      onFileUpload={handleFileUpload}
+                      onRemoveFile={handleRemoveFile}
+                      isUploading={isUploadingFile}
+                    />
+                    {pdfPendingExtraction && isExtracting && (
+                      <Box w="full" mt={2}>
+                        <Text fontSize="sm" color="content.tertiary" mb={2}>
+                          {extractionProgress && extractionProgress.total > 1
+                            ? t("extracting-chunk-progress", {
+                                current: extractionProgress.current,
+                                total: extractionProgress.total,
+                              })
+                            : t("breaking-into-chunks")}
+                        </Text>
+                        {extractionProgress && extractionProgress.total > 1 ? (
+                          <Box
+                            w="full"
+                            h="8px"
+                            bg="background.subtle"
+                            borderRadius="10px"
+                            overflow="hidden"
+                          >
+                            <Box
+                              h="full"
+                              bg="interactive.primary"
+                              borderRadius="10px"
+                              transition="width 0.3s ease"
+                              w={`${(extractionProgress.current / extractionProgress.total) * 100}%`}
+                            />
+                          </Box>
+                        ) : (
+                          <Box
+                            w="full"
+                            h="8px"
+                            bg="background.subtle"
+                            borderRadius="10px"
+                            overflow="hidden"
+                            position="relative"
+                          >
+                            <motion.div
+                              style={{
+                                position: "absolute",
+                                left: 0,
+                                top: 0,
+                                height: "100%",
+                                width: "40%",
+                              }}
+                              animate={{ x: ["0%", "250%"] }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                              }}
+                            >
+                              <Box
+                                h="full"
+                                w="full"
+                                bg="interactive.primary"
+                                borderRadius="10px"
+                              />
+                            </motion.div>
+                          </Box>
+                        )}
+                      </Box>
+                    )}
+                  </Box>
                 </motion.div>
               )}
               {activeStep === 1 && importedFileId && inventoryId && (

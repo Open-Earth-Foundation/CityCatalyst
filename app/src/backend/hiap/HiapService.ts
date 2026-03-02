@@ -1,13 +1,9 @@
 import { LANGUAGES, ACTION_TYPES } from "@/util/types";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
-import { Readable } from "stream";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
 import PopulationService from "../PopulationService";
-import {
-  getTotalEmissionsBySector,
-  EmissionsBySector,
-} from "../ResultsService";
+import { getTotalEmissionsBySector } from "../ResultsService";
 import { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
 import { HighImpactActionRankingStatus } from "@/util/types";
 import { hiapApiWrapper } from "./HiapApiService";
@@ -23,6 +19,7 @@ import EmailService from "../EmailService";
 import { User } from "@/models/User";
 import { getSession } from "next-auth/react";
 import { AppSession } from "@/lib/auth";
+import VersionHistoryService from "../VersionHistoryService";
 import { Op } from "sequelize";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
@@ -493,7 +490,7 @@ async function processBulkJobResults(
     }
   }
 
-    logger.info({ jobId }, "Bulk action ranking job completed successfully");
+  logger.info({ jobId }, "Bulk action ranking job completed successfully");
 
   return true; // Job is complete (success)
 }
@@ -572,10 +569,10 @@ function extractLocalizedString(
   lang: LANGUAGES,
 ): string | undefined {
   if (!field) return undefined;
-  if (typeof field === 'string') return field;
-  if (typeof field === 'object' && field[lang]) return field[lang];
+  if (typeof field === "string") return field;
+  if (typeof field === "object" && field[lang]) return field[lang];
   // Fallback to English if requested language not available
-  if (typeof field === 'object' && field['en']) return field['en'];
+  if (typeof field === "object" && field["en"]) return field["en"];
   return undefined;
 }
 
@@ -757,7 +754,7 @@ async function saveRankedActionsForLanguage(
   const savedSample = mergedRanked.slice(0, 3).map((a) => ({
     actionId: a.actionId,
     rank: a.rank,
-    name: a.name ? Array.from(a.name).slice(0, 30).join('') : undefined,
+    name: a.name ? Array.from(a.name).slice(0, 30).join("") : undefined,
   }));
   logger.info(
     {
@@ -1094,7 +1091,7 @@ export async function copyRankedActionsToLang(
   // Aggregate available languages across all actions
   const availableLanguagesSet = new Set<string>();
   for (const action of uniqueActions) {
-    if (action.explanation && typeof action.explanation === 'object') {
+    if (action.explanation && typeof action.explanation === "object") {
       Object.keys(action.explanation).forEach((lang) =>
         availableLanguagesSet.add(lang),
       );
@@ -1136,7 +1133,11 @@ export async function copyRankedActionsToLang(
 
   // Fetch and merge action details in the requested language
   const mergedRanked = await fetchAndMergeRankedActions(lang, rankedActions);
-  const savedActions = await saveRankedActionsForLanguage(ranking, mergedRanked, lang);
+  const savedActions = await saveRankedActionsForLanguage(
+    ranking,
+    mergedRanked,
+    lang,
+  );
 
   // Update the ranking's langs array to include the new language
   const currentLangs = ranking.langs as string[];
@@ -1346,90 +1347,6 @@ export const readSelectedActionsFile = async (
     return [];
   }
 };
-
-async function updateSelectionForRankingIds(
-  rankingIds: string[],
-  selectedActionIds: string[],
-) {
-  const [affectedCount] = await db.models.HighImpactActionRanked.update(
-    { isSelected: true },
-    {
-      where: {
-        hiaRankingId: rankingIds,
-        actionId: selectedActionIds,
-      },
-    },
-  );
-
-  return affectedCount;
-}
-
-export async function migrateProjectSelections(projectId: string) {
-  const cities = await db.models.City.findAll({
-    where: { projectId },
-    attributes: ["locode", "name"],
-  });
-
-  // Gather all inventories for these cities, then call per-inventory migration
-  const cityIds = cities
-    .map((c) => (c as any).cityId as string | undefined)
-    .filter((id): id is string => !!id);
-
-  if (cityIds.length === 0) return;
-
-  const inventories = await db.models.Inventory.findAll({
-    where: { cityId: cityIds },
-    attributes: ["inventoryId"],
-  });
-  const inventoryIds = inventories
-    .map((i) => (i as any).inventoryId as string | undefined)
-    .filter((id): id is string => !!id);
-
-  if (inventoryIds.length === 0) return;
-
-  // Restrict to inventories that actually have HIAP rankings, mirroring the SQL join path
-  const rankings = await db.models.HighImpactActionRanking.findAll({
-    where: { inventoryId: { [Op.in]: inventoryIds } },
-    attributes: ["inventoryId"],
-    group: ["inventoryId"],
-  });
-  const rankedInventoryIds = rankings
-    .map((r) => (r as any).inventoryId as string | undefined)
-    .filter((id): id is string => !!id);
-
-  for (const invId of rankedInventoryIds) {
-    await migrateActionSelections(invId);
-  }
-}
-
-export async function migrateActionSelections(inventoryId: string) {
-  // Find rankings for this inventory to get locode(s) and types
-  const rankings = await db.models.HighImpactActionRanking.findAll({
-    where: { inventoryId },
-    attributes: ["locode", "type"],
-  });
-  const uniqueByKey = new Map<string, { locode: string; type: ACTION_TYPES }>();
-  for (const r of rankings as any[]) {
-    const key = `${r.locode}:${r.type}`;
-    if (!uniqueByKey.has(key))
-      uniqueByKey.set(key, { locode: r.locode, type: r.type });
-  }
-
-  for (const { locode, type } of uniqueByKey.values()) {
-    const selectedActionIds = await readSelectedActionsFile(locode, type);
-    if (!Array.isArray(selectedActionIds) || selectedActionIds.length === 0)
-      continue;
-
-    const rankingIds = (
-      await db.models.HighImpactActionRanking.findAll({
-        where: { inventoryId, locode, type },
-        attributes: ["id"],
-      })
-    ).map((r) => r.id);
-    if (rankingIds.length === 0) continue;
-    await updateSelectionForRankingIds(rankingIds, selectedActionIds);
-  }
-}
 
 /**
  * Migrates HIAP action selections for all cities in a project.

@@ -29,3 +29,38 @@ It simulates a response from the actions data API containing information about t
 The upstream provider is the global-api.
 
 It is being used to fetch the list of actions and their associated mitigation and impact data.
+
+# policy_framework_api_mock.json:
+
+This is a mock response from a policy framework API.
+It simulates policy signals extracted from plans, targets, and budgets, and links these signals to actions.
+The upstream provider is the global-api.
+
+It includes:
+
+- policy signals (national, regional, municipal scopes)
+- action to policy signal mapping records
+
+# legal_api_mock.json:
+
+This is a mock response from a legal framework API.
+It simulates legal signals that define authority, enablement, restrictions, thresholds, and process requirements.
+The upstream provider is the global-api.
+
+It includes:
+
+- legal signals scoped to national, regional, and municipal actors
+- action to legal requirement mapping records with operator and strength
+
+# projects_api_mock.json:
+
+This is a mock response from a funded projects API.
+It simulates funded projects and supporting evidence used to assess action feasibility, impact, and replicability.
+The upstream provider is the global-api.
+
+It includes:
+
+- funded project core records
+- project metrics and evidence
+- optional supporting project tables (co-benefits, barriers, phases)
+- action to funded project evidence links

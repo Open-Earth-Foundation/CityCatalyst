@@ -127,6 +127,8 @@ export default function ImportPage(props: {
   const [pdfPendingExtraction, setPdfPendingExtraction] = useState(false);
   const [tabularPendingInterpretation, setTabularPendingInterpretation] =
     useState(false);
+  const [isExtractInProgress, setIsExtractInProgress] = useState(false);
+  const [isInterpretInProgress, setIsInterpretInProgress] = useState(false);
   const [mappingOverrides, setMappingOverrides] = useState<
     Record<string, string>
   >({});
@@ -137,6 +139,9 @@ export default function ImportPage(props: {
     total: number;
   } | null>(null);
   const extractionPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const interpretPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const extractionCompleteHandledRef = useRef(false);
+  const interpretCompleteHandledRef = useRef(false);
   const pathname = usePathname();
   const prevPathnameRef = useRef<string | null>(null);
 
@@ -214,6 +219,18 @@ export default function ImportPage(props: {
   };
 
   const handleRemoveFile = () => {
+    if (extractionPollRef.current) {
+      clearInterval(extractionPollRef.current);
+      extractionPollRef.current = null;
+    }
+    if (interpretPollRef.current) {
+      clearInterval(interpretPollRef.current);
+      interpretPollRef.current = null;
+    }
+    extractionCompleteHandledRef.current = false;
+    interpretCompleteHandledRef.current = false;
+    setIsExtractInProgress(false);
+    setIsInterpretInProgress(false);
     setUploadedFile(null);
     setImportedFileId(null);
     setPdfPendingExtraction(false);
@@ -223,6 +240,12 @@ export default function ImportPage(props: {
 
   const handleExtractWithAi = async () => {
     if (!importedFileId || !inventoryId) return;
+    setIsExtractInProgress(true);
+    if (extractionPollRef.current) {
+      clearInterval(extractionPollRef.current);
+      extractionPollRef.current = null;
+    }
+    extractionCompleteHandledRef.current = false;
     setExtractionProgress(null);
     extractionPollRef.current = setInterval(async () => {
       if (!cityId || !inventoryId || !importedFileId) return;
@@ -232,59 +255,141 @@ export default function ImportPage(props: {
           inventoryId,
           importedFileId,
         }).unwrap();
+        if (extractionCompleteHandledRef.current) return;
         const progress = (res as { mappingConfiguration?: { extractionProgress?: { current: number; total?: number } } })?.mappingConfiguration?.extractionProgress;
         const total = progress?.total;
         if (progress != null && total != null && total > 1) setExtractionProgress({ current: progress.current, total });
+        const status = (res as { importStatus?: string; errorLog?: string | null }).importStatus;
+        const errorLog = (res as { importStatus?: string; errorLog?: string | null }).errorLog;
+        if (status === "waiting_for_approval") {
+          extractionCompleteHandledRef.current = true;
+          if (extractionPollRef.current) {
+            clearInterval(extractionPollRef.current);
+            extractionPollRef.current = null;
+          }
+          setIsExtractInProgress(false);
+          setExtractionProgress(null);
+          setPdfPendingExtraction(false);
+          setTimeout(() => goToNextStep(), 150);
+        } else if (status === "failed") {
+          extractionCompleteHandledRef.current = true;
+          if (extractionPollRef.current) {
+            clearInterval(extractionPollRef.current);
+            extractionPollRef.current = null;
+          }
+          setIsExtractInProgress(false);
+          setExtractionProgress(null);
+          makeErrorToast(t("extraction-failed"), errorLog ?? t("ai-extraction-failed-default"));
+        }
       } catch (err) {
         logger.debug({ err, cityId, inventoryId, importedFileId }, "Import status poll failed");
       }
     }, 3000);
     try {
-      await extractImport({
+      const result = await extractImport({
         cityId,
         inventoryId,
         importedFileId,
       }).unwrap();
+      if ("accepted" in result && result.accepted) return;
+      if (extractionPollRef.current) {
+        clearInterval(extractionPollRef.current);
+        extractionPollRef.current = null;
+      }
+      setIsExtractInProgress(false);
       setPdfPendingExtraction(false);
       await getImportStatus({
         cityId,
         inventoryId,
         importedFileId,
       }).unwrap();
-      // Go to Validation results (step 1) so user can review and map extracted rows
       setTimeout(() => goToNextStep(), 150);
     } catch (error: any) {
+      if (extractionPollRef.current) {
+        clearInterval(extractionPollRef.current);
+        extractionPollRef.current = null;
+      }
+      setIsExtractInProgress(false);
+      setExtractionProgress(null);
       const apiMessage = error?.data?.message || error?.message || "";
       const message =
         apiMessage === "Inventory not found for the target year"
           ? t("inventory-not-found-for-target-year")
           : apiMessage || t("ai-extraction-failed-default");
       makeErrorToast(t("extraction-failed"), message);
-    } finally {
-      if (extractionPollRef.current) {
-        clearInterval(extractionPollRef.current);
-        extractionPollRef.current = null;
-      }
-      setExtractionProgress(null);
     }
   };
 
   const handleInterpretWithAi = async () => {
     if (!importedFileId || !inventoryId) return;
+    if (interpretPollRef.current) {
+      clearInterval(interpretPollRef.current);
+      interpretPollRef.current = null;
+    }
+    interpretCompleteHandledRef.current = false;
+    setIsInterpretInProgress(true);
     makeInfoToast(
       t("interpreting-file"),
       t("interpreting-file-description"),
     );
     try {
-      await interpretImport({
+      const result = await interpretImport({
         cityId,
         inventoryId,
         importedFileId,
       }).unwrap();
+      if ("accepted" in result && result.accepted) {
+        interpretPollRef.current = setInterval(async () => {
+          if (!cityId || !inventoryId || !importedFileId) return;
+          try {
+            const res = await getImportStatus({
+              cityId,
+              inventoryId,
+              importedFileId,
+            }).unwrap();
+            if (interpretCompleteHandledRef.current) return;
+            const status = (res as { importStatus?: string; errorLog?: string | null }).importStatus;
+            const errorLog = (res as { importStatus?: string; errorLog?: string | null }).errorLog;
+            if (status === "waiting_for_approval") {
+              interpretCompleteHandledRef.current = true;
+              if (interpretPollRef.current) {
+                clearInterval(interpretPollRef.current);
+                interpretPollRef.current = null;
+              }
+              setIsInterpretInProgress(false);
+              setTabularPendingInterpretation(false);
+              setTimeout(() => goToNextStep(), 150);
+            } else if (status === "failed") {
+              interpretCompleteHandledRef.current = true;
+              if (interpretPollRef.current) {
+                clearInterval(interpretPollRef.current);
+                interpretPollRef.current = null;
+              }
+              setIsInterpretInProgress(false);
+              makeErrorToast(
+                t("interpretation-failed") ?? "Interpretation failed",
+                errorLog ?? t("ai-extraction-failed-default"),
+              );
+            }
+          } catch (err) {
+            logger.debug({ err, cityId, inventoryId, importedFileId }, "Interpret status poll failed");
+          }
+        }, 3000);
+        return;
+      }
+      setIsInterpretInProgress(false);
+      if ((result as { importStatus?: string }).importStatus === "failed") {
+        const errorLog = (result as { errorLog?: string | null }).errorLog;
+        makeErrorToast(
+          t("interpretation-failed") ?? "Interpretation failed",
+          errorLog ?? t("ai-extraction-failed-default"),
+        );
+        return;
+      }
       setTabularPendingInterpretation(false);
-      // Go to Validation results (step 1)
       setTimeout(() => goToNextStep(), 150);
     } catch (error: any) {
+      setIsInterpretInProgress(false);
       const message =
         error?.data?.message || error?.message || t("ai-extraction-failed-default");
       makeErrorToast(t("interpretation-failed") ?? "Interpretation failed", message);
@@ -385,7 +490,7 @@ export default function ImportPage(props: {
                       onRemoveFile={handleRemoveFile}
                       isUploading={isUploadingFile}
                     />
-                    {pdfPendingExtraction && isExtracting && (
+                    {pdfPendingExtraction && (isExtracting || isExtractInProgress) && (
                       <Box w="full" mt={2}>
                         <Text fontSize="sm" color="content.tertiary" mb={2}>
                           {extractionProgress && extractionProgress.total > 1
@@ -446,7 +551,7 @@ export default function ImportPage(props: {
                         )}
                       </Box>
                     )}
-                    {tabularPendingInterpretation && isInterpreting && (
+                    {tabularPendingInterpretation && (isInterpreting || isInterpretInProgress) && (
                       <Box w="full" mt={2}>
                         <Text fontSize="sm" color="content.tertiary" mb={2}>
                           {t("interpreting-file-description")}
@@ -586,12 +691,12 @@ export default function ImportPage(props: {
                   disabled={
                     !uploadedFile ||
                     !importedFileId ||
-                    (pdfPendingExtraction && isExtracting) ||
-                    (tabularPendingInterpretation && isInterpreting)
+                    (pdfPendingExtraction && (isExtracting || isExtractInProgress)) ||
+                    (tabularPendingInterpretation && (isInterpreting || isInterpretInProgress))
                   }
                   loading={
-                    (pdfPendingExtraction && isExtracting) ||
-                    (tabularPendingInterpretation && isInterpreting)
+                    (pdfPendingExtraction && (isExtracting || isExtractInProgress)) ||
+                    (tabularPendingInterpretation && (isInterpreting || isInterpretInProgress))
                   }
                 >
                   <Text

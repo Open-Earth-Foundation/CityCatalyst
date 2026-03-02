@@ -7,12 +7,10 @@
  *       - inventory
  *       - import
  *     operationId: interpretTabularImport
- *     summary: Run AI interpretation on an uploaded tabular file (Path B).
+ *     summary: Start AI interpretation on an uploaded tabular file (Path B).
  *     description: |
- *       Loads the stored file, parses it, sends content to LLM for column mapping,
- *       processes with ECRFImportService using AI-suggested detectedColumns,
- *       then sets importStatus to waiting_for_approval. Only allowed when fileType is xlsx or csv
- *       and importStatus is pending_ai_interpretation.
+ *       Returns 202 Accepted and runs interpretation in the background. Client should poll
+ *       GET .../import/{importedFileId} until importStatus is waiting_for_approval or failed.
  *     parameters:
  *       - in: path
  *         name: city
@@ -33,14 +31,12 @@
  *           type: string
  *           format: uuid
  *     responses:
- *       200:
- *         description: Interpretation completed; returns updated import record.
+ *       202:
+ *         description: Interpretation started; poll GET import status until completion.
  *       400:
  *         description: File is not tabular or not in pending_ai_interpretation status.
  *       404:
  *         description: Import file not found or access denied.
- *       502:
- *         description: LLM or processing failed.
  *       401:
  *         description: Unauthorized.
  */
@@ -67,8 +63,8 @@ import { z } from "zod";
 import { LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
 
-/** Allow time for parse + LLM + process. */
-export const maxDuration = 90;
+/** Allow time for sync validation only; interpretation runs in background. */
+export const maxDuration = 30;
 
 /** Serialize one sheet to CSV-like text (header row + sample rows). */
 function serializeSheet(
@@ -122,6 +118,219 @@ function serializeSheetsForInterpretation(
   return parts.join("\n\n");
 }
 
+type InterpretBackgroundPayload = {
+  cityId: string;
+  inventoryId: string;
+  importedFileId: string;
+  documentContent: string;
+  targetYear: number | undefined;
+  targetCity: string | undefined;
+  keyValueFormat: boolean;
+  parsedData: ParsedFileData;
+};
+
+async function runInterpretationInBackground(
+  payload: InterpretBackgroundPayload,
+): Promise<void> {
+  const {
+    cityId,
+    inventoryId,
+    importedFileId,
+    documentContent,
+    targetYear,
+    targetCity,
+    keyValueFormat,
+    parsedData,
+  } = payload;
+
+  const importedFile = await db.models.ImportedInventoryFile.findOne({
+    where: {
+      id: importedFileId,
+      inventoryId,
+      cityId,
+    },
+  });
+
+  if (!importedFile) {
+    logger.warn({ importedFileId, inventoryId, cityId }, "Import file not found in background interpret");
+    return;
+  }
+
+  const setFailed = async (message: string) => {
+    await importedFile.update({
+      importStatus: ImportStatusEnum.FAILED,
+      errorLog: message,
+      lastUpdated: new Date(),
+    });
+  };
+
+  try {
+    if (keyValueFormat) {
+      const shapedRows = await shapeKeyValueToRows(documentContent, {
+        targetYear,
+        targetCity,
+      });
+      if (!shapedRows.length) {
+        await setFailed(
+          "Key-value table could not be shaped into inventory rows; check column headers and values",
+        );
+        return;
+      }
+      const validationResults = importedFile.validationResults ?? {};
+      await importedFile.update({
+        importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+        validationResults: {
+          ...validationResults,
+          keyValueShaped: true,
+          processingResults: {
+            rowCount: shapedRows.length,
+            validRowCount: shapedRows.length,
+          },
+        },
+        rowCount: shapedRows.length,
+        mappingConfiguration: {
+          keyValueShaped: true,
+          rows: shapedRows,
+        },
+        lastUpdated: new Date(),
+      });
+      logger.info(
+        { importedFileId: importedFile.id, rowCount: shapedRows.length },
+        "Path B key-value shaping completed, waiting for approval",
+      );
+      return;
+    }
+
+    let detectedColumns: Record<string, number>;
+    try {
+      detectedColumns = await interpretTabular(documentContent, {
+        targetYear,
+        targetCity,
+      });
+    } catch (err) {
+      if (err instanceof LLMError) {
+        const msg = err.code === LLMErrorCode.BAD_REQUEST
+          ? err.message || "Document content could not be processed"
+          : err.message || "AI interpretation failed";
+        await setFailed(msg);
+        return;
+      }
+      await setFailed(err instanceof Error ? err.message : "Unknown error");
+      return;
+    }
+
+    if (!detectedColumnsMatchECRFStructure(detectedColumns)) {
+      let shapedRows: Awaited<ReturnType<typeof shapeTableToRows>>;
+      try {
+        shapedRows = await shapeTableToRows(documentContent, {
+          targetYear,
+          targetCity,
+        });
+      } catch (err) {
+        if (err instanceof LLMError) {
+          const msg = err.code === LLMErrorCode.BAD_REQUEST
+            ? err.message || "Document content could not be processed"
+            : err.message || "AI interpretation failed";
+          await setFailed(msg);
+          return;
+        }
+        await setFailed(err instanceof Error ? err.message : "Unknown error");
+        return;
+      }
+      if (!shapedRows.length) {
+        await setFailed(
+          "AI could not extract inventory rows from this table. Check that the file has recognizable sector/scope and emissions columns.",
+        );
+        return;
+      }
+      const validationResults = importedFile.validationResults ?? {};
+      await importedFile.update({
+        importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+        validationResults: {
+          ...validationResults,
+          keyValueShaped: true,
+          processingResults: {
+            rowCount: shapedRows.length,
+            validRowCount: shapedRows.length,
+          },
+        },
+        rowCount: shapedRows.length,
+        mappingConfiguration: {
+          keyValueShaped: true,
+          rows: shapedRows,
+        },
+        lastUpdated: new Date(),
+      });
+      logger.info(
+        { importedFileId: importedFile.id, rowCount: shapedRows.length },
+        "Path B AI reshape completed (non-eCRF mapping), waiting for approval",
+      );
+      return;
+    }
+
+    let importResult: Awaited<ReturnType<typeof ECRFImportService.processECRFFile>>;
+    try {
+      importResult = await ECRFImportService.processECRFFile(
+        parsedData,
+        detectedColumns,
+      );
+    } catch (err) {
+      logger.error({ err, importedFileId }, "ECRF process failed after interpretation");
+      await setFailed(err instanceof Error ? err.message : "Unknown error");
+      return;
+    }
+
+    const validationResults = importedFile.validationResults ?? {};
+    const existingErrors = Array.isArray(validationResults.errors)
+      ? validationResults.errors
+      : [];
+    const existingWarnings = Array.isArray(validationResults.warnings)
+      ? validationResults.warnings
+      : [];
+
+    await importedFile.update({
+      importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+      validationResults: {
+        ...validationResults,
+        errors: existingErrors,
+        warnings: [...existingWarnings, ...importResult.warnings],
+        detectedColumns,
+        processingResults: {
+          rowCount: importResult.rowCount,
+          validRowCount: importResult.validRowCount,
+          errors: importResult.errors,
+          warnings: importResult.warnings,
+        },
+      },
+      rowCount: importResult.rowCount,
+      mappingConfiguration: {
+        rows: importResult.rows.map((row) => ({
+          gpcRefNo: row.gpcRefNo,
+          sectorId: row.sectorId,
+          subsectorId: row.subsectorId,
+          subcategoryId: row.subcategoryId,
+          scopeId: row.scopeId,
+          hasErrors: !!row.errors && row.errors.length > 0,
+          hasWarnings: !!row.warnings && row.warnings.length > 0,
+        })),
+      },
+      lastUpdated: new Date(),
+    });
+
+    logger.info(
+      {
+        importedFileId: importedFile.id,
+        rowCount: importResult.rowCount,
+        validRowCount: importResult.validRowCount,
+      },
+      "Path B interpretation completed, waiting for approval",
+    );
+  } catch (err) {
+    logger.error({ err, importedFileId }, "Interpret background error");
+    await setFailed(err instanceof Error ? err.message : "Unknown error");
+  }
+}
+
 export const POST = apiHandler(
   async (_req, { session, params }) => {
     if (!session) {
@@ -155,9 +364,46 @@ export const POST = apiHandler(
       );
     }
 
-    if (
-      importedFile.importStatus !== ImportStatusEnum.PENDING_AI_INTERPRETATION
-    ) {
+    if (importedFile.importStatus === ImportStatusEnum.WAITING_FOR_APPROVAL) {
+      await importedFile.reload();
+      return NextResponse.json({
+        data: {
+          id: importedFile.id,
+          userId: importedFile.userId,
+          cityId: importedFile.cityId,
+          inventoryId: importedFile.inventoryId,
+          fileName: importedFile.fileName,
+          fileType: importedFile.fileType,
+          fileSize: importedFile.fileSize,
+          originalFileName: importedFile.originalFileName,
+          importStatus: importedFile.importStatus,
+          rowCount: importedFile.rowCount,
+          created: importedFile.created,
+          lastUpdated: importedFile.lastUpdated,
+        },
+      });
+    }
+    if (importedFile.importStatus === ImportStatusEnum.FAILED) {
+      await importedFile.reload();
+      return NextResponse.json({
+        data: {
+          id: importedFile.id,
+          importStatus: importedFile.importStatus,
+          errorLog: importedFile.errorLog ?? undefined,
+          userId: importedFile.userId,
+          cityId: importedFile.cityId,
+          inventoryId: importedFile.inventoryId,
+          fileName: importedFile.fileName,
+          fileType: importedFile.fileType,
+          fileSize: importedFile.fileSize,
+          originalFileName: importedFile.originalFileName,
+          rowCount: importedFile.rowCount,
+          created: importedFile.created,
+          lastUpdated: importedFile.lastUpdated,
+        },
+      });
+    }
+    if (importedFile.importStatus !== ImportStatusEnum.PENDING_AI_INTERPRETATION) {
       throw new createHttpError.BadRequest(
         "File is not in pending AI interpretation status",
       );
@@ -204,269 +450,29 @@ export const POST = apiHandler(
 
     const keyValueFormat = isKeyValueFormat(primarySheet.headers);
 
-    if (keyValueFormat) {
-      // Key-value table: column headers = (category + scope); LLM shapes into GPC rows
-      let shapedRows: Awaited<ReturnType<typeof shapeKeyValueToRows>>;
-      try {
-        shapedRows = await shapeKeyValueToRows(documentContent, {
-          targetYear,
-          targetCity,
-        });
-      } catch (err) {
-        if (err instanceof LLMError) {
-          logger.warn(
-            { code: err.code, message: err.message, importedFileId },
-            "Key-value shape LLM failed",
-          );
-          if (err.code === LLMErrorCode.BAD_REQUEST) {
-            throw new createHttpError.BadRequest(
-              err.message || "Document content could not be processed",
-            );
-          }
-          throw new createHttpError.BadGateway(
-            err.message || "AI interpretation failed",
-          );
-        }
-        throw err;
-      }
-
-      if (!shapedRows.length) {
-        throw new createHttpError.BadRequest(
-          "Key-value table could not be shaped into inventory rows; check column headers and values",
-        );
-      }
-
-      const validationResults = importedFile.validationResults ?? {};
-
-      await importedFile.update({
-        importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
-        validationResults: {
-          ...validationResults,
-          keyValueShaped: true,
-          processingResults: {
-            rowCount: shapedRows.length,
-            validRowCount: shapedRows.length,
-          },
-        },
-        rowCount: shapedRows.length,
-        mappingConfiguration: {
-          keyValueShaped: true,
-          rows: shapedRows,
-        },
-        lastUpdated: new Date(),
-      });
-
-      logger.info(
-        { importedFileId: importedFile.id, rowCount: shapedRows.length },
-        "Path B key-value shaping completed, waiting for approval",
-      );
-
-      await importedFile.reload();
-
-      return NextResponse.json({
-        data: {
-          id: importedFile.id,
-          userId: importedFile.userId,
-          cityId: importedFile.cityId,
-          inventoryId: importedFile.inventoryId,
-          fileName: importedFile.fileName,
-          fileType: importedFile.fileType,
-          fileSize: importedFile.fileSize,
-          originalFileName: importedFile.originalFileName,
-          importStatus: importedFile.importStatus,
-          rowCount: importedFile.rowCount,
-          created: importedFile.created,
-          lastUpdated: importedFile.lastUpdated,
-        },
-      });
-    }
-
-    let detectedColumns: Record<string, number>;
-    try {
-      detectedColumns = await interpretTabular(documentContent, {
-        targetYear,
-        targetCity,
-      });
-    } catch (err) {
-      if (err instanceof LLMError) {
-        logger.warn(
-          { code: err.code, message: err.message, importedFileId },
-          "LLM interpretation failed",
-        );
-        if (err.code === LLMErrorCode.BAD_REQUEST) {
-          throw new createHttpError.BadRequest(
-            err.message || "Document content could not be processed",
-          );
-        }
-        throw new createHttpError.BadGateway(
-          err.message || "AI interpretation failed",
-        );
-      }
-      throw err;
-    }
-
-    if (!detectedColumnsMatchECRFStructure(detectedColumns)) {
-      // Detected columns do not match eCRF structure → use AI to reshape table into GPC rows
-      logger.info(
-        { detectedColumns, importedFileId },
-        "Detected columns do not match eCRF structure; using AI reshape",
-      );
-      let shapedRows: Awaited<ReturnType<typeof shapeTableToRows>>;
-      try {
-        shapedRows = await shapeTableToRows(documentContent, {
-          targetYear,
-          targetCity,
-        });
-      } catch (err) {
-        if (err instanceof LLMError) {
-          logger.warn(
-            { code: err.code, message: err.message, importedFileId },
-            "AI reshape failed",
-          );
-          if (err.code === LLMErrorCode.BAD_REQUEST) {
-            throw new createHttpError.BadRequest(
-              err.message || "Document content could not be processed",
-            );
-          }
-          throw new createHttpError.BadGateway(
-            err.message || "AI interpretation failed",
-          );
-        }
-        throw err;
-      }
-
-      if (!shapedRows.length) {
-        throw new createHttpError.BadRequest(
-          "AI could not extract inventory rows from this table. Check that the file has recognizable sector/scope and emissions columns (e.g. 'Sector and scope (GPC reference number)', 'Emissions (metric tonnes CO2e)', 'Reporting year'). The response was logged for debugging.",
-        );
-      }
-
-      const validationResults = importedFile.validationResults ?? {};
-
-      await importedFile.update({
-        importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
-        validationResults: {
-          ...validationResults,
-          keyValueShaped: true,
-          processingResults: {
-            rowCount: shapedRows.length,
-            validRowCount: shapedRows.length,
-          },
-        },
-        rowCount: shapedRows.length,
-        mappingConfiguration: {
-          keyValueShaped: true,
-          rows: shapedRows,
-        },
-        lastUpdated: new Date(),
-      });
-
-      logger.info(
-        { importedFileId: importedFile.id, rowCount: shapedRows.length },
-        "Path B AI reshape completed (non-eCRF mapping), waiting for approval",
-      );
-
-      await importedFile.reload();
-
-      return NextResponse.json({
-        data: {
-          id: importedFile.id,
-          userId: importedFile.userId,
-          cityId: importedFile.cityId,
-          inventoryId: importedFile.inventoryId,
-          fileName: importedFile.fileName,
-          fileType: importedFile.fileType,
-          fileSize: importedFile.fileSize,
-          originalFileName: importedFile.originalFileName,
-          importStatus: importedFile.importStatus,
-          rowCount: importedFile.rowCount,
-          created: importedFile.created,
-          lastUpdated: importedFile.lastUpdated,
-        },
-      });
-    }
-
-    let importResult: Awaited<ReturnType<typeof ECRFImportService.processECRFFile>>;
-    try {
-      importResult = await ECRFImportService.processECRFFile(
-        parsedData,
-        detectedColumns,
-      );
-    } catch (err) {
-      logger.error({ err, importedFileId }, "ECRF process failed after interpretation");
-      await importedFile.update({
-        importStatus: ImportStatusEnum.FAILED,
-        errorLog: err instanceof Error ? err.message : "Unknown error",
-        lastUpdated: new Date(),
-      });
-      throw new createHttpError.InternalServerError(
-        `Failed to process file: ${err instanceof Error ? err.message : "Unknown error"}`,
-      );
-    }
-
-    const validationResults = importedFile.validationResults ?? {};
-    const existingErrors = Array.isArray(validationResults.errors)
-      ? validationResults.errors
-      : [];
-    const existingWarnings = Array.isArray(validationResults.warnings)
-      ? validationResults.warnings
-      : [];
-
-    await importedFile.update({
-      importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
-      validationResults: {
-        ...validationResults,
-        errors: existingErrors,
-        warnings: [...existingWarnings, ...importResult.warnings],
-        detectedColumns,
-        processingResults: {
-          rowCount: importResult.rowCount,
-          validRowCount: importResult.validRowCount,
-          errors: importResult.errors,
-          warnings: importResult.warnings,
-        },
-      },
-      rowCount: importResult.rowCount,
-      mappingConfiguration: {
-        rows: importResult.rows.map((row) => ({
-          gpcRefNo: row.gpcRefNo,
-          sectorId: row.sectorId,
-          subsectorId: row.subsectorId,
-          subcategoryId: row.subcategoryId,
-          scopeId: row.scopeId,
-          hasErrors: !!row.errors && row.errors.length > 0,
-          hasWarnings: !!row.warnings && row.warnings.length > 0,
-        })),
-      },
-      lastUpdated: new Date(),
-    });
-
-    await importedFile.reload();
-
-    logger.info(
-      {
-        importedFileId: importedFile.id,
-        rowCount: importResult.rowCount,
-        validRowCount: importResult.validRowCount,
-      },
-      "Path B interpretation completed, waiting for approval",
+    runInterpretationInBackground({
+      cityId,
+      inventoryId,
+      importedFileId,
+      documentContent,
+      targetYear,
+      targetCity,
+      keyValueFormat,
+      parsedData,
+    }).catch((err) =>
+      logger.error({ err, importedFileId }, "Interpret background failed"),
     );
 
-    return NextResponse.json({
-      data: {
-        id: importedFile.id,
-        userId: importedFile.userId,
-        cityId: importedFile.cityId,
-        inventoryId: importedFile.inventoryId,
-        fileName: importedFile.fileName,
-        fileType: importedFile.fileType,
-        fileSize: importedFile.fileSize,
-        originalFileName: importedFile.originalFileName,
-        importStatus: importedFile.importStatus,
-        rowCount: importedFile.rowCount,
-        created: importedFile.created,
-        lastUpdated: importedFile.lastUpdated,
+    return NextResponse.json(
+      {
+        data: {
+          accepted: true,
+          id: importedFileId,
+          message:
+            "Interpretation started; poll GET import status until importStatus is waiting_for_approval or failed.",
+        },
       },
-    });
+      { status: 202 },
+    );
   },
 );

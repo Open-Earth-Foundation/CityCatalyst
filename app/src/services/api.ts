@@ -1828,7 +1828,8 @@ export const api = createApi({
           response.data,
       }),
       extractImport: builder.mutation<
-        { id: string; importStatus: string; rowCount: number },
+        | { id: string; importStatus: string; rowCount: number }
+        | { accepted: true; id: string; message?: string },
         {
           cityId: string;
           inventoryId: string;
@@ -1840,12 +1841,15 @@ export const api = createApi({
           method: "POST",
         }),
         transformResponse: (response: {
-          data: { id: string; importStatus: string; rowCount: number };
+          data:
+            | { id: string; importStatus: string; rowCount: number }
+            | { accepted: true; id: string; message?: string };
         }) => response.data,
         invalidatesTags: ["Inventory"],
       }),
       interpretImport: builder.mutation<
-        { id: string; importStatus: string; rowCount?: number },
+        | { id: string; importStatus: string; rowCount?: number }
+        | { accepted: true; id: string; message?: string },
         {
           cityId: string;
           inventoryId: string;
@@ -1857,7 +1861,9 @@ export const api = createApi({
           method: "POST",
         }),
         transformResponse: (response: {
-          data: { id: string; importStatus: string; rowCount?: number };
+          data:
+            | { id: string; importStatus: string; rowCount?: number }
+            | { accepted: true; id: string; message?: string };
         }) => response.data,
         invalidatesTags: ["Inventory"],
       }),

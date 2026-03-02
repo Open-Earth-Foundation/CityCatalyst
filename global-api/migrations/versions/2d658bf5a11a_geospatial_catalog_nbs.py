@@ -34,6 +34,7 @@ def upgrade() -> None:
         sa.Column("layer_type", sa.String(length=64), nullable=False),
         sa.Column("category", sa.String(length=128), nullable=False),
 
+        sa.Column("publisher_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("dataset_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("release_id", postgresql.UUID(as_uuid=True), nullable=True),
 
@@ -55,12 +56,14 @@ def upgrade() -> None:
     )
 
     # Foreign keys (added separately so the schema-qualified refs are explicit)
+    # publisher_datasource uses a composite PK (publisher_id, dataset_id), so
+    # the catalog must reference both columns together.
     op.create_foreign_key(
         "fk_nbs_geospatial_catalog_dataset",
         source_table="nbs_geospatial_catalog",
         referent_table="publisher_datasource",
-        local_cols=["dataset_id"],
-        remote_cols=["dataset_id"],
+        local_cols=["publisher_id", "dataset_id"],
+        remote_cols=["publisher_id", "dataset_id"],
         source_schema="modelled",
         referent_schema="modelled",
         ondelete="RESTRICT",
@@ -111,7 +114,7 @@ def upgrade() -> None:
     op.create_unique_constraint(
         "uq_nbs_geospatial_catalog_dataset_release_name",
         "nbs_geospatial_catalog",
-        ["dataset_id", "release_id", "name"],
+        ["publisher_id", "dataset_id", "release_id", "name"],
         schema="modelled",
     )
 

@@ -43,7 +43,7 @@ def _catalog_projection(include: str) -> str:
         return "c.*"
     return """
         c.layer_input_id,
-        c.layer_name,
+        c.name AS layer_name,
         c.layer_type,
         c.category,
         c.dataset_id,

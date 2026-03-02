@@ -12,10 +12,10 @@ export default class VersionHistoryService {
     EmissionsFactor: db.models.EmissionsFactor,
 
     // HIAP module
-    ActionPlan: db.models.ActionPlan,
-    UnrankedActionSelection: db.models.UnrankedActionSelection,
     HighImpactActionRanked: db.models.HighImpactActionRanked,
-    HighImpactActionRanking: db.models.HighImpactActionRanking,
+    // ActionPlan: db.models.ActionPlan,
+    // UnrankedActionSelection: db.models.UnrankedActionSelection,
+    // HighImpactActionRanking: db.models.HighImpactActionRanking,
   };
 
   static MODEL_ID_COLUMNS: Record<string, string> = {
@@ -26,10 +26,15 @@ export default class VersionHistoryService {
     EmissionsFactor: "id",
 
     // HIAP module
-    ActionPlan: "id",
-    UnrankedActionSelection: "id",
     HighImpactActionRanked: "id",
-    HighImpactActionRanking: "id",
+    // ActionPlan: "id",
+    // UnrankedActionSelection: "id",
+    // HighImpactActionRanking: "id",
+  };
+
+  static MODULE_HANDLES_DELETIONS: Record<string, boolean> = {
+    ghgi: true,
+    hiap: false,
   };
 
   static async getVersionHistory(
@@ -157,6 +162,11 @@ export default class VersionHistoryService {
       throw new createHttpError.BadRequest("no-newer-versions-found");
     }
 
+    const moduleName = restoredVersion.moduleName;
+    const moduleHandlesDeletions = moduleName
+      ? (VersionHistoryService.MODULE_HANDLES_DELETIONS[moduleName] ?? true)
+      : true;
+
     await db.sequelize?.transaction(async (transaction) => {
       for (const version of newerVersions) {
         const model = VersionHistoryService.MODELS[version.table!];
@@ -185,7 +195,7 @@ export default class VersionHistoryService {
               transaction,
             });
           }
-        } else {
+        } else if (moduleHandlesDeletions) {
           // delete table entry as it didn't exist previously
           await model.destroy({
             where: {

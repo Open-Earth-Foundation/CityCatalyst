@@ -172,3 +172,175 @@ def test_get_city_layer_assets_invalid_assets_contract(monkeypatch):
     response = client.get("/api/v1/nbs/geospatial-publications/cities/USA%200US-CA-SF/layers/layer-1/assets")
     assert response.status_code == 500
     assert "raster publication" in response.json()["detail"]
+
+
+def test_get_catalog_layer_by_id_success(monkeypatch):
+    class DummySession:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+        def execute(self, query, params):
+            class DummyResult:
+                def mappings(self):
+                    return self
+
+                def first(self):
+                    return {
+                        "layer_input_id": "layer-1",
+                        "name": "Mangrove extent",
+                        "layer_type": "ecosystem_type",
+                    }
+
+            return DummyResult()
+
+    monkeypatch.setattr("routes.nbs_geospatial_endpoint.SessionLocal", lambda: DummySession())
+
+    response = client.get("/api/v1/nbs/geospatial-catalog/layers/layer-1")
+    assert response.status_code == 200
+    assert response.json()["name"] == "Mangrove extent"
+
+
+def test_get_catalog_layer_by_id_not_found(monkeypatch):
+    class DummySession:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+        def execute(self, query, params):
+            class DummyResult:
+                def mappings(self):
+                    return self
+
+                def first(self):
+                    return None
+
+            return DummyResult()
+
+    monkeypatch.setattr("routes.nbs_geospatial_endpoint.SessionLocal", lambda: DummySession())
+
+    response = client.get("/api/v1/nbs/geospatial-catalog/layers/layer-missing")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Catalog layer not found"
+
+
+def test_list_publications_for_layer_success(monkeypatch):
+    class DummySession:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+        def execute(self, query, params):
+            class DummyResult:
+                def mappings(self):
+                    return self
+
+                def all(self):
+                    return [
+                        {
+                            "publication_id": "pub-1",
+                            "layer_input_id": "layer-1",
+                            "city_id": "USA 0US-CA-SF",
+                            "data_type": "raster",
+                            "assets": {"cog_url": "https://example.com/layer.tif"},
+                            "name": "Heat hazard",
+                        }
+                    ]
+
+            return DummyResult()
+
+    monkeypatch.setattr("routes.nbs_geospatial_endpoint.SessionLocal", lambda: DummySession())
+
+    response = client.get("/api/v1/nbs/geospatial-publications/layers/layer-1/publications")
+    assert response.status_code == 200
+    payload = response.json()
+    assert "publications" in payload
+    assert len(payload["publications"]) == 1
+
+
+def test_list_publications_for_layer_empty(monkeypatch):
+    class DummySession:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+        def execute(self, query, params):
+            class DummyResult:
+                def mappings(self):
+                    return self
+
+                def all(self):
+                    return []
+
+            return DummyResult()
+
+    monkeypatch.setattr("routes.nbs_geospatial_endpoint.SessionLocal", lambda: DummySession())
+
+    response = client.get("/api/v1/nbs/geospatial-publications/layers/layer-1/publications")
+    assert response.status_code == 200
+    assert response.json() == {"publications": []}
+
+
+def test_get_publication_by_id_success(monkeypatch):
+    class DummySession:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+        def execute(self, query, params):
+            class DummyResult:
+                def mappings(self):
+                    return self
+
+                def first(self):
+                    return {
+                        "publication_id": "pub-1",
+                        "layer_input_id": "layer-1",
+                        "city_id": "USA 0US-CA-SF",
+                        "data_type": "raster",
+                        "assets": {"cog_url": "https://example.com/layer.tif"},
+                        "name": "Heat hazard",
+                    }
+
+            return DummyResult()
+
+    monkeypatch.setattr("routes.nbs_geospatial_endpoint.SessionLocal", lambda: DummySession())
+
+    response = client.get("/api/v1/nbs/geospatial-publications/publications/pub-1")
+    assert response.status_code == 200
+    assert response.json()["publication_id"] == "pub-1"
+
+
+def test_get_publication_by_id_not_found(monkeypatch):
+    class DummySession:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+        def execute(self, query, params):
+            class DummyResult:
+                def mappings(self):
+                    return self
+
+                def first(self):
+                    return None
+
+            return DummyResult()
+
+    monkeypatch.setattr("routes.nbs_geospatial_endpoint.SessionLocal", lambda: DummySession())
+
+    response = client.get("/api/v1/nbs/geospatial-publications/publications/pub-missing")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Publication not found"

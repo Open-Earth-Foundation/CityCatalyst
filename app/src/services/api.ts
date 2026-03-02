@@ -1844,6 +1844,23 @@ export const api = createApi({
         }) => response.data,
         invalidatesTags: ["Inventory"],
       }),
+      interpretImport: builder.mutation<
+        { id: string; importStatus: string; rowCount?: number },
+        {
+          cityId: string;
+          inventoryId: string;
+          importedFileId: string;
+        }
+      >({
+        query: ({ cityId, inventoryId, importedFileId }) => ({
+          url: `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}/interpret`,
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data: { id: string; importStatus: string; rowCount?: number };
+        }) => response.data,
+        invalidatesTags: ["Inventory"],
+      }),
       approveImport: builder.mutation<
         ImportedFileResponse,
         {

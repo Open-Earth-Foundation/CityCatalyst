@@ -109,6 +109,8 @@ export const POST = apiHandler(
     // Get form data
     const formData = await req.formData();
     const file = formData?.get("file") as unknown as File;
+    const pathB =
+      formData?.get("pathB") === "true" || formData?.get("pathB") === true;
 
     if (!file) {
       throw new createHttpError.BadRequest(
@@ -116,13 +118,57 @@ export const POST = apiHandler(
       );
     }
 
-    // Validate file using FileValidatorService (includes structure validation)
-    const validationResult =
-      await FileValidatorService.validateFileStructure(file);
+    // Path selection for tabular (xlsx/csv): only use eCRF path when file has full eCRF structure (all required columns).
+    // Otherwise use Path B (Interpret with AI). pathB form flag forces Path B without running structure check.
+    let validationResult = pathB
+      ? FileValidatorService.validateFile(file)
+      : await FileValidatorService.validateFileStructure(file);
+
+    let usePathB = pathB;
+    const isTabular =
+      validationResult.fileType === "xlsx" || validationResult.fileType === "csv";
+    if (!pathB && isTabular && !validationResult.isValid) {
+      // Tabular file does not have full eCRF structure → use Path B only (do not use eCRF path)
+      logger.info(
+        { errors: validationResult.errors },
+        "Tabular file does not have eCRF structure; using Path B (Interpret with AI)",
+      );
+      validationResult = FileValidatorService.validateFile(file);
+      usePathB = validationResult.isValid;
+    } else if (
+      !pathB &&
+      isTabular &&
+      validationResult.isValid &&
+      !FileValidatorService.hasDistinctRequiredECRFColumns(
+        validationResult.detectedColumns,
+      )
+    ) {
+      // Structure passed but required identity columns collapse into one (e.g. single "Sector and scope (GPC ref)") → Path B
+      logger.info(
+        { detectedColumns: validationResult.detectedColumns },
+        "Tabular file required columns not distinct; using Path B (Interpret with AI)",
+      );
+      validationResult = FileValidatorService.validateFile(file);
+      usePathB = validationResult.isValid;
+    } else if (!pathB && isTabular && validationResult.isValid && validationResult.isCIRIS) {
+      // CIRIS (CDP) format: has eCRF_3 sheet but should use AI extraction from it, not standard eCRF path
+      logger.info(
+        "CIRIS (CDP) format detected; using Path B (Interpret with AI) for eCRF_3 sheet",
+      );
+      validationResult = FileValidatorService.validateFile(file);
+      usePathB = validationResult.isValid;
+    }
 
     if (!validationResult.isValid) {
       throw new createHttpError.BadRequest(
         `File validation failed: ${validationResult.errors.join(", ")}`,
+      );
+    }
+
+    // Path B only accepts xlsx/csv
+    if (usePathB && validationResult.fileType !== "xlsx" && validationResult.fileType !== "csv") {
+      throw new createHttpError.BadRequest(
+        "Path B (Interpret with AI) accepts only xlsx or csv files.",
       );
     }
 
@@ -131,7 +177,6 @@ export const POST = apiHandler(
     const buffer = Buffer.from(bytes);
 
     // Generate sanitized file name (for now, just use the original with UUID prefix)
-    // In a real implementation, you might want to sanitize special characters
     const originalFileName = file.name;
     const fileName = `${randomUUID()}-${originalFileName}`;
 
@@ -150,7 +195,9 @@ export const POST = apiHandler(
       originalFileName,
       importStatus: isPdf
         ? ImportStatusEnum.PENDING_AI_EXTRACTION
-        : ImportStatusEnum.PROCESSING,
+        : usePathB
+          ? ImportStatusEnum.PENDING_AI_INTERPRETATION
+          : ImportStatusEnum.PROCESSING,
       validationResults: {
         errors: validationResult.errors,
         warnings: validationResult.warnings,
@@ -163,6 +210,29 @@ export const POST = apiHandler(
       logger.info(
         { importedFileId: importedFile.id },
         "PDF uploaded, pending AI extraction",
+      );
+      return NextResponse.json({
+        data: {
+          id: importedFile.id,
+          userId: importedFile.userId,
+          cityId: importedFile.cityId,
+          inventoryId: importedFile.inventoryId,
+          fileName: importedFile.fileName,
+          fileType: importedFile.fileType,
+          fileSize: importedFile.fileSize,
+          originalFileName: importedFile.originalFileName,
+          importStatus: importedFile.importStatus,
+          created: importedFile.created,
+          lastUpdated: importedFile.lastUpdated,
+        },
+      });
+    }
+
+    // Path B (tabular): stop here; user will call Interpret API to run AI column mapping
+    if (usePathB) {
+      logger.info(
+        { importedFileId: importedFile.id },
+        "Tabular file uploaded (Path B), pending AI interpretation",
       );
       return NextResponse.json({
         data: {

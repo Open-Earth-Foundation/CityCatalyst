@@ -59,8 +59,8 @@ import {
 import { LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
 
-/** Allow long-running PDF + LLM extraction. */
-export const maxDuration = 120;
+/** Allow long-running PDF + LLM extraction. Chunks run sequentially; 300s supports ~3–4 chunks at ~90s each. For K8s/ingress, ensure timeout is at least this (e.g. nginx proxy_read_timeout). */
+export const maxDuration = 300;
 
 export const POST = apiHandler(
   async (_req, { session, params }) => {

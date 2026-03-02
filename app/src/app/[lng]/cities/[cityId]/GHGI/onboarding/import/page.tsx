@@ -125,6 +125,8 @@ export default function ImportPage(props: {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [importedFileId, setImportedFileId] = useState<string | null>(null);
   const [pdfPendingExtraction, setPdfPendingExtraction] = useState(false);
+  const [tabularPendingInterpretation, setTabularPendingInterpretation] =
+    useState(false);
   const [mappingOverrides, setMappingOverrides] = useState<
     Record<string, string>
   >({});
@@ -155,6 +157,8 @@ export default function ImportPage(props: {
     api.useUploadInventoryFileMutation();
   const [extractImport, { isLoading: isExtracting }] =
     api.useExtractImportMutation();
+  const [interpretImport, { isLoading: isInterpreting }] =
+    api.useInterpretImportMutation();
   const [getImportStatus] = api.useLazyGetImportStatusQuery();
 
   const handleFileUpload = async (file: File) => {
@@ -181,9 +185,15 @@ export default function ImportPage(props: {
       setPdfPendingExtraction(
         result.importStatus === "pending_ai_extraction" || result.fileType === "pdf",
       );
+      setTabularPendingInterpretation(
+        result.importStatus === "pending_ai_interpretation",
+      );
 
-      // PDF (Path C): stay on step 0 for "Extract with AI"; xlsx/csv advance to step 1
-      if (result.importStatus !== "pending_ai_extraction") {
+      // PDF (Path C): stay on step 0 for "Extract with AI"; Path B (tabular): stay for "Interpret with AI"; eCRF: advance to step 1
+      if (
+        result.importStatus !== "pending_ai_extraction" &&
+        result.importStatus !== "pending_ai_interpretation"
+      ) {
         setTimeout(() => goToNextStep(), 150);
       }
     } catch (error: any) {
@@ -207,6 +217,7 @@ export default function ImportPage(props: {
     setUploadedFile(null);
     setImportedFileId(null);
     setPdfPendingExtraction(false);
+    setTabularPendingInterpretation(false);
     setStep(0);
   };
 
@@ -255,6 +266,28 @@ export default function ImportPage(props: {
         extractionPollRef.current = null;
       }
       setExtractionProgress(null);
+    }
+  };
+
+  const handleInterpretWithAi = async () => {
+    if (!importedFileId || !inventoryId) return;
+    makeInfoToast(
+      t("interpreting-file"),
+      t("interpreting-file-description"),
+    );
+    try {
+      await interpretImport({
+        cityId,
+        inventoryId,
+        importedFileId,
+      }).unwrap();
+      setTabularPendingInterpretation(false);
+      // Go to Validation results (step 1)
+      setTimeout(() => goToNextStep(), 150);
+    } catch (error: any) {
+      const message =
+        error?.data?.message || error?.message || t("ai-extraction-failed-default");
+      makeErrorToast(t("interpretation-failed") ?? "Interpretation failed", message);
     }
   };
 
@@ -413,6 +446,44 @@ export default function ImportPage(props: {
                         )}
                       </Box>
                     )}
+                    {tabularPendingInterpretation && isInterpreting && (
+                      <Box w="full" mt={2}>
+                        <Text fontSize="sm" color="content.tertiary" mb={2}>
+                          {t("interpreting-file-description")}
+                        </Text>
+                        <Box
+                          w="full"
+                          h="8px"
+                          bg="background.subtle"
+                          borderRadius="10px"
+                          overflow="hidden"
+                          position="relative"
+                        >
+                          <motion.div
+                            style={{
+                              position: "absolute",
+                              left: 0,
+                              top: 0,
+                              height: "100%",
+                              width: "40%",
+                            }}
+                            animate={{ x: ["0%", "250%"] }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                            }}
+                          >
+                            <Box
+                              h="full"
+                              w="full"
+                              bg="interactive.primary"
+                              borderRadius="10px"
+                            />
+                          </motion.div>
+                        </Box>
+                      </Box>
+                    )}
                   </Box>
                 </motion.div>
               )}
@@ -505,15 +576,23 @@ export default function ImportPage(props: {
                   py="16px"
                   px="24px"
                   onClick={
-                    pdfPendingExtraction ? handleExtractWithAi : handleContinue
+                    pdfPendingExtraction
+                      ? handleExtractWithAi
+                      : tabularPendingInterpretation
+                        ? handleInterpretWithAi
+                        : handleContinue
                   }
                   h="64px"
                   disabled={
                     !uploadedFile ||
                     !importedFileId ||
-                    (pdfPendingExtraction && isExtracting)
+                    (pdfPendingExtraction && isExtracting) ||
+                    (tabularPendingInterpretation && isInterpreting)
                   }
-                  loading={pdfPendingExtraction && isExtracting}
+                  loading={
+                    (pdfPendingExtraction && isExtracting) ||
+                    (tabularPendingInterpretation && isInterpreting)
+                  }
                 >
                   <Text
                     fontFamily="button.md"
@@ -522,7 +601,9 @@ export default function ImportPage(props: {
                   >
                     {pdfPendingExtraction
                       ? t("extract-with-ai")
-                      : t("continue")}
+                      : tabularPendingInterpretation
+                        ? t("interpret-with-ai")
+                        : t("continue")}
                   </Text>
                   <MdArrowForward height="24px" width="24px" />
                 </Button>

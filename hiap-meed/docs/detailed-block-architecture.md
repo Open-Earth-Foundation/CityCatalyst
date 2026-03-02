@@ -1,5 +1,21 @@
 # Detailed block architecture
 
+## Implementation status
+
+| Block | Sub-feature | Status |
+|---|---|---|
+| Hard Filter | Exclusion by `action_id` | Implemented |
+| Hard Filter | Legal requirement check | Not started |
+| Impact | GPC reference evidence collection | Implemented (stub: score = 0.0) |
+| Impact | Activity relevance × reduction band × timeline | Not started |
+| Alignment | Attribute-presence evidence | Implemented (stub: score = 0.0) |
+| Alignment | Policy signal matching + city preference boost | Not started |
+| Feasibility | City context row-count evidence | Implemented (stub: score = 0.0) |
+| Feasibility | Soft legal signals + socio-economic fit rules | Not started |
+| Weighted Sum | Weighted aggregation, sort, rank, `top_n` | Implemented |
+
+---
+
 ## Hard Filter Architecture
 
 This block removes actions that are not eligible before any scoring happens. It applies two binary checks:

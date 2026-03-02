@@ -1,7 +1,7 @@
 [project]
 name = "hiap-meed"
 version = "0.1.0"
-description = "Add your description here"
+description = "MEED+ prioritization engine: scores and ranks city climate actions across impact, alignment, and feasibility."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

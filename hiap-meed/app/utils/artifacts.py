@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def _artifacts_enabled() -> bool:
+    """Return True when ARTIFACT_LOG_JSONL env var is set to a truthy value."""
     value = os.getenv("ARTIFACT_LOG_JSONL", "true").strip().lower()
     return value in {"1", "true", "yes", "on"}
 

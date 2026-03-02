@@ -88,7 +88,7 @@ Minimal payload:
 ```bash
 curl -X POST http://localhost:8000/v1/prioritize \
   -H 'Content-Type: application/json' \
-  -d '{"locode":"CL-SCL","excluded_action_ids":[]}'
+  -d '{"locode":"CL IQQ","excluded_action_ids":[]}'
 ```
 
 Payload with `top_n`:
@@ -96,7 +96,7 @@ Payload with `top_n`:
 ```bash
 curl -X POST http://localhost:8000/v1/prioritize \
   -H 'Content-Type: application/json' \
-  -d '{"locode":"CL-SCL","excluded_action_ids":[],"top_n":5}'
+  -d '{"locode":"CL IQQ","excluded_action_ids":[],"top_n":5}'
 ```
 
 Payload with exclusions and custom weights:
@@ -104,7 +104,7 @@ Payload with exclusions and custom weights:
 ```bash
 curl -X POST http://localhost:8000/v1/prioritize \
   -H 'Content-Type: application/json' \
-  -d '{"locode":"CL-SCL","excluded_action_ids":["c40_0020"],"weights_override":{"impact":0.5,"alignment":0.3,"feasibility":0.2},"top_n":10}'
+  -d '{"locode":"CL IQQ","excluded_action_ids":["c40_0020"],"weights_override":{"impact":0.5,"alignment":0.3,"feasibility":0.2},"top_n":10}'
 ```
 
 Example response:
@@ -114,7 +114,7 @@ Example response:
   "ranked_action_ids": ["c40_0010", "c40_0030"],
   "metadata": {
     "request_id": "d1db6269-4cf9-4d62-8f4c-8f4ce631fbd2",
-    "locode": "CL-SCL",
+    "locode": "CL IQQ",
     "weights": {
       "impact": 0.5,
       "alignment": 0.3,

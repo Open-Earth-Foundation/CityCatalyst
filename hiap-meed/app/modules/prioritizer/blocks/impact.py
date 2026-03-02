@@ -6,6 +6,7 @@ from app.modules.prioritizer.models import Action, BlockScoreResult
 
 
 def _read_gpc_refs(impact_row: dict[str, object]) -> list[str]:
+    """Extract and deduplicate GPC reference numbers from a single impact row."""
     refs: list[str] = []
     single_ref = impact_row.get("gpc_reference_number")
     if isinstance(single_ref, str) and single_ref.strip():

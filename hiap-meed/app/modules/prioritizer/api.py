@@ -23,6 +23,7 @@ router = APIRouter(tags=["prioritization"])
 
 
 def _error_payload(request_id: UUID, message: str) -> dict[str, str]:
+    """Build a consistent JSON error body including the request ID."""
     return {"request_id": str(request_id), "error": message}
 
 

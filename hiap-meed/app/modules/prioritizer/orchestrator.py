@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 def _safe_block_evidence(
     evidence: dict[str, dict[str, object]] | None, action_id: str
 ) -> dict[str, object]:
+    """Return evidence dict for one action, or an empty dict if absent."""
     if evidence is None:
         return {}
     action_evidence = evidence.get(action_id)

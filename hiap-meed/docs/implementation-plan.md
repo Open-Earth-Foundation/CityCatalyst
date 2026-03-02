@@ -520,7 +520,7 @@ Suggested upstream endpoints (informational, not binding):
 - City API: `GET /v1/cities/{locode}` -> `CityData`
 - Action API: `GET /v1/actions` -> `list[Action]`
 
-You can also check hiap\app\services for example APIs (the provider will be the same, but the endpoints will be different). Orrientate on this and maybe improve the API endpoints and the protocol.
+When implementing HTTP clients, follow the same pattern used in `app/services/data_clients.py`: define a base class with the required interface and provide a concrete HTTP implementation alongside the existing stub.
 
 ---
 

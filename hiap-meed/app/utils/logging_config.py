@@ -1,3 +1,5 @@
+"""Root logging configuration for the HIAP-MEED service."""
+
 import logging
 import os
 from pathlib import Path

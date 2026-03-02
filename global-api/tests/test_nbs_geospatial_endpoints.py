@@ -22,7 +22,7 @@ def test_get_catalog_layers_thin_default(monkeypatch):
                     return [
                         {
                             "layer_input_id": "layer-1",
-                            "layer_name": "Mangrove extent",
+                            "name": "Mangrove extent",
                             "layer_type": "ecosystem_type",
                             "category": "coastal",
                             "dataset_id": "dataset-1",
@@ -41,7 +41,7 @@ def test_get_catalog_layers_thin_default(monkeypatch):
     assert response.status_code == 200
     payload = response.json()
     assert "layers" in payload
-    assert payload["layers"][0]["layer_name"] == "Mangrove extent"
+    assert payload["layers"][0]["name"] == "Mangrove extent"
 
 
 def test_get_catalog_layers_full_projection(monkeypatch):
@@ -96,7 +96,7 @@ def test_get_city_layers_latest_success(monkeypatch):
                             "release_id": "release-1",
                             "data_type": "raster",
                             "assets": {"cog_url": "https://example.com/layer.tif"},
-                            "layer_name": "Heat hazard",
+                            "name": "Heat hazard",
                         }
                     ]
 

@@ -43,7 +43,7 @@ def _catalog_projection(include: str) -> str:
         return "c.*"
     return """
         c.layer_input_id,
-        c.name AS layer_name,
+        c.name,
         c.layer_type,
         c.category,
         c.dataset_id,
@@ -71,7 +71,7 @@ def _publication_projection() -> str:
         p.published_at,
         p.created_at,
         p.updated_at,
-        c.name AS layer_name,
+        c.name,
         c.layer_type,
         c.category,
         c.dataset_id,
@@ -194,7 +194,7 @@ def get_nbs_geospatial_publications_by_city(
             SELECT *
             FROM ranked
             WHERE rn = 1
-            ORDER BY layer_name ASC;
+            ORDER BY name ASC;
             """
         )
     else:

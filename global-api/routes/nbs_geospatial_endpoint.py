@@ -263,32 +263,18 @@ def get_nbs_layer_assets(
         where.append("p.release_id::text = :release_id")
         params["release_id"] = release_id
 
-    if latest:
-        query = text(
-            f"""
-            SELECT
-                {_publication_projection()}
-            FROM modelled.nbs_layer_publication p
-            JOIN modelled.nbs_geospatial_catalog c
-              ON c.layer_input_id = p.layer_input_id
-            WHERE {" AND ".join(where)}
-            ORDER BY COALESCE(p.published_at, p.created_at) DESC, p.created_at DESC
-            LIMIT 1;
-            """
-        )
-    else:
-        query = text(
-            f"""
-            SELECT
-                {_publication_projection()}
-            FROM modelled.nbs_layer_publication p
-            JOIN modelled.nbs_geospatial_catalog c
-              ON c.layer_input_id = p.layer_input_id
-            WHERE {" AND ".join(where)}
-            ORDER BY COALESCE(p.published_at, p.created_at) DESC, p.created_at DESC
-            LIMIT 1;
-            """
-        )
+    query = text(
+        f"""
+        SELECT
+            {_publication_projection()}
+        FROM modelled.nbs_layer_publication p
+        JOIN modelled.nbs_geospatial_catalog c
+          ON c.layer_input_id = p.layer_input_id
+        WHERE {" AND ".join(where)}
+        ORDER BY COALESCE(p.published_at, p.created_at) DESC, p.created_at DESC
+        LIMIT 1;
+        """
+    )
 
     with SessionLocal() as session:
         row = session.execute(query, params).mappings().first()

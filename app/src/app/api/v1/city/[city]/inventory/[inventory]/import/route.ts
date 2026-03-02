@@ -109,8 +109,7 @@ export const POST = apiHandler(
     // Get form data
     const formData = await req.formData();
     const file = formData?.get("file") as unknown as File;
-    const pathB =
-      formData?.get("pathB") === "true" || formData?.get("pathB") === true;
+    const pathB = formData?.get("pathB") === "true";
 
     if (!file) {
       throw new createHttpError.BadRequest(

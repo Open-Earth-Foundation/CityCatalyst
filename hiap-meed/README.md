@@ -85,6 +85,36 @@ Response fields:
 - `ranked_action_ids` (`string[]`): Ordered action IDs from highest to lowest priority.
 - `metadata` (`object`): Request ID, resolved weights, timing, and action counts.
 
+Example JSON request bodies (using mock data from `data/`):
+
+```json
+{
+  "locode": "CL ARI",
+  "excluded_action_ids": [
+    "c40_0023",
+    "c40_0037",
+    "icare_0001"
+  ],
+  "top_n": 10
+}
+```
+
+```json
+{
+  "locode": "CL IQQ",
+  "excluded_action_ids": [
+    "c40_0010",
+    "icare_0016"
+  ],
+  "weights_override": {
+    "impact": 0.5,
+    "alignment": 0.3,
+    "feasibility": 0.2
+  },
+  "top_n": 5
+}
+```
+
 Minimal payload:
 
 ```bash

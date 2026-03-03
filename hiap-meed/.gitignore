@@ -16,3 +16,5 @@ __pycache__/
 # Runtime artifacts
 logs/
 
+# Implementation plan
+implementation-plan.md

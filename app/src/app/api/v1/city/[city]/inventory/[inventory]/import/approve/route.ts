@@ -164,16 +164,18 @@ export const POST = apiHandler(
       const validationResults = (importedFile.validationResults as any) || {};
       let importResult: ECRFImportResult;
 
-      // Path C: PDF with AI-extracted rows – skip file parse, convert rows to ECRF format.
-      // mappingOverrides for PDF: per-row field overrides, keyed by row index (e.g. { "0": { sector: "X", subsector: "Y" } }).
+      // Path C (PDF) or Path B key-value: AI-shaped rows – convert ExtractedRow[] to ECRF format (no file parse).
+      // mappingOverrides: per-row field overrides keyed by row index (e.g. { "0": { sector: "X", subsector: "Y" } }).
       const extractedRows = mappingConfiguration.rows as
         | ExtractedRow[]
         | undefined;
-      if (
-        importedFile.fileType === "pdf" &&
+      const keyValueShaped =
+        (mappingConfiguration as { keyValueShaped?: boolean }).keyValueShaped === true;
+      const useExtractedRows =
+        (importedFile.fileType === "pdf" || keyValueShaped) &&
         Array.isArray(extractedRows) &&
-        extractedRows.length > 0
-      ) {
+        extractedRows.length > 0;
+      if (useExtractedRows) {
         const errors: string[] = [];
         const warnings: string[] = [];
         const rows: ECRFRowData[] = [];
@@ -189,18 +191,39 @@ export const POST = apiHandler(
         }
 
         const allowedPdfOverrideKeys = new Set([
-          "year", "sector", "subsector", "scope", "category", "totalCO2e",
-          "co2", "ch4", "n2o", "gpcRefNo", "source", "methodology",
-          "activityAmount", "activityUnit", "activityType", "activityDataSource", "activityDataQuality",
+          "year",
+          "sector",
+          "subsector",
+          "scope",
+          "category",
+          "totalCO2e",
+          "co2",
+          "ch4",
+          "n2o",
+          "gpcRefNo",
+          "source",
+          "methodology",
+          "activityAmount",
+          "activityUnit",
+          "activityType",
+          "activityDataSource",
+          "activityDataQuality",
         ]);
 
         for (let i = 0; i < extractedRows.length; i++) {
           const baseRow = extractedRows[i];
-          const rowOverrides = mappingOverrides && typeof mappingOverrides[String(i)] === "object" && mappingOverrides[String(i)] !== null
-            ? (mappingOverrides[String(i)] as Record<string, unknown>)
-            : null;
+          const rowOverrides =
+            mappingOverrides &&
+            typeof mappingOverrides[String(i)] === "object" &&
+            mappingOverrides[String(i)] !== null
+              ? (mappingOverrides[String(i)] as Record<string, unknown>)
+              : null;
           const row: ExtractedRow = rowOverrides
-            ? applyPdfFieldOverrides(baseRow, rowOverrides, allowedPdfOverrideKeys)
+            ? applyPdfFieldOverrides(
+                baseRow,
+                rowOverrides,
+                allowedPdfOverrideKeys,
+              )
             : baseRow;
 
           const sector = row.sector?.trim() ?? "";
@@ -231,7 +254,9 @@ export const POST = apiHandler(
           const gpcMapping =
             await ECRFImportService.lookupGPCReference(gpcRefNo);
           if (!gpcMapping) {
-            errors.push(`Row ${i + 1}: GPC reference "${gpcRefNo}" not in taxonomy`);
+            errors.push(
+              `Row ${i + 1}: GPC reference "${gpcRefNo}" not in taxonomy`,
+            );
             rows.push({
               gpcRefNo,
               sectorId: "",
@@ -254,9 +279,7 @@ export const POST = apiHandler(
             v != null && Number.isFinite(v) ? Number(v) : undefined;
           if (row.year != null && Number.isFinite(row.year)) {
             inferredYear =
-              inferredYear != null
-                ? inferredYear
-                : (row.year as number);
+              inferredYear != null ? inferredYear : (row.year as number);
           }
 
           rows.push({
@@ -269,12 +292,19 @@ export const POST = apiHandler(
             ch4: num(row.ch4),
             n2o: num(row.n2o),
             totalCO2e: num(row.totalCO2e),
-            year: row.year != null && Number.isFinite(row.year) ? row.year : undefined,
+            year:
+              row.year != null && Number.isFinite(row.year)
+                ? row.year
+                : undefined,
             rowIndex: i,
             methodology: row.methodology?.trim() || undefined,
-            activityAmount: row.activityAmount != null && Number.isFinite(row.activityAmount) ? row.activityAmount : undefined,
+            activityAmount:
+              row.activityAmount != null && Number.isFinite(row.activityAmount)
+                ? row.activityAmount
+                : undefined,
             activityUnit: row.activityUnit?.trim() || undefined,
-            activityType: (row.category?.trim() || row.activityType?.trim()) || undefined,
+            activityType:
+              row.category?.trim() || row.activityType?.trim() || undefined,
             activityDataSource: row.activityDataSource?.trim() || undefined,
             activityDataQuality: row.activityDataQuality?.trim() || undefined,
           });
@@ -289,7 +319,7 @@ export const POST = apiHandler(
           inferredYearFromFile: inferredYear,
         };
       } else {
-        // xlsx/csv: parse file and process with ECRF pipeline
+        // xlsx/csv (column-mapped, not key-value shaped): parse file and process with ECRF pipeline
         if (!importedFile.data) {
           throw new Error("File data not found");
         }

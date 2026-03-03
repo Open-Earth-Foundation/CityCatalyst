@@ -35,6 +35,7 @@ from routes.emissionfactor_methodology_endpoint import api_router as emissionfac
 from routes.emissionfactor_datasource_endpoint import api_router as emissionfactor_datasource_route
 from routes.emissionfactor_emissionfactor_datasource_endpoint import api_router as emissionfactor_emissionfactor_datasource_route
 from routes.emissionfactor_emissionsfactor_endpoint import api_router as emissionfactor_emissionsfactor_route
+from routes.nbs_geospatial_endpoint import api_router as nbs_geospatial_route
 
 # Formula Input endpoints
 from routes.formulainput_publisher_endpoint import api_router as formulainput_publisher_route
@@ -263,6 +264,12 @@ app.include_router(
 app.include_router(
     climate_actions_route,
     tags=["Climate Actions"],
+)
+
+## Endpoints for NBS Geospatial
+app.include_router(
+    nbs_geospatial_route,
+    tags=["NBS Geospatial"],
 )
 
 """

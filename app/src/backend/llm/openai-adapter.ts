@@ -54,7 +54,7 @@ export async function openaiComplete(
   });
 
   const model = options.model ?? config.model;
-  // Some models (e.g. gpt-5-mini) only support default temperature (1); omit when 0.1 to avoid 400
+  // Some models (e.g. gpt-4o-mini) only support default temperature (1); omit when 0.1 to avoid 400
   const sendTemperature =
     options.temperature !== undefined && options.temperature !== 0.1;
 
@@ -65,7 +65,7 @@ export async function openaiComplete(
       content: m.content,
     })),
     ...(sendTemperature && { temperature: options.temperature }),
-    // Newer models (e.g. gpt-5-mini) require max_completion_tokens; older accept both
+    // Newer models (e.g. gpt-4o-mini) require max_completion_tokens; older accept both
     ...(options.maxTokens !== undefined && {
       max_completion_tokens: options.maxTokens,
     }),

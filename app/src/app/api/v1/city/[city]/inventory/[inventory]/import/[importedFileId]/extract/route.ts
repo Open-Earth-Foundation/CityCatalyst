@@ -7,10 +7,10 @@
  *       - inventory
  *       - import
  *     operationId: extractInventoryFromPdf
- *     summary: Run AI extraction on an uploaded PDF (Path C).
+ *     summary: Start AI extraction on an uploaded PDF (Path C).
  *     description: |
- *       Loads the stored PDF, extracts text, runs LLM extraction to get inventory rows,
- *       stores rows in mappingConfiguration.rows and sets importStatus to waiting_for_approval.
+ *       Returns 202 Accepted and runs extraction in the background. Client should poll
+ *       GET .../import/{importedFileId} until importStatus is waiting_for_approval or failed.
  *       Only allowed when fileType is pdf and importStatus is pending_ai_extraction.
  *     parameters:
  *       - in: path
@@ -32,14 +32,12 @@
  *           type: string
  *           format: uuid
  *     responses:
- *       200:
- *         description: Extraction completed; returns updated import status and row count.
+ *       202:
+ *         description: Extraction started; poll GET import status until completion.
  *       400:
  *         description: File is not a PDF or not in pending_ai_extraction status.
  *       404:
  *         description: Import file not found or access denied.
- *       502:
- *         description: LLM or PDF extraction failed (e.g. timeout, parse error).
  *       401:
  *         description: Unauthorized.
  */
@@ -59,8 +57,77 @@ import {
 import { LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
 
-/** Allow long-running PDF + LLM extraction. */
-export const maxDuration = 120;
+/** Quick response so request returns before ingress timeout; extraction runs in background. */
+export const maxDuration = 30;
+
+async function runExtractionInBackground(
+  cityId: string,
+  inventoryId: string,
+  importedFileId: string,
+  text: string,
+  targetYear: number | undefined,
+): Promise<void> {
+  const importedFile = await db.models.ImportedInventoryFile.findOne({
+    where: {
+      id: importedFileId,
+      inventoryId,
+      cityId,
+    },
+  });
+  if (!importedFile) {
+    logger.warn({ importedFileId }, "Background extract: file no longer found");
+    return;
+  }
+  try {
+    const rows = await extractInventoryRowsFromDocument(text, {
+      targetYear,
+      onChunkProgress: async (current, total) => {
+        await importedFile.update({
+          mappingConfiguration: {
+            ...(importedFile.mappingConfiguration || {}),
+            extractionProgress: { current, total },
+          },
+        });
+      },
+    });
+    if (!rows || rows.length === 0) {
+      await importedFile.update({
+        importStatus: ImportStatusEnum.FAILED,
+        errorLog: "PDF does not contain extractable inventory data",
+        lastUpdated: new Date(),
+      });
+      return;
+    }
+    const mappingConfiguration = {
+      ...(importedFile.mappingConfiguration || {}),
+      rows,
+      extractionProgress: undefined,
+    };
+    await importedFile.update({
+      importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+      mappingConfiguration,
+      rowCount: rows.length,
+      lastUpdated: new Date(),
+    });
+    logger.info(
+      { importedFileId, rowCount: rows.length },
+      "Background PDF extraction completed",
+    );
+  } catch (err) {
+    const message =
+      err instanceof LLMError
+        ? err.message
+        : err instanceof Error
+          ? err.message
+          : "AI extraction failed";
+    logger.warn({ err, importedFileId }, "Background PDF extraction failed");
+    await importedFile.update({
+      importStatus: ImportStatusEnum.FAILED,
+      errorLog: message,
+      lastUpdated: new Date(),
+    });
+  }
+}
 
 export const POST = apiHandler(
   async (_req, { session, params }) => {
@@ -128,57 +195,30 @@ export const POST = apiHandler(
         ? Number(inventory.year)
         : undefined;
 
-    let rows: ExtractedRow[];
-    try {
-      rows = await extractInventoryRowsFromDocument(text, {
-        targetYear,
-      });
-    } catch (err) {
-      if (err instanceof LLMError) {
-        logger.warn(
-          { code: err.code, message: err.message, importedFileId },
-          "LLM extraction failed",
-        );
-        if (err.code === LLMErrorCode.BAD_REQUEST) {
-          throw new createHttpError.BadRequest(
-            err.message || "Document content could not be processed",
-          );
-        }
-        throw new createHttpError.BadGateway(
-          err.message || "AI extraction failed",
-        );
-      }
-      throw err;
-    }
-
-    if (!rows || rows.length === 0) {
-      logger.warn(
-        { importedFileId },
-        "LLM extraction produced no inventory rows",
-      );
-      throw new createHttpError.BadRequest(
-        "PDF does not contain extractable inventory data",
-      );
-    }
-
-    const mappingConfiguration = {
-      ...(importedFile.mappingConfiguration || {}),
-      rows,
-    };
-
     await importedFile.update({
-      importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
-      mappingConfiguration,
-      rowCount: rows.length,
+      importStatus: ImportStatusEnum.EXTRACTING,
       lastUpdated: new Date(),
     });
 
-    return NextResponse.json({
-      data: {
-        id: importedFile.id,
-        importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
-        rowCount: rows.length,
-      },
+    runExtractionInBackground(
+      cityId,
+      inventoryId,
+      importedFileId,
+      text,
+      targetYear,
+    ).catch((err) => {
+      logger.error({ err, importedFileId }, "Background extraction promise rejected");
     });
+
+    return NextResponse.json(
+      {
+        data: {
+          accepted: true,
+          id: importedFileId,
+          message: "Extraction started; poll GET import status until importStatus is waiting_for_approval or failed.",
+        },
+      },
+      { status: 202 },
+    );
   },
 );

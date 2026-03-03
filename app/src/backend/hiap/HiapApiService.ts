@@ -373,7 +373,8 @@ const startActionPlanJobImpl = async ({
               user,
               action.name,
               planData.metadata?.cityName || cityLocode,
-              action.actionId,
+              cityId,
+              inventoryId,
               lng,
             );
           }

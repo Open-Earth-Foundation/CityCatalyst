@@ -67,10 +67,7 @@ import { logger } from "@/services/logger";
 export const maxDuration = 30;
 
 /** Serialize one sheet to CSV-like text (header row + sample rows). */
-function serializeSheet(
-  sheet: ParsedSheet,
-  maxRows = 30,
-): string {
+function serializeSheet(sheet: ParsedSheet, maxRows = 30): string {
   const headers = sheet.headers.filter(Boolean);
   if (headers.length === 0) return "";
 
@@ -152,7 +149,10 @@ async function runInterpretationInBackground(
   });
 
   if (!importedFile) {
-    logger.warn({ importedFileId, inventoryId, cityId }, "Import file not found in background interpret");
+    logger.warn(
+      { importedFileId, inventoryId, cityId },
+      "Import file not found in background interpret",
+    );
     return;
   }
 
@@ -209,9 +209,10 @@ async function runInterpretationInBackground(
       });
     } catch (err) {
       if (err instanceof LLMError) {
-        const msg = err.code === LLMErrorCode.BAD_REQUEST
-          ? err.message || "Document content could not be processed"
-          : err.message || "AI interpretation failed";
+        const msg =
+          err.code === LLMErrorCode.BAD_REQUEST
+            ? err.message || "Document content could not be processed"
+            : err.message || "AI interpretation failed";
         await setFailed(msg);
         return;
       }
@@ -228,9 +229,10 @@ async function runInterpretationInBackground(
         });
       } catch (err) {
         if (err instanceof LLMError) {
-          const msg = err.code === LLMErrorCode.BAD_REQUEST
-            ? err.message || "Document content could not be processed"
-            : err.message || "AI interpretation failed";
+          const msg =
+            err.code === LLMErrorCode.BAD_REQUEST
+              ? err.message || "Document content could not be processed"
+              : err.message || "AI interpretation failed";
           await setFailed(msg);
           return;
         }
@@ -268,14 +270,19 @@ async function runInterpretationInBackground(
       return;
     }
 
-    let importResult: Awaited<ReturnType<typeof ECRFImportService.processECRFFile>>;
+    let importResult: Awaited<
+      ReturnType<typeof ECRFImportService.processECRFFile>
+    >;
     try {
       importResult = await ECRFImportService.processECRFFile(
         parsedData,
         detectedColumns,
       );
     } catch (err) {
-      logger.error({ err, importedFileId }, "ECRF process failed after interpretation");
+      logger.error(
+        { err, importedFileId },
+        "ECRF process failed after interpretation",
+      );
       await setFailed(err instanceof Error ? err.message : "Unknown error");
       return;
     }
@@ -331,148 +338,149 @@ async function runInterpretationInBackground(
   }
 }
 
-export const POST = apiHandler(
-  async (_req, { session, params }) => {
-    if (!session) {
-      throw new createHttpError.Unauthorized("Not signed in");
-    }
+export const POST = apiHandler(async (_req, { session, params }) => {
+  if (!session) {
+    throw new createHttpError.Unauthorized("Not signed in");
+  }
 
-    const cityId = z.string().uuid().parse(params.city);
-    const inventoryId = z.string().uuid().parse(params.inventory);
-    const importedFileId = z.string().uuid().parse(params.importedFileId);
+  const cityId = z.string().uuid().parse(params.city);
+  const inventoryId = z.string().uuid().parse(params.inventory);
+  const importedFileId = z.string().uuid().parse(params.importedFileId);
 
-    const inventory = await UserService.findUserInventory(inventoryId, session);
+  const inventory = await UserService.findUserInventory(inventoryId, session);
 
-    const importedFile = await db.models.ImportedInventoryFile.findOne({
-      where: {
-        id: importedFileId,
-        inventoryId,
-        cityId,
-        userId: session.user.id,
-      },
-    });
-
-    if (!importedFile) {
-      throw new createHttpError.NotFound(
-        "Imported file not found or access denied",
-      );
-    }
-
-    if (importedFile.fileType !== "xlsx" && importedFile.fileType !== "csv") {
-      throw new createHttpError.BadRequest(
-        "Interpret is only supported for xlsx or csv files (Path B)",
-      );
-    }
-
-    if (importedFile.importStatus === ImportStatusEnum.WAITING_FOR_APPROVAL) {
-      await importedFile.reload();
-      return NextResponse.json({
-        data: {
-          id: importedFile.id,
-          userId: importedFile.userId,
-          cityId: importedFile.cityId,
-          inventoryId: importedFile.inventoryId,
-          fileName: importedFile.fileName,
-          fileType: importedFile.fileType,
-          fileSize: importedFile.fileSize,
-          originalFileName: importedFile.originalFileName,
-          importStatus: importedFile.importStatus,
-          rowCount: importedFile.rowCount,
-          created: importedFile.created,
-          lastUpdated: importedFile.lastUpdated,
-        },
-      });
-    }
-    if (importedFile.importStatus === ImportStatusEnum.FAILED) {
-      await importedFile.reload();
-      return NextResponse.json({
-        data: {
-          id: importedFile.id,
-          importStatus: importedFile.importStatus,
-          errorLog: importedFile.errorLog ?? undefined,
-          userId: importedFile.userId,
-          cityId: importedFile.cityId,
-          inventoryId: importedFile.inventoryId,
-          fileName: importedFile.fileName,
-          fileType: importedFile.fileType,
-          fileSize: importedFile.fileSize,
-          originalFileName: importedFile.originalFileName,
-          rowCount: importedFile.rowCount,
-          created: importedFile.created,
-          lastUpdated: importedFile.lastUpdated,
-        },
-      });
-    }
-    if (importedFile.importStatus !== ImportStatusEnum.PENDING_AI_INTERPRETATION) {
-      throw new createHttpError.BadRequest(
-        "File is not in pending AI interpretation status",
-      );
-    }
-
-    const buffer = importedFile.data as Buffer;
-    if (!buffer || !Buffer.isBuffer(buffer)) {
-      throw new createHttpError.InternalServerError(
-        "Stored file data is missing or invalid",
-      );
-    }
-
-    let parsedData: ParsedFileData;
-    try {
-      parsedData = await FileParserService.parseFile(
-        buffer,
-        importedFile.fileType,
-      );
-    } catch (err) {
-      logger.error({ err, importedFileId }, "Failed to parse file for interpretation");
-      throw new createHttpError.BadRequest(
-        `Failed to parse file: ${err instanceof Error ? err.message : "Unknown error"}`,
-      );
-    }
-
-    const primarySheet = parsedData.primarySheet;
-    if (!primarySheet || primarySheet.headers.length === 0) {
-      throw new createHttpError.BadRequest(
-        "File has no recognizable header row",
-      );
-    }
-
-    const documentContent = serializeSheetsForInterpretation(parsedData);
-
-    const targetYear =
-      inventory.year != null && Number.isInteger(Number(inventory.year))
-        ? Number(inventory.year)
-        : undefined;
-
-    const city = await db.models.City.findByPk(cityId, {
-      attributes: ["name"],
-    });
-    const targetCity = city?.name?.trim() || undefined;
-
-    const keyValueFormat = isKeyValueFormat(primarySheet.headers);
-
-    runInterpretationInBackground({
-      cityId,
+  const importedFile = await db.models.ImportedInventoryFile.findOne({
+    where: {
+      id: importedFileId,
       inventoryId,
-      importedFileId,
-      documentContent,
-      targetYear,
-      targetCity,
-      keyValueFormat,
-      parsedData,
-    }).catch((err) =>
-      logger.error({ err, importedFileId }, "Interpret background failed"),
-    );
+      cityId,
+      userId: session.user.id,
+    },
+  });
 
-    return NextResponse.json(
-      {
-        data: {
-          accepted: true,
-          id: importedFileId,
-          message:
-            "Interpretation started; poll GET import status until importStatus is waiting_for_approval or failed.",
-        },
-      },
-      { status: 202 },
+  if (!importedFile) {
+    throw new createHttpError.NotFound(
+      "Imported file not found or access denied",
     );
-  },
-);
+  }
+
+  if (importedFile.fileType !== "xlsx" && importedFile.fileType !== "csv") {
+    throw new createHttpError.BadRequest(
+      "Interpret is only supported for xlsx or csv files (Path B)",
+    );
+  }
+
+  if (importedFile.importStatus === ImportStatusEnum.WAITING_FOR_APPROVAL) {
+    await importedFile.reload();
+    return NextResponse.json({
+      data: {
+        id: importedFile.id,
+        userId: importedFile.userId,
+        cityId: importedFile.cityId,
+        inventoryId: importedFile.inventoryId,
+        fileName: importedFile.fileName,
+        fileType: importedFile.fileType,
+        fileSize: importedFile.fileSize,
+        originalFileName: importedFile.originalFileName,
+        importStatus: importedFile.importStatus,
+        rowCount: importedFile.rowCount,
+        created: importedFile.created,
+        lastUpdated: importedFile.lastUpdated,
+      },
+    });
+  }
+  if (importedFile.importStatus === ImportStatusEnum.FAILED) {
+    await importedFile.reload();
+    return NextResponse.json({
+      data: {
+        id: importedFile.id,
+        importStatus: importedFile.importStatus,
+        errorLog: importedFile.errorLog ?? undefined,
+        userId: importedFile.userId,
+        cityId: importedFile.cityId,
+        inventoryId: importedFile.inventoryId,
+        fileName: importedFile.fileName,
+        fileType: importedFile.fileType,
+        fileSize: importedFile.fileSize,
+        originalFileName: importedFile.originalFileName,
+        rowCount: importedFile.rowCount,
+        created: importedFile.created,
+        lastUpdated: importedFile.lastUpdated,
+      },
+    });
+  }
+  if (
+    importedFile.importStatus !== ImportStatusEnum.PENDING_AI_INTERPRETATION
+  ) {
+    throw new createHttpError.BadRequest(
+      "File is not in pending AI interpretation status",
+    );
+  }
+
+  const buffer = importedFile.data as Buffer;
+  if (!buffer || !Buffer.isBuffer(buffer)) {
+    throw new createHttpError.InternalServerError(
+      "Stored file data is missing or invalid",
+    );
+  }
+
+  let parsedData: ParsedFileData;
+  try {
+    parsedData = await FileParserService.parseFile(
+      buffer,
+      importedFile.fileType,
+    );
+  } catch (err) {
+    logger.error(
+      { err, importedFileId },
+      "Failed to parse file for interpretation",
+    );
+    throw new createHttpError.BadRequest(
+      `Failed to parse file: ${err instanceof Error ? err.message : "Unknown error"}`,
+    );
+  }
+
+  const primarySheet = parsedData.primarySheet;
+  if (!primarySheet || primarySheet.headers.length === 0) {
+    throw new createHttpError.BadRequest("File has no recognizable header row");
+  }
+
+  const documentContent = serializeSheetsForInterpretation(parsedData);
+
+  const targetYear =
+    inventory.year != null && Number.isInteger(Number(inventory.year))
+      ? Number(inventory.year)
+      : undefined;
+
+  const city = await db.models.City.findByPk(cityId, {
+    attributes: ["name"],
+  });
+  const targetCity = city?.name?.trim() || undefined;
+
+  const keyValueFormat = isKeyValueFormat(primarySheet.headers);
+
+  runInterpretationInBackground({
+    cityId,
+    inventoryId,
+    importedFileId,
+    documentContent,
+    targetYear,
+    targetCity,
+    keyValueFormat,
+    parsedData,
+  }).catch((err) =>
+    logger.error({ err, importedFileId }, "Interpret background failed"),
+  );
+
+  return NextResponse.json(
+    {
+      data: {
+        accepted: true,
+        id: importedFileId,
+        message:
+          "Interpretation started; poll GET import status until importStatus is waiting_for_approval or failed.",
+      },
+    },
+    { status: 202 },
+  );
+});

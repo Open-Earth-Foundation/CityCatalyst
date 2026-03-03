@@ -704,11 +704,9 @@ export default function ImportPage(props: {
                     fontWeight="600"
                     letterSpacing="wider"
                   >
-                    {pdfPendingExtraction
+                    {pdfPendingExtraction || tabularPendingInterpretation
                       ? t("extract-with-ai")
-                      : tabularPendingInterpretation
-                        ? t("interpret-with-ai")
-                        : t("continue")}
+                      : t("continue")}
                   </Text>
                   <MdArrowForward height="24px" width="24px" />
                 </Button>

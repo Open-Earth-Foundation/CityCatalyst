@@ -109,7 +109,7 @@ export const POST = apiHandler(
     // Get form data
     const formData = await req.formData();
     const file = formData?.get("file") as unknown as File;
-    const pathB = formData?.get("pathB") === "true";
+    const useAIInterpretationPath = formData?.get("pathB") === "true";
 
     if (!file) {
       throw new createHttpError.BadRequest(
@@ -118,15 +118,15 @@ export const POST = apiHandler(
     }
 
     // Path selection for tabular (xlsx/csv): only use eCRF path when file has full eCRF structure (all required columns).
-    // Otherwise use Path B (Interpret with AI). pathB form flag forces Path B without running structure check.
-    let validationResult = pathB
+    // Otherwise use Path B (Interpret with AI). useAIInterpretationPath form flag forces Path B without running structure check.
+    let validationResult = useAIInterpretationPath
       ? FileValidatorService.validateFile(file)
       : await FileValidatorService.validateFileStructure(file);
 
-    let usePathB = pathB;
+    let usePathB = useAIInterpretationPath;
     const isTabular =
       validationResult.fileType === "xlsx" || validationResult.fileType === "csv";
-    if (!pathB && isTabular && !validationResult.isValid) {
+    if (!useAIInterpretationPath && isTabular && !validationResult.isValid) {
       // Tabular file does not have full eCRF structure → use Path B only (do not use eCRF path)
       logger.info(
         { errors: validationResult.errors },
@@ -135,7 +135,7 @@ export const POST = apiHandler(
       validationResult = FileValidatorService.validateFile(file);
       usePathB = validationResult.isValid;
     } else if (
-      !pathB &&
+      !useAIInterpretationPath &&
       isTabular &&
       validationResult.isValid &&
       !FileValidatorService.hasDistinctRequiredECRFColumns(
@@ -149,7 +149,7 @@ export const POST = apiHandler(
       );
       validationResult = FileValidatorService.validateFile(file);
       usePathB = validationResult.isValid;
-    } else if (!pathB && isTabular && validationResult.isValid && validationResult.isCIRIS) {
+    } else if (!useAIInterpretationPath && isTabular && validationResult.isValid && validationResult.isCIRIS) {
       // CIRIS (CDP) format: has eCRF_3 sheet but should use AI extraction from it, not standard eCRF path
       logger.info(
         "CIRIS (CDP) format detected; using Path B (Interpret with AI) for eCRF_3 sheet",

@@ -22,6 +22,14 @@ type NameMappings = {
 };
 const nameMappings = gpcNameMappings as NameMappings;
 
+/** LLM options for interpretation: deterministic JSON output. */
+const INTERPRET_LLM_JSON_MODE = true;
+const INTERPRET_LLM_TEMPERATURE = 0;
+/** Max tokens for column mapping (smaller response). */
+const INTERPRET_LLM_MAX_TOKENS_MAPPING = 4096;
+/** Max tokens for key-value / table shape (larger response). */
+const INTERPRET_LLM_MAX_TOKENS_SHAPE = 8192;
+
 function slugToDisplay(slug: string): string {
   return slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
@@ -238,9 +246,9 @@ export async function interpretTabular(
       { role: "system", content: systemPrompt },
       { role: "user", content: userContent },
     ],
-    jsonMode: true,
-    temperature: 0,
-    maxTokens: 4096,
+    jsonMode: INTERPRET_LLM_JSON_MODE,
+    temperature: INTERPRET_LLM_TEMPERATURE,
+    maxTokens: INTERPRET_LLM_MAX_TOKENS_MAPPING,
   });
 
   const truncated =
@@ -542,9 +550,9 @@ export async function shapeTableToRows(
       { role: "system", content: systemPrompt },
       { role: "user", content: userContent },
     ],
-    jsonMode: true,
-    temperature: 0,
-    maxTokens: 8192,
+    jsonMode: INTERPRET_LLM_JSON_MODE,
+    temperature: INTERPRET_LLM_TEMPERATURE,
+    maxTokens: INTERPRET_LLM_MAX_TOKENS_SHAPE,
   });
 
   logger.debug(
@@ -588,9 +596,9 @@ export async function shapeKeyValueToRows(
       { role: "system", content: systemPrompt },
       { role: "user", content: userContent },
     ],
-    jsonMode: true,
-    temperature: 0,
-    maxTokens: 8192,
+    jsonMode: INTERPRET_LLM_JSON_MODE,
+    temperature: INTERPRET_LLM_TEMPERATURE,
+    maxTokens: INTERPRET_LLM_MAX_TOKENS_SHAPE,
   });
 
   const truncated =

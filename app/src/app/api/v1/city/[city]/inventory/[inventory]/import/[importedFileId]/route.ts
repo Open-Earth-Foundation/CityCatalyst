@@ -185,6 +185,22 @@ const PDF_IMPORT_FIELD_DEFS: Array<{ key: string; label: string }> = [
   { key: "activityDataQuality", label: "Activity Data Quality" },
 ];
 
+/** Column names to hide from validation/mapping UI (not required for import). */
+const EXCLUDED_COLUMN_NAMES = [
+  "GHGs (metric tonnes CO2e) - Biogenic CO2",
+  "Activity data conversion - original activity",
+  "Activity data conversion - original unit",
+  "Activity data conversion - conversion value",
+  "Activity data conversion - override used?",
+  "Emission factor - Biogenic CO2",
+  "Oxidation factor",
+  "Emission factor - Year",
+  "Emission factor - Data Quality",
+  "Emission factor - Scale",
+  "Emission factor - Description",
+  "Emission factor - Source",
+].map((s) => s.toLowerCase().trim());
+
 export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
   if (!session) {
     throw new createHttpError.Unauthorized("Not signed in");
@@ -289,22 +305,6 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
     "emissionFactorN2O",
     "emissionFactorTotalCO2e",
   ].map((key) => ({ key, label: gpcFieldNames[key] ?? key }));
-
-  /** Column names to hide from validation/mapping UI (not required for import). */
-  const EXCLUDED_COLUMN_NAMES = [
-    "GHGs (metric tonnes CO2e) - Biogenic CO2",
-    "Activity data conversion - original activity",
-    "Activity data conversion - original unit",
-    "Activity data conversion - conversion value",
-    "Activity data conversion - override used?",
-    "Emission factor - Biogenic CO2",
-    "Oxidation factor",
-    "Emission factor - Year",
-    "Emission factor - Data Quality",
-    "Emission factor - Scale",
-    "Emission factor - Description",
-    "Emission factor - Source",
-  ].map((s) => s.toLowerCase().trim());
 
   const isExcludedColumn = (header: string) => {
     const n = header.toLowerCase().trim();

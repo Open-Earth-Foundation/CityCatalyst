@@ -110,14 +110,18 @@ export default class ECRFImportService {
           ? row[headers[detectedColumns.subsector!]]?.toString().trim()
           : "";
         if (rawSector && rawSector.includes(" > ")) {
-          const [left, right] = rawSector.split(" > ").map((s: string) => s.trim());
+          const [left, right] = rawSector
+            .split(" > ")
+            .map((s: string) => s.trim());
           if (left && right) {
             rawSector = left;
             if (!rawSubsector) rawSubsector = right;
           }
         }
         if (rawSubsector && rawSubsector.includes(" > ")) {
-          const [left, right] = rawSubsector.split(" > ").map((s: string) => s.trim());
+          const [left, right] = rawSubsector
+            .split(" > ")
+            .map((s: string) => s.trim());
           if (left && right) {
             if (!rawSector) rawSector = left;
             rawSubsector = right;
@@ -562,7 +566,7 @@ export default class ECRFImportService {
    * For sectors I-III: looks up SubCategory by referenceNumber
    * For sectors IV-V (IPPU and AFOLU): looks up SubSector by referenceNumber (no subcategories)
    */
-  private static async lookupGPCReference(gpcRefNo: string): Promise<{
+  public static async lookupGPCReference(gpcRefNo: string): Promise<{
     sectorId: string;
     subsectorId: string;
     subcategoryId: string | null;

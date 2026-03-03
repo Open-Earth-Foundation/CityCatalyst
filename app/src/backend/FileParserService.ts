@@ -51,7 +51,7 @@ export default class FileParserService {
         headers.forEach((header, colNumber) => {
           if (header) {
             const cell = row.getCell(colNumber);
-            rowData[header] = cell.value ?? null;
+            rowData[header] = this.normalizeCellValue(cell.value);
           }
         });
 
@@ -81,6 +81,32 @@ export default class FileParserService {
       primarySheet,
       fileType: "xlsx",
     };
+  }
+
+  /**
+   * Normalize cell value to string, number, or null so we never store objects (avoids [object Object]
+   * when cells contain formula errors like #REF! or rich text objects).
+   */
+  private static normalizeCellValue(value: unknown): string | number | null {
+    if (value == null) return null;
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (typeof value === "string") return value;
+    if (typeof value === "boolean") return value ? "TRUE" : "FALSE";
+    if (value instanceof Date) return value.toISOString();
+    if (typeof value === "object") {
+      const o = value as Record<string, unknown>;
+      if (typeof o.error === "string" && o.error) return `#${o.error.toUpperCase()}!`;
+      if (typeof o.result !== "undefined") return this.normalizeCellValue(o.result) ?? null;
+      if (typeof o.richText === "string") return o.richText;
+      if (Array.isArray(o.richText)) {
+        const text = (o.richText as { text?: string }[])
+          .map((t) => t.text)
+          .filter(Boolean)
+          .join("");
+        if (text) return text;
+      }
+    }
+    return null;
   }
 
   /**
@@ -142,7 +168,7 @@ export default class FileParserService {
    */
   public static async parseFile(
     buffer: Buffer,
-    fileType: "xlsx" | "csv",
+    fileType: "xlsx" | "csv" | "pdf",
   ): Promise<ParsedFileData> {
     if (fileType === "xlsx") {
       return this.parseXLSX(buffer);

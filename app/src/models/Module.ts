@@ -7,6 +7,7 @@ export interface ModuleAttributes {
   description?: { [lng: string]: string };
   tagline?: { [lng: string]: string };
   type: string;
+  status: string;
   author: string;
   url: string;
   logo?: string;
@@ -26,6 +27,7 @@ export class Module
   declare description?: { [lng: string]: string };
   declare tagline?: { [lng: string]: string };
   declare type: string;
+  declare status: string;
   declare url: string;
   declare author: string;
   declare logo?: string;
@@ -59,6 +61,11 @@ export class Module
         type: {
           type: DataTypes.TEXT,
           allowNull: false,
+        },
+        status: {
+          type: DataTypes.TEXT,
+          allowNull: false,
+          defaultValue: "active",
         },
         author: {
           type: DataTypes.TEXT,

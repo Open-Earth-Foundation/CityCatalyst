@@ -1970,6 +1970,7 @@ export const api = createApi({
           description?: string;
           tagline?: string;
           stage: string;
+          status?: string;
           url: string;
           logo?: string;
         }
@@ -1992,6 +1993,7 @@ export const api = createApi({
             description?: string;
             tagline?: string;
             stage?: string;
+            status?: string;
             url?: string;
             logo?: string;
           };

@@ -20,7 +20,7 @@ export const PUT = apiHandler(async (req, { session, params }) => {
   }
 
   const body = await req.json();
-  const { name, description, tagline, stage, url, logo } = body;
+  const { name, description, tagline, stage, url, logo, status } = body;
 
   const updateData: Record<string, unknown> = {};
 
@@ -41,6 +41,7 @@ export const PUT = apiHandler(async (req, { session, params }) => {
   }
 
   if (stage !== undefined) updateData.stage = stage;
+  if (status !== undefined) updateData.status = status;
   if (url !== undefined) updateData.url = url;
   if (logo !== undefined) updateData.logo = logo;
 

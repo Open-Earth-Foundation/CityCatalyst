@@ -1,3 +1,5 @@
+This document is a short-lived implementation plan for the HIAP-MEED project. It is not a permanent record of the implementation. It is a guide for the implementation of the project.
+
 # HIAP-MEED: MEED+ Prioritization Engine Implementation Plan (Repo-Specific)
 
 Goal: Implement the MEED+ prioritization pipeline end-to-end inside `hiap-meed/` with typed Python, Pydantic models, modular block structure, a single API endpoint, configurable weights, and robust logging + request artifacts. Scoring logic can be stubbed initially, but interfaces, models, and orchestration must be stable.
@@ -13,7 +15,7 @@ Alignment targets:
 ## 0) Tech Choices (current repo reality)
 
 - Runtime: Python 3.12+ (already required)
-- API: FastAPI (already in dependencies)
+- API: FastAPI (already in dependencies); prioritizer routes are **synchronous** because the orchestrator and data clients are synchronous. If upstream clients become async, convert the route + orchestrator to async end-to-end.
 - Models: Pydantic v2 (via FastAPI)
 - Dependencies: `pyproject.toml` is the source of truth (uv-managed)
 - Logging: stdlib `logging`, configured via `app/utils/logging_config.py` (exists)

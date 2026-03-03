@@ -28,12 +28,18 @@ def _error_payload(request_id: UUID, message: str) -> dict[str, str]:
 
 
 @router.post("/v1/prioritize", response_model=PrioritizationResponse)
-async def prioritize(
+def prioritize(
     request: PrioritizationRequest,
     city_data_api_client: CityDataApiClient = Depends(get_city_data_api_client),
     action_data_api_client: ActionDataApiClient = Depends(get_action_data_api_client),
 ) -> PrioritizationResponse:
-    """Run prioritization for one city and return ordered action IDs."""
+    """
+    Run prioritization for one city and return ordered action IDs.
+
+    This endpoint is synchronous because the orchestrator and data clients
+    are synchronous; FastAPI runs sync routes in a threadpool to avoid
+    blocking the event loop.
+    """
     request_id = uuid4()
     try:
         return run_prioritization(

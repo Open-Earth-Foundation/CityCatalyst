@@ -89,7 +89,7 @@ Usage (from project root):
 
 ### Folder placement must follow the hierarchy
 
-All directories containing code must include an `__init__.py` file to ensure proper package resolution.
+All directories containing code must include an `__init__.py` file to ensure proper package resolution. These files must be **empty or contain only a module-level docstring** — do not add imports or re-exports. Because the project uses absolute imports exclusively, convenience re-exports in `__init__.py` are unnecessary and risk introducing circular imports.
 
 Use this structure:
 
@@ -329,7 +329,7 @@ When making changes:
 
 ## Quick checklist for contributions
 
-- [ ] `__init__.py` present in all code folders
+- [ ] `__init__.py` present in all code folders (empty or docstring-only — no imports or re-exports)
 - [ ] No duplication (helpers in utils where appropriate)
 - [ ] Clear separation of concerns (services vs utils vs scripts)
 - [ ] Runnable scripts: docstring, argparse, `__main__`

@@ -1,6 +1,8 @@
 # HIAP-MEED
 
-`hiap-meed` is a FastAPI service scaffold for the MEED prioritization flow.
+`hiap-meed` is a synchronous FastAPI service that implements the MEED prioritization pipeline. It sits between the CityCatalyst frontend and the upstream Global API, fetching city context and action data before running a configurable scoring pipeline.
+
+See [`docs/service-architecture.md`](docs/service-architecture.md) for the full system diagram.
 
 ## Repository layout
 
@@ -146,7 +148,7 @@ Common validation errors:
 - `top_n < 1` -> HTTP `422`.
 - Invalid `weights_override` keys/values -> HTTP `422` with error payload.
 
-Note: current data clients are in-memory stubs. Real upstream API calls are not wired yet.
+Note: current data clients are in-memory stubs. Real upstream API calls are not wired yet. When they are wired, the data clients will use a synchronous HTTP client (e.g. `httpx.Client`). FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
 
 ### 5. Logging and artifacts
 

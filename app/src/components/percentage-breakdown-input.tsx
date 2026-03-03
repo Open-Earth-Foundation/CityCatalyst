@@ -154,8 +154,10 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
 
     if (isNaN(total)) {
       total = 0;
-    } else {
+    } else if (wasteCompositionType === "default") {
       total = Math.min(Math.round(total), 100);
+    } else {
+      total = Math.round(total);
     }
 
     if (total === 100) {

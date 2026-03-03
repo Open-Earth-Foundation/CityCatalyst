@@ -290,5 +290,11 @@
   "date": "Date",
   "no-history": "Aucune entrée d'historique de version trouvée.",
   "subcategory": "Sous-catégorie",
-  "inventory-versions-restore-failed": "Échec de la restauration de la version"
+  "inventory-versions-restore-failed": "Échec de la restauration de la version",
+  "status-poc": "Preuve de Concept",
+  "status-prototype": "Prototype",
+  "status-preview": "Aperçu",
+  "status-early-access": "Accès Anticipé",
+  "status-beta": "Bêta",
+  "status-active": "Actif"
 }

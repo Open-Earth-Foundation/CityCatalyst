@@ -290,5 +290,11 @@
   "date": "Datum",
   "no-history": "Keine Versionverlaufseinträge gefunden.",
   "subcategory": "Unterkategorie",
-  "inventory-versions-restore-failed": "Fehler beim Wiederherstellen der Version"
+  "inventory-versions-restore-failed": "Fehler beim Wiederherstellen der Version",
+  "status-poc": "Proof of Concept",
+  "status-prototype": "Prototyp",
+  "status-preview": "Vorschau",
+  "status-early-access": "Frühzeitiger Zugang",
+  "status-beta": "Betaversion",
+  "status-active": "Aktiv"
 }

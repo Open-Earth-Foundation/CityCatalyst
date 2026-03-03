@@ -299,5 +299,13 @@
   "stage-implement": "Umsetzen",
   "stage-monitor-evaluate-and-report": "Überwachen, Bewerten & Berichten",
   "select-stage": "Wählen Sie eine Stufe",
-  "translation-language": "Sprache"
+  "translation-language": "Sprache",
+  "module-status": "Status",
+  "status-poc": "PoC",
+  "status-prototype": "Prototyp",
+  "status-preview": "Vorschau",
+  "status-early-access": "Frühzeitiger Zugang",
+  "status-beta": "Beta",
+  "status-active": "Aktiv",
+  "select-status": "Wählen Sie einen Status"
 }

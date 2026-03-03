@@ -8,11 +8,11 @@ This document describes how `hiap-meed` fits into the wider CityCatalyst system 
 
 ```mermaid
 graph TD
-    CC["CityCatalyst\n(frontend / caller)"]
+    CC["CityCatalyst (frontend / caller)"]
 
     subgraph hiap-meed ["hiap-meed (FastAPI service)"]
-        Router["POST /v1/prioritize\n(sync route → threadpool)"]
-        Orch["Orchestrator\nrun_prioritization()"]
+        Router["POST /v1/prioritize (sync route → threadpool)"]
+        Orch["Orchestrator run_prioritization()"]
 
         subgraph pipeline ["Prioritization pipeline"]
             HF["Hard Filter"]
@@ -22,13 +22,13 @@ graph TD
             WS["Weighted Sum"]
         end
 
-        CityClient["CityDataApiClient\n(sync HTTP client)"]
-        ActionClient["ActionDataApiClient\n(sync HTTP client)"]
+        CityClient["CityDataApiClient (sync HTTP client)"]
+        ActionClient["ActionDataApiClient (sync HTTP client)"]
     end
 
-    GlobalAPI["Global API\n(upstream data service)"]
+    GlobalAPI["Global API (upstream data service)"]
 
-    CC -->|"POST /v1/prioritize\nJSON body: locode, weights, top_n"| Router
+    CC -->|"POST /v1/prioritize JSON body: locode, weights, top_n"| Router
     Router --> Orch
 
     Orch -->|"getCityContext(locode)"| CityClient
@@ -52,7 +52,7 @@ graph TD
     Feas --> WS
 
     WS -->|"PrioritizationResponse"| Router
-    Router -->|"JSON response\nranked_action_ids + metadata"| CC
+    Router -->|"JSON response ranked_action_ids + metadata"| CC
 ```
 
 ---
@@ -67,10 +67,10 @@ This is the right choice as long as the orchestrator and data clients are synchr
 
 ## Data client layer (current state)
 
-| Client | Method | Status | Target upstream |
-|---|---|---|---|
-| `CityDataApiClient` | `get_city(locode)` | In-memory stub | Global API |
-| `ActionDataApiClient` | `list_actions()` | In-memory stub | Global API |
+| Client                | Method             | Status         | Target upstream |
+| --------------------- | ------------------ | -------------- | --------------- |
+| `CityDataApiClient`   | `get_city(locode)` | In-memory stub | Global API      |
+| `ActionDataApiClient` | `list_actions()`   | In-memory stub | Global API      |
 
 Stubs are injected via FastAPI's `Depends()` pattern, which makes swapping real implementations straightforward without changing route or orchestrator code.
 
@@ -101,12 +101,12 @@ sequenceDiagram
 
 ## Pipeline stages summary
 
-| Stage | Purpose | Removes / produces |
-|---|---|---|
-| Hard Filter | Remove ineligible actions (exclusions, hard legal requirements) | Discards actions; produces eligible set |
-| Impact | Score emissions reduction potential per city | Impact score per action |
-| Alignment | Score alignment with city strategy and policy signals | Alignment score per action |
-| Feasibility | Score realistic implementability for the city | Feasibility score per action |
-| Weighted Sum | Aggregate pillar scores, sort, apply `top_n` | Final ranked action list |
+| Stage        | Purpose                                                         | Removes / produces                      |
+| ------------ | --------------------------------------------------------------- | --------------------------------------- |
+| Hard Filter  | Remove ineligible actions (exclusions, hard legal requirements) | Discards actions; produces eligible set |
+| Impact       | Score emissions reduction potential per city                    | Impact score per action                 |
+| Alignment    | Score alignment with city strategy and policy signals           | Alignment score per action              |
+| Feasibility  | Score realistic implementability for the city                   | Feasibility score per action            |
+| Weighted Sum | Aggregate pillar scores, sort, apply `top_n`                    | Final ranked action list                |
 
 See [`highlevel-architecture.md`](highlevel-architecture.md) and [`detailed-block-architecture.md`](detailed-block-architecture.md) for the scoring logic inside each block.

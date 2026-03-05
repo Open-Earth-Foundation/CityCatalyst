@@ -22,7 +22,13 @@
       "c40_0025": "mixed_strengths",
       "c40_0029": "all_strength_types"
     },
-    "strength_scale": ["mandatory", "required", "recommended", "optional", "informational"]
+    "strength_scale": [
+      "mandatory",
+      "required",
+      "recommended",
+      "optional",
+      "informational"
+    ]
   },
   "legal_requirements": [
     {
@@ -37,7 +43,10 @@
           "alignment_status": "aligns",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_003|ev_004",
+          "evidence_ids": [
+            "ev_003",
+            "ev_004"
+          ],
           "evidence_count": 2
         },
         {
@@ -49,7 +58,9 @@
           "alignment_status": "aligns",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_008",
+          "evidence_ids": [
+            "ev_008"
+          ],
           "evidence_count": 1
         }
       ]
@@ -66,7 +77,10 @@
           "alignment_status": "not_aligned",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_003|ev_004",
+          "evidence_ids": [
+            "ev_003",
+            "ev_004"
+          ],
           "evidence_count": 2
         },
         {
@@ -78,7 +92,9 @@
           "alignment_status": "aligns",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_008",
+          "evidence_ids": [
+            "ev_008"
+          ],
           "evidence_count": 1
         }
       ]
@@ -95,7 +111,10 @@
           "alignment_status": "aligns",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_003|ev_004",
+          "evidence_ids": [
+            "ev_003",
+            "ev_004"
+          ],
           "evidence_count": 2
         },
         {
@@ -107,7 +126,7 @@
           "alignment_status": "no_evidence",
           "location_scope": null,
           "location_name": null,
-          "evidence_ids": null,
+          "evidence_ids": [],
           "evidence_count": 0
         }
       ]
@@ -124,7 +143,9 @@
           "alignment_status": "aligns",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_005",
+          "evidence_ids": [
+            "ev_005"
+          ],
           "evidence_count": 1
         },
         {
@@ -136,7 +157,9 @@
           "alignment_status": "not_aligned",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_007",
+          "evidence_ids": [
+            "ev_007"
+          ],
           "evidence_count": 1
         },
         {
@@ -148,7 +171,7 @@
           "alignment_status": "no_evidence",
           "location_scope": null,
           "location_name": null,
-          "evidence_ids": null,
+          "evidence_ids": [],
           "evidence_count": 0
         }
       ]
@@ -165,7 +188,10 @@
           "alignment_status": "not_aligned",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_001|ev_002",
+          "evidence_ids": [
+            "ev_001",
+            "ev_002"
+          ],
           "evidence_count": 2
         }
       ]
@@ -182,7 +208,7 @@
           "alignment_status": "no_evidence",
           "location_scope": null,
           "location_name": null,
-          "evidence_ids": null,
+          "evidence_ids": [],
           "evidence_count": 0
         }
       ]
@@ -199,7 +225,10 @@
           "alignment_status": "aligns",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_001|ev_002",
+          "evidence_ids": [
+            "ev_001",
+            "ev_002"
+          ],
           "evidence_count": 2
         },
         {
@@ -211,7 +240,9 @@
           "alignment_status": "aligns",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_008",
+          "evidence_ids": [
+            "ev_008"
+          ],
           "evidence_count": 1
         },
         {
@@ -223,7 +254,9 @@
           "alignment_status": "not_aligned",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_006",
+          "evidence_ids": [
+            "ev_006"
+          ],
           "evidence_count": 1
         }
       ]
@@ -240,7 +273,9 @@
           "alignment_status": "aligns",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_009",
+          "evidence_ids": [
+            "ev_009"
+          ],
           "evidence_count": 1
         },
         {
@@ -252,7 +287,7 @@
           "alignment_status": "no_evidence",
           "location_scope": null,
           "location_name": null,
-          "evidence_ids": null,
+          "evidence_ids": [],
           "evidence_count": 0
         }
       ]
@@ -269,7 +304,9 @@
           "alignment_status": "aligns",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_005",
+          "evidence_ids": [
+            "ev_005"
+          ],
           "evidence_count": 1
         },
         {
@@ -281,7 +318,9 @@
           "alignment_status": "aligns",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_007",
+          "evidence_ids": [
+            "ev_007"
+          ],
           "evidence_count": 1
         },
         {
@@ -293,7 +332,9 @@
           "alignment_status": "aligns",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_008",
+          "evidence_ids": [
+            "ev_008"
+          ],
           "evidence_count": 1
         }
       ]
@@ -310,7 +351,9 @@
           "alignment_status": "aligns",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_005",
+          "evidence_ids": [
+            "ev_005"
+          ],
           "evidence_count": 1
         },
         {
@@ -322,7 +365,9 @@
           "alignment_status": "not_aligned",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_007",
+          "evidence_ids": [
+            "ev_007"
+          ],
           "evidence_count": 1
         },
         {
@@ -334,7 +379,9 @@
           "alignment_status": "aligns",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_008",
+          "evidence_ids": [
+            "ev_008"
+          ],
           "evidence_count": 1
         },
         {
@@ -346,7 +393,7 @@
           "alignment_status": "no_evidence",
           "location_scope": null,
           "location_name": null,
-          "evidence_ids": null,
+          "evidence_ids": [],
           "evidence_count": 0
         },
         {
@@ -358,7 +405,9 @@
           "alignment_status": "aligns",
           "location_scope": "National",
           "location_name": "Chile",
-          "evidence_ids": "ev_006",
+          "evidence_ids": [
+            "ev_006"
+          ],
           "evidence_count": 1
         }
       ]

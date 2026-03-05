@@ -1,0 +1,367 @@
+{
+  "meta": {
+    "generated_at_utc": "2026-03-05T12:00:00+00:00",
+    "backend_consumer": "hiap-meed",
+    "upstream_provider": "legal-api",
+    "api_context": {
+      "endpoint": "GET /v1/actions/city/{locode}/legal",
+      "description": "Test mock covering all alignment cases (aligns, not_aligned, no_evidence) and strength types for ranking validation",
+      "locode": null,
+      "test_purpose": "Use for prioritizer/ranking tests. Covers alignment scenarios and strength tiers (mandatory, required, recommended, optional, informational)."
+    },
+    "total_actions": 10,
+    "test_cases": {
+      "c40_0010": "all_aligns",
+      "c40_0012": "mix_aligns_not_aligned",
+      "c40_0013": "mix_aligns_no_evidence",
+      "c40_0023": "mix_all_three",
+      "c40_0034": "all_not_aligned",
+      "c40_0040": "all_no_evidence",
+      "c40_0037": "aligns_with_one_not_aligned",
+      "ipcc_0074": "aligns_with_one_no_evidence",
+      "c40_0025": "mixed_strengths",
+      "c40_0029": "all_strength_types"
+    },
+    "strength_scale": ["mandatory", "required", "recommended", "optional", "informational"]
+  },
+  "legal_requirements": [
+    {
+      "action_id": "c40_0010",
+      "requirements": [
+        {
+          "signal_code": "MUNI_ENV_STANDARDS",
+          "signal_name": "Municipal environmental standards",
+          "required_value": "apply_standards",
+          "legal_signal_value": "apply_standards",
+          "strength": "mandatory",
+          "alignment_status": "aligns",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_003|ev_004",
+          "evidence_count": 2
+        },
+        {
+          "signal_code": "PLANS_ALIGNMENT",
+          "signal_name": "Plans alignment requirement",
+          "required_value": "comply",
+          "legal_signal_value": "comply",
+          "strength": "required",
+          "alignment_status": "aligns",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_008",
+          "evidence_count": 1
+        }
+      ]
+    },
+    {
+      "action_id": "c40_0012",
+      "requirements": [
+        {
+          "signal_code": "MUNI_ENV_STANDARDS",
+          "signal_name": "Municipal environmental standards",
+          "required_value": "apply_standards",
+          "legal_signal_value": "restricted",
+          "strength": "mandatory",
+          "alignment_status": "not_aligned",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_003|ev_004",
+          "evidence_count": 2
+        },
+        {
+          "signal_code": "PLANS_ALIGNMENT",
+          "signal_name": "Plans alignment requirement",
+          "required_value": "comply",
+          "legal_signal_value": "comply",
+          "strength": "mandatory",
+          "alignment_status": "aligns",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_008",
+          "evidence_count": 1
+        }
+      ]
+    },
+    {
+      "action_id": "c40_0013",
+      "requirements": [
+        {
+          "signal_code": "MUNI_ENV_STANDARDS",
+          "signal_name": "Municipal environmental standards",
+          "required_value": "apply_standards",
+          "legal_signal_value": "apply_standards",
+          "strength": "mandatory",
+          "alignment_status": "aligns",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_003|ev_004",
+          "evidence_count": 2
+        },
+        {
+          "signal_code": "PLANS_ALIGNMENT",
+          "signal_name": "Plans alignment requirement",
+          "required_value": "comply",
+          "legal_signal_value": null,
+          "strength": "mandatory",
+          "alignment_status": "no_evidence",
+          "location_scope": null,
+          "location_name": null,
+          "evidence_ids": null,
+          "evidence_count": 0
+        }
+      ]
+    },
+    {
+      "action_id": "c40_0023",
+      "requirements": [
+        {
+          "signal_code": "MUNI_TRANSPORT_AUTHORITY",
+          "signal_name": "Municipal transport authority",
+          "required_value": "exclusive_authority",
+          "legal_signal_value": "exclusive_authority",
+          "strength": "mandatory",
+          "alignment_status": "aligns",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_005",
+          "evidence_count": 1
+        },
+        {
+          "signal_code": "PROCUREMENT_PUBLIC_BIDDING",
+          "signal_name": "Public bidding for procurement",
+          "required_value": "public_bidding",
+          "legal_signal_value": "direct_award",
+          "strength": "recommended",
+          "alignment_status": "not_aligned",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_007",
+          "evidence_count": 1
+        },
+        {
+          "signal_code": "PLANS_ALIGNMENT",
+          "signal_name": "Plans alignment requirement",
+          "required_value": "comply",
+          "legal_signal_value": null,
+          "strength": "mandatory",
+          "alignment_status": "no_evidence",
+          "location_scope": null,
+          "location_name": null,
+          "evidence_ids": null,
+          "evidence_count": 0
+        }
+      ]
+    },
+    {
+      "action_id": "c40_0034",
+      "requirements": [
+        {
+          "signal_code": "MUNI_WASTE_AUTHORITY",
+          "signal_name": "Municipal waste management authority",
+          "required_value": "exclusive_authority",
+          "legal_signal_value": "shared_authority",
+          "strength": "mandatory",
+          "alignment_status": "not_aligned",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_001|ev_002",
+          "evidence_count": 2
+        }
+      ]
+    },
+    {
+      "action_id": "c40_0040",
+      "requirements": [
+        {
+          "signal_code": "MUNI_WASTE_AUTHORITY",
+          "signal_name": "Municipal waste management authority",
+          "required_value": "exclusive_authority",
+          "legal_signal_value": null,
+          "strength": "mandatory",
+          "alignment_status": "no_evidence",
+          "location_scope": null,
+          "location_name": null,
+          "evidence_ids": null,
+          "evidence_count": 0
+        }
+      ]
+    },
+    {
+      "action_id": "c40_0037",
+      "requirements": [
+        {
+          "signal_code": "MUNI_WASTE_AUTHORITY",
+          "signal_name": "Municipal waste management authority",
+          "required_value": "exclusive_authority",
+          "legal_signal_value": "exclusive_authority",
+          "strength": "mandatory",
+          "alignment_status": "aligns",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_001|ev_002",
+          "evidence_count": 2
+        },
+        {
+          "signal_code": "PLANS_ALIGNMENT",
+          "signal_name": "Plans alignment requirement",
+          "required_value": "comply",
+          "legal_signal_value": "comply",
+          "strength": "mandatory",
+          "alignment_status": "aligns",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_008",
+          "evidence_count": 1
+        },
+        {
+          "signal_code": "SUBSIDY_CAP_7PCT",
+          "signal_name": "Subsidy cap for non-profits",
+          "required_value": "0.07",
+          "legal_signal_value": "0.12",
+          "strength": "required",
+          "alignment_status": "not_aligned",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_006",
+          "evidence_count": 1
+        }
+      ]
+    },
+    {
+      "action_id": "ipcc_0074",
+      "requirements": [
+        {
+          "signal_code": "MUNI_PLANNING_AUTHORITY",
+          "signal_name": "Municipal planning authority",
+          "required_value": "planning_authority",
+          "legal_signal_value": "planning_authority",
+          "strength": "mandatory",
+          "alignment_status": "aligns",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_009",
+          "evidence_count": 1
+        },
+        {
+          "signal_code": "PLANS_ALIGNMENT",
+          "signal_name": "Plans alignment requirement",
+          "required_value": "comply",
+          "legal_signal_value": null,
+          "strength": "optional",
+          "alignment_status": "no_evidence",
+          "location_scope": null,
+          "location_name": null,
+          "evidence_ids": null,
+          "evidence_count": 0
+        }
+      ]
+    },
+    {
+      "action_id": "c40_0025",
+      "requirements": [
+        {
+          "signal_code": "MUNI_TRANSPORT_AUTHORITY",
+          "signal_name": "Municipal transport authority",
+          "required_value": "exclusive_authority",
+          "legal_signal_value": "exclusive_authority",
+          "strength": "mandatory",
+          "alignment_status": "aligns",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_005",
+          "evidence_count": 1
+        },
+        {
+          "signal_code": "PROCUREMENT_PUBLIC_BIDDING",
+          "signal_name": "Public bidding for procurement",
+          "required_value": "public_bidding",
+          "legal_signal_value": "public_bidding",
+          "strength": "recommended",
+          "alignment_status": "aligns",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_007",
+          "evidence_count": 1
+        },
+        {
+          "signal_code": "PLANS_ALIGNMENT",
+          "signal_name": "Plans alignment requirement",
+          "required_value": "comply",
+          "legal_signal_value": "comply",
+          "strength": "optional",
+          "alignment_status": "aligns",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_008",
+          "evidence_count": 1
+        }
+      ]
+    },
+    {
+      "action_id": "c40_0029",
+      "requirements": [
+        {
+          "signal_code": "MUNI_TRANSPORT_AUTHORITY",
+          "signal_name": "Municipal transport authority",
+          "required_value": "exclusive_authority",
+          "legal_signal_value": "exclusive_authority",
+          "strength": "mandatory",
+          "alignment_status": "aligns",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_005",
+          "evidence_count": 1
+        },
+        {
+          "signal_code": "PROCUREMENT_PUBLIC_BIDDING",
+          "signal_name": "Public bidding for procurement",
+          "required_value": "public_bidding",
+          "legal_signal_value": "direct_award",
+          "strength": "required",
+          "alignment_status": "not_aligned",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_007",
+          "evidence_count": 1
+        },
+        {
+          "signal_code": "PLANS_ALIGNMENT",
+          "signal_name": "Plans alignment requirement",
+          "required_value": "comply",
+          "legal_signal_value": "comply",
+          "strength": "recommended",
+          "alignment_status": "aligns",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_008",
+          "evidence_count": 1
+        },
+        {
+          "signal_code": "MUNI_ENV_STANDARDS",
+          "signal_name": "Municipal environmental standards",
+          "required_value": "apply_standards",
+          "legal_signal_value": null,
+          "strength": "optional",
+          "alignment_status": "no_evidence",
+          "location_scope": null,
+          "location_name": null,
+          "evidence_ids": null,
+          "evidence_count": 0
+        },
+        {
+          "signal_code": "SUBSIDY_CAP_7PCT",
+          "signal_name": "Subsidy cap for non-profits",
+          "required_value": "0.07",
+          "legal_signal_value": "0.05",
+          "strength": "informational",
+          "alignment_status": "aligns",
+          "location_scope": "National",
+          "location_name": "Chile",
+          "evidence_ids": "ev_006",
+          "evidence_count": 1
+        }
+      ]
+    }
+  ]
+}

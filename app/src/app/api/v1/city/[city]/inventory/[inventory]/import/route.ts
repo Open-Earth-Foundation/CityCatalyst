@@ -127,9 +127,9 @@ async function runUploadProcessingInBackground(
   };
 
   try {
-    let validationResult = await FileValidatorService.validateFileStructure(file);
+    const validationResult = await FileValidatorService.validateFileStructure(file);
     const isTabular = validationResult.fileType === "xlsx" || validationResult.fileType === "csv";
-    if (!isTabular || !validationResult.isValid) {
+    if (!isTabular) {
       await setFailed(validationResult.errors?.length ? validationResult.errors.join("; ") : "File validation failed");
       return;
     }
@@ -138,6 +138,7 @@ async function runUploadProcessingInBackground(
       !FileValidatorService.hasDistinctRequiredECRFColumns(validationResult.detectedColumns || {}) ||
       !!validationResult.isCIRIS;
 
+    // Path B: file doesn't have full eCRF structure (or is CIRIS). Send to AI interpretation even if structure validation reported "errors" (e.g. missing gpcRefNo/totalCO2e).
     if (usePathB) {
       await importedFile.update({
         importStatus: ImportStatusEnum.PENDING_AI_INTERPRETATION,
@@ -149,6 +150,14 @@ async function runUploadProcessingInBackground(
         lastUpdated: new Date(),
       });
       logger.info({ importedFileId: importedFile.id }, "Tabular upload (Path B) validated, pending AI interpretation");
+      return;
+    }
+
+    // eCRF path: require valid structure
+    if (!validationResult.isValid) {
+      await setFailed(
+        validationResult.errors?.length ? validationResult.errors.join("; ") : "File validation failed",
+      );
       return;
     }
 
@@ -245,21 +254,17 @@ export const POST = apiHandler(
         validationResults: { errors: basicValidation.errors, warnings: basicValidation.warnings },
       });
       logger.info({ importedFileId: importedFile.id }, "PDF uploaded, pending AI extraction");
-      return NextResponse.json({
-        data: {
-          id: importedFile.id,
-          userId: importedFile.userId,
-          cityId: importedFile.cityId,
-          inventoryId: importedFile.inventoryId,
-          fileName: importedFile.fileName,
-          fileType: importedFile.fileType,
-          fileSize: importedFile.fileSize,
-          originalFileName: importedFile.originalFileName,
-          importStatus: importedFile.importStatus,
-          created: importedFile.created,
-          lastUpdated: importedFile.lastUpdated,
+      return NextResponse.json(
+        {
+          data: {
+            accepted: true,
+            id: importedFile.id,
+            message:
+              "Upload accepted; poll GET import status until importStatus is pending_ai_extraction, pending_ai_interpretation, waiting_for_approval, or failed.",
+          },
         },
-      });
+        { status: 202 },
+      );
     }
 
     if (isTabular) {

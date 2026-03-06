@@ -227,7 +227,11 @@ export default function ImportPage(props: {
       return getImportStatus({ cityId, inventoryId, importedFileId: id }).unwrap() as Promise<ImportStatusResponse>;
     }, [cityId, inventoryId, getImportStatus]),
     isTerminal: (res) => {
-      if (res.importStatus === "pending_ai_interpretation" || res.importStatus === "waiting_for_approval")
+      if (
+        res.importStatus === "pending_ai_extraction" ||
+        res.importStatus === "pending_ai_interpretation" ||
+        res.importStatus === "waiting_for_approval"
+      )
         return { done: true, success: true, data: res };
       if (res.importStatus === "failed") return { done: true, success: false, data: res };
       return { done: false };
@@ -236,9 +240,14 @@ export default function ImportPage(props: {
       const file = uploadPendingFileRef.current;
       if (file) setUploadedFile(file);
       setImportedFileId(res.id);
-      setPdfPendingExtraction(false);
-      setTabularPendingInterpretation(res.importStatus === "pending_ai_interpretation");
-      if (res.importStatus === "waiting_for_approval") setTimeout(() => goToNextStep(), 150);
+      if (res.importStatus === "pending_ai_extraction") {
+        setPdfPendingExtraction(true);
+        setTabularPendingInterpretation(false);
+      } else {
+        setPdfPendingExtraction(false);
+        setTabularPendingInterpretation(res.importStatus === "pending_ai_interpretation");
+        if (res.importStatus === "waiting_for_approval") setTimeout(() => goToNextStep(), 150);
+      }
     },
     onFailure: (res) =>
       makeErrorToast("Upload failed", res.errorLog ?? "File validation or processing failed"),

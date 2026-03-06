@@ -27,8 +27,8 @@ const INTERPRET_LLM_JSON_MODE = true;
 const INTERPRET_LLM_TEMPERATURE = 0;
 /** Max tokens for column mapping (smaller response). */
 const INTERPRET_LLM_MAX_TOKENS_MAPPING = 4096;
-/** Max tokens for key-value / table shape (larger response). */
-const INTERPRET_LLM_MAX_TOKENS_SHAPE = 8192;
+/** Max tokens for key-value / table shape (larger response so LLM can return all rows). */
+const INTERPRET_LLM_MAX_TOKENS_SHAPE = 16384;
 
 function slugToDisplay(slug: string): string {
   return slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -351,15 +351,15 @@ You are an interpreter of key-value GHG inventory tables. Column headers are com
 <task>
 The table is in key-value format: each column header is a field name like "residential_buildings_scope_1" or "commercial_and_institutional_buildings_and_facilities_scope_2". The part before "_scope_1", "_scope_2", "_scope_3" (or "scope_1", "scope_2", "scope_3") is the category identifier—map it to GPC sector and subsector using the taxonomy below. The suffix indicates scope (1, 2, or 3) for that column. The value in the cell is totalCO2e (metric tonnes CO2e) for that category and scope.${cityLine}
 
-Output one row per column that has a numeric emission value. Use the GPC sector and subsector canonical names from the taxonomy. Do not map the suffix to "Subsector" or "Scope" as a column—the header as a whole represents one (subsector, scope) pair; the value is totalCO2e. ${yearLine}
+Output one row per column that has a numeric emission value. Include every such column—do not sample or limit to a few rows. Use the GPC sector and subsector canonical names from the taxonomy. Do not map the suffix to "Subsector" or "Scope" as a column—the header as a whole represents one (subsector, scope) pair; the value is totalCO2e. ${yearLine}
 </task>
 
 <input>
-- documentContent: Table with first row = column headers (composite names), following rows = values. Headers may use underscores (e.g. residential_buildings_scope_1). Map the category part to GPC sector/subsector; the scope suffix to scope "1", "2", or "3"; the cell value to totalCO2e.
+- documentContent: Table with first row = column headers (composite names), following rows = values. Headers may use underscores (e.g. residential_buildings_scope_1). Map the category part to GPC sector/subsector; the scope suffix to scope "1", "2", or "3"; the cell value to totalCO2e. Output a row for every column that has an emission value.
 </input>
 
 <output>
-Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown. Each row: year (integer | null), sector (string, canonical from taxonomy), subsector (string, canonical from taxonomy), scope (string "1", "2", or "3"), totalCO2e (number). Include category (string | null) if useful (e.g. "Subsector total"). Use null for missing. Format: {"rows": [ {...}, ... ]}.
+Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown. Output one row for every column with a numeric emission value—do not omit or sample. Each row: year (integer | null), sector (string, canonical from taxonomy), subsector (string, canonical from taxonomy), scope (string "1", "2", or "3"), totalCO2e (number). Include category (string | null) if useful (e.g. "Subsector total"). Use null for missing. Format: {"rows": [ {...}, ... ]}.
 </output>
 
 <taxonomy>
@@ -479,6 +479,32 @@ function normalizeKeyValueRow(row: Record<string, unknown>): ExtractedRow {
   const gpc = row.gpcRefNo ?? row.gpc_ref_no ?? row.gpcRef ?? row.GPC;
   if (str(gpc)) out.gpcRefNo = str(gpc);
 
+  const co2Val = row.co2 ?? row.CO2;
+  const ch4Val = row.ch4 ?? row.CH4;
+  const n2oVal = row.n2o ?? row.N2O;
+  const co2Num = num(co2Val);
+  const ch4Num = num(ch4Val);
+  const n2oNum = num(n2oVal);
+  if (co2Num !== null) out.co2 = co2Num;
+  if (ch4Num !== null) out.ch4 = ch4Num;
+  if (n2oNum !== null) out.n2o = n2oNum;
+
+  const src = row.source ?? row.Source;
+  if (str(src)) out.source = str(src);
+  const meth = row.methodology ?? row.Methodology;
+  if (str(meth)) out.methodology = str(meth);
+  const actAmt = row.activityAmount ?? row.activity_amount ?? row.ActivityAmount;
+  const actAmtNum = num(actAmt);
+  if (actAmtNum !== null) out.activityAmount = actAmtNum;
+  const actUnit = row.activityUnit ?? row.activity_unit ?? row.ActivityUnit;
+  if (str(actUnit)) out.activityUnit = str(actUnit);
+  const actType = row.activityType ?? row.activity_type ?? row.ActivityType ?? row.category ?? row.Category;
+  if (str(actType)) out.activityType = str(actType);
+  const actDs = row.activityDataSource ?? row.activity_data_source ?? row.ActivityDataSource;
+  if (str(actDs)) out.activityDataSource = str(actDs);
+  const actDq = row.activityDataQuality ?? row.activity_data_quality ?? row.ActivityDataQuality;
+  if (str(actDq)) out.activityDataQuality = str(actDq);
+
   return out;
 }
 
@@ -505,15 +531,16 @@ You are an interpreter of GHG inventory tables that do not follow the standard e
 The table may be in one of these forms:
 (1) Single-row key-value: one row of data; each column header is a field name and the cell is the value. Examples: "Sector and scope (GPC reference number)" with value "Stationary Energy: energy use - Scope 1 (I.X.1)" → extract sector=Stationary Energy, subsector from "energy use", scope=1, gpcRefNo=I.X.1. "Emissions (metric tonnes CO2e)" or "Total CO2e" → totalCO2e. "Reporting year" or "Year" → year. Output one row combining these fields.
 (2) Composite headers: column names like "residential_buildings_scope_1"; the part before _scope_1/_scope_2/_scope_3 is the category (map to GPC sector/subsector), the suffix is scope, the cell value is totalCO2e. Output one row per such column.
-Use the GPC taxonomy below for sector/subsector canonical names. Do not map descriptive columns (e.g. "Sector and scope (GPC reference number)") to "Total CO2e"—that column holds sector/scope info; the emissions value is in a separate column like "Emissions (metric tonnes CO2e)". ${cityLine} ${yearLine}
+(3) Multi-row table: header row plus many data rows (each row = one inventory line). Output one JSON row for every data row in the table—do not sample or limit to 5 or 10 rows; extract all rows.
+Column names often vary: map "Category", "CRF - Sector", "Sector name", "Sector Name" to sector; "Sub-sector", "Subsector", "CRF - Sub-sector" to subsector; "Scope", "Scope 1/2/3", "Scope (e.g. 1, 2, 3)" to scope ("1", "2", or "3"); "Emissions", "tCO2e", "GHG", "Total emissions", "GHGs (metric tonnes CO2e) - Total CO2e", "CO2e", "Emissions (metric tonnes CO2e)" to totalCO2e; "Year", "Reporting year", "Account year" to year; "GPC ref", "GPC reference", "Reference number" to gpcRefNo. CDP/Cities format: a column named "Sector and scope (GPC reference number)" (or similar) contains combined values like "Stationary Energy: energy use – Scope 1 (I.X.1)" or "Transportation – Scope 2 (II.X.2)"—parse each value to extract sector (e.g. Stationary Energy, Transportation, Waste), subsector (e.g. energy use), scope ("1", "2", or "3" from "Scope 1/2/3"), and gpcRefNo (e.g. I.X.1, II.X.2) into separate output fields. Use the GPC taxonomy below for sector/subsector canonical names. Do not map descriptive columns (e.g. "Sector and scope (GPC reference number)") to "Total CO2e"—that column holds sector/scope info; the emissions value is in a separate column. ${cityLine} ${yearLine}
 </task>
 
 <input>
-- documentContent: Table with header row and one or more data rows. Interpret column headers and values to build inventory rows.
+- documentContent: Table with header row and one or more data rows. Interpret column headers and values to build inventory rows; map common alternate names as above. CDP Cities GPC files often have "Sector and scope (GPC reference number)" (parse its values into sector, subsector, scope, gpcRefNo) and "Emissions (metric tonnes CO2e)" (→ totalCO2e). Extract every data row; do not return only a sample. If the table has any columns that look like sector, category, scope, or emissions, output rows—do not refuse.
 </input>
 
 <output>
-Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown. You must output at least one row when the table contains any emissions value or sector/scope description. Each row must use these exact keys: year (integer | null), sector (string | null), subsector (string | null), scope (string "1", "2", or "3" only), totalCO2e (number | null), gpcRefNo (string | null). Use null for missing. Format: {"rows": [ {"year": 2017, "sector": "...", "subsector": "...", "scope": "1", "totalCO2e": 38871, "gpcRefNo": null}, ... ]}.
+Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown. Output one row for every data row in the table—do not output only a sample of 5 or 10 rows. Each row must use these exact keys: year (integer | null), sector (string | null), subsector (string | null), scope (string "1", "2", or "3" only), totalCO2e (number | null), gpcRefNo (string | null). Use null for missing. Format: {"rows": [ {"year": 2017, "sector": "...", "subsector": "...", "scope": "1", "totalCO2e": 38871, "gpcRefNo": null}, ... ]}.
 </output>
 
 <taxonomy>
@@ -528,6 +555,104 @@ Mapping (report term → canonical): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)
   {"year": 2017, "sector": "Stationary Energy", "subsector": "Energy Use", "scope": "1", "totalCO2e": 38871, "gpcRefNo": "I.1", "category": null}
 ]}
 </example_output>`;
+}
+
+/** Max tokens for CIRIS/ECRF-like full-schema extraction (many rows, many fields). */
+const INTERPRET_LLM_MAX_TOKENS_SHAPE_CIRIS = 32768;
+
+/**
+ * Prompt for CIRIS (CDP) eCRF_3-style tables: require full ECRF-like output schema and extract every data row.
+ * Output fields: year, gpcRefNo, sector, subsector, scope, category, totalCO2e, co2, ch4, n2o, source, methodology,
+ * activityAmount, activityUnit, activityType, activityDataSource, activityDataQuality.
+ */
+function buildCIRISShapeTablePrompt(options?: {
+  targetYear?: number;
+  targetCity?: string;
+}): string {
+  const targetYear = options?.targetYear;
+  const targetCity = options?.targetCity;
+  const yearLine =
+    targetYear != null
+      ? `Use year ${targetYear} when not specified in the table.`
+      : "Infer year from columns like 'Reporting year', 'Year', 'Account year' when present.";
+  const cityLine =
+    targetCity != null && targetCity.trim() !== ""
+      ? ` Only include data for the target city: "${targetCity.trim()}".`
+      : "";
+
+  return `<role>
+You are an interpreter of CIRIS/CDP eCRF-style inventory tables. The table has a header row and many data rows. You output only valid JSON with no commentary.
+</role>
+
+<task>
+Extract every data row from the table into the standard ECRF-like schema. Do not sample or limit rows—output one JSON row object for each data row in the table. Map column headers to the exact output keys below (e.g. GPC ref no → gpcRefNo, CRF - Sector → sector, GHGs (metric tonnes CO2e) - Total CO2e → totalCO2e). Use the GPC taxonomy for sector/subsector canonical names. ${cityLine} ${yearLine}
+</task>
+
+<input>
+- documentContent: Table with header row and data rows (eCRF_3 / CIRIS style). First row = headers; each following row = one inventory line. Extract all rows.
+</input>
+
+<output>
+Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown. You must output one row for every data row in the table—do not output only a sample of 5 or 10 rows. Each row must use these exact keys (use null for missing): year (integer | null), gpcRefNo (string | null), sector (string | null), subsector (string | null), scope (string "1", "2", or "3" only), category (string | null), totalCO2e (number | null), co2 (number | null), ch4 (number | null), n2o (number | null), source (string | null), methodology (string | null), activityAmount (number | null), activityUnit (string | null), activityType (string | null), activityDataSource (string | null), activityDataQuality (string | null). Format: {"rows": [ {"year": 2017, "gpcRefNo": "I.1.1", "sector": "Stationary Energy", "subsector": "Residential Buildings", "scope": "1", "category": "Natural gas", "totalCO2e": 38871, "co2": null, "ch4": null, "n2o": null, "source": null, "methodology": null, "activityAmount": 5500000, "activityUnit": "GJ", "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null}, ... ]}. Extract all data rows.
+</output>
+
+<taxonomy>
+GPC sector → subsector hierarchy:
+${HIERARCHY_TEXT}
+
+Mapping (report term → canonical): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)"}. Subsector: ${SUBSECTOR_DICTIONARY_TEXT || "(none)"}.
+</taxonomy>
+
+<example_output>
+{"rows": [
+  {"year": 2017, "gpcRefNo": "I.1.1", "sector": "Stationary Energy", "subsector": "Residential Buildings", "scope": "1", "category": "Natural gas", "totalCO2e": 125000, "co2": null, "ch4": null, "n2o": null, "source": null, "methodology": null, "activityAmount": 5500000, "activityUnit": "GJ", "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null},
+  {"year": 2017, "gpcRefNo": "I.1.1", "sector": "Stationary Energy", "subsector": "Residential Buildings", "scope": "2", "category": "Electricity", "totalCO2e": 42000, "co2": null, "ch4": null, "n2o": null, "source": null, "methodology": null, "activityAmount": 12000, "activityUnit": "MWh", "activityType": "Electricity", "activityDataSource": null, "activityDataQuality": null}
+]}
+</example_output>`;
+}
+
+/**
+ * Reshape CIRIS (eCRF_3-style) table into GPC rows with full ECRF-like schema. Extracts every data row.
+ */
+export async function shapeTableToRowsForCIRIS(
+  documentContent: string,
+  options?: InterpretTabularOptions,
+): Promise<ExtractedRow[]> {
+  const systemPrompt = buildCIRISShapeTablePrompt({
+    targetYear: options?.targetYear,
+    targetCity: options?.targetCity,
+  });
+  const userContent = `CIRIS/eCRF-style table (header row + data rows). Extract every data row with the full schema:\n\n${documentContent}`;
+
+  const client = createLLMClient();
+  const { content: responseContent } = await client.complete({
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userContent },
+    ],
+    jsonMode: INTERPRET_LLM_JSON_MODE,
+    temperature: INTERPRET_LLM_TEMPERATURE,
+    maxTokens: INTERPRET_LLM_MAX_TOKENS_SHAPE_CIRIS,
+  });
+
+  logger.debug(
+    { shapeCIRISLength: responseContent.length },
+    "CIRIS shape table LLM output",
+  );
+
+  const rows = parseKeyValueShapeResponse(responseContent);
+  if (rows.length === 0) {
+    logger.warn(
+      {
+        responsePreview:
+          responseContent.length > 600
+            ? responseContent.slice(0, 600) + "..."
+            : responseContent,
+      },
+      "CIRIS shape table produced no rows; check LLM output format",
+    );
+  }
+  return rows;
 }
 
 /**

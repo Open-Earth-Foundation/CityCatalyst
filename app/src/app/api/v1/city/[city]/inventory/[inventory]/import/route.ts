@@ -146,6 +146,7 @@ async function runUploadProcessingInBackground(
           errors: validationResult.errors,
           warnings: validationResult.warnings,
           detectedColumns: validationResult.detectedColumns,
+          isCIRIS: validationResult.isCIRIS ?? false,
         },
         lastUpdated: new Date(),
       });

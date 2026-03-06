@@ -16,6 +16,7 @@ import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-ste
 import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
+import type { ImportStatusResponse } from "@/util/types";
 import { TFunction } from "i18next";
 
 function ImportButton({
@@ -140,8 +141,11 @@ export default function ImportPage(props: {
   } | null>(null);
   const extractionPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const interpretPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const uploadPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const extractionCompleteHandledRef = useRef(false);
   const interpretCompleteHandledRef = useRef(false);
+  const uploadCompleteHandledRef = useRef(false);
+  const [isUploadInProgress, setIsUploadInProgress] = useState(false);
   const pathname = usePathname();
   const prevPathnameRef = useRef<string | null>(null);
 
@@ -171,12 +175,16 @@ export default function ImportPage(props: {
       makeErrorToast("Error", "Inventory ID is required");
       return;
     }
-
-    // Show info toast when upload starts
+    if (uploadPollRef.current) {
+      clearInterval(uploadPollRef.current);
+      uploadPollRef.current = null;
+    }
+    uploadCompleteHandledRef.current = false;
     makeInfoToast(
       t("upload-started"),
       t("upload-started-description", { fileName: file.name }),
     );
+    setIsUploadInProgress(true);
 
     try {
       const result = await uploadFile({
@@ -185,23 +193,66 @@ export default function ImportPage(props: {
         file,
       }).unwrap();
 
+      if ("accepted" in result && result.accepted) {
+        uploadPollRef.current = setInterval(async () => {
+          if (!cityId || !inventoryId || !result.id) return;
+          try {
+            const res = (await getImportStatus({
+              cityId,
+              inventoryId,
+              importedFileId: result.id,
+            }).unwrap()) as ImportStatusResponse;
+            if (uploadCompleteHandledRef.current) return;
+            const status = res.importStatus;
+            const errorLog = res.errorLog;
+            if (status === "pending_ai_interpretation" || status === "waiting_for_approval") {
+              uploadCompleteHandledRef.current = true;
+              if (uploadPollRef.current) {
+                clearInterval(uploadPollRef.current);
+                uploadPollRef.current = null;
+              }
+              setIsUploadInProgress(false);
+              setUploadedFile(file);
+              setImportedFileId(result.id);
+              setPdfPendingExtraction(false);
+              setTabularPendingInterpretation(status === "pending_ai_interpretation");
+              if (status === "waiting_for_approval") {
+                setTimeout(() => goToNextStep(), 150);
+              }
+            } else if (status === "failed") {
+              uploadCompleteHandledRef.current = true;
+              if (uploadPollRef.current) {
+                clearInterval(uploadPollRef.current);
+                uploadPollRef.current = null;
+              }
+              setIsUploadInProgress(false);
+              makeErrorToast("Upload failed", errorLog ?? "File validation or processing failed");
+            }
+          } catch (err) {
+            logger.debug({ err, cityId, inventoryId, importedFileId: result.id }, "Upload status poll failed");
+          }
+        }, 3000);
+        return;
+      }
+
+      setIsUploadInProgress(false);
       setUploadedFile(file);
       setImportedFileId(result.id);
       setPdfPendingExtraction(
-        result.importStatus === "pending_ai_extraction" || result.fileType === "pdf",
+        (result as { importStatus?: string; fileType?: string }).importStatus === "pending_ai_extraction" ||
+          (result as { fileType?: string }).fileType === "pdf",
       );
       setTabularPendingInterpretation(
-        result.importStatus === "pending_ai_interpretation",
+        (result as { importStatus?: string }).importStatus === "pending_ai_interpretation",
       );
-
-      // PDF (Path C): stay on step 0 for "Extract with AI"; Path B (tabular): stay for "Interpret with AI"; eCRF: advance to step 1
       if (
-        result.importStatus !== "pending_ai_extraction" &&
-        result.importStatus !== "pending_ai_interpretation"
+        (result as { importStatus?: string }).importStatus !== "pending_ai_extraction" &&
+        (result as { importStatus?: string }).importStatus !== "pending_ai_interpretation"
       ) {
         setTimeout(() => goToNextStep(), 150);
       }
     } catch (error: any) {
+      setIsUploadInProgress(false);
       makeErrorToast(
         "Upload failed",
         error?.data?.message || error?.message || "Failed to upload file",
@@ -227,10 +278,16 @@ export default function ImportPage(props: {
       clearInterval(interpretPollRef.current);
       interpretPollRef.current = null;
     }
+    if (uploadPollRef.current) {
+      clearInterval(uploadPollRef.current);
+      uploadPollRef.current = null;
+    }
     extractionCompleteHandledRef.current = false;
     interpretCompleteHandledRef.current = false;
+    uploadCompleteHandledRef.current = false;
     setIsExtractInProgress(false);
     setIsInterpretInProgress(false);
+    setIsUploadInProgress(false);
     setUploadedFile(null);
     setImportedFileId(null);
     setPdfPendingExtraction(false);
@@ -396,6 +453,16 @@ export default function ImportPage(props: {
     }
   };
 
+  // Clear upload poll on unmount
+  useEffect(() => {
+    return () => {
+      if (uploadPollRef.current) {
+        clearInterval(uploadPollRef.current);
+        uploadPollRef.current = null;
+      }
+    };
+  }, []);
+
   // Handle beforeunload event (browser refresh/close)
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -488,7 +555,7 @@ export default function ImportPage(props: {
                       uploadedFile={uploadedFile}
                       onFileUpload={handleFileUpload}
                       onRemoveFile={handleRemoveFile}
-                      isUploading={isUploadingFile}
+                      isUploading={isUploadingFile || isUploadInProgress}
                     />
                     {pdfPendingExtraction && (isExtracting || isExtractInProgress) && (
                       <Box w="full" mt={2}>

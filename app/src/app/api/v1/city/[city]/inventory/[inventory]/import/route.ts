@@ -94,6 +94,106 @@ import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { logger } from "@/services/logger";
 
+/** Quick response for tabular uploads; validation/processing runs in background. */
+export const maxDuration = 30;
+
+/** Run validation and optional eCRF processing for a tabular upload in the background (avoids timeout for large files e.g. CIRIS). */
+async function runUploadProcessingInBackground(
+  cityId: string,
+  inventoryId: string,
+  importedFileId: string,
+): Promise<void> {
+  const importedFile = await db.models.ImportedInventoryFile.findOne({
+    where: { id: importedFileId, inventoryId, cityId },
+  });
+  if (!importedFile || importedFile.importStatus !== ImportStatusEnum.PROCESSING) {
+    logger.warn({ importedFileId, inventoryId, cityId }, "Upload background: file not found or not PROCESSING");
+    return;
+  }
+
+  const buffer = importedFile.data as Buffer;
+  const originalFileName = (importedFile.originalFileName as string) || "upload";
+  const fileType = importedFile.fileType as "xlsx" | "csv";
+  const file = new File([buffer], originalFileName, {
+    type: fileType === "xlsx" ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : "text/csv",
+  });
+
+  const setFailed = async (message: string) => {
+    await importedFile.update({
+      importStatus: ImportStatusEnum.FAILED,
+      errorLog: message,
+      lastUpdated: new Date(),
+    });
+  };
+
+  try {
+    let validationResult = await FileValidatorService.validateFileStructure(file);
+    const isTabular = validationResult.fileType === "xlsx" || validationResult.fileType === "csv";
+    if (!isTabular || !validationResult.isValid) {
+      await setFailed(validationResult.errors?.length ? validationResult.errors.join("; ") : "File validation failed");
+      return;
+    }
+
+    const usePathB =
+      !FileValidatorService.hasDistinctRequiredECRFColumns(validationResult.detectedColumns || {}) ||
+      !!validationResult.isCIRIS;
+
+    if (usePathB) {
+      await importedFile.update({
+        importStatus: ImportStatusEnum.PENDING_AI_INTERPRETATION,
+        validationResults: {
+          errors: validationResult.errors,
+          warnings: validationResult.warnings,
+          detectedColumns: validationResult.detectedColumns,
+        },
+        lastUpdated: new Date(),
+      });
+      logger.info({ importedFileId: importedFile.id }, "Tabular upload (Path B) validated, pending AI interpretation");
+      return;
+    }
+
+    const parsedData = await FileParserService.parseFile(buffer, fileType);
+    const importResult = await ECRFImportService.processECRFFile(
+      parsedData,
+      validationResult.detectedColumns || {},
+    );
+    await importedFile.update({
+      importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+      validationResults: {
+        errors: validationResult.errors,
+        warnings: [...(validationResult.warnings || []), ...importResult.warnings],
+        detectedColumns: validationResult.detectedColumns,
+        processingResults: {
+          rowCount: importResult.rowCount,
+          validRowCount: importResult.validRowCount,
+          errors: importResult.errors,
+          warnings: importResult.warnings,
+        },
+      },
+      rowCount: importResult.rowCount,
+      mappingConfiguration: {
+        rows: importResult.rows.map((row) => ({
+          gpcRefNo: row.gpcRefNo,
+          sectorId: row.sectorId,
+          subsectorId: row.subsectorId,
+          subcategoryId: row.subcategoryId,
+          scopeId: row.scopeId,
+          hasErrors: !!row.errors && row.errors.length > 0,
+          hasWarnings: !!row.warnings && row.warnings.length > 0,
+        })),
+      },
+      lastUpdated: new Date(),
+    });
+    logger.info(
+      { importedFileId: importedFile.id, rowCount: importResult.rowCount },
+      "Tabular upload (eCRF) processed, waiting for approval",
+    );
+  } catch (error) {
+    logger.error({ err: error, importedFileId: importedFile.id }, "Upload background processing failed");
+    await setFailed(error instanceof Error ? error.message : "Unknown error");
+  }
+}
+
 export const POST = apiHandler(
   async (req: NextRequest, { session, params }) => {
     if (!session) {
@@ -103,10 +203,8 @@ export const POST = apiHandler(
     const cityId = z.string().uuid().parse(params.city);
     const inventoryId = z.string().uuid().parse(params.inventory);
 
-    // Validate user access to inventory
     await UserService.findUserInventory(inventoryId, session);
 
-    // Get form data
     const formData = await req.formData();
     const file = formData?.get("file") as unknown as File;
     const useAIInterpretationPath = formData?.get("pathB") === "true";
@@ -117,99 +215,36 @@ export const POST = apiHandler(
       );
     }
 
-    // Path selection for tabular (xlsx/csv): only use eCRF path when file has full eCRF structure (all required columns).
-    // Otherwise use Path B (Interpret with AI). useAIInterpretationPath form flag forces Path B without running structure check.
-    let validationResult = useAIInterpretationPath
-      ? FileValidatorService.validateFile(file)
-      : await FileValidatorService.validateFileStructure(file);
-
-    let usePathB = useAIInterpretationPath;
-    const isTabular =
-      validationResult.fileType === "xlsx" || validationResult.fileType === "csv";
-    if (!useAIInterpretationPath && isTabular && !validationResult.isValid) {
-      // Tabular file does not have full eCRF structure → use Path B only (do not use eCRF path)
-      logger.info(
-        { errors: validationResult.errors },
-        "Tabular file does not have eCRF structure; using Path B (Interpret with AI)",
-      );
-      validationResult = FileValidatorService.validateFile(file);
-      usePathB = validationResult.isValid;
-    } else if (
-      !useAIInterpretationPath &&
-      isTabular &&
-      validationResult.isValid &&
-      !FileValidatorService.hasDistinctRequiredECRFColumns(
-        validationResult.detectedColumns,
-      )
-    ) {
-      // Structure passed but required identity columns collapse into one (e.g. single "Sector and scope (GPC ref)") → Path B
-      logger.info(
-        { detectedColumns: validationResult.detectedColumns },
-        "Tabular file required columns not distinct; using Path B (Interpret with AI)",
-      );
-      validationResult = FileValidatorService.validateFile(file);
-      usePathB = validationResult.isValid;
-    } else if (!useAIInterpretationPath && isTabular && validationResult.isValid && validationResult.isCIRIS) {
-      // CIRIS (CDP) format: has eCRF_3 sheet but should use AI extraction from it, not standard eCRF path
-      logger.info(
-        "CIRIS (CDP) format detected; using Path B (Interpret with AI) for eCRF_3 sheet",
-      );
-      validationResult = FileValidatorService.validateFile(file);
-      usePathB = validationResult.isValid;
-    }
-
-    if (!validationResult.isValid) {
+    const basicValidation = FileValidatorService.validateFile(file);
+    if (!basicValidation.isValid || !basicValidation.fileType) {
       throw new createHttpError.BadRequest(
-        `File validation failed: ${validationResult.errors.join(", ")}`,
+        basicValidation.errors?.length ? basicValidation.errors.join(", ") : "File validation failed",
       );
     }
 
-    // Path B only accepts xlsx/csv
-    if (usePathB && validationResult.fileType !== "xlsx" && validationResult.fileType !== "csv") {
-      throw new createHttpError.BadRequest(
-        "Path B (Interpret with AI) accepts only xlsx or csv files.",
-      );
-    }
+    const isPdf = basicValidation.fileType === "pdf";
+    const isTabular = basicValidation.fileType === "xlsx" || basicValidation.fileType === "csv";
 
-    // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-
-    // Generate sanitized file name (for now, just use the original with UUID prefix)
     const originalFileName = file.name;
     const fileName = `${randomUUID()}-${originalFileName}`;
 
-    const isPdf = validationResult.fileType === "pdf";
-
-    // Create ImportedInventoryFile record
-    const importedFile = await db.models.ImportedInventoryFile.create({
-      id: randomUUID(),
-      userId: session.user.id,
-      cityId,
-      inventoryId,
-      fileName,
-      fileType: validationResult.fileType!,
-      fileSize: validationResult.fileSize!,
-      data: buffer,
-      originalFileName,
-      importStatus: isPdf
-        ? ImportStatusEnum.PENDING_AI_EXTRACTION
-        : usePathB
-          ? ImportStatusEnum.PENDING_AI_INTERPRETATION
-          : ImportStatusEnum.PROCESSING,
-      validationResults: {
-        errors: validationResult.errors,
-        warnings: validationResult.warnings,
-        detectedColumns: validationResult.detectedColumns,
-      },
-    });
-
-    // Path C (PDF): stop here; user will call Extract API to run AI extraction
     if (isPdf) {
-      logger.info(
-        { importedFileId: importedFile.id },
-        "PDF uploaded, pending AI extraction",
-      );
+      const importedFile = await db.models.ImportedInventoryFile.create({
+        id: randomUUID(),
+        userId: session.user.id,
+        cityId,
+        inventoryId,
+        fileName,
+        fileType: basicValidation.fileType,
+        fileSize: basicValidation.fileSize!,
+        data: buffer,
+        originalFileName,
+        importStatus: ImportStatusEnum.PENDING_AI_EXTRACTION,
+        validationResults: { errors: basicValidation.errors, warnings: basicValidation.warnings },
+      });
+      logger.info({ importedFileId: importedFile.id }, "PDF uploaded, pending AI extraction");
       return NextResponse.json({
         data: {
           id: importedFile.id,
@@ -227,114 +262,35 @@ export const POST = apiHandler(
       });
     }
 
-    // Path B (tabular): stop here; user will call Interpret API to run AI column mapping
-    if (usePathB) {
-      logger.info(
-        { importedFileId: importedFile.id },
-        "Tabular file uploaded (Path B), pending AI interpretation",
-      );
-      return NextResponse.json({
-        data: {
-          id: importedFile.id,
-          userId: importedFile.userId,
-          cityId: importedFile.cityId,
-          inventoryId: importedFile.inventoryId,
-          fileName: importedFile.fileName,
-          fileType: importedFile.fileType,
-          fileSize: importedFile.fileSize,
-          originalFileName: importedFile.originalFileName,
-          importStatus: importedFile.importStatus,
-          created: importedFile.created,
-          lastUpdated: importedFile.lastUpdated,
-        },
+    if (isTabular) {
+      const importedFile = await db.models.ImportedInventoryFile.create({
+        id: randomUUID(),
+        userId: session.user.id,
+        cityId,
+        inventoryId,
+        fileName,
+        fileType: basicValidation.fileType,
+        fileSize: basicValidation.fileSize!,
+        data: buffer,
+        originalFileName,
+        importStatus: ImportStatusEnum.PROCESSING,
+        validationResults: null,
       });
-    }
-
-    try {
-      // Process the file: parse and extract eCRF data (xlsx/csv only)
-      const parsedData = await FileParserService.parseFile(
-        buffer,
-        validationResult.fileType!,
+      runUploadProcessingInBackground(cityId, inventoryId, importedFile.id).catch((err) =>
+        logger.error({ err, importedFileId: importedFile.id }, "Upload background failed"),
       );
-
-      const importResult = await ECRFImportService.processECRFFile(
-        parsedData,
-        validationResult.detectedColumns || {},
-      );
-
-      // Update file with processing results
-      await importedFile.update({
-        importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
-        validationResults: {
-          errors: validationResult.errors,
-          warnings: [...validationResult.warnings, ...importResult.warnings],
-          detectedColumns: validationResult.detectedColumns,
-          processingResults: {
-            rowCount: importResult.rowCount,
-            validRowCount: importResult.validRowCount,
-            errors: importResult.errors,
-            warnings: importResult.warnings,
+      return NextResponse.json(
+        {
+          data: {
+            accepted: true,
+            id: importedFile.id,
+            message: "Upload accepted; poll GET import status until importStatus is pending_ai_interpretation, waiting_for_approval, or failed.",
           },
         },
-        rowCount: importResult.rowCount,
-        mappingConfiguration: {
-          rows: importResult.rows.map((row) => ({
-            gpcRefNo: row.gpcRefNo,
-            sectorId: row.sectorId,
-            subsectorId: row.subsectorId,
-            subcategoryId: row.subcategoryId,
-            scopeId: row.scopeId,
-            hasErrors: !!row.errors && row.errors.length > 0,
-            hasWarnings: !!row.warnings && row.warnings.length > 0,
-          })),
-        },
-        lastUpdated: new Date(),
-      });
-
-      logger.info(
-        {
-          importedFileId: importedFile.id,
-          rowCount: importResult.rowCount,
-          validRowCount: importResult.validRowCount,
-        },
-        "File processed and ready for approval",
-      );
-    } catch (error) {
-      // If processing fails, mark as failed
-      await importedFile.update({
-        importStatus: ImportStatusEnum.FAILED,
-        errorLog: error instanceof Error ? error.message : "Unknown error",
-        lastUpdated: new Date(),
-      });
-
-      logger.error(
-        { err: error, importedFileId: importedFile.id },
-        "Failed to process imported file",
-      );
-
-      throw new createHttpError.InternalServerError(
-        `Failed to process file: ${error instanceof Error ? error.message : "Unknown error"}`,
+        { status: 202 },
       );
     }
 
-    // Reload to get updated status
-    await importedFile.reload();
-
-    // Return response with metadata (excluding the binary data)
-    return NextResponse.json({
-      data: {
-        id: importedFile.id,
-        userId: importedFile.userId,
-        cityId: importedFile.cityId,
-        inventoryId: importedFile.inventoryId,
-        fileName: importedFile.fileName,
-        fileType: importedFile.fileType,
-        fileSize: importedFile.fileSize,
-        originalFileName: importedFile.originalFileName,
-        importStatus: importedFile.importStatus,
-        created: importedFile.created,
-        lastUpdated: importedFile.lastUpdated,
-      },
-    });
+    throw new createHttpError.BadRequest("Unsupported file type");
   },
 );

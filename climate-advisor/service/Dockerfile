@@ -26,6 +26,6 @@ COPY service/app ./app
 COPY service/migrations ./migrations
 COPY service/alembic.ini ./alembic.ini
 
-EXPOSE 8080
+EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -178,7 +178,7 @@ When running in Docker, migrations should be run as part of the container startu
 
 ```dockerfile
 # In your Dockerfile or docker-compose.yml
-CMD ["sh", "-c", "python migrate.py upgrade && python -m uvicorn app.main:app --host 0.0.0.0 --port 8080"]
+CMD ["sh", "-c", "python migrate.py upgrade && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"]
 ```
 
 ## Testing

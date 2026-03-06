@@ -493,16 +493,28 @@ function normalizeKeyValueRow(row: Record<string, unknown>): ExtractedRow {
   if (str(src)) out.source = str(src);
   const meth = row.methodology ?? row.Methodology;
   if (str(meth)) out.methodology = str(meth);
-  const actAmt = row.activityAmount ?? row.activity_amount ?? row.ActivityAmount;
+  const actAmt =
+    row.activityAmount ?? row.activity_amount ?? row.ActivityAmount;
   const actAmtNum = num(actAmt);
   if (actAmtNum !== null) out.activityAmount = actAmtNum;
   const actUnit = row.activityUnit ?? row.activity_unit ?? row.ActivityUnit;
   if (str(actUnit)) out.activityUnit = str(actUnit);
-  const actType = row.activityType ?? row.activity_type ?? row.ActivityType ?? row.category ?? row.Category;
+  const actType =
+    row.activityType ??
+    row.activity_type ??
+    row.ActivityType ??
+    row.category ??
+    row.Category;
   if (str(actType)) out.activityType = str(actType);
-  const actDs = row.activityDataSource ?? row.activity_data_source ?? row.ActivityDataSource;
+  const actDs =
+    row.activityDataSource ??
+    row.activity_data_source ??
+    row.ActivityDataSource;
   if (str(actDs)) out.activityDataSource = str(actDs);
-  const actDq = row.activityDataQuality ?? row.activity_data_quality ?? row.ActivityDataQuality;
+  const actDq =
+    row.activityDataQuality ??
+    row.activity_data_quality ??
+    row.ActivityDataQuality;
   if (str(actDq)) out.activityDataQuality = str(actDq);
 
   return out;

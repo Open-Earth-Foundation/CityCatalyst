@@ -20,6 +20,17 @@ import type { ImportStatusResponse } from "@/util/types";
 import { usePollUntil } from "@/hooks/usePollUntil";
 import { TFunction } from "i18next";
 
+/** If errorLog starts with "i18n:", return t(key); else return errorLog or fallback. */
+function resolveErrorMessage(
+  errorLog: string | null | undefined,
+  fallback: string,
+  t: TFunction,
+): string {
+  if (errorLog == null || errorLog === "") return fallback;
+  if (errorLog.startsWith("i18n:")) return t(errorLog.slice(5));
+  return errorLog;
+}
+
 function ImportButton({
   cityId,
   inventoryId,
@@ -68,7 +79,7 @@ function ImportButton({
         onImport();
       },
       onFailure: (res) =>
-        makeErrorToast("Import failed", res.errorLog ?? "Failed to import data"),
+        makeErrorToast("Import failed", resolveErrorMessage(res.errorLog, "Failed to import data", t)),
       onPollError: (err) =>
         logger.debug(
           { err, cityId, inventoryId, importedFileId },
@@ -250,7 +261,7 @@ export default function ImportPage(props: {
       }
     },
     onFailure: (res) =>
-      makeErrorToast("Upload failed", res.errorLog ?? "File validation or processing failed"),
+      makeErrorToast("Upload failed", resolveErrorMessage(res.errorLog, "File validation or processing failed", t)),
     onPollError: (err) =>
       logger.debug(
         { err, cityId, inventoryId, importedFileId: uploadPendingIdRef.current },
@@ -283,7 +294,7 @@ export default function ImportPage(props: {
     onFailure: (res) => {
       setIsExtractInProgress(false);
       setExtractionProgress(null);
-      makeErrorToast(t("extraction-failed"), res.errorLog ?? t("ai-extraction-failed-default"));
+      makeErrorToast(t("extraction-failed"), resolveErrorMessage(res.errorLog, t("ai-extraction-failed-default"), t));
     },
     onTick: (res) => {
       const progress = (res as ImportStatusResponse & { mappingConfiguration?: { extractionProgress?: { current: number; total?: number } } })
@@ -320,7 +331,7 @@ export default function ImportPage(props: {
     onFailure: (res) =>
       makeErrorToast(
         t("interpretation-failed") ?? "Interpretation failed",
-        res.errorLog ?? t("ai-extraction-failed-default"),
+        resolveErrorMessage(res.errorLog, t("ai-extraction-failed-default"), t),
       ),
     onPollError: (err) =>
       logger.debug({ err, cityId, inventoryId, importedFileId }, "Interpret status poll failed"),
@@ -455,7 +466,7 @@ export default function ImportPage(props: {
         const errorLog = (result as { errorLog?: string | null }).errorLog;
         makeErrorToast(
           t("interpretation-failed") ?? "Interpretation failed",
-          errorLog ?? t("ai-extraction-failed-default"),
+          resolveErrorMessage(errorLog, t("ai-extraction-failed-default"), t),
         );
         return;
       }

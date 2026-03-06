@@ -267,9 +267,7 @@ async function runInterpretationInBackground(
         }
       }
       if (!shapedRows.length) {
-        await setFailed(
-          "AI could not extract inventory rows from this table. The file may use column names we don't recognize—try a file with columns like Sector, Sub-sector, Scope, and emissions (e.g. total CO2e), or export from your source in a standard eCRF/CIRIS layout.",
-        );
+        await setFailed("i18n:ai-extract-no-rows");
         return;
       }
       const validationResults = importedFile.validationResults ?? {};

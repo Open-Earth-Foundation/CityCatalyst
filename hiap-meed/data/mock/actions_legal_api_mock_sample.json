@@ -17,6 +17,7 @@
         {
           "signal_code": "MUNI_ENV_STANDARDS",
           "signal_name": "Municipal environmental standards",
+          "operator": "equals",
           "required_value": "apply_standards",
           "legal_signal_value": "apply_standards",
           "strength": "mandatory",
@@ -32,6 +33,7 @@
         {
           "signal_code": "PLANS_ALIGNMENT",
           "signal_name": "Plans alignment requirement",
+          "operator": "equals",
           "required_value": "comply",
           "legal_signal_value": "comply",
           "strength": "mandatory",
@@ -51,6 +53,7 @@
         {
           "signal_code": "MUNI_ENV_STANDARDS",
           "signal_name": "Municipal environmental standards",
+          "operator": "equals",
           "required_value": "apply_standards",
           "legal_signal_value": "apply_standards",
           "strength": "mandatory",
@@ -66,6 +69,7 @@
         {
           "signal_code": "PLANS_ALIGNMENT",
           "signal_name": "Plans alignment requirement",
+          "operator": "equals",
           "required_value": "comply",
           "legal_signal_value": "comply",
           "strength": "mandatory",
@@ -85,6 +89,7 @@
         {
           "signal_code": "MUNI_ENV_STANDARDS",
           "signal_name": "Municipal environmental standards",
+          "operator": "equals",
           "required_value": "apply_standards",
           "legal_signal_value": "apply_standards",
           "strength": "mandatory",
@@ -100,6 +105,7 @@
         {
           "signal_code": "PLANS_ALIGNMENT",
           "signal_name": "Plans alignment requirement",
+          "operator": "equals",
           "required_value": "comply",
           "legal_signal_value": "comply",
           "strength": "mandatory",
@@ -119,6 +125,7 @@
         {
           "signal_code": "MUNI_TRANSPORT_AUTHORITY",
           "signal_name": "Municipal transport authority",
+          "operator": "equals",
           "required_value": "exclusive_authority",
           "legal_signal_value": "exclusive_authority",
           "strength": "mandatory",
@@ -133,6 +140,7 @@
         {
           "signal_code": "PROCUREMENT_PUBLIC_BIDDING",
           "signal_name": "Public bidding for procurement",
+          "operator": "equals",
           "required_value": "public_bidding",
           "legal_signal_value": "public_bidding",
           "strength": "mandatory",
@@ -152,6 +160,7 @@
         {
           "signal_code": "MUNI_TRANSPORT_AUTHORITY",
           "signal_name": "Municipal transport authority",
+          "operator": "equals",
           "required_value": "exclusive_authority",
           "legal_signal_value": "exclusive_authority",
           "strength": "mandatory",
@@ -171,6 +180,7 @@
         {
           "signal_code": "MUNI_TRANSPORT_AUTHORITY",
           "signal_name": "Municipal transport authority",
+          "operator": "equals",
           "required_value": "exclusive_authority",
           "legal_signal_value": "exclusive_authority",
           "strength": "mandatory",
@@ -185,6 +195,7 @@
         {
           "signal_code": "PROCUREMENT_PUBLIC_BIDDING",
           "signal_name": "Public bidding for procurement",
+          "operator": "equals",
           "required_value": "public_bidding",
           "legal_signal_value": "public_bidding",
           "strength": "mandatory",
@@ -204,6 +215,7 @@
         {
           "signal_code": "MUNI_WASTE_AUTHORITY",
           "signal_name": "Municipal waste management authority",
+          "operator": "equals",
           "required_value": "exclusive_authority",
           "legal_signal_value": "exclusive_authority",
           "strength": "mandatory",
@@ -224,6 +236,7 @@
         {
           "signal_code": "MUNI_WASTE_AUTHORITY",
           "signal_name": "Municipal waste management authority",
+          "operator": "equals",
           "required_value": "exclusive_authority",
           "legal_signal_value": "exclusive_authority",
           "strength": "mandatory",
@@ -239,6 +252,7 @@
         {
           "signal_code": "PLANS_ALIGNMENT",
           "signal_name": "Plans alignment requirement",
+          "operator": "equals",
           "required_value": "comply",
           "legal_signal_value": "comply",
           "strength": "mandatory",
@@ -258,6 +272,7 @@
         {
           "signal_code": "MUNI_WASTE_AUTHORITY",
           "signal_name": "Municipal waste management authority",
+          "operator": "equals",
           "required_value": "exclusive_authority",
           "legal_signal_value": "exclusive_authority",
           "strength": "mandatory",
@@ -273,6 +288,7 @@
         {
           "signal_code": "PLANS_ALIGNMENT",
           "signal_name": "Plans alignment requirement",
+          "operator": "equals",
           "required_value": "comply",
           "legal_signal_value": "comply",
           "strength": "mandatory",
@@ -292,6 +308,7 @@
         {
           "signal_code": "MUNI_WASTE_AUTHORITY",
           "signal_name": "Municipal waste management authority",
+          "operator": "equals",
           "required_value": "exclusive_authority",
           "legal_signal_value": "exclusive_authority",
           "strength": "mandatory",
@@ -307,6 +324,7 @@
         {
           "signal_code": "PLANS_ALIGNMENT",
           "signal_name": "Plans alignment requirement",
+          "operator": "equals",
           "required_value": "comply",
           "legal_signal_value": "comply",
           "strength": "mandatory",
@@ -321,6 +339,7 @@
         {
           "signal_code": "SUBSIDY_CAP_7PCT",
           "signal_name": "Subsidy cap for non-profits",
+          "operator": "less_than_or_equal",
           "required_value": "0.07",
           "legal_signal_value": "0.07",
           "strength": "mandatory",
@@ -340,6 +359,7 @@
         {
           "signal_code": "MUNI_WASTE_AUTHORITY",
           "signal_name": "Municipal waste management authority",
+          "operator": "equals",
           "required_value": "exclusive_authority",
           "legal_signal_value": "exclusive_authority",
           "strength": "mandatory",
@@ -360,6 +380,7 @@
         {
           "signal_code": "SUBSIDY_CAP_7PCT",
           "signal_name": "Subsidy cap for non-profits",
+          "operator": "less_than_or_equal",
           "required_value": "0.07",
           "legal_signal_value": "0.07",
           "strength": "mandatory",
@@ -379,6 +400,7 @@
         {
           "signal_code": "MUNI_PLANNING_AUTHORITY",
           "signal_name": "Municipal planning authority",
+          "operator": "equals",
           "required_value": "planning_authority",
           "legal_signal_value": "planning_authority",
           "strength": "mandatory",
@@ -393,6 +415,7 @@
         {
           "signal_code": "PLANS_ALIGNMENT",
           "signal_name": "Plans alignment requirement",
+          "operator": "equals",
           "required_value": "comply",
           "legal_signal_value": "comply",
           "strength": "mandatory",

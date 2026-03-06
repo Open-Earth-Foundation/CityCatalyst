@@ -1869,7 +1869,7 @@ export const api = createApi({
         invalidatesTags: ["Inventory"],
       }),
       approveImport: builder.mutation<
-        ImportedFileResponse,
+        ImportedFileResponse | { accepted: true; id: string; message?: string },
         {
           cityId: string;
           inventoryId: string;
@@ -1885,8 +1885,11 @@ export const api = createApi({
             mappingOverrides,
           },
         }),
-        transformResponse: (response: { data: ImportedFileResponse }) =>
-          response.data,
+        transformResponse: (response: {
+          data:
+            | ImportedFileResponse
+            | { accepted: true; id: string; message?: string };
+        }) => response.data,
         invalidatesTags: [
           "Inventory",
           "InventoryProgress",

@@ -5,13 +5,9 @@
     "upstream_provider": "policy-api",
     "api_context": {
       "endpoint": "GET /v1/cities/{locode}/policy-signals",
-      "locode": "CL ANF",
-      "comuna_name": "Antofagasta",
-      "region_name": "Antofagasta",
-      "description": "Policy signals scoped to city (National + Regional + Communal)",
-      "policy_support_score_formula": "sum(relation_weight × strength_confidence × scope_multiplier) / 3.0, capped at 1.0"
+      "locode": "CL ANF"
     },
-    "total_actions": 142
+    "total_records": 142
   },
   "policy_signals": [
     {
@@ -1562,9 +1558,7 @@
           "signal_type": "action",
           "signal_relation": "establishes",
           "signal_strength": "high",
-          "evidence_ids": [
-            "e2c0f2a4-8d30-49c4-88c2-ff71edcf9fe0"
-          ],
+          "evidence_ids": ["e2c0f2a4-8d30-49c4-88c2-ff71edcf9fe0"],
           "evidence_count": 1
         },
         {
@@ -2636,9 +2630,7 @@
           "signal_type": "action",
           "signal_relation": "establishes",
           "signal_strength": "high",
-          "evidence_ids": [
-            "e2c0f2a4-8d30-49c4-88c2-ff71edcf9fe0"
-          ],
+          "evidence_ids": ["e2c0f2a4-8d30-49c4-88c2-ff71edcf9fe0"],
           "evidence_count": 1
         },
         {
@@ -3256,9 +3248,7 @@
           "signal_type": "action",
           "signal_relation": "supports",
           "signal_strength": "low",
-          "evidence_ids": [
-            "556fc7ee-b56c-490f-ad40-1809e7a074d0"
-          ],
+          "evidence_ids": ["556fc7ee-b56c-490f-ad40-1809e7a074d0"],
           "evidence_count": 1
         },
         {
@@ -11277,9 +11267,7 @@
           "signal_type": "action",
           "signal_relation": "supports",
           "signal_strength": "low",
-          "evidence_ids": [
-            "556fc7ee-b56c-490f-ad40-1809e7a074d0"
-          ],
+          "evidence_ids": ["556fc7ee-b56c-490f-ad40-1809e7a074d0"],
           "evidence_count": 1
         },
         {
@@ -14920,9 +14908,7 @@
           "signal_type": "action",
           "signal_relation": "supports",
           "signal_strength": "low",
-          "evidence_ids": [
-            "556fc7ee-b56c-490f-ad40-1809e7a074d0"
-          ],
+          "evidence_ids": ["556fc7ee-b56c-490f-ad40-1809e7a074d0"],
           "evidence_count": 1
         },
         {
@@ -20921,9 +20907,7 @@
           "signal_type": "action",
           "signal_relation": "establishes",
           "signal_strength": "high",
-          "evidence_ids": [
-            "e2c0f2a4-8d30-49c4-88c2-ff71edcf9fe0"
-          ],
+          "evidence_ids": ["e2c0f2a4-8d30-49c4-88c2-ff71edcf9fe0"],
           "evidence_count": 1
         },
         {
@@ -23500,9 +23484,7 @@
           "signal_type": "action",
           "signal_relation": "supports",
           "signal_strength": "low",
-          "evidence_ids": [
-            "556fc7ee-b56c-490f-ad40-1809e7a074d0"
-          ],
+          "evidence_ids": ["556fc7ee-b56c-490f-ad40-1809e7a074d0"],
           "evidence_count": 1
         },
         {
@@ -27539,9 +27521,7 @@
           "signal_type": "action",
           "signal_relation": "supports",
           "signal_strength": "low",
-          "evidence_ids": [
-            "556fc7ee-b56c-490f-ad40-1809e7a074d0"
-          ],
+          "evidence_ids": ["556fc7ee-b56c-490f-ad40-1809e7a074d0"],
           "evidence_count": 1
         },
         {
@@ -27625,9 +27605,7 @@
           "signal_type": "action",
           "signal_relation": "supports",
           "signal_strength": "low",
-          "evidence_ids": [
-            "dcb7de9c-588a-4691-8f7b-0506a05bb249"
-          ],
+          "evidence_ids": ["dcb7de9c-588a-4691-8f7b-0506a05bb249"],
           "evidence_count": 1
         },
         {

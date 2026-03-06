@@ -53,6 +53,7 @@ import {
   isKeyValueFormat,
   shapeKeyValueToRows,
   shapeTableToRows,
+  shapeTableToRowsForCIRIS,
 } from "@/backend/AIInterpretationService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
@@ -96,11 +97,14 @@ function serializeSheet(sheet: ParsedSheet, maxRows = 30): string {
 function serializeSheetsForInterpretation(
   parsedData: ParsedFileData,
   maxRowsPerSheet = 25,
+  /** When true (e.g. CIRIS eCRF_3), send more rows so the LLM can extract full table. */
+  isCIRIS = false,
 ): string {
+  const limit = isCIRIS ? 200 : maxRowsPerSheet;
   const parts: string[] = [];
   const seen = new Set<ParsedSheet>();
   if (parsedData.primarySheet) {
-    const content = serializeSheet(parsedData.primarySheet, maxRowsPerSheet);
+    const content = serializeSheet(parsedData.primarySheet, limit);
     if (content) {
       parts.push(`Sheet: ${parsedData.primarySheet.name}\n${content}`);
       seen.add(parsedData.primarySheet);
@@ -108,7 +112,7 @@ function serializeSheetsForInterpretation(
   }
   for (const sheet of parsedData.sheets) {
     if (seen.has(sheet)) continue;
-    const content = serializeSheet(sheet, maxRowsPerSheet);
+    const content = serializeSheet(sheet, limit);
     if (!content) continue;
     parts.push(`Sheet: ${sheet.name}\n${content}`);
   }
@@ -123,6 +127,8 @@ type InterpretBackgroundPayload = {
   targetYear: number | undefined;
   targetCity: string | undefined;
   keyValueFormat: boolean;
+  /** When true, use CIRIS prompt and full ECRF-like schema; extract all rows. */
+  isCIRIS: boolean;
   parsedData: ParsedFileData;
 };
 
@@ -137,6 +143,7 @@ async function runInterpretationInBackground(
     targetYear,
     targetCity,
     keyValueFormat,
+    isCIRIS,
     parsedData,
   } = payload;
 
@@ -223,10 +230,17 @@ async function runInterpretationInBackground(
     if (!detectedColumnsMatchECRFStructure(detectedColumns)) {
       let shapedRows: Awaited<ReturnType<typeof shapeTableToRows>>;
       try {
-        shapedRows = await shapeTableToRows(documentContent, {
-          targetYear,
-          targetCity,
-        });
+        if (isCIRIS) {
+          shapedRows = await shapeTableToRowsForCIRIS(documentContent, {
+            targetYear,
+            targetCity,
+          });
+        } else {
+          shapedRows = await shapeTableToRows(documentContent, {
+            targetYear,
+            targetCity,
+          });
+        }
       } catch (err) {
         if (err instanceof LLMError) {
           const msg =
@@ -239,10 +253,21 @@ async function runInterpretationInBackground(
         await setFailed(err instanceof Error ? err.message : "Unknown error");
         return;
       }
+      if (!shapedRows.length && !keyValueFormat) {
+        try {
+          const keyValueRows = await shapeKeyValueToRows(documentContent, {
+            targetYear,
+            targetCity,
+          });
+          if (keyValueRows.length > 0) {
+            shapedRows = keyValueRows;
+          }
+        } catch (fallbackErr) {
+          logger.debug({ err: fallbackErr, importedFileId }, "Key-value fallback after empty table shape");
+        }
+      }
       if (!shapedRows.length) {
-        await setFailed(
-          "AI could not extract inventory rows from this table. Check that the file has recognizable sector/scope and emissions columns.",
-        );
+        await setFailed("i18n:ai-extract-no-rows");
         return;
       }
       const validationResults = importedFile.validationResults ?? {};
@@ -445,7 +470,10 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     throw new createHttpError.BadRequest("File has no recognizable header row");
   }
 
-  const documentContent = serializeSheetsForInterpretation(parsedData);
+  const validationResults = (importedFile.validationResults ?? {}) as { isCIRIS?: boolean };
+  const isCIRIS = validationResults.isCIRIS === true;
+
+  const documentContent = serializeSheetsForInterpretation(parsedData, 100, isCIRIS);
 
   const targetYear =
     inventory.year != null && Number.isInteger(Number(inventory.year))
@@ -467,6 +495,7 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     targetYear,
     targetCity,
     keyValueFormat,
+    isCIRIS,
     parsedData,
   }).catch((err) =>
     logger.error({ err, importedFileId }, "Interpret background failed"),

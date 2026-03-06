@@ -49,6 +49,7 @@
   "interpret-with-ai": "Mit KI interpretieren",
   "interpretation-failed": "Interpretation fehlgeschlagen",
   "ai-extraction-failed-default": "KI-Extraktion fehlgeschlagen",
+  "ai-extract-no-rows": "Die KI konnte keine Inventarzeilen aus dieser Tabelle extrahieren. Die Datei verwendet möglicherweise Spaltennamen, die wir nicht erkennen. Verwenden Sie eine Datei mit Spalten wie Sektor, Teilsektor, Scope und Emissionen (z. B. CO2e gesamt) oder exportieren Sie aus Ihrer Quelle im Standard-eCRF/CIRIS-Layout.",
   "inventory-not-found-for-target-year": "Inventar für das Zieljahr nicht gefunden",
   "extracting-chunk-progress": "Extraktion läuft... (Teil {{current}} von {{total}})",
   "breaking-into-chunks": "Datei wird in kleinere Teile für die Extraktion aufgeteilt",

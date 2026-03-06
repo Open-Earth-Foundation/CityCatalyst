@@ -48,6 +48,7 @@
   "interpret-with-ai": "Interpretar com IA",
   "interpretation-failed": "Interpretação falhou",
   "ai-extraction-failed-default": "Extração por IA falhou",
+  "ai-extract-no-rows": "A IA não conseguiu extrair linhas de inventário desta tabela. O arquivo pode usar nomes de colunas que não reconhecemos. Tente um arquivo com colunas como Setor, Sub-setor, Escopo e emissões (ex.: CO2e total) ou exporte da sua fonte em um layout eCRF/CIRIS padrão.",
   "inventory-not-found-for-target-year": "Inventário não encontrado para o ano-alvo",
   "extracting-chunk-progress": "Extraindo... (parte {{current}} de {{total}})",
   "breaking-into-chunks": "Dividindo o arquivo em partes menores para extração mais fácil",

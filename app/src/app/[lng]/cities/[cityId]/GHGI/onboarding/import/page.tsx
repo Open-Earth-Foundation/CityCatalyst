@@ -122,8 +122,11 @@ function ImportButton({
       if ((result as { importStatus?: string }).importStatus === "failed") {
         makeErrorToast(
           "Import failed",
-          (result as { errorLog?: string | null }).errorLog ??
+          resolveErrorMessage(
+            (result as { errorLog?: string | null }).errorLog,
             "Failed to import data",
+            t,
+          ),
         );
         return;
       }

@@ -35,6 +35,24 @@ const typeColorMap: Record<string, string> = {
   POC: "yellow",
 };
 
+const statusColorMap: Record<string, string> = {
+  active: "green",
+  beta: "blue",
+  early_access: "purple",
+  preview: "orange",
+  prototype: "yellow",
+  poc: "gray",
+};
+
+const statusKeyMap: Record<string, string> = {
+  poc: "status-poc",
+  prototype: "status-prototype",
+  preview: "status-preview",
+  early_access: "status-early-access",
+  beta: "status-beta",
+  active: "status-active",
+};
+
 const stageKeyMap: Record<string, string> = {
   "assess-&-analyze": "stage-assess-and-analyze",
   "plan": "stage-plan",
@@ -129,6 +147,7 @@ const ManageModulesList = ({ lng }: { lng: string }) => {
               { header: t("module-name"), accessor: "name" },
               { header: t("module-type"), accessor: "type" },
               { header: t("module-stage"), accessor: "stage" },
+              { header: t("module-status"), accessor: "status" },
               { header: t("module-url"), accessor: "url" },
               { header: "", accessor: null },
             ]}
@@ -144,6 +163,14 @@ const ManageModulesList = ({ lng }: { lng: string }) => {
                   </Tag>
                 </Table.Cell>
                 <Table.Cell>{t(stageKeyMap[item.stage] || item.stage)}</Table.Cell>
+                <Table.Cell>
+                  <Tag
+                    size="lg"
+                    colorPalette={statusColorMap[item.status] || "gray"}
+                  >
+                    {t(statusKeyMap[item.status] || item.status)}
+                  </Tag>
+                </Table.Cell>
                 <Table.Cell>
                   {isExternalUrl(item.url) ? (
                     <Tag size="sm" colorPalette="blue" variant="outline">

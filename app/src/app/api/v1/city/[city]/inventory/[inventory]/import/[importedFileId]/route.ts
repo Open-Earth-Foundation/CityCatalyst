@@ -14,7 +14,7 @@
  *       2. Validation results - Detected columns with interpretations
  *       3. Mapping columns - Column mapping interface data
  *       4. Review and confirm - Summary and final mapping preview
- *       
+ *
  *       The response includes `currentStep` (1-4) indicating which step the user should be on based on the import status.
  *     parameters:
  *       - in: path
@@ -185,153 +185,168 @@ const PDF_IMPORT_FIELD_DEFS: Array<{ key: string; label: string }> = [
   { key: "activityDataQuality", label: "Activity Data Quality" },
 ];
 
-export const GET = apiHandler(
-  async (req: NextRequest, { session, params }) => {
-    if (!session) {
-      throw new createHttpError.Unauthorized("Not signed in");
+/** Column names to hide from validation/mapping UI (not required for import). */
+const EXCLUDED_COLUMN_NAMES = [
+  "GHGs (metric tonnes CO2e) - Biogenic CO2",
+  "Activity data conversion - original activity",
+  "Activity data conversion - original unit",
+  "Activity data conversion - conversion value",
+  "Activity data conversion - override used?",
+  "Emission factor - Biogenic CO2",
+  "Oxidation factor",
+  "Emission factor - Year",
+  "Emission factor - Data Quality",
+  "Emission factor - Scale",
+  "Emission factor - Description",
+  "Emission factor - Source",
+].map((s) => s.toLowerCase().trim());
+
+export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
+  if (!session) {
+    throw new createHttpError.Unauthorized("Not signed in");
+  }
+
+  const cityId = z.string().uuid().parse(params.city);
+  const inventoryId = z.string().uuid().parse(params.inventory);
+  const importedFileId = z.string().uuid().parse(params.importedFileId);
+
+  // Validate user access to inventory
+  await UserService.findUserInventory(inventoryId, session);
+
+  // Find the imported file
+  const importedFile = await db.models.ImportedInventoryFile.findOne({
+    where: {
+      id: importedFileId,
+      inventoryId,
+      cityId,
+      userId: session.user.id,
+    },
+  });
+
+  if (!importedFile) {
+    throw new createHttpError.NotFound(
+      "Imported file not found or access denied",
+    );
+  }
+
+  // Get the inventory to determine required GPC rows
+  const inventory = await db.models.Inventory.findOne({
+    where: { inventoryId: inventoryId },
+  });
+
+  if (!inventory) {
+    throw new createHttpError.NotFound("Inventory not found");
+  }
+
+  // Determine current step based on import status
+  let currentStep: 1 | 2 | 3 | 4 = 1;
+  if (importedFile.importStatus === "processing") {
+    currentStep = 2; // Validation results
+  } else if (importedFile.importStatus === "waiting_for_approval") {
+    currentStep = 3; // Mapping columns (or 4 for review, determined by presence of mapping overrides)
+    // If mappingConfiguration has user mappings, we're on step 4
+    if (
+      importedFile.mappingConfiguration?.userMappings ||
+      importedFile.mappingConfiguration?.mappingsApplied
+    ) {
+      currentStep = 4; // Review and confirm
     }
+  }
 
-    const cityId = z.string().uuid().parse(params.city);
-    const inventoryId = z.string().uuid().parse(params.inventory);
-    const importedFileId = z.string().uuid().parse(params.importedFileId);
+  // Map of detected column keys to GPC field names (display labels). Shared across steps.
+  const gpcFieldNames: Record<string, string> = {
+    gpcRefNo: "GPC Reference Number",
+    sector: "Sector",
+    subsector: "Subsector",
+    scope: "Scope",
+    year: "Year",
+    co2: "CO2",
+    ch4: "CH4",
+    n2o: "N2O",
+    totalCO2e: "Total CO2e",
+    notationKey: "Notation Key",
+    activityType: "Activity Type / Fuel Type",
+    activityAmount: "Activity Amount",
+    activityUnit: "Activity Unit",
+    methodology: "Methodology",
+    activityDataSource: "Activity Data Source",
+    activityDataQuality: "Activity Data Quality",
+    emissionFactorSource: "Emission Factor Source",
+    emissionFactorDescription: "Emission Factor Description",
+    emissionFactorUnit: "Emission Factor - Unit",
+    emissionFactorCO2: "Emission Factor - CO2",
+    emissionFactorCH4: "Emission Factor - CH4",
+    emissionFactorN2O: "Emission Factor - N2O",
+    emissionFactorTotalCO2e: "Emission Factor - Total CO2e",
+  };
 
-    // Validate user access to inventory
-    await UserService.findUserInventory(inventoryId, session);
+  const requiredMappings = [
+    "gpcRefNo",
+    "sector",
+    "subsector",
+    "scope",
+    "year",
+    "co2",
+    "ch4",
+    "n2o",
+    "totalCO2e",
+    "notationKey",
+    "activityType",
+    "activityAmount",
+    "activityUnit",
+    "methodology",
+    "activityDataSource",
+    "activityDataQuality",
+    "emissionFactorSource",
+    "emissionFactorDescription",
+    "emissionFactorUnit",
+    "emissionFactorCO2",
+    "emissionFactorCH4",
+    "emissionFactorN2O",
+    "emissionFactorTotalCO2e",
+  ].map((key) => ({ key, label: gpcFieldNames[key] ?? key }));
 
-    // Find the imported file
-    const importedFile = await db.models.ImportedInventoryFile.findOne({
-      where: {
-        id: importedFileId,
-        inventoryId,
-        cityId,
-        userId: session.user.id,
-      },
-    });
+  const isExcludedColumn = (header: string) => {
+    const n = header.toLowerCase().trim();
+    return EXCLUDED_COLUMN_NAMES.some((e) => n === e);
+  };
 
-    if (!importedFile) {
-      throw new createHttpError.NotFound(
-        "Imported file not found or access denied",
-      );
-    }
+  // Step 2: Validation Results - Get detected columns (xlsx/csv) or extracted rows (PDF)
+  let validationStepData = null;
+  const pdfExtractedRows = Array.isArray(
+    importedFile.mappingConfiguration?.rows,
+  )
+    ? (importedFile.mappingConfiguration.rows as any[])
+    : [];
 
-    // Get the inventory to determine required GPC rows
-    const inventory = await db.models.Inventory.findOne({
-      where: { inventoryId: inventoryId },
-    });
-
-    if (!inventory) {
-      throw new createHttpError.NotFound("Inventory not found");
-    }
-
-    // Determine current step based on import status
-    let currentStep: 1 | 2 | 3 | 4 = 1;
-    if (importedFile.importStatus === "processing") {
-      currentStep = 2; // Validation results
-    } else if (importedFile.importStatus === "waiting_for_approval") {
-      currentStep = 3; // Mapping columns (or 4 for review, determined by presence of mapping overrides)
-      // If mappingConfiguration has user mappings, we're on step 4
-      if (
-        importedFile.mappingConfiguration?.userMappings ||
-        importedFile.mappingConfiguration?.mappingsApplied
-      ) {
-        currentStep = 4; // Review and confirm
-      }
-    }
-
-    // Map of detected column keys to GPC field names (display labels). Shared across steps.
-    const gpcFieldNames: Record<string, string> = {
-      gpcRefNo: "GPC Reference Number",
-      sector: "Sector",
-      subsector: "Subsector",
-      scope: "Scope",
-      year: "Year",
-      co2: "CO2",
-      ch4: "CH4",
-      n2o: "N2O",
-      totalCO2e: "Total CO2e",
-      notationKey: "Notation Key",
-      activityType: "Activity Type / Fuel Type",
-      activityAmount: "Activity Amount",
-      activityUnit: "Activity Unit",
-      methodology: "Methodology",
-      activityDataSource: "Activity Data Source",
-      activityDataQuality: "Activity Data Quality",
-      emissionFactorSource: "Emission Factor Source",
-      emissionFactorDescription: "Emission Factor Description",
-      emissionFactorUnit: "Emission Factor - Unit",
-      emissionFactorCO2: "Emission Factor - CO2",
-      emissionFactorCH4: "Emission Factor - CH4",
-      emissionFactorN2O: "Emission Factor - N2O",
-      emissionFactorTotalCO2e: "Emission Factor - Total CO2e",
-    };
-
-    const requiredMappings = [
-      "gpcRefNo",
-      "sector",
-      "subsector",
-      "scope",
-      "year",
-      "co2",
-      "ch4",
-      "n2o",
-      "totalCO2e",
-      "notationKey",
-      "activityType",
-      "activityAmount",
-      "activityUnit",
-      "methodology",
-      "activityDataSource",
-      "activityDataQuality",
-      "emissionFactorSource",
-      "emissionFactorDescription",
-      "emissionFactorUnit",
-      "emissionFactorCO2",
-      "emissionFactorCH4",
-      "emissionFactorN2O",
-      "emissionFactorTotalCO2e",
-    ].map((key) => ({ key, label: gpcFieldNames[key] ?? key }));
-
-    /** Column names to hide from validation/mapping UI (not required for import). */
-    const EXCLUDED_COLUMN_NAMES = [
-      "GHGs (metric tonnes CO2e) - Biogenic CO2",
-      "Activity data conversion - original activity",
-      "Activity data conversion - original unit",
-      "Activity data conversion - conversion value",
-      "Activity data conversion - override used?",
-      "Emission factor - Biogenic CO2",
-      "Oxidation factor",
-      "Emission factor - Year",
-      "Emission factor - Data Quality",
-      "Emission factor - Scale",
-      "Emission factor - Description",
-      "Emission factor - Source",
-    ].map((s) => s.toLowerCase().trim());
-
-    const isExcludedColumn = (header: string) => {
-      const n = header.toLowerCase().trim();
-      return EXCLUDED_COLUMN_NAMES.some((e) => n === e);
-    };
-
-    // Step 2: Validation Results - Get detected columns (xlsx/csv) or extracted rows (PDF)
-    let validationStepData = null;
-    const pdfExtractedRows = Array.isArray(importedFile.mappingConfiguration?.rows)
-      ? (importedFile.mappingConfiguration.rows as any[])
-      : [];
-
-    if (currentStep >= 2) {
-      if (
-        importedFile.fileType === "pdf" &&
-        pdfExtractedRows.length > 0
-      ) {
-        // PDF: use actual JSON keys from extraction response as Field Name; label = Interpreted As / Map To
-        const first = (pdfExtractedRows[0] as Record<string, unknown>) || {};
-        const detectedColumnsList = PDF_IMPORT_FIELD_DEFS.map(({ key, label }) => {
+  if (currentStep >= 2) {
+    const keyValueShaped =
+      (importedFile.mappingConfiguration as { keyValueShaped?: boolean })
+        ?.keyValueShaped === true;
+    const useExtractedRowsDisplay =
+      (importedFile.fileType === "pdf" || keyValueShaped) &&
+      pdfExtractedRows.length > 0;
+    if (useExtractedRowsDisplay) {
+      // PDF or key-value shaped: use row keys as Field Name; label = Interpreted As / Map To
+      const first = (pdfExtractedRows[0] as Record<string, unknown>) || {};
+      const toDisplayValue = (raw: unknown): string | null => {
+        if (raw == null || raw === "") return null;
+        if (typeof raw === "number" && Number.isFinite(raw)) return String(raw);
+        if (typeof raw === "string") return raw;
+        if (typeof raw === "boolean") return raw ? "TRUE" : "FALSE";
+        if (typeof raw === "object") {
+          const o = raw as Record<string, unknown>;
+          if (typeof o.error === "string" && o.error) return `#${o.error.toUpperCase()}!`;
+          if (o.result !== undefined) return toDisplayValue(o.result);
+        }
+        return null;
+      };
+      const detectedColumnsList = PDF_IMPORT_FIELD_DEFS.map(
+        ({ key, label }) => {
           const raw = first[key];
-          let exampleValue: string | null = null;
-          if (raw != null && raw !== "") {
-            exampleValue = typeof raw === "number" ? String(raw) : String(raw);
-            if (exampleValue.length > 50) exampleValue = exampleValue.substring(0, 50);
-          }
+          let exampleValue: string | null = toDisplayValue(raw);
+          if (exampleValue != null && exampleValue.length > 50)
+            exampleValue = exampleValue.substring(0, 50);
           const hasMultipleValues = pdfExtractedRows.some(
             (r: any) => r[key] != null && r[key] !== "" && r[key] !== raw,
           );
@@ -344,15 +359,16 @@ export const GET = apiHandler(
             status: "detected" as const,
             exampleValue: exampleValue || "-",
           };
-        });
-        validationStepData = {
-          totalColumnsDetected: detectedColumnsList.length,
-          columns: detectedColumnsList,
-          requiredMappings,
-          errors: [],
-          warnings: [],
-        };
-      } else if (importedFile.validationResults?.detectedColumns) {
+        },
+      );
+      validationStepData = {
+        totalColumnsDetected: detectedColumnsList.length,
+        columns: detectedColumnsList,
+        requiredMappings,
+        errors: [],
+        warnings: [],
+      };
+    } else if (importedFile.validationResults?.detectedColumns) {
       let detectedColumnsList: Array<{
         columnName: string;
         interpretedAs: string | null;
@@ -373,7 +389,7 @@ export const GET = apiHandler(
 
           if (parsedData.primarySheet) {
             const headers = parsedData.primarySheet.headers;
-            const firstRow = parsedData.primarySheet.rows[0] || {};
+            const rows = parsedData.primarySheet.rows || [];
 
             // Build detected columns list (exclude non-required columns)
             for (const header of headers) {
@@ -393,9 +409,22 @@ export const GET = apiHandler(
                 }
               }
 
-              // Get example value
-              const exampleValue =
-                firstRow[header]?.toString().substring(0, 50) || null;
+              // Example value: first non-empty value in this column across rows (so totalCO2e etc. show when not in row 0)
+              let exampleValue: string | null = null;
+              for (const row of rows) {
+                const raw = row[header];
+                if (raw == null || raw === "") continue;
+                const display =
+                  typeof raw === "object"
+                    ? (raw as Record<string, unknown>).error
+                      ? `#${String((raw as Record<string, unknown>).error).toUpperCase()}!`
+                      : null
+                    : String(raw);
+                if (display != null && display !== "[object Object]") {
+                  exampleValue = display.substring(0, 50);
+                  break;
+                }
+              }
 
               detectedColumnsList.push({
                 columnName: header,
@@ -417,125 +446,134 @@ export const GET = apiHandler(
         errors: importedFile.validationResults?.errors || [],
         warnings: importedFile.validationResults?.warnings || [],
       };
-      }
     }
+  }
 
-    // Step 3: Column Mapping - Get columns (xlsx/csv) or extracted rows (PDF)
-    let columnMappingStepData = null;
-    if (currentStep >= 3) {
+  // Step 3: Column Mapping - Get columns (xlsx/csv) or extracted rows (PDF / Path B keyValueShaped)
+  let columnMappingStepData = null;
+  if (currentStep >= 3) {
+    const keyValueShaped =
+      (importedFile.mappingConfiguration as { keyValueShaped?: boolean })
+        ?.keyValueShaped === true;
+    if (
+      (importedFile.fileType === "pdf" || keyValueShaped) &&
+      pdfExtractedRows.length > 0
+    ) {
+      columnMappingStepData = validationStepData;
+    } else if (importedFile.validationResults?.detectedColumns) {
+      columnMappingStepData = validationStepData;
+    }
+  }
+
+  // Step 4: Review and Confirm - Generate mapping preview and summary
+  let reviewStepData = null;
+
+  if (
+    currentStep === 4 &&
+    importedFile.importStatus === "waiting_for_approval"
+  ) {
+    try {
+      const keyValueShapedReview =
+        (importedFile.mappingConfiguration as { keyValueShaped?: boolean })
+          ?.keyValueShaped === true;
+      // Path C: PDF with AI-extracted rows. Path B: keyValueShaped (tabular AI reshape) – use stored rows for summary
       if (
-        importedFile.fileType === "pdf" &&
+        (importedFile.fileType === "pdf" || keyValueShapedReview) &&
         pdfExtractedRows.length > 0
       ) {
-        columnMappingStepData = validationStepData;
-      } else if (importedFile.validationResults?.detectedColumns) {
-        columnMappingStepData = validationStepData;
-      }
-    }
+        reviewStepData = {
+          importSummary: {
+            sourceFile: importedFile.originalFileName,
+            formatDetected:
+              importedFile.fileType === "pdf"
+                ? "PDF"
+                : importedFile.fileType.toUpperCase(),
+            rowsFound: pdfExtractedRows.length,
+            fieldsMapped: PDF_IMPORT_FIELD_DEFS.length,
+          },
+          fieldMappings: PDF_IMPORT_FIELD_DEFS.map(({ key, label }) => ({
+            sourceColumn: key,
+            mappedField: label,
+          })),
+          mappingPreview: null,
+          extractedRows: pdfExtractedRows,
+        };
+      } else if (
+        importedFile.data &&
+        importedFile.validationResults?.detectedColumns
+      ) {
+        // xlsx/csv: Parse the file and create mapping preview
+        const parsedData = await FileParserService.parseFile(
+          importedFile.data,
+          importedFile.fileType,
+        );
 
-    // Step 4: Review and Confirm - Generate mapping preview and summary
-    let reviewStepData = null;
+        const mappingPreview = await ImportMappingService.createMappingPreview(
+          inventory,
+          parsedData,
+          importedFile.validationResults.detectedColumns,
+        );
 
-    if (currentStep === 4 && importedFile.importStatus === "waiting_for_approval") {
-      try {
-        // Path C: PDF with AI-extracted rows – no file parse, use stored rows for summary
-        if (
-          importedFile.fileType === "pdf" &&
-          pdfExtractedRows.length > 0
-        ) {
-          reviewStepData = {
-            importSummary: {
-              sourceFile: importedFile.originalFileName,
-              formatDetected: "PDF",
-              rowsFound: pdfExtractedRows.length,
-              fieldsMapped: PDF_IMPORT_FIELD_DEFS.length,
-            },
-            fieldMappings: PDF_IMPORT_FIELD_DEFS.map(({ key, label }) => ({
-              sourceColumn: key,
-              mappedField: label,
-            })),
-            mappingPreview: null,
-            extractedRows: pdfExtractedRows,
-          };
-        } else if (
-          importedFile.data &&
-          importedFile.validationResults?.detectedColumns
-        ) {
-          // xlsx/csv: Parse the file and create mapping preview
-          const parsedData = await FileParserService.parseFile(
-            importedFile.data,
-            importedFile.fileType,
-          );
+        const fieldMappings: Array<{
+          sourceColumn: string;
+          mappedField: string;
+        }> = [];
 
-          const mappingPreview =
-            await ImportMappingService.createMappingPreview(
-              inventory,
-              parsedData,
-              importedFile.validationResults.detectedColumns,
-            );
-
-          const fieldMappings: Array<{
-            sourceColumn: string;
-            mappedField: string;
-          }> = [];
-
-          if (validationStepData?.columns) {
-            for (const col of validationStepData.columns) {
-              if (col.interpretedAs) {
-                fieldMappings.push({
-                  sourceColumn: col.columnName,
-                  mappedField: col.interpretedAs,
-                });
-              }
+        if (validationStepData?.columns) {
+          for (const col of validationStepData.columns) {
+            if (col.interpretedAs) {
+              fieldMappings.push({
+                sourceColumn: col.columnName,
+                mappedField: col.interpretedAs,
+              });
             }
           }
-
-          reviewStepData = {
-            importSummary: {
-              sourceFile: importedFile.originalFileName,
-              formatDetected: importedFile.fileType.toUpperCase(),
-              rowsFound: importedFile.rowCount || 0,
-              fieldsMapped: fieldMappings.length,
-            },
-            fieldMappings,
-            mappingPreview,
-          };
         }
-      } catch (error) {
-        console.error("Failed to generate review step data:", error);
+
+        reviewStepData = {
+          importSummary: {
+            sourceFile: importedFile.originalFileName,
+            formatDetected: importedFile.fileType.toUpperCase(),
+            rowsFound: importedFile.rowCount || 0,
+            fieldsMapped: fieldMappings.length,
+          },
+          fieldMappings,
+          mappingPreview,
+        };
       }
+    } catch (error) {
+      console.error("Failed to generate review step data:", error);
     }
+  }
 
-    // Return response structured by step
-    return NextResponse.json({
-      data: {
-        id: importedFile.id,
-        importStatus: importedFile.importStatus,
-        currentStep,
-        // Step 1: Upload (basic file info)
-        fileInfo: {
-          fileName: importedFile.fileName,
-          originalFileName: importedFile.originalFileName,
-          fileType: importedFile.fileType,
-          fileSize: importedFile.fileSize,
-        },
-        // Step 2: Validation Results
-        validationResults: validationStepData,
-        // Step 3: Column Mapping
-        columnMappings: columnMappingStepData,
-        // Step 4: Review and Confirm
-        reviewData: reviewStepData,
-        // Legacy fields (for backwards compatibility)
-        rowCount: importedFile.rowCount,
-        processedRowCount: importedFile.processedRowCount,
-        validationResults_legacy: importedFile.validationResults,
-        mappingConfiguration: importedFile.mappingConfiguration,
-        errorLog: importedFile.errorLog,
-        created: importedFile.created,
-        lastUpdated: importedFile.lastUpdated,
-        completedAt: importedFile.completedAt,
+  // Return response structured by step
+  return NextResponse.json({
+    data: {
+      id: importedFile.id,
+      importStatus: importedFile.importStatus,
+      currentStep,
+      // Step 1: Upload (basic file info)
+      fileInfo: {
+        fileName: importedFile.fileName,
+        originalFileName: importedFile.originalFileName,
+        fileType: importedFile.fileType,
+        fileSize: importedFile.fileSize,
       },
-    });
-  },
-);
-
+      // Step 2: Validation Results
+      validationResults: validationStepData,
+      // Step 3: Column Mapping
+      columnMappings: columnMappingStepData,
+      // Step 4: Review and Confirm
+      reviewData: reviewStepData,
+      // Legacy fields (for backwards compatibility)
+      rowCount: importedFile.rowCount,
+      processedRowCount: importedFile.processedRowCount,
+      validationResults_legacy: importedFile.validationResults,
+      mappingConfiguration: importedFile.mappingConfiguration,
+      errorLog: importedFile.errorLog,
+      created: importedFile.created,
+      lastUpdated: importedFile.lastUpdated,
+      completedAt: importedFile.completedAt,
+    },
+  });
+});

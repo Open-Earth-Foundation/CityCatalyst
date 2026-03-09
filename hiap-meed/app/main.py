@@ -2,8 +2,8 @@
 This is the main file for the HIAP-MEED API.
 It is responsible for setting up the FastAPI app and basic middleware.
 
-Run it from the /app directory with:
-python main.py
+Run from project root with:
+python -m app.main
 """
 
 from dotenv import load_dotenv
@@ -16,12 +16,13 @@ import os
 import uvicorn
 from fastapi import FastAPI
 
-from utils.logging_config import setup_logger
+from app.modules.prioritizer.api import router as prioritization_router
+from app.utils.logging_config import setup_logger
 
 
 app = FastAPI(
     title="HIAP-MEED",
-    description="Minimal HIAP-aligned FastAPI service (boilerplate).",
+    description="HIAP-MEED prioritization service.",
     version="0.1.0",
 )
 
@@ -40,6 +41,9 @@ async def health() -> dict[str, str]:
     """Health endpoint used for probes."""
     logger.info("Health check endpoint called")
     return {"status": "healthy"}
+
+
+app.include_router(prioritization_router)
 
 
 if __name__ == "__main__":

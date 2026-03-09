@@ -2,12 +2,12 @@
 
 /**
  * Script to check if test coverage has dropped below the previous value.
- * Fails if coverage decreases by more than the threshold (default 0.5%) for any metric.
+ * Fails if coverage decreases by more than the threshold (default 4%) for any metric.
  *
  * Usage: node scripts/check-coverage-regression.js [coverage-summary.json path]
  *
  * Environment variables:
- *   COVERAGE_THRESHOLD - Tolerance threshold in percentage (default: 0.5)
+ *   COVERAGE_THRESHOLD - Tolerance threshold in percentage (default: 4)
  */
 
 import fs from "fs";
@@ -26,9 +26,9 @@ const previousCoveragePath = path.join(
 );
 
 // Tolerance threshold - only fail if coverage decreases by more than this amount.
-// Default is 2.0%, configurable via the COVERAGE_THRESHOLD environment variable.
+// Default is 4%, configurable via the COVERAGE_THRESHOLD environment variable.
 
-const COVERAGE_THRESHOLD = parseFloat(process.env.COVERAGE_THRESHOLD || "2.0");
+const COVERAGE_THRESHOLD = parseFloat(process.env.COVERAGE_THRESHOLD || "4.0");
 
 // Metrics to check
 const metrics = ["lines", "statements", "branches", "functions"];

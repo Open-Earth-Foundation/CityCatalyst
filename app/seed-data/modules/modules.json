@@ -9,6 +9,7 @@
     "tagline": {},
     "author": "Open Earth Foundation",
     "type": "CC",
+    "status": "active",
     "url": "/GHGI"
   },
   {
@@ -21,6 +22,7 @@
     "tagline": {},
     "author": "Open Earth Foundation",
     "type": "CC",
+    "status": "active",
     "url": "/HIAP"
   },
   {
@@ -49,6 +51,7 @@
       "fr": "Choisissez une limite alternative pour votre ville basée sur les données d'OpenStreetMap."
     },
     "author": "Open Earth Foundation",
+    "status": "poc",
     "url": "https://cc-boundary-picker.replit.app/",
     "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/EnhancedBoundaryEditorIcon.png"
   },
@@ -78,6 +81,7 @@
       "pt": "Compreenda os riscos climáticos e desenvolva estratégias de adaptação para uma cidade mais resiliente."
     },
     "author": "Open Earth Foundation",
+    "status": "active",
     "url": "/CCRA"
   },
   {
@@ -94,6 +98,7 @@
       "en": "From Climate Risk to Action — Powered by Nature"
     },
     "author": "Open Earth Foundation",
+    "status": "poc",
     "url": "https://nbs-project-preparation.replit.app/",
     "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-162443.png"
   },
@@ -111,6 +116,7 @@
       "en": "Unlock Your City's Solar Potential"
     },
     "author": "Open Earth Foundation",
+    "status": "poc",
     "url": "https://cc-municipal-solar.replit.app",
     "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-162722.png"
   },
@@ -128,6 +134,7 @@
       "en": "Find proven climate projects for your city"
     },
     "author": "Open Earth Foundation",
+    "status": "poc",
     "url": "https://flourish-inspire.replit.app/",
     "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-163043.png"
   },
@@ -145,6 +152,7 @@
       "en": "Smart Due Diligence for Climate Finance"
     },
     "author": "Open Earth Foundation",
+    "status": "poc",
     "url": "https://flourish-rate.replit.app",
     "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-163311+(1).png"
   },
@@ -162,6 +170,7 @@
       "en": "From Climate Ideas to Fundable Projects"
     },
     "author": "Open Earth Foundation",
+    "status": "poc",
     "url": "https://flourish-build.replit.app",
     "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-163311.png"
   },
@@ -179,6 +188,7 @@
       "en": "Benchmark Your City's Emissions Against the World"
     },
     "author": "Open Earth Foundation",
+    "status": "poc",
     "url": "https://cc-inventory-comparison.replit.app",
     "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-163620.png"
   },
@@ -196,6 +206,7 @@
       "en": "Climate Risk Intelligence at Your Fingertips"
     },
     "author": "Open Earth Foundation",
+    "status": "poc",
     "url": "https://porto-risk-map-joaquinvan.replit.app/",
     "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-163841.png"
   },
@@ -213,6 +224,7 @@
       "en": "Understand the climate risk of your assets"
     },
     "author": "Open Earth Foundation",
+    "status": "poc",
     "url": "https://ccrav3.replit.app/asset-ccra",
     "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/Screenshot+2026-02-03+at+1.42.48%E2%80%AFPM.png"
   }

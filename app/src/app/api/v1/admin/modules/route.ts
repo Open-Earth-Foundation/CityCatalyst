@@ -16,7 +16,7 @@ export const POST = apiHandler(async (req, { session }) => {
   UserService.validateIsAdmin(session);
 
   const body = await req.json();
-  const { name, description, tagline, stage, url, logo, author } = body;
+  const { name, description, tagline, stage, url, logo, author, status } = body;
 
   const translated = await translateModuleFields({
     name,
@@ -30,6 +30,7 @@ export const POST = apiHandler(async (req, { session }) => {
     tagline: translated.tagline,
     stage,
     type: "POC",
+    status: status || "poc",
     author: author || "Open Earth Foundation",
     url,
     logo: logo || "",

@@ -40,11 +40,21 @@ const STAGE_OPTIONS = [
   { value: "monitor-evaluate-&-report", labelKey: "stage-monitor-evaluate-and-report" },
 ];
 
+const STATUS_OPTIONS = [
+  { value: "poc", labelKey: "status-poc" },
+  { value: "prototype", labelKey: "status-prototype" },
+  { value: "preview", labelKey: "status-preview" },
+  { value: "early_access", labelKey: "status-early-access" },
+  { value: "beta", labelKey: "status-beta" },
+  { value: "active", labelKey: "status-active" },
+];
+
 const schema = z.object({
   name: z.string().min(1, "required"),
   description: z.string().optional(),
   tagline: z.string().optional(),
   stage: z.string().min(1, "required"),
+  status: z.string().min(1, "required"),
   url: z.string().min(1, "required"),
   logo: z.string().optional(),
 });
@@ -95,6 +105,7 @@ const EditModuleModal: FC<EditModuleModalProps> = ({
         description: module.description?.en || "",
         tagline: module.tagline?.en || "",
         stage: module.stage || "",
+        status: module.status || "active",
         url: module.url || "",
         logo: module.logo || "",
       });
@@ -114,6 +125,7 @@ const EditModuleModal: FC<EditModuleModalProps> = ({
         description: data.description || "",
         tagline: data.tagline || "",
         stage: data.stage,
+        status: data.status,
         url: data.url,
         logo: data.logo || "",
       },
@@ -195,6 +207,24 @@ const EditModuleModal: FC<EditModuleModalProps> = ({
                 </NativeSelectField>
               </NativeSelectRoot>
               {errors.stage && (
+                <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                  <Icon as={MdWarning} color="sentiment.negativeDefault" />
+                </Box>
+              )}
+            </Field>
+            <Field labelClassName="font-semibold" label={t("module-status")}>
+              <NativeSelectRoot>
+                <NativeSelectField
+                  {...register("status")}
+                >
+                  {STATUS_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {t(opt.labelKey)}
+                    </option>
+                  ))}
+                </NativeSelectField>
+              </NativeSelectRoot>
+              {errors.status && (
                 <Box display="flex" gap="6px" alignItems="center" mt="6px">
                   <Icon as={MdWarning} color="sentiment.negativeDefault" />
                 </Box>

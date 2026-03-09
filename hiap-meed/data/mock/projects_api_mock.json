@@ -1,0 +1,519 @@
+{
+  "meta": {
+    "generated_at_utc": "2026-03-02T12:00:00+00:00",
+    "backend_consumer": "hiap-meed",
+    "upstream_provider": "global-api",
+    "api_context": {
+      "endpoint": "GET /v1/projects/funded",
+      "countryCode": "CL",
+      "locodes": ["CL IQQ", "CL ARI"]
+    },
+    "total_funded_projects": 4
+  },
+  "fundedProjects": [
+    {
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e01",
+      "projectTitle": "Iquique E-Bus Fleet Transition Phase I",
+      "projectSummary": "Procurement of electric buses and depot charging infrastructure to replace high-emission diesel units in core routes.",
+      "projectStatus": "in_implementation",
+      "startDate": "2025-07-01",
+      "endDate": "2028-12-31",
+      "country": "Chile",
+      "region": "Tarapaca",
+      "cityName": "Iquique",
+      "cityId": null,
+      "sectors": ["transportation"],
+      "subsectors": ["on_road"],
+      "technologyMaturity": "proven",
+      "primaryBeneficiaries": "Daily public transport users in Iquique, with focus on low-income commuters.",
+      "financingInstrument": "blended",
+      "primaryFunderName": "Inter-American Development Bank",
+      "otherFunders": [
+        "Ministry of Transport and Telecommunications",
+        "Municipality of Iquique"
+      ],
+      "funderType": "mixed",
+      "programName": "National E-Mobility Acceleration Facility",
+      "eligibilityNotes": "Municipal operators with approved fleet transition and charging plans are eligible.",
+      "dataSourceName": "Iquique_EBus_Program_Dossier_2026",
+      "sourceUrl": "https://example.org/projects/iquique-ebus-phase1",
+      "documentationUrls": [
+        "https://example.org/projects/iquique-ebus-phase1/term-sheet",
+        "https://example.org/projects/iquique-ebus-phase1/monitoring-plan"
+      ],
+      "lastVerifiedAt": "2026-02-20T10:30:00+00:00",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e02",
+      "projectTitle": "Arica Sanitary Landfill Gas Capture Upgrade",
+      "projectSummary": "Installation of collection wells, flare system, and monitoring controls to reduce methane emissions from municipal disposal cells.",
+      "projectStatus": "approved",
+      "startDate": "2026-04-01",
+      "endDate": "2029-09-30",
+      "country": "Chile",
+      "region": "Arica y Parinacota",
+      "cityName": "Arica",
+      "cityId": null,
+      "sectors": ["waste"],
+      "subsectors": ["disposal_of_solid_waste_generated_in_the_city"],
+      "technologyMaturity": "proven",
+      "primaryBeneficiaries": "Residents near disposal facilities and citywide households benefiting from improved waste operations.",
+      "financingInstrument": "loan",
+      "primaryFunderName": "CAF - Development Bank of Latin America",
+      "otherFunders": ["Regional Government of Arica y Parinacota"],
+      "funderType": "ifi",
+      "programName": "Landfill Methane Abatement Line",
+      "eligibilityNotes": "Applies to municipalities with engineered landfill upgrade plans and methane monitoring baselines.",
+      "dataSourceName": "Arica_Landfill_Upgrade_PreFeasibility_2026",
+      "sourceUrl": "https://example.org/projects/arica-landfill-gas-capture",
+      "documentationUrls": [
+        "https://example.org/projects/arica-landfill-gas-capture/engineering-note"
+      ],
+      "lastVerifiedAt": "2026-02-18T09:15:00+00:00",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e03",
+      "projectTitle": "Tarapaca Municipal Building Retrofit Revolving Fund",
+      "projectSummary": "Performance-based retrofits for schools, clinics, and administrative buildings, financed through a revolving municipal efficiency facility.",
+      "projectStatus": "in_implementation",
+      "startDate": "2024-11-01",
+      "endDate": "2029-12-31",
+      "country": "Chile",
+      "region": "Tarapaca",
+      "cityName": "Iquique",
+      "cityId": null,
+      "sectors": ["stationary_energy"],
+      "subsectors": [
+        "residential_buildings",
+        "commercial_and_institutional_buildings_and_facilities"
+      ],
+      "technologyMaturity": "proven",
+      "primaryBeneficiaries": "Public service users and municipal departments facing high utility costs.",
+      "financingInstrument": "revolving_fund",
+      "primaryFunderName": "Subsecretaria de Desarrollo Regional",
+      "otherFunders": ["Municipality of Iquique"],
+      "funderType": "public",
+      "programName": "Local Government Energy Efficiency Facility",
+      "eligibilityNotes": "Requires baseline audits and verification of savings for reinvestment.",
+      "dataSourceName": "Tarapaca_Public_Buildings_Retrofit_Portfolio_2025",
+      "sourceUrl": "https://example.org/projects/tarapaca-retrofit-fund",
+      "documentationUrls": [
+        "https://example.org/projects/tarapaca-retrofit-fund/measurement-and-verification",
+        "https://example.org/projects/tarapaca-retrofit-fund/procurement-package"
+      ],
+      "lastVerifiedAt": "2026-02-22T14:00:00+00:00",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e04",
+      "projectTitle": "Arica Coastal and Urban Green Corridor Program",
+      "projectSummary": "Expansion of connected green corridors and restoration of degraded peri-urban land to reduce heat stress and improve ecosystem services.",
+      "projectStatus": "planned",
+      "startDate": "2026-09-01",
+      "endDate": "2031-08-31",
+      "country": "Chile",
+      "region": "Arica y Parinacota",
+      "cityName": "Arica",
+      "cityId": null,
+      "sectors": ["afolu"],
+      "subsectors": ["land"],
+      "technologyMaturity": "emerging",
+      "primaryBeneficiaries": "Urban neighborhoods with low tree canopy and high heat exposure.",
+      "financingInstrument": "grant",
+      "primaryFunderName": "Global Environment Facility",
+      "otherFunders": [
+        "Regional Government of Arica y Parinacota",
+        "Municipality of Arica"
+      ],
+      "funderType": "mixed",
+      "programName": "Urban Nature and Climate Resilience Program",
+      "eligibilityNotes": "Priority to interventions in socially vulnerable districts with measurable adaptation benefits.",
+      "dataSourceName": "Arica_Urban_Nature_Concept_Note_2026",
+      "sourceUrl": "https://example.org/projects/arica-green-corridors",
+      "documentationUrls": [
+        "https://example.org/projects/arica-green-corridors/concept-note"
+      ],
+      "lastVerifiedAt": "2026-02-24T16:45:00+00:00",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    }
+  ],
+
+  "__docs__": "What is this table actually holding? How would hiap-meed receive this data from the API?",
+  "fundedProjectMetrics": [
+    {
+      "fundedProjectMetricId": "6f22b264-4e66-4092-baf9-5e49e78d0f01",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e01",
+      "metricKey": "electric_buses_deployed",
+      "metricValueNumeric": 120,
+      "metricValueText": null,
+      "unit": "vehicles",
+      "year": 2028,
+      "notes": "Targeted deployment by end of phase I.",
+      "sourceUrl": "https://example.org/projects/iquique-ebus-phase1/monitoring-plan",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectMetricId": "6f22b264-4e66-4092-baf9-5e49e78d0f02",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e01",
+      "metricKey": "capex_amount_usd",
+      "metricValueNumeric": 125000000,
+      "metricValueText": null,
+      "unit": "USD",
+      "year": 2026,
+      "notes": "Includes vehicles, charging systems, and depot works.",
+      "sourceUrl": "https://example.org/projects/iquique-ebus-phase1/term-sheet",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectMetricId": "6f22b264-4e66-4092-baf9-5e49e78d0f03",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e01",
+      "metricKey": "expected_reduction_tco2e_per_year",
+      "metricValueNumeric": 41000,
+      "metricValueText": null,
+      "unit": "tCO2e/year",
+      "year": 2028,
+      "notes": "Estimated from diesel bus replacement baseline.",
+      "sourceUrl": "https://example.org/projects/iquique-ebus-phase1/monitoring-plan",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectMetricId": "6f22b264-4e66-4092-baf9-5e49e78d0f04",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e02",
+      "metricKey": "landfill_gas_capture_rate",
+      "metricValueNumeric": 68,
+      "metricValueText": null,
+      "unit": "percent",
+      "year": 2029,
+      "notes": "Expected capture efficiency after full commissioning.",
+      "sourceUrl": "https://example.org/projects/arica-landfill-gas-capture/engineering-note",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectMetricId": "6f22b264-4e66-4092-baf9-5e49e78d0f05",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e02",
+      "metricKey": "expected_reduction_tco2e_per_year",
+      "metricValueNumeric": 54000,
+      "metricValueText": null,
+      "unit": "tCO2e/year",
+      "year": 2029,
+      "notes": "Based on methane capture and destruction assumptions.",
+      "sourceUrl": "https://example.org/projects/arica-landfill-gas-capture/engineering-note",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectMetricId": "6f22b264-4e66-4092-baf9-5e49e78d0f06",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e03",
+      "metricKey": "buildings_retrofitted",
+      "metricValueNumeric": 185,
+      "metricValueText": null,
+      "unit": "buildings",
+      "year": 2029,
+      "notes": "Public buildings included in the revolving fund pipeline.",
+      "sourceUrl": "https://example.org/projects/tarapaca-retrofit-fund/measurement-and-verification",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectMetricId": "6f22b264-4e66-4092-baf9-5e49e78d0f07",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e03",
+      "metricKey": "annual_energy_savings_mwh",
+      "metricValueNumeric": 27500,
+      "metricValueText": null,
+      "unit": "MWh/year",
+      "year": 2029,
+      "notes": "Estimated annual savings after full retrofit rollout.",
+      "sourceUrl": "https://example.org/projects/tarapaca-retrofit-fund/measurement-and-verification",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectMetricId": "6f22b264-4e66-4092-baf9-5e49e78d0f08",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e03",
+      "metricKey": "expected_reduction_tco2e_per_year",
+      "metricValueNumeric": 9200,
+      "metricValueText": null,
+      "unit": "tCO2e/year",
+      "year": 2029,
+      "notes": "Derived from measured electricity and thermal demand reduction.",
+      "sourceUrl": "https://example.org/projects/tarapaca-retrofit-fund/measurement-and-verification",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectMetricId": "6f22b264-4e66-4092-baf9-5e49e78d0f09",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e04",
+      "metricKey": "hectares_restored",
+      "metricValueNumeric": 140,
+      "metricValueText": null,
+      "unit": "ha",
+      "year": 2031,
+      "notes": "Target restoration and greening footprint.",
+      "sourceUrl": "https://example.org/projects/arica-green-corridors/concept-note",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectMetricId": "6f22b264-4e66-4092-baf9-5e49e78d0f0a",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e04",
+      "metricKey": "beneficiaries_count",
+      "metricValueNumeric": 56000,
+      "metricValueText": null,
+      "unit": "people",
+      "year": 2031,
+      "notes": "Estimated population in intervention influence areas.",
+      "sourceUrl": "https://example.org/projects/arica-green-corridors/concept-note",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    }
+  ],
+  "fundedProjectEvidence": [
+    {
+      "fundedProjectEvidenceId": "7a33c375-3f77-4193-b0fa-6f5ae89e1001",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e01",
+      "evidenceType": "climate_impact",
+      "title": "Modeled reduction from diesel fleet replacement",
+      "evidenceText": "Baseline and replacement modeling indicates a substantial annual reduction in transport emissions once phase I vehicles are deployed.",
+      "sourceName": "Iquique_EBus_Program_Dossier_2026",
+      "sourceUrl": "https://example.org/projects/iquique-ebus-phase1/monitoring-plan",
+      "confidenceScore": 0.88,
+      "assumptionsJson": {
+        "baseline_fleet_age_years": 12,
+        "grid_emission_factor_tco2e_per_mwh": 0.31
+      },
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectEvidenceId": "7a33c375-3f77-4193-b0fa-6f5ae89e1002",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e01",
+      "evidenceType": "implementation_feasibility",
+      "title": "Fleet and depot deployment governance package",
+      "evidenceText": "The project includes signed implementation agreements between operator, municipality, and utility for grid connection and depot operation.",
+      "sourceName": "Iquique_EBus_Program_Dossier_2026",
+      "sourceUrl": "https://example.org/projects/iquique-ebus-phase1/term-sheet",
+      "confidenceScore": 0.85,
+      "assumptionsJson": {
+        "utility_connection_lead_time_months": 10
+      },
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectEvidenceId": "7a33c375-3f77-4193-b0fa-6f5ae89e1003",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e02",
+      "evidenceType": "climate_impact",
+      "title": "Methane abatement estimate",
+      "evidenceText": "Engineering assessment indicates that flare and capture upgrades can reduce site methane releases significantly.",
+      "sourceName": "Arica_Landfill_Upgrade_PreFeasibility_2026",
+      "sourceUrl": "https://example.org/projects/arica-landfill-gas-capture/engineering-note",
+      "confidenceScore": 0.83,
+      "assumptionsJson": {
+        "capture_efficiency_percent": 68,
+        "oxidation_factor_percent": 10
+      },
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectEvidenceId": "7a33c375-3f77-4193-b0fa-6f5ae89e1004",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e03",
+      "evidenceType": "cost_benchmark",
+      "title": "Measured retrofit savings from prior tranche",
+      "evidenceText": "Completed tranche data shows median payback period under eight years for envelope and lighting interventions.",
+      "sourceName": "Tarapaca_Public_Buildings_Retrofit_Portfolio_2025",
+      "sourceUrl": "https://example.org/projects/tarapaca-retrofit-fund/measurement-and-verification",
+      "confidenceScore": 0.82,
+      "assumptionsJson": {
+        "electricity_price_usd_per_mwh": 126
+      },
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectEvidenceId": "7a33c375-3f77-4193-b0fa-6f5ae89e1005",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e03",
+      "evidenceType": "policy_enablement",
+      "title": "Procurement and contracting templates for municipal retrofits",
+      "evidenceText": "Standardized ESCO contract templates are in place, reducing procurement friction for new retrofit packages.",
+      "sourceName": "Tarapaca_Public_Buildings_Retrofit_Portfolio_2025",
+      "sourceUrl": "https://example.org/projects/tarapaca-retrofit-fund/procurement-package",
+      "confidenceScore": 0.79,
+      "assumptionsJson": {
+        "template_adoption_rate_percent": 70
+      },
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectEvidenceId": "7a33c375-3f77-4193-b0fa-6f5ae89e1006",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e04",
+      "evidenceType": "replicability",
+      "title": "Transferable corridor design package",
+      "evidenceText": "The intervention package uses modular design and monitoring templates suitable for other northern Chilean cities.",
+      "sourceName": "Arica_Urban_Nature_Concept_Note_2026",
+      "sourceUrl": "https://example.org/projects/arica-green-corridors/concept-note",
+      "confidenceScore": 0.72,
+      "assumptionsJson": {
+        "replication_ready_modules": 4
+      },
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    }
+  ],
+  "fundedProjectCoBenefits": [
+    {
+      "fundedProjectCoBenefitId": "8b44d486-2a88-4294-b1fb-7f6bf90f1101",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e01",
+      "coBenefitKey": "air_quality",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectCoBenefitId": "8b44d486-2a88-4294-b1fb-7f6bf90f1102",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e02",
+      "coBenefitKey": "odor_reduction",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectCoBenefitId": "8b44d486-2a88-4294-b1fb-7f6bf90f1103",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e04",
+      "coBenefitKey": "heat_risk_reduction",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    }
+  ],
+  "fundedProjectBarriers": [
+    {
+      "fundedProjectBarrierId": "8c55e597-1b99-4395-b2fc-8f7cf01f1201",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e01",
+      "barrierKey": "grid_connection_delay",
+      "barrierText": "Utility interconnection timelines for depot charging can delay deployment.",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectBarrierId": "8c55e597-1b99-4395-b2fc-8f7cf01f1202",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e04",
+      "barrierKey": "water_availability",
+      "barrierText": "Long-term irrigation planning is needed for vegetation survival in arid zones.",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    }
+  ],
+  "fundedProjectPhases": [
+    {
+      "fundedProjectPhaseId": "8d66f6a8-0aaa-4496-b3fd-9f8df12f1301",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e01",
+      "phaseOrder": 1,
+      "phaseName": "Procurement and contracting",
+      "months": 9,
+      "notes": "Includes bus procurement and depot EPC package.",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectPhaseId": "8d66f6a8-0aaa-4496-b3fd-9f8df12f1302",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e02",
+      "phaseOrder": 1,
+      "phaseName": "Detailed engineering and permits",
+      "months": 10,
+      "notes": "Final design, permit approvals, and tender docs.",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectPhaseId": "8d66f6a8-0aaa-4496-b3fd-9f8df12f1303",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e03",
+      "phaseOrder": 1,
+      "phaseName": "Audit and project preparation",
+      "months": 6,
+      "notes": "Audit bundle and intervention prioritization.",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "fundedProjectPhaseId": "8d66f6a8-0aaa-4496-b3fd-9f8df12f1304",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e04",
+      "phaseOrder": 1,
+      "phaseName": "Design and community consultation",
+      "months": 8,
+      "notes": "Participatory design and site screening.",
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    }
+  ],
+  "actionFundedProjects": [
+    {
+      "id": "9e7707b9-1bbb-4597-b4fe-af9ef23f1401",
+      "actionId": "c40_0023",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e01",
+      "evidenceType": "climate_impact",
+      "notes": "Direct evidence of fleet electrification emissions reduction.",
+      "confidence": 0.9,
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "id": "9e7707b9-1bbb-4597-b4fe-af9ef23f1402",
+      "actionId": "c40_0023",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e01",
+      "evidenceType": "implementation_feasibility",
+      "notes": "Confirms practical deployment pathway for bus and depot rollout.",
+      "confidence": 0.86,
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "id": "9e7707b9-1bbb-4597-b4fe-af9ef23f1403",
+      "actionId": "c40_0036",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e02",
+      "evidenceType": "climate_impact",
+      "notes": "Methane capture retrofit shows direct relevance for landfill gas actions.",
+      "confidence": 0.88,
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "id": "9e7707b9-1bbb-4597-b4fe-af9ef23f1404",
+      "actionId": "c40_0015",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e03",
+      "evidenceType": "cost_benchmark",
+      "notes": "Retrofit cost and payback benchmarks can calibrate action assumptions.",
+      "confidence": 0.84,
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "id": "9e7707b9-1bbb-4597-b4fe-af9ef23f1405",
+      "actionId": "c40_0010",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e03",
+      "evidenceType": "policy_enablement",
+      "notes": "Contracting templates support rollout of stronger building efficiency standards.",
+      "confidence": 0.75,
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    },
+    {
+      "id": "9e7707b9-1bbb-4597-b4fe-af9ef23f1406",
+      "actionId": "c40_0042",
+      "fundedProjectId": "5e11a153-5d55-4f91-b9f8-4d38d67c0e04",
+      "evidenceType": "replicability",
+      "notes": "Green corridor package is designed for transfer to similar arid urban contexts.",
+      "confidence": 0.77,
+      "createdAt": "2026-03-02T12:00:00+00:00",
+      "updatedAt": "2026-03-02T12:00:00+00:00"
+    }
+  ]
+}

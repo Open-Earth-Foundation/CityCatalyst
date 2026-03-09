@@ -10,9 +10,7 @@ import {
   type DirectMeasure,
   type ExtraField,
 } from "@/util/form-schema";
-import fs from "fs";
-import path from "path";
-import process from "node:process";
+import manageSubsectorsEn from "@/i18n/locales/en/manage-subsectors.json";
 
 /** Options for import (e.g. PDF): default data source from file name. */
 export type ImportECRFDataOptions = {
@@ -33,45 +31,24 @@ const notationKeyMapping: Record<string, string> = {
 };
 
 /**
- * Load translation file and create reverse map (value -> key)
- * This is used to map unit values like "Tonnes (T)" to keys like "units-tonnes"
- * and activity type values like "Firewood" to keys like "fuel-type-firewood"
+ * Reverse map (value -> key) from manage-subsectors en locale.
+ * Used to map unit values like "Tonnes (T)" to keys like "units-tonnes"
+ * and activity type values like "Firewood" to keys like "fuel-type-firewood".
+ * Loaded at module init so it works in container (no runtime filesystem read).
  */
-let translationMap: Record<string, string> | null = null;
+const translationMap: Record<string, string> = (() => {
+  const translations = manageSubsectorsEn as Record<string, string>;
+  const out: Record<string, string> = {};
+  for (const [key, value] of Object.entries(translations)) {
+    const normalizedValue = value.toLowerCase().trim();
+    out[normalizedValue] = key;
+    out[value] = key;
+  }
+  return out;
+})();
 
 function loadTranslationMap(): Record<string, string> {
-  if (translationMap) {
-    return translationMap;
-  }
-
-  try {
-    const translationPath = path.join(
-      process.cwd(),
-      "src",
-      "i18n",
-      "locales",
-      "en",
-      "manage-subsectors.json",
-    );
-    const translations = JSON.parse(
-      fs.readFileSync(translationPath, "utf-8"),
-    ) as Record<string, string>;
-
-    // Create reverse map for all translations (value -> key)
-    translationMap = {};
-    for (const [key, value] of Object.entries(translations)) {
-      // Normalize both key and value for matching
-      const normalizedValue = value.toLowerCase().trim();
-      translationMap[normalizedValue] = key;
-      // Also add the original value for exact matches
-      translationMap[value] = key;
-    }
-
-    return translationMap;
-  } catch (error) {
-    logger.error({ err: error }, "Failed to load translation map");
-    return {};
-  }
+  return translationMap;
 }
 
 /**

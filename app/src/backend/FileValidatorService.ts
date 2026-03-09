@@ -1,5 +1,5 @@
 import createHttpError from "http-errors";
-import FileParserService from "./FileParserService";
+import FileParserService, { type ParsedFileData } from "./FileParserService";
 
 // File size limit: 20MB (in bytes)
 export const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
@@ -16,6 +16,8 @@ export interface ValidationResult {
   fileType?: AcceptedFileFormat;
   fileSize?: number;
   detectedColumns?: Record<string, number>; // Column name -> index mapping
+  /** True when file is CIRIS (CDP) format: has eCRF_3 sheet but should use AI extraction (Path B). */
+  isCIRIS?: boolean;
 }
 
 /**
@@ -137,6 +139,7 @@ export default class FileValidatorService {
     const errors: string[] = [...basicValidation.errors];
     const warnings: string[] = [...basicValidation.warnings];
     const detectedColumns: Record<string, number> = {};
+    let isCIRIS = false;
 
     try {
       // Convert file to buffer
@@ -148,6 +151,11 @@ export default class FileValidatorService {
         buffer,
         basicValidation.fileType,
       );
+
+      // CIRIS (CDP) format: has eCRF_3 sheet but is a multi-sheet workbook for CDP; route to Path B (AI extraction)
+      if (parsedData.fileType === "xlsx") {
+        isCIRIS = this.isCIRISFormat(parsedData);
+      }
 
       // Validate structure based on file type
       if (parsedData.fileType === "xlsx") {
@@ -183,7 +191,50 @@ export default class FileValidatorService {
       fileSize: basicValidation.fileSize,
       detectedColumns:
         Object.keys(detectedColumns).length > 0 ? detectedColumns : undefined,
+      isCIRIS: isCIRIS || undefined,
     };
+  }
+
+  /**
+   * Detect CIRIS (CDP) format: XLSX with eCRF_3 sheet and many other sheets or CDP/CIRIS-specific sheet names.
+   * CIRIS files should use Path B (AI extraction from eCRF_3) instead of standard eCRF processing.
+   */
+  public static isCIRISFormat(parsedData: ParsedFileData): boolean {
+    if (!parsedData.sheets?.length || parsedData.fileType !== "xlsx") {
+      return false;
+    }
+    const hasECRF3 = parsedData.sheets.some((s) =>
+      s.name.toLowerCase().includes("ecrf_3"),
+    );
+    if (!hasECRF3) return false;
+    const sheetCount = parsedData.sheets.length;
+    const cirisIndicators =
+      /ciris|cdp|overview|summary|boundary|governance|city information|disclosure|questionnaire/i;
+    const hasCIRISSheets = parsedData.sheets.some((s) =>
+      cirisIndicators.test(s.name),
+    );
+    return sheetCount > 5 || hasCIRISSheets;
+  }
+
+  /**
+   * Returns true only when required eCRF identity columns (gpcRefNo, sector, subsector, scope)
+   * map to at least 2 distinct column indices. Used to avoid treating non-eCRF files (e.g. one
+   * "Sector and scope (GPC reference number)" column satisfying multiple checks) as eCRF.
+   */
+  public static hasDistinctRequiredECRFColumns(
+    detectedColumns: Record<string, number> | undefined,
+  ): boolean {
+    if (!detectedColumns || Object.keys(detectedColumns).length === 0) {
+      return false;
+    }
+    const requiredKeys = ["gpcRefNo", "sector", "subsector", "scope"] as const;
+    const indices = new Set<number>();
+    for (const key of requiredKeys) {
+      if (key in detectedColumns && typeof detectedColumns[key] === "number") {
+        indices.add(detectedColumns[key]);
+      }
+    }
+    return indices.size >= 2;
   }
 
   /**

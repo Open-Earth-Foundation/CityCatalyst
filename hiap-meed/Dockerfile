@@ -12,15 +12,15 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Copy the entire app directory (including all subfolders)
-COPY app/ ./
+# Copy the application package
+COPY app/ ./app/
 
 # Make the run.sh file executable
-RUN chmod +x run.sh
+RUN chmod +x app/run.sh
 
 # Expose the port the app runs on
 EXPOSE 8000
 
 # Command to run the application
-CMD ["./run.sh"]
+CMD ["./app/run.sh"]
 

@@ -17,5 +17,4 @@ echo "- e.g. download artifacts"
 echo ""
 
 echo "Starting server..."
-exec uvicorn main:app --host 0.0.0.0 --port 8000
-
+exec uvicorn app.main:app --host 0.0.0.0 --port 8000

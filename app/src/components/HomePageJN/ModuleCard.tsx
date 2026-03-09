@@ -1,4 +1,5 @@
 import { Card, Button, HStack, Image, Icon, VStack } from "@chakra-ui/react";
+import { Tag } from "@/components/ui/tag";
 import { Tooltip } from "@/components/ui/tooltip";
 import React from "react";
 import type { TFunction } from "i18next";
@@ -22,7 +23,25 @@ export function ModuleCard({
   baseUrl: string;
   language: string;
 }) {
-  const { name, author, description, tagline, url, logo } = module;
+  const statusColorMap: Record<string, string> = {
+    active: "green",
+    beta: "blue",
+    early_access: "purple",
+    preview: "orange",
+    prototype: "yellow",
+    poc: "gray",
+  };
+
+  const statusLabelMap: Record<string, string> = {
+    poc: "status-poc",
+    prototype: "status-prototype",
+    preview: "status-preview",
+    early_access: "status-early-access",
+    beta: "status-beta",
+    active: "status-active",
+  };
+
+  const { name, author, description, tagline, url, logo, status } = module;
 
   const getTranslationInLanguage = (
     obj: { [lng: string]: string } | undefined,
@@ -57,11 +76,21 @@ export function ModuleCard({
       <Card.Body gap={2}>
         <VStack w="full" align="start" gap={2}>
           <HStack justify="space-between" w="full">
-            <Image
-              src={logo || "/assets/icon_inverted.svg"}
-              boxSize={8}
-              alt={`${name} module logo`}
-            />
+            <HStack gap={2}>
+              <Image
+                src={logo || "/assets/icon_inverted.svg"}
+                boxSize={8}
+                alt={`${name} module logo`}
+              />
+              {status && status !== "active" && (
+                <Tag
+                  size="sm"
+                  colorPalette={statusColorMap[status] || "gray"}
+                >
+                  {t(statusLabelMap[status] || status)}
+                </Tag>
+              )}
+            </HStack>
 
             <Tooltip
               content={getTranslationInLanguage(description)}

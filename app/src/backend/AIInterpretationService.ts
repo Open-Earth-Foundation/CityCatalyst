@@ -570,7 +570,8 @@ Mapping (report term → canonical): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)
 }
 
 /** Max tokens for CIRIS/ECRF-like full-schema extraction (many rows, many fields). */
-const INTERPRET_LLM_MAX_TOKENS_SHAPE_CIRIS = 32768;
+/** CIRIS table shape: use same limit as generic (model max completion tokens). */
+const INTERPRET_LLM_MAX_TOKENS_SHAPE_CIRIS = 16384;
 
 /**
  * Prompt for CIRIS (CDP) eCRF_3-style tables: require full ECRF-like output schema and extract every data row.

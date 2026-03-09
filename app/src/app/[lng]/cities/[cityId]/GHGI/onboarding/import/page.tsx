@@ -278,11 +278,14 @@ export default function ImportPage(props: {
     stopPolling: stopExtractionPolling,
     isPolling: isExtractionPolling,
   } = usePollUntil<ImportStatusResponse>({
-    fetch: useCallback(
-      () =>
-        getImportStatus({ cityId, inventoryId, importedFileId: importedFileId! }).unwrap() as Promise<ImportStatusResponse>,
-      [cityId, inventoryId, importedFileId, getImportStatus],
-    ),
+    fetch: useCallback(() => {
+      if (!importedFileId || !inventoryId) return Promise.reject(new Error("Missing importedFileId or inventoryId"));
+      return getImportStatus({
+        cityId,
+        inventoryId: inventoryId as string,
+        importedFileId: importedFileId as string,
+      }).unwrap() as Promise<ImportStatusResponse>;
+    }, [cityId, inventoryId, importedFileId, getImportStatus]),
     isTerminal: (res) => {
       if (res.importStatus === "waiting_for_approval") return { done: true, success: true, data: res };
       if (res.importStatus === "failed") return { done: true, success: false, data: res };
@@ -316,11 +319,14 @@ export default function ImportPage(props: {
     stopPolling: stopInterpretPolling,
     isPolling: isInterpretPolling,
   } = usePollUntil<ImportStatusResponse>({
-    fetch: useCallback(
-      () =>
-        getImportStatus({ cityId, inventoryId, importedFileId: importedFileId! }).unwrap() as Promise<ImportStatusResponse>,
-      [cityId, inventoryId, importedFileId, getImportStatus],
-    ),
+    fetch: useCallback(() => {
+      if (!importedFileId || !inventoryId) return Promise.reject(new Error("Missing importedFileId or inventoryId"));
+      return getImportStatus({
+        cityId,
+        inventoryId: inventoryId as string,
+        importedFileId: importedFileId as string,
+      }).unwrap() as Promise<ImportStatusResponse>;
+    }, [cityId, inventoryId, importedFileId, getImportStatus]),
     isTerminal: (res) => {
       if (res.importStatus === "waiting_for_approval") return { done: true, success: true, data: res };
       if (res.importStatus === "failed") return { done: true, success: false, data: res };

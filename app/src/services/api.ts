@@ -1,3 +1,4 @@
+import { env } from "next-runtime-env";
 import {
   type CityAttributes,
   type InventoryAttributes,
@@ -1826,6 +1827,46 @@ export const api = createApi({
         transformResponse: (response: { data: ImportStatusResponse }) =>
           response.data,
       }),
+      extractImport: builder.mutation<
+        | { id: string; importStatus: string; rowCount: number }
+        | { accepted: true; id: string; message?: string },
+        {
+          cityId: string;
+          inventoryId: string;
+          importedFileId: string;
+        }
+      >({
+        query: ({ cityId, inventoryId, importedFileId }) => ({
+          url: `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}/extract`,
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data:
+            | { id: string; importStatus: string; rowCount: number }
+            | { accepted: true; id: string; message?: string };
+        }) => response.data,
+        invalidatesTags: ["Inventory"],
+      }),
+      interpretImport: builder.mutation<
+        | { id: string; importStatus: string; rowCount?: number }
+        | { accepted: true; id: string; message?: string },
+        {
+          cityId: string;
+          inventoryId: string;
+          importedFileId: string;
+        }
+      >({
+        query: ({ cityId, inventoryId, importedFileId }) => ({
+          url: `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}/interpret`,
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data:
+            | { id: string; importStatus: string; rowCount?: number }
+            | { accepted: true; id: string; message?: string };
+        }) => response.data,
+        invalidatesTags: ["Inventory"],
+      }),
       approveImport: builder.mutation<
         ImportedFileResponse,
         {
@@ -1845,7 +1886,13 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: ImportedFileResponse }) =>
           response.data,
-        invalidatesTags: ["Inventory"],
+        invalidatesTags: [
+          "Inventory",
+          "InventoryProgress",
+          "InventoryValue",
+          "ReportResults",
+          "YearlyReportResults",
+        ],
       }),
 
       // Version Control Endpoints
@@ -1899,13 +1946,15 @@ export const api = createApi({
         }),
         invalidatesTags: ["PersonalAccessToken"],
       }),
-      deletePersonalAccessToken: builder.mutation<{ success: boolean }, string>({
-        query: (tokenId) => ({
-          url: `/user/tokens/${tokenId}`,
-          method: "DELETE",
-        }),
-        invalidatesTags: ["PersonalAccessToken"],
-      }),
+      deletePersonalAccessToken: builder.mutation<{ success: boolean }, string>(
+        {
+          query: (tokenId) => ({
+            url: `/user/tokens/${tokenId}`,
+            method: "DELETE",
+          }),
+          invalidatesTags: ["PersonalAccessToken"],
+        },
+      ),
 
       // Admin Modules endpoints
       getAdminModules: builder.query<ModuleAttributes[], void>({
@@ -1921,6 +1970,7 @@ export const api = createApi({
           description?: string;
           tagline?: string;
           stage: string;
+          status?: string;
           url: string;
           logo?: string;
         }
@@ -1943,6 +1993,7 @@ export const api = createApi({
             description?: string;
             tagline?: string;
             stage?: string;
+            status?: string;
             url?: string;
             logo?: string;
           };
@@ -1972,7 +2023,7 @@ export const openclimateAPI = createApi({
   reducerPath: "openclimateapi",
   baseQuery: fetchBaseQuery({
     baseUrl:
-      process.env.NEXT_PUBLIC_OPENCLIMATE_API_URL ||
+      env("NEXT_PUBLIC_OPENCLIMATE_API_URL") ??
       "https://app.openclimate.network",
   }),
   endpoints: (builder) => ({

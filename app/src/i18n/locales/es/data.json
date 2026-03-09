@@ -1276,5 +1276,6 @@
   "on-road-transportation-fuel-type": "Tipo de combustible",
   "water-transportation-outside-fuel-type": "Tipo de combustible",
   "not-occurring": "No Ocurre",
-  "not-estimated-progress": "No Estimado"
+  "not-estimated-progress": "No Estimado",
+  "uncategorized": "Sin categorizar"
 }

@@ -24,7 +24,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip } from "@/components/ui/tooltip";
 import { RiExpandDiagonalFill } from "react-icons/ri";
-import { MdExpandMore, MdExpandLess } from "react-icons/md";
+import { MdExpandMore, MdExpandLess, MdHistory } from "react-icons/md";
 import {
   useReactTable,
   getCoreRowModel,
@@ -62,6 +62,7 @@ import { ButtonMedium } from "@/components/package/Texts/Button";
 import { ButtonSmall } from "@/components/package/Texts/Button";
 import { toaster } from "@/components/ui/toaster";
 import { trackEvent } from "@/lib/analytics";
+import HiapVersionHistory from "./HiapVersionHistory";
 
 const BarVisualization = ({
   value,
@@ -109,6 +110,7 @@ export function HiapTab({
   const [selectedActions, setSelectedActions] = useState<HIAction[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [showUnrankedActions, setShowUnrankedActions] = useState(true);
+  const [isShowingHistory, setIsShowingHistory] = useState(false);
 
   // HIAP Query State
   const [userTriggeredHiap, setUserTriggeredHiap] = useState(false);
@@ -166,7 +168,8 @@ export function HiapTab({
   const actions = rankedActions; // Keep only ranked actions for the main table
   const isAdaptation = type === ACTION_TYPES.Adaptation;
   const isPending =
-    currentData?.status === HighImpactActionRankingStatus.PENDING || localIsPending;
+    currentData?.status === HighImpactActionRankingStatus.PENDING ||
+    localIsPending;
   const isFailure =
     currentData?.status === HighImpactActionRankingStatus.FAILURE;
   const hasActions = actions && actions.length > 0;
@@ -179,7 +182,7 @@ export function HiapTab({
   // Event Handlers
   const handleHiapGeneration = async () => {
     setLocalIsPending(true);
-    
+
     try {
       // Track HIAP plan generation
       trackEvent("hiap_plan_generated", {
@@ -208,11 +211,10 @@ export function HiapTab({
         setIgnoreExisting(true);
         setUserTriggeredHiap(true);
       }
-      
+
       // After triggering HIAP generation, refetch status multiple times to ensure we catch the pending state
       setTimeout(() => refetchStatus(), 500);
       setTimeout(() => refetchStatus(), 2000);
-      
     } catch (error) {
       // Clear pending on error
       setLocalIsPending(false);
@@ -223,7 +225,7 @@ export function HiapTab({
       });
       logger.error(error, "Failed to generate HIAP actions");
     }
-    
+
     // Safety net: clear local pending after timeout
     setTimeout(() => setLocalIsPending(false), 30000);
   };
@@ -547,166 +549,154 @@ export function HiapTab({
         ),
       },
     ],
-    [isSelectionMode, t],
+    [isSelectionMode, t, isAdaptation],
   );
 
   // Columns for unranked actions table
-  const unrankedColumns: ColumnDef<HIAction>[] = useMemo(
-    () => {
-      // Selection column (only shown in selection mode)
-      const selectionColumn = {
-        id: "select",
-        header: ({ table }: { table: TanStackTable<HIAction> }) => (
-          <Checkbox
-            checked={table.getIsAllRowsSelected()}
-            onChange={table.getToggleAllRowsSelectedHandler()}
-          />
-        ),
-        cell: ({ row }: { row: Row<HIAction> }) => (
-          <Checkbox
-            checked={row.getIsSelected()}
-            disabled={!row.getCanSelect()}
-            onChange={row.getToggleSelectedHandler()}
-          />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-      };
+  const unrankedColumns: ColumnDef<HIAction>[] = useMemo(() => {
+    // Selection column (only shown in selection mode)
+    const selectionColumn = {
+      id: "select",
+      header: ({ table }: { table: TanStackTable<HIAction> }) => (
+        <Checkbox
+          checked={table.getIsAllRowsSelected()}
+          onChange={table.getToggleAllRowsSelectedHandler()}
+        />
+      ),
+      cell: ({ row }: { row: Row<HIAction> }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          disabled={!row.getCanSelect()}
+          onChange={row.getToggleSelectedHandler()}
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    };
 
-      // Type-specific columns for adaptation
-      const adaptationColumns = [
-        {
-          id: "hazards-covered",
-          header: t("hazards-covered"),
-          cell: ({ row }: { row: Row<HIAction> }) => {
-            const action = row.original as AdaptationAction;
-            const hazardCount = action.hazards?.length || 0;
-            return (
-              <Badge colorScheme="orange">
-                {hazardCount} {t("hazards")}
-              </Badge>
-            );
-          },
+    // Type-specific columns for adaptation
+    const adaptationColumns = [
+      {
+        id: "hazards-covered",
+        header: t("hazards-covered"),
+        cell: ({ row }: { row: Row<HIAction> }) => {
+          const action = row.original as AdaptationAction;
+          const hazardCount = action.hazards?.length || 0;
+          return (
+            <Badge colorScheme="orange">
+              {hazardCount} {t("hazards")}
+            </Badge>
+          );
         },
-        {
-          id: "adaptation-effectiveness",
-          header: t("effectiveness"),
-          cell: ({ row }: { row: Row<HIAction> }) => {
-            const action = row.original as AdaptationAction;
-            const effectivenessMap: Record<string, number> = {
-              low: 1,
-              medium: 2,
-              high: 3,
-            };
-            const blueBars =
-              effectivenessMap[action.adaptationEffectiveness] || 0;
-            return <BarVisualization value={blueBars} total={3} />;
-          },
+      },
+      {
+        id: "adaptation-effectiveness",
+        header: t("effectiveness"),
+        cell: ({ row }: { row: Row<HIAction> }) => {
+          const action = row.original as AdaptationAction;
+          const effectivenessMap: Record<string, number> = {
+            low: 1,
+            medium: 2,
+            high: 3,
+          };
+          const blueBars =
+            effectivenessMap[action.adaptationEffectiveness] || 0;
+          return <BarVisualization value={blueBars} total={3} />;
         },
-      ];
+      },
+    ];
 
-      // Type-specific columns for mitigation
-      const mitigationColumns = [
-        {
-          id: "sector",
-          header: t("sector-label"),
-          cell: ({ row }: { row: Row<HIAction> }) => {
-            const action = row.original as MitigationAction;
-            return (
-              <HStack gap={1} flexWrap="wrap">
-                {action.sectors.map((sector) => (
-                  <Text key={sector} color="content.secondary">
-                    {t(`sector.${sector}`)}
-                  </Text>
-                ))}
-              </HStack>
-            );
-          },
+    // Type-specific columns for mitigation
+    const mitigationColumns = [
+      {
+        id: "sector",
+        header: t("sector-label"),
+        cell: ({ row }: { row: Row<HIAction> }) => {
+          const action = row.original as MitigationAction;
+          return (
+            <HStack gap={1} flexWrap="wrap">
+              {action.sectors.map((sector) => (
+                <Text key={sector} color="content.secondary">
+                  {t(`sector.${sector}`)}
+                </Text>
+              ))}
+            </HStack>
+          );
         },
-        {
-          id: "reduction-potential",
-          header: t("ghg-reduction"),
-          cell: ({ row }: { row: Row<HIAction> }) => {
-            const action = row.original as MitigationAction;
-            const totalReduction = Object.values(
-              action.GHGReductionPotential,
-            )
-              .filter((value): value is string => value !== null)
-              .map((value) => {
-                // Parse range like "80-100" and take the average
-                if (value.includes("-")) {
-                  const [min, max] = value
-                    .split("-")
-                    .map((v) => parseFloat(v));
-                  return (min + max) / 2;
-                }
-                return parseFloat(value);
-              })
-              .reduce((sum, value) => sum + value, 0);
-            const blueBars = Math.min(Math.ceil(totalReduction / 20), 5);
-            return (
-              <BarVisualization value={blueBars} total={5} width="60px" />
-            );
-          },
+      },
+      {
+        id: "reduction-potential",
+        header: t("ghg-reduction"),
+        cell: ({ row }: { row: Row<HIAction> }) => {
+          const action = row.original as MitigationAction;
+          const totalReduction = Object.values(action.GHGReductionPotential)
+            .filter((value): value is string => value !== null)
+            .map((value) => {
+              // Parse range like "80-100" and take the average
+              if (value.includes("-")) {
+                const [min, max] = value.split("-").map((v) => parseFloat(v));
+                return (min + max) / 2;
+              }
+              return parseFloat(value);
+            })
+            .reduce((sum, value) => sum + value, 0);
+          const blueBars = Math.min(Math.ceil(totalReduction / 20), 5);
+          return <BarVisualization value={blueBars} total={5} width="60px" />;
         },
-      ];
+      },
+    ];
 
-      // Common name column
-      const nameColumn = {
-        accessorKey: "name",
-        header: t("action"),
-        cell: ({ row }: { row: Row<HIAction> }) => (
-          <HStack
-            alignItems="center"
-            gap={1}
-            maxW={"367px"}
-            position="relative"
-          >
-            <Box>
-              {row.original.isSelected && (
-                <Icon as={TopPickIcon} color="content.link" boxSize={6} />
-              )}
-            </Box>
-            <Text color="content.secondary">{row.original.name}</Text>
-          </HStack>
-        ),
-      };
+    // Common name column
+    const nameColumn = {
+      accessorKey: "name",
+      header: t("action"),
+      cell: ({ row }: { row: Row<HIAction> }) => (
+        <HStack alignItems="center" gap={1} maxW={"367px"} position="relative">
+          <Box>
+            {row.original.isSelected && (
+              <Icon as={TopPickIcon} color="content.link" boxSize={6} />
+            )}
+          </Box>
+          <Text color="content.secondary">{row.original.name}</Text>
+        </HStack>
+      ),
+    };
 
-      // Actions column
-      const actionsColumn = {
-        id: "actions",
-        header: "",
-        cell: ({ row }: { row: Row<HIAction> }) => (
-          <IconButton
-            aria-label="View details"
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setSelectedAction(row.original);
-              logger.info(row.original, "Open drawer for unranked action");
-            }}
-          >
-            <Icon as={RiExpandDiagonalFill} color="interactive.control" />
-          </IconButton>
-        ),
-      };
+    // Actions column
+    const actionsColumn = {
+      id: "actions",
+      header: "",
+      cell: ({ row }: { row: Row<HIAction> }) => (
+        <IconButton
+          aria-label="View details"
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            setSelectedAction(row.original);
+            logger.info(row.original, "Open drawer for unranked action");
+          }}
+        >
+          <Icon as={RiExpandDiagonalFill} color="interactive.control" />
+        </IconButton>
+      ),
+    };
 
-      // Determine which selection columns to include
-      const selectionColumns = isSelectionMode ? [selectionColumn] : [];
-      
-      // Determine which type-specific columns to include
-      const typeSpecificColumns = isAdaptation ? adaptationColumns : mitigationColumns;
+    // Determine which selection columns to include
+    const selectionColumns = isSelectionMode ? [selectionColumn] : [];
 
-      // Assemble all columns in order
-      return [
-        ...selectionColumns,
-        nameColumn,
-        ...typeSpecificColumns,
-        actionsColumn,
-      ];
-    },
-    [isSelectionMode, isAdaptation, t],
-  );
+    // Determine which type-specific columns to include
+    const typeSpecificColumns = isAdaptation
+      ? adaptationColumns
+      : mitigationColumns;
+
+    // Assemble all columns in order
+    return [
+      ...selectionColumns,
+      nameColumn,
+      ...typeSpecificColumns,
+      actionsColumn,
+    ];
+  }, [isSelectionMode, isAdaptation, t]);
 
   const table = useReactTable({
     data: actions,
@@ -968,59 +958,89 @@ export function HiapTab({
                 </MenuItem>
               </MenuContent>
             </MenuRoot>
+            {isShowingHistory && (
+              <Button
+                variant="ghost"
+                color="interactive.control"
+                p="4px"
+                onClick={() => setIsShowingHistory(false)}
+                bg={isShowingHistory ? "background.muted" : "transparent"}
+              >
+                <Text>{t("close")}</Text>
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              color="interactive.control"
+              p="4px"
+              onClick={() => setIsShowingHistory(!isShowingHistory)}
+              bg={isShowingHistory ? "background.muted" : "transparent"}
+            >
+              <Icon as={MdHistory} />
+              <Text>{t("history")}</Text>
+            </Button>
           </Box>
         </Box>
-        <BodyLarge
-          color="content.tertiary"
-          fontWeight="normal"
-          fontFamily="body"
-        >
-          {t("ranked-and-unranked-actions-description")}
-        </BodyLarge>
+        {!isShowingHistory && (
+          <BodyLarge
+            color="content.tertiary"
+            fontWeight="normal"
+            fontFamily="body"
+          >
+            {t("ranked-and-unranked-actions-description")}
+          </BodyLarge>
+        )}
       </Box>
-      <ChakraTable.Root w="full" borderRadius="md" borderWidth="1px">
-        <ChakraTable.Header bg="header.overlay">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <ChakraTable.Row key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <ChakraTable.ColumnHeader
-                  key={header.id}
-                  textAlign="left"
-                  fontWeight="bold"
-                  fontFamily="heading"
-                  textTransform="uppercase"
-                  fontSize="body.sm"
-                  color="content.secondary"
-                  bg="background.neutral"
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext(),
-                  )}
-                </ChakraTable.ColumnHeader>
-              ))}
-            </ChakraTable.Row>
-          ))}
-        </ChakraTable.Header>
-        <ChakraTable.Body>
-          {table.getRowModel().rows.map((row) => (
-            <ChakraTable.Row key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <ChakraTable.Cell
-                  key={cell.id}
-                  borderBottom="1px solid #e2e8f0"
-                  p={4}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </ChakraTable.Cell>
-              ))}
-            </ChakraTable.Row>
-          ))}
-        </ChakraTable.Body>
-      </ChakraTable.Root>
+
+      {isShowingHistory && (
+        <HiapVersionHistory inventoryId={inventory?.inventoryId} lng={lng} />
+      )}
+
+      {!isShowingHistory && (
+        <ChakraTable.Root w="full" borderRadius="md" borderWidth="1px">
+          <ChakraTable.Header bg="header.overlay">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <ChakraTable.Row key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <ChakraTable.ColumnHeader
+                    key={header.id}
+                    textAlign="left"
+                    fontWeight="bold"
+                    fontFamily="heading"
+                    textTransform="uppercase"
+                    fontSize="body.sm"
+                    color="content.secondary"
+                    bg="background.neutral"
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
+                  </ChakraTable.ColumnHeader>
+                ))}
+              </ChakraTable.Row>
+            ))}
+          </ChakraTable.Header>
+          <ChakraTable.Body>
+            {table.getRowModel().rows.map((row) => (
+              <ChakraTable.Row key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <ChakraTable.Cell
+                    key={cell.id}
+                    borderBottom="1px solid #e2e8f0"
+                    p={4}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </ChakraTable.Cell>
+                ))}
+              </ChakraTable.Row>
+            ))}
+          </ChakraTable.Body>
+        </ChakraTable.Root>
+      )}
 
       {/* Unranked Actions Collapsible Section */}
-      {unrankedActions.length > 0 && (
+      {!isShowingHistory && unrankedActions.length > 0 && (
         <Box mt={20} overflowX="hidden">
           <Box
             display="flex"

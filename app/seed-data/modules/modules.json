@@ -9,6 +9,7 @@
     "tagline": {},
     "author": "Open Earth Foundation",
     "type": "CC",
+    "status": "active",
     "url": "/GHGI"
   },
   {
@@ -21,6 +22,7 @@
     "tagline": {},
     "author": "Open Earth Foundation",
     "type": "CC",
+    "status": "active",
     "url": "/HIAP"
   },
   {
@@ -49,6 +51,7 @@
       "fr": "Choisissez une limite alternative pour votre ville basée sur les données d'OpenStreetMap."
     },
     "author": "Open Earth Foundation",
+    "status": "poc",
     "url": "https://cc-boundary-picker.replit.app/",
     "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/EnhancedBoundaryEditorIcon.png"
   },
@@ -78,6 +81,151 @@
       "pt": "Compreenda os riscos climáticos e desenvolva estratégias de adaptação para uma cidade mais resiliente."
     },
     "author": "Open Earth Foundation",
+    "status": "active",
     "url": "/CCRA"
+  },
+  {
+    "id": "f6caf30e-8707-4829-8a8f-a6900b58c896",
+    "type": "POC",
+    "stage": "implement",
+    "name": {
+      "en": "NBS Project Builder"
+    },
+    "description": {
+      "en": "NBS Project Builder helps cities turn climate challenges into nature-based solutions. With AI-powered planning tools, geospatial risk analysis, and streamlined funder matching, cities can develop bankable sustainability projects faster."
+    },
+    "tagline": {
+      "en": "From Climate Risk to Action — Powered by Nature"
+    },
+    "author": "Open Earth Foundation",
+    "status": "poc",
+    "url": "https://nbs-project-preparation.replit.app/",
+    "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-162443.png"
+  },
+  {
+    "id": "0c4384eb-d7f6-4fd7-9bf2-e0a233f7127f",
+    "type": "POC",
+    "stage": "implement",
+    "name": {
+      "en": "Rooftop Solar Project Builder"
+    },
+    "description": {
+      "en": "Explore rooftop solar potential for municipal buildings. Select buildings on the map, analyze energy capacity and savings, and build a portfolio to plan your city's clean energy future."
+    },
+    "tagline": {
+      "en": "Unlock Your City's Solar Potential"
+    },
+    "author": "Open Earth Foundation",
+    "status": "poc",
+    "url": "https://cc-municipal-solar.replit.app",
+    "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-162722.png"
+  },
+  {
+    "id": "10fc136e-16ea-48ab-a4c3-ca5658f7c46f",
+    "type": "POC",
+    "stage": "plan",
+    "name": {
+      "en": "Flourish - Inspire"
+    },
+    "description": {
+      "en": "Flourish Inspire is a discovery platform showcasing successful climate action projects from the world. Browse by sector, funding type, or use our AI-powered Project Finder to get personalized recommendations, then export project details directly to Flourish Build to start your own implementation."
+    },
+    "tagline": {
+      "en": "Find proven climate projects for your city"
+    },
+    "author": "Open Earth Foundation",
+    "status": "poc",
+    "url": "https://flourish-inspire.replit.app/",
+    "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-163043.png"
+  },
+  {
+    "id": "a28f71ab-a185-4c82-b8e6-a02a623e6db7",
+    "type": "POC",
+    "stage": "monitor-evaluate-&-report",
+    "name": {
+      "en": "Flourish - Rate"
+    },
+    "description": {
+      "en": "Flourish Rate is an AI-powered due diligence platform that evaluates climate project proposals across seven critical assessment gates, helping city officials and investors make informed decisions with confidence."
+    },
+    "tagline": {
+      "en": "Smart Due Diligence for Climate Finance"
+    },
+    "author": "Open Earth Foundation",
+    "status": "poc",
+    "url": "https://flourish-rate.replit.app",
+    "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-163311+(1).png"
+  },
+  {
+    "id": "3487fcc5-a491-4c41-89d0-0a1fcefed5e5",
+    "type": "POC",
+    "stage": "plan",
+    "name": {
+      "en": "Flourish - Build"
+    },
+    "description": {
+      "en": "Transform your climate action plans into structured, investment-ready project proposals. Flourish Build guides you through defining your investment case, organizing actions and budgets, and aligning with funder requirements—all with AI-powered assistance."
+    },
+    "tagline": {
+      "en": "From Climate Ideas to Fundable Projects"
+    },
+    "author": "Open Earth Foundation",
+    "status": "poc",
+    "url": "https://flourish-build.replit.app",
+    "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-163311.png"
+  },
+  {
+    "id": "f0e2722c-e895-4b27-ae8b-d1a86d25b9ef",
+    "type": "POC",
+    "stage": "assess-&-analyze",
+    "name": {
+      "en": "GHG Inventory Comparison"
+    },
+    "description": {
+      "en": "Compare your city's greenhouse gas inventory against global benchmarks and get AI-powered recommendations for emission reduction."
+    },
+    "tagline": {
+      "en": "Benchmark Your City's Emissions Against the World"
+    },
+    "author": "Open Earth Foundation",
+    "status": "poc",
+    "url": "https://cc-inventory-comparison.replit.app",
+    "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-163620.png"
+  },
+  {
+    "id": "dca36554-d673-496e-95df-fea636ae4ba7",
+    "type": "POC",
+    "stage": "assess-&-analyze",
+    "name": {
+      "en": "Geospatial AI Risk Map"
+    },
+    "description": {
+      "en": "Query flood and landslide risks across Porto Alegre using plain language—just ask about schools, hospitals, or any infrastructure, and see results highlighted instantly on the map."
+    },
+    "tagline": {
+      "en": "Climate Risk Intelligence at Your Fingertips"
+    },
+    "author": "Open Earth Foundation",
+    "status": "poc",
+    "url": "https://porto-risk-map-joaquinvan.replit.app/",
+    "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-163841.png"
+  },
+  {
+    "id": "4096ef48-0b37-41a7-bba2-4ed60fa6c6f7",
+    "type": "POC",
+    "stage": "assess-&-analyze",
+    "name": {
+      "en": "Prisma - Asset Based CCRA"
+    },
+    "description": {
+      "en": "Understand the climate risk of your assets by location and risk level. See exactly which assets fall within high, medium, or low flood and landslide zones, with precise coordinates and instant map highlighting."
+    },
+    "tagline": {
+      "en": "Understand the climate risk of your assets"
+    },
+    "author": "Open Earth Foundation",
+    "status": "poc",
+    "url": "https://ccrav3.replit.app/asset-ccra",
+    "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/Screenshot+2026-02-03+at+1.42.48%E2%80%AFPM.png"
   }
 ]

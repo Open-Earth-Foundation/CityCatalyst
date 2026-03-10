@@ -109,7 +109,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
         <Box display="flex" flexDirection="column" gap="16px">
           <EmailInput register={register} error={errors.email} t={t} />
           <PasswordInput register={register} error={errors.password} t={t} />
-          <Text color="semantic.danger">{error}</Text>
+          <Text color="semantic.danger">{t(error)}</Text>
           <Box w="full" textAlign="right">
             <Link href="/auth/forgot-password" textDecoration="underline">
               {t("forgot-password")}

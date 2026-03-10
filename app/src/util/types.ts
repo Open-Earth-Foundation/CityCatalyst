@@ -643,7 +643,7 @@ export interface BaseAction {
   isSelected: boolean;
   actionId: string;
   rank: number;
-  explanation: Record<string, string>;
+  explanation: { explanations?: Record<string, string> };
   created: Date;
   last_updated: Date;
 }
@@ -845,7 +845,7 @@ export interface ImportedFileResponse {
   cityId: string;
   inventoryId: string;
   fileName: string;
-  fileType: "xlsx" | "csv";
+  fileType: "xlsx" | "csv" | "pdf";
   fileSize: number;
   originalFileName: string;
   importStatus: string;
@@ -865,12 +865,28 @@ export interface RequiredMappingOption {
   label: string;
 }
 
+/** One row from AI extraction (Path C PDF). */
+export interface ExtractedRowDisplay {
+  year: number | null;
+  sector: string | null;
+  subsector: string | null;
+  category: string | null;
+  totalCO2e: number | null;
+  co2?: number | null;
+  ch4?: number | null;
+  n2o?: number | null;
+  gpcRefNo?: string | null;
+  source?: string | null;
+}
+
 export interface ValidationResults {
   totalColumnsDetected: number;
   columns: ColumnInfo[];
   requiredMappings?: RequiredMappingOption[];
   errors: string[];
   warnings: string[];
+  /** PDF (Path C): AI-extracted rows for validation/mapping steps */
+  extractedRows?: ExtractedRowDisplay[];
 }
 
 export interface ImportSummary {
@@ -898,7 +914,7 @@ export interface ImportStatusResponse {
   fileInfo: {
     fileName: string;
     originalFileName: string;
-    fileType: "xlsx" | "csv";
+    fileType: "xlsx" | "csv" | "pdf";
     fileSize: number;
   };
   validationResults: ValidationResults | null;

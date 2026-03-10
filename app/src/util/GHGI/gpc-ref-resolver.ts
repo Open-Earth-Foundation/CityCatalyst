@@ -39,6 +39,20 @@ function mapToCanonicalSlug(
 }
 
 /**
+ * Normalize raw sector and subsector names (e.g. from PDF/LLM extraction) to canonical
+ * slugs used in the GPC reference table. Use when gpcRefNo is absent to improve matching.
+ */
+export function normalizeSectorAndSubsector(
+  sector: string,
+  subsector: string,
+): { sectorSlug: string; subsectorSlug: string } {
+  return {
+    sectorSlug: mapToCanonicalSlug("sector", sector),
+    subsectorSlug: mapToCanonicalSlug("subsector", subsector),
+  };
+}
+
+/**
  * Resolve GPC reference number from sector + subsector + optional fuel/activity.
  * Use when the eCRF file has no GPC ref no column or a row has an empty ref.
  *

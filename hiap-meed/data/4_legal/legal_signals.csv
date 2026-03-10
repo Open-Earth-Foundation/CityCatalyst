@@ -1,0 +1,8 @@
+location_scope,location_name,signal_code,signal_value,evidence_ids,evidence_count
+National,Chile,MUNI_WASTE_AUTHORITY,exclusive_authority,ev_001|ev_002,2
+National,Chile,MUNI_ENV_STANDARDS,apply_standards,ev_003|ev_004,2
+National,Chile,MUNI_TRANSPORT_AUTHORITY,exclusive_authority,ev_005,1
+National,Chile,SUBSIDY_CAP_7PCT,0.07,ev_006,1
+National,Chile,PROCUREMENT_PUBLIC_BIDDING,public_bidding,ev_007,1
+National,Chile,PLANS_ALIGNMENT,comply,ev_008,1
+National,Chile,MUNI_PLANNING_AUTHORITY,planning_authority,ev_009,1

@@ -26,7 +26,7 @@ export interface HighImpactActionRankedAttributes {
   isSelected?: boolean;
   actionId: string;
   rank: number;
-  explanation: { [key in keyof typeof languages]: string };
+  explanation: { explanations?: Record<string, string> };
   lang: string;
   created?: Date;
   lastUpdated?: Date;
@@ -51,7 +51,7 @@ export class HighImpactActionRanked
   declare hiaRankingId: string;
   declare actionId: string;
   declare rank: number;
-  declare explanation: { [key in keyof typeof languages]: string };
+  declare explanation: { explanations?: Record<string, string> };
   declare lang: string;
   declare isSelected?: boolean;
   declare type: string;

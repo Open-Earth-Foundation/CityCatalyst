@@ -114,6 +114,7 @@ import { db } from "@/models";
 import { z } from "zod";
 import GlobalAPIService from "@/backend/GlobalAPIService";
 import VersionHistoryService from "@/backend/VersionHistoryService";
+import { Op } from "sequelize";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -377,6 +378,7 @@ export const PATCH = apiHandler(
             { isSelected: false },
             {
               where: {
+                id: { [Op.not]: rankedActionIds },
                 hiaRankingId: rankingIds,
               },
               returning: true,

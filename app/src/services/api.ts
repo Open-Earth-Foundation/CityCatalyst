@@ -1898,9 +1898,10 @@ export const api = createApi({
       // Version Control Endpoints
       getVersionHistory: builder.query<
         VersionHistoryResponse,
-        { inventoryId: string }
+        { inventoryId: string; moduleName?: string }
       >({
-        query: ({ inventoryId }) => `inventory/${inventoryId}/version-history`,
+        query: ({ inventoryId, moduleName = "ghgi" }) =>
+          `inventory/${inventoryId}/version-history?module=${moduleName}`,
         transformResponse: (response: { data: VersionHistoryResponse }) =>
           response.data,
         providesTags: ["VersionHistory"],

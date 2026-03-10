@@ -5,7 +5,7 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.addColumn("HighImpactActionRanking", "user_id", {
       type: Sequelize.UUID,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: "User",
         key: "user_id",

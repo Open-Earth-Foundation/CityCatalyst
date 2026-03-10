@@ -912,17 +912,23 @@ export interface ImportStatusResponse {
   completedAt: string | null;
 }
 
-type VersionChange = VersionAttributes & {
+export type VersionChange = VersionAttributes & {
   author: { name: string; userId: string };
   previousVersion: VersionAttributes;
 };
 
 export type VersionHistoryEntry = {
   version: VersionChange;
-  activities: VersionChange[];
-  subCategory: SubCategoryAttributes;
-  dataSource?: { datasourceName: string; datasetName: string };
-  previousDataSource?: { datasourceName: string; datasetName: string };
+  activities?: VersionChange[];
+  subCategory?: SubCategoryAttributes;
+  dataSource?: {
+    datasourceName?: string;
+    datasetName?: Record<string, string>;
+  };
+  previousDataSource?: {
+    datasourceName?: string;
+    datasetName?: Record<string, string>;
+  };
   mostRecentAssociatedVersion?: VersionChange;
 };
 

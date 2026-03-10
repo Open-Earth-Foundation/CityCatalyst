@@ -10,6 +10,7 @@ import { Inventory_Sector_Hierarchy } from "@/backend/InventoryProgressService";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
 import type { SubCategory } from "@/models/SubCategory";
+import { VersionHistoryEntry } from "@/util/types";
 
 const validModules = ["ghgi", "hiap"];
 
@@ -81,77 +82,83 @@ export const GET = apiHandler(
       inventoryId,
       moduleName,
     );
+    let versions: VersionHistoryEntry[] = versionHistory.map((version) => ({
+      version,
+    }));
 
-    const inventoryValueVersions = versionHistory.filter(
-      (version) => version.table === "InventoryValue",
-    );
-    const activityValueVersions = versionHistory.filter(
-      (version) => version.table === "ActivityValue",
-    );
-    const activitiesByInventoryValue = groupBy(
-      activityValueVersions,
-      (version) => version.data?.inventoryValueId,
-    );
-    const dataSourcesUsed = inventoryValueVersions.map(
-      (version) => version.data?.datasourceId,
-    );
-
-    const dataSources = await db.models.DataSource.findAll({
-      where: {
-        datasourceId: { [Op.in]: dataSourcesUsed },
-      },
-      attributes: ["datasourceId", "datasourceName", "datasetName"],
-    });
-
-    // add metadata required by frontend to version history data
-    const versions = inventoryValueVersions.map((version) => {
-      let subCategoryId = version.data?.subCategoryId;
-      // try to get the subCategoryId from the previous version if available (necessary for deletes)
-      if (!subCategoryId && version.previousVersion?.data) {
-        subCategoryId = version.previousVersion.data?.subCategoryId;
-      }
-      let subCategory = undefined;
-      if (subCategoryId) {
-        subCategory = findSubCategory(subCategoryId);
-      }
-
-      let activities = version.entryId
-        ? activitiesByInventoryValue[version.entryId]
-        : undefined;
-
-      const dataSource = dataSources.find(
-        (source) => source.datasourceId === version.data?.datasourceId,
+    // skip version grouping and processing for non-GHGI modules
+    if (moduleName === "ghgi") {
+      const inventoryValueVersions = versionHistory.filter(
+        (version) => version.table === "InventoryValue",
       );
-      const previousDataSource = version.previousVersion
-        ? dataSources.find(
-            (source) =>
-              source.datasourceId ===
-              version.previousVersion.data?.datasourceId,
-          )
-        : undefined;
+      const activityValueVersions = versionHistory.filter(
+        (version) => version.table === "ActivityValue",
+      );
+      const activitiesByInventoryValue = groupBy(
+        activityValueVersions,
+        (version) => version.data?.inventoryValueId,
+      );
+      const dataSourcesUsed = inventoryValueVersions.map(
+        (version) => version.data?.datasourceId,
+      );
 
-      const scope = subCategory ? subCategory.scope.scopeName : undefined;
-      const mostRecentAssociatedVersion = versionHistory.find(
-        (historyVersion) => {
-          if (!historyVersion.created || !version.created) {
-            return false;
-          }
-          const timeDelta =
-            historyVersion.created?.getTime() - version.created?.getTime();
-          return Math.abs(timeDelta) < 100;
+      const dataSources = await db.models.DataSource.findAll({
+        where: {
+          datasourceId: { [Op.in]: dataSourcesUsed },
         },
-      );
+        attributes: ["datasourceId", "datasourceName", "datasetName"],
+      });
 
-      return {
-        version,
-        activities,
-        subCategory,
-        dataSource,
-        previousDataSource,
-        scope,
-        mostRecentAssociatedVersion,
-      };
-    });
+      // add metadata required by frontend to GHGI version history data
+      versions = inventoryValueVersions.map((version) => {
+        let subCategoryId = version.data?.subCategoryId;
+        // try to get the subCategoryId from the previous version if available (necessary for deletes)
+        if (!subCategoryId && version.previousVersion?.data) {
+          subCategoryId = version.previousVersion.data?.subCategoryId;
+        }
+        let subCategory = undefined;
+        if (subCategoryId) {
+          subCategory = findSubCategory(subCategoryId);
+        }
+
+        let activities = version.entryId
+          ? activitiesByInventoryValue[version.entryId]
+          : undefined;
+
+        const dataSource = dataSources.find(
+          (source) => source.datasourceId === version.data?.datasourceId,
+        );
+        const previousDataSource = version.previousVersion
+          ? dataSources.find(
+              (source) =>
+                source.datasourceId ===
+                version.previousVersion.data?.datasourceId,
+            )
+          : undefined;
+
+        const scope = subCategory ? subCategory.scope.scopeName : undefined;
+        const mostRecentAssociatedVersion = versionHistory.find(
+          (historyVersion) => {
+            if (!historyVersion.created || !version.created) {
+              return false;
+            }
+            const timeDelta =
+              historyVersion.created?.getTime() - version.created?.getTime();
+            return Math.abs(timeDelta) < 100;
+          },
+        );
+
+        return {
+          version,
+          activities,
+          subCategory,
+          dataSource,
+          previousDataSource,
+          scope,
+          mostRecentAssociatedVersion,
+        };
+      });
+    }
 
     return NextResponse.json({
       data: versions,

@@ -1,4 +1,5 @@
 import { db } from "@/models";
+import { VersionChange } from "@/util/types";
 import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
 import { Op, Transaction } from "sequelize";
@@ -41,7 +42,7 @@ export default class VersionHistoryService {
     inventoryId: string,
     moduleName: string = "ghgi",
   ) {
-    const versions = await db.models.Version.findAll({
+    const versions = (await db.models.Version.findAll({
       where: {
         inventoryId,
         moduleName,
@@ -58,7 +59,7 @@ export default class VersionHistoryService {
         },
       ],
       order: [["created", "DESC"]],
-    });
+    })) as VersionChange[];
 
     return versions;
   }

@@ -131,7 +131,12 @@ describe("VersionHistoryService", () => {
       );
 
       expect(mockVersionFindOne).toHaveBeenCalledWith({
-        where: { inventoryId, entryId, table: "InventoryValue" },
+        where: {
+          inventoryId,
+          entryId,
+          table: "InventoryValue",
+          moduleName: "ghgi",
+        },
         order: [["created", "DESC"]],
       });
       expect(mockVersionCreate).toHaveBeenCalledWith(
@@ -197,6 +202,7 @@ describe("VersionHistoryService", () => {
         entry1,
         true,
         undefined,
+        "ghgi",
       );
       expect(createVersionSpy).toHaveBeenCalledWith(
         inventoryId,
@@ -206,6 +212,7 @@ describe("VersionHistoryService", () => {
         entry2,
         true,
         undefined,
+        "ghgi",
       );
       expect(createVersionSpy).toHaveBeenCalledWith(
         inventoryId,
@@ -215,6 +222,7 @@ describe("VersionHistoryService", () => {
         entry3,
         true,
         undefined,
+        "ghgi",
       );
 
       createVersionSpy.mockRestore();
@@ -369,10 +377,7 @@ describe("VersionHistoryService", () => {
       });
 
       mockVersionFindOne.mockResolvedValueOnce(targetVersion);
-      mockVersionFindAll.mockResolvedValueOnce([
-        newerVersion1,
-        newerVersion2,
-      ]);
+      mockVersionFindAll.mockResolvedValueOnce([newerVersion1, newerVersion2]);
 
       await VersionHistoryService.restoreVersion(targetVersion.versionId);
 

@@ -3,7 +3,10 @@ import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
 import PopulationService from "../PopulationService";
-import { getTotalEmissionsBySector } from "../ResultsService";
+import {
+  getTotalEmissionsBySector,
+  EmissionsBySector,
+} from "../ResultsService";
 import { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
 import { HighImpactActionRankingStatus } from "@/util/types";
 import { hiapApiWrapper } from "./HiapApiService";
@@ -19,8 +22,8 @@ import EmailService from "../EmailService";
 import { User } from "@/models/User";
 import { getSession } from "next-auth/react";
 import { AppSession } from "@/lib/auth";
-import VersionHistoryService from "../VersionHistoryService";
 import { Op } from "sequelize";
+import VersionHistoryService from "../VersionHistoryService";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 logger.info(`Using HIAP API at ${HIAP_API_URL}`);
@@ -153,6 +156,7 @@ export const startActionRankingJob = async (
     jobId: taskId,
     status: HighImpactActionRankingStatus.PENDING,
     isBulk: false, // Single city prioritization
+    userId: user?.userId,
   });
   logger.info(
     `Ranking created in DB with ID: ${ranking.id}, langs: ${langs.join(", ")}`,
@@ -198,6 +202,7 @@ export const startBulkActionRankingJob = async (
   }>,
   langs: LANGUAGES[],
   type: ACTION_TYPES,
+  userId: string,
 ) => {
   logger.info(
     { cityCount: citiesInventoriesData.length, type, langs },
@@ -254,6 +259,7 @@ export const startBulkActionRankingJob = async (
         jobId: taskId, // SAME jobId for all cities in this bulk batch
         status: HighImpactActionRankingStatus.PENDING,
         isBulk: true, // Old bulk prioritization (kept for backward compatibility)
+        userId,
       });
     }),
   );
@@ -683,39 +689,55 @@ async function createRankedActionRecord(
   rankingId: string,
   lang: LANGUAGES,
   rankedAction: any,
+  inventoryId: string,
+  userId: string | undefined,
 ): Promise<boolean> {
   if (!rankedAction) return false;
 
   try {
-    await db.models.HighImpactActionRanked.create({
-      hiaRankingId: rankingId,
-      lang: lang,
-      actionId: rankedAction.actionId,
-      rank: rankedAction.rank,
-      type: rankedAction.type,
-      explanation: rankedAction.explanation,
-      name: rankedAction.name,
-      hazards: normalizeToArray(rankedAction.hazard),
-      sectors: normalizeToArray(rankedAction.sector),
-      subsectors: normalizeToArray(rankedAction.subsector),
-      primaryPurposes: normalizeToArray(rankedAction.primaryPurpose),
-      description: rankedAction.description,
-      cobenefits: rankedAction.cobenefits,
-      equityAndInclusionConsiderations:
-        rankedAction.equityAndInclusionConsiderations,
-      GHGReductionPotential: rankedAction.GHGReductionPotential,
-      adaptationEffectiveness: rankedAction.adaptationEffectiveness,
-      costInvestmentNeeded: rankedAction.costInvestmentNeeded,
-      timelineForImplementation: rankedAction.timelineForImplementation,
-      dependencies: normalizeToArray(rankedAction.dependencies),
-      keyPerformanceIndicators: normalizeToArray(
-        rankedAction.keyPerformanceIndicators,
-      ),
-      powersAndMandates: normalizeToArray(rankedAction.powersAndMandates),
-      adaptationEffectivenessPerHazard:
-        rankedAction.adaptationEffectivenessPerHazard,
-      biome: rankedAction.biome,
-    });
+    const entry = await db.models.HighImpactActionRanked.create(
+      {
+        hiaRankingId: rankingId,
+        lang: lang,
+        actionId: rankedAction.actionId,
+        rank: rankedAction.rank,
+        type: rankedAction.type,
+        explanation: rankedAction.explanation,
+        name: rankedAction.name,
+        hazards: normalizeToArray(rankedAction.hazard),
+        sectors: normalizeToArray(rankedAction.sector),
+        subsectors: normalizeToArray(rankedAction.subsector),
+        primaryPurposes: normalizeToArray(rankedAction.primaryPurpose),
+        description: rankedAction.description,
+        cobenefits: rankedAction.cobenefits,
+        equityAndInclusionConsiderations:
+          rankedAction.equityAndInclusionConsiderations,
+        GHGReductionPotential: rankedAction.GHGReductionPotential,
+        adaptationEffectiveness: rankedAction.adaptationEffectiveness,
+        costInvestmentNeeded: rankedAction.costInvestmentNeeded,
+        timelineForImplementation: rankedAction.timelineForImplementation,
+        dependencies: normalizeToArray(rankedAction.dependencies),
+        keyPerformanceIndicators: normalizeToArray(
+          rankedAction.keyPerformanceIndicators,
+        ),
+        powersAndMandates: normalizeToArray(rankedAction.powersAndMandates),
+        adaptationEffectivenessPerHazard:
+          rankedAction.adaptationEffectivenessPerHazard,
+        biome: rankedAction.biome,
+      },
+      { returning: true },
+    );
+    await VersionHistoryService.createVersion(
+      inventoryId,
+      "HighImpactActionRanked",
+      entry.id,
+      userId,
+      entry,
+      false,
+      undefined,
+      "hiap",
+    );
+
     return true;
   } catch (err) {
     logger.error({ rankedAction, err }, "Failed to save ranked action");
@@ -744,7 +766,13 @@ async function saveRankedActionsForLanguage(
   // Save all ranked actions
   const results = await Promise.all(
     mergedRanked.map((action) =>
-      createRankedActionRecord(ranking.id, lang, action),
+      createRankedActionRecord(
+        ranking.id,
+        lang,
+        action,
+        ranking.inventoryId,
+        ranking.userId,
+      ),
     ),
   );
 

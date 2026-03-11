@@ -53,6 +53,7 @@ import {
   isKeyValueFormat,
   shapeKeyValueToRows,
   shapeTableToRows,
+  shapeTableToRowsForCIRIS,
 } from "@/backend/AIInterpretationService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
@@ -66,8 +67,8 @@ import { logger } from "@/services/logger";
 /** Allow time for sync validation only; interpretation runs in background. */
 export const maxDuration = 30;
 
-/** Serialize one sheet to CSV-like text (header row + sample rows). */
-function serializeSheet(sheet: ParsedSheet, maxRows = 30): string {
+/** Serialize one sheet to CSV-like text (header row + data rows). Optional offset for chunking. */
+function serializeSheet(sheet: ParsedSheet, maxRows = 30, offset = 0): string {
   const headers = sheet.headers.filter(Boolean);
   if (headers.length === 0) return "";
 
@@ -84,7 +85,7 @@ function serializeSheet(sheet: ParsedSheet, maxRows = 30): string {
   };
 
   const lines: string[] = [headers.map(escape).join(",")];
-  const rows = sheet.rows.slice(0, maxRows);
+  const rows = sheet.rows.slice(offset, offset + maxRows);
   for (const row of rows) {
     const cells = headers.map((h) => escape(row[h]));
     lines.push(cells.join(","));
@@ -92,15 +93,38 @@ function serializeSheet(sheet: ParsedSheet, maxRows = 30): string {
   return lines.join("\n");
 }
 
-/** Serialize all sheets for LLM; documents may contain data on different spreadsheets. Primary sheet first so LLM column indices match the sheet we use for processing. */
+/** Max number of chunks to send to the LLM for table shaping (avoids runaway calls). */
+const MAX_TABLE_SHAPE_CHUNKS = 15;
+
+/** Build serialized chunks of the primary sheet for chunked table-shape extraction. Each chunk has header + up to chunkSize rows. */
+function getTableShapeChunks(
+  parsedData: ParsedFileData,
+  chunkSize: number,
+): string[] {
+  const sheet = parsedData.primarySheet;
+  if (!sheet || sheet.headers.length === 0 || !sheet.rows.length) return [];
+
+  const totalRows = sheet.rows.length;
+  const chunks: string[] = [];
+  for (let offset = 0; offset < totalRows && chunks.length < MAX_TABLE_SHAPE_CHUNKS; offset += chunkSize) {
+    const content = serializeSheet(sheet, chunkSize, offset);
+    if (content.split("\n").length > 1) chunks.push(content); // header + at least one row
+  }
+  return chunks;
+}
+
+/** Serialize all sheets for LLM (column detection only). Limit applies per sheet; when we later shape the table (non-eCRF path), we use chunked extraction via getTableShapeChunks. */
 function serializeSheetsForInterpretation(
   parsedData: ParsedFileData,
   maxRowsPerSheet = 25,
+  /** When true (e.g. CIRIS eCRF_3), send more rows for column detection. */
+  isCIRIS = false,
 ): string {
+  const limit = isCIRIS ? 200 : maxRowsPerSheet;
   const parts: string[] = [];
   const seen = new Set<ParsedSheet>();
   if (parsedData.primarySheet) {
-    const content = serializeSheet(parsedData.primarySheet, maxRowsPerSheet);
+    const content = serializeSheet(parsedData.primarySheet, limit);
     if (content) {
       parts.push(`Sheet: ${parsedData.primarySheet.name}\n${content}`);
       seen.add(parsedData.primarySheet);
@@ -108,7 +132,7 @@ function serializeSheetsForInterpretation(
   }
   for (const sheet of parsedData.sheets) {
     if (seen.has(sheet)) continue;
-    const content = serializeSheet(sheet, maxRowsPerSheet);
+    const content = serializeSheet(sheet, limit);
     if (!content) continue;
     parts.push(`Sheet: ${sheet.name}\n${content}`);
   }
@@ -123,6 +147,8 @@ type InterpretBackgroundPayload = {
   targetYear: number | undefined;
   targetCity: string | undefined;
   keyValueFormat: boolean;
+  /** When true, use CIRIS prompt and full ECRF-like schema; extract all rows. */
+  isCIRIS: boolean;
   parsedData: ParsedFileData;
 };
 
@@ -137,6 +163,7 @@ async function runInterpretationInBackground(
     targetYear,
     targetCity,
     keyValueFormat,
+    isCIRIS,
     parsedData,
   } = payload;
 
@@ -221,12 +248,25 @@ async function runInterpretationInBackground(
     }
 
     if (!detectedColumnsMatchECRFStructure(detectedColumns)) {
-      let shapedRows: Awaited<ReturnType<typeof shapeTableToRows>>;
+      const chunkSize = isCIRIS ? 200 : 100;
+      const chunks = getTableShapeChunks(parsedData, chunkSize);
+      const shapeOptions = { targetYear, targetCity };
+
+      let shapedRows: Awaited<ReturnType<typeof shapeTableToRows>> = [];
       try {
-        shapedRows = await shapeTableToRows(documentContent, {
-          targetYear,
-          targetCity,
-        });
+        if (chunks.length > 0) {
+          for (let i = 0; i < chunks.length; i++) {
+            const chunkContent = chunks[i];
+            const rows = isCIRIS
+              ? await shapeTableToRowsForCIRIS(chunkContent, shapeOptions)
+              : await shapeTableToRows(chunkContent, shapeOptions);
+            shapedRows.push(...rows);
+          }
+          logger.debug(
+            { importedFileId, chunkCount: chunks.length, totalShapedRows: shapedRows.length },
+            "Table shape chunks merged",
+          );
+        }
       } catch (err) {
         if (err instanceof LLMError) {
           const msg =
@@ -239,10 +279,21 @@ async function runInterpretationInBackground(
         await setFailed(err instanceof Error ? err.message : "Unknown error");
         return;
       }
+      if (!shapedRows.length && !keyValueFormat) {
+        try {
+          const keyValueRows = await shapeKeyValueToRows(documentContent, {
+            targetYear,
+            targetCity,
+          });
+          if (keyValueRows.length > 0) {
+            shapedRows = keyValueRows;
+          }
+        } catch (fallbackErr) {
+          logger.debug({ err: fallbackErr, importedFileId }, "Key-value fallback after empty table shape");
+        }
+      }
       if (!shapedRows.length) {
-        await setFailed(
-          "AI could not extract inventory rows from this table. Check that the file has recognizable sector/scope and emissions columns.",
-        );
+        await setFailed("i18n:ai-extract-no-rows");
         return;
       }
       const validationResults = importedFile.validationResults ?? {};
@@ -445,7 +496,10 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     throw new createHttpError.BadRequest("File has no recognizable header row");
   }
 
-  const documentContent = serializeSheetsForInterpretation(parsedData);
+  const validationResults = (importedFile.validationResults ?? {}) as { isCIRIS?: boolean };
+  const isCIRIS = validationResults.isCIRIS === true;
+
+  const documentContent = serializeSheetsForInterpretation(parsedData, 100, isCIRIS);
 
   const targetYear =
     inventory.year != null && Number.isInteger(Number(inventory.year))
@@ -467,6 +521,7 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     targetYear,
     targetCity,
     keyValueFormat,
+    isCIRIS,
     parsedData,
   }).catch((err) =>
     logger.error({ err, importedFileId }, "Interpret background failed"),

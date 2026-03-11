@@ -1802,7 +1802,7 @@ export const api = createApi({
 
       // Inventory Import Endpoints
       uploadInventoryFile: builder.mutation<
-        ImportedFileResponse,
+        ImportedFileResponse | { accepted: true; id: string; message?: string },
         { cityId: string; inventoryId: string; file: File }
       >({
         query: ({ cityId, inventoryId, file }) => {
@@ -1814,8 +1814,9 @@ export const api = createApi({
             body: formData,
           };
         },
-        transformResponse: (response: { data: ImportedFileResponse }) =>
-          response.data,
+        transformResponse: (response: {
+          data: ImportedFileResponse | { accepted: true; id: string; message?: string };
+        }) => response.data,
         invalidatesTags: ["Inventory"],
       }),
       getImportStatus: builder.query<
@@ -1868,7 +1869,7 @@ export const api = createApi({
         invalidatesTags: ["Inventory"],
       }),
       approveImport: builder.mutation<
-        ImportedFileResponse,
+        ImportedFileResponse | { accepted: true; id: string; message?: string },
         {
           cityId: string;
           inventoryId: string;
@@ -1884,8 +1885,11 @@ export const api = createApi({
             mappingOverrides,
           },
         }),
-        transformResponse: (response: { data: ImportedFileResponse }) =>
-          response.data,
+        transformResponse: (response: {
+          data:
+            | ImportedFileResponse
+            | { accepted: true; id: string; message?: string };
+        }) => response.data,
         invalidatesTags: [
           "Inventory",
           "InventoryProgress",

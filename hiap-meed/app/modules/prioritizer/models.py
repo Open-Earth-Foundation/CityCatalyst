@@ -1,93 +1,281 @@
 """
-Pydantic models for the MEED prioritizer.
-
-This module intentionally keeps the domain surface small for the initial phase:
-- `CityData` from city identity + city context inputs
-- `Action` from action catalog + impact rows
+Pydantic models for external API payloads and top-level endpoint contracts.
 """
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class CityData(BaseModel):
-    """
-    City identity and socio-economic context.
+# ============================================================================
+# FRONTEND REQUEST ENVELOPE MODELS (CityCatalyst -> hiap-meed)
+# ----------------------------------------------------------------------------
+# Composition:
+# - PrioritizerApiRequest
+#   - meta: FrontendRequestMeta
+#     - apiContext: FrontendApiContext
+#   - requestData: PrioritizerRequestData
+#     - cityDataList: list[FrontendCityInput]
+#       - cityEmissionsData: FrontendCityEmissionsData
+#         - gpcData: dict[str, GpcDataEntry]
+#           - activities: list[GpcActivity]
+# ============================================================================
 
-    Inputs:
-    - City identity fields from the upstream city endpoint.
-    - `city_context` row-like records aligned with `city_context.csv` fields.
-    """
+
+class FrontendApiContext(BaseModel):
+    """Frontend request API context metadata."""
+
+    endpoint: str
+    locodes: list[str] = Field(default_factory=list)
+
+
+class FrontendRequestMeta(BaseModel):
+    """Metadata envelope for prioritizer requests sent by CityCatalyst."""
+
+    requestId: str
+    generatedAtUtc: str
+    backendConsumer: str
+    upstreamProvider: str
+    apiContext: FrontendApiContext
+    totalRecords: int
+
+
+class GpcActivity(BaseModel):
+    """Single activity record for one GPC key."""
+
+    activityName: str
+    totalEmissions: float | None = None
+    totalEmissionsUnit: str | None = None
+    activityValue: float | None = None
+    activityUnit: str | None = None
+    dataSource: str | None = None
+    notationKey: str | None = None
+
+
+class GpcDataEntry(BaseModel):
+    """One GPC reference key payload containing optional activities."""
+
+    notationKey: str | None = None
+    activities: list[GpcActivity] = Field(default_factory=list)
+
+
+class FrontendCityEmissionsData(BaseModel):
+    """City emissions payload provided by frontend request."""
+
+    inventoryYear: int | None = None
+    gpcData: dict[str, GpcDataEntry] = Field(default_factory=dict)
+
+
+class FrontendCityInput(BaseModel):
+    """Single city payload within frontend prioritizer request."""
+
+    locode: str = Field(min_length=1)
+    countryCode: str = Field(min_length=2, max_length=2)
+    populationSize: int | None = None
+    excludedActionsFreeText: str | None = None
+    cityStrategicPreferenceSectors: list[str] = Field(default_factory=list)
+    cityStrategicPreferenceOther: str | None = None
+    cityEmissionsData: FrontendCityEmissionsData
+
+
+class PrioritizerRequestData(BaseModel):
+    """RequestData section of frontend prioritizer request payload."""
+
+    requestedLanguages: list[str] = Field(default_factory=lambda: ["en"])
+    cityDataList: list[FrontendCityInput] = Field(min_length=1)
+
+
+class PrioritizerApiRequest(BaseModel):
+    """Frontend -> hiap-meed request envelope for single or multi-city prioritization."""
+
+    meta: FrontendRequestMeta
+    requestData: PrioritizerRequestData
+
+
+# ============================================================================
+# UPSTREAM RESPONSE MODELS (global-api -> hiap-meed)
+# ----------------------------------------------------------------------------
+# Composition:
+# - CityApiResponse
+#   - meta: UpstreamMeta
+#     - api_context: UpstreamApiContext
+#   - city: CityApiItem
+# - CitiesApiResponse
+#   - meta: UpstreamMeta
+#   - cities: list[CityApiItem]
+# - ActionsApiResponse
+#   - meta: UpstreamMeta
+#   - actions: list[ActionApiItem]
+# - ActionsPolicySignalsApiResponse
+#   - meta: UpstreamMeta
+#   - policy_signals: list[PolicySignalByAction]
+#     - policy_signals: list[PolicySignal]
+# - ActionsLegalApiResponse
+#   - meta: ActionsLegalApiMeta (extends UpstreamMeta)
+#   - legal_requirements: list[LegalRequirementsByAction]
+#     - requirements: list[LegalRequirement]
+# ============================================================================
+
+
+class UpstreamApiContext(BaseModel):
+    """Common API context metadata returned by upstream APIs."""
+
+    endpoint: str
+    locode: str | None = None
+
+
+class UpstreamMeta(BaseModel):
+    """Common metadata envelope returned by upstream APIs."""
+
+    generated_at_utc: str
+    backend_consumer: str
+    upstream_provider: str
+    api_context: UpstreamApiContext
+    total_records: int
+
+
+class CityIndicator(BaseModel):
+    """Single city indicator object used in city API payload."""
+
+    attribute_value: float | str | None = None
+    attribute_units: str | None = None
+    attribute_category: str | None = None
+
+
+class CityApiItem(BaseModel):
+    """City item shape returned by upstream `GET /v1/cities/{locode}`."""
 
     comuna_name: str
-    locode: str = Field(min_length=1)
+    locode: str
+    countryCode: str | None = None
     region_name: str
     comuna_code: str
     region_code: str
-    comuna: str | None = None
-    city_context: list[dict[str, Any]] = Field(default_factory=list)
-    as_of: datetime | None = None
-    source: str | None = None
-    raw: dict[str, Any] = Field(default_factory=dict)
+    populationSize: int | None = None
+    populationDensity: float | None = None
+    area: float | None = None
+    unemployment_rate: CityIndicator | None = None
+    renter_share: CityIndicator | None = None
+    transport_logistics_employment: CityIndicator | None = None
+    electricity_access: CityIndicator | None = None
+    industry_construction_employment: CityIndicator | None = None
+    median_household_income: CityIndicator | None = None
+    public_transport_share: CityIndicator | None = None
+    poverty_rate: CityIndicator | None = None
+    home_ownership: CityIndicator | None = None
 
 
-class Action(BaseModel):
-    """
-    Action catalog record with embedded impact rows.
+class ActionApiItem(BaseModel):
+    """Action item shape returned by upstream `GET /v1/actions`."""
 
-    Inputs:
-    - Action identity and attributes from the upstream actions endpoint.
-    - `impacts` row-like records aligned with `actions_mitigation_impact.csv`.
-    """
-
-    action_id: str = Field(min_length=1)
-    action_name: str
-    action_type: str | None = None
+    actionId: str
+    actionName: str
     description: str | None = None
-    action_category: str | None = None
-    action_subcategory: str | None = None
-    investment_cost: str | None = None
-    implementation_timeline: str | None = None
-    biome: str | None = None
-    impacts: list[dict[str, Any]] = Field(default_factory=list)
-    as_of: datetime | None = None
-    source: str | None = None
-    raw: dict[str, Any] = Field(default_factory=dict)
+    actionCategory: str | None = None
+    actionSubcategory: str | None = None
+    costInvestmentNeeded: str | None = None
+    timelineForImplementation: str | None = None
+    mitigationImpact: dict[str, dict[str, Any]] = Field(default_factory=dict)
 
 
-class BlockScoreResult(BaseModel):
-    """Per-block action scores and optional explainability metadata."""
+class CityApiResponse(BaseModel):
+    """Response model for `GET /v1/cities/{locode}`."""
 
-    score_by_action_id: dict[str, float] = Field(default_factory=dict)
-    evidence_by_action_id: dict[str, dict[str, object]] | None = None
-
-
-class HardFilterResult(BaseModel):
-    """Result of hard filtering before scoring blocks run."""
-
-    valid_actions: list[Action] = Field(default_factory=list)
-    discarded_excluded: list[Action] = Field(default_factory=list)
-    evidence: dict[str, dict[str, object]] = Field(default_factory=dict)
+    meta: UpstreamMeta
+    city: CityApiItem
 
 
-class ScoredAction(BaseModel):
-    """Action scores after weighted aggregation and ranking."""
+class CitiesApiResponse(BaseModel):
+    """Response model for city list endpoints."""
 
-    action: Action
-    impact_score: float
-    alignment_score: float
-    feasibility_score: float
-    final_score: float
-    rank: int
-    evidence: dict[str, object] = Field(default_factory=dict)
+    meta: UpstreamMeta
+    cities: list[CityApiItem] = Field(default_factory=list)
+
+
+class ActionsApiResponse(BaseModel):
+    """Response model for `GET /v1/actions`."""
+
+    meta: UpstreamMeta
+    actions: list[ActionApiItem] = Field(default_factory=list)
+
+
+class PolicySignal(BaseModel):
+    """Single policy signal evidence item for one action."""
+
+    location_scope: str
+    location_name: str
+    signal_type: str
+    signal_relation: str
+    signal_strength: str
+    evidence_ids: list[str] = Field(default_factory=list)
+    evidence_count: int = 0
+
+
+class PolicySignalByAction(BaseModel):
+    """Policy signal collection grouped by action ID."""
+
+    action_id: str
+    policy_signals: list[PolicySignal] = Field(default_factory=list)
+    policy_support_score: float | None = None
+
+
+class ActionsPolicySignalsApiResponse(BaseModel):
+    """Response model for city-scoped policy alignment endpoint."""
+
+    meta: UpstreamMeta
+    policy_signals: list[PolicySignalByAction] = Field(default_factory=list)
+
+
+class LegalRequirement(BaseModel):
+    """Single legal requirement alignment check for one action."""
+
+    signal_code: str
+    signal_name: str
+    operator: str
+    required_value: str | None = None
+    legal_signal_value: str | None = None
+    strength: str
+    alignment_status: str
+    location_scope: str | None = None
+    location_name: str | None = None
+    evidence_ids: list[str] = Field(default_factory=list)
+    evidence_count: int = 0
+
+
+class LegalRequirementsByAction(BaseModel):
+    """Legal requirements grouped by action ID."""
+
+    action_id: str
+    requirements: list[LegalRequirement] = Field(default_factory=list)
+
+
+class ActionsLegalApiMeta(UpstreamMeta):
+    """Metadata for actions/legal response including test descriptors."""
+
+    test_cases: dict[str, str] = Field(default_factory=dict)
+    strength_scale: list[str] = Field(default_factory=list)
+
+
+class ActionsLegalApiResponse(BaseModel):
+    """Response model for city-scoped legal alignment endpoint."""
+
+    meta: ActionsLegalApiMeta
+    legal_requirements: list[LegalRequirementsByAction] = Field(default_factory=list)
+
+
+# ============================================================================
+# TOP-LEVEL PRIORITIZATION ENDPOINT CONTRACTS
+# ----------------------------------------------------------------------------
+# Composition:
+# - PrioritizationRequest: input contract for `POST /v1/prioritize`
+# - PrioritizationResponse: output contract for `POST /v1/prioritize`
+# ============================================================================
 
 
 class PrioritizationRequest(BaseModel):
-    """Request payload for the prioritization endpoint."""
+    """Current top-level request payload for `/v1/prioritize`."""
 
     locode: str = Field(min_length=1)
     excluded_action_ids: list[str] = Field(default_factory=list)
@@ -96,18 +284,9 @@ class PrioritizationRequest(BaseModel):
 
 
 class PrioritizationResponse(BaseModel):
-    """Response payload with ordered action IDs and execution metadata."""
+    """Current top-level response payload for `/v1/prioritize`."""
 
     ranked_action_ids: list[str] = Field(default_factory=list)
     metadata: dict[str, object] = Field(default_factory=dict)
 
 
-__all__ = [
-    "Action",
-    "BlockScoreResult",
-    "CityData",
-    "HardFilterResult",
-    "PrioritizationRequest",
-    "PrioritizationResponse",
-    "ScoredAction",
-]

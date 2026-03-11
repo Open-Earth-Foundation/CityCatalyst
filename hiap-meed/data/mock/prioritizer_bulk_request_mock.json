@@ -6,8 +6,7 @@
     "upstreamProvider": "city_catalyst_frontend",
     "apiContext": {
       "endpoint": "POST /prioritizer/v1/start_prioritization_bulk",
-      "locodes": ["CL IQQ", "CL ARI"],
-      "emissionsStructure": "gpc_reference_number_keyed"
+      "locodes": ["CL IQQ", "CL ARI"]
     },
     "totalRecords": 2
   },

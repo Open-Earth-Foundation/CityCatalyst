@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from app.modules.prioritizer.models import Action, CityData
+from app.modules.prioritizer.internal_models import Action, CityData
 
 
 class CityDataApiClient:
@@ -69,13 +69,3 @@ def get_city_data_api_client() -> CityDataApiClient:
 def get_action_data_api_client() -> ActionDataApiClient:
     """FastAPI dependency provider for action data client."""
     return _default_action_client
-
-
-__all__ = [
-    "ActionDataApiClient",
-    "CityDataApiClient",
-    "StubActionDataApiClient",
-    "StubCityDataApiClient",
-    "get_action_data_api_client",
-    "get_city_data_api_client",
-]

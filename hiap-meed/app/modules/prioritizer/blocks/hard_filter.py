@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from app.modules.prioritizer.models import Action, HardFilterResult
+from app.modules.prioritizer.internal_models import Action, HardFilterResult
 
 
 def run(actions: list[Action], excluded_action_ids: set[str]) -> HardFilterResult:
@@ -34,6 +34,3 @@ def run(actions: list[Action], excluded_action_ids: set[str]) -> HardFilterResul
         discarded_excluded=discarded_excluded,
         evidence=evidence,
     )
-
-
-__all__ = ["run"]

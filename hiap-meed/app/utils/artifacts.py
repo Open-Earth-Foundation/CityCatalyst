@@ -47,6 +47,3 @@ class ArtifactWriter:
                 handle.write("\n")
         except Exception:
             logger.exception("Failed to write artifact event `%s`", event_type)
-
-
-__all__ = ["ArtifactWriter"]

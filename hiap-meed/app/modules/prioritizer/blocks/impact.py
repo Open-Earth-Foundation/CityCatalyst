@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from app.modules.prioritizer.models import Action, BlockScoreResult
+from app.modules.prioritizer.internal_models import Action, BlockScoreResult
 
 
 def _read_gpc_refs(impact_row: dict[str, object]) -> list[str]:
@@ -52,6 +52,3 @@ def run(actions: list[Action]) -> BlockScoreResult:
         score_by_action_id=score_by_action_id,
         evidence_by_action_id=evidence_by_action_id,
     )
-
-
-__all__ = ["run"]

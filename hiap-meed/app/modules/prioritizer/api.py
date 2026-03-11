@@ -49,7 +49,9 @@ def prioritize(
             action_data_api_client=action_data_api_client,
         )
     except ValueError as error:
-        logger.warning("Invalid prioritization request request_id=%s error=%s", request_id, error)
+        logger.warning(
+            "Invalid prioritization request request_id=%s error=%s", request_id, error
+        )
         raise HTTPException(
             status_code=422,
             detail=_error_payload(request_id, str(error)),
@@ -60,6 +62,3 @@ def prioritize(
             status_code=500,
             detail=_error_payload(request_id, "Internal server error"),
         ) from error
-
-
-__all__ = ["router", "get_action_data_api_client", "get_city_data_api_client"]

@@ -65,6 +65,23 @@ Verify the service:
 - OpenAPI docs: `http://localhost:8000/docs`
 - Prioritization endpoint: `POST /v1/prioritize`
 
+### External API contracts (modeled, integration pending)
+
+The repository now includes explicit Pydantic contracts for upcoming request and
+upstream response integrations in `app/modules/prioritizer/models.py`.
+
+Key models:
+- Frontend request envelope: `PrioritizerApiRequest`
+- Frontend city input row: `FrontendCityInput`
+- Global city API response: `CityApiResponse`
+- Global actions API response: `ActionsApiResponse`
+- Global legal alignment API response: `ActionsLegalApiResponse`
+- Global policy alignment API response: `ActionsPolicySignalsApiResponse`
+
+Design note:
+- For the upcoming frontend contract, single-city and multi-city payloads both
+  use `cityDataList`; single-city is represented as a list with one item.
+
 ### 4. Call the prioritization endpoint
 
 Run commands from a Bash shell (Git Bash, WSL, Linux, macOS).

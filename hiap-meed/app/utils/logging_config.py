@@ -21,7 +21,3 @@ def setup_logger() -> None:
         handlers=[stream_handler, file_handler],
         force=True,
     )
-
-
-__all__ = ["setup_logger"]
-

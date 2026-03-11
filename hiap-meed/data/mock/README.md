@@ -3,6 +3,11 @@
 This is a mock request for the prioritizer API.
 It simulates a request from CityCatalyst frontend containing information provided by the city user via the frontend.
 
+This payload shape is modeled by:
+- `PrioritizerApiRequest` (envelope)
+- `PrioritizerRequestData` (`requestData`)
+- `FrontendCityInput` (`cityDataList[]`)
+
 This includes:
 
 - locode (city identifier for the prioritization request)
@@ -12,11 +17,24 @@ This includes:
 - city strategic preference sector (list of sectors to prioritize)
 - city emissions data (emissions data for the city from CityCatalyst)
 
+Single-city and multi-city requests use the same structure (`cityDataList`).
+A single-city request is represented by exactly one item in `cityDataList`.
+
+# prioritizer_bulk_request_mock.json:
+
+This is the multi-city variant of the same frontend request contract. It uses
+the same envelope and schema as `prioritizer_request_mock.json` but includes
+more than one item in `cityDataList`.
+
 # city_api_mock.json:
 
 This is a mock response from the city context data API.
 It simulates a response from the city context data API containing information about the city.
 The upstream provider is the global-api.
+
+This payload shape is modeled by:
+- `CityApiResponse` (envelope)
+- `CityData` (`city`)
 
 It is being used to fetch basic city context data and also more specific city context data like unemployment rate, renter share, transport logistics employment, electricity access, industry construction employment, median household income, public transport share, poverty rate and home ownership.
 
@@ -30,6 +48,10 @@ The upstream provider is the global-api.
 
 It is being used to fetch the list of actions and their associated mitigation and impact data.
 
+This payload shape is modeled by:
+- `ActionsApiResponse` (envelope)
+- `Action` (`actions[]`)
+
 # city_policy_signals_api_mock.json:
 
 Mock for GET /v1/cities/{locode}/policy-signals.
@@ -41,6 +63,11 @@ It includes:
 - each signal: location_scope, location_name, signal_type, signal_relation, signal_strength, evidence_ids, evidence_count
 - policy_support_score: 0–1 score per action (relation × strength × scope multiplier, normalized)
 - meta.locode, meta.comuna_name, meta.region_name
+
+This payload shape is modeled by:
+- `ActionsPolicySignalsApiResponse` (envelope)
+- `PolicySignalByAction` (`policy_signals[]`)
+- `PolicySignal` (nested signal rows)
 
 # policy_framework_api_mock.json:
 
@@ -74,6 +101,11 @@ It includes:
 - legal_requirements: array of { action_id, requirements: [...] }
 - each requirement: signal_code, signal_name, required_value, legal_signal_value, strength, alignment_status, location_scope, location_name, evidence_ids, evidence_count
 - meta.locode: null for now; can filter by city when city-scoped legal data exists
+
+This payload shape is modeled by:
+- `ActionsLegalApiResponse` (envelope)
+- `LegalRequirementsByAction` (`legal_requirements[]`)
+- `LegalRequirement` (nested requirement rows)
 
 # actions_legal_api_mock_test_cases.json:
 

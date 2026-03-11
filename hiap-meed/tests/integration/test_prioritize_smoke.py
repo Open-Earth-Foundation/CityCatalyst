@@ -12,7 +12,7 @@ from app.modules.prioritizer.api import (
     get_action_data_api_client,
     get_city_data_api_client,
 )
-from app.modules.prioritizer.models import Action, CityData
+from app.modules.prioritizer.internal_models import Action, CityData
 from app.services.data_clients import ActionDataApiClient, CityDataApiClient
 
 

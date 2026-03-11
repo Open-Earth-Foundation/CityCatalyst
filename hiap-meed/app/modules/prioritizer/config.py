@@ -57,6 +57,3 @@ def validate_weights(weights: Mapping[str, float] | None) -> dict[str, float]:
         raise ValueError(f"Weight sum must be 1.0, got {total}")
 
     return resolved
-
-
-__all__ = ["DEFAULT_WEIGHTS", "validate_weights"]

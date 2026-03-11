@@ -228,9 +228,6 @@ def setup_logger() -> None:
         datefmt="%Y-%m-%d %H:%M:%S",
         force=True,
     )
-
-
-__all__ = ["setup_logger"]
 ```
 
 - Log key steps and important parameters, do not log secrets.
@@ -259,6 +256,7 @@ __all__ = ["setup_logger"]
 
 - Strictly use **absolute imports**, for example `from app.utils.foo import bar`. Do not use relative imports.
 - Always run scripts as modules using `python -m ...` from the project root.
+- Do not define module-level `__all__` export lists. With absolute imports, explicit symbol imports at the call site are clearer and avoid hidden export contracts.
 - **Never use wildcard imports** (`from module import *`). Always explicitly name the functions, classes, or objects you are importing.
   - Bad: `from app.utils.helpers import *`
   - Good: `from app.utils.helpers import parse_config, validate_input`
@@ -330,6 +328,7 @@ When making changes:
 ## Quick checklist for contributions
 
 - [ ] `__init__.py` present in all code folders (empty or docstring-only — no imports or re-exports)
+- [ ] No module-level `__all__` export lists
 - [ ] No duplication (helpers in utils where appropriate)
 - [ ] Clear separation of concerns (services vs utils vs scripts)
 - [ ] Runnable scripts: docstring, argparse, `__main__`

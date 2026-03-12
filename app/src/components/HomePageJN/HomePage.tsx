@@ -253,7 +253,7 @@ export default function HomePage({
                         <BodyLarge color="content.primary">
                           {t("journey." + stage + "-description")}
                         </BodyLarge>
-                        <HStack mt={12} gap={6} align="start">
+                        <HStack mt={12} gap={6} align="stretch" flexWrap="wrap">
                           {modules && modules.length > 0 ? (
                             modules.map((mod) => (
                               <ModuleCard

@@ -15,6 +15,8 @@
   "ai-extraction-failed-default": "Extraction par IA échouée",
   "ai-extract-no-rows": "L'IA n'a pas pu extraire de lignes d'inventaire de cette table. Le fichier utilise peut-être des noms de colonnes non reconnus. Utilisez un fichier avec des colonnes comme Secteur, Sous-secteur, Périmètre et émissions (ex. CO2e total), ou exportez depuis votre source au format eCRF/CIRIS standard.",
   "inventory-not-found-for-target-year": "Inventaire introuvable pour l'année cible",
+  "file-year-mismatch-title": "L'année du fichier ne correspond pas à l'inventaire",
+  "file-year-mismatch": "L'année des données du fichier ne correspond pas à l'année cible de l'inventaire. Veuillez télécharger un fichier avec des données pour {{year}}.",
   "extracting-chunk-progress": "Extraction en cours... (partie {{current}} sur {{total}})",
   "breaking-into-chunks": "Découpage du fichier en parties plus petites pour une extraction plus simple",
   "interpreting-file": "Interprétation de votre fichier",

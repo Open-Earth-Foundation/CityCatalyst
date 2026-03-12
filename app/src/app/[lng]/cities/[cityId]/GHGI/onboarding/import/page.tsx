@@ -189,6 +189,7 @@ export default function ImportPage(props: {
 
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [importedFileId, setImportedFileId] = useState<string | null>(null);
+  const [lastImportStatus, setLastImportStatus] = useState<ImportStatusResponse | null>(null);
   const [pdfPendingExtraction, setPdfPendingExtraction] = useState(false);
   const [tabularPendingInterpretation, setTabularPendingInterpretation] =
     useState(false);
@@ -207,6 +208,7 @@ export default function ImportPage(props: {
   const uploadPendingIdRef = useRef<string | null>(null);
   const pathname = usePathname();
   const prevPathnameRef = useRef<string | null>(null);
+  const fileYearMismatchToastShownRef = useRef(false);
 
   // Check if there's unsaved progress
   const hasUnsavedProgress = uploadedFile !== null || importedFileId !== null;
@@ -228,6 +230,37 @@ export default function ImportPage(props: {
   const [interpretImport, { isLoading: isInterpreting }] =
     api.useInterpretImportMutation();
   const [getImportStatus] = api.useLazyGetImportStatusQuery();
+  const { data: inventory } = api.useGetInventoryQuery(inventoryId ?? "", {
+    skip: !inventoryId,
+  });
+
+  // Keep last import status for year-mismatch check; load when we have an import
+  useEffect(() => {
+    if (!importedFileId || !inventoryId || !cityId) return;
+    fileYearMismatchToastShownRef.current = false;
+    getImportStatus({ cityId, inventoryId, importedFileId })
+      .unwrap()
+      .then(setLastImportStatus)
+      .catch(() => {});
+  }, [importedFileId, inventoryId, cityId, getImportStatus]);
+
+  const inventoryYear =
+    inventory?.year != null && Number.isFinite(Number(inventory.year))
+      ? Number(inventory.year)
+      : null;
+  const fileYear =
+    lastImportStatus?.inferredYearFromFile != null &&
+    Number.isFinite(Number(lastImportStatus.inferredYearFromFile))
+      ? Number(lastImportStatus.inferredYearFromFile)
+      : null;
+  const fileYearMismatch =
+    inventoryYear != null && fileYear != null && inventoryYear !== fileYear;
+
+  useEffect(() => {
+    if (!fileYearMismatch || fileYearMismatchToastShownRef.current) return;
+    fileYearMismatchToastShownRef.current = true;
+    makeErrorToast(t("file-year-mismatch-title"), t("file-year-mismatch", { year: inventoryYear }));
+  }, [fileYearMismatch, inventoryYear, t]);
 
   const {
     startPolling: startUploadPolling,
@@ -251,6 +284,7 @@ export default function ImportPage(props: {
       return { done: false };
     },
     onSuccess: (res) => {
+      setLastImportStatus(res);
       const file = uploadPendingFileRef.current;
       if (file) setUploadedFile(file);
       setImportedFileId(res.id);
@@ -291,7 +325,8 @@ export default function ImportPage(props: {
       if (res.importStatus === "failed") return { done: true, success: false, data: res };
       return { done: false };
     },
-    onSuccess: () => {
+    onSuccess: (res) => {
+      setLastImportStatus(res);
       setIsExtractInProgress(false);
       setExtractionProgress(null);
       setPdfPendingExtraction(false);
@@ -332,7 +367,8 @@ export default function ImportPage(props: {
       if (res.importStatus === "failed") return { done: true, success: false, data: res };
       return { done: false };
     },
-    onSuccess: () => {
+    onSuccess: (res) => {
+      setLastImportStatus(res);
       setIsInterpretInProgress(false);
       setTabularPendingInterpretation(false);
       setTimeout(() => goToNextStep(), 150);
@@ -412,9 +448,11 @@ export default function ImportPage(props: {
     setIsInterpretInProgress(false);
     setUploadedFile(null);
     setImportedFileId(null);
+    setLastImportStatus(null);
     setPdfPendingExtraction(false);
     setTabularPendingInterpretation(false);
     setStep(0);
+    fileYearMismatchToastShownRef.current = false;
   };
 
   const handleExtractWithAi = async () => {
@@ -812,6 +850,7 @@ export default function ImportPage(props: {
                   px="24px"
                   onClick={handleContinue}
                   h="64px"
+                  disabled={fileYearMismatch}
                 >
                   <Text
                     fontFamily="button.md"

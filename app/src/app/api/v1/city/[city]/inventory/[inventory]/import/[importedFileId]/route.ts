@@ -546,6 +546,8 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
     }
   }
 
+  const legacyValidation = importedFile.validationResults as { inferredYearFromFile?: number } | null;
+
   // Return response structured by step
   return NextResponse.json({
     data: {
@@ -565,6 +567,8 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
       columnMappings: columnMappingStepData,
       // Step 4: Review and Confirm
       reviewData: reviewStepData,
+      // Year inferred from file data (eCRF); used for target-year mismatch check
+      inferredYearFromFile: legacyValidation?.inferredYearFromFile ?? undefined,
       // Legacy fields (for backwards compatibility)
       rowCount: importedFile.rowCount,
       processedRowCount: importedFile.processedRowCount,

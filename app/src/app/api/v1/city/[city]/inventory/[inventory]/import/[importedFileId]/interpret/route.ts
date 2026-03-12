@@ -353,6 +353,7 @@ async function runInterpretationInBackground(
         errors: existingErrors,
         warnings: [...existingWarnings, ...importResult.warnings],
         detectedColumns,
+        inferredYearFromFile: importResult.inferredYearFromFile,
         processingResults: {
           rowCount: importResult.rowCount,
           validRowCount: importResult.validRowCount,

@@ -75,6 +75,7 @@ class FrontendCityInput(BaseModel):
     countryCode: str = Field(min_length=2, max_length=2)
     populationSize: int | None = None
     excludedActionsFreeText: str | None = None
+    weightsOverride: dict[str, float] | None = None
     cityStrategicPreferenceSectors: list[str] = Field(default_factory=list)
     cityStrategicPreferenceOther: str | None = None
     cityEmissionsData: FrontendCityEmissionsData
@@ -265,28 +266,24 @@ class ActionsLegalApiResponse(BaseModel):
     legal_requirements: list[LegalRequirementsByAction] = Field(default_factory=list)
 
 
-# ============================================================================
-# TOP-LEVEL PRIORITIZATION ENDPOINT CONTRACTS
-# ----------------------------------------------------------------------------
-# Composition:
-# - PrioritizationRequest: input contract for `POST /v1/prioritize`
-# - PrioritizationResponse: output contract for `POST /v1/prioritize`
-# ============================================================================
-
-
-class PrioritizationRequest(BaseModel):
-    """Current top-level request payload for `/v1/prioritize`."""
-
-    locode: str = Field(min_length=1)
-    excluded_action_ids: list[str] = Field(default_factory=list)
-    weights_override: dict[str, float] | None = None
-    top_n: int | None = Field(default=None, ge=1)
-
-
 class PrioritizationResponse(BaseModel):
-    """Current top-level response payload for `/v1/prioritize`."""
+    """Per-city prioritization output used by the API response."""
 
     ranked_action_ids: list[str] = Field(default_factory=list)
     metadata: dict[str, object] = Field(default_factory=dict)
+
+
+class PrioritizerApiCityResult(BaseModel):
+    """One city result entry returned by the prioritization endpoint."""
+
+    locode: str = Field(min_length=1)
+    ranked_action_ids: list[str] = Field(default_factory=list)
+    metadata: dict[str, object] = Field(default_factory=dict)
+
+
+class PrioritizerApiResponse(BaseModel):
+    """Top-level response for the frontend prioritization request envelope."""
+
+    results: list[PrioritizerApiCityResult] = Field(default_factory=list)
 
 

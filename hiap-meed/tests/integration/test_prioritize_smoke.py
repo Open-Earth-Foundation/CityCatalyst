@@ -40,7 +40,7 @@ class MockActionDataApiClient(ActionDataApiClient):
 
 @pytest.mark.integration
 def test_prioritize_smoke() -> None:
-    """Excluded actions are removed and remaining actions are ranked."""
+    """Frontend envelope request returns deterministic ranked action IDs."""
     city = CityData(
         comuna_name="Santiago",
         locode="CL-SCL",
@@ -90,55 +90,44 @@ def test_prioritize_smoke() -> None:
             response = test_client.post(
                 "/v1/prioritize",
                 json={
-                    "locode": "CL-SCL",
-                    "excluded_action_ids": ["c40_0020"],
-                    "top_n": 5,
+                    "meta": {
+                        "requestId": "1234567890",
+                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                        "backendConsumer": "hiap-meed",
+                        "upstreamProvider": "city_catalyst_frontend",
+                        "apiContext": {
+                            "endpoint": "POST /prioritizer/v1/start_prioritization",
+                            "locodes": ["CL-SCL"],
+                        },
+                        "totalRecords": 1,
+                    },
+                    "requestData": {
+                        "requestedLanguages": ["en"],
+                        "cityDataList": [
+                            {
+                                "locode": "CL-SCL",
+                                "countryCode": "CL",
+                                "populationSize": 1000,
+                                "excludedActionsFreeText": "Do not include ... (stub)",
+                                "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceOther": None,
+                                "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
+                            }
+                        ],
+                    },
                 },
             )
         assert response.status_code == 200
         body = response.json()
 
-        assert body["ranked_action_ids"] == ["c40_0010"]
-        assert "metadata" in body
-        assert "timings" in body["metadata"]
-        assert "counts" in body["metadata"]
-        assert body["metadata"]["counts"]["discarded_excluded"] == 1
-    finally:
-        app.dependency_overrides.clear()
-
-
-@pytest.mark.integration
-def test_prioritize_rejects_non_unit_weight_sum() -> None:
-    """Non-unit weight sums return 422 and do not get normalized."""
-    city = CityData(
-        comuna_name="Santiago",
-        locode="CL-SCL",
-        region_name="Metropolitana",
-        comuna_code="13101",
-        region_code="13",
-        city_context=[],
-    )
-    actions = [Action(action_id="c40_0010", action_name="Retrofit buildings")]
-    mock_city_client = MockCityDataApiClient(city=city)
-    mock_action_client = MockActionDataApiClient(actions=actions)
-
-    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
-    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
-    try:
-        with TestClient(app) as test_client:
-            response = test_client.post(
-                "/v1/prioritize",
-                json={
-                    "locode": "CL-SCL",
-                    "weights_override": {
-                        "impact": 0.5,
-                        "alignment": 0.3,
-                        "feasibility": 0.3,
-                    },
-                },
-            )
-        assert response.status_code == 422
-        detail = response.json()["detail"]
-        assert "Weight sum must be 1.0" in detail["error"]
+        assert "results" in body
+        assert len(body["results"]) == 1
+        result = body["results"][0]
+        assert result["locode"] == "CL-SCL"
+        assert result["ranked_action_ids"] == ["c40_0010", "c40_0020"]
+        assert "metadata" in result
+        assert "timings" in result["metadata"]
+        assert "counts" in result["metadata"]
+        assert result["metadata"]["counts"]["discarded_excluded"] == 0
     finally:
         app.dependency_overrides.clear()

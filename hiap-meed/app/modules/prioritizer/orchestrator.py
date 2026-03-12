@@ -13,7 +13,7 @@ from app.modules.prioritizer.blocks import (
     impact,
 )
 from app.modules.prioritizer.config import validate_weights
-from app.modules.prioritizer.models import PrioritizationRequest, PrioritizationResponse
+from app.modules.prioritizer.models import PrioritizationResponse
 from app.services.data_clients import ActionDataApiClient, CityDataApiClient
 from app.utils.artifacts import ArtifactWriter
 from app.utils.timing import time_block
@@ -35,8 +35,12 @@ def _safe_block_evidence(
 
 
 def run_prioritization(
-    request: PrioritizationRequest,
-    request_id: UUID,
+    *,
+    locode: str,
+    weights_override: dict[str, float] | None,
+    top_n: int | None,
+    excluded_actions_free_text: str | None,
+    internal_request_id: UUID,
     city_data_api_client: CityDataApiClient,
     action_data_api_client: ActionDataApiClient,
 ) -> PrioritizationResponse:
@@ -48,16 +52,17 @@ def run_prioritization(
     - Metadata with timings, counts, and resolved weights.
     """
 
-    artifact_writer = ArtifactWriter(request_id=request_id)
+    artifact_writer = ArtifactWriter(request_id=internal_request_id)
     timings: dict[str, float] = {}
 
     with time_block("fetch_city") as block:
-        city = city_data_api_client.get_city(request.locode)
+        city = city_data_api_client.get_city(locode)
+
     timings["fetch_city"] = block.elapsed_seconds
     artifact_writer.write_event(
         "fetch_city.completed",
         {
-            "locode": request.locode,
+            "locode": locode,
             "city_context_rows": len(city.city_context),
             "elapsed_seconds": block.elapsed_seconds,
         },
@@ -72,7 +77,7 @@ def run_prioritization(
     )
 
     with time_block("validate_weights") as block:
-        weights = validate_weights(request.weights_override)
+        weights = validate_weights(weights_override)
     timings["validate_weights"] = block.elapsed_seconds
     artifact_writer.write_event(
         "validate_weights.completed",
@@ -82,7 +87,7 @@ def run_prioritization(
     with time_block("hard_filter") as block:
         hard_filter_result = hard_filter.run(
             actions=actions,
-            excluded_action_ids=set(request.excluded_action_ids),
+            excluded_actions_free_text=excluded_actions_free_text,
         )
     timings["hard_filter"] = block.elapsed_seconds
     artifact_writer.write_event(
@@ -122,7 +127,7 @@ def run_prioritization(
             alignment_scores=alignment_result.score_by_action_id,
             feasibility_scores=feasibility_result.score_by_action_id,
             weights=weights,
-            top_n=request.top_n,
+            top_n=top_n,
         )
     timings["final_scoring"] = block.elapsed_seconds
 
@@ -130,8 +135,12 @@ def run_prioritization(
         action_id = scored_action.action.action_id
         scored_action.evidence = {
             "hard_filter": hard_filter_result.evidence.get(action_id, {}),
-            "impact": _safe_block_evidence(impact_result.evidence_by_action_id, action_id),
-            "alignment": _safe_block_evidence(alignment_result.evidence_by_action_id, action_id),
+            "impact": _safe_block_evidence(
+                impact_result.evidence_by_action_id, action_id
+            ),
+            "alignment": _safe_block_evidence(
+                alignment_result.evidence_by_action_id, action_id
+            ),
             "feasibility": _safe_block_evidence(
                 feasibility_result.evidence_by_action_id,
                 action_id,
@@ -141,8 +150,8 @@ def run_prioritization(
     ranked_action_ids = [item.action.action_id for item in scored_actions]
 
     metadata: dict[str, object] = {
-        "request_id": str(request_id),
-        "locode": request.locode,
+        "internal_request_id": str(internal_request_id),
+        "locode": locode,
         "weights": weights,
         "timings": timings,
         "counts": {
@@ -161,11 +170,11 @@ def run_prioritization(
     )
 
     logger.info(
-        "Prioritization complete request_id=%s locode=%s ranked_actions=%s",
-        request_id,
-        request.locode,
+        "Prioritization complete internal_request_id=%s locode=%s ranked_actions=%s",
+        internal_request_id,
+        locode,
         len(ranked_action_ids),
     )
-    return PrioritizationResponse(ranked_action_ids=ranked_action_ids, metadata=metadata)
-
-
+    return PrioritizationResponse(
+        ranked_action_ids=ranked_action_ids, metadata=metadata
+    )

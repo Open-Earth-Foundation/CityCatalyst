@@ -18,6 +18,11 @@
         "countryCode": "CL",
         "populationSize": 125000,
         "excludedActionsFreeText": "Do not include new fossil fuel-based infrastructure or actions that significantly increase household costs for vulnerable communities.",
+        "weightsOverride": {
+          "impact": 0.5,
+          "alignment": 0.3,
+          "feasibility": 0.2
+        },
         "cityStrategicPreferenceSectors": ["transportation"],
         "cityStrategicPreferenceOther": "Prioritize near-term air quality improvements, reliable and affordable mobility, and climate resilience benefits for low-income neighborhoods.",
         "cityEmissionsData": {

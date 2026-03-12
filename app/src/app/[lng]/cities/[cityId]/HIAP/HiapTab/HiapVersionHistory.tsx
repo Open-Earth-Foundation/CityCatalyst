@@ -29,22 +29,21 @@ export default function HiapVersionHistory({
       {inventoryId}
 
       {isLoading && <ProgressLoader />}
-      {data != null &&
-        (data?.length === 0 ? (
-          <Text>{t("no-history")}</Text>
-        ) : (
-          groupedVersions.map((entries, i) => (
-            <VersionEntry
-              key={i}
-              t={t}
-              tData={tData}
-              versionEntries={entries}
-              isCurrent={i === 0}
-              versionNumber={groupedVersions.length - i - 1}
-              moduleName="hiap"
-            />
-          ))
-        ))}
+      {data != null && data?.length === 0 ? (
+        <Text>{t("no-history")}</Text>
+      ) : (
+        groupedVersions.map((entries, i) => (
+          <VersionEntry
+            key={i}
+            t={t}
+            tData={tData}
+            versionEntries={entries}
+            isCurrent={i === 0}
+            versionNumber={groupedVersions.length - i - 1}
+            moduleName="hiap"
+          />
+        ))
+      )}
     </VStack>
   );
 }

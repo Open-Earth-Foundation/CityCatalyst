@@ -35,14 +35,19 @@ API_PORT=8000
 LOG_LEVEL=INFO
 LOG_DIR=logs
 ARTIFACT_LOG_JSONL=true
+HIAP_MEED_LEGAL_DATA_SOURCE=mock
+HIAP_MEED_ACTION_DATA_SOURCE=mock
 ```
 
 Variables:
+
 - `API_HOST`: server bind host (default `0.0.0.0`)
 - `API_PORT`: server bind port (default `8000`)
 - `LOG_LEVEL`: Python logging level (for example `DEBUG`, `INFO`)
 - `LOG_DIR`: output folder for file logs and request artifacts
 - `ARTIFACT_LOG_JSONL`: if `true`, writes per-request JSONL artifacts
+- `HIAP_MEED_LEGAL_DATA_SOURCE`: legal input source (`mock`, `stub`, or `api`)
+- `HIAP_MEED_ACTION_DATA_SOURCE`: action catalog source (`mock`, `stub`, or `api`)
 
 ### 2. Install dependencies
 
@@ -61,6 +66,7 @@ uv run python -m app.main
 ```
 
 Verify the service:
+
 - Health check: `curl http://localhost:8000/health`
 - OpenAPI docs: `http://localhost:8000/docs`
 - Prioritization endpoint: `POST /v1/prioritize`
@@ -71,6 +77,7 @@ The repository now includes explicit Pydantic contracts for upcoming request and
 upstream response integrations in `app/modules/prioritizer/models.py`.
 
 Key models:
+
 - Frontend request envelope: `PrioritizerApiRequest`
 - Frontend city input row: `FrontendCityInput`
 - Global city API response: `CityApiResponse`
@@ -79,6 +86,7 @@ Key models:
 - Global policy alignment API response: `ActionsPolicySignalsApiResponse`
 
 Design note:
+
 - For the upcoming frontend contract, single-city and multi-city payloads both
   use `cityDataList`; single-city is represented as a list with one item.
 
@@ -87,18 +95,27 @@ Design note:
 Run commands from a Bash shell (Git Bash, WSL, Linux, macOS).
 
 Request body:
+
 - The endpoint accepts the frontend envelope `PrioritizerApiRequest` (see `app/modules/prioritizer/models.py`).
 - Single-city and multi-city payloads both use `requestData.cityDataList`.
 
 Exclusions:
+
 - The frontend provides exclusions as `excludedActionsFreeText` (free text).
 - Current behavior: this is a **stub** and does not exclude actions yet (the text is attached to metadata for downstream flagging).
 
+Hard legal requirements:
+
+- The hard filter now enforces legal requirements with `strength` in `mandatory|required`.
+- Actions with hard `alignment_status="not_aligned"` are discarded before scoring.
+- Actions with hard `alignment_status="no_evidence"` are kept and surfaced in hard-filter evidence.
+
 Response fields:
+
 - `results` (`array`): one entry per requested city.
   - `locode` (`string`)
   - `ranked_action_ids` (`string[]`): ordered action IDs.
-  - `metadata` (`object`): request ID, timings, counts, and frontend trace fields.
+  - `metadata` (`object`): request ID, timings, counts, hard-filter evidence, and frontend trace fields.
 
 Example JSON request bodies (using mock data from `data/`):
 
@@ -165,6 +182,7 @@ Example response:
           "total_actions": 2,
           "valid_actions": 2,
           "discarded_excluded": 0,
+          "discarded_legal": 0,
           "ranked_actions": 2
         },
         "frontend_request_id": "1234567890",
@@ -177,26 +195,30 @@ Example response:
 ```
 
 Common validation errors:
+
 - Missing request body -> HTTP `422`.
 - Missing `requestData.cityDataList` or empty `cityDataList` -> HTTP `422`.
 - Missing `locode` or empty `locode` in a city entry -> HTTP `422`.
 
-Note: current data clients are in-memory stubs. Real upstream API calls are not wired yet. When they are wired, the data clients will use a synchronous HTTP client (e.g. `httpx.Client`). FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
+Note: city data is currently an in-memory stub. Action and legal clients can use `mock` (file-backed), `stub` (empty), or `api` (placeholder returning empty data) based on `HIAP_MEED_ACTION_DATA_SOURCE` and `HIAP_MEED_LEGAL_DATA_SOURCE`. Real upstream HTTP wiring is still pending for all clients; when wired, clients should use a synchronous HTTP client (e.g. `httpx.Client`). FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
 
 ### 5. Logging and artifacts
 
 The service writes:
+
 - Console logs (stdout/stderr)
 - File logs at `LOG_DIR/app.log`
-- Per-request artifacts at `LOG_DIR/requests/{internal_request_id}.jsonl` when `ARTIFACT_LOG_JSONL=true`
+- Per-request artifacts at `LOG_DIR/requests/{UTC_TIMESTAMP}Z_{internal_request_id}.jsonl` when `ARTIFACT_LOG_JSONL=true`
 
 What `app.log` contains:
+
 - Service startup and runtime logs
 - Endpoint activity (for example health checks and prioritization completion)
 - Validation errors and unexpected exceptions with stack traces
 - Cross-request aggregated logs (all requests in one rolling file path)
 
-What each `requests/{internal_request_id}.jsonl` file contains:
+What each `requests/{UTC_TIMESTAMP}Z_{internal_request_id}.jsonl` file contains:
+
 - One JSON line per pipeline event for that single request
 - Event metadata such as timestamp, request ID, event type, and payload
 - Timing/count summaries for fetch/filter/score steps
@@ -213,6 +235,7 @@ ls -1 logs/requests/
 ```
 
 Typical per-request artifact events:
+
 - `fetch_city.completed`
 - `fetch_actions.completed`
 - `validate_weights.completed`
@@ -228,6 +251,10 @@ From the `hiap-meed` directory:
 docker build -t hiap-meed-app .
 docker run -it --rm -p 8000:8000 --env-file .env hiap-meed-app
 ```
+
+The Docker image includes both `app/` and `data/`, so mock payloads under
+`data/mock` are available in-container at `/app/data/mock`.
+Data folder needs to be removed once real APIs are available.
 
 ## Testing
 

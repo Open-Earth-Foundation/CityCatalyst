@@ -208,6 +208,13 @@ if __name__ == "__main__":
     - side effects (filesystem/DB/network, mutations, logging, caching)
     - raised exceptions (when non-obvious)
 
+### Logical block comments inside functions
+
+- Use short `#` comments to mark **logical blocks** in non-trivial functions (for example: `# Step 1: validate input`, `# Apply hard legal gate`).
+- Prefer comments that explain **why/intent**, not line-by-line restatements of obvious code.
+- Keep comments concise and stable; avoid noisy or redundant comments.
+- Add these comments when they materially improve scanability for future maintainers.
+
 ### Logging is required
 
 - Use Python’s `logging` module, do not use `print`, except in rare CLI UX cases where it is explicitly intended.

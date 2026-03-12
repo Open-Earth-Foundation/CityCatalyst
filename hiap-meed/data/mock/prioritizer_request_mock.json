@@ -26,15 +26,71 @@
         "cityStrategicPreferenceSectors": ["transportation"],
         "cityStrategicPreferenceOther": "Prioritize near-term air quality improvements, reliable and affordable mobility, and climate resilience benefits for low-income neighborhoods.",
         "cityEmissionsData": {
-          "inventoryYear": null,
+          "inventoryYear": 2022,
           "gpcData": {
             "I.1.1": {
               "notationKey": null,
-              "activities": []
+              "activities": [
+                {
+                  "activityName": "Kerosene (paraffin)",
+                  "totalEmissions": 599.532,
+                  "totalEmissionsUnit": "t CO2e",
+                  "activityValue": 8352484.555,
+                  "activityUnit": "MJ",
+                  "dataSource": null,
+                  "notationKey": null
+                },
+                {
+                  "activityName": "Natural gas",
+                  "totalEmissions": 818452.245,
+                  "totalEmissionsUnit": "t CO2e",
+                  "activityValue": 14280609148.0,
+                  "activityUnit": "MJ",
+                  "dataSource": null,
+                  "notationKey": null
+                },
+                {
+                  "activityName": "Wood or wood waste",
+                  "totalEmissions": 42200.983,
+                  "totalEmissionsUnit": "t CO2e",
+                  "activityValue": 360130991.6,
+                  "activityUnit": "MJ",
+                  "dataSource": null,
+                  "notationKey": null
+                }
+              ]
             },
             "I.1.2": {
               "notationKey": null,
-              "activities": []
+              "activities": [
+                {
+                  "activityName": "Electricity use in single family home",
+                  "totalEmissions": 2955600.0,
+                  "totalEmissionsUnit": "t CO2e",
+                  "activityValue": null,
+                  "activityUnit": null,
+                  "dataSource": "Mock data",
+                  "notationKey": null
+                },
+                {
+                  "activityName": "Heating in multi family home",
+                  "totalEmissions": 1438300.0,
+                  "totalEmissionsUnit": "t CO2e",
+                  "activityValue": null,
+                  "activityUnit": null,
+                  "dataSource": "Mock data",
+                  "notationKey": null
+                },
+                {
+                  "activityName": "All energy usage types in informal housing",
+                  "totalEmissions": 3524785.0,
+                  "totalEmissionsUnit": "t CO2e",
+                  "activityValue": null,
+                  "activityUnit": null,
+                  "dataSource": "Mock data",
+                  "notationKey": null
+                }
+              ]
             },
             "I.1.3": {
               "notationKey": null,
@@ -42,11 +98,89 @@
             },
             "II.1.1": {
               "notationKey": null,
-              "activities": []
+              "activities": [
+                {
+                  "activityName": "Biodiesels (Single unit truck)",
+                  "totalEmissions": 1943.87,
+                  "totalEmissionsUnit": "t CO2e",
+                  "activityValue": 27028397.55,
+                  "activityUnit": "MJ",
+                  "dataSource": null,
+                  "notationKey": null
+                },
+                {
+                  "activityName": "Diesel oil (Single unit truck)",
+                  "totalEmissions": 24808.289,
+                  "totalEmissionsUnit": "t CO2e",
+                  "activityValue": 347138314.3,
+                  "activityUnit": "MJ",
+                  "dataSource": null,
+                  "notationKey": null
+                },
+                {
+                  "activityName": "Gas oil (Single unit truck)",
+                  "totalEmissions": 836.075,
+                  "totalEmissionsUnit": "t CO2e",
+                  "activityValue": 11395082.09,
+                  "activityUnit": "MJ",
+                  "dataSource": null,
+                  "notationKey": null
+                }
+              ]
             },
             "III.1.1": {
-              "notationKey": null,
+              "notationKey": "IE",
               "activities": []
+            },
+            "III.2.1": {
+              "notationKey": "NE",
+              "activities": []
+            },
+            "III.4.1": {
+              "notationKey": null,
+              "activities": [
+                {
+                  "activityName": "Domestic wastewater",
+                  "totalEmissions": 144817.556,
+                  "totalEmissionsUnit": "t CO2e",
+                  "activityValue": null,
+                  "activityUnit": null,
+                  "dataSource": null,
+                  "notationKey": null
+                },
+                {
+                  "activityName": "Industrial wastewater",
+                  "totalEmissions": 91786.748,
+                  "totalEmissionsUnit": "t CO2e",
+                  "activityValue": null,
+                  "activityUnit": null,
+                  "dataSource": null,
+                  "notationKey": null
+                }
+              ]
+            },
+            "V.1": {
+              "notationKey": null,
+              "activities": [
+                {
+                  "activityName": "Buffalo",
+                  "totalEmissions": 0.489,
+                  "totalEmissionsUnit": "t CO2e",
+                  "activityValue": null,
+                  "activityUnit": null,
+                  "dataSource": null,
+                  "notationKey": null
+                },
+                {
+                  "activityName": "Cattle",
+                  "totalEmissions": 129.168,
+                  "totalEmissionsUnit": "t CO2e",
+                  "activityValue": null,
+                  "activityUnit": null,
+                  "dataSource": null,
+                  "notationKey": null
+                }
+              ]
             },
             "VI.1": {
               "notationKey": null,

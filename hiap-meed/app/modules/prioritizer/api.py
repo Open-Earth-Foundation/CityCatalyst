@@ -18,8 +18,10 @@ from app.modules.prioritizer.orchestrator import run_prioritization
 from app.services.data_clients import (
     ActionDataApiClient,
     CityDataApiClient,
+    LegalDataApiClient,
     get_action_data_api_client,
     get_city_data_api_client,
+    get_legal_data_api_client,
 )
 
 
@@ -38,6 +40,7 @@ def prioritize(
     request: PrioritizerApiRequest,
     city_data_api_client: CityDataApiClient = Depends(get_city_data_api_client),
     action_data_api_client: ActionDataApiClient = Depends(get_action_data_api_client),
+    legal_data_api_client: LegalDataApiClient = Depends(get_legal_data_api_client),
 ) -> PrioritizerApiResponse:
     """
     Prioritize actions from the CityCatalyst frontend request envelope.
@@ -59,6 +62,7 @@ def prioritize(
                 requested_languages=list(request.requestData.requestedLanguages),
                 city_data_api_client=city_data_api_client,
                 action_data_api_client=action_data_api_client,
+                legal_data_api_client=legal_data_api_client,
             )
             results.append(
                 PrioritizerApiCityResult(
@@ -94,6 +98,7 @@ def _run_for_city_input(
     requested_languages: list[str],
     city_data_api_client: CityDataApiClient,
     action_data_api_client: ActionDataApiClient,
+    legal_data_api_client: LegalDataApiClient,
 ) -> PrioritizationResponse:
     """
     Translate a single frontend city payload into a pipeline run.
@@ -112,12 +117,13 @@ def _run_for_city_input(
     internal_request_id = uuid4()
     result = run_prioritization(
         locode=city_input.locode,
-        weights_override=None,
+        weights_override=city_input.weightsOverride,
         top_n=None,
         excluded_actions_free_text=city_input.excludedActionsFreeText,
         internal_request_id=internal_request_id,
         city_data_api_client=city_data_api_client,
         action_data_api_client=action_data_api_client,
+        legal_data_api_client=legal_data_api_client,
     )
 
     # Attach minimal frontend context for traceability/debugging.

@@ -27,7 +27,12 @@ class ArtifactWriter:
         self.request_id = request_id
         self.enabled = _artifacts_enabled()
         log_dir = Path(os.getenv("LOG_DIR", "logs"))
-        self.path = log_dir / "requests" / f"{request_id}.jsonl"
+        created_at_utc = datetime.now(UTC)
+        timestamp_prefix = created_at_utc.strftime("%Y%m%d-%H%M%S")
+        # Keep request ID in the file name so traces remain easy to correlate.
+        self.path = (
+            log_dir / "requests" / f"{timestamp_prefix}Z_{request_id}.jsonl"
+        )
 
     def write_event(self, event_type: str, payload: Mapping[str, object]) -> None:
         """Append a single JSON event line. Failures are logged and ignored."""

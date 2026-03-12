@@ -5,7 +5,7 @@
 | Block | Sub-feature | Status |
 |---|---|---|
 | Hard Filter | Exclusion by `action_id` | Implemented |
-| Hard Filter | Legal requirement check | Not started |
+| Hard Filter | Legal requirement check | Implemented |
 | Impact | GPC reference evidence collection | Implemented (stub: score = 0.0) |
 | Impact | Activity relevance × reduction band × timeline | Not started |
 | Alignment | Attribute-presence evidence | Implemented (stub: score = 0.0) |

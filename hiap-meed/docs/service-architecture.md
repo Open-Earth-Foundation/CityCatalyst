@@ -70,7 +70,7 @@ This is the right choice as long as the orchestrator and data clients are synchr
 | Client                | Method             | Status         | Target upstream |
 | --------------------- | ------------------ | -------------- | --------------- |
 | `CityDataApiClient`   | `get_city(locode)` | In-memory stub | Global API      |
-| `ActionDataApiClient` | `list_actions()`   | In-memory stub | Global API      |
+| `ActionDataApiClient` | `list_actions()`   | Mock/stub/api switch (`HIAP_MEED_ACTION_DATA_SOURCE`) | Global API      |
 
 Stubs are injected via FastAPI's `Depends()` pattern, which makes swapping real implementations straightforward without changing route or orchestrator code.
 

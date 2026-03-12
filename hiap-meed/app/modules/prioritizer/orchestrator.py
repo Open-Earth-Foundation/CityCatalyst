@@ -14,7 +14,11 @@ from app.modules.prioritizer.blocks import (
 )
 from app.modules.prioritizer.config import validate_weights
 from app.modules.prioritizer.models import PrioritizationResponse
-from app.services.data_clients import ActionDataApiClient, CityDataApiClient
+from app.services.data_clients import (
+    ActionDataApiClient,
+    CityDataApiClient,
+    LegalDataApiClient,
+)
 from app.utils.artifacts import ArtifactWriter
 from app.utils.timing import time_block
 
@@ -43,6 +47,7 @@ def run_prioritization(
     internal_request_id: UUID,
     city_data_api_client: CityDataApiClient,
     action_data_api_client: ActionDataApiClient,
+    legal_data_api_client: LegalDataApiClient,
 ) -> PrioritizationResponse:
     """
     Run the end-to-end prioritization workflow for one city request.
@@ -76,6 +81,19 @@ def run_prioritization(
         {"total_actions": len(actions), "elapsed_seconds": block.elapsed_seconds},
     )
 
+    with time_block("fetch_legal_requirements") as block:
+        legal_requirements_by_action_id = legal_data_api_client.get_action_legal_requirements(
+            locode
+        )
+    timings["fetch_legal_requirements"] = block.elapsed_seconds
+    artifact_writer.write_event(
+        "fetch_legal_requirements.completed",
+        {
+            "actions_with_legal_requirements": len(legal_requirements_by_action_id),
+            "elapsed_seconds": block.elapsed_seconds,
+        },
+    )
+
     with time_block("validate_weights") as block:
         weights = validate_weights(weights_override)
     timings["validate_weights"] = block.elapsed_seconds
@@ -88,6 +106,7 @@ def run_prioritization(
         hard_filter_result = hard_filter.run(
             actions=actions,
             excluded_actions_free_text=excluded_actions_free_text,
+            legal_requirements_by_action_id=legal_requirements_by_action_id,
         )
     timings["hard_filter"] = block.elapsed_seconds
     artifact_writer.write_event(
@@ -95,6 +114,7 @@ def run_prioritization(
         {
             "valid_actions": len(hard_filter_result.valid_actions),
             "discarded_excluded": len(hard_filter_result.discarded_excluded),
+            "discarded_legal": len(hard_filter_result.discarded_legal),
             "elapsed_seconds": block.elapsed_seconds,
         },
     )
@@ -154,10 +174,12 @@ def run_prioritization(
         "locode": locode,
         "weights": weights,
         "timings": timings,
+        "hard_filter_evidence_by_action_id": hard_filter_result.evidence,
         "counts": {
             "total_actions": len(actions),
             "valid_actions": len(hard_filter_result.valid_actions),
             "discarded_excluded": len(hard_filter_result.discarded_excluded),
+            "discarded_legal": len(hard_filter_result.discarded_legal),
             "ranked_actions": len(ranked_action_ids),
         },
     }

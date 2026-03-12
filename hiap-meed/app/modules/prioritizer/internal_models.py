@@ -105,7 +105,24 @@ class HardFilterResult(BaseModel):
 
     valid_actions: list[Action] = Field(default_factory=list)
     discarded_excluded: list[Action] = Field(default_factory=list)
+    discarded_legal: list[Action] = Field(default_factory=list)
     evidence: dict[str, dict[str, object]] = Field(default_factory=dict)
+
+
+class HardFilterLegalRequirement(BaseModel):
+    """Internal legal requirement contract consumed by hard-filter logic."""
+
+    signal_code: str
+    signal_name: str
+    operator: str
+    required_value: str | None = None
+    legal_signal_value: str | None = None
+    strength: str
+    alignment_status: str
+    location_scope: str | None = None
+    location_name: str | None = None
+    evidence_ids: list[str] = Field(default_factory=list)
+    evidence_count: int = 0
 
 
 class ScoredAction(BaseModel):

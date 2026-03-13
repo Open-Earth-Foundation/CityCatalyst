@@ -72,10 +72,7 @@ function ImportButton({
         return { done: false };
       },
       onSuccess: () => {
-        makeSuccessToast(
-          "Import completed",
-          "Your inventory data has been imported successfully.",
-        );
+        makeSuccessToast(t("import-completed"), t("import-completed-description"));
         onImport();
       },
       onFailure: (res) =>
@@ -112,10 +109,7 @@ function ImportButton({
       }
 
       if ((result as { importStatus?: string }).importStatus === "completed") {
-        makeSuccessToast(
-          "Import completed",
-          "Your inventory data has been imported successfully.",
-        );
+        makeSuccessToast(t("import-completed"), t("import-completed-description"));
         onImport();
         return;
       }

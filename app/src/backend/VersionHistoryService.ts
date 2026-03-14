@@ -1,27 +1,51 @@
 import { db } from "@/models";
+import { VersionChange } from "@/util/types";
 import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
 import { Op, Transaction } from "sequelize";
 
 export default class VersionHistoryService {
   static MODELS: Record<string, any> = {
+    // GHGI module
     InventoryValue: db.models.InventoryValue,
     ActivityValue: db.models.ActivityValue,
     GasValue: db.models.GasValue,
     EmissionsFactor: db.models.EmissionsFactor,
+
+    // HIAP module
+    HighImpactActionRanked: db.models.HighImpactActionRanked,
+    // ActionPlan: db.models.ActionPlan,
+    // UnrankedActionSelection: db.models.UnrankedActionSelection,
+    // HighImpactActionRanking: db.models.HighImpactActionRanking,
   };
 
   static MODEL_ID_COLUMNS: Record<string, string> = {
+    // GHGI module
     InventoryValue: "id",
     ActivityValue: "id",
     GasValue: "id",
     EmissionsFactor: "id",
+
+    // HIAP module
+    HighImpactActionRanked: "id",
+    // ActionPlan: "id",
+    // UnrankedActionSelection: "id",
+    // HighImpactActionRanking: "id",
   };
 
-  static async getVersionHistory(inventoryId: string) {
-    const versions = await db.models.Version.findAll({
+  static MODULE_HANDLES_DELETIONS: Record<string, boolean> = {
+    ghgi: true,
+    hiap: false,
+  };
+
+  static async getVersionHistory(
+    inventoryId: string,
+    moduleName: string = "ghgi",
+  ) {
+    const versions = (await db.models.Version.findAll({
       where: {
         inventoryId,
+        moduleName,
       },
       include: [
         {
@@ -35,7 +59,7 @@ export default class VersionHistoryService {
         },
       ],
       order: [["created", "DESC"]],
-    });
+    })) as VersionChange[];
 
     return versions;
   }
@@ -48,6 +72,7 @@ export default class VersionHistoryService {
     data: Record<string, any> = {},
     isDeleted: boolean = false,
     transaction?: Transaction,
+    moduleName: string = "ghgi",
   ) {
     if (!inventoryId) {
       throw new createHttpError.BadRequest("missing-inventory-id");
@@ -58,7 +83,7 @@ export default class VersionHistoryService {
 
     // find previous version (if available)
     const previousVersion = await db.models.Version.findOne({
-      where: { inventoryId, entryId, table },
+      where: { inventoryId, entryId, table, moduleName },
       order: [["created", "DESC"]],
     });
 
@@ -69,6 +94,7 @@ export default class VersionHistoryService {
         inventoryId,
         authorId,
         table,
+        moduleName,
         entryId,
         previousVersionId: previousVersion?.versionId,
         data,
@@ -85,6 +111,7 @@ export default class VersionHistoryService {
     dataEntries: Record<string, any>[],
     isDeleted: boolean = false,
     transaction?: Transaction,
+    moduleName: string = "ghgi",
   ) {
     return Promise.all(
       dataEntries.map((entry) => {
@@ -96,6 +123,7 @@ export default class VersionHistoryService {
           entry,
           isDeleted,
           transaction,
+          moduleName,
         );
       }),
     );
@@ -117,6 +145,7 @@ export default class VersionHistoryService {
       where: {
         inventoryId: restoredVersion.inventoryId,
         created: { [Op.gt]: restoredVersion?.created },
+        moduleName: restoredVersion.moduleName,
       },
       // make sure newest versions are deleted first because of previousVersion constraint
       // so a newer version doesn't refer to a previous version still while being deleted
@@ -134,10 +163,22 @@ export default class VersionHistoryService {
       throw new createHttpError.BadRequest("no-newer-versions-found");
     }
 
+    const moduleName = restoredVersion.moduleName;
+    const moduleHandlesDeletions = moduleName
+      ? (VersionHistoryService.MODULE_HANDLES_DELETIONS[moduleName] ?? true)
+      : true;
+
     await db.sequelize?.transaction(async (transaction) => {
       for (const version of newerVersions) {
         const model = VersionHistoryService.MODELS[version.table!];
         const idColumn = VersionHistoryService.MODEL_ID_COLUMNS[version.table!];
+
+        if (!model || !idColumn) {
+          throw new createHttpError.InternalServerError(
+            "table-model-not-configured: " + version.table!,
+          );
+        }
+
         if (
           version.previousVersion &&
           !version.previousVersion?.isDeleted &&
@@ -155,7 +196,7 @@ export default class VersionHistoryService {
               transaction,
             });
           }
-        } else {
+        } else if (moduleHandlesDeletions) {
           // delete table entry as it didn't exist previously
           await model.destroy({
             where: {

@@ -185,6 +185,7 @@ describe("Inventory HIAP API", () => {
         langs: ["en"],
         jobId: randomUUID(),
         status: HighImpactActionRankingStatus.SUCCESS,
+        userId: testData.userId,
       });
 
       await db.models.HighImpactActionRanked.create({
@@ -235,6 +236,7 @@ describe("Inventory HIAP API", () => {
         langs: ["en"],
         jobId: randomUUID(),
         status: HighImpactActionRankingStatus.PENDING,
+        userId: testData.userId,
       });
 
       const ranked1 = await db.models.HighImpactActionRanked.create({

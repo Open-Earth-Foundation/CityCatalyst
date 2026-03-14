@@ -1,4 +1,3 @@
-import { LANGUAGES } from "@/util/types";
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import { languages } from "@/i18n/settings";
@@ -34,8 +33,12 @@ export interface HighImpactActionRankedAttributes {
 }
 
 export type HighImpactActionRankedPk = "id";
-export type HighImpactActionRankedId = HighImpactActionRanked[HighImpactActionRankedPk];
-export type HighImpactActionRankedCreationAttributes = Optional<HighImpactActionRankedAttributes, "id">;
+export type HighImpactActionRankedId =
+  HighImpactActionRanked[HighImpactActionRankedPk];
+export type HighImpactActionRankedCreationAttributes = Optional<
+  HighImpactActionRankedAttributes,
+  "id"
+>;
 
 export class HighImpactActionRanked
   extends Model<
@@ -211,4 +214,5 @@ export class HighImpactActionRanked
       },
     );
   }
-} 
+}
+

@@ -126,7 +126,8 @@ async function synchData(
   targetData,
   targetLanguage,
 ) {
-  let totalTokens = 0;
+  let totalInputTokens = 0;
+  let totalQueries = 0;
 
   for (const key in sourceData) {
     if (typeof sourceData[key] === "string") {
@@ -138,7 +139,8 @@ async function synchData(
           sourceData[key],
         );
         targetData[key] = result.result;
-        totalTokens += result.inputTokens;
+        totalInputTokens += result.inputTokens;
+        totalQueries += 1;
       }
     } else if (
       typeof sourceData[key] === "object" &&
@@ -147,15 +149,18 @@ async function synchData(
       if (!(key in targetData) || typeof targetData[key] !== "object") {
         targetData[key] = {};
       }
-      totalTokens += await synchData(
-        sourceData[key],
-        sourceLanguage,
-        targetData[key],
-        targetLanguage,
-      );
+      const { totalInputTokens: newInputTokens, totalQueries: newQueries } =
+        await synchData(
+          sourceData[key],
+          sourceLanguage,
+          targetData[key],
+          targetLanguage,
+        );
+      totalInputTokens += newInputTokens;
+      totalQueries += newQueries;
     }
 
-    return totalTokens;
+    return { totalInputTokens, totalQueries };
   }
 }
 

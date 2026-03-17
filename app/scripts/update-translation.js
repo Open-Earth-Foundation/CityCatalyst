@@ -192,7 +192,7 @@ async function submitStats({ totalInputTokens, totalQueries }) {
         "Content-Type": "application/json",
         "Notion-Version": "2026-03-11",
       },
-      body: {
+      body: JSON.stringify({
         parent: {
           type: "data_source_id",
           data_source_id: NOTION_DATASOURCE_ID,
@@ -224,7 +224,7 @@ async function submitStats({ totalInputTokens, totalQueries }) {
             },
           },
         },
-      },
+      }),
     });
 
     if (!response.ok) {

@@ -185,6 +185,7 @@ async function submitStats({ totalInputTokens, totalQueries }) {
   }
 
   try {
+    const entryId = randomUUID();
     const response = await fetch("https://api.notion.com/v1/pages", {
       method: "POST",
       headers: {
@@ -201,9 +202,10 @@ async function submitStats({ totalInputTokens, totalQueries }) {
         properties: {
           id: {
             type: "title",
+            id: entryId,
             title: [
               {
-                text: { content: randomUUID() },
+                text: { content: entryId },
               },
             ],
           },

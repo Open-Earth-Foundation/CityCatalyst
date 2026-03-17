@@ -201,8 +201,13 @@ async function submitStats({ totalInputTokens, totalQueries }) {
         },
         properties: {
           id: {
+            type: "title",
             id: entryId,
-            name: entryId,
+            title: [
+              {
+                text: { content: entryId },
+              },
+            ],
           },
           queries: {
             type: "number",

@@ -81,8 +81,8 @@ async function synchDirectory(sourceLanguage, targetLanguage) {
     await fs.mkdir(targetDir);
   }
 
-  const totalInputTokens = 0;
-  const totalQueries = 0;
+  let totalInputTokens = 0;
+  let totalQueries = 0;
 
   const files = await fs.readdir(sourceDir);
   for (const file of files.sort()) {

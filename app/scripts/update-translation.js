@@ -194,8 +194,8 @@ async function submitStats({ totalInputTokens, totalQueries }) {
       },
       body: JSON.stringify({
         parent: {
-          type: "data_source_id",
-          data_source_id: NOTION_DATASOURCE_ID,
+          type: "database_id",
+          // data_source_id: NOTION_DATASOURCE_ID,
           database_id: NOTION_DATABASE_ID,
         },
         properties: {

@@ -7,6 +7,7 @@ import { randomUUID } from "node:crypto";
 
 const AI_MODEL = "gpt-4";
 const NOTION_DATABASE_ID = "326eb557728b8083ac03de6394c9f7c5";
+const NOTION_DATASOURCE_ID = "326eb557-728b-804a-9dd4-000bedd001dd";
 
 // Convert the module's URL to a file path
 const __filename = fileURLToPath(import.meta.url);
@@ -193,6 +194,8 @@ async function submitStats({ totalInputTokens, totalQueries }) {
       },
       body: {
         parent: {
+          type: "data_source_id",
+          data_source_id: NOTION_DATASOURCE_ID,
           database_id: NOTION_DATABASE_ID,
         },
         properties: {

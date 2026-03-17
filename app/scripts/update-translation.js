@@ -200,8 +200,10 @@ async function submitStats({ totalInputTokens, totalQueries }) {
         },
         properties: {
           id: {
-            type: "text",
-            text: randomUUID(),
+            type: "title",
+            title: {
+              text: { content: randomUUID() },
+            },
           },
           queries: {
             type: "number",

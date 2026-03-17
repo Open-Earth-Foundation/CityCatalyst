@@ -94,6 +94,15 @@ async function synchDirectory(sourceLanguage, targetLanguage) {
     if (stats) {
       totalInputTokens += stats.totalInputTokens;
       totalQueries += stats.totalQueries;
+      console.log(
+        "Language file stats",
+        targetLanguage,
+        file,
+        "Tokens:",
+        totalInputTokens,
+        "Queries:",
+        totalQueries,
+      );
     } else {
       console.error("No stats returned!", sourceLanguage, targetLanguage, file);
     }
@@ -178,6 +187,13 @@ async function synchData(
 }
 
 async function submitStats({ totalInputTokens, totalQueries }) {
+  console.log(
+    "Total input tokens:",
+    totalInputTokens,
+    " - Queries:",
+    totalQueries,
+  );
+
   if (!process.env.NOTION_API_KEY) {
     console.error("Please set the NOTION_API_KEY environment variable");
     return;

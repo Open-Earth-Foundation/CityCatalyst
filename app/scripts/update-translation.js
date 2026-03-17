@@ -81,14 +81,25 @@ async function synchDirectory(sourceLanguage, targetLanguage) {
     await fs.mkdir(targetDir);
   }
 
+  const totalInputTokens = 0;
+  const totalQueries = 0;
+
   const files = await fs.readdir(sourceDir);
   for (const file of files.sort()) {
     if (!file.endsWith(".json")) {
       continue;
     }
 
-    await synchFile(sourceLanguage, targetLanguage, file);
+    const stats = await synchFile(sourceLanguage, targetLanguage, file);
+    if (stats) {
+      totalInputTokens += stats.totalInputTokens;
+      totalQueries += stats.totalQueries;
+    } else {
+      console.error("No stats returned!", sourceLanguage, targetLanguage, file);
+    }
   }
+
+  await submitStats({ totalInputTokens, totalQueries });
 }
 
 async function synchFile(sourceLanguage, targetLanguage, fileName) {
@@ -117,9 +128,10 @@ async function synchFile(sourceLanguage, targetLanguage, fileName) {
     targetData,
     targetLanguage,
   );
-  submitStats(stats);
 
   await fs.writeFile(targetFile, JSON.stringify(targetData, null, 2) + "\n");
+
+  return stats;
 }
 async function synchData(
   sourceData,
@@ -173,6 +185,7 @@ async function submitStats({ totalInputTokens, totalQueries }) {
 
   try {
     const response = await fetch("https://api.notion.com/v1/pages", {
+      method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.NOTION_API_KEY}`,
         "Content-Type": "application/json",

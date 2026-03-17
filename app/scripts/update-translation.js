@@ -3,8 +3,10 @@ import path from "node:path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import OpenAI from "openai";
+import { randomUUID } from "node:crypto";
 
 const AI_MODEL = "gpt-4";
+const NOTION_DATABASE_ID = "326eb557728b8083ac03de6394c9f7c5";
 
 // Convert the module's URL to a file path
 const __filename = fileURLToPath(import.meta.url);
@@ -109,17 +111,16 @@ async function synchFile(sourceLanguage, targetLanguage, fileName) {
     targetData = JSON.parse(await fs.readFile(targetFile, "utf8"));
   }
 
-  const totalTokens = await synchData(
+  const stats = await synchData(
     sourceData,
     sourceLanguage,
     targetData,
     targetLanguage,
   );
-  submitStats(totalTokens);
+  submitStats(stats);
 
   await fs.writeFile(targetFile, JSON.stringify(targetData, null, 2) + "\n");
 }
-
 async function synchData(
   sourceData,
   sourceLanguage,
@@ -161,6 +162,65 @@ async function synchData(
     }
 
     return { totalInputTokens, totalQueries };
+  }
+}
+
+async function submitStats({ totalInputTokens, totalQueries }) {
+  if (!process.env.NOTION_API_KEY) {
+    console.error("Please set the OPENAI_API_KEY environment variable");
+    return;
+  }
+
+  try {
+    const response = await fetch("https://api.notion.com/v1/pages", {
+      headers: {
+        Authorization: `Bearer ${process.env.NOTION_API_KEY}`,
+        "Content-Type": "application/json",
+        "Notion-Version": "2026-03-11",
+      },
+      body: {
+        parent: {
+          database_id: NOTION_DATABASE_ID,
+        },
+        properties: {
+          id: {
+            type: "text",
+            text: randomUUID(),
+          },
+          queries: {
+            type: "number",
+            number: totalQueries,
+          },
+          input_tokens: {
+            type: "number",
+            number: totalInputTokens,
+          },
+          output_tokens: {
+            type: "number",
+            number: 0,
+          },
+          model: AI_MODEL,
+          usage: "update-translations",
+          timestamp: {
+            type: "date",
+            date: {
+              start: new Date().toString(),
+            },
+          },
+        },
+      },
+    });
+
+    if (!response.ok) {
+      console.error(
+        "Failed to submit results to Notion, Status:",
+        response.status,
+      );
+      const result = await response.json();
+      console.error("Notion response:", result);
+    }
+  } catch (error) {
+    console.error("Failed to submit results to Notion, error:", error.message);
   }
 }
 

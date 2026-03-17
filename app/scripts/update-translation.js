@@ -163,6 +163,14 @@ async function synchData(
         targetData[key] = result.result;
         totalInputTokens += result.inputTokens;
         totalQueries += 1;
+        console.log(
+          "Tokens from translation",
+          result.inputTokens,
+          "Total tokens",
+          totalInputTokens,
+          "Total queries",
+          totalQueries,
+        );
       }
     } else if (
       typeof sourceData[key] === "object" &&

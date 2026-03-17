@@ -6,7 +6,6 @@ import OpenAI from "openai";
 import { randomUUID } from "node:crypto";
 
 const AI_MODEL = "gpt-4";
-const NOTION_DATABASE_ID = "326eb557728b8083ac03de6394c9f7c5";
 const NOTION_DATASOURCE_ID = "326eb557-728b-804a-9dd4-000bedd001dd";
 
 // Convert the module's URL to a file path
@@ -180,7 +179,7 @@ async function synchData(
 
 async function submitStats({ totalInputTokens, totalQueries }) {
   if (!process.env.NOTION_API_KEY) {
-    console.error("Please set the OPENAI_API_KEY environment variable");
+    console.error("Please set the NOTION_API_KEY environment variable");
     return;
   }
 
@@ -195,9 +194,8 @@ async function submitStats({ totalInputTokens, totalQueries }) {
       },
       body: JSON.stringify({
         parent: {
-          type: "database_id",
-          // data_source_id: NOTION_DATASOURCE_ID,
-          database_id: NOTION_DATABASE_ID,
+          type: "data_source_id",
+          data_source_id: NOTION_DATASOURCE_ID,
         },
         properties: {
           id: {
@@ -221,12 +219,18 @@ async function submitStats({ totalInputTokens, totalQueries }) {
             type: "number",
             number: 0,
           },
-          model: AI_MODEL,
-          usage: "update-translations",
+          model: {
+            type: "rich_text",
+            rich_text: [{ text: { content: AI_MODEL } }],
+          },
+          usage: {
+            type: "rich_text",
+            rich_text: [{ text: { content: "update-translations" } }],
+          },
           timestamp: {
             type: "date",
             date: {
-              start: new Date().toString(),
+              start: new Date().toISOString(),
             },
           },
         },

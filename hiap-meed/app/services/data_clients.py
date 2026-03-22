@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 from app.modules.prioritizer.internal_models import (
@@ -13,7 +13,11 @@ from app.modules.prioritizer.internal_models import (
     CityData,
     HardFilterLegalRequirement,
 )
-from app.modules.prioritizer.models import ActionsApiResponse, ActionsLegalApiResponse
+from app.modules.prioritizer.models import (
+    ActionsApiResponse,
+    ActionsLegalApiResponse,
+    CitiesApiResponse,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -45,37 +49,33 @@ class LegalDataApiClient:
 
 
 @dataclass
-class StubCityDataApiClient:
-    """
-    In-memory fallback city client for local development and tests.
+class MockCityDataApiClient:
+    """File-backed city client loading checked-in mock city API payload."""
 
-    If no city is preloaded for a locode, a minimal placeholder city is returned.
-    """
-
-    cities_by_locode: dict[str, CityData] = field(default_factory=dict)
+    mock_file_path: Path
 
     def get_city(self, locode: str) -> CityData:
-        city = self.cities_by_locode.get(locode)
-        if city is not None:
-            return city
-        return CityData(
-            comuna_name=locode,
-            locode=locode,
-            region_name="unknown",
-            comuna_code="unknown",
-            region_code="unknown",
-            city_context=[],
-        )
+        """Load one city record from mock data by locode."""
+        payload = json.loads(self.mock_file_path.read_text(encoding="utf-8"))
+        response = CitiesApiResponse.model_validate(payload)
+        requested_locode = locode.strip().upper()
+        for city in response.cities:
+            if city.locode.strip().upper() != requested_locode:
+                continue
+            return CityData(
+                comuna_name=city.comuna_name,
+                locode=city.locode,
+                country_code=city.countryCode,
+                region_name=city.region_name,
+                comuna_code=city.comuna_code,
+                region_code=city.region_code,
+                population_size=city.populationSize,
+                population_density=city.populationDensity,
+                area=city.area,
+                raw=city.model_dump(),
+            )
 
-
-@dataclass
-class StubActionDataApiClient:
-    """In-memory fallback action client for local development and tests."""
-
-    actions: list[Action] = field(default_factory=list)
-
-    def list_actions(self) -> list[Action]:
-        return list(self.actions)
+        raise ValueError(f"Locode `{locode}` not found in city mock data")
 
 
 @dataclass
@@ -111,21 +111,6 @@ class MockActionDataApiClient:
 
 
 @dataclass
-class StubLegalDataApiClient:
-    """In-memory fallback legal client for local development and tests."""
-
-    requirements_by_locode: dict[str, dict[str, list[HardFilterLegalRequirement]]] = field(
-        default_factory=dict
-    )
-
-    def get_action_legal_requirements(
-        self, locode: str
-    ) -> dict[str, list[HardFilterLegalRequirement]]:
-        """Return preloaded legal requirements for a locode, or an empty map."""
-        return dict(self.requirements_by_locode.get(locode, {}))
-
-
-@dataclass
 class MockLegalDataApiClient:
     """
     File-backed legal client loading the checked-in mock legal API payload.
@@ -139,7 +124,7 @@ class MockLegalDataApiClient:
         self, locode: str
     ) -> dict[str, list[HardFilterLegalRequirement]]:
         """Load mock legal requirements grouped by action ID."""
-        del locode
+        _ = locode  # Locode is unused because mock legal payload is city-agnostic.
         payload = json.loads(self.mock_file_path.read_text(encoding="utf-8"))
         response = ActionsLegalApiResponse.model_validate(payload)
         requirements_by_action_id: dict[str, list[HardFilterLegalRequirement]] = {}
@@ -174,7 +159,7 @@ class ApiLegalDataApiClient:
         self, locode: str
     ) -> dict[str, list[HardFilterLegalRequirement]]:
         """Return no legal requirements until HTTP integration is implemented."""
-        del locode
+        _ = locode  # Locode is unused until the real upstream API call is wired.
         return {}
 
 
@@ -190,8 +175,32 @@ class ApiActionDataApiClient:
         return []
 
 
-_default_city_client = StubCityDataApiClient()
-_default_action_client = StubActionDataApiClient()
+class ApiCityDataApiClient:
+    """
+    Placeholder city client for future upstream HTTP integration.
+
+    Current behavior returns a minimal placeholder city until HTTP wiring exists.
+    """
+
+    def get_city(self, locode: str) -> CityData:
+        """Return minimal city data until HTTP integration is implemented."""
+        return CityData(
+            comuna_name=locode,
+            locode=locode,
+            region_name="unknown",
+            comuna_code="unknown",
+            region_code="unknown",
+            city_context=[],
+        )
+
+
+_default_api_city_client = ApiCityDataApiClient()
+_default_mock_city_client = MockCityDataApiClient(
+    mock_file_path=Path(__file__).resolve().parents[2]
+    / "data"
+    / "mock"
+    / "cities_api_mock.json"
+)
 _default_api_action_client = ApiActionDataApiClient()
 _default_mock_action_client = MockActionDataApiClient(
     mock_file_path=Path(__file__).resolve().parents[2]
@@ -199,7 +208,6 @@ _default_mock_action_client = MockActionDataApiClient(
     / "mock"
     / "actions_api_mock.json"
 )
-_default_stub_legal_client = StubLegalDataApiClient()
 _default_api_legal_client = ApiLegalDataApiClient()
 _default_mock_legal_client = MockLegalDataApiClient(
     mock_file_path=Path(__file__).resolve().parents[2]
@@ -211,48 +219,61 @@ _default_mock_legal_client = MockLegalDataApiClient(
 
 def get_city_data_api_client() -> CityDataApiClient:
     """FastAPI dependency provider for city data client."""
-    return _default_city_client
+    source = os.getenv("HIAP_MEED_CITY_DATA_SOURCE", "mock").strip().lower()
+    if source == "api":
+        return _default_api_city_client
+
+    if not _default_mock_city_client.mock_file_path.exists():
+        logger.warning(
+            "Mock city file not found at `%s`; using API city client",
+            _default_mock_city_client.mock_file_path,
+        )
+        return _default_api_city_client
+
+    if source not in {"mock", "api"}:
+        logger.warning(
+            "Unknown HIAP_MEED_CITY_DATA_SOURCE=`%s`; using mock city client", source
+        )
+    return _default_mock_city_client
 
 
 def get_action_data_api_client() -> ActionDataApiClient:
     """FastAPI dependency provider for action catalog client."""
     source = os.getenv("HIAP_MEED_ACTION_DATA_SOURCE", "mock").strip().lower()
-    if source == "mock":
-        if not _default_mock_action_client.mock_file_path.exists():
-            logger.warning(
-                "Mock actions file not found at `%s`; using stub action client",
-                _default_mock_action_client.mock_file_path,
-            )
-            return _default_action_client
-        return _default_mock_action_client
     if source == "api":
         return _default_api_action_client
-    if source == "stub":
-        return _default_action_client
 
-    logger.warning(
-        "Unknown HIAP_MEED_ACTION_DATA_SOURCE=`%s`; falling back to stub", source
-    )
-    return _default_action_client
+    if not _default_mock_action_client.mock_file_path.exists():
+        logger.warning(
+            "Mock actions file not found at `%s`; using API action client",
+            _default_mock_action_client.mock_file_path,
+        )
+        return _default_api_action_client
+
+    if source not in {"mock", "api"}:
+        logger.warning(
+            "Unknown HIAP_MEED_ACTION_DATA_SOURCE=`%s`; using mock action client",
+            source,
+        )
+    return _default_mock_action_client
 
 
 def get_legal_data_api_client() -> LegalDataApiClient:
     """FastAPI dependency provider for legal requirement client."""
     source = os.getenv("HIAP_MEED_LEGAL_DATA_SOURCE", "mock").strip().lower()
-    if source == "mock":
-        if not _default_mock_legal_client.mock_file_path.exists():
-            logger.warning(
-                "Mock legal file not found at `%s`; using stub legal client",
-                _default_mock_legal_client.mock_file_path,
-            )
-            return _default_stub_legal_client
-        return _default_mock_legal_client
     if source == "api":
         return _default_api_legal_client
-    if source == "stub":
-        return _default_stub_legal_client
 
-    logger.warning(
-        "Unknown HIAP_MEED_LEGAL_DATA_SOURCE=`%s`; falling back to stub", source
-    )
-    return _default_stub_legal_client
+    if not _default_mock_legal_client.mock_file_path.exists():
+        logger.warning(
+            "Mock legal file not found at `%s`; using API legal client",
+            _default_mock_legal_client.mock_file_path,
+        )
+        return _default_api_legal_client
+
+    if source not in {"mock", "api"}:
+        logger.warning(
+            "Unknown HIAP_MEED_LEGAL_DATA_SOURCE=`%s`; using mock legal client",
+            source,
+        )
+    return _default_mock_legal_client

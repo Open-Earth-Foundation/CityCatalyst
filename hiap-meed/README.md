@@ -35,6 +35,7 @@ API_PORT=8000
 LOG_LEVEL=INFO
 LOG_DIR=logs
 ARTIFACT_LOG_JSONL=true
+HIAP_MEED_CITY_DATA_SOURCE=mock
 HIAP_MEED_LEGAL_DATA_SOURCE=mock
 HIAP_MEED_ACTION_DATA_SOURCE=mock
 ```
@@ -45,9 +46,10 @@ Variables:
 - `API_PORT`: server bind port (default `8000`)
 - `LOG_LEVEL`: Python logging level (for example `DEBUG`, `INFO`)
 - `LOG_DIR`: output folder for file logs and request artifacts
-- `ARTIFACT_LOG_JSONL`: if `true`, writes per-request JSONL artifacts
-- `HIAP_MEED_LEGAL_DATA_SOURCE`: legal input source (`mock`, `stub`, or `api`)
-- `HIAP_MEED_ACTION_DATA_SOURCE`: action catalog source (`mock`, `stub`, or `api`)
+- `ARTIFACT_LOG_JSONL`: if `true`, writes per-request artifact files
+- `HIAP_MEED_CITY_DATA_SOURCE`: city input source (`mock` or `api`)
+- `HIAP_MEED_LEGAL_DATA_SOURCE`: legal input source (`mock` or `api`)
+- `HIAP_MEED_ACTION_DATA_SOURCE`: action catalog source (`mock` or `api`)
 
 ### 2. Install dependencies
 
@@ -200,7 +202,7 @@ Common validation errors:
 - Missing `requestData.cityDataList` or empty `cityDataList` -> HTTP `422`.
 - Missing `locode` or empty `locode` in a city entry -> HTTP `422`.
 
-Note: city data is currently an in-memory stub. Action and legal clients can use `mock` (file-backed), `stub` (empty), or `api` (placeholder returning empty data) based on `HIAP_MEED_ACTION_DATA_SOURCE` and `HIAP_MEED_LEGAL_DATA_SOURCE`. Real upstream HTTP wiring is still pending for all clients; when wired, clients should use a synchronous HTTP client (e.g. `httpx.Client`). FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
+Note: city, action, and legal clients now resolve to `mock` (file-backed) or `api` (placeholder until real upstream wiring is added). Default source for all three is `mock`, so local and Docker runs use checked-in mock payloads by default. Real upstream HTTP wiring is still pending; when wired, clients should use a synchronous HTTP client (e.g. `httpx.Client`). FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
 
 ### 5. Logging and artifacts
 
@@ -208,7 +210,7 @@ The service writes:
 
 - Console logs (stdout/stderr)
 - File logs at `LOG_DIR/app.log`
-- Per-request artifacts at `LOG_DIR/requests/{UTC_TIMESTAMP}Z_{internal_request_id}.jsonl` when `ARTIFACT_LOG_JSONL=true`
+- Per-request artifacts at `LOG_DIR/requests/{UTC_TIMESTAMP}Z_{internal_request_id}/` when `ARTIFACT_LOG_JSONL=true`
 
 What `app.log` contains:
 
@@ -217,12 +219,13 @@ What `app.log` contains:
 - Validation errors and unexpected exceptions with stack traces
 - Cross-request aggregated logs (all requests in one rolling file path)
 
-What each `requests/{UTC_TIMESTAMP}Z_{internal_request_id}.jsonl` file contains:
+What each `requests/{UTC_TIMESTAMP}Z_{internal_request_id}/` run folder contains:
 
-- One JSON line per pipeline event for that single request
-- Event metadata such as timestamp, request ID, event type, and payload
-- Timing/count summaries for fetch/filter/score steps
-- Request-scoped traceability (one file per request ID)
+- `summary.jsonl`: one JSON line per high-level pipeline event for that request
+- `NNN_<step>.json`: concise per-step detail files (fetch, filter, score, response)
+- Event metadata such as timestamp, request ID, event index, event/step type, and payload
+- `event_index` is shared between a summary event and its matching detail file, so `summary.jsonl` and `NNN_<step>.json` are directly pairable
+- Timing/count summaries plus request-scoped traceability in a single run directory
 
 Inspect logs:
 
@@ -240,7 +243,9 @@ Typical per-request artifact events:
 - `fetch_actions.completed`
 - `validate_weights.completed`
 - `hard_filter.completed`
-- `block_scores.completed`
+- `pillar_scores.completed`
+- `final_scoring.completed`
+- `run_summary.completed`
 - `response.completed`
 
 ### 6. Docker
@@ -251,6 +256,20 @@ From the `hiap-meed` directory:
 docker build -t hiap-meed-app .
 docker run -it --rm -p 8000:8000 --env-file .env hiap-meed-app
 ```
+
+To persist file logs and per-request artifacts on your machine (under `logs/`, including `logs/requests/`), bind-mount the host `logs` directory to `/app/logs` in the container (this matches default `LOG_DIR=logs`):
+
+```bash
+docker run -it --rm -p 8000:8000 --env-file .env -v ./logs:/app/logs hiap-meed-app
+```
+
+On **Windows Command Prompt**, from the `hiap-meed` directory:
+
+```cmd
+docker run -it --rm -p 8000:8000 --env-file .env -v "%cd%\logs:/app/logs" hiap-meed-app
+```
+
+If you change `LOG_DIR` in `.env`, adjust the container path in `-v` so it matches `/app/<LOG_DIR>`.
 
 The Docker image includes both `app/` and `data/`, so mock payloads under
 `data/mock` are available in-container at `/app/data/mock`.

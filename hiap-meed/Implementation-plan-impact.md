@@ -193,7 +193,7 @@ For each action ID, include (suggested keys):
 - `timeline_score`: float (0..1) + `timeline_bucket`: str | None
 - `impact_raw`: float
 - `impact_normalized`: float
-- `top_contributors`: list of objects for all contributing `gpc_ref` values, e.g.:
+- `gpc_contributors`: list of objects for all contributing `gpc_ref` values, e.g.:
   - `{"gpc_ref": "II.1.1", "city_emissions": 123.4, "share_of_city": 0.22}`
 
 ## Data plumbing plan (MEED-aligned, Notion-first)

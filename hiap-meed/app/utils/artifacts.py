@@ -88,15 +88,15 @@ class ArtifactWriter:
         else:
             self._event_counter = max(self._event_counter, event_index)
 
-        detail = {
+        detail: dict[str, object] = {
             "timestamp": datetime.now(UTC).isoformat(),
             "request_id": str(self.request_id),
             "event_index": event_index,
             "step_name": step_name,
-            "payload": dict(payload),
         }
         if event_type is not None:
             detail["event_type"] = event_type
+        detail["payload"] = dict(payload)
         safe_step_name = self._safe_file_stem(step_name)
         detail_path = self._run_dir / f"{event_index:03d}_{safe_step_name}.json"
         try:

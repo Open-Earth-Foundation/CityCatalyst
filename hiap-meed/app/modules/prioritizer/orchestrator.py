@@ -107,7 +107,6 @@ def run_prioritization(
     timings["fetch_city"] = block.elapsed_seconds
     fetch_city_payload = {
         "locode": locode,
-        "city_context_rows": len(city.city_context),
         "elapsed_seconds": block.elapsed_seconds,
     }
     fetch_city_event_index = artifact_writer.write_event(
@@ -116,18 +115,18 @@ def run_prioritization(
     artifact_writer.write_step_detail(
         "fetch_city",
         {
-            **fetch_city_payload,
+            "locode": locode,
             "comuna_name": city.comuna_name,
             "region_name": city.region_name,
+            "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=fetch_city_event_index,
         event_type="fetch_city.completed",
     )
     logger.info(
-        "Fetched city context internal_request_id=%s locode=%s city_context_rows=%s elapsed_seconds=%.3f",
+        "Fetched city context internal_request_id=%s locode=%s elapsed_seconds=%.3f",
         internal_request_id,
         locode,
-        len(city.city_context),
         block.elapsed_seconds,
     )
 
@@ -146,8 +145,9 @@ def run_prioritization(
     artifact_writer.write_step_detail(
         "fetch_actions",
         {
-            **fetch_actions_payload,
+            "total_actions": len(actions),
             "action_ids": _sorted_action_ids(actions),
+            "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=fetch_actions_event_index,
         event_type="fetch_actions.completed",
@@ -177,10 +177,11 @@ def run_prioritization(
     artifact_writer.write_step_detail(
         "fetch_legal_requirements",
         {
-            **fetch_legal_payload,
+            "actions_with_legal_requirements": len(legal_requirements_by_action_id),
             "action_ids_with_requirements": sorted(
                 legal_requirements_by_action_id.keys()
             ),
+            "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=fetch_legal_event_index,
         event_type="fetch_legal_requirements.completed",
@@ -195,12 +196,32 @@ def run_prioritization(
 
     # Phase 4: validate and resolve ranking weights for this run.
     with time_block("validate_weights") as block:
-        weights = validate_weights(weights_override)
+        try:
+            weights = validate_weights(weights_override)
+        except Exception as error:
+            timings["validate_weights"] = block.elapsed_seconds
+            validate_weights_failed_payload = {
+                "weights_override_provided": weights_override is not None,
+                "requested_weights_override": weights_override,
+                "error": str(error),
+                "elapsed_seconds": block.elapsed_seconds,
+            }
+            validate_weights_failed_event_index = artifact_writer.write_event(
+                "validate_weights.failed", validate_weights_failed_payload
+            )
+            artifact_writer.write_step_detail(
+                "validate_weights",
+                validate_weights_failed_payload,
+                event_index=validate_weights_failed_event_index,
+                event_type="validate_weights.failed",
+            )
+            raise
     # Emit high-level and step-detail artifacts for weight resolution.
     timings["validate_weights"] = block.elapsed_seconds
     validate_weights_payload = {
-        "weights": weights,
         "weights_override_provided": weights_override is not None,
+        "requested_weights_override": weights_override,
+        "weights": weights,
         "elapsed_seconds": block.elapsed_seconds,
     }
     validate_weights_event_index = artifact_writer.write_event(
@@ -236,9 +257,12 @@ def run_prioritization(
     artifact_writer.write_step_detail(
         "hard_filter",
         {
-            **hard_filter_payload,
+            "valid_actions": len(hard_filter_result.valid_actions),
+            "discarded_excluded": len(discarded_excluded_ids),
+            "discarded_legal": len(discarded_legal_ids),
             "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
             "discarded_legal_action_ids": sorted(discarded_legal_ids),
+            "valid_action_ids": _sorted_action_ids(hard_filter_result.valid_actions),
             "discarded_legal_reasons_by_action_id": {
                 action_id: {
                     "discard_reason": hard_filter_result.evidence.get(action_id, {}).get(
@@ -250,7 +274,7 @@ def run_prioritization(
                 }
                 for action_id in sorted(discarded_legal_ids)
             },
-            "valid_action_ids": _sorted_action_ids(hard_filter_result.valid_actions),
+            "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=hard_filter_event_index,
         event_type="hard_filter.completed",
@@ -281,10 +305,11 @@ def run_prioritization(
     artifact_writer.write_step_detail(
         "impact",
         {
-            **impact_payload,
+            **_score_stats(impact_result.score_by_action_id),
             "evidence_by_action_id": _all_block_evidence(
                 impact_result.evidence_by_action_id
             ),
+            "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=impact_event_index,
         event_type="impact.completed",
@@ -305,10 +330,11 @@ def run_prioritization(
     artifact_writer.write_step_detail(
         "alignment",
         {
-            **alignment_payload,
+            **_score_stats(alignment_result.score_by_action_id),
             "evidence_by_action_id": _all_block_evidence(
                 alignment_result.evidence_by_action_id
             ),
+            "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=alignment_event_index,
         event_type="alignment.completed",
@@ -329,10 +355,11 @@ def run_prioritization(
     artifact_writer.write_step_detail(
         "feasibility",
         {
-            **feasibility_payload,
+            **_score_stats(feasibility_result.score_by_action_id),
             "evidence_by_action_id": _all_block_evidence(
                 feasibility_result.evidence_by_action_id
             ),
+            "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=feasibility_event_index,
         event_type="feasibility.completed",
@@ -369,7 +396,8 @@ def run_prioritization(
     artifact_writer.write_step_detail(
         "final_scoring",
         {
-            **final_scoring_payload,
+            "ranked_actions": len(scored_actions),
+            "top_n": top_n,
             "top_ranked_actions": [
                 {
                     "rank": item.rank,
@@ -381,6 +409,7 @@ def run_prioritization(
                 }
                 for item in scored_actions
             ],
+            "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=final_scoring_event_index,
         event_type="final_scoring.completed",
@@ -433,11 +462,11 @@ def run_prioritization(
         {
             "locode": locode,
             "counts": metadata["counts"],
-            "timings": timings,
             "weights": weights,
             "ranked_action_ids": ranked_action_ids,
             "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
             "discarded_legal_action_ids": sorted(discarded_legal_ids),
+            "timings": timings,
         },
         event_index=response_event_index,
         event_type="response.completed",
@@ -447,9 +476,9 @@ def run_prioritization(
         {
             "locode": locode,
             "counts": metadata["counts"],
-            "timings": timings,
             "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
             "discarded_legal_action_ids": sorted(discarded_legal_ids),
+            "timings": timings,
         },
     )
 

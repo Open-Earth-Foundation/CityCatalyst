@@ -140,14 +140,14 @@ def run(
             else 0.0
         )
 
-        # Step 3: Build top-contributor evidence for matched GPC refs.
-        top_contributors: list[dict[str, float | str]] = []
+        # Step 3: Build per-GPC contributor evidence for matched refs.
+        gpc_contributors: list[dict[str, float | str]] = []
         for gpc_ref in matched_city_gpc_refs:
             gpc_city_emissions = city_emissions_by_gpc_ref[gpc_ref]
             reduction_amount = 0.0
             if reduction_multiplier is not None:
                 reduction_amount = gpc_city_emissions * reduction_multiplier
-            top_contributors.append(
+            gpc_contributors.append(
                 {
                     "gpc_ref": gpc_ref,
                     "city_emissions": gpc_city_emissions,
@@ -159,7 +159,7 @@ def run(
                     "reduction_amount": reduction_amount,
                 }
             )
-        top_contributors.sort(
+        gpc_contributors.sort(
             key=lambda item: (
                 -float(item["reduction_amount"]),
                 str(item["gpc_ref"]),
@@ -179,20 +179,21 @@ def run(
             "action_gpc_refs": action_gpc_refs,
             "impact_text": impact_text,
             "reduction_multiplier": reduction_multiplier,
-            "matched_city_gpc_refs_count": len(matched_city_gpc_refs),
-            "matched_city_gpc_refs": matched_city_gpc_refs,
-            "total_city_emissions": total_city_emissions,
-            "total_reduction_amount": total_reduction_amount,
-            "reduction_share_of_city_emissions": reduction_share_of_city_emissions,
             "timeline_bucket": action.implementation_timeline,
-            "timeline_score": timeline_score,
             "timeline_bucket_known": action.implementation_timeline in {
                 "<5 years",
                 "5-10 years",
                 ">10 years",
             },
+            "timeline_score": timeline_score,
+            "matched_city_gpc_refs_count": len(matched_city_gpc_refs),
+            "matched_city_gpc_refs": matched_city_gpc_refs,
+            "total_city_emissions": total_city_emissions,
+            "total_reduction_amount": total_reduction_amount,
+            "reduction_share_of_city_emissions": reduction_share_of_city_emissions,
             "impact_raw": impact_raw,
-            "top_contributors": top_contributors,
+            "impact_normalized": 0.0,
+            "gpc_contributors": gpc_contributors,
         }
 
     # Step 5: Max-normalize per run and append normalized values to evidence.

@@ -253,7 +253,7 @@ def test_alignment_block_with_mock_api_data() -> None:
 
 @pytest.mark.unit
 def test_feasibility_block_with_mock_api_data() -> None:
-    """Feasibility block returns zero scores and city-context row counts."""
+    """Feasibility block returns zero scores (stub)."""
     actions = _load_mock_actions()
     city = _load_mock_city()
 
@@ -261,11 +261,7 @@ def test_feasibility_block_with_mock_api_data() -> None:
 
     assert len(result.score_by_action_id) == len(actions)
     assert all(score == 0.0 for score in result.score_by_action_id.values())
-    assert result.evidence_by_action_id is not None
-
-    expected_context_rows = len(city.city_context)
-    assert expected_context_rows > 0
-    assert result.evidence_by_action_id["c40_0010"]["city_context_rows"] == expected_context_rows
+    assert result.evidence_by_action_id is None
 
 
 @pytest.mark.unit

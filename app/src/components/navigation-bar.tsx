@@ -527,7 +527,7 @@ export function NavigationBar({
           <JNDrawer
             lng={lng}
             currentInventoryId={currentInventoryId as string}
-            organizationId={organization?.organizationId as string}
+            organizationId={(organization?.organizationId ?? userAccessStatus?.organizationId) as string}
             isOpen={isDrawerOpen}
             onClose={() => setIsDrawerOpen(false)}
             onOpenChange={({ open }) => setIsDrawerOpen(open)}

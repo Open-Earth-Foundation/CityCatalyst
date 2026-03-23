@@ -53,6 +53,8 @@
   "inventory-not-found-for-target-year": "Inventario no encontrado para el año objetivo",
   "file-year-mismatch-title": "El año del archivo no coincide con el inventario",
   "file-year-mismatch": "El año de los datos del archivo no coincide con el año objetivo del inventario. Suba un archivo con datos de {{year}}.",
+  "import-completed": "Importación completada",
+  "import-completed-description": "Los datos de su inventario se han importado correctamente.",
   "extracting-chunk-progress": "Extrayendo... (parte {{current}} de {{total}})",
   "breaking-into-chunks": "Dividiendo el archivo en partes más pequeñas para una extracción más sencilla",
   "interpreting-file": "Interpretando su archivo",

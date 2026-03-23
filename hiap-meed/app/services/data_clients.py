@@ -62,18 +62,24 @@ class MockCityDataApiClient:
         for city in response.cities:
             if city.locode.strip().upper() != requested_locode:
                 continue
-            return CityData(
-                comuna_name=city.comuna_name,
-                locode=city.locode,
-                country_code=city.countryCode,
-                region_name=city.region_name,
-                comuna_code=city.comuna_code,
-                region_code=city.region_code,
-                population_size=city.populationSize,
-                population_density=city.populationDensity,
-                area=city.area,
-                raw=city.model_dump(),
+            # Keep full indicator fields so CityData can backfill city_context.
+            city_raw = city.model_dump()
+            city_for_validation = dict(city_raw)
+            city_for_validation.update(
+                {
+                    "comuna_name": city.comuna_name,
+                    "locode": city.locode,
+                    "country_code": city.countryCode,
+                    "region_name": city.region_name,
+                    "comuna_code": city.comuna_code,
+                    "region_code": city.region_code,
+                    "population_size": city.populationSize,
+                    "population_density": city.populationDensity,
+                    "area": city.area,
+                    "raw": city_raw,
+                }
             )
+            return CityData.model_validate(city_for_validation)
 
         raise ValueError(f"Locode `{locode}` not found in city mock data")
 

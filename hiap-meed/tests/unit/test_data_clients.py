@@ -53,6 +53,10 @@ def test_mock_city_client_loads_city_from_file() -> None:
 
     assert city.comuna_name == "Iquique"
     assert city.region_name == "Tarapacá"
+    assert city.city_context
+    assert any(
+        row.get("attribute_name") == "unemployment_rate" for row in city.city_context
+    )
 
 
 @pytest.mark.unit

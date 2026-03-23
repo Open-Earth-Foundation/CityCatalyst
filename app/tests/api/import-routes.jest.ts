@@ -616,11 +616,9 @@ describe("Import Routes API", () => {
         }),
       });
 
-      // Note: The import process may fail in tests due to incomplete file data,
-      // but we can verify the approval step works by checking the status update
-      // Status should eventually be COMPLETED or FAILED depending on processing
-      // We accept both success and failure as valid test outcomes for approval
-      assert.ok([200, 500].includes(res.status));
+      // Approve returns 202 Accepted when import is started in background; client polls for completion.
+      // The import process may fail in tests due to incomplete file data, but we verify the approval step.
+      assert.ok([200, 202, 500].includes(res.status));
 
       // Reload to check status - should have moved from WAITING_FOR_APPROVAL
       await importedFile.reload();

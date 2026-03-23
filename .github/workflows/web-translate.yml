@@ -61,6 +61,7 @@ jobs:
       - name: Update all translations
         env:
           OPENAI_API_KEY: ${{ secrets.TRANSLATION_OPENAI_API_KEY }}
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
         working-directory: ./app
         run: |
           for lang in de es fr pt; do

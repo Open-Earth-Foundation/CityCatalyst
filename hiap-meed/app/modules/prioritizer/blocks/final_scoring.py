@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from app.modules.prioritizer.models import Action, ScoredAction
+from app.modules.prioritizer.internal_models import Action, ScoredAction
 
 
 def run(
@@ -51,6 +51,3 @@ def run(
         item.rank = index
 
     return scored_actions
-
-
-__all__ = ["run"]

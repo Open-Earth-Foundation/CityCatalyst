@@ -28,7 +28,7 @@ graph TD
 
     GlobalAPI["Global API (upstream data service)"]
 
-    CC -->|"POST /v1/prioritize JSON body: locode, weights, top_n"| Router
+    CC -->|"POST /v1/prioritize JSON body: PrioritizerApiRequest (meta + requestData.cityDataList)"| Router
     Router --> Orch
 
     Orch -->|"getCityContext(locode)"| CityClient
@@ -51,8 +51,8 @@ graph TD
     Align --> WS
     Feas --> WS
 
-    WS -->|"PrioritizationResponse"| Router
-    Router -->|"JSON response ranked_action_ids + metadata"| CC
+    WS -->|"PrioritizationResponse (per city)"| Router
+    Router -->|"JSON response PrioritizerApiResponse (results[])"| CC
 ```
 
 ---
@@ -67,10 +67,10 @@ This is the right choice as long as the orchestrator and data clients are synchr
 
 ## Data client layer (current state)
 
-| Client                | Method             | Status         | Target upstream |
-| --------------------- | ------------------ | -------------- | --------------- |
-| `CityDataApiClient`   | `get_city(locode)` | In-memory stub | Global API      |
-| `ActionDataApiClient` | `list_actions()`   | In-memory stub | Global API      |
+| Client                | Method             | Status                                                | Target upstream |
+| --------------------- | ------------------ | ----------------------------------------------------- | --------------- |
+| `CityDataApiClient`   | `get_city(locode)` | In-memory stub                                        | Global API      |
+| `ActionDataApiClient` | `list_actions()`   | Mock/stub/api switch (`HIAP_MEED_ACTION_DATA_SOURCE`) | Global API      |
 
 Stubs are injected via FastAPI's `Depends()` pattern, which makes swapping real implementations straightforward without changing route or orchestrator code.
 
@@ -85,16 +85,16 @@ sequenceDiagram
     participant Orch as Orchestrator
     participant GlobalAPI as Global API
 
-    CC->>API: POST /v1/prioritize {locode, weights, top_n}
+    CC->>API: POST /v1/prioritize PrioritizerApiRequest (meta + requestData.cityDataList)
     Note over API: FastAPI validates request body (Pydantic)
-    API->>Orch: run_prioritization(request, clients)
+    API->>Orch: run_prioritization(locode, clients, per_city_options...)
     Orch->>GlobalAPI: getCityContext(locode)
     GlobalAPI-->>Orch: CityData
     Orch->>GlobalAPI: listActions()
     GlobalAPI-->>Orch: Action[]
     Note over Orch: Hard Filter → Impact / Alignment / Feasibility → Weighted Sum
-    Orch-->>API: PrioritizationResponse
-    API-->>CC: 200 {ranked_action_ids, metadata}
+    Orch-->>API: PrioritizationResponse (per city)
+    API-->>CC: 200 PrioritizerApiResponse (results[])
 ```
 
 ---

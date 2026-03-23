@@ -1,4 +1,4 @@
-"""Per-request JSONL artifact writer."""
+"""Per-request artifact writer for summary JSONL and step detail JSON files."""
 
 from __future__ import annotations
 
@@ -21,22 +21,44 @@ def _artifacts_enabled() -> bool:
 
 
 class ArtifactWriter:
-    """Best-effort JSONL artifact writer for one request."""
+    """Best-effort artifact writer for one request."""
 
     def __init__(self, request_id: UUID) -> None:
         self.request_id = request_id
         self.enabled = _artifacts_enabled()
         log_dir = Path(os.getenv("LOG_DIR", "logs"))
-        self.path = log_dir / "requests" / f"{request_id}.jsonl"
+        created_at_utc = datetime.now(UTC)
+        timestamp_prefix = created_at_utc.strftime("%Y%m%d-%H%M%S")
+        # Group all artifacts for one run under a single folder.
+        self._run_dir = (
+            log_dir
+            / "requests"
+            / f"{timestamp_prefix}Z_{request_id}"
+        )
+        self.path = self._run_dir / "summary.jsonl"
+        self._event_counter = 0
 
-    def write_event(self, event_type: str, payload: Mapping[str, object]) -> None:
-        """Append a single JSON event line. Failures are logged and ignored."""
+    def _next_event_counter(self) -> int:
+        """Return a monotonically increasing per-request event counter."""
+        self._event_counter += 1
+        return self._event_counter
+
+    def _safe_file_stem(self, name: str) -> str:
+        """Convert event/step name to a filename-safe stem."""
+        lowered = name.strip().lower()
+        sanitized = lowered.replace(".", "_").replace(" ", "_").replace("/", "_")
+        return sanitized or "step"
+
+    def write_event(self, event_type: str, payload: Mapping[str, object]) -> int | None:
+        """Append one summary event and return its event index."""
         if not self.enabled:
-            return
+            return None
 
+        event_index = self._next_event_counter()
         event = {
             "timestamp": datetime.now(UTC).isoformat(),
             "request_id": str(self.request_id),
+            "event_index": event_index,
             "event_type": event_type,
             "payload": dict(payload),
         }
@@ -47,6 +69,41 @@ class ArtifactWriter:
                 handle.write("\n")
         except Exception:
             logger.exception("Failed to write artifact event `%s`", event_type)
+        return event_index
 
+    def write_step_detail(
+        self,
+        step_name: str,
+        payload: Mapping[str, object],
+        *,
+        event_index: int | None = None,
+        event_type: str | None = None,
+    ) -> None:
+        """Write detail for one pipeline step, optionally linked to summary event."""
+        if not self.enabled:
+            return
 
-__all__ = ["ArtifactWriter"]
+        if event_index is None:
+            event_index = self._next_event_counter()
+        else:
+            self._event_counter = max(self._event_counter, event_index)
+
+        detail = {
+            "timestamp": datetime.now(UTC).isoformat(),
+            "request_id": str(self.request_id),
+            "event_index": event_index,
+            "step_name": step_name,
+            "payload": dict(payload),
+        }
+        if event_type is not None:
+            detail["event_type"] = event_type
+        safe_step_name = self._safe_file_stem(step_name)
+        detail_path = self._run_dir / f"{event_index:03d}_{safe_step_name}.json"
+        try:
+            detail_path.parent.mkdir(parents=True, exist_ok=True)
+            detail_path.write_text(
+                json.dumps(detail, ensure_ascii=True, indent=2),
+                encoding="utf-8",
+            )
+        except Exception:
+            logger.exception("Failed to write step detail `%s`", step_name)

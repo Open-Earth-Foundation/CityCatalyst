@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from app.modules.prioritizer.models import Action, BlockScoreResult, CityData
+from app.modules.prioritizer.internal_models import Action, BlockScoreResult, CityData
 
 
 def run(actions: list[Action], city: CityData) -> BlockScoreResult:
@@ -27,6 +27,3 @@ def run(actions: list[Action], city: CityData) -> BlockScoreResult:
         score_by_action_id=score_by_action_id,
         evidence_by_action_id=evidence_by_action_id,
     )
-
-
-__all__ = ["run"]

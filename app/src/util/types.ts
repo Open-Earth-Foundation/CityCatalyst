@@ -920,6 +920,8 @@ export interface ImportStatusResponse {
   validationResults: ValidationResults | null;
   columnMappings: ValidationResults | null;
   reviewData: ReviewData | null;
+  /** Year inferred from file data (eCRF); used to check match with inventory target year. */
+  inferredYearFromFile?: number;
   rowCount: number;
   processedRowCount: number;
   errorLog: string | null;

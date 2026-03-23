@@ -26,6 +26,3 @@ def time_block(name: str) -> Iterator[TimedBlock]:
         yield block
     finally:
         block.elapsed_seconds = perf_counter() - block._start_time
-
-
-__all__ = ["TimedBlock", "time_block"]

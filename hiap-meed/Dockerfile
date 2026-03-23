@@ -15,6 +15,9 @@ ENV PATH="/app/.venv/bin:$PATH"
 # Copy the application package
 COPY app/ ./app/
 
+# TODO: Remove this once we have a real data source
+COPY data/ ./data/
+
 # Make the run.sh file executable
 RUN chmod +x app/run.sh
 

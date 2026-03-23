@@ -62,6 +62,76 @@ class MockLegalDataApiClient(LegalDataApiClient):
 
 
 @pytest.mark.integration
+@pytest.mark.parametrize(
+    "weights_override",
+    [
+        {"impact": 0.6, "alignment": 0.2, "feasibility": 0.1},
+        {"impact": 0.55, "alignment": 0.22, "feasibility": 0.23, "unknown": 0.0},
+    ],
+)
+def test_prioritize_rejects_invalid_weights_override(
+    weights_override: dict[str, float],
+) -> None:
+    """Invalid `weightsOverride` values are rejected with HTTP 422."""
+    city = CityData(
+        comuna_name="Santiago",
+        locode="CL-SCL",
+        region_name="Metropolitana",
+        comuna_code="13101",
+        region_code="13",
+        city_context=[],
+    )
+    actions = [Action(action_id="A_ok", action_name="Action")]
+    mock_city_client = MockCityDataApiClient(city=city)
+    mock_action_client = MockActionDataApiClient(actions=actions)
+    mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post(
+                "/v1/prioritize",
+                json={
+                    "meta": {
+                        "requestId": "req-invalid-weights",
+                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                        "backendConsumer": "hiap-meed",
+                        "upstreamProvider": "city_catalyst_frontend",
+                        "apiContext": {
+                            "endpoint": "POST /prioritizer/v1/start_prioritization",
+                            "locodes": ["CL-SCL"],
+                        },
+                        "totalRecords": 1,
+                    },
+                    "requestData": {
+                        "requestedLanguages": ["en"],
+                        "cityDataList": [
+                            {
+                                "locode": "CL-SCL",
+                                "countryCode": "CL",
+                                "populationSize": 1000,
+                                "excludedActionsFreeText": None,
+                                "weightsOverride": weights_override,
+                                "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceOther": None,
+                                "cityEmissionsData": {
+                                    "inventoryYear": None,
+                                    "gpcData": {},
+                                },
+                            }
+                        ],
+                    },
+                },
+            )
+        assert response.status_code == 422
+        assert response.json()["detail"]["request_id"] == "req-invalid-weights"
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
 def test_prioritize_smoke() -> None:
     """Frontend envelope request returns deterministic ranked action IDs."""
     city = CityData(

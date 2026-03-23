@@ -173,6 +173,7 @@ async function runUploadProcessingInBackground(
         errors: validationResult.errors,
         warnings: [...(validationResult.warnings || []), ...importResult.warnings],
         detectedColumns: validationResult.detectedColumns,
+        inferredYearFromFile: importResult.inferredYearFromFile,
         processingResults: {
           rowCount: importResult.rowCount,
           validRowCount: importResult.validRowCount,

@@ -67,9 +67,9 @@ This is the right choice as long as the orchestrator and data clients are synchr
 
 ## Data client layer (current state)
 
-| Client                | Method             | Status         | Target upstream |
-| --------------------- | ------------------ | -------------- | --------------- |
-| `CityDataApiClient`   | `get_city(locode)` | In-memory stub | Global API      |
+| Client                | Method             | Status                                                | Target upstream |
+| --------------------- | ------------------ | ----------------------------------------------------- | --------------- |
+| `CityDataApiClient`   | `get_city(locode)` | In-memory stub                                        | Global API      |
 | `ActionDataApiClient` | `list_actions()`   | Mock/stub/api switch (`HIAP_MEED_ACTION_DATA_SOURCE`) | Global API      |
 
 Stubs are injected via FastAPI's `Depends()` pattern, which makes swapping real implementations straightforward without changing route or orchestrator code.
@@ -87,7 +87,7 @@ sequenceDiagram
 
     CC->>API: POST /v1/prioritize PrioritizerApiRequest (meta + requestData.cityDataList)
     Note over API: FastAPI validates request body (Pydantic)
-    API->>Orch: run_prioritization(locode, clients)
+    API->>Orch: run_prioritization(locode, clients, per_city_options...)
     Orch->>GlobalAPI: getCityContext(locode)
     GlobalAPI-->>Orch: CityData
     Orch->>GlobalAPI: listActions()

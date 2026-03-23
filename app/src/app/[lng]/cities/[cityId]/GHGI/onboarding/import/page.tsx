@@ -234,15 +234,10 @@ export default function ImportPage(props: {
     skip: !inventoryId,
   });
 
-  // Keep last import status for year-mismatch check; load when we have an import
+  // Reset year-mismatch toast when the user switches to a different import
   useEffect(() => {
-    if (!importedFileId || !inventoryId || !cityId) return;
     fileYearMismatchToastShownRef.current = false;
-    getImportStatus({ cityId, inventoryId, importedFileId })
-      .unwrap()
-      .then(setLastImportStatus)
-      .catch(() => {});
-  }, [importedFileId, inventoryId, cityId, getImportStatus]);
+  }, [importedFileId]);
 
   const inventoryYear =
     inventory?.year != null && Number.isFinite(Number(inventory.year))
@@ -421,6 +416,16 @@ export default function ImportPage(props: {
         (result as { importStatus?: string }).importStatus !== "pending_ai_extraction" &&
         (result as { importStatus?: string }).importStatus !== "pending_ai_interpretation"
       ) {
+        // Sync upload path (no polling): polls do not run, so fetch status for year-mismatch / inferredYearFromFile
+        getImportStatus({ cityId, inventoryId, importedFileId: result.id })
+          .unwrap()
+          .then(setLastImportStatus)
+          .catch((err) =>
+            logger.debug(
+              { err, cityId, inventoryId, importedFileId: result.id },
+              "Import status fetch after sync upload failed",
+            ),
+          );
         setTimeout(() => goToNextStep(), 150);
       }
     } catch (error: any) {

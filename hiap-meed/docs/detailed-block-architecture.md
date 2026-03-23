@@ -84,7 +84,7 @@ It combines:
 
 - City emissions, activity-level
   - Source: `CityGHGIActivity`
-- Action to activity targeting (GPC refno mapping)
+- Action to activity targeting (`gpc_ref` mapping)
   - Source: `ActionMitigationImpact`
 - Reduction potential band
   - Source: `ActionMitigationImpact.reductionPotentialBand` with a standard band to multiplier mapping
@@ -99,6 +99,11 @@ It combines:
   - Output: `Impact Scores` (one score per action, used in final ranking)
 - Optional trace fields
   - Output: `Impact Evidence` (top contributing activities and multipliers)
+
+Normalization policy:
+
+- Impact scores are normalized to `0..1` using **max-normalization per run**.
+- Scores do not sum to 1 across actions; the top action in Impact gets score `1.0`.
 
 ```mermaid
 graph TD

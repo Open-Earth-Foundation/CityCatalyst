@@ -21,10 +21,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -33,10 +30,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -45,10 +39,7 @@
         "housing": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "negative",
           "impact_text": "low",
           "impact_numeric": -1,
@@ -68,10 +59,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -80,10 +68,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -92,10 +77,7 @@
         "housing": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "negative",
           "impact_text": "low",
           "impact_numeric": -1,
@@ -115,10 +97,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
+          "gpc_reference_number": ["I.3.1", "I.3.2"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -127,10 +106,7 @@
         "housing": {
           "sector_number": "I",
           "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
+          "gpc_reference_number": ["I.3.1", "I.3.2"],
           "impact_relationship": "negative",
           "impact_text": "low",
           "impact_numeric": -1,
@@ -139,10 +115,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
+          "gpc_reference_number": ["I.3.1", "I.3.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -162,10 +135,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -174,10 +144,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -186,10 +153,7 @@
         "housing": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "negative",
           "impact_text": "low",
           "impact_numeric": -1,
@@ -209,10 +173,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -221,10 +182,7 @@
         "housing": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "negative",
           "impact_text": "low",
           "impact_numeric": -1,
@@ -233,10 +191,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -256,10 +211,7 @@
         "housing": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "negative",
           "impact_text": "low",
           "impact_numeric": -1,
@@ -268,10 +220,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -280,10 +229,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -303,10 +249,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
+          "gpc_reference_number": ["I.3.1", "I.3.2"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -315,10 +258,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
+          "gpc_reference_number": ["I.3.1", "I.3.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -327,10 +267,7 @@
         "housing": {
           "sector_number": "I",
           "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
+          "gpc_reference_number": ["I.3.1", "I.3.2"],
           "impact_relationship": "negative",
           "impact_text": "low",
           "impact_numeric": -1,
@@ -350,9 +287,7 @@
         "emissions": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -361,9 +296,7 @@
         "air_quality": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -383,9 +316,7 @@
         "emissions": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -394,9 +325,7 @@
         "air_quality": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -416,9 +345,7 @@
         "air_quality": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -427,9 +354,7 @@
         "habitat": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -438,9 +363,7 @@
         "emissions": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "medium",
           "impact_numeric": 3,
@@ -449,9 +372,7 @@
         "stakeholder_engagement": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -471,9 +392,7 @@
         "emissions": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -482,9 +401,7 @@
         "water_quality": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -504,9 +421,7 @@
         "water_quality": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -515,9 +430,7 @@
         "emissions": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -526,9 +439,7 @@
         "stakeholder_engagement": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -537,9 +448,7 @@
         "habitat": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -548,9 +457,7 @@
         "cost_of_living": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -570,9 +477,7 @@
         "emissions": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -581,9 +486,7 @@
         "air_quality": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -592,9 +495,7 @@
         "water_quality": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -614,9 +515,7 @@
         "emissions": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -636,9 +535,7 @@
         "emissions": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -658,9 +555,7 @@
         "habitat": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -669,9 +564,7 @@
         "water_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -680,9 +573,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -691,9 +582,7 @@
         "air_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -794,10 +683,8 @@
       "mitigationImpact": {
         "emissions": {
           "sector_number": "I",
-          "subsector_number": 6,
-          "gpc_reference_number": [
-            "I.1.1"
-          ],
+          "subsector_number": 1,
+          "gpc_reference_number": ["I.1.1"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -817,9 +704,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -828,9 +713,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -839,9 +722,7 @@
         "water_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -850,9 +731,7 @@
         "stakeholder_engagement": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -861,9 +740,7 @@
         "cost_of_living": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -872,9 +749,7 @@
         "habitat": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -894,10 +769,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -906,10 +778,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -929,9 +798,7 @@
         "housing": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -940,9 +807,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -951,9 +816,7 @@
         "water_quality": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -962,9 +825,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -973,9 +834,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -984,9 +843,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1006,10 +863,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1018,10 +872,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -1030,10 +881,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -1042,10 +890,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1065,10 +910,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
+          "gpc_reference_number": ["I.3.1", "I.3.2"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -1077,10 +919,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
+          "gpc_reference_number": ["I.3.1", "I.3.2"],
           "impact_relationship": "negative",
           "impact_text": "low",
           "impact_numeric": -1,
@@ -1100,10 +939,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -1112,10 +948,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -1124,10 +957,7 @@
         "housing": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -1136,10 +966,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1148,10 +975,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -1171,9 +995,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -1182,9 +1004,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1193,9 +1013,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1215,9 +1033,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 4,
@@ -1226,9 +1042,7 @@
         "habitat": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "negative",
           "impact_text": "low",
           "impact_numeric": -1,
@@ -1237,9 +1051,7 @@
         "water_quality": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "negative",
           "impact_text": "low",
           "impact_numeric": -1,
@@ -1248,9 +1060,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1270,12 +1080,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2",
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2", "I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -1284,12 +1089,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2",
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2", "I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1298,12 +1098,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2",
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2", "I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1323,10 +1118,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 4,
@@ -1346,9 +1138,7 @@
         "water_quality": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -1357,9 +1147,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1368,9 +1156,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -1379,9 +1165,7 @@
         "habitat": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -1390,9 +1174,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1401,9 +1183,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "very high",
           "impact_numeric": 5,
@@ -1423,10 +1203,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1435,10 +1212,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 4,
@@ -1447,10 +1221,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -1459,10 +1230,7 @@
         "housing": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -1482,10 +1250,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1494,10 +1259,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -1506,10 +1268,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1529,10 +1288,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -1541,10 +1297,7 @@
         "housing": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -1553,10 +1306,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1565,10 +1315,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 4,
@@ -1577,10 +1324,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -1600,12 +1344,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2",
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2", "I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1614,12 +1353,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2",
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2", "I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1628,12 +1362,7 @@
         "housing": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2",
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2", "I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1642,12 +1371,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2",
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2", "I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -1667,9 +1391,7 @@
         "emissions": {
           "sector_number": "III",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "III.4.1"
-          ],
+          "gpc_reference_number": ["III.4.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 4,
@@ -1689,10 +1411,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "I.5.1",
-            "I.5.2"
-          ],
+          "gpc_reference_number": ["I.5.1", "I.5.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1701,10 +1420,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "I.5.1",
-            "I.5.2"
-          ],
+          "gpc_reference_number": ["I.5.1", "I.5.2"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -1713,10 +1429,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "I.5.1",
-            "I.5.2"
-          ],
+          "gpc_reference_number": ["I.5.1", "I.5.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1736,9 +1449,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1747,9 +1458,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -1758,9 +1467,7 @@
         "cost_of_living": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1769,9 +1476,7 @@
         "stakeholder_engagement": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -1791,10 +1496,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
+          "gpc_reference_number": ["I.3.1", "I.3.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1803,10 +1505,7 @@
         "habitat": {
           "sector_number": "I",
           "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
+          "gpc_reference_number": ["I.3.1", "I.3.2"],
           "impact_relationship": "negative",
           "impact_text": "low",
           "impact_numeric": -1,
@@ -1815,10 +1514,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
+          "gpc_reference_number": ["I.3.1", "I.3.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1827,10 +1523,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
+          "gpc_reference_number": ["I.3.1", "I.3.2"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -1839,10 +1532,7 @@
         "water_quality": {
           "sector_number": "I",
           "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
+          "gpc_reference_number": ["I.3.1", "I.3.2"],
           "impact_relationship": "negative",
           "impact_text": "low",
           "impact_numeric": -1,
@@ -1862,10 +1552,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -1874,10 +1561,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1886,10 +1570,7 @@
         "mobility": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1898,10 +1579,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1910,10 +1588,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
+          "gpc_reference_number": ["I.1.1", "I.1.2"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -1933,9 +1608,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1944,9 +1617,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -1955,9 +1626,7 @@
         "habitat": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1966,9 +1635,7 @@
         "water_quality": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -1988,9 +1655,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -1999,9 +1664,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2010,9 +1673,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -2021,9 +1682,7 @@
         "water_quality": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2032,9 +1691,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2054,9 +1711,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2065,9 +1720,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "medium",
           "impact_numeric": 3,
@@ -2076,9 +1729,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2087,9 +1738,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2098,9 +1747,7 @@
         "water_quality": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2109,9 +1756,7 @@
         "habitat": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2131,9 +1776,7 @@
         "stakeholder_engagement": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2142,9 +1785,7 @@
         "cost_of_living": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2153,9 +1794,7 @@
         "emissions": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -2164,9 +1803,7 @@
         "habitat": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2186,9 +1823,7 @@
         "emissions": {
           "sector_number": "III",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "III.2.1"
-          ],
+          "gpc_reference_number": ["III.2.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -2197,9 +1832,7 @@
         "habitat": {
           "sector_number": "III",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "III.2.1"
-          ],
+          "gpc_reference_number": ["III.2.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2208,9 +1841,7 @@
         "water_quality": {
           "sector_number": "III",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "III.2.1"
-          ],
+          "gpc_reference_number": ["III.2.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2230,9 +1861,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -2252,9 +1881,7 @@
         "habitat": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2263,9 +1890,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -2274,9 +1899,7 @@
         "stakeholder_engagement": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2285,9 +1908,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2296,9 +1917,7 @@
         "water_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2318,9 +1937,7 @@
         "water_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2329,9 +1946,7 @@
         "stakeholder_engagement": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2340,9 +1955,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2351,9 +1964,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -2373,9 +1984,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2384,9 +1993,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -2395,9 +2002,7 @@
         "stakeholder_engagement": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2406,9 +2011,7 @@
         "habitat": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2417,9 +2020,7 @@
         "water_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2428,9 +2029,7 @@
         "cost_of_living": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2450,9 +2049,7 @@
         "cost_of_living": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2461,9 +2058,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -2472,9 +2067,7 @@
         "habitat": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2483,9 +2076,7 @@
         "stakeholder_engagement": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2494,9 +2085,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2505,9 +2094,7 @@
         "water_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2527,9 +2114,7 @@
         "cost_of_living": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2538,9 +2123,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -2549,9 +2132,7 @@
         "water_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2560,9 +2141,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2571,9 +2150,7 @@
         "stakeholder_engagement": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2582,9 +2159,7 @@
         "habitat": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2604,9 +2179,7 @@
         "water_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2615,9 +2188,7 @@
         "stakeholder_engagement": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2626,9 +2197,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -2637,9 +2206,7 @@
         "cost_of_living": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2648,9 +2215,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2670,9 +2235,7 @@
         "water_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2681,9 +2244,7 @@
         "cost_of_living": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2692,9 +2253,7 @@
         "stakeholder_engagement": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2703,9 +2262,7 @@
         "habitat": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2714,9 +2271,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2725,9 +2280,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -2747,10 +2300,7 @@
         "habitat": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.1",
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.1", "V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2759,10 +2309,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.1",
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.1", "V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2771,10 +2318,7 @@
         "water_quality": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.1",
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.1", "V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2783,10 +2327,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.1",
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.1", "V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -2795,10 +2336,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.1",
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.1", "V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2807,10 +2345,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.1",
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.1", "V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2830,9 +2365,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -2841,9 +2374,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2852,9 +2383,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2863,9 +2392,7 @@
         "water_quality": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2874,9 +2401,7 @@
         "habitat": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2896,9 +2421,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2907,9 +2430,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
+          "gpc_reference_number": ["I.4.4"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -2929,10 +2450,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2941,10 +2459,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -2953,10 +2468,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -2965,10 +2477,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
+          "gpc_reference_number": ["I.4.1", "I.4.2"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -2988,9 +2497,7 @@
         "emissions": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -2999,9 +2506,7 @@
         "water_quality": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3010,9 +2515,7 @@
         "habitat": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3032,9 +2535,7 @@
         "cost_of_living": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3043,9 +2544,7 @@
         "emissions": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -3054,9 +2553,7 @@
         "habitat": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3065,9 +2562,7 @@
         "water_quality": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3076,9 +2571,7 @@
         "stakeholder_engagement": {
           "sector_number": "III",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
+          "gpc_reference_number": ["III.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3098,9 +2591,7 @@
         "emissions": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -3109,9 +2600,7 @@
         "mobility": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -3120,9 +2609,7 @@
         "air_quality": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -3131,9 +2618,7 @@
         "cost_of_living": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3153,9 +2638,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 6,
-          "gpc_reference_number": [
-            "I.6.1"
-          ],
+          "gpc_reference_number": ["I.6.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3164,9 +2647,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 6,
-          "gpc_reference_number": [
-            "I.6.1"
-          ],
+          "gpc_reference_number": ["I.6.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -3186,9 +2667,7 @@
         "stakeholder_engagement": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3197,9 +2676,7 @@
         "mobility": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -3208,9 +2685,7 @@
         "cost_of_living": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3219,9 +2694,7 @@
         "air_quality": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -3230,9 +2703,7 @@
         "emissions": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -3252,9 +2723,7 @@
         "water_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3263,9 +2732,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -3274,9 +2741,7 @@
         "habitat": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -3285,9 +2750,7 @@
         "housing": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3296,9 +2759,7 @@
         "air_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3318,9 +2779,7 @@
         "water_quality": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -3329,9 +2788,7 @@
         "habitat": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3340,9 +2797,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -3351,9 +2806,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3362,9 +2815,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3384,9 +2835,7 @@
         "stakeholder_engagement": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -3395,9 +2844,7 @@
         "water_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -3406,9 +2853,7 @@
         "habitat": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -3417,9 +2862,7 @@
         "cost_of_living": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3428,9 +2871,7 @@
         "air_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3439,9 +2880,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -3450,9 +2889,7 @@
         "housing": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3472,9 +2909,7 @@
         "water_quality": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -3483,9 +2918,7 @@
         "habitat": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -3494,9 +2927,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3505,9 +2936,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3516,9 +2945,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -3527,9 +2954,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -3549,9 +2974,7 @@
         "habitat": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3560,9 +2983,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3571,9 +2992,7 @@
         "cost_of_living": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3582,9 +3001,7 @@
         "water_quality": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -3593,9 +3010,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -3604,9 +3019,7 @@
         "stakeholder_engagement": {
           "sector_number": "I",
           "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -3626,10 +3039,7 @@
         "housing": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3638,10 +3048,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -3650,10 +3057,7 @@
         "mobility": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3673,9 +3077,7 @@
         "emissions": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -3684,9 +3086,7 @@
         "mobility": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -3695,9 +3095,7 @@
         "air_quality": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -3706,9 +3104,7 @@
         "cost_of_living": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "negative",
           "impact_text": "low",
           "impact_numeric": -1,
@@ -3970,9 +3366,7 @@
         "emissions": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "very low",
           "impact_numeric": 1,
@@ -3981,9 +3375,7 @@
         "housing": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -3992,9 +3384,7 @@
         "mobility": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 2,
@@ -4003,9 +3393,7 @@
         "cost_of_living": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4014,9 +3402,7 @@
         "stakeholder_engagement": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4025,9 +3411,7 @@
         "air_quality": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4047,9 +3431,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -4058,9 +3440,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4080,9 +3460,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -4091,9 +3469,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4113,9 +3489,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4124,9 +3498,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -4146,9 +3518,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4157,9 +3527,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 4,
@@ -4179,9 +3547,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -4201,9 +3567,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -4212,9 +3576,7 @@
         "stakeholder_engagement": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4223,9 +3585,7 @@
         "mobility": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4245,9 +3605,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4256,9 +3614,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "medium",
           "impact_numeric": 3,
@@ -4278,9 +3634,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "medium",
           "impact_numeric": 3,
@@ -4300,9 +3654,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "IV.2"
-          ],
+          "gpc_reference_number": ["IV.2"],
           "impact_relationship": "positive",
           "impact_text": "medium",
           "impact_numeric": 3,
@@ -4311,9 +3663,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "IV.2"
-          ],
+          "gpc_reference_number": ["IV.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4333,9 +3683,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "IV.2"
-          ],
+          "gpc_reference_number": ["IV.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -4344,9 +3692,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "IV.2"
-          ],
+          "gpc_reference_number": ["IV.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4366,9 +3712,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "IV.2"
-          ],
+          "gpc_reference_number": ["IV.2"],
           "impact_relationship": "positive",
           "impact_text": "medium",
           "impact_numeric": 3,
@@ -4377,9 +3721,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "IV.2"
-          ],
+          "gpc_reference_number": ["IV.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4399,9 +3741,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "medium",
           "impact_numeric": 3,
@@ -4421,9 +3761,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -4443,9 +3781,7 @@
         "stakeholder_engagement": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4454,9 +3790,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "medium",
           "impact_numeric": 3,
@@ -4476,9 +3810,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "medium",
           "impact_numeric": 3,
@@ -4498,9 +3830,7 @@
         "stakeholder_engagement": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4509,9 +3839,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4520,9 +3848,7 @@
         "cost_of_living": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4531,9 +3857,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -4553,9 +3877,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "medium",
           "impact_numeric": 3,
@@ -4575,9 +3897,7 @@
         "cost_of_living": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4586,9 +3906,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -4609,9 +3927,7 @@
         "water_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4620,9 +3936,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 4,
@@ -4631,9 +3945,7 @@
         "air_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4653,9 +3965,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 4,
@@ -4664,9 +3974,7 @@
         "habitat": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4675,9 +3983,7 @@
         "water_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4697,9 +4003,7 @@
         "habitat": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4708,9 +4012,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "medium",
           "impact_numeric": 3,
@@ -4719,9 +4021,7 @@
         "water_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4741,9 +4041,7 @@
         "air_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4752,9 +4050,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -4775,9 +4071,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -4798,9 +4092,7 @@
         "habitat": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4809,9 +4101,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "medium",
           "impact_numeric": 3,
@@ -4820,9 +4110,7 @@
         "water_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4842,9 +4130,7 @@
         "habitat": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4853,9 +4139,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "medium",
           "impact_numeric": 3,
@@ -4864,9 +4148,7 @@
         "water_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4886,9 +4168,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -4908,9 +4188,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "V.1"
-          ],
+          "gpc_reference_number": ["V.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -4930,10 +4208,7 @@
         "air_quality": {
           "sector_number": "V",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "V.1",
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.1", "V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4942,10 +4217,7 @@
         "water_quality": {
           "sector_number": "V",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "V.1",
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.1", "V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4954,10 +4226,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "V.1",
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.1", "V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -4966,10 +4235,7 @@
         "habitat": {
           "sector_number": "V",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "V.1",
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.1", "V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -4989,9 +4255,7 @@
         "water_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5000,9 +4264,7 @@
         "air_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5011,9 +4273,7 @@
         "stakeholder_engagement": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5022,9 +4282,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "high",
           "impact_numeric": 4,
@@ -5044,9 +4302,7 @@
         "water_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5055,9 +4311,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "medium",
           "impact_numeric": 3,
@@ -5077,9 +4331,7 @@
         "habitat": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5088,9 +4340,7 @@
         "water_quality": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5099,9 +4349,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -5110,9 +4358,7 @@
         "cost_of_living": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5132,9 +4378,7 @@
         "habitat": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5143,9 +4387,7 @@
         "emissions": {
           "sector_number": "V",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
+          "gpc_reference_number": ["V.2"],
           "impact_relationship": "positive",
           "impact_text": "medium",
           "impact_numeric": 3,
@@ -5165,10 +4407,7 @@
         "emissions": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -5177,10 +4416,7 @@
         "habitat": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5189,10 +4425,7 @@
         "housing": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5201,10 +4434,7 @@
         "mobility": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5213,10 +4443,7 @@
         "air_quality": {
           "sector_number": "I",
           "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
+          "gpc_reference_number": ["I.2.1", "I.2.2"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5236,9 +4463,7 @@
         "emissions": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -5247,9 +4472,7 @@
         "water_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5258,9 +4481,7 @@
         "air_quality": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5269,9 +4490,7 @@
         "stakeholder_engagement": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5280,9 +4499,7 @@
         "habitat": {
           "sector_number": "IV",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
+          "gpc_reference_number": ["IV.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5515,9 +4732,7 @@
         "mobility": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5526,9 +4741,7 @@
         "emissions": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 2,
@@ -5537,9 +4750,7 @@
         "stakeholder_engagement": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,
@@ -5548,9 +4759,7 @@
         "air_quality": {
           "sector_number": "II",
           "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
+          "gpc_reference_number": ["II.1.1"],
           "impact_relationship": "positive",
           "impact_text": "low",
           "impact_numeric": 1,

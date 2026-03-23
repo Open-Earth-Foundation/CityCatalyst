@@ -2,22 +2,32 @@
 
 from __future__ import annotations
 
+import logging
+
+from app.modules.prioritizer.config import (
+    resolve_impact_text_multiplier,
+    resolve_timeline_score,
+)
 from app.modules.prioritizer.internal_models import Action, BlockScoreResult
 
 
-def _read_gpc_refs(impact_row: dict[str, object]) -> list[str]:
-    """Extract and deduplicate GPC reference numbers from a single impact row."""
-    refs: list[str] = []
-    single_ref = impact_row.get("gpc_reference_number")
-    if isinstance(single_ref, str) and single_ref.strip():
-        refs.append(single_ref.strip())
+logger = logging.getLogger(__name__)
 
-    many_refs = impact_row.get("gpc_reference_numbers")
-    if isinstance(many_refs, list):
-        refs.extend(str(item).strip() for item in many_refs if str(item).strip())
 
-    deduped = list(dict.fromkeys(refs))
-    return deduped
+def _read_gpc_reference_numbers(
+    *, action_id: str, emissions_entry: dict[str, object]
+) -> list[str]:
+    """Extract and deduplicate GPC reference numbers from one emissions entry dict."""
+    ref_value = emissions_entry.get("gpc_reference_number")
+    if not isinstance(ref_value, list):
+        message = (
+            "Invalid impact contract for action_id=%s: expected `gpc_reference_number` "
+            "to be a list[str], got %s"
+        )
+        logger.error(message, action_id, type(ref_value).__name__)
+        raise ValueError(message % (action_id, type(ref_value).__name__))
+    refs = [str(item).strip() for item in ref_value if str(item).strip()]
+    return list(dict.fromkeys(refs))
 
 
 def run(actions: list[Action]) -> BlockScoreResult:
@@ -32,19 +42,45 @@ def run(actions: list[Action]) -> BlockScoreResult:
     evidence_by_action_id: dict[str, dict[str, object]] = {}
 
     for action in actions:
-        emissions_impact_rows = 0
-        collected_refs: list[str] = []
-        for raw_impact in action.impacts:
-            impact_type = raw_impact.get("impact_type")
-            if str(impact_type).lower() == "emissions":
-                emissions_impact_rows += 1
-                collected_refs.extend(_read_gpc_refs(raw_impact))
+        emissions_entry = action.mitigation_impact.get("emissions")
+        if emissions_entry is None:
+            collected_refs = []
+        elif not isinstance(emissions_entry, dict):
+            logger.error(
+                "Invalid mitigation_impact.emissions for action_id=%s: expected dict, got %s",
+                action.action_id,
+                type(emissions_entry).__name__,
+            )
+            raise ValueError(
+                f"Invalid mitigation_impact.emissions for action_id={action.action_id}: "
+                f"expected dict, got {type(emissions_entry).__name__}"
+            )
+        else:
+            collected_refs = _read_gpc_reference_numbers(
+                action_id=action.action_id, emissions_entry=emissions_entry
+            )
 
-        sample_refs = list(dict.fromkeys(collected_refs))[:3]
+        impact_text = (
+            str(emissions_entry.get("impact_text"))
+            if isinstance(emissions_entry, dict)
+            and emissions_entry.get("impact_text") is not None
+            else None
+        )
+        reduction_multiplier = (
+            resolve_impact_text_multiplier(impact_text)
+            if impact_text is not None
+            else None
+        )
+        timeline_score = resolve_timeline_score(action.implementation_timeline)
+        action_gpc_refs = list(dict.fromkeys(collected_refs))
         evidence_by_action_id[action.action_id] = {
-            "emissions_impact_rows": emissions_impact_rows,
-            "has_any_gpc_reference": len(sample_refs) > 0,
-            "sample_gpc_reference_numbers": sample_refs,
+            "has_emissions_entry": emissions_entry is not None,
+            "has_any_action_gpc_ref": len(action_gpc_refs) > 0,
+            "action_gpc_refs": action_gpc_refs,
+            "impact_text": impact_text,
+            "reduction_multiplier": reduction_multiplier,
+            "timeline_bucket": action.implementation_timeline,
+            "timeline_score": timeline_score,
         }
         score_by_action_id[action.action_id] = 0.0
 

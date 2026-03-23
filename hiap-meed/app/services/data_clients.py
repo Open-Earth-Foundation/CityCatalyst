@@ -100,6 +100,10 @@ class MockActionDataApiClient:
         response = ActionsApiResponse.model_validate(payload)
         actions: list[Action] = []
         for action in response.actions:
+            mitigation_impact = {
+                impact_type: impact_entry.model_dump()
+                for impact_type, impact_entry in action.mitigationImpact.items()
+            }
             actions.append(
                 Action(
                     action_id=action.actionId,
@@ -109,7 +113,7 @@ class MockActionDataApiClient:
                     action_subcategory=action.actionSubcategory,
                     investment_cost=action.costInvestmentNeeded,
                     implementation_timeline=action.timelineForImplementation,
-                    mitigation_impact=action.mitigationImpact,
+                    mitigation_impact=mitigation_impact,
                     raw=action.model_dump(),
                 )
             )

@@ -38,6 +38,7 @@ ARTIFACT_LOG_JSONL=true
 HIAP_MEED_CITY_DATA_SOURCE=mock
 HIAP_MEED_LEGAL_DATA_SOURCE=mock
 HIAP_MEED_ACTION_DATA_SOURCE=mock
+HIAP_MEED_TOP_N=20
 ```
 
 Variables:
@@ -50,6 +51,7 @@ Variables:
 - `HIAP_MEED_CITY_DATA_SOURCE`: city input source (`mock` or `api`)
 - `HIAP_MEED_LEGAL_DATA_SOURCE`: legal input source (`mock` or `api`)
 - `HIAP_MEED_ACTION_DATA_SOURCE`: action catalog source (`mock` or `api`)
+- `HIAP_MEED_TOP_N`: default number of ranked actions to return per city (default `20`)
 
 ### 2. Install dependencies
 
@@ -112,6 +114,12 @@ Hard legal requirements:
 - Actions with hard `alignment_status="not_aligned"` are discarded before scoring.
 - Actions with hard `alignment_status="no_evidence"` are kept and surfaced in hard-filter evidence.
 
+Score normalization policy:
+
+- Impact, alignment, and feasibility block scores are normalized to `0..1` per action.
+- Blocks use **max-normalization per run** (`score / max(score)`), not sum-normalization.
+- Scores therefore do not sum to 1 across all actions; `1.0` means “best action in that block for this run”.
+
 Response fields:
 
 - `results` (`array`): one entry per requested city.
@@ -136,6 +144,7 @@ Example JSON request bodies (using mock data from `data/`):
   },
   "requestData": {
     "requestedLanguages": ["en"],
+    "topN": 20,
     "cityDataList": [
       {
         "locode": "CL IQQ",

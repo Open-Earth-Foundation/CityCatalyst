@@ -81,14 +81,14 @@ def test_prioritize_e2e_with_mock_api_payloads() -> None:
         assert metadata["counts"]["discarded_excluded"] == 0
         assert metadata["counts"]["discarded_legal"] == len(expected_discarded_legal_ids)
         assert metadata["counts"]["valid_actions"] == 151
-        assert metadata["counts"]["ranked_actions"] == 151
+        assert metadata["counts"]["ranked_actions"] == 20
         assert not expected_discarded_legal_ids.intersection(ranked_action_ids)
 
         expected_ranked_ids = sorted(
             action.action_id
             for action in mock_action_client.list_actions()
             if action.action_id not in expected_discarded_legal_ids
-        )
+        )[:20]
         assert ranked_action_ids == expected_ranked_ids
 
         blocked_evidence = metadata["hard_filter_evidence_by_action_id"]["c40_0012"]

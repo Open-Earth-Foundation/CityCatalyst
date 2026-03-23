@@ -74,23 +74,9 @@ class Action(BaseModel):
     implementation_timeline: str | None = None
     biome: str | None = None
     mitigation_impact: dict[str, dict[str, Any]] = Field(default_factory=dict)
-    impacts: list[dict[str, Any]] = Field(default_factory=list)
     as_of: datetime | None = None
     source: str | None = None
     raw: dict[str, Any] = Field(default_factory=dict)
-
-    @model_validator(mode="after")
-    def _backfill_impacts(self) -> Action:
-        """Flatten `mitigation_impact` object into legacy `impacts` row list."""
-        if self.impacts or not self.mitigation_impact:
-            return self
-        flattened: list[dict[str, Any]] = []
-        for impact_type, impact_data in self.mitigation_impact.items():
-            if not isinstance(impact_data, dict):
-                continue
-            flattened.append({"impact_type": impact_type, **impact_data})
-        self.impacts = flattened
-        return self
 
 
 class BlockScoreResult(BaseModel):

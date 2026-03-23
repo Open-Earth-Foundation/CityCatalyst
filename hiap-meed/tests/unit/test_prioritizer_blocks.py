@@ -79,9 +79,9 @@ def test_impact_block_with_mock_api_data() -> None:
     assert result.evidence_by_action_id is not None
 
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
-    assert first_action_evidence["emissions_impact_rows"] == 1
-    assert first_action_evidence["has_any_gpc_reference"] is False
-    assert first_action_evidence["sample_gpc_reference_numbers"] == []
+    assert first_action_evidence["has_emissions_entry"] is True
+    assert first_action_evidence["has_any_action_gpc_ref"] is True
+    assert first_action_evidence["action_gpc_refs"] == ["I.1.1", "I.1.2"]
 
 
 @pytest.mark.unit

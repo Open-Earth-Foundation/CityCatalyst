@@ -338,7 +338,7 @@ def run_prioritization(
                     "alignment_score": item.alignment_score,
                     "feasibility_score": item.feasibility_score,
                 }
-                for item in scored_actions[:20]
+                for item in scored_actions
             ],
         },
         event_index=final_scoring_event_index,

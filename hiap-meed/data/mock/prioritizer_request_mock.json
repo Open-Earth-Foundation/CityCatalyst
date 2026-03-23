@@ -12,6 +12,7 @@
   },
   "requestData": {
     "requestedLanguages": ["en"],
+    "topN": 20,
     "cityDataList": [
       {
         "locode": "CL IQQ",

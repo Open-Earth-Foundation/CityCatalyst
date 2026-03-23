@@ -153,24 +153,22 @@ def test_prioritize_smoke() -> None:
         Action(
             action_id="c40_0010",
             action_name="Retrofit buildings",
-            impacts=[
-                {
-                    "impact_type": "emissions",
+            mitigation_impact={
+                "emissions": {
+                    "gpc_reference_number": ["I.1.1", "I.1.2"],
                     "impact_relationship": "positive",
-                    "gpc_reference_number": "{'I.1.1','I.1.2'}",
                 }
-            ],
+            },
         ),
         Action(
             action_id="c40_0020",
             action_name="Fleet expansion",
-            impacts=[
-                {
-                    "impact_type": "emissions",
+            mitigation_impact={
+                "emissions": {
+                    "gpc_reference_number": ["I.2.1"],
                     "impact_relationship": "negative",
-                    "gpc_reference_number": "{'I.2.1'}",
                 }
-            ],
+            },
         ),
     ]
     mock_city_client = MockCityDataApiClient(city=city)

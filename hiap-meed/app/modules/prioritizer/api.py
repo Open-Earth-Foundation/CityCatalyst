@@ -7,6 +7,7 @@ from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException
 
+from app.modules.prioritizer.config import resolve_top_n
 from app.modules.prioritizer.models import (
     FrontendCityInput,
     PrioritizationResponse,
@@ -58,6 +59,7 @@ def prioritize(
         for city_input in request.requestData.cityDataList:
             per_city_result = _run_for_city_input(
                 city_input=city_input,
+                requested_top_n=request.requestData.topN,
                 frontend_request_id=request.meta.requestId,
                 requested_languages=list(request.requestData.requestedLanguages),
                 city_data_api_client=city_data_api_client,
@@ -94,6 +96,7 @@ def prioritize(
 def _run_for_city_input(
     *,
     city_input: FrontendCityInput,
+    requested_top_n: int | None,
     frontend_request_id: str,
     requested_languages: list[str],
     city_data_api_client: CityDataApiClient,
@@ -118,7 +121,7 @@ def _run_for_city_input(
     result = run_prioritization(
         locode=city_input.locode,
         weights_override=city_input.weightsOverride,
-        top_n=None,
+        top_n=resolve_top_n(requested_top_n),
         excluded_actions_free_text=city_input.excludedActionsFreeText,
         internal_request_id=internal_request_id,
         city_data_api_client=city_data_api_client,

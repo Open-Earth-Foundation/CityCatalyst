@@ -6,8 +6,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
+from app.modules.prioritizer.config import resolve_impact_text_multiplier
 
 # ============================================================================
 # FRONTEND REQUEST ENVELOPE MODELS (CityCatalyst -> hiap-meed)
@@ -85,6 +86,7 @@ class PrioritizerRequestData(BaseModel):
     """RequestData section of frontend prioritizer request payload."""
 
     requestedLanguages: list[str] = Field(default_factory=lambda: ["en"])
+    topN: int | None = Field(default=None, ge=1)
     cityDataList: list[FrontendCityInput] = Field(min_length=1)
 
 
@@ -168,6 +170,18 @@ class CityApiItem(BaseModel):
     home_ownership: CityIndicator | None = None
 
 
+class MitigationImpactEntry(BaseModel):
+    """Single mitigation impact entry (e.g. emissions, air_quality) for one action."""
+
+    sector_number: str
+    subsector_number: int
+    gpc_reference_number: list[str]
+    impact_relationship: str | None = None
+    impact_text: str | None = None
+    impact_numeric: int | None = None
+    methodology: str | None = None
+
+
 class ActionApiItem(BaseModel):
     """Action item shape returned by upstream `GET /v1/actions`."""
 
@@ -178,7 +192,22 @@ class ActionApiItem(BaseModel):
     actionSubcategory: str | None = None
     costInvestmentNeeded: str | None = None
     timelineForImplementation: str | None = None
-    mitigationImpact: dict[str, dict[str, Any]] = Field(default_factory=dict)
+    mitigationImpact: dict[str, MitigationImpactEntry] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def _validate_emissions_impact_text_band_present(self) -> ActionApiItem:
+        """Validate emissions impact includes a non-empty text band."""
+        emissions_entry = self.mitigationImpact.get("emissions")
+        if emissions_entry is None:
+            return self
+        impact_text = emissions_entry.impact_text
+        if impact_text is None or not impact_text.strip():
+            raise ValueError(
+                f"Action `{self.actionId}` is missing mitigationImpact.emissions.impact_text"
+            )
+        # Validate that the text band can be resolved by configured impact mapping.
+        resolve_impact_text_multiplier(impact_text)
+        return self
 
 
 class CityApiResponse(BaseModel):

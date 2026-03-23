@@ -22,9 +22,9 @@ Inputs and behaviors must align with:
   - `_apply_legal_hard_filter(...)`
 - Free-text exclusions are currently **stubbed**:
   - `_resolve_excluded_action_ids_from_text(...)` returns an empty set, so no actions are excluded yet from free text.
-- Legal hard filtering is currently **stubbed**:
-  - `_apply_legal_hard_filter(...)` does not discard actions yet and marks evidence with `legal_filter_status = "not_applied_stub"`.
-- `HardFilterResult` currently has no explicit bucket for “discarded due to legal mismatch”.
+- Legal hard filtering is currently **implemented**:
+  - `_apply_legal_hard_filter(...)` evaluates legal requirements and discards actions that fail hard legal constraints (for example `not_aligned` hard requirements).
+- `HardFilterResult` now includes an explicit `discarded_legal` bucket for actions discarded due to legal mismatch.
 - The orchestrator calls hard filter before scoring and attaches `hard_filter_result.evidence[action_id]` into the final response evidence.
 
 Relevant files:
@@ -100,6 +100,7 @@ Handling missing legal data:
       - Useful for summary UI and monitoring/QA (legal signal coverage by theme/action family).
 
 Note:
+
 - Non-blocking legal constraints / implementation notes (Notion “constraint”) are intentionally **not** emitted by the Hard Filter block in this plan.
 - They should be derived and attached later in the **Feasibility** stage as feasibility evidence (and potentially as a feasibility modifier), because they do not determine eligibility.
 
@@ -234,4 +235,3 @@ After code is implemented and tests pass:
 4. Update orchestrator to fetch/pass legal data and report counts.
 5. Add integration test(s).
 6. Update architecture doc status.
-

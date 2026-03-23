@@ -14,6 +14,7 @@ from app.modules.prioritizer.internal_models import (
     HardFilterLegalRequirement,
 )
 from app.modules.prioritizer.models import (
+    CityApiResponse,
     ActionsApiResponse,
     ActionsLegalApiResponse,
     CitiesApiResponse,
@@ -57,9 +58,16 @@ class MockCityDataApiClient:
     def get_city(self, locode: str) -> CityData:
         """Load one city record from mock data by locode."""
         payload = json.loads(self.mock_file_path.read_text(encoding="utf-8"))
-        response = CitiesApiResponse.model_validate(payload)
+        if "cities" in payload:
+            response_cities = CitiesApiResponse.model_validate(payload).cities
+        elif "city" in payload:
+            response_cities = [CityApiResponse.model_validate(payload).city]
+        else:
+            raise ValueError(
+                "Invalid city mock payload: expected `city` or `cities` key"
+            )
         requested_locode = locode.strip().upper()
-        for city in response.cities:
+        for city in response_cities:
             if city.locode.strip().upper() != requested_locode:
                 continue
             # Keep full indicator fields so CityData can backfill city_context.
@@ -209,7 +217,7 @@ _default_mock_city_client = MockCityDataApiClient(
     mock_file_path=Path(__file__).resolve().parents[2]
     / "data"
     / "mock"
-    / "cities_api_mock.json"
+    / "city_api_mock.json"
 )
 _default_api_action_client = ApiActionDataApiClient()
 _default_mock_action_client = MockActionDataApiClient(

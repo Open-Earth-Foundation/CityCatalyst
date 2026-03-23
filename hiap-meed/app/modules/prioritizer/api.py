@@ -36,6 +36,28 @@ def _error_payload(request_id: str, message: str) -> dict[str, str]:
     return {"request_id": request_id, "error": message}
 
 
+def _extract_city_emissions_by_gpc_ref(city_input: FrontendCityInput) -> dict[str, float]:
+    """
+    Build city emissions totals keyed by GPC reference.
+
+    The frontend request carries emissions per GPC key under
+    `cityEmissionsData.gpcData[*].activities[*].totalEmissions`. This helper
+    sums activity totals per key and ignores missing totals (`None`).
+    """
+    emissions_by_gpc_ref: dict[str, float] = {}
+
+    # Sum activity emissions for each GPC key from frontend request schema.
+    for gpc_ref, gpc_entry in city_input.cityEmissionsData.gpcData.items():
+        gpc_total = 0.0
+        for activity in gpc_entry.activities:
+            if activity.totalEmissions is None:
+                continue
+            gpc_total += activity.totalEmissions
+        emissions_by_gpc_ref[gpc_ref] = gpc_total
+
+    return emissions_by_gpc_ref
+
+
 @router.post("/v1/prioritize", response_model=PrioritizerApiResponse)
 def prioritize(
     request: PrioritizerApiRequest,
@@ -55,8 +77,19 @@ def prioritize(
     request_trace_id = request.meta.requestId
 
     try:
+        logger.info(
+            "Prioritization request received frontend_request_id=%s cities=%s requested_top_n=%s",
+            request_trace_id,
+            len(request.requestData.cityDataList),
+            request.requestData.topN,
+        )
         results: list[PrioritizerApiCityResult] = []
         for city_input in request.requestData.cityDataList:
+            logger.info(
+                "Prioritization city started frontend_request_id=%s locode=%s",
+                request_trace_id,
+                city_input.locode,
+            )
             per_city_result = _run_for_city_input(
                 city_input=city_input,
                 requested_top_n=request.requestData.topN,
@@ -74,6 +107,11 @@ def prioritize(
                 )
             )
 
+        logger.info(
+            "Prioritization request completed frontend_request_id=%s cities=%s",
+            request_trace_id,
+            len(results),
+        )
         return PrioritizerApiResponse(results=results)
     except ValueError as error:
         logger.warning(
@@ -118,11 +156,13 @@ def _run_for_city_input(
 
     # Create internal request ID used for orchestrator artifacts/tracing.
     internal_request_id = uuid4()
+    city_emissions_by_gpc_ref = _extract_city_emissions_by_gpc_ref(city_input)
     result = run_prioritization(
         locode=city_input.locode,
         weights_override=city_input.weightsOverride,
         top_n=resolve_top_n(requested_top_n),
         excluded_actions_free_text=city_input.excludedActionsFreeText,
+        city_emissions_by_gpc_ref=city_emissions_by_gpc_ref,
         internal_request_id=internal_request_id,
         city_data_api_client=city_data_api_client,
         action_data_api_client=action_data_api_client,

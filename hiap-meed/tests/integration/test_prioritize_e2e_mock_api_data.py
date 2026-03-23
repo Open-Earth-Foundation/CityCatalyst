@@ -84,11 +84,28 @@ def test_prioritize_e2e_with_mock_api_payloads() -> None:
         assert metadata["counts"]["ranked_actions"] == 20
         assert not expected_discarded_legal_ids.intersection(ranked_action_ids)
 
-        expected_ranked_ids = sorted(
-            action.action_id
-            for action in mock_action_client.list_actions()
-            if action.action_id not in expected_discarded_legal_ids
-        )[:20]
+        expected_ranked_ids = [
+            "icare_0025",
+            "icare_0002",
+            "icare_0016",
+            "icare_0028",
+            "c40_0010",
+            "c40_0015",
+            "icare_0010",
+            "icare_0040",
+            "c40_0023",
+            "icare_0121",
+            "icare_0139",
+            "ipcc_0105",
+            "c40_0025",
+            "icare_0099",
+            "c40_0013",
+            "c40_0016",
+            "c40_0017",
+            "c40_0018",
+            "c40_0035",
+            "c40_0036",
+        ]
         assert ranked_action_ids == expected_ranked_ids
 
         blocked_evidence = metadata["hard_filter_evidence_by_action_id"]["c40_0012"]

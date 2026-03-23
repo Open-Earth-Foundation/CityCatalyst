@@ -45,7 +45,7 @@ def test_get_action_data_client_uses_mock_for_unknown_source(
 def test_mock_city_client_loads_city_from_file() -> None:
     """Mock city client returns expected city metadata for known locode."""
     mock_file_path = (
-        Path(__file__).resolve().parents[2] / "data" / "mock" / "cities_api_mock.json"
+        Path(__file__).resolve().parents[2] / "data" / "mock" / "city_api_mock.json"
     )
     client = MockCityDataApiClient(mock_file_path=mock_file_path)
 

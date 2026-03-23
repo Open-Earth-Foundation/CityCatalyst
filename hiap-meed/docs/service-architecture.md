@@ -87,12 +87,12 @@ sequenceDiagram
 
     CC->>API: POST /v1/prioritize PrioritizerApiRequest (meta + requestData.cityDataList)
     Note over API: FastAPI validates request body (Pydantic)
-    API->>Orch: run_prioritization(locode, clients, per_city_options...)
+    API->>Orch: run_prioritization(locode, city_emissions_by_gpc_ref, clients, per_city_options...)
     Orch->>GlobalAPI: getCityContext(locode)
     GlobalAPI-->>Orch: CityData
     Orch->>GlobalAPI: listActions()
     GlobalAPI-->>Orch: Action[]
-    Note over Orch: Hard Filter → Impact / Alignment / Feasibility → Weighted Sum
+    Note over Orch: Hard Filter → Impact (uses city_emissions_by_gpc_ref) → Alignment / Feasibility → Weighted Sum
     Orch-->>API: PrioritizationResponse (per city)
     API-->>CC: 200 PrioritizerApiResponse (results[])
 ```

@@ -45,6 +45,23 @@ def _load_mock_legal_requirements() -> dict[str, object]:
     return legal_client.get_action_legal_requirements(locode="CL IQQ")
 
 
+def _load_city_emissions_by_gpc_ref() -> dict[str, float]:
+    """Return city emissions totals per GPC key from frontend request mock payload."""
+    request_payload = json.loads(
+        (_mock_data_dir() / "prioritizer_request_mock.json").read_text(encoding="utf-8")
+    )
+    city_input = request_payload["requestData"]["cityDataList"][0]
+    gpc_data = city_input["cityEmissionsData"]["gpcData"]
+
+    emissions_by_gpc_ref: dict[str, float] = {}
+    for gpc_ref, gpc_entry in gpc_data.items():
+        activities = gpc_entry.get("activities", [])
+        emissions_by_gpc_ref[gpc_ref] = sum(
+            activity.get("totalEmissions") or 0.0 for activity in activities
+        )
+    return emissions_by_gpc_ref
+
+
 @pytest.mark.unit
 def test_hard_filter_block_with_mock_api_data() -> None:
     """Hard filter removes known not-aligned actions from mock legal data."""
@@ -69,19 +86,151 @@ def test_hard_filter_block_with_mock_api_data() -> None:
 
 @pytest.mark.unit
 def test_impact_block_with_mock_api_data() -> None:
-    """Impact block returns zero scores plus emissions evidence for mock actions."""
+    """Impact block emits normalized city-specific scores and explainability evidence."""
     actions = _load_mock_actions()
+    city_emissions_by_gpc_ref = _load_city_emissions_by_gpc_ref()
 
-    result = impact.run(actions=actions)
+    result = impact.run(
+        actions=actions,
+        city_emissions_by_gpc_ref=city_emissions_by_gpc_ref,
+    )
 
     assert len(result.score_by_action_id) == len(actions)
-    assert all(score == 0.0 for score in result.score_by_action_id.values())
+    assert all(0.0 <= score <= 1.0 for score in result.score_by_action_id.values())
+    assert max(result.score_by_action_id.values()) == pytest.approx(1.0)
     assert result.evidence_by_action_id is not None
 
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
     assert first_action_evidence["has_emissions_entry"] is True
     assert first_action_evidence["has_any_action_gpc_ref"] is True
     assert first_action_evidence["action_gpc_refs"] == ["I.1.1", "I.1.2"]
+    assert first_action_evidence["matched_city_gpc_refs_count"] == 2
+    assert first_action_evidence["reduction_share_of_city_emissions"] > 0.0
+    assert first_action_evidence["impact_normalized"] == pytest.approx(
+        result.score_by_action_id["c40_0010"]
+    )
+
+
+@pytest.mark.unit
+def test_impact_block_rejects_unknown_impact_text_band() -> None:
+    """Impact block fails fast when an action has an unknown impact_text band."""
+    actions = [
+        Action(
+            action_id="A1",
+            action_name="Unknown impact text action",
+            implementation_timeline="<5 years",
+            mitigation_impact={
+                "emissions": {
+                    "gpc_reference_number": ["I.1.1"],
+                    "impact_text": "extreme",
+                }
+            },
+        )
+    ]
+
+    with pytest.raises(ValueError, match="Unknown mitigation impact_text value"):
+        impact.run(actions=actions, city_emissions_by_gpc_ref={"I.1.1": 100.0})
+
+
+@pytest.mark.unit
+def test_impact_block_ranks_higher_emissions_target_above_lower_target() -> None:
+    """Action targeting higher-emitting city refs ranks higher with same timeline/band."""
+    actions = [
+        Action(
+            action_id="A_high",
+            action_name="Targets high emissions",
+            implementation_timeline="<5 years",
+            mitigation_impact={
+                "emissions": {
+                    "gpc_reference_number": ["I.1.1"],
+                    "impact_text": "medium",
+                }
+            },
+        ),
+        Action(
+            action_id="A_low",
+            action_name="Targets low emissions",
+            implementation_timeline="<5 years",
+            mitigation_impact={
+                "emissions": {
+                    "gpc_reference_number": ["II.1.1"],
+                    "impact_text": "medium",
+                }
+            },
+        ),
+    ]
+
+    result = impact.run(
+        actions=actions,
+        city_emissions_by_gpc_ref={"I.1.1": 1_000.0, "II.1.1": 100.0},
+    )
+
+    assert result.score_by_action_id["A_high"] > result.score_by_action_id["A_low"]
+    assert result.score_by_action_id["A_high"] == pytest.approx(1.0)
+
+
+@pytest.mark.unit
+def test_impact_block_accepts_gpc_reference_number_list_shape() -> None:
+    """Impact block accepts the mock schema where gpc_reference_number is a list."""
+    action = Action(
+        action_id="A_refs",
+        action_name="Action with repeated refs",
+        implementation_timeline="5-10 years",
+        mitigation_impact={
+            "emissions": {
+                "gpc_reference_number": ["I.1.1", "I.1.1", "I.1.2"],
+                "impact_text": "low",
+            }
+        },
+    )
+
+    result = impact.run(
+        actions=[action],
+        city_emissions_by_gpc_ref={"I.1.1": 10.0, "I.1.2": 5.0},
+    )
+
+    evidence = result.evidence_by_action_id["A_refs"]
+    assert evidence["action_gpc_refs"] == ["I.1.1", "I.1.2"]
+    assert evidence["matched_city_gpc_refs_count"] == 2
+
+
+@pytest.mark.unit
+def test_impact_block_timeline_mapping_prefers_faster_implementation() -> None:
+    """Timeline mapping contributes more for faster implementation buckets."""
+    actions = [
+        Action(
+            action_id="A_fast",
+            action_name="Fast timeline",
+            implementation_timeline="<5 years",
+            mitigation_impact={
+                "emissions": {
+                    "gpc_reference_number": ["I.1.1"],
+                    "impact_text": "high",
+                }
+            },
+        ),
+        Action(
+            action_id="A_slow",
+            action_name="Slow timeline",
+            implementation_timeline=">10 years",
+            mitigation_impact={
+                "emissions": {
+                    "gpc_reference_number": ["I.1.1"],
+                    "impact_text": "high",
+                }
+            },
+        ),
+    ]
+
+    result = impact.run(
+        actions=actions,
+        city_emissions_by_gpc_ref={"I.1.1": 100.0},
+    )
+    assert (
+        result.evidence_by_action_id["A_fast"]["timeline_score"]
+        > result.evidence_by_action_id["A_slow"]["timeline_score"]
+    )
+    assert result.score_by_action_id["A_fast"] > result.score_by_action_id["A_slow"]
 
 
 @pytest.mark.unit

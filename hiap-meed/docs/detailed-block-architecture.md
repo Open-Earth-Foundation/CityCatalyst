@@ -6,8 +6,8 @@
 |---|---|---|
 | Hard Filter | Exclusion by `action_id` | Implemented |
 | Hard Filter | Legal requirement check | Implemented |
-| Impact | GPC reference evidence collection | Implemented (stub: score = 0.0) |
-| Impact | Activity relevance × reduction band × timeline | Not started |
+| Impact | GPC reference evidence collection | Implemented |
+| Impact | Activity relevance × reduction band × timeline | Implemented |
 | Alignment | Attribute-presence evidence | Implemented (stub: score = 0.0) |
 | Alignment | Policy signal matching + city preference boost | Not started |
 | Feasibility | City context row-count evidence | Implemented (stub: score = 0.0) |
@@ -30,11 +30,9 @@ Biome filtering is intentionally not included yet.
 - **All mitigation actions**
   - Source: `Action` (core actions list)
 - **City exclusions**
-  - Source: `CityStrategicPreferences.excludedActions` (or your preference mapping tables, if split)
+  - Source: frontend request `excludedActionsFreeText` (currently treated as a stub and does not exclude actions yet)
 - **Hard legal requirements per action**
-  - Source: `ActionLegalRequirement` filtered to `strength = hard`
-- **Applicable legal signals for the city or scope**
-  - Source: `LegalSignal` (scoped to `CL` national baseline and optionally region/city scope)
+  - Source: legal requirements client payload (mock/API), filtered to hard strengths (`mandatory|required`)
 
 ### Outputs
 
@@ -83,11 +81,11 @@ It combines:
 ### Inputs (and where they come from)
 
 - City emissions, activity-level
-  - Source: `CityGHGIActivity`
+  - Source: frontend request `requestData.cityDataList[].cityEmissionsData.gpcData[*].activities[*].totalEmissions`
 - Action to activity targeting (`gpc_ref` mapping)
   - Source: `ActionMitigationImpact`
 - Reduction potential band
-  - Source: `ActionMitigationImpact.reductionPotentialBand` with a standard band to multiplier mapping
+  - Source: `Action.mitigation_impact["emissions"]["impact_text"]` with configurable mapping (`very low` to `very high`)
 - Timeline
   - Source: `Action.timelineForImplementation`
 - Candidate actions (already hard-filtered)
@@ -105,11 +103,16 @@ Normalization policy:
 - Impact scores are normalized to `0..1` using **max-normalization per run**.
 - Scores do not sum to 1 across actions; the top action in Impact gets score `1.0`.
 
+Current implementation detail:
+
+- `impact_raw = (0.80 × reduction_share_of_city_emissions) + (0.20 × timeline_score)`
+- `reduction_share_of_city_emissions` is computed from matched action `gpc_reference_number` keys only.
+
 ```mermaid
 graph TD
   Valid[(Valid Actions for Scoring)]
-  GHGI[(CityGHGIActivity)]
-  MitMap[(ActionMitigationImpact)]
+  CityReq[(Frontend city emissions by GPC ref)]
+  MitMap[(ActionMitigationImpact.emissions)]
   ActionTbl[(Action)]
 
   Rel[Activity relevance score]
@@ -121,7 +124,7 @@ graph TD
   ImpactExplain[Impact Evidence optional]
 
   Valid --> Rel
-  GHGI -.-> Rel
+  CityReq -.-> Rel
   MitMap -.-> Rel
 
   MitMap -.-> Band

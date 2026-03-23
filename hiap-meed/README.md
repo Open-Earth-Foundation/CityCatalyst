@@ -120,6 +120,19 @@ Score normalization policy:
 - Blocks use **max-normalization per run** (`score / max(score)`), not sum-normalization.
 - Scores therefore do not sum to 1 across all actions; `1.0` means “best action in that block for this run”.
 
+Impact block behavior (implemented):
+
+- Impact reads action emissions targeting from `mitigationImpact.emissions`, including:
+  - `gpc_reference_number` (**list** of GPC refs in the mock/API schema)
+  - `impact_text` (`very low`, `low`, `medium`, `high`, `very high`)
+- Impact reads city emissions from the frontend request:
+  - `requestData.cityDataList[].cityEmissionsData.gpcData[*].activities[*].totalEmissions`
+  - The service sums activity emissions per GPC key before scoring.
+- Impact computes raw score as:
+  - `0.80 * reduction_share_of_city_emissions + 0.20 * timeline_score`
+  - Timeline mapping: `<5 years -> 1.0`, `5-10 years -> 0.5`, `>10 years -> 0.0`
+- Unknown `impact_text` values are rejected with `422` (raised during Impact scoring and surfaced by the API error handler).
+
 Response fields:
 
 - `results` (`array`): one entry per requested city.
@@ -221,11 +234,14 @@ The service writes:
 - File logs at `LOG_DIR/app.log`
 - Per-request artifacts at `LOG_DIR/requests/{UTC_TIMESTAMP}Z_{internal_request_id}/` when `ARTIFACT_LOG_JSONL=true`
 
+To disable `app.log` file writes (for example, during tests), set `LOG_FILE_ENABLED=false`.
+
 What `app.log` contains:
 
 - Service startup and runtime logs
 - Endpoint activity (for example health checks and prioritization completion)
 - Validation errors and unexpected exceptions with stack traces
+- High-level pipeline milestone logs (fetch counts, hard-filter counts, completion)
 - Cross-request aggregated logs (all requests in one rolling file path)
 
 What each `requests/{UTC_TIMESTAMP}Z_{internal_request_id}/` run folder contains:
@@ -269,7 +285,7 @@ docker run -it --rm -p 8000:8000 --env-file .env hiap-meed-app
 To persist file logs and per-request artifacts on your machine (under `logs/`, including `logs/requests/`), bind-mount the host `logs` directory to `/app/logs` in the container (this matches default `LOG_DIR=logs`):
 
 ```bash
-docker run -it --rm -p 8000:8000 --env-file .env -v ./logs:/app/logs hiap-meed-app
+docker run -it --rm -p 8000:8000 --env-file .env -v "%cd%\logs:/app/logs" hiap-meed-app
 ```
 
 On **Windows Command Prompt**, from the `hiap-meed` directory:

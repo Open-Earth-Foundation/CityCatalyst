@@ -74,6 +74,7 @@ def run_prioritization(
     weights_override: dict[str, float] | None,
     top_n: int | None,
     excluded_actions_free_text: str | None,
+    city_emissions_by_gpc_ref: dict[str, float],
     internal_request_id: UUID,
     city_data_api_client: CityDataApiClient,
     action_data_api_client: ActionDataApiClient,
@@ -90,6 +91,13 @@ def run_prioritization(
     # Phase 0: initialize request-scoped artifact writer and timing accumulator.
     artifact_writer = ArtifactWriter(request_id=internal_request_id)
     timings: dict[str, float] = {}
+    logger.info(
+        "Prioritization started internal_request_id=%s locode=%s top_n=%s weights_override_provided=%s",
+        internal_request_id,
+        locode,
+        top_n,
+        weights_override is not None,
+    )
 
     # Phase 1: fetch city context used by alignment and feasibility blocks.
     with time_block("fetch_city") as block:
@@ -115,6 +123,13 @@ def run_prioritization(
         event_index=fetch_city_event_index,
         event_type="fetch_city.completed",
     )
+    logger.info(
+        "Fetched city context internal_request_id=%s locode=%s city_context_rows=%s elapsed_seconds=%.3f",
+        internal_request_id,
+        locode,
+        len(city.city_context),
+        block.elapsed_seconds,
+    )
 
     # Phase 2: fetch action catalog that enters hard filtering.
     with time_block("fetch_actions") as block:
@@ -136,6 +151,13 @@ def run_prioritization(
         },
         event_index=fetch_actions_event_index,
         event_type="fetch_actions.completed",
+    )
+    logger.info(
+        "Fetched actions internal_request_id=%s locode=%s total_actions=%s elapsed_seconds=%.3f",
+        internal_request_id,
+        locode,
+        len(actions),
+        block.elapsed_seconds,
     )
 
     # Phase 3: fetch legal requirements used by hard legal filtering.
@@ -162,6 +184,13 @@ def run_prioritization(
         },
         event_index=fetch_legal_event_index,
         event_type="fetch_legal_requirements.completed",
+    )
+    logger.info(
+        "Fetched legal requirements internal_request_id=%s locode=%s actions_with_requirements=%s elapsed_seconds=%.3f",
+        internal_request_id,
+        locode,
+        len(legal_requirements_by_action_id),
+        block.elapsed_seconds,
     )
 
     # Phase 4: validate and resolve ranking weights for this run.
@@ -226,10 +255,22 @@ def run_prioritization(
         event_index=hard_filter_event_index,
         event_type="hard_filter.completed",
     )
+    logger.info(
+        "Hard filter completed internal_request_id=%s locode=%s valid_actions=%s discarded_legal=%s discarded_excluded=%s elapsed_seconds=%.3f",
+        internal_request_id,
+        locode,
+        len(hard_filter_result.valid_actions),
+        len(discarded_legal_ids),
+        len(discarded_excluded_ids),
+        block.elapsed_seconds,
+    )
 
     # Phase 6: run Impact block scoring on hard-filtered actions.
     with time_block("impact") as block:
-        impact_result = impact.run(hard_filter_result.valid_actions)
+        impact_result = impact.run(
+            hard_filter_result.valid_actions,
+            city_emissions_by_gpc_ref=city_emissions_by_gpc_ref,
+        )
     # Emit impact score stats and detailed evidence artifacts.
     timings["impact"] = block.elapsed_seconds
     impact_payload = {

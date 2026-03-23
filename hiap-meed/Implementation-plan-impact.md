@@ -19,9 +19,10 @@ and produce a **normalized score per action** (target range: 0.0–1.0) plus evi
 
 ## Current state (repo)
 
-- `hiap-meed/app/modules/prioritizer/blocks/impact.py` is a **stub**:
-  - collects a small amount of “impact evidence” by reading `Action.mitigation_impact["emissions"]`
-  - returns **score = 0.0** for all actions
+- `hiap-meed/app/modules/prioritizer/blocks/impact.py` is **implemented**:
+  - reads `Action.mitigation_impact["emissions"]` (`gpc_reference_number` list + `impact_text`)
+  - reads city emissions totals per GPC key derived from the frontend request
+  - computes raw scores from reduction share + timeline and max-normalizes per run
 - `Action.mitigation_impact` stores the action mitigation impacts as a dict (direct from API mock).
 - Mock action payload contains:
   - `timelineForImplementation`: `"<5 years" | "5-10 years" | ">10 years"`
@@ -235,10 +236,9 @@ Add focused unit tests for Impact:
 
 These are blockers or sharp edges that should be addressed in the same PR(s) as Impact:
 
-- **City mock client mismatch**
-  - `MockCityDataApiClient` points to `cities_api_mock.json` and expects a `CitiesApiResponse` (list),
-    but the repo contains `data/mock/city_api_mock.json` with a single `city` object.
-  - Impact work needs reliable city data wiring anyway (even if only for `locode` / metadata).
+- **City mock payload shape**
+  - Addressed: `MockCityDataApiClient` now supports both `data/mock/city_api_mock.json` (`{"city": ...}`) and
+    legacy list-shaped payloads (`{"cities": [...]}`), so tests and local runs can use either.
 
 ## Rollout steps (suggested)
 

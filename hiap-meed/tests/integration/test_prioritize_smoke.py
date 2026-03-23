@@ -153,20 +153,24 @@ def test_prioritize_smoke() -> None:
         Action(
             action_id="c40_0010",
             action_name="Retrofit buildings",
+            implementation_timeline="<5 years",
             mitigation_impact={
                 "emissions": {
                     "gpc_reference_number": ["I.1.1", "I.1.2"],
                     "impact_relationship": "positive",
+                    "impact_text": "high",
                 }
             },
         ),
         Action(
             action_id="c40_0020",
             action_name="Fleet expansion",
+            implementation_timeline=">10 years",
             mitigation_impact={
                 "emissions": {
                     "gpc_reference_number": ["I.2.1"],
                     "impact_relationship": "negative",
+                    "impact_text": "low",
                 }
             },
         ),

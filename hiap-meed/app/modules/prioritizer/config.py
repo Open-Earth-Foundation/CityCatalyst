@@ -33,6 +33,8 @@ TIMELINE_TO_SCORE: dict[str, float] = {
     "5-10 years": 0.5,
     ">10 years": 0.0,
 }
+IMPACT_WEIGHT_REDUCTION_SHARE = 0.80
+IMPACT_WEIGHT_TIMELINE = 0.20
 
 
 def validate_weights(weights: Mapping[str, float] | None) -> dict[str, float]:

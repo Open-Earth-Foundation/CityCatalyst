@@ -132,6 +132,13 @@
  *                         mappingPreview:
  *                           type: object
  *                           description: Side-by-side comparison of eCRF rows with required GPC rows
+ *                     inferredYearFromFile:
+ *                       type: integer
+ *                       nullable: true
+ *                       description: |
+ *                         Calendar year inferred from the uploaded file's tabular/eCRF data (first row with a year).
+ *                         Omitted when processing has not run yet or no year could be inferred.
+ *                         Clients may compare this with the inventory target year before continuing import.
  *                     rowCount:
  *                       type: integer
  *                     processedRowCount:

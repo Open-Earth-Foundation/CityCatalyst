@@ -17,20 +17,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "I",
@@ -88,7 +74,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "c40_0012",
@@ -98,20 +96,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "I",
@@ -169,7 +153,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "I.2.1",
+          "I.2.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "c40_0013",
@@ -179,20 +175,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "housing": {
           "sector_number": "I",
@@ -250,7 +232,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 3,
+        "gpc_reference_number": [
+          "I.3.1",
+          "I.3.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "c40_0015",
@@ -260,20 +254,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "I",
@@ -331,7 +311,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "c40_0016",
@@ -341,20 +333,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "housing": {
           "sector_number": "I",
@@ -412,7 +390,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "I.2.1",
+          "I.2.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "c40_0017",
@@ -422,20 +412,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "housing": {
           "sector_number": "I",
@@ -493,7 +469,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "I.2.1",
+          "I.2.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "c40_0018",
@@ -503,20 +491,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "I",
@@ -574,7 +548,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 3,
+        "gpc_reference_number": [
+          "I.3.1",
+          "I.3.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "c40_0023",
@@ -584,19 +570,6 @@
       "actionSubcategory": "Mobility & Transport Projects",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "II",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "II",
@@ -641,7 +614,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "II",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "II.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "c40_0025",
@@ -651,19 +635,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "II",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "II",
@@ -708,7 +679,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "II",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "II.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "c40_0029",
@@ -718,19 +700,6 @@
       "actionSubcategory": "Mobility & Transport Projects",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "II",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "medium",
-          "impact_numeric": 3,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "II",
@@ -797,7 +766,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "II",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "II.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "medium",
+        "impact_numeric": 3,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "c40_0034",
@@ -807,19 +787,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "III",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "water_quality": {
           "sector_number": "III",
@@ -864,7 +831,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "III",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "III.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "c40_0035",
@@ -874,19 +852,6 @@
       "actionSubcategory": "Strategic Plans",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "III",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "water_quality": {
           "sector_number": "III",
@@ -964,7 +929,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "III",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "III.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "c40_0036",
@@ -974,19 +950,6 @@
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "III",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "III",
@@ -1042,7 +1005,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "III",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "III.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "c40_0037",
@@ -1052,19 +1026,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "III",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "socioeconomicIndicators": [
         {
           "indicator_key": "median_household_income",
@@ -1096,7 +1057,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "III",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "III.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "c40_0040",
@@ -1106,19 +1078,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "III",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "socioeconomicIndicators": [
         {
           "indicator_key": "median_household_income",
@@ -1150,7 +1109,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "III",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "III.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "c40_0042",
@@ -1160,19 +1130,6 @@
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "habitat": {
           "sector_number": "V",
@@ -1239,7 +1196,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "c40_0046",
@@ -1331,19 +1299,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "socioeconomicIndicators": [
         {
           "indicator_key": "median_household_income",
@@ -1375,7 +1330,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "I.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0001",
@@ -1385,19 +1351,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": ">10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "IV",
@@ -1486,7 +1439,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0002",
@@ -1496,20 +1460,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "stakeholder_engagement": {
           "sector_number": "I",
@@ -1555,7 +1505,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0006",
@@ -1565,19 +1527,6 @@
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": ">10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "housing": {
           "sector_number": "I",
@@ -1666,7 +1615,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 4,
+        "gpc_reference_number": [
+          "I.4.4"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0008",
@@ -1676,20 +1636,6 @@
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "stakeholder_engagement": {
           "sector_number": "I",
@@ -1759,7 +1705,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 4,
+        "gpc_reference_number": [
+          "I.4.1",
+          "I.4.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0009",
@@ -1769,20 +1727,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "I",
@@ -1828,7 +1772,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 3,
+        "gpc_reference_number": [
+          "I.3.1",
+          "I.3.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0010",
@@ -1838,20 +1794,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "I",
@@ -1933,7 +1875,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0012",
@@ -1943,19 +1897,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "stakeholder_engagement": {
           "sector_number": "I",
@@ -2011,7 +1952,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 4,
+        "gpc_reference_number": [
+          "I.4.4"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0015",
@@ -2021,19 +1973,6 @@
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "high",
-          "impact_numeric": 4,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "habitat": {
           "sector_number": "I",
@@ -2100,7 +2039,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 4,
+        "gpc_reference_number": [
+          "I.4.4"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "high",
+        "impact_numeric": 4,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0016",
@@ -2110,22 +2060,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2",
-            "I.2.1",
-            "I.2.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "stakeholder_engagement": {
           "sector_number": "I",
@@ -2187,7 +2121,21 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "I.1.1",
+          "I.1.2",
+          "I.2.1",
+          "I.2.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0023",
@@ -2197,20 +2145,6 @@
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "high",
-          "impact_numeric": 4,
-          "methodology": "expert review"
-        }
-      },
       "socioeconomicIndicators": [
         {
           "indicator_key": "median_household_income",
@@ -2242,7 +2176,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 4,
+        "gpc_reference_number": [
+          "I.4.1",
+          "I.4.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "high",
+        "impact_numeric": 4,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0024",
@@ -2252,19 +2198,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very high",
-          "impact_numeric": 5,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "water_quality": {
           "sector_number": "I",
@@ -2353,7 +2286,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 4,
+        "gpc_reference_number": [
+          "I.4.4"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very high",
+        "impact_numeric": 5,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0025",
@@ -2363,20 +2307,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "high",
-          "impact_numeric": 4,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "stakeholder_engagement": {
           "sector_number": "I",
@@ -2446,7 +2376,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "high",
+        "impact_numeric": 4,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0026",
@@ -2456,20 +2398,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "cost_of_living": {
           "sector_number": "I",
@@ -2527,7 +2455,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 4,
+        "gpc_reference_number": [
+          "I.4.1",
+          "I.4.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0027",
@@ -2537,20 +2477,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "high",
-          "impact_numeric": 4,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "I",
@@ -2632,7 +2558,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 4,
+        "gpc_reference_number": [
+          "I.4.1",
+          "I.4.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "high",
+        "impact_numeric": 4,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0028",
@@ -2642,22 +2580,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2",
-            "I.2.1",
-            "I.2.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "cost_of_living": {
           "sector_number": "I",
@@ -2733,7 +2655,21 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "I.1.1",
+          "I.1.2",
+          "I.2.1",
+          "I.2.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0031",
@@ -2743,19 +2679,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "III",
-          "subsector_number": 4,
-          "gpc_reference_number": [
-            "III.4.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "high",
-          "impact_numeric": 4,
-          "methodology": "expert review"
-        }
-      },
       "socioeconomicIndicators": [
         {
           "indicator_key": "median_household_income",
@@ -2787,7 +2710,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "III",
+        "subsector_number": 4,
+        "gpc_reference_number": [
+          "III.4.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "high",
+        "impact_numeric": 4,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0033",
@@ -2797,20 +2731,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 5,
-          "gpc_reference_number": [
-            "I.5.1",
-            "I.5.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "cost_of_living": {
           "sector_number": "I",
@@ -2868,7 +2788,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 5,
+        "gpc_reference_number": [
+          "I.5.1",
+          "I.5.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0034",
@@ -2878,19 +2810,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "IV",
@@ -2957,7 +2876,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0035",
@@ -2967,20 +2897,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 3,
-          "gpc_reference_number": [
-            "I.3.1",
-            "I.3.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "cost_of_living": {
           "sector_number": "I",
@@ -3062,7 +2978,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 3,
+        "gpc_reference_number": [
+          "I.3.1",
+          "I.3.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0040",
@@ -3072,20 +3000,6 @@
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "I.1.1",
-            "I.1.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "I",
@@ -3167,7 +3081,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0045",
@@ -3177,19 +3103,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "I",
@@ -3256,7 +3169,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 5,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0049",
@@ -3266,19 +3190,6 @@
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": ">10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "I",
@@ -3356,7 +3267,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 4,
+        "gpc_reference_number": [
+          "I.4.4"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0050",
@@ -3366,19 +3288,6 @@
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "medium",
-          "impact_numeric": 3,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "cost_of_living": {
           "sector_number": "I",
@@ -3467,7 +3376,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 5,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "medium",
+        "impact_numeric": 3,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0053",
@@ -3477,19 +3397,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "III",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "stakeholder_engagement": {
           "sector_number": "III",
@@ -3556,7 +3463,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "III",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "III.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0064",
@@ -3566,19 +3484,6 @@
       "actionSubcategory": "Strategic Plans",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "III",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "III.2.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "habitat": {
           "sector_number": "III",
@@ -3634,7 +3539,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "III",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "III.2.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0069",
@@ -3644,19 +3560,6 @@
       "actionSubcategory": "Data Collection / Baseline Studies",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "socioeconomicIndicators": [
         {
           "indicator_key": "median_household_income",
@@ -3688,7 +3591,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 5,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0071",
@@ -3698,19 +3612,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "habitat": {
           "sector_number": "IV",
@@ -3788,7 +3689,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0072",
@@ -3798,19 +3710,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "water_quality": {
           "sector_number": "IV",
@@ -3877,7 +3776,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0074",
@@ -3887,19 +3797,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "IV",
@@ -3988,7 +3885,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0076",
@@ -3998,19 +3906,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": ">10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "cost_of_living": {
           "sector_number": "IV",
@@ -4099,7 +3994,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0078",
@@ -4109,19 +4015,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "cost_of_living": {
           "sector_number": "IV",
@@ -4210,7 +4103,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0079",
@@ -4220,19 +4124,6 @@
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "water_quality": {
           "sector_number": "IV",
@@ -4310,7 +4201,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0082",
@@ -4320,19 +4222,6 @@
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": ">10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "water_quality": {
           "sector_number": "IV",
@@ -4421,7 +4310,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0099",
@@ -4431,20 +4331,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.1",
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "habitat": {
           "sector_number": "I",
@@ -4538,7 +4424,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 5,
+        "gpc_reference_number": [
+          "V.1",
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0101",
@@ -4548,19 +4446,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "stakeholder_engagement": {
           "sector_number": "I",
@@ -4638,7 +4523,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 5,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0104",
@@ -4648,19 +4544,6 @@
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": ">10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.4"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "stakeholder_engagement": {
           "sector_number": "I",
@@ -4705,7 +4588,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 4,
+        "gpc_reference_number": [
+          "I.4.4"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0105",
@@ -4715,20 +4609,6 @@
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 4,
-          "gpc_reference_number": [
-            "I.4.1",
-            "I.4.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "stakeholder_engagement": {
           "sector_number": "I",
@@ -4798,7 +4678,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 4,
+        "gpc_reference_number": [
+          "I.4.1",
+          "I.4.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0110",
@@ -4808,19 +4700,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "III",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "water_quality": {
           "sector_number": "III",
@@ -4876,7 +4755,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "III",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "III.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0111",
@@ -4886,19 +4776,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "III",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "III.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "cost_of_living": {
           "sector_number": "III",
@@ -4976,7 +4853,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "III",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "III.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0117",
@@ -4986,19 +4874,6 @@
       "actionSubcategory": "Mobility & Transport Projects",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "II",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "mobility": {
           "sector_number": "II",
@@ -5065,7 +4940,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "II",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "II.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0120",
@@ -5075,19 +4961,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 6,
-          "gpc_reference_number": [
-            "I.6.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "stakeholder_engagement": {
           "sector_number": "I",
@@ -5132,7 +5005,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 6,
+        "gpc_reference_number": [
+          "I.6.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0121",
@@ -5142,19 +5026,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "II",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "stakeholder_engagement": {
           "sector_number": "II",
@@ -5232,7 +5103,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "II",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "II.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0122",
@@ -5242,19 +5124,6 @@
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "water_quality": {
           "sector_number": "V",
@@ -5332,7 +5201,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0127",
@@ -5342,19 +5222,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "water_quality": {
           "sector_number": "I",
@@ -5432,7 +5299,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 5,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0128",
@@ -5442,19 +5320,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "stakeholder_engagement": {
           "sector_number": "V",
@@ -5554,7 +5419,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0131",
@@ -5564,19 +5440,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "water_quality": {
           "sector_number": "I",
@@ -5665,7 +5528,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 5,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0132",
@@ -5675,19 +5549,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 5,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "habitat": {
           "sector_number": "I",
@@ -5776,7 +5637,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 5,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0137",
@@ -5786,20 +5658,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "housing": {
           "sector_number": "I",
@@ -5857,7 +5715,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "I.2.1",
+          "I.2.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0139",
@@ -5867,19 +5737,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "II",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "mobility": {
           "sector_number": "II",
@@ -5946,7 +5803,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "II",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "II.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "icare_0144",
@@ -6198,19 +6066,6 @@
       "actionSubcategory": "Strategic Plans",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": ">10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "II",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "very low",
-          "impact_numeric": 1,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "housing": {
           "sector_number": "II",
@@ -6299,7 +6154,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "II",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "II.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0023",
@@ -6309,19 +6175,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "IV",
@@ -6366,7 +6219,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0024",
@@ -6376,19 +6240,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "IV",
@@ -6433,7 +6284,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0025",
@@ -6443,19 +6305,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "IV",
@@ -6500,7 +6349,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0026",
@@ -6510,19 +6370,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "high",
-          "impact_numeric": 4,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "IV",
@@ -6567,7 +6414,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "high",
+        "impact_numeric": 4,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0028",
@@ -6577,19 +6435,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "socioeconomicIndicators": [
         {
           "indicator_key": "median_household_income",
@@ -6621,7 +6466,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0031",
@@ -6631,19 +6487,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "stakeholder_engagement": {
           "sector_number": "IV",
@@ -6699,7 +6542,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0033",
@@ -6709,19 +6563,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "medium",
-          "impact_numeric": 3,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "IV",
@@ -6766,7 +6607,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "medium",
+        "impact_numeric": 3,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0034",
@@ -6776,19 +6628,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "medium",
-          "impact_numeric": 3,
-          "methodology": "expert review"
-        }
-      },
       "socioeconomicIndicators": [
         {
           "indicator_key": "median_household_income",
@@ -6820,7 +6659,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "medium",
+        "impact_numeric": 3,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0037",
@@ -6830,19 +6680,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": ">10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "IV.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "medium",
-          "impact_numeric": 3,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "IV",
@@ -6887,7 +6724,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "IV.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "medium",
+        "impact_numeric": 3,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0038",
@@ -6897,19 +6745,6 @@
       "actionSubcategory": "Energy & Building Retrofits",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "IV.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "IV",
@@ -6954,7 +6789,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "IV.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0039",
@@ -6964,19 +6810,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": ">10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "IV.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "medium",
-          "impact_numeric": 3,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "IV",
@@ -7021,7 +6854,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "IV.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "medium",
+        "impact_numeric": 3,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0040",
@@ -7031,19 +6875,6 @@
       "actionSubcategory": "Institutional Frameworks",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "medium",
-          "impact_numeric": 3,
-          "methodology": "expert review"
-        }
-      },
       "socioeconomicIndicators": [
         {
           "indicator_key": "median_household_income",
@@ -7075,7 +6906,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "medium",
+        "impact_numeric": 3,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0041",
@@ -7085,19 +6927,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "socioeconomicIndicators": [
         {
           "indicator_key": "median_household_income",
@@ -7129,7 +6958,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0042",
@@ -7139,19 +6979,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "medium",
-          "impact_numeric": 3,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "stakeholder_engagement": {
           "sector_number": "IV",
@@ -7196,7 +7023,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "medium",
+        "impact_numeric": 3,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0043",
@@ -7206,19 +7044,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "medium",
-          "impact_numeric": 3,
-          "methodology": "expert review"
-        }
-      },
       "socioeconomicIndicators": [
         {
           "indicator_key": "median_household_income",
@@ -7250,7 +7075,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "medium",
+        "impact_numeric": 3,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0045",
@@ -7260,19 +7096,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "stakeholder_engagement": {
           "sector_number": "IV",
@@ -7339,7 +7162,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0049",
@@ -7349,19 +7183,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "medium",
-          "impact_numeric": 3,
-          "methodology": "expert review"
-        }
-      },
       "socioeconomicIndicators": [
         {
           "indicator_key": "median_household_income",
@@ -7393,7 +7214,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "medium",
+        "impact_numeric": 3,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0050",
@@ -7403,19 +7235,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "cost_of_living": {
           "sector_number": "IV",
@@ -7460,7 +7279,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0052",
@@ -7471,19 +7301,6 @@
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
       "biome": "tropical_rainforest",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "high",
-          "impact_numeric": 4,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "water_quality": {
           "sector_number": "V",
@@ -7539,7 +7356,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "high",
+        "impact_numeric": 4,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0053",
@@ -7549,19 +7377,6 @@
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "high",
-          "impact_numeric": 4,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "habitat": {
           "sector_number": "V",
@@ -7617,7 +7432,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "high",
+        "impact_numeric": 4,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0054",
@@ -7627,19 +7453,6 @@
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "medium",
-          "impact_numeric": 3,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "habitat": {
           "sector_number": "V",
@@ -7695,7 +7508,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "medium",
+        "impact_numeric": 3,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0055",
@@ -7705,19 +7529,6 @@
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "V",
@@ -7762,7 +7573,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0056",
@@ -7773,19 +7595,6 @@
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
       "biome": "grassland_savanna",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "socioeconomicIndicators": [
         {
           "indicator_key": "median_household_income",
@@ -7817,7 +7626,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0057",
@@ -7828,19 +7648,6 @@
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
       "biome": "wetlands",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "medium",
-          "impact_numeric": 3,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "habitat": {
           "sector_number": "V",
@@ -7896,7 +7703,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "medium",
+        "impact_numeric": 3,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0060",
@@ -7906,19 +7724,6 @@
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": ">10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "medium",
-          "impact_numeric": 3,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "habitat": {
           "sector_number": "V",
@@ -7974,7 +7779,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "medium",
+        "impact_numeric": 3,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0062",
@@ -7984,19 +7800,6 @@
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "socioeconomicIndicators": [
         {
           "indicator_key": "median_household_income",
@@ -8028,7 +7831,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0064",
@@ -8038,19 +7852,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "V.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "socioeconomicIndicators": [
         {
           "indicator_key": "median_household_income",
@@ -8082,7 +7883,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "V.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0067",
@@ -8092,20 +7904,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "V.1",
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "air_quality": {
           "sector_number": "V",
@@ -8175,7 +7973,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "V.1",
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0068",
@@ -8185,19 +7995,6 @@
       "actionSubcategory": "Tech Pilots & Deployments",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": ">10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "high",
-          "impact_numeric": 4,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "water_quality": {
           "sector_number": "V",
@@ -8264,7 +8061,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "high",
+        "impact_numeric": 4,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0069",
@@ -8274,19 +8082,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "medium",
-          "impact_numeric": 3,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "water_quality": {
           "sector_number": "V",
@@ -8331,7 +8126,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "medium",
+        "impact_numeric": 3,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0070",
@@ -8341,19 +8147,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "habitat": {
           "sector_number": "V",
@@ -8420,7 +8213,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0071",
@@ -8430,19 +8234,6 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "V",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "V.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "medium",
-          "impact_numeric": 3,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "habitat": {
           "sector_number": "V",
@@ -8487,7 +8278,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "V",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "V.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "medium",
+        "impact_numeric": 3,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0074",
@@ -8497,20 +8299,6 @@
       "actionSubcategory": "Strategic Plans",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": ">10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "I",
-          "subsector_number": 2,
-          "gpc_reference_number": [
-            "I.2.1",
-            "I.2.2"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "habitat": {
           "sector_number": "I",
@@ -8592,7 +8380,19 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": 2,
+        "gpc_reference_number": [
+          "I.2.1",
+          "I.2.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0076",
@@ -8602,19 +8402,6 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": ">10 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "IV",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "IV.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "water_quality": {
           "sector_number": "IV",
@@ -8692,7 +8479,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "IV",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "IV.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     },
     {
       "actionId": "ipcc_0078",
@@ -8915,19 +8713,6 @@
       "description": "Promotes walking and cycling by reallocating road space from cars to active and sustainable modes on a permanent basis. Measures include developing pedestrian pathways, protected cycling infrastructure, green corridors, and universal accessibility improvements. By prioritizing active mobility, cities enhance public health, equity, and resilience while reducing emissions from private vehicles.",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "<5 years",
-      "mitigationImpact": {
-        "emissions": {
-          "sector_number": "II",
-          "subsector_number": 1,
-          "gpc_reference_number": [
-            "II.1.1"
-          ],
-          "impact_relationship": "positive",
-          "impact_text": "low",
-          "impact_numeric": 2,
-          "methodology": "expert review"
-        }
-      },
       "coBenefits": {
         "mobility": {
           "sector_number": "II",
@@ -8994,7 +8779,18 @@
           "weight": 0.2,
           "rationale": "If AD/biogas recovery is used, stable power access supports operations and monitoring."
         }
-      ]
+      ],
+      "emissions": {
+        "sector_number": "II",
+        "subsector_number": 1,
+        "gpc_reference_number": [
+          "II.1.1"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "low",
+        "impact_numeric": 2,
+        "methodology": "expert review"
+      }
     }
   ]
 }

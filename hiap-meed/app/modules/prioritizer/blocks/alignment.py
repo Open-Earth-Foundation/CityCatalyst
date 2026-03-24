@@ -5,6 +5,28 @@ from __future__ import annotations
 from app.modules.prioritizer.internal_models import Action, BlockScoreResult, CityData
 
 
+def _score_other_preference_alignment_stub(
+    *, actions: list[Action], city_strategic_preference_other: str | None
+) -> dict[str, float]:
+    """
+    Compute per-action alignment signals from free-text strategic preferences.
+
+    This is a deliberate stub (no-op) mirroring the hard-filter free-text
+    exclusion stub. It returns 0.0 for every action and does not influence
+    alignment scoring yet.
+
+    Intended future behavior:
+    - Use an LLM to compare `city_strategic_preference_other` against action
+      attributes (e.g. description, timeline, and co-benefit-like impact fields
+      in `Action.mitigation_impact` such as air_quality / housing).
+    - Produce an interpretable score in 0..1 per action plus evidence explaining
+      what parts of the action match the city's free-text preferences.
+    """
+
+    _ = city_strategic_preference_other
+    return {action.action_id: 0.0 for action in actions}
+
+
 def run(actions: list[Action], city: CityData) -> BlockScoreResult:
     """
     Compute stub alignment scores and lightweight attribute-presence evidence.
@@ -14,7 +36,7 @@ def run(actions: list[Action], city: CityData) -> BlockScoreResult:
     - `city`: City context for current prioritization request.
     """
 
-    del city  # Placeholder for future city-strategy overlays.
+    _ = city  # Placeholder for future city-strategy overlays.
 
     score_by_action_id: dict[str, float] = {}
     evidence_by_action_id: dict[str, dict[str, object]] = {}

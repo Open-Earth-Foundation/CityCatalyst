@@ -18,8 +18,8 @@ DEFAULT_WEIGHTS: dict[str, float] = {
 
 REQUIRED_WEIGHT_KEYS: set[str] = set(DEFAULT_WEIGHTS.keys())
 DEFAULT_TOP_N = 20
-DEFAULT_TIMELINE_SCORE = 0.0
 
+# Impact scoring knobs
 IMPACT_TEXT_TO_MULTIPLIER: dict[str, float] = {
     "very low": 0.2,
     "low": 0.4,
@@ -28,13 +28,21 @@ IMPACT_TEXT_TO_MULTIPLIER: dict[str, float] = {
     "very high": 1.0,
 }
 
-TIMELINE_TO_SCORE: dict[str, float] = {
+IMPACT_DEFAULT_TIMELINE_SCORE = 0.0
+
+IMPACT_TIMELINE_TO_SCORE: dict[str, float] = {
     "<5 years": 1.0,
     "5-10 years": 0.5,
     ">10 years": 0.0,
 }
 IMPACT_WEIGHT_REDUCTION_SHARE = 0.80
 IMPACT_WEIGHT_TIMELINE = 0.20
+
+# Alignment scoring knobs
+#
+# This is intentionally small because Alignment is max-normalized per run and
+# should remain primarily driven by policy support signals.
+ALIGNMENT_STRATEGIC_SECTOR_BOOST = 0.05
 
 
 def validate_weights(weights: Mapping[str, float] | None) -> dict[str, float]:
@@ -129,5 +137,5 @@ def resolve_impact_text_multiplier(impact_text: str) -> float:
 def resolve_timeline_score(timeline: str | None) -> float:
     """Resolve timeline score from configured mapping, defaulting to 0.0."""
     if timeline is None:
-        return DEFAULT_TIMELINE_SCORE
-    return TIMELINE_TO_SCORE.get(timeline, DEFAULT_TIMELINE_SCORE)
+        return IMPACT_DEFAULT_TIMELINE_SCORE
+    return IMPACT_TIMELINE_TO_SCORE.get(timeline, IMPACT_DEFAULT_TIMELINE_SCORE)

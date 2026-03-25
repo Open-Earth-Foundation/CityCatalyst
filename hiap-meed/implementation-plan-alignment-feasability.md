@@ -28,7 +28,7 @@ With weighted sums, a weight like `0.05` has a clear meaning: up to 5 percentage
 For any block \(B\):
 
 - each block defines named `*_COMPONENT` values in `[0,1]`
-- each block defines named `*_WEIGHT` constants where each weight is `>= 0` and all block-internal weights sum to `1`
+- each block defines named `*_WEIGHT` constants where each weight must satisfy `0.0 <= weight <= 1.0` and all block-internal weights sum to `1`
 - block score is the weighted sum of named components, for example:
   - `BLOCK_SCORE = (BLOCK_WEIGHT_A * BLOCK_COMPONENT_A) + (BLOCK_WEIGHT_B * BLOCK_COMPONENT_B) + ...`
 
@@ -51,10 +51,9 @@ Evidence requirement:
 
 - Frontend request city emissions: `prioritizer_request_mock.json`
   - `requestData.cityDataList[].cityEmissionsData.gpcData[*].activities[*].totalEmissions`
-- Action emissions metadata: `actions_api_mock_v2.json` and upcoming top-level emissions schema
-  - current v2 path: `mitigationImpact.emissions.gpc_reference_number`
-  - current v2 path: `mitigationImpact.emissions.impact_text`
-  - target path after next schema update: `emissions.gpc_reference_number`, `emissions.impact_text`
+- Action emissions metadata:
+  - **current file in repo**: `actions_api_mock_v2.json` (uses top-level `emissions.*` and has no `mitigationImpact`)
+  - canonical field path: `emissions.gpc_reference_number`, `emissions.impact_text`, `emissions.sector_number`
   - `timelineForImplementation`
 
 Impact does **not** use policy signals or legal requirements.
@@ -67,9 +66,8 @@ Impact does **not** use policy signals or legal requirements.
 - Policy signals: `actions_policy_signals_api_mock.json`
   - `policy_support_score`
   - `policy_signals[]` evidence fields
-- Action metadata for sector mapping: `actions_api_mock_v2.json` and upcoming top-level emissions schema
-  - current v2 path: `mitigationImpact.emissions.sector_number`
-  - target path after next schema update: `emissions.sector_number`
+- Action metadata for sector mapping:
+  - **current file in repo**: `actions_api_mock_v2.json` uses top-level `emissions.sector_number`
 
 Alignment does **not** use legal requirements.
 
@@ -91,6 +89,7 @@ Alignment does **not** use legal requirements.
     - `direction` (`supportive` or `constraining`)
     - `weight`
     - `rationale`
+  - `indicator_key` must match canonical city indicator names (see below). If they dont match, log a warning message.
 
 Feasibility must explicitly account for hard-filter sequencing:
 
@@ -110,16 +109,26 @@ Implementation should use the following target conventions:
 
 - `coBenefits` is the canonical location for non-emissions impact/co-benefit signals.
 - `socioeconomicIndicators` (lowercase `e`) is canonical; remove legacy `socioEconomicIndicators`.
-- upcoming schema change: move `emissions` to action top-level and remove `mitigationImpact`.
+- `actions_api_mock_v2.json` already uses top-level `emissions` and does not include `mitigationImpact`.
+
+Data consistency requirement:
+
+- `socioeconomicIndicators[].indicator_key` values must match the canonical city indicator keys from `city_api_mock.json`
+  (for example: `transport_logistics_employment`, `electricity_access`, `public_transport_share`).
+  If action indicator keys do not match, those indicators will be treated as missing and contribute neutrally (0).
+  Log a warning message.
 
 Required field-read updates when implementing blocks:
 
-- Impact reads emissions from `emissions.*` (or current interim `mitigationImpact.emissions.*` before cutover).
+- Impact reads emissions from `emissions.*` (top-level).
 - Alignment sector matching reads `emissions.sector_number`.
 - Alignment "other preference" matching can use `coBenefits` + action text fields.
 - Feasibility socioeconomic rules read `socioeconomicIndicators[].indicator_key|direction|weight|rationale`.
 
-No backward-compatibility branch is required after cutover.
+Implementation note:
+
+- Do **not** implement dual-path parsing (no backward compatibility).
+- The mock file already reflects the new contract, so implementation work is only to update code/models to match it.
 
 ---
 
@@ -183,8 +192,8 @@ Output:
      - `I -> stationary_energy`
      - `II -> transportation`
      - `III -> waste`
-     - `IV -> IPPU`
-     - `V -> AFOLU`
+     - `IV -> ippu`
+     - `V -> afolu`
 
 3. **Other-preference component** `ALIGNMENT_OTHER_COMPONENT in [0,1]`
    - from LLM matching of `cityStrategicPreferenceOther`
@@ -193,7 +202,7 @@ Output:
 
 ### Canonical score
 
-- `ALIGNMENT_SCORE = (ALIGNMENT_WEIGHT_POLICY * ALIGNMENT_COMPONENT_POLICY) + (ALIGNMENT_WEIGHT_SECTOR * ALIGNMENT_COMPONENT_SECTOR) + (ALIGNMENT_WEIGHT_OTHER * ALIGNMENT_COMPONENT_OTHER)`
+- `ALIGNMENT_SCORE = (ALIGNMENT_WEIGHT_POLICY * ALIGNMENT_POLICY_COMPONENT) + (ALIGNMENT_WEIGHT_SECTOR * ALIGNMENT_SECTOR_COMPONENT) + (ALIGNMENT_WEIGHT_OTHER * ALIGNMENT_OTHER_COMPONENT)`
 - require: `ALIGNMENT_WEIGHT_POLICY + ALIGNMENT_WEIGHT_SECTOR + ALIGNMENT_WEIGHT_OTHER = 1`
 
 ### Config migration
@@ -226,7 +235,7 @@ constants and old scoring branches instead of keeping dual behavior.
 
 Planned signature:
 
-- `feasibility.run(actions, *, legal_requirements_by_action_id) -> BlockScoreResult`
+- `feasibility.run(actions, *, city, legal_requirements_by_action_id) -> BlockScoreResult`
 
 Output:
 
@@ -253,35 +262,36 @@ Output:
    - bucket-to-score mapping (Notion section "2. Socio-Economic Fit"):
      - `very_low -> -2`\
      - `low -> -1`
-    - `medium -> 0`
-     - `high -> +1`
-     - `very_high -> +2`
+   - `medium -> 0`
+   - `high -> +1`
+   - `very_high -> +2`
    - normalize bucket labels before mapping:
      - lowercase
      - replace spaces and hyphens with underscores
-    - no alias remapping required when city/action data use canonical bucket labels
+   - no alias remapping required when city/action data use canonical bucket labels
    - direction handling:
      - `supportive`: use bucket score as-is
      - `constraining`: multiply bucket score by `-1`
-  - explicit variable definitions used in formula:
-    - `INDICATOR_WEIGHT` means `actions_api_mock_v2.json -> socioeconomicIndicators[].weight`
-    - `ADJUSTED_INDICATOR_SCORE` means:
-      - first map `city_api_mock.json -> <indicator>.attribute_category` to numeric bucket score
-      - then apply `actions_api_mock_v2.json -> socioeconomicIndicators[].direction`
-      - final value is the direction-adjusted per-indicator numeric score
-   - missing city indicator data rule:
-     - use raw indicator score `0` (neutral) before weighting
-   - socioeconomic weighted average score:
-    - compute each indicator contribution first (per action, per indicator):
-      - `INDICATOR_CONTRIBUTION = INDICATOR_WEIGHT * ADJUSTED_INDICATOR_SCORE`
-     - `TOTAL_INDICATOR_WEIGHT = sum(INDICATOR_WEIGHT)`
-    - `SOCIO_WEIGHTED_SUM = sum(INDICATOR_CONTRIBUTION)`
-     - `SOCIO_AVG = SOCIO_WEIGHTED_SUM / TOTAL_INDICATOR_WEIGHT` when `TOTAL_INDICATOR_WEIGHT > 0`, else `0`
-    - `SOCIO_AVG` is the final aggregate for this action's socioeconomic indicator set
-    - `SOCIO_AVG` is guaranteed in `[-2, +2]` because it is a weighted average of values in `[-2, +2]`
-   - socioeconomic normalized score:
-     - `FEASIBILITY_SOCIO_COMPONENT = (SOCIO_AVG + 2) / 4`
-     - no clamp is needed when strict validation is enforced and weighted-average formulation is used
+
+- explicit variable definitions used in formula:
+  - `INDICATOR_WEIGHT` means `actions_api_mock_v2.json -> socioeconomicIndicators[].weight`
+  - `ADJUSTED_INDICATOR_SCORE` means:
+    - first map `city_api_mock.json -> <indicator>.attribute_category` to numeric bucket score
+    - then apply `actions_api_mock_v2.json -> socioeconomicIndicators[].direction`
+    - final value is the direction-adjusted per-indicator numeric score
+- missing city indicator data rule:
+  - use raw indicator score `0` (neutral) before weighting
+- socioeconomic weighted average score:
+- compute each indicator contribution first (per action, per indicator):
+  - `INDICATOR_CONTRIBUTION = INDICATOR_WEIGHT * ADJUSTED_INDICATOR_SCORE`
+- `TOTAL_INDICATOR_WEIGHT = sum(INDICATOR_WEIGHT)`
+- `SOCIO_WEIGHTED_SUM = sum(INDICATOR_CONTRIBUTION)`
+- `SOCIO_AVG = SOCIO_WEIGHTED_SUM / TOTAL_INDICATOR_WEIGHT` when `TOTAL_INDICATOR_WEIGHT > 0`, else `0`
+- `SOCIO_AVG` is the final aggregate for this action's socioeconomic indicator set
+- `SOCIO_AVG` is guaranteed in `[-2, +2]` because it is a weighted average of values in `[-2, +2]`
+- socioeconomic normalized score:
+  - `FEASIBILITY_SOCIO_COMPONENT = (SOCIO_AVG + 2) / 4`
+  - no clamp is needed when strict validation is enforced and weighted-average formulation is used
 
 3. **Constraint evidence component** (evidence-only, no score contribution in v1)
    - source field path:
@@ -309,6 +319,18 @@ Output:
 City indicator names in `city_api_mock.json` are the canonical source of truth.
 Action rule keys (`indicator_key`) must match those canonical city
 indicator names directly (no key-mapping layer in implementation).
+
+Concrete examples (city payload keys that actions must use as `indicator_key`):
+
+- `unemployment_rate`
+- `renter_share`
+- `transport_logistics_employment`
+- `electricity_access`
+- `industry_construction_employment`
+- `median_household_income`
+- `public_transport_share`
+- `poverty_rate`
+- `home_ownership`
 
 If an action key does not exist in the city indicators, treat it as missing data
 (neutral raw indicator score `0`) and log it in evidence.
@@ -355,6 +377,129 @@ If an action key does not exist in the city indicators, treat it as missing data
    - scores are in `[0,1]`
    - component contributions sum to block score
    - no assumption that top score must be `1.0`
+
+---
+
+## Agent execution slices (recommended order)
+
+Use these slices as strict sequential implementation units. Complete one slice fully
+(code + tests + docs) before starting the next.
+
+### Slice 1 — Action schema cutover in models + data client mapping
+
+- **Goal:** align internal parsing with `actions_api_mock_v2.json` conventions.
+- **Scope:**
+  - `app/modules/prioritizer/models.py`
+  - `app/services/data_clients.py`
+  - `app/modules/prioritizer/internal_models.py`
+- **Changes:**
+  - adopt `socioeconomicIndicators[]` with `indicator_key|direction|weight|rationale`
+  - remove legacy `socioEconomicIndicators` handling
+  - update action contract to use top-level `emissions` (as in `actions_api_mock_v2.json`)
+  - update internal `Action` model to store canonical `emissions` and `coBenefits` fields (instead of overloading `mitigation_impact`)
+- **Done when:**
+  - action payload validates with new field names
+  - no legacy parser branches remain
+
+### Slice 2 — Config foundation for canonical block scoring
+
+- **Goal:** define all block-internal weight constants and validation rules.
+- **Scope:** `app/modules/prioritizer/config.py`
+- **Changes:**
+  - keep/add explicit `IMPACT_*`, `ALIGNMENT_*`, `FEASIBILITY_*` weight constants
+  - enforce `0.0 <= weight <= 1.0` for each block internal weight
+  - enforce sum-to-1 checks for each block's internal weights
+  - remove `ALIGNMENT_STRATEGIC_SECTOR_BOOST`
+- **Done when:**
+  - config exposes only weight-based controls
+  - validation fails fast on invalid weight sums
+
+### Slice 3 — Impact block canonical-score migration
+
+- **Goal:** move Impact from max-normalized output to canonical weighted-sum output.
+- **Scope:** `app/modules/prioritizer/blocks/impact.py`
+- **Changes:**
+  - compute final score directly from `IMPACT_REDUCTION_COMPONENT` + `IMPACT_TIMELINE_COMPONENT`
+  - remove max-normalization path
+  - rename/align evidence fields to canonical-score wording
+- **Done when:**
+  - all impact scores are in `[0,1]` without run-relative scaling
+  - evidence shows component contributions
+
+### Slice 4 — Policy-signal plumbing for Alignment
+
+- **Goal:** make policy signal data available to Alignment block.
+- **Scope:**
+  - `app/services/data_clients.py`
+  - `app/modules/prioritizer/orchestrator.py`
+  - dependency wiring in API layer as needed
+- **Changes:**
+  - add policy-signal data client (mock + provider)
+  - orchestrator fetches policy signals and passes to Alignment
+  - add fetch artifacts (`fetch_policy_signals.completed`)
+- **Done when:**
+  - alignment receives policy signals through orchestrator
+  - artifacts include policy-fetch trace
+
+### Slice 5 — Alignment block full implementation
+
+- **Goal:** implement weighted Alignment scoring with new schema fields.
+- **Scope:** `app/modules/prioritizer/blocks/alignment.py`
+- **Changes:**
+  - `ALIGNMENT_POLICY_COMPONENT` from `policy_support_score`
+  - `ALIGNMENT_SECTOR_COMPONENT` from `emissions.sector_number` mapping
+  - keep `ALIGNMENT_OTHER_COMPONENT` as LLM stub (`0.0` for now)
+  - compute canonical weighted score; log contributions
+- **Done when:**
+  - alignment scores are canonical `[0,1]`
+  - sector mapping uses configured Roman-numeral map only
+
+### Slice 6 — Feasibility legal component implementation
+
+- **Goal:** implement legal soft-signal scoring on post-hard-filter actions.
+- **Scope:**
+  - `app/modules/prioritizer/blocks/feasibility.py`
+  - `app/modules/prioritizer/orchestrator.py`
+- **Changes:**
+  - `FEASIBILITY_SOFT_LEGAL_COMPONENT = aligned_soft / total_soft`
+  - enforce "no double gating": do not rescore hard failures
+  - keep informational (`strength=informational`) as evidence-only
+- **Done when:**
+  - all surviving actions use one uniform feasibility formula
+  - hard failures are not re-penalized
+
+### Slice 7 — Feasibility socioeconomic component implementation
+
+- **Goal:** add socioeconomic fit scoring from city indicators + action rules.
+- **Scope:**
+  - `app/modules/prioritizer/blocks/feasibility.py`
+  - model validation in `app/modules/prioritizer/models.py`
+  - `app/modules/prioritizer/orchestrator.py` (to ensure city + legal maps are passed through the new signature)
+- **Changes:**
+  - strict validation:
+    - `0.0 <= weight <= 1.0`
+    - `direction in {supportive, constraining}`
+    - sum of indicator weights may be `> 1`
+  - compute per-indicator contributions, then weighted average (`SOCIO_AVG`)
+  - map to `[0,1]` via `(SOCIO_AVG + 2) / 4`
+  - no clamp needed with this formulation + validation
+- **Done when:**
+  - socioeconomic component is deterministic and bounded
+  - per-indicator evidence rows are present
+
+### Slice 8 — Tests + docs + final consistency pass
+
+- **Goal:** lock behavior with tests and synchronize documentation.
+- **Scope:**
+  - `tests/unit/test_prioritizer_blocks.py` (and related tests)
+  - docs including this plan and architecture docs
+- **Changes:**
+  - remove old max-normalization expectations
+  - add assertions for component contributions summing to canonical block scores
+  - add coverage for v2 schema fields and socioeconomic validation failures
+- **Done when:**
+  - tests pass end-to-end for Impact/Alignment/Feasibility
+  - docs reflect canonical weighted-sum behavior only
 
 ---
 

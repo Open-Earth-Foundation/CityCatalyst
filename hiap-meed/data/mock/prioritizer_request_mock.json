@@ -160,6 +160,43 @@
                 }
               ]
             },
+            "IV.1": {
+              "notationKey": null,
+              "activities": [
+                {
+                  "activityName": "Chemical",
+                  "totalEmissions": 28588.499,
+                  "totalEmissionsUnit": "t CO2e",
+                  "activityValue": null,
+                  "activityUnit": null,
+                  "dataSource": null,
+                  "notationKey": null
+                },
+                {
+                  "activityName": "Mineral",
+                  "totalEmissions": 69.867,
+                  "totalEmissionsUnit": "t CO2e",
+                  "activityValue": null,
+                  "activityUnit": null,
+                  "dataSource": null,
+                  "notationKey": null
+                }
+              ]
+            },
+            "IV.2": {
+              "notationKey": null,
+              "activities": [
+                {
+                  "activityName": "Non energy products from fuels and solvent use",
+                  "totalEmissions": 3508.957,
+                  "totalEmissionsUnit": "t CO2e",
+                  "activityValue": null,
+                  "activityUnit": null,
+                  "dataSource": null,
+                  "notationKey": null
+                }
+              ]
+            },
             "V.1": {
               "notationKey": null,
               "activities": [

@@ -1217,8 +1217,7 @@
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "biome": "coastal_marine",
-      "mitigationImpact": {}
+      "biome": "coastal_marine"
     },
     {
       "actionId": "c40_0048",
@@ -1227,8 +1226,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "c40_0049",
@@ -1238,8 +1236,7 @@
       "actionSubcategory": "Emergency Infrastructure",
       "costInvestmentNeeded": "low",
       "timelineForImplementation": "<5 years",
-      "biome": "coastal_marine",
-      "mitigationImpact": {}
+      "biome": "coastal_marine"
     },
     {
       "actionId": "c40_0051",
@@ -1248,8 +1245,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "low",
-      "timelineForImplementation": "<5 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "<5 years"
     },
     {
       "actionId": "c40_0052",
@@ -1258,8 +1254,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "low",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "c40_0053",
@@ -1268,8 +1263,7 @@
       "actionCategory": "Policies, Plans & Programs",
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "low",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "c40_0056",
@@ -1278,8 +1272,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "low",
-      "timelineForImplementation": "<5 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "<5 years"
     },
     {
       "actionId": "c40_0062",
@@ -1288,8 +1281,7 @@
       "actionCategory": "Policies, Plans & Programs",
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "low",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "c40_0071",
@@ -5823,8 +5815,7 @@
       "actionCategory": "Policies, Plans & Programs",
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "<5 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "<5 years"
     },
     {
       "actionId": "icare_0145",
@@ -5833,8 +5824,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Emergency Infrastructure",
       "costInvestmentNeeded": "high",
-      "timelineForImplementation": ">10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": ">10 years"
     },
     {
       "actionId": "icare_0154",
@@ -5843,8 +5833,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "<5 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "<5 years"
     },
     {
       "actionId": "icare_0156",
@@ -5853,8 +5842,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "low",
-      "timelineForImplementation": "<5 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "<5 years"
     },
     {
       "actionId": "icare_0160",
@@ -5863,8 +5851,7 @@
       "actionCategory": "Policies, Plans & Programs",
       "actionSubcategory": "Institutional Frameworks",
       "costInvestmentNeeded": "low",
-      "timelineForImplementation": "<5 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "<5 years"
     },
     {
       "actionId": "icare_0162",
@@ -5873,8 +5860,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "icare_0163",
@@ -5883,8 +5869,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Emergency Infrastructure",
       "costInvestmentNeeded": "low",
-      "timelineForImplementation": "<5 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "<5 years"
     },
     {
       "actionId": "icare_0164",
@@ -5893,8 +5878,7 @@
       "actionCategory": "Data, Tools & Planning Projects",
       "actionSubcategory": "Data Collection / Baseline Studies",
       "costInvestmentNeeded": "low",
-      "timelineForImplementation": "<5 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "<5 years"
     },
     {
       "actionId": "icare_0165",
@@ -5903,8 +5887,7 @@
       "actionCategory": "Policies, Plans & Programs",
       "actionSubcategory": "Strategic Plans",
       "costInvestmentNeeded": "low",
-      "timelineForImplementation": "<5 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "<5 years"
     },
     {
       "actionId": "icare_0169",
@@ -5914,8 +5897,7 @@
       "actionSubcategory": "Strategic Plans",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": "5-10 years",
-      "biome": "coastal_marine",
-      "mitigationImpact": {}
+      "biome": "coastal_marine"
     },
     {
       "actionId": "icare_0170",
@@ -5924,8 +5906,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "high",
-      "timelineForImplementation": ">10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": ">10 years"
     },
     {
       "actionId": "icare_0171",
@@ -5934,8 +5915,7 @@
       "actionCategory": "Data, Tools & Planning Projects",
       "actionSubcategory": "Tech Pilots & Deployments",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "icare_0172",
@@ -5944,8 +5924,7 @@
       "actionCategory": "Policies, Plans & Programs",
       "actionSubcategory": "Strategic Plans",
       "costInvestmentNeeded": "low",
-      "timelineForImplementation": "<5 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "<5 years"
     },
     {
       "actionId": "icare_0173",
@@ -5954,8 +5933,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "icare_0176",
@@ -5964,8 +5942,7 @@
       "actionCategory": "Policies, Plans & Programs",
       "actionSubcategory": "Strategic Plans",
       "costInvestmentNeeded": "low",
-      "timelineForImplementation": "<5 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "<5 years"
     },
     {
       "actionId": "icare_0178",
@@ -5974,8 +5951,7 @@
       "actionCategory": "Policies, Plans & Programs",
       "actionSubcategory": "Strategic Plans",
       "costInvestmentNeeded": "low",
-      "timelineForImplementation": "<5 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "<5 years"
     },
     {
       "actionId": "icare_0180",
@@ -5984,8 +5960,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "<5 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "<5 years"
     },
     {
       "actionId": "icare_0181",
@@ -5994,8 +5969,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "icare_0182",
@@ -6004,8 +5978,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "icare_0183",
@@ -6014,8 +5987,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Emergency Infrastructure",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "icare_0184",
@@ -6024,8 +5996,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "icare_0185",
@@ -6034,8 +6005,7 @@
       "actionCategory": "Data, Tools & Planning Projects",
       "actionSubcategory": "Data Collection / Baseline Studies",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "icare_0186",
@@ -6045,8 +6015,7 @@
       "actionSubcategory": "Strategic Plans",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "biome": "coastal_marine",
-      "mitigationImpact": {}
+      "biome": "coastal_marine"
     },
     {
       "actionId": "icare_0188",
@@ -6055,8 +6024,7 @@
       "actionCategory": "Data, Tools & Planning Projects",
       "actionSubcategory": "Data Collection / Baseline Studies",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "ipcc_0001",
@@ -8499,8 +8467,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "high",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "ipcc_0083",
@@ -8510,8 +8477,7 @@
       "actionSubcategory": "Strategic Plans",
       "costInvestmentNeeded": "high",
       "timelineForImplementation": ">10 years",
-      "biome": "coastal_marine",
-      "mitigationImpact": {}
+      "biome": "coastal_marine"
     },
     {
       "actionId": "ipcc_0084",
@@ -8521,8 +8487,7 @@
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "biome": "coastal_marine",
-      "mitigationImpact": {}
+      "biome": "coastal_marine"
     },
     {
       "actionId": "ipcc_0085",
@@ -8531,8 +8496,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "ipcc_0086",
@@ -8541,8 +8505,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Nature-Based Solutions",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "ipcc_0087",
@@ -8551,8 +8514,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "high",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "ipcc_0088",
@@ -8561,8 +8523,7 @@
       "actionCategory": "Policies, Plans & Programs",
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "ipcc_0089",
@@ -8572,8 +8533,7 @@
       "actionSubcategory": "Regulation & Standards",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "biome": "coastal_marine",
-      "mitigationImpact": {}
+      "biome": "coastal_marine"
     },
     {
       "actionId": "ipcc_0090",
@@ -8582,8 +8542,7 @@
       "actionCategory": "Policies, Plans & Programs",
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "<5 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "<5 years"
     },
     {
       "actionId": "ipcc_0091",
@@ -8593,8 +8552,7 @@
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "<5 years",
-      "biome": "coastal_marine",
-      "mitigationImpact": {}
+      "biome": "coastal_marine"
     },
     {
       "actionId": "ipcc_0092",
@@ -8603,8 +8561,7 @@
       "actionCategory": "Policies, Plans & Programs",
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "ipcc_0094",
@@ -8613,8 +8570,7 @@
       "actionCategory": "Policies, Plans & Programs",
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "ipcc_0096",
@@ -8623,8 +8579,7 @@
       "actionCategory": "Policies, Plans & Programs",
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "ipcc_0097",
@@ -8633,8 +8588,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "ipcc_0098",
@@ -8643,8 +8597,7 @@
       "actionCategory": "Policies, Plans & Programs",
       "actionSubcategory": "Public Programs / Incentives",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "ipcc_0099",
@@ -8653,8 +8606,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "ipcc_0100",
@@ -8663,8 +8615,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "ipcc_0101",
@@ -8673,8 +8624,7 @@
       "actionCategory": "Projects & Physical Actions",
       "actionSubcategory": "Infrastructure Development",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "ipcc_0102",
@@ -8684,8 +8634,7 @@
       "actionSubcategory": "Institutional Frameworks",
       "costInvestmentNeeded": "medium",
       "timelineForImplementation": "5-10 years",
-      "biome": "coastal_marine",
-      "mitigationImpact": {}
+      "biome": "coastal_marine"
     },
     {
       "actionId": "ipcc_0103",
@@ -8694,8 +8643,7 @@
       "actionCategory": "Policies, Plans & Programs",
       "actionSubcategory": "Institutional Frameworks",
       "costInvestmentNeeded": "medium",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "ipcc_0104",
@@ -8704,8 +8652,7 @@
       "actionCategory": "Policies, Plans & Programs",
       "actionSubcategory": "Strategic Plans",
       "costInvestmentNeeded": "high",
-      "timelineForImplementation": "5-10 years",
-      "mitigationImpact": {}
+      "timelineForImplementation": "5-10 years"
     },
     {
       "actionId": "ipcc_0105",

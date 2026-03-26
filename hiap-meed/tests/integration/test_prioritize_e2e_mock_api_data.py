@@ -29,8 +29,15 @@ def _mock_data_dir() -> Path:
 
 
 @pytest.mark.integration
-def test_prioritize_e2e_with_mock_api_payloads() -> None:
+def test_prioritize_e2e_with_mock_api_payloads(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """Prioritize endpoint returns expected hard-filtered ranking for mock payloads."""
+    # Route request artifacts into an isolated test folder.
+    artifact_log_dir = tmp_path / "logs"
+    monkeypatch.setenv("LOG_DIR", str(artifact_log_dir))
+    monkeypatch.setenv("ARTIFACT_LOG_JSONL", "true")
+
     mock_data_dir = _mock_data_dir()
     request_payload = json.loads(
         (mock_data_dir / "prioritizer_request_mock.json").read_text(encoding="utf-8")
@@ -62,9 +69,11 @@ def test_prioritize_e2e_with_mock_api_payloads() -> None:
         assert len(body["results"]) == 1
         result = body["results"][0]
         metadata = result["metadata"]
+        assert metadata["frontend_request_id"] == "1234567890"
 
         expected_discarded_legal_ids = {"c40_0012", "c40_0034", "c40_0037", "c40_0029"}
         ranked_action_ids = result["ranked_action_ids"]
+        ranked_actions = result["ranked_actions"]
 
         assert result["locode"] == "CL IQQ"
         assert metadata["weights"] == {"impact": 0.5, "alignment": 0.3, "feasibility": 0.2}
@@ -73,6 +82,7 @@ def test_prioritize_e2e_with_mock_api_payloads() -> None:
         assert metadata["counts"]["discarded_legal"] == len(expected_discarded_legal_ids)
         assert metadata["counts"]["valid_actions"] == 151
         assert metadata["counts"]["ranked_actions"] == 20
+        assert len(ranked_actions) == 20
         assert not expected_discarded_legal_ids.intersection(ranked_action_ids)
 
         expected_ranked_ids = [
@@ -98,10 +108,40 @@ def test_prioritize_e2e_with_mock_api_payloads() -> None:
             "icare_0045",
         ]
         assert ranked_action_ids == expected_ranked_ids
+        assert [item["action_id"] for item in ranked_actions] == expected_ranked_ids
+        assert ranked_actions[0]["rank"] == 1
+        assert ranked_actions[0]["explanation"] is None
 
         blocked_evidence = metadata["hard_filter_evidence_by_action_id"]["c40_0012"]
         unknown_evidence = metadata["hard_filter_evidence_by_action_id"]["c40_0013"]
         assert blocked_evidence["discard_reason"] == "legal_hard_requirement_failed"
         assert unknown_evidence["hard_requirements_unknown_count"] == 1
+
+        # Verify artifact naming and full-response persistence.
+        request_runs = sorted((artifact_log_dir / "requests").glob("*"))
+        assert len(request_runs) == 1
+        run_dir = request_runs[0]
+
+        manifest_payload = json.loads((run_dir / "manifest.json").read_text("utf-8"))
+        generated_files = set(manifest_payload["generated_files"])
+        assert "013_response_summary.json" in generated_files
+        assert "response_full.json" in generated_files
+
+        response_summary_payload = json.loads(
+            (run_dir / "013_response_summary.json").read_text("utf-8")
+        )
+        assert response_summary_payload["event_type"] == "response_summary.completed"
+        assert response_summary_payload["step_name"] == "response_summary"
+
+        response_full_payload = json.loads(
+            (run_dir / "response_full.json").read_text("utf-8")
+        )
+        assert "results" in response_full_payload
+        assert len(response_full_payload["results"]) == 1
+        assert response_full_payload["results"][0]["locode"] == "CL IQQ"
+        assert (
+            response_full_payload["results"][0]["ranked_action_ids"]
+            == result["ranked_action_ids"]
+        )
     finally:
         app.dependency_overrides.clear()

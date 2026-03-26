@@ -12,6 +12,7 @@ from uuid import UUID
 
 
 logger = logging.getLogger(__name__)
+ARTIFACT_SCHEMA_VERSION = "1.0"
 
 
 def _artifacts_enabled() -> bool:
@@ -37,6 +38,7 @@ class ArtifactWriter:
         )
         self.path = self._run_dir / "summary.jsonl"
         self._event_counter = 0
+        self._written_files: set[str] = set()
 
     def _next_event_counter(self) -> int:
         """Return a monotonically increasing per-request event counter."""
@@ -48,6 +50,14 @@ class ArtifactWriter:
         lowered = name.strip().lower()
         sanitized = lowered.replace(".", "_").replace(" ", "_").replace("/", "_")
         return sanitized or "step"
+
+    def _register_written_file(self, file_path: Path) -> None:
+        """Track one run-relative file path for manifest generation."""
+        try:
+            relative_path = file_path.relative_to(self._run_dir).as_posix()
+        except ValueError:
+            relative_path = file_path.as_posix()
+        self._written_files.add(relative_path)
 
     def write_event(self, event_type: str, payload: Mapping[str, object]) -> int | None:
         """Append one summary event and return its event index."""
@@ -67,6 +77,7 @@ class ArtifactWriter:
             with self.path.open("a", encoding="utf-8") as handle:
                 handle.write(json.dumps(event, ensure_ascii=True))
                 handle.write("\n")
+            self._register_written_file(self.path)
         except Exception:
             logger.exception("Failed to write artifact event `%s`", event_type)
         return event_index
@@ -105,5 +116,48 @@ class ArtifactWriter:
                 json.dumps(detail, ensure_ascii=True, indent=2),
                 encoding="utf-8",
             )
+            self._register_written_file(detail_path)
         except Exception:
             logger.exception("Failed to write step detail `%s`", step_name)
+
+    def write_run_file(self, filename: str, payload: Mapping[str, object]) -> Path | None:
+        """Write one JSON artifact file directly inside the run folder."""
+        if not self.enabled:
+            return None
+
+        output_path = self._run_dir / filename
+        try:
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            output_path.write_text(
+                json.dumps(dict(payload), ensure_ascii=True, indent=2),
+                encoding="utf-8",
+            )
+            self._register_written_file(output_path)
+            return output_path
+        except Exception:
+            logger.exception("Failed to write run file `%s`", filename)
+            return None
+
+    def write_manifest(self, payload: Mapping[str, object]) -> Path | None:
+        """Write run-level manifest describing generated artifact files."""
+        if not self.enabled:
+            return None
+
+        manifest_path = self._run_dir / "manifest.json"
+        manifest = {
+            "schema_version": ARTIFACT_SCHEMA_VERSION,
+            "request_id": str(self.request_id),
+            "generated_files": sorted(self._written_files),
+            **dict(payload),
+        }
+        try:
+            manifest_path.parent.mkdir(parents=True, exist_ok=True)
+            manifest_path.write_text(
+                json.dumps(manifest, ensure_ascii=True, indent=2),
+                encoding="utf-8",
+            )
+            self._register_written_file(manifest_path)
+            return manifest_path
+        except Exception:
+            logger.exception("Failed to write run manifest")
+            return None

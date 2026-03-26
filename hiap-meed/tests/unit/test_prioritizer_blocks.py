@@ -286,13 +286,13 @@ def test_feasibility_block_with_mock_api_data() -> None:
     assert "socioeconomic_indicator_rows" in first_action_evidence
     assert first_action_evidence["feasibility_score"] == pytest.approx(
         first_action_evidence["soft_legal_contribution"]
-        + first_action_evidence["socio_contribution"]
+        + first_action_evidence["socioeconomic_indicators_contribution"]
     )
 
 
 @pytest.mark.unit
 def test_final_scoring_block_with_mock_api_data() -> None:
-    """Final scoring applies weights, tie-break sorting, and top_n truncation."""
+    """Final scoring applies tie-break sorting and competitive ranking."""
     actions = _load_mock_actions()
     action_by_id = {action.action_id: action for action in actions}
     selected_actions = [
@@ -312,5 +312,65 @@ def test_final_scoring_block_with_mock_api_data() -> None:
 
     ranked_ids = [item.action.action_id for item in scored_actions]
     assert ranked_ids == ["c40_0010", "c40_0012"]
-    assert [item.rank for item in scored_actions] == [1, 2]
+    assert [item.rank for item in scored_actions] == [1, 1]
     assert scored_actions[0].final_score == pytest.approx(scored_actions[1].final_score)
+
+
+@pytest.mark.unit
+def test_final_scoring_tie_break_follows_weight_priority() -> None:
+    """Tie-break order follows pillar weight priority when final scores are equal."""
+    actions = [
+        Action(action_id="action_a", action_name="Action A"),
+        Action(action_id="action_b", action_name="Action B"),
+    ]
+
+    # Scenario 1: impact has highest weight and should break final-score tie.
+    impact_first = final_scoring.run(
+        actions=actions,
+        impact_scores={"action_a": 0.8, "action_b": 0.5},
+        alignment_scores={"action_a": 0.2, "action_b": 0.7},
+        feasibility_scores={"action_a": 0.2, "action_b": 0.2},
+        weights={"impact": 0.5, "alignment": 0.3, "feasibility": 0.2},
+        top_n=2,
+    )
+    assert impact_first[0].final_score == pytest.approx(impact_first[1].final_score)
+    assert [item.action.action_id for item in impact_first] == ["action_a", "action_b"]
+    assert [item.rank for item in impact_first] == [1, 1]
+
+    # Scenario 2: feasibility has highest weight and should break final-score tie.
+    feasibility_first = final_scoring.run(
+        actions=actions,
+        impact_scores={"action_a": 0.8, "action_b": 0.3},
+        alignment_scores={"action_a": 0.5, "action_b": 0.5},
+        feasibility_scores={"action_a": 0.2, "action_b": 0.4},
+        weights={"impact": 0.2, "alignment": 0.3, "feasibility": 0.5},
+        top_n=2,
+    )
+    assert feasibility_first[0].final_score == pytest.approx(
+        feasibility_first[1].final_score
+    )
+    assert [item.action.action_id for item in feasibility_first] == [
+        "action_b",
+        "action_a",
+    ]
+    assert [item.rank for item in feasibility_first] == [1, 1]
+
+
+@pytest.mark.unit
+def test_final_scoring_competitive_ranks_skip_after_ties() -> None:
+    """Competitive ranks skip positions after ties in the returned top_n slice."""
+    actions = [
+        Action(action_id="a1", action_name="Action 1"),
+        Action(action_id="a2", action_name="Action 2"),
+        Action(action_id="a3", action_name="Action 3"),
+        Action(action_id="a4", action_name="Action 4"),
+    ]
+    scored_actions = final_scoring.run(
+        actions=actions,
+        impact_scores={"a1": 1.0, "a2": 0.8, "a3": 0.8, "a4": 0.7},
+        alignment_scores={"a1": 0.0, "a2": 0.0, "a3": 0.0, "a4": 0.0},
+        feasibility_scores={"a1": 0.0, "a2": 0.0, "a3": 0.0, "a4": 0.0},
+        weights={"impact": 1.0, "alignment": 0.0, "feasibility": 0.0},
+        top_n=4,
+    )
+    assert [item.rank for item in scored_actions] == [1, 2, 2, 4]

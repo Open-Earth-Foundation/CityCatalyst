@@ -140,7 +140,24 @@ Response fields:
 - `results` (`array`): one entry per requested city.
   - `locode` (`string`)
   - `ranked_action_ids` (`string[]`): ordered action IDs.
-  - `metadata` (`object`): request ID, timings, counts, hard-filter evidence, and frontend trace fields.
+  - `ranked_actions` (`array`): public ranking payload with one item per returned action.
+    - `action_id` (`string`)
+    - `rank` (`int`) uses competitive ranking (`1,2,2,4`) by `final_score` over the returned top-N slice
+    - `final_score` (`float`)
+    - `impact_score` (`float`)
+    - `alignment_score` (`float`)
+    - `feasibility_score` (`float`)
+    - `evidence_summary` (`object`): compact explainability snapshot from hard-filter/impact/alignment/feasibility evidence
+    - `explanation` (`string | null`): reserved placeholder for future LLM-generated explanation text
+  - `metadata` (`object`): request IDs, timings, counts, and hard-filter evidence.
+
+Ranking details:
+
+- Top-N selection is deterministic and uses this sort order:
+  1) `final_score` desc
+  2) tie-break by pillar scores in descending weight priority
+  3) `action_id` asc as the final fallback
+- Ranks are assigned after top-N truncation using competitive ranking (`1,2,2,4`).
 
 Example JSON request bodies (using mock data from `data/`):
 
@@ -186,8 +203,26 @@ Example response:
     {
       "locode": "CL IQQ",
       "ranked_action_ids": ["c40_0010", "c40_0030"],
+      "ranked_actions": [
+        {
+          "action_id": "c40_0010",
+          "rank": 1,
+          "final_score": 0.744,
+          "impact_score": 0.88,
+          "alignment_score": 0.62,
+          "feasibility_score": 0.59,
+          "evidence_summary": {
+            "impact": {
+              "impact_block_score": 0.88,
+              "matched_city_gpc_refs_count": 2
+            }
+          },
+          "explanation": null
+        }
+      ],
       "metadata": {
         "internal_request_id": "d1db6269-4cf9-4d62-8f4c-8f4ce631fbd2",
+        "frontend_request_id": "1234567890",
         "locode": "CL IQQ",
         "weights": {
           "impact": 0.55,
@@ -211,9 +246,6 @@ Example response:
           "discarded_legal": 0,
           "ranked_actions": 2
         },
-        "frontend_request_id": "1234567890",
-        "requested_languages": ["en"],
-        "excluded_actions_free_text": "Do not include new fossil fuel-based infrastructure ..."
       }
     }
   ]
@@ -249,7 +281,10 @@ What `app.log` contains:
 What each `requests/{UTC_TIMESTAMP}Z_{internal_request_id}/` run folder contains:
 
 - `summary.jsonl`: one JSON line per high-level pipeline event for that request
-- `NNN_<step>.json`: concise per-step detail files (fetch, filter, score, response)
+- `NNN_<step>.json`: concise per-step detail files (fetch, filter, score, response summary)
+- `response_full.json`: full per-city API response payload in the same shape returned by `/v1/prioritize`
+- `input_snapshot.json`: reproducibility-critical run inputs (`locode`, resolved weights, resolved `top_n`, frontend city preference fields, emissions by GPC ref)
+- `manifest.json`: run-level index of generated files, key counts, and pointers for top-ranked rows vs full evidence files
 - Event metadata such as timestamp, request ID, event index, event/step type, and payload
 - `event_index` is shared between a summary event and its matching detail file, so `summary.jsonl` and `NNN_<step>.json` are directly pairable
 - Timing/count summaries plus request-scoped traceability in a single run directory
@@ -274,7 +309,7 @@ Typical per-request artifact events:
 - `pillar_scores.completed`
 - `final_scoring.completed`
 - `run_summary.completed`
-- `response.completed`
+- `response_summary.completed`
 
 ### 6. Docker
 

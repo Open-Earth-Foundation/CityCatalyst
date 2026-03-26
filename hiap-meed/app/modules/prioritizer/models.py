@@ -332,7 +332,21 @@ class PrioritizationResponse(BaseModel):
     """Per-city prioritization output used by the API response."""
 
     ranked_action_ids: list[str] = Field(default_factory=list)
+    ranked_actions: list[RankedActionResult] = Field(default_factory=list)
     metadata: dict[str, object] = Field(default_factory=dict)
+
+
+class RankedActionResult(BaseModel):
+    """Public ranked action payload returned to API consumers."""
+
+    action_id: str
+    rank: int
+    final_score: float
+    impact_score: float
+    alignment_score: float
+    feasibility_score: float
+    evidence_summary: dict[str, object] = Field(default_factory=dict)
+    explanation: str | None = None
 
 
 class PrioritizerApiCityResult(BaseModel):
@@ -340,6 +354,7 @@ class PrioritizerApiCityResult(BaseModel):
 
     locode: str = Field(min_length=1)
     ranked_action_ids: list[str] = Field(default_factory=list)
+    ranked_actions: list[RankedActionResult] = Field(default_factory=list)
     metadata: dict[str, object] = Field(default_factory=dict)
 
 

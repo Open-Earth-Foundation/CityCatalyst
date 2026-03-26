@@ -110,17 +110,18 @@ def prioritize(
             per_city_result = _run_for_city_input(
                 city_input=city_input,
                 requested_top_n=request.requestData.topN,
-                frontend_request_id=request.meta.requestId,
-                requested_languages=list(request.requestData.requestedLanguages),
                 city_data_api_client=city_data_api_client,
                 action_data_api_client=action_data_api_client,
                 legal_data_api_client=legal_data_api_client,
                 policy_signals_data_api_client=policy_signals_data_api_client,
             )
+            # Echo frontend request ID for response correlation in clients/logs.
+            per_city_result.metadata["frontend_request_id"] = request_trace_id
             results.append(
                 PrioritizerApiCityResult(
                     locode=city_input.locode,
                     ranked_action_ids=per_city_result.ranked_action_ids,
+                    ranked_actions=per_city_result.ranked_actions,
                     metadata=per_city_result.metadata,
                 )
             )
@@ -153,8 +154,6 @@ def _run_for_city_input(
     *,
     city_input: FrontendCityInput,
     requested_top_n: int | None,
-    frontend_request_id: str,
-    requested_languages: list[str],
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient,
     action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient,
     legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient,
@@ -167,8 +166,6 @@ def _run_for_city_input(
 
     Current behavior:
     - `excludedActionsFreeText` is treated as a **stub** and does not exclude actions.
-      The text is attached to metadata so downstream consumers (e.g. frontend)
-      can flag it or implement a manual review flow.
 
     Future behavior:
     - Resolve free-text exclusions into concrete action exclusions via semantic
@@ -192,9 +189,4 @@ def _run_for_city_input(
         legal_data_api_client=legal_data_api_client,
         policy_signals_data_api_client=policy_signals_data_api_client,
     )
-
-    # Attach minimal frontend context for traceability/debugging.
-    result.metadata["frontend_request_id"] = frontend_request_id
-    result.metadata["requested_languages"] = requested_languages
-    result.metadata["excluded_actions_free_text"] = city_input.excludedActionsFreeText
     return result

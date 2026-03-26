@@ -10,7 +10,7 @@ Approach:
 
 Final score formula per action:
 - `feasibility_score = (legal_weight * soft_legal_component_value)`
-- `+ (socio_weight * socio_component_value)`
+- `+ (socioeconomic_indicators_weight * socioeconomic_indicators_component_value)`
 """
 
 from __future__ import annotations
@@ -204,8 +204,12 @@ def run(
         soft_legal_contribution = (
             FEASIBILITY_WEIGHT_LEGAL * feasibility_soft_legal_component
         )
-        socio_contribution = FEASIBILITY_WEIGHT_SOCIO * feasibility_socio_component
-        feasibility_score = soft_legal_contribution + socio_contribution
+        socioeconomic_indicators_contribution = (
+            FEASIBILITY_WEIGHT_SOCIO * feasibility_socio_component
+        )
+        feasibility_score = (
+            soft_legal_contribution + socioeconomic_indicators_contribution
+        )
         score_by_action_id[action.action_id] = feasibility_score
 
         # Block 5: Build legal summary diagnostics for explainability.
@@ -233,12 +237,12 @@ def run(
             "soft_legal_contribution": soft_legal_contribution,
             "soft_legal_aligned_count": aligned_soft_count,
             "soft_legal_total_count": total_soft_count,
-            "socio_component_value": feasibility_socio_component,
-            "socio_weight": FEASIBILITY_WEIGHT_SOCIO,
-            "socio_contribution": socio_contribution,
-            "socio_weighted_sum": socio_weighted_sum,
+            "socioeconomic_indicators_component_value": feasibility_socio_component,
+            "socioeconomic_indicators_weight": FEASIBILITY_WEIGHT_SOCIO,
+            "socioeconomic_indicators_contribution": socioeconomic_indicators_contribution,
+            "socioeconomic_indicators_weighted_sum": socio_weighted_sum,
             "total_socioeconomic_indicator_weight": total_socioeconomic_indicator_weight,
-            "socio_avg": socio_avg,
+            "socioeconomic_indicators_avg": socio_avg,
             "socioeconomic_indicator_rows": socioeconomic_indicator_rows,
             "missing_city_socioeconomic_indicator_keys": sorted(
                 set(missing_socioeconomic_indicator_keys)

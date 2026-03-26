@@ -61,7 +61,7 @@ graph TD
     Align --> WS
     Feas --> WS
 
-    WS -->|"PrioritizationResponse (per city)"| Router
+    WS -->|"PrioritizationResponse (per city: ranked_action_ids + ranked_actions + metadata)"| Router
     Router -->|"JSON response PrioritizerApiResponse (results[])"| CC
 ```
 
@@ -119,6 +119,6 @@ sequenceDiagram
 | Impact       | Score emissions reduction potential per city                    | Impact score per action                 |
 | Alignment    | Score alignment with city strategy and policy signals           | Alignment score per action              |
 | Feasibility  | Score realistic implementability for the city                   | Feasibility score per action            |
-| Weighted Sum | Aggregate pillar scores, sort, apply `top_n`                    | Final ranked action list                |
+| Weighted Sum | Aggregate pillar scores, sort, apply `top_n`                    | `ranked_action_ids` + `ranked_actions`  |
 
 See [`highlevel-architecture.md`](highlevel-architecture.md) and [`detailed-block-architecture.md`](detailed-block-architecture.md) for the scoring logic inside each block.

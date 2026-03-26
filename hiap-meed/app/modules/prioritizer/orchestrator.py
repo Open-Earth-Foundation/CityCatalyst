@@ -14,7 +14,7 @@ from app.modules.prioritizer.blocks import (
 )
 from app.modules.prioritizer.config import validate_weights
 from app.modules.prioritizer.internal_models import Action
-from app.modules.prioritizer.models import PrioritizationResponse
+from app.modules.prioritizer.models import PrioritizationResponse, RankedActionResult
 from app.services.data_clients import (
     ApiActionDataApiClient,
     ApiCityDataApiClient,
@@ -73,6 +73,82 @@ def _safe_block_evidence(
     return dict(action_evidence)
 
 
+def _safe_float(value: object, default: float = 0.0) -> float:
+    """Return float(value) when possible, otherwise a fallback."""
+    if isinstance(value, int | float):
+        return float(value)
+    return default
+
+
+def _build_evidence_summary(scored_action_evidence: dict[str, object]) -> dict[str, object]:
+    """Build compact public explainability fields for one ranked action."""
+    hard_filter_evidence = scored_action_evidence.get("hard_filter", {})
+    impact_evidence = scored_action_evidence.get("impact", {})
+    alignment_evidence = scored_action_evidence.get("alignment", {})
+    feasibility_evidence = scored_action_evidence.get("feasibility", {})
+
+    if not isinstance(hard_filter_evidence, dict):
+        hard_filter_evidence = {}
+    if not isinstance(impact_evidence, dict):
+        impact_evidence = {}
+    if not isinstance(alignment_evidence, dict):
+        alignment_evidence = {}
+    if not isinstance(feasibility_evidence, dict):
+        feasibility_evidence = {}
+
+    return {
+        "hard_filter": {
+            "discard_reason": hard_filter_evidence.get("discard_reason"),
+            "hard_requirements_failed_count": hard_filter_evidence.get(
+                "hard_requirements_failed_count", 0
+            ),
+            "hard_requirements_unknown_count": hard_filter_evidence.get(
+                "hard_requirements_unknown_count", 0
+            ),
+        },
+        "impact": {
+            "impact_block_score": _safe_float(impact_evidence.get("impact_block_score")),
+            "matched_city_gpc_refs_count": int(
+                impact_evidence.get("matched_city_gpc_refs_count", 0)
+            ),
+            "reduction_share_of_city_emissions": _safe_float(
+                impact_evidence.get("reduction_share_of_city_emissions")
+            ),
+            "timeline_score": _safe_float(impact_evidence.get("timeline_score")),
+        },
+        "alignment": {
+            "alignment_score": _safe_float(alignment_evidence.get("alignment_score")),
+            "policy_component_value": _safe_float(
+                alignment_evidence.get("policy_component_value")
+            ),
+            "sector_component_value": _safe_float(
+                alignment_evidence.get("sector_component_value")
+            ),
+            "other_component_value": _safe_float(
+                alignment_evidence.get("other_component_value")
+            ),
+        },
+        "feasibility": {
+            "feasibility_score": _safe_float(
+                feasibility_evidence.get("feasibility_score")
+            ),
+            "soft_legal_component_value": _safe_float(
+                feasibility_evidence.get("soft_legal_component_value")
+            ),
+            "socioeconomic_indicators_component_value": _safe_float(
+                feasibility_evidence.get("socioeconomic_indicators_component_value")
+            ),
+        },
+    }
+
+
+def _detail_filename(event_index: int | None, step_name: str) -> str:
+    """Return expected detail filename for one step event."""
+    if event_index is None:
+        return f"<disabled>_{step_name}.json"
+    return f"{event_index:03d}_{step_name}.json"
+
+
 def run_prioritization(
     *,
     locode: str,
@@ -95,6 +171,7 @@ def run_prioritization(
 
     Outputs:
     - Ordered `action_id` list in `PrioritizationResponse.ranked_action_ids`.
+    - Rich `ranked_actions` payload with scores and evidence summary per action.
     - Metadata with timings, counts, and resolved weights.
     """
 
@@ -273,6 +350,27 @@ def run_prioritization(
         validate_weights_payload,
         event_index=validate_weights_event_index,
         event_type="validate_weights.completed",
+    )
+
+    # Persist reproducibility-critical inputs in one dedicated run artifact.
+    input_snapshot_payload = {
+        "locode": locode,
+        "resolved_top_n": top_n,
+        "resolved_weights": weights,
+        "city_emissions_by_gpc_ref": city_emissions_by_gpc_ref,
+        "city_preference_sectors": city_preference_sectors,
+        "city_preference_other_text": city_preference_other_text,
+        "excluded_actions_free_text": excluded_actions_free_text,
+    }
+    input_snapshot_path = artifact_writer.write_run_file(
+        "input_snapshot.json", input_snapshot_payload
+    )
+    artifact_writer.write_event(
+        "input_snapshot.completed",
+        {
+            "file": input_snapshot_path.name if input_snapshot_path else "input_snapshot.json",
+            "locode": locode,
+        },
     )
 
     # Phase 6: run hard filter to remove excluded and legally blocked actions.
@@ -482,15 +580,28 @@ def run_prioritization(
             ),
         }
 
-    # Phase 12: build response metadata with counts and timings.
+    # Phase 12: build public ranked action payloads and response metadata.
+    ranked_actions: list[RankedActionResult] = []
+    for scored_action in scored_actions:
+        ranked_actions.append(
+            RankedActionResult(
+                action_id=scored_action.action.action_id,
+                rank=scored_action.rank,
+                final_score=scored_action.final_score,
+                impact_score=scored_action.impact_score,
+                alignment_score=scored_action.alignment_score,
+                feasibility_score=scored_action.feasibility_score,
+                evidence_summary=_build_evidence_summary(scored_action.evidence),
+                # Placeholder for future LLM-generated narrative explanation.
+                explanation=None,
+            )
+        )
+
     ranked_action_ids = [item.action.action_id for item in scored_actions]
 
     metadata: dict[str, object] = {
-        "internal_request_id": str(internal_request_id),
         "locode": locode,
-        "weights": weights,
-        "timings": timings,
-        "hard_filter_evidence_by_action_id": hard_filter_result.evidence,
+        "internal_request_id": str(internal_request_id),
         "counts": {
             "total_actions": len(actions),
             "valid_actions": len(hard_filter_result.valid_actions),
@@ -498,17 +609,35 @@ def run_prioritization(
             "discarded_legal": len(hard_filter_result.discarded_legal),
             "ranked_actions": len(ranked_action_ids),
         },
+        "weights": weights,
+        "timings": timings,
+        "hard_filter_evidence_by_action_id": hard_filter_result.evidence,
     }
-    # Emit final response and run-summary artifacts.
+    # Build the full per-city API response shape for artifact logging.
+    full_response_payload = {
+        "results": [
+            {
+                "locode": locode,
+                "ranked_action_ids": ranked_action_ids,
+                "ranked_actions": [
+                    ranked_action.model_dump(mode="json")
+                    for ranked_action in ranked_actions
+                ],
+                "metadata": metadata,
+            }
+        ]
+    }
+
+    # Emit response summary and run-summary artifacts.
     response_event_index = artifact_writer.write_event(
-        "response.completed",
+        "response_summary.completed",
         {
             "ranked_action_ids": ranked_action_ids,
             "counts": metadata["counts"],
         },
     )
     artifact_writer.write_step_detail(
-        "response",
+        "response_summary",
         {
             "locode": locode,
             "counts": metadata["counts"],
@@ -519,8 +648,9 @@ def run_prioritization(
             "timings": timings,
         },
         event_index=response_event_index,
-        event_type="response.completed",
+        event_type="response_summary.completed",
     )
+    artifact_writer.write_run_file("response_full.json", full_response_payload)
     artifact_writer.write_event(
         "run_summary.completed",
         {
@@ -532,6 +662,31 @@ def run_prioritization(
         },
     )
 
+    # Emit run-level manifest after all other artifact files are written.
+    final_scoring_detail_file = _detail_filename(
+        final_scoring_event_index, "final_scoring"
+    )
+    hard_filter_detail_file = _detail_filename(hard_filter_event_index, "hard_filter")
+    impact_detail_file = _detail_filename(impact_event_index, "impact")
+    alignment_detail_file = _detail_filename(alignment_event_index, "alignment")
+    feasibility_detail_file = _detail_filename(feasibility_event_index, "feasibility")
+    artifact_writer.write_manifest(
+        {
+            "counts": metadata["counts"],
+            "artifact_pointers": {
+                "summary_events": "summary.jsonl",
+                "input_snapshot": "input_snapshot.json",
+                "top_ranked_actions": final_scoring_detail_file,
+                "full_evidence": {
+                    "hard_filter": hard_filter_detail_file,
+                    "impact": impact_detail_file,
+                    "alignment": alignment_detail_file,
+                    "feasibility": feasibility_detail_file,
+                },
+            },
+        }
+    )
+
     logger.info(
         "Prioritization complete internal_request_id=%s locode=%s ranked_actions=%s",
         internal_request_id,
@@ -539,5 +694,7 @@ def run_prioritization(
         len(ranked_action_ids),
     )
     return PrioritizationResponse(
-        ranked_action_ids=ranked_action_ids, metadata=metadata
+        ranked_action_ids=ranked_action_ids,
+        ranked_actions=ranked_actions,
+        metadata=metadata,
     )

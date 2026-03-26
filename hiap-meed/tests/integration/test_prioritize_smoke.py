@@ -234,7 +234,18 @@ def test_prioritize_smoke() -> None:
         result = body["results"][0]
         assert result["locode"] == "CL-SCL"
         assert result["ranked_action_ids"] == ["c40_0010", "c40_0020"]
+        assert len(result["ranked_actions"]) == 2
+        first_ranked_action = result["ranked_actions"][0]
+        assert first_ranked_action["action_id"] == "c40_0010"
+        assert first_ranked_action["rank"] == 1
+        assert "final_score" in first_ranked_action
+        assert "impact_score" in first_ranked_action
+        assert "alignment_score" in first_ranked_action
+        assert "feasibility_score" in first_ranked_action
+        assert "evidence_summary" in first_ranked_action
+        assert first_ranked_action["explanation"] is None
         assert "metadata" in result
+        assert result["metadata"]["frontend_request_id"] == "1234567890"
         assert "timings" in result["metadata"]
         assert "counts" in result["metadata"]
         assert result["metadata"]["counts"]["discarded_excluded"] == 0

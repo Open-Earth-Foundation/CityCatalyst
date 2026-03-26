@@ -288,7 +288,7 @@ This step combines the three pillar scores into a single ranking score and produ
 ### Outputs
 
 - Final prioritized action list
-  - Output: ranked list of actions with pillar scores and final score
+  - Output: `ranked_action_ids` plus `ranked_actions[]` payload items containing `rank`, pillar scores, final score, compact `evidence_summary`, and `explanation` placeholder
 
 ```mermaid
 graph TD

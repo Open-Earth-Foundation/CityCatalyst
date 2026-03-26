@@ -40,6 +40,12 @@ It is being used to fetch basic city context data and also more specific city co
 
 The general logic is that this is the baseline and values might be updated by the city user via the frontend request.
 
+Known alignment gap with action socioeconomic rules:
+
+- City keys currently include `transport_logistics_employment` and `electricity_access`.
+- `actions_api_mock_v2.json` currently includes indicator keys `employment_in_transport_and_logistics` and `electricity_access_rate`.
+- Until these names are aligned (or mapped in code), feasibility socio-economic lookup will treat those indicators as missing.
+
 # actions_api_mock_v2.json:
 
 This is a mock response from the actions data API.

@@ -260,6 +260,12 @@ Common validation errors:
 
 Note: city, action, legal, and policy-signal clients now resolve to `mock` (file-backed) or `api` (placeholder until real upstream wiring is added). Default source for all four is `mock`, so local and Docker runs use checked-in mock payloads by default. Real upstream HTTP wiring is still pending; when wired, clients should use a synchronous HTTP client (e.g. `httpx.Client`). FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
 
+Known limitation (mock data):
+
+- The Feasibility socio-economic lookup currently expects city keys like `transport_logistics_employment` and `electricity_access`.
+- `actions_api_mock_v2.json` currently uses `employment_in_transport_and_logistics` and `electricity_access_rate` for some `indicator_key` values.
+- Until key normalization or aligned naming is implemented, those indicators are treated as missing and contribute `0` in the socio-economic feasibility component.
+
 ### 5. Logging and artifacts
 
 The service writes:

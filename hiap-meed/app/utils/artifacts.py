@@ -13,6 +13,7 @@ from uuid import UUID
 
 logger = logging.getLogger(__name__)
 ARTIFACT_SCHEMA_VERSION = "1.0"
+RESERVED_MANIFEST_KEYS = {"schema_version", "request_id", "generated_files"}
 
 
 def _artifacts_enabled() -> bool:
@@ -144,11 +145,16 @@ class ArtifactWriter:
             return None
 
         manifest_path = self._run_dir / "manifest.json"
+        safe_payload = {
+            key: value
+            for key, value in payload.items()
+            if key not in RESERVED_MANIFEST_KEYS
+        }
         manifest = {
+            **safe_payload,
             "schema_version": ARTIFACT_SCHEMA_VERSION,
             "request_id": str(self.request_id),
             "generated_files": sorted(self._written_files),
-            **dict(payload),
         }
         try:
             manifest_path.parent.mkdir(parents=True, exist_ok=True)

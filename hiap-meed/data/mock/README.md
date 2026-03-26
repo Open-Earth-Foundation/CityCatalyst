@@ -40,19 +40,19 @@ It is being used to fetch basic city context data and also more specific city co
 
 The general logic is that this is the baseline and values might be updated by the city user via the frontend request.
 
-# actions_api_mock.json:
+# actions_api_mock_v2.json:
 
 This is a mock response from the actions data API.
 It simulates a response from the actions data API containing information about the actions.
 The upstream provider is the global-api.
 
-It is being used to fetch the list of actions and their associated mitigation and impact data.
+It is being used to fetch the list of actions and their associated emissions, co-benefits, and socioeconomic indicator-fit data.
 
 This payload shape is modeled by:
 - `ActionsApiResponse` (envelope)
 - `Action` (`actions[]`)
 
-# city_policy_signals_api_mock.json:
+# actions_policy_signals_api_mock.json:
 
 Mock for GET /v1/cities/{locode}/policy-signals.
 Policy signals filtered by city's location_scope/location_name (National Chile + Regional + Communal).

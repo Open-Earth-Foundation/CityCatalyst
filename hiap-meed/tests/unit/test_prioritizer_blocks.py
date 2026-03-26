@@ -15,7 +15,12 @@ from app.modules.prioritizer.blocks import (
     impact,
 )
 from app.modules.prioritizer.internal_models import Action, CityData
-from app.services.data_clients import MockActionDataApiClient, MockLegalDataApiClient
+from app.services.data_clients import (
+    MockActionDataApiClient,
+    MockCityDataApiClient,
+    MockLegalDataApiClient,
+    MockPolicySignalsDataApiClient,
+)
 
 
 def _mock_data_dir() -> Path:
@@ -26,15 +31,17 @@ def _mock_data_dir() -> Path:
 def _load_mock_actions() -> list[Action]:
     """Load actions from the mock actions API payload."""
     action_client = MockActionDataApiClient(
-        mock_file_path=_mock_data_dir() / "actions_api_mock.json"
+        mock_file_path=_mock_data_dir() / "actions_api_mock_v2.json"
     )
     return action_client.list_actions()
 
 
 def _load_mock_city() -> CityData:
     """Load city context from the mock city API payload."""
-    payload = json.loads((_mock_data_dir() / "city_api_mock.json").read_text(encoding="utf-8"))
-    return CityData.model_validate(payload["city"])
+    city_client = MockCityDataApiClient(
+        mock_file_path=_mock_data_dir() / "city_api_mock.json"
+    )
+    return city_client.get_city("CL IQQ")
 
 
 def _load_mock_legal_requirements() -> dict[str, object]:
@@ -43,6 +50,14 @@ def _load_mock_legal_requirements() -> dict[str, object]:
         mock_file_path=_mock_data_dir() / "actions_legal_api_mock.json"
     )
     return legal_client.get_action_legal_requirements(locode="CL IQQ")
+
+
+def _load_mock_policy_signals() -> dict[str, object]:
+    """Load policy support signals from the mock policy-signals payload."""
+    policy_client = MockPolicySignalsDataApiClient(
+        mock_file_path=_mock_data_dir() / "actions_policy_signals_api_mock.json"
+    )
+    return policy_client.get_action_policy_signals(locode="CL IQQ")
 
 
 def _load_city_emissions_by_gpc_ref() -> dict[str, float]:
@@ -86,7 +101,7 @@ def test_hard_filter_block_with_mock_api_data() -> None:
 
 @pytest.mark.unit
 def test_impact_block_with_mock_api_data() -> None:
-    """Impact block emits normalized city-specific scores and explainability evidence."""
+    """Impact block emits canonical weighted-sum scores and explainability evidence."""
     actions = _load_mock_actions()
     city_emissions_by_gpc_ref = _load_city_emissions_by_gpc_ref()
 
@@ -97,7 +112,6 @@ def test_impact_block_with_mock_api_data() -> None:
 
     assert len(result.score_by_action_id) == len(actions)
     assert all(0.0 <= score <= 1.0 for score in result.score_by_action_id.values())
-    assert max(result.score_by_action_id.values()) == pytest.approx(1.0)
     assert result.evidence_by_action_id is not None
 
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
@@ -106,8 +120,12 @@ def test_impact_block_with_mock_api_data() -> None:
     assert first_action_evidence["action_gpc_refs"] == ["I.1.1", "I.1.2"]
     assert first_action_evidence["matched_city_gpc_refs_count"] == 2
     assert first_action_evidence["reduction_share_of_city_emissions"] > 0.0
-    assert first_action_evidence["impact_normalized"] == pytest.approx(
+    assert first_action_evidence["impact_block_score"] == pytest.approx(
         result.score_by_action_id["c40_0010"]
+    )
+    assert first_action_evidence["impact_block_score"] == pytest.approx(
+        first_action_evidence["reduction_component_contribution"]
+        + first_action_evidence["timeline_component_contribution"]
     )
 
 
@@ -119,11 +137,9 @@ def test_impact_block_rejects_unknown_impact_text_band() -> None:
             action_id="A1",
             action_name="Unknown impact text action",
             implementation_timeline="<5 years",
-            mitigation_impact={
-                "emissions": {
-                    "gpc_reference_number": ["I.1.1"],
-                    "impact_text": "extreme",
-                }
+            emissions={
+                "gpc_reference_number": ["I.1.1"],
+                "impact_text": "extreme",
             },
         )
     ]
@@ -140,22 +156,18 @@ def test_impact_block_ranks_higher_emissions_target_above_lower_target() -> None
             action_id="A_high",
             action_name="Targets high emissions",
             implementation_timeline="<5 years",
-            mitigation_impact={
-                "emissions": {
-                    "gpc_reference_number": ["I.1.1"],
-                    "impact_text": "medium",
-                }
+            emissions={
+                "gpc_reference_number": ["I.1.1"],
+                "impact_text": "medium",
             },
         ),
         Action(
             action_id="A_low",
             action_name="Targets low emissions",
             implementation_timeline="<5 years",
-            mitigation_impact={
-                "emissions": {
-                    "gpc_reference_number": ["II.1.1"],
-                    "impact_text": "medium",
-                }
+            emissions={
+                "gpc_reference_number": ["II.1.1"],
+                "impact_text": "medium",
             },
         ),
     ]
@@ -166,7 +178,6 @@ def test_impact_block_ranks_higher_emissions_target_above_lower_target() -> None
     )
 
     assert result.score_by_action_id["A_high"] > result.score_by_action_id["A_low"]
-    assert result.score_by_action_id["A_high"] == pytest.approx(1.0)
 
 
 @pytest.mark.unit
@@ -176,11 +187,9 @@ def test_impact_block_accepts_gpc_reference_number_list_shape() -> None:
         action_id="A_refs",
         action_name="Action with repeated refs",
         implementation_timeline="5-10 years",
-        mitigation_impact={
-            "emissions": {
-                "gpc_reference_number": ["I.1.1", "I.1.1", "I.1.2"],
-                "impact_text": "low",
-            }
+        emissions={
+            "gpc_reference_number": ["I.1.1", "I.1.1", "I.1.2"],
+            "impact_text": "low",
         },
     )
 
@@ -202,22 +211,18 @@ def test_impact_block_timeline_mapping_prefers_faster_implementation() -> None:
             action_id="A_fast",
             action_name="Fast timeline",
             implementation_timeline="<5 years",
-            mitigation_impact={
-                "emissions": {
-                    "gpc_reference_number": ["I.1.1"],
-                    "impact_text": "high",
-                }
+            emissions={
+                "gpc_reference_number": ["I.1.1"],
+                "impact_text": "high",
             },
         ),
         Action(
             action_id="A_slow",
             action_name="Slow timeline",
             implementation_timeline=">10 years",
-            mitigation_impact={
-                "emissions": {
-                    "gpc_reference_number": ["I.1.1"],
-                    "impact_text": "high",
-                }
+            emissions={
+                "gpc_reference_number": ["I.1.1"],
+                "impact_text": "high",
             },
         ),
     ]
@@ -235,33 +240,54 @@ def test_impact_block_timeline_mapping_prefers_faster_implementation() -> None:
 
 @pytest.mark.unit
 def test_alignment_block_with_mock_api_data() -> None:
-    """Alignment block returns zero scores with attribute-presence evidence."""
+    """Alignment block computes canonical weighted scores with policy and sectors."""
     actions = _load_mock_actions()
-    city = _load_mock_city()
+    policy_signals = _load_mock_policy_signals()
 
-    result = alignment.run(actions=actions, city=city)
+    result = alignment.run(
+        actions=actions,
+        policy_signals_by_action_id=policy_signals,
+        city_preference_sectors=["stationary_energy", "transportation"],
+        city_preference_other_text="Focus on local jobs and cleaner mobility",
+    )
 
     assert len(result.score_by_action_id) == len(actions)
-    assert all(score == 0.0 for score in result.score_by_action_id.values())
+    assert all(0.0 <= score <= 1.0 for score in result.score_by_action_id.values())
     assert result.evidence_by_action_id is not None
 
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
-    assert first_action_evidence["has_action_type"] is False
-    assert first_action_evidence["has_action_category"] is True
-    assert first_action_evidence["has_action_subcategory"] is True
+    assert first_action_evidence["policy_component_value"] > 0.0
+    assert first_action_evidence["sector_component_value"] in {0.0, 1.0}
+    assert first_action_evidence["other_component_value"] == 0.0
+    assert first_action_evidence["alignment_score"] == pytest.approx(
+        first_action_evidence["policy_contribution"]
+        + first_action_evidence["sector_contribution"]
+        + first_action_evidence["other_contribution"]
+    )
 
 
 @pytest.mark.unit
 def test_feasibility_block_with_mock_api_data() -> None:
-    """Feasibility block returns zero scores (stub)."""
+    """Feasibility block computes legal+socio canonical scores and evidence."""
     actions = _load_mock_actions()
     city = _load_mock_city()
+    legal_requirements = _load_mock_legal_requirements()
 
-    result = feasibility.run(actions=actions, city=city)
+    result = feasibility.run(
+        actions=actions,
+        city=city,
+        legal_requirements_by_action_id=legal_requirements,
+    )
 
     assert len(result.score_by_action_id) == len(actions)
-    assert all(score == 0.0 for score in result.score_by_action_id.values())
-    assert result.evidence_by_action_id is None
+    assert all(0.0 <= score <= 1.0 for score in result.score_by_action_id.values())
+    assert result.evidence_by_action_id is not None
+    first_action_evidence = result.evidence_by_action_id["c40_0010"]
+    assert "socioeconomic_indicator_rows" in first_action_evidence
+    assert first_action_evidence["feasibility_score"] == pytest.approx(
+        first_action_evidence["soft_legal_contribution"]
+        + first_action_evidence["socio_contribution"]
+    )
 
 
 @pytest.mark.unit

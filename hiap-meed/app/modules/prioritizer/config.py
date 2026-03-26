@@ -39,10 +39,13 @@ IMPACT_WEIGHT_REDUCTION_SHARE = 0.80
 IMPACT_WEIGHT_TIMELINE = 0.20
 
 # Alignment scoring knobs
-#
-# This is intentionally small because Alignment is max-normalized per run and
-# should remain primarily driven by policy support signals.
-ALIGNMENT_STRATEGIC_SECTOR_BOOST = 0.05
+ALIGNMENT_WEIGHT_POLICY = 0.80
+ALIGNMENT_WEIGHT_SECTOR = 0.15
+ALIGNMENT_WEIGHT_OTHER = 0.05
+
+# Feasibility scoring knobs
+FEASIBILITY_WEIGHT_LEGAL = 0.50
+FEASIBILITY_WEIGHT_SOCIO = 0.50
 
 
 def validate_weights(weights: Mapping[str, float] | None) -> dict[str, float]:
@@ -84,6 +87,36 @@ def validate_weights(weights: Mapping[str, float] | None) -> dict[str, float]:
         raise ValueError(f"Weight sum must be 1.0, got {total}")
 
     return resolved
+
+
+def validate_block_component_weights() -> None:
+    """Validate all block-internal component weights for 0..1 bounds and sum-to-1."""
+    block_weights: dict[str, dict[str, float]] = {
+        "impact": {
+            "IMPACT_WEIGHT_REDUCTION_SHARE": IMPACT_WEIGHT_REDUCTION_SHARE,
+            "IMPACT_WEIGHT_TIMELINE": IMPACT_WEIGHT_TIMELINE,
+        },
+        "alignment": {
+            "ALIGNMENT_WEIGHT_POLICY": ALIGNMENT_WEIGHT_POLICY,
+            "ALIGNMENT_WEIGHT_SECTOR": ALIGNMENT_WEIGHT_SECTOR,
+            "ALIGNMENT_WEIGHT_OTHER": ALIGNMENT_WEIGHT_OTHER,
+        },
+        "feasibility": {
+            "FEASIBILITY_WEIGHT_LEGAL": FEASIBILITY_WEIGHT_LEGAL,
+            "FEASIBILITY_WEIGHT_SOCIO": FEASIBILITY_WEIGHT_SOCIO,
+        },
+    }
+    for block_name, weights in block_weights.items():
+        for weight_name, value in weights.items():
+            if value < 0.0 or value > 1.0:
+                raise ValueError(
+                    f"{weight_name} for `{block_name}` must be within [0, 1], got {value}"
+                )
+        total = sum(weights.values())
+        if not isclose(total, 1.0, rel_tol=1e-9, abs_tol=1e-9):
+            raise ValueError(
+                f"Internal `{block_name}` weights must sum to 1.0, got {total}"
+            )
 
 
 def _parse_top_n(value: str, *, source_label: str) -> int:
@@ -132,10 +165,3 @@ def resolve_impact_text_multiplier(impact_text: str) -> float:
             f"`{impact_text}` (normalized: `{normalized}`)"
         )
     return IMPACT_TEXT_TO_MULTIPLIER[normalized]
-
-
-def resolve_timeline_score(timeline: str | None) -> float:
-    """Resolve timeline score from configured mapping, defaulting to 0.0."""
-    if timeline is None:
-        return IMPACT_DEFAULT_TIMELINE_SCORE
-    return IMPACT_TIMELINE_TO_SCORE.get(timeline, IMPACT_DEFAULT_TIMELINE_SCORE)

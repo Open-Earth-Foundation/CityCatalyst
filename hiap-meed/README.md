@@ -38,6 +38,7 @@ ARTIFACT_LOG_JSONL=true
 HIAP_MEED_CITY_DATA_SOURCE=mock
 HIAP_MEED_LEGAL_DATA_SOURCE=mock
 HIAP_MEED_ACTION_DATA_SOURCE=mock
+HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE=mock
 HIAP_MEED_TOP_N=20
 ```
 
@@ -51,6 +52,7 @@ Variables:
 - `HIAP_MEED_CITY_DATA_SOURCE`: city input source (`mock` or `api`)
 - `HIAP_MEED_LEGAL_DATA_SOURCE`: legal input source (`mock` or `api`)
 - `HIAP_MEED_ACTION_DATA_SOURCE`: action catalog source (`mock` or `api`)
+- `HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE`: policy-signal input source (`mock` or `api`)
 - `HIAP_MEED_TOP_N`: default number of ranked actions to return per city (default `20`)
 
 ### 2. Install dependencies
@@ -116,19 +118,19 @@ Hard legal requirements:
 
 Score normalization policy:
 
-- Impact, alignment, and feasibility block scores are normalized to `0..1` per action.
-- Blocks use **max-normalization per run** (`score / max(score)`), not sum-normalization.
-- Scores therefore do not sum to 1 across all actions; `1.0` means “best action in that block for this run”.
+- Each block computes named component values in `0..1`.
+- Each block applies explicit internal weights that sum to `1.0`.
+- Block score is the canonical weighted sum of those components (no run-relative max-normalization).
 
 Impact block behavior (implemented):
 
-- Impact reads action emissions targeting from `mitigationImpact.emissions`, including:
+- Impact reads action emissions targeting from `emissions`, including:
   - `gpc_reference_number` (**list** of GPC refs in the mock/API schema)
   - `impact_text` (`very low`, `low`, `medium`, `high`, `very high`)
 - Impact reads city emissions from the frontend request:
   - `requestData.cityDataList[].cityEmissionsData.gpcData[*].activities[*].totalEmissions`
   - The service sums activity emissions per GPC key before scoring.
-- Impact computes raw score as:
+- Impact computes canonical score as:
   - `0.80 * reduction_share_of_city_emissions + 0.20 * timeline_score`
   - Timeline mapping: `<5 years -> 1.0`, `5-10 years -> 0.5`, `>10 years -> 0.0`
 - Unknown `impact_text` values are rejected with `422` (raised during Impact scoring and surfaced by the API error handler).
@@ -224,7 +226,7 @@ Common validation errors:
 - Missing `requestData.cityDataList` or empty `cityDataList` -> HTTP `422`.
 - Missing `locode` or empty `locode` in a city entry -> HTTP `422`.
 
-Note: city, action, and legal clients now resolve to `mock` (file-backed) or `api` (placeholder until real upstream wiring is added). Default source for all three is `mock`, so local and Docker runs use checked-in mock payloads by default. Real upstream HTTP wiring is still pending; when wired, clients should use a synchronous HTTP client (e.g. `httpx.Client`). FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
+Note: city, action, legal, and policy-signal clients now resolve to `mock` (file-backed) or `api` (placeholder until real upstream wiring is added). Default source for all four is `mock`, so local and Docker runs use checked-in mock payloads by default. Real upstream HTTP wiring is still pending; when wired, clients should use a synchronous HTTP client (e.g. `httpx.Client`). FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
 
 ### 5. Logging and artifacts
 
@@ -266,6 +268,7 @@ Typical per-request artifact events:
 
 - `fetch_city.completed`
 - `fetch_actions.completed`
+- `fetch_policy_signals.completed`
 - `validate_weights.completed`
 - `hard_filter.completed`
 - `pillar_scores.completed`

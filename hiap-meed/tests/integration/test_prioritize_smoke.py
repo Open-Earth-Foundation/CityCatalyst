@@ -12,21 +12,17 @@ from app.modules.prioritizer.api import (
     get_action_data_api_client,
     get_city_data_api_client,
     get_legal_data_api_client,
+    get_policy_signals_data_api_client,
 )
 from app.modules.prioritizer.internal_models import (
     Action,
     CityData,
-    HardFilterLegalRequirement,
-)
-from app.services.data_clients import (
-    ActionDataApiClient,
-    CityDataApiClient,
-    LegalDataApiClient,
+    LegalRequirementRecord,
 )
 
 
 @dataclass
-class MockCityDataApiClient(CityDataApiClient):
+class MockCityDataApiClient:
     """In-memory city client for prioritization endpoint tests."""
 
     city: CityData
@@ -38,7 +34,7 @@ class MockCityDataApiClient(CityDataApiClient):
 
 
 @dataclass
-class MockActionDataApiClient(ActionDataApiClient):
+class MockActionDataApiClient:
     """In-memory action client for prioritization endpoint tests."""
 
     actions: list[Action]
@@ -48,17 +44,29 @@ class MockActionDataApiClient(ActionDataApiClient):
 
 
 @dataclass
-class MockLegalDataApiClient(LegalDataApiClient):
+class MockLegalDataApiClient:
     """In-memory legal client for hard filter integration tests."""
 
-    requirements_by_action_id: dict[str, list[HardFilterLegalRequirement]]
+    requirements_by_action_id: dict[str, list[LegalRequirementRecord]]
 
     def get_action_legal_requirements(
         self, locode: str
-    ) -> dict[str, list[HardFilterLegalRequirement]]:
+    ) -> dict[str, list[LegalRequirementRecord]]:
         """Return legal requirements for the requested city test case."""
         del locode
         return dict(self.requirements_by_action_id)
+
+
+@dataclass
+class MockPolicySignalsDataApiClient:
+    """In-memory policy signal client for alignment integration tests."""
+
+    policy_signals_by_action_id: dict[str, object]
+
+    def get_action_policy_signals(self, locode: str) -> dict[str, object]:
+        """Return policy support signals for the requested city test case."""
+        del locode
+        return dict(self.policy_signals_by_action_id)
 
 
 @pytest.mark.integration
@@ -85,10 +93,14 @@ def test_prioritize_rejects_invalid_weights_override(
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
     try:
         with TestClient(app) as test_client:
             response = test_client.post(
@@ -154,34 +166,34 @@ def test_prioritize_smoke() -> None:
             action_id="c40_0010",
             action_name="Retrofit buildings",
             implementation_timeline="<5 years",
-            mitigation_impact={
-                "emissions": {
-                    "gpc_reference_number": ["I.1.1", "I.1.2"],
-                    "impact_relationship": "positive",
-                    "impact_text": "high",
-                }
+            emissions={
+                "gpc_reference_number": ["I.1.1", "I.1.2"],
+                "impact_relationship": "positive",
+                "impact_text": "high",
             },
         ),
         Action(
             action_id="c40_0020",
             action_name="Fleet expansion",
             implementation_timeline=">10 years",
-            mitigation_impact={
-                "emissions": {
-                    "gpc_reference_number": ["I.2.1"],
-                    "impact_relationship": "negative",
-                    "impact_text": "low",
-                }
+            emissions={
+                "gpc_reference_number": ["I.2.1"],
+                "impact_relationship": "negative",
+                "impact_text": "low",
             },
         ),
     ]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
     try:
         with TestClient(app) as test_client:
             response = test_client.post(
@@ -248,7 +260,7 @@ def test_prioritize_discards_hard_legal_mismatch() -> None:
     ]
     requirements_by_action_id = {
         "A_blocked": [
-            HardFilterLegalRequirement(
+            LegalRequirementRecord(
                 signal_code="MUNI_ENV_STANDARDS",
                 signal_name="Municipal environmental standards",
                 operator="equals",
@@ -268,10 +280,14 @@ def test_prioritize_discards_hard_legal_mismatch() -> None:
     mock_legal_client = MockLegalDataApiClient(
         requirements_by_action_id=requirements_by_action_id
     )
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
     try:
         with TestClient(app) as test_client:
             response = test_client.post(
@@ -327,7 +343,7 @@ def test_prioritize_keeps_no_evidence_hard_legal_requirements() -> None:
     actions = [Action(action_id="A_unknown", action_name="Unknown legal evidence action")]
     requirements_by_action_id = {
         "A_unknown": [
-            HardFilterLegalRequirement(
+            LegalRequirementRecord(
                 signal_code="PLANS_ALIGNMENT",
                 signal_name="Plans alignment requirement",
                 operator="equals",
@@ -347,10 +363,14 @@ def test_prioritize_keeps_no_evidence_hard_legal_requirements() -> None:
     mock_legal_client = MockLegalDataApiClient(
         requirements_by_action_id=requirements_by_action_id
     )
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
     try:
         with TestClient(app) as test_client:
             response = test_client.post(

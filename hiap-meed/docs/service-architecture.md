@@ -22,8 +22,10 @@ graph TD
             WS["Weighted Sum"]
         end
 
-        CityClient["CityDataApiClient (sync HTTP client)"]
-        ActionClient["ActionDataApiClient (sync HTTP client)"]
+        CityClient["City data client (sync HTTP client)"]
+        ActionClient["Action data client (sync HTTP client)"]
+        LegalClient["Legal data client (sync HTTP client)"]
+        PolicyClient["Policy signals data client (sync HTTP client)"]
     end
 
     GlobalAPI["Global API (upstream data service)"]
@@ -33,15 +35,23 @@ graph TD
 
     Orch -->|"getCityContext(locode)"| CityClient
     Orch -->|"listActions()"| ActionClient
+    Orch -->|"getActionLegalRequirements(locode)"| LegalClient
+    Orch -->|"getActionPolicySignals(locode)"| PolicyClient
 
     CityClient -->|"HTTP GET"| GlobalAPI
     ActionClient -->|"HTTP GET"| GlobalAPI
+    LegalClient -->|"HTTP GET"| GlobalAPI
+    PolicyClient -->|"HTTP GET"| GlobalAPI
 
     GlobalAPI -->|"CityData"| CityClient
     GlobalAPI -->|"Action list"| ActionClient
+    GlobalAPI -->|"Action legal requirements"| LegalClient
+    GlobalAPI -->|"Action policy signals"| PolicyClient
 
     CityClient --> Orch
     ActionClient --> Orch
+    LegalClient --> Orch
+    PolicyClient --> Orch
 
     Orch --> HF
     HF -->|"eligible actions"| Impact
@@ -69,8 +79,10 @@ This is the right choice as long as the orchestrator and data clients are synchr
 
 | Client                | Method             | Status                                                | Target upstream |
 | --------------------- | ------------------ | ----------------------------------------------------- | --------------- |
-| `CityDataApiClient`   | `get_city(locode)` | In-memory stub                                        | Global API      |
-| `ActionDataApiClient` | `list_actions()`   | Mock/stub/api switch (`HIAP_MEED_ACTION_DATA_SOURCE`) | Global API      |
+| City data client | `get_city(locode)` | Mock/API switch (`HIAP_MEED_CITY_DATA_SOURCE`) | Global API |
+| Action data client | `list_actions()` | Mock/API switch (`HIAP_MEED_ACTION_DATA_SOURCE`) | Global API |
+| Legal data client | `get_action_legal_requirements(locode)` | Mock/API switch (`HIAP_MEED_LEGAL_DATA_SOURCE`) | Global API |
+| Policy signals data client | `get_action_policy_signals(locode)` | Mock/API switch (`HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE`) | Global API |
 
 Stubs are injected via FastAPI's `Depends()` pattern, which makes swapping real implementations straightforward without changing route or orchestrator code.
 

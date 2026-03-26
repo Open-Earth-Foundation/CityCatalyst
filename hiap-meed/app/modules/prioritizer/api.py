@@ -17,12 +17,18 @@ from app.modules.prioritizer.models import (
 )
 from app.modules.prioritizer.orchestrator import run_prioritization
 from app.services.data_clients import (
-    ActionDataApiClient,
-    CityDataApiClient,
-    LegalDataApiClient,
+    ApiActionDataApiClient,
+    ApiCityDataApiClient,
+    ApiLegalDataApiClient,
+    ApiPolicySignalsDataApiClient,
+    MockActionDataApiClient,
+    MockCityDataApiClient,
+    MockLegalDataApiClient,
+    MockPolicySignalsDataApiClient,
     get_action_data_api_client,
     get_city_data_api_client,
     get_legal_data_api_client,
+    get_policy_signals_data_api_client,
 )
 
 
@@ -61,9 +67,20 @@ def _extract_city_emissions_by_gpc_ref(city_input: FrontendCityInput) -> dict[st
 @router.post("/v1/prioritize", response_model=PrioritizerApiResponse)
 def prioritize(
     request: PrioritizerApiRequest,
-    city_data_api_client: CityDataApiClient = Depends(get_city_data_api_client),
-    action_data_api_client: ActionDataApiClient = Depends(get_action_data_api_client),
-    legal_data_api_client: LegalDataApiClient = Depends(get_legal_data_api_client),
+    city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient = Depends(
+        get_city_data_api_client
+    ),
+    action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient = Depends(
+        get_action_data_api_client
+    ),
+    legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient = Depends(
+        get_legal_data_api_client
+    ),
+    policy_signals_data_api_client: (
+        MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
+    ) = Depends(
+        get_policy_signals_data_api_client
+    ),
 ) -> PrioritizerApiResponse:
     """
     Prioritize actions from the CityCatalyst frontend request envelope.
@@ -98,6 +115,7 @@ def prioritize(
                 city_data_api_client=city_data_api_client,
                 action_data_api_client=action_data_api_client,
                 legal_data_api_client=legal_data_api_client,
+                policy_signals_data_api_client=policy_signals_data_api_client,
             )
             results.append(
                 PrioritizerApiCityResult(
@@ -137,9 +155,12 @@ def _run_for_city_input(
     requested_top_n: int | None,
     frontend_request_id: str,
     requested_languages: list[str],
-    city_data_api_client: CityDataApiClient,
-    action_data_api_client: ActionDataApiClient,
-    legal_data_api_client: LegalDataApiClient,
+    city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient,
+    action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient,
+    legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient,
+    policy_signals_data_api_client: (
+        MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
+    ),
 ) -> PrioritizationResponse:
     """
     Translate a single frontend city payload into a pipeline run.
@@ -162,11 +183,14 @@ def _run_for_city_input(
         weights_override=city_input.weightsOverride,
         top_n=resolve_top_n(requested_top_n),
         excluded_actions_free_text=city_input.excludedActionsFreeText,
+        city_preference_sectors=list(city_input.cityStrategicPreferenceSectors),
+        city_preference_other_text=city_input.cityStrategicPreferenceOther,
         city_emissions_by_gpc_ref=city_emissions_by_gpc_ref,
         internal_request_id=internal_request_id,
         city_data_api_client=city_data_api_client,
         action_data_api_client=action_data_api_client,
         legal_data_api_client=legal_data_api_client,
+        policy_signals_data_api_client=policy_signals_data_api_client,
     )
 
     # Attach minimal frontend context for traceability/debugging.

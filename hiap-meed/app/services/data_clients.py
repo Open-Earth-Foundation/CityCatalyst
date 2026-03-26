@@ -1,4 +1,4 @@
-"""Repository/data-client protocols for external inputs."""
+"""Repository data clients for file-backed and API-backed inputs."""
 
 from __future__ import annotations
 
@@ -11,42 +11,18 @@ from pathlib import Path
 from app.modules.prioritizer.internal_models import (
     Action,
     CityData,
-    HardFilterLegalRequirement,
+    LegalRequirementRecord,
 )
 from app.modules.prioritizer.models import (
+    ActionsPolicySignalsApiResponse,
     CityApiResponse,
     ActionsApiResponse,
     ActionsLegalApiResponse,
     CitiesApiResponse,
+    PolicySignalByAction,
 )
 
 logger = logging.getLogger(__name__)
-
-
-class CityDataApiClient:
-    """Minimal interface for city data retrieval."""
-
-    def get_city(self, locode: str) -> CityData:
-        """Fetch city data for a location code."""
-        raise NotImplementedError
-
-
-class ActionDataApiClient:
-    """Minimal interface for action catalog retrieval."""
-
-    def list_actions(self) -> list[Action]:
-        """Fetch action catalog records."""
-        raise NotImplementedError
-
-
-class LegalDataApiClient:
-    """Minimal interface for legal requirement retrieval."""
-
-    def get_action_legal_requirements(
-        self, locode: str
-    ) -> dict[str, list[HardFilterLegalRequirement]]:
-        """Fetch legal requirements grouped by action ID for one city."""
-        raise NotImplementedError
 
 
 @dataclass
@@ -108,9 +84,9 @@ class MockActionDataApiClient:
         response = ActionsApiResponse.model_validate(payload)
         actions: list[Action] = []
         for action in response.actions:
-            mitigation_impact = {
+            co_benefits = {
                 impact_type: impact_entry.model_dump()
-                for impact_type, impact_entry in action.mitigationImpact.items()
+                for impact_type, impact_entry in action.coBenefits.items()
             }
             actions.append(
                 Action(
@@ -121,7 +97,15 @@ class MockActionDataApiClient:
                     action_subcategory=action.actionSubcategory,
                     investment_cost=action.costInvestmentNeeded,
                     implementation_timeline=action.timelineForImplementation,
-                    mitigation_impact=mitigation_impact,
+                    emissions=(
+                        action.emissions.model_dump()
+                        if action.emissions is not None
+                        else {}
+                    ),
+                    co_benefits=co_benefits,
+                    socioeconomic_indicators=[
+                        item.model_dump() for item in action.socioeconomicIndicators
+                    ],
                     raw=action.model_dump(),
                 )
             )
@@ -140,15 +124,15 @@ class MockLegalDataApiClient:
 
     def get_action_legal_requirements(
         self, locode: str
-    ) -> dict[str, list[HardFilterLegalRequirement]]:
+    ) -> dict[str, list[LegalRequirementRecord]]:
         """Load mock legal requirements grouped by action ID."""
         _ = locode  # Locode is unused because mock legal payload is city-agnostic.
         payload = json.loads(self.mock_file_path.read_text(encoding="utf-8"))
         response = ActionsLegalApiResponse.model_validate(payload)
-        requirements_by_action_id: dict[str, list[HardFilterLegalRequirement]] = {}
+        requirements_by_action_id: dict[str, list[LegalRequirementRecord]] = {}
         for action_group in response.legal_requirements:
             requirements_by_action_id[action_group.action_id] = [
-                HardFilterLegalRequirement(
+                LegalRequirementRecord(
                     signal_code=requirement.signal_code,
                     signal_name=requirement.signal_name,
                     operator=requirement.operator,
@@ -166,49 +150,85 @@ class MockLegalDataApiClient:
         return requirements_by_action_id
 
 
+@dataclass
+class MockPolicySignalsDataApiClient:
+    """File-backed policy-signal client loading checked-in mock payload."""
+
+    mock_file_path: Path
+
+    def get_action_policy_signals(self, locode: str) -> dict[str, PolicySignalByAction]:
+        """Load policy support signals grouped by action ID."""
+        _ = locode  # Locode is unused because mock policy payload is city-agnostic.
+        payload = json.loads(self.mock_file_path.read_text(encoding="utf-8"))
+        response = ActionsPolicySignalsApiResponse.model_validate(payload)
+        return {
+            signal_by_action.action_id: signal_by_action
+            for signal_by_action in response.policy_signals
+        }
+
+
 class ApiLegalDataApiClient:
     """
     Placeholder legal client for future upstream HTTP integration.
 
-    Current behavior returns an empty map to avoid blocking the pipeline.
+    Current behavior fails fast until real HTTP integration is implemented.
     """
 
     def get_action_legal_requirements(
         self, locode: str
-    ) -> dict[str, list[HardFilterLegalRequirement]]:
-        """Return no legal requirements until HTTP integration is implemented."""
-        _ = locode  # Locode is unused until the real upstream API call is wired.
-        return {}
+    ) -> dict[str, list[LegalRequirementRecord]]:
+        """Raise until legal API integration is implemented."""
+        del locode
+        raise NotImplementedError(
+            "ApiLegalDataApiClient is not implemented yet. "
+            "Set HIAP_MEED_LEGAL_DATA_SOURCE=mock for local runs."
+        )
+
+
+class ApiPolicySignalsDataApiClient:
+    """
+    Placeholder policy-signals client for future upstream HTTP integration.
+
+    Current behavior fails fast until real HTTP integration is implemented.
+    """
+
+    def get_action_policy_signals(self, locode: str) -> dict[str, PolicySignalByAction]:
+        """Raise until policy signals API integration is implemented."""
+        del locode
+        raise NotImplementedError(
+            "ApiPolicySignalsDataApiClient is not implemented yet. "
+            "Set HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE=mock for local runs."
+        )
 
 
 class ApiActionDataApiClient:
     """
     Placeholder action client for future upstream HTTP integration.
 
-    Current behavior returns an empty list to avoid blocking the pipeline.
+    Current behavior fails fast until real HTTP integration is implemented.
     """
 
     def list_actions(self) -> list[Action]:
-        """Return no actions until HTTP integration is implemented."""
-        return []
+        """Raise until actions API integration is implemented."""
+        raise NotImplementedError(
+            "ApiActionDataApiClient is not implemented yet. "
+            "Set HIAP_MEED_ACTION_DATA_SOURCE=mock for local runs."
+        )
 
 
 class ApiCityDataApiClient:
     """
     Placeholder city client for future upstream HTTP integration.
 
-    Current behavior returns a minimal placeholder city until HTTP wiring exists.
+    Current behavior fails fast until real HTTP integration is implemented.
     """
 
     def get_city(self, locode: str) -> CityData:
-        """Return minimal city data until HTTP integration is implemented."""
-        return CityData(
-            comuna_name=locode,
-            locode=locode,
-            region_name="unknown",
-            comuna_code="unknown",
-            region_code="unknown",
-            city_context=[],
+        """Raise until city API integration is implemented."""
+        del locode
+        raise NotImplementedError(
+            "ApiCityDataApiClient is not implemented yet. "
+            "Set HIAP_MEED_CITY_DATA_SOURCE=mock for local runs."
         )
 
 
@@ -224,7 +244,7 @@ _default_mock_action_client = MockActionDataApiClient(
     mock_file_path=Path(__file__).resolve().parents[2]
     / "data"
     / "mock"
-    / "actions_api_mock.json"
+    / "actions_api_mock_v2.json"
 )
 _default_api_legal_client = ApiLegalDataApiClient()
 _default_mock_legal_client = MockLegalDataApiClient(
@@ -233,9 +253,16 @@ _default_mock_legal_client = MockLegalDataApiClient(
     / "mock"
     / "actions_legal_api_mock.json"
 )
+_default_api_policy_signals_client = ApiPolicySignalsDataApiClient()
+_default_mock_policy_signals_client = MockPolicySignalsDataApiClient(
+    mock_file_path=Path(__file__).resolve().parents[2]
+    / "data"
+    / "mock"
+    / "actions_policy_signals_api_mock.json"
+)
 
 
-def get_city_data_api_client() -> CityDataApiClient:
+def get_city_data_api_client() -> MockCityDataApiClient | ApiCityDataApiClient:
     """FastAPI dependency provider for city data client."""
     source = os.getenv("HIAP_MEED_CITY_DATA_SOURCE", "mock").strip().lower()
     if source == "api":
@@ -255,7 +282,7 @@ def get_city_data_api_client() -> CityDataApiClient:
     return _default_mock_city_client
 
 
-def get_action_data_api_client() -> ActionDataApiClient:
+def get_action_data_api_client() -> MockActionDataApiClient | ApiActionDataApiClient:
     """FastAPI dependency provider for action catalog client."""
     source = os.getenv("HIAP_MEED_ACTION_DATA_SOURCE", "mock").strip().lower()
     if source == "api":
@@ -276,7 +303,7 @@ def get_action_data_api_client() -> ActionDataApiClient:
     return _default_mock_action_client
 
 
-def get_legal_data_api_client() -> LegalDataApiClient:
+def get_legal_data_api_client() -> MockLegalDataApiClient | ApiLegalDataApiClient:
     """FastAPI dependency provider for legal requirement client."""
     source = os.getenv("HIAP_MEED_LEGAL_DATA_SOURCE", "mock").strip().lower()
     if source == "api":
@@ -295,3 +322,26 @@ def get_legal_data_api_client() -> LegalDataApiClient:
             source,
         )
     return _default_mock_legal_client
+
+
+def get_policy_signals_data_api_client() -> (
+    MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
+):
+    """FastAPI dependency provider for policy signals client."""
+    source = os.getenv("HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE", "mock").strip().lower()
+    if source == "api":
+        return _default_api_policy_signals_client
+
+    if not _default_mock_policy_signals_client.mock_file_path.exists():
+        logger.warning(
+            "Mock policy signals file not found at `%s`; using API policy signals client",
+            _default_mock_policy_signals_client.mock_file_path,
+        )
+        return _default_api_policy_signals_client
+
+    if source not in {"mock", "api"}:
+        logger.warning(
+            "Unknown HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE=`%s`; using mock policy signals client",
+            source,
+        )
+    return _default_mock_policy_signals_client

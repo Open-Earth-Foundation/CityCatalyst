@@ -2,17 +2,15 @@
 
 ## Implementation status
 
-| Block | Sub-feature | Status |
-|---|---|---|
-| Hard Filter | Exclusion by `action_id` | Implemented |
-| Hard Filter | Legal requirement check | Implemented |
-| Impact | GPC reference evidence collection | Implemented |
-| Impact | Activity relevance × reduction band × timeline | Implemented |
-| Alignment | Attribute-presence evidence | Implemented (stub: score = 0.0) |
-| Alignment | Policy signal matching + city preference boost | Not started |
-| Feasibility | City context row-count evidence | Implemented (stub: score = 0.0) |
-| Feasibility | Soft legal signals + socio-economic fit rules | Not started |
-| Weighted Sum | Weighted aggregation, sort, rank, `top_n` | Implemented |
+| Block        | Sub-feature                                    | Status                                           |
+| ------------ | ---------------------------------------------- | ------------------------------------------------ |
+| Hard Filter  | Exclusion by `action_id`                       | Implemented                                      |
+| Hard Filter  | Legal requirement check                        | Implemented                                      |
+| Impact       | GPC reference evidence collection              | Implemented                                      |
+| Impact       | Activity relevance × reduction band × timeline | Implemented                                      |
+| Alignment    | Policy + sector + other components             | Implemented (`other` currently stubbed as `0.0`) |
+| Feasibility  | Soft legal + socio-economic weighted component | Implemented                                      |
+| Weighted Sum | Weighted aggregation, sort, rank, `top_n`      | Implemented                                      |
 
 ---
 
@@ -41,18 +39,18 @@ Biome filtering is intentionally not included yet.
 - **Discarded actions**
   - Output: discarded due to exclusions or hard legal mismatch (useful for traceability and debugging)
 
-```mermaid id="hard-filter-option-a"
+```mermaid
 graph TD
   ActionTbl[(Action)]
   PrefTbl[(CityStrategicPreferences.excludedActions)]
-  ReqTbl[(ActionLegalRequirement\\nstrength = hard)]
-  SigTbl[(LegalSignal\\nscoped to city or CL)]
+  ReqTbl[(ActionLegalRequirement<br/>strength = hard)]
+  SigTbl[(LegalSignal<br/>scoped to city or CL)]
 
   Excl{Excluded by city?}
   Legal{Meets hard legal requirements?}
 
-  DiscardExcl((Discarded\\nExcluded))
-  DiscardLegal((Discarded\\nLegally blocked))
+  DiscardExcl((Discarded<br/>Excluded))
+  DiscardLegal((Discarded<br/>Legally blocked))
   Valid[Valid Actions for Scoring]
 
   ActionTbl --> Excl
@@ -83,9 +81,9 @@ It combines:
 - City emissions, activity-level
   - Source: frontend request `requestData.cityDataList[].cityEmissionsData.gpcData[*].activities[*].totalEmissions`
 - Action to activity targeting (`gpc_ref` mapping)
-  - Source: `ActionMitigationImpact`
+  - Source: `Action.emissions`
 - Reduction potential band
-  - Source: `Action.mitigation_impact["emissions"]["impact_text"]` with configurable mapping (`very low` to `very high`)
+  - Source: `Action.emissions["impact_text"]` with configurable mapping (`very low` to `very high`)
 - Timeline
   - Source: `Action.timelineForImplementation`
 - Candidate actions (already hard-filtered)
@@ -98,14 +96,16 @@ It combines:
 - Optional trace fields
   - Output: `Impact Evidence` (top contributing activities and multipliers)
 
-Normalization policy:
+Canonical score policy:
 
-- Impact scores are normalized to `0..1` using **max-normalization per run**.
-- Scores do not sum to 1 across actions; the top action in Impact gets score `1.0`.
+- Impact uses weighted-sum components in `0..1`.
+- Canonical score formula:
+  - `IMPACT_SCORE = (IMPACT_WEIGHT_REDUCTION_SHARE * reduction_component) + (IMPACT_WEIGHT_TIMELINE * timeline_component)`
+- No run-relative max-normalization is applied.
 
 Current implementation detail:
 
-- `impact_raw = (0.80 × reduction_share_of_city_emissions) + (0.20 × timeline_score)`
+- `impact_block_score = (0.80 × reduction_share_of_city_emissions) + (0.20 × timeline_score)`
 - `reduction_share_of_city_emissions` is computed from matched action `gpc_reference_number` keys only.
 
 ```mermaid
@@ -153,14 +153,14 @@ Exclusions are handled in the Hard Filter stage, so Alignment only scores eligib
 
 ### Inputs (and where they come from)
 
-- Policy facts extracted from plans, strategies, budgets
-  - Source: `PolicySignal` (scoped to the city or region)
-- Action to policy signal mapping
-  - Source: `ActionPolicySignal` (relationType supports, targets, funds, constrains)
-- City strategic preferences
-  - Source: `CityStrategicPreferences` (priority sectors, political priorities)
-- Action co-benefits (to match political priorities)
-  - Source: `Action.coBenefits`
+- Policy support score and signals
+  - Source: `actions_policy_signals_api_mock.json` (`policy_support_score`, `policy_signals[]`)
+- City strategic preference sectors
+  - Source: frontend request `cityStrategicPreferenceSectors`
+- City strategic preference other text (currently stubbed as `0.0`)
+  - Source: frontend request `cityStrategicPreferenceOther`
+- Action sector mapping for city preference overlap
+  - Source: `Action.emissions["sector_number"]`
 - Candidate actions (already hard-filtered)
   - Source: `Valid Actions for Scoring`
 
@@ -169,7 +169,7 @@ Exclusions are handled in the Hard Filter stage, so Alignment only scores eligib
 - Alignment scores per action
   - Output: `Alignment Scores` (one score per action, used in final ranking)
 - Optional trace fields
-  - Output: `Alignment Evidence` (matched signals and boosts)
+  - Output: `Alignment Evidence` (component values, weights, contributions, sector diagnostics, policy summaries)
 
 ```mermaid
 graph TD
@@ -216,14 +216,16 @@ Hard legal requirements are enforced in the Hard Filter stage.
 
 ### Inputs (and where they come from)
 
-- Legal facts extracted from laws, mandates, regulations
-  - Source: `LegalSignal` (national baseline CL plus optional local overlays)
-- Action to legal requirement mapping
-  - Source: `ActionLegalRequirement` filtered to strength soft or constraint
+- Legal requirement rows by action
+  - Source: `actions_legal_api_mock.json` grouped by `action_id`
+- Soft legal strengths used in scoring
+  - Source: legal requirements where `strength in {recommended, optional}`
+- Informational legal constraints (evidence only)
+  - Source: legal requirements where `strength == informational`
 - Socio-economic indicator buckets for the city
-  - Source: `CityMitigationSocioEconomicIndicatorValue` (very_low to very_high)
+  - Source: city indicators (`attribute_category`) from `city_api_mock.json`
 - Action socio-economic fit rules
-  - Source: `Action.socioeconomicFitRules` (jsonb)
+  - Source: `Action.socioeconomic_indicators` (`indicator_key`, `direction`, `weight`, `rationale`)
 - Candidate actions (already hard-filtered)
   - Source: `Valid Actions for Scoring`
 
@@ -232,7 +234,7 @@ Hard legal requirements are enforced in the Hard Filter stage.
 - Feasibility scores per action
   - Output: `Feasibility Scores` (one score per action, used in final ranking)
 - Optional trace fields
-  - Output: `Feasibility Evidence` (which legal and socio rules drove the score)
+  - Output: `Feasibility Evidence` (counts by strength/status, component values, per-indicator contributions)
 
 ```mermaid
 graph TD

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
 from pathlib import Path
 
 import pytest
@@ -14,33 +13,19 @@ from app.modules.prioritizer.api import (
     get_action_data_api_client,
     get_city_data_api_client,
     get_legal_data_api_client,
+    get_policy_signals_data_api_client,
 )
-from app.modules.prioritizer.internal_models import CityData
 from app.services.data_clients import (
-    CityDataApiClient,
     MockActionDataApiClient,
+    MockCityDataApiClient,
     MockLegalDataApiClient,
+    MockPolicySignalsDataApiClient,
 )
 
 
 def _mock_data_dir() -> Path:
     """Return the checked-in mock data directory path."""
     return Path(__file__).resolve().parents[2] / "data" / "mock"
-
-
-@dataclass
-class MockCityDataApiClient(CityDataApiClient):
-    """File-backed city client loading the checked-in city mock payload."""
-
-    mock_file_path: Path
-
-    def get_city(self, locode: str) -> CityData:
-        """Load one city and enforce that requested locode matches the mock record."""
-        payload = json.loads(self.mock_file_path.read_text(encoding="utf-8"))
-        city = CityData.model_validate(payload["city"])
-        if locode != city.locode:
-            raise ValueError(f"Unknown locode: {locode}")
-        return city
 
 
 @pytest.mark.integration
@@ -53,15 +38,21 @@ def test_prioritize_e2e_with_mock_api_payloads() -> None:
 
     mock_city_client = MockCityDataApiClient(mock_file_path=mock_data_dir / "city_api_mock.json")
     mock_action_client = MockActionDataApiClient(
-        mock_file_path=mock_data_dir / "actions_api_mock.json"
+        mock_file_path=mock_data_dir / "actions_api_mock_v2.json"
     )
     mock_legal_client = MockLegalDataApiClient(
         mock_file_path=mock_data_dir / "actions_legal_api_mock.json"
+    )
+    mock_policy_client = MockPolicySignalsDataApiClient(
+        mock_file_path=mock_data_dir / "actions_policy_signals_api_mock.json"
     )
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
     try:
         with TestClient(app) as test_client:
             response = test_client.post("/v1/prioritize", json=request_payload)
@@ -86,25 +77,25 @@ def test_prioritize_e2e_with_mock_api_payloads() -> None:
 
         expected_ranked_ids = [
             "icare_0025",
-            "icare_0002",
+            "c40_0025",
             "icare_0016",
-            "icare_0028",
             "c40_0010",
             "c40_0015",
-            "icare_0010",
-            "icare_0040",
+            "icare_0002",
+            "icare_0028",
             "c40_0023",
-            "icare_0121",
             "icare_0139",
+            "icare_0121",
             "ipcc_0105",
-            "c40_0025",
+            "icare_0040",
+            "icare_0156",
+            "icare_0172",
+            "icare_0176",
+            "ipcc_0050",
+            "icare_0072",
             "icare_0099",
-            "c40_0013",
-            "c40_0016",
-            "c40_0017",
             "c40_0018",
-            "c40_0035",
-            "c40_0036",
+            "icare_0045",
         ]
         assert ranked_action_ids == expected_ranked_ids
 

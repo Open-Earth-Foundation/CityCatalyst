@@ -73,7 +73,9 @@ class Action(BaseModel):
     investment_cost: str | None = None
     implementation_timeline: str | None = None
     biome: str | None = None
-    mitigation_impact: dict[str, dict[str, Any]] = Field(default_factory=dict)
+    emissions: dict[str, Any] = Field(default_factory=dict)
+    co_benefits: dict[str, dict[str, Any]] = Field(default_factory=dict)
+    socioeconomic_indicators: list[dict[str, Any]] = Field(default_factory=list)
     as_of: datetime | None = None
     source: str | None = None
     raw: dict[str, Any] = Field(default_factory=dict)
@@ -95,8 +97,8 @@ class HardFilterResult(BaseModel):
     evidence: dict[str, dict[str, object]] = Field(default_factory=dict)
 
 
-class HardFilterLegalRequirement(BaseModel):
-    """Internal legal requirement contract consumed by hard-filter logic."""
+class LegalRequirementRecord(BaseModel):
+    """Internal legal requirement contract shared across scoring blocks."""
 
     signal_code: str
     signal_name: str

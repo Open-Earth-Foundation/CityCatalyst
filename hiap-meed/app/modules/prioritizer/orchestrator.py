@@ -16,9 +16,14 @@ from app.modules.prioritizer.config import validate_weights
 from app.modules.prioritizer.internal_models import Action
 from app.modules.prioritizer.models import PrioritizationResponse
 from app.services.data_clients import (
-    ActionDataApiClient,
-    CityDataApiClient,
-    LegalDataApiClient,
+    ApiActionDataApiClient,
+    ApiCityDataApiClient,
+    ApiLegalDataApiClient,
+    ApiPolicySignalsDataApiClient,
+    MockActionDataApiClient,
+    MockCityDataApiClient,
+    MockLegalDataApiClient,
+    MockPolicySignalsDataApiClient,
 )
 from app.utils.artifacts import ArtifactWriter
 from app.utils.timing import time_block
@@ -74,11 +79,16 @@ def run_prioritization(
     weights_override: dict[str, float] | None,
     top_n: int | None,
     excluded_actions_free_text: str | None,
+    city_preference_sectors: list[str],
+    city_preference_other_text: str | None,
     city_emissions_by_gpc_ref: dict[str, float],
     internal_request_id: UUID,
-    city_data_api_client: CityDataApiClient,
-    action_data_api_client: ActionDataApiClient,
-    legal_data_api_client: LegalDataApiClient,
+    city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient,
+    action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient,
+    legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient,
+    policy_signals_data_api_client: (
+        MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
+    ),
 ) -> PrioritizationResponse:
     """
     Run the end-to-end prioritization workflow for one city request.
@@ -194,7 +204,38 @@ def run_prioritization(
         block.elapsed_seconds,
     )
 
-    # Phase 4: validate and resolve ranking weights for this run.
+    # Phase 4: fetch policy signals used by alignment scoring.
+    with time_block("fetch_policy_signals") as block:
+        policy_signals_by_action_id = policy_signals_data_api_client.get_action_policy_signals(
+            locode
+        )
+    timings["fetch_policy_signals"] = block.elapsed_seconds
+    fetch_policy_payload = {
+        "actions_with_policy_signals": len(policy_signals_by_action_id),
+        "elapsed_seconds": block.elapsed_seconds,
+    }
+    fetch_policy_event_index = artifact_writer.write_event(
+        "fetch_policy_signals.completed", fetch_policy_payload
+    )
+    artifact_writer.write_step_detail(
+        "fetch_policy_signals",
+        {
+            "actions_with_policy_signals": len(policy_signals_by_action_id),
+            "action_ids_with_policy_signals": sorted(policy_signals_by_action_id.keys()),
+            "elapsed_seconds": block.elapsed_seconds,
+        },
+        event_index=fetch_policy_event_index,
+        event_type="fetch_policy_signals.completed",
+    )
+    logger.info(
+        "Fetched policy signals internal_request_id=%s locode=%s actions_with_policy_signals=%s elapsed_seconds=%.3f",
+        internal_request_id,
+        locode,
+        len(policy_signals_by_action_id),
+        block.elapsed_seconds,
+    )
+
+    # Phase 5: validate and resolve ranking weights for this run.
     with time_block("validate_weights") as block:
         try:
             weights = validate_weights(weights_override)
@@ -234,7 +275,7 @@ def run_prioritization(
         event_type="validate_weights.completed",
     )
 
-    # Phase 5: run hard filter to remove excluded and legally blocked actions.
+    # Phase 6: run hard filter to remove excluded and legally blocked actions.
     with time_block("hard_filter") as block:
         hard_filter_result = hard_filter.run(
             actions=actions,
@@ -289,7 +330,7 @@ def run_prioritization(
         block.elapsed_seconds,
     )
 
-    # Phase 6: run Impact block scoring on hard-filtered actions.
+    # Phase 7: run Impact block scoring on hard-filtered actions.
     with time_block("impact") as block:
         impact_result = impact.run(
             hard_filter_result.valid_actions,
@@ -315,9 +356,14 @@ def run_prioritization(
         event_type="impact.completed",
     )
 
-    # Phase 7: run Alignment block scoring on hard-filtered actions.
+    # Phase 8: run Alignment block scoring on hard-filtered actions.
     with time_block("alignment") as block:
-        alignment_result = alignment.run(hard_filter_result.valid_actions, city)
+        alignment_result = alignment.run(
+            hard_filter_result.valid_actions,
+            policy_signals_by_action_id=policy_signals_by_action_id,
+            city_preference_sectors=city_preference_sectors,
+            city_preference_other_text=city_preference_other_text,
+        )
     # Emit alignment score stats and detailed evidence artifacts.
     timings["alignment"] = block.elapsed_seconds
     alignment_payload = {
@@ -340,9 +386,13 @@ def run_prioritization(
         event_type="alignment.completed",
     )
 
-    # Phase 8: run Feasibility block scoring on hard-filtered actions.
+    # Phase 9: run Feasibility block scoring on hard-filtered actions.
     with time_block("feasibility") as block:
-        feasibility_result = feasibility.run(hard_filter_result.valid_actions, city)
+        feasibility_result = feasibility.run(
+            hard_filter_result.valid_actions,
+            city=city,
+            legal_requirements_by_action_id=legal_requirements_by_action_id,
+        )
     # Emit feasibility score stats and detailed evidence artifacts.
     timings["feasibility"] = block.elapsed_seconds
     feasibility_payload = {
@@ -373,7 +423,7 @@ def run_prioritization(
         },
     )
 
-    # Phase 9: aggregate pillar scores into final ranking.
+    # Phase 10: aggregate pillar scores into final ranking.
     with time_block("final_scoring") as block:
         scored_actions = final_scoring.run(
             actions=hard_filter_result.valid_actions,
@@ -415,7 +465,7 @@ def run_prioritization(
         event_type="final_scoring.completed",
     )
 
-    # Phase 10: attach per-block evidence into each ranked action object.
+    # Phase 11: attach per-block evidence into each ranked action object.
     for scored_action in scored_actions:
         action_id = scored_action.action.action_id
         scored_action.evidence = {
@@ -432,7 +482,7 @@ def run_prioritization(
             ),
         }
 
-    # Phase 11: build response metadata with counts and timings.
+    # Phase 12: build response metadata with counts and timings.
     ranked_action_ids = [item.action.action_id for item in scored_actions]
 
     metadata: dict[str, object] = {

@@ -5,12 +5,16 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
+from app.modules.prioritizer.models import PolicySignalByAction
 from app.services.data_clients import (
     MockActionDataApiClient,
     MockCityDataApiClient,
+    MockPolicySignalsDataApiClient,
     get_action_data_api_client,
     get_city_data_api_client,
+    get_policy_signals_data_api_client,
 )
 
 
@@ -18,7 +22,7 @@ from app.services.data_clients import (
 def test_mock_action_client_loads_actions_from_file() -> None:
     """Mock action client reads and maps actions from the checked-in mock payload."""
     mock_file_path = (
-        Path(__file__).resolve().parents[2] / "data" / "mock" / "actions_api_mock.json"
+        Path(__file__).resolve().parents[2] / "data" / "mock" / "actions_api_mock_v2.json"
     )
     client = MockActionDataApiClient(mock_file_path=mock_file_path)
 
@@ -27,6 +31,8 @@ def test_mock_action_client_loads_actions_from_file() -> None:
     assert len(actions) > 0
     assert actions[0].action_id
     assert actions[0].action_name
+    assert isinstance(actions[0].emissions, dict)
+    assert isinstance(actions[0].co_benefits, dict)
 
 
 @pytest.mark.unit
@@ -67,3 +73,26 @@ def test_get_city_data_client_defaults_to_mock(monkeypatch: pytest.MonkeyPatch) 
     client = get_city_data_api_client()
 
     assert isinstance(client, MockCityDataApiClient)
+
+
+@pytest.mark.unit
+def test_get_policy_signals_data_client_defaults_to_mock(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Policy signal dependency provider defaults to mock data source."""
+    monkeypatch.delenv("HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE", raising=False)
+
+    client = get_policy_signals_data_api_client()
+
+    assert isinstance(client, MockPolicySignalsDataApiClient)
+
+
+@pytest.mark.unit
+def test_policy_support_score_must_be_between_zero_and_one() -> None:
+    """Policy support score rejects values outside the [0, 1] contract."""
+    with pytest.raises(ValidationError):
+        PolicySignalByAction(
+            action_id="action_1",
+            policy_signals=[],
+            policy_support_score=1.2,
+        )

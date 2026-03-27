@@ -2,6 +2,8 @@
 
 This diagram illustrates the top-level data flow. A Hard Filter Gate prunes ineligible actions before the remaining valid actions enter the ranking stage and are scored across the three pillars.
 
+Current implementation note: the hard filter fully enforces hard legal requirements, while free-text exclusions from `excludedActionsFreeText` are accepted but currently resolved by a stub (no exclusions applied yet).
+
 ```mermaid
 graph TD
   CityData[(City Data)]

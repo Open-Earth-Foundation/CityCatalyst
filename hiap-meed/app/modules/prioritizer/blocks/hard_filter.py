@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from app.modules.prioritizer.internal_models import (
     Action,
-    HardFilterLegalRequirement,
+    LegalRequirementRecord,
     HardFilterResult,
 )
 
@@ -61,7 +61,7 @@ def _apply_legal_hard_filter(
     *,
     actions: list[Action],
     evidence: dict[str, dict[str, object]],
-    legal_requirements_by_action_id: dict[str, list[HardFilterLegalRequirement]] | None,
+    legal_requirements_by_action_id: dict[str, list[LegalRequirementRecord]] | None,
 ) -> tuple[list[Action], list[Action]]:
     """
     Apply legal hard-requirement filtering to currently eligible actions.
@@ -139,7 +139,7 @@ def run(
     actions: list[Action],
     excluded_actions_free_text: str | None,
     legal_requirements_by_action_id: (
-        dict[str, list[HardFilterLegalRequirement]] | None
+        dict[str, list[LegalRequirementRecord]] | None
     ) = None,
 ) -> HardFilterResult:
     """

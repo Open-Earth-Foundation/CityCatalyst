@@ -1,0 +1,1918 @@
+{
+  "results": [
+    {
+      "locode": "CL IQQ",
+      "ranked_action_ids": [
+        "icare_0025",
+        "c40_0025",
+        "icare_0016",
+        "c40_0010",
+        "c40_0015",
+        "icare_0002",
+        "icare_0028",
+        "c40_0023",
+        "icare_0139",
+        "icare_0121",
+        "ipcc_0105",
+        "icare_0040",
+        "icare_0156",
+        "icare_0172",
+        "icare_0176",
+        "ipcc_0050",
+        "icare_0072",
+        "icare_0099",
+        "c40_0018",
+        "icare_0045"
+      ],
+      "ranked_actions": [
+        {
+          "action_id": "icare_0025",
+          "rank": 1,
+          "final_score": 0.6304369172115809,
+          "impact_score": 0.7190938344231617,
+          "alignment_score": 0.7488000000000001,
+          "feasibility_score": 0.23125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.7190938344231617,
+              "matched_city_gpc_refs_count": 2,
+              "reduction_share_of_city_emissions": 0.7738672930289521,
+              "timeline_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.7488000000000001,
+              "policy_component_value": 0.936,
+              "sector_component_value": 0.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.23125,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "c40_0025",
+          "rank": 2,
+          "final_score": 0.5314931638190227,
+          "impact_score": 0.20048632763804536,
+          "alignment_score": 0.9500000000000001,
+          "feasibility_score": 0.73125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.20048632763804536,
+              "matched_city_gpc_refs_count": 1,
+              "reduction_share_of_city_emissions": 0.0006079095475566703,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.9500000000000001,
+              "policy_component_value": 1.0,
+              "sector_component_value": 1.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.73125,
+              "soft_legal_component_value": 1.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "icare_0016",
+          "rank": 3,
+          "final_score": 0.5256634586057904,
+          "impact_score": 0.5095469172115809,
+          "alignment_score": 0.7488000000000001,
+          "feasibility_score": 0.23125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.5095469172115809,
+              "matched_city_gpc_refs_count": 2,
+              "reduction_share_of_city_emissions": 0.38693364651447604,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.7488000000000001,
+              "policy_component_value": 0.936,
+              "sector_component_value": 0.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.23125,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "c40_0010",
+          "rank": 4,
+          "final_score": 0.4482767293028953,
+          "impact_score": 0.35477345860579046,
+          "alignment_score": 0.7488000000000001,
+          "feasibility_score": 0.23125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.35477345860579046,
+              "matched_city_gpc_refs_count": 2,
+              "reduction_share_of_city_emissions": 0.19346682325723802,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.7488000000000001,
+              "policy_component_value": 0.936,
+              "sector_component_value": 0.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.23125,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "c40_0015",
+          "rank": 4,
+          "final_score": 0.4482767293028953,
+          "impact_score": 0.35477345860579046,
+          "alignment_score": 0.7488000000000001,
+          "feasibility_score": 0.23125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.35477345860579046,
+              "matched_city_gpc_refs_count": 2,
+              "reduction_share_of_city_emissions": 0.19346682325723802,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.7488000000000001,
+              "policy_component_value": 0.936,
+              "sector_component_value": 0.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.23125,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "icare_0002",
+          "rank": 6,
+          "final_score": 0.4392634586057904,
+          "impact_score": 0.5095469172115809,
+          "alignment_score": 0.4608,
+          "feasibility_score": 0.23125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.5095469172115809,
+              "matched_city_gpc_refs_count": 2,
+              "reduction_share_of_city_emissions": 0.38693364651447604,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.4608,
+              "policy_component_value": 0.576,
+              "sector_component_value": 0.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.23125,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "icare_0028",
+          "rank": 6,
+          "final_score": 0.4392634586057904,
+          "impact_score": 0.5095469172115809,
+          "alignment_score": 0.4608,
+          "feasibility_score": 0.23125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.5095469172115809,
+              "matched_city_gpc_refs_count": 2,
+              "reduction_share_of_city_emissions": 0.38693364651447604,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.4608,
+              "policy_component_value": 0.576,
+              "sector_component_value": 0.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.23125,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "c40_0023",
+          "rank": 8,
+          "final_score": 0.43173632763804537,
+          "impact_score": 0.20097265527609068,
+          "alignment_score": 0.9500000000000001,
+          "feasibility_score": 0.23125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 1
+            },
+            "impact": {
+              "impact_block_score": 0.20097265527609068,
+              "matched_city_gpc_refs_count": 1,
+              "reduction_share_of_city_emissions": 0.0012158190951133405,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.9500000000000001,
+              "policy_component_value": 1.0,
+              "sector_component_value": 1.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.23125,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "icare_0139",
+          "rank": 8,
+          "final_score": 0.43173632763804537,
+          "impact_score": 0.20097265527609068,
+          "alignment_score": 0.9500000000000001,
+          "feasibility_score": 0.23125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.20097265527609068,
+              "matched_city_gpc_refs_count": 1,
+              "reduction_share_of_city_emissions": 0.0012158190951133405,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.9500000000000001,
+              "policy_component_value": 1.0,
+              "sector_component_value": 1.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.23125,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "icare_0121",
+          "rank": 10,
+          "final_score": 0.4163763276380454,
+          "impact_score": 0.20097265527609068,
+          "alignment_score": 0.8988000000000002,
+          "feasibility_score": 0.23125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.20097265527609068,
+              "matched_city_gpc_refs_count": 1,
+              "reduction_share_of_city_emissions": 0.0012158190951133405,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.8988000000000002,
+              "policy_component_value": 0.936,
+              "sector_component_value": 1.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.23125,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "ipcc_0105",
+          "rank": 10,
+          "final_score": 0.4163763276380454,
+          "impact_score": 0.20097265527609068,
+          "alignment_score": 0.8988000000000002,
+          "feasibility_score": 0.23125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.20097265527609068,
+              "matched_city_gpc_refs_count": 1,
+              "reduction_share_of_city_emissions": 0.0012158190951133405,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.8988000000000002,
+              "policy_component_value": 0.936,
+              "sector_component_value": 1.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.23125,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "icare_0040",
+          "rank": 12,
+          "final_score": 0.39827672930289526,
+          "impact_score": 0.2547734586057904,
+          "alignment_score": 0.7488000000000001,
+          "feasibility_score": 0.23125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.2547734586057904,
+              "matched_city_gpc_refs_count": 2,
+              "reduction_share_of_city_emissions": 0.19346682325723802,
+              "timeline_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.7488000000000001,
+              "policy_component_value": 0.936,
+              "sector_component_value": 0.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.23125,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "icare_0156",
+          "rank": 13,
+          "final_score": 0.38999999999999996,
+          "impact_score": 0.2,
+          "alignment_score": 0.8,
+          "feasibility_score": 0.25,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.2,
+              "matched_city_gpc_refs_count": 0,
+              "reduction_share_of_city_emissions": 0.0,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.8,
+              "policy_component_value": 1.0,
+              "sector_component_value": 0.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.25,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.5
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "icare_0172",
+          "rank": 13,
+          "final_score": 0.38999999999999996,
+          "impact_score": 0.2,
+          "alignment_score": 0.8,
+          "feasibility_score": 0.25,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.2,
+              "matched_city_gpc_refs_count": 0,
+              "reduction_share_of_city_emissions": 0.0,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.8,
+              "policy_component_value": 1.0,
+              "sector_component_value": 0.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.25,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.5
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "icare_0176",
+          "rank": 13,
+          "final_score": 0.38999999999999996,
+          "impact_score": 0.2,
+          "alignment_score": 0.8,
+          "feasibility_score": 0.25,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.2,
+              "matched_city_gpc_refs_count": 0,
+              "reduction_share_of_city_emissions": 0.0,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.8,
+              "policy_component_value": 1.0,
+              "sector_component_value": 0.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.25,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.5
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "ipcc_0050",
+          "rank": 16,
+          "final_score": 0.3867551920121824,
+          "impact_score": 0.2010103840243648,
+          "alignment_score": 0.8,
+          "feasibility_score": 0.23125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.2010103840243648,
+              "matched_city_gpc_refs_count": 1,
+              "reduction_share_of_city_emissions": 0.001262980030455988,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.8,
+              "policy_component_value": 1.0,
+              "sector_component_value": 0.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.23125,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "icare_0072",
+          "rank": 17,
+          "final_score": 0.3865025960060912,
+          "impact_score": 0.2005051920121824,
+          "alignment_score": 0.8,
+          "feasibility_score": 0.23125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.2005051920121824,
+              "matched_city_gpc_refs_count": 1,
+              "reduction_share_of_city_emissions": 0.000631490015227994,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.8,
+              "policy_component_value": 1.0,
+              "sector_component_value": 0.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.23125,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "icare_0099",
+          "rank": 18,
+          "final_score": 0.38625228560416613,
+          "impact_score": 0.20000457120833223,
+          "alignment_score": 0.8,
+          "feasibility_score": 0.23125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.20000457120833223,
+              "matched_city_gpc_refs_count": 1,
+              "reduction_share_of_city_emissions": 5.714010415277411e-06,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.8,
+              "policy_component_value": 1.0,
+              "sector_component_value": 0.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.23125,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "c40_0018",
+          "rank": 19,
+          "final_score": 0.38625,
+          "impact_score": 0.2,
+          "alignment_score": 0.8,
+          "feasibility_score": 0.23125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.2,
+              "matched_city_gpc_refs_count": 0,
+              "reduction_share_of_city_emissions": 0.0,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.8,
+              "policy_component_value": 1.0,
+              "sector_component_value": 0.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.23125,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        },
+        {
+          "action_id": "icare_0045",
+          "rank": 19,
+          "final_score": 0.38625,
+          "impact_score": 0.2,
+          "alignment_score": 0.8,
+          "feasibility_score": 0.23125,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "hard_requirements_failed_count": 0,
+              "hard_requirements_unknown_count": 0
+            },
+            "impact": {
+              "impact_block_score": 0.2,
+              "matched_city_gpc_refs_count": 0,
+              "reduction_share_of_city_emissions": 0.0,
+              "timeline_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.8,
+              "policy_component_value": 1.0,
+              "sector_component_value": 0.0,
+              "other_component_value": 0.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.23125,
+              "soft_legal_component_value": 0.0,
+              "socioeconomic_indicators_component_value": 0.4625
+            }
+          },
+          "explanation": null
+        }
+      ],
+      "metadata": {
+        "locode": "CL IQQ",
+        "internal_request_id": "7aa84c5b-ad1c-4581-8953-44711844626b",
+        "counts": {
+          "total_actions": 155,
+          "valid_actions": 151,
+          "discarded_excluded": 0,
+          "discarded_legal": 4,
+          "ranked_actions": 20
+        },
+        "weights": {
+          "impact": 0.5,
+          "alignment": 0.3,
+          "feasibility": 0.2
+        },
+        "timings": {
+          "fetch_city": 0.002567835006630048,
+          "fetch_actions": 0.02857981200213544,
+          "fetch_legal_requirements": 0.0007139119989005849,
+          "fetch_policy_signals": 0.08416841398866381,
+          "validate_weights": 0.0001792639959603548,
+          "hard_filter": 0.0007928520062705502,
+          "impact": 0.002933963987743482,
+          "alignment": 0.002196187007939443,
+          "feasibility": 0.1387392379983794,
+          "final_scoring": 0.0014480760000878945
+        },
+        "hard_filter_evidence_by_action_id": {
+          "c40_0010": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 2,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0012": {
+            "discard_reason": "legal_hard_requirement_failed",
+            "hard_requirements_checked_count": 2,
+            "hard_requirements_failed_count": 1,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": [],
+            "failed_requirements": [
+              {
+                "signal_code": "MUNI_ENV_STANDARDS",
+                "signal_name": "Municipal environmental standards",
+                "strength": "mandatory",
+                "alignment_status": "not_aligned",
+                "operator": "equals",
+                "required_value": "apply_standards",
+                "legal_signal_value": "restricted",
+                "evidence_ids": [
+                  "ev_003",
+                  "ev_004"
+                ],
+                "evidence_count": 2,
+                "location_scope": "National",
+                "location_name": "Chile"
+              }
+            ]
+          },
+          "c40_0013": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 2,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 1,
+            "unknown_requirements": [
+              {
+                "signal_code": "PLANS_ALIGNMENT",
+                "signal_name": "Plans alignment requirement",
+                "strength": "mandatory",
+                "alignment_status": "no_evidence",
+                "operator": "equals",
+                "required_value": "comply",
+                "legal_signal_value": null,
+                "evidence_ids": [],
+                "evidence_count": 0,
+                "location_scope": null,
+                "location_name": null
+              }
+            ]
+          },
+          "c40_0015": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0016": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0017": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0018": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0023": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 2,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 1,
+            "unknown_requirements": [
+              {
+                "signal_code": "PLANS_ALIGNMENT",
+                "signal_name": "Plans alignment requirement",
+                "strength": "mandatory",
+                "alignment_status": "no_evidence",
+                "operator": "equals",
+                "required_value": "comply",
+                "legal_signal_value": null,
+                "evidence_ids": [],
+                "evidence_count": 0,
+                "location_scope": null,
+                "location_name": null
+              }
+            ]
+          },
+          "c40_0025": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 1,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0029": {
+            "discard_reason": "legal_hard_requirement_failed",
+            "hard_requirements_checked_count": 2,
+            "hard_requirements_failed_count": 1,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": [],
+            "failed_requirements": [
+              {
+                "signal_code": "PROCUREMENT_PUBLIC_BIDDING",
+                "signal_name": "Public bidding for procurement",
+                "strength": "required",
+                "alignment_status": "not_aligned",
+                "operator": "equals",
+                "required_value": "public_bidding",
+                "legal_signal_value": "direct_award",
+                "evidence_ids": [
+                  "ev_007"
+                ],
+                "evidence_count": 1,
+                "location_scope": "National",
+                "location_name": "Chile"
+              }
+            ]
+          },
+          "c40_0034": {
+            "discard_reason": "legal_hard_requirement_failed",
+            "hard_requirements_checked_count": 1,
+            "hard_requirements_failed_count": 1,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": [],
+            "failed_requirements": [
+              {
+                "signal_code": "MUNI_WASTE_AUTHORITY",
+                "signal_name": "Municipal waste management authority",
+                "strength": "mandatory",
+                "alignment_status": "not_aligned",
+                "operator": "equals",
+                "required_value": "exclusive_authority",
+                "legal_signal_value": "shared_authority",
+                "evidence_ids": [
+                  "ev_001",
+                  "ev_002"
+                ],
+                "evidence_count": 2,
+                "location_scope": "National",
+                "location_name": "Chile"
+              }
+            ]
+          },
+          "c40_0035": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0036": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0037": {
+            "discard_reason": "legal_hard_requirement_failed",
+            "hard_requirements_checked_count": 3,
+            "hard_requirements_failed_count": 1,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": [],
+            "failed_requirements": [
+              {
+                "signal_code": "SUBSIDY_CAP_7PCT",
+                "signal_name": "Subsidy cap for non-profits",
+                "strength": "required",
+                "alignment_status": "not_aligned",
+                "operator": "less_than_or_equal",
+                "required_value": "0.07",
+                "legal_signal_value": "0.12",
+                "evidence_ids": [
+                  "ev_006"
+                ],
+                "evidence_count": 1,
+                "location_scope": "National",
+                "location_name": "Chile"
+              }
+            ]
+          },
+          "c40_0040": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 1,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 1,
+            "unknown_requirements": [
+              {
+                "signal_code": "MUNI_WASTE_AUTHORITY",
+                "signal_name": "Municipal waste management authority",
+                "strength": "mandatory",
+                "alignment_status": "no_evidence",
+                "operator": "equals",
+                "required_value": "exclusive_authority",
+                "legal_signal_value": null,
+                "evidence_ids": [],
+                "evidence_count": 0,
+                "location_scope": null,
+                "location_name": null
+              }
+            ]
+          },
+          "c40_0042": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0046": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0048": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0049": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0051": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0052": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0053": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0056": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0062": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "c40_0071": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0001": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0002": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0006": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0008": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0009": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0010": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0012": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0015": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0016": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0023": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0024": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0025": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0026": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0027": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0028": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0031": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0033": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0034": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0035": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0040": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0045": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0049": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0050": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0053": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0064": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0069": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0071": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0072": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0074": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0076": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0078": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0079": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0082": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0099": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0101": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0104": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0105": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0110": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0111": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0117": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0120": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0121": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0122": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0127": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0128": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0131": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0132": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0137": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0139": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0144": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0145": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0154": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0156": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0160": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0162": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0163": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0164": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0165": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0169": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0170": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0171": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0172": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0173": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0176": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0178": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0180": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0181": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0182": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0183": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0184": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0185": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0186": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "icare_0188": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0001": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0023": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0024": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0025": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0026": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0028": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0031": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0033": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0034": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0037": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0038": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0039": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0040": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0041": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0042": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0043": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0045": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0049": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0050": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0052": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0053": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0054": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0055": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0056": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0057": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0060": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0062": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0064": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0067": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0068": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0069": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0070": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0071": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0074": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 1,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0076": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0078": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0083": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0084": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0085": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0086": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0087": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0088": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0089": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0090": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0091": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0092": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0094": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0096": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0097": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0098": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0099": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0100": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0101": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0102": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0103": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0104": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          },
+          "ipcc_0105": {
+            "discard_reason": null,
+            "hard_requirements_checked_count": 0,
+            "hard_requirements_failed_count": 0,
+            "hard_requirements_unknown_count": 0,
+            "unknown_requirements": []
+          }
+        }
+      }
+    }
+  ]
+}

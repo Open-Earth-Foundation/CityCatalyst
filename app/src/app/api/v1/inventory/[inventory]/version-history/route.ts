@@ -132,7 +132,7 @@ export const GET = apiHandler(
           ? dataSources.find(
               (source) =>
                 source.datasourceId ===
-                version.previousVersion.data?.datasourceId,
+                version.previousVersion?.data?.datasourceId,
             )
           : undefined;
 

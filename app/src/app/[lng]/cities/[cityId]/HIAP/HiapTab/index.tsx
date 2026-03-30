@@ -920,61 +920,67 @@ export function HiapTab({
             {t("ranked-actions")}
           </TitleLarge>
           <Box display="flex" gap="16px">
-            <Button
-              variant="ghost"
-              color="interactive.control"
-              p="4px"
-              onClick={toggleSelectionMode}
-              disabled={isUpdatingSelection}
-              bg={isSelectionMode ? "background.muted" : "transparent"}
-            >
-              <Icon as={isSelectionMode ? MdCheckBox : IoMdCheckboxOutline} />
-              <Text>
-                {isSelectionMode
-                  ? selectedActions.length > 0
-                    ? `${selectedActions.length} ${t("actions-selected")}`
-                    : t("pick-actions")
-                  : t("pick-actions")}
-              </Text>
-            </Button>
-            <MenuRoot>
-              <MenuTrigger asChild>
-                <Button variant="ghost" color="interactive.control" p="4px">
-                  <Icon as={DownloadIcon} />
-                  <Text>{t("download-action-plan")}</Text>
-                  <Icon as={MdArrowDropDown} color="interactive.control" />
+            {!isShowingHistory && (
+              <>
+                <Button
+                  variant="ghost"
+                  color="interactive.control"
+                  p="4px"
+                  onClick={toggleSelectionMode}
+                  disabled={isUpdatingSelection}
+                  bg={isSelectionMode ? "background.muted" : "transparent"}
+                >
+                  <Icon
+                    as={isSelectionMode ? MdCheckBox : IoMdCheckboxOutline}
+                  />
+                  <Text>
+                    {isSelectionMode
+                      ? selectedActions.length > 0
+                        ? `${selectedActions.length} ${t("actions-selected")}`
+                        : t("pick-actions")
+                      : t("pick-actions")}
+                  </Text>
                 </Button>
-              </MenuTrigger>
-              <MenuContent minW="180px" zIndex={2000}>
-                <MenuItem onClick={handleDownloadPDF} value="pdf">
-                  <ButtonMedium color="interactive.control">
-                    {t("export-as-pdf")}
-                  </ButtonMedium>
-                </MenuItem>
-                <MenuItem onClick={handleDownloadCSV} value="csv">
-                  <ButtonMedium color="interactive.control">
-                    {t("export-as-csv")}
-                  </ButtonMedium>
-                </MenuItem>
-              </MenuContent>
-            </MenuRoot>
+                <MenuRoot>
+                  <MenuTrigger asChild>
+                    <Button variant="ghost" color="interactive.control" p="4px">
+                      <Icon as={DownloadIcon} />
+                      <Text>{t("download-action-plan")}</Text>
+                      <Icon as={MdArrowDropDown} color="interactive.control" />
+                    </Button>
+                  </MenuTrigger>
+                  <MenuContent minW="180px" zIndex={2000}>
+                    <MenuItem onClick={handleDownloadPDF} value="pdf">
+                      <ButtonMedium color="interactive.control">
+                        {t("export-as-pdf")}
+                      </ButtonMedium>
+                    </MenuItem>
+                    <MenuItem onClick={handleDownloadCSV} value="csv">
+                      <ButtonMedium color="interactive.control">
+                        {t("export-as-csv")}
+                      </ButtonMedium>
+                    </MenuItem>
+                  </MenuContent>
+                </MenuRoot>
+              </>
+            )}
             {isShowingHistory && (
               <Button
                 variant="ghost"
-                color="interactive.control"
+                color="content.link"
                 p="4px"
                 onClick={() => setIsShowingHistory(false)}
-                bg={isShowingHistory ? "background.muted" : "transparent"}
               >
                 <Text>{t("close")}</Text>
               </Button>
             )}
             <Button
-              variant="ghost"
-              color="interactive.control"
+              variant="outline"
               p="4px"
               onClick={() => setIsShowingHistory(!isShowingHistory)}
-              bg={isShowingHistory ? "background.muted" : "transparent"}
+              bg={isShowingHistory ? "background.muted" : "base.light"}
+              color={isShowingHistory ? "content.link" : "content.tertiary"}
+              border={isShowingHistory ? "content.link" : "interactive.control"}
             >
               <Icon as={MdHistory} />
               <Text>{t("history")}</Text>

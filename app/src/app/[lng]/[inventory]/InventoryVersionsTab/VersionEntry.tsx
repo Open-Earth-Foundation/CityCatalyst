@@ -17,6 +17,8 @@ import {
 import { TFunction } from "i18next";
 import { useState } from "react";
 import {
+  MdCheckBox,
+  MdCheckBoxOutlineBlank,
   MdKeyboardArrowDown,
   MdKeyboardArrowUp,
   MdPersonOutline,
@@ -51,7 +53,26 @@ function getChangeSign(entry: VersionHistoryEntry): number {
   return co2eq < previousCo2eq ? 1 : -1;
 }
 
-function renderChangeText(t: TFunction, change: any): string {
+function renderChangeText(
+  t: TFunction,
+  change: any,
+  moduleName: string = "ghgi",
+): string {
+  if (moduleName === "hiap") {
+    if (change.isDeleted) {
+      return t("inventory-versions-action-deleted", {
+        name: change.author,
+        actionName: change.name,
+      });
+    }
+    return t("inventory-versions-action-change", {
+      name: change.author,
+      actionName: change.name,
+      rank: change.rank,
+      selectionStatus: change.isSelected ? t("selected") : t("unselected"),
+    });
+  }
+
   if (change.isDeleted) {
     return t("inventory-versions-value-deleted-entry", {
       name: change.author,
@@ -129,26 +150,42 @@ export default function VersionEntry({
     firstEntry.mostRecentAssociatedVersion?.versionId;
   const inventoryId = firstEntry.version.inventoryId;
 
-  const changes = versionEntries.map((entry) => ({
-    versionId: entry.version.versionId,
-    referenceNumber: entry.subCategory?.referenceNumber,
-    subCategory:
-      entry.subCategory?.referenceNumber +
-      " " +
-      tData(entry.subCategory?.subcategoryName ?? ""),
-    totalEmissions: entry.version.data?.co2eq
-      ? toEmissionsString(entry.version.data.co2eq)
-      : "-",
-    previousTotalEmissions: entry.version.previousVersion?.data?.co2eq
-      ? toEmissionsString(entry.version.previousVersion?.data?.co2eq)
-      : "-",
-    totalEmissionsChangeSign: getChangeSign(entry),
-    source: entry.dataSource?.datasourceName ?? "-",
-    previousSource: entry.previousDataSource?.datasourceName ?? "-",
-    author: entry.version.author.name,
-    date: new Date(entry.version.created ?? 0),
-    isDeleted: entry.version.isDeleted,
-  }));
+  let changes: Record<string, any>[] = [];
+
+  if (moduleName === "ghgi") {
+    changes = versionEntries.map((entry) => ({
+      versionId: entry.version.versionId,
+      author: entry.version.author.name,
+      date: new Date(entry.version.created ?? 0),
+      isDeleted: entry.version.isDeleted,
+      // module specific fields
+      referenceNumber: entry.subCategory?.referenceNumber,
+      subCategory:
+        entry.subCategory?.referenceNumber +
+        " " +
+        tData(entry.subCategory?.subcategoryName ?? ""),
+      totalEmissions: entry.version.data?.co2eq
+        ? toEmissionsString(entry.version.data.co2eq)
+        : "-",
+      previousTotalEmissions: entry.version.previousVersion?.data?.co2eq
+        ? toEmissionsString(entry.version.previousVersion?.data?.co2eq)
+        : "-",
+      totalEmissionsChangeSign: getChangeSign(entry),
+      source: entry.dataSource?.datasourceName ?? "-",
+      previousSource: entry.previousDataSource?.datasourceName ?? "-",
+    }));
+  } else if (moduleName === "hiap") {
+    changes = versionEntries.map((entry) => ({
+      versionId: entry.version.versionId,
+      author: entry.version.author.name,
+      date: new Date(entry.version.created ?? 0),
+      isDeleted: entry.version.isDeleted,
+      // module specific fields
+      name: entry.version.data?.name,
+      isSelected: entry.version.data?.isSelected,
+      rank: entry.version.data?.rank,
+    }));
+  }
 
   const formattedVersionNumber = ((versionNumber + 10) / 10).toFixed(1);
 
@@ -276,7 +313,7 @@ export default function VersionEntry({
                 letterSpacing="0.5px"
                 fontFamily="body"
               >
-                {renderChangeText(t, change)}
+                {renderChangeText(t, change, moduleName)}
               </Text>
             ))}
           </VStack>
@@ -343,9 +380,22 @@ export default function VersionEntry({
               textTransform="uppercase"
             >
               <Table.Row>
-                <Table.ColumnHeader>{t("subcategory")}</Table.ColumnHeader>
-                <Table.ColumnHeader>{t("total-emissions")}</Table.ColumnHeader>
-                <Table.ColumnHeader>{t("source")}</Table.ColumnHeader>
+                {moduleName === "ghgi" && (
+                  <>
+                    <Table.ColumnHeader>{t("subcategory")}</Table.ColumnHeader>
+                    <Table.ColumnHeader>
+                      {t("total-emissions")}
+                    </Table.ColumnHeader>
+                    <Table.ColumnHeader>{t("source")}</Table.ColumnHeader>
+                  </>
+                )}
+                {moduleName === "hiap" && (
+                  <>
+                    <Table.ColumnHeader>{t("name")}</Table.ColumnHeader>
+                    <Table.ColumnHeader>{t("selected")}</Table.ColumnHeader>
+                    <Table.ColumnHeader>{t("rank")}</Table.ColumnHeader>
+                  </>
+                )}
                 <Table.ColumnHeader>{t("last-modified-by")}</Table.ColumnHeader>
                 <Table.ColumnHeader>{t("date")}</Table.ColumnHeader>
               </Table.Row>
@@ -381,13 +431,34 @@ export default function VersionEntry({
 
                   return (
                     <Table.Row key={change.versionId}>
-                      <Table.Cell>{change.subCategory}</Table.Cell>
-                      <Table.Cell bgColor={totalBgColor} color={totalColor}>
-                        {change.totalEmissions}
-                      </Table.Cell>
-                      <Table.Cell bgColor={sourceBgColor} color={sourceColor}>
-                        {change.source}
-                      </Table.Cell>
+                      {moduleName === "ghgi" && (
+                        <>
+                          <Table.Cell>{change.subCategory}</Table.Cell>
+                          <Table.Cell bgColor={totalBgColor} color={totalColor}>
+                            {change.totalEmissions}
+                          </Table.Cell>
+                          <Table.Cell
+                            bgColor={sourceBgColor}
+                            color={sourceColor}
+                          >
+                            {change.source}
+                          </Table.Cell>
+                        </>
+                      )}
+
+                      {moduleName === "hiap" && (
+                        <>
+                          <Table.Cell>{change.name}</Table.Cell>
+                          <Table.Cell>
+                            {change.isSelected ? (
+                              <MdCheckBox />
+                            ) : (
+                              <MdCheckBoxOutlineBlank />
+                            )}
+                          </Table.Cell>
+                          <Table.Cell>#{change.rank}</Table.Cell>
+                        </>
+                      )}
                       <Table.Cell>{change.author}</Table.Cell>
                       <Table.Cell>
                         {change.date.toLocaleString("default")}

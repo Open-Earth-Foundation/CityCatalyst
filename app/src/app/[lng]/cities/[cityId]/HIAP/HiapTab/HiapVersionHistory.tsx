@@ -26,8 +26,6 @@ export default function HiapVersionHistory({
 
   return (
     <VStack alignItems="start" gap={4} mt={1}>
-      {inventoryId}
-
       {isLoading && <ProgressLoader />}
       {data != null && data?.length === 0 ? (
         <Text>{t("no-history")}</Text>

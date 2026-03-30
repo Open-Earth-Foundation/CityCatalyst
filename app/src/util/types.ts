@@ -930,7 +930,7 @@ export interface ImportStatusResponse {
 
 export type VersionChange = VersionAttributes & {
   author: { name: string; userId: string };
-  previousVersion: VersionAttributes;
+  previousVersion: VersionAttributes | null;
 };
 
 export type VersionHistoryEntry = {

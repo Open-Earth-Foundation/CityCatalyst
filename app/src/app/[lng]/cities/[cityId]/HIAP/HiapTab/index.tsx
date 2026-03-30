@@ -992,7 +992,7 @@ export function HiapTab({
         )}
       </Box>
 
-      {isShowingHistory && (
+      {isShowingHistory && inventory?.inventoryId && (
         <HiapVersionHistory inventoryId={inventory?.inventoryId} lng={lng} />
       )}
 

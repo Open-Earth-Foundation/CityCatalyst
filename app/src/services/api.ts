@@ -1402,7 +1402,7 @@ export const api = createApi({
         }) => {
           return response;
         },
-        invalidatesTags: ["Hiap"],
+        invalidatesTags: ["Hiap", "VersionHistory"],
       }),
       generateActionPlan: builder.mutation<
         { plan: string; timestamp: string; actionName: string },
@@ -1815,7 +1815,9 @@ export const api = createApi({
           };
         },
         transformResponse: (response: {
-          data: ImportedFileResponse | { accepted: true; id: string; message?: string };
+          data:
+            | ImportedFileResponse
+            | { accepted: true; id: string; message?: string };
         }) => response.data,
         invalidatesTags: ["Inventory"],
       }),

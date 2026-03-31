@@ -1,6 +1,8 @@
 import { db } from "@/models";
+import { logger } from "@/services/logger";
 import { VersionChange } from "@/util/types";
 import createHttpError from "http-errors";
+import { isEqual } from "lodash";
 import { randomUUID } from "node:crypto";
 import { Op, Transaction } from "sequelize";
 
@@ -86,6 +88,14 @@ export default class VersionHistoryService {
       where: { inventoryId, entryId, table, moduleName },
       order: [["created", "DESC"]],
     });
+
+    if (isEqual(previousVersion?.data, data.toJSON())) {
+      logger.warn(
+        { moduleName, table, inventoryId, entryId },
+        "createVersion called with same data, skipping",
+      );
+      return;
+    }
 
     // save version entry
     await db.models.Version.create(

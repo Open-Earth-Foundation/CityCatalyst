@@ -89,7 +89,7 @@ export default class VersionHistoryService {
       order: [["created", "DESC"]],
     });
 
-    if (isDeepStrictEqual(previousVersion?.data, data.toJSON())) {
+    if (isDeepStrictEqual(previousVersion?.data, data)) {
       logger.warn(
         { moduleName, table, inventoryId, entryId },
         "createVersion called with same data, skipping",

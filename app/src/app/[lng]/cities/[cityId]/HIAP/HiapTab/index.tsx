@@ -976,9 +976,10 @@ export function HiapTab({
             )}
             <Button
               variant="outline"
+              borderRadius="4px"
               p="4px"
               onClick={() => setIsShowingHistory(!isShowingHistory)}
-              bg={isShowingHistory ? "background.muted" : "base.light"}
+              bgColor={isShowingHistory ? "background.muted" : "base.light"}
               color={isShowingHistory ? "content.link" : "content.tertiary"}
               border={isShowingHistory ? "content.link" : "interactive.control"}
             >

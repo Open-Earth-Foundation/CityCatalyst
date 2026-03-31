@@ -113,8 +113,11 @@ import { logger } from "@/services/logger";
 import { db } from "@/models";
 import { z } from "zod";
 import GlobalAPIService from "@/backend/GlobalAPIService";
+import VersionHistoryService from "@/backend/VersionHistoryService";
+import { Op } from "sequelize";
 
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
   if (!session) {
@@ -148,7 +151,7 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
 
     // Get all available climate actions
     const allActions = await GlobalAPIService.fetchAllClimateActions(lng);
-    
+
     // Filter actions by the requested action type
     const actionsOfType = allActions.filter((action: any) => {
       return action.ActionType && action.ActionType.includes(type);
@@ -156,7 +159,9 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
 
     // Extract ranked action IDs to filter them out from unranked
     const rankedActionIds = new Set(
-      ((rankingData as any).rankedActions || []).map((action: any) => action.actionId)
+      ((rankingData as any).rankedActions || []).map(
+        (action: any) => action.actionId,
+      ),
     );
 
     // Get unranked action selections from database
@@ -168,9 +173,9 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
         isSelected: true,
       },
     });
-    
+
     const selectedUnrankedActionIds = new Set(
-      unrankedSelections.map((selection: any) => selection.actionId)
+      unrankedSelections.map((selection: any) => selection.actionId),
     );
 
     // Get unranked actions (all actions minus ranked ones) and transform them to HIAction format
@@ -179,75 +184,82 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
     });
 
     // Transform unranked actions to HIAction format
-    const unrankedActions = rawUnrankedActions.map((action: any, index: number) => {
-      const baseAction = {
-        id: action.ActionID,
-        actionId: action.ActionID,
-        name: action.ActionName,
-        rank: ((rankingData as any).rankedActions || []).length + index + 1,
-        description: action.Description || "",
-        explanation: action.Explanation || {},
-        isSelected: selectedUnrankedActionIds.has(action.ActionID),
-        hiaRankingId: "", // Not applicable for unranked
-        lang: lng,
-        primaryPurposes: action.PrimaryPurpose || [],
-        dependencies: action.Dependencies || [],
-        cobenefits: action.CoBenefits || [],
-        timeline: "",
-        cost: "",
-        costEvidence: "",
-        implementationBarriers: "",
-        otherConsiderations: "",
-        feasibility: "",
-        institutionalRequirements: "",
-        subActions: [],
-        monitoringAndEvaluation: "",
-        costInvestmentNeeded: action.CostInvestmentNeeded || action.Cost || "",
-        timelineForImplementation: action.TimelineForImplementation || action.Timeline || "",
-        keyPerformanceIndicators: action.KeyPerformanceIndicators || [],
-        powersAndMandates: action.PowersAndMandates || [],
-      };
+    const unrankedActions = rawUnrankedActions.map(
+      (action: any, index: number) => {
+        const baseAction = {
+          id: action.ActionID,
+          actionId: action.ActionID,
+          name: action.ActionName,
+          rank: ((rankingData as any).rankedActions || []).length + index + 1,
+          description: action.Description || "",
+          explanation: action.Explanation || {},
+          isSelected: selectedUnrankedActionIds.has(action.ActionID),
+          hiaRankingId: "", // Not applicable for unranked
+          lang: lng,
+          primaryPurposes: action.PrimaryPurpose || [],
+          dependencies: action.Dependencies || [],
+          cobenefits: action.CoBenefits || [],
+          timeline: "",
+          cost: "",
+          costEvidence: "",
+          implementationBarriers: "",
+          otherConsiderations: "",
+          feasibility: "",
+          institutionalRequirements: "",
+          subActions: [],
+          monitoringAndEvaluation: "",
+          costInvestmentNeeded:
+            action.CostInvestmentNeeded || action.Cost || "",
+          timelineForImplementation:
+            action.TimelineForImplementation || action.Timeline || "",
+          keyPerformanceIndicators: action.KeyPerformanceIndicators || [],
+          powersAndMandates: action.PowersAndMandates || [],
+        };
 
-      if (type === "adaptation") {
-        return {
-          ...baseAction,
-          type: "adaptation",
-          hazards: action.Hazard || [],
-          adaptationEffectiveness: action.AdaptationEffectiveness || "medium",
-          adaptationEffectivenessPerHazard: action.AdaptationEffectivenessPerHazard || {},
-          qualitativeEffectivenessEvidence: "",
-          quantitativeEffectivenessEvidence: "",
-          equityAndInclusionConsiderations: action.EquityAndInclusionConsiderations || "",
-          vulnerabilityAnalysisEvidence: "",
-          riskReductionEvidence: "",
-          socioEconomicImpacts: "",
-          liveabilityCobenefits: "",
-          ecosystemServices: "",
-          GHGReductionPotential: action.GHGReductionPotential || {},
-          sectors: action.Sector || [],
-          subsectors: action.Subsector || [],
-        };
-      } else {
-        return {
-          ...baseAction,
-          type: "mitigation",
-          sectors: action.Sector || [],
-          subsectors: action.Subsector || [],
-          GHGReductionPotential: action.GHGReductionPotential || {},
-          hazards: [],
-          adaptationEffectiveness: "medium",
-          adaptationEffectivenessPerHazard: {},
-          qualitativeEffectivenessEvidence: "",
-          quantitativeEffectivenessEvidence: "",
-          equityAndInclusionConsiderations: action.EquityAndInclusionConsiderations || "",
-          vulnerabilityAnalysisEvidence: "",
-          riskReductionEvidence: "",
-          socioEconomicImpacts: "",
-          liveabilityCobenefits: "",
-          ecosystemServices: "",
-        };
-      }
-    });
+        if (type === "adaptation") {
+          return {
+            ...baseAction,
+            type: "adaptation",
+            hazards: action.Hazard || [],
+            adaptationEffectiveness: action.AdaptationEffectiveness || "medium",
+            adaptationEffectivenessPerHazard:
+              action.AdaptationEffectivenessPerHazard || {},
+            qualitativeEffectivenessEvidence: "",
+            quantitativeEffectivenessEvidence: "",
+            equityAndInclusionConsiderations:
+              action.EquityAndInclusionConsiderations || "",
+            vulnerabilityAnalysisEvidence: "",
+            riskReductionEvidence: "",
+            socioEconomicImpacts: "",
+            liveabilityCobenefits: "",
+            ecosystemServices: "",
+            GHGReductionPotential: action.GHGReductionPotential || {},
+            sectors: action.Sector || [],
+            subsectors: action.Subsector || [],
+          };
+        } else {
+          return {
+            ...baseAction,
+            type: "mitigation",
+            sectors: action.Sector || [],
+            subsectors: action.Subsector || [],
+            GHGReductionPotential: action.GHGReductionPotential || {},
+            hazards: [],
+            adaptationEffectiveness: "medium",
+            adaptationEffectivenessPerHazard: {},
+            qualitativeEffectivenessEvidence: "",
+            quantitativeEffectivenessEvidence: "",
+            equityAndInclusionConsiderations:
+              action.EquityAndInclusionConsiderations || "",
+            vulnerabilityAnalysisEvidence: "",
+            riskReductionEvidence: "",
+            socioEconomicImpacts: "",
+            liveabilityCobenefits: "",
+            ecosystemServices: "",
+          };
+        }
+      },
+    );
 
     const data = {
       ...rankingData,
@@ -256,12 +268,15 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
 
     return Response.json({ data });
   } catch (error) {
-    logger.error({
-      err: error,
-      inventory: params.inventory,
-      type,
-      lng,
-    }, "Error fetching HIAP data");
+    logger.error(
+      {
+        err: error,
+        inventory: params.inventory,
+        type,
+        lng,
+      },
+      "Error fetching HIAP data",
+    );
     throw new Error(
       `Failed to fetch HIAP data for city ${inventory.city.locode}: ${(error as Error).message}`,
       { cause: error },
@@ -327,6 +342,8 @@ export const PATCH = apiHandler(
       params.inventory,
       session,
     );
+    const authorId = session.user.id;
+    const inventoryId = params.inventory;
 
     try {
       // Get all ranked actions for this inventory
@@ -335,15 +352,15 @@ export const PATCH = apiHandler(
       });
 
       const rankingIds = rankings.map((r) => r.id);
-      
+
       // Separate ranked action IDs (UUIDs) from unranked action IDs (regular strings)
       const rankedActionIds: string[] = [];
       const unrankedActionIds: string[] = [];
-      
+
       for (const actionId of body.selectedActionIds) {
         // Check if it's a UUID (ranked action database record ID)
         const isUuid = UUID_REGEX.test(actionId);
-        
+
         if (isUuid) {
           rankedActionIds.push(actionId);
         } else {
@@ -356,27 +373,51 @@ export const PATCH = apiHandler(
       // Handle ranked actions (existing logic)
       if (rankings.length > 0) {
         // First, set all ranked actions to not selected
-        await db.models.HighImpactActionRanked.update(
-          { isSelected: false },
-          {
-            where: {
-              hiaRankingId: rankingIds,
+        const [_affectedCount, changedDeselectedEntries] =
+          await db.models.HighImpactActionRanked.update(
+            { isSelected: false },
+            {
+              where: {
+                id: { [Op.not]: rankedActionIds },
+                hiaRankingId: rankingIds,
+              },
+              returning: true,
             },
-          },
+          );
+        await VersionHistoryService.bulkCreateVersions(
+          inventoryId,
+          "HighImpactActionRanked",
+          authorId,
+          changedDeselectedEntries,
+          false,
+          undefined,
+          "hiap",
         );
 
         // Then, set selected ranked actions to true
         if (rankedActionIds.length > 0) {
-          const [affectedCount] = await db.models.HighImpactActionRanked.update(
-            { isSelected: true },
-            {
-              where: {
-                id: rankedActionIds,
-                hiaRankingId: rankingIds,
+          const [affectedCount, changedEntries] =
+            await db.models.HighImpactActionRanked.update(
+              { isSelected: true },
+              {
+                where: {
+                  id: rankedActionIds,
+                  hiaRankingId: rankingIds,
+                },
+                returning: true,
               },
-            },
-          );
+            );
           updatedCount += affectedCount;
+
+          await VersionHistoryService.bulkCreateVersions(
+            inventoryId,
+            "HighImpactActionRanked",
+            authorId,
+            changedEntries,
+            false,
+            undefined,
+            "hiap",
+          );
         }
       }
 
@@ -409,21 +450,27 @@ export const PATCH = apiHandler(
         updatedCount += unrankedActionIds.length;
       }
 
-      logger.info({
-        inventoryId: params.inventory,
-        rankedActionIds,
-        unrankedActionIds,
-        totalSelected: body.selectedActionIds.length,
-        updatedCount,
-      }, "Updated HIAP action selection (ranked and unranked)");
+      logger.info(
+        {
+          inventoryId: params.inventory,
+          rankedActionIds,
+          unrankedActionIds,
+          totalSelected: body.selectedActionIds.length,
+          updatedCount,
+        },
+        "Updated HIAP action selection (ranked and unranked)",
+      );
 
       return NextResponse.json({ success: true, updated: updatedCount });
     } catch (error) {
-      logger.error({
-        err: error,
-        inventory: params.inventory,
-        selectedActionIds: body.selectedActionIds,
-      }, "Error updating HIAP action selection");
+      logger.error(
+        {
+          err: error,
+          inventory: params.inventory,
+          selectedActionIds: body.selectedActionIds,
+        },
+        "Error updating HIAP action selection",
+      );
       throw new Error(
         `Failed to update action selection for city ${inventory.city.locode}: ${(error as Error).message}`,
         { cause: error },

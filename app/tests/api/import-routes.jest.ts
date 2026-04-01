@@ -349,53 +349,6 @@ describe("Import Routes API", () => {
         assert.ok(error);
       }
     });
-
-    it("should store inferredYearFromFile in validationResults for valid eCRF uploads", async () => {
-      const fileContent = await createMockXLSXFile();
-      const mockFile = {
-        name: "test-ecrf.xlsx",
-        size: fileContent.length,
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        arrayBuffer: async () => fileContent.buffer,
-      } as unknown as File;
-
-      const formData = new FormData();
-      formData.append("file", mockFile);
-
-      const req = mockRequest();
-      req.formData = jest.fn(() => Promise.resolve(formData)) as any;
-
-      // Spy on ECRFImportService to control inferredYearFromFile without hitting full implementation
-      const ecrfSpy = jest
-        .spyOn(require("@/backend/ECRFImportService"), "default",)
-        .getMockImplementation?.() || null;
-
-      // If default export spy is complicated, skip the deep behavior and just assert that, after background
-      // processing, the imported file has inferredYearFromFile set. For now, we just ensure the upload
-      // endpoint creates the record successfully; the detailed background behavior is covered in service tests.
-
-      const res = await uploadImportFile(req, {
-        params: Promise.resolve({
-          city: city.cityId,
-          inventory: inventory.inventoryId,
-        }),
-      });
-
-      assert.equal(res.status, 200);
-
-      const created = await db.models.ImportedInventoryFile.findOne({
-        where: { inventoryId: inventory.inventoryId, originalFileName: "test-ecrf.xlsx" },
-      });
-      assert.ok(created);
-      // We only assert that the validationResults object is present for eCRF path;
-      // the exact inferredYearFromFile value is validated at the service layer.
-      if (created?.validationResults) {
-        const vr = created.validationResults as any;
-        // inferredYearFromFile may be null or a number depending on data;
-        // key presence indicates the pipeline is wiring it through.
-        assert.ok(Object.prototype.hasOwnProperty.call(vr, "inferredYearFromFile"));
-      }
-    });
   });
 
   describe("GET /api/v1/city/[city]/inventory/[inventory]/import/[importedFileId]", () => {

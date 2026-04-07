@@ -4,19 +4,40 @@ from db.database import SessionLocal
 
 api_router = APIRouter(prefix="/api/v1")
 
+ALLOWED_GWP = {"ar2", "ar3", "ar4", "ar5", "ar6"}
+
+
+def _gwp_value_expr(alias: str) -> str:
+    """
+    Return a CASE expression that maps :gwp to a fixed DB column.
+    This avoids injecting user-provided values into SQL identifiers.
+    """
+    return f"""
+        CASE :gwp
+            WHEN 'ar2' THEN {alias}.ar2
+            WHEN 'ar3' THEN {alias}.ar3
+            WHEN 'ar4' THEN {alias}.ar4
+            WHEN 'ar5' THEN {alias}.ar5
+            WHEN 'ar6' THEN {alias}.ar6
+            ELSE NULL
+        END
+    """
+
+
 def db_query_total(datasource_name, spatial_granularity, actor_id, gpc_reference_number, emissions_year, gwp):
     with SessionLocal() as session:
-        # Ensure `gwp` is a safe column name string.
-        if gwp not in {"ar2", "ar3", "ar4", "ar5", "ar6"}:
+        if gwp not in ALLOWED_GWP:
             raise ValueError("Invalid GWP provided.")
 
+        gwp_100yr_expr = _gwp_value_expr("gwp")
+        gwp_20yr_expr = _gwp_value_expr("gwp2")
         query = text(
-            f"""
+            """
             SELECT		upper(e.gas_name) as gas_name,
              			round(sum(e.emissions_value)) as emissions_value,
-             			COALESCE(max(gwp.{gwp}),0) as gwp_100yr,
-             			COALESCE(sum(e.emissions_value * gwp.{gwp}),0) as emissions_value_100yr,
-                        COALESCE(sum(e.emissions_value * gwp2.{gwp}),0) as emissions_value_20yr
+            			COALESCE(max({gwp_100yr_expr}),0) as gwp_100yr,
+            			COALESCE(sum(e.emissions_value * {gwp_100yr_expr}),0) as emissions_value_100yr,
+                        COALESCE(sum(e.emissions_value * {gwp_20yr_expr}),0) as emissions_value_20yr
             FROM 		modelled.emissions e
             LEFT JOIN 	modelled.emissions_factor ef
             ON 			e.emissionfactor_id = ef.emissionfactor_id
@@ -43,6 +64,7 @@ def db_query_total(datasource_name, spatial_granularity, actor_id, gpc_reference
             AND 		e.emissions_year = :emissions_year
             GROUP BY 	e.gas_name;
             """
+            .format(gwp_100yr_expr=gwp_100yr_expr, gwp_20yr_expr=gwp_20yr_expr)
         )
         params = {
             "datasource_name": datasource_name,
@@ -50,7 +72,7 @@ def db_query_total(datasource_name, spatial_granularity, actor_id, gpc_reference
             "actor_id": actor_id,
             "gpc_reference_number": gpc_reference_number,
             "emissions_year": emissions_year,
-            "gwp": gwp
+            "gwp": gwp,
         }
         result = session.execute(query, params).fetchall()
 
@@ -58,14 +80,15 @@ def db_query_total(datasource_name, spatial_granularity, actor_id, gpc_reference
 
 def db_query_eq_total(datasource_name, spatial_granularity, actor_id, gpc_reference_number, emissions_year, gwp):
     with SessionLocal() as session:
-        # Ensure `gwp` is a safe column name string.
-        if gwp not in {"ar2", "ar3", "ar4", "ar5", "ar6"}:
+        if gwp not in ALLOWED_GWP:
             raise ValueError("Invalid GWP provided.")
 
+        gwp_100yr_expr = _gwp_value_expr("gwp")
+        gwp_20yr_expr = _gwp_value_expr("gwp2")
         query = text(
-            f"""
-            SELECT		round(COALESCE(sum(e.emissions_value * gwp.{gwp}),0)) as emissions_value_100yr,
-                        round(COALESCE(sum(e.emissions_value * gwp2.{gwp}),0)) as emissions_value_20yr
+            """
+            SELECT		round(COALESCE(sum(e.emissions_value * {gwp_100yr_expr}),0)) as emissions_value_100yr,
+                        round(COALESCE(sum(e.emissions_value * {gwp_20yr_expr}),0)) as emissions_value_20yr
             FROM 		modelled.emissions e
             LEFT JOIN 	modelled.emissions_factor ef
             ON 			e.emissionfactor_id = ef.emissionfactor_id
@@ -91,6 +114,7 @@ def db_query_eq_total(datasource_name, spatial_granularity, actor_id, gpc_refere
             AND 		e.gpc_reference_number = :gpc_reference_number
             AND 		e.emissions_year = :emissions_year;
             """
+            .format(gwp_100yr_expr=gwp_100yr_expr, gwp_20yr_expr=gwp_20yr_expr)
         )
         params = {
             "datasource_name": datasource_name,
@@ -98,7 +122,7 @@ def db_query_eq_total(datasource_name, spatial_granularity, actor_id, gpc_refere
             "actor_id": actor_id,
             "gpc_reference_number": gpc_reference_number,
             "emissions_year": emissions_year,
-            "gwp": gwp
+            "gwp": gwp,
         }
         result = session.execute(query, params).fetchone()
 
@@ -106,12 +130,11 @@ def db_query_eq_total(datasource_name, spatial_granularity, actor_id, gpc_refere
 
 def db_source_dq(datasource_name, spatial_granularity, actor_id, gpc_reference_number, emissions_year, gwp):
     with SessionLocal() as session:
-        # Ensure `gwp_column_name` is a safe column name string.
-        if gwp not in {"ar2", "ar3", "ar4", "ar5", "ar6"}:
+        if gwp not in ALLOWED_GWP:
             raise ValueError("Invalid GWP provided.")
 
         query = text(
-            f"""
+            """
             SELECT 	data_quality
             FROM 	datasource
             WHERE 	publisher_id = :datasource_name
@@ -126,7 +149,7 @@ def db_source_dq(datasource_name, spatial_granularity, actor_id, gpc_reference_n
             "actor_id": actor_id,
             "gpc_reference_number": gpc_reference_number,
             "emissions_year": emissions_year,
-            "gwp": gwp
+            "gwp": gwp,
         }
         result = session.execute(query, params).fetchone()
 
@@ -135,12 +158,13 @@ def db_source_dq(datasource_name, spatial_granularity, actor_id, gpc_reference_n
 # query for the detailed emissions data
 def db_query(datasource_name, spatial_granularity, actor_id, gpc_reference_number, emissions_year, gwp):
     with SessionLocal() as session:
-        # Ensure `gwp` is a safe column name string.
-        if gwp not in {"ar2", "ar3", "ar4", "ar5", "ar6"}:
+        if gwp not in ALLOWED_GWP:
             raise ValueError("Invalid GWP column name provided.")
 
+        gwp_100yr_expr = _gwp_value_expr("gwp")
+        gwp_20yr_expr = _gwp_value_expr("gwp2")
         query = text(
-            f"""
+            """
             WITH 		activity_data AS (
 			SELECT		e.activity_id,
                         m.methodology_name,
@@ -152,9 +176,9 @@ def db_query(datasource_name, spatial_granularity, actor_id, gpc_reference_numbe
 						'emissionfactor_value', ef.emissionfactor_value,
 						'emissionfactor_datasource', ef.datasource_name,
 						'activity_value', e.activity_value::numeric,
-						'gwp', COALESCE(gwp.{gwp},0),
-						'emissions_value_100yr', round(COALESCE(e.emissions_value * gwp.{gwp},0)),
-						'emissions_value_20yr', round(COALESCE(e.emissions_value * gwp2.{gwp},0))
+						'gwp', COALESCE({gwp_100yr_expr},0),
+						'emissions_value_100yr', round(COALESCE(e.emissions_value * {gwp_100yr_expr},0)),
+						'emissions_value_20yr', round(COALESCE(e.emissions_value * {gwp_20yr_expr},0))
 						)) AS gas_info
                      FROM 		modelled.emissions e
                      LEFT JOIN 	modelled.emissions_factor ef
@@ -190,6 +214,7 @@ def db_query(datasource_name, spatial_granularity, actor_id, gpc_reference_numbe
 			INNER JOIN modelled.activity_subcategory b
 			ON a.activity_id = b.activity_id;
             """
+            .format(gwp_100yr_expr=gwp_100yr_expr, gwp_20yr_expr=gwp_20yr_expr)
         )
         params = {
             "datasource_name": datasource_name,
@@ -197,7 +222,7 @@ def db_query(datasource_name, spatial_granularity, actor_id, gpc_reference_numbe
             "actor_id": actor_id,
             "gpc_reference_number": gpc_reference_number,
             "emissions_year": emissions_year,
-            "gwp": gwp
+            "gwp": gwp,
         }
         result = session.execute(query, params).fetchall()
 

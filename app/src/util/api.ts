@@ -197,7 +197,7 @@ async function makeOAuthUserSession(token: BearerTokenPayload): Promise<AppSessi
     throw new createHttpError.BadRequest(`Malformed Authorization header`);
   }
   return {
-    expires: token.iat,
+    expires: new Date(token.iat * 1000).toISOString(),
     user: {
       id: user.userId,
       name: user.name,
@@ -214,8 +214,9 @@ async function makeServiceUserSession(token: BearerTokenPayload): Promise<AppSes
   if (!user) {
     throw new createHttpError.Unauthorized(`User not found for service token`);
   }
+  const expiresAt = token.exp ?? Math.floor(Date.now() / 1000) + 3600;
   return {
-    expires: token.exp || Math.floor(Date.now() / 1000) + 3600, // Use token exp or 1 hour from now
+    expires: new Date(expiresAt * 1000).toISOString(),
     user: {
       id: user.userId,
       name: user.name,
@@ -349,6 +350,9 @@ export function apiHandler(handler: NextHandler) {
             const client = await OAuthClient.findByPk(token.client_id);
             if (!client) {
               throw new createHttpError.Unauthorized("Invalid client");
+            }
+            if (!token.scope) {
+              throw new createHttpError.Unauthorized("Token missing scope");
             }
             const scopes = token.scope.split(" ");
             if (

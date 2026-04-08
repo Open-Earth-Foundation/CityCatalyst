@@ -466,17 +466,14 @@ function errorHandler(err: unknown, _req: NextRequest) {
       { status: 400 },
     );
   } else if (err instanceof OpenAI.APIError) {
-    const { name, status, headers, message } = err;
-    return NextResponse.json({ name, status, headers, message }, { status });
-  } else {
-    let errorMessage = "Unknown error";
-    if ((err as Object).hasOwnProperty("message")) {
-      errorMessage = (err as Error).message;
-    } else if (err instanceof Error) {
-      errorMessage = (err as Object).toString();
-    }
+    const { name, status, message } = err;
     return NextResponse.json(
-      { error: { message: "Internal server error", error: errorMessage } },
+      { error: { name, message } },
+      { status: status ?? 500 },
+    );
+  } else {
+    return NextResponse.json(
+      { error: { message: "Internal server error" } },
       { status: 500 },
     );
   }

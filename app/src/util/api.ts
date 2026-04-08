@@ -24,6 +24,15 @@ import { OAuthClient } from "@/models/OAuthClient";
 import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
 import { isPATToken, validatePAT } from "@/lib/auth/access-token-validator";
 
+interface BearerTokenPayload {
+  sub: string;
+  aud: string;
+  iat: number;
+  exp?: number;
+  client_id?: string;
+  scope?: string;
+}
+
 // Rate limiting configuration
 // Skip during Playwright runs via feature flag to avoid hitting limits
 // 200 requests per minute allows for ~28 page loads (each page makes ~7 API calls)
@@ -166,7 +175,7 @@ const organizationContextCheck = async ({
   }
 };
 
-function getBearerToken(header: string): any {
+function getBearerToken(header: string): BearerTokenPayload {
   const match = header.match(/^Bearer\s+(.*)$/);
   if (!match) {
     throw new createHttpError.BadRequest(`Malformed Authorization header`);
@@ -175,10 +184,13 @@ function getBearerToken(header: string): any {
     logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
     throw createHttpError.InternalServerError("Configuration error");
   }
-  return jwt.verify(match[1], process.env.VERIFICATION_TOKEN_SECRET);
+  return jwt.verify(
+    match[1],
+    process.env.VERIFICATION_TOKEN_SECRET,
+  ) as BearerTokenPayload;
 }
 
-async function makeOAuthUserSession(token: any): Promise<AppSession> {
+async function makeOAuthUserSession(token: BearerTokenPayload): Promise<AppSession> {
   const userId = token.sub;
   const user = await db.models.User.findOne({ where: { userId } });
   if (!user) {
@@ -196,7 +208,7 @@ async function makeOAuthUserSession(token: any): Promise<AppSession> {
   };
 }
 
-async function makeServiceUserSession(token: any): Promise<AppSession> {
+async function makeServiceUserSession(token: BearerTokenPayload): Promise<AppSession> {
   const userId = token.sub;
   const user = await db.models.User.findOne({ where: { userId } });
   if (!user) {

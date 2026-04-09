@@ -106,28 +106,6 @@ export function NavigationBar({
     router.replace(newPath);
   };
 
-  // Checks if language is set in cookie and updates URL if not
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (typeof window !== "undefined") {
-        const handlePopState = () => {
-          const cookieLanguage = Cookies.get("i18next");
-          if (cookieLanguage) {
-            const currentPath = window.location.pathname;
-            // Your logic here
-          }
-        };
-
-        window.addEventListener("popstate", handlePopState);
-
-        // Cleanup the event listener on component unmount
-        return () => {
-          window.removeEventListener("popstate", handlePopState);
-        };
-      }
-    }
-  }, []);
-
   const { data: session, status } = useSession();
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();

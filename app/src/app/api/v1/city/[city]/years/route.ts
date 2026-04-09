@@ -73,6 +73,7 @@ export const GET = apiHandler(
         model: db.models.Inventory,
         as: "inventories",
         attributes: ["year", "inventoryId", "lastUpdated"],
+        order: [["year", "ASC"]],
       },
     ]);
 

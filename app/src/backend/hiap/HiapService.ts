@@ -185,7 +185,12 @@ export const startBothActionRankingJobs = async (
       : ACTION_TYPES.Mitigation;
 
   // start the opposite type job in the background
-  startActionRankingJob(inventoryId, locode, langs, oppositeType, user);
+  startActionRankingJob(inventoryId, locode, langs, oppositeType, user).catch((error) => {
+    logger.error(
+      { error, inventoryId, locode, type: oppositeType },
+      "Background action ranking job failed"
+    );
+  });
   // then start the current type job and return the result
   return await startActionRankingJob(inventoryId, locode, langs, type, user);
 };

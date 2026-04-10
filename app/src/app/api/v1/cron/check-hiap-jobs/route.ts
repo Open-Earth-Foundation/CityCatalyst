@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
     );
   }
   const token = authorization.replace("Bearer ", "").trim();
-  if (token.length > 0 && token !== process.env.CC_CRON_JOB_API_KEY) {
+  if (token.length === 0 || token !== process.env.CC_CRON_JOB_API_KEY) {
     return NextResponse.json(
       { error: { message: "Unauthorized, API key invalid" } },
       { status: 401 },

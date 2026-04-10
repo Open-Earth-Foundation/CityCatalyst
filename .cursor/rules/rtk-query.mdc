@@ -1,0 +1,81 @@
+---
+description: Redux Toolkit Query patterns for API data fetching and state management
+globs: app/src/services/api.ts,app/src/features/**/*.ts,app/src/lib/store.ts
+alwaysApply: false
+---
+
+# RTK Query & Redux Patterns
+
+## API Definition (src/services/api.ts)
+
+The main API is defined with `createApi` using `fetchBaseQuery` to `/api/v1/`:
+
+```typescript
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+export const api = createApi({
+  reducerPath: "api",
+  tagTypes: ["UserInfo", "InventoryProgress", "CityData", /* ... */],
+  baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
+  endpoints: (builder) => ({
+    // Query example
+    getInventory: builder.query<InventoryResponse, string>({
+      query: (inventoryId) => `inventory/${inventoryId}`,
+      providesTags: (_result, _err, id) => [{ type: "InventoryValue", id }],
+    }),
+    // Mutation example
+    updateInventory: builder.mutation<InventoryResponse, { id: string; body: UpdateBody }>({
+      query: ({ id, body }) => ({ url: `inventory/${id}`, method: "PATCH", body }),
+      invalidatesTags: (_result, _err, { id }) => [{ type: "InventoryValue", id }],
+    }),
+  }),
+});
+```
+
+## Adding a New Endpoint
+
+1. Add the endpoint inside `endpoints: (builder) => ({...})` in `src/services/api.ts`
+2. Add appropriate `tagTypes` if introducing a new cache domain
+3. Use `providesTags` on queries and `invalidatesTags` on mutations for cache sync
+4. Export the auto-generated hook: `export const { useGetInventoryQuery } = api;`
+
+## Using in Components
+
+```tsx
+import { api } from "@/services/api";
+
+function MyComponent({ inventoryId }: { inventoryId: string }) {
+  const { data, isLoading, error } = api.useGetInventoryQuery(inventoryId);
+  const [updateInventory] = api.useUpdateInventoryMutation();
+
+  if (isLoading) return <Skeleton />;
+  if (error) return <ErrorState />;
+  return <div>{data?.inventoryName}</div>;
+}
+```
+
+## Redux Slices (src/features/)
+
+Small RTK slices for local UI state:
+
+```typescript
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+const citySlice = createSlice({
+  name: "city",
+  initialState: { selectedCity: null as string | null },
+  reducers: {
+    setCity: (state, action: PayloadAction<string>) => {
+      state.selectedCity = action.payload;
+    },
+  },
+});
+```
+
+## Store (src/lib/store.ts)
+
+The store combines RTK Query reducers + slices. When adding new API definitions, register their `reducerPath` and `middleware`.
+
+## Tag Types (existing)
+
+`UserInfo`, `UserPermissions`, `InventoryProgress`, `UserInventories`, `SubSectorValue`, `InventoryValue`, `ActivityValue`, `UserData`, `FileData`, `CityData`, `ReportResults`, `EmissionsFactor`, `Organization`, `Project`, `Theme`, `DataSource`, `VersionHistory`, `HIAP`, `Module`, `PersonalAccessToken`, `OAuthClient`

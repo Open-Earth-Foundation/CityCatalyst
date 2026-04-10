@@ -33,11 +33,7 @@ const ByScopeViewSourceDrawer: React.FC<ByScopeViewProps> = ({
 
   useEffect(() => {
     if (dataSourceError) {
-      console.error("Failed to fetch data source:", {
-        error: dataSourceError,
-        sourceId,
-        inventoryId,
-      });
+      // Error handling could be implemented here if needed
     }
   }, [dataSourceError, sourceId, inventoryId]);
 

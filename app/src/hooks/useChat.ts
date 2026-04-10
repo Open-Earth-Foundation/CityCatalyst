@@ -73,7 +73,7 @@ export function useChat({ inventoryId, t }: UseChatProps) {
             setAssistantStartedResponding(false);
           },
           onWarning: (warning: string) => {
-            console.warn("Chat warning:", warning);
+            // Warning could be handled here if needed
           },
         }
       : {
@@ -95,7 +95,6 @@ export function useChat({ inventoryId, t }: UseChatProps) {
           onRequiresAction: async (event: any) => {
             // Handle function calls for legacy implementation
             // This would need the full function call handling logic
-            console.log("Requires action:", event);
           },
           onError: (error: string) => {
             // Remove empty assistant message if no response was received

@@ -36,9 +36,6 @@ const AdminOrganizationModulesPage = (props: {
     hasAccess: boolean,
   ) => {
     // TODO: implement module access update logic
-    console.log(
-      `Toggle ${moduleName} for project ${projectId} to ${hasAccess}`,
-    );
   };
   return (
     <Box>

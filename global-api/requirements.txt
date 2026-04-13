@@ -1,7 +1,7 @@
 aiohttp==3.13.*
 alembic==1.18.1
 black==26.3.1
-fastapi==0.135.2
+fastapi==0.135.3
 flake8==7.3.0
 fsspec==2026.*
 geopandas>=0.12,<1.2

@@ -206,6 +206,7 @@ async function runInterpretationInBackground(
       const shapedRows = await shapeKeyValueToRows(documentContent, {
         targetYear,
         targetCity,
+        pastMapping,
       });
       if (!shapedRows.length) {
         await setFailed(
@@ -260,7 +261,7 @@ async function runInterpretationInBackground(
     if (!detectedColumnsMatchECRFStructure(detectedColumns)) {
       const chunkSize = isCIRIS ? 200 : 100;
       const chunks = getTableShapeChunks(parsedData, chunkSize);
-      const shapeOptions = { targetYear, targetCity };
+      const shapeOptions = { targetYear, targetCity, pastMapping };
 
       let shapedRows: Awaited<ReturnType<typeof shapeTableToRows>> = [];
       try {
@@ -294,6 +295,7 @@ async function runInterpretationInBackground(
           const keyValueRows = await shapeKeyValueToRows(documentContent, {
             targetYear,
             targetCity,
+            pastMapping,
           });
           if (keyValueRows.length > 0) {
             shapedRows = keyValueRows;

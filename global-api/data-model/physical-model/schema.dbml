@@ -20,11 +20,13 @@ TableGroup modelled {
   "modelled"."gpc_methodology"
   "modelled"."gpc_sector"
   "modelled"."population"
+  "modelled"."project_portfolio"
+  "modelled"."project_summary"
   "modelled"."publisher_datasource"
 }
 
 Table "citywide_emissions" {
-  "id" varchar [pk]
+  "id" uuid [pk]
   "source_name" varchar [not null]
   "GPC_refno" varchar [not null]
   "city_name" varchar [not null]
@@ -44,7 +46,7 @@ Table "citywide_emissions" {
 }
 
 Table "datasource" {
-  "datasource_id" varchar [pk]
+  "datasource_id" uuid [pk]
   "publisher_id" varchar
   "name" varchar
   "source_type" varchar
@@ -77,7 +79,7 @@ Table "datasource" {
 }
 
 Table "regionwide_emissions" {
-  "id" varchar [pk]
+  "id" uuid [pk]
   "source_name" varchar [not null]
   "GPC_refno" varchar [not null]
   "region_name" varchar [not null]
@@ -97,12 +99,12 @@ Table "regionwide_emissions" {
 }
 
 Table "modelled"."activity_subcategory" {
-  "activity_id" varchar [pk]
+  "activity_id" uuid [pk]
   "activity_name" text
   "activity_units" text
-  "gpcmethod_id" varchar
+  "gpcmethod_id" uuid
   "activity_subcategory_type" json
-  "method_id" varchar
+  "method_id" uuid
 }
 
 Table "modelled"."cap_climate_action" {
@@ -146,7 +148,7 @@ Table "modelled"."cap_climate_action" {
 }
 
 Table "modelled"."ccra_impactchain" {
-  "id" varchar [pk]
+  "id" uuid [pk]
   "keyimpact_name" varchar
   "hazard_name" varchar
   "latest_year" integer
@@ -154,8 +156,8 @@ Table "modelled"."ccra_impactchain" {
 }
 
 Table "modelled"."ccra_impactchain_indicator" {
-  "impact_id" varchar [pk]
-  "indicator_id" varchar [pk]
+  "impact_id" uuid [pk]
+  "indicator_id" uuid [pk]
   "actor_id" varchar
   "category" varchar [pk]
   "subcategory" varchar [pk]
@@ -167,7 +169,7 @@ Table "modelled"."ccra_impactchain_indicator" {
 }
 
 Table "modelled"."ccra_indicator" {
-  "id" varchar [pk]
+  "id" uuid [pk]
   "actor_id" varchar
   "indicator_name" varchar
   "indicator_score" decimal
@@ -179,7 +181,7 @@ Table "modelled"."ccra_indicator" {
 }
 
 Table "modelled"."ccra_riskassessment" {
-  "impact_id" varchar [pk]
+  "impact_id" uuid [pk]
   "actor_id" varchar [pk]
   "risk_score" decimal
   "hazard_score" decimal
@@ -202,8 +204,8 @@ Table "modelled"."city_attribute" {
   "datasource" varchar [pk]
   "datasource_date" integer
   "attribute_category" varchar
-  "dataset_id" varchar
-  "release_id" varchar
+  "dataset_id" uuid
+  "release_id" uuid
 }
 
 Table "modelled"."city_polygon" {
@@ -221,14 +223,14 @@ Table "modelled"."city_polygon" {
   "bbox_south" varchar [not null]
   "bbox_east" varchar [not null]
   "bbox_west" varchar [not null]
-  "dataset_id" varchar
-  "release_id" varchar
+  "dataset_id" uuid
+  "release_id" uuid
 }
 
 Table "modelled"."dataset_release" {
-  "release_id" varchar [pk]
-  "publisher_id" varchar [not null]
-  "dataset_id" varchar [not null]
+  "release_id" uuid [pk]
+  "publisher_id" uuid [not null]
+  "dataset_id" uuid [not null]
   "version_label" varchar [not null]
   "released_at" date
   "retrieved_at" datetime
@@ -241,7 +243,7 @@ Table "modelled"."dataset_release" {
 }
 
 Table "modelled"."emissions" {
-  "emissions_id" varchar [pk]
+  "emissions_id" uuid [pk]
   "datasource_name" text
   "actor_id" varchar
   "city_id" text
@@ -249,10 +251,10 @@ Table "modelled"."emissions" {
   "emissions_value" float
   "emissions_year" decimal
   "emissions_units" text
-  "gpcmethod_id" varchar
+  "gpcmethod_id" uuid
   "gas_name" text
-  "emissionfactor_id" varchar
-  "activity_id" varchar
+  "emissionfactor_id" uuid
+  "activity_id" uuid
   "activity_value" text
   "spatial_granularity" text [not null]
   "geometry_type" text
@@ -261,24 +263,24 @@ Table "modelled"."emissions" {
 }
 
 Table "modelled"."emissions_factor" {
-  "emissionfactor_id" varchar [pk]
+  "emissionfactor_id" uuid [pk]
   "gas_name" text
   "emissionfactor_value" float
   "unit_denominator" text
-  "activity_id" varchar
+  "activity_id" uuid
   "datasource_name" text
   "active_from" date
   "active_to" date
   "actor_id" text
-  "publisher_id" varchar
-  "dataset_id" varchar
+  "publisher_id" uuid
+  "dataset_id" uuid
 }
 
 Table "modelled"."formula_input" {
-  "formula_input_id" varchar [pk]
-  "method_id" varchar [not null]
-  "publisher_id" varchar [not null]
-  "dataset_id" varchar [not null]
+  "formula_input_id" uuid [pk]
+  "method_id" uuid [not null]
+  "publisher_id" uuid [not null]
+  "dataset_id" uuid [not null]
   "gas_name" varchar [not null]
   "parameter_code" varchar [not null]
   "parameter_name" varchar [not null]
@@ -291,7 +293,7 @@ Table "modelled"."formula_input" {
 }
 
 Table "modelled"."ghgi_city_facility_occurance" {
-  "id" varchar [pk]
+  "id" uuid [pk]
   "locode" varchar [not null]
   "gpc_reference_number" varchar [not null]
   "facility_count" integer
@@ -301,7 +303,7 @@ Table "modelled"."ghgi_city_facility_occurance" {
 }
 
 Table "modelled"."ghgi_emission_forecast" {
-  "id" varchar [pk]
+  "id" uuid [pk]
   "actor_id" varchar
   "cluster_id" integer
   "cluster_name" json
@@ -315,7 +317,7 @@ Table "modelled"."ghgi_emission_forecast" {
 }
 
 Table "modelled"."ghgi_methodology" {
-  "method_id" varchar [pk]
+  "method_id" uuid [pk]
   "methodology_name" varchar [not null]
   "methodology_description" text
   "gpc_reference_number" varchar [not null]
@@ -332,7 +334,7 @@ Table "modelled"."global_warming_potential" {
 }
 
 Table "modelled"."gpc_methodology" {
-  "gpcmethod_id" varchar [pk]
+  "gpcmethod_id" uuid [pk]
   "methodology_name" text
   "methodology_description" text
   "gpc_reference_number" text
@@ -351,9 +353,9 @@ Table "modelled"."gpc_sector" {
 }
 
 Table "modelled"."population" {
-  "population_id" varchar [pk]
-  "publisher_id" varchar [not null]
-  "dataset_id" varchar [not null]
+  "population_id" uuid [pk]
+  "publisher_id" uuid [not null]
+  "dataset_id" uuid [not null]
   "population_value" decimal [not null]
   "year" integer [not null]
   "population_source" varchar [not null]
@@ -361,11 +363,78 @@ Table "modelled"."population" {
   "actor_id" varchar [not null]
 }
 
+Table "modelled"."project_portfolio" {
+  "project_id" uuid [pk]
+  "source_name" varchar [not null]
+  "source_project_id" varchar [not null]
+  "source_project_url" text
+  "project_name" text [not null]
+  "project_description" text
+  "project_status" varchar
+  "project_type" varchar
+  "country_code" varchar
+  "country_name" varchar
+  "world_region_name" varchar
+  "approval_at" datetime
+  "closing_at" datetime
+  "total_commitment_amount" decimal
+  "total_project_cost_amount" decimal
+  "currency_code" varchar
+  "sector_name" text
+  "theme_name" text
+  "instrument_type" varchar
+  "borrower_name" text
+  "implementing_agency_name" text
+  "release_id" uuid [not null]
+  "created_at" datetime [not null]
+  "updated_at" datetime [not null]
+}
+
+Table "modelled"."project_summary" {
+  "project_summary_id" uuid [pk]
+  "project_id" uuid [not null]
+  "source_project_id" varchar [not null]
+  "project_title" text [not null]
+  "funder_id" varchar [not null]
+  "funder_name" varchar [not null]
+  "country_name" varchar
+  "country_code" varchar
+  "region_name" varchar
+  "city_name" varchar
+  "project_type" varchar
+  "sector_name" varchar
+  "subsector_name" varchar
+  "approval_at" datetime
+  "closing_at" datetime
+  "project_status" varchar
+  "total_budget_amount_usd" decimal
+  "primary_funder_amount_usd" decimal
+  "financing_instrument" varchar
+  "project_summary_text" text
+  "lessons_learned" text
+  "synthesis_notes" text
+  "site_context" json
+  "financing_structure" json
+  "data_completeness" json
+  "actions_implemented" json
+  "key_risks" json
+  "evidence_anchors" json
+  "secondary_project_types" json
+  "co_financiers" json
+  "co_benefits" json
+  "key_interventions" json
+  "replicability_conditions" json
+  "model_metadata" json
+  "release_id" uuid [not null]
+  "created_at" datetime [not null]
+  "updated_at" datetime [not null]
+}
+
 Table "modelled"."publisher_datasource" {
-  "publisher_id" varchar [pk]
+  "publisher_id" uuid [pk]
   "publisher_name" varchar [not null]
   "publisher_url" varchar [not null]
-  "dataset_id" varchar [pk]
+  "dataset_id" uuid [pk]
   "datasource_name" varchar [not null]
   "dataset_name" varchar [not null]
   "dataset_url" varchar [not null]
@@ -375,10 +444,13 @@ Table "modelled"."publisher_datasource" {
 
 Ref: "modelled"."dataset_release"."publisher_id" > "modelled"."publisher_datasource"."publisher_id"
 Ref: "modelled"."dataset_release"."dataset_id" > "modelled"."publisher_datasource"."dataset_id"
-Ref: "modelled"."formula_input"."gpc_reference_number" > "modelled"."gpc_sector"."gpc_reference_number"
 Ref: "modelled"."formula_input"."method_id" > "modelled"."ghgi_methodology"."method_id"
 Ref: "modelled"."formula_input"."publisher_id" > "modelled"."publisher_datasource"."publisher_id"
 Ref: "modelled"."formula_input"."dataset_id" > "modelled"."publisher_datasource"."dataset_id"
+Ref: "modelled"."formula_input"."gpc_reference_number" > "modelled"."gpc_sector"."gpc_reference_number"
 Ref: "modelled"."ghgi_methodology"."gpc_reference_number" > "modelled"."gpc_sector"."gpc_reference_number"
 Ref: "modelled"."population"."publisher_id" > "modelled"."publisher_datasource"."publisher_id"
 Ref: "modelled"."population"."dataset_id" > "modelled"."publisher_datasource"."dataset_id"
+Ref: "modelled"."project_portfolio"."release_id" > "modelled"."dataset_release"."release_id"
+Ref: "modelled"."project_summary"."release_id" > "modelled"."dataset_release"."release_id"
+Ref: "modelled"."project_summary"."project_id" > "modelled"."project_portfolio"."project_id"

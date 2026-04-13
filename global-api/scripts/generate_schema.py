@@ -41,7 +41,7 @@ def _normalize_sa_type(col_type: Any) -> Any:
     try:
         from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY as PG_ARRAY
         if isinstance(col_type, UUID):
-            return sa.String(36)
+            return col_type
         if isinstance(col_type, JSONB):
             return sa.JSON()
         if isinstance(col_type, PG_ARRAY):
@@ -51,7 +51,7 @@ def _normalize_sa_type(col_type: Any) -> Any:
     # Handle dialect-qualified types accessed via sa.dialects.postgresql.*
     type_cls_name = type(col_type).__name__
     if type_cls_name in ("UUID",):
-        return sa.String(36)
+        return col_type
     if type_cls_name in ("JSONB",):
         return sa.JSON()
     if type_cls_name in ("ARRAY",):
@@ -79,6 +79,7 @@ def _sa_type_to_mermaid(col_type: Any) -> str:
         "JSON": "json",
         "JSONB": "json",
         "UUID": "string",
+        "Uuid": "string",
         "ARRAY": "string",
         "LargeBinary": "string",
         "Enum": "string",
@@ -104,6 +105,7 @@ def _sa_type_to_dbml(col_type: Any) -> str:
         "Numeric": "decimal",
         "JSON": "json",
         "UUID": "uuid",
+        "Uuid": "uuid",
         "LargeBinary": "blob",
         "NullType": "varchar",
     }
@@ -136,7 +138,7 @@ _SQL_RAW_TYPE_MAP: Dict[str, Any] = {
     "timestamp without time zone": sa.DateTime,
     "json": sa.JSON,
     "jsonb": sa.JSON,
-    "uuid": sa.String,
+    "uuid": sa.UUID,
     "char": sa.String,
 }
 

@@ -22,6 +22,7 @@ from routes.city_context import api_router as city_context_route
 from routes.city_attribute import api_router as city_attributes_route
 from routes.get_climate_actions import api_router as climate_actions_route
 from routes.population_endpoint import api_router as population_route
+from routes.projects import api_router as projects_route
 from routes.emissionfactor_publisher_endpoint import api_router as emissionfactor_publisher_route
 from routes.emissionfactor_methodology_endpoint import api_router as emissionfactor_methodology_route
 from routes.emissionfactor_datasource_endpoint import api_router as emissionfactor_datasource_route
@@ -234,6 +235,13 @@ app.include_router(
 app.include_router(
     climate_actions_route,
     tags=["Climate Actions"],
+)
+
+## Endpoints for Projects
+
+app.include_router(
+    projects_route,
+    tags=["Projects"],
 )
 
 """

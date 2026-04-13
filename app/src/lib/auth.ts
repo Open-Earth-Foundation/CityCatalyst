@@ -73,7 +73,6 @@ export const authOptions: NextAuthOptions = {
           if (!db.initialized) {
             await db.initialize();
           }
-          const users = await db.models.User.findAll();
           user = await db.models.User.findOne({
             where: { email: credentials.email.toLowerCase() },
           });

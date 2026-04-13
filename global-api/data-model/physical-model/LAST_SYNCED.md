@@ -2,6 +2,6 @@
 
 | Field | Value |
 |---|---|
-| Generated at | 2026-04-04 11:19 UTC |
-| Alembic revision | `971397f30dd9` |
+| Generated at | 2026-04-13 09:09 UTC |
+| Alembic revision | `5f3e9f2b1c7d` |
 | Regenerate | `python scripts/generate_schema.py` |

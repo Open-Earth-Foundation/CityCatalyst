@@ -654,6 +654,33 @@ export default class FormatAdapterService {
     };
   }
 
+  // ── Public: header fingerprinting ─────────────────────────────────────────
+
+  /**
+   * Derive a stable, human-readable lookup key from a file's column headers.
+   * Each header is lowercased, trimmed, and stripped of leading/trailing
+   * punctuation before being sorted and pipe-joined.
+   *
+   * e.g. ["Year (Calendar Year)", "GHG Emissions", "Sector"] → "ghg_emissions|sector|year_calendar_year"
+   *
+   * The key is used as the unique identifier in ImportMappingFeedback
+   * (together with cityId) so that past approved mappings can be retrieved
+   * and injected into future AI prompts for files with the same shape.
+   */
+  public static headerKey(headers: string[]): string {
+    return headers
+      .map((h) =>
+        h
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, "_")
+          .replace(/^_+|_+$/g, ""),
+      )
+      .filter(Boolean)
+      .sort()
+      .join("|");
+  }
+
   // ── Private: shared utilities ──────────────────────────────────────────────
 
   /** Find column index using FileParserService's fuzzy matching. */

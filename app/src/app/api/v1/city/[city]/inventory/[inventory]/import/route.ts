@@ -160,6 +160,7 @@ async function runUploadProcessingInBackground(
           detectedColumns: validationResult.detectedColumns,
           adapterType: "near-ecrf",
           isMultiCity: validationResult.isMultiCity ?? false,
+          headerKey: validationResult.headerKey,
         },
         rowCount: rows.length,
         mappingConfiguration: { rows },
@@ -191,6 +192,7 @@ async function runUploadProcessingInBackground(
           isBIOMATEC: validationResult.isBIOMATEC ?? false,
           adapterType: validationResult.adapterType,
           isMultiCity: validationResult.isMultiCity ?? false,
+          headerKey: validationResult.headerKey,
         },
         lastUpdated: new Date(),
       });

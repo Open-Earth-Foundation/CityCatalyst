@@ -25,6 +25,13 @@ export interface ValidationResult {
   adapterType?: AdapterType;
   /** True when the file contains data for multiple cities/organizations. */
   isMultiCity?: boolean;
+  /**
+   * Stable lookup key derived from the file's column headers.
+   * Plain sorted pipe-joined normalised string — readable and debuggable.
+   * e.g. "department|ghg_emissions|protocol|sector|source|year"
+   * Present for all tabular files (xlsx/csv); absent for PDFs.
+   */
+  headerKey?: string;
 }
 
 /**
@@ -150,6 +157,7 @@ export default class FileValidatorService {
     let isBIOMATEC = false;
     let adapterType: AdapterType | undefined;
     let isMultiCity: boolean | undefined;
+    let headerKey: string | undefined;
 
     try {
       // Convert file to buffer
@@ -195,6 +203,13 @@ export default class FileValidatorService {
         warnings.push(...structureValidation.warnings);
       }
 
+      // Compute header key for all tabular files (used by feedback loop)
+      if (parsedData.primarySheet && basicValidation.fileType !== "pdf") {
+        headerKey = FormatAdapterService.headerKey(
+          parsedData.primarySheet.headers,
+        );
+      }
+
       // Detect and map required columns
       if (parsedData.primarySheet) {
         const columnMapping = this.detectRequiredColumns(
@@ -220,6 +235,7 @@ export default class FileValidatorService {
       isBIOMATEC: isBIOMATEC || undefined,
       adapterType,
       isMultiCity: isMultiCity || undefined,
+      headerKey,
     };
   }
 

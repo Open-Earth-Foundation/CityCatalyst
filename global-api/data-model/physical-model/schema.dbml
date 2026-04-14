@@ -19,6 +19,7 @@ TableGroup modelled {
   "modelled"."global_warming_potential"
   "modelled"."gpc_methodology"
   "modelled"."gpc_sector"
+  "modelled"."policy_signals"
   "modelled"."population"
   "modelled"."project_portfolio"
   "modelled"."project_summary"
@@ -352,6 +353,24 @@ Table "modelled"."gpc_sector" {
   "gpc_version" varchar [not null]
 }
 
+Table "modelled"."policy_signals" {
+  "policy_signal_id" uuid [pk]
+  "location_code" varchar
+  "location_name" text [not null]
+  "location_scope" varchar [not null]
+  "signal_type" varchar [not null]
+  "signal_relation" varchar [not null]
+  "signal_strength" varchar
+  "signal_subject" text [not null]
+  "gpc_sector" varchar
+  "signal_summary" text
+  "key_numeric" json
+  "evidence_anchors" json
+  "release_id" uuid [not null]
+  "created_at" datetime [not null]
+  "updated_at" datetime [not null]
+}
+
 Table "modelled"."population" {
   "population_id" uuid [pk]
   "publisher_id" uuid [not null]
@@ -449,8 +468,9 @@ Ref: "modelled"."formula_input"."publisher_id" > "modelled"."publisher_datasourc
 Ref: "modelled"."formula_input"."dataset_id" > "modelled"."publisher_datasource"."dataset_id"
 Ref: "modelled"."formula_input"."gpc_reference_number" > "modelled"."gpc_sector"."gpc_reference_number"
 Ref: "modelled"."ghgi_methodology"."gpc_reference_number" > "modelled"."gpc_sector"."gpc_reference_number"
+Ref: "modelled"."policy_signals"."release_id" > "modelled"."dataset_release"."release_id"
 Ref: "modelled"."population"."publisher_id" > "modelled"."publisher_datasource"."publisher_id"
 Ref: "modelled"."population"."dataset_id" > "modelled"."publisher_datasource"."dataset_id"
 Ref: "modelled"."project_portfolio"."release_id" > "modelled"."dataset_release"."release_id"
-Ref: "modelled"."project_summary"."release_id" > "modelled"."dataset_release"."release_id"
 Ref: "modelled"."project_summary"."project_id" > "modelled"."project_portfolio"."project_id"
+Ref: "modelled"."project_summary"."release_id" > "modelled"."dataset_release"."release_id"

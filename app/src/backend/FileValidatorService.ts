@@ -204,7 +204,7 @@ export default class FileValidatorService {
       }
 
       // Compute header key for all tabular files (used by feedback loop)
-      if (parsedData.primarySheet && basicValidation.fileType !== "pdf") {
+      if (parsedData.primarySheet) {
         headerKey = FormatAdapterService.headerKey(
           parsedData.primarySheet.headers,
         );

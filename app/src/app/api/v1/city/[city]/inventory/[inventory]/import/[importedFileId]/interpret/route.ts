@@ -46,6 +46,7 @@ import FileParserService, {
   type ParsedFileData,
   type ParsedSheet,
 } from "@/backend/FileParserService";
+import FormatAdapterService, { type AdapterType } from "@/backend/FormatAdapterService";
 import ECRFImportService from "@/backend/ECRFImportService";
 import {
   detectedColumnsMatchECRFStructure,
@@ -497,22 +498,61 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     throw new createHttpError.BadRequest("File has no recognizable header row");
   }
 
-  const validationResults = (importedFile.validationResults ?? {}) as { isCIRIS?: boolean };
+  const validationResults = (importedFile.validationResults ?? {}) as {
+    isCIRIS?: boolean;
+    adapterType?: string;
+  };
   const isCIRIS = validationResults.isCIRIS === true;
-
-  const documentContent = serializeSheetsForInterpretation(parsedData, 100, isCIRIS);
+  const adapterType = validationResults.adapterType as AdapterType | undefined;
 
   const targetYear =
     inventory.year != null && Number.isInteger(Number(inventory.year))
       ? Number(inventory.year)
       : undefined;
 
+  // For Adapter A/B/C files: normalize raw ParsedFileData into a clean flat table
+  // before passing to the AI. This lets the AI focus on GPC semantic mapping
+  // rather than untangling structural formatting.
+  let effectiveParsedData = parsedData;
+  if (adapterType && adapterType !== "near-ecrf") {
+    try {
+      const normalized = FormatAdapterService.normalize(
+        parsedData,
+        adapterType,
+        targetYear,
+      );
+      const normalizedRowCount = normalized.primarySheet?.rows.length ?? 0;
+      if (normalizedRowCount > 0) {
+        effectiveParsedData = normalized;
+        logger.info(
+          { importedFileId, adapterType, normalizedRows: normalizedRowCount },
+          "Format adapter normalization applied before AI interpretation",
+        );
+      } else {
+        // Normalization produced nothing — fall back to raw data so AI still gets something
+        logger.warn(
+          { importedFileId, adapterType, targetYear },
+          "Adapter normalization returned 0 rows; falling back to raw parsed data",
+        );
+      }
+    } catch (normalizeErr) {
+      logger.warn(
+        { err: normalizeErr, importedFileId, adapterType },
+        "Format adapter normalization failed; proceeding with raw parsed data",
+      );
+    }
+  }
+
+  const documentContent = serializeSheetsForInterpretation(effectiveParsedData, 100, isCIRIS);
+
   const city = await db.models.City.findByPk(cityId, {
     attributes: ["name"],
   });
   const targetCity = city?.name?.trim() || undefined;
 
-  const keyValueFormat = isKeyValueFormat(primarySheet.headers);
+  const keyValueFormat = isKeyValueFormat(
+    effectiveParsedData.primarySheet?.headers ?? primarySheet.headers,
+  );
 
   runInterpretationInBackground({
     cityId,
@@ -523,7 +563,7 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     targetCity,
     keyValueFormat,
     isCIRIS,
-    parsedData,
+    parsedData: effectiveParsedData,
   }).catch((err) =>
     logger.error({ err, importedFileId }, "Interpret background failed"),
   );

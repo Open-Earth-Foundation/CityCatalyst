@@ -7,21 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from settings import settings
 from utils.helpers import get_or_create_log_file
 from routes.health import api_router as health_check_route
-from routes.city_locode_endpoint_climatetrace import (
-    api_router as climatetrace_city_locode_route,
-)
 from routes.city_boundaries_endpoint import api_router as city_boundaries_route
-from routes.city_locode_endpoint_crosswalk import (
-    api_router as crosswalk_city_locode_route,
-)
-from routes.city_locode_endpoint_edgar import api_router as edgar_city_locode_route
 from routes.catalogue_endpoint import api_router as catalouge_route
 from routes.catalogue_last_update_endpoint import (
     api_router as catalogue_last_update_endpoint,
 )
-from routes.city_locode_endpoint_ghgrp import api_router as ghgrp_city_locode_route
 from routes.region_code_endpoint import api_router as region_code_endpoint_route
-from routes.country_code_endpoint import api_router as country_code_endpoint_route
 from routes.citywide_emission_endpoint import api_router as citywide_route
 from routes.ghgi_emissions import api_router as actor_emissions_route
 from routes.ccra_assessment import api_router as ccra_assessment
@@ -31,13 +22,12 @@ from routes.city_context import api_router as city_context_route
 from routes.city_attribute import api_router as city_attributes_route
 from routes.get_climate_actions import api_router as climate_actions_route
 from routes.population_endpoint import api_router as population_route
+from routes.projects import api_router as projects_route
 from routes.emissionfactor_publisher_endpoint import api_router as emissionfactor_publisher_route
 from routes.emissionfactor_methodology_endpoint import api_router as emissionfactor_methodology_route
 from routes.emissionfactor_datasource_endpoint import api_router as emissionfactor_datasource_route
 from routes.emissionfactor_emissionfactor_datasource_endpoint import api_router as emissionfactor_emissionfactor_datasource_route
 from routes.emissionfactor_emissionsfactor_endpoint import api_router as emissionfactor_emissionsfactor_route
-from routes.nbs_geospatial_endpoint import api_router as nbs_geospatial_route
-
 # Formula Input endpoints
 from routes.formulainput_publisher_endpoint import api_router as formulainput_publisher_route
 from routes.formulainput_methodology_endpoint import api_router as formulainput_methodology_route
@@ -173,31 +163,6 @@ app.include_router(
 )
 
 app.include_router(
-    crosswalk_city_locode_route,
-    tags=["GHGI Emissions"],
-)
-
-app.include_router(
-    edgar_city_locode_route,
-    tags=["GHGI Emissions"],
-)
-
-app.include_router(
-    climatetrace_city_locode_route,
-    tags=["GHGI Emissions"],
-)
-
-app.include_router(
-    ghgrp_city_locode_route,
-    tags=["GHGI Emissions"],
-)
-
-app.include_router(
-    country_code_endpoint_route,
-    tags=["GHGI Emissions"],
-)
-
-app.include_router(
     citywide_route,
     tags=["GHGI Emissions"],
 )
@@ -272,10 +237,11 @@ app.include_router(
     tags=["Climate Actions"],
 )
 
-## Endpoints for NBS Geospatial
+## Endpoints for Projects
+
 app.include_router(
-    nbs_geospatial_route,
-    tags=["NBS Geospatial"],
+    projects_route,
+    tags=["Projects"],
 )
 
 """

@@ -137,7 +137,7 @@ export const api = createApi({
         transformResponse: (response: { data: CityAndYearsResponse[] }) =>
           response.data.map(({ city, years }) => ({
             city,
-            years: years.sort((a, b) => b.year - a.year),
+            years: years.sort((a, b) => a.year - b.year),
           })),
         providesTags: ["CitiesAndInventories"],
       }),

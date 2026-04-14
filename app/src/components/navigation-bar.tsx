@@ -106,28 +106,6 @@ export function NavigationBar({
     router.replace(newPath);
   };
 
-  // Checks if language is set in cookie and updates URL if not
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (typeof window !== "undefined") {
-        const handlePopState = () => {
-          const cookieLanguage = Cookies.get("i18next");
-          if (cookieLanguage) {
-            const currentPath = window.location.pathname;
-            // Your logic here
-          }
-        };
-
-        window.addEventListener("popstate", handlePopState);
-
-        // Cleanup the event listener on component unmount
-        return () => {
-          window.removeEventListener("popstate", handlePopState);
-        };
-      }
-    }
-  }, []);
-
   const { data: session, status } = useSession();
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -136,21 +114,21 @@ export function NavigationBar({
   // Memoize city and inventory IDs to ensure they update when route changes
   const currentInventoryId = useMemo(
     () => inventoryIdFromRoute ?? userInfo?.defaultInventoryId,
-    [inventoryIdFromRoute, userInfo?.defaultInventoryId, pathname],
+    [inventoryIdFromRoute, userInfo?.defaultInventoryId],
   );
   const currentCityId = useMemo(
-    () => cityIdFromRoute ?? userInfo?.defaultCityId,
-    [cityIdFromRoute, userInfo?.defaultCityId, pathname],
+    () => cityIdFromRoute ?? userInfo?.defaultCityId ?? undefined,
+    [cityIdFromRoute, userInfo?.defaultCityId],
   );
 
   // Memoize paths to recompute when pathname or IDs change
   const dashboardPath = useMemo(
     () => getDashboardPath(lng, currentCityId ?? "", currentInventoryId ?? ""),
-    [lng, currentCityId, currentInventoryId, pathname],
+    [lng, currentCityId, currentInventoryId],
   );
   const homePath = useMemo(
     () => getHomePath(lng, currentCityId ?? "", currentInventoryId ?? ""),
-    [lng, currentCityId, currentInventoryId, pathname],
+    [lng, currentCityId, currentInventoryId],
   );
   const { setTheme } = useTheme();
 
@@ -526,8 +504,11 @@ export function NavigationBar({
         {hasFeatureFlag(FeatureFlags.JN_ENABLED) && (
           <JNDrawer
             lng={lng}
-            currentInventoryId={currentInventoryId as string}
-            organizationId={(organization?.organizationId ?? userAccessStatus?.organizationId) as string}
+            currentCityId={currentCityId}
+            organizationId={
+              (organization?.organizationId ??
+                userAccessStatus?.organizationId) as string
+            }
             isOpen={isDrawerOpen}
             onClose={() => setIsDrawerOpen(false)}
             onOpenChange={({ open }) => setIsDrawerOpen(open)}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { useTranslation } from "@/i18n/client";
 import { languages } from "@/i18n/settings";
 import {
@@ -27,7 +27,7 @@ import {
   MdOutlineMenu,
 } from "react-icons/md";
 import Cookies from "js-cookie";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { api, useGetUserAccessStatusQuery } from "@/services/api";
 import {
   MenuContent,
@@ -81,8 +81,6 @@ export function NavigationBar({
     inventoryId: inventoryIdFromRoute,
     pathname,
   } = useRouteParams();
-  const fullPath = pathname.replace(/^\/[A-Za-z]+/, "");
-
   const { data: inventory, isLoading: isInventoryLoading } =
     api.useGetInventoryQuery(inventoryIdFromRoute ?? "default");
 

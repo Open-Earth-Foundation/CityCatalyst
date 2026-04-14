@@ -24,6 +24,6 @@ nest_asyncio==1.6.*
 xlrd==2.0.*
 dns-cache==0.3.*
 openpyxl==3.1.*
-pytest-cov==7.0.0
+pytest-cov==7.1.0
 httpx==0.28.1
 pyproj==3.7.*

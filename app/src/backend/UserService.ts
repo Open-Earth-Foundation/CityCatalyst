@@ -49,12 +49,14 @@ export default class UserService {
     cityId: string,
     session: AppSession | null,
     isReadOnly: boolean = false,
+    include: Includeable[] = [],
   ): Promise<City> {
     const isAdmin = session?.user?.role === Roles.Admin;
 
     const city = await db.models.City.findOne({
       where: { cityId },
       include: [
+        ...include,
         {
           model: db.models.User,
           as: "users",

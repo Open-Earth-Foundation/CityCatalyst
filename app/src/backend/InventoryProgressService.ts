@@ -105,15 +105,13 @@ export default class InventoryProgressService {
               );
             const subCategoryCount = subSector.subCategories.filter(
               (subcategory) => {
-                const referenceNumber = subcategory.referenceNumber as string;
-                const parts = referenceNumber?.split(".");
-                const lastItem =
-                  parts && parts.length > 0
-                    ? parts[parts.length - 1]
-                    : undefined;
-                return possibleScopesForInventoryType.includes(
-                  parseInt(lastItem as string),
-                );
+                const scope = subcategory.scopeName;
+
+                if (!scope) {
+                  return false;
+                }
+
+                return possibleScopesForInventoryType.includes(parseInt(scope));
               },
             ).length;
 
@@ -135,7 +133,12 @@ export default class InventoryProgressService {
         (inventoryValue) => sector.sectorId === inventoryValue.sectorId,
       );
 
-      let sectorCounts = { thirdParty: 0, uploaded: 0, reasonNE: 0, reasonNO: 0 };
+      let sectorCounts = {
+        thirdParty: 0,
+        uploaded: 0,
+        reasonNE: 0,
+        reasonNO: 0,
+      };
       if (inventoryValues) {
         sectorCounts = inventoryValues.reduce(
           (acc, inventoryValue) => {

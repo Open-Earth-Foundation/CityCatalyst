@@ -1277,5 +1277,6 @@
   "water-transportation-outside-fuel-type": "Tipo de combustible",
   "not-occurring": "No Ocurre",
   "not-estimated-progress": "No Estimado",
-  "uncategorized": "Sin categorizar"
+  "uncategorized": "Sin categorizar",
+  "legend": "Leyenda"
 }

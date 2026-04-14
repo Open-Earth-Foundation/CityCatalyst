@@ -1,0 +1,72 @@
+---
+description: Python FastAPI patterns for global-api, climate-advisor, hiap, hiap-meed services
+globs: global-api/**/*.py,climate-advisor/**/*.py,hiap/**/*.py,hiap-meed/**/*.py
+alwaysApply: false
+---
+
+# Python FastAPI Services
+
+## Services Overview
+
+| Service | Path | DB | Key Libs |
+|---------|------|------|----------|
+| global-api | `global-api/` | PostgreSQL (SQLAlchemy + Alembic) | GeoPandas, OSMnx, rioxarray |
+| climate-advisor | `climate-advisor/service/` | PostgreSQL + pgvector | LangChain, LangGraph, OpenAI |
+| hiap | `hiap/` | — | LangChain, ChromaDB, XGBoost, scikit-learn |
+| hiap-meed | `hiap-meed/` | — | FastAPI minimal |
+
+## global-api Conventions
+
+- **ORM**: SQLAlchemy with Alembic migrations (`global-api/migrations/`)
+- **Entry**: `global-api/main.py` with Uvicorn
+- **Linting**: black, flake8, mypy
+- **Tests**: pytest + pytest-cov
+- **Deps**: `global-api/requirements.txt`
+
+## climate-advisor Conventions
+
+- **Architecture**: RAG agents with LangChain/LangGraph
+- **Vector store**: pgvector (PostgreSQL extension)
+- **Auth**: JWT validation + service-to-service via `X-Service-Name`/`X-Service-Key`
+- **Streaming**: SSE (Server-Sent Events)
+- **Deps**: `climate-advisor/service/requirements.txt`
+
+## hiap / hiap-meed Conventions
+
+- **Package manager**: `uv` with `pyproject.toml` + `uv.lock`
+- **Tests**: pytest
+- **Deployment**: Kubernetes (`k8s/` subdirectory)
+
+## Common Patterns
+
+```python
+from fastapi import FastAPI, HTTPException, Depends
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class MyRequest(BaseModel):
+    name: str
+    value: float
+
+@app.post("/v1/endpoint")
+async def my_endpoint(request: MyRequest):
+    try:
+        result = process(request)
+        return {"data": result}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+```
+
+## Running Locally
+
+```bash
+# global-api
+cd global-api && pip install -r requirements.txt && python main.py
+
+# hiap
+cd hiap && uv sync && uv run uvicorn app.main:app --reload
+
+# hiap-meed
+cd hiap-meed && uv sync && uv run uvicorn app.main:app --reload
+```

@@ -1,0 +1,110 @@
+---
+description: Sequelize model, migration, and seed patterns for PostgreSQL
+globs: app/src/models/**/*.ts,app/migrations/**/*.cjs,app/seeders/**/*.cjs
+alwaysApply: false
+---
+
+# Sequelize Database Patterns
+
+## Model Definition
+
+Models are defined as classes extending `Model` in `src/models/`:
+
+```typescript
+// src/models/MyEntity.ts
+import { DataTypes, Model, Sequelize } from "sequelize";
+
+export interface MyEntityAttributes {
+  entityId: string;
+  name: string;
+  createdAt?: Date;
+}
+export interface MyEntityCreationAttributes extends MyEntityAttributes {}
+
+export class MyEntity
+  extends Model<MyEntityAttributes, MyEntityCreationAttributes>
+  implements MyEntityAttributes
+{
+  declare entityId: string;
+  declare name: string;
+  declare createdAt: Date;
+
+  static initModel(sequelize: Sequelize): typeof MyEntity {
+    MyEntity.init(
+      {
+        entityId: { type: DataTypes.UUID, primaryKey: true, defaultValue: DataTypes.UUIDV4 },
+        name: { type: DataTypes.STRING(255), allowNull: false },
+      },
+      { sequelize, tableName: "MyEntity", timestamps: true },
+    );
+    return MyEntity;
+  }
+}
+```
+
+## Registering Models
+
+After creating a model, register it in `src/models/init-models.ts`:
+
+1. Import the model class and its attribute types
+2. Add to `initModels()` function with `_MyEntity.initModel(sequelize)`
+3. Define associations if needed (belongsTo, hasMany, etc.)
+4. Re-export attribute types
+
+## Database Access
+
+```typescript
+import { db } from "@/models";
+
+// Direct model usage
+const inventory = await db.models.Inventory.findByPk(id);
+const cities = await db.models.City.findAll({ where: { projectId } });
+
+// With associations
+const data = await db.models.Inventory.findByPk(id, {
+  include: [{ model: db.models.City, as: "city" }],
+});
+```
+
+## Migration Template
+
+Migrations are `.cjs` files in `app/migrations/`:
+
+```javascript
+// migrations/YYYYMMDDHHMMSS-add-my-entity.cjs
+"use strict";
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable("MyEntity", {
+      entity_id: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        primaryKey: true,
+      },
+      name: { type: Sequelize.STRING(255), allowNull: false },
+      created_at: { type: Sequelize.DATE, defaultValue: Sequelize.fn("NOW") },
+    });
+  },
+  async down(queryInterface) {
+    await queryInterface.dropTable("MyEntity");
+  },
+};
+```
+
+## Commands
+
+```bash
+npm run db:migrate          # Run pending migrations
+npm run db:migrate:undo     # Undo last migration
+npm run db:gen-migration    # Generate migration file
+npm run db:seed             # Run seeders
+```
+
+## Key Models (domain)
+
+Core: `Organization`, `Project`, `City`, `User`, `Inventory`
+GPC: `Sector`, `SubSector`, `SubCategory`, `Scope`, `ReportingLevel`
+Data: `InventoryValue`, `ActivityValue`, `GasValue`, `EmissionsFactor`, `DataSource`
+Planning: `ActionPlan`, `HighImpactActionRanking`

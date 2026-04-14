@@ -151,6 +151,14 @@ type InterpretBackgroundPayload = {
   /** When true, use CIRIS prompt and full ECRF-like schema; extract all rows. */
   isCIRIS: boolean;
   parsedData: ParsedFileData;
+  /**
+   * Past approved mapping for this city × header fingerprint (if any).
+   * Injected into the AI prompt as a warm-start hint.
+   */
+  pastMapping?: {
+    columnMapping: Record<string, string>;
+    exampleRows: Record<string, unknown>[];
+  } | null;
 };
 
 async function runInterpretationInBackground(
@@ -166,6 +174,7 @@ async function runInterpretationInBackground(
     keyValueFormat,
     isCIRIS,
     parsedData,
+    pastMapping,
   } = payload;
 
   const importedFile = await db.models.ImportedInventoryFile.findOne({
@@ -197,6 +206,7 @@ async function runInterpretationInBackground(
       const shapedRows = await shapeKeyValueToRows(documentContent, {
         targetYear,
         targetCity,
+        pastMapping,
       });
       if (!shapedRows.length) {
         await setFailed(
@@ -251,7 +261,7 @@ async function runInterpretationInBackground(
     if (!detectedColumnsMatchECRFStructure(detectedColumns)) {
       const chunkSize = isCIRIS ? 200 : 100;
       const chunks = getTableShapeChunks(parsedData, chunkSize);
-      const shapeOptions = { targetYear, targetCity };
+      const shapeOptions = { targetYear, targetCity, pastMapping };
 
       let shapedRows: Awaited<ReturnType<typeof shapeTableToRows>> = [];
       try {
@@ -285,6 +295,7 @@ async function runInterpretationInBackground(
           const keyValueRows = await shapeKeyValueToRows(documentContent, {
             targetYear,
             targetCity,
+            pastMapping,
           });
           if (keyValueRows.length > 0) {
             shapedRows = keyValueRows;
@@ -501,9 +512,11 @@ export const POST = apiHandler(async (_req, { session, params }) => {
   const validationResults = (importedFile.validationResults ?? {}) as {
     isCIRIS?: boolean;
     adapterType?: string;
+    headerKey?: string;
   };
   const isCIRIS = validationResults.isCIRIS === true;
   const adapterType = validationResults.adapterType as AdapterType | undefined;
+  const headerKey = validationResults.headerKey as string | undefined;
 
   const targetYear =
     inventory.year != null && Number.isInteger(Number(inventory.year))
@@ -554,6 +567,32 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     effectiveParsedData.primarySheet?.headers ?? primarySheet.headers,
   );
 
+  // Look up any previously approved mapping for this city × header fingerprint.
+  // If found, it will be injected into the AI prompt as a warm-start hint.
+  let pastMapping: InterpretBackgroundPayload["pastMapping"] = null;
+  if (headerKey) {
+    try {
+      const feedback = await db.models.ImportMappingFeedback.findOne({
+        where: { cityId, headerKey },
+      });
+      if (feedback) {
+        pastMapping = {
+          columnMapping: feedback.columnMapping,
+          exampleRows: feedback.exampleRows,
+        };
+        logger.info(
+          { importedFileId, cityId, headerKey },
+          "Past mapping feedback found — will inject into AI prompt",
+        );
+      }
+    } catch (err) {
+      logger.warn(
+        { err, cityId, headerKey },
+        "Failed to look up mapping feedback (non-fatal)",
+      );
+    }
+  }
+
   runInterpretationInBackground({
     cityId,
     inventoryId,
@@ -564,6 +603,7 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     keyValueFormat,
     isCIRIS,
     parsedData: effectiveParsedData,
+    pastMapping,
   }).catch((err) =>
     logger.error({ err, importedFileId }, "Interpret background failed"),
   );

@@ -58,6 +58,7 @@ import ECRFImportService, {
   type ECRFRowData,
 } from "@/backend/ECRFImportService";
 import InventoryImportService from "@/backend/InventoryImportService";
+import FormatAdapterService from "@/backend/FormatAdapterService";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
@@ -67,6 +68,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { logger } from "@/services/logger";
 import { Op } from "sequelize";
+import { v4 as uuidv4 } from "uuid";
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 
 const approveImportSchema = z.object({
@@ -102,6 +104,99 @@ function applyPdfFieldOverrides(
     }
   }
   return out;
+}
+
+/**
+ * Derive a column→field mapping from the raw file headers and the approved ExtractedRow[] set.
+ * For each ExtractedRow field that has a non-null value, we try to find which original header
+ * most likely maps to it by checking if the normalised header contains the field name substring.
+ * This is best-effort; the AI prompt hint is used only as a warm-start, not a hard constraint.
+ */
+function deriveColumnMapping(
+  headers: string[],
+  rows: ExtractedRow[],
+): Record<string, string> {
+  const FIELD_HINTS: Array<[keyof ExtractedRow, string[]]> = [
+    ["sector", ["sector"]],
+    ["subsector", ["subsector", "sub-sector", "category"]],
+    ["scope", ["scope"]],
+    ["totalCO2e", ["co2e", "emission", "ghg", "total"]],
+    ["co2", ["co2"]],
+    ["ch4", ["ch4"]],
+    ["n2o", ["n2o"]],
+    ["gpcRefNo", ["gpc", "reference", "ref"]],
+    ["source", ["source", "fuel", "data source"]],
+    ["activityAmount", ["activity", "amount", "value", "quantity"]],
+    ["activityUnit", ["unit"]],
+    ["year", ["year"]],
+  ];
+
+  const mapping: Record<string, string> = {};
+  const usedHeaders = new Set<string>();
+
+  for (const [field, hints] of FIELD_HINTS) {
+    const hasValues = rows.some((r) => r[field] != null);
+    if (!hasValues) continue;
+
+    const matched = headers.find(
+      (h) =>
+        !usedHeaders.has(h) &&
+        hints.some((hint) => h.toLowerCase().includes(hint)),
+    );
+    if (matched) {
+      mapping[matched] = field as string;
+      usedHeaders.add(matched);
+    }
+  }
+
+  return mapping;
+}
+
+/**
+ * Persist approved column mapping + example rows for the given city × header key.
+ * Uses upsert so re-uploads of the same file structure update existing feedback.
+ */
+async function persistMappingFeedback(args: {
+  cityId: string;
+  headerKey: string;
+  adapterType?: string;
+  columnMapping: Record<string, string>;
+  exampleRows: Record<string, unknown>[];
+}): Promise<void> {
+  const { cityId, headerKey, adapterType, columnMapping, exampleRows } = args;
+
+  if (!headerKey || Object.keys(columnMapping).length === 0) return;
+
+  try {
+    const existing = await db.models.ImportMappingFeedback.findOne({
+      where: { cityId, headerKey },
+    });
+
+    if (existing) {
+      await existing.update({
+        adapterType: adapterType ?? existing.adapterType,
+        columnMapping,
+        exampleRows,
+        lastUpdated: new Date(),
+      });
+    } else {
+      await db.models.ImportMappingFeedback.create({
+        id: uuidv4(),
+        cityId,
+        headerKey,
+        adapterType: adapterType ?? null,
+        columnMapping,
+        exampleRows,
+      });
+    }
+
+    logger.info(
+      { cityId, headerKey, adapterType, columnCount: Object.keys(columnMapping).length },
+      "ImportMappingFeedback upserted",
+    );
+  } catch (err) {
+    logger.warn({ err, cityId, headerKey }, "Failed to persist mapping feedback (non-fatal)");
+  }
 }
 
 async function runApproveImportInBackground(args: {
@@ -340,6 +435,40 @@ async function runApproveImportInBackground(args: {
         importSummary,
       },
     });
+
+    // Persist mapping feedback for Path B (AI-shaped) files so future uploads
+    // with the same header structure get a warm-start prompt hint.
+    if (useExtractedRows && extractedRows && extractedRows.length > 0) {
+      const vr = (importedFile.validationResults as any) ?? {};
+      const headerKey = vr.headerKey as string | undefined;
+      if (headerKey) {
+        const buffer = importedFile.data
+          ? Buffer.from(importedFile.data as any)
+          : null;
+        const rawHeaders: string[] = buffer
+          ? await FileParserService.parseFile(buffer, importedFile.fileType)
+              .then((p) => p.primarySheet?.headers ?? [])
+              .catch(() => [])
+          : [];
+
+        const columnMapping =
+          rawHeaders.length > 0
+            ? deriveColumnMapping(rawHeaders, extractedRows)
+            : {};
+        const exampleRows = extractedRows.slice(0, 5) as unknown as Record<
+          string,
+          unknown
+        >[];
+
+        await persistMappingFeedback({
+          cityId,
+          headerKey,
+          adapterType: vr.adapterType,
+          columnMapping,
+          exampleRows,
+        });
+      }
+    }
 
     logger.info(
       {

@@ -1,8 +1,10 @@
 import { db } from "@/models";
+import { logger } from "@/services/logger";
 import { VersionChange } from "@/util/types";
 import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
 import { Op, Transaction } from "sequelize";
+import { isDeepStrictEqual } from "node:util";
 
 export default class VersionHistoryService {
   static MODELS: Record<string, any> = {
@@ -86,6 +88,14 @@ export default class VersionHistoryService {
       where: { inventoryId, entryId, table, moduleName },
       order: [["created", "DESC"]],
     });
+
+    if (isDeepStrictEqual(previousVersion?.data, data)) {
+      logger.warn(
+        { moduleName, table, inventoryId, entryId },
+        "createVersion called with same data, skipping",
+      );
+      return;
+    }
 
     // save version entry
     await db.models.Version.create(

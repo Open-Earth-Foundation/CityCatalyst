@@ -302,5 +302,6 @@
   "date": "Date",
   "no-history": "No version history entries found.",
   "subcategory": "Sub-category",
-  "inventory-versions-restore-failed": "Failed to restore version"
+  "inventory-versions-restore-failed": "Failed to restore version",
+  "legend": "Legend"
 }

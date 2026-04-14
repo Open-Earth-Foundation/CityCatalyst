@@ -25,7 +25,6 @@ interface TooltipCardProps {
 }
 
 const TooltipCard = ({ point, data, forecast, t }: TooltipCardProps) => {
-  console.log("Rendering TooltipCard for point:", point);
   const year = point.data.x;
   const sumOfYs = data.reduce((sum, series) => {
     const yearData = series.data.find(({ x }) => x === year);

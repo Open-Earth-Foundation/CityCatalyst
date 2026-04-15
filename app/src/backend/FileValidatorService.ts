@@ -1,5 +1,6 @@
 import createHttpError from "http-errors";
 import FileParserService, { type ParsedFileData } from "./FileParserService";
+import FormatAdapterService, { type AdapterType } from "./FormatAdapterService";
 
 // File size limit: 20MB (in bytes)
 export const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
@@ -18,6 +19,19 @@ export interface ValidationResult {
   detectedColumns?: Record<string, number>; // Column name -> index mapping
   /** True when file is CIRIS (CDP) format: has eCRF_3 sheet but should use AI extraction (Path B). */
   isCIRIS?: boolean;
+  /** True when file is BIOMATEC format (Spanish multi-sector Excel). */
+  isBIOMATEC?: boolean;
+  /** Which format adapter family was detected for this file, if any. */
+  adapterType?: AdapterType;
+  /** True when the file contains data for multiple cities/organizations. */
+  isMultiCity?: boolean;
+  /**
+   * Stable lookup key derived from the file's column headers.
+   * Plain sorted pipe-joined normalised string — readable and debuggable.
+   * e.g. "department|ghg_emissions|protocol|sector|source|year"
+   * Present for all tabular files (xlsx/csv); absent for PDFs.
+   */
+  headerKey?: string;
 }
 
 /**
@@ -140,6 +154,10 @@ export default class FileValidatorService {
     const warnings: string[] = [...basicValidation.warnings];
     const detectedColumns: Record<string, number> = {};
     let isCIRIS = false;
+    let isBIOMATEC = false;
+    let adapterType: AdapterType | undefined;
+    let isMultiCity: boolean | undefined;
+    let headerKey: string | undefined;
 
     try {
       // Convert file to buffer
@@ -155,6 +173,21 @@ export default class FileValidatorService {
       // CIRIS (CDP) format: has eCRF_3 sheet but is a multi-sheet workbook for CDP; route to Path B (AI extraction)
       if (parsedData.fileType === "xlsx") {
         isCIRIS = this.isCIRISFormat(parsedData);
+        if (!isCIRIS) {
+          isBIOMATEC = this.isBIOMATECFormat(parsedData);
+        }
+      }
+
+      // Format adapter detection (runs for non-CIRIS, non-BIOMATEC files only)
+      if (!isCIRIS && !isBIOMATEC) {
+        const adapterDetection = FormatAdapterService.detect(parsedData);
+        if (adapterDetection.adapterType) {
+          adapterType = adapterDetection.adapterType;
+        }
+        if (adapterDetection.isMultiCity) {
+          isMultiCity = true;
+          warnings.push(...adapterDetection.warnings);
+        }
       }
 
       // Validate structure based on file type
@@ -168,6 +201,13 @@ export default class FileValidatorService {
         const structureValidation = this.validateCSVStructure(parsedData);
         errors.push(...structureValidation.errors);
         warnings.push(...structureValidation.warnings);
+      }
+
+      // Compute header key for all tabular files (used by feedback loop)
+      if (parsedData.primarySheet) {
+        headerKey = FormatAdapterService.headerKey(
+          parsedData.primarySheet.headers,
+        );
       }
 
       // Detect and map required columns
@@ -192,7 +232,30 @@ export default class FileValidatorService {
       detectedColumns:
         Object.keys(detectedColumns).length > 0 ? detectedColumns : undefined,
       isCIRIS: isCIRIS || undefined,
+      isBIOMATEC: isBIOMATEC || undefined,
+      adapterType,
+      isMultiCity: isMultiCity || undefined,
+      headerKey,
     };
+  }
+
+  /**
+   * Detect BIOMATEC format: XLSX with Spanish-named sector sheets (2.1 Energia, 2.2 Transporte, etc.)
+   * BIOMATEC files use Path B with a specialized BIOMATEC AI prompt.
+   */
+  public static isBIOMATECFormat(parsedData: ParsedFileData): boolean {
+    if (!parsedData.sheets?.length || parsedData.fileType !== "xlsx") {
+      return false;
+    }
+    const BIOMATEC_SHEET_PREFIXES = ["2.1", "2.2", "2.3", "2.4", "2.5"];
+    const normalizeSheetName = (name: string) =>
+      name.toLowerCase().replace(/\s+/g, " ").trim();
+    const matchCount = parsedData.sheets.filter((s) =>
+      BIOMATEC_SHEET_PREFIXES.some((prefix) =>
+        normalizeSheetName(s.name).startsWith(prefix),
+      ),
+    ).length;
+    return matchCount >= 2;
   }
 
   /**

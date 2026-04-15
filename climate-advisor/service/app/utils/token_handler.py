@@ -99,8 +99,11 @@ class TokenHandler:
                     list(thread.context.keys()) if thread.context else []
                 )
                 
-                # Use the Thread model's get_access_token() method which looks for "access_token" key
+                # Support both the persisted access_token key and the original
+                # cc_access_token payload key used by some thread clients.
                 token = thread.get_access_token()
+                if not token and isinstance(thread.context, dict):
+                    token = thread.context.get("cc_access_token")
                 if token:
                     logger.info("Loaded CC token from thread context for thread_id=%s", self.thread_id)
                     return token

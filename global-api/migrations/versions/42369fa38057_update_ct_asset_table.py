@@ -29,8 +29,7 @@ def upgrade() -> None:
                   sa.Column("id",
                   sa.UUID(),
                   nullable=False,
-                  primary_key=True,
-                  default=sa.text("gen_random_uuid()")))
+                  server_default=sa.text("gen_random_uuid()")))
     op.create_primary_key("asset_pkey", "asset", ["id"])
     op.execute('ALTER TABLE asset ALTER COLUMN emissions_quantity TYPE BIGINT')
 

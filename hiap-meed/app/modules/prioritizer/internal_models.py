@@ -73,24 +73,12 @@ class Action(BaseModel):
     investment_cost: str | None = None
     implementation_timeline: str | None = None
     biome: str | None = None
-    mitigation_impact: dict[str, dict[str, Any]] = Field(default_factory=dict)
-    impacts: list[dict[str, Any]] = Field(default_factory=list)
+    emissions: dict[str, Any] = Field(default_factory=dict)
+    co_benefits: dict[str, dict[str, Any]] = Field(default_factory=dict)
+    socioeconomic_indicators: list[dict[str, Any]] = Field(default_factory=list)
     as_of: datetime | None = None
     source: str | None = None
     raw: dict[str, Any] = Field(default_factory=dict)
-
-    @model_validator(mode="after")
-    def _backfill_impacts(self) -> Action:
-        """Flatten `mitigation_impact` object into legacy `impacts` row list."""
-        if self.impacts or not self.mitigation_impact:
-            return self
-        flattened: list[dict[str, Any]] = []
-        for impact_type, impact_data in self.mitigation_impact.items():
-            if not isinstance(impact_data, dict):
-                continue
-            flattened.append({"impact_type": impact_type, **impact_data})
-        self.impacts = flattened
-        return self
 
 
 class BlockScoreResult(BaseModel):
@@ -109,8 +97,8 @@ class HardFilterResult(BaseModel):
     evidence: dict[str, dict[str, object]] = Field(default_factory=dict)
 
 
-class HardFilterLegalRequirement(BaseModel):
-    """Internal legal requirement contract consumed by hard-filter logic."""
+class LegalRequirementRecord(BaseModel):
+    """Internal legal requirement contract shared across scoring blocks."""
 
     signal_code: str
     signal_name: str

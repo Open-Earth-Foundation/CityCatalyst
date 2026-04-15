@@ -85,6 +85,7 @@ import UserService from "@/backend/UserService";
 import FileValidatorService from "@/backend/FileValidatorService";
 import FileParserService from "@/backend/FileParserService";
 import ECRFImportService from "@/backend/ECRFImportService";
+import FormatAdapterService from "@/backend/FormatAdapterService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { ImportStatusEnum } from "@/util/enums";
@@ -134,11 +135,52 @@ async function runUploadProcessingInBackground(
       return;
     }
 
-    const usePathB =
-      !FileValidatorService.hasDistinctRequiredECRFColumns(validationResult.detectedColumns || {}) ||
-      !!validationResult.isCIRIS;
+    // ── Adapter D (near-ecrf): direct deterministic mapping, no AI needed ──
+    if (validationResult.adapterType === "near-ecrf") {
+      const parsedData = await FileParserService.parseFile(buffer, fileType);
+      // Fetch target year from the inventory so rows get annotated with the correct year
+      const inventory = await db.models.Inventory.findOne({
+        where: { inventoryId },
+        attributes: ["year"],
+      });
+      const targetYear =
+        inventory?.year != null && Number.isInteger(Number(inventory.year))
+          ? Number(inventory.year)
+          : undefined;
+      const rows = FormatAdapterService.toExtractedRows(parsedData, targetYear);
+      if (rows.length === 0) {
+        await setFailed("Adapter D: no data rows could be extracted from this file");
+        return;
+      }
+      await importedFile.update({
+        importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+        validationResults: {
+          errors: validationResult.errors,
+          warnings: validationResult.warnings,
+          detectedColumns: validationResult.detectedColumns,
+          adapterType: "near-ecrf",
+          isMultiCity: validationResult.isMultiCity ?? false,
+          headerKey: validationResult.headerKey,
+        },
+        rowCount: rows.length,
+        mappingConfiguration: { rows },
+        lastUpdated: new Date(),
+      });
+      logger.info(
+        { importedFileId: importedFile.id, rowCount: rows.length },
+        "Adapter D (near-ecrf): direct mapping completed, waiting for approval",
+      );
+      return;
+    }
 
-    // Path B: file doesn't have full eCRF structure (or is CIRIS). Send to AI interpretation even if structure validation reported "errors" (e.g. missing gpcRefNo/totalCO2e).
+    // ── Adapters A/B/C: normalize, then hand off to AI interpretation (Path B) ──
+    const usePathB =
+      !!validationResult.adapterType ||
+      !FileValidatorService.hasDistinctRequiredECRFColumns(validationResult.detectedColumns || {}) ||
+      !!validationResult.isCIRIS ||
+      !!validationResult.isBIOMATEC;
+
+    // Path B: file doesn't have full eCRF structure, is CIRIS, BIOMATEC, or matched an adapter.
     if (usePathB) {
       await importedFile.update({
         importStatus: ImportStatusEnum.PENDING_AI_INTERPRETATION,
@@ -147,10 +189,22 @@ async function runUploadProcessingInBackground(
           warnings: validationResult.warnings,
           detectedColumns: validationResult.detectedColumns,
           isCIRIS: validationResult.isCIRIS ?? false,
+          isBIOMATEC: validationResult.isBIOMATEC ?? false,
+          adapterType: validationResult.adapterType,
+          isMultiCity: validationResult.isMultiCity ?? false,
+          headerKey: validationResult.headerKey,
         },
         lastUpdated: new Date(),
       });
-      logger.info({ importedFileId: importedFile.id }, "Tabular upload (Path B) validated, pending AI interpretation");
+      logger.info(
+        {
+          importedFileId: importedFile.id,
+          adapterType: validationResult.adapterType,
+          isCIRIS: validationResult.isCIRIS,
+          isBIOMATEC: validationResult.isBIOMATEC,
+        },
+        "Tabular upload (Path B) validated, pending AI interpretation",
+      );
       return;
     }
 

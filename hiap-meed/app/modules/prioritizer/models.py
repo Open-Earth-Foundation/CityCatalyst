@@ -6,8 +6,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
+from app.modules.prioritizer.config import resolve_impact_text_multiplier
 
 # ============================================================================
 # FRONTEND REQUEST ENVELOPE MODELS (CityCatalyst -> hiap-meed)
@@ -85,6 +86,7 @@ class PrioritizerRequestData(BaseModel):
     """RequestData section of frontend prioritizer request payload."""
 
     requestedLanguages: list[str] = Field(default_factory=lambda: ["en"])
+    topN: int | None = Field(default=None, ge=1)
     cityDataList: list[FrontendCityInput] = Field(min_length=1)
 
 
@@ -109,6 +111,9 @@ class PrioritizerApiRequest(BaseModel):
 # - ActionsApiResponse
 #   - meta: UpstreamMeta
 #   - actions: list[ActionApiItem]
+#     - emissions: ActionImpactEntry
+#     - coBenefits: dict[str, ActionImpactEntry]
+#     - socioeconomicIndicators: list[ActionSocioeconomicIndicatorRule]
 # - ActionsPolicySignalsApiResponse
 #   - meta: UpstreamMeta
 #   - policy_signals: list[PolicySignalByAction]
@@ -168,6 +173,44 @@ class CityApiItem(BaseModel):
     home_ownership: CityIndicator | None = None
 
 
+class ActionImpactEntry(BaseModel):
+    """Single impact entry (emissions or co-benefit category) for one action."""
+
+    sector_number: str
+    subsector_number: int
+    gpc_reference_number: list[str]
+    impact_relationship: str | None = None
+    impact_text: str | None = None
+    impact_numeric: int | None = None
+    methodology: str | None = None
+
+
+class ActionSocioeconomicIndicatorRule(BaseModel):
+    """One socioeconomic fit rule row attached to an action."""
+
+    indicator_key: str
+    direction: str
+    weight: float
+    rationale: str | None = None
+
+    @model_validator(mode="after")
+    def _validate_direction_and_weight(self) -> ActionSocioeconomicIndicatorRule:
+        """Validate direction enum and weight bounds for socioeconomic rules."""
+        normalized_direction = self.direction.strip().lower()
+        if normalized_direction not in {"supportive", "constraining"}:
+            raise ValueError(
+                "socioeconomicIndicators[].direction must be `supportive` or "
+                f"`constraining`, got `{self.direction}`"
+            )
+        if self.weight < 0.0 or self.weight > 1.0:
+            raise ValueError(
+                "socioeconomicIndicators[].weight must be within [0, 1], "
+                f"got {self.weight}"
+            )
+        self.direction = normalized_direction
+        return self
+
+
 class ActionApiItem(BaseModel):
     """Action item shape returned by upstream `GET /v1/actions`."""
 
@@ -178,7 +221,26 @@ class ActionApiItem(BaseModel):
     actionSubcategory: str | None = None
     costInvestmentNeeded: str | None = None
     timelineForImplementation: str | None = None
-    mitigationImpact: dict[str, dict[str, Any]] = Field(default_factory=dict)
+    coBenefits: dict[str, ActionImpactEntry] = Field(default_factory=dict)
+    emissions: ActionImpactEntry | None = None
+    socioeconomicIndicators: list[ActionSocioeconomicIndicatorRule] = Field(
+        default_factory=list
+    )
+
+    @model_validator(mode="after")
+    def _validate_emissions_impact_text_band_present(self) -> ActionApiItem:
+        """Validate emissions impact includes a non-empty text band."""
+        emissions_entry = self.emissions
+        if emissions_entry is None:
+            return self
+        impact_text = emissions_entry.impact_text
+        if impact_text is None or not impact_text.strip():
+            raise ValueError(
+                f"Action `{self.actionId}` is missing emissions.impact_text"
+            )
+        # Validate that the text band can be resolved by configured impact mapping.
+        resolve_impact_text_multiplier(impact_text)
+        return self
 
 
 class CityApiResponse(BaseModel):
@@ -219,7 +281,7 @@ class PolicySignalByAction(BaseModel):
 
     action_id: str
     policy_signals: list[PolicySignal] = Field(default_factory=list)
-    policy_support_score: float | None = None
+    policy_support_score: float | None = Field(default=None, ge=0.0, le=1.0)
 
 
 class ActionsPolicySignalsApiResponse(BaseModel):
@@ -270,7 +332,21 @@ class PrioritizationResponse(BaseModel):
     """Per-city prioritization output used by the API response."""
 
     ranked_action_ids: list[str] = Field(default_factory=list)
+    ranked_actions: list[RankedActionResult] = Field(default_factory=list)
     metadata: dict[str, object] = Field(default_factory=dict)
+
+
+class RankedActionResult(BaseModel):
+    """Public ranked action payload returned to API consumers."""
+
+    action_id: str
+    rank: int
+    final_score: float
+    impact_score: float
+    alignment_score: float
+    feasibility_score: float
+    evidence_summary: dict[str, object] = Field(default_factory=dict)
+    explanation: str | None = None
 
 
 class PrioritizerApiCityResult(BaseModel):
@@ -278,6 +354,7 @@ class PrioritizerApiCityResult(BaseModel):
 
     locode: str = Field(min_length=1)
     ranked_action_ids: list[str] = Field(default_factory=list)
+    ranked_actions: list[RankedActionResult] = Field(default_factory=list)
     metadata: dict[str, object] = Field(default_factory=dict)
 
 

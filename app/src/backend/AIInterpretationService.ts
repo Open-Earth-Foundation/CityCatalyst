@@ -219,6 +219,15 @@ export interface InterpretTabularOptions {
   targetYear?: number;
   /** Target city name; when set, prompt asks to only consider data for this city (some files contain multiple cities). */
   targetCity?: string;
+  /**
+   * Past approved mapping for this city × header fingerprint.
+   * When provided, it is injected into the AI prompt as a warm-start hint
+   * so the model can reuse previously approved column → field assignments.
+   */
+  pastMapping?: {
+    columnMapping: Record<string, string>;
+    exampleRows: Record<string, unknown>[];
+  } | null;
 }
 
 /**
@@ -332,9 +341,14 @@ export function isKeyValueFormat(headers: string[]): boolean {
 function buildKeyValueShapePrompt(options?: {
   targetYear?: number;
   targetCity?: string;
+  pastMapping?: {
+    columnMapping: Record<string, string>;
+    exampleRows: Record<string, unknown>[];
+  } | null;
 }): string {
   const targetYear = options?.targetYear;
   const targetCity = options?.targetCity;
+  const pastMappingsBlock = buildPastMappingsBlock(options?.pastMapping);
   const yearLine =
     targetYear != null
       ? `Use year ${targetYear} for all rows (inventory target year).`
@@ -376,7 +390,7 @@ Common patterns: "residential_buildings" → Stationary Energy / Residential Bui
   {"year": 2017, "sector": "Stationary Energy", "subsector": "Residential Buildings", "scope": "2", "totalCO2e": 262254, "category": "Subsector total"},
   {"year": 2017, "sector": "Stationary Energy", "subsector": "Commercial And Institutional Buildings And Facilities", "scope": "1", "totalCO2e": 14748, "category": "Subsector total"}
 ]}
-</example_output>`;
+</example_output>${pastMappingsBlock}`;
 }
 
 function parseKeyValueShapeResponse(content: string): ExtractedRow[] {
@@ -520,12 +534,41 @@ function normalizeKeyValueRow(row: Record<string, unknown>): ExtractedRow {
   return out;
 }
 
+function buildPastMappingsBlock(pastMapping?: {
+  columnMapping: Record<string, string>;
+  exampleRows: Record<string, unknown>[];
+} | null): string {
+  if (!pastMapping || Object.keys(pastMapping.columnMapping).length === 0) return "";
+
+  const mappingLines = Object.entries(pastMapping.columnMapping)
+    .map(([col, field]) => `  "${col}" → ${field}`)
+    .join("\n");
+
+  const exampleJson =
+    pastMapping.exampleRows.length > 0
+      ? JSON.stringify(pastMapping.exampleRows.slice(0, 3), null, 2)
+      : "";
+
+  return `
+<past_mappings>
+This file structure was previously approved by a user with the following column mapping:
+${mappingLines}
+${exampleJson ? `\nApproved example rows:\n${exampleJson}` : ""}
+Use this as a warm-start hint. If the current table has the same columns, prefer these mappings.
+</past_mappings>`;
+}
+
 function buildGenericShapeTablePrompt(options?: {
   targetYear?: number;
   targetCity?: string;
+  pastMapping?: {
+    columnMapping: Record<string, string>;
+    exampleRows: Record<string, unknown>[];
+  } | null;
 }): string {
   const targetYear = options?.targetYear;
   const targetCity = options?.targetCity;
+  const pastMappingsBlock = buildPastMappingsBlock(options?.pastMapping);
   const yearLine =
     targetYear != null
       ? `Use year ${targetYear} when not specified in the table.`
@@ -566,7 +609,7 @@ Mapping (report term → canonical): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)
 {"rows": [
   {"year": 2017, "sector": "Stationary Energy", "subsector": "Energy Use", "scope": "1", "totalCO2e": 38871, "gpcRefNo": "I.1", "category": null}
 ]}
-</example_output>`;
+</example_output>${pastMappingsBlock}`;
 }
 
 /** Max tokens for CIRIS/ECRF-like full-schema extraction (many rows, many fields). */
@@ -581,9 +624,14 @@ const INTERPRET_LLM_MAX_TOKENS_SHAPE_CIRIS = 16384;
 function buildCIRISShapeTablePrompt(options?: {
   targetYear?: number;
   targetCity?: string;
+  pastMapping?: {
+    columnMapping: Record<string, string>;
+    exampleRows: Record<string, unknown>[];
+  } | null;
 }): string {
   const targetYear = options?.targetYear;
   const targetCity = options?.targetCity;
+  const pastMappingsBlock = buildPastMappingsBlock(options?.pastMapping);
   const yearLine =
     targetYear != null
       ? `Use year ${targetYear} when not specified in the table.`
@@ -621,7 +669,7 @@ Mapping (report term → canonical): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)
   {"year": 2017, "gpcRefNo": "I.1.1", "sector": "Stationary Energy", "subsector": "Residential Buildings", "scope": "1", "category": "Natural gas", "totalCO2e": 125000, "co2": null, "ch4": null, "n2o": null, "source": null, "methodology": null, "activityAmount": 5500000, "activityUnit": "GJ", "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null},
   {"year": 2017, "gpcRefNo": "I.1.1", "sector": "Stationary Energy", "subsector": "Residential Buildings", "scope": "2", "category": "Electricity", "totalCO2e": 42000, "co2": null, "ch4": null, "n2o": null, "source": null, "methodology": null, "activityAmount": 12000, "activityUnit": "MWh", "activityType": "Electricity", "activityDataSource": null, "activityDataQuality": null}
 ]}
-</example_output>`;
+</example_output>${pastMappingsBlock}`;
 }
 
 /**
@@ -634,6 +682,7 @@ export async function shapeTableToRowsForCIRIS(
   const systemPrompt = buildCIRISShapeTablePrompt({
     targetYear: options?.targetYear,
     targetCity: options?.targetCity,
+    pastMapping: options?.pastMapping,
   });
   const userContent = `CIRIS/eCRF-style table (header row + data rows). Extract every data row with the full schema:\n\n${documentContent}`;
 
@@ -679,6 +728,7 @@ export async function shapeTableToRows(
   const systemPrompt = buildGenericShapeTablePrompt({
     targetYear: options?.targetYear,
     targetCity: options?.targetCity,
+    pastMapping: options?.pastMapping,
   });
   const userContent = `Table to reshape into GPC inventory rows (headers + values):\n\n${documentContent}`;
 
@@ -725,6 +775,7 @@ export async function shapeKeyValueToRows(
   const systemPrompt = buildKeyValueShapePrompt({
     targetYear: options?.targetYear,
     targetCity: options?.targetCity,
+    pastMapping: options?.pastMapping,
   });
   const userContent = `Key-value table (first row = headers, each column = one category+scope; cell value = totalCO2e):\n\n${documentContent}`;
 

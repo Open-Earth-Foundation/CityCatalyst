@@ -132,12 +132,6 @@ export async function middleware(req: NextRequestWithAuth) {
   }
 
   // redirect for paths that don't have lng at the start
-  if (!req.cookies.has(cookieName)) {
-    response?.headers.set(
-      "Set-Cookie",
-      `${cookieName}=${lng}; Path=/; HttpOnly; SameSite=Strict`,
-    );
-  }
   if (
     !languages.some((loc) => req.nextUrl.pathname.startsWith(`/${loc}`)) &&
     !req.nextUrl.pathname.startsWith("/_next")
@@ -153,12 +147,20 @@ export async function middleware(req: NextRequestWithAuth) {
     const lngInReferer = languages.find((l) =>
       refererUrl.pathname.startsWith(`/${l}`),
     );
-    const response = next(req);
+    response = await next(req);
     if (response instanceof NextResponse && lngInReferer) {
       response.cookies.set(cookieName, lngInReferer);
     }
   } else {
     response = await next(req);
+  }
+
+  if (!req.cookies.has(cookieName) && response instanceof NextResponse) {
+    response.cookies.set(cookieName, lng, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "strict",
+    });
   }
 
   // Add security headers to all responses

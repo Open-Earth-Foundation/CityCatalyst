@@ -570,6 +570,47 @@ describe("Import Routes API", () => {
 
       assert.equal(res.status, 404);
     });
+
+    it("should return inferredYearFromFile in data when present on validationResults", async () => {
+      const fileContent = await createMockXLSXFile();
+      const importedFile = await db.models.ImportedInventoryFile.create({
+        id: randomUUID(),
+        userId: testUserID,
+        cityId: city.cityId,
+        inventoryId: inventory.inventoryId,
+        fileName: "test-file.xlsx",
+        fileType: "xlsx",
+        fileSize: fileContent.length,
+        originalFileName: "test-file.xlsx",
+        importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
+        data: fileContent,
+        validationResults: {
+          detectedColumns: {
+            gpcRefNo: 0,
+            activityAmount: 4,
+          },
+          errors: [],
+          warnings: [],
+          inferredYearFromFile: 2021,
+        },
+        mappingConfiguration: {
+          rows: [],
+        },
+      });
+
+      const req = mockRequest();
+      const res = await getImportStatus(req, {
+        params: Promise.resolve({
+          city: city.cityId,
+          inventory: inventory.inventoryId,
+          importedFileId: importedFile.id,
+        }),
+      });
+
+      assert.equal(res.status, 200);
+      const json = await res.json();
+      assert.strictEqual(json.data.inferredYearFromFile, 2021);
+    });
   });
 
   describe("POST /api/v1/city/[city]/inventory/[inventory]/import/approve", () => {

@@ -46,6 +46,7 @@ import FileParserService, {
   type ParsedFileData,
   type ParsedSheet,
 } from "@/backend/FileParserService";
+import FormatAdapterService, { type AdapterType } from "@/backend/FormatAdapterService";
 import ECRFImportService from "@/backend/ECRFImportService";
 import {
   detectedColumnsMatchECRFStructure,
@@ -150,6 +151,14 @@ type InterpretBackgroundPayload = {
   /** When true, use CIRIS prompt and full ECRF-like schema; extract all rows. */
   isCIRIS: boolean;
   parsedData: ParsedFileData;
+  /**
+   * Past approved mapping for this city × header fingerprint (if any).
+   * Injected into the AI prompt as a warm-start hint.
+   */
+  pastMapping?: {
+    columnMapping: Record<string, string>;
+    exampleRows: Record<string, unknown>[];
+  } | null;
 };
 
 async function runInterpretationInBackground(
@@ -165,6 +174,7 @@ async function runInterpretationInBackground(
     keyValueFormat,
     isCIRIS,
     parsedData,
+    pastMapping,
   } = payload;
 
   const importedFile = await db.models.ImportedInventoryFile.findOne({
@@ -196,6 +206,7 @@ async function runInterpretationInBackground(
       const shapedRows = await shapeKeyValueToRows(documentContent, {
         targetYear,
         targetCity,
+        pastMapping,
       });
       if (!shapedRows.length) {
         await setFailed(
@@ -250,7 +261,7 @@ async function runInterpretationInBackground(
     if (!detectedColumnsMatchECRFStructure(detectedColumns)) {
       const chunkSize = isCIRIS ? 200 : 100;
       const chunks = getTableShapeChunks(parsedData, chunkSize);
-      const shapeOptions = { targetYear, targetCity };
+      const shapeOptions = { targetYear, targetCity, pastMapping };
 
       let shapedRows: Awaited<ReturnType<typeof shapeTableToRows>> = [];
       try {
@@ -284,6 +295,7 @@ async function runInterpretationInBackground(
           const keyValueRows = await shapeKeyValueToRows(documentContent, {
             targetYear,
             targetCity,
+            pastMapping,
           });
           if (keyValueRows.length > 0) {
             shapedRows = keyValueRows;
@@ -497,22 +509,89 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     throw new createHttpError.BadRequest("File has no recognizable header row");
   }
 
-  const validationResults = (importedFile.validationResults ?? {}) as { isCIRIS?: boolean };
+  const validationResults = (importedFile.validationResults ?? {}) as {
+    isCIRIS?: boolean;
+    adapterType?: string;
+    headerKey?: string;
+  };
   const isCIRIS = validationResults.isCIRIS === true;
-
-  const documentContent = serializeSheetsForInterpretation(parsedData, 100, isCIRIS);
+  const adapterType = validationResults.adapterType as AdapterType | undefined;
+  const headerKey = validationResults.headerKey as string | undefined;
 
   const targetYear =
     inventory.year != null && Number.isInteger(Number(inventory.year))
       ? Number(inventory.year)
       : undefined;
 
+  // For Adapter A/B/C files: normalize raw ParsedFileData into a clean flat table
+  // before passing to the AI. This lets the AI focus on GPC semantic mapping
+  // rather than untangling structural formatting.
+  let effectiveParsedData = parsedData;
+  if (adapterType && adapterType !== "near-ecrf") {
+    try {
+      const normalized = FormatAdapterService.normalize(
+        parsedData,
+        adapterType,
+        targetYear,
+      );
+      const normalizedRowCount = normalized.primarySheet?.rows.length ?? 0;
+      if (normalizedRowCount > 0) {
+        effectiveParsedData = normalized;
+        logger.info(
+          { importedFileId, adapterType, normalizedRows: normalizedRowCount },
+          "Format adapter normalization applied before AI interpretation",
+        );
+      } else {
+        // Normalization produced nothing — fall back to raw data so AI still gets something
+        logger.warn(
+          { importedFileId, adapterType, targetYear },
+          "Adapter normalization returned 0 rows; falling back to raw parsed data",
+        );
+      }
+    } catch (normalizeErr) {
+      logger.warn(
+        { err: normalizeErr, importedFileId, adapterType },
+        "Format adapter normalization failed; proceeding with raw parsed data",
+      );
+    }
+  }
+
+  const documentContent = serializeSheetsForInterpretation(effectiveParsedData, 100, isCIRIS);
+
   const city = await db.models.City.findByPk(cityId, {
     attributes: ["name"],
   });
   const targetCity = city?.name?.trim() || undefined;
 
-  const keyValueFormat = isKeyValueFormat(primarySheet.headers);
+  const keyValueFormat = isKeyValueFormat(
+    effectiveParsedData.primarySheet?.headers ?? primarySheet.headers,
+  );
+
+  // Look up any previously approved mapping for this city × header fingerprint.
+  // If found, it will be injected into the AI prompt as a warm-start hint.
+  let pastMapping: InterpretBackgroundPayload["pastMapping"] = null;
+  if (headerKey) {
+    try {
+      const feedback = await db.models.ImportMappingFeedback.findOne({
+        where: { cityId, headerKey },
+      });
+      if (feedback) {
+        pastMapping = {
+          columnMapping: feedback.columnMapping,
+          exampleRows: feedback.exampleRows,
+        };
+        logger.info(
+          { importedFileId, cityId, headerKey },
+          "Past mapping feedback found — will inject into AI prompt",
+        );
+      }
+    } catch (err) {
+      logger.warn(
+        { err, cityId, headerKey },
+        "Failed to look up mapping feedback (non-fatal)",
+      );
+    }
+  }
 
   runInterpretationInBackground({
     cityId,
@@ -523,7 +602,8 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     targetCity,
     keyValueFormat,
     isCIRIS,
-    parsedData,
+    parsedData: effectiveParsedData,
+    pastMapping,
   }).catch((err) =>
     logger.error({ err, importedFileId }, "Interpret background failed"),
   );

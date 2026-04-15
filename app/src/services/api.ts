@@ -137,7 +137,7 @@ export const api = createApi({
         transformResponse: (response: { data: CityAndYearsResponse[] }) =>
           response.data.map(({ city, years }) => ({
             city,
-            years: years.sort((a, b) => b.year - a.year),
+            years: years.sort((a, b) => a.year - b.year),
           })),
         providesTags: ["CitiesAndInventories"],
       }),
@@ -1402,7 +1402,7 @@ export const api = createApi({
         }) => {
           return response;
         },
-        invalidatesTags: ["Hiap"],
+        invalidatesTags: ["Hiap", "VersionHistory"],
       }),
       generateActionPlan: builder.mutation<
         { plan: string; timestamp: string; actionName: string },
@@ -1815,7 +1815,9 @@ export const api = createApi({
           };
         },
         transformResponse: (response: {
-          data: ImportedFileResponse | { accepted: true; id: string; message?: string };
+          data:
+            | ImportedFileResponse
+            | { accepted: true; id: string; message?: string };
         }) => response.data,
         invalidatesTags: ["Inventory"],
       }),
@@ -1902,9 +1904,10 @@ export const api = createApi({
       // Version Control Endpoints
       getVersionHistory: builder.query<
         VersionHistoryResponse,
-        { inventoryId: string }
+        { inventoryId: string; moduleName?: string }
       >({
-        query: ({ inventoryId }) => `inventory/${inventoryId}/version-history`,
+        query: ({ inventoryId, moduleName = "ghgi" }) =>
+          `inventory/${inventoryId}/version-history?module=${moduleName}`,
         transformResponse: (response: { data: VersionHistoryResponse }) =>
           response.data,
         providesTags: ["VersionHistory"],

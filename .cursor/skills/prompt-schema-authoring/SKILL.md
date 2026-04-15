@@ -1,6 +1,6 @@
 ---
 name: prompt-schema-authoring
-description: Create or update agent system prompts in this repository using the required `<role>`, `<task>`, `<input>`, and `<output>` structure with explicit, model-aligned field contracts. Use when editing `app/prompts/*_system.md` or introducing a new prompt.
+description: Create or update any LLM-related prompt file in this repository using the required `<role>`, `<task>`, `<input>`, and `<output>` structure, with optional `<tools>` when tool policy is needed, and explicit model-aligned field contracts. Use for prompts stored in markdown, Python prompt templates, YAML/JSON config prompts, and any other runtime prompt definitions for large language models (LLMs).
 ---
 
 # prompt-schema-authoring
@@ -19,6 +19,7 @@ Use this skill to keep prompts explicit, contract-driven, and context-efficient.
 - `<role>`
 - `<task>`
 - `<input>`
+- `<tools>` (optional but preferred when tools are available)
 - `<output>`
 - Add `<example_output>` whenever possible.
 
@@ -28,7 +29,15 @@ Use this skill to keep prompts explicit, contract-driven, and context-efficient.
 - Add type and short purpose for each field.
 - Exclude context-junk/internal fields unless the model truly needs them (for example `path`, `chunk_index`, `chunk_count`).
 
-4. Define `<output>` from model contract only.
+4. Define `<tools>` when tool selection/policy exists.
+
+- Add `<tools>` for tool-capable prompts.
+- List each tool and when to use it.
+- List when not to use it.
+- Keep user-facing formatting rules in `<output>`, not `<tools>`.
+- Keep exact argument schemas in one place: `<output>`. In `<tools>`, focus on usage policy.
+
+5. Define `<output>` from model contract only.
 
 - State tool invocation requirements explicitly:
   - pass a JSON object or JSON list depending on the tool definition
@@ -37,9 +46,9 @@ Use this skill to keep prompts explicit, contract-driven, and context-efficient.
 - Explain field behavior clearly.
 - Exclude internal/auto fields that should not come from the LLM (for example `created_at`).
 
-5. Add one valid `<example_output>` that conforms to the model.
+6. Add one valid `<example_output>` that conforms to the model.
 
-6. Keep contracts aligned end-to-end.
+7. Keep contracts aligned end-to-end.
 
 - If you change prompt output fields, update models, coercion/parsing, runtime logic, and tests in the same change.
 
@@ -47,6 +56,8 @@ Use this skill to keep prompts explicit, contract-driven, and context-efficient.
 
 - Keep instructions explicit and operational.
 - Keep output contract field-by-field and typed.
+- Keep required prompt blocks: `<role>`, `<task>`, `<input>`, `<output>`.
+- Add `<tools>` for tool-capable prompts, and use it for tool usage policy.
 - Avoid asking for wrappers/status/error fields unless the model requires them.
 - Avoid asking for timestamps from the LLM.
 - Avoid meta phrasing requirements that conflict with downstream synthesis.
@@ -66,6 +77,11 @@ Use this skill to keep prompts explicit, contract-driven, and context-efficient.
 Input is a JSON object with:
 - `field_name` (type): purpose
 </input>
+
+<tools>
+Available tools:
+- `tool_name`: when to use, when not to use.
+</tools>
 
 <output>
 You must call tool `tool_name` and pass a JSON object (not a JSON string).

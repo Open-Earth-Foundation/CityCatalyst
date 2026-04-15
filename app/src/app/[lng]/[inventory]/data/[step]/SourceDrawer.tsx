@@ -121,87 +121,100 @@ export function SourceDrawer({
                 {t("go-back")}
               </Button>
               {source && (
-                <DrawerBody className="space-y-6 overflow-auto" px={0}>
-                  <Icon as={MdHomeWork} boxSize={9} />
-                  <Heading
-                    color="content.tertiary"
-                    textTransform="uppercase"
-                    letterSpacing="1.25px"
-                    fontSize="title.sm"
-                    lineHeight="16px"
-                  >
-                    {t(toKebabCase(sector?.sectorName))} /{" "}
-                    {t(
-                      toKebabCase(source.subSector?.subsectorName) ||
-                        toKebabCase(
-                          source.subCategory?.subsector?.subsectorName,
-                        ),
-                    )}
-                  </Heading>
-                  <Heading fontSize="title.lg">
-                    {source.subCategory?.referenceNumber ||
-                      source.subSector?.referenceNumber}{" "}
-                    {t(
-                      toKebabCase(source.subCategory?.subcategoryName) ||
-                        toKebabCase(source.subSector?.subsectorName),
-                    )}
-                  </Heading>
-                  <Heading
-                    fontSize="32px"
-                    lineHeight="40px"
-                    textTransform="capitalize"
-                  >
-                    {getTranslationFromDict(source.datasetName)}
-                  </Heading>
-                  <HStack>
-                    <TitleMedium>{t("by")} </TitleMedium>
-                    <a
-                      href={
-                        source.publisher?.url
-                          ? ensureProtocol(source.publisher.url)
-                          : "#"
-                      }
-                      target="_blank"
-                      rel="noreferrer noopener"
-                    >
-                      <TitleMedium color="content.link">
-                        {source.publisher?.name}
-                      </TitleMedium>
-                    </a>
-                  </HStack>
-                  <TitleMedium>
-                    {t("total-emissions-included")}{" "}
-                    <Tooltip
-                      showArrow
-                      content={
-                        t("total-emissions-tooltip") +
-                        ".\nScale factor: " +
-                        sourceData?.scaleFactor.toFixed(4)
-                      }
-                      positioning={{ placement: "bottom-end" }}
-                    >
-                      <Icon
-                        as={MdInfoOutline}
-                        color="interactive.control"
-                        boxSize={4}
-                      />
-                    </Tooltip>
-                  </TitleMedium>
-
-                  <HStack align="baseline">
-                    <DisplayMedium color={"content.link"}>
-                      {emissionsToBeIncluded().number}
-                    </DisplayMedium>
-                    <Text
+                <DrawerBody className="overflow-auto" px={0}>
+                  {/* Header Section */}
+                  <Stack gap={3} mb={6}>
+                    <Icon as={MdHomeWork} boxSize={9} />
+                    <Heading
                       color="content.tertiary"
-                      fontSize="22px"
-                      lineHeight="28px"
-                      fontFamily="heading"
-                      fontWeight={600}
+                      textTransform="uppercase"
+                      letterSpacing="1.25px"
+                      fontSize="title.sm"
+                      lineHeight="16px"
                     >
-                      {emissionsToBeIncluded().unit}
-                    </Text>
-                  </HStack>
+                      {t(toKebabCase(sector?.sectorName))} /{" "}
+                      {t(
+                        toKebabCase(source.subSector?.subsectorName) ||
+                          toKebabCase(
+                            source.subCategory?.subsector?.subsectorName,
+                          ),
+                      )}
+                    </Heading>
+                    <Heading fontSize="title.lg" mt={1}>
+                      {source.subCategory?.referenceNumber ||
+                        source.subSector?.referenceNumber}{" "}
+                      {t(
+                        toKebabCase(source.subCategory?.subcategoryName) ||
+                          toKebabCase(source.subSector?.subsectorName),
+                      )}
+                    </Heading>
+                    <Heading
+                      fontSize="32px"
+                      lineHeight="40px"
+                      textTransform="capitalize"
+                    >
+                      {getTranslationFromDict(source.datasetName)}
+                    </Heading>
+                    <HStack>
+                      <TitleMedium>{t("by")} </TitleMedium>
+                      <a
+                        href={
+                          source.publisher?.url
+                            ? ensureProtocol(source.publisher.url)
+                            : "#"
+                        }
+                        target="_blank"
+                        rel="noreferrer noopener"
+                      >
+                        <TitleMedium color="content.link">
+                          {source.publisher?.name}
+                        </TitleMedium>
+                      </a>
+                    </HStack>
+                  </Stack>
+                  {emissionsToBeIncluded().number &&
+                    emissionsToBeIncluded().number !== "?" && (
+                      <Stack mt={6} gap={1}>
+                        <HStack gap={1}>
+                          <Text
+                            fontSize="body.md"
+                            color="content.secondary"
+                            fontWeight="medium"
+                          >
+                            {t("total-emissions-included")}
+                          </Text>
+                          <Tooltip
+                            showArrow
+                            content={
+                              t("total-emissions-tooltip") +
+                              ".\nScale factor: " +
+                              sourceData?.scaleFactor.toFixed(4)
+                            }
+                            positioning={{ placement: "bottom-end" }}
+                          >
+                            <Icon
+                              as={MdInfoOutline}
+                              color="interactive.control"
+                              boxSize={4}
+                            />
+                          </Tooltip>
+                        </HStack>
+                        <HStack align="baseline" gap={2}>
+                          <DisplayMedium color="content.link">
+                            {emissionsToBeIncluded().number}
+                          </DisplayMedium>
+                          <Text
+                            color="content.tertiary"
+                            fontSize="22px"
+                            lineHeight="28px"
+                            fontFamily="heading"
+                            fontWeight={600}
+                          >
+                            {emissionsToBeIncluded().unit}
+                          </Text>
+                        </HStack>
+                      </Stack>
+                    )}
 
                   {sourceData?.issue && (
                     <Text color="semantic.danger" fontSize="body.sm" mt={-4}>
@@ -210,8 +223,8 @@ export function SourceDrawer({
                   )}
 
                   <SourceDrawerTags t={t} source={source} />
-                  <Separator />
-                  <Stack className="space-y-4">
+                  <Separator my={4} />
+                  <Stack gap={4} mt={2}>
                     <TitleLarge>{t("inside-dataset")}</TitleLarge>
                     <BodyLarge color="content.tertiary">
                       {getTranslationFromDict(source.datasetDescription)}

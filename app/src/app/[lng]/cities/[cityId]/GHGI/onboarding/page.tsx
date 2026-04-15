@@ -2,9 +2,9 @@
 import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
-import { Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
+import { Box, Button, Heading, HStack, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
-import { MdArrowForward } from "react-icons/md";
+import { MdArrowForward, MdUpload } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import ProgressSteps from "@/components/steps/progress-steps";
 
@@ -82,7 +82,23 @@ export default function Onboarding(props: {
           justifyContent="end"
           py="32px"
           px="175px"
+          gap="16px"
         >
+          <Button
+            w="auto"
+            gap="8px"
+            py="16px"
+            px="24px"
+            h="64px"
+            variant="outline"
+            onClick={() => router.push("setup?mode=upload")}
+            data-testid="upload-inventory-button"
+          >
+            <MdUpload height="24px" width="24px" />
+            <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
+              {t("upload-existing-inventory")}
+            </Text>
+          </Button>
           <Button
             w="auto"
             gap="8px"

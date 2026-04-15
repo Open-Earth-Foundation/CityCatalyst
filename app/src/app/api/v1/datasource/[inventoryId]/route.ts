@@ -98,6 +98,7 @@ import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { PermissionService } from "@/backend/permissions";
 
 export const GET = apiHandler(async (_req: NextRequest, { params }) => {
   const inventory = await db.models.Inventory.findOne({
@@ -250,90 +251,96 @@ const applySourcesRequest = z.object({
  *           - "550e8400-e29b-41d4-a716-446655440000"
  *           - "550e8400-e29b-41d4-a716-446655440001"
  */
-export const POST = apiHandler(async (req: NextRequest, { params }) => {
-  const body = applySourcesRequest.parse(await req.json());
-  const inventory = await db.models.Inventory.findOne({
-    where: { inventoryId: params.inventoryId },
-    include: [{ model: City, as: "city" }],
-  });
-  if (!inventory) {
-    throw new createHttpError.NotFound("Inventory not found");
-  }
+export const POST = apiHandler(
+  async (req: NextRequest, { params, session }) => {
+    const body = applySourcesRequest.parse(await req.json());
 
-  const sources = await db.models.DataSource.findAll({
-    where: { datasourceId: body.dataSourceIds },
-    include: [
-      { model: SubSector, required: false, as: "subSector" },
-      {
-        model: SubCategory,
-        required: false,
-        as: "subCategory",
-        include: [
-          {
-            model: SubSector,
-            required: false,
-            as: "subsector",
-          },
-        ],
-      },
-    ],
-  });
-  if (!sources) {
-    throw new createHttpError.NotFound("Sources not found");
-  }
-  const { applicableSources, removedSources } = DataSourceService.filterSources(
-    inventory,
-    sources,
-  );
-  const applicableSourceIds = applicableSources.map(
-    (source) => source.datasourceId,
-  );
-  const invalidSources = sources.filter(
-    (source) => !applicableSourceIds.includes(source.datasourceId),
-  );
-  const invalidSourceIds = invalidSources.map((source) => source.datasourceId);
+    // perform access control
+    await PermissionService.canEditInventory(session, params.inventoryId);
 
-  // TODO check if the user has made manual edits that would be overwritten
-  // TODO create new versioning record
+    const inventory = await db.models.Inventory.findOne({
+      where: { inventoryId: params.inventoryId },
+      include: [{ model: City, as: "city" }],
+    });
+    if (!inventory) {
+      throw new createHttpError.NotFound("Inventory not found");
+    }
 
-  const populationScaleFactors =
-    await DataSourceService.findPopulationScaleFactors(
-      inventory,
-      applicableSources,
+    const sources = await db.models.DataSource.findAll({
+      where: { datasourceId: body.dataSourceIds },
+      include: [
+        { model: SubSector, required: false, as: "subSector" },
+        {
+          model: SubCategory,
+          required: false,
+          as: "subCategory",
+          include: [
+            {
+              model: SubSector,
+              required: false,
+              as: "subsector",
+            },
+          ],
+        },
+      ],
+    });
+    if (!sources) {
+      throw new createHttpError.NotFound("Sources not found");
+    }
+    const { applicableSources, removedSources } =
+      DataSourceService.filterSources(inventory, sources);
+    const applicableSourceIds = applicableSources.map(
+      (source) => source.datasourceId,
+    );
+    const invalidSources = sources.filter(
+      (source) => !applicableSourceIds.includes(source.datasourceId),
+    );
+    const invalidSourceIds = invalidSources.map(
+      (source) => source.datasourceId,
     );
 
-  // download source data and apply in database
-  const sourceResults = await Promise.all(
-    applicableSources.map(async (source) => {
-      const result = await DataSourceService.applySource(
-        source,
+    // TODO check if the user has made manual edits that would be overwritten
+
+    const populationScaleFactors =
+      await DataSourceService.findPopulationScaleFactors(
         inventory,
-        populationScaleFactors,
+        applicableSources,
       );
-      return result;
-    }),
-  );
 
-  const successful = sourceResults
-    .filter((result) => result.success)
-    .map((result) => result.id);
-  const failed = sourceResults
-    .filter((result) => !result.success)
-    .map((result) => result.id);
-  const issues = sourceResults
-    .filter((result) => !!result.issue)
-    .reduce((acc: Record<string, string>, result) => {
-      acc[result.id] = result.issue!;
-      return acc;
-    }, {});
+    // download source data and apply in database
+    const sourceResults = await Promise.all(
+      applicableSources.map(async (source) => {
+        const result = await DataSourceService.applySource(
+          source,
+          inventory,
+          populationScaleFactors,
+          session?.user.id,
+        );
+        return result;
+      }),
+    );
 
-  return NextResponse.json({
-    data: {
-      successful,
-      failed,
-      invalid: invalidSourceIds,
-      issues,
-      removedSources,
-    },
-  });
-});
+    const successful = sourceResults
+      .filter((result) => result.success)
+      .map((result) => result.id);
+    const failed = sourceResults
+      .filter((result) => !result.success)
+      .map((result) => result.id);
+    const issues = sourceResults
+      .filter((result) => !!result.issue)
+      .reduce((acc: Record<string, string>, result) => {
+        acc[result.id] = result.issue!;
+        return acc;
+      }, {});
+
+    return NextResponse.json({
+      data: {
+        successful,
+        failed,
+        invalid: invalidSourceIds,
+        issues,
+        removedSources,
+      },
+    });
+  },
+);

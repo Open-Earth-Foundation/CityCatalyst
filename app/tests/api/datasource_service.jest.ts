@@ -13,6 +13,7 @@ describe("DataSourceService.applyGlobalAPISource", () => {
   const inventoryId = randomUUID();
   const subsectorId = randomUUID();
   const subcategoryId = randomUUID();
+  const userId = "9b833155-4d37-48a6-892d-1f528cbdb6b2";
   const inventoryData: Inventory = {
     inventoryId,
     city: { locode: "US NYC", region: "NY" },
@@ -58,6 +59,10 @@ describe("DataSourceService.applyGlobalAPISource", () => {
       cityId: city.cityId,
     });
     await db.models.DataSource.create(dataSource);
+    await db.models.User.upsert({
+      userId,
+      name: "DATASOURCE_TEST_USER",
+    });
   });
 
   afterAll(async () => {
@@ -73,6 +78,7 @@ describe("DataSourceService.applyGlobalAPISource", () => {
     const result = await DataSourceService.applyGlobalAPISource(
       dataSource,
       inventory,
+      userId,
     );
     expect(result).toBe(true);
 

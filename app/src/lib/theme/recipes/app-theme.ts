@@ -153,6 +153,21 @@ export const appTheme = createSystem(defaultConfig, {
               _violet_theme: "{colors.violet_theme.background.alternative}",
             },
           },
+          alternativeLight: {
+            value: {
+              base: "{colors.background.alternativeLight}",
+              _blue_theme: "{colors.blue_theme.background.alternativeLight}",
+              _light_brown_theme:
+                "{colors.light_brown_theme.background.alternativeLight}",
+              _dark_orange_theme:
+                "{colors.dark_orange_theme.background.alternativeLight}",
+              _green_theme: "{colors.green_theme.background.alternativeLight}",
+              _light_blue_theme:
+                "{colors.light_blue_theme.background.alternativeLight}",
+              _violet_theme:
+                "{colors.violet_theme.background.alternativeLight}",
+            },
+          },
           overlay: {
             value: {
               base: "{colors.background.overlay}",
@@ -237,6 +252,7 @@ export const appTheme = createSystem(defaultConfig, {
             default: { value: "#FFFFFF" },
             neutral: { value: "#E8EAFB" },
             alternative: { value: "#EFFDE5" }, // #C5CBF5
+            alternativeLight: { value: "#F9FAFE" },
             overlay: { value: "#C5CBF5" },
           },
           border: {

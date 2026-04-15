@@ -1,0 +1,10 @@
+evidence_id,signal_code,signal_value,source_name,source_url,article_ref,plain_language_summary,signal_type,action_area,location_scope,location_name
+ev_001,MUNI_WASTE_AUTHORITY,exclusive_authority,Ley 18.695,https://bcn.cl/3d2sz,Artículo 3° letra d),Municipalities have exclusive responsibility for cleanliness and upkeep of the commune.,authority,waste,National,Chile
+ev_002,MUNI_WASTE_AUTHORITY,exclusive_authority,Ley 18.695,https://bcn.cl/3d2sz,Artículo 20°,Municipal waste collection is an assigned internal function.,authority,waste,National,Chile
+ev_003,MUNI_ENV_STANDARDS,apply_standards,Ley 18.695,https://bcn.cl/3d2sz,Artículo 4° letra c),Municipalities may carry out environmental protection functions directly or jointly with state bodies.,enablement,environment,National,Chile
+ev_004,MUNI_ENV_STANDARDS,apply_standards,Ley 18.695,https://bcn.cl/3d2sz,Artículo 19° letra d),Municipal works units must apply environmental protection standards.,authority,environment,National,Chile
+ev_005,MUNI_TRANSPORT_AUTHORITY,exclusive_authority,Ley 18.695,https://bcn.cl/3d2sz,Artículo 3° letra a),Municipalities have exclusive authority to apply public transport and traffic rules within the commune.,authority,transport,National,Chile
+ev_006,SUBSIDY_CAP_7PCT,0.07,Ley 18.695,https://bcn.cl/3d2sz,Artículo 5° letra g),Municipalities may grant subsidies to non-profit entities up to 7% of the municipal budget.,threshold,finance,National,Chile
+ev_007,PROCUREMENT_PUBLIC_BIDDING,public_bidding,Ley 18.695,https://bcn.cl/3d2sz,Artículo 6°,Municipalities may contract private entities via public bidding to execute actions or manage assets.,process,procurement,National,Chile
+ev_008,PLANS_ALIGNMENT,comply,Ley 18.695,https://bcn.cl/3d2sz,Artículo 7°,Municipal actions must comply with national and regional plans.,restriction,governance,National,Chile
+ev_009,MUNI_PLANNING_AUTHORITY,planning_authority,Ley 18.695,https://bcn.cl/3d2sz,Artículo 3° letra c),Municipalities are responsible for urban planning and the communal regulatory plan.,authority,land_use,National,Chile

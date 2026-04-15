@@ -29,7 +29,7 @@ export function AddCollaboratorButtonSmall({ lng }: { lng: string }) {
       >
         <MdPersonAdd color="white" size={24} />
         <ButtonMedium color="background.default" marginLeft={2}>
-          {t("invite")}
+          {t("invite-collaborator")}
         </ButtonMedium>
       </Button>
     </>

@@ -167,6 +167,7 @@ export async function createTestModule(moduleId?: string): Promise<string> {
     description: { en: "Test module description" },
     tagline: { en: "Test module tagline" },
     type: "OEF",
+    status: "active",
     stage: "assess-&-analyze",
     author: "OEF",
     url: "https://example.com",

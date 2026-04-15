@@ -12,7 +12,11 @@ import {
   setupTests,
   testUserID,
 } from "../helpers";
-import { createTestData, cleanupTestData, TestData } from "../helpers/testDataCreationHelper";
+import {
+  createTestData,
+  cleanupTestData,
+  TestData,
+} from "../helpers/testDataCreationHelper";
 import { City } from "@/models/City";
 import { CreateInventoryRequest } from "@/util/validation";
 import { Sector } from "@/models/Sector";
@@ -98,10 +102,10 @@ describe("DataSource API", () => {
     // Create proper test data hierarchy
     testData = await createTestData({
       cityName: locode,
-      countryLocode: "XX"
+      countryLocode: "XX",
     });
 
-    city = await db.models.City.findByPk(testData.cityId) as City;
+    city = (await db.models.City.findByPk(testData.cityId)) as City;
     if (!city) {
       throw new Error(`Failed to find city with ID ${testData.cityId}`);
     }
@@ -109,7 +113,7 @@ describe("DataSource API", () => {
     // Update city with datasource test specific data
     await city.update({
       name: "CC_",
-      locode: locode
+      locode: locode,
     });
 
     await db.models.User.upsert({ userId: testUserID, name: "TEST_USER" });
@@ -145,7 +149,6 @@ describe("DataSource API", () => {
       subcategoryName,
     });
 
-    fetchMock.config.overwriteRoutes = true;
     for (let i = 0; i < 3; i++) {
       const source = await db.models.DataSource.create({
         datasourceId: randomUUID(),
@@ -165,8 +168,10 @@ describe("DataSource API", () => {
       // Update the datasource with the computed URL
       await source.update({ url });
 
-      fetchMock.mock(url, mockGlobalApiResponses[i]);
+      fetchMock.route(url, mockGlobalApiResponses[i]);
     }
+
+    fetchMock.mockGlobal();
   });
 
   afterAll(async () => {

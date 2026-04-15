@@ -1,0 +1,76 @@
+---
+description: react-hook-form and Zod validation patterns for forms
+globs: app/src/components/**/*.tsx,app/src/hooks/**/*.ts,app/src/util/validation.ts
+alwaysApply: false
+---
+
+# Forms & Validation
+
+## Client-Side Forms (react-hook-form)
+
+```tsx
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const schema = z.object({
+  name: z.string().min(1, "Required"),
+  email: z.string().email("Invalid email"),
+  year: z.number().int().min(2000),
+});
+type FormData = z.infer<typeof schema>;
+
+export function MyForm() {
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = (data: FormData) => { /* ... */ };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <FormInput label="Name" register={register} name="name" errors={errors} />
+      <Button type="submit">Save</Button>
+    </form>
+  );
+}
+```
+
+## Form Input Components
+
+Use `@/components/form-input.tsx` and `@/components/form-select-input.tsx`:
+
+```tsx
+import FormInput from "@/components/form-input";
+import FormSelectInput from "@/components/form-select-input";
+```
+
+## Server-Side Validation (Zod)
+
+All API request validation schemas are in `src/util/validation.ts`:
+
+```typescript
+import { z } from "zod";
+
+export const createCityRequest = z.object({
+  locode: z.string().min(4),
+  name: z.string().min(1),
+  projectId: z.string().uuid().optional(),
+});
+export type CreateCityRequest = z.infer<typeof createCityRequest>;
+```
+
+In API routes, Zod errors are auto-caught by `errorHandler` and returned as 400 with `issues`.
+
+## Activity Forms (Complex Pattern)
+
+Complex dynamic forms use `src/hooks/activity-value-form/use-activity-form.ts` — a large custom hook wrapping `useForm` with methodology-specific logic. Follow this pattern for similarly complex forms.
+
+## Conventions
+
+- Always co-locate the Zod schema with its `type` inference: `type X = z.infer<typeof xSchema>`
+- Server schemas go in `src/util/validation.ts`
+- Client schemas can live in the component file or a nearby `schema.ts`
+- Use `zodResolver` to connect Zod schemas with react-hook-form

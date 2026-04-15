@@ -4,8 +4,8 @@ import { PermissionService } from "./permissions/PermissionService";
 import { type AppSession } from "@/lib/auth";
 import { Inventory } from "@/models/Inventory";
 
-export const InventoryService = {
-  async getInventoryIdByCityId(cityId: string): Promise<string> {
+export class InventoryService {
+  static async getInventoryIdByCityId(cityId: string): Promise<string> {
     const inventory = await db.models.Inventory.findOne({
       where: { cityId },
       order: [["year", "DESC"]], // get the most recent one
@@ -14,8 +14,9 @@ export const InventoryService = {
       throw new Error("Inventory not found");
     }
     return inventory.inventoryId;
-  },
-  async getLocode(inventoryId: string): Promise<string> {
+  }
+
+  static async getLocode(inventoryId: string): Promise<string> {
     const inventory = await db.models.Inventory.findByPk(inventoryId, {
       include: [{ model: db.models.City, as: "city" }],
     });
@@ -23,8 +24,9 @@ export const InventoryService = {
       throw new Error("Inventory or city or locode not found");
     }
     return inventory.city.locode;
-  },
-  async getInventoryWithTotalEmissions(
+  }
+
+  static async getInventoryWithTotalEmissions(
     inventoryId: string,
     session: AppSession | null,
   ): Promise<Inventory> {
@@ -72,5 +74,5 @@ export const InventoryService = {
 
     inventory.totalEmissions = sum;
     return inventory;
-  },
-};
+  }
+}

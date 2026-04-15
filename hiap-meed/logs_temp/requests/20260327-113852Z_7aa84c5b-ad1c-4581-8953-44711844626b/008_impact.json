@@ -1,0 +1,3944 @@
+{
+  "timestamp": "2026-03-27T11:38:53.118011+00:00",
+  "request_id": "7aa84c5b-ad1c-4581-8953-44711844626b",
+  "event_index": 8,
+  "step_name": "impact",
+  "event_type": "impact.completed",
+  "payload": {
+    "actions": 151,
+    "all_scores_zero": false,
+    "min_score": 0.0,
+    "max_score": 0.7190938344231617,
+    "evidence_by_action_id": {
+      "c40_0010": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 2,
+        "matched_city_gpc_refs": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 1755987.5520000001,
+        "reduction_share_of_city_emissions": 0.19346682325723802,
+        "reduction_component_value": 0.19346682325723802,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.15477345860579042,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.35477345860579046,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "I.1.2",
+            "city_emissions": 7918685.0,
+            "share_of_city": 0.8724451546252998,
+            "reduction_amount": 1583737.0
+          },
+          {
+            "gpc_ref": "I.1.1",
+            "city_emissions": 861252.76,
+            "share_of_city": 0.0948889616608902,
+            "reduction_amount": 172250.55200000003
+          }
+        ]
+      },
+      "c40_0013": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.3.1",
+          "I.3.2"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "c40_0015": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 2,
+        "matched_city_gpc_refs": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 1755987.5520000001,
+        "reduction_share_of_city_emissions": 0.19346682325723802,
+        "reduction_component_value": 0.19346682325723802,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.15477345860579042,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.35477345860579046,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "I.1.2",
+            "city_emissions": 7918685.0,
+            "share_of_city": 0.8724451546252998,
+            "reduction_amount": 1583737.0
+          },
+          {
+            "gpc_ref": "I.1.1",
+            "city_emissions": 861252.76,
+            "share_of_city": 0.0948889616608902,
+            "reduction_amount": 172250.55200000003
+          }
+        ]
+      },
+      "c40_0016": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.2.1",
+          "I.2.2"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "c40_0017": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.2.1",
+          "I.2.2"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "c40_0018": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.3.1",
+          "I.3.2"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "c40_0023": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "II.1.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "II.1.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11035.2936,
+        "reduction_share_of_city_emissions": 0.0012158190951133405,
+        "reduction_component_value": 0.0012158190951133405,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0009726552760906725,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.20097265527609068,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "II.1.1",
+            "city_emissions": 27588.234,
+            "share_of_city": 0.003039547737783351,
+            "reduction_amount": 11035.2936
+          }
+        ]
+      },
+      "c40_0025": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "II.1.1"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "II.1.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 5517.6468,
+        "reduction_share_of_city_emissions": 0.0006079095475566703,
+        "reduction_component_value": 0.0006079095475566703,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.00048632763804533623,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.20048632763804536,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "II.1.1",
+            "city_emissions": 27588.234,
+            "share_of_city": 0.003039547737783351,
+            "reduction_amount": 5517.6468
+          }
+        ]
+      },
+      "c40_0035": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "III.1.1"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "III.1.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "III.1.1",
+            "city_emissions": 0.0,
+            "share_of_city": 0.0,
+            "reduction_amount": 0.0
+          }
+        ]
+      },
+      "c40_0036": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "III.1.1"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "III.1.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "III.1.1",
+            "city_emissions": 0.0,
+            "share_of_city": 0.0,
+            "reduction_amount": 0.0
+          }
+        ]
+      },
+      "c40_0040": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "III.1.1"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "III.1.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "III.1.1",
+            "city_emissions": 0.0,
+            "share_of_city": 0.0,
+            "reduction_amount": 0.0
+          }
+        ]
+      },
+      "c40_0042": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "c40_0046": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "c40_0048": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "c40_0049": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "c40_0051": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "c40_0052": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "c40_0053": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "c40_0056": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "c40_0062": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "c40_0071": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.1.1"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "I.1.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 172250.55200000003,
+        "reduction_share_of_city_emissions": 0.018977792332178042,
+        "reduction_component_value": 0.018977792332178042,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.015182233865742434,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.11518223386574244,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "I.1.1",
+            "city_emissions": 861252.76,
+            "share_of_city": 0.0948889616608902,
+            "reduction_amount": 172250.55200000003
+          }
+        ]
+      },
+      "icare_0001": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11463.3464,
+        "reduction_share_of_city_emissions": 0.001262980030455988,
+        "reduction_component_value": 0.001262980030455988,
+        "timeline_component_value": 0.0,
+        "reduction_component_contribution": 0.0010103840243647904,
+        "timeline_component_contribution": 0.0,
+        "impact_block_score": 0.0010103840243647904,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "icare_0002": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 2,
+        "matched_city_gpc_refs": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 3511975.1040000003,
+        "reduction_share_of_city_emissions": 0.38693364651447604,
+        "reduction_component_value": 0.38693364651447604,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.30954691721158084,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.5095469172115809,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "I.1.2",
+            "city_emissions": 7918685.0,
+            "share_of_city": 0.8724451546252998,
+            "reduction_amount": 3167474.0
+          },
+          {
+            "gpc_ref": "I.1.1",
+            "city_emissions": 861252.76,
+            "share_of_city": 0.0948889616608902,
+            "reduction_amount": 344501.10400000005
+          }
+        ]
+      },
+      "icare_0006": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.4.4"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.0,
+        "impact_block_score": 0.0,
+        "gpc_contributors": []
+      },
+      "icare_0008": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.4.1",
+          "I.4.2"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0009": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.3.1",
+          "I.3.2"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0010": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 2,
+        "matched_city_gpc_refs": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 1755987.5520000001,
+        "reduction_share_of_city_emissions": 0.19346682325723802,
+        "reduction_component_value": 0.19346682325723802,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.15477345860579042,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.2547734586057904,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "I.1.2",
+            "city_emissions": 7918685.0,
+            "share_of_city": 0.8724451546252998,
+            "reduction_amount": 1583737.0
+          },
+          {
+            "gpc_ref": "I.1.1",
+            "city_emissions": 861252.76,
+            "share_of_city": 0.0948889616608902,
+            "reduction_amount": 172250.55200000003
+          }
+        ]
+      },
+      "icare_0012": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.4.4"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0015": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.4.4"
+        ],
+        "impact_text": "high",
+        "reduction_multiplier": 0.8,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0016": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.1.1",
+          "I.1.2",
+          "I.2.1",
+          "I.2.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 2,
+        "matched_city_gpc_refs": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 3511975.1040000003,
+        "reduction_share_of_city_emissions": 0.38693364651447604,
+        "reduction_component_value": 0.38693364651447604,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.30954691721158084,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.5095469172115809,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "I.1.2",
+            "city_emissions": 7918685.0,
+            "share_of_city": 0.8724451546252998,
+            "reduction_amount": 3167474.0
+          },
+          {
+            "gpc_ref": "I.1.1",
+            "city_emissions": 861252.76,
+            "share_of_city": 0.0948889616608902,
+            "reduction_amount": 344501.10400000005
+          }
+        ]
+      },
+      "icare_0023": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.4.1",
+          "I.4.2"
+        ],
+        "impact_text": "high",
+        "reduction_multiplier": 0.8,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0024": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.4.4"
+        ],
+        "impact_text": "very high",
+        "reduction_multiplier": 1.0,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0025": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "impact_text": "high",
+        "reduction_multiplier": 0.8,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 2,
+        "matched_city_gpc_refs": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 7023950.208000001,
+        "reduction_share_of_city_emissions": 0.7738672930289521,
+        "reduction_component_value": 0.7738672930289521,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.6190938344231617,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.7190938344231617,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "I.1.2",
+            "city_emissions": 7918685.0,
+            "share_of_city": 0.8724451546252998,
+            "reduction_amount": 6334948.0
+          },
+          {
+            "gpc_ref": "I.1.1",
+            "city_emissions": 861252.76,
+            "share_of_city": 0.0948889616608902,
+            "reduction_amount": 689002.2080000001
+          }
+        ]
+      },
+      "icare_0026": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.4.1",
+          "I.4.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0027": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.4.1",
+          "I.4.2"
+        ],
+        "impact_text": "high",
+        "reduction_multiplier": 0.8,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0028": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.1.1",
+          "I.1.2",
+          "I.2.1",
+          "I.2.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 2,
+        "matched_city_gpc_refs": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 3511975.1040000003,
+        "reduction_share_of_city_emissions": 0.38693364651447604,
+        "reduction_component_value": 0.38693364651447604,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.30954691721158084,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.5095469172115809,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "I.1.2",
+            "city_emissions": 7918685.0,
+            "share_of_city": 0.8724451546252998,
+            "reduction_amount": 3167474.0
+          },
+          {
+            "gpc_ref": "I.1.1",
+            "city_emissions": 861252.76,
+            "share_of_city": 0.0948889616608902,
+            "reduction_amount": 344501.10400000005
+          }
+        ]
+      },
+      "icare_0031": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "III.4.1"
+        ],
+        "impact_text": "high",
+        "reduction_multiplier": 0.8,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "III.4.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 189283.4432,
+        "reduction_share_of_city_emissions": 0.02085439979878391,
+        "reduction_component_value": 0.02085439979878391,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.01668351983902713,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.11668351983902714,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "III.4.1",
+            "city_emissions": 236604.304,
+            "share_of_city": 0.026067999748479887,
+            "reduction_amount": 189283.4432
+          }
+        ]
+      },
+      "icare_0033": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.5.1",
+          "I.5.2"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0034": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11463.3464,
+        "reduction_share_of_city_emissions": 0.001262980030455988,
+        "reduction_component_value": 0.001262980030455988,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0010103840243647904,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2010103840243648,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "icare_0035": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.3.1",
+          "I.3.2"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0040": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 2,
+        "matched_city_gpc_refs": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 1755987.5520000001,
+        "reduction_share_of_city_emissions": 0.19346682325723802,
+        "reduction_component_value": 0.19346682325723802,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.15477345860579042,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.2547734586057904,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "I.1.2",
+            "city_emissions": 7918685.0,
+            "share_of_city": 0.8724451546252998,
+            "reduction_amount": 1583737.0
+          },
+          {
+            "gpc_ref": "I.1.1",
+            "city_emissions": 861252.76,
+            "share_of_city": 0.0948889616608902,
+            "reduction_amount": 172250.55200000003
+          }
+        ]
+      },
+      "icare_0045": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0049": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.4.4"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.0,
+        "impact_block_score": 0.0,
+        "gpc_contributors": []
+      },
+      "icare_0050": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0053": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "III.1.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "III.1.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "III.1.1",
+            "city_emissions": 0.0,
+            "share_of_city": 0.0,
+            "reduction_amount": 0.0
+          }
+        ]
+      },
+      "icare_0064": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "III.2.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "III.2.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "III.2.1",
+            "city_emissions": 0.0,
+            "share_of_city": 0.0,
+            "reduction_amount": 0.0
+          }
+        ]
+      },
+      "icare_0069": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0071": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 5731.6732,
+        "reduction_share_of_city_emissions": 0.000631490015227994,
+        "reduction_component_value": 0.000631490015227994,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0005051920121823952,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1005051920121824,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 5731.6732
+          }
+        ]
+      },
+      "icare_0072": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 5731.6732,
+        "reduction_share_of_city_emissions": 0.000631490015227994,
+        "reduction_component_value": 0.000631490015227994,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0005051920121823952,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2005051920121824,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 5731.6732
+          }
+        ]
+      },
+      "icare_0074": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 5731.6732,
+        "reduction_share_of_city_emissions": 0.000631490015227994,
+        "reduction_component_value": 0.000631490015227994,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0005051920121823952,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1005051920121824,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 5731.6732
+          }
+        ]
+      },
+      "icare_0076": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11463.3464,
+        "reduction_share_of_city_emissions": 0.001262980030455988,
+        "reduction_component_value": 0.001262980030455988,
+        "timeline_component_value": 0.0,
+        "reduction_component_contribution": 0.0010103840243647904,
+        "timeline_component_contribution": 0.0,
+        "impact_block_score": 0.0010103840243647904,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "icare_0078": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 5731.6732,
+        "reduction_share_of_city_emissions": 0.000631490015227994,
+        "reduction_component_value": 0.000631490015227994,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0005051920121823952,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1005051920121824,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 5731.6732
+          }
+        ]
+      },
+      "icare_0079": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11463.3464,
+        "reduction_share_of_city_emissions": 0.001262980030455988,
+        "reduction_component_value": 0.001262980030455988,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0010103840243647904,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2010103840243648,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "icare_0082": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11463.3464,
+        "reduction_share_of_city_emissions": 0.001262980030455988,
+        "reduction_component_value": 0.001262980030455988,
+        "timeline_component_value": 0.0,
+        "reduction_component_contribution": 0.0010103840243647904,
+        "timeline_component_contribution": 0.0,
+        "impact_block_score": 0.0010103840243647904,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "icare_0099": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.1",
+          "V.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "V.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 51.86280000000001,
+        "reduction_share_of_city_emissions": 5.714010415277411e-06,
+        "reduction_component_value": 5.714010415277411e-06,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 4.571208332221929e-06,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.20000457120833223,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "V.1",
+            "city_emissions": 129.657,
+            "share_of_city": 1.4285026038193528e-05,
+            "reduction_amount": 51.86280000000001
+          }
+        ]
+      },
+      "icare_0101": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0104": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.4.4"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.0,
+        "impact_block_score": 0.0,
+        "gpc_contributors": []
+      },
+      "icare_0105": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.4.1",
+          "I.4.2"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0110": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "III.1.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "III.1.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "III.1.1",
+            "city_emissions": 0.0,
+            "share_of_city": 0.0,
+            "reduction_amount": 0.0
+          }
+        ]
+      },
+      "icare_0111": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "III.1.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "III.1.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "III.1.1",
+            "city_emissions": 0.0,
+            "share_of_city": 0.0,
+            "reduction_amount": 0.0
+          }
+        ]
+      },
+      "icare_0117": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "II.1.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "II.1.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11035.2936,
+        "reduction_share_of_city_emissions": 0.0012158190951133405,
+        "reduction_component_value": 0.0012158190951133405,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0009726552760906725,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.10097265527609067,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "II.1.1",
+            "city_emissions": 27588.234,
+            "share_of_city": 0.003039547737783351,
+            "reduction_amount": 11035.2936
+          }
+        ]
+      },
+      "icare_0120": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.6.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0121": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "II.1.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "II.1.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11035.2936,
+        "reduction_share_of_city_emissions": 0.0012158190951133405,
+        "reduction_component_value": 0.0012158190951133405,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0009726552760906725,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.20097265527609068,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "II.1.1",
+            "city_emissions": 27588.234,
+            "share_of_city": 0.003039547737783351,
+            "reduction_amount": 11035.2936
+          }
+        ]
+      },
+      "icare_0122": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0127": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0128": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0131": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0132": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0137": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.2.1",
+          "I.2.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0139": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "II.1.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "II.1.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11035.2936,
+        "reduction_share_of_city_emissions": 0.0012158190951133405,
+        "reduction_component_value": 0.0012158190951133405,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0009726552760906725,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.20097265527609068,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "II.1.1",
+            "city_emissions": 27588.234,
+            "share_of_city": 0.003039547737783351,
+            "reduction_amount": 11035.2936
+          }
+        ]
+      },
+      "icare_0144": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0145": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.0,
+        "impact_block_score": 0.0,
+        "gpc_contributors": []
+      },
+      "icare_0154": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0156": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0160": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0162": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0163": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0164": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0165": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0169": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0170": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.0,
+        "impact_block_score": 0.0,
+        "gpc_contributors": []
+      },
+      "icare_0171": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0172": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0173": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0176": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0178": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0180": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "icare_0181": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0182": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0183": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0184": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0185": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0186": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "icare_0188": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0001": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "II.1.1"
+        ],
+        "impact_text": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "II.1.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 5517.6468,
+        "reduction_share_of_city_emissions": 0.0006079095475566703,
+        "reduction_component_value": 0.0006079095475566703,
+        "timeline_component_value": 0.0,
+        "reduction_component_contribution": 0.00048632763804533623,
+        "timeline_component_contribution": 0.0,
+        "impact_block_score": 0.00048632763804533623,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "II.1.1",
+            "city_emissions": 27588.234,
+            "share_of_city": 0.003039547737783351,
+            "reduction_amount": 5517.6468
+          }
+        ]
+      },
+      "ipcc_0023": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11463.3464,
+        "reduction_share_of_city_emissions": 0.001262980030455988,
+        "reduction_component_value": 0.001262980030455988,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0010103840243647904,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1010103840243648,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "ipcc_0024": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11463.3464,
+        "reduction_share_of_city_emissions": 0.001262980030455988,
+        "reduction_component_value": 0.001262980030455988,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0010103840243647904,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1010103840243648,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "ipcc_0025": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11463.3464,
+        "reduction_share_of_city_emissions": 0.001262980030455988,
+        "reduction_component_value": 0.001262980030455988,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0010103840243647904,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1010103840243648,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "ipcc_0026": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "high",
+        "reduction_multiplier": 0.8,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 22926.6928,
+        "reduction_share_of_city_emissions": 0.002525960060911976,
+        "reduction_component_value": 0.002525960060911976,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0020207680487295807,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.10202076804872959,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 22926.6928
+          }
+        ]
+      },
+      "ipcc_0028": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0031": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11463.3464,
+        "reduction_share_of_city_emissions": 0.001262980030455988,
+        "reduction_component_value": 0.001262980030455988,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0010103840243647904,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1010103840243648,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "ipcc_0033": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 17195.0196,
+        "reduction_share_of_city_emissions": 0.0018944700456839816,
+        "reduction_component_value": 0.0018944700456839816,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0015155760365471854,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.10151557603654719,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 17195.0196
+          }
+        ]
+      },
+      "ipcc_0034": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0037": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.2"
+        ],
+        "impact_text": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.2"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 2105.3741999999997,
+        "reduction_share_of_city_emissions": 0.00023196067522108995,
+        "reduction_component_value": 0.00023196067522108995,
+        "timeline_component_value": 0.0,
+        "reduction_component_contribution": 0.00018556854017687198,
+        "timeline_component_contribution": 0.0,
+        "impact_block_score": 0.00018556854017687198,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.2",
+            "city_emissions": 3508.957,
+            "share_of_city": 0.0003866011253684833,
+            "reduction_amount": 2105.3741999999997
+          }
+        ]
+      },
+      "ipcc_0038": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.2"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 1403.5828000000001,
+        "reduction_share_of_city_emissions": 0.00015464045014739334,
+        "reduction_component_value": 0.00015464045014739334,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.00012371236011791468,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.10012371236011793,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.2",
+            "city_emissions": 3508.957,
+            "share_of_city": 0.0003866011253684833,
+            "reduction_amount": 1403.5828000000001
+          }
+        ]
+      },
+      "ipcc_0039": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.2"
+        ],
+        "impact_text": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.2"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 2105.3741999999997,
+        "reduction_share_of_city_emissions": 0.00023196067522108995,
+        "reduction_component_value": 0.00023196067522108995,
+        "timeline_component_value": 0.0,
+        "reduction_component_contribution": 0.00018556854017687198,
+        "timeline_component_contribution": 0.0,
+        "impact_block_score": 0.00018556854017687198,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.2",
+            "city_emissions": 3508.957,
+            "share_of_city": 0.0003866011253684833,
+            "reduction_amount": 2105.3741999999997
+          }
+        ]
+      },
+      "ipcc_0040": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 17195.0196,
+        "reduction_share_of_city_emissions": 0.0018944700456839816,
+        "reduction_component_value": 0.0018944700456839816,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0015155760365471854,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.10151557603654719,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 17195.0196
+          }
+        ]
+      },
+      "ipcc_0041": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11463.3464,
+        "reduction_share_of_city_emissions": 0.001262980030455988,
+        "reduction_component_value": 0.001262980030455988,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0010103840243647904,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1010103840243648,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "ipcc_0042": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 17195.0196,
+        "reduction_share_of_city_emissions": 0.0018944700456839816,
+        "reduction_component_value": 0.0018944700456839816,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0015155760365471854,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.10151557603654719,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 17195.0196
+          }
+        ]
+      },
+      "ipcc_0043": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 17195.0196,
+        "reduction_share_of_city_emissions": 0.0018944700456839816,
+        "reduction_component_value": 0.0018944700456839816,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0015155760365471854,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.10151557603654719,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 17195.0196
+          }
+        ]
+      },
+      "ipcc_0045": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11463.3464,
+        "reduction_share_of_city_emissions": 0.001262980030455988,
+        "reduction_component_value": 0.001262980030455988,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0010103840243647904,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2010103840243648,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "ipcc_0049": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 17195.0196,
+        "reduction_share_of_city_emissions": 0.0018944700456839816,
+        "reduction_component_value": 0.0018944700456839816,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0015155760365471854,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.10151557603654719,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 17195.0196
+          }
+        ]
+      },
+      "ipcc_0050": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11463.3464,
+        "reduction_share_of_city_emissions": 0.001262980030455988,
+        "reduction_component_value": 0.001262980030455988,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0010103840243647904,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2010103840243648,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "ipcc_0052": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "high",
+        "reduction_multiplier": 0.8,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0053": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "high",
+        "reduction_multiplier": 0.8,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0054": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0055": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0056": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0057": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0060": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.0,
+        "impact_block_score": 0.0,
+        "gpc_contributors": []
+      },
+      "ipcc_0062": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0064": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "V.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 51.86280000000001,
+        "reduction_share_of_city_emissions": 5.714010415277411e-06,
+        "reduction_component_value": 5.714010415277411e-06,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 4.571208332221929e-06,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.10000457120833223,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "V.1",
+            "city_emissions": 129.657,
+            "share_of_city": 1.4285026038193528e-05,
+            "reduction_amount": 51.86280000000001
+          }
+        ]
+      },
+      "ipcc_0067": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.1",
+          "V.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "V.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 51.86280000000001,
+        "reduction_share_of_city_emissions": 5.714010415277411e-06,
+        "reduction_component_value": 5.714010415277411e-06,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 4.571208332221929e-06,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.10000457120833223,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "V.1",
+            "city_emissions": 129.657,
+            "share_of_city": 1.4285026038193528e-05,
+            "reduction_amount": 51.86280000000001
+          }
+        ]
+      },
+      "ipcc_0068": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "high",
+        "reduction_multiplier": 0.8,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.0,
+        "impact_block_score": 0.0,
+        "gpc_contributors": []
+      },
+      "ipcc_0069": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0070": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0071": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "V.2"
+        ],
+        "impact_text": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0074": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "I.2.1",
+          "I.2.2"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.0,
+        "impact_block_score": 0.0,
+        "gpc_contributors": []
+      },
+      "ipcc_0076": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "IV.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11463.3464,
+        "reduction_share_of_city_emissions": 0.001262980030455988,
+        "reduction_component_value": 0.001262980030455988,
+        "timeline_component_value": 0.0,
+        "reduction_component_contribution": 0.0010103840243647904,
+        "timeline_component_contribution": 0.0,
+        "impact_block_score": 0.0010103840243647904,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "share_of_city": 0.0031574500761399693,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "ipcc_0078": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0083": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.0,
+        "impact_block_score": 0.0,
+        "gpc_contributors": []
+      },
+      "ipcc_0084": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0085": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0086": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0087": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0088": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0089": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0090": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "ipcc_0091": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "gpc_contributors": []
+      },
+      "ipcc_0092": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0094": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0096": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0097": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0098": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0099": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0100": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0101": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0102": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0103": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0104": {
+        "has_emissions_entry": false,
+        "has_any_action_gpc_ref": false,
+        "action_gpc_refs": [],
+        "impact_text": null,
+        "reduction_multiplier": null,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_gpc_refs_count": 0,
+        "matched_city_gpc_refs": [],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 0.0,
+        "reduction_share_of_city_emissions": 0.0,
+        "reduction_component_value": 0.0,
+        "timeline_component_value": 0.5,
+        "reduction_component_contribution": 0.0,
+        "timeline_component_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "gpc_contributors": []
+      },
+      "ipcc_0105": {
+        "has_emissions_entry": true,
+        "has_any_action_gpc_ref": true,
+        "action_gpc_refs": [
+          "II.1.1"
+        ],
+        "impact_text": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_gpc_refs_count": 1,
+        "matched_city_gpc_refs": [
+          "II.1.1"
+        ],
+        "total_city_emissions": 9076427.278,
+        "total_reduction_amount": 11035.2936,
+        "reduction_share_of_city_emissions": 0.0012158190951133405,
+        "reduction_component_value": 0.0012158190951133405,
+        "timeline_component_value": 1.0,
+        "reduction_component_contribution": 0.0009726552760906725,
+        "timeline_component_contribution": 0.2,
+        "impact_block_score": 0.20097265527609068,
+        "gpc_contributors": [
+          {
+            "gpc_ref": "II.1.1",
+            "city_emissions": 27588.234,
+            "share_of_city": 0.003039547737783351,
+            "reduction_amount": 11035.2936
+          }
+        ]
+      }
+    },
+    "elapsed_seconds": 0.002933963987743482
+  }
+}

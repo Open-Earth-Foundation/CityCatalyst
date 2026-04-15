@@ -157,7 +157,7 @@ class PromptsConfig(BaseModel):
             Path.cwd(),  # Container root or current working directory
             Path(__file__).resolve().parents[3],  # climate-advisor/
         ]
-        
+
         # Dynamically search up the directory tree for the repository root
         # without assuming a fixed depth (which fails in some environments)
         current = Path(__file__).resolve()
@@ -176,9 +176,11 @@ class PromptsConfig(BaseModel):
                 break
 
         if full_path is None or not full_path.exists():
-            raise FileNotFoundError(f"Prompt file not found: {Path.cwd() / prompt_path}")
+            raise FileNotFoundError(
+                f"Prompt file not found: {Path.cwd() / prompt_path}"
+            )
 
-        with open(full_path, 'r', encoding='utf-8') as f:
+        with open(full_path, "r", encoding="utf-8") as f:
             return f.read().strip()
 
 
@@ -204,26 +206,28 @@ class APIConfig(BaseModel):
 class ToolConfig(BaseModel):
     climate_vector_search: Dict[str, Any] = Field(
         default={"top_k": 3, "min_score": 0.6},
-        description="Climate vector search tool configuration (loaded from llm_config.yaml if present, otherwise uses this fallback default)"
+        description="Climate vector search tool configuration (loaded from llm_config.yaml if present, otherwise uses this fallback default)",
     )
     # Numbers here are just a fallback if the llm_config.yaml is not present
 
 
 class RetentionConfig(BaseModel):
     """Configuration for conversation history pruning and retention.
-    
+
     Note: Full tool metadata is ALWAYS persisted to the database.
     Pruning only affects what is sent to the LLM context.
     """
-    # Number of most recent turns to preserve with full tool metadata in LLM context
-    # Older turns have tools stripped before sending to LLM, but full tools remain in DB
-    preserve_turns: Optional[int] = 2
-    
+
+    # Number of most recent turns to preserve in LLM context.
+    # Tool metadata is never sent as extra keys on input items; instead, recent tool outputs
+    # are injected as additional SYSTEM messages (role/content only) for preserved turns.
+    preserve_turns: Optional[int] = 10
+
     # Maximum number of messages to load from database per request
     max_loaded_messages: Optional[int] = 20
-    
-    # Whether to strip tool metadata from older messages before sending to LLM
-    # Full metadata is always saved to DB regardless of this setting
+
+    # Whether to apply the pruning window for tool-output SYSTEM message injection.
+    # Full metadata is always saved to DB regardless of this setting.
     prune_tools_for_llm: Optional[bool] = True
 
 
@@ -288,7 +292,7 @@ def _load_llm_config() -> LLMConfig:
     if not config_path.exists():
         raise FileNotFoundError(f"LLM config file not found at {config_path}")
 
-    with open(config_path, 'r', encoding='utf-8') as f:
+    with open(config_path, "r", encoding="utf-8") as f:
         config_data = yaml.safe_load(f)
 
     return LLMConfig(**config_data)
@@ -306,7 +310,7 @@ class Settings(BaseModel):
     # OpenRouter configuration (kept for backward compatibility)
     openrouter_api_key: str | None = os.getenv("OPENROUTER_API_KEY")
     openrouter_base_url: str | None = None  # Will be overridden by LLM config
-    openrouter_model: str | None = None     # Will be overridden by LLM config
+    openrouter_model: str | None = None  # Will be overridden by LLM config
 
     # OpenAI configuration for embeddings
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
@@ -321,9 +325,15 @@ class Settings(BaseModel):
 
     # Database configuration
     database_url: str | None = os.getenv("CA_DATABASE_URL")
-    database_pool_size: Optional[int] = _parse_int(os.getenv("CA_DATABASE_POOL_SIZE"), 5)
-    database_max_overflow: Optional[int] = _parse_int(os.getenv("CA_DATABASE_MAX_OVERFLOW"), 10)
-    database_pool_timeout: Optional[int] = _parse_int(os.getenv("CA_DATABASE_POOL_TIMEOUT"), 30)
+    database_pool_size: Optional[int] = _parse_int(
+        os.getenv("CA_DATABASE_POOL_SIZE"), 5
+    )
+    database_max_overflow: Optional[int] = _parse_int(
+        os.getenv("CA_DATABASE_MAX_OVERFLOW"), 10
+    )
+    database_pool_timeout: Optional[int] = _parse_int(
+        os.getenv("CA_DATABASE_POOL_TIMEOUT"), 30
+    )
     database_echo: bool = _parse_bool(os.getenv("CA_DATABASE_ECHO"), False)
 
     # CityCatalyst integration - Service API key authentication and JWT token exchange
@@ -342,7 +352,7 @@ class Settings(BaseModel):
         # Override with LLM config values, allowing env vars to take precedence
         if self.openrouter_base_url is None:
             self.openrouter_base_url = self.llm.api.openrouter.base_url
-        
+
         if self.openrouter_model is None:
             self.openrouter_model = self.llm.models.get("default", "openrouter/auto")
 
@@ -356,10 +366,10 @@ class Settings(BaseModel):
         if langsmith_cfg:
             if langsmith_cfg.project:
                 self.langsmith_project = langsmith_cfg.project
-            
+
             if langsmith_cfg.endpoint:
                 self.langsmith_endpoint = langsmith_cfg.endpoint
-            
+
             if langsmith_cfg.tracing_enabled is not None:
                 self.langsmith_tracing_enabled = bool(langsmith_cfg.tracing_enabled)
 
@@ -380,7 +390,7 @@ class Settings(BaseModel):
                 )
                 self.langsmith_tracing_enabled = False
                 return
-            
+
             # Surface configuration to the expected environment variables for LangSmith/LangChain SDKs
             os.environ.setdefault("LANGSMITH_TRACING_V2", "true")
             os.environ.setdefault("LANGCHAIN_TRACING_V2", "true")
@@ -396,7 +406,6 @@ class Settings(BaseModel):
             if self.langsmith_api_key:
                 os.environ.setdefault("LANGSMITH_API_KEY", self.langsmith_api_key)
                 os.environ.setdefault("LANGCHAIN_API_KEY", self.langsmith_api_key)
-
 
 
 _settings: Settings | None = None

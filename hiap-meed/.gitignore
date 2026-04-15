@@ -1,0 +1,20 @@
+# HIAP-MEED gitignore
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Editor
+.vscode/
+
+# Service local
+.env
+.venv
+
+# Testing
+.pytest_cache/
+
+# Runtime artifacts
+logs/
+
+# Implementation plan
+implementation-plan.md

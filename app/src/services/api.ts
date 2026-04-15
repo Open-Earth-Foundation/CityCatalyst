@@ -1,3 +1,4 @@
+import { env } from "next-runtime-env";
 import {
   type CityAttributes,
   type InventoryAttributes,
@@ -61,6 +62,8 @@ import {
   PermissionCheckResponse,
   Authz,
   CityDashboardResponse,
+  PersonalAccessToken,
+  PersonalAccessTokenCreateResponse,
 } from "@/util/types";
 import type {
   CityLocationResponse,
@@ -74,6 +77,9 @@ import type {
   HighImpactActionRankingStatus,
   BulkHiapPrioritizationResult,
   HiapJob,
+  ImportedFileResponse,
+  ImportStatusResponse,
+  VersionHistoryResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -119,6 +125,9 @@ export const api = createApi({
     "ProjectModules",
     "Modules",
     "ActionPlan",
+    "VersionHistory",
+    "PersonalAccessToken",
+    "AdminModules",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -128,7 +137,7 @@ export const api = createApi({
         transformResponse: (response: { data: CityAndYearsResponse[] }) =>
           response.data.map(({ city, years }) => ({
             city,
-            years: years.sort((a, b) => b.year - a.year),
+            years: years.sort((a, b) => a.year - b.year),
           })),
         providesTags: ["CitiesAndInventories"],
       }),
@@ -1393,7 +1402,7 @@ export const api = createApi({
         }) => {
           return response;
         },
-        invalidatesTags: ["Hiap"],
+        invalidatesTags: ["Hiap", "VersionHistory"],
       }),
       generateActionPlan: builder.mutation<
         { plan: string; timestamp: string; actionName: string },
@@ -1790,6 +1799,229 @@ export const api = createApi({
         }),
         transformResponse: (response: { threadId: string }) => response,
       }),
+
+      // Inventory Import Endpoints
+      uploadInventoryFile: builder.mutation<
+        ImportedFileResponse | { accepted: true; id: string; message?: string },
+        { cityId: string; inventoryId: string; file: File }
+      >({
+        query: ({ cityId, inventoryId, file }) => {
+          const formData = new FormData();
+          formData.append("file", file);
+          return {
+            url: `city/${cityId}/inventory/${inventoryId}/import`,
+            method: "POST",
+            body: formData,
+          };
+        },
+        transformResponse: (response: {
+          data:
+            | ImportedFileResponse
+            | { accepted: true; id: string; message?: string };
+        }) => response.data,
+        invalidatesTags: ["Inventory"],
+      }),
+      getImportStatus: builder.query<
+        ImportStatusResponse,
+        { cityId: string; inventoryId: string; importedFileId: string }
+      >({
+        query: ({ cityId, inventoryId, importedFileId }) =>
+          `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}`,
+        transformResponse: (response: { data: ImportStatusResponse }) =>
+          response.data,
+      }),
+      extractImport: builder.mutation<
+        | { id: string; importStatus: string; rowCount: number }
+        | { accepted: true; id: string; message?: string },
+        {
+          cityId: string;
+          inventoryId: string;
+          importedFileId: string;
+        }
+      >({
+        query: ({ cityId, inventoryId, importedFileId }) => ({
+          url: `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}/extract`,
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data:
+            | { id: string; importStatus: string; rowCount: number }
+            | { accepted: true; id: string; message?: string };
+        }) => response.data,
+        invalidatesTags: ["Inventory"],
+      }),
+      interpretImport: builder.mutation<
+        | { id: string; importStatus: string; rowCount?: number }
+        | { accepted: true; id: string; message?: string },
+        {
+          cityId: string;
+          inventoryId: string;
+          importedFileId: string;
+        }
+      >({
+        query: ({ cityId, inventoryId, importedFileId }) => ({
+          url: `city/${cityId}/inventory/${inventoryId}/import/${importedFileId}/interpret`,
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data:
+            | { id: string; importStatus: string; rowCount?: number }
+            | { accepted: true; id: string; message?: string };
+        }) => response.data,
+        invalidatesTags: ["Inventory"],
+      }),
+      approveImport: builder.mutation<
+        ImportedFileResponse | { accepted: true; id: string; message?: string },
+        {
+          cityId: string;
+          inventoryId: string;
+          importedFileId: string;
+          mappingOverrides?: Record<string, any>;
+        }
+      >({
+        query: ({ cityId, inventoryId, importedFileId, mappingOverrides }) => ({
+          url: `city/${cityId}/inventory/${inventoryId}/import/approve`,
+          method: "POST",
+          body: {
+            importedFileId,
+            mappingOverrides,
+          },
+        }),
+        transformResponse: (response: {
+          data:
+            | ImportedFileResponse
+            | { accepted: true; id: string; message?: string };
+        }) => response.data,
+        invalidatesTags: [
+          "Inventory",
+          "InventoryProgress",
+          "InventoryValue",
+          "ReportResults",
+          "YearlyReportResults",
+        ],
+      }),
+
+      // Version Control Endpoints
+      getVersionHistory: builder.query<
+        VersionHistoryResponse,
+        { inventoryId: string; moduleName?: string }
+      >({
+        query: ({ inventoryId, moduleName = "ghgi" }) =>
+          `inventory/${inventoryId}/version-history?module=${moduleName}`,
+        transformResponse: (response: { data: VersionHistoryResponse }) =>
+          response.data,
+        providesTags: ["VersionHistory"],
+      }),
+
+      restoreVersion: builder.mutation<
+        { success: boolean },
+        {
+          inventoryId: string;
+          versionId: string;
+        }
+      >({
+        query: ({ inventoryId, versionId }) => ({
+          url: `inventory/${inventoryId}/version-history/restore/${versionId}`,
+          method: "POST",
+        }),
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
+        invalidatesTags: [
+          "VersionHistory",
+          "Inventory",
+          "InventoryProgress",
+          "ReportResults",
+          "YearlyReportResults",
+        ],
+      }),
+
+      // Personal Access Token Endpoints
+      getPersonalAccessTokens: builder.query<PersonalAccessToken[], void>({
+        query: () => "/user/tokens",
+        transformResponse: (response: { tokens: PersonalAccessToken[] }) =>
+          response.tokens,
+        providesTags: ["PersonalAccessToken"],
+      }),
+      createPersonalAccessToken: builder.mutation<
+        PersonalAccessTokenCreateResponse,
+        { name: string; scopes: string[]; expiresAt?: string | null }
+      >({
+        query: (data) => ({
+          url: "/user/tokens",
+          method: "POST",
+          body: data,
+        }),
+        invalidatesTags: ["PersonalAccessToken"],
+      }),
+      deletePersonalAccessToken: builder.mutation<{ success: boolean }, string>(
+        {
+          query: (tokenId) => ({
+            url: `/user/tokens/${tokenId}`,
+            method: "DELETE",
+          }),
+          invalidatesTags: ["PersonalAccessToken"],
+        },
+      ),
+
+      // Admin Modules endpoints
+      getAdminModules: builder.query<ModuleAttributes[], void>({
+        query: () => "admin/modules",
+        transformResponse: (response: { data: ModuleAttributes[] }) =>
+          response.data,
+        providesTags: ["AdminModules"],
+      }),
+      createModule: builder.mutation<
+        ModuleAttributes,
+        {
+          name: string;
+          description?: string;
+          tagline?: string;
+          stage: string;
+          status?: string;
+          url: string;
+          logo?: string;
+        }
+      >({
+        query: (data) => ({
+          url: "admin/modules",
+          method: "POST",
+          body: data,
+        }),
+        transformResponse: (response: { data: ModuleAttributes }) =>
+          response.data,
+        invalidatesTags: ["AdminModules", "Modules"],
+      }),
+      updateModule: builder.mutation<
+        ModuleAttributes,
+        {
+          id: string;
+          data: {
+            name?: string;
+            description?: string;
+            tagline?: string;
+            stage?: string;
+            status?: string;
+            url?: string;
+            logo?: string;
+          };
+        }
+      >({
+        query: ({ id, data }) => ({
+          url: `admin/modules/${id}`,
+          method: "PUT",
+          body: data,
+        }),
+        transformResponse: (response: { data: ModuleAttributes }) =>
+          response.data,
+        invalidatesTags: ["AdminModules", "Modules"],
+      }),
+      deleteModule: builder.mutation<void, string>({
+        query: (id) => ({
+          url: `admin/modules/${id}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["AdminModules", "Modules"],
+      }),
     };
   },
 });
@@ -1798,7 +2030,7 @@ export const openclimateAPI = createApi({
   reducerPath: "openclimateapi",
   baseQuery: fetchBaseQuery({
     baseUrl:
-      process.env.NEXT_PUBLIC_OPENCLIMATE_API_URL ||
+      env("NEXT_PUBLIC_OPENCLIMATE_API_URL") ??
       "https://app.openclimate.network",
   }),
   endpoints: (builder) => ({
@@ -1927,5 +2159,12 @@ export const {
   useDisableProjectModuleAccessMutation,
   useGetHiapJobsQuery,
   useGetHiapStatusQuery,
+  useGetPersonalAccessTokensQuery,
+  useCreatePersonalAccessTokenMutation,
+  useDeletePersonalAccessTokenMutation,
+  useGetAdminModulesQuery,
+  useCreateModuleMutation,
+  useUpdateModuleMutation,
+  useDeleteModuleMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

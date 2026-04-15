@@ -132,6 +132,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
       inventoryValueId,
       inventoryValueParams,
       gasValues,
+      session?.user.id,
     );
     return NextResponse.json({ success: !!result, data: result });
   } catch (error: any) {
@@ -458,8 +459,9 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
 
   const count = await ActivityService.deleteAllActivitiesInSubsector({
     inventoryId: inventory.inventoryId,
-    subsectorId: subSectorId as string,
+    subSectorId: subSectorId as string,
     referenceNumber: gpcReferenceNumber as string,
+    userId: session?.user.id,
   });
 
   return NextResponse.json({

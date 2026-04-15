@@ -27,6 +27,7 @@ import type {
 } from "@/backend/DataSourceService";
 import type { ProjectAttributes } from "@/models/Project";
 import type { OrganizationAttributes } from "@/models/Organization";
+import type { VersionAttributes } from "@/models/Version";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -642,7 +643,7 @@ export interface BaseAction {
   isSelected: boolean;
   actionId: string;
   rank: number;
-  explanation: Record<string, string>;
+  explanation: { explanations?: Record<string, string> };
   created: Date;
   last_updated: Date;
 }
@@ -836,4 +837,138 @@ export interface CCRATopRisksData {
   indicators?: Indicator[];
   cityName?: string;
   region?: string;
+}
+
+export interface ImportedFileResponse {
+  id: string;
+  userId: string;
+  cityId: string;
+  inventoryId: string;
+  fileName: string;
+  fileType: "xlsx" | "csv" | "pdf";
+  fileSize: number;
+  originalFileName: string;
+  importStatus: string;
+  created: string;
+  lastUpdated: string;
+}
+
+export interface ColumnInfo {
+  columnName: string;
+  interpretedAs: string | null;
+  status: "detected" | "manual";
+  exampleValue: string | null;
+}
+
+export interface RequiredMappingOption {
+  key: string;
+  label: string;
+}
+
+/** One row from AI extraction (Path C PDF). */
+export interface ExtractedRowDisplay {
+  year: number | null;
+  sector: string | null;
+  subsector: string | null;
+  category: string | null;
+  totalCO2e: number | null;
+  co2?: number | null;
+  ch4?: number | null;
+  n2o?: number | null;
+  gpcRefNo?: string | null;
+  source?: string | null;
+}
+
+export interface ValidationResults {
+  totalColumnsDetected: number;
+  columns: ColumnInfo[];
+  requiredMappings?: RequiredMappingOption[];
+  errors: string[];
+  warnings: string[];
+  /** PDF (Path C): AI-extracted rows for validation/mapping steps */
+  extractedRows?: ExtractedRowDisplay[];
+}
+
+export interface ImportSummary {
+  sourceFile: string;
+  formatDetected: string;
+  rowsFound: number;
+  fieldsMapped: number;
+}
+
+export interface FieldMapping {
+  sourceColumn: string;
+  mappedField: string;
+}
+
+export interface ReviewData {
+  importSummary: ImportSummary;
+  fieldMappings: FieldMapping[];
+  mappingPreview?: any;
+}
+
+export interface ImportStatusResponse {
+  id: string;
+  importStatus: string;
+  currentStep: 1 | 2 | 3 | 4;
+  fileInfo: {
+    fileName: string;
+    originalFileName: string;
+    fileType: "xlsx" | "csv" | "pdf";
+    fileSize: number;
+  };
+  validationResults: ValidationResults | null;
+  columnMappings: ValidationResults | null;
+  reviewData: ReviewData | null;
+  /** Year inferred from file data (eCRF); used to check match with inventory target year. */
+  inferredYearFromFile?: number;
+  rowCount: number;
+  processedRowCount: number;
+  errorLog: string | null;
+  created: string;
+  lastUpdated: string;
+  completedAt: string | null;
+}
+
+export type VersionChange = VersionAttributes & {
+  author: { name: string; userId: string };
+  previousVersion: VersionAttributes | null;
+};
+
+export type VersionHistoryEntry = {
+  version: VersionChange;
+  activities?: VersionChange[];
+  subCategory?: SubCategoryAttributes;
+  dataSource?: {
+    datasourceName?: string;
+    datasetName?: Record<string, string>;
+  };
+  previousDataSource?: {
+    datasourceName?: string;
+    datasetName?: Record<string, string>;
+  };
+  mostRecentAssociatedVersion?: VersionChange;
+};
+
+export type VersionHistoryResponse = VersionHistoryEntry[];
+
+// Personal Access Token types
+export interface PersonalAccessToken {
+  id: string;
+  name: string;
+  tokenPrefix: string;
+  scopes: string[];
+  expiresAt: string | null;
+  lastUsedAt: string | null;
+  created: string;
+}
+
+export interface PersonalAccessTokenCreateResponse {
+  id: string;
+  token: string;
+  name: string;
+  tokenPrefix: string;
+  scopes: string[];
+  expiresAt: string | null;
+  created: string;
 }

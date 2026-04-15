@@ -83,7 +83,11 @@
     "afolu": "AFOLU",
     "public_health": "Saúde Pública",
     "water_resources": "Recursos Hídricos",
-    "food_security": "Segurança Alimentar"
+    "food_security": "Segurança Alimentar",
+    "biodiversity": "Biodiversidade",
+    "road_infrastructure": "Infraestrutura Rodoviária",
+    "energy_security": "Segurança Energética",
+    "geo-hydrological_disasters": "Desastres Geo-Hidrológicos"
   },
   "effectiveness-level": {
     "high": "Alta",
@@ -119,6 +123,7 @@
   "actions": "Ações",
   "open-cc-actions": "Ações Abertas do CC",
   "top-climate-actions": "Principais Ações de Alto Impacto",
+  "no-actions-generated": "Nenhuma ação de {{type}} foi gerada ainda",
   "ranked-and-unranked-actions": "Ações classificadas e não classificadas",
   "pick-actions": "Escolher principais ações",
   "clear-selection": "Limpar seleção",

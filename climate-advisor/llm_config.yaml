@@ -71,23 +71,25 @@ conversation:
   history_limit: 5
   # Whether to include conversation history in agent context
   include_history: true
-  
+
   # Conversation History Retention & Pruning
   retention:
-    # Number of most recent turns to preserve with full tool metadata in LLM context
+    # Number of most recent turns to preserve in LLM context
     # A "turn" = user message + assistant response
-    # Older turns have tools stripped to reduce token usage, but full tools remain in DB
-    # Default: 2 turns = last 4 messages (if alternating roles)
-    preserve_turns: 2
-    
+    # NOTE:
+    # - Tool metadata (`messages.tools_used`) is always stored in DB.
+    # - It is NOT sent as extra keys in Responses API input items (unknown fields are rejected).
+    # - Recent tool outputs are injected as additional SYSTEM messages (role/content only)
+    #   for preserved turns so follow-up requests stay grounded (e.g. remembering inventoryId).
+    preserve_turns: 10
+
     # Maximum number of messages to load from database per request
     # Older messages beyond this limit are not loaded at all
     max_loaded_messages: 20
-    
-    # Whether to strip tool invocation metadata from older messages before sending to LLM
-    # If true: older messages (outside preserve_turns window) have tools_used removed
-    # If false: all messages retain full tool metadata in LLM context (higher token usage)
-    # NOTE: Full tool metadata is ALWAYS saved to DB regardless of this setting
+
+    # Whether to apply pruning logic for history payload size (message-count based)
+    # If true: only the last preserve_turns are treated as "preserved" in logs/metrics.
+    # If false: all loaded messages are treated as preserved (still role/content only).
     prune_tools_for_llm: true
 
 # Feature Flags

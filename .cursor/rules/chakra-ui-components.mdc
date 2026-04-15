@@ -1,0 +1,77 @@
+---
+description: Chakra UI v3 component patterns, theming, and styling conventions
+globs: app/src/components/**/*.tsx
+alwaysApply: false
+---
+
+# Chakra UI v3 Component Patterns
+
+## Theme System
+
+The app uses `createSystem` from Chakra UI v3 with multi-theme support via `next-themes`:
+- Themes: `blue_theme`, `light_brown_theme`, `dark_orange_theme`, `green_theme`, `light_blue_theme`, `violet_theme`
+- Theme config: `src/lib/theme/recipes/app-theme.ts`
+- Semantic tokens change per theme via `conditions`
+
+## Component Template
+
+```tsx
+"use client";
+
+import { Box, Text, Heading, Flex, Stack } from "@chakra-ui/react";
+import { useTranslation } from "@/i18n/client";
+
+interface MyComponentProps {
+  title: string;
+  lng: string;
+}
+
+export function MyComponent({ title, lng }: MyComponentProps) {
+  const { t } = useTranslation(lng, "namespace");
+
+  return (
+    <Box p={6} borderRadius="lg" bg="background.overlay">
+      <Heading size="lg">{title}</Heading>
+      <Text color="content.tertiary">{t("description")}</Text>
+    </Box>
+  );
+}
+```
+
+## Semantic Tokens (use these, not raw colors)
+
+- Backgrounds: `background.default`, `background.overlay`, `background.neutral`
+- Content: `content.primary`, `content.secondary`, `content.tertiary`, `content.link`
+- Border: `border.neutral`, `border.overlay`
+- Interactive: `interactive.primary`, `interactive.secondary`
+- Sentiment: `sentiment.positiveDefault`, `sentiment.negativeDefault`, `sentiment.warningDefault`
+
+## UI Primitives (src/components/ui/)
+
+Use project wrappers instead of raw Chakra:
+- `@/components/ui/button` — Button with loading spinner
+- `@/components/ui/dialog` — Modal dialogs
+- `@/components/ui/field` — Form field with label/error
+- `@/components/ui/data-table` — TanStack-powered data table
+- `@/components/ui/tooltip`, `toaster`, `checkbox`, `switch`, etc.
+
+## File Organization
+
+```
+src/components/
+├── ui/              # Design system primitives (Chakra wrappers)
+├── Navigation/      # Navbar, sidebar, breadcrumbs
+├── Tabs/            # Tab-based views (Activity, etc.)
+├── Modals/          # Modal dialogs
+├── Sections/        # Page sections
+├── Skeletons/       # Loading skeletons
+├── shared/          # Cross-feature shared components
+├── steps/           # Multi-step wizard components
+└── PublicDashboard/ # Public-facing dashboard
+```
+
+## Naming
+
+- **PascalCase** for component names and folders when they're feature buckets
+- **kebab-case** for utility component files (e.g. `form-input.tsx`, `activity-tab.tsx`)
+- Components export as named exports, not default

@@ -11,7 +11,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: climate-advisor-migrate
-          image: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor:latest
+          image: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor:test
           imagePullPolicy: Always
           envFrom:
             - configMapRef:

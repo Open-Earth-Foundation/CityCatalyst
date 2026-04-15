@@ -1,0 +1,131 @@
+{
+  "defaults": {
+    "user_id": "1b4d6a25-82b5-42c2-94fb-d4e2dcc4c6f1",
+    "context": {
+      "cc_access_token": "${CA_E2E_CC_TOKEN}"
+    }
+  },
+  "cases": [
+    {
+      "name": "gpc_basic_missing_data",
+      "content": "List all required GPC Basic sectors and which are missing data for {{city_name}}."
+    },
+    {
+      "name": "best_inventory_years_city",
+      "content": "What are the best inventory years for {{city_name}} based on data availability?",
+      "expect_tool": "city_inventory_search",
+      "requires": [
+        "city_name"
+      ]
+    },
+    {
+      "name": "confirm_population_city",
+      "content": "Confirm the population for {{city_name}} in 2024.",
+      "requires": [
+        "city_name",
+        "inventory_id"
+      ],
+      "payload": {
+        "inventory_id": "{{inventory_id}}"
+      }
+    },
+    {
+      "name": "scope1_subsectors_stationary_energy",
+      "content": "What sub-sectors are required under Scope 1 for stationary energy?",
+      "expect_tool": "climate_vector_search",
+      "expect_tool_output_contains": [
+        "Relevant climate knowledge base excerpts"
+      ]
+    },
+    {
+      "name": "ar6_gases_inventory",
+      "content": "Which gases are included under AR6 for this inventory?",
+      "expect_tool": "climate_vector_search",
+      "expect_tool_output_contains": [
+        "Relevant climate knowledge base excerpts"
+      ]
+    },
+    {
+      "name": "sector_map_inventory",
+      "content": "Show me the sector map used for this inventory.",
+      "requires": [
+        "inventory_id"
+      ],
+      "payload": {
+        "inventory_id": "{{inventory_id}}"
+      }
+    },
+    {
+      "name": "city_total_emissions_latest",
+      "content": "What is {{city_name}} total emissions for latest inventory year?",
+      "requires": [
+        "city_name",
+        "inventory_id"
+      ],
+      "payload": {
+        "inventory_id": "{{inventory_id}}"
+      }
+    },
+    {
+      "name": "per_capita_emissions",
+      "content": "Estimate per-capita emissions using the inventory total and city population.",
+      "requires": [
+        "inventory_id"
+      ],
+      "payload": {
+        "inventory_id": "{{inventory_id}}"
+      }
+    },
+    {
+      "name": "inventory_datasources",
+      "content": "What data sources are currently linked to this inventory?",
+      "expect_tool": "get_all_datasources",
+      "requires": [
+        "inventory_id"
+      ],
+      "payload": {
+        "inventory_id": "{{inventory_id}}"
+      }
+    },
+    {
+      "name": "gpc_basic_vs_basic_plus",
+      "content": "Explain the difference between GPC Basic and GPC Basic Plus.",
+      "expect_tool": "climate_vector_search",
+      "expect_tool_output_contains": [
+        "Relevant climate knowledge base excerpts"
+      ]
+    },
+    {
+      "name": "ar6_definition",
+      "content": "What is AR6 and why is it used for factors?",
+      "expect_tool": "climate_vector_search",
+      "expect_tool_output_contains": [
+        "Relevant climate knowledge base excerpts"
+      ]
+    },
+    {
+      "name": "waste_data_sources",
+      "content": "What are common data sources for municipal waste emissions?",
+      "expect_tool": "climate_vector_search",
+      "expect_tool_output_contains": [
+        "Relevant climate knowledge base excerpts"
+      ]
+    },
+    {
+      "name": "grid_factors_over_time",
+      "content": "How should we treat grid emission factor changes over time?",
+      "expect_tool": "climate_vector_search",
+      "expect_tool_output_contains": [
+        "Relevant climate knowledge base excerpts"
+      ]
+    },
+    {
+      "name": "scopes_plain_terms",
+      "content": "Explain Scope 1, 2, and 3 in plain terms for a city audience.",
+      "expect_tool": "climate_vector_search",
+      "expect_tool_output_contains": [
+        "Relevant climate knowledge base excerpts"
+      ]
+    }
+  ]
+}

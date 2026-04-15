@@ -1,12 +1,18 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import type { Inventory, InventoryId } from "./Inventory";
+import { User, UserId } from "./User";
 
 export interface VersionAttributes {
   versionId: string;
-  year?: number;
-  version?: string;
   inventoryId?: string;
+  authorId?: string;
+  entryId?: string; // ID of the table entry that was changed
+  previousVersionId?: string; // ID of the previous version entry of the same table entry
+  table?: string;
+  moduleName?: string;
+  data?: Record<string, any>;
+  isDeleted?: boolean;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -14,9 +20,14 @@ export interface VersionAttributes {
 export type VersionPk = "versionId";
 export type VersionId = Version[VersionPk];
 export type VersionOptionalAttributes =
-  | "year"
-  | "version"
   | "inventoryId"
+  | "authorId"
+  | "entryId"
+  | "previousVersionId"
+  | "table"
+  | "moduleName"
+  | "data"
+  | "isDeleted"
   | "created"
   | "lastUpdated";
 export type VersionCreationAttributes = Optional<
@@ -29,17 +40,38 @@ export class Version
   implements Partial<VersionAttributes>
 {
   declare versionId: string;
-  declare year?: number;
-  declare version?: string;
   declare inventoryId?: string;
+  declare authorId?: string;
+  declare entryId?: string; // ID of the table entry that was changed
+  declare previousVersionId?: string; // ID of the previous version entry of the same table entry
+  declare table?: string;
+  declare moduleName?: string;
+  declare data?: Record<string, any>;
+  declare isDeleted?: boolean;
   declare created?: Date;
   declare lastUpdated?: Date;
 
   // Version belongsTo Inventory via inventoryId
   declare inventory: Inventory;
   declare getInventory: Sequelize.BelongsToGetAssociationMixin<Inventory>;
-  declare setInventory: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
+  declare setInventory: Sequelize.BelongsToSetAssociationMixin<
+    Inventory,
+    InventoryId
+  >;
   declare createInventory: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
+
+  // Version belongsTo User via authorId
+  declare author: User;
+  declare getAuthor: Sequelize.BelongsToGetAssociationMixin<User>;
+  declare setAuthor: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
+
+  // Version hasOne Version via previousVersionId
+  declare previousVersion: Version;
+  declare getPreviousVersion: Sequelize.BelongsToGetAssociationMixin<Version>;
+  declare setPreviousVersion: Sequelize.BelongsToSetAssociationMixin<
+    Version,
+    VersionId
+  >;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Version {
     return Version.init(
@@ -50,22 +82,56 @@ export class Version
           primaryKey: true,
           field: "version_id",
         },
-        year: {
-          type: DataTypes.INTEGER,
-          allowNull: true,
-        },
-        version: {
-          type: DataTypes.STRING(255),
-          allowNull: true,
-        },
         inventoryId: {
           type: DataTypes.UUID,
-          allowNull: true,
+          allowNull: false,
           references: {
             model: "Inventory",
             key: "inventory_id",
           },
           field: "inventory_id",
+        },
+        authorId: {
+          type: DataTypes.UUID,
+          allowNull: false,
+          references: {
+            model: "User",
+            key: "user_id",
+          },
+          field: "author_id",
+        },
+        entryId: {
+          type: DataTypes.UUID,
+          allowNull: false,
+          field: "entry_id",
+        },
+        previousVersionId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "Version",
+            key: "version_id",
+          },
+          field: "previous_version_id",
+        },
+        table: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
+        moduleName: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          defaultValue: "ghgi",
+          field: "module_name",
+        },
+        data: {
+          type: DataTypes.JSONB,
+          allowNull: false,
+        },
+        isDeleted: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          field: "is_deleted",
         },
       },
       {

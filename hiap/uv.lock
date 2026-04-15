@@ -1534,14 +1534,14 @@ wheels = [
 
 [[package]]
 name = "langchain-text-splitters"
-version = "1.1.0"
+version = "1.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "langchain-core" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/41/42/c178dcdc157b473330eb7cc30883ea69b8ec60078c7b85e2d521054c4831/langchain_text_splitters-1.1.0.tar.gz", hash = "sha256:75e58acb7585dc9508f3cd9d9809cb14751283226c2d6e21fb3a9ae57582ca22", size = 272230, upload-time = "2025-12-14T01:15:38.659Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/85/38/14121ead61e0e75f79c3a35e5148ac7c2fe754a55f76eab3eed573269524/langchain_text_splitters-1.1.1.tar.gz", hash = "sha256:34861abe7c07d9e49d4dc852d0129e26b32738b60a74486853ec9b6d6a8e01d2", size = 279352, upload-time = "2026-02-18T23:02:42.798Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d8/1a/a84ed1c046deecf271356b0179c1b9fba95bfdaa6f934e1849dee26fad7b/langchain_text_splitters-1.1.0-py3-none-any.whl", hash = "sha256:f00341fe883358786104a5f881375ac830a4dd40253ecd42b4c10536c6e4693f", size = 34182, upload-time = "2025-12-14T01:15:37.382Z" },
+    { url = "https://files.pythonhosted.org/packages/84/66/d9e0c3b83b0ad75ee746c51ba347cacecb8d656b96e1d513f3e334d1ccab/langchain_text_splitters-1.1.1-py3-none-any.whl", hash = "sha256:5ed0d7bf314ba925041e7d7d17cd8b10f688300d5415fb26c29442f061e329dc", size = 35734, upload-time = "2026-02-18T23:02:41.913Z" },
 ]
 
 [[package]]

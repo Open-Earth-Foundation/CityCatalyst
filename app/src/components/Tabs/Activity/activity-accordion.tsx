@@ -423,9 +423,11 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                         fontSize="title.md"
                         fontWeight="semibold"
                       >
-                        {key.includes(",")
-                          ? t(`mixed${activityGroups[key].tag}`)
-                          : t(key)}
+                        {key == null || key === "" || key === "undefined"
+                          ? t("uncategorized")
+                          : key.includes(",")
+                            ? t(`mixed${activityGroups[key].tag}`)
+                            : t(key)}
                       </Text>
                       <Text
                         color="content.tertiary"

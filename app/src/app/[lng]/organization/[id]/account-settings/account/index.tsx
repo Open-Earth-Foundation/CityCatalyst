@@ -233,12 +233,13 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
                   borderColor="border.neutral"
                   borderRadius="md"
                 >
-                  <HStack>
+                  <HStack w="full">
                     <Box h={5} w={5} bg={selectedThemeValue?.color} />
                     <SelectValueText
                       color="content.tertiary"
                       fontWeight="medium"
                       placeholder={t("select-theme")}
+                      w="full"
                     />
                   </HStack>
                 </SelectTrigger>

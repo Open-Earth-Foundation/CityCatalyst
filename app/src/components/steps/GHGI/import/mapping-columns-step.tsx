@@ -77,7 +77,12 @@ export default function MappingColumnsStep({
           borderWidth="1px"
           borderColor="border.default"
         >
-          <VStack gap="16px" py={12} alignItems="center" justifyContent="center">
+          <VStack
+            gap="16px"
+            py={12}
+            alignItems="center"
+            justifyContent="center"
+          >
             <Spinner size="lg" color="interactive.primary" />
             <Text fontSize="body.md" color="content.secondary">
               {t("loading-validation-results")}
@@ -137,10 +142,7 @@ export default function MappingColumnsStep({
                       <NativeSelect.Field
                         value={currentKey}
                         onChange={(e) =>
-                          handleMappingChange(
-                            column.columnName,
-                            e.target.value,
-                          )
+                          handleMappingChange(column.columnName, e.target.value)
                         }
                       >
                         <option value="">{t("select-mapping")}</option>

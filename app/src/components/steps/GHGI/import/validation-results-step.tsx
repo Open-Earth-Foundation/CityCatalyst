@@ -42,7 +42,9 @@ export default function ValidationResultsStep({
   );
 
   const columns: ColumnInfo[] = data?.validationResults?.columns || [];
-  const detectedCount = columns.filter((col) => col.status === "detected").length;
+  const detectedCount = columns.filter(
+    (col) => col.status === "detected",
+  ).length;
 
   return (
     <Box w="full">
@@ -66,7 +68,12 @@ export default function ValidationResultsStep({
         borderColor="border.default"
       >
         {isLoading ? (
-          <VStack gap="16px" py={12} alignItems="center" justifyContent="center">
+          <VStack
+            gap="16px"
+            py={12}
+            alignItems="center"
+            justifyContent="center"
+          >
             <Spinner size="lg" color="interactive.primary" />
             <Text fontSize="body.md" color="content.secondary">
               {t("loading-validation-results")}

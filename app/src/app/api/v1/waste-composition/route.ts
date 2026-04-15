@@ -102,7 +102,7 @@ export const GET = apiHandler(async (_req: Request, context) => {
     ],
   });
 
-  const parsedLocode = city?.countryLocode ?? "world"; // TODO extend to use city Country locode;
+  const parsedLocode = city?.countryLocode ?? "world";
 
   const formulaValues = await db.models.FormulaInput.findAll({
     where: {
@@ -114,5 +114,14 @@ export const GET = apiHandler(async (_req: Request, context) => {
     },
   });
 
-  return NextResponse.json({ data: formulaValues });
+  // Prefer regional values over global ones when both exist for the same parameter
+  const valuesByParam = new Map<string, (typeof formulaValues)[number]>();
+  for (const value of formulaValues) {
+    const existing = valuesByParam.get(value.parameterName);
+    if (!existing || existing.region === "global") {
+      valuesByParam.set(value.parameterName, value);
+    }
+  }
+
+  return NextResponse.json({ data: Array.from(valuesByParam.values()) });
 });

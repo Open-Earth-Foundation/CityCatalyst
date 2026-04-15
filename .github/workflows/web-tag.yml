@@ -207,6 +207,8 @@ jobs:
             VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_PROD}} \
             "OPENAI_ASSISTANT_ID=asst_FCZ1wta3NElIFXCxDO1KME9I" \
+            LLM_PROVIDER=openai \
+            LLM_MODEL=gpt-4o-mini \
             HUGGINGFACE_API_KEY=${{secrets.HUGGINGFACE_API_KEY}} \
             "ADMIN_EMAILS=${{secrets.ADMIN_EMAILS}}" \
             "ADMIN_NAMES=${{secrets.ADMIN_NAMES}}" \

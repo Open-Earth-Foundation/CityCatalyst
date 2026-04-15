@@ -203,7 +203,7 @@ export default function HomePage({
 
   const inventoriesForCurrentCity = useMemo(() => {
     if (!cityYears) return [];
-    return [...cityYears.years].sort((a, b) => b.year - a.year) || [];
+    return [...cityYears.years].sort((a, b) => a.year - b.year) || [];
   }, [cityYears]);
 
   // Check user permissions for this city

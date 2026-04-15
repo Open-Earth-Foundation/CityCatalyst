@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-03-27T11:38:52.591234+00:00",
+  "request_id": "7aa84c5b-ad1c-4581-8953-44711844626b",
+  "event_index": 1,
+  "step_name": "fetch_city",
+  "event_type": "fetch_city.completed",
+  "payload": {
+    "locode": "CL IQQ",
+    "comuna_name": "Iquique",
+    "region_name": "Tarapac\u00e1",
+    "elapsed_seconds": 0.002567835006630048
+  }
+}

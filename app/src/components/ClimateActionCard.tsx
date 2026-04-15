@@ -568,6 +568,175 @@ const GeneratePlanDialog = ({
                         </VStack>
                       </Box>
                     )}
+
+                    {/* Milestones */}
+                    {planToDisplay.content?.milestones?.items && (
+                      <Box w="full">
+                        <TitleLarge
+                          fontWeight="bold"
+                          color="content.link"
+                          mb="8px"
+                          borderBottom="1px solid"
+                          borderColor="border.overlay"
+                          pb="12px"
+                        >
+                          {t("pdf.sections.milestones")} (
+                          {planToDisplay.content.milestones.items.length})
+                        </TitleLarge>
+                        <VStack gap="12px" alignItems="flex-start" w="full">
+                          {planToDisplay.content.milestones.items.map(
+                            (milestone: any, index: number) => (
+                              <Box
+                                key={index}
+                                display="flex"
+                                gap="4px"
+                                alignItems="baseline"
+                              >
+                                <BodyLarge color="content.primary" mb="4px">
+                                  {milestone.number}.
+                                </BodyLarge>
+                                <Box
+                                  p="12px"
+                                  bg="background.muted"
+                                  borderRadius="md"
+                                  w="full"
+                                >
+                                  <BodyLarge color="content.primary" mb="4px">
+                                    {milestone.title}
+                                  </BodyLarge>
+                                  <BodyLarge color="content.secondary">
+                                    {milestone.description}
+                                  </BodyLarge>
+                                </Box>
+                              </Box>
+                            ),
+                          )}
+                        </VStack>
+                      </Box>
+                    )}
+
+                    {/* Mitigation Measures */}
+                    {planToDisplay.content?.mitigations?.items && (
+                      <Box w="full">
+                        <TitleLarge
+                          fontWeight="bold"
+                          color="content.link"
+                          mb="8px"
+                          borderBottom="1px solid"
+                          borderColor="border.overlay"
+                          pb="12px"
+                        >
+                          {t("pdf.sections.mitigation-measures")} (
+                          {planToDisplay.content.mitigations.items.length})
+                        </TitleLarge>
+                        <VStack gap="8px" alignItems="flex-start" w="full">
+                          {planToDisplay.content.mitigations.items.map(
+                            (mitigation: any, index: number) => (
+                              <Box
+                                key={index}
+                                p="12px"
+                                bg="background.muted"
+                                borderRadius="md"
+                                w="full"
+                              >
+                                <BodyLarge
+                                  color="content.primary"
+                                  mb="4px"
+                                  fontWeight="bold"
+                                >
+                                  &bull; {mitigation.title}
+                                </BodyLarge>
+                                <BodyLarge color="content.secondary">
+                                  {mitigation.description}
+                                </BodyLarge>
+                              </Box>
+                            ),
+                          )}
+                        </VStack>
+                      </Box>
+                    )}
+
+                    {/* Adaptation Measures */}
+                    {planToDisplay.content?.adaptations?.items && (
+                      <Box w="full">
+                        <TitleLarge
+                          fontWeight="bold"
+                          color="content.link"
+                          mb="8px"
+                          borderBottom="1px solid"
+                          borderColor="border.overlay"
+                          pb="12px"
+                        >
+                          {t("pdf.sections.adaptation-measures")} (
+                          {planToDisplay.content.adaptations.items.length})
+                        </TitleLarge>
+                        <VStack gap="8px" alignItems="flex-start" w="full">
+                          {planToDisplay.content.adaptations.items.map(
+                            (adaptation: any, index: number) => (
+                              <Box
+                                key={index}
+                                p="12px"
+                                bg="background.muted"
+                                borderRadius="md"
+                                w="full"
+                              >
+                                <BodyLarge
+                                  color="content.primary"
+                                  mb="4px"
+                                  fontWeight="bold"
+                                >
+                                  &bull; {adaptation.title}
+                                </BodyLarge>
+                                <BodyLarge color="content.secondary">
+                                  {adaptation.description}
+                                </BodyLarge>
+                              </Box>
+                            ),
+                          )}
+                        </VStack>
+                      </Box>
+                    )}
+
+                    {/* Sustainable Development Goals */}
+                    {planToDisplay.content?.sdgs?.items && (
+                      <Box w="full">
+                        <TitleLarge
+                          fontWeight="bold"
+                          color="content.link"
+                          mb="8px"
+                          borderBottom="1px solid"
+                          borderColor="border.overlay"
+                          pb="12px"
+                        >
+                          {t("pdf.sections.sustainable-development-goals")} (
+                          {planToDisplay.content.sdgs.items.length})
+                        </TitleLarge>
+                        <VStack gap="8px" alignItems="flex-start" w="full">
+                          {planToDisplay.content.sdgs.items.map(
+                            (sdg: any, index: number) => (
+                              <Box
+                                key={index}
+                                p="12px"
+                                bg="background.muted"
+                                borderRadius="md"
+                                w="full"
+                              >
+                                <BodyLarge
+                                  color="content.primary"
+                                  mb="4px"
+                                  fontWeight="bold"
+                                >
+                                  &bull; {sdg.title}
+                                </BodyLarge>
+                                <BodyLarge color="content.secondary">
+                                  {sdg.description}
+                                </BodyLarge>
+                              </Box>
+                            ),
+                          )}
+                        </VStack>
+                      </Box>
+                    )}
                   </>
                 )}
               </VStack>

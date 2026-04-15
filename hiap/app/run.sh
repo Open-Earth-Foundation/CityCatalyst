@@ -15,6 +15,16 @@ echo "If not, downloading them from S3."
 echo "This may take a while."
 echo ""
 
+# Optional: allow starting the API without S3 artefacts (useful for external users).
+# Note: some endpoints may degrade or fail if required artefacts are missing.
+if [ "${HIAP_SKIP_S3_DOWNLOADS:-}" = "true" ] || [ "${HIAP_SKIP_S3_DOWNLOADS:-}" = "1" ]; then
+    echo ""
+    echo "HIAP_SKIP_S3_DOWNLOADS is enabled; skipping S3 downloads."
+    echo "Starting server (some features may not work without vector stores / artefacts)."
+    echo ""
+    exec uvicorn main:app --host 0.0.0.0 --port 8000
+fi
+
 # Initialize download status tracking
 DOWNLOAD_FAILED=false
 

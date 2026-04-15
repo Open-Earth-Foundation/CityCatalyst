@@ -1,5 +1,6 @@
 import { usePathname, useParams } from "next/navigation";
 import { useMemo } from "react";
+import { validate as isValidUuid } from "uuid";
 
 const LAST_VISITED_CITY_KEY = "lastVisitedCityId";
 const LAST_VISITED_INVENTORY_KEY = "lastVisitedInventoryId";
@@ -41,7 +42,7 @@ export function useRouteParams() {
     }
 
     if (!inventoryId && pathname) {
-      // Try to find inventory in various path patterns:
+      // Try to find inventory in various path patterns (only accept UUIDs; ignore literal segments like "onboarding"):
       // - /cities/[cityId]/GHGI/[inventoryId]
       // - /cities/[cityId]/HIAP/[inventoryId]
       // - /[lng]/[inventoryId] (direct inventory route)
@@ -49,8 +50,9 @@ export function useRouteParams() {
         pathname.match(/\/GHGI\/([^\/]+)/) ||
         pathname.match(/\/HIAP\/([^\/]+)/) ||
         pathname.match(/^\/[a-z]{2}\/([a-f0-9-]{36})(?:\/|$)/);
-      if (inventoryMatch && inventoryMatch[1] && inventoryMatch[1] !== "null") {
-        inventoryId = inventoryMatch[1];
+      const candidate = inventoryMatch?.[1];
+      if (candidate && candidate !== "null" && isValidUuid(candidate)) {
+        inventoryId = candidate;
       }
     }
 

@@ -1,0 +1,38 @@
+{
+  "counts": {
+    "total_actions": 155,
+    "valid_actions": 151,
+    "discarded_excluded": 0,
+    "discarded_legal": 4,
+    "ranked_actions": 20
+  },
+  "artifact_pointers": {
+    "summary_events": "summary.jsonl",
+    "input_snapshot": "input_snapshot.json",
+    "top_ranked_actions": "012_final_scoring.json",
+    "full_evidence": {
+      "hard_filter": "007_hard_filter.json",
+      "impact": "008_impact.json",
+      "alignment": "009_alignment.json",
+      "feasibility": "010_feasibility.json"
+    }
+  },
+  "schema_version": "1.0",
+  "request_id": "7aa84c5b-ad1c-4581-8953-44711844626b",
+  "generated_files": [
+    "001_fetch_city.json",
+    "002_fetch_actions.json",
+    "003_fetch_legal_requirements.json",
+    "004_fetch_policy_signals.json",
+    "005_validate_weights.json",
+    "007_hard_filter.json",
+    "008_impact.json",
+    "009_alignment.json",
+    "010_feasibility.json",
+    "012_final_scoring.json",
+    "013_response_summary.json",
+    "input_snapshot.json",
+    "response_full.json",
+    "summary.jsonl"
+  ]
+}

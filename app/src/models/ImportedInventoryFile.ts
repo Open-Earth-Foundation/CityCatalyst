@@ -11,7 +11,7 @@ export interface ImportedInventoryFileAttributes {
   cityId: string;
   inventoryId: string;
   fileName: string;
-  fileType: "xlsx" | "csv";
+  fileType: "xlsx" | "csv" | "pdf";
   fileSize: number;
   data?: Buffer | any;
   originalFileName: string;
@@ -56,7 +56,7 @@ export class ImportedInventoryFile
   declare cityId: string;
   declare inventoryId: string;
   declare fileName: string;
-  declare fileType: "xlsx" | "csv";
+  declare fileType: "xlsx" | "csv" | "pdf";
   declare fileSize: number;
   declare data?: Buffer | any;
   declare originalFileName: string;
@@ -135,7 +135,7 @@ export class ImportedInventoryFile
           field: "file_name",
         },
         fileType: {
-          type: DataTypes.ENUM("xlsx", "csv"),
+          type: DataTypes.ENUM("xlsx", "csv", "pdf"),
           allowNull: false,
           field: "file_type",
         },

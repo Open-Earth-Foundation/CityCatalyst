@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-03-27T11:38:52.947832+00:00",
+  "request_id": "7aa84c5b-ad1c-4581-8953-44711844626b",
+  "event_index": 5,
+  "step_name": "validate_weights",
+  "event_type": "validate_weights.completed",
+  "payload": {
+    "weights_override_provided": true,
+    "requested_weights_override": {
+      "impact": 0.5,
+      "alignment": 0.3,
+      "feasibility": 0.2
+    },
+    "weights": {
+      "impact": 0.5,
+      "alignment": 0.3,
+      "feasibility": 0.2
+    },
+    "elapsed_seconds": 0.0001792639959603548
+  }
+}

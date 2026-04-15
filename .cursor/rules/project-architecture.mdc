@@ -1,0 +1,72 @@
+---
+description: CityCatalyst project architecture, monorepo structure, and core conventions
+alwaysApply: true
+---
+
+# CityCatalyst Architecture
+
+## Monorepo Structure
+
+```
+CityCatalyst/
+├── app/                    # Next.js 15 (App Router) — main product
+│   ├── src/app/            # Pages & API routes (locale: [lng])
+│   ├── src/components/     # React components (Chakra UI v3)
+│   ├── src/services/       # RTK Query API, logger, PDF
+│   ├── src/backend/        # Server services (UserService, InventoryService...)
+│   ├── src/models/         # Sequelize models (PostgreSQL)
+│   ├── src/hooks/          # Custom React hooks
+│   ├── src/util/           # Shared utilities, validation (Zod), types
+│   ├── src/lib/            # Auth, theme, highlight, custom errors
+│   ├── src/i18n/           # i18next config + locales/{en,de,es,fr,pt}
+│   ├── src/features/       # Redux slices
+│   ├── migrations/         # Sequelize migrations (.cjs)
+│   └── seeders/            # Sequelize seeders (.cjs)
+├── global-api/             # Python FastAPI — data services
+├── climate-advisor/        # Python FastAPI — RAG chat agent (LangChain)
+├── hiap/                   # Python FastAPI — prioritization (ML/LLM)
+├── hiap-meed/              # Python FastAPI — MEED scoring
+├── k8s/                    # Shared Kubernetes manifests
+└── .github/workflows/      # CI/CD (GitHub Actions)
+```
+
+## Tech Stack (app/)
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 15 (App Router) |
+| UI | Chakra UI v3 + Emotion + next-themes |
+| State | Redux Toolkit + RTK Query |
+| Auth | NextAuth v4 (credentials, JWT) |
+| DB/ORM | PostgreSQL + Sequelize v6 |
+| Forms | react-hook-form + Zod |
+| i18n | i18next + react-i18next |
+| Charts | Nivo |
+| Testing | Jest (unit/API) + Playwright (E2E) |
+
+## Path Alias
+
+`@/` maps to `app/src/` — always use `@/` for imports inside `app/`.
+
+## Key Conventions
+
+- API routes live under `src/app/api/v1/` and use `apiHandler` wrapper from `@/util/api`
+- Pages use `[lng]` locale segment: `src/app/[lng]/...`
+- Backend services in `src/backend/` (e.g. `UserService`, `InventoryService`)
+- Validation schemas in `src/util/validation.ts` using Zod
+- Types in `src/util/types.ts`, enums in `src/util/enums.ts`
+- Feature flags in `src/util/feature-flags.ts`
+- Error handling centralized in `errorHandler` within `src/util/api.ts`
+- Logger: `import { logger } from "@/services/logger"` (pino)
+
+## Domain Glossary
+
+- **GPC**: Global Protocol for Community-Scale GHG Emissions
+- **GHGI**: Greenhouse Gas Inventory
+- **Inventory**: A city's emissions data for a specific year
+- **Sector/SubSector/SubCategory**: GPC hierarchy for emissions classification
+- **ActivityValue/GasValue**: Emissions data entries
+- **InventoryValue**: Aggregated emissions per sub-category
+- **HIAP**: High Impact Action Prioritization
+- **CCRA**: Climate Change Risk Assessment
+- **Locode**: UN/LOCODE city identifier

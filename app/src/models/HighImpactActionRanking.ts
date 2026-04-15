@@ -14,14 +14,22 @@ export interface HighImpactActionRankingAttributes {
   status?: HighImpactActionRankingStatus;
   errorMessage?: string | null;
   isBulk?: boolean;
+  userId?: string;
 }
 
 export type HighImpactActionRankingPk = "id";
-export type HighImpactActionRankingId = HighImpactActionRanking[HighImpactActionRankingPk];
-export type HighImpactActionRankingCreationAttributes = Optional<HighImpactActionRankingAttributes, "id">;
+export type HighImpactActionRankingId =
+  HighImpactActionRanking[HighImpactActionRankingPk];
+export type HighImpactActionRankingCreationAttributes = Optional<
+  HighImpactActionRankingAttributes,
+  "id"
+>;
 
 export class HighImpactActionRanking
-  extends Model<HighImpactActionRankingAttributes, HighImpactActionRankingCreationAttributes>
+  extends Model<
+    HighImpactActionRankingAttributes,
+    HighImpactActionRankingCreationAttributes
+  >
   implements HighImpactActionRankingAttributes
 {
   declare id: string;
@@ -35,8 +43,11 @@ export class HighImpactActionRanking
   declare status?: HighImpactActionRankingStatus;
   declare errorMessage?: string | null;
   declare isBulk?: boolean;
+  declare userId?: string;
 
-  static initModel(sequelize: Sequelize.Sequelize): typeof HighImpactActionRanking {
+  static initModel(
+    sequelize: Sequelize.Sequelize,
+  ): typeof HighImpactActionRanking {
     return HighImpactActionRanking.init(
       {
         id: {
@@ -88,6 +99,11 @@ export class HighImpactActionRanking
           defaultValue: false,
           field: "is_bulk",
         },
+        userId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          field: "user_id",
+        },
       },
       {
         sequelize,
@@ -118,4 +134,5 @@ export class HighImpactActionRanking
       },
     );
   }
-} 
+}
+

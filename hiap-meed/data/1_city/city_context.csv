@@ -1,0 +1,2981 @@
+"locode","comuna_name","comuna","attribute_type","attribute_value","attribute_units","attribute_category"
+CL ADC,Alto del Carmen,3302,unemployment_rate,8.77,percent,medium
+CL ADC,Alto del Carmen,3302,poverty_rate,21.19,percent,medium
+CL ADC,Alto del Carmen,3302,transport_logistics_employment,0.0,percent,very low
+CL ADC,Alto del Carmen,3302,electricity_access,66.67,percent,very low
+CL ADC,Alto del Carmen,3302,home_ownership,40.0,percent,very low
+CL ADC,Alto del Carmen,3302,renter_share,20.0,percent,low
+CL ADC,Alto del Carmen,3302,median_household_income,1138667.0,CLP,high
+CL ADC,Alto del Carmen,3302,industry_construction_employment,0.0,percent,very low
+CL ADC,Alto del Carmen,3302,public_transport_share,24.73,percent,low
+CL AHP,Alto Hospicio,1107,electricity_access,100.0,percent,very low
+CL AHP,Alto Hospicio,1107,median_household_income,1200000.0,CLP,high
+CL AHP,Alto Hospicio,1107,renter_share,18.03,percent,low
+CL AHP,Alto Hospicio,1107,industry_construction_employment,30.67,percent,high
+CL AHP,Alto Hospicio,1107,home_ownership,62.3,percent,low
+CL AHP,Alto Hospicio,1107,unemployment_rate,9.44,percent,high
+CL AHP,Alto Hospicio,1107,poverty_rate,26.77,percent,very high
+CL AHP,Alto Hospicio,1107,public_transport_share,31.84,percent,medium
+CL AHP,Alto Hospicio,1107,transport_logistics_employment,6.67,percent,very low
+CL ALG,Algarrobo,5602,median_household_income,1108241.0,CLP,medium
+CL ALG,Algarrobo,5602,home_ownership,75.0,percent,high
+CL ALG,Algarrobo,5602,renter_share,12.5,percent,low
+CL ALG,Algarrobo,5602,poverty_rate,20.94,percent,low
+CL ALG,Algarrobo,5602,electricity_access,100.0,percent,very low
+CL ALG,Algarrobo,5602,unemployment_rate,9.8,percent,high
+CL ALG,Algarrobo,5602,transport_logistics_employment,0.0,percent,very low
+CL ALG,Algarrobo,5602,industry_construction_employment,12.5,percent,low
+CL ALG,Algarrobo,5602,public_transport_share,39.54,percent,high
+CL ALH,Alhué,13502,renter_share,0.0,percent,very low
+CL ALH,Alhué,13502,industry_construction_employment,50.0,percent,very high
+CL ALH,Alhué,13502,poverty_rate,16.51,percent,very low
+CL ALH,Alhué,13502,public_transport_share,49.86,percent,very high
+CL ALH,Alhué,13502,transport_logistics_employment,0.0,percent,very low
+CL ALH,Alhué,13502,median_household_income,1414513.0,CLP,very high
+CL ALH,Alhué,13502,electricity_access,100.0,percent,very low
+CL ALH,Alhué,13502,unemployment_rate,8.18,percent,very low
+CL ALH,Alhué,13502,home_ownership,50.0,percent,very low
+CL AND,Andacollo,4103,public_transport_share,28.79,percent,medium
+CL AND,Andacollo,4103,electricity_access,100.0,percent,very low
+CL AND,Andacollo,4103,transport_logistics_employment,0.0,percent,very low
+CL AND,Andacollo,4103,median_household_income,1068233.0,CLP,medium
+CL AND,Andacollo,4103,unemployment_rate,9.08,percent,medium
+CL AND,Andacollo,4103,home_ownership,80.0,percent,high
+CL AND,Andacollo,4103,poverty_rate,24.26,percent,high
+CL AND,Andacollo,4103,renter_share,0.0,percent,very low
+CL AND,Andacollo,4103,industry_construction_employment,66.67,percent,very high
+CL ANF,Antofagasta,2101,home_ownership,40.09,percent,very low
+CL ANF,Antofagasta,2101,public_transport_share,34.19,percent,high
+CL ANF,Antofagasta,2101,transport_logistics_employment,10.98,percent,low
+CL ANF,Antofagasta,2101,industry_construction_employment,37.25,percent,very high
+CL ANF,Antofagasta,2101,median_household_income,1303632.0,CLP,high
+CL ANF,Antofagasta,2101,poverty_rate,19.53,percent,low
+CL ANF,Antofagasta,2101,renter_share,42.29,percent,high
+CL ANF,Antofagasta,2101,unemployment_rate,9.26,percent,medium
+CL ANF,Antofagasta,2101,electricity_access,100.0,percent,very low
+CL ANG,Angol,9201,renter_share,32.35,percent,high
+CL ANG,Angol,9201,transport_logistics_employment,8.82,percent,low
+CL ANG,Angol,9201,poverty_rate,31.96,percent,very high
+CL ANG,Angol,9201,home_ownership,61.76,percent,low
+CL ANG,Angol,9201,public_transport_share,27.27,percent,low
+CL ANG,Angol,9201,unemployment_rate,10.36,percent,very high
+CL ANG,Angol,9201,median_household_income,896521.0,CLP,very low
+CL ANG,Angol,9201,industry_construction_employment,14.71,percent,low
+CL ANG,Angol,9201,electricity_access,100.0,percent,very low
+CL ANT,Antuco,8302,industry_construction_employment,75.0,percent,very high
+CL ANT,Antuco,8302,poverty_rate,22.01,percent,medium
+CL ANT,Antuco,8302,transport_logistics_employment,0.0,percent,very low
+CL ANT,Antuco,8302,public_transport_share,35.51,percent,high
+CL ANT,Antuco,8302,renter_share,20.0,percent,low
+CL ANT,Antuco,8302,electricity_access,100.0,percent,very low
+CL ANT,Antuco,8302,home_ownership,80.0,percent,high
+CL ANT,Antuco,8302,median_household_income,1042738.0,CLP,low
+CL ANT,Antuco,8302,unemployment_rate,9.49,percent,high
+CL ARA,Arauco,8202,transport_logistics_employment,0.0,percent,very low
+CL ARA,Arauco,8202,renter_share,0.0,percent,very low
+CL ARA,Arauco,8202,electricity_access,100.0,percent,very low
+CL ARA,Arauco,8202,unemployment_rate,9.49,percent,high
+CL ARA,Arauco,8202,public_transport_share,35.51,percent,high
+CL ARA,Arauco,8202,industry_construction_employment,38.89,percent,very high
+CL ARA,Arauco,8202,home_ownership,90.0,percent,very high
+CL ARA,Arauco,8202,poverty_rate,22.01,percent,medium
+CL ARA,Arauco,8202,median_household_income,1042738.0,CLP,low
+CL ARI,Arica,15101,industry_construction_employment,22.4,percent,high
+CL ARI,Arica,15101,renter_share,31.78,percent,high
+CL ARI,Arica,15101,electricity_access,100.0,percent,very low
+CL ARI,Arica,15101,unemployment_rate,9.44,percent,high
+CL ARI,Arica,15101,poverty_rate,25.28,percent,high
+CL ARI,Arica,15101,median_household_income,1150000.0,CLP,high
+CL ARI,Arica,15101,public_transport_share,24.92,percent,low
+CL ARI,Arica,15101,home_ownership,52.34,percent,very low
+CL ARI,Arica,15101,transport_logistics_employment,5.6,percent,very low
+CL BUI,Buin,13402,renter_share,11.11,percent,very low
+CL BUI,Buin,13402,electricity_access,100.0,percent,very low
+CL BUI,Buin,13402,public_transport_share,49.86,percent,very high
+CL BUI,Buin,13402,median_household_income,1414513.0,CLP,very high
+CL BUI,Buin,13402,industry_construction_employment,16.18,percent,low
+CL BUI,Buin,13402,poverty_rate,16.51,percent,very low
+CL BUI,Buin,13402,unemployment_rate,8.18,percent,very low
+CL BUI,Buin,13402,transport_logistics_employment,13.24,percent,medium
+CL BUI,Buin,13402,home_ownership,79.37,percent,high
+CL BUL,Bulnes,16102,median_household_income,871602.5,CLP,very low
+CL BUL,Bulnes,16102,electricity_access,100.0,percent,very low
+CL BUL,Bulnes,16102,transport_logistics_employment,0.0,percent,very low
+CL BUL,Bulnes,16102,unemployment_rate,9.68,percent,high
+CL BUL,Bulnes,16102,home_ownership,58.33,percent,low
+CL BUL,Bulnes,16102,renter_share,16.67,percent,low
+CL BUL,Bulnes,16102,public_transport_share,24.53,percent,low
+CL BUL,Bulnes,16102,poverty_rate,29.65,percent,very high
+CL BUL,Bulnes,16102,industry_construction_employment,77.78,percent,very high
+CL CAB,Cabrero,8303,median_household_income,1042738.0,CLP,low
+CL CAB,Cabrero,8303,home_ownership,54.55,percent,low
+CL CAB,Cabrero,8303,electricity_access,100.0,percent,very low
+CL CAB,Cabrero,8303,transport_logistics_employment,14.29,percent,medium
+CL CAB,Cabrero,8303,renter_share,0.0,percent,very low
+CL CAB,Cabrero,8303,public_transport_share,35.51,percent,high
+CL CAB,Cabrero,8303,unemployment_rate,9.49,percent,high
+CL CAB,Cabrero,8303,industry_construction_employment,42.86,percent,very high
+CL CAB,Cabrero,8303,poverty_rate,22.01,percent,medium
+CL CAM,Camarones,15102,electricity_access,100.0,percent,very low
+CL CAM,Camarones,15102,renter_share,0.0,percent,very low
+CL CAM,Camarones,15102,transport_logistics_employment,0.0,percent,very low
+CL CAM,Camarones,15102,industry_construction_employment,0.0,percent,very low
+CL CAM,Camarones,15102,poverty_rate,25.28,percent,high
+CL CAM,Camarones,15102,public_transport_share,24.92,percent,low
+CL CAM,Camarones,15102,home_ownership,50.0,percent,very low
+CL CAM,Camarones,15102,median_household_income,1150000.0,CLP,high
+CL CAM,Camarones,15102,unemployment_rate,9.44,percent,high
+CL CAN,Canela,4202,median_household_income,1068233.0,CLP,medium
+CL CAN,Canela,4202,public_transport_share,28.79,percent,medium
+CL CAN,Canela,4202,unemployment_rate,9.08,percent,medium
+CL CAN,Canela,4202,electricity_access,100.0,percent,very low
+CL CAN,Canela,4202,transport_logistics_employment,0.0,percent,very low
+CL CAN,Canela,4202,renter_share,0.0,percent,very low
+CL CAN,Canela,4202,poverty_rate,24.26,percent,high
+CL CAN,Canela,4202,home_ownership,100.0,percent,very high
+CL CAN,Canela,4202,industry_construction_employment,0.0,percent,very low
+CL CAR,Carahue,9102,median_household_income,896521.0,CLP,very low
+CL CAR,Carahue,9102,electricity_access,100.0,percent,very low
+CL CAR,Carahue,9102,unemployment_rate,10.36,percent,very high
+CL CAR,Carahue,9102,renter_share,23.08,percent,medium
+CL CAR,Carahue,9102,poverty_rate,31.96,percent,very high
+CL CAR,Carahue,9102,industry_construction_employment,12.5,percent,low
+CL CAR,Carahue,9102,home_ownership,69.23,percent,medium
+CL CAR,Carahue,9102,transport_logistics_employment,0.0,percent,very low
+CL CAR,Carahue,9102,public_transport_share,27.27,percent,low
+CL CAS,Casablanca,5102,home_ownership,52.38,percent,very low
+CL CAS,Casablanca,5102,renter_share,28.57,percent,medium
+CL CAS,Casablanca,5102,transport_logistics_employment,11.54,percent,medium
+CL CAS,Casablanca,5102,electricity_access,100.0,percent,very low
+CL CAS,Casablanca,5102,public_transport_share,39.54,percent,high
+CL CAS,Casablanca,5102,poverty_rate,20.94,percent,low
+CL CAS,Casablanca,5102,unemployment_rate,9.8,percent,high
+CL CAS,Casablanca,5102,median_household_income,1108241.0,CLP,medium
+CL CAS,Casablanca,5102,industry_construction_employment,30.77,percent,high
+CL CAT,Catemu,5702,home_ownership,100.0,percent,very high
+CL CAT,Catemu,5702,median_household_income,1108241.0,CLP,medium
+CL CAT,Catemu,5702,unemployment_rate,9.8,percent,high
+CL CAT,Catemu,5702,public_transport_share,39.54,percent,high
+CL CAT,Catemu,5702,renter_share,0.0,percent,very low
+CL CAT,Catemu,5702,industry_construction_employment,33.33,percent,very high
+CL CAT,Catemu,5702,electricity_access,100.0,percent,very low
+CL CAT,Catemu,5702,transport_logistics_employment,33.33,percent,medium
+CL CAT,Catemu,5702,poverty_rate,20.94,percent,low
+CL CAU,Cauquenes,7201,unemployment_rate,8.44,percent,low
+CL CAU,Cauquenes,7201,industry_construction_employment,5.0,percent,very low
+CL CAU,Cauquenes,7201,home_ownership,66.67,percent,medium
+CL CAU,Cauquenes,7201,poverty_rate,26.12,percent,high
+CL CAU,Cauquenes,7201,electricity_access,100.0,percent,very low
+CL CAU,Cauquenes,7201,transport_logistics_employment,15.0,percent,medium
+CL CAU,Cauquenes,7201,renter_share,9.52,percent,very low
+CL CAU,Cauquenes,7201,median_household_income,925271.0,CLP,very low
+CL CAU,Cauquenes,7201,public_transport_share,20.39,percent,very low
+CL CBB,Combarbalá,4302,renter_share,45.45,percent,high
+CL CBB,Combarbalá,4302,electricity_access,100.0,percent,very low
+CL CBB,Combarbalá,4302,transport_logistics_employment,0.0,percent,very low
+CL CBB,Combarbalá,4302,unemployment_rate,9.08,percent,medium
+CL CBB,Combarbalá,4302,public_transport_share,28.79,percent,medium
+CL CBB,Combarbalá,4302,home_ownership,45.45,percent,very low
+CL CBB,Combarbalá,4302,median_household_income,1068233.0,CLP,medium
+CL CBB,Combarbalá,4302,industry_construction_employment,50.0,percent,very high
+CL CBB,Combarbalá,4302,poverty_rate,24.26,percent,high
+CL CBC,Calbuco,10102,public_transport_share,28.43,percent,medium
+CL CBC,Calbuco,10102,industry_construction_employment,19.05,percent,medium
+CL CBC,Calbuco,10102,home_ownership,86.96,percent,very high
+CL CBC,Calbuco,10102,median_household_income,1055000.0,CLP,low
+CL CBC,Calbuco,10102,transport_logistics_employment,14.29,percent,medium
+CL CBC,Calbuco,10102,poverty_rate,21.43,percent,medium
+CL CBC,Calbuco,10102,renter_share,0.0,percent,very low
+CL CBC,Calbuco,10102,unemployment_rate,6.88,percent,very low
+CL CBC,Calbuco,10102,electricity_access,100.0,percent,very low
+CL CBG,Chimbarongo,6303,industry_construction_employment,16.67,percent,medium
+CL CBG,Chimbarongo,6303,home_ownership,85.0,percent,very high
+CL CBG,Chimbarongo,6303,electricity_access,100.0,percent,very low
+CL CBG,Chimbarongo,6303,unemployment_rate,9.07,percent,medium
+CL CBG,Chimbarongo,6303,median_household_income,1100000.0,CLP,medium
+CL CBG,Chimbarongo,6303,transport_logistics_employment,12.5,percent,medium
+CL CBG,Chimbarongo,6303,poverty_rate,21.05,percent,low
+CL CBG,Chimbarongo,6303,public_transport_share,20.36,percent,very low
+CL CBG,Chimbarongo,6303,renter_share,10.0,percent,very low
+CL CBQ,Cobquecura,16202,electricity_access,100.0,percent,very low
+CL CBQ,Cobquecura,16202,industry_construction_employment,0.0,percent,very low
+CL CBQ,Cobquecura,16202,home_ownership,66.67,percent,medium
+CL CBQ,Cobquecura,16202,transport_logistics_employment,0.0,percent,very low
+CL CBQ,Cobquecura,16202,median_household_income,871602.5,CLP,very low
+CL CBQ,Cobquecura,16202,poverty_rate,29.65,percent,very high
+CL CBQ,Cobquecura,16202,unemployment_rate,9.68,percent,high
+CL CBQ,Cobquecura,16202,renter_share,0.0,percent,very low
+CL CBQ,Cobquecura,16202,public_transport_share,24.53,percent,low
+CL CCH,Chile Chico,11401,renter_share,25.0,percent,medium
+CL CCH,Chile Chico,11401,unemployment_rate,5.33,percent,very low
+CL CCH,Chile Chico,11401,home_ownership,50.0,percent,very low
+CL CCH,Chile Chico,11401,median_household_income,1339999.0,CLP,high
+CL CCH,Chile Chico,11401,industry_construction_employment,25.0,percent,high
+CL CCH,Chile Chico,11401,transport_logistics_employment,0.0,percent,very low
+CL CCH,Chile Chico,11401,poverty_rate,14.94,percent,very low
+CL CCH,Chile Chico,11401,public_transport_share,10.16,percent,very low
+CL CCH,Chile Chico,11401,electricity_access,100.0,percent,very low
+CL CCN,Curacautín,9203,electricity_access,100.0,percent,very low
+CL CCN,Curacautín,9203,transport_logistics_employment,0.0,percent,very low
+CL CCN,Curacautín,9203,unemployment_rate,10.36,percent,very high
+CL CCN,Curacautín,9203,home_ownership,66.67,percent,medium
+CL CCN,Curacautín,9203,median_household_income,896521.0,CLP,very low
+CL CCN,Curacautín,9203,industry_construction_employment,10.0,percent,low
+CL CCN,Curacautín,9203,public_transport_share,27.27,percent,low
+CL CCN,Curacautín,9203,renter_share,6.67,percent,very low
+CL CCN,Curacautín,9203,poverty_rate,31.96,percent,very high
+CL CCP,Concepción,8101,public_transport_share,35.51,percent,high
+CL CCP,Concepción,8101,median_household_income,1042738.0,CLP,low
+CL CCP,Concepción,8101,renter_share,30.71,percent,high
+CL CCP,Concepción,8101,electricity_access,100.0,percent,very low
+CL CCP,Concepción,8101,transport_logistics_employment,6.96,percent,low
+CL CCP,Concepción,8101,poverty_rate,22.01,percent,medium
+CL CCP,Concepción,8101,industry_construction_employment,15.82,percent,low
+CL CCP,Concepción,8101,unemployment_rate,9.49,percent,high
+CL CCP,Concepción,8101,home_ownership,60.0,percent,low
+CL CDT,Calera de Tango,13403,unemployment_rate,8.18,percent,very low
+CL CDT,Calera de Tango,13403,industry_construction_employment,18.18,percent,medium
+CL CDT,Calera de Tango,13403,median_household_income,1414513.0,CLP,very high
+CL CDT,Calera de Tango,13403,renter_share,11.11,percent,very low
+CL CDT,Calera de Tango,13403,electricity_access,100.0,percent,very low
+CL CDT,Calera de Tango,13403,public_transport_share,49.86,percent,very high
+CL CDT,Calera de Tango,13403,transport_logistics_employment,9.09,percent,low
+CL CDT,Calera de Tango,13403,home_ownership,72.22,percent,high
+CL CDT,Calera de Tango,13403,poverty_rate,16.51,percent,very low
+CL CDV,Curaco de Vélez,10204,electricity_access,100.0,percent,very low
+CL CDV,Curaco de Vélez,10204,transport_logistics_employment,0.0,percent,very low
+CL CDV,Curaco de Vélez,10204,unemployment_rate,6.88,percent,very low
+CL CDV,Curaco de Vélez,10204,median_household_income,1055000.0,CLP,low
+CL CDV,Curaco de Vélez,10204,renter_share,0.0,percent,very low
+CL CDV,Curaco de Vélez,10204,industry_construction_employment,0.0,percent,very low
+CL CDV,Curaco de Vélez,10204,public_transport_share,28.43,percent,medium
+CL CDV,Curaco de Vélez,10204,home_ownership,100.0,percent,very high
+CL CDV,Curaco de Vélez,10204,poverty_rate,21.43,percent,medium
+CL CER,Cerrillos,13102,median_household_income,1414513.0,CLP,very high
+CL CER,Cerrillos,13102,industry_construction_employment,22.22,percent,medium
+CL CER,Cerrillos,13102,home_ownership,58.97,percent,low
+CL CER,Cerrillos,13102,unemployment_rate,8.18,percent,very low
+CL CER,Cerrillos,13102,renter_share,23.08,percent,medium
+CL CER,Cerrillos,13102,electricity_access,100.0,percent,very low
+CL CER,Cerrillos,13102,transport_logistics_employment,13.33,percent,medium
+CL CER,Cerrillos,13102,poverty_rate,16.51,percent,very low
+CL CER,Cerrillos,13102,public_transport_share,49.86,percent,very high
+CL CGN,Cartagena,5603,transport_logistics_employment,25.0,percent,medium
+CL CGN,Cartagena,5603,electricity_access,100.0,percent,very low
+CL CGN,Cartagena,5603,renter_share,7.14,percent,very low
+CL CGN,Cartagena,5603,industry_construction_employment,12.5,percent,low
+CL CGN,Cartagena,5603,unemployment_rate,9.8,percent,high
+CL CGN,Cartagena,5603,public_transport_share,39.54,percent,high
+CL CGN,Cartagena,5603,home_ownership,64.29,percent,low
+CL CGN,Cartagena,5603,poverty_rate,20.94,percent,low
+CL CGN,Cartagena,5603,median_household_income,1108241.0,CLP,medium
+CL CHA,Chanco,7202,median_household_income,925271.0,CLP,very low
+CL CHA,Chanco,7202,home_ownership,66.67,percent,medium
+CL CHA,Chanco,7202,renter_share,33.33,percent,high
+CL CHA,Chanco,7202,poverty_rate,26.12,percent,high
+CL CHA,Chanco,7202,unemployment_rate,8.44,percent,low
+CL CHA,Chanco,7202,transport_logistics_employment,0.0,percent,very low
+CL CHA,Chanco,7202,public_transport_share,20.39,percent,very low
+CL CHA,Chanco,7202,industry_construction_employment,0.0,percent,very low
+CL CHA,Chanco,7202,electricity_access,100.0,percent,very low
+CL CHE,Chépica,6302,median_household_income,1100000.0,CLP,medium
+CL CHE,Chépica,6302,home_ownership,70.0,percent,medium
+CL CHE,Chépica,6302,unemployment_rate,9.07,percent,medium
+CL CHE,Chépica,6302,industry_construction_employment,9.09,percent,low
+CL CHE,Chépica,6302,public_transport_share,20.36,percent,very low
+CL CHE,Chépica,6302,poverty_rate,21.05,percent,low
+CL CHE,Chépica,6302,transport_logistics_employment,18.18,percent,medium
+CL CHE,Chépica,6302,renter_share,10.0,percent,very low
+CL CHE,Chépica,6302,electricity_access,100.0,percent,very low
+CL CHI,Chiguayante,8103,industry_construction_employment,16.67,percent,medium
+CL CHI,Chiguayante,8103,median_household_income,1042738.0,CLP,low
+CL CHI,Chiguayante,8103,electricity_access,100.0,percent,very low
+CL CHI,Chiguayante,8103,transport_logistics_employment,12.5,percent,medium
+CL CHI,Chiguayante,8103,home_ownership,56.82,percent,low
+CL CHI,Chiguayante,8103,poverty_rate,22.01,percent,medium
+CL CHI,Chiguayante,8103,unemployment_rate,9.49,percent,high
+CL CHI,Chiguayante,8103,renter_share,27.27,percent,medium
+CL CHI,Chiguayante,8103,public_transport_share,35.51,percent,high
+CL CHL,Cholchol,9121,public_transport_share,27.27,percent,low
+CL CHL,Cholchol,9121,home_ownership,88.89,percent,very high
+CL CHL,Cholchol,9121,industry_construction_employment,0.0,percent,very low
+CL CHL,Cholchol,9121,transport_logistics_employment,0.0,percent,very low
+CL CHL,Cholchol,9121,median_household_income,896521.0,CLP,very low
+CL CHL,Cholchol,9121,poverty_rate,31.96,percent,very high
+CL CHL,Cholchol,9121,unemployment_rate,10.36,percent,very high
+CL CHL,Cholchol,9121,renter_share,0.0,percent,very low
+CL CHL,Cholchol,9121,electricity_access,66.67,percent,very low
+CL CHO,Chonchi,10203,home_ownership,85.71,percent,very high
+CL CHO,Chonchi,10203,public_transport_share,28.43,percent,medium
+CL CHO,Chonchi,10203,transport_logistics_employment,11.11,percent,low
+CL CHO,Chonchi,10203,unemployment_rate,6.88,percent,very low
+CL CHO,Chonchi,10203,poverty_rate,21.43,percent,medium
+CL CHO,Chonchi,10203,industry_construction_employment,0.0,percent,very low
+CL CHO,Chonchi,10203,renter_share,14.29,percent,low
+CL CHO,Chonchi,10203,electricity_access,100.0,percent,very low
+CL CHO,Chonchi,10203,median_household_income,1055000.0,CLP,low
+CL CHV,Chillán Viejo,16103,transport_logistics_employment,0.0,percent,very low
+CL CHV,Chillán Viejo,16103,poverty_rate,29.65,percent,very high
+CL CHV,Chillán Viejo,16103,unemployment_rate,9.68,percent,high
+CL CHV,Chillán Viejo,16103,industry_construction_employment,21.43,percent,medium
+CL CHV,Chillán Viejo,16103,renter_share,29.41,percent,high
+CL CHV,Chillán Viejo,16103,home_ownership,64.71,percent,medium
+CL CHV,Chillán Viejo,16103,public_transport_share,24.53,percent,low
+CL CHV,Chillán Viejo,16103,electricity_access,100.0,percent,very low
+CL CHV,Chillán Viejo,16103,median_household_income,871602.5,CLP,very low
+CL CJC,Calama,2201,median_household_income,1303632.0,CLP,high
+CL CJC,Calama,2201,poverty_rate,19.53,percent,low
+CL CJC,Calama,2201,unemployment_rate,9.26,percent,medium
+CL CJC,Calama,2201,renter_share,39.51,percent,high
+CL CJC,Calama,2201,home_ownership,43.21,percent,very low
+CL CJC,Calama,2201,industry_construction_employment,41.38,percent,very high
+CL CJC,Calama,2201,electricity_access,100.0,percent,very low
+CL CJC,Calama,2201,transport_logistics_employment,5.75,percent,very low
+CL CJC,Calama,2201,public_transport_share,34.19,percent,high
+CL CLD,Caldera,3102,renter_share,15.38,percent,low
+CL CLD,Caldera,3102,median_household_income,1138667.0,CLP,high
+CL CLD,Caldera,3102,unemployment_rate,8.77,percent,medium
+CL CLD,Caldera,3102,poverty_rate,21.19,percent,medium
+CL CLD,Caldera,3102,transport_logistics_employment,0.0,percent,very low
+CL CLD,Caldera,3102,home_ownership,76.92,percent,high
+CL CLD,Caldera,3102,public_transport_share,24.73,percent,low
+CL CLD,Caldera,3102,industry_construction_employment,35.0,percent,very high
+CL CLD,Caldera,3102,electricity_access,100.0,percent,very low
+CL CLL,Calle Larga,5302,transport_logistics_employment,0.0,percent,very low
+CL CLL,Calle Larga,5302,public_transport_share,39.54,percent,high
+CL CLL,Calle Larga,5302,renter_share,0.0,percent,very low
+CL CLL,Calle Larga,5302,home_ownership,80.0,percent,high
+CL CLL,Calle Larga,5302,unemployment_rate,9.8,percent,high
+CL CLL,Calle Larga,5302,electricity_access,100.0,percent,very low
+CL CLL,Calle Larga,5302,median_household_income,1108241.0,CLP,medium
+CL CLL,Calle Larga,5302,poverty_rate,20.94,percent,low
+CL CLL,Calle Larga,5302,industry_construction_employment,16.67,percent,medium
+CL CLN,Colina,13301,public_transport_share,49.86,percent,very high
+CL CLN,Colina,13301,median_household_income,1414513.0,CLP,very high
+CL CLN,Colina,13301,transport_logistics_employment,4.49,percent,very low
+CL CLN,Colina,13301,unemployment_rate,8.18,percent,very low
+CL CLN,Colina,13301,industry_construction_employment,16.85,percent,medium
+CL CLN,Colina,13301,home_ownership,80.56,percent,high
+CL CLN,Colina,13301,electricity_access,100.0,percent,very low
+CL CLN,Colina,13301,poverty_rate,16.51,percent,very low
+CL CLN,Colina,13301,renter_share,16.67,percent,low
+CL CMA,Camiña,1402,industry_construction_employment,0.0,percent,very low
+CL CMA,Camiña,1402,public_transport_share,31.84,percent,medium
+CL CMA,Camiña,1402,poverty_rate,26.77,percent,very high
+CL CMA,Camiña,1402,home_ownership,100.0,percent,very high
+CL CMA,Camiña,1402,transport_logistics_employment,0.0,percent,very low
+CL CMA,Camiña,1402,median_household_income,1200000.0,CLP,high
+CL CMA,Camiña,1402,unemployment_rate,9.44,percent,high
+CL CMA,Camiña,1402,renter_share,0.0,percent,very low
+CL CNE,Colchane,1403,public_transport_share,31.84,percent,medium
+CL CNE,Colchane,1403,median_household_income,1200000.0,CLP,high
+CL CNE,Colchane,1403,poverty_rate,26.77,percent,very high
+CL CNE,Colchane,1403,unemployment_rate,9.44,percent,high
+CL CNL,Coronel,8102,industry_construction_employment,33.33,percent,very high
+CL CNL,Coronel,8102,renter_share,12.86,percent,low
+CL CNL,Coronel,8102,poverty_rate,22.01,percent,medium
+CL CNL,Coronel,8102,public_transport_share,35.51,percent,high
+CL CNL,Coronel,8102,median_household_income,1042738.0,CLP,low
+CL CNL,Coronel,8102,unemployment_rate,9.49,percent,high
+CL CNL,Coronel,8102,transport_logistics_employment,3.03,percent,very low
+CL CNL,Coronel,8102,home_ownership,75.71,percent,high
+CL CNL,Coronel,8102,electricity_access,100.0,percent,very low
+CL CNR,Chañaral,3201,home_ownership,85.71,percent,very high
+CL CNR,Chañaral,3201,public_transport_share,24.73,percent,low
+CL CNR,Chañaral,3201,industry_construction_employment,14.29,percent,low
+CL CNR,Chañaral,3201,transport_logistics_employment,0.0,percent,very low
+CL CNR,Chañaral,3201,poverty_rate,21.19,percent,medium
+CL CNR,Chañaral,3201,electricity_access,100.0,percent,very low
+CL CNR,Chañaral,3201,renter_share,0.0,percent,very low
+CL CNR,Chañaral,3201,median_household_income,1138667.0,CLP,high
+CL CNR,Chañaral,3201,unemployment_rate,8.77,percent,medium
+CL COB,Colbún,7402,home_ownership,63.64,percent,low
+CL COB,Colbún,7402,electricity_access,100.0,percent,very low
+CL COB,Colbún,7402,poverty_rate,26.12,percent,high
+CL COB,Colbún,7402,renter_share,0.0,percent,very low
+CL COB,Colbún,7402,industry_construction_employment,50.0,percent,very high
+CL COB,Colbún,7402,unemployment_rate,8.44,percent,low
+CL COB,Colbún,7402,transport_logistics_employment,0.0,percent,very low
+CL COB,Colbún,7402,median_household_income,925271.0,CLP,very low
+CL COB,Colbún,7402,public_transport_share,20.39,percent,very low
+CL COC,Cochrane,11301,renter_share,50.0,percent,high
+CL COC,Cochrane,11301,unemployment_rate,5.33,percent,very low
+CL COC,Cochrane,11301,electricity_access,100.0,percent,very low
+CL COC,Cochrane,11301,public_transport_share,10.16,percent,very low
+CL COC,Cochrane,11301,home_ownership,50.0,percent,very low
+CL COC,Cochrane,11301,poverty_rate,14.94,percent,very low
+CL COC,Cochrane,11301,industry_construction_employment,50.0,percent,very high
+CL COC,Cochrane,11301,transport_logistics_employment,0.0,percent,very low
+CL COC,Cochrane,11301,median_household_income,1339999.0,CLP,high
+CL COD,Codegua,6102,electricity_access,100.0,percent,very low
+CL COD,Codegua,6102,renter_share,0.0,percent,very low
+CL COD,Codegua,6102,unemployment_rate,9.07,percent,medium
+CL COD,Codegua,6102,public_transport_share,20.36,percent,very low
+CL COD,Codegua,6102,poverty_rate,21.05,percent,low
+CL COD,Codegua,6102,industry_construction_employment,0.0,percent,very low
+CL COD,Codegua,6102,median_household_income,1100000.0,CLP,medium
+CL COD,Codegua,6102,transport_logistics_employment,0.0,percent,very low
+CL COD,Codegua,6102,home_ownership,100.0,percent,very high
+CL COE,Coelemu,16203,transport_logistics_employment,0.0,percent,very low
+CL COE,Coelemu,16203,renter_share,22.22,percent,medium
+CL COE,Coelemu,16203,home_ownership,44.44,percent,very low
+CL COE,Coelemu,16203,electricity_access,100.0,percent,very low
+CL COE,Coelemu,16203,public_transport_share,24.53,percent,low
+CL COE,Coelemu,16203,unemployment_rate,9.68,percent,high
+CL COE,Coelemu,16203,median_household_income,871602.5,CLP,very low
+CL COE,Coelemu,16203,poverty_rate,29.65,percent,very high
+CL COE,Coelemu,16203,industry_construction_employment,0.0,percent,very low
+CL COI,Coihueco,16302,median_household_income,871602.5,CLP,very low
+CL COI,Coihueco,16302,public_transport_share,24.53,percent,low
+CL COI,Coihueco,16302,home_ownership,58.33,percent,low
+CL COI,Coihueco,16302,poverty_rate,29.65,percent,very high
+CL COI,Coihueco,16302,renter_share,0.0,percent,very low
+CL COI,Coihueco,16302,transport_logistics_employment,15.38,percent,medium
+CL COI,Coihueco,16302,unemployment_rate,9.68,percent,high
+CL COI,Coihueco,16302,industry_construction_employment,15.38,percent,low
+CL COI,Coihueco,16302,electricity_access,100.0,percent,very low
+CL CON,Concón,5103,public_transport_share,39.54,percent,high
+CL CON,Concón,5103,industry_construction_employment,10.53,percent,low
+CL CON,Concón,5103,transport_logistics_employment,0.0,percent,very low
+CL CON,Concón,5103,renter_share,25.0,percent,medium
+CL CON,Concón,5103,home_ownership,50.0,percent,very low
+CL CON,Concón,5103,poverty_rate,20.94,percent,low
+CL CON,Concón,5103,unemployment_rate,9.8,percent,high
+CL CON,Concón,5103,electricity_access,100.0,percent,very low
+CL CON,Concón,5103,median_household_income,1108241.0,CLP,medium
+CL COO,Coinco,6103,unemployment_rate,9.07,percent,medium
+CL COO,Coinco,6103,electricity_access,100.0,percent,very low
+CL COO,Coinco,6103,poverty_rate,21.05,percent,low
+CL COO,Coinco,6103,renter_share,0.0,percent,very low
+CL COO,Coinco,6103,median_household_income,1100000.0,CLP,medium
+CL COO,Coinco,6103,transport_logistics_employment,0.0,percent,very low
+CL COO,Coinco,6103,industry_construction_employment,16.67,percent,medium
+CL COO,Coinco,6103,home_ownership,90.91,percent,very high
+CL COO,Coinco,6103,public_transport_share,20.36,percent,very low
+CL CPI,Collipulli,9202,poverty_rate,31.96,percent,very high
+CL CPI,Collipulli,9202,renter_share,15.38,percent,low
+CL CPI,Collipulli,9202,median_household_income,896521.0,CLP,very low
+CL CPI,Collipulli,9202,unemployment_rate,10.36,percent,very high
+CL CPI,Collipulli,9202,electricity_access,100.0,percent,very low
+CL CPI,Collipulli,9202,industry_construction_employment,22.22,percent,medium
+CL CPI,Collipulli,9202,transport_logistics_employment,11.11,percent,low
+CL CPI,Collipulli,9202,home_ownership,84.62,percent,very high
+CL CPI,Collipulli,9202,public_transport_share,27.27,percent,low
+CL CPO,Copiapó,3101,median_household_income,1138667.0,CLP,high
+CL CPO,Copiapó,3101,renter_share,26.32,percent,medium
+CL CPO,Copiapó,3101,transport_logistics_employment,7.48,percent,low
+CL CPO,Copiapó,3101,poverty_rate,21.19,percent,medium
+CL CPO,Copiapó,3101,industry_construction_employment,28.04,percent,high
+CL CPO,Copiapó,3101,electricity_access,100.0,percent,very low
+CL CPO,Copiapó,3101,public_transport_share,24.73,percent,low
+CL CPO,Copiapó,3101,home_ownership,64.21,percent,low
+CL CPO,Copiapó,3101,unemployment_rate,8.77,percent,medium
+CL CQQ,Coquimbo,4102,renter_share,19.86,percent,low
+CL CQQ,Coquimbo,4102,electricity_access,100.0,percent,very low
+CL CQQ,Coquimbo,4102,industry_construction_employment,23.08,percent,high
+CL CQQ,Coquimbo,4102,public_transport_share,28.79,percent,medium
+CL CQQ,Coquimbo,4102,unemployment_rate,9.08,percent,medium
+CL CQQ,Coquimbo,4102,median_household_income,1068233.0,CLP,medium
+CL CQQ,Coquimbo,4102,transport_logistics_employment,5.13,percent,very low
+CL CQQ,Coquimbo,4102,home_ownership,68.09,percent,medium
+CL CQQ,Coquimbo,4102,poverty_rate,24.26,percent,high
+CL CRE,Curarrehue,9104,electricity_access,100.0,percent,very low
+CL CRE,Curarrehue,9104,industry_construction_employment,25.0,percent,high
+CL CRE,Curarrehue,9104,transport_logistics_employment,0.0,percent,very low
+CL CRE,Curarrehue,9104,unemployment_rate,10.36,percent,very high
+CL CRE,Curarrehue,9104,poverty_rate,31.96,percent,very high
+CL CRE,Curarrehue,9104,home_ownership,75.0,percent,high
+CL CRE,Curarrehue,9104,renter_share,0.0,percent,very low
+CL CRE,Curarrehue,9104,median_household_income,896521.0,CLP,very low
+CL CRE,Curarrehue,9104,public_transport_share,27.27,percent,low
+CL CRN,Curanilahue,8205,industry_construction_employment,22.22,percent,medium
+CL CRN,Curanilahue,8205,transport_logistics_employment,5.56,percent,very low
+CL CRN,Curanilahue,8205,renter_share,6.25,percent,very low
+CL CRN,Curanilahue,8205,home_ownership,81.25,percent,high
+CL CRN,Curanilahue,8205,poverty_rate,22.01,percent,medium
+CL CRN,Curanilahue,8205,electricity_access,100.0,percent,very low
+CL CRN,Curanilahue,8205,unemployment_rate,9.49,percent,high
+CL CRN,Curanilahue,8205,public_transport_share,35.51,percent,high
+CL CRN,Curanilahue,8205,median_household_income,1042738.0,CLP,low
+CL CRR,Corral,14102,home_ownership,100.0,percent,very high
+CL CRR,Corral,14102,poverty_rate,20.8,percent,low
+CL CRR,Corral,14102,industry_construction_employment,0.0,percent,very low
+CL CRR,Corral,14102,public_transport_share,24.17,percent,low
+CL CRR,Corral,14102,renter_share,0.0,percent,very low
+CL CRR,Corral,14102,transport_logistics_employment,0.0,percent,very low
+CL CRR,Corral,14102,unemployment_rate,7.95,percent,very low
+CL CRR,Corral,14102,median_household_income,1049778.0,CLP,low
+CL CRT,Curepto,7103,electricity_access,100.0,percent,very low
+CL CRT,Curepto,7103,median_household_income,925271.0,CLP,very low
+CL CRT,Curepto,7103,poverty_rate,26.12,percent,high
+CL CRT,Curepto,7103,industry_construction_employment,16.67,percent,medium
+CL CRT,Curepto,7103,home_ownership,83.33,percent,high
+CL CRT,Curepto,7103,renter_share,0.0,percent,very low
+CL CRT,Curepto,7103,unemployment_rate,8.44,percent,low
+CL CRT,Curepto,7103,public_transport_share,20.39,percent,very low
+CL CRT,Curepto,7103,transport_logistics_employment,0.0,percent,very low
+CL CRV,Curacaví,13503,home_ownership,77.78,percent,high
+CL CRV,Curacaví,13503,renter_share,11.11,percent,very low
+CL CRV,Curacaví,13503,median_household_income,1414513.0,CLP,very high
+CL CRV,Curacaví,13503,poverty_rate,16.51,percent,very low
+CL CRV,Curacaví,13503,industry_construction_employment,4.35,percent,very low
+CL CRV,Curacaví,13503,electricity_access,100.0,percent,very low
+CL CRV,Curacaví,13503,unemployment_rate,8.18,percent,very low
+CL CRV,Curacaví,13503,public_transport_share,49.86,percent,very high
+CL CRV,Curacaví,13503,transport_logistics_employment,13.04,percent,medium
+CL CSA,Puyehue,10304,median_household_income,1055000.0,CLP,low
+CL CSA,Puyehue,10304,unemployment_rate,6.88,percent,very low
+CL CSA,Puyehue,10304,renter_share,16.67,percent,low
+CL CSA,Puyehue,10304,electricity_access,100.0,percent,very low
+CL CSA,Puyehue,10304,public_transport_share,28.43,percent,medium
+CL CSA,Puyehue,10304,home_ownership,66.67,percent,medium
+CL CSA,Puyehue,10304,poverty_rate,21.43,percent,medium
+CL CSA,Puyehue,10304,transport_logistics_employment,50.0,percent,medium
+CL CSA,Puyehue,10304,industry_construction_employment,0.0,percent,very low
+CL CST,Constitución,7102,home_ownership,43.75,percent,very low
+CL CST,Constitución,7102,unemployment_rate,8.44,percent,low
+CL CST,Constitución,7102,public_transport_share,20.39,percent,very low
+CL CST,Constitución,7102,electricity_access,100.0,percent,very low
+CL CST,Constitución,7102,median_household_income,925271.0,CLP,very low
+CL CST,Constitución,7102,poverty_rate,26.12,percent,high
+CL CST,Constitución,7102,transport_logistics_employment,0.0,percent,very low
+CL CST,Constitución,7102,renter_share,37.5,percent,high
+CL CST,Constitución,7102,industry_construction_employment,22.22,percent,medium
+CL CTC,Coltauco,6104,poverty_rate,21.05,percent,low
+CL CTC,Coltauco,6104,renter_share,12.5,percent,low
+CL CTC,Coltauco,6104,unemployment_rate,9.07,percent,medium
+CL CTC,Coltauco,6104,public_transport_share,20.36,percent,very low
+CL CTC,Coltauco,6104,median_household_income,1100000.0,CLP,medium
+CL CTC,Coltauco,6104,industry_construction_employment,0.0,percent,very low
+CL CTC,Coltauco,6104,home_ownership,75.0,percent,high
+CL CTC,Coltauco,6104,transport_logistics_employment,0.0,percent,very low
+CL CTE,Cañete,8203,industry_construction_employment,35.71,percent,very high
+CL CTE,Cañete,8203,poverty_rate,22.01,percent,medium
+CL CTE,Cañete,8203,median_household_income,1042738.0,CLP,low
+CL CTE,Cañete,8203,unemployment_rate,9.49,percent,high
+CL CTE,Cañete,8203,home_ownership,81.25,percent,high
+CL CTE,Cañete,8203,electricity_access,100.0,percent,very low
+CL CTE,Cañete,8203,renter_share,0.0,percent,very low
+CL CTE,Cañete,8203,transport_logistics_employment,0.0,percent,very low
+CL CTE,Cañete,8203,public_transport_share,35.51,percent,high
+CL CTM,Contulmo,8204,poverty_rate,22.01,percent,medium
+CL CTM,Contulmo,8204,renter_share,0.0,percent,very low
+CL CTM,Contulmo,8204,electricity_access,100.0,percent,very low
+CL CTM,Contulmo,8204,median_household_income,1042738.0,CLP,low
+CL CTM,Contulmo,8204,transport_logistics_employment,0.0,percent,very low
+CL CTM,Contulmo,8204,public_transport_share,35.51,percent,high
+CL CTM,Contulmo,8204,unemployment_rate,9.49,percent,high
+CL CTM,Contulmo,8204,home_ownership,80.0,percent,high
+CL CTM,Contulmo,8204,industry_construction_employment,0.0,percent,very low
+CL CUN,Cunco,9103,poverty_rate,31.96,percent,very high
+CL CUN,Cunco,9103,public_transport_share,27.27,percent,low
+CL CUN,Cunco,9103,median_household_income,896521.0,CLP,very low
+CL CUN,Cunco,9103,transport_logistics_employment,5.56,percent,very low
+CL CUN,Cunco,9103,electricity_access,100.0,percent,very low
+CL CUN,Cunco,9103,unemployment_rate,10.36,percent,very high
+CL CUN,Cunco,9103,renter_share,21.43,percent,medium
+CL CUN,Cunco,9103,home_ownership,64.29,percent,low
+CL CUN,Cunco,9103,industry_construction_employment,27.78,percent,high
+CL CUR,Curicó,7301,electricity_access,100.0,percent,very low
+CL CUR,Curicó,7301,poverty_rate,26.12,percent,high
+CL CUR,Curicó,7301,renter_share,22.99,percent,medium
+CL CUR,Curicó,7301,unemployment_rate,8.44,percent,low
+CL CUR,Curicó,7301,median_household_income,925271.0,CLP,very low
+CL CUR,Curicó,7301,public_transport_share,20.39,percent,very low
+CL CUR,Curicó,7301,transport_logistics_employment,6.0,percent,very low
+CL CUR,Curicó,7301,home_ownership,65.52,percent,medium
+CL CUR,Curicó,7301,industry_construction_employment,18.0,percent,medium
+CL CVJ,Natales,12401,public_transport_share,20.08,percent,very low
+CL CVJ,Natales,12401,unemployment_rate,3.83,percent,very low
+CL CVJ,Natales,12401,renter_share,7.69,percent,very low
+CL CVJ,Natales,12401,home_ownership,84.62,percent,very high
+CL CVJ,Natales,12401,industry_construction_employment,18.75,percent,medium
+CL CVJ,Natales,12401,median_household_income,1423917.0,CLP,very high
+CL CVJ,Natales,12401,electricity_access,100.0,percent,very low
+CL CVJ,Natales,12401,transport_logistics_employment,6.25,percent,very low
+CL CVJ,Natales,12401,poverty_rate,14.7,percent,very low
+CL CXQ,Coyhaique,11101,transport_logistics_employment,5.26,percent,very low
+CL CXQ,Coyhaique,11101,median_household_income,1339999.0,CLP,high
+CL CXQ,Coyhaique,11101,industry_construction_employment,31.58,percent,high
+CL CXQ,Coyhaique,11101,unemployment_rate,5.33,percent,very low
+CL CXQ,Coyhaique,11101,renter_share,28.57,percent,medium
+CL CXQ,Coyhaique,11101,poverty_rate,14.94,percent,very low
+CL CXQ,Coyhaique,11101,home_ownership,61.9,percent,low
+CL CXQ,Coyhaique,11101,electricity_access,100.0,percent,very low
+CL CXQ,Coyhaique,11101,public_transport_share,10.16,percent,very low
+CL DCH,Dalcahue,10205,median_household_income,1055000.0,CLP,low
+CL DCH,Dalcahue,10205,renter_share,12.5,percent,low
+CL DCH,Dalcahue,10205,electricity_access,100.0,percent,very low
+CL DCH,Dalcahue,10205,unemployment_rate,6.88,percent,very low
+CL DCH,Dalcahue,10205,transport_logistics_employment,0.0,percent,very low
+CL DCH,Dalcahue,10205,public_transport_share,28.43,percent,medium
+CL DCH,Dalcahue,10205,industry_construction_employment,11.11,percent,low
+CL DCH,Dalcahue,10205,poverty_rate,21.43,percent,medium
+CL DCH,Dalcahue,10205,home_ownership,62.5,percent,low
+CL DDA,Diego de Almagro,3202,transport_logistics_employment,0.0,percent,very low
+CL DDA,Diego de Almagro,3202,electricity_access,100.0,percent,very low
+CL DDA,Diego de Almagro,3202,median_household_income,1138667.0,CLP,high
+CL DDA,Diego de Almagro,3202,poverty_rate,21.19,percent,medium
+CL DDA,Diego de Almagro,3202,public_transport_share,24.73,percent,low
+CL DDA,Diego de Almagro,3202,home_ownership,50.0,percent,very low
+CL DDA,Diego de Almagro,3202,industry_construction_employment,66.67,percent,very high
+CL DDA,Diego de Almagro,3202,unemployment_rate,8.77,percent,medium
+CL DDA,Diego de Almagro,3202,renter_share,0.0,percent,very low
+CL DOH,Doñihue,6105,public_transport_share,20.36,percent,very low
+CL DOH,Doñihue,6105,transport_logistics_employment,0.0,percent,very low
+CL DOH,Doñihue,6105,median_household_income,1100000.0,CLP,medium
+CL DOH,Doñihue,6105,industry_construction_employment,26.09,percent,high
+CL DOH,Doñihue,6105,unemployment_rate,9.07,percent,medium
+CL DOH,Doñihue,6105,home_ownership,56.25,percent,low
+CL DOH,Doñihue,6105,electricity_access,100.0,percent,very low
+CL DOH,Doñihue,6105,renter_share,12.5,percent,low
+CL DOH,Doñihue,6105,poverty_rate,21.05,percent,low
+CL ELC,El Carmen,16104,renter_share,11.11,percent,very low
+CL ELC,El Carmen,16104,public_transport_share,24.53,percent,low
+CL ELC,El Carmen,16104,unemployment_rate,9.68,percent,high
+CL ELC,El Carmen,16104,transport_logistics_employment,0.0,percent,very low
+CL ELC,El Carmen,16104,poverty_rate,29.65,percent,very high
+CL ELC,El Carmen,16104,home_ownership,66.67,percent,medium
+CL ELC,El Carmen,16104,median_household_income,871602.5,CLP,very low
+CL ELC,El Carmen,16104,electricity_access,100.0,percent,very low
+CL ELC,El Carmen,16104,industry_construction_employment,10.0,percent,low
+CL ELM,El Monte,13602,public_transport_share,49.86,percent,very high
+CL ELM,El Monte,13602,unemployment_rate,8.18,percent,very low
+CL ELM,El Monte,13602,electricity_access,100.0,percent,very low
+CL ELM,El Monte,13602,industry_construction_employment,20.0,percent,medium
+CL ELM,El Monte,13602,transport_logistics_employment,13.33,percent,medium
+CL ELM,El Monte,13602,median_household_income,1414513.0,CLP,very high
+CL ELM,El Monte,13602,renter_share,17.65,percent,low
+CL ELM,El Monte,13602,poverty_rate,16.51,percent,very low
+CL ELM,El Monte,13602,home_ownership,52.94,percent,low
+CL ELQ,El Quisco,5604,unemployment_rate,9.8,percent,high
+CL ELQ,El Quisco,5604,home_ownership,55.56,percent,low
+CL ELQ,El Quisco,5604,public_transport_share,39.54,percent,high
+CL ELQ,El Quisco,5604,transport_logistics_employment,14.29,percent,medium
+CL ELQ,El Quisco,5604,median_household_income,1108241.0,CLP,medium
+CL ELQ,El Quisco,5604,industry_construction_employment,0.0,percent,very low
+CL ELQ,El Quisco,5604,electricity_access,100.0,percent,very low
+CL ELQ,El Quisco,5604,poverty_rate,20.94,percent,low
+CL ELQ,El Quisco,5604,renter_share,11.11,percent,very low
+CL ELT,El Tabo,5605,unemployment_rate,9.8,percent,high
+CL ELT,El Tabo,5605,public_transport_share,39.54,percent,high
+CL ELT,El Tabo,5605,renter_share,0.0,percent,very low
+CL ELT,El Tabo,5605,electricity_access,100.0,percent,very low
+CL ELT,El Tabo,5605,transport_logistics_employment,0.0,percent,very low
+CL ELT,El Tabo,5605,poverty_rate,20.94,percent,low
+CL ELT,El Tabo,5605,median_household_income,1108241.0,CLP,medium
+CL ELT,El Tabo,5605,industry_construction_employment,0.0,percent,very low
+CL ELT,El Tabo,5605,home_ownership,71.43,percent,medium
+CL EMP,Empedrado,7104,public_transport_share,20.39,percent,very low
+CL EMP,Empedrado,7104,median_household_income,925271.0,CLP,very low
+CL EMP,Empedrado,7104,poverty_rate,26.12,percent,high
+CL EMP,Empedrado,7104,unemployment_rate,8.44,percent,low
+CL ERC,Ercilla,9204,transport_logistics_employment,0.0,percent,very low
+CL ERC,Ercilla,9204,median_household_income,896521.0,CLP,very low
+CL ERC,Ercilla,9204,unemployment_rate,10.36,percent,very high
+CL ERC,Ercilla,9204,electricity_access,100.0,percent,very low
+CL ERC,Ercilla,9204,public_transport_share,27.27,percent,low
+CL ERC,Ercilla,9204,industry_construction_employment,20.0,percent,medium
+CL ERC,Ercilla,9204,renter_share,0.0,percent,very low
+CL ERC,Ercilla,9204,home_ownership,75.0,percent,high
+CL ERC,Ercilla,9204,poverty_rate,31.96,percent,very high
+CL FFU,Futaleufú,10402,median_household_income,1055000.0,CLP,low
+CL FFU,Futaleufú,10402,public_transport_share,28.43,percent,medium
+CL FFU,Futaleufú,10402,industry_construction_employment,0.0,percent,very low
+CL FFU,Futaleufú,10402,transport_logistics_employment,0.0,percent,very low
+CL FFU,Futaleufú,10402,unemployment_rate,6.88,percent,very low
+CL FFU,Futaleufú,10402,renter_share,100.0,percent,high
+CL FFU,Futaleufú,10402,poverty_rate,21.43,percent,medium
+CL FFU,Futaleufú,10402,home_ownership,0.0,percent,very low
+CL FLO,Florida,8104,public_transport_share,35.51,percent,high
+CL FLO,Florida,8104,unemployment_rate,9.49,percent,high
+CL FLO,Florida,8104,transport_logistics_employment,100.0,percent,medium
+CL FLO,Florida,8104,poverty_rate,22.01,percent,medium
+CL FLO,Florida,8104,renter_share,0.0,percent,very low
+CL FLO,Florida,8104,median_household_income,1042738.0,CLP,low
+CL FLO,Florida,8104,industry_construction_employment,0.0,percent,very low
+CL FLO,Florida,8104,home_ownership,100.0,percent,very high
+CL FRE,Freire,9105,median_household_income,896521.0,CLP,very low
+CL FRE,Freire,9105,renter_share,37.5,percent,high
+CL FRE,Freire,9105,unemployment_rate,10.36,percent,very high
+CL FRE,Freire,9105,poverty_rate,31.96,percent,very high
+CL FRE,Freire,9105,industry_construction_employment,0.0,percent,very low
+CL FRE,Freire,9105,electricity_access,100.0,percent,very low
+CL FRE,Freire,9105,transport_logistics_employment,0.0,percent,very low
+CL FRE,Freire,9105,public_transport_share,27.27,percent,low
+CL FRE,Freire,9105,home_ownership,50.0,percent,very low
+CL FRN,Freirina,3303,unemployment_rate,8.77,percent,medium
+CL FRN,Freirina,3303,home_ownership,100.0,percent,very high
+CL FRN,Freirina,3303,renter_share,0.0,percent,very low
+CL FRN,Freirina,3303,public_transport_share,24.73,percent,low
+CL FRN,Freirina,3303,electricity_access,100.0,percent,very low
+CL FRN,Freirina,3303,poverty_rate,21.19,percent,medium
+CL FRN,Freirina,3303,transport_logistics_employment,0.0,percent,very low
+CL FRN,Freirina,3303,median_household_income,1138667.0,CLP,high
+CL FRN,Freirina,3303,industry_construction_employment,100.0,percent,very high
+CL FRS,Fresia,10104,electricity_access,100.0,percent,very low
+CL FRS,Fresia,10104,home_ownership,50.0,percent,very low
+CL FRS,Fresia,10104,public_transport_share,28.43,percent,medium
+CL FRS,Fresia,10104,industry_construction_employment,45.45,percent,very high
+CL FRS,Fresia,10104,renter_share,16.67,percent,low
+CL FRS,Fresia,10104,transport_logistics_employment,0.0,percent,very low
+CL FRS,Fresia,10104,poverty_rate,21.43,percent,medium
+CL FRS,Fresia,10104,median_household_income,1055000.0,CLP,low
+CL FRS,Fresia,10104,unemployment_rate,6.88,percent,very low
+CL FRT,Frutillar,10105,renter_share,10.0,percent,very low
+CL FRT,Frutillar,10105,home_ownership,80.0,percent,high
+CL FRT,Frutillar,10105,industry_construction_employment,46.15,percent,very high
+CL FRT,Frutillar,10105,electricity_access,100.0,percent,very low
+CL FRT,Frutillar,10105,median_household_income,1055000.0,CLP,low
+CL FRT,Frutillar,10105,poverty_rate,21.43,percent,medium
+CL FRT,Frutillar,10105,transport_logistics_employment,7.69,percent,low
+CL FRT,Frutillar,10105,public_transport_share,28.43,percent,medium
+CL FRT,Frutillar,10105,unemployment_rate,6.88,percent,very low
+CL FUT,Futrono,14202,electricity_access,100.0,percent,very low
+CL FUT,Futrono,14202,poverty_rate,20.8,percent,low
+CL FUT,Futrono,14202,renter_share,0.0,percent,very low
+CL FUT,Futrono,14202,home_ownership,50.0,percent,very low
+CL FUT,Futrono,14202,median_household_income,1049778.0,CLP,low
+CL FUT,Futrono,14202,unemployment_rate,7.95,percent,very low
+CL FUT,Futrono,14202,public_transport_share,24.17,percent,low
+CL FUT,Futrono,14202,transport_logistics_employment,0.0,percent,very low
+CL FUT,Futrono,14202,industry_construction_employment,33.33,percent,very high
+CL GAL,Galvarino,9106,public_transport_share,27.27,percent,low
+CL GAL,Galvarino,9106,poverty_rate,31.96,percent,very high
+CL GAL,Galvarino,9106,renter_share,9.09,percent,very low
+CL GAL,Galvarino,9106,transport_logistics_employment,0.0,percent,very low
+CL GAL,Galvarino,9106,home_ownership,63.64,percent,low
+CL GAL,Galvarino,9106,electricity_access,100.0,percent,very low
+CL GAL,Galvarino,9106,median_household_income,896521.0,CLP,very low
+CL GAL,Galvarino,9106,industry_construction_employment,0.0,percent,very low
+CL GAL,Galvarino,9106,unemployment_rate,10.36,percent,very high
+CL GLG,General Lagos,15202,unemployment_rate,9.44,percent,high
+CL GLG,General Lagos,15202,median_household_income,1150000.0,CLP,high
+CL GLG,General Lagos,15202,poverty_rate,25.28,percent,high
+CL GLG,General Lagos,15202,public_transport_share,24.92,percent,low
+CL GOR,Gorbea,9107,electricity_access,100.0,percent,very low
+CL GOR,Gorbea,9107,industry_construction_employment,25.0,percent,high
+CL GOR,Gorbea,9107,home_ownership,66.67,percent,medium
+CL GOR,Gorbea,9107,public_transport_share,27.27,percent,low
+CL GOR,Gorbea,9107,unemployment_rate,10.36,percent,very high
+CL GOR,Gorbea,9107,renter_share,33.33,percent,high
+CL GOR,Gorbea,9107,transport_logistics_employment,0.0,percent,very low
+CL GOR,Gorbea,9107,median_household_income,896521.0,CLP,very low
+CL GOR,Gorbea,9107,poverty_rate,31.96,percent,very high
+CL GRA,Graneros,6106,median_household_income,1100000.0,CLP,medium
+CL GRA,Graneros,6106,poverty_rate,21.05,percent,low
+CL GRA,Graneros,6106,unemployment_rate,9.07,percent,medium
+CL GRA,Graneros,6106,industry_construction_employment,25.0,percent,high
+CL GRA,Graneros,6106,home_ownership,76.47,percent,high
+CL GRA,Graneros,6106,public_transport_share,20.36,percent,very low
+CL GRA,Graneros,6106,renter_share,5.88,percent,very low
+CL GRA,Graneros,6106,electricity_access,100.0,percent,very low
+CL GRA,Graneros,6106,transport_logistics_employment,8.33,percent,low
+CL HIJ,Hijuelas,5503,poverty_rate,20.94,percent,low
+CL HIJ,Hijuelas,5503,transport_logistics_employment,0.0,percent,very low
+CL HIJ,Hijuelas,5503,public_transport_share,39.54,percent,high
+CL HIJ,Hijuelas,5503,home_ownership,87.5,percent,very high
+CL HIJ,Hijuelas,5503,electricity_access,100.0,percent,very low
+CL HIJ,Hijuelas,5503,median_household_income,1108241.0,CLP,medium
+CL HIJ,Hijuelas,5503,industry_construction_employment,42.86,percent,very high
+CL HIJ,Hijuelas,5503,unemployment_rate,9.8,percent,high
+CL HIJ,Hijuelas,5503,renter_share,0.0,percent,very low
+CL HLE,Hualañé,7302,unemployment_rate,8.44,percent,low
+CL HLE,Hualañé,7302,poverty_rate,26.12,percent,high
+CL HLE,Hualañé,7302,renter_share,0.0,percent,very low
+CL HLE,Hualañé,7302,home_ownership,100.0,percent,very high
+CL HLE,Hualañé,7302,transport_logistics_employment,12.5,percent,medium
+CL HLE,Hualañé,7302,public_transport_share,20.39,percent,very low
+CL HLE,Hualañé,7302,industry_construction_employment,0.0,percent,very low
+CL HLE,Hualañé,7302,electricity_access,100.0,percent,very low
+CL HLE,Hualañé,7302,median_household_income,925271.0,CLP,very low
+CL HPN,Hualpén,8112,industry_construction_employment,31.58,percent,high
+CL HPN,Hualpén,8112,home_ownership,68.63,percent,medium
+CL HPN,Hualpén,8112,public_transport_share,35.51,percent,high
+CL HPN,Hualpén,8112,unemployment_rate,9.49,percent,high
+CL HPN,Hualpén,8112,poverty_rate,22.01,percent,medium
+CL HPN,Hualpén,8112,electricity_access,100.0,percent,very low
+CL HPN,Hualpén,8112,median_household_income,1042738.0,CLP,low
+CL HPN,Hualpén,8112,renter_share,17.65,percent,low
+CL HPN,Hualpén,8112,transport_logistics_employment,5.26,percent,very low
+CL HQI,Hualqui,8105,public_transport_share,35.51,percent,high
+CL HQI,Hualqui,8105,electricity_access,100.0,percent,very low
+CL HQI,Hualqui,8105,industry_construction_employment,38.46,percent,very high
+CL HQI,Hualqui,8105,unemployment_rate,9.49,percent,high
+CL HQI,Hualqui,8105,transport_logistics_employment,0.0,percent,very low
+CL HQI,Hualqui,8105,median_household_income,1042738.0,CLP,low
+CL HQI,Hualqui,8105,poverty_rate,22.01,percent,medium
+CL HQI,Hualqui,8105,renter_share,26.67,percent,medium
+CL HQI,Hualqui,8105,home_ownership,66.67,percent,medium
+CL HUA,Huara,1404,median_household_income,1200000.0,CLP,high
+CL HUA,Huara,1404,public_transport_share,31.84,percent,medium
+CL HUA,Huara,1404,electricity_access,100.0,percent,very low
+CL HUA,Huara,1404,unemployment_rate,9.44,percent,high
+CL HUA,Huara,1404,industry_construction_employment,50.0,percent,very high
+CL HUA,Huara,1404,home_ownership,66.67,percent,medium
+CL HUA,Huara,1404,transport_logistics_employment,0.0,percent,very low
+CL HUA,Huara,1404,poverty_rate,26.77,percent,very high
+CL HUA,Huara,1404,renter_share,33.33,percent,high
+CL HUE,Huechuraba,13107,public_transport_share,49.86,percent,very high
+CL HUE,Huechuraba,13107,unemployment_rate,8.18,percent,very low
+CL HUE,Huechuraba,13107,poverty_rate,16.51,percent,very low
+CL HUE,Huechuraba,13107,home_ownership,56.67,percent,low
+CL HUE,Huechuraba,13107,industry_construction_employment,28.33,percent,high
+CL HUE,Huechuraba,13107,transport_logistics_employment,5.0,percent,very low
+CL HUE,Huechuraba,13107,renter_share,25.0,percent,medium
+CL HUE,Huechuraba,13107,median_household_income,1414513.0,CLP,very high
+CL HUE,Huechuraba,13107,electricity_access,100.0,percent,very low
+CL IDM,Isla de Maipo,13603,electricity_access,100.0,percent,very low
+CL IDM,Isla de Maipo,13603,home_ownership,62.5,percent,low
+CL IDM,Isla de Maipo,13603,public_transport_share,49.86,percent,very high
+CL IDM,Isla de Maipo,13603,transport_logistics_employment,15.38,percent,medium
+CL IDM,Isla de Maipo,13603,median_household_income,1414513.0,CLP,very high
+CL IDM,Isla de Maipo,13603,renter_share,12.5,percent,low
+CL IDM,Isla de Maipo,13603,industry_construction_employment,15.38,percent,low
+CL IDM,Isla de Maipo,13603,poverty_rate,16.51,percent,very low
+CL IDM,Isla de Maipo,13603,unemployment_rate,8.18,percent,very low
+CL ILL,Illapel,4201,unemployment_rate,9.08,percent,medium
+CL ILL,Illapel,4201,median_household_income,1068233.0,CLP,medium
+CL ILL,Illapel,4201,poverty_rate,24.26,percent,high
+CL ILL,Illapel,4201,public_transport_share,28.79,percent,medium
+CL ILL,Illapel,4201,industry_construction_employment,60.0,percent,very high
+CL ILL,Illapel,4201,home_ownership,78.57,percent,high
+CL ILL,Illapel,4201,renter_share,7.14,percent,very low
+CL ILL,Illapel,4201,electricity_access,100.0,percent,very low
+CL ILL,Illapel,4201,transport_logistics_employment,10.0,percent,low
+CL IND,Independencia,13108,poverty_rate,16.51,percent,very low
+CL IND,Independencia,13108,home_ownership,27.5,percent,very low
+CL IND,Independencia,13108,renter_share,58.75,percent,high
+CL IND,Independencia,13108,unemployment_rate,8.18,percent,very low
+CL IND,Independencia,13108,industry_construction_employment,20.0,percent,medium
+CL IND,Independencia,13108,electricity_access,100.0,percent,very low
+CL IND,Independencia,13108,median_household_income,1414513.0,CLP,very high
+CL IND,Independencia,13108,transport_logistics_employment,8.89,percent,low
+CL IND,Independencia,13108,public_transport_share,49.86,percent,very high
+CL IPC,Isla de Pascua,5201,median_household_income,1108241.0,CLP,medium
+CL IPC,Isla de Pascua,5201,electricity_access,100.0,percent,very low
+CL IPC,Isla de Pascua,5201,transport_logistics_employment,0.0,percent,very low
+CL IPC,Isla de Pascua,5201,industry_construction_employment,20.0,percent,medium
+CL IPC,Isla de Pascua,5201,unemployment_rate,9.8,percent,high
+CL IPC,Isla de Pascua,5201,renter_share,37.5,percent,high
+CL IPC,Isla de Pascua,5201,home_ownership,50.0,percent,very low
+CL IPC,Isla de Pascua,5201,poverty_rate,20.94,percent,low
+CL IPC,Isla de Pascua,5201,public_transport_share,39.54,percent,high
+CL IQQ,Iquique,1101,unemployment_rate,9.44,percent,high
+CL IQQ,Iquique,1101,renter_share,43.48,percent,high
+CL IQQ,Iquique,1101,transport_logistics_employment,7.35,percent,low
+CL IQQ,Iquique,1101,electricity_access,100.0,percent,very low
+CL IQQ,Iquique,1101,industry_construction_employment,22.79,percent,high
+CL IQQ,Iquique,1101,median_household_income,1200000.0,CLP,high
+CL IQQ,Iquique,1101,public_transport_share,31.84,percent,medium
+CL IQQ,Iquique,1101,poverty_rate,26.77,percent,very high
+CL IQQ,Iquique,1101,home_ownership,40.0,percent,very low
+CL KNA,Viña del Mar,5109,transport_logistics_employment,6.25,percent,very low
+CL KNA,Viña del Mar,5109,poverty_rate,20.94,percent,low
+CL KNA,Viña del Mar,5109,renter_share,31.53,percent,high
+CL KNA,Viña del Mar,5109,industry_construction_employment,16.35,percent,medium
+CL KNA,Viña del Mar,5109,public_transport_share,39.54,percent,high
+CL KNA,Viña del Mar,5109,unemployment_rate,9.8,percent,high
+CL KNA,Viña del Mar,5109,median_household_income,1108241.0,CLP,medium
+CL KNA,Viña del Mar,5109,home_ownership,54.19,percent,low
+CL KNA,Viña del Mar,5109,electricity_access,98.67,percent,very low
+CL LAJ,Laja,8304,home_ownership,80.0,percent,high
+CL LAJ,Laja,8304,transport_logistics_employment,11.11,percent,low
+CL LAJ,Laja,8304,public_transport_share,35.51,percent,high
+CL LAJ,Laja,8304,unemployment_rate,9.49,percent,high
+CL LAJ,Laja,8304,electricity_access,100.0,percent,very low
+CL LAJ,Laja,8304,industry_construction_employment,11.11,percent,low
+CL LAJ,Laja,8304,renter_share,10.0,percent,very low
+CL LAJ,Laja,8304,poverty_rate,22.01,percent,medium
+CL LAJ,Laja,8304,median_household_income,1042738.0,CLP,low
+CL LAL,Los Álamos,8206,home_ownership,85.0,percent,very high
+CL LAL,Los Álamos,8206,industry_construction_employment,21.43,percent,medium
+CL LAL,Los Álamos,8206,unemployment_rate,9.49,percent,high
+CL LAL,Los Álamos,8206,transport_logistics_employment,14.29,percent,medium
+CL LAL,Los Álamos,8206,public_transport_share,35.51,percent,high
+CL LAL,Los Álamos,8206,median_household_income,1042738.0,CLP,low
+CL LAL,Los Álamos,8206,electricity_access,100.0,percent,very low
+CL LAL,Los Álamos,8206,renter_share,15.0,percent,low
+CL LAL,Los Álamos,8206,poverty_rate,22.01,percent,medium
+CL LAM,Lampa,13302,poverty_rate,16.51,percent,very low
+CL LAM,Lampa,13302,electricity_access,100.0,percent,very low
+CL LAM,Lampa,13302,transport_logistics_employment,9.57,percent,low
+CL LAM,Lampa,13302,public_transport_share,49.86,percent,very high
+CL LAM,Lampa,13302,industry_construction_employment,22.34,percent,high
+CL LAM,Lampa,13302,home_ownership,67.57,percent,medium
+CL LAM,Lampa,13302,unemployment_rate,8.18,percent,very low
+CL LAM,Lampa,13302,renter_share,20.27,percent,medium
+CL LAM,Lampa,13302,median_household_income,1414513.0,CLP,very high
+CL LAN,Lanco,14103,electricity_access,100.0,percent,very low
+CL LAN,Lanco,14103,public_transport_share,24.17,percent,low
+CL LAN,Lanco,14103,renter_share,42.86,percent,high
+CL LAN,Lanco,14103,industry_construction_employment,0.0,percent,very low
+CL LAN,Lanco,14103,home_ownership,42.86,percent,very low
+CL LAN,Lanco,14103,transport_logistics_employment,0.0,percent,very low
+CL LAN,Lanco,14103,median_household_income,1049778.0,CLP,low
+CL LAN,Lanco,14103,poverty_rate,20.8,percent,low
+CL LAN,Lanco,14103,unemployment_rate,7.95,percent,very low
+CL LAU,Lautaro,9108,public_transport_share,27.27,percent,low
+CL LAU,Lautaro,9108,transport_logistics_employment,6.25,percent,very low
+CL LAU,Lautaro,9108,unemployment_rate,10.36,percent,very high
+CL LAU,Lautaro,9108,renter_share,29.41,percent,high
+CL LAU,Lautaro,9108,poverty_rate,31.96,percent,very high
+CL LAU,Lautaro,9108,electricity_access,100.0,percent,very low
+CL LAU,Lautaro,9108,industry_construction_employment,12.5,percent,low
+CL LAU,Lautaro,9108,median_household_income,896521.0,CLP,very low
+CL LAU,Lautaro,9108,home_ownership,58.82,percent,low
+CL LBA,Lo Barnechea,13115,transport_logistics_employment,6.78,percent,low
+CL LBA,Lo Barnechea,13115,industry_construction_employment,8.47,percent,low
+CL LBA,Lo Barnechea,13115,poverty_rate,16.51,percent,very low
+CL LBA,Lo Barnechea,13115,median_household_income,1414513.0,CLP,very high
+CL LBA,Lo Barnechea,13115,unemployment_rate,8.18,percent,very low
+CL LBA,Lo Barnechea,13115,home_ownership,80.0,percent,high
+CL LBA,Lo Barnechea,13115,renter_share,17.78,percent,low
+CL LBA,Lo Barnechea,13115,public_transport_share,49.86,percent,very high
+CL LBA,Lo Barnechea,13115,electricity_access,100.0,percent,very low
+CL LCB,Las Cabras,6107,public_transport_share,20.36,percent,very low
+CL LCB,Las Cabras,6107,poverty_rate,21.05,percent,low
+CL LCB,Las Cabras,6107,home_ownership,63.16,percent,low
+CL LCB,Las Cabras,6107,industry_construction_employment,9.09,percent,low
+CL LCB,Las Cabras,6107,median_household_income,1100000.0,CLP,medium
+CL LCB,Las Cabras,6107,electricity_access,100.0,percent,very low
+CL LCB,Las Cabras,6107,unemployment_rate,9.07,percent,medium
+CL LCB,Las Cabras,6107,renter_share,15.79,percent,low
+CL LCB,Las Cabras,6107,transport_logistics_employment,0.0,percent,very low
+CL LCI,La Cisterna,13109,poverty_rate,16.51,percent,very low
+CL LCI,La Cisterna,13109,electricity_access,100.0,percent,very low
+CL LCI,La Cisterna,13109,unemployment_rate,8.18,percent,very low
+CL LCI,La Cisterna,13109,median_household_income,1414513.0,CLP,very high
+CL LCI,La Cisterna,13109,home_ownership,41.07,percent,very low
+CL LCI,La Cisterna,13109,transport_logistics_employment,8.11,percent,low
+CL LCI,La Cisterna,13109,renter_share,44.64,percent,high
+CL LCI,La Cisterna,13109,industry_construction_employment,18.92,percent,medium
+CL LCI,La Cisterna,13109,public_transport_share,49.86,percent,very high
+CL LCL,Calera,5502,median_household_income,1108241.0,CLP,medium
+CL LCL,Calera,5502,unemployment_rate,9.8,percent,high
+CL LCL,Calera,5502,public_transport_share,39.54,percent,high
+CL LCL,Calera,5502,renter_share,14.29,percent,low
+CL LCL,Calera,5502,home_ownership,57.14,percent,low
+CL LCL,Calera,5502,poverty_rate,20.94,percent,low
+CL LCL,Calera,5502,transport_logistics_employment,8.0,percent,low
+CL LCL,Calera,5502,industry_construction_employment,28.0,percent,high
+CL LCL,Calera,5502,electricity_access,94.12,percent,very low
+CL LCZ,La Cruz,5504,home_ownership,77.78,percent,high
+CL LCZ,La Cruz,5504,median_household_income,1108241.0,CLP,medium
+CL LCZ,La Cruz,5504,public_transport_share,39.54,percent,high
+CL LCZ,La Cruz,5504,unemployment_rate,9.8,percent,high
+CL LCZ,La Cruz,5504,renter_share,11.11,percent,very low
+CL LCZ,La Cruz,5504,industry_construction_employment,22.22,percent,medium
+CL LCZ,La Cruz,5504,transport_logistics_employment,0.0,percent,very low
+CL LCZ,La Cruz,5504,poverty_rate,20.94,percent,low
+CL LCZ,La Cruz,5504,electricity_access,100.0,percent,very low
+CL LEB,Lebu,8201,poverty_rate,22.01,percent,medium
+CL LEB,Lebu,8201,public_transport_share,35.51,percent,high
+CL LEB,Lebu,8201,unemployment_rate,9.49,percent,high
+CL LEB,Lebu,8201,transport_logistics_employment,0.0,percent,very low
+CL LEB,Lebu,8201,renter_share,14.29,percent,low
+CL LEB,Lebu,8201,home_ownership,78.57,percent,high
+CL LEB,Lebu,8201,electricity_access,100.0,percent,very low
+CL LEB,Lebu,8201,industry_construction_employment,16.67,percent,medium
+CL LEB,Lebu,8201,median_household_income,1042738.0,CLP,low
+CL LEJ,Lo Espejo,13116,unemployment_rate,8.18,percent,very low
+CL LEJ,Lo Espejo,13116,public_transport_share,49.86,percent,very high
+CL LEJ,Lo Espejo,13116,industry_construction_employment,19.51,percent,medium
+CL LEJ,Lo Espejo,13116,home_ownership,50.0,percent,very low
+CL LEJ,Lo Espejo,13116,electricity_access,100.0,percent,very low
+CL LEJ,Lo Espejo,13116,transport_logistics_employment,4.88,percent,very low
+CL LEJ,Lo Espejo,13116,median_household_income,1414513.0,CLP,very high
+CL LEJ,Lo Espejo,13116,renter_share,16.67,percent,low
+CL LEJ,Lo Espejo,13116,poverty_rate,16.51,percent,very low
+CL LES,La Estrella,6202,home_ownership,100.0,percent,very high
+CL LES,La Estrella,6202,median_household_income,1100000.0,CLP,medium
+CL LES,La Estrella,6202,poverty_rate,21.05,percent,low
+CL LES,La Estrella,6202,public_transport_share,20.36,percent,very low
+CL LES,La Estrella,6202,unemployment_rate,9.07,percent,medium
+CL LES,La Estrella,6202,renter_share,0.0,percent,very low
+CL LFL,La Florida,13110,electricity_access,100.0,percent,very low
+CL LFL,La Florida,13110,public_transport_share,49.86,percent,very high
+CL LFL,La Florida,13110,poverty_rate,16.51,percent,very low
+CL LFL,La Florida,13110,median_household_income,1414513.0,CLP,very high
+CL LFL,La Florida,13110,transport_logistics_employment,5.14,percent,very low
+CL LFL,La Florida,13110,home_ownership,65.18,percent,medium
+CL LFL,La Florida,13110,industry_construction_employment,16.1,percent,low
+CL LFL,La Florida,13110,unemployment_rate,8.18,percent,very low
+CL LFL,La Florida,13110,renter_share,24.7,percent,medium
+CL LIA,Llanquihue,10107,home_ownership,62.5,percent,low
+CL LIA,Llanquihue,10107,unemployment_rate,6.88,percent,very low
+CL LIA,Llanquihue,10107,public_transport_share,28.43,percent,medium
+CL LIA,Llanquihue,10107,median_household_income,1055000.0,CLP,low
+CL LIA,Llanquihue,10107,electricity_access,100.0,percent,very low
+CL LIA,Llanquihue,10107,transport_logistics_employment,8.33,percent,low
+CL LIA,Llanquihue,10107,renter_share,25.0,percent,medium
+CL LIA,Llanquihue,10107,poverty_rate,21.43,percent,medium
+CL LIA,Llanquihue,10107,industry_construction_employment,25.0,percent,high
+CL LIB,Los Andes,5301,public_transport_share,39.54,percent,high
+CL LIB,Los Andes,5301,transport_logistics_employment,6.25,percent,very low
+CL LIB,Los Andes,5301,unemployment_rate,9.8,percent,high
+CL LIB,Los Andes,5301,poverty_rate,20.94,percent,low
+CL LIB,Los Andes,5301,electricity_access,100.0,percent,very low
+CL LIB,Los Andes,5301,industry_construction_employment,15.63,percent,low
+CL LIB,Los Andes,5301,home_ownership,70.0,percent,medium
+CL LIB,Los Andes,5301,median_household_income,1108241.0,CLP,medium
+CL LIB,Los Andes,5301,renter_share,23.33,percent,medium
+CL LIC,Licantén,7303,home_ownership,100.0,percent,very high
+CL LIC,Licantén,7303,unemployment_rate,8.44,percent,low
+CL LIC,Licantén,7303,public_transport_share,20.39,percent,very low
+CL LIC,Licantén,7303,median_household_income,925271.0,CLP,very low
+CL LIC,Licantén,7303,poverty_rate,26.12,percent,high
+CL LIC,Licantén,7303,industry_construction_employment,0.0,percent,very low
+CL LIC,Licantén,7303,electricity_access,100.0,percent,very low
+CL LIC,Licantén,7303,renter_share,0.0,percent,very low
+CL LIC,Licantén,7303,transport_logistics_employment,0.0,percent,very low
+CL LIG,La Ligua,5401,renter_share,20.0,percent,low
+CL LIG,La Ligua,5401,poverty_rate,20.94,percent,low
+CL LIG,La Ligua,5401,home_ownership,56.0,percent,low
+CL LIG,La Ligua,5401,public_transport_share,39.54,percent,high
+CL LIG,La Ligua,5401,electricity_access,100.0,percent,very low
+CL LIG,La Ligua,5401,transport_logistics_employment,6.45,percent,very low
+CL LIG,La Ligua,5401,median_household_income,1108241.0,CLP,medium
+CL LIG,La Ligua,5401,unemployment_rate,9.8,percent,high
+CL LIG,La Ligua,5401,industry_construction_employment,19.35,percent,medium
+CL LIM,Limache,5802,transport_logistics_employment,9.68,percent,low
+CL LIM,Limache,5802,electricity_access,100.0,percent,very low
+CL LIM,Limache,5802,unemployment_rate,9.8,percent,high
+CL LIM,Limache,5802,industry_construction_employment,16.13,percent,low
+CL LIM,Limache,5802,poverty_rate,20.94,percent,low
+CL LIM,Limache,5802,renter_share,28.57,percent,medium
+CL LIM,Limache,5802,public_transport_share,39.54,percent,high
+CL LIM,Limache,5802,median_household_income,1108241.0,CLP,medium
+CL LIM,Limache,5802,home_ownership,64.29,percent,low
+CL LIN,Linares,7401,unemployment_rate,8.44,percent,low
+CL LIN,Linares,7401,public_transport_share,20.39,percent,very low
+CL LIN,Linares,7401,industry_construction_employment,6.06,percent,low
+CL LIN,Linares,7401,poverty_rate,26.12,percent,high
+CL LIN,Linares,7401,renter_share,21.21,percent,medium
+CL LIN,Linares,7401,home_ownership,60.61,percent,low
+CL LIN,Linares,7401,median_household_income,925271.0,CLP,very low
+CL LIN,Linares,7401,transport_logistics_employment,6.06,percent,very low
+CL LIN,Linares,7401,electricity_access,100.0,percent,very low
+CL LLA,Llaillay,5703,median_household_income,1108241.0,CLP,medium
+CL LLA,Llaillay,5703,unemployment_rate,9.8,percent,high
+CL LLA,Llaillay,5703,transport_logistics_employment,0.0,percent,very low
+CL LLA,Llaillay,5703,home_ownership,80.0,percent,high
+CL LLA,Llaillay,5703,public_transport_share,39.54,percent,high
+CL LLA,Llaillay,5703,poverty_rate,20.94,percent,low
+CL LLA,Llaillay,5703,industry_construction_employment,27.27,percent,high
+CL LLA,Llaillay,5703,renter_share,0.0,percent,very low
+CL LLA,Llaillay,5703,electricity_access,100.0,percent,very low
+CL LLG,Los Lagos,14104,home_ownership,55.56,percent,low
+CL LLG,Los Lagos,14104,poverty_rate,20.8,percent,low
+CL LLG,Los Lagos,14104,industry_construction_employment,30.0,percent,high
+CL LLG,Los Lagos,14104,transport_logistics_employment,0.0,percent,very low
+CL LLG,Los Lagos,14104,renter_share,11.11,percent,very low
+CL LLG,Los Lagos,14104,unemployment_rate,7.95,percent,very low
+CL LLG,Los Lagos,14104,median_household_income,1049778.0,CLP,low
+CL LLG,Los Lagos,14104,public_transport_share,24.17,percent,low
+CL LLG,Los Lagos,14104,electricity_access,100.0,percent,very low
+CL LMU,Los Muermos,10106,electricity_access,100.0,percent,very low
+CL LMU,Los Muermos,10106,poverty_rate,21.43,percent,medium
+CL LMU,Los Muermos,10106,home_ownership,50.0,percent,very low
+CL LMU,Los Muermos,10106,median_household_income,1055000.0,CLP,low
+CL LMU,Los Muermos,10106,industry_construction_employment,20.0,percent,medium
+CL LMU,Los Muermos,10106,transport_logistics_employment,0.0,percent,very low
+CL LMU,Los Muermos,10106,public_transport_share,28.43,percent,medium
+CL LMU,Los Muermos,10106,renter_share,37.5,percent,high
+CL LMU,Los Muermos,10106,unemployment_rate,6.88,percent,very low
+CL LNC,Loncoche,9109,poverty_rate,31.96,percent,very high
+CL LNC,Loncoche,9109,unemployment_rate,10.36,percent,very high
+CL LNC,Loncoche,9109,industry_construction_employment,15.38,percent,low
+CL LNC,Loncoche,9109,home_ownership,71.43,percent,medium
+CL LNC,Loncoche,9109,transport_logistics_employment,15.38,percent,medium
+CL LNC,Loncoche,9109,median_household_income,896521.0,CLP,very low
+CL LNC,Loncoche,9109,public_transport_share,27.27,percent,low
+CL LNC,Loncoche,9109,renter_share,0.0,percent,very low
+CL LNC,Loncoche,9109,electricity_access,100.0,percent,very low
+CL LOL,Lolol,6304,median_household_income,1100000.0,CLP,medium
+CL LOL,Lolol,6304,renter_share,0.0,percent,very low
+CL LOL,Lolol,6304,home_ownership,60.0,percent,low
+CL LOL,Lolol,6304,industry_construction_employment,33.33,percent,very high
+CL LOL,Lolol,6304,transport_logistics_employment,0.0,percent,very low
+CL LOL,Lolol,6304,poverty_rate,21.05,percent,low
+CL LOL,Lolol,6304,electricity_access,100.0,percent,very low
+CL LOL,Lolol,6304,unemployment_rate,9.07,percent,medium
+CL LOL,Lolol,6304,public_transport_share,20.36,percent,very low
+CL LON,Longaví,7403,poverty_rate,26.12,percent,high
+CL LON,Longaví,7403,unemployment_rate,8.44,percent,low
+CL LON,Longaví,7403,industry_construction_employment,9.09,percent,low
+CL LON,Longaví,7403,electricity_access,100.0,percent,very low
+CL LON,Longaví,7403,public_transport_share,20.39,percent,very low
+CL LON,Longaví,7403,home_ownership,83.33,percent,high
+CL LON,Longaví,7403,transport_logistics_employment,9.09,percent,low
+CL LON,Longaví,7403,median_household_income,925271.0,CLP,very low
+CL LON,Longaví,7403,renter_share,8.33,percent,very low
+CL LOS,Los Vilos,4203,poverty_rate,24.26,percent,high
+CL LOS,Los Vilos,4203,home_ownership,66.67,percent,medium
+CL LOS,Los Vilos,4203,median_household_income,1068233.0,CLP,medium
+CL LOS,Los Vilos,4203,renter_share,29.17,percent,high
+CL LOS,Los Vilos,4203,unemployment_rate,9.08,percent,medium
+CL LOS,Los Vilos,4203,electricity_access,100.0,percent,very low
+CL LOS,Los Vilos,4203,industry_construction_employment,31.58,percent,high
+CL LOS,Los Vilos,4203,transport_logistics_employment,10.53,percent,low
+CL LOS,Los Vilos,4203,public_transport_share,28.79,percent,medium
+CL LPR,Lo Prado,13117,industry_construction_employment,17.46,percent,medium
+CL LPR,Lo Prado,13117,unemployment_rate,8.18,percent,very low
+CL LPR,Lo Prado,13117,public_transport_share,49.86,percent,very high
+CL LPR,Lo Prado,13117,home_ownership,42.86,percent,very low
+CL LPR,Lo Prado,13117,transport_logistics_employment,12.7,percent,medium
+CL LPR,Lo Prado,13117,median_household_income,1414513.0,CLP,very high
+CL LPR,Lo Prado,13117,renter_share,37.5,percent,high
+CL LPR,Lo Prado,13117,poverty_rate,16.51,percent,very low
+CL LPR,Lo Prado,13117,electricity_access,100.0,percent,very low
+CL LQY,Lonquimay,9205,industry_construction_employment,25.0,percent,high
+CL LQY,Lonquimay,9205,poverty_rate,31.96,percent,very high
+CL LQY,Lonquimay,9205,electricity_access,100.0,percent,very low
+CL LQY,Lonquimay,9205,transport_logistics_employment,0.0,percent,very low
+CL LQY,Lonquimay,9205,renter_share,14.29,percent,low
+CL LQY,Lonquimay,9205,unemployment_rate,10.36,percent,very high
+CL LQY,Lonquimay,9205,median_household_income,896521.0,CLP,very low
+CL LQY,Lonquimay,9205,public_transport_share,27.27,percent,low
+CL LQY,Lonquimay,9205,home_ownership,71.43,percent,medium
+CL LSA,Los Sauces,9206,public_transport_share,27.27,percent,low
+CL LSA,Los Sauces,9206,median_household_income,896521.0,CLP,very low
+CL LSA,Los Sauces,9206,unemployment_rate,10.36,percent,very high
+CL LSA,Los Sauces,9206,transport_logistics_employment,0.0,percent,very low
+CL LSA,Los Sauces,9206,industry_construction_employment,50.0,percent,very high
+CL LSA,Los Sauces,9206,electricity_access,100.0,percent,very low
+CL LSA,Los Sauces,9206,home_ownership,25.0,percent,very low
+CL LSA,Los Sauces,9206,poverty_rate,31.96,percent,very high
+CL LSA,Los Sauces,9206,renter_share,50.0,percent,high
+CL LSC,La Serena,4101,renter_share,24.16,percent,medium
+CL LSC,La Serena,4101,unemployment_rate,9.08,percent,medium
+CL LSC,La Serena,4101,industry_construction_employment,30.27,percent,high
+CL LSC,La Serena,4101,public_transport_share,28.79,percent,medium
+CL LSC,La Serena,4101,transport_logistics_employment,7.57,percent,low
+CL LSC,La Serena,4101,home_ownership,69.13,percent,medium
+CL LSC,La Serena,4101,poverty_rate,24.26,percent,high
+CL LSC,La Serena,4101,electricity_access,100.0,percent,very low
+CL LSC,La Serena,4101,median_household_income,1068233.0,CLP,medium
+CL LSQ,Los Ángeles,8301,public_transport_share,35.51,percent,high
+CL LSQ,Los Ángeles,8301,electricity_access,98.21,percent,very low
+CL LSQ,Los Ángeles,8301,home_ownership,72.0,percent,high
+CL LSQ,Los Ángeles,8301,median_household_income,1042738.0,CLP,low
+CL LSQ,Los Ángeles,8301,unemployment_rate,9.49,percent,high
+CL LSQ,Los Ángeles,8301,industry_construction_employment,18.55,percent,medium
+CL LSQ,Los Ángeles,8301,renter_share,17.6,percent,low
+CL LSQ,Los Ángeles,8301,transport_logistics_employment,6.45,percent,very low
+CL LSQ,Los Ángeles,8301,poverty_rate,22.01,percent,medium
+CL LTA,Lota,8106,home_ownership,70.0,percent,medium
+CL LTA,Lota,8106,unemployment_rate,9.49,percent,high
+CL LTA,Lota,8106,poverty_rate,22.01,percent,medium
+CL LTA,Lota,8106,median_household_income,1042738.0,CLP,low
+CL LTA,Lota,8106,public_transport_share,35.51,percent,high
+CL LTA,Lota,8106,renter_share,15.0,percent,low
+CL LTA,Lota,8106,electricity_access,100.0,percent,very low
+CL LTA,Lota,8106,industry_construction_employment,26.09,percent,high
+CL LTA,Lota,8106,transport_logistics_employment,17.39,percent,medium
+CL LUM,Lumaco,9207,renter_share,0.0,percent,very low
+CL LUM,Lumaco,9207,median_household_income,896521.0,CLP,very low
+CL LUM,Lumaco,9207,transport_logistics_employment,0.0,percent,very low
+CL LUM,Lumaco,9207,poverty_rate,31.96,percent,very high
+CL LUM,Lumaco,9207,unemployment_rate,10.36,percent,very high
+CL LUM,Lumaco,9207,public_transport_share,27.27,percent,low
+CL LUM,Lumaco,9207,home_ownership,100.0,percent,very high
+CL LUM,Lumaco,9207,industry_construction_employment,0.0,percent,very low
+CL LUM,Lumaco,9207,electricity_access,100.0,percent,very low
+CL LUN,La Unión,14201,renter_share,14.81,percent,low
+CL LUN,La Unión,14201,median_household_income,1049778.0,CLP,low
+CL LUN,La Unión,14201,industry_construction_employment,19.05,percent,medium
+CL LUN,La Unión,14201,unemployment_rate,7.95,percent,very low
+CL LUN,La Unión,14201,home_ownership,66.67,percent,medium
+CL LUN,La Unión,14201,transport_logistics_employment,9.52,percent,low
+CL LUN,La Unión,14201,poverty_rate,20.8,percent,low
+CL LUN,La Unión,14201,electricity_access,100.0,percent,very low
+CL LUN,La Unión,14201,public_transport_share,24.17,percent,low
+CL LVD,Lago Verde,11102,poverty_rate,14.94,percent,very low
+CL LVD,Lago Verde,11102,median_household_income,1339999.0,CLP,high
+CL LVD,Lago Verde,11102,public_transport_share,10.16,percent,very low
+CL LVD,Lago Verde,11102,unemployment_rate,5.33,percent,very low
+CL MAC,Macul,13118,poverty_rate,16.51,percent,very low
+CL MAC,Macul,13118,industry_construction_employment,11.29,percent,low
+CL MAC,Macul,13118,electricity_access,100.0,percent,very low
+CL MAC,Macul,13118,home_ownership,56.9,percent,low
+CL MAC,Macul,13118,median_household_income,1414513.0,CLP,very high
+CL MAC,Macul,13118,transport_logistics_employment,4.84,percent,very low
+CL MAC,Macul,13118,renter_share,36.21,percent,high
+CL MAC,Macul,13118,unemployment_rate,8.18,percent,very low
+CL MAC,Macul,13118,public_transport_share,49.86,percent,very high
+CL MAE,María Elena,2302,industry_construction_employment,75.0,percent,very high
+CL MAE,María Elena,2302,poverty_rate,19.53,percent,low
+CL MAE,María Elena,2302,unemployment_rate,9.26,percent,medium
+CL MAE,María Elena,2302,public_transport_share,34.19,percent,high
+CL MAE,María Elena,2302,transport_logistics_employment,0.0,percent,very low
+CL MAE,María Elena,2302,median_household_income,1303632.0,CLP,high
+CL MAE,María Elena,2302,renter_share,50.0,percent,high
+CL MAE,María Elena,2302,home_ownership,0.0,percent,very low
+CL MAF,Máfil,14105,poverty_rate,20.8,percent,low
+CL MAF,Máfil,14105,electricity_access,100.0,percent,very low
+CL MAF,Máfil,14105,home_ownership,33.33,percent,very low
+CL MAF,Máfil,14105,public_transport_share,24.17,percent,low
+CL MAF,Máfil,14105,median_household_income,1049778.0,CLP,low
+CL MAF,Máfil,14105,renter_share,0.0,percent,very low
+CL MAF,Máfil,14105,unemployment_rate,7.95,percent,very low
+CL MAI,Maipú,13119,home_ownership,67.51,percent,medium
+CL MAI,Maipú,13119,public_transport_share,49.86,percent,very high
+CL MAI,Maipú,13119,median_household_income,1414513.0,CLP,very high
+CL MAI,Maipú,13119,poverty_rate,16.51,percent,very low
+CL MAI,Maipú,13119,renter_share,25.74,percent,medium
+CL MAI,Maipú,13119,electricity_access,100.0,percent,very low
+CL MAI,Maipú,13119,unemployment_rate,8.18,percent,very low
+CL MAI,Maipú,13119,industry_construction_employment,18.84,percent,medium
+CL MAI,Maipú,13119,transport_logistics_employment,9.06,percent,low
+CL MAL,Malloa,6109,renter_share,0.0,percent,very low
+CL MAL,Malloa,6109,transport_logistics_employment,0.0,percent,very low
+CL MAL,Malloa,6109,unemployment_rate,9.07,percent,medium
+CL MAL,Malloa,6109,poverty_rate,21.05,percent,low
+CL MAL,Malloa,6109,home_ownership,100.0,percent,very high
+CL MAL,Malloa,6109,electricity_access,100.0,percent,very low
+CL MAL,Malloa,6109,median_household_income,1100000.0,CLP,medium
+CL MAL,Malloa,6109,public_transport_share,20.36,percent,very low
+CL MAL,Malloa,6109,industry_construction_employment,20.0,percent,medium
+CL MAU,Maule,7105,industry_construction_employment,22.22,percent,medium
+CL MAU,Maule,7105,poverty_rate,26.12,percent,high
+CL MAU,Maule,7105,transport_logistics_employment,5.56,percent,very low
+CL MAU,Maule,7105,unemployment_rate,8.44,percent,low
+CL MAU,Maule,7105,renter_share,12.5,percent,low
+CL MAU,Maule,7105,electricity_access,100.0,percent,very low
+CL MAU,Maule,7105,public_transport_share,20.39,percent,very low
+CL MAU,Maule,7105,median_household_income,925271.0,CLP,very low
+CL MAU,Maule,7105,home_ownership,75.0,percent,high
+CL MCI,Machalí,6108,renter_share,26.92,percent,medium
+CL MCI,Machalí,6108,transport_logistics_employment,7.41,percent,low
+CL MCI,Machalí,6108,industry_construction_employment,25.93,percent,high
+CL MCI,Machalí,6108,home_ownership,61.54,percent,low
+CL MCI,Machalí,6108,poverty_rate,21.05,percent,low
+CL MCI,Machalí,6108,public_transport_share,20.36,percent,very low
+CL MCI,Machalí,6108,electricity_access,100.0,percent,very low
+CL MCI,Machalí,6108,median_household_income,1100000.0,CLP,medium
+CL MCI,Machalí,6108,unemployment_rate,9.07,percent,medium
+CL MEL,Melipilla,13501,industry_construction_employment,14.1,percent,low
+CL MEL,Melipilla,13501,public_transport_share,49.86,percent,very high
+CL MEL,Melipilla,13501,poverty_rate,16.51,percent,very low
+CL MEL,Melipilla,13501,home_ownership,55.56,percent,low
+CL MEL,Melipilla,13501,unemployment_rate,8.18,percent,very low
+CL MEL,Melipilla,13501,median_household_income,1414513.0,CLP,very high
+CL MEL,Melipilla,13501,transport_logistics_employment,8.97,percent,low
+CL MEL,Melipilla,13501,renter_share,29.17,percent,high
+CL MEL,Melipilla,13501,electricity_access,100.0,percent,very low
+CL MJS,Mejillones,2102,unemployment_rate,9.26,percent,medium
+CL MJS,Mejillones,2102,renter_share,16.67,percent,low
+CL MJS,Mejillones,2102,industry_construction_employment,57.14,percent,very high
+CL MJS,Mejillones,2102,electricity_access,100.0,percent,very low
+CL MJS,Mejillones,2102,transport_logistics_employment,14.29,percent,medium
+CL MJS,Mejillones,2102,public_transport_share,34.19,percent,high
+CL MJS,Mejillones,2102,median_household_income,1303632.0,CLP,high
+CL MJS,Mejillones,2102,home_ownership,83.33,percent,high
+CL MJS,Mejillones,2102,poverty_rate,19.53,percent,low
+CL MLL,Maullín,10108,poverty_rate,21.43,percent,medium
+CL MLL,Maullín,10108,electricity_access,100.0,percent,very low
+CL MLL,Maullín,10108,unemployment_rate,6.88,percent,very low
+CL MLL,Maullín,10108,median_household_income,1055000.0,CLP,low
+CL MLL,Maullín,10108,public_transport_share,28.43,percent,medium
+CL MLL,Maullín,10108,industry_construction_employment,16.67,percent,medium
+CL MLL,Maullín,10108,home_ownership,75.0,percent,high
+CL MLL,Maullín,10108,renter_share,18.75,percent,low
+CL MLL,Maullín,10108,transport_logistics_employment,5.56,percent,very low
+CL MLP,Melipeuco,9110,industry_construction_employment,14.29,percent,low
+CL MLP,Melipeuco,9110,home_ownership,100.0,percent,very high
+CL MLP,Melipeuco,9110,transport_logistics_employment,0.0,percent,very low
+CL MLP,Melipeuco,9110,electricity_access,100.0,percent,very low
+CL MLP,Melipeuco,9110,median_household_income,896521.0,CLP,very low
+CL MLP,Melipeuco,9110,poverty_rate,31.96,percent,very high
+CL MLP,Melipeuco,9110,unemployment_rate,10.36,percent,very high
+CL MLP,Melipeuco,9110,public_transport_share,27.27,percent,low
+CL MLP,Melipeuco,9110,renter_share,0.0,percent,very low
+CL MOL,Molina,7304,median_household_income,925271.0,CLP,very low
+CL MOL,Molina,7304,public_transport_share,20.39,percent,very low
+CL MOL,Molina,7304,industry_construction_employment,8.33,percent,low
+CL MOL,Molina,7304,unemployment_rate,8.44,percent,low
+CL MOL,Molina,7304,electricity_access,100.0,percent,very low
+CL MOL,Molina,7304,home_ownership,88.24,percent,very high
+CL MOL,Molina,7304,transport_logistics_employment,16.67,percent,medium
+CL MOL,Molina,7304,poverty_rate,26.12,percent,high
+CL MOL,Molina,7304,renter_share,11.76,percent,low
+CL MOS,Mostazal,6110,transport_logistics_employment,11.11,percent,low
+CL MOS,Mostazal,6110,electricity_access,100.0,percent,very low
+CL MOS,Mostazal,6110,poverty_rate,21.05,percent,low
+CL MOS,Mostazal,6110,renter_share,8.33,percent,very low
+CL MOS,Mostazal,6110,industry_construction_employment,44.44,percent,very high
+CL MOS,Mostazal,6110,unemployment_rate,9.07,percent,medium
+CL MOS,Mostazal,6110,public_transport_share,20.36,percent,very low
+CL MOS,Mostazal,6110,home_ownership,66.67,percent,medium
+CL MOS,Mostazal,6110,median_household_income,1100000.0,CLP,medium
+CL MPI,María Pinto,13504,renter_share,14.29,percent,low
+CL MPI,María Pinto,13504,poverty_rate,16.51,percent,very low
+CL MPI,María Pinto,13504,public_transport_share,49.86,percent,very high
+CL MPI,María Pinto,13504,unemployment_rate,8.18,percent,very low
+CL MPI,María Pinto,13504,transport_logistics_employment,30.0,percent,medium
+CL MPI,María Pinto,13504,industry_construction_employment,0.0,percent,very low
+CL MPI,María Pinto,13504,home_ownership,85.71,percent,very high
+CL MPI,María Pinto,13504,median_household_income,1414513.0,CLP,very high
+CL MTP,Monte Patria,4303,industry_construction_employment,27.78,percent,high
+CL MTP,Monte Patria,4303,public_transport_share,28.79,percent,medium
+CL MTP,Monte Patria,4303,median_household_income,1068233.0,CLP,medium
+CL MTP,Monte Patria,4303,poverty_rate,24.26,percent,high
+CL MTP,Monte Patria,4303,home_ownership,65.22,percent,medium
+CL MTP,Monte Patria,4303,electricity_access,100.0,percent,very low
+CL MTP,Monte Patria,4303,transport_logistics_employment,16.67,percent,medium
+CL MTP,Monte Patria,4303,renter_share,4.35,percent,very low
+CL MTP,Monte Patria,4303,unemployment_rate,9.08,percent,medium
+CL MUL,Mulchén,8305,transport_logistics_employment,9.52,percent,low
+CL MUL,Mulchén,8305,public_transport_share,35.51,percent,high
+CL MUL,Mulchén,8305,renter_share,5.26,percent,very low
+CL MUL,Mulchén,8305,median_household_income,1042738.0,CLP,low
+CL MUL,Mulchén,8305,home_ownership,84.21,percent,very high
+CL MUL,Mulchén,8305,industry_construction_employment,19.05,percent,medium
+CL MUL,Mulchén,8305,unemployment_rate,9.49,percent,high
+CL MUL,Mulchén,8305,electricity_access,100.0,percent,very low
+CL MUL,Mulchén,8305,poverty_rate,22.01,percent,medium
+CL NAC,Nacimiento,8306,public_transport_share,35.51,percent,high
+CL NAC,Nacimiento,8306,electricity_access,100.0,percent,very low
+CL NAC,Nacimiento,8306,unemployment_rate,9.49,percent,high
+CL NAC,Nacimiento,8306,transport_logistics_employment,25.0,percent,medium
+CL NAC,Nacimiento,8306,poverty_rate,22.01,percent,medium
+CL NAC,Nacimiento,8306,home_ownership,75.0,percent,high
+CL NAC,Nacimiento,8306,median_household_income,1042738.0,CLP,low
+CL NAC,Nacimiento,8306,industry_construction_employment,25.0,percent,high
+CL NAC,Nacimiento,8306,renter_share,25.0,percent,medium
+CL NAV,Navidad,6205,industry_construction_employment,50.0,percent,very high
+CL NAV,Navidad,6205,electricity_access,100.0,percent,very low
+CL NAV,Navidad,6205,home_ownership,80.0,percent,high
+CL NAV,Navidad,6205,public_transport_share,20.36,percent,very low
+CL NAV,Navidad,6205,transport_logistics_employment,0.0,percent,very low
+CL NAV,Navidad,6205,unemployment_rate,9.07,percent,medium
+CL NAV,Navidad,6205,median_household_income,1100000.0,CLP,medium
+CL NAV,Navidad,6205,renter_share,20.0,percent,low
+CL NAV,Navidad,6205,poverty_rate,21.05,percent,low
+CL NCG,Nancagua,6305,industry_construction_employment,25.0,percent,high
+CL NCG,Nancagua,6305,median_household_income,1100000.0,CLP,medium
+CL NCG,Nancagua,6305,home_ownership,90.0,percent,very high
+CL NCG,Nancagua,6305,transport_logistics_employment,33.33,percent,medium
+CL NCG,Nancagua,6305,public_transport_share,20.36,percent,very low
+CL NCG,Nancagua,6305,unemployment_rate,9.07,percent,medium
+CL NCG,Nancagua,6305,poverty_rate,21.05,percent,low
+CL NCG,Nancagua,6305,renter_share,10.0,percent,very low
+CL NCG,Nancagua,6305,electricity_access,100.0,percent,very low
+CL NEG,Negrete,8307,poverty_rate,22.01,percent,medium
+CL NEG,Negrete,8307,transport_logistics_employment,40.0,percent,medium
+CL NEG,Negrete,8307,renter_share,12.5,percent,low
+CL NEG,Negrete,8307,median_household_income,1042738.0,CLP,low
+CL NEG,Negrete,8307,home_ownership,75.0,percent,high
+CL NEG,Negrete,8307,electricity_access,100.0,percent,very low
+CL NEG,Negrete,8307,public_transport_share,35.51,percent,high
+CL NEG,Negrete,8307,industry_construction_employment,0.0,percent,very low
+CL NEG,Negrete,8307,unemployment_rate,9.49,percent,high
+CL NIM,Nueva Imperial,9111,unemployment_rate,10.36,percent,very high
+CL NIM,Nueva Imperial,9111,industry_construction_employment,44.44,percent,very high
+CL NIM,Nueva Imperial,9111,median_household_income,896521.0,CLP,very low
+CL NIM,Nueva Imperial,9111,transport_logistics_employment,0.0,percent,very low
+CL NIM,Nueva Imperial,9111,public_transport_share,27.27,percent,low
+CL NIM,Nueva Imperial,9111,home_ownership,87.5,percent,very high
+CL NIM,Nueva Imperial,9111,renter_share,12.5,percent,low
+CL NIM,Nueva Imperial,9111,poverty_rate,31.96,percent,very high
+CL NIM,Nueva Imperial,9111,electricity_access,100.0,percent,very low
+CL NIN,Ninhue,16204,poverty_rate,29.65,percent,very high
+CL NIN,Ninhue,16204,home_ownership,100.0,percent,very high
+CL NIN,Ninhue,16204,transport_logistics_employment,0.0,percent,very low
+CL NIN,Ninhue,16204,renter_share,0.0,percent,very low
+CL NIN,Ninhue,16204,electricity_access,100.0,percent,very low
+CL NIN,Ninhue,16204,industry_construction_employment,100.0,percent,very high
+CL NIN,Ninhue,16204,unemployment_rate,9.68,percent,high
+CL NIN,Ninhue,16204,public_transport_share,24.53,percent,low
+CL NIN,Ninhue,16204,median_household_income,871602.5,CLP,very low
+CL NOG,Nogales,5506,poverty_rate,20.94,percent,low
+CL NOG,Nogales,5506,transport_logistics_employment,40.0,percent,medium
+CL NOG,Nogales,5506,industry_construction_employment,10.0,percent,low
+CL NOG,Nogales,5506,unemployment_rate,9.8,percent,high
+CL NOG,Nogales,5506,median_household_income,1108241.0,CLP,medium
+CL NOG,Nogales,5506,public_transport_share,39.54,percent,high
+CL NOG,Nogales,5506,home_ownership,75.0,percent,high
+CL NOG,Nogales,5506,electricity_access,100.0,percent,very low
+CL NOG,Nogales,5506,renter_share,0.0,percent,very low
+CL NQN,Ñiquén,16303,industry_construction_employment,75.0,percent,very high
+CL NQN,Ñiquén,16303,transport_logistics_employment,0.0,percent,very low
+CL NQN,Ñiquén,16303,unemployment_rate,9.68,percent,high
+CL NQN,Ñiquén,16303,median_household_income,871602.5,CLP,very low
+CL NQN,Ñiquén,16303,poverty_rate,29.65,percent,very high
+CL NQN,Ñiquén,16303,electricity_access,100.0,percent,very low
+CL NQN,Ñiquén,16303,home_ownership,71.43,percent,medium
+CL NQN,Ñiquén,16303,public_transport_share,24.53,percent,low
+CL NQN,Ñiquén,16303,renter_share,0.0,percent,very low
+CL NUN,Ñuñoa,13120,median_household_income,1414513.0,CLP,very high
+CL NUN,Ñuñoa,13120,poverty_rate,16.51,percent,very low
+CL NUN,Ñuñoa,13120,electricity_access,100.0,percent,very low
+CL NUN,Ñuñoa,13120,unemployment_rate,8.18,percent,very low
+CL NUN,Ñuñoa,13120,public_transport_share,49.86,percent,very high
+CL NUN,Ñuñoa,13120,industry_construction_employment,9.47,percent,low
+CL NUN,Ñuñoa,13120,transport_logistics_employment,7.1,percent,low
+CL NUN,Ñuñoa,13120,renter_share,44.67,percent,high
+CL NUN,Ñuñoa,13120,home_ownership,52.67,percent,very low
+CL OHI,O'Higgins,11302,public_transport_share,10.16,percent,very low
+CL OHI,O'Higgins,11302,poverty_rate,14.94,percent,very low
+CL OHI,O'Higgins,11302,unemployment_rate,5.33,percent,very low
+CL OHI,O'Higgins,11302,median_household_income,1339999.0,CLP,high
+CL OLI,Olivar,6111,industry_construction_employment,33.33,percent,very high
+CL OLI,Olivar,6111,public_transport_share,20.36,percent,very low
+CL OLI,Olivar,6111,home_ownership,66.67,percent,medium
+CL OLI,Olivar,6111,transport_logistics_employment,33.33,percent,medium
+CL OLI,Olivar,6111,median_household_income,1100000.0,CLP,medium
+CL OLI,Olivar,6111,poverty_rate,21.05,percent,low
+CL OLI,Olivar,6111,electricity_access,100.0,percent,very low
+CL OLI,Olivar,6111,renter_share,33.33,percent,high
+CL OLI,Olivar,6111,unemployment_rate,9.07,percent,medium
+CL OLL,Ollagüe,2202,poverty_rate,19.53,percent,low
+CL OLL,Ollagüe,2202,public_transport_share,34.19,percent,high
+CL OLL,Ollagüe,2202,unemployment_rate,9.26,percent,medium
+CL OLL,Ollagüe,2202,median_household_income,1303632.0,CLP,high
+CL OLM,Olmué,5803,renter_share,11.11,percent,very low
+CL OLM,Olmué,5803,median_household_income,1108241.0,CLP,medium
+CL OLM,Olmué,5803,poverty_rate,20.94,percent,low
+CL OLM,Olmué,5803,public_transport_share,39.54,percent,high
+CL OLM,Olmué,5803,home_ownership,77.78,percent,high
+CL OLM,Olmué,5803,industry_construction_employment,40.0,percent,very high
+CL OLM,Olmué,5803,electricity_access,100.0,percent,very low
+CL OLM,Olmué,5803,unemployment_rate,9.8,percent,high
+CL OLM,Olmué,5803,transport_logistics_employment,0.0,percent,very low
+CL OVL,Ovalle,4301,transport_logistics_employment,4.92,percent,very low
+CL OVL,Ovalle,4301,public_transport_share,28.79,percent,medium
+CL OVL,Ovalle,4301,electricity_access,100.0,percent,very low
+CL OVL,Ovalle,4301,median_household_income,1068233.0,CLP,medium
+CL OVL,Ovalle,4301,unemployment_rate,9.08,percent,medium
+CL OVL,Ovalle,4301,poverty_rate,24.26,percent,high
+CL OVL,Ovalle,4301,renter_share,16.42,percent,low
+CL OVL,Ovalle,4301,industry_construction_employment,21.31,percent,medium
+CL OVL,Ovalle,4301,home_ownership,70.15,percent,medium
+CL PAL,Palena,10404,median_household_income,1055000.0,CLP,low
+CL PAL,Palena,10404,public_transport_share,28.43,percent,medium
+CL PAL,Palena,10404,unemployment_rate,6.88,percent,very low
+CL PAL,Palena,10404,home_ownership,100.0,percent,very high
+CL PAL,Palena,10404,renter_share,0.0,percent,very low
+CL PAL,Palena,10404,poverty_rate,21.43,percent,medium
+CL PAN,Panguipulli,14108,home_ownership,60.87,percent,low
+CL PAN,Panguipulli,14108,median_household_income,1049778.0,CLP,low
+CL PAN,Panguipulli,14108,public_transport_share,24.17,percent,low
+CL PAN,Panguipulli,14108,industry_construction_employment,35.29,percent,very high
+CL PAN,Panguipulli,14108,electricity_access,92.86,percent,very low
+CL PAN,Panguipulli,14108,transport_logistics_employment,0.0,percent,very low
+CL PAN,Panguipulli,14108,renter_share,4.35,percent,very low
+CL PAN,Panguipulli,14108,unemployment_rate,7.95,percent,very low
+CL PAN,Panguipulli,14108,poverty_rate,20.8,percent,low
+CL PAO,Paillaco,14107,industry_construction_employment,30.0,percent,high
+CL PAO,Paillaco,14107,public_transport_share,24.17,percent,low
+CL PAO,Paillaco,14107,poverty_rate,20.8,percent,low
+CL PAO,Paillaco,14107,transport_logistics_employment,10.0,percent,low
+CL PAO,Paillaco,14107,electricity_access,100.0,percent,very low
+CL PAO,Paillaco,14107,renter_share,18.18,percent,low
+CL PAO,Paillaco,14107,unemployment_rate,7.95,percent,very low
+CL PAO,Paillaco,14107,median_household_income,1049778.0,CLP,low
+CL PAO,Paillaco,14107,home_ownership,72.73,percent,high
+CL PAP,Papudo,5403,home_ownership,83.33,percent,high
+CL PAP,Papudo,5403,electricity_access,100.0,percent,very low
+CL PAP,Papudo,5403,renter_share,16.67,percent,low
+CL PAP,Papudo,5403,industry_construction_employment,25.0,percent,high
+CL PAP,Papudo,5403,unemployment_rate,9.8,percent,high
+CL PAP,Papudo,5403,transport_logistics_employment,0.0,percent,very low
+CL PAP,Papudo,5403,poverty_rate,20.94,percent,low
+CL PAP,Papudo,5403,public_transport_share,39.54,percent,high
+CL PAP,Papudo,5403,median_household_income,1108241.0,CLP,medium
+CL PAR,Paredones,6206,home_ownership,100.0,percent,very high
+CL PAR,Paredones,6206,industry_construction_employment,0.0,percent,very low
+CL PAR,Paredones,6206,median_household_income,1100000.0,CLP,medium
+CL PAR,Paredones,6206,transport_logistics_employment,0.0,percent,very low
+CL PAR,Paredones,6206,unemployment_rate,9.07,percent,medium
+CL PAR,Paredones,6206,renter_share,0.0,percent,very low
+CL PAR,Paredones,6206,poverty_rate,21.05,percent,low
+CL PAR,Paredones,6206,public_transport_share,20.36,percent,very low
+CL PCI,Puchuncaví,5105,median_household_income,1108241.0,CLP,medium
+CL PCI,Puchuncaví,5105,renter_share,11.11,percent,very low
+CL PCI,Puchuncaví,5105,poverty_rate,20.94,percent,low
+CL PCI,Puchuncaví,5105,public_transport_share,39.54,percent,high
+CL PCI,Puchuncaví,5105,electricity_access,100.0,percent,very low
+CL PCI,Puchuncaví,5105,unemployment_rate,9.8,percent,high
+CL PCI,Puchuncaví,5105,transport_logistics_employment,10.0,percent,low
+CL PCI,Puchuncaví,5105,home_ownership,66.67,percent,medium
+CL PCI,Puchuncaví,5105,industry_construction_employment,40.0,percent,very high
+CL PDH,Pichidegua,6113,public_transport_share,20.36,percent,very low
+CL PDH,Pichidegua,6113,unemployment_rate,9.07,percent,medium
+CL PDH,Pichidegua,6113,median_household_income,1100000.0,CLP,medium
+CL PDH,Pichidegua,6113,electricity_access,100.0,percent,very low
+CL PDH,Pichidegua,6113,renter_share,10.0,percent,very low
+CL PDH,Pichidegua,6113,transport_logistics_employment,12.5,percent,medium
+CL PDH,Pichidegua,6113,home_ownership,90.0,percent,very high
+CL PDH,Pichidegua,6113,poverty_rate,21.05,percent,low
+CL PDH,Pichidegua,6113,industry_construction_employment,37.5,percent,very high
+CL PEL,Pelarco,7106,poverty_rate,26.12,percent,high
+CL PEL,Pelarco,7106,transport_logistics_employment,0.0,percent,very low
+CL PEL,Pelarco,7106,renter_share,0.0,percent,very low
+CL PEL,Pelarco,7106,industry_construction_employment,12.5,percent,low
+CL PEL,Pelarco,7106,electricity_access,100.0,percent,very low
+CL PEL,Pelarco,7106,unemployment_rate,8.44,percent,low
+CL PEL,Pelarco,7106,home_ownership,75.0,percent,high
+CL PEL,Pelarco,7106,public_transport_share,20.39,percent,very low
+CL PEL,Pelarco,7106,median_household_income,925271.0,CLP,very low
+CL PEM,Pemuco,16105,poverty_rate,29.65,percent,very high
+CL PEM,Pemuco,16105,home_ownership,50.0,percent,very low
+CL PEM,Pemuco,16105,unemployment_rate,9.68,percent,high
+CL PEM,Pemuco,16105,electricity_access,100.0,percent,very low
+CL PEM,Pemuco,16105,transport_logistics_employment,0.0,percent,very low
+CL PEM,Pemuco,16105,renter_share,25.0,percent,medium
+CL PEM,Pemuco,16105,public_transport_share,24.53,percent,low
+CL PEM,Pemuco,16105,industry_construction_employment,40.0,percent,very high
+CL PEM,Pemuco,16105,median_household_income,871602.5,CLP,very low
+CL PEN,Pencahue,7107,transport_logistics_employment,0.0,percent,very low
+CL PEN,Pencahue,7107,home_ownership,50.0,percent,very low
+CL PEN,Pencahue,7107,industry_construction_employment,0.0,percent,very low
+CL PEN,Pencahue,7107,renter_share,33.33,percent,high
+CL PEN,Pencahue,7107,public_transport_share,20.39,percent,very low
+CL PEN,Pencahue,7107,poverty_rate,26.12,percent,high
+CL PEN,Pencahue,7107,median_household_income,925271.0,CLP,very low
+CL PEN,Pencahue,7107,unemployment_rate,8.44,percent,low
+CL PEO,Penco,8107,industry_construction_employment,20.0,percent,medium
+CL PEO,Penco,8107,public_transport_share,35.51,percent,high
+CL PEO,Penco,8107,poverty_rate,22.01,percent,medium
+CL PEO,Penco,8107,transport_logistics_employment,13.33,percent,medium
+CL PEO,Penco,8107,median_household_income,1042738.0,CLP,low
+CL PEO,Penco,8107,home_ownership,65.52,percent,medium
+CL PEO,Penco,8107,unemployment_rate,9.49,percent,high
+CL PEO,Penco,8107,renter_share,20.69,percent,medium
+CL PEO,Penco,8107,electricity_access,100.0,percent,very low
+CL PER,Peralillo,6307,median_household_income,1100000.0,CLP,medium
+CL PER,Peralillo,6307,home_ownership,62.5,percent,low
+CL PER,Peralillo,6307,electricity_access,100.0,percent,very low
+CL PER,Peralillo,6307,renter_share,37.5,percent,high
+CL PER,Peralillo,6307,poverty_rate,21.05,percent,low
+CL PER,Peralillo,6307,unemployment_rate,9.07,percent,medium
+CL PER,Peralillo,6307,public_transport_share,20.36,percent,very low
+CL PER,Peralillo,6307,industry_construction_employment,30.77,percent,high
+CL PER,Peralillo,6307,transport_logistics_employment,0.0,percent,very low
+CL PET,Petorca,5404,unemployment_rate,9.8,percent,high
+CL PET,Petorca,5404,renter_share,0.0,percent,very low
+CL PET,Petorca,5404,industry_construction_employment,40.0,percent,very high
+CL PET,Petorca,5404,median_household_income,1108241.0,CLP,medium
+CL PET,Petorca,5404,electricity_access,100.0,percent,very low
+CL PET,Petorca,5404,transport_logistics_employment,20.0,percent,medium
+CL PET,Petorca,5404,home_ownership,71.43,percent,medium
+CL PET,Petorca,5404,public_transport_share,39.54,percent,high
+CL PET,Petorca,5404,poverty_rate,20.94,percent,low
+CL PEU,Peumo,6112,poverty_rate,21.05,percent,low
+CL PEU,Peumo,6112,public_transport_share,20.36,percent,very low
+CL PEU,Peumo,6112,median_household_income,1100000.0,CLP,medium
+CL PEU,Peumo,6112,industry_construction_employment,0.0,percent,very low
+CL PEU,Peumo,6112,unemployment_rate,9.07,percent,medium
+CL PEU,Peumo,6112,transport_logistics_employment,0.0,percent,very low
+CL PEU,Peumo,6112,renter_share,0.0,percent,very low
+CL PEU,Peumo,6112,home_ownership,0.0,percent,very low
+CL PFL,Peñaflor,13605,median_household_income,1414513.0,CLP,very high
+CL PFL,Peñaflor,13605,unemployment_rate,8.18,percent,very low
+CL PFL,Peñaflor,13605,renter_share,14.58,percent,low
+CL PFL,Peñaflor,13605,public_transport_share,49.86,percent,very high
+CL PFL,Peñaflor,13605,transport_logistics_employment,9.23,percent,low
+CL PFL,Peñaflor,13605,home_ownership,75.0,percent,high
+CL PFL,Peñaflor,13605,industry_construction_employment,27.69,percent,high
+CL PFL,Peñaflor,13605,electricity_access,100.0,percent,very low
+CL PFL,Peñaflor,13605,poverty_rate,16.51,percent,very low
+CL PHU,Padre Hurtado,13604,transport_logistics_employment,8.16,percent,low
+CL PHU,Padre Hurtado,13604,median_household_income,1414513.0,CLP,very high
+CL PHU,Padre Hurtado,13604,industry_construction_employment,32.65,percent,very high
+CL PHU,Padre Hurtado,13604,unemployment_rate,8.18,percent,very low
+CL PHU,Padre Hurtado,13604,home_ownership,65.12,percent,medium
+CL PHU,Padre Hurtado,13604,public_transport_share,49.86,percent,very high
+CL PHU,Padre Hurtado,13604,electricity_access,100.0,percent,very low
+CL PHU,Padre Hurtado,13604,renter_share,23.26,percent,medium
+CL PHU,Padre Hurtado,13604,poverty_rate,16.51,percent,very low
+CL PIC,Pica,1405,transport_logistics_employment,0.0,percent,very low
+CL PIC,Pica,1405,poverty_rate,26.77,percent,very high
+CL PIC,Pica,1405,unemployment_rate,9.44,percent,high
+CL PIC,Pica,1405,home_ownership,0.0,percent,very low
+CL PIC,Pica,1405,median_household_income,1200000.0,CLP,high
+CL PIC,Pica,1405,renter_share,100.0,percent,high
+CL PIC,Pica,1405,electricity_access,100.0,percent,very low
+CL PIC,Pica,1405,public_transport_share,31.84,percent,medium
+CL PIC,Pica,1405,industry_construction_employment,0.0,percent,very low
+CL PIN,Pinto,16106,transport_logistics_employment,0.0,percent,very low
+CL PIN,Pinto,16106,public_transport_share,24.53,percent,low
+CL PIN,Pinto,16106,electricity_access,100.0,percent,very low
+CL PIN,Pinto,16106,home_ownership,75.0,percent,high
+CL PIN,Pinto,16106,renter_share,0.0,percent,very low
+CL PIN,Pinto,16106,industry_construction_employment,22.22,percent,medium
+CL PIN,Pinto,16106,unemployment_rate,9.68,percent,high
+CL PIN,Pinto,16106,median_household_income,871602.5,CLP,very low
+CL PIN,Pinto,16106,poverty_rate,29.65,percent,very high
+CL PIR,Pirque,13202,industry_construction_employment,12.12,percent,low
+CL PIR,Pirque,13202,home_ownership,76.47,percent,high
+CL PIR,Pirque,13202,electricity_access,100.0,percent,very low
+CL PIR,Pirque,13202,transport_logistics_employment,9.09,percent,low
+CL PIR,Pirque,13202,poverty_rate,16.51,percent,very low
+CL PIR,Pirque,13202,public_transport_share,49.86,percent,very high
+CL PIR,Pirque,13202,unemployment_rate,8.18,percent,very low
+CL PIR,Pirque,13202,renter_share,11.76,percent,low
+CL PIR,Pirque,13202,median_household_income,1414513.0,CLP,very high
+CL PIT,Pitrufquén,9114,transport_logistics_employment,6.67,percent,very low
+CL PIT,Pitrufquén,9114,home_ownership,50.0,percent,very low
+CL PIT,Pitrufquén,9114,median_household_income,896521.0,CLP,very low
+CL PIT,Pitrufquén,9114,electricity_access,100.0,percent,very low
+CL PIT,Pitrufquén,9114,renter_share,30.0,percent,high
+CL PIT,Pitrufquén,9114,public_transport_share,27.27,percent,low
+CL PIT,Pitrufquén,9114,poverty_rate,31.96,percent,very high
+CL PIT,Pitrufquén,9114,unemployment_rate,10.36,percent,very high
+CL PIT,Pitrufquén,9114,industry_construction_employment,13.33,percent,low
+CL PLA,Placilla,6308,public_transport_share,20.36,percent,very low
+CL PLA,Placilla,6308,transport_logistics_employment,0.0,percent,very low
+CL PLA,Placilla,6308,unemployment_rate,9.07,percent,medium
+CL PLA,Placilla,6308,industry_construction_employment,0.0,percent,very low
+CL PLA,Placilla,6308,electricity_access,100.0,percent,very low
+CL PLA,Placilla,6308,poverty_rate,21.05,percent,low
+CL PLA,Placilla,6308,median_household_income,1100000.0,CLP,medium
+CL PLA,Placilla,6308,renter_share,0.0,percent,very low
+CL PLA,Placilla,6308,home_ownership,75.0,percent,high
+CL PLC,Padre Las Casas,9112,median_household_income,896521.0,CLP,very low
+CL PLC,Padre Las Casas,9112,public_transport_share,27.27,percent,low
+CL PLC,Padre Las Casas,9112,unemployment_rate,10.36,percent,very high
+CL PLC,Padre Las Casas,9112,poverty_rate,31.96,percent,very high
+CL PLC,Padre Las Casas,9112,industry_construction_employment,25.58,percent,high
+CL PLC,Padre Las Casas,9112,electricity_access,100.0,percent,very low
+CL PLC,Padre Las Casas,9112,home_ownership,82.0,percent,high
+CL PLC,Padre Las Casas,9112,renter_share,6.0,percent,very low
+CL PLC,Padre Las Casas,9112,transport_logistics_employment,9.3,percent,low
+CL PLH,Pelluhue,7203,public_transport_share,20.39,percent,very low
+CL PLH,Pelluhue,7203,median_household_income,925271.0,CLP,very low
+CL PLH,Pelluhue,7203,electricity_access,100.0,percent,very low
+CL PLH,Pelluhue,7203,unemployment_rate,8.44,percent,low
+CL PLH,Pelluhue,7203,renter_share,0.0,percent,very low
+CL PLH,Pelluhue,7203,transport_logistics_employment,0.0,percent,very low
+CL PLH,Pelluhue,7203,industry_construction_employment,50.0,percent,very high
+CL PLH,Pelluhue,7203,home_ownership,100.0,percent,very high
+CL PLH,Pelluhue,7203,poverty_rate,26.12,percent,high
+CL PLM,Pichilemu,6201,industry_construction_employment,13.33,percent,low
+CL PLM,Pichilemu,6201,public_transport_share,20.36,percent,very low
+CL PLM,Pichilemu,6201,electricity_access,100.0,percent,very low
+CL PLM,Pichilemu,6201,median_household_income,1100000.0,CLP,medium
+CL PLM,Pichilemu,6201,unemployment_rate,9.07,percent,medium
+CL PLM,Pichilemu,6201,poverty_rate,21.05,percent,low
+CL PLM,Pichilemu,6201,transport_logistics_employment,6.67,percent,very low
+CL PLM,Pichilemu,6201,renter_share,41.67,percent,high
+CL PLM,Pichilemu,6201,home_ownership,58.33,percent,low
+CL PLN,Peñalolén,13122,renter_share,20.88,percent,medium
+CL PLN,Peñalolén,13122,public_transport_share,49.86,percent,very high
+CL PLN,Peñalolén,13122,transport_logistics_employment,11.21,percent,low
+CL PLN,Peñalolén,13122,unemployment_rate,8.18,percent,very low
+CL PLN,Peñalolén,13122,median_household_income,1414513.0,CLP,very high
+CL PLN,Peñalolén,13122,industry_construction_employment,23.36,percent,high
+CL PLN,Peñalolén,13122,home_ownership,68.13,percent,medium
+CL PLN,Peñalolén,13122,poverty_rate,16.51,percent,very low
+CL PLN,Peñalolén,13122,electricity_access,100.0,percent,very low
+CL PMA,Palmilla,6306,poverty_rate,21.05,percent,low
+CL PMA,Palmilla,6306,median_household_income,1100000.0,CLP,medium
+CL PMA,Palmilla,6306,renter_share,0.0,percent,very low
+CL PMA,Palmilla,6306,transport_logistics_employment,0.0,percent,very low
+CL PMA,Palmilla,6306,home_ownership,100.0,percent,very high
+CL PMA,Palmilla,6306,industry_construction_employment,0.0,percent,very low
+CL PMA,Palmilla,6306,public_transport_share,20.36,percent,very low
+CL PMA,Palmilla,6306,unemployment_rate,9.07,percent,medium
+CL PMA,Palmilla,6306,electricity_access,100.0,percent,very low
+CL PMC,Puerto Montt,10101,public_transport_share,28.43,percent,medium
+CL PMC,Puerto Montt,10101,unemployment_rate,6.88,percent,very low
+CL PMC,Puerto Montt,10101,renter_share,26.95,percent,medium
+CL PMC,Puerto Montt,10101,transport_logistics_employment,7.1,percent,low
+CL PMC,Puerto Montt,10101,median_household_income,1055000.0,CLP,low
+CL PMC,Puerto Montt,10101,home_ownership,65.96,percent,medium
+CL PMC,Puerto Montt,10101,industry_construction_employment,19.35,percent,medium
+CL PMC,Puerto Montt,10101,poverty_rate,21.43,percent,medium
+CL PMC,Puerto Montt,10101,electricity_access,100.0,percent,very low
+CL PNE,Paine,13404,public_transport_share,49.86,percent,very high
+CL PNE,Paine,13404,electricity_access,100.0,percent,very low
+CL PNE,Paine,13404,renter_share,38.46,percent,high
+CL PNE,Paine,13404,industry_construction_employment,24.44,percent,high
+CL PNE,Paine,13404,poverty_rate,16.51,percent,very low
+CL PNE,Paine,13404,home_ownership,41.03,percent,very low
+CL PNE,Paine,13404,median_household_income,1414513.0,CLP,very high
+CL PNE,Paine,13404,unemployment_rate,8.18,percent,very low
+CL PNE,Paine,13404,transport_logistics_employment,2.22,percent,very low
+CL POC,Puerto Octay,10302,median_household_income,1055000.0,CLP,low
+CL POC,Puerto Octay,10302,public_transport_share,28.43,percent,medium
+CL POC,Puerto Octay,10302,unemployment_rate,6.88,percent,very low
+CL POC,Puerto Octay,10302,poverty_rate,21.43,percent,medium
+CL POR,Portezuelo,16205,poverty_rate,29.65,percent,very high
+CL POR,Portezuelo,16205,transport_logistics_employment,0.0,percent,very low
+CL POR,Portezuelo,16205,industry_construction_employment,20.0,percent,medium
+CL POR,Portezuelo,16205,electricity_access,100.0,percent,very low
+CL POR,Portezuelo,16205,public_transport_share,24.53,percent,low
+CL POR,Portezuelo,16205,unemployment_rate,9.68,percent,high
+CL POR,Portezuelo,16205,renter_share,0.0,percent,very low
+CL POR,Portezuelo,16205,median_household_income,871602.5,CLP,very low
+CL POR,Portezuelo,16205,home_ownership,33.33,percent,very low
+CL PQC,Perquenco,9113,renter_share,25.0,percent,medium
+CL PQC,Perquenco,9113,transport_logistics_employment,0.0,percent,very low
+CL PQC,Perquenco,9113,public_transport_share,27.27,percent,low
+CL PQC,Perquenco,9113,unemployment_rate,10.36,percent,very high
+CL PQC,Perquenco,9113,electricity_access,100.0,percent,very low
+CL PQC,Perquenco,9113,poverty_rate,31.96,percent,very high
+CL PQC,Perquenco,9113,industry_construction_employment,0.0,percent,very low
+CL PQC,Perquenco,9113,home_ownership,75.0,percent,high
+CL PQC,Perquenco,9113,median_household_income,896521.0,CLP,very low
+CL PQD,Puqueldón,10206,electricity_access,100.0,percent,very low
+CL PQD,Puqueldón,10206,poverty_rate,21.43,percent,medium
+CL PQD,Puqueldón,10206,home_ownership,66.67,percent,medium
+CL PQD,Puqueldón,10206,public_transport_share,28.43,percent,medium
+CL PQD,Puqueldón,10206,unemployment_rate,6.88,percent,very low
+CL PQD,Puqueldón,10206,renter_share,0.0,percent,very low
+CL PQD,Puqueldón,10206,median_household_income,1055000.0,CLP,low
+CL PQH,Panquehue,5704,electricity_access,100.0,percent,very low
+CL PQH,Panquehue,5704,renter_share,100.0,percent,high
+CL PQH,Panquehue,5704,public_transport_share,39.54,percent,high
+CL PQH,Panquehue,5704,median_household_income,1108241.0,CLP,medium
+CL PQH,Panquehue,5704,home_ownership,0.0,percent,very low
+CL PQH,Panquehue,5704,unemployment_rate,9.8,percent,high
+CL PQH,Panquehue,5704,industry_construction_employment,50.0,percent,very high
+CL PQH,Panquehue,5704,poverty_rate,20.94,percent,low
+CL PQH,Panquehue,5704,transport_logistics_employment,0.0,percent,very low
+CL PRI,Primavera,12302,poverty_rate,14.7,percent,very low
+CL PRI,Primavera,12302,public_transport_share,20.08,percent,very low
+CL PRI,Primavera,12302,unemployment_rate,3.83,percent,very low
+CL PRI,Primavera,12302,median_household_income,1423917.0,CLP,very high
+CL PRL,Parral,7404,transport_logistics_employment,0.0,percent,very low
+CL PRL,Parral,7404,industry_construction_employment,22.22,percent,medium
+CL PRL,Parral,7404,public_transport_share,20.39,percent,very low
+CL PRL,Parral,7404,median_household_income,925271.0,CLP,very low
+CL PRL,Parral,7404,poverty_rate,26.12,percent,high
+CL PRL,Parral,7404,renter_share,14.29,percent,low
+CL PRL,Parral,7404,electricity_access,100.0,percent,very low
+CL PRL,Parral,7404,home_ownership,66.67,percent,medium
+CL PRL,Parral,7404,unemployment_rate,8.44,percent,low
+CL PRO,Providencia,13123,unemployment_rate,8.18,percent,very low
+CL PRO,Providencia,13123,industry_construction_employment,8.49,percent,low
+CL PRO,Providencia,13123,poverty_rate,16.51,percent,very low
+CL PRO,Providencia,13123,transport_logistics_employment,0.94,percent,very low
+CL PRO,Providencia,13123,renter_share,51.61,percent,high
+CL PRO,Providencia,13123,public_transport_share,49.86,percent,very high
+CL PRO,Providencia,13123,home_ownership,38.71,percent,very low
+CL PRO,Providencia,13123,electricity_access,100.0,percent,very low
+CL PRO,Providencia,13123,median_household_income,1414513.0,CLP,very high
+CL PRQ,Purranque,10303,renter_share,0.0,percent,very low
+CL PRQ,Purranque,10303,median_household_income,1055000.0,CLP,low
+CL PRQ,Purranque,10303,transport_logistics_employment,12.5,percent,medium
+CL PRQ,Purranque,10303,poverty_rate,21.43,percent,medium
+CL PRQ,Purranque,10303,public_transport_share,28.43,percent,medium
+CL PRQ,Purranque,10303,electricity_access,100.0,percent,very low
+CL PRQ,Purranque,10303,unemployment_rate,6.88,percent,very low
+CL PRQ,Purranque,10303,industry_construction_employment,25.0,percent,high
+CL PRQ,Purranque,10303,home_ownership,70.0,percent,medium
+CL PSN,Aysén,11201,unemployment_rate,5.33,percent,very low
+CL PSN,Aysén,11201,public_transport_share,10.16,percent,very low
+CL PSN,Aysén,11201,home_ownership,55.56,percent,low
+CL PSN,Aysén,11201,electricity_access,100.0,percent,very low
+CL PSN,Aysén,11201,industry_construction_employment,10.0,percent,low
+CL PSN,Aysén,11201,renter_share,11.11,percent,very low
+CL PSN,Aysén,11201,poverty_rate,14.94,percent,very low
+CL PSN,Aysén,11201,median_household_income,1339999.0,CLP,high
+CL PSN,Aysén,11201,transport_logistics_employment,20.0,percent,medium
+CL PTA,Puente Alto,13201,industry_construction_employment,20.91,percent,medium
+CL PTA,Puente Alto,13201,home_ownership,72.47,percent,high
+CL PTA,Puente Alto,13201,renter_share,17.41,percent,low
+CL PTA,Puente Alto,13201,public_transport_share,49.86,percent,very high
+CL PTA,Puente Alto,13201,electricity_access,100.0,percent,very low
+CL PTA,Puente Alto,13201,poverty_rate,16.51,percent,very low
+CL PTA,Puente Alto,13201,median_household_income,1414513.0,CLP,very high
+CL PTA,Puente Alto,13201,unemployment_rate,8.18,percent,very low
+CL PTA,Puente Alto,13201,transport_logistics_employment,5.63,percent,very low
+CL PTE,Quellón,10208,public_transport_share,28.43,percent,medium
+CL PTE,Quellón,10208,median_household_income,1055000.0,CLP,low
+CL PTE,Quellón,10208,transport_logistics_employment,0.0,percent,very low
+CL PTE,Quellón,10208,poverty_rate,21.43,percent,medium
+CL PTE,Quellón,10208,unemployment_rate,6.88,percent,very low
+CL PTE,Quellón,10208,electricity_access,100.0,percent,very low
+CL PTE,Quellón,10208,home_ownership,36.36,percent,very low
+CL PTE,Quellón,10208,renter_share,54.55,percent,high
+CL PTE,Quellón,10208,industry_construction_employment,0.0,percent,very low
+CL PTO,Putaendo,5705,transport_logistics_employment,0.0,percent,very low
+CL PTO,Putaendo,5705,poverty_rate,20.94,percent,low
+CL PTO,Putaendo,5705,median_household_income,1108241.0,CLP,medium
+CL PTO,Putaendo,5705,unemployment_rate,9.8,percent,high
+CL PTO,Putaendo,5705,home_ownership,75.0,percent,high
+CL PTO,Putaendo,5705,industry_construction_employment,15.38,percent,low
+CL PTO,Putaendo,5705,public_transport_share,39.54,percent,high
+CL PTO,Putaendo,5705,renter_share,0.0,percent,very low
+CL PTO,Putaendo,5705,electricity_access,100.0,percent,very low
+CL PUC,Pucón,9115,poverty_rate,31.96,percent,very high
+CL PUC,Pucón,9115,transport_logistics_employment,6.67,percent,very low
+CL PUC,Pucón,9115,home_ownership,47.83,percent,very low
+CL PUC,Pucón,9115,renter_share,34.78,percent,high
+CL PUC,Pucón,9115,industry_construction_employment,6.67,percent,low
+CL PUC,Pucón,9115,public_transport_share,27.27,percent,low
+CL PUC,Pucón,9115,median_household_income,896521.0,CLP,very low
+CL PUC,Pucón,9115,electricity_access,100.0,percent,very low
+CL PUC,Pucón,9115,unemployment_rate,10.36,percent,very high
+CL PUD,Pudahuel,13124,industry_construction_employment,21.38,percent,medium
+CL PUD,Pudahuel,13124,renter_share,22.12,percent,medium
+CL PUD,Pudahuel,13124,poverty_rate,16.51,percent,very low
+CL PUD,Pudahuel,13124,public_transport_share,49.86,percent,very high
+CL PUD,Pudahuel,13124,median_household_income,1414513.0,CLP,very high
+CL PUD,Pudahuel,13124,unemployment_rate,8.18,percent,very low
+CL PUD,Pudahuel,13124,electricity_access,100.0,percent,very low
+CL PUD,Pudahuel,13124,transport_logistics_employment,15.17,percent,medium
+CL PUD,Pudahuel,13124,home_ownership,68.14,percent,medium
+CL PUM,Pumanque,6309,poverty_rate,21.05,percent,low
+CL PUM,Pumanque,6309,industry_construction_employment,0.0,percent,very low
+CL PUM,Pumanque,6309,renter_share,0.0,percent,very low
+CL PUM,Pumanque,6309,home_ownership,100.0,percent,very high
+CL PUM,Pumanque,6309,unemployment_rate,9.07,percent,medium
+CL PUM,Pumanque,6309,median_household_income,1100000.0,CLP,medium
+CL PUM,Pumanque,6309,public_transport_share,20.36,percent,very low
+CL PUM,Pumanque,6309,electricity_access,100.0,percent,very low
+CL PUM,Pumanque,6309,transport_logistics_employment,0.0,percent,very low
+CL PUN,Punitaqui,4304,industry_construction_employment,0.0,percent,very low
+CL PUN,Punitaqui,4304,public_transport_share,28.79,percent,medium
+CL PUN,Punitaqui,4304,poverty_rate,24.26,percent,high
+CL PUN,Punitaqui,4304,home_ownership,83.33,percent,high
+CL PUN,Punitaqui,4304,electricity_access,100.0,percent,very low
+CL PUN,Punitaqui,4304,unemployment_rate,9.08,percent,medium
+CL PUN,Punitaqui,4304,transport_logistics_employment,0.0,percent,very low
+CL PUN,Punitaqui,4304,renter_share,0.0,percent,very low
+CL PUN,Punitaqui,4304,median_household_income,1068233.0,CLP,medium
+CL PUQ,Punta Arenas,12101,home_ownership,68.92,percent,medium
+CL PUQ,Punta Arenas,12101,poverty_rate,14.7,percent,very low
+CL PUQ,Punta Arenas,12101,industry_construction_employment,26.6,percent,high
+CL PUQ,Punta Arenas,12101,electricity_access,100.0,percent,very low
+CL PUQ,Punta Arenas,12101,median_household_income,1423917.0,CLP,very high
+CL PUQ,Punta Arenas,12101,public_transport_share,20.08,percent,very low
+CL PUQ,Punta Arenas,12101,renter_share,27.03,percent,medium
+CL PUQ,Punta Arenas,12101,unemployment_rate,3.83,percent,very low
+CL PUQ,Punta Arenas,12101,transport_logistics_employment,8.51,percent,low
+CL PUR,Purén,9208,poverty_rate,31.96,percent,very high
+CL PUR,Purén,9208,transport_logistics_employment,60.0,percent,medium
+CL PUR,Purén,9208,unemployment_rate,10.36,percent,very high
+CL PUR,Purén,9208,median_household_income,896521.0,CLP,very low
+CL PUR,Purén,9208,industry_construction_employment,0.0,percent,very low
+CL PUR,Purén,9208,home_ownership,100.0,percent,very high
+CL PUR,Purén,9208,public_transport_share,27.27,percent,low
+CL PUR,Purén,9208,electricity_access,100.0,percent,very low
+CL PUR,Purén,9208,renter_share,0.0,percent,very low
+CL PUT,Putre,15201,unemployment_rate,9.44,percent,high
+CL PUT,Putre,15201,median_household_income,1150000.0,CLP,high
+CL PUT,Putre,15201,public_transport_share,24.92,percent,low
+CL PUT,Putre,15201,poverty_rate,25.28,percent,high
+CL PVR,Porvenir,12301,home_ownership,20.0,percent,very low
+CL PVR,Porvenir,12301,poverty_rate,14.7,percent,very low
+CL PVR,Porvenir,12301,electricity_access,100.0,percent,very low
+CL PVR,Porvenir,12301,industry_construction_employment,0.0,percent,very low
+CL PVR,Porvenir,12301,transport_logistics_employment,0.0,percent,very low
+CL PVR,Porvenir,12301,public_transport_share,20.08,percent,very low
+CL PVR,Porvenir,12301,unemployment_rate,3.83,percent,very low
+CL PVR,Porvenir,12301,median_household_income,1423917.0,CLP,very high
+CL PVR,Porvenir,12301,renter_share,40.0,percent,high
+CL PVS,Puerto Varas,10109,poverty_rate,21.43,percent,medium
+CL PVS,Puerto Varas,10109,electricity_access,100.0,percent,very low
+CL PVS,Puerto Varas,10109,industry_construction_employment,13.51,percent,low
+CL PVS,Puerto Varas,10109,public_transport_share,28.43,percent,medium
+CL PVS,Puerto Varas,10109,median_household_income,1055000.0,CLP,low
+CL PVS,Puerto Varas,10109,home_ownership,70.0,percent,medium
+CL PVS,Puerto Varas,10109,transport_logistics_employment,8.11,percent,low
+CL PVS,Puerto Varas,10109,unemployment_rate,6.88,percent,very low
+CL PVS,Puerto Varas,10109,renter_share,20.0,percent,low
+CL QCO,Quinchao,10210,renter_share,28.57,percent,medium
+CL QCO,Quinchao,10210,poverty_rate,21.43,percent,medium
+CL QCO,Quinchao,10210,home_ownership,71.43,percent,medium
+CL QCO,Quinchao,10210,median_household_income,1055000.0,CLP,low
+CL QCO,Quinchao,10210,unemployment_rate,6.88,percent,very low
+CL QCO,Quinchao,10210,industry_construction_employment,0.0,percent,very low
+CL QCO,Quinchao,10210,public_transport_share,28.43,percent,medium
+CL QCO,Quinchao,10210,transport_logistics_employment,28.57,percent,medium
+CL QCO,Quinchao,10210,electricity_access,100.0,percent,very low
+CL QDT,Quinta de Tilcoco,6114,transport_logistics_employment,0.0,percent,very low
+CL QDT,Quinta de Tilcoco,6114,renter_share,12.5,percent,low
+CL QDT,Quinta de Tilcoco,6114,home_ownership,87.5,percent,very high
+CL QDT,Quinta de Tilcoco,6114,unemployment_rate,9.07,percent,medium
+CL QDT,Quinta de Tilcoco,6114,electricity_access,100.0,percent,very low
+CL QDT,Quinta de Tilcoco,6114,industry_construction_employment,44.44,percent,very high
+CL QDT,Quinta de Tilcoco,6114,public_transport_share,20.36,percent,very low
+CL QDT,Quinta de Tilcoco,6114,poverty_rate,21.05,percent,low
+CL QDT,Quinta de Tilcoco,6114,median_household_income,1100000.0,CLP,medium
+CL QIL,Quilpué,5801,poverty_rate,20.94,percent,low
+CL QIL,Quilpué,5801,median_household_income,1108241.0,CLP,medium
+CL QIL,Quilpué,5801,unemployment_rate,9.8,percent,high
+CL QIL,Quilpué,5801,transport_logistics_employment,10.78,percent,low
+CL QIL,Quilpué,5801,public_transport_share,39.54,percent,high
+CL QIL,Quilpué,5801,home_ownership,64.65,percent,medium
+CL QIL,Quilpué,5801,renter_share,26.26,percent,medium
+CL QIL,Quilpué,5801,electricity_access,100.0,percent,very low
+CL QIL,Quilpué,5801,industry_construction_employment,14.71,percent,low
+CL QIN,Quillón,16107,poverty_rate,29.65,percent,very high
+CL QIN,Quillón,16107,public_transport_share,24.53,percent,low
+CL QIN,Quillón,16107,unemployment_rate,9.68,percent,high
+CL QIN,Quillón,16107,renter_share,37.5,percent,high
+CL QIN,Quillón,16107,electricity_access,100.0,percent,very low
+CL QIN,Quillón,16107,transport_logistics_employment,0.0,percent,very low
+CL QIN,Quillón,16107,industry_construction_employment,0.0,percent,very low
+CL QIN,Quillón,16107,home_ownership,62.5,percent,low
+CL QIN,Quillón,16107,median_household_income,871602.5,CLP,very low
+CL QLN,Queilén,10207,unemployment_rate,6.88,percent,very low
+CL QLN,Queilén,10207,public_transport_share,28.43,percent,medium
+CL QLN,Queilén,10207,industry_construction_employment,50.0,percent,very high
+CL QLN,Queilén,10207,home_ownership,100.0,percent,very high
+CL QLN,Queilén,10207,transport_logistics_employment,0.0,percent,very low
+CL QLN,Queilén,10207,median_household_income,1055000.0,CLP,low
+CL QLN,Queilén,10207,renter_share,0.0,percent,very low
+CL QLN,Queilén,10207,poverty_rate,21.43,percent,medium
+CL QLO,Quilleco,8309,poverty_rate,22.01,percent,medium
+CL QLO,Quilleco,8309,unemployment_rate,9.49,percent,high
+CL QLO,Quilleco,8309,median_household_income,1042738.0,CLP,low
+CL QLO,Quilleco,8309,transport_logistics_employment,0.0,percent,very low
+CL QLO,Quilleco,8309,home_ownership,80.0,percent,high
+CL QLO,Quilleco,8309,public_transport_share,35.51,percent,high
+CL QLO,Quilleco,8309,renter_share,0.0,percent,very low
+CL QLO,Quilleco,8309,industry_construction_employment,33.33,percent,very high
+CL QMC,Quemchi,10209,unemployment_rate,6.88,percent,very low
+CL QMC,Quemchi,10209,electricity_access,100.0,percent,very low
+CL QMC,Quemchi,10209,renter_share,28.57,percent,medium
+CL QMC,Quemchi,10209,industry_construction_employment,0.0,percent,very low
+CL QMC,Quemchi,10209,public_transport_share,28.43,percent,medium
+CL QMC,Quemchi,10209,poverty_rate,21.43,percent,medium
+CL QMC,Quemchi,10209,home_ownership,71.43,percent,medium
+CL QMC,Quemchi,10209,transport_logistics_employment,22.22,percent,medium
+CL QMC,Quemchi,10209,median_household_income,1055000.0,CLP,low
+CL QRC,Rancagua,6101,poverty_rate,21.05,percent,low
+CL QRC,Rancagua,6101,renter_share,22.31,percent,medium
+CL QRC,Rancagua,6101,public_transport_share,20.36,percent,very low
+CL QRC,Rancagua,6101,median_household_income,1100000.0,CLP,medium
+CL QRC,Rancagua,6101,industry_construction_employment,25.71,percent,high
+CL QRC,Rancagua,6101,transport_logistics_employment,3.57,percent,very low
+CL QRC,Rancagua,6101,electricity_access,100.0,percent,very low
+CL QRC,Rancagua,6101,unemployment_rate,9.07,percent,medium
+CL QRC,Rancagua,6101,home_ownership,69.23,percent,medium
+CL QRH,Quirihue,16201,electricity_access,100.0,percent,very low
+CL QRH,Quirihue,16201,unemployment_rate,9.68,percent,high
+CL QRH,Quirihue,16201,public_transport_share,24.53,percent,low
+CL QRH,Quirihue,16201,home_ownership,16.67,percent,very low
+CL QRH,Quirihue,16201,renter_share,50.0,percent,high
+CL QRH,Quirihue,16201,transport_logistics_employment,0.0,percent,very low
+CL QRH,Quirihue,16201,poverty_rate,29.65,percent,very high
+CL QRH,Quirihue,16201,median_household_income,871602.5,CLP,very low
+CL QRH,Quirihue,16201,industry_construction_employment,0.0,percent,very low
+CL QTA,Quillota,5501,public_transport_share,39.54,percent,high
+CL QTA,Quillota,5501,poverty_rate,20.94,percent,low
+CL QTA,Quillota,5501,renter_share,26.42,percent,medium
+CL QTA,Quillota,5501,home_ownership,64.15,percent,low
+CL QTA,Quillota,5501,industry_construction_employment,27.08,percent,high
+CL QTA,Quillota,5501,unemployment_rate,9.8,percent,high
+CL QTA,Quillota,5501,median_household_income,1108241.0,CLP,medium
+CL QTA,Quillota,5501,transport_logistics_employment,12.5,percent,medium
+CL QTA,Quillota,5501,electricity_access,100.0,percent,very low
+CL QUI,Quilicura,13125,electricity_access,100.0,percent,very low
+CL QUI,Quilicura,13125,median_household_income,1414513.0,CLP,very high
+CL QUI,Quilicura,13125,poverty_rate,16.51,percent,very low
+CL QUI,Quilicura,13125,public_transport_share,49.86,percent,very high
+CL QUI,Quilicura,13125,renter_share,22.45,percent,medium
+CL QUI,Quilicura,13125,transport_logistics_employment,10.69,percent,low
+CL QUI,Quilicura,13125,home_ownership,69.39,percent,medium
+CL QUI,Quilicura,13125,industry_construction_employment,21.37,percent,medium
+CL QUI,Quilicura,13125,unemployment_rate,8.18,percent,very low
+CL RAN,Ránquil,16206,industry_construction_employment,0.0,percent,very low
+CL RAN,Ranquil,16206,public_transport_share,24.53,percent,low
+CL RAN,Ránquil,16206,renter_share,0.0,percent,very low
+CL RAN,Ránquil,16206,transport_logistics_employment,0.0,percent,very low
+CL RAN,Ranquil,16206,median_household_income,871602.5,CLP,very low
+CL RAN,Ránquil,16206,home_ownership,50.0,percent,very low
+CL RAN,Ranquil,16206,unemployment_rate,9.68,percent,high
+CL RAN,Ranquil,16206,poverty_rate,29.65,percent,very high
+CL RAU,Rauco,7305,unemployment_rate,8.44,percent,low
+CL RAU,Rauco,7305,renter_share,10.0,percent,very low
+CL RAU,Rauco,7305,median_household_income,925271.0,CLP,very low
+CL RAU,Rauco,7305,public_transport_share,20.39,percent,very low
+CL RAU,Rauco,7305,transport_logistics_employment,0.0,percent,very low
+CL RAU,Rauco,7305,industry_construction_employment,20.0,percent,medium
+CL RAU,Rauco,7305,electricity_access,100.0,percent,very low
+CL RAU,Rauco,7305,poverty_rate,26.12,percent,high
+CL RAU,Rauco,7305,home_ownership,60.0,percent,low
+CL RCL,Río Claro,7108,transport_logistics_employment,0.0,percent,very low
+CL RCL,Río Claro,7108,public_transport_share,20.39,percent,very low
+CL RCL,Río Claro,7108,unemployment_rate,8.44,percent,low
+CL RCL,Río Claro,7108,median_household_income,925271.0,CLP,very low
+CL RCL,Río Claro,7108,industry_construction_employment,0.0,percent,very low
+CL RCL,Río Claro,7108,electricity_access,100.0,percent,very low
+CL RCL,Río Claro,7108,home_ownership,33.33,percent,very low
+CL RCL,Río Claro,7108,poverty_rate,26.12,percent,high
+CL RCL,Río Claro,7108,renter_share,0.0,percent,very low
+CL REC,Recoleta,13127,home_ownership,42.55,percent,very low
+CL REC,Recoleta,13127,transport_logistics_employment,8.41,percent,low
+CL REC,Recoleta,13127,median_household_income,1414513.0,CLP,very high
+CL REC,Recoleta,13127,poverty_rate,16.51,percent,very low
+CL REC,Recoleta,13127,public_transport_share,49.86,percent,very high
+CL REC,Recoleta,13127,industry_construction_employment,15.89,percent,low
+CL REC,Recoleta,13127,renter_share,42.55,percent,high
+CL REC,Recoleta,13127,electricity_access,97.56,percent,very low
+CL REC,Recoleta,13127,unemployment_rate,8.18,percent,very low
+CL REI,La Reina,13113,unemployment_rate,8.18,percent,very low
+CL REI,La Reina,13113,renter_share,30.23,percent,high
+CL REI,La Reina,13113,median_household_income,1414513.0,CLP,very high
+CL REI,La Reina,13113,industry_construction_employment,9.62,percent,low
+CL REI,La Reina,13113,public_transport_share,49.86,percent,very high
+CL REI,La Reina,13113,poverty_rate,16.51,percent,very low
+CL REI,La Reina,13113,home_ownership,58.14,percent,low
+CL REI,La Reina,13113,transport_logistics_employment,3.85,percent,very low
+CL REI,La Reina,13113,electricity_access,100.0,percent,very low
+CL REN,Renca,13128,electricity_access,100.0,percent,very low
+CL REN,Renca,13128,renter_share,28.13,percent,medium
+CL REN,Renca,13128,public_transport_share,49.86,percent,very high
+CL REN,Renca,13128,median_household_income,1414513.0,CLP,very high
+CL REN,Renca,13128,industry_construction_employment,17.57,percent,medium
+CL REN,Renca,13128,poverty_rate,16.51,percent,very low
+CL REN,Renca,13128,home_ownership,57.81,percent,low
+CL REN,Renca,13128,transport_logistics_employment,9.46,percent,low
+CL REN,Renca,13128,unemployment_rate,8.18,percent,very low
+CL REQ,Requínoa,6116,renter_share,12.5,percent,low
+CL REQ,Requínoa,6116,poverty_rate,21.05,percent,low
+CL REQ,Requínoa,6116,industry_construction_employment,20.0,percent,medium
+CL REQ,Requínoa,6116,median_household_income,1100000.0,CLP,medium
+CL REQ,Requínoa,6116,unemployment_rate,9.07,percent,medium
+CL REQ,Requínoa,6116,public_transport_share,20.36,percent,very low
+CL REQ,Requínoa,6116,transport_logistics_employment,13.33,percent,medium
+CL REQ,Requínoa,6116,home_ownership,68.75,percent,medium
+CL REQ,Requínoa,6116,electricity_access,100.0,percent,very low
+CL RET,Retiro,7405,home_ownership,66.67,percent,medium
+CL RET,Retiro,7405,median_household_income,925271.0,CLP,very low
+CL RET,Retiro,7405,electricity_access,100.0,percent,very low
+CL RET,Retiro,7405,transport_logistics_employment,7.69,percent,low
+CL RET,Retiro,7405,renter_share,0.0,percent,very low
+CL RET,Retiro,7405,poverty_rate,26.12,percent,high
+CL RET,Retiro,7405,industry_construction_employment,7.69,percent,low
+CL RET,Retiro,7405,unemployment_rate,8.44,percent,low
+CL RET,Retiro,7405,public_transport_share,20.39,percent,very low
+CL RGO,Rengo,6115,electricity_access,100.0,percent,very low
+CL RGO,Rengo,6115,renter_share,11.76,percent,low
+CL RGO,Rengo,6115,unemployment_rate,9.07,percent,medium
+CL RGO,Rengo,6115,home_ownership,76.47,percent,high
+CL RGO,Rengo,6115,median_household_income,1100000.0,CLP,medium
+CL RGO,Rengo,6115,poverty_rate,21.05,percent,low
+CL RGO,Rengo,6115,transport_logistics_employment,9.68,percent,low
+CL RGO,Rengo,6115,industry_construction_employment,9.68,percent,low
+CL RGO,Rengo,6115,public_transport_share,20.36,percent,very low
+CL RHU,Río Hurtado,4305,public_transport_share,28.79,percent,medium
+CL RHU,Río Hurtado,4305,median_household_income,1068233.0,CLP,medium
+CL RHU,Río Hurtado,4305,poverty_rate,24.26,percent,high
+CL RHU,Río Hurtado,4305,unemployment_rate,9.08,percent,medium
+CL RIB,Río Ibáñez,11402,transport_logistics_employment,0.0,percent,very low
+CL RIB,Río Ibáñez,11402,median_household_income,1339999.0,CLP,high
+CL RIB,Río Ibáñez,11402,public_transport_share,10.16,percent,very low
+CL RIB,Río Ibáñez,11402,industry_construction_employment,25.0,percent,high
+CL RIB,Río Ibáñez,11402,electricity_access,100.0,percent,very low
+CL RIB,Río Ibáñez,11402,poverty_rate,14.94,percent,very low
+CL RIB,Río Ibáñez,11402,renter_share,25.0,percent,medium
+CL RIB,Río Ibáñez,11402,unemployment_rate,5.33,percent,very low
+CL RIB,Río Ibáñez,11402,home_ownership,75.0,percent,high
+CL RIN,Rinconada,5303,unemployment_rate,9.8,percent,high
+CL RIN,Rinconada,5303,transport_logistics_employment,33.33,percent,medium
+CL RIN,Rinconada,5303,public_transport_share,39.54,percent,high
+CL RIN,Rinconada,5303,industry_construction_employment,33.33,percent,very high
+CL RIN,Rinconada,5303,poverty_rate,20.94,percent,low
+CL RIN,Rinconada,5303,home_ownership,50.0,percent,very low
+CL RIN,Rinconada,5303,electricity_access,100.0,percent,very low
+CL RIN,Rinconada,5303,median_household_income,1108241.0,CLP,medium
+CL RIN,Rinconada,5303,renter_share,50.0,percent,high
+CL RNC,Lago Ranco,14203,unemployment_rate,7.95,percent,very low
+CL RNC,Lago Ranco,14203,renter_share,33.33,percent,high
+CL RNC,Lago Ranco,14203,transport_logistics_employment,0.0,percent,very low
+CL RNC,Lago Ranco,14203,poverty_rate,20.8,percent,low
+CL RNC,Lago Ranco,14203,industry_construction_employment,0.0,percent,very low
+CL RNC,Lago Ranco,14203,public_transport_share,24.17,percent,low
+CL RNC,Lago Ranco,14203,electricity_access,100.0,percent,very low
+CL RNC,Lago Ranco,14203,home_ownership,33.33,percent,very low
+CL RNC,Lago Ranco,14203,median_household_income,1049778.0,CLP,low
+CL RNE,Río Negro,10305,renter_share,0.0,percent,very low
+CL RNE,Río Negro,10305,unemployment_rate,6.88,percent,very low
+CL RNE,Río Negro,10305,transport_logistics_employment,0.0,percent,very low
+CL RNE,Río Negro,10305,home_ownership,50.0,percent,very low
+CL RNE,Río Negro,10305,electricity_access,100.0,percent,very low
+CL RNE,Río Negro,10305,poverty_rate,21.43,percent,medium
+CL RNE,Río Negro,10305,industry_construction_employment,14.29,percent,low
+CL RNE,Río Negro,10305,median_household_income,1055000.0,CLP,low
+CL RNE,Río Negro,10305,public_transport_share,28.43,percent,medium
+CL RNO,Renaico,9209,home_ownership,88.89,percent,very high
+CL RNO,Renaico,9209,unemployment_rate,10.36,percent,very high
+CL RNO,Renaico,9209,public_transport_share,27.27,percent,low
+CL RNO,Renaico,9209,median_household_income,896521.0,CLP,very low
+CL RNO,Renaico,9209,transport_logistics_employment,0.0,percent,very low
+CL RNO,Renaico,9209,electricity_access,100.0,percent,very low
+CL RNO,Renaico,9209,industry_construction_employment,0.0,percent,very low
+CL RNO,Renaico,9209,poverty_rate,31.96,percent,very high
+CL RNO,Renaico,9209,renter_share,11.11,percent,very low
+CL ROM,Romeral,7306,transport_logistics_employment,0.0,percent,very low
+CL ROM,Romeral,7306,electricity_access,100.0,percent,very low
+CL ROM,Romeral,7306,poverty_rate,26.12,percent,high
+CL ROM,Romeral,7306,renter_share,25.0,percent,medium
+CL ROM,Romeral,7306,median_household_income,925271.0,CLP,very low
+CL ROM,Romeral,7306,home_ownership,62.5,percent,low
+CL ROM,Romeral,7306,public_transport_share,20.39,percent,very low
+CL ROM,Romeral,7306,unemployment_rate,8.44,percent,low
+CL ROM,Romeral,7306,industry_construction_employment,9.09,percent,low
+CL RSD,Santo Domingo,5606,electricity_access,100.0,percent,very low
+CL RSD,Santo Domingo,5606,unemployment_rate,9.8,percent,high
+CL RSD,Santo Domingo,5606,transport_logistics_employment,0.0,percent,very low
+CL RSD,Santo Domingo,5606,median_household_income,1108241.0,CLP,medium
+CL RSD,Santo Domingo,5606,home_ownership,80.0,percent,high
+CL RSD,Santo Domingo,5606,industry_construction_employment,14.29,percent,low
+CL RSD,Santo Domingo,5606,renter_share,0.0,percent,very low
+CL RSD,Santo Domingo,5606,public_transport_share,39.54,percent,high
+CL RSD,Santo Domingo,5606,poverty_rate,20.94,percent,low
+CL RVE,Río Verde,12103,median_household_income,1423917.0,CLP,very high
+CL RVE,Río Verde,12103,public_transport_share,20.08,percent,very low
+CL RVE,Río Verde,12103,poverty_rate,14.7,percent,very low
+CL RVE,Río Verde,12103,unemployment_rate,3.83,percent,very low
+CL SAA,Saavedra,9116,median_household_income,896521.0,CLP,very low
+CL SAA,Saavedra,9116,public_transport_share,27.27,percent,low
+CL SAA,Saavedra,9116,electricity_access,100.0,percent,very low
+CL SAA,Saavedra,9116,poverty_rate,31.96,percent,very high
+CL SAA,Saavedra,9116,transport_logistics_employment,0.0,percent,very low
+CL SAA,Saavedra,9116,unemployment_rate,10.36,percent,very high
+CL SAA,Saavedra,9116,home_ownership,75.0,percent,high
+CL SAA,Saavedra,9116,industry_construction_employment,25.0,percent,high
+CL SAA,Saavedra,9116,renter_share,0.0,percent,very low
+CL SAF,Sagrada Familia,7307,unemployment_rate,8.44,percent,low
+CL SAF,Sagrada Familia,7307,poverty_rate,26.12,percent,high
+CL SAF,Sagrada Familia,7307,electricity_access,100.0,percent,very low
+CL SAF,Sagrada Familia,7307,home_ownership,57.14,percent,low
+CL SAF,Sagrada Familia,7307,renter_share,14.29,percent,low
+CL SAF,Sagrada Familia,7307,transport_logistics_employment,0.0,percent,very low
+CL SAF,Sagrada Familia,7307,public_transport_share,20.39,percent,very low
+CL SAF,Sagrada Familia,7307,industry_construction_employment,0.0,percent,very low
+CL SAF,Sagrada Familia,7307,median_household_income,925271.0,CLP,very low
+CL SAI,San Antonio,5601,unemployment_rate,9.8,percent,high
+CL SAI,San Antonio,5601,electricity_access,96.15,percent,very low
+CL SAI,San Antonio,5601,transport_logistics_employment,24.59,percent,medium
+CL SAI,San Antonio,5601,poverty_rate,20.94,percent,low
+CL SAI,San Antonio,5601,home_ownership,54.9,percent,low
+CL SAI,San Antonio,5601,renter_share,25.49,percent,medium
+CL SAI,San Antonio,5601,public_transport_share,39.54,percent,high
+CL SAI,San Antonio,5601,median_household_income,1108241.0,CLP,medium
+CL SAI,San Antonio,5601,industry_construction_employment,19.67,percent,medium
+CL SAL,Salamanca,4204,public_transport_share,28.79,percent,medium
+CL SAL,Salamanca,4204,transport_logistics_employment,3.45,percent,very low
+CL SAL,Salamanca,4204,home_ownership,36.36,percent,very low
+CL SAL,Salamanca,4204,renter_share,27.27,percent,medium
+CL SAL,Salamanca,4204,unemployment_rate,9.08,percent,medium
+CL SAL,Salamanca,4204,industry_construction_employment,34.48,percent,very high
+CL SAL,Salamanca,4204,poverty_rate,24.26,percent,high
+CL SAL,Salamanca,4204,electricity_access,100.0,percent,very low
+CL SAL,Salamanca,4204,median_household_income,1068233.0,CLP,medium
+CL SBA,Santa Bárbara,8311,home_ownership,55.56,percent,low
+CL SBA,Santa Bárbara,8311,poverty_rate,22.01,percent,medium
+CL SBA,Santa Bárbara,8311,transport_logistics_employment,20.0,percent,medium
+CL SBA,Santa Bárbara,8311,industry_construction_employment,0.0,percent,very low
+CL SBA,Santa Bárbara,8311,median_household_income,1042738.0,CLP,low
+CL SBA,Santa Bárbara,8311,renter_share,11.11,percent,very low
+CL SBA,Santa Bárbara,8311,public_transport_share,35.51,percent,high
+CL SBA,Santa Bárbara,8311,unemployment_rate,9.49,percent,high
+CL SBA,Santa Bárbara,8311,electricity_access,100.0,percent,very low
+CL SBD,San Bernardo,13401,poverty_rate,16.51,percent,very low
+CL SBD,San Bernardo,13401,electricity_access,100.0,percent,very low
+CL SBD,San Bernardo,13401,transport_logistics_employment,7.6,percent,low
+CL SBD,San Bernardo,13401,renter_share,24.26,percent,medium
+CL SBD,San Bernardo,13401,industry_construction_employment,25.15,percent,high
+CL SBD,San Bernardo,13401,home_ownership,61.03,percent,low
+CL SBD,San Bernardo,13401,public_transport_share,49.86,percent,very high
+CL SBD,San Bernardo,13401,unemployment_rate,8.18,percent,very low
+CL SBD,San Bernardo,13401,median_household_income,1414513.0,CLP,very high
+CL SCL,Santiago,13101,renter_share,70.98,percent,high
+CL SCL,Santiago,13101,electricity_access,100.0,percent,very low
+CL SCL,Santiago,13101,industry_construction_employment,12.43,percent,low
+CL SCL,Santiago,13101,home_ownership,23.03,percent,very low
+CL SCL,Santiago,13101,unemployment_rate,8.18,percent,very low
+CL SCL,Santiago,13101,transport_logistics_employment,4.91,percent,very low
+CL SCL,Santiago,13101,poverty_rate,16.51,percent,very low
+CL SCL,Santiago,13101,public_transport_share,49.86,percent,very high
+CL SCL,Santiago,13101,median_household_income,1414513.0,CLP,very high
+CL SCR,San Carlos,16301,public_transport_share,24.53,percent,low
+CL SCR,San Carlos,16301,transport_logistics_employment,5.56,percent,very low
+CL SCR,San Carlos,16301,industry_construction_employment,16.67,percent,medium
+CL SCR,San Carlos,16301,electricity_access,100.0,percent,very low
+CL SCR,San Carlos,16301,renter_share,9.52,percent,very low
+CL SCR,San Carlos,16301,home_ownership,76.19,percent,high
+CL SCR,San Carlos,16301,poverty_rate,29.65,percent,very high
+CL SCR,San Carlos,16301,median_household_income,871602.5,CLP,very low
+CL SCR,San Carlos,16301,unemployment_rate,9.68,percent,high
+CL SCT,San Clemente,7109,median_household_income,925271.0,CLP,very low
+CL SCT,San Clemente,7109,industry_construction_employment,42.86,percent,very high
+CL SCT,San Clemente,7109,renter_share,5.56,percent,very low
+CL SCT,San Clemente,7109,poverty_rate,26.12,percent,high
+CL SCT,San Clemente,7109,unemployment_rate,8.44,percent,low
+CL SCT,San Clemente,7109,home_ownership,88.89,percent,very high
+CL SCT,San Clemente,7109,electricity_access,85.71,percent,very low
+CL SCT,San Clemente,7109,transport_logistics_employment,0.0,percent,very low
+CL SCT,San Clemente,7109,public_transport_share,20.39,percent,very low
+CL SCZ,Santa Cruz,6310,transport_logistics_employment,5.56,percent,very low
+CL SCZ,Santa Cruz,6310,median_household_income,1100000.0,CLP,medium
+CL SCZ,Santa Cruz,6310,unemployment_rate,9.07,percent,medium
+CL SCZ,Santa Cruz,6310,renter_share,16.0,percent,low
+CL SCZ,Santa Cruz,6310,public_transport_share,20.36,percent,very low
+CL SCZ,Santa Cruz,6310,industry_construction_employment,5.56,percent,very low
+CL SCZ,Santa Cruz,6310,poverty_rate,21.05,percent,low
+CL SCZ,Santa Cruz,6310,home_ownership,60.0,percent,low
+CL SCZ,Santa Cruz,6310,electricity_access,100.0,percent,very low
+CL SES,San Esteban,5304,median_household_income,1108241.0,CLP,medium
+CL SES,San Esteban,5304,poverty_rate,20.94,percent,low
+CL SES,San Esteban,5304,renter_share,18.18,percent,low
+CL SES,San Esteban,5304,home_ownership,63.64,percent,low
+CL SES,San Esteban,5304,electricity_access,100.0,percent,very low
+CL SES,San Esteban,5304,public_transport_share,39.54,percent,high
+CL SES,San Esteban,5304,industry_construction_employment,33.33,percent,very high
+CL SES,San Esteban,5304,unemployment_rate,9.8,percent,high
+CL SES,San Esteban,5304,transport_logistics_employment,0.0,percent,very low
+CL SFD,San Fernando,6301,median_household_income,1100000.0,CLP,medium
+CL SFD,San Fernando,6301,industry_construction_employment,18.87,percent,medium
+CL SFD,San Fernando,6301,home_ownership,63.04,percent,low
+CL SFD,San Fernando,6301,transport_logistics_employment,9.43,percent,low
+CL SFD,San Fernando,6301,unemployment_rate,9.07,percent,medium
+CL SFD,San Fernando,6301,public_transport_share,20.36,percent,very low
+CL SFD,San Fernando,6301,poverty_rate,21.05,percent,low
+CL SFD,San Fernando,6301,electricity_access,100.0,percent,very low
+CL SFD,San Fernando,6301,renter_share,21.74,percent,medium
+CL SFN,San Fabián,16304,median_household_income,871602.5,CLP,very low
+CL SFN,San Fabián,16304,transport_logistics_employment,20.0,percent,medium
+CL SFN,San Fabián,16304,unemployment_rate,9.68,percent,high
+CL SFN,San Fabián,16304,renter_share,0.0,percent,very low
+CL SFN,San Fabián,16304,electricity_access,50.0,percent,very low
+CL SFN,San Fabián,16304,industry_construction_employment,40.0,percent,very high
+CL SFN,San Fabián,16304,poverty_rate,29.65,percent,very high
+CL SFN,San Fabián,16304,home_ownership,50.0,percent,very low
+CL SFN,San Fabián,16304,public_transport_share,24.53,percent,low
+CL SFP,San Felipe,5701,median_household_income,1108241.0,CLP,medium
+CL SFP,San Felipe,5701,unemployment_rate,9.8,percent,high
+CL SFP,San Felipe,5701,renter_share,23.81,percent,medium
+CL SFP,San Felipe,5701,transport_logistics_employment,8.16,percent,low
+CL SFP,San Felipe,5701,public_transport_share,39.54,percent,high
+CL SFP,San Felipe,5701,electricity_access,100.0,percent,very low
+CL SFP,San Felipe,5701,industry_construction_employment,12.24,percent,low
+CL SFP,San Felipe,5701,poverty_rate,20.94,percent,low
+CL SFP,San Felipe,5701,home_ownership,64.29,percent,low
+CL SGR,San Gregorio,12104,unemployment_rate,3.83,percent,very low
+CL SGR,San Gregorio,12104,median_household_income,1423917.0,CLP,very high
+CL SGR,San Gregorio,12104,poverty_rate,14.7,percent,very low
+CL SGR,San Gregorio,12104,public_transport_share,20.08,percent,very low
+CL SIG,Sierra Gorda,2103,public_transport_share,34.19,percent,high
+CL SIG,Sierra Gorda,2103,median_household_income,1303632.0,CLP,high
+CL SIG,Sierra Gorda,2103,poverty_rate,19.53,percent,low
+CL SIG,Sierra Gorda,2103,unemployment_rate,9.26,percent,medium
+CL SIN,San Ignacio,16108,electricity_access,100.0,percent,very low
+CL SIN,San Ignacio,16108,unemployment_rate,9.68,percent,high
+CL SIN,San Ignacio,16108,median_household_income,871602.5,CLP,very low
+CL SIN,San Ignacio,16108,public_transport_share,24.53,percent,low
+CL SIN,San Ignacio,16108,industry_construction_employment,0.0,percent,very low
+CL SIN,San Ignacio,16108,renter_share,11.11,percent,very low
+CL SIN,San Ignacio,16108,home_ownership,77.78,percent,high
+CL SIN,San Ignacio,16108,poverty_rate,29.65,percent,very high
+CL SIN,San Ignacio,16108,transport_logistics_employment,12.5,percent,medium
+CL SJC,San Juan de la Costa,10306,unemployment_rate,6.88,percent,very low
+CL SJC,San Juan de la Costa,10306,renter_share,0.0,percent,very low
+CL SJC,San Juan de la Costa,10306,transport_logistics_employment,0.0,percent,very low
+CL SJC,San Juan de la Costa,10306,median_household_income,1055000.0,CLP,low
+CL SJC,San Juan de la Costa,10306,public_transport_share,28.43,percent,medium
+CL SJC,San Juan de la Costa,10306,poverty_rate,21.43,percent,medium
+CL SJC,San Juan de la Costa,10306,electricity_access,100.0,percent,very low
+CL SJC,San Juan de la Costa,10306,industry_construction_employment,50.0,percent,very high
+CL SJC,San Juan de la Costa,10306,home_ownership,100.0,percent,very high
+CL SJM,San José de Maipo,13203,home_ownership,63.64,percent,low
+CL SJM,San José de Maipo,13203,public_transport_share,49.86,percent,very high
+CL SJM,San José de Maipo,13203,median_household_income,1414513.0,CLP,very high
+CL SJM,San José de Maipo,13203,poverty_rate,16.51,percent,very low
+CL SJM,San José de Maipo,13203,unemployment_rate,8.18,percent,very low
+CL SJM,San José de Maipo,13203,industry_construction_employment,18.18,percent,medium
+CL SJM,San José de Maipo,13203,electricity_access,100.0,percent,very low
+CL SJM,San José de Maipo,13203,transport_logistics_employment,0.0,percent,very low
+CL SJM,San José de Maipo,13203,renter_share,27.27,percent,medium
+CL SJQ,San Joaquín,13129,electricity_access,100.0,percent,very low
+CL SJQ,San Joaquín,13129,renter_share,36.54,percent,high
+CL SJQ,San Joaquín,13129,public_transport_share,49.86,percent,very high
+CL SJQ,San Joaquín,13129,industry_construction_employment,24.24,percent,high
+CL SJQ,San Joaquín,13129,transport_logistics_employment,7.58,percent,low
+CL SJQ,San Joaquín,13129,median_household_income,1414513.0,CLP,very high
+CL SJQ,San Joaquín,13129,poverty_rate,16.51,percent,very low
+CL SJQ,San Joaquín,13129,home_ownership,44.23,percent,very low
+CL SJQ,San Joaquín,13129,unemployment_rate,8.18,percent,very low
+CL SJU,Santa Juana,8109,transport_logistics_employment,20.0,percent,medium
+CL SJU,Santa Juana,8109,renter_share,0.0,percent,very low
+CL SJU,Santa Juana,8109,unemployment_rate,9.49,percent,high
+CL SJU,Santa Juana,8109,poverty_rate,22.01,percent,medium
+CL SJU,Santa Juana,8109,public_transport_share,35.51,percent,high
+CL SJU,Santa Juana,8109,home_ownership,87.5,percent,very high
+CL SJU,Santa Juana,8109,industry_construction_employment,0.0,percent,very low
+CL SJU,Santa Juana,8109,median_household_income,1042738.0,CLP,low
+CL SJU,Santa Juana,8109,electricity_access,100.0,percent,very low
+CL SJV,San Javier,7406,electricity_access,100.0,percent,very low
+CL SJV,San Javier,7406,industry_construction_employment,23.08,percent,high
+CL SJV,San Javier,7406,median_household_income,925271.0,CLP,very low
+CL SJV,San Javier,7406,poverty_rate,26.12,percent,high
+CL SJV,San Javier,7406,transport_logistics_employment,7.69,percent,low
+CL SJV,San Javier,7406,home_ownership,80.65,percent,high
+CL SJV,San Javier,7406,renter_share,12.9,percent,low
+CL SJV,San Javier,7406,unemployment_rate,8.44,percent,low
+CL SJV,San Javier,7406,public_transport_share,20.39,percent,very low
+CL SMA,Santa María,5706,public_transport_share,39.54,percent,high
+CL SMA,Santa María,5706,home_ownership,75.0,percent,high
+CL SMA,Santa María,5706,transport_logistics_employment,0.0,percent,very low
+CL SMA,Santa María,5706,poverty_rate,20.94,percent,low
+CL SMA,Santa María,5706,unemployment_rate,9.8,percent,high
+CL SMA,Santa María,5706,industry_construction_employment,0.0,percent,very low
+CL SMA,Santa María,5706,renter_share,0.0,percent,very low
+CL SMA,Santa María,5706,median_household_income,1108241.0,CLP,medium
+CL SMA,Santa María,5706,electricity_access,100.0,percent,very low
+CL SMG,San Miguel,13130,unemployment_rate,8.18,percent,very low
+CL SMG,San Miguel,13130,renter_share,47.06,percent,high
+CL SMG,San Miguel,13130,industry_construction_employment,11.54,percent,low
+CL SMG,San Miguel,13130,public_transport_share,49.86,percent,very high
+CL SMG,San Miguel,13130,poverty_rate,16.51,percent,very low
+CL SMG,San Miguel,13130,electricity_access,100.0,percent,very low
+CL SMG,San Miguel,13130,transport_logistics_employment,7.69,percent,low
+CL SMG,San Miguel,13130,median_household_income,1414513.0,CLP,very high
+CL SMG,San Miguel,13130,home_ownership,41.18,percent,very low
+CL SNI,San Nicolás,16305,unemployment_rate,9.68,percent,high
+CL SNI,San Nicolás,16305,home_ownership,83.33,percent,high
+CL SNI,San Nicolás,16305,median_household_income,871602.5,CLP,very low
+CL SNI,San Nicolás,16305,transport_logistics_employment,0.0,percent,very low
+CL SNI,San Nicolás,16305,poverty_rate,29.65,percent,very high
+CL SNI,San Nicolás,16305,electricity_access,100.0,percent,very low
+CL SNI,San Nicolás,16305,industry_construction_employment,20.0,percent,medium
+CL SNI,San Nicolás,16305,renter_share,8.33,percent,very low
+CL SNI,San Nicolás,16305,public_transport_share,24.53,percent,low
+CL SPA,San Pedro de Atacama,2203,unemployment_rate,9.26,percent,medium
+CL SPA,San Pedro de Atacama,2203,poverty_rate,19.53,percent,low
+CL SPA,San Pedro de Atacama,2203,electricity_access,100.0,percent,very low
+CL SPA,San Pedro de Atacama,2203,median_household_income,1303632.0,CLP,high
+CL SPA,San Pedro de Atacama,2203,renter_share,14.29,percent,low
+CL SPA,San Pedro de Atacama,2203,industry_construction_employment,14.29,percent,low
+CL SPA,San Pedro de Atacama,2203,transport_logistics_employment,21.43,percent,medium
+CL SPA,San Pedro de Atacama,2203,home_ownership,42.86,percent,very low
+CL SPA,San Pedro de Atacama,2203,public_transport_share,34.19,percent,high
+CL SPB,San Pablo,10307,poverty_rate,21.43,percent,medium
+CL SPB,San Pablo,10307,public_transport_share,28.43,percent,medium
+CL SPB,San Pablo,10307,unemployment_rate,6.88,percent,very low
+CL SPB,San Pablo,10307,home_ownership,78.57,percent,high
+CL SPB,San Pablo,10307,renter_share,0.0,percent,very low
+CL SPB,San Pablo,10307,median_household_income,1055000.0,CLP,low
+CL SPB,San Pablo,10307,transport_logistics_employment,0.0,percent,very low
+CL SPB,San Pablo,10307,industry_construction_employment,23.08,percent,high
+CL SPB,San Pablo,10307,electricity_access,100.0,percent,very low
+CL SPE,San Pedro,13505,median_household_income,1414513.0,CLP,very high
+CL SPE,San Pedro,13505,home_ownership,100.0,percent,very high
+CL SPE,San Pedro,13505,public_transport_share,49.86,percent,very high
+CL SPE,San Pedro,13505,electricity_access,100.0,percent,very low
+CL SPE,San Pedro,13505,industry_construction_employment,20.0,percent,medium
+CL SPE,San Pedro,13505,transport_logistics_employment,0.0,percent,very low
+CL SPE,San Pedro,13505,unemployment_rate,8.18,percent,very low
+CL SPE,San Pedro,13505,poverty_rate,16.51,percent,very low
+CL SPE,San Pedro,13505,renter_share,0.0,percent,very low
+CL SPP,San Pedro de La paz,8108,transport_logistics_employment,6.52,percent,very low
+CL SPP,San Pedro de la Paz,8108,unemployment_rate,9.49,percent,high
+CL SPP,San Pedro de La paz,8108,electricity_access,100.0,percent,very low
+CL SPP,San Pedro de La paz,8108,renter_share,21.18,percent,medium
+CL SPP,San Pedro de la Paz,8108,median_household_income,1042738.0,CLP,low
+CL SPP,San Pedro de La paz,8108,home_ownership,72.94,percent,high
+CL SPP,San Pedro de la Paz,8108,public_transport_share,35.51,percent,high
+CL SPP,San Pedro de la Paz,8108,poverty_rate,22.01,percent,medium
+CL SPP,San Pedro de La paz,8108,industry_construction_employment,17.39,percent,medium
+CL SRA,San Rafael,7110,unemployment_rate,8.44,percent,low
+CL SRA,San Rafael,7110,renter_share,0.0,percent,very low
+CL SRA,San Rafael,7110,electricity_access,100.0,percent,very low
+CL SRA,San Rafael,7110,median_household_income,925271.0,CLP,very low
+CL SRA,San Rafael,7110,public_transport_share,20.39,percent,very low
+CL SRA,San Rafael,7110,home_ownership,66.67,percent,medium
+CL SRA,San Rafael,7110,transport_logistics_employment,25.0,percent,medium
+CL SRA,San Rafael,7110,industry_construction_employment,25.0,percent,high
+CL SRA,San Rafael,7110,poverty_rate,26.12,percent,high
+CL SRO,San Rosendo,8310,poverty_rate,22.01,percent,medium
+CL SRO,San Rosendo,8310,public_transport_share,35.51,percent,high
+CL SRO,San Rosendo,8310,median_household_income,1042738.0,CLP,low
+CL SRO,San Rosendo,8310,unemployment_rate,9.49,percent,high
+CL SVT,San Vicente,6117,median_household_income,1100000.0,CLP,medium
+CL SVT,San Vicente,6117,unemployment_rate,9.07,percent,medium
+CL SVT,San Vicente,6117,industry_construction_employment,25.81,percent,high
+CL SVT,San Vicente,6117,home_ownership,70.83,percent,medium
+CL SVT,San Vicente,6117,transport_logistics_employment,0.0,percent,very low
+CL SVT,San Vicente,6117,poverty_rate,21.05,percent,low
+CL SVT,San Vicente,6117,electricity_access,100.0,percent,very low
+CL SVT,San Vicente,6117,renter_share,8.33,percent,very low
+CL SVT,San Vicente,6117,public_transport_share,20.36,percent,very low
+CL TAL,Talcahuano,8110,unemployment_rate,9.49,percent,high
+CL TAL,Talcahuano,8110,poverty_rate,22.01,percent,medium
+CL TAL,Talcahuano,8110,transport_logistics_employment,5.88,percent,very low
+CL TAL,Talcahuano,8110,median_household_income,1042738.0,CLP,low
+CL TAL,Talcahuano,8110,home_ownership,61.11,percent,low
+CL TAL,Talcahuano,8110,electricity_access,100.0,percent,very low
+CL TAL,Talcahuano,8110,public_transport_share,35.51,percent,high
+CL TAL,Talcahuano,8110,industry_construction_employment,21.18,percent,medium
+CL TAL,Talcahuano,8110,renter_share,19.44,percent,low
+CL TAM,Tierra Amarilla,3103,public_transport_share,24.73,percent,low
+CL TAM,Tierra Amarilla,3103,unemployment_rate,8.77,percent,medium
+CL TAM,Tierra Amarilla,3103,industry_construction_employment,0.0,percent,very low
+CL TAM,Tierra Amarilla,3103,median_household_income,1138667.0,CLP,high
+CL TAM,Tierra Amarilla,3103,home_ownership,100.0,percent,very high
+CL TAM,Tierra Amarilla,3103,poverty_rate,21.19,percent,medium
+CL TAM,Tierra Amarilla,3103,renter_share,0.0,percent,very low
+CL TAM,Tierra Amarilla,3103,transport_logistics_employment,100.0,percent,medium
+CL TDP,Torres del Paine,12402,public_transport_share,20.08,percent,very low
+CL TDP,Torres del Paine,12402,poverty_rate,14.7,percent,very low
+CL TDP,Torres del Paine,12402,median_household_income,1423917.0,CLP,very high
+CL TDP,Torres del Paine,12402,unemployment_rate,3.83,percent,very low
+CL TEN,Teno,7308,median_household_income,925271.0,CLP,very low
+CL TEN,Teno,7308,electricity_access,100.0,percent,very low
+CL TEN,Teno,7308,home_ownership,73.91,percent,high
+CL TEN,Teno,7308,unemployment_rate,8.44,percent,low
+CL TEN,Teno,7308,poverty_rate,26.12,percent,high
+CL TEN,Teno,7308,transport_logistics_employment,4.0,percent,very low
+CL TEN,Teno,7308,industry_construction_employment,24.0,percent,high
+CL TEN,Teno,7308,public_transport_share,20.39,percent,very low
+CL TEN,Teno,7308,renter_share,4.35,percent,very low
+CL TEO,Teodoro Schmidt,9117,industry_construction_employment,14.29,percent,low
+CL TEO,Teodoro Schmidt,9117,renter_share,0.0,percent,very low
+CL TEO,Teodoro Schmidt,9117,home_ownership,90.0,percent,very high
+CL TEO,Teodoro Schmidt,9117,electricity_access,100.0,percent,very low
+CL TEO,Teodoro Schmidt,9117,median_household_income,896521.0,CLP,very low
+CL TEO,Teodoro Schmidt,9117,poverty_rate,31.96,percent,very high
+CL TEO,Teodoro Schmidt,9117,unemployment_rate,10.36,percent,very high
+CL TEO,Teodoro Schmidt,9117,public_transport_share,27.27,percent,low
+CL TEO,Teodoro Schmidt,9117,transport_logistics_employment,0.0,percent,very low
+CL TIL,Tiltil,13303,home_ownership,71.43,percent,medium
+CL TIL,Tiltil,13303,public_transport_share,49.86,percent,very high
+CL TIL,Tiltil,13303,median_household_income,1414513.0,CLP,very high
+CL TIL,Tiltil,13303,poverty_rate,16.51,percent,very low
+CL TIL,Tiltil,13303,electricity_access,100.0,percent,very low
+CL TIL,Tiltil,13303,unemployment_rate,8.18,percent,very low
+CL TIL,Tiltil,13303,renter_share,0.0,percent,very low
+CL TIL,Tiltil,13303,transport_logistics_employment,14.29,percent,medium
+CL TIL,Tiltil,13303,industry_construction_employment,14.29,percent,low
+CL TIM,Timaukel,12303,median_household_income,1423917.0,CLP,very high
+CL TIM,Timaukel,12303,unemployment_rate,3.83,percent,very low
+CL TIM,Timaukel,12303,poverty_rate,14.7,percent,very low
+CL TIM,Timaukel,12303,public_transport_share,20.08,percent,very low
+CL TIR,Tirúa,8207,electricity_access,100.0,percent,very low
+CL TIR,Tirúa,8207,industry_construction_employment,0.0,percent,very low
+CL TIR,Tirúa,8207,transport_logistics_employment,11.11,percent,low
+CL TIR,Tirúa,8207,public_transport_share,35.51,percent,high
+CL TIR,Tirúa,8207,poverty_rate,22.01,percent,medium
+CL TIR,Tirúa,8207,median_household_income,1042738.0,CLP,low
+CL TIR,Tirúa,8207,unemployment_rate,9.49,percent,high
+CL TIR,Tirúa,8207,renter_share,25.0,percent,medium
+CL TIR,Tirúa,8207,home_ownership,75.0,percent,high
+CL TLG,Talagante,13601,electricity_access,100.0,percent,very low
+CL TLG,Talagante,13601,poverty_rate,16.51,percent,very low
+CL TLG,Talagante,13601,transport_logistics_employment,0.0,percent,very low
+CL TLG,Talagante,13601,home_ownership,77.78,percent,high
+CL TLG,Talagante,13601,unemployment_rate,8.18,percent,very low
+CL TLG,Talagante,13601,industry_construction_employment,28.57,percent,high
+CL TLG,Talagante,13601,public_transport_share,49.86,percent,very high
+CL TLG,Talagante,13601,median_household_income,1414513.0,CLP,very high
+CL TLG,Talagante,13601,renter_share,13.89,percent,low
+CL TLX,Talca,7101,home_ownership,67.41,percent,medium
+CL TLX,Talca,7101,unemployment_rate,8.44,percent,low
+CL TLX,Talca,7101,public_transport_share,20.39,percent,very low
+CL TLX,Talca,7101,renter_share,21.48,percent,medium
+CL TLX,Talca,7101,electricity_access,100.0,percent,very low
+CL TLX,Talca,7101,transport_logistics_employment,2.84,percent,very low
+CL TLX,Talca,7101,industry_construction_employment,21.28,percent,medium
+CL TLX,Talca,7101,median_household_income,925271.0,CLP,very low
+CL TLX,Talca,7101,poverty_rate,26.12,percent,high
+CL TOL,Toltén,9118,public_transport_share,27.27,percent,low
+CL TOL,Toltén,9118,electricity_access,100.0,percent,very low
+CL TOL,Toltén,9118,median_household_income,896521.0,CLP,very low
+CL TOL,Toltén,9118,poverty_rate,31.96,percent,very high
+CL TOL,Toltén,9118,renter_share,0.0,percent,very low
+CL TOL,Toltén,9118,industry_construction_employment,0.0,percent,very low
+CL TOL,Toltén,9118,home_ownership,71.43,percent,medium
+CL TOL,Toltén,9118,transport_logistics_employment,0.0,percent,very low
+CL TOL,Toltén,9118,unemployment_rate,10.36,percent,very high
+CL TOM,Tomé,8111,poverty_rate,22.01,percent,medium
+CL TOM,Tomé,8111,renter_share,5.41,percent,very low
+CL TOM,Tomé,8111,transport_logistics_employment,3.57,percent,very low
+CL TOM,Tomé,8111,median_household_income,1042738.0,CLP,low
+CL TOM,Tomé,8111,home_ownership,70.27,percent,medium
+CL TOM,Tomé,8111,electricity_access,100.0,percent,very low
+CL TOM,Tomé,8111,public_transport_share,35.51,percent,high
+CL TOM,Tomé,8111,unemployment_rate,9.49,percent,high
+CL TOM,Tomé,8111,industry_construction_employment,35.71,percent,very high
+CL TOQ,Tocopilla,2301,renter_share,31.82,percent,high
+CL TOQ,Tocopilla,2301,home_ownership,36.36,percent,very low
+CL TOQ,Tocopilla,2301,public_transport_share,34.19,percent,high
+CL TOQ,Tocopilla,2301,transport_logistics_employment,11.11,percent,low
+CL TOQ,Tocopilla,2301,electricity_access,80.0,percent,very low
+CL TOQ,Tocopilla,2301,median_household_income,1303632.0,CLP,high
+CL TOQ,Tocopilla,2301,unemployment_rate,9.26,percent,medium
+CL TOQ,Tocopilla,2301,poverty_rate,19.53,percent,low
+CL TOQ,Tocopilla,2301,industry_construction_employment,38.89,percent,very high
+CL TRA,Traiguén,9210,renter_share,38.46,percent,high
+CL TRA,Traiguén,9210,unemployment_rate,10.36,percent,very high
+CL TRA,Traiguén,9210,industry_construction_employment,8.33,percent,low
+CL TRA,Traiguén,9210,transport_logistics_employment,0.0,percent,very low
+CL TRA,Traiguén,9210,public_transport_share,27.27,percent,low
+CL TRA,Traiguén,9210,electricity_access,100.0,percent,very low
+CL TRA,Traiguén,9210,home_ownership,46.15,percent,very low
+CL TRA,Traiguén,9210,poverty_rate,31.96,percent,very high
+CL TRA,Traiguén,9210,median_household_income,896521.0,CLP,very low
+CL TRE,Trehuaco,16207,industry_construction_employment,25.0,percent,high
+CL TRE,Trehuaco,16207,electricity_access,100.0,percent,very low
+CL TRE,Treguaco,16207,median_household_income,871602.5,CLP,very low
+CL TRE,Trehuaco,16207,transport_logistics_employment,0.0,percent,very low
+CL TRE,Treguaco,16207,public_transport_share,24.53,percent,low
+CL TRE,Treguaco,16207,poverty_rate,29.65,percent,very high
+CL TRE,Trehuaco,16207,home_ownership,100.0,percent,very high
+CL TRE,Treguaco,16207,unemployment_rate,9.68,percent,high
+CL TRE,Trehuaco,16207,renter_share,0.0,percent,very low
+CL TTC,Taltal,2104,poverty_rate,19.53,percent,low
+CL TTC,Taltal,2104,unemployment_rate,9.26,percent,medium
+CL TTC,Taltal,2104,transport_logistics_employment,0.0,percent,very low
+CL TTC,Taltal,2104,median_household_income,1303632.0,CLP,high
+CL TTC,Taltal,2104,renter_share,0.0,percent,very low
+CL TTC,Taltal,2104,industry_construction_employment,50.0,percent,very high
+CL TTC,Taltal,2104,home_ownership,87.5,percent,very high
+CL TTC,Taltal,2104,electricity_access,100.0,percent,very low
+CL TTC,Taltal,2104,public_transport_share,34.19,percent,high
+CL TUC,Tucapel,8312,electricity_access,100.0,percent,very low
+CL TUC,Tucapel,8312,transport_logistics_employment,14.29,percent,medium
+CL TUC,Tucapel,8312,unemployment_rate,9.49,percent,high
+CL TUC,Tucapel,8312,home_ownership,88.89,percent,very high
+CL TUC,Tucapel,8312,renter_share,11.11,percent,very low
+CL TUC,Tucapel,8312,public_transport_share,35.51,percent,high
+CL TUC,Tucapel,8312,poverty_rate,22.01,percent,medium
+CL TUC,Tucapel,8312,industry_construction_employment,28.57,percent,high
+CL TUC,Tucapel,8312,median_household_income,1042738.0,CLP,low
+CL VAG,Villa Alegre,7407,poverty_rate,26.12,percent,high
+CL VAG,Villa Alegre,7407,home_ownership,62.5,percent,low
+CL VAG,Villa Alegre,7407,public_transport_share,20.39,percent,very low
+CL VAG,Villa Alegre,7407,unemployment_rate,8.44,percent,low
+CL VAG,Villa Alegre,7407,median_household_income,925271.0,CLP,very low
+CL VAG,Villa Alegre,7407,electricity_access,100.0,percent,very low
+CL VAG,Villa Alegre,7407,renter_share,12.5,percent,low
+CL VAG,Villa Alegre,7407,transport_logistics_employment,0.0,percent,very low
+CL VAG,Villa Alegre,7407,industry_construction_employment,20.0,percent,medium
+CL VAP,Valparaíso,5101,electricity_access,100.0,percent,very low
+CL VAP,Valparaíso,5101,poverty_rate,20.94,percent,low
+CL VAP,Valparaíso,5101,renter_share,31.58,percent,high
+CL VAP,Valparaíso,5101,median_household_income,1108241.0,CLP,medium
+CL VAP,Valparaíso,5101,public_transport_share,39.54,percent,high
+CL VAP,Valparaíso,5101,unemployment_rate,9.8,percent,high
+CL VAP,Valparaíso,5101,transport_logistics_employment,10.59,percent,low
+CL VAP,Valparaíso,5101,home_ownership,49.12,percent,very low
+CL VAP,Valparaíso,5101,industry_construction_employment,20.0,percent,medium
+CL VCN,Vilcún,9119,home_ownership,70.0,percent,medium
+CL VCN,Vilcún,9119,public_transport_share,27.27,percent,low
+CL VCN,Vilcún,9119,median_household_income,896521.0,CLP,very low
+CL VCN,Vilcún,9119,poverty_rate,31.96,percent,very high
+CL VCN,Vilcún,9119,renter_share,5.0,percent,very low
+CL VCN,Vilcún,9119,unemployment_rate,10.36,percent,very high
+CL VCN,Vilcún,9119,industry_construction_employment,8.33,percent,low
+CL VCN,Vilcún,9119,transport_logistics_employment,16.67,percent,medium
+CL VCN,Vilcún,9119,electricity_access,100.0,percent,very low
+CL VCQ,Vichuquén,7309,unemployment_rate,8.44,percent,low
+CL VCQ,Vichuquén,7309,home_ownership,100.0,percent,very high
+CL VCQ,Vichuquén,7309,industry_construction_employment,0.0,percent,very low
+CL VCQ,Vichuquén,7309,electricity_access,100.0,percent,very low
+CL VCQ,Vichuquén,7309,transport_logistics_employment,0.0,percent,very low
+CL VCQ,Vichuquén,7309,renter_share,0.0,percent,very low
+CL VCQ,Vichuquén,7309,median_household_income,925271.0,CLP,very low
+CL VCQ,Vichuquén,7309,poverty_rate,26.12,percent,high
+CL VCQ,Vichuquén,7309,public_transport_share,20.39,percent,very low
+CL VIA,Villa Alemana,5804,poverty_rate,20.94,percent,low
+CL VIA,Villa Alemana,5804,transport_logistics_employment,12.35,percent,medium
+CL VIA,Villa Alemana,5804,electricity_access,100.0,percent,very low
+CL VIA,Villa Alemana,5804,home_ownership,69.14,percent,medium
+CL VIA,Villa Alemana,5804,renter_share,22.22,percent,medium
+CL VIA,Villa Alemana,5804,industry_construction_employment,16.05,percent,low
+CL VIA,Villa Alemana,5804,public_transport_share,39.54,percent,high
+CL VIA,Villa Alemana,5804,median_household_income,1108241.0,CLP,medium
+CL VIA,Villa Alemana,5804,unemployment_rate,9.8,percent,high
+CL VIC,Vicuña,4106,public_transport_share,28.79,percent,medium
+CL VIC,Vicuña,4106,poverty_rate,24.26,percent,high
+CL VIC,Vicuña,4106,renter_share,40.0,percent,high
+CL VIC,Vicuña,4106,unemployment_rate,9.08,percent,medium
+CL VIC,Vicuña,4106,median_household_income,1068233.0,CLP,medium
+CL VIC,Vicuña,4106,industry_construction_employment,10.0,percent,low
+CL VIC,Vicuña,4106,home_ownership,60.0,percent,low
+CL VIC,Vicuña,4106,transport_logistics_employment,0.0,percent,very low
+CL VIC,Vicuña,4106,electricity_access,100.0,percent,very low
+CL VIL,Villarrica,9120,renter_share,31.03,percent,high
+CL VIL,Villarrica,9120,median_household_income,896521.0,CLP,very low
+CL VIL,Villarrica,9120,unemployment_rate,10.36,percent,very high
+CL VIL,Villarrica,9120,industry_construction_employment,27.27,percent,high
+CL VIL,Villarrica,9120,transport_logistics_employment,9.09,percent,low
+CL VIL,Villarrica,9120,home_ownership,58.62,percent,low
+CL VIL,Villarrica,9120,electricity_access,92.86,percent,very low
+CL VIL,Villarrica,9120,poverty_rate,31.96,percent,very high
+CL VIL,Villarrica,9120,public_transport_share,27.27,percent,low
+CL VIT,Vitacura,13132,public_transport_share,49.86,percent,very high
+CL VIT,Vitacura,13132,median_household_income,1414513.0,CLP,very high
+CL VIT,Vitacura,13132,transport_logistics_employment,7.81,percent,low
+CL VIT,Vitacura,13132,poverty_rate,16.51,percent,very low
+CL VIT,Vitacura,13132,home_ownership,60.87,percent,low
+CL VIT,Vitacura,13132,renter_share,36.96,percent,high
+CL VIT,Vitacura,13132,electricity_access,100.0,percent,very low
+CL VIT,Vitacura,13132,unemployment_rate,8.18,percent,very low
+CL VIT,Vitacura,13132,industry_construction_employment,10.94,percent,low
+CL VLR,Vallenar,3301,median_household_income,1138667.0,CLP,high
+CL VLR,Vallenar,3301,industry_construction_employment,35.29,percent,very high
+CL VLR,Vallenar,3301,unemployment_rate,8.77,percent,medium
+CL VLR,Vallenar,3301,public_transport_share,24.73,percent,low
+CL VLR,Vallenar,3301,electricity_access,100.0,percent,very low
+CL VLR,Vallenar,3301,renter_share,12.0,percent,low
+CL VLR,Vallenar,3301,transport_logistics_employment,5.88,percent,very low
+CL VLR,Vallenar,3301,poverty_rate,21.19,percent,medium
+CL VLR,Vallenar,3301,home_ownership,60.0,percent,low
+CL WCA,Castro,10201,renter_share,38.1,percent,high
+CL WCA,Castro,10201,home_ownership,57.14,percent,low
+CL WCA,Castro,10201,unemployment_rate,6.88,percent,very low
+CL WCA,Castro,10201,median_household_income,1055000.0,CLP,low
+CL WCA,Castro,10201,public_transport_share,28.43,percent,medium
+CL WCA,Castro,10201,electricity_access,100.0,percent,very low
+CL WCA,Castro,10201,poverty_rate,21.43,percent,medium
+CL WCA,Castro,10201,transport_logistics_employment,7.41,percent,low
+CL WCA,Castro,10201,industry_construction_employment,18.52,percent,medium
+CL WCH,Chaitén,10401,transport_logistics_employment,0.0,percent,very low
+CL WCH,Chaitén,10401,poverty_rate,21.43,percent,medium
+CL WCH,Chaitén,10401,public_transport_share,28.43,percent,medium
+CL WCH,Chaitén,10401,renter_share,25.0,percent,medium
+CL WCH,Chaitén,10401,unemployment_rate,6.88,percent,very low
+CL WCH,Chaitén,10401,electricity_access,100.0,percent,very low
+CL WCH,Chaitén,10401,industry_construction_employment,50.0,percent,very high
+CL WCH,Chaitén,10401,median_household_income,1055000.0,CLP,low
+CL WCH,Chaitén,10401,home_ownership,75.0,percent,high
+CL YAI,Chillán,16101,public_transport_share,24.53,percent,low
+CL YAI,Chillán,16101,median_household_income,871602.5,CLP,very low
+CL YAI,Chillán,16101,transport_logistics_employment,4.6,percent,very low
+CL YAI,Chillán,16101,unemployment_rate,9.68,percent,high
+CL YAI,Chillán,16101,home_ownership,70.48,percent,medium
+CL YAI,Chillán,16101,poverty_rate,29.65,percent,very high
+CL YAI,Chillán,16101,electricity_access,100.0,percent,very low
+CL YAI,Chillán,16101,renter_share,20.0,percent,low
+CL YAI,Chillán,16101,industry_construction_employment,19.54,percent,medium
+CL YBU,Yerbas Buenas,7408,home_ownership,78.57,percent,high
+CL YBU,Yerbas Buenas,7408,poverty_rate,26.12,percent,high
+CL YBU,Yerbas Buenas,7408,median_household_income,925271.0,CLP,very low
+CL YBU,Yerbas Buenas,7408,industry_construction_employment,11.11,percent,low
+CL YBU,Yerbas Buenas,7408,renter_share,21.43,percent,medium
+CL YBU,Yerbas Buenas,7408,unemployment_rate,8.44,percent,low
+CL YBU,Yerbas Buenas,7408,transport_logistics_employment,0.0,percent,very low
+CL YBU,Yerbas Buenas,7408,public_transport_share,20.39,percent,very low
+CL YBU,Yerbas Buenas,7408,electricity_access,100.0,percent,very low
+CL YUM,Yumbel,8313,transport_logistics_employment,14.29,percent,medium
+CL YUM,Yumbel,8313,home_ownership,66.67,percent,medium
+CL YUM,Yumbel,8313,renter_share,25.0,percent,medium
+CL YUM,Yumbel,8313,electricity_access,100.0,percent,very low
+CL YUM,Yumbel,8313,industry_construction_employment,42.86,percent,very high
+CL YUM,Yumbel,8313,median_household_income,1042738.0,CLP,low
+CL YUM,Yumbel,8313,poverty_rate,22.01,percent,medium
+CL YUM,Yumbel,8313,unemployment_rate,9.49,percent,high
+CL YUM,Yumbel,8313,public_transport_share,35.51,percent,high
+CL YUN,Yungay,16109,transport_logistics_employment,0.0,percent,very low
+CL YUN,Yungay,16109,unemployment_rate,9.68,percent,high
+CL YUN,Yungay,16109,renter_share,12.5,percent,low
+CL YUN,Yungay,16109,median_household_income,871602.5,CLP,very low
+CL YUN,Yungay,16109,public_transport_share,24.53,percent,low
+CL YUN,Yungay,16109,home_ownership,75.0,percent,high
+CL YUN,Yungay,16109,industry_construction_employment,33.33,percent,very high
+CL YUN,Yungay,16109,electricity_access,100.0,percent,very low
+CL YUN,Yungay,16109,poverty_rate,29.65,percent,very high
+CL ZAL,Valdivia,14101,median_household_income,1049778.0,CLP,low
+CL ZAL,Valdivia,14101,home_ownership,63.46,percent,low
+CL ZAL,Valdivia,14101,public_transport_share,24.17,percent,low
+CL ZAL,Valdivia,14101,poverty_rate,20.8,percent,low
+CL ZAL,Valdivia,14101,electricity_access,97.5,percent,very low
+CL ZAL,Valdivia,14101,industry_construction_employment,15.32,percent,low
+CL ZAL,Valdivia,14101,unemployment_rate,7.95,percent,very low
+CL ZAL,Valdivia,14101,transport_logistics_employment,6.31,percent,very low
+CL ZAL,Valdivia,14101,renter_share,25.96,percent,medium
+CL ZCO,Temuco,9101,median_household_income,896521.0,CLP,very low
+CL ZCO,Temuco,9101,poverty_rate,31.96,percent,very high
+CL ZCO,Temuco,9101,public_transport_share,27.27,percent,low
+CL ZCO,Temuco,9101,renter_share,24.71,percent,medium
+CL ZCO,Temuco,9101,industry_construction_employment,17.71,percent,medium
+CL ZCO,Temuco,9101,unemployment_rate,10.36,percent,very high
+CL ZCO,Temuco,9101,electricity_access,100.0,percent,very low
+CL ZCO,Temuco,9101,home_ownership,64.37,percent,medium
+CL ZCO,Temuco,9101,transport_logistics_employment,8.0,percent,low
+CL ZIC,Victoria,9211,electricity_access,100.0,percent,very low
+CL ZIC,Victoria,9211,home_ownership,46.67,percent,very low
+CL ZIC,Victoria,9211,renter_share,26.67,percent,medium
+CL ZIC,Victoria,9211,median_household_income,896521.0,CLP,very low
+CL ZIC,Victoria,9211,transport_logistics_employment,0.0,percent,very low
+CL ZIC,Victoria,9211,public_transport_share,27.27,percent,low
+CL ZIC,Victoria,9211,industry_construction_employment,6.67,percent,low
+CL ZIC,Victoria,9211,poverty_rate,31.96,percent,very high
+CL ZIC,Victoria,9211,unemployment_rate,10.36,percent,very high
+CL ZOS,Osorno,10301,poverty_rate,21.43,percent,medium
+CL ZOS,Osorno,10301,unemployment_rate,6.88,percent,very low
+CL ZOS,Osorno,10301,home_ownership,56.12,percent,low
+CL ZOS,Osorno,10301,industry_construction_employment,16.67,percent,medium
+CL ZOS,Osorno,10301,renter_share,25.51,percent,medium
+CL ZOS,Osorno,10301,transport_logistics_employment,7.14,percent,low
+CL ZOS,Osorno,10301,public_transport_share,28.43,percent,medium
+CL ZOS,Osorno,10301,median_household_income,1055000.0,CLP,low
+CL ZOS,Osorno,10301,electricity_access,100.0,percent,very low
+CL ZUD,Ancud,10202,home_ownership,79.17,percent,high
+CL ZUD,Ancud,10202,electricity_access,100.0,percent,very low
+CL ZUD,Ancud,10202,public_transport_share,28.43,percent,medium
+CL ZUD,Ancud,10202,renter_share,16.67,percent,low
+CL ZUD,Ancud,10202,transport_logistics_employment,12.5,percent,medium
+CL ZUD,Ancud,10202,industry_construction_employment,25.0,percent,high
+CL ZUD,Ancud,10202,unemployment_rate,6.88,percent,very low
+CL ZUD,Ancud,10202,median_household_income,1055000.0,CLP,low
+CL ZUD,Ancud,10202,poverty_rate,21.43,percent,medium
+,Huasco,3304,poverty_rate,21.19,percent,medium
+,Pozo Almonte,1401,renter_share,50.0,percent,high
+,Pedro Aguirre Cerda,13121,transport_logistics_employment,4.17,percent,very low
+,Las Condes,13114,electricity_access,100.0,percent,very low
+,Estación Central,13106,industry_construction_employment,19.71,percent,medium
+,Cerro Navia,13103,electricity_access,100.0,percent,very low
+,La Higuera,4104,electricity_access,100.0,percent,very low
+,Huasco,3304,electricity_access,100.0,percent,very low
+,Quinta Normal,13126,public_transport_share,49.86,percent,very high
+,Pedro Aguirre Cerda,13121,poverty_rate,16.51,percent,very low
+,La Pintana,13112,poverty_rate,16.51,percent,very low
+,El Bosque,13105,poverty_rate,16.51,percent,very low
+,La Higuera,4104,median_household_income,1068233.0,CLP,medium
+,Cochamó,10103,unemployment_rate,6.88,percent,very low
+,Paiguano,4105,unemployment_rate,9.08,percent,medium
+,Marchihue,6204,unemployment_rate,9.07,percent,medium
+,La Pintana,13112,renter_share,20.63,percent,medium
+,La Granja,13111,home_ownership,63.24,percent,low
+,El Bosque,13105,transport_logistics_employment,8.57,percent,low
+,Tortel,11303,home_ownership,100.0,percent,very high
+,Cochamó,10103,transport_logistics_employment,0.0,percent,very low
+,Zapallar,5405,renter_share,16.67,percent,low
+,San Ramón,13131,unemployment_rate,8.18,percent,very low
+,Pedro Aguirre Cerda,13121,median_household_income,1414513.0,CLP,very high
+,Las Condes,13114,unemployment_rate,8.18,percent,very low
+,La Pintana,13112,public_transport_share,49.86,percent,very high
+,Hualaihué,10403,median_household_income,1055000.0,CLP,low
+,Pozo Almonte,1401,unemployment_rate,9.44,percent,high
+,Litueche,6203,median_household_income,1100000.0,CLP,medium
+,San Ramón,13131,electricity_access,100.0,percent,very low
+,Guaitecas,11203,public_transport_share,10.16,percent,very low
+,Quinta Normal,13126,poverty_rate,16.51,percent,very low
+,San Ramón,13131,median_household_income,1414513.0,CLP,very high
+,Antártica,12202,median_household_income,1423917.0,CLP,very high
+,Quinta Normal,13126,home_ownership,40.91,percent,very low
+,Huasco,3304,home_ownership,60.0,percent,low
+,La Higuera,4104,renter_share,20.0,percent,low
+,Paihuano,4105,renter_share,0.0,percent,very low
+,Marchihue,6204,transport_logistics_employment,0.0,percent,very low
+,Hualaihué,10403,industry_construction_employment,0.0,percent,very low
+,Cisnes,11202,home_ownership,50.0,percent,very low
+,Río Bueno,14204,electricity_access,100.0,percent,very low
+,La Granja,13111,industry_construction_employment,18.75,percent,medium
+,Las Condes,13114,industry_construction_employment,13.07,percent,low
+,Conchalí,13104,median_household_income,1414513.0,CLP,very high
+,Cabo de Hornos,12201,unemployment_rate,3.83,percent,very low
+,Conchalí,13104,poverty_rate,16.51,percent,very low
+,La Pintana,13112,unemployment_rate,8.18,percent,very low
+,Mariquina,14106,median_household_income,1049778.0,CLP,low
+,Mariquina,14106,public_transport_share,24.17,percent,low
+,Río Bueno,14204,unemployment_rate,7.95,percent,very low
+,Quintero,5107,industry_construction_employment,40.0,percent,very high
+,Zapallar,5405,home_ownership,66.67,percent,medium
+,Marchihue,6204,renter_share,0.0,percent,very low
+,Estación Central,13106,renter_share,56.88,percent,high
+,Estación Central,13106,transport_logistics_employment,7.3,percent,low
+,La Pintana,13112,industry_construction_employment,26.87,percent,high
+,Las Condes,13114,transport_logistics_employment,4.55,percent,very low
+,Pedro Aguirre Cerda,13121,industry_construction_employment,18.75,percent,medium
+,Paiguano,4105,poverty_rate,24.26,percent,high
+,Quilaco,8308,poverty_rate,22.01,percent,medium
+,Alto Biobío,8314,unemployment_rate,9.49,percent,high
+,Laguna Blanca,12102,unemployment_rate,3.83,percent,very low
+,Las Condes,13114,median_household_income,1414513.0,CLP,very high
+,Pedro Aguirre Cerda,13121,unemployment_rate,8.18,percent,very low
+,Huasco,3304,transport_logistics_employment,22.22,percent,medium
+,La Higuera,4104,home_ownership,80.0,percent,high
+,La Higuera,4104,transport_logistics_employment,100.0,percent,medium
+,Cisnes,11202,transport_logistics_employment,0.0,percent,very low
+,Cerro Navia,13103,home_ownership,41.54,percent,very low
+,San Ramón,13131,home_ownership,50.0,percent,very low
+,San Ramón,13131,industry_construction_employment,29.03,percent,high
+,Río Bueno,14204,transport_logistics_employment,0.0,percent,very low
+,Juan Fernández,5104,public_transport_share,39.54,percent,high
+,Cabildo,5402,public_transport_share,39.54,percent,high
+,Marchihue,6204,poverty_rate,21.05,percent,low
+,Alto Biobío,8314,poverty_rate,22.01,percent,medium
+,Hualaihué,10403,unemployment_rate,6.88,percent,very low
+,Río Bueno,14204,median_household_income,1049778.0,CLP,low
+,Litueche,6203,renter_share,0.0,percent,very low
+,Hualaihué,10403,electricity_access,100.0,percent,very low
+,Cisnes,11202,electricity_access,100.0,percent,very low
+,Tortel,11303,electricity_access,100.0,percent,very low
+,Cerro Navia,13103,industry_construction_employment,26.15,percent,high
+,Pedro Aguirre Cerda,13121,home_ownership,54.55,percent,low
+,Pozo Almonte,1401,poverty_rate,26.77,percent,very high
+,Quilaco,8308,public_transport_share,35.51,percent,high
+,Laguna Blanca,12102,median_household_income,1423917.0,CLP,very high
+,Cabo de Hornos,12201,median_household_income,1423917.0,CLP,very high
+,El Bosque,13105,median_household_income,1414513.0,CLP,very high
+,La Granja,13111,unemployment_rate,8.18,percent,very low
+,Quinta Normal,13126,median_household_income,1414513.0,CLP,very high
+,Río Bueno,14204,public_transport_share,24.17,percent,low
+,Paihuano,4105,industry_construction_employment,0.0,percent,very low
+,Marchihue,6204,industry_construction_employment,50.0,percent,very high
+,Cisnes,11202,renter_share,25.0,percent,medium
+,Guaitecas,11203,industry_construction_employment,0.0,percent,very low
+,Laguna Blanca,12102,electricity_access,100.0,percent,very low
+,Estación Central,13106,home_ownership,36.7,percent,very low
+,La Granja,13111,electricity_access,100.0,percent,very low
+,La Pintana,13112,electricity_access,100.0,percent,very low
+,San Ramón,13131,renter_share,46.15,percent,high
+,Mariquina,14106,industry_construction_employment,35.71,percent,very high
+,Quintero,5107,median_household_income,1108241.0,CLP,medium
+,Quintero,5107,poverty_rate,20.94,percent,low
+,Zapallar,5405,poverty_rate,20.94,percent,low
+,Litueche,6203,public_transport_share,20.36,percent,very low
+,Marchihue,6204,public_transport_share,20.36,percent,very low
+,Hualaihué,10403,poverty_rate,21.43,percent,medium
+,Cisnes,11202,poverty_rate,14.94,percent,very low
+,Laguna Blanca,12102,poverty_rate,14.7,percent,very low
+,Estación Central,13106,unemployment_rate,8.18,percent,very low
+,La Granja,13111,poverty_rate,16.51,percent,very low
+,Las Condes,13114,public_transport_share,49.86,percent,very high
+,San Ramón,13131,poverty_rate,16.51,percent,very low
+,Cabildo,5402,electricity_access,100.0,percent,very low
+,Litueche,6203,home_ownership,100.0,percent,very high
+,Alto Biobío,8314,renter_share,0.0,percent,very low
+,Hualaihué,10403,transport_logistics_employment,0.0,percent,very low
+,Cerro Navia,13103,renter_share,27.69,percent,medium
+,Conchalí,13104,home_ownership,53.19,percent,low
+,El Bosque,13105,industry_construction_employment,22.86,percent,high
+,La Pintana,13112,home_ownership,68.25,percent,medium
+,Río Bueno,14204,industry_construction_employment,28.57,percent,high
+,Cabildo,5402,unemployment_rate,9.8,percent,high
+,Quilaco,8308,median_household_income,1042738.0,CLP,low
+,Tortel,11303,public_transport_share,10.16,percent,very low
+,Cabo de Hornos,12201,poverty_rate,14.7,percent,very low
+,Cabo de Hornos,12201,public_transport_share,20.08,percent,very low
+,Pozo Almonte,1401,transport_logistics_employment,16.67,percent,medium
+,Paihuano,4105,home_ownership,66.67,percent,medium
+,Quintero,5107,electricity_access,100.0,percent,very low
+,Quintero,5107,renter_share,31.58,percent,high
+,Cabildo,5402,home_ownership,72.73,percent,high
+,Cabildo,5402,renter_share,18.18,percent,low
+,Cabildo,5402,transport_logistics_employment,0.0,percent,very low
+,Hualaihué,10403,home_ownership,85.71,percent,very high
+,El Bosque,13105,renter_share,14.55,percent,low
+,Pozo Almonte,1401,public_transport_share,31.84,percent,medium
+,La Higuera,4104,unemployment_rate,9.08,percent,medium
+,Paiguano,4105,public_transport_share,28.79,percent,medium
+,Cabildo,5402,median_household_income,1108241.0,CLP,medium
+,Litueche,6203,poverty_rate,21.05,percent,low
+,Cisnes,11202,unemployment_rate,5.33,percent,very low
+,Conchalí,13104,public_transport_share,49.86,percent,very high
+,La Granja,13111,public_transport_share,49.86,percent,very high
+,Quinta Normal,13126,unemployment_rate,8.18,percent,very low
+,Paihuano,4105,transport_logistics_employment,0.0,percent,very low
+,Zapallar,5405,industry_construction_employment,28.57,percent,high
+,Marchihue,6204,home_ownership,100.0,percent,very high
+,Alto Biobío,8314,electricity_access,100.0,percent,very low
+,Cochamó,10103,home_ownership,100.0,percent,very high
+,Hualaihué,10403,renter_share,14.29,percent,low
+,Guaitecas,11203,renter_share,0.0,percent,very low
+,Conchalí,13104,electricity_access,100.0,percent,very low
+,Pedro Aguirre Cerda,13121,electricity_access,100.0,percent,very low
+,Quinta Normal,13126,renter_share,46.97,percent,high
+,San Ramón,13131,transport_logistics_employment,0.0,percent,very low
+,La Higuera,4104,public_transport_share,28.79,percent,medium
+,Quintero,5107,public_transport_share,39.54,percent,high
+,Zapallar,5405,unemployment_rate,9.8,percent,high
+,Alto Biobío,8314,median_household_income,1042738.0,CLP,low
+,Cisnes,11202,public_transport_share,10.16,percent,very low
+,Tortel,11303,unemployment_rate,5.33,percent,very low
+,Estación Central,13106,poverty_rate,16.51,percent,very low
+,Río Bueno,14204,poverty_rate,20.8,percent,low
+,Huasco,3304,renter_share,0.0,percent,very low
+,Cabildo,5402,industry_construction_employment,27.27,percent,high
+,Alto Biobío,8314,home_ownership,100.0,percent,very high
+,Tortel,11303,renter_share,0.0,percent,very low
+,Conchalí,13104,industry_construction_employment,23.4,percent,high
+,Quinta Normal,13126,electricity_access,100.0,percent,very low
+,Quinta Normal,13126,transport_logistics_employment,5.88,percent,very low
+,Mariquina,14106,renter_share,14.29,percent,low
+,Pozo Almonte,1401,median_household_income,1200000.0,CLP,high
+,Huasco,3304,unemployment_rate,8.77,percent,medium
+,Antártica,12202,public_transport_share,20.08,percent,very low
+,Pozo Almonte,1401,industry_construction_employment,33.33,percent,very high
+,Cochamó,10103,renter_share,0.0,percent,very low
+,Huasco,3304,industry_construction_employment,11.11,percent,low
+,Guaitecas,11203,median_household_income,1339999.0,CLP,high
+,La Higuera,4104,industry_construction_employment,0.0,percent,very low
+,Guaitecas,11203,poverty_rate,14.94,percent,very low
+,Zapallar,5405,electricity_access,100.0,percent,very low
+,El Bosque,13105,public_transport_share,49.86,percent,very high
+,La Granja,13111,renter_share,20.59,percent,medium
+,Las Condes,13114,poverty_rate,16.51,percent,very low
+,Mariquina,14106,poverty_rate,20.8,percent,low
+,La Granja,13111,transport_logistics_employment,13.75,percent,medium
+,Mariquina,14106,unemployment_rate,7.95,percent,very low
+,Zapallar,5405,public_transport_share,39.54,percent,high
+,Pozo Almonte,1401,electricity_access,100.0,percent,very low
+,Pedro Aguirre Cerda,13121,renter_share,22.73,percent,medium
+,Huasco,3304,median_household_income,1138667.0,CLP,high
+,Huasco,3304,public_transport_share,24.73,percent,low
+,Juan Fernández,5104,poverty_rate,20.94,percent,low
+,Cochamó,10103,median_household_income,1055000.0,CLP,low
+,Hualaihué,10403,public_transport_share,28.43,percent,medium
+,Guaitecas,11203,unemployment_rate,5.33,percent,very low
+,Tortel,11303,poverty_rate,14.94,percent,very low
+,Conchalí,13104,unemployment_rate,8.18,percent,very low
+,Estación Central,13106,median_household_income,1414513.0,CLP,very high
+,Mariquina,14106,transport_logistics_employment,7.14,percent,low
+,San Ramón,13131,public_transport_share,49.86,percent,very high
+,Antártica,12202,poverty_rate,14.7,percent,very low
+,Antártica,12202,unemployment_rate,3.83,percent,very low
+,Mariquina,14106,home_ownership,64.29,percent,low
+,Quintero,5107,home_ownership,57.89,percent,low
+,Cerro Navia,13103,transport_logistics_employment,15.38,percent,medium
+,Las Condes,13114,renter_share,44.37,percent,high
+,La Pintana,13112,transport_logistics_employment,5.97,percent,very low
+,El Bosque,13105,home_ownership,52.73,percent,low
+,El Bosque,13105,electricity_access,100.0,percent,very low
+,Guaitecas,11203,transport_logistics_employment,0.0,percent,very low
+,Cochamó,10103,industry_construction_employment,0.0,percent,very low
+,Litueche,6203,electricity_access,100.0,percent,very low
+,Quintero,5107,transport_logistics_employment,0.0,percent,very low
+,Pozo Almonte,1401,home_ownership,25.0,percent,very low
+,Río Bueno,14204,renter_share,11.11,percent,very low
+,Río Bueno,14204,home_ownership,83.33,percent,high
+,Cerro Navia,13103,public_transport_share,49.86,percent,very high
+,Laguna Blanca,12102,public_transport_share,20.08,percent,very low
+,Tortel,11303,median_household_income,1339999.0,CLP,high
+,Cochamó,10103,poverty_rate,21.43,percent,medium
+,Marchihue,6204,median_household_income,1100000.0,CLP,medium
+,Cabildo,5402,poverty_rate,20.94,percent,low
+,Quintero,5107,unemployment_rate,9.8,percent,high
+,Conchalí,13104,renter_share,27.66,percent,medium
+,La Higuera,4104,poverty_rate,24.26,percent,high
+,Juan Fernández,5104,unemployment_rate,9.8,percent,high
+,Litueche,6203,unemployment_rate,9.07,percent,medium
+,Cerro Navia,13103,poverty_rate,16.51,percent,very low
+,Quinta Normal,13126,industry_construction_employment,20.0,percent,medium
+,El Bosque,13105,unemployment_rate,8.18,percent,very low
+,Estación Central,13106,public_transport_share,49.86,percent,very high
+,La Granja,13111,median_household_income,1414513.0,CLP,very high
+,La Pintana,13112,median_household_income,1414513.0,CLP,very high
+,Laguna Blanca,12102,home_ownership,100.0,percent,very high
+,Laguna Blanca,12102,renter_share,0.0,percent,very low
+,Estación Central,13106,electricity_access,100.0,percent,very low
+,Paiguano,4105,median_household_income,1068233.0,CLP,medium
+,Juan Fernández,5104,median_household_income,1108241.0,CLP,medium
+,Zapallar,5405,median_household_income,1108241.0,CLP,medium
+,Quilaco,8308,unemployment_rate,9.49,percent,high
+,Cochamó,10103,public_transport_share,28.43,percent,medium
+,Cisnes,11202,median_household_income,1339999.0,CLP,high
+,Cerro Navia,13103,median_household_income,1414513.0,CLP,very high
+,Cerro Navia,13103,unemployment_rate,8.18,percent,very low
+,Mariquina,14106,electricity_access,100.0,percent,very low
+,Pedro Aguirre Cerda,13121,public_transport_share,49.86,percent,very high
+,Zapallar,5405,transport_logistics_employment,0.0,percent,very low
+,Cochamó,10103,electricity_access,100.0,percent,very low
+,Cisnes,11202,industry_construction_employment,33.33,percent,very high
+,Guaitecas,11203,electricity_access,100.0,percent,very low
+,Guaitecas,11203,home_ownership,100.0,percent,very high
+,Conchalí,13104,transport_logistics_employment,21.28,percent,medium
+,Las Condes,13114,home_ownership,52.32,percent,very low
+,Alto Biobío,8314,public_transport_share,35.51,percent,high

@@ -1,0 +1,27 @@
+{
+  "locode": "CL IQQ",
+  "resolved_top_n": 20,
+  "resolved_weights": {
+    "impact": 0.5,
+    "alignment": 0.3,
+    "feasibility": 0.2
+  },
+  "city_emissions_by_gpc_ref": {
+    "I.1.1": 861252.76,
+    "I.1.2": 7918685.0,
+    "I.1.3": 0.0,
+    "II.1.1": 27588.234,
+    "III.1.1": 0.0,
+    "III.2.1": 0.0,
+    "III.4.1": 236604.304,
+    "IV.1": 28658.365999999998,
+    "IV.2": 3508.957,
+    "V.1": 129.657,
+    "VI.1": 0.0
+  },
+  "city_preference_sectors": [
+    "transportation"
+  ],
+  "city_preference_other_text": "Prioritize near-term air quality improvements, reliable and affordable mobility, and climate resilience benefits for low-income neighborhoods.",
+  "excluded_actions_free_text": "Do not include new fossil fuel-based infrastructure or actions that significantly increase household costs for vulnerable communities."
+}

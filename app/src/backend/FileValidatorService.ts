@@ -1,11 +1,12 @@
 import createHttpError from "http-errors";
-import FileParserService from "./FileParserService";
+import FileParserService, { type ParsedFileData } from "./FileParserService";
+import FormatAdapterService, { type AdapterType } from "./FormatAdapterService";
 
 // File size limit: 20MB (in bytes)
 export const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
-// Accepted file formats for inventory import
-export const ACCEPTED_FILE_FORMATS = ["xlsx", "csv"] as const;
+// Accepted file formats for inventory import (xlsx/csv = eCRF; pdf = Path C AI extraction)
+export const ACCEPTED_FILE_FORMATS = ["xlsx", "csv", "pdf"] as const;
 
 export type AcceptedFileFormat = (typeof ACCEPTED_FILE_FORMATS)[number];
 
@@ -16,6 +17,21 @@ export interface ValidationResult {
   fileType?: AcceptedFileFormat;
   fileSize?: number;
   detectedColumns?: Record<string, number>; // Column name -> index mapping
+  /** True when file is CIRIS (CDP) format: has eCRF_3 sheet but should use AI extraction (Path B). */
+  isCIRIS?: boolean;
+  /** True when file is BIOMATEC format (Spanish multi-sector Excel). */
+  isBIOMATEC?: boolean;
+  /** Which format adapter family was detected for this file, if any. */
+  adapterType?: AdapterType;
+  /** True when the file contains data for multiple cities/organizations. */
+  isMultiCity?: boolean;
+  /**
+   * Stable lookup key derived from the file's column headers.
+   * Plain sorted pipe-joined normalised string — readable and debuggable.
+   * e.g. "department|ghg_emissions|protocol|sector|source|year"
+   * Present for all tabular files (xlsx/csv); absent for PDFs.
+   */
+  headerKey?: string;
 }
 
 /**
@@ -123,9 +139,25 @@ export default class FileValidatorService {
       return basicValidation;
     }
 
+    // PDF (Path C): no eCRF structure validation; accept for AI extraction only
+    if (basicValidation.fileType === "pdf") {
+      return {
+        isValid: true,
+        errors: [],
+        warnings: [],
+        fileType: "pdf",
+        fileSize: basicValidation.fileSize,
+      };
+    }
+
     const errors: string[] = [...basicValidation.errors];
     const warnings: string[] = [...basicValidation.warnings];
     const detectedColumns: Record<string, number> = {};
+    let isCIRIS = false;
+    let isBIOMATEC = false;
+    let adapterType: AdapterType | undefined;
+    let isMultiCity: boolean | undefined;
+    let headerKey: string | undefined;
 
     try {
       // Convert file to buffer
@@ -138,6 +170,26 @@ export default class FileValidatorService {
         basicValidation.fileType,
       );
 
+      // CIRIS (CDP) format: has eCRF_3 sheet but is a multi-sheet workbook for CDP; route to Path B (AI extraction)
+      if (parsedData.fileType === "xlsx") {
+        isCIRIS = this.isCIRISFormat(parsedData);
+        if (!isCIRIS) {
+          isBIOMATEC = this.isBIOMATECFormat(parsedData);
+        }
+      }
+
+      // Format adapter detection (runs for non-CIRIS, non-BIOMATEC files only)
+      if (!isCIRIS && !isBIOMATEC) {
+        const adapterDetection = FormatAdapterService.detect(parsedData);
+        if (adapterDetection.adapterType) {
+          adapterType = adapterDetection.adapterType;
+        }
+        if (adapterDetection.isMultiCity) {
+          isMultiCity = true;
+          warnings.push(...adapterDetection.warnings);
+        }
+      }
+
       // Validate structure based on file type
       if (parsedData.fileType === "xlsx") {
         // For eCRF XLSX files, validate sheet structure
@@ -149,6 +201,13 @@ export default class FileValidatorService {
         const structureValidation = this.validateCSVStructure(parsedData);
         errors.push(...structureValidation.errors);
         warnings.push(...structureValidation.warnings);
+      }
+
+      // Compute header key for all tabular files (used by feedback loop)
+      if (parsedData.primarySheet) {
+        headerKey = FormatAdapterService.headerKey(
+          parsedData.primarySheet.headers,
+        );
       }
 
       // Detect and map required columns
@@ -172,7 +231,73 @@ export default class FileValidatorService {
       fileSize: basicValidation.fileSize,
       detectedColumns:
         Object.keys(detectedColumns).length > 0 ? detectedColumns : undefined,
+      isCIRIS: isCIRIS || undefined,
+      isBIOMATEC: isBIOMATEC || undefined,
+      adapterType,
+      isMultiCity: isMultiCity || undefined,
+      headerKey,
     };
+  }
+
+  /**
+   * Detect BIOMATEC format: XLSX with Spanish-named sector sheets (2.1 Energia, 2.2 Transporte, etc.)
+   * BIOMATEC files use Path B with a specialized BIOMATEC AI prompt.
+   */
+  public static isBIOMATECFormat(parsedData: ParsedFileData): boolean {
+    if (!parsedData.sheets?.length || parsedData.fileType !== "xlsx") {
+      return false;
+    }
+    const BIOMATEC_SHEET_PREFIXES = ["2.1", "2.2", "2.3", "2.4", "2.5"];
+    const normalizeSheetName = (name: string) =>
+      name.toLowerCase().replace(/\s+/g, " ").trim();
+    const matchCount = parsedData.sheets.filter((s) =>
+      BIOMATEC_SHEET_PREFIXES.some((prefix) =>
+        normalizeSheetName(s.name).startsWith(prefix),
+      ),
+    ).length;
+    return matchCount >= 2;
+  }
+
+  /**
+   * Detect CIRIS (CDP) format: XLSX with eCRF_3 sheet and many other sheets or CDP/CIRIS-specific sheet names.
+   * CIRIS files should use Path B (AI extraction from eCRF_3) instead of standard eCRF processing.
+   */
+  public static isCIRISFormat(parsedData: ParsedFileData): boolean {
+    if (!parsedData.sheets?.length || parsedData.fileType !== "xlsx") {
+      return false;
+    }
+    const hasECRF3 = parsedData.sheets.some((s) =>
+      s.name.toLowerCase().includes("ecrf_3"),
+    );
+    if (!hasECRF3) return false;
+    const sheetCount = parsedData.sheets.length;
+    const cirisIndicators =
+      /ciris|cdp|overview|summary|boundary|governance|city information|disclosure|questionnaire/i;
+    const hasCIRISSheets = parsedData.sheets.some((s) =>
+      cirisIndicators.test(s.name),
+    );
+    return sheetCount > 5 || hasCIRISSheets;
+  }
+
+  /**
+   * Returns true only when required eCRF identity columns (gpcRefNo, sector, subsector, scope)
+   * map to at least 2 distinct column indices. Used to avoid treating non-eCRF files (e.g. one
+   * "Sector and scope (GPC reference number)" column satisfying multiple checks) as eCRF.
+   */
+  public static hasDistinctRequiredECRFColumns(
+    detectedColumns: Record<string, number> | undefined,
+  ): boolean {
+    if (!detectedColumns || Object.keys(detectedColumns).length === 0) {
+      return false;
+    }
+    const requiredKeys = ["gpcRefNo", "sector", "subsector", "scope"] as const;
+    const indices = new Set<number>();
+    for (const key of requiredKeys) {
+      if (key in detectedColumns && typeof detectedColumns[key] === "number") {
+        indices.add(detectedColumns[key]);
+      }
+    }
+    return indices.size >= 2;
   }
 
   /**
@@ -199,36 +324,38 @@ export default class FileValidatorService {
       errors.push("Data sheet is empty");
     }
 
-    // Check for required columns
-    const requiredColumns = [
-      {
-        name: "GPC ref. no.",
-        alternatives: [
-          "gpc ref",
-          "gpc ref no",
-          "reference number",
-          "gpc reference",
-        ],
-      },
-      { name: "CRF - Sector", alternatives: ["sector", "crf sector"] },
-      {
-        name: "CRF - Sub-sector",
-        alternatives: ["subsector", "sub-sector", "crf sub-sector"],
-      },
-      { name: "Scope", alternatives: ["scope"] },
-    ];
+    // GPC ref no is required OR sector + subsector (to resolve ref from reference table)
+    const gpcRefFound =
+      FileParserService.detectColumn(sheet.headers, [
+        "GPC ref. no.",
+        "gpc ref",
+        "gpc ref no",
+        "reference number",
+        "gpc reference",
+      ]) !== -1;
+    const sectorFound =
+      FileParserService.detectColumn(sheet.headers, [
+        "CRF - Sector",
+        "sector",
+        "crf sector",
+      ]) !== -1;
+    const subsectorFound =
+      FileParserService.detectColumn(sheet.headers, [
+        "CRF - Sub-sector",
+        "subsector",
+        "sub-sector",
+        "crf sub-sector",
+      ]) !== -1;
+    const scopeFound =
+      FileParserService.detectColumn(sheet.headers, ["scope"]) !== -1;
 
-    for (const column of requiredColumns) {
-      const found = FileParserService.detectColumn(sheet.headers, [
-        column.name,
-        ...column.alternatives,
-      ]);
-
-      if (found === -1) {
-        errors.push(
-          `Required column not found: ${column.name} (or similar: ${column.alternatives.join(", ")})`,
-        );
-      }
+    if (!scopeFound) {
+      errors.push("Required column not found: Scope (or similar: scope)");
+    }
+    if (!gpcRefFound && (!sectorFound || !subsectorFound)) {
+      errors.push(
+        "Either GPC ref. no. column or both CRF - Sector and CRF - Sub-sector columns are required",
+      );
     }
 
     // Check for at least one gas value column
@@ -380,27 +507,15 @@ export default class FileValidatorService {
       },
       {
         key: "co2",
-        terms: [
-          "ghgs (metric tonnes co2e) - co2",
-          "co2",
-          "ghg co2",
-        ],
+        terms: ["ghgs (metric tonnes co2e) - co2", "co2", "ghg co2"],
       },
       {
         key: "ch4",
-        terms: [
-          "ghgs (metric tonnes co2e) - ch4",
-          "ch4",
-          "ghg ch4",
-        ],
+        terms: ["ghgs (metric tonnes co2e) - ch4", "ch4", "ghg ch4"],
       },
       {
         key: "n2o",
-        terms: [
-          "ghgs (metric tonnes co2e) - n2o",
-          "n2o",
-          "ghg n2o",
-        ],
+        terms: ["ghgs (metric tonnes co2e) - n2o", "n2o", "ghg n2o"],
       },
       {
         key: "totalCO2e",

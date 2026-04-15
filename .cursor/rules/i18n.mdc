@@ -1,0 +1,62 @@
+---
+description: Internationalization patterns with i18next and react-i18next
+globs: app/src/i18n/**/*,app/src/app/[lng]/**/*.tsx
+alwaysApply: false
+---
+
+# i18n Patterns
+
+## Client-Side Translation
+
+```tsx
+import { useTranslation } from "@/i18n/client";
+
+export default function MyPage(props: { params: Promise<{ lng: string }> }) {
+  const { lng } = use(props.params);
+  const { t } = useTranslation(lng, "namespace");
+  // namespace maps to src/i18n/locales/en/namespace.json
+
+  return <Text>{t("my-key")}</Text>;
+}
+```
+
+## Namespaces
+
+Each JSON file in `src/i18n/locales/en/` is a namespace:
+- `auth.json` — login, signup, password
+- `dashboard.json` — main dashboard UI
+- `common.json` — shared terms
+- `emails.json` — email templates
+
+## Adding Translations
+
+1. Add the key to the **English** file first: `src/i18n/locales/en/<namespace>.json`
+2. Other languages are auto-translated via CI (`web-translate.yml`)
+3. Use descriptive, kebab-case keys: `"inventory-not-found"`, `"save-changes"`
+
+## Key Format
+
+```json
+{
+  "page-title": "My Page Title",
+  "description": "This is a description with {{count}} items",
+  "nested": {
+    "key": "Nested value"
+  }
+}
+```
+
+## Interpolation
+
+```tsx
+t("description", { count: 5 })
+// "This is a description with 5 items"
+```
+
+## Supported Languages
+
+`en` (fallback), `de`, `es`, `fr`, `pt`
+
+## ESLint
+
+The project uses `eslint-plugin-i18next` — all user-facing strings in TSX must use `t()` instead of hardcoded text.

@@ -1,0 +1,72 @@
+---
+description: Next.js App Router patterns for pages, layouts, and client components
+globs: app/src/app/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Next.js App Router Patterns
+
+## Page Structure
+
+Pages live under `src/app/[lng]/` with the locale segment. Always receive `params` as a Promise:
+
+```tsx
+// src/app/[lng]/cities/[cityId]/page.tsx
+import { use } from "react";
+import { useTranslation } from "@/i18n/client";
+
+export default function MyPage(props: { params: Promise<{ lng: string; cityId: string }> }) {
+  const { lng, cityId } = use(props.params);
+  const { t } = useTranslation(lng, "namespace");
+
+  return <div>{t("page-title")}</div>;
+}
+```
+
+## Layout Pattern
+
+```tsx
+// layout.tsx — server component wrapping child pages
+export default async function Layout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ lng: string }>;
+}) {
+  const { lng } = await params;
+  return <section>{children}</section>;
+}
+```
+
+## Client vs Server Components
+
+- Default is **server component** — add `"use client"` only when needed (hooks, browser APIs, event handlers)
+- Keep server components for data fetching and layout
+- Extract interactive parts into small client components
+
+## Provider Stack (src/app/providers.tsx)
+
+Providers wrap in this order: `ThemeProvider` → `ChakraProvider` → `OrganizationContextProvider` → `SessionProvider` → `Redux Provider`
+
+## Route Organization
+
+```
+src/app/
+├── [lng]/                  # Locale-prefixed UI pages
+│   ├── auth/               # Login, signup, password reset
+│   ├── admin/              # Admin panel
+│   ├── cities/[cityId]/    # City-specific pages
+│   ├── onboarding/         # Onboarding flows
+│   ├── organization/       # Org management
+│   └── public/             # Public dashboards
+├── api/v1/                 # REST API routes
+└── docs/                   # Swagger UI
+```
+
+## Imports Order
+
+1. React/Next.js (`react`, `next/...`)
+2. External libraries (`@chakra-ui`, `zod`, etc.)
+3. Internal modules (`@/components`, `@/hooks`, `@/util`, `@/services`)
+4. Relative imports (`./`, `../`)

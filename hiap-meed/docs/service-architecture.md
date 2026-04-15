@@ -1,0 +1,122 @@
+# Service Architecture
+
+This document describes how `hiap-meed` fits into the wider CityCatalyst system and how a prioritization request flows through the service.
+
+---
+
+## System overview
+
+```mermaid
+graph TD
+    CC["CityCatalyst (frontend / caller)"]
+
+    subgraph hiap-meed ["hiap-meed (FastAPI service)"]
+        Router["POST /v1/prioritize (sync route → threadpool)"]
+        Orch["Orchestrator run_prioritization()"]
+
+        subgraph pipeline ["Prioritization pipeline"]
+            HF["Hard Filter"]
+            Impact["Impact block"]
+            Align["Alignment block"]
+            Feas["Feasibility block"]
+            WS["Weighted Sum"]
+        end
+
+        CityClient["City data client (sync data client)"]
+        ActionClient["Action data client (sync data client)"]
+        LegalClient["Legal data client (sync data client)"]
+        PolicyClient["Policy signals data client (sync data client)"]
+    end
+
+    GlobalAPI["Global API (future upstream integration)"]
+
+    CC -->|"POST /v1/prioritize JSON body: PrioritizerApiRequest (meta + requestData.cityDataList)"| Router
+    Router --> Orch
+
+    Orch -->|"getCityContext(locode)"| CityClient
+    Orch -->|"listActions()"| ActionClient
+    Orch -->|"getActionLegalRequirements(locode)"| LegalClient
+    Orch -->|"getActionPolicySignals(locode)"| PolicyClient
+
+    CityClient -.->|"API mode (not implemented yet)"| GlobalAPI
+    ActionClient -.->|"API mode (not implemented yet)"| GlobalAPI
+    LegalClient -.->|"API mode (not implemented yet)"| GlobalAPI
+    PolicyClient -.->|"API mode (not implemented yet)"| GlobalAPI
+
+    GlobalAPI -.->|"CityData"| CityClient
+    GlobalAPI -.->|"Action list"| ActionClient
+    GlobalAPI -.->|"Action legal requirements"| LegalClient
+    GlobalAPI -.->|"Action policy signals"| PolicyClient
+
+    CityClient --> Orch
+    ActionClient --> Orch
+    LegalClient --> Orch
+    PolicyClient --> Orch
+
+    Orch --> HF
+    HF -->|"eligible actions"| Impact
+    HF -->|"eligible actions"| Align
+    HF -->|"eligible actions"| Feas
+    Impact --> WS
+    Align --> WS
+    Feas --> WS
+
+    WS -->|"PrioritizationResponse (per city: ranked_action_ids + ranked_actions + metadata)"| Router
+    Router -->|"JSON response PrioritizerApiResponse (results[])"| CC
+```
+
+---
+
+## Concurrency model
+
+The `/v1/prioritize` route is a **synchronous** FastAPI route (`def`, not `async def`). FastAPI automatically offloads sync routes to a threadpool worker, so the event loop thread remains free to accept and dispatch other requests.
+
+This is the right choice as long as the orchestrator and data clients are synchronous. If the data clients are later replaced with async counterparts (e.g. `httpx.AsyncClient`), the orchestrator and route should both be converted to `async def` / `await` end-to-end.
+
+---
+
+## Data client layer (current state)
+
+| Client                    | Method                                | Status                                                                                  | Target upstream |
+| ------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------- | --------------- |
+| City data client          | `get_city(locode)`                    | Mock/API switch (`HIAP_MEED_CITY_DATA_SOURCE`); `mock` is file-backed, `api` is placeholder and raises `NotImplementedError` | Global API (future) |
+| Action data client        | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_DATA_SOURCE`); `mock` is file-backed, `api` is placeholder and raises `NotImplementedError` | Global API (future) |
+| Legal data client         | `get_action_legal_requirements(locode)` | Mock/API switch (`HIAP_MEED_LEGAL_DATA_SOURCE`); `mock` is file-backed, `api` is placeholder and raises `NotImplementedError` | Global API (future) |
+| Policy signals data client | `get_action_policy_signals(locode)`    | Mock/API switch (`HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE`); `mock` is file-backed, `api` is placeholder and raises `NotImplementedError` | Global API (future) |
+
+Clients are injected via FastAPI's `Depends()` pattern. Mock clients are active by default; API clients are scaffolds for future HTTP integration.
+
+---
+
+## Request lifecycle
+
+```mermaid
+sequenceDiagram
+    participant CC as CityCatalyst
+    participant API as hiap-meed FastAPI
+    participant Orch as Orchestrator
+    participant Clients as Data clients (mock by default)
+
+    CC->>API: POST /v1/prioritize PrioritizerApiRequest (meta + requestData.cityDataList)
+    Note over API: FastAPI validates request body (Pydantic)
+    API->>Orch: run_prioritization(locode, city_emissions_by_gpc_ref, clients, per_city_options...)
+    Orch->>Clients: get_city / list_actions / get_action_legal_requirements / get_action_policy_signals
+    Clients-->>Orch: CityData / Action[] / legal requirements / policy signals
+    Note over Orch: Hard Filter -> Impact -> Alignment -> Feasibility -> Weighted Sum
+    Orch-->>API: PrioritizationResponse (per city)
+    API-->>CC: 200 PrioritizerApiResponse (results[])
+```
+
+---
+
+## Pipeline stages summary
+
+| Stage        | Purpose                                                         | Removes / produces                      |
+| ------------ | --------------------------------------------------------------- | --------------------------------------- |
+| Hard Filter  | Remove ineligible actions (exclusions, hard legal requirements) | Discards actions; produces eligible set |
+| Impact       | Score emissions reduction potential per city                    | Impact score per action                 |
+| Alignment    | Score alignment with city strategy and policy signals           | Alignment score per action              |
+| Feasibility  | Score realistic implementability for the city                   | Feasibility score per action            |
+| Weighted Sum | Aggregate pillar scores, sort, apply `top_n`                    | `ranked_action_ids` + `ranked_actions`  |
+
+See [`highlevel-architecture.md`](highlevel-architecture.md) and [`detailed-block-architecture.md`](detailed-block-architecture.md) for the scoring logic inside each block.

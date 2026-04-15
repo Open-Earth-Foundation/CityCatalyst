@@ -1,0 +1,635 @@
+{
+  "meta": {
+    "requestId": "1234567890",
+    "generated_at_utc": "2026-02-26T11:43:40.011939+00:00",
+    "backend_consumer": "hiap-meed",
+    "upstream_provider": "city_catalyst_frontend",
+    "api_context": {
+      "endpoint": "POST /prioritizer/v1/start_prioritization_bulk",
+      "locodes": ["CL IQQ", "CL ARI"],
+      "emissions_structure": "gpc_reference_number_keyed"
+    },
+    "total_records": 2
+  },
+  "requestData": {
+    "requestedLanguages": ["en"],
+    "cityDataList": [
+      {
+        "locode": "CL IQQ",
+        "countryCode": "CL",
+        "populationSize": 125000,
+        "excludedActions": "Do not include new fossil fuel-based infrastructure or actions that significantly increase household costs for vulnerable communities.",
+        "cityStrategicPreferenceOther": "Prioritize near-term air quality improvements, reliable and affordable mobility, and climate resilience benefits for low-income neighborhoods.",
+        "cityStragicPreferenceSector": ["transportation"],
+        "cityEmissionsData": {
+          "I.1.1": {},
+          "I.1.2": {},
+          "I.1.3": {},
+          "I.2.1": {},
+          "I.2.2": {},
+          "I.2.3": {},
+          "I.3.1": {},
+          "I.3.2": {},
+          "I.3.3": {},
+          "I.4.1": {},
+          "I.4.2": {},
+          "I.4.3": {},
+          "I.4.4": {},
+          "I.5.1": {},
+          "I.5.2": {},
+          "I.5.3": {},
+          "I.6.1": {},
+          "I.6.2": {},
+          "I.6.3": {},
+          "I.7.1": {},
+          "I.8.1": {},
+          "II.1.1": {},
+          "II.1.2": {},
+          "II.1.3": {},
+          "II.2.1": {},
+          "II.2.2": {},
+          "II.2.3": {},
+          "II.3.1": {},
+          "II.3.2": {},
+          "II.3.3": {},
+          "II.4.1": {},
+          "II.4.2": {},
+          "II.4.3": {},
+          "II.5.1": {},
+          "II.5.2": {},
+          "III.1.1": {},
+          "III.1.2": {},
+          "III.1.3": {},
+          "III.2.1": {},
+          "III.2.2": {},
+          "III.2.3": {},
+          "III.3.1": {},
+          "III.3.2": {},
+          "III.3.3": {},
+          "III.4.1": {},
+          "III.4.2": {},
+          "III.4.3": {},
+          "IV.1": {},
+          "IV.2": {},
+          "V.1": {},
+          "V.2": {},
+          "V.3": {},
+          "VI.1": {}
+        }
+      },
+      {
+        "locode": "CL ARI",
+        "countryCode": "CL",
+        "populationSize": 250000,
+        "excludedActions": "Avoid actions with high implementation complexity in the first phase; prioritize feasible measures with quick delivery.",
+        "cityStrategicPreferenceOther": "Prioritize public health co-benefits, cleaner mobility, and emission reductions in high-impact urban activities.",
+        "cityStragicPreferenceSector": [
+          "stationary_energy",
+          "transportation",
+          "waste"
+        ],
+        "cityEmissionsData": {
+          "I.1.1": {
+            "activities": {
+              "Kerosene (paraffin)": {
+                "total_emissions": 599.532,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 8352484.555,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              },
+              "Natural gas": {
+                "total_emissions": 818452.245,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 14280609148.0,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              },
+              "Wood or wood waste": {
+                "total_emissions": 42200.983,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 360130991.6,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "I.1.2": {
+            "activities": {
+              "Electricity use in single family home": {
+                "total_emissions": 2955600.0,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": "Mock data",
+                "notation_key": null
+              },
+              "Heating in  multi family home": {
+                "total_emissions": 1438300.0,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": "Mock data",
+                "notation_key": null
+              },
+              "All energy usage types in informal housing": {
+                "total_emissions": 3524785.0,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": "Mock data",
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "I.1.3": {},
+          "I.2.1": {
+            "activities": {
+              "Kerosene (paraffin)": {
+                "total_emissions": 7299.541,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 101694771.6,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              },
+              "Natural gas": {
+                "total_emissions": 124011.014,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 2163782718.0,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              },
+              "Wood or wood waste": {
+                "total_emissions": 26505.359,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 226189072.1,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "I.2.2": {
+            "activities": {
+              "Electricity": {
+                "total_emissions": 5618400.0,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": "Mock data",
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "I.2.3": {},
+          "I.3.1": {
+            "activities": {
+              "Coal (Bituminous or Black coal)": {
+                "total_emissions": 13340.846,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 758034544.3,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              },
+              "Diesel oil": {
+                "total_emissions": 95981.65,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 1343055450.0,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              },
+              "Natural gas": {
+                "total_emissions": 685392.017,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 11958932930.0,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              },
+              "Wood or wood waste": {
+                "total_emissions": 128528.786,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 1096827502.0,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "I.3.2": {
+            "activities": {
+              "Electricity": {
+                "total_emissions": 2567988.0,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": "Mock data",
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "I.3.3": {},
+          "I.4.1": {},
+          "I.4.2": {},
+          "I.4.3": {},
+          "I.4.4": {},
+          "I.5.1": {
+            "activities": {
+              "Diesel oil": {
+                "total_emissions": 0.127,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 1780.682771,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              },
+              "Natural gas": {
+                "total_emissions": 0.005,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 97.3985035,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              },
+              "Wood or wood waste": {
+                "total_emissions": 0.011,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 98.43914357,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "I.5.2": {
+            "activities": {
+              "Electricity(Agriculture)": {
+                "total_emissions": 174684.0,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": "Mock data",
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "I.5.3": {},
+          "I.6.1": {},
+          "I.6.2": {},
+          "I.6.3": {},
+          "I.7.1": {},
+          "I.8.1": {},
+          "II.1.1": {
+            "activities": {
+              "Biodiesels(Single unit truck)": {
+                "total_emissions": 1943.87,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 27028397.55,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              },
+              "Diesel oil(Single unit truck)": {
+                "total_emissions": 24808.289,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 347138314.3,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              },
+              "Gas oil(Single unit truck)": {
+                "total_emissions": 836.075,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 11395082.09,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "II.1.2": {
+            "activities": {
+              "Electricity(Commercial vehicles(trucks, delivery vans etc)": {
+                "total_emissions": 2046619.0,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "II.1.3": {},
+          "II.2.1": {
+            "activities": {
+              "Diesel oil": {
+                "total_emissions": 266.193,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 3724803.949,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "II.2.2": {
+            "activities": {
+              "Electricity(Passenger trains)": {
+                "total_emissions": 1963980.0,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "II.2.3": {},
+          "II.3.1": {
+            "activities": {
+              "Biodiesels": {
+                "total_emissions": 9.177,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 127604.1803,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              },
+              "Diesel oil": {
+                "total_emissions": 17671.144,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 247269424.7,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              },
+              "Motor gasoline (petrol)": {
+                "total_emissions": 35.012,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 482278.1602,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              },
+              "Residual fuel oil": {
+                "total_emissions": 10291.19,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": 131781776.2,
+                "activity_unit": "MJ",
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "II.3.2": {
+            "activities": {
+              "Electricity(Boats)": {
+                "total_emissions": 202035.0,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "II.3.3": {},
+          "II.4.1": {
+            "activities": {
+              "Aviation Gasoline(commercial passenger aircraft)": {
+                "total_emissions": 5533263.0,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": "Mock data",
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "II.4.2": {
+            "activities": {
+              "Electricity(commercial passenger aircraft)": {
+                "total_emissions": 2200820.0,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "II.4.3": {},
+          "II.5.1": {},
+          "II.5.2": {},
+          "III.1.1": {
+            "activities": {},
+            "notation_key": "IE"
+          },
+          "III.1.2": {},
+          "III.1.3": {},
+          "III.2.1": {
+            "activities": {},
+            "notation_key": "NE"
+          },
+          "III.2.2": {},
+          "III.2.3": {},
+          "III.3.1": {},
+          "III.3.2": {},
+          "III.3.3": {},
+          "III.4.1": {
+            "activities": {
+              "Domestic wastewater": {
+                "total_emissions": 144817.556,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              },
+              "Industrial wastewater": {
+                "total_emissions": 91786.748,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "III.4.2": {},
+          "III.4.3": {},
+          "IV.1": {
+            "activities": {
+              "Chemical": {
+                "total_emissions": 28588.499,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              },
+              "Mineral": {
+                "total_emissions": 69.867,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "IV.2": {
+            "activities": {
+              "Non energy products from fuels and solvent use": {
+                "total_emissions": 3508.957,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "V.1": {
+            "activities": {
+              "Buffalo": {
+                "total_emissions": 0.489,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              },
+              "Cattle": {
+                "total_emissions": 129.168,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              },
+              "Goats": {
+                "total_emissions": 0.979,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              },
+              "Horses": {
+                "total_emissions": 2.218,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              },
+              "Mules and asses": {
+                "total_emissions": 0.049,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              },
+              "Poultry": {
+                "total_emissions": 0.168,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              },
+              "Sheep": {
+                "total_emissions": 3.086,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              },
+              "Swine": {
+                "total_emissions": 1.008,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "V.2": {
+            "activities": {
+              "Grassland": {
+                "total_emissions": 46.968,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "V.3": {
+            "activities": {
+              "Burning": {
+                "total_emissions": 0.000555287,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              },
+              "Direct N2O from managed soils": {
+                "total_emissions": 10.50447366,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              },
+              "Indirect N2O from managed soils": {
+                "total_emissions": 680.3299891,
+                "total_emissions_unit": "t CO2e",
+                "activity_value": null,
+                "activity_unit": null,
+                "data_source": null,
+                "notation_key": null
+              }
+            },
+            "notation_key": null
+          },
+          "VI.1": {}
+        }
+      }
+    ]
+  }
+}

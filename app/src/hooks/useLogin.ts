@@ -43,7 +43,7 @@ export const useLogin = (): UseLoginReturn => {
 
       if (result?.error) {
         logger.error({ err: result.error }, "Sign in failure:");
-        const errorMessage = "Invalid email or password";
+        const errorMessage = "invalid-email-or-password";
         setError(errorMessage);
         return { success: false, error: errorMessage };
       }

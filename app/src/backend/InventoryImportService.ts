@@ -10,9 +10,13 @@ import {
   type DirectMeasure,
   type ExtraField,
 } from "@/util/form-schema";
-import fs from "fs";
-import path from "path";
-import process from "node:process";
+import manageSubsectorsEn from "@/i18n/locales/en/manage-subsectors.json";
+
+/** Options for import (e.g. PDF): default data source from file name. */
+export type ImportECRFDataOptions = {
+  /** When set (e.g. file name), used as activity data source when row does not provide one. */
+  defaultActivityDataSource?: string;
+};
 
 /**
  * Maps eCRF notation keys to unavailableReason enum values
@@ -27,45 +31,24 @@ const notationKeyMapping: Record<string, string> = {
 };
 
 /**
- * Load translation file and create reverse map (value -> key)
- * This is used to map unit values like "Tonnes (T)" to keys like "units-tonnes"
- * and activity type values like "Firewood" to keys like "fuel-type-firewood"
+ * Reverse map (value -> key) from manage-subsectors en locale.
+ * Used to map unit values like "Tonnes (T)" to keys like "units-tonnes"
+ * and activity type values like "Firewood" to keys like "fuel-type-firewood".
+ * Loaded at module init so it works in container (no runtime filesystem read).
  */
-let translationMap: Record<string, string> | null = null;
+const translationMap: Record<string, string> = (() => {
+  const translations = manageSubsectorsEn as Record<string, string>;
+  const out: Record<string, string> = {};
+  for (const [key, value] of Object.entries(translations)) {
+    const normalizedValue = value.toLowerCase().trim();
+    out[normalizedValue] = key;
+    out[value] = key;
+  }
+  return out;
+})();
 
 function loadTranslationMap(): Record<string, string> {
-  if (translationMap) {
-    return translationMap;
-  }
-
-  try {
-    const translationPath = path.join(
-      process.cwd(),
-      "src",
-      "i18n",
-      "locales",
-      "en",
-      "manage-subsectors.json",
-    );
-    const translations = JSON.parse(
-      fs.readFileSync(translationPath, "utf-8"),
-    ) as Record<string, string>;
-
-    // Create reverse map for all translations (value -> key)
-    translationMap = {};
-    for (const [key, value] of Object.entries(translations)) {
-      // Normalize both key and value for matching
-      const normalizedValue = value.toLowerCase().trim();
-      translationMap[normalizedValue] = key;
-      // Also add the original value for exact matches
-      translationMap[value] = key;
-    }
-
-    return translationMap;
-  } catch (error) {
-    logger.error({ err: error }, "Failed to load translation map");
-    return {};
-  }
+  return translationMap;
 }
 
 /**
@@ -284,11 +267,13 @@ export default class InventoryImportService {
    * Import eCRF data into inventory
    * @param inventoryId - Inventory ID to import into
    * @param importResult - Processed eCRF import result
+   * @param options - Optional defaults (e.g. defaultActivityDataSource from file name)
    * @returns ImportSummary with import statistics
    */
   public static async importECRFData(
     inventoryId: string,
     importResult: ECRFImportResult,
+    options?: ImportECRFDataOptions,
   ): Promise<ImportSummary> {
     const errors: string[] = [];
     const warnings: string[] = [];
@@ -393,14 +378,15 @@ export default class InventoryImportService {
           // Get hierarchy entry for field mapping
           const hierarchyEntry = MANUAL_INPUT_HIERARCHY[row.gpcRefNo];
 
-          // Use mapped methodology, or fall back to directMeasure if methodology is "Direct Measure" or not found
+          // Default to Direct Measure when methodology is missing or not mapped
           const finalMethodology =
             mappedMethodology ||
             (row.methodology?.toLowerCase().includes("direct") &&
             row.methodology?.toLowerCase().includes("measure")
               ? hierarchyEntry?.directMeasure?.id
               : hierarchyEntry?.directMeasure?.id) ||
-            row.methodology;
+            row.methodology ||
+            hierarchyEntry?.directMeasure?.id;
 
           let inventoryValue;
           if (existingValue) {
@@ -465,14 +451,14 @@ export default class InventoryImportService {
             }
           }
 
-          // Create ActivityValue if activity data or metadata is present
-          // For direct-measure methodology, we need to store metadata (data source, data quality) even without activity data
+          // Create ActivityValue if activity data or metadata is present, or when default data source from file is provided
           if (
             row.activityAmount ||
             row.activityType ||
             row.activityUnit ||
             row.activityDataSource ||
-            row.activityDataQuality
+            row.activityDataQuality ||
+            options?.defaultActivityDataSource
           ) {
             try {
               // Get schema for this GPC reference to map fields correctly
@@ -565,9 +551,12 @@ export default class InventoryImportService {
                 activityData["activity-type"] = mappedActivityType;
               }
 
-              // Store data source in activityData (frontend reads from here)
-              if (row.activityDataSource) {
-                activityData["data-source"] = row.activityDataSource;
+              // Store data source in activityData (frontend reads from here); default from file when provided
+              const dataSource =
+                row.activityDataSource?.trim() ||
+                options?.defaultActivityDataSource?.trim();
+              if (dataSource) {
+                activityData["data-source"] = dataSource;
               }
 
               // Store gas amounts in activityData for Direct Measure UI (co2_amount, ch4_amount, n2o_amount; units-tonnes)
@@ -584,9 +573,15 @@ export default class InventoryImportService {
                 activityData.n2o_unit = "units-tonnes";
               }
 
-              // Set group-by field default value if available
-              if (groupByField && groupByDefaultValue) {
-                activityData[groupByField] = groupByDefaultValue;
+              // Set group-by field so the UI can show sector→subsector→activity: use exclusive default when available, else use activityType so the accordion title is not "undefined"
+              if (groupByField) {
+                if (groupByDefaultValue) {
+                  activityData[groupByField] = groupByDefaultValue;
+                } else {
+                  const activityLabel =
+                    row.activityType?.trim() || "Uncategorized";
+                  activityData[groupByField] = activityLabel;
+                }
               }
 
               // Build metadata JSONB object
@@ -601,10 +596,11 @@ export default class InventoryImportService {
               metadata.activityTitle = activityTitle;
 
               // Store data source in metadata as sourceExplanation (for export/other purposes)
-              if (row.activityDataSource) {
-                metadata.sourceExplanation = row.activityDataSource;
+              if (dataSource) {
+                metadata.sourceExplanation = dataSource;
               }
 
+              // Default data quality to low when not provided
               metadata.dataQuality =
                 row.activityDataQuality?.trim() || "low";
 

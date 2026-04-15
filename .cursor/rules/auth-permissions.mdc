@@ -1,0 +1,65 @@
+---
+description: NextAuth authentication and permission patterns
+globs: app/src/lib/auth*,app/src/middleware.ts,app/src/hooks/useUserPermissions*,app/src/hooks/useAdminGuard*
+alwaysApply: false
+---
+
+# Authentication & Permissions
+
+## NextAuth Configuration (src/lib/auth.ts)
+
+- Provider: **Credentials** (email + bcrypt password)
+- Strategy: **JWT** sessions
+- Session type: `AppSession` with `user.id` and `user.role`
+
+```typescript
+import { Auth, AppSession } from "@/lib/auth";
+
+// Server-side (API routes, server components)
+const session = await Auth.getServerSession();
+if (!session) throw new createHttpError.Unauthorized();
+const userId = session.user.id;
+const isAdmin = session.user.role === Roles.Admin;
+```
+
+## API Route Auth
+
+`apiHandler` automatically resolves auth from multiple sources (priority order):
+1. NextAuth session (cookie)
+2. Bearer JWT token (`Authorization: Bearer <token>`)
+3. Personal Access Token (PAT)
+4. OAuth client token (feature-flagged)
+5. Service-to-service (`X-Service-Name` + `X-Service-Key` headers)
+
+The resolved `session` is passed to the handler — no need to call `getServerSession` manually.
+
+## Middleware (src/middleware.ts)
+
+Edge middleware handles:
+- **CORS** for `/api/*` and `/.well-known` routes
+- **i18n** language detection and cookie
+- **Route protection** via `withAuth` — public, auth, and invite matchers define unprotected paths
+
+## Permission Hooks
+
+```tsx
+import { useUserPermissions } from "@/hooks/useUserPermissions";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
+
+// Check user permissions for a resource
+const { hasPermission } = useUserPermissions();
+
+// Redirect non-admins
+useAdminGuard();
+```
+
+## Roles
+
+```typescript
+import { Roles } from "@/util/types";
+// Roles.Admin, Roles.User
+```
+
+## Organization Frozen Check
+
+`apiHandler` blocks mutating methods (POST/PUT/PATCH/DELETE) when the organization is frozen (`active === false`), except for admin users and invite-related endpoints.

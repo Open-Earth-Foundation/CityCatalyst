@@ -9,6 +9,7 @@ import { MyProfileTab } from "@/components/Tabs/MyProfileTab";
 import MyFilesTab from "@/components/Tabs/my-files-tab";
 import MyInventoriesTab from "@/components/Tabs/my-inventories-tab";
 import MyAppsTab from "@/components/Tabs/my-apps-tab";
+import MyTokensTab from "@/components/Tabs/my-tokens-tab";
 import { api } from "@/services/api";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { getParamValueRequired } from "@/util/helpers";
@@ -39,7 +40,7 @@ export type CityData = {
   lastUpdated: string;
 };
 
-const tabValues = ["my-profile", "my-files", "my-inventories"];
+const tabValues = ["my-profile", "my-files", "my-inventories", "my-tokens"];
 
 if (hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
   tabValues.push("my-apps");
@@ -174,6 +175,26 @@ export default function Settings() {
                     {t("my-inventories")}
                   </Text>
                 </Tabs.Trigger>
+                <Tabs.Trigger
+                  _selected={{
+                    borderColor: "content.link",
+                    borderBottomWidth: "2px",
+                    boxShadow: "none",
+                    fontWeight: "bold",
+                    borderRadius: "0",
+                    color: "content.link",
+                    backgroundColor: "background.backgroundLight",
+                  }}
+                  value="my-tokens"
+                >
+                  <Text
+                    fontSize="title.md"
+                    fontStyle="normal"
+                    lineHeight="24px"
+                  >
+                    {t("api-tokens")}
+                  </Text>
+                </Tabs.Trigger>
                 {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
                   <Tabs.Trigger
                     _selected={{
@@ -207,6 +228,7 @@ export default function Settings() {
                 t={t}
                 defaultCityId={cityId}
               />
+              <MyTokensTab lng={lng} />
               {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
                 <MyAppsTab lng={lng} />
               )}

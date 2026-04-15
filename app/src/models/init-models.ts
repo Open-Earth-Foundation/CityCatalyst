@@ -101,6 +101,11 @@ import type {
 } from "./ImportedInventoryFile";
 import { ImportedInventoryFile as _ImportedInventoryFile } from "./ImportedInventoryFile";
 import type {
+  ImportMappingFeedbackAttributes,
+  ImportMappingFeedbackCreationAttributes,
+} from "./ImportMappingFeedback";
+import { ImportMappingFeedback as _ImportMappingFeedback } from "./ImportMappingFeedback";
+import type {
   MethodologyAttributes,
   MethodologyCreationAttributes,
 } from "./Methodology";
@@ -236,6 +241,12 @@ import {
   OAuthClientAuthzCreationAttributes,
   OAuthClientAuthzOptionalAttributes,
 } from "./OAuthClientAuthz";
+import {
+  PersonalAccessToken as _PersonalAccessToken,
+  PersonalAccessTokenAttributes,
+  PersonalAccessTokenCreationAttributes,
+  PersonalAccessTokenOptionalAttributes,
+} from "./PersonalAccessToken";
 
 export {
   _ActionPlan as ActionPlan,
@@ -260,6 +271,7 @@ export {
   _GHGs as GHGs,
   _Inventory as Inventory,
   _ImportedInventoryFile as ImportedInventoryFile,
+  _ImportMappingFeedback as ImportMappingFeedback,
   _Methodology as Methodology,
   _Organization as Organization,
   _Project as Project,
@@ -291,6 +303,7 @@ export {
   _OAuthClient as OAuthClient,
   _OAuthClientI18N as OAuthClientI18N,
   _OAuthClientAuthz as OAuthClientAuthz,
+  _PersonalAccessToken as PersonalAccessToken,
 };
 
 export type {
@@ -334,6 +347,10 @@ export type {
   GHGsCreationAttributes,
   InventoryAttributes,
   InventoryCreationAttributes,
+  ImportedInventoryFileAttributes,
+  ImportedInventoryFileCreationAttributes,
+  ImportMappingFeedbackAttributes,
+  ImportMappingFeedbackCreationAttributes,
   MethodologyAttributes,
   MethodologyCreationAttributes,
   OrganizationAttributes,
@@ -397,6 +414,9 @@ export type {
   OAuthClientAuthzAttributes,
   OAuthClientAuthzCreationAttributes,
   OAuthClientAuthzOptionalAttributes,
+  PersonalAccessTokenAttributes,
+  PersonalAccessTokenCreationAttributes,
+  PersonalAccessTokenOptionalAttributes,
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -424,6 +444,7 @@ export function initModels(sequelize: Sequelize) {
   const GHGs = _GHGs.initModel(sequelize);
   const Inventory = _Inventory.initModel(sequelize);
   const ImportedInventoryFile = _ImportedInventoryFile.initModel(sequelize);
+  const ImportMappingFeedback = _ImportMappingFeedback.initModel(sequelize);
   const Methodology = _Methodology.initModel(sequelize);
   const Organization = _Organization.initModel(sequelize);
   const Project = _Project.initModel(sequelize);
@@ -458,6 +479,7 @@ export function initModels(sequelize: Sequelize) {
   const OAuthClient = _OAuthClient.initModel(sequelize);
   const OAuthClientI18N = _OAuthClientI18N.initModel(sequelize);
   const OAuthClientAuthz = _OAuthClientAuthz.initModel(sequelize);
+  const PersonalAccessToken = _PersonalAccessToken.initModel(sequelize);
 
   ActionPlan.belongsTo(HighImpactActionRankedModel, {
     foreignKey: "highImpactActionRankedId",
@@ -1096,6 +1118,21 @@ export function initModels(sequelize: Sequelize) {
     onUpdate: "CASCADE",
   });
 
+  // PersonalAccessToken associations
+  PersonalAccessToken.belongsTo(User, {
+    as: "user",
+    foreignKey: "userId",
+    targetKey: "userId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  User.hasMany(PersonalAccessToken, {
+    as: "personalAccessTokens",
+    foreignKey: "userId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+
   // Associations for ImportedInventoryFile
   ImportedInventoryFile.belongsTo(User, {
     as: "user",
@@ -1136,6 +1173,19 @@ export function initModels(sequelize: Sequelize) {
     onUpdate: "CASCADE",
   });
 
+  ImportMappingFeedback.belongsTo(City, {
+    as: "city",
+    foreignKey: "cityId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  City.hasMany(ImportMappingFeedback, {
+    as: "importMappingFeedbacks",
+    foreignKey: "cityId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+
   return {
     ActionPlan: ActionPlan,
     ActivityData: ActivityData,
@@ -1158,6 +1208,7 @@ export function initModels(sequelize: Sequelize) {
     GHGs: GHGs,
     Inventory: Inventory,
     ImportedInventoryFile: ImportedInventoryFile,
+    ImportMappingFeedback: ImportMappingFeedback,
     Methodology: Methodology,
     Organization: Organization,
     Project: Project,
@@ -1190,5 +1241,6 @@ export function initModels(sequelize: Sequelize) {
     OAuthClient: OAuthClient,
     OAuthClientI18N: OAuthClientI18N,
     OAuthClientAuthz: OAuthClientAuthz,
+    PersonalAccessToken: PersonalAccessToken,
   };
 }

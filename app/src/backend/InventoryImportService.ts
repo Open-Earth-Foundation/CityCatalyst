@@ -10,9 +10,13 @@ import {
   type DirectMeasure,
   type ExtraField,
 } from "@/util/form-schema";
-import fs from "fs";
-import path from "path";
-import process from "node:process";
+import manageSubsectorsEn from "@/i18n/locales/en/manage-subsectors.json";
+
+/** Options for import (e.g. PDF): default data source from file name. */
+export type ImportECRFDataOptions = {
+  /** When set (e.g. file name), used as activity data source when row does not provide one. */
+  defaultActivityDataSource?: string;
+};
 
 /**
  * Maps eCRF notation keys to unavailableReason enum values
@@ -27,45 +31,24 @@ const notationKeyMapping: Record<string, string> = {
 };
 
 /**
- * Load translation file and create reverse map (value -> key)
- * This is used to map unit values like "Tonnes (T)" to keys like "units-tonnes"
- * and activity type values like "Firewood" to keys like "fuel-type-firewood"
+ * Reverse map (value -> key) from manage-subsectors en locale.
+ * Used to map unit values like "Tonnes (T)" to keys like "units-tonnes"
+ * and activity type values like "Firewood" to keys like "fuel-type-firewood".
+ * Loaded at module init so it works in container (no runtime filesystem read).
  */
-let translationMap: Record<string, string> | null = null;
+const translationMap: Record<string, string> = (() => {
+  const translations = manageSubsectorsEn as Record<string, string>;
+  const out: Record<string, string> = {};
+  for (const [key, value] of Object.entries(translations)) {
+    const normalizedValue = value.toLowerCase().trim();
+    out[normalizedValue] = key;
+    out[value] = key;
+  }
+  return out;
+})();
 
 function loadTranslationMap(): Record<string, string> {
-  if (translationMap) {
-    return translationMap;
-  }
-
-  try {
-    const translationPath = path.join(
-      process.cwd(),
-      "src",
-      "i18n",
-      "locales",
-      "en",
-      "manage-subsectors.json",
-    );
-    const translations = JSON.parse(
-      fs.readFileSync(translationPath, "utf-8"),
-    ) as Record<string, string>;
-
-    // Create reverse map for all translations (value -> key)
-    translationMap = {};
-    for (const [key, value] of Object.entries(translations)) {
-      // Normalize both key and value for matching
-      const normalizedValue = value.toLowerCase().trim();
-      translationMap[normalizedValue] = key;
-      // Also add the original value for exact matches
-      translationMap[value] = key;
-    }
-
-    return translationMap;
-  } catch (error) {
-    logger.error({ err: error }, "Failed to load translation map");
-    return {};
-  }
+  return translationMap;
 }
 
 /**
@@ -284,16 +267,35 @@ export default class InventoryImportService {
    * Import eCRF data into inventory
    * @param inventoryId - Inventory ID to import into
    * @param importResult - Processed eCRF import result
+   * @param options - Optional defaults (e.g. defaultActivityDataSource from file name)
    * @returns ImportSummary with import statistics
    */
   public static async importECRFData(
     inventoryId: string,
     importResult: ECRFImportResult,
+    options?: ImportECRFDataOptions,
   ): Promise<ImportSummary> {
     const errors: string[] = [];
     const warnings: string[] = [];
     let importedRows = 0;
     let skippedRows = 0;
+
+    // Set inventory year from file when missing (year column mapped as "Year")
+    const inventory = await db.models.Inventory.findByPk(inventoryId);
+    if (
+      inventory &&
+      inventory.year == null &&
+      importResult.inferredYearFromFile != null
+    ) {
+      await inventory.update({ year: importResult.inferredYearFromFile });
+      logger.info(
+        {
+          inventoryId,
+          year: importResult.inferredYearFromFile,
+        },
+        "Set inventory year from imported file",
+      );
+    }
 
     // Filter to only valid rows (no errors)
     const validRows = importResult.rows.filter(
@@ -322,21 +324,35 @@ export default class InventoryImportService {
           },
         });
 
-        // Calculate total CO2e first (use totalCO2e if available, otherwise sum individual gases)
-        let totalCO2e: number | undefined = row.totalCO2e;
+        // If any of CO2, CH4, N2O exist: store totalCO2e and gas values together.
+        // Otherwise: store only totalCO2e (no per-gas storage).
+        const co2Val =
+          row.co2 != null ? Number(row.co2) : undefined;
+        const ch4Val =
+          row.ch4 != null ? Number(row.ch4) : undefined;
+        const n2oVal =
+          row.n2o != null ? Number(row.n2o) : undefined;
+        const hasAnyGas =
+          (typeof co2Val === "number" && !isNaN(co2Val)) ||
+          (typeof ch4Val === "number" && !isNaN(ch4Val)) ||
+          (typeof n2oVal === "number" && !isNaN(n2oVal));
 
-        console.log(
-          `[Import] GPC ${row.gpcRefNo} - Initial totalCO2e: ${totalCO2e}, CO2: ${row.co2}, CH4: ${row.ch4}, N2O: ${row.n2o}, NotationKey: ${row.notationKey}`,
-        );
+        const gasSum =
+          (co2Val ?? 0) + (ch4Val ?? 0) + (n2oVal ?? 0);
 
-        if (!totalCO2e) {
-          // Sum individual gas values (already in CO2e from eCRF)
-          const co2 = row.co2 || 0;
-          const ch4 = row.ch4 || 0;
-          const n2o = row.n2o || 0;
-          totalCO2e = co2 + ch4 + n2o;
+        let totalCO2e: number | undefined;
+        if (hasAnyGas) {
+          totalCO2e =
+            row.totalCO2e != null && !isNaN(Number(row.totalCO2e))
+              ? Number(row.totalCO2e)
+              : gasSum;
           console.log(
-            `[Import] GPC ${row.gpcRefNo} - Calculated totalCO2e from individual gases: ${totalCO2e}`,
+            `[Import] GPC ${row.gpcRefNo} - Storing totalCO2e and gas values: totalCO2e=${totalCO2e}, CO2=${co2Val ?? "-"}, CH4=${ch4Val ?? "-"}, N2O=${n2oVal ?? "-"}`,
+          );
+        } else {
+          totalCO2e = row.totalCO2e;
+          console.log(
+            `[Import] GPC ${row.gpcRefNo} - Storing totalCO2e only (no gas values): ${totalCO2e}`,
           );
         }
 
@@ -362,14 +378,15 @@ export default class InventoryImportService {
           // Get hierarchy entry for field mapping
           const hierarchyEntry = MANUAL_INPUT_HIERARCHY[row.gpcRefNo];
 
-          // Use mapped methodology, or fall back to directMeasure if methodology is "Direct Measure" or not found
+          // Default to Direct Measure when methodology is missing or not mapped
           const finalMethodology =
             mappedMethodology ||
             (row.methodology?.toLowerCase().includes("direct") &&
             row.methodology?.toLowerCase().includes("measure")
               ? hierarchyEntry?.directMeasure?.id
               : hierarchyEntry?.directMeasure?.id) ||
-            row.methodology;
+            row.methodology ||
+            hierarchyEntry?.directMeasure?.id;
 
           let inventoryValue;
           if (existingValue) {
@@ -403,16 +420,45 @@ export default class InventoryImportService {
             });
             importedRows++;
           }
-          console.log(row);
 
-          // Create ActivityValue if activity data or metadata is present
-          // For direct-measure methodology, we need to store metadata (data source, data quality) even without activity data
+          // Sync per-gas storage: store CO2, CH4, N2O as GasValues when present; otherwise clear any existing.
+          const existingGasValues = await db.models.GasValue.findAll({
+            where: { inventoryValueId: inventoryValue.id },
+          });
+          for (const gv of existingGasValues) {
+            await gv.destroy();
+          }
+          if (hasAnyGas && (typeof co2Val === "number" || typeof ch4Val === "number" || typeof n2oVal === "number")) {
+            const toKg = (t: number) =>
+              decimalToBigInt(new Decimal(t).mul(1000));
+            const gases: { gas: "CO2" | "CH4" | "N2O"; val: number }[] = [];
+            if (typeof co2Val === "number" && !isNaN(co2Val)) {
+              gases.push({ gas: "CO2", val: co2Val });
+            }
+            if (typeof ch4Val === "number" && !isNaN(ch4Val)) {
+              gases.push({ gas: "CH4", val: ch4Val });
+            }
+            if (typeof n2oVal === "number" && !isNaN(n2oVal)) {
+              gases.push({ gas: "N2O", val: n2oVal });
+            }
+            for (const { gas, val } of gases) {
+              await db.models.GasValue.create({
+                id: randomUUID(),
+                inventoryValueId: inventoryValue.id,
+                gas,
+                gasAmount: toKg(val),
+              });
+            }
+          }
+
+          // Create ActivityValue if activity data or metadata is present, or when default data source from file is provided
           if (
             row.activityAmount ||
             row.activityType ||
             row.activityUnit ||
             row.activityDataSource ||
-            row.activityDataQuality
+            row.activityDataQuality ||
+            options?.defaultActivityDataSource
           ) {
             try {
               // Get schema for this GPC reference to map fields correctly
@@ -505,14 +551,37 @@ export default class InventoryImportService {
                 activityData["activity-type"] = mappedActivityType;
               }
 
-              // Store data source in activityData (frontend reads from here)
-              if (row.activityDataSource) {
-                activityData["data-source"] = row.activityDataSource;
+              // Store data source in activityData (frontend reads from here); default from file when provided
+              const dataSource =
+                row.activityDataSource?.trim() ||
+                options?.defaultActivityDataSource?.trim();
+              if (dataSource) {
+                activityData["data-source"] = dataSource;
               }
 
-              // Set group-by field default value if available
-              if (groupByField && groupByDefaultValue) {
-                activityData[groupByField] = groupByDefaultValue;
+              // Store gas amounts in activityData for Direct Measure UI (co2_amount, ch4_amount, n2o_amount; units-tonnes)
+              if (typeof co2Val === "number" && !isNaN(co2Val)) {
+                activityData.co2_amount = co2Val;
+                activityData.co2_unit = "units-tonnes";
+              }
+              if (typeof ch4Val === "number" && !isNaN(ch4Val)) {
+                activityData.ch4_amount = ch4Val;
+                activityData.ch4_unit = "units-tonnes";
+              }
+              if (typeof n2oVal === "number" && !isNaN(n2oVal)) {
+                activityData.n2o_amount = n2oVal;
+                activityData.n2o_unit = "units-tonnes";
+              }
+
+              // Set group-by field so the UI can show sector→subsector→activity: use exclusive default when available, else use activityType so the accordion title is not "undefined"
+              if (groupByField) {
+                if (groupByDefaultValue) {
+                  activityData[groupByField] = groupByDefaultValue;
+                } else {
+                  const activityLabel =
+                    row.activityType?.trim() || "Uncategorized";
+                  activityData[groupByField] = activityLabel;
+                }
               }
 
               // Build metadata JSONB object
@@ -527,13 +596,13 @@ export default class InventoryImportService {
               metadata.activityTitle = activityTitle;
 
               // Store data source in metadata as sourceExplanation (for export/other purposes)
-              if (row.activityDataSource) {
-                metadata.sourceExplanation = row.activityDataSource;
+              if (dataSource) {
+                metadata.sourceExplanation = dataSource;
               }
 
-              if (row.activityDataQuality) {
-                metadata.dataQuality = row.activityDataQuality;
-              }
+              // Default data quality to low when not provided
+              metadata.dataQuality =
+                row.activityDataQuality?.trim() || "low";
 
               if (row.emissionFactorSource) {
                 metadata.emissionFactorName = row.emissionFactorSource;
@@ -542,6 +611,23 @@ export default class InventoryImportService {
               if (row.emissionFactorDescription) {
                 metadata.emissionFactorTypeReference =
                   row.emissionFactorDescription;
+              }
+
+              if (row.emissionFactorUnit) {
+                metadata.emissionFactorUnit = row.emissionFactorUnit;
+              }
+
+              if (row.emissionFactorCO2 != null) {
+                metadata.emissionFactorCO2 = row.emissionFactorCO2;
+              }
+              if (row.emissionFactorCH4 != null) {
+                metadata.emissionFactorCH4 = row.emissionFactorCH4;
+              }
+              if (row.emissionFactorN2O != null) {
+                metadata.emissionFactorN2O = row.emissionFactorN2O;
+              }
+              if (row.emissionFactorTotalCO2e != null) {
+                metadata.emissionFactorTotalCO2e = row.emissionFactorTotalCO2e;
               }
 
               // emissionFactorType is a UUID field that we don't have in eCRF files

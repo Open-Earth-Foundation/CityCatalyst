@@ -64,13 +64,20 @@ spec:
             httpGet:
               path: /api/v0/check/liveness
               port: 3000
+            timeoutSeconds: 5
+            periodSeconds: 10
+            failureThreshold: 6
           readinessProbe:
             httpGet:
               path: /api/v0/check/health
               port: 3000
+            timeoutSeconds: 5
+            periodSeconds: 10
+            failureThreshold: 6
           startupProbe:
             httpGet:
               path: /api/v0/check/liveness
               port: 3000
-            failureThreshold: 30
+            timeoutSeconds: 5
+            failureThreshold: 60
             periodSeconds: 10

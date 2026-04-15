@@ -3,7 +3,10 @@ import { api } from "@/services/api";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { TFunction } from "i18next";
-import { YearSelector, YearSelectorItem } from "@/components/shared/YearSelector";
+import {
+  YearSelector,
+  YearSelectorItem,
+} from "@/components/shared/YearSelector";
 
 export function YearSelectorCard({
   inventories,
@@ -22,8 +25,11 @@ export function YearSelectorCard({
   const router = useRouter();
 
   const handleYearSelect = (yearData: YearSelectorItem) => {
-    setUserInfo({ defaultInventoryId: yearData.inventoryId, defaultCityId: cityId });
-    router.push(`/${yearData.inventoryId}`);
+    setUserInfo({
+      defaultInventoryId: yearData.inventoryId,
+      defaultCityId: cityId,
+    });
+    router.push(`/cities/${cityId}/GHGI/${yearData.inventoryId}`);
   };
 
   return (

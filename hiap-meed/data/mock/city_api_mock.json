@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "generated_at_utc": "2026-02-26T11:38:45.183100+00:00",
+    "backend_consumer": "hiap-meed",
+    "upstream_provider": "global-api",
+    "api_context": {
+      "endpoint": "GET /v1/cities/{locode}",
+      "locode": "CL IQQ"
+    },
+    "total_records": 1
+  },
+  "city": {
+    "comuna_name": "Iquique",
+    "locode": "CL IQQ",
+    "countryCode": "CL",
+    "region_name": "Tarapacá",
+    "comuna_code": "CL01101",
+    "region_code": "CL01",
+    "populationSize": 214857,
+    "populationDensity": 953.69,
+    "area": 225,
+    "unemployment_rate": {
+      "attribute_value": 9.44,
+      "attribute_units": "percent",
+      "attribute_category": "high"
+    },
+    "renter_share": {
+      "attribute_value": 43.48,
+      "attribute_units": "percent",
+      "attribute_category": "high"
+    },
+    "transport_logistics_employment": {
+      "attribute_value": 7.35,
+      "attribute_units": "percent",
+      "attribute_category": "low"
+    },
+    "electricity_access": {
+      "attribute_value": 100.0,
+      "attribute_units": "percent",
+      "attribute_category": "very low"
+    },
+    "industry_construction_employment": {
+      "attribute_value": 22.79,
+      "attribute_units": "percent",
+      "attribute_category": "high"
+    },
+    "median_household_income": {
+      "attribute_value": 1200000.0,
+      "attribute_units": "CLP",
+      "attribute_category": "high"
+    },
+    "public_transport_share": {
+      "attribute_value": 31.84,
+      "attribute_units": "percent",
+      "attribute_category": "medium"
+    },
+    "poverty_rate": {
+      "attribute_value": 26.77,
+      "attribute_units": "percent",
+      "attribute_category": "very high"
+    },
+    "home_ownership": {
+      "attribute_value": 40.0,
+      "attribute_units": "percent",
+      "attribute_category": "very low"
+    }
+  }
+}

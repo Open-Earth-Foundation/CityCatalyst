@@ -204,12 +204,12 @@ const ProjectFilterSection = ({
   t,
   projectsData,
   lng,
-  currentInventoryId,
+  currentCityId,
 }: {
   t: Function;
   projectsData: ProjectWithCitiesResponse;
   lng: string;
-  currentInventoryId?: string;
+  currentCityId?: string;
 }) => {
   const router = useRouter();
   const [selectedProject, setSelectedProject] = useState<string>("");
@@ -219,17 +219,13 @@ const ProjectFilterSection = ({
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  // Initialize with current project and city based on currentInventoryId
+  // Initialize with current project and city based on currentCityId
   useEffect(() => {
-    if (currentInventoryId && projectsData) {
+    if (currentCityId && projectsData) {
       // Find the project and city that contains the current inventory
       for (const project of projectsData) {
         for (const city of project.cities) {
-          if (
-            city.inventories?.some(
-              (inv) => inv.inventoryId === currentInventoryId,
-            )
-          ) {
+          if (city.cityId === currentCityId) {
             setSelectedProject(project.projectId);
             setSelectedCity(city.cityId);
             return;
@@ -237,12 +233,15 @@ const ProjectFilterSection = ({
         }
       }
     }
-  }, [currentInventoryId, projectsData]);
+  }, [currentCityId, projectsData]);
 
   // Transform projectsData into options for the project select
   const projectOptions = projectsData.map((project) => ({
     value: project.projectId,
-    label: project.name,
+    label:
+      project.name === "cc_project_default"
+        ? t("default-project")
+        : project.name,
   }));
 
   // Get cities for the selected project
@@ -482,7 +481,8 @@ const ProjectFilterSection = ({
             label={t("city")}
           />
           {/* Only show add city button for ORG_ADMIN and PROJECT_ADMIN */}
-          {(userAccessStatus?.isOrgOwner || userAccessStatus?.isProjectAdmin) && (
+          {(userAccessStatus?.isOrgOwner ||
+            userAccessStatus?.isProjectAdmin) && (
             <Box w="full" display="flex" justifyContent="flex-start">
               <Button
                 variant="ghost"
@@ -521,14 +521,14 @@ const JNDrawer = ({
   organizationId,
   onClose,
   onOpenChange,
-  currentInventoryId,
+  currentCityId,
 }: {
   lng: string;
   isOpen: boolean;
   onClose: () => void;
   onOpenChange: (val: OpenChangeDetails) => void;
   organizationId?: string;
-  currentInventoryId?: string;
+  currentCityId?: string;
 }) => {
   const { t } = useTranslation(lng, "dashboard");
   const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
@@ -542,17 +542,13 @@ const JNDrawer = ({
   const { data: projectModules, isLoading: isProjectModulesLoading } =
     useGetProjectModulesQuery(selectedProject!, { skip: !selectedProject });
 
-  // Initialize with current project and city based on currentInventoryId
+  // Initialize with current project and city based on currentCityId
   useEffect(() => {
-    if (currentInventoryId && projectsData) {
+    if (currentCityId && projectsData) {
       // Find the project and city that contains the current inventory
       for (const project of projectsData) {
         for (const city of project.cities) {
-          if (
-            city.inventories?.some(
-              (inv) => inv.inventoryId === currentInventoryId,
-            )
-          ) {
+          if (city.cityId === currentCityId) {
             setSelectedProject(project.projectId);
             setSelectedCity(city.cityId);
             return;
@@ -560,11 +556,7 @@ const JNDrawer = ({
         }
       }
     }
-  }, [currentInventoryId, projectsData]);
-
-  const selectProject = (projectId: string) => {
-    setSelectedProject(projectId);
-  };
+  }, [currentCityId, projectsData]);
 
   // Module filtering by stage - same logic as HomePage
   const modulesByStage = useMemo(() => {
@@ -628,7 +620,7 @@ const JNDrawer = ({
                 t={t}
                 projectsData={projectsData}
                 lng={lng}
-                currentInventoryId={currentInventoryId}
+                currentCityId={currentCityId}
               />
               <Box w="full" border="1px solid" borderColor="border.neutral" />
               {/* Menu items */}

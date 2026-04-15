@@ -1,0 +1,2 @@
+"""HIAP-MEED application package."""
+

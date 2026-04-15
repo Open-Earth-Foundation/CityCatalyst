@@ -11,7 +11,10 @@ spec:
     matchLabels:
       app: hiap-dev
   strategy:
-    type: Recreate # needed because of high CPU request. Rolling update will not find a second large instance
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   template:
     metadata:
       labels:
@@ -19,7 +22,7 @@ spec:
     spec:
       containers:
         - name: hiap-dev
-          image: ghcr.io/open-earth-foundation/citycatalyst-hiap:latest
+          image: ghcr.io/open-earth-foundation/citycatalyst-hiap:dev
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
@@ -31,28 +34,34 @@ spec:
               value: "8000"
           resources:
             requests:
-              memory: "20Gi" # Increased to 20Gi because of OOM error
-              cpu: "10" # "500m"
-              ephemeral-storage: "10Gi" # Added to store temporary files
+              cpu: "250m"
+              memory: "1Gi"
+              ephemeral-storage: "1Gi"
             limits:
-              memory: "20Gi" # Increased to 20Gi because of OOM error
-              cpu: "12" # "500m"
-              ephemeral-storage: "10Gi" # Added to store temporary files
+              cpu: "500m"
+              memory: "2Gi"
+              ephemeral-storage: "2Gi"
           livenessProbe:
             httpGet:
               path: /
               port: http
             initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /
               port: http
             initialDelaySeconds: 5
             periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+            successThreshold: 1
           startupProbe:
             httpGet:
               path: /
               port: http
             periodSeconds: 10
+            timeoutSeconds: 2
             failureThreshold: 30

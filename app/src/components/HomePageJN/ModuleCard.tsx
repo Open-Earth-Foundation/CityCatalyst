@@ -91,10 +91,7 @@ export function ModuleCard({
                 alt={`${name} module logo`}
               />
               {status && status !== "active" && (
-                <Tag
-                  size="sm"
-                  colorPalette={statusColorMap[status] || "gray"}
-                >
+                <Tag size="sm" colorPalette={statusColorMap[status] || "gray"}>
                   {t(statusLabelMap[status] || status)}
                 </Tag>
               )}
@@ -103,7 +100,7 @@ export function ModuleCard({
             <Tooltip
               content={getTranslationInLanguage(description)}
               showArrow
-              closeDelay={1000}
+              closeDelay={8000}
               contentProps={{
                 bg: "content.secondary",
                 color: "background.default",

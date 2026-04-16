@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: climate-advisor-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: climateadvisor
+      POSTGRES_PASSWORD: climateadvisor
+      POSTGRES_DB: climateadvisor
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U climateadvisor -d climateadvisor"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  climate-advisor:
+    # Local testing: always build from current local source.
+    pull_policy: never
+    build:
+      context: .
+      dockerfile: service/Dockerfile
+    image: climate-advisor:dev
+    container_name: climate-advisor-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      CA_DATABASE_URL: postgresql://climateadvisor:climateadvisor@postgres:5432/climateadvisor
+      CC_BASE_URL: http://host.docker.internal:3000
+    command: >
+      sh -c "python -m alembic -c alembic.ini upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8080"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

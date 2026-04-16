@@ -215,7 +215,7 @@ OPENROUTER_API_KEY=your-openrouter-api-key
 CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5432/climateadvisor
 
 # Optional
-CA_PORT=8080
+CA_PORT=8000
 CA_LOG_LEVEL=info
 CA_CORS_ORIGINS=*
 OPENAI_API_KEY=your-openai-api-key  # For embeddings
@@ -261,15 +261,15 @@ python scripts/setup_database.py
 
 ```bash
 cd climate-advisor/service
-uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ### 6. Verify Setup
 
-- **API Docs**: http://localhost:8080/docs
-- **ReDoc**: http://localhost:8080/redoc
-- **Playground**: http://localhost:8080/playground
-- **Health Check**: http://localhost:8080/health
+- **API Docs**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+- **Playground**: http://localhost:8000/playground
+- **Health Check**: http://localhost:8000/health
 
 ## Configuration
 
@@ -281,7 +281,7 @@ All LLM-related settings are centralized in (`llm_config.yaml`)
 
 - `OPENROUTER_API_KEY` - OpenRouter API key for LLM access
 - `CA_DATABASE_URL` - PostgreSQL connection string
-- `CA_PORT` - Server port (default: 8080) - note - there is issue when running any app inside of the docker container the localhost is within the container network be aware of that and adjust this same as CA_DATBASE_URL
+- `CA_PORT` - Server port (default: 8000) - note - there is issue when running any app inside of the docker container the localhost is within the container network be aware of that and adjust this same as CA_DATBASE_URL
 - `CA_LOG_LEVEL` - Logging level: info|debug (default: info)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: \*)
 - `OPENAI_API_KEY` - OpenAI API key (for embeddings & traces)
@@ -541,7 +541,7 @@ pytest tests/test_e2e_conversation.py -v
 ### Quick Streaming Test
 
 ```bash
-python climate-advisor/scripts/test_service_stream.py http://localhost:8080
+python climate-advisor/scripts/test_service_stream.py http://localhost:8000
 ```
 
 ## Docker Deployment
@@ -558,7 +558,7 @@ docker build -f service/Dockerfile -t climate-advisor:latest .
 ```bash
 docker run --rm \
   --env-file .env \
-  -p 8080:8080 \
+  -p 8000:8000 \
   climate-advisor:latest
 ```
 
@@ -583,7 +583,7 @@ services:
       context: .
       dockerfile: service/Dockerfile
     ports:
-      - "8080:8080"
+      - "8000:8000"
     environment:
       CA_DATABASE_URL: postgresql://climateadvisor:climateadvisor@postgres:5432/climateadvisor
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}

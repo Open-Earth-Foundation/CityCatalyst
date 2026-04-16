@@ -38,8 +38,7 @@ export default function ChatPopover({
   const [hasAcceptedDisclaimer, setHasAcceptedDisclaimer] = useState(false);
 
   // get user info
-  const { data: userInfo, isLoading: isUserInfoLoading } =
-    api.useGetUserInfoQuery();
+  const { data: userInfo } = api.useGetUserInfoQuery();
 
   const effectiveInventoryId =
     inventoryId ?? userInfo?.defaultInventoryId ?? "";
@@ -70,10 +69,6 @@ export default function ChatPopover({
     setHasAcceptedDisclaimer(true);
     setShowDisclaimer(false);
     onOpen();
-  };
-
-  const handleDisclaimerCancel = () => {
-    setShowDisclaimer(false);
   };
 
   // Lock body scroll while popover is open

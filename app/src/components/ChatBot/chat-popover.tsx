@@ -76,6 +76,14 @@ export default function ChatPopover({
     setShowDisclaimer(false);
   };
 
+  // Lock body scroll while popover is open
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   // Use the new hook to position the AI button
   const dynamicBottomPosition = useAIButtonPosition();
 

@@ -212,7 +212,10 @@ Create `.env` in `climate-advisor/` directory:
 ```bash
 # Required
 OPENROUTER_API_KEY=your-openrouter-api-key
-CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5432/climateadvisor
+
+# Recommended host-facing DB URL for local development (avoids conflict with
+# CityCatalyst Postgres on localhost:5432)
+CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5433/climateadvisor
 
 # Optional
 CA_PORT=8080
@@ -227,23 +230,34 @@ CC_BASE_URL=http://localhost:3000
 
 ### 3. Start PostgreSQL
 
+Recommended (uses `docker-compose.yml` in `climate-advisor/`):
+
 ```bash
-# Linux/macOS
-docker run --name ca-postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=postgres \
-  -p 5432:5432 -d postgres:15
+cd climate-advisor
+docker compose up -d postgres
+```
 
-# Setup database and user
-docker exec -i ca-postgres psql -U postgres -d postgres << EOF
-CREATE USER climateadvisor WITH PASSWORD 'climateadvisor';
-CREATE DATABASE climateadvisor OWNER climateadvisor;
-GRANT ALL PRIVILEGES ON DATABASE climateadvisor TO climateadvisor;
-ALTER USER climateadvisor CREATEDB;
-EOF
+If you use this compose-based PostgreSQL setup and run the CA service on your host
+(not in Docker), use:
 
-# Install pgvector extension
-docker exec ca-postgres apt update
-docker exec ca-postgres apt install -y postgresql-15-pgvector
-docker exec ca-postgres psql -U postgres -d climateadvisor -c "CREATE EXTENSION IF NOT EXISTS vector;"
+```bash
+CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5433/climateadvisor
+```
+
+If you run a dedicated CA PostgreSQL instance directly on host port `5432`
+without CityCatalyst using that port, `localhost:5432` can also work.
+
+Manual alternative:
+
+```bash
+docker run --name ca-postgres \
+  -e POSTGRES_USER=climateadvisor \
+  -e POSTGRES_PASSWORD=climateadvisor \
+  -e POSTGRES_DB=climateadvisor \
+  -p 5432:5432 \
+  -d pgvector/pgvector:pg15
+
+docker exec ca-postgres psql -U climateadvisor -d climateadvisor -c "CREATE EXTENSION IF NOT EXISTS vector;"
 ```
 
 ### 4. Install Dependencies & Setup Database
@@ -431,9 +445,7 @@ GET /health
 
 ```json
 {
-  "status": "healthy",
-  "service": "climate-advisor",
-  "version": "0.1.0"
+  "status": "ok"
 }
 ```
 
@@ -544,13 +556,15 @@ pytest tests/test_e2e_conversation.py -v
 python climate-advisor/scripts/test_service_stream.py http://localhost:8080
 ```
 
-## Docker Deployment
+## Docker Deployment (Local Testing)
 
-### Build Image
+This section is for local development/testing. It builds the Climate Advisor image from your local working tree so your unpushed code changes are included.
+
+### Build Image (Local Source)
 
 ```bash
 cd climate-advisor
-docker build -f service/Dockerfile -t climate-advisor:latest .
+docker build -f service/Dockerfile -t climate-advisor:dev .
 ```
 
 ### Run Container
@@ -559,41 +573,37 @@ docker build -f service/Dockerfile -t climate-advisor:latest .
 docker run --rm \
   --env-file .env \
   -p 8080:8080 \
-  climate-advisor:latest
+  climate-advisor:dev
 ```
 
 ### Docker Compose (with PostgreSQL)
 
-```yaml
-version: "3.8"
+Use the committed compose file at `climate-advisor/docker-compose.yml`:
 
-services:
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+```bash
+cd climate-advisor
 
-  climate-advisor:
-    build:
-      context: .
-      dockerfile: service/Dockerfile
-    ports:
-      - "8080:8080"
-    environment:
-      CA_DATABASE_URL: postgresql://climateadvisor:climateadvisor@postgres:5432/climateadvisor
-      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-    depends_on:
-      - postgres
+# Start both services
+docker compose up -d --build
 
-volumes:
-  postgres_data:
+# View logs
+docker compose logs -f climate-advisor
+
+# Stop and remove containers
+docker compose down
 ```
+
+Notes:
+
+- The compose setup uses `pgvector/pgvector:pg15` for PostgreSQL with vector support.
+- The app image/tag used for compose is local (`climate-advisor:dev`) and built from your local source.
+- The compose service is configured with `pull_policy: never` to avoid pulling remote images during local testing.
+- `.env.example` defaults `CA_DATABASE_URL` to `localhost:5433` to avoid conflict with CityCatalyst's local PostgreSQL on `5432`.
+- PostgreSQL is published on `localhost:5433` in compose to avoid conflicts with CityCatalyst's local PostgreSQL on `5432`.
+- Inside the compose network, Climate Advisor still connects to PostgreSQL on `postgres:5432`.
+- Because of this network difference, compose sets `CA_DATABASE_URL` explicitly in `docker-compose.yml`.
+- For local Docker testing against a host-running CityCatalyst app, compose overrides `CC_BASE_URL` to `http://host.docker.internal:3000`.
+- The compose service runs Alembic migrations automatically on startup before launching Uvicorn.
 
 ## Observability
 

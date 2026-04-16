@@ -13,6 +13,7 @@ from app.models.db.message import Message, MessageRole
 from app.models.requests import MessageCreateRequest, ThreadCreateRequest
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
+from app.utils.token_handler import TokenHandler
 
 #TODO: filter the messages by a given test ID that is assigned earlier in the test. This way you can prevent Messages created by other tests from messing with this test or vice versa. The other tests might be running in parallel, so this prevents annoying race conditions in the tests where the CI sometimes fails
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
@@ -98,6 +99,25 @@ class UserIdentityPersistenceTests(unittest.IsolatedAsyncioTestCase):
             service = ThreadService(session)
             with self.assertRaises(ThreadAccessDeniedException):
                 await service.get_thread_for_user(thread_id, "user-99")
+
+    async def test_token_handler_loads_legacy_cc_access_token(self) -> None:
+        async with self.session_factory() as session:
+            service = ThreadService(session)
+            payload = ThreadCreateRequest(
+                user_id="user-1",
+                context={"cc_access_token": "legacy-token"},
+            )
+            thread = await service.create_thread(payload)
+            await session.commit()
+
+        handler = TokenHandler(
+            thread_id=thread.thread_id,
+            user_id="user-1",
+            session_factory=self.session_factory,
+        )
+        token = await handler.load_token_from_thread()
+
+        self.assertEqual(token, "legacy-token")
 
 
 if __name__ == "__main__":

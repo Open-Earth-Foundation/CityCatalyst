@@ -115,6 +115,10 @@ class StreamingHandler:
             ):
                 yield event_bytes
 
+            # Persist the assistant message before the terminal done event so
+            # history_saved reflects the actual write result.
+            await self.persist_message()
+
             # Send completion event
             yield self._format_completion_event(req_id)
 

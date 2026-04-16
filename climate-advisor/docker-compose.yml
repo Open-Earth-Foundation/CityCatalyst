@@ -29,6 +29,8 @@ services:
     env_file:
       - .env
     environment:
+      # Compose runs CA inside a container, so DB host must be the postgres service
+      # on the compose network (not localhost from .env/.env.example).
       CA_DATABASE_URL: postgresql://climateadvisor:climateadvisor@postgres:5432/climateadvisor
       CC_BASE_URL: http://host.docker.internal:3000
     command: >

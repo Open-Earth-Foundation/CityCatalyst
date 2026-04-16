@@ -213,8 +213,9 @@ Create `.env` in `climate-advisor/` directory:
 # Required
 OPENROUTER_API_KEY=your-openrouter-api-key
 
-# If you run PostgreSQL directly on the host (manual setup below)
-CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5432/climateadvisor
+# Recommended host-facing DB URL for local development (avoids conflict with
+# CityCatalyst Postgres on localhost:5432)
+CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5433/climateadvisor
 
 # Optional
 CA_PORT=8080
@@ -242,6 +243,9 @@ If you use this compose-based PostgreSQL setup and run the CA service on your ho
 ```bash
 CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5433/climateadvisor
 ```
+
+If you run a dedicated CA PostgreSQL instance directly on host port `5432`
+without CityCatalyst using that port, `localhost:5432` can also work.
 
 Manual alternative:
 
@@ -441,9 +445,7 @@ GET /health
 
 ```json
 {
-  "status": "healthy",
-  "service": "climate-advisor",
-  "version": "0.1.0"
+  "status": "ok"
 }
 ```
 
@@ -596,8 +598,10 @@ Notes:
 - The compose setup uses `pgvector/pgvector:pg15` for PostgreSQL with vector support.
 - The app image/tag used for compose is local (`climate-advisor:dev`) and built from your local source.
 - The compose service is configured with `pull_policy: never` to avoid pulling remote images during local testing.
+- `.env.example` defaults `CA_DATABASE_URL` to `localhost:5433` to avoid conflict with CityCatalyst's local PostgreSQL on `5432`.
 - PostgreSQL is published on `localhost:5433` in compose to avoid conflicts with CityCatalyst's local PostgreSQL on `5432`.
 - Inside the compose network, Climate Advisor still connects to PostgreSQL on `postgres:5432`.
+- Because of this network difference, compose sets `CA_DATABASE_URL` explicitly in `docker-compose.yml`.
 - For local Docker testing against a host-running CityCatalyst app, compose overrides `CC_BASE_URL` to `http://host.docker.internal:3000`.
 - The compose service runs Alembic migrations automatically on startup before launching Uvicorn.
 

@@ -150,9 +150,11 @@ def run(
             action_socioeconomic_indicator_key = str(
                 socioeconomic_indicator.get("indicator_key", "")
             ).strip()
-            direction = str(
-                socioeconomic_indicator.get("direction", "supportive")
-            ).strip().lower()
+            direction = (
+                str(socioeconomic_indicator.get("direction", "supportive"))
+                .strip()
+                .lower()
+            )
             socioeconomic_indicator_weight = float(
                 socioeconomic_indicator.get("weight", 0.0)
             )
@@ -248,6 +250,8 @@ def run(
                 set(missing_socioeconomic_indicator_keys)
             ),
             "informational_requirements": informational_requirements,
+            # Reminder: set this to False once UI-ready implementation notes are generated.
+            "informational_requirements_notes_are_stub": True,
             "feasibility_score": feasibility_score,
         }
 

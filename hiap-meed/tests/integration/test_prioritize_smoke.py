@@ -8,6 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+import app.modules.prioritizer.orchestrator as prioritizer_orchestrator
 from app.modules.prioritizer.api import (
     get_action_data_api_client,
     get_city_data_api_client,
@@ -67,6 +68,42 @@ class MockPolicySignalsDataApiClient:
         """Return policy support signals for the requested city test case."""
         del locode
         return dict(self.policy_signals_by_action_id)
+
+
+@dataclass
+class MockExplanationService:
+    """In-memory explanation service double for endpoint integration tests."""
+
+    explanations_by_action_id: dict[str, str] | None = None
+    should_raise: bool = False
+    seen_action_ids: list[str] | None = None
+
+    def __call__(
+        self,
+        *,
+        locode: str,
+        scored_actions: list[object],
+        city_preference_sectors: list[str],
+        city_preference_other_text: str | None,
+        excluded_actions_free_text: str | None,
+    ) -> tuple[dict[str, str], dict[str, object]]:
+        """Return predefined explanations and capture which actions were requested."""
+        del (
+            locode,
+            city_preference_sectors,
+            city_preference_other_text,
+            excluded_actions_free_text,
+        )
+        if self.should_raise:
+            raise RuntimeError("simulated explanation provider failure")
+        action_ids = [item.action.action_id for item in scored_actions]
+        self.seen_action_ids = action_ids
+        return dict(self.explanations_by_action_id or {}), {
+            "status": "completed",
+            "provider": "mock",
+            "llm_input": {"curated_actions_count": len(action_ids)},
+            "llm_output": {"explanations_by_action_id": dict(self.explanations_by_action_id or {})},
+        }
 
 
 @pytest.mark.integration
@@ -426,5 +463,226 @@ def test_prioritize_keeps_no_evidence_hard_legal_requirements() -> None:
         assert unknown_evidence["discard_reason"] is None
         assert unknown_evidence["hard_requirements_unknown_count"] == 1
         assert len(unknown_evidence["unknown_requirements"]) == 1
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+def test_prioritize_skips_explanations_when_flag_false(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Request flag=false must skip explanation service invocation."""
+    city = CityData(
+        comuna_name="Santiago",
+        locode="CL-SCL",
+        region_name="Metropolitana",
+        comuna_code="13101",
+        region_code="13",
+        city_context=[],
+    )
+    actions = [Action(action_id="A_1", action_name="Action one")]
+    mock_city_client = MockCityDataApiClient(city=city)
+    mock_action_client = MockActionDataApiClient(actions=actions)
+    mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_explanation_service = MockExplanationService(
+        should_raise=True
+    )
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
+    monkeypatch.setattr(
+        prioritizer_orchestrator, "generate_explanations", mock_explanation_service
+    )
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post(
+                "/v1/prioritize",
+                json={
+                    "meta": {
+                        "requestId": "req-explanations-skipped",
+                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                        "backendConsumer": "hiap-meed",
+                        "upstreamProvider": "city_catalyst_frontend",
+                        "apiContext": {
+                            "endpoint": "POST /prioritizer/v1/start_prioritization",
+                            "locodes": ["CL-SCL"],
+                        },
+                        "totalRecords": 1,
+                    },
+                    "requestData": {
+                        "requestedLanguages": ["en"],
+                        "createExplanations": False,
+                        "cityDataList": [
+                            {
+                                "locode": "CL-SCL",
+                                "countryCode": "CL",
+                                "populationSize": 1000,
+                                "excludedActionsFreeText": None,
+                                "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceOther": None,
+                                "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
+                            }
+                        ],
+                    },
+                },
+            )
+
+        assert response.status_code == 200
+        result = response.json()["results"][0]
+        assert result["ranked_actions"][0]["explanation"] is None
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+def test_prioritize_generates_explanations_for_returned_top_n_only(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Explanation service receives only top-N scored actions from orchestrator."""
+    city = CityData(
+        comuna_name="Santiago",
+        locode="CL-SCL",
+        region_name="Metropolitana",
+        comuna_code="13101",
+        region_code="13",
+        city_context=[],
+    )
+    actions = [
+        Action(action_id="A_top", action_name="Top action"),
+        Action(action_id="A_second", action_name="Second action"),
+    ]
+    mock_city_client = MockCityDataApiClient(city=city)
+    mock_action_client = MockActionDataApiClient(actions=actions)
+    mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_explanation_service = MockExplanationService(
+        explanations_by_action_id={"A_top": "Top action explanation"}
+    )
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
+    monkeypatch.setattr(
+        prioritizer_orchestrator, "generate_explanations", mock_explanation_service
+    )
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post(
+                "/v1/prioritize",
+                json={
+                    "meta": {
+                        "requestId": "req-topn-explanations",
+                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                        "backendConsumer": "hiap-meed",
+                        "upstreamProvider": "city_catalyst_frontend",
+                        "apiContext": {
+                            "endpoint": "POST /prioritizer/v1/start_prioritization",
+                            "locodes": ["CL-SCL"],
+                        },
+                        "totalRecords": 1,
+                    },
+                    "requestData": {
+                        "requestedLanguages": ["en"],
+                        "topN": 1,
+                        "createExplanations": True,
+                        "cityDataList": [
+                            {
+                                "locode": "CL-SCL",
+                                "countryCode": "CL",
+                                "populationSize": 1000,
+                                "excludedActionsFreeText": None,
+                                "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceOther": None,
+                                "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
+                            }
+                        ],
+                    },
+                },
+            )
+
+        assert response.status_code == 200
+        result = response.json()["results"][0]
+        assert result["ranked_action_ids"] == ["A_second"]
+        assert mock_explanation_service.seen_action_ids == ["A_second"]
+        assert result["ranked_actions"][0]["explanation"] is None
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+def test_prioritize_fails_open_when_explanation_generation_errors(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """LLM failures should not break ranking response semantics."""
+    city = CityData(
+        comuna_name="Santiago",
+        locode="CL-SCL",
+        region_name="Metropolitana",
+        comuna_code="13101",
+        region_code="13",
+        city_context=[],
+    )
+    actions = [Action(action_id="A_1", action_name="Action one")]
+    mock_city_client = MockCityDataApiClient(city=city)
+    mock_action_client = MockActionDataApiClient(actions=actions)
+    mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_explanation_service = MockExplanationService(should_raise=True)
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
+    monkeypatch.setattr(
+        prioritizer_orchestrator, "generate_explanations", mock_explanation_service
+    )
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post(
+                "/v1/prioritize",
+                json={
+                    "meta": {
+                        "requestId": "req-explanation-failure",
+                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                        "backendConsumer": "hiap-meed",
+                        "upstreamProvider": "city_catalyst_frontend",
+                        "apiContext": {
+                            "endpoint": "POST /prioritizer/v1/start_prioritization",
+                            "locodes": ["CL-SCL"],
+                        },
+                        "totalRecords": 1,
+                    },
+                    "requestData": {
+                        "requestedLanguages": ["en"],
+                        "createExplanations": True,
+                        "cityDataList": [
+                            {
+                                "locode": "CL-SCL",
+                                "countryCode": "CL",
+                                "populationSize": 1000,
+                                "excludedActionsFreeText": None,
+                                "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceOther": None,
+                                "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
+                            }
+                        ],
+                    },
+                },
+            )
+
+        assert response.status_code == 200
+        result = response.json()["results"][0]
+        assert result["ranked_action_ids"] == ["A_1"]
+        assert result["ranked_actions"][0]["explanation"] is None
     finally:
         app.dependency_overrides.clear()

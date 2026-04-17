@@ -4,19 +4,19 @@ overview: Add an optional, grounded post-ranking explanation stage to `hiap-meed
 todos:
   - id: define-toggle-and-config
     content: Add the request flag and central runtime configuration for optional explanation generation.
-    status: pending
+    status: completed
   - id: design-grounding-layer
     content: Design the deterministic evidence-to-qualitative adapter that prepares ranked-action evidence for the LLM.
-    status: pending
+    status: completed
   - id: add-llm-explanation-stage
     content: Insert the optional post-ranking explanation stage into the orchestrator with fail-open behavior.
-    status: pending
+    status: completed
   - id: cover-with-tests
     content: Add focused unit and integration coverage for toggle behavior, grounding, and provider failure fallback.
-    status: pending
+    status: completed
   - id: update-docs
     content: Update README and future-work notes to describe the new explanation capability and remaining gaps.
-    status: pending
+    status: completed
 isProject: false
 ---
 

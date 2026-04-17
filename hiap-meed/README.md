@@ -40,6 +40,11 @@ HIAP_MEED_LEGAL_DATA_SOURCE=mock
 HIAP_MEED_ACTION_DATA_SOURCE=mock
 HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE=mock
 HIAP_MEED_TOP_N=20
+HIAP_MEED_EXPLANATIONS_ENABLED=true
+HIAP_MEED_EXPLANATIONS_MODEL=
+HIAP_MEED_EXPLANATIONS_TIMEOUT_SECONDS=30
+HIAP_MEED_EXPLANATIONS_MAX_RETRIES=1
+OPENAI_API_KEY=
 ```
 
 Variables:
@@ -54,6 +59,11 @@ Variables:
 - `HIAP_MEED_ACTION_DATA_SOURCE`: action catalog source (`mock` or `api`)
 - `HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE`: policy-signal input source (`mock` or `api`)
 - `HIAP_MEED_TOP_N`: default number of ranked actions to return per city (default `20`)
+- `HIAP_MEED_EXPLANATIONS_ENABLED`: global switch for post-ranking explanation calls
+- `HIAP_MEED_EXPLANATIONS_MODEL`: model name used when `createExplanations=true`
+- `HIAP_MEED_EXPLANATIONS_TIMEOUT_SECONDS`: timeout for one explanation call
+- `HIAP_MEED_EXPLANATIONS_MAX_RETRIES`: retries for explanation provider client
+- `OPENAI_API_KEY`: API key used for explanation generation
 
 ### 2. Install dependencies
 
@@ -104,6 +114,8 @@ Request body:
 
 - The endpoint accepts the frontend envelope `PrioritizerApiRequest` (see `app/modules/prioritizer/models.py`).
 - Single-city and multi-city payloads both use `requestData.cityDataList`.
+- Optional flag: `requestData.createExplanations` controls whether the post-ranking
+  explanation stage is executed.
 
 Exclusions:
 
@@ -148,16 +160,23 @@ Response fields:
     - `alignment_score` (`float`)
     - `feasibility_score` (`float`)
     - `evidence_summary` (`object`): compact explainability snapshot from hard-filter/impact/alignment/feasibility evidence
-    - `explanation` (`string | null`): reserved placeholder for future LLM-generated explanation text
+    - `explanation` (`string | null`): optional qualitative explanation text when `createExplanations=true`
   - `metadata` (`object`): request IDs, timings, counts, and hard-filter evidence.
 
 Ranking details:
 
 - Top-N selection is deterministic and uses this sort order:
-  1) `final_score` desc
-  2) tie-break by pillar scores in descending weight priority
-  3) `action_id` asc as the final fallback
+  1. `final_score` desc
+  2. tie-break by pillar scores in descending weight priority
+  3. `action_id` asc as the final fallback
 - Ranks are assigned after top-N truncation using competitive ranking (`1,2,2,4`).
+
+Explanation stage behavior:
+
+- Explanations are generated only when `requestData.createExplanations=true`.
+- Explanations are generated from post-ranking evidence and do not change ranks.
+- If explanation generation fails or times out, the endpoint fails open and
+  returns normal ranking output with `explanation=null`.
 
 Example JSON request bodies (using mock data from `data/`):
 
@@ -177,6 +196,7 @@ Example JSON request bodies (using mock data from `data/`):
   "requestData": {
     "requestedLanguages": ["en"],
     "topN": 20,
+    "createExplanations": false,
     "cityDataList": [
       {
         "locode": "CL IQQ",
@@ -245,7 +265,7 @@ Example response:
           "discarded_excluded": 0,
           "discarded_legal": 0,
           "ranked_actions": 2
-        },
+        }
       }
     }
   ]
@@ -290,6 +310,9 @@ What each `requests/{UTC_TIMESTAMP}Z_{internal_request_id}/` run folder contains
 - `NNN_<step>.json`: concise per-step detail files (fetch, filter, score, response summary)
 - `response_full.json`: full per-city API response payload in the same shape returned by `/v1/prioritize`
 - `input_snapshot.json`: reproducibility-critical run inputs (`locode`, resolved weights, resolved `top_n`, frontend city preference fields, emissions by GPC ref)
+- `llm/explanations_io.json`: explanation-stage LLM request/response artifact (only when explanations are generated successfully)
+- `llm/explanations_prompt.txt`: plain-text rendered user prompt with preserved newlines (only when explanations are generated successfully)
+- `llm/explanations_error.json`: explanation-stage failure artifact with request context and error (only when explanation generation fails)
 - `manifest.json`: run-level index of generated files, key counts, and pointers for top-ranked rows vs full evidence files
 - Event metadata such as timestamp, request ID, event index, event/step type, and payload
 - `event_index` is shared between a summary event and its matching detail file, so `summary.jsonl` and `NNN_<step>.json` are directly pairable
@@ -329,12 +352,6 @@ docker run -it --rm -p 8000:8000 --env-file .env hiap-meed-app
 To persist file logs and per-request artifacts on your machine (under `logs/`, including `logs/requests/`), bind-mount the host `logs` directory to `/app/logs` in the container (this matches default `LOG_DIR=logs`):
 
 ```bash
-docker run -it --rm -p 8000:8000 --env-file .env -v "%cd%\logs:/app/logs" hiap-meed-app
-```
-
-On **Windows Command Prompt**, from the `hiap-meed` directory:
-
-```cmd
 docker run -it --rm -p 8000:8000 --env-file .env -v "%cd%\logs:/app/logs" hiap-meed-app
 ```
 

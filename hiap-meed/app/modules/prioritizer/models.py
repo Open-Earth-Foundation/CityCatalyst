@@ -87,6 +87,7 @@ class PrioritizerRequestData(BaseModel):
 
     requestedLanguages: list[str] = Field(default_factory=lambda: ["en"])
     topN: int | None = Field(default=None, ge=1)
+    createExplanations: bool = False
     cityDataList: list[FrontendCityInput] = Field(min_length=1)
 
 

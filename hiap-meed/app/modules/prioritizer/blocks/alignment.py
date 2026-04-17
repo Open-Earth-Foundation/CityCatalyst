@@ -123,6 +123,7 @@ def run(
             "policy_component_value": policy_component_value,
             "sector_component_value": sector_component_value,
             "other_component_value": other_component_value,
+            "other_component_is_stub": True,
             "policy_weight": ALIGNMENT_WEIGHT_POLICY,
             "sector_weight": ALIGNMENT_WEIGHT_SECTOR,
             "other_weight": ALIGNMENT_WEIGHT_OTHER,

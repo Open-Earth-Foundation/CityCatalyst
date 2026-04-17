@@ -18,6 +18,8 @@ DEFAULT_WEIGHTS: dict[str, float] = {
 
 REQUIRED_WEIGHT_KEYS: set[str] = set(DEFAULT_WEIGHTS.keys())
 DEFAULT_TOP_N = 20
+DEFAULT_EXPLANATIONS_TIMEOUT_SECONDS = 30.0
+DEFAULT_EXPLANATIONS_MAX_RETRIES = 1
 
 # Impact scoring knobs
 IMPACT_TEXT_TO_MULTIPLIER: dict[str, float] = {
@@ -165,3 +167,64 @@ def resolve_impact_text_multiplier(impact_text: str) -> float:
             f"`{impact_text}` (normalized: `{normalized}`)"
         )
     return IMPACT_TEXT_TO_MULTIPLIER[normalized]
+
+
+def parse_bool_env(value: str | None, *, default: bool) -> bool:
+    """Parse common env-var boolean encodings with a fallback default."""
+    if value is None:
+        return default
+    normalized = value.strip().lower()
+    if not normalized:
+        return default
+    if normalized in {"1", "true", "yes", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "off"}:
+        return False
+    return default
+
+
+def is_explanations_enabled() -> bool:
+    """Return global feature switch for LLM explanation generation."""
+    raw_value = os.getenv("HIAP_MEED_EXPLANATIONS_ENABLED")
+    return parse_bool_env(raw_value, default=True)
+
+
+def get_explanations_model() -> str | None:
+    """Return configured explanation model name, if set."""
+    value = os.getenv("HIAP_MEED_EXPLANATIONS_MODEL")
+    if value is None:
+        return None
+    normalized = value.strip()
+    if not normalized:
+        return None
+    return normalized
+
+
+def get_explanations_timeout_seconds() -> float:
+    """Return configured explanation timeout in seconds."""
+    raw_value = os.getenv("HIAP_MEED_EXPLANATIONS_TIMEOUT_SECONDS")
+    if raw_value is None or not raw_value.strip():
+        return DEFAULT_EXPLANATIONS_TIMEOUT_SECONDS
+    try:
+        parsed = float(raw_value.strip())
+    except ValueError as error:
+        raise ValueError(
+            "HIAP_MEED_EXPLANATIONS_TIMEOUT_SECONDS must be a number"
+        ) from error
+    if parsed <= 0:
+        raise ValueError("HIAP_MEED_EXPLANATIONS_TIMEOUT_SECONDS must be > 0")
+    return parsed
+
+
+def get_explanations_max_retries() -> int:
+    """Return configured explanation client retries."""
+    raw_value = os.getenv("HIAP_MEED_EXPLANATIONS_MAX_RETRIES")
+    if raw_value is None or not raw_value.strip():
+        return DEFAULT_EXPLANATIONS_MAX_RETRIES
+    try:
+        parsed = int(raw_value.strip())
+    except ValueError as error:
+        raise ValueError("HIAP_MEED_EXPLANATIONS_MAX_RETRIES must be an integer") from error
+    if parsed < 0:
+        raise ValueError("HIAP_MEED_EXPLANATIONS_MAX_RETRIES must be >= 0")
+    return parsed

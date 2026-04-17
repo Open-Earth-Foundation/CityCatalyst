@@ -27,7 +27,10 @@ def _resolve_excluded_action_ids_from_text(
 
 
 def _apply_free_text_exclusion_filter(
-    *, actions: list[Action], excluded_action_ids: set[str]
+    *,
+    actions: list[Action],
+    excluded_action_ids: set[str],
+    free_text_exclusion_text_provided: bool,
 ) -> tuple[list[Action], list[Action], dict[str, dict[str, object]]]:
     """
     Apply action exclusion by resolved action IDs.
@@ -49,10 +52,16 @@ def _apply_free_text_exclusion_filter(
             evidence[action.action_id] = {
                 "discard_reason": "excluded",
                 "matched_excluded_action_id": action.action_id,
+                "free_text_exclusion_is_stub": True,
+                "free_text_exclusion_text_provided": free_text_exclusion_text_provided,
             }
             continue
         valid_actions.append(action)
-        evidence[action.action_id] = {"discard_reason": None}
+        evidence[action.action_id] = {
+            "discard_reason": None,
+            "free_text_exclusion_is_stub": True,
+            "free_text_exclusion_text_provided": free_text_exclusion_text_provided,
+        }
 
     return valid_actions, discarded_excluded, evidence
 
@@ -156,9 +165,13 @@ def run(
         excluded_actions_free_text=excluded_actions_free_text,
     )
     # Step 2: apply explicit action exclusions and initialize evidence entries.
+    free_text_exclusion_text_provided = bool(
+        excluded_actions_free_text and excluded_actions_free_text.strip()
+    )
     valid_actions, discarded_excluded, evidence = _apply_free_text_exclusion_filter(
         actions=actions,
         excluded_action_ids=excluded_action_ids,
+        free_text_exclusion_text_provided=free_text_exclusion_text_provided,
     )
     # Step 3: apply hard legal gate to the remaining candidates.
     valid_actions, discarded_legal = _apply_legal_hard_filter(

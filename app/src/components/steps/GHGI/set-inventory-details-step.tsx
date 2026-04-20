@@ -214,7 +214,9 @@ export default function SetInventoryDetailsStep({
               <Trans i18nKey="inventory-goal-description" t={t}>
                 Want to learn more about these inventory formats?{" "}
                 <Link
-                  href="/"
+                  href="https://ghgprotocol.org/ghg-protocol-cities"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   fontFamily="heading"
                   fontWeight="bold"
                   color="content.link"
@@ -309,7 +311,9 @@ export default function SetInventoryDetailsStep({
               <Trans i18nKey="gwp-description" t={t}>
                 Want to learn more about these inventory formats?{" "}
                 <Link
-                  href="/"
+                  href="https://ghgprotocol.org/sites/default/files/2024-08/Global-Warming-Potential-Values%20(August%202024).pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   fontFamily="heading"
                   fontWeight="bold"
                   color="content.link"

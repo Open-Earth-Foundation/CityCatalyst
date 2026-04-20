@@ -2,18 +2,12 @@ import {
   CloseButton,
   Button,
   Dialog,
-  DialogTrigger,
   Portal,
   VStack,
-  HStack,
-  Box,
-  Icon,
-  Flex,
   Text,
   Link,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { useState } from "react";
 import {
   AskAiIconOutline,
   VerifyKeyInformationIcon,

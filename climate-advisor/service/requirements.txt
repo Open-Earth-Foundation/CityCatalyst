@@ -41,7 +41,7 @@ MarkupSafe==3.0.3
 mcp==1.20.0
 numpy==2.3.4
 openai==2.16.0
-openai-agents==0.6.2
+openai-agents==0.13.6
 orjson==3.11.4
 ormsgpack==1.12.2
 packaging==25.0

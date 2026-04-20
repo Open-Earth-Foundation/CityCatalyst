@@ -40,15 +40,13 @@ Source: Notion “Data Reviews” (exclusion intent)
 - **Current**: implemented.
   - `cityStrategicPreferenceOther` is mapped with OpenAI structured output into the
     allowed co-benefit taxonomy.
-  - The current score is a simple overlap ratio:
-    `matched_preferred_co_benefits / total_preferred_co_benefits`.
+  - The current score uses only city-selected co-benefits, reads each selected
+    action `impact_numeric` value, and normalizes the summed result into `0..1`.
   - The block already emits evidence such as resolved preferred co-benefits,
     unmappable fragments, matched preferred co-benefits, and mapping source/model.
 - **Future**: improve the scoring logic, not just the mapping.
-  - Replace the simple overlap heuristic with richer product-defined co-benefit
-    weighting and scoring semantics.
-  - Decide whether some co-benefits should matter more than others or whether
-    partial semantic matches should receive different weights.
+  - Decide whether some co-benefits should matter more than others.
+  - Decide whether partial semantic matches should receive different weights.
 - **Where**:
   - `hiap-meed/app/modules/prioritizer/services/co_benefit_mapping.py`
   - `hiap-meed/app/modules/prioritizer/blocks/alignment.py`

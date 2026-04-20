@@ -129,6 +129,9 @@ Score normalization policy:
 - Each block computes named component values in `0..1`.
 - Each block applies explicit internal weights that sum to `1.0`.
 - Block score is the canonical weighted sum of those components (no run-relative max-normalization).
+- For normalized components in this system, `0.5` is the neutral midpoint when a component is designed around beneficial vs harmful effects.
+  - Example: the Alignment other-preference co-benefit component and the Feasibility socio-economic component use `0.5` as neutral.
+  - By contrast, some one-sided components use `0.0` as the natural baseline because they measure absence of support rather than harmful effect, such as missing policy support or no preferred-sector match.
 
 Impact block behavior (implemented):
 
@@ -149,11 +152,14 @@ Alignment block free-text behavior (implemented):
 - The mapping output is constrained to the current action-catalog taxonomy:
   - `air_quality`, `cost_of_living`, `habitat`, `housing`, `mobility`, `stakeholder_engagement`, `water_quality`
 - `unmappable_preference_fragments` are captured when user intent cannot be confidently mapped to allowed labels.
-- Temporary scoring heuristic (future implementation note):
-  - `other_component_value = matched_preferred_co_benefits / total_preferred_co_benefits`
-  - This overlap-count scoring is intentionally simple until richer co-benefit scoring semantics are defined.
+- Other-preference scoring:
+  - Only co-benefits selected by the city are scored.
+  - Each selected co-benefit reads the action's `impact_numeric` value in `-2..2`.
+  - Missing co-benefit keys are treated as `0`.
+  - The summed selected impacts are normalized into `0..1`, where `0.5` is neutral.
 - Fail-open behavior:
-  - blank free-text, model misconfiguration, timeout, or parse failure results in `other_component_value = 0.0` with fallback evidence.
+  - blank free-text results in a neutral `other_component_value = 0.5`
+  - model misconfiguration, timeout, or parse failure also result in a neutral `other_component_value = 0.5`, with fallback evidence showing the mapping did not succeed
 
 Response fields:
 

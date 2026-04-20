@@ -66,11 +66,25 @@ def test_co_benefit_mapping_response_rejects_unknown_keys() -> None:
 
 
 @pytest.mark.unit
-def test_score_action_other_preference_component_uses_simple_overlap() -> None:
-    """Scoring helper returns overlap share and matched co-benefit keys."""
+def test_score_action_other_preference_component_normalizes_selected_impacts() -> None:
+    """Scoring helper normalizes selected co-benefit impacts into `0..1`."""
     score, matched = co_benefit_mapping.score_action_other_preference_component(
-        action_co_benefit_keys={"air_quality", "housing"},
+        action_co_benefits={
+            "air_quality": {"impact_numeric": 1},
+            "housing": {"impact_numeric": -1},
+        },
         resolved_preferred_co_benefits=["air_quality", "mobility"],
     )
-    assert score == pytest.approx(0.5)
+    assert score == pytest.approx(0.625)
     assert matched == ["air_quality"]
+
+
+@pytest.mark.unit
+def test_score_action_other_preference_component_is_neutral_without_priorities() -> None:
+    """Scoring helper returns a neutral value when no priorities are selected."""
+    score, matched = co_benefit_mapping.score_action_other_preference_component(
+        action_co_benefits={"air_quality": {"impact_numeric": 2}},
+        resolved_preferred_co_benefits=[],
+    )
+    assert score == pytest.approx(0.5)
+    assert matched == []

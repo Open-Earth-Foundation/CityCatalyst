@@ -8,7 +8,7 @@
 | Hard Filter  | Legal requirement check                        | Implemented                                      |
 | Impact       | GPC reference evidence collection              | Implemented                                      |
 | Impact       | Activity relevance × reduction band × timeline | Implemented                                      |
-| Alignment    | Policy + sector + other components             | Implemented (`other` uses LLM-based co-benefit mapping with a temporary overlap heuristic) |
+| Alignment    | Policy + sector + other components             | Implemented (`other` uses LLM-based co-benefit mapping plus normalized selected co-benefit scoring) |
 | Feasibility  | Soft legal + socio-economic weighted component | Implemented                                      |
 | Weighted Sum | Weighted aggregation, sort, rank, `top_n`      | Implemented                                      |
 

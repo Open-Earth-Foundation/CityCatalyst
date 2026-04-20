@@ -290,6 +290,15 @@ It does this by linking each action to the city's emissions categories and then 
 - how much of the city's emissions the action seems to target,
 - and how quickly the action can be implemented.
 
+Score semantics used in this document:
+- All block scores and named components are expressed in `0..1`.
+- `1.0` means the strongest support available within that component's own logic.
+- `0.0` means the weakest support available within that component's own logic.
+- `0.5` is the neutral midpoint only for components that start from a signed scale and are then normalized into `0..1`.
+  - Current examples: the Alignment other-preference co-benefit component and the Feasibility socio-economic component.
+- Not every component uses `0.5` as neutral.
+  - Example: a missing policy support score remains `0.0` because that component measures support, not beneficial-versus-harmful effect.
+
 ### 5.1 Inputs
 
 From the frontend request:
@@ -502,19 +511,23 @@ Current behavior:
   - `mobility`
   - `stakeholder_engagement`
   - `water_quality`
-- If the free-text is blank, the model is misconfigured, or the call/parsing fails, the block fails open and this component is `0.0`.
+- If the free-text is blank, the model is misconfigured, or the call/parsing fails, the block stays neutral at `0.5`.
 
 Plain-language formula:
 
 ```text
 Other-preference component
-= matched_preferred_co_benefits / total_preferred_co_benefits
-or 0.0 when no preferred co-benefits are resolved
+= normalize(
+    sum(action.coBenefits[selected_key].impact_numeric or 0 for selected_key in resolved_preferred_co_benefits),
+    min=len(resolved_preferred_co_benefits) * -2,
+    max=len(resolved_preferred_co_benefits) * 2
+  )
+where missing co-benefit keys count as 0
+and no selected co-benefits returns 0.5 (neutral)
 ```
 
-Future implementation note:
-- This overlap-based score is intentionally a temporary heuristic.
-- Replace it with richer product-defined co-benefit weighting and scoring semantics when available.
+Fallback behavior note:
+- When non-blank free-text cannot be resolved because of model misconfiguration or call/parsing failure, the block remains neutral at `0.5`.
 
 #### Final Alignment formula
 

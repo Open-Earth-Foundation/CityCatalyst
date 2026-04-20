@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -128,23 +128,28 @@ def resolve_city_preferred_co_benefits(
 
 
 def score_action_other_preference_component(
-    *, action_co_benefit_keys: set[str], resolved_preferred_co_benefits: list[str]
+    *,
+    action_co_benefits: dict[str, dict[str, Any]],
+    resolved_preferred_co_benefits: list[str],
 ) -> tuple[float, list[str]]:
-    """Score action overlap against resolved city-preferred co-benefit keys."""
-    if not resolved_preferred_co_benefits:
-        return 0.0, []
+    """Normalize selected co-benefit impacts into a `0..1` score."""
+    unique_preferred = sorted(set(resolved_preferred_co_benefits))
+    if not unique_preferred:
+        return 0.5, []
 
-    # Future implementation note: this temporary heuristic is intentionally simple.
-    # Replace with richer product-defined co-benefit weighting when requirements settle.
+    # Only city-selected co-benefits count. Missing keys are treated as neutral `0`.
     matched_preferred = sorted(
-        key
-        for key in set(resolved_preferred_co_benefits)
-        if key in action_co_benefit_keys
+        key for key in unique_preferred if key in action_co_benefits
     )
-    # Score is the share of preferred co-benefits that this action matches.
-    # matched_preferred is the list of co-benefit keys that this action matches.
-    # resolved_preferred_co_benefits is the list of all preferred co-benefit keys.
-    score = len(matched_preferred) / len(set(resolved_preferred_co_benefits))
+    total = 0
+    for key in unique_preferred:
+        impact_numeric = action_co_benefits.get(key, {}).get("impact_numeric", 0)
+        total += impact_numeric or 0
+
+    # Normalize from the raw `-2..2` range into the block's canonical `0..1` range.
+    min_possible = len(unique_preferred) * -2
+    max_possible = len(unique_preferred) * 2
+    score = (total - min_possible) / (max_possible - min_possible)
     return score, matched_preferred
 
 

@@ -5,7 +5,9 @@ How the score is built (0..1):
 - Policy component: uses `policy_support_score` from policy signals.
 - Sector component: checks whether the action's emissions sector overlaps with
   requested city preference sectors (`1.0` for overlap, else `0.0`).
-- Other-preference component: LLM-assisted free-text mapping to co-benefits.
+- Other-preference component: LLM-assisted free-text mapping to co-benefits,
+  then normalization of the selected co-benefit `impact_numeric` values into
+  `0..1` (`0.5` is neutral, `<0.5` is harmful, `>0.5` is beneficial).
 
 Final alignment score per action:
 - `(policy_weight * policy_component_value)`
@@ -101,11 +103,11 @@ def run(
         if mapped_sector_tag is not None and mapped_sector_tag in preferred_sectors:
             sector_component_value = 1.0
 
-        # Block 4: Score free-text preference overlap against action co-benefits.
+        # Block 4: Score selected co-benefit impacts against action co-benefits.
         action_co_benefit_keys = sorted(action.co_benefits.keys())
         other_component_value, matched_preferred_co_benefits = (
             co_benefit_mapping.score_action_other_preference_component(
-                action_co_benefit_keys=set(action_co_benefit_keys),
+                action_co_benefits=action.co_benefits,
                 resolved_preferred_co_benefits=resolved_preferred_co_benefits,
             )
         )

@@ -35,20 +35,23 @@ Source: Notion “Data Reviews” (exclusion intent)
   - never exclude unless confidence is high and the UI can show “why”
   - consider a “preview only” mode if/when the frontend needs human confirmation
 
-## City “other preference” alignment → LLM matching (Alignment stage)
+## City "other preference" alignment scoring improvements (Alignment stage)
 
-- **Current**: the “other preference” component is a stub (`0.0` for all actions).
-- **Future**: implement free-text matching of `cityStrategicPreferenceOther` against
-  action fields to produce `ALIGNMENT_OTHER_COMPONENT in [0,1]`, plus evidence.
+- **Current**: implemented.
+  - `cityStrategicPreferenceOther` is mapped with OpenAI structured output into the
+    allowed co-benefit taxonomy.
+  - The current score is a simple overlap ratio:
+    `matched_preferred_co_benefits / total_preferred_co_benefits`.
+  - The block already emits evidence such as resolved preferred co-benefits,
+    unmappable fragments, matched preferred co-benefits, and mapping source/model.
+- **Future**: improve the scoring logic, not just the mapping.
+  - Replace the simple overlap heuristic with richer product-defined co-benefit
+    weighting and scoring semantics.
+  - Decide whether some co-benefits should matter more than others or whether
+    partial semantic matches should receive different weights.
 - **Where**:
+  - `hiap-meed/app/modules/prioritizer/services/co_benefit_mapping.py`
   - `hiap-meed/app/modules/prioritizer/blocks/alignment.py`
-- **Candidate action fields** (initial):
-  - `Action.description`
-  - `Action.implementation_timeline`
-  - `Action.co_benefits` (and other textual/co-benefit-like fields as available)
-- **Output**:
-  - per-action `other_component_value` (0..1)
-  - evidence showing which phrases/attributes matched and why
 
 ## Replace mock data clients with real upstream API calls
 

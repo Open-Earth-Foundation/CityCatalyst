@@ -14,6 +14,7 @@ from app.modules.prioritizer.blocks import (
     hard_filter,
     impact,
 )
+from app.modules.prioritizer.services import co_benefit_mapping
 from app.modules.prioritizer.internal_models import Action, CityData
 from app.services.data_clients import (
     MockActionDataApiClient,
@@ -264,6 +265,51 @@ def test_alignment_block_with_mock_api_data() -> None:
         + first_action_evidence["sector_contribution"]
         + first_action_evidence["other_contribution"]
     )
+
+
+@pytest.mark.unit
+def test_alignment_other_preference_component_uses_resolved_co_benefit_overlap(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Alignment other-preference score reflects overlap with resolved co-benefits."""
+    actions = _load_mock_actions()
+    policy_signals = _load_mock_policy_signals()
+
+    def _fake_resolve(**_: object) -> dict[str, object]:
+        return {
+            "resolved_preferred_co_benefits": ["air_quality", "housing"],
+            "unmappable_preference_fragments": ["jobs"],
+            "mapping_source": "llm",
+            "provider": "openai",
+            "model": "gpt-test",
+        }
+
+    monkeypatch.setattr(
+        co_benefit_mapping,
+        "resolve_city_preferred_co_benefits",
+        _fake_resolve,
+    )
+
+    result = alignment.run(
+        actions=actions,
+        policy_signals_by_action_id=policy_signals,
+        city_preference_sectors=["stationary_energy", "transportation"],
+        city_preference_other_text="Cleaner air and healthier homes",
+    )
+
+    assert result.evidence_by_action_id is not None
+    first_action_evidence = result.evidence_by_action_id["c40_0010"]
+    assert first_action_evidence["resolved_preferred_co_benefits"] == [
+        "air_quality",
+        "housing",
+    ]
+    assert first_action_evidence["matched_preferred_co_benefits"] == [
+        "air_quality",
+        "housing",
+    ]
+    assert first_action_evidence["unmappable_preference_fragments"] == ["jobs"]
+    assert first_action_evidence["other_component_mapping_source"] == "llm"
+    assert first_action_evidence["other_component_value"] > 0.0
 
 
 @pytest.mark.unit

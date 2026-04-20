@@ -36,7 +36,7 @@ What these are used for:
 - `weightsOverride` changes how much Impact, Alignment, and Feasibility matter in the final score.
 - `excludedActionsFreeText` is intended to remove actions, but is currently still a placeholder.
 - `cityStrategicPreferenceSectors[]` influences the Alignment block.
-- `cityStrategicPreferenceOther` is intended to influence the Alignment block, but is currently still a placeholder.
+- `cityStrategicPreferenceOther` influences the Alignment block through LLM-based co-benefit mapping.
 - `totalEmissions` values are the main city emissions numbers used in the Impact block.
 
 ### City context data
@@ -489,22 +489,32 @@ Sector component
 #### Part C: match to the city's free-text strategic priorities
 
 Current behavior:
-- This is still a placeholder.
-- Every action receives `0.0` for this part.
+- The pipeline reads `cityStrategicPreferenceOther`.
+- It calls OpenAI with structured output parsing and a Pydantic schema to map free text into allowed co-benefit keys.
+- The output schema includes:
+  - `mapped_co_benefits`
+  - `unmappable_preference_fragments`
+- Allowed co-benefit keys are currently:
+  - `air_quality`
+  - `cost_of_living`
+  - `habitat`
+  - `housing`
+  - `mobility`
+  - `stakeholder_engagement`
+  - `water_quality`
+- If the free-text is blank, the model is misconfigured, or the call/parsing fails, the block fails open and this component is `0.0`.
 
 Plain-language formula:
 
 ```text
-Other-preference component = 0.0
+Other-preference component
+= matched_preferred_co_benefits / total_preferred_co_benefits
+or 0.0 when no preferred co-benefits are resolved
 ```
 
-Planned future behavior:
-- Read `cityStrategicPreferenceOther`
-- Compare it with action content such as:
-  - description,
-  - timeline,
-  - co-benefits
-- Turn that comparison into a score between `0` and `1`
+Future implementation note:
+- This overlap-based score is intentionally a temporary heuristic.
+- Replace it with richer product-defined co-benefit weighting and scoring semantics when available.
 
 #### Final Alignment formula
 
@@ -857,14 +867,15 @@ Current behavior:
 Planned use:
 - convert natural-language exclusion instructions into real action removals
 
-### Placeholder 2: `cityStrategicPreferenceOther`
+### Current heuristic: `cityStrategicPreferenceOther`
 
 Current behavior:
 - accepted in the request
-- currently contributes `0.0` in the Alignment block
+- mapped into allowed co-benefit keys with OpenAI structured output
+- contributes to the Alignment block through a simple overlap score
 
-Planned use:
-- compare the city's written strategic priorities with action content and score the match
+Future improvement:
+- keep the mapping stage, but replace the current overlap heuristic with richer scoring semantics when product requirements are defined
 
 ### Placeholder 3: ranked action `explanation`
 

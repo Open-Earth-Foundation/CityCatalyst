@@ -47,7 +47,6 @@ ALIGNMENT_WEIGHT_OTHER = 0.05
 FEASIBILITY_WEIGHT_LEGAL = 0.50
 FEASIBILITY_WEIGHT_SOCIO = 0.50
 
-
 def validate_weights(weights: Mapping[str, float] | None) -> dict[str, float]:
     """
     Validate scoring weights.
@@ -165,3 +164,11 @@ def resolve_impact_text_multiplier(impact_text: str) -> float:
             f"`{impact_text}` (normalized: `{normalized}`)"
         )
     return IMPACT_TEXT_TO_MULTIPLIER[normalized]
+
+
+def get_alignment_other_preference_mapping_model() -> str | None:
+    """Return configured model name for alignment other-preference mapping."""
+    raw_value = os.getenv("HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL")
+    if raw_value is None or not raw_value.strip():
+        return None
+    return raw_value.strip()

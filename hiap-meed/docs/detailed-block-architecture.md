@@ -8,7 +8,7 @@
 | Hard Filter  | Legal requirement check                        | Implemented                                      |
 | Impact       | GPC reference evidence collection              | Implemented                                      |
 | Impact       | Activity relevance × reduction band × timeline | Implemented                                      |
-| Alignment    | Policy + sector + other components             | Implemented (`other` currently stubbed as `0.0`) |
+| Alignment    | Policy + sector + other components             | Implemented (`other` uses LLM-based co-benefit mapping with a temporary overlap heuristic) |
 | Feasibility  | Soft legal + socio-economic weighted component | Implemented                                      |
 | Weighted Sum | Weighted aggregation, sort, rank, `top_n`      | Implemented                                      |
 
@@ -160,8 +160,8 @@ Exclusions are handled in the Hard Filter stage, so Alignment only scores eligib
   - Source: `actions_policy_signals_api_mock.json` (`policy_support_score`, `policy_signals[]`)
 - City strategic preference sectors
   - Source: frontend request `cityStrategicPreferenceSectors`
-- City strategic preference other text (currently stubbed as `0.0`)
-  - Source: frontend request `cityStrategicPreferenceOther`
+- City strategic preference other text
+  - Source: frontend request `cityStrategicPreferenceOther`, mapped to allowed co-benefit keys with OpenAI structured output
 - Action sector mapping for city preference overlap
   - Source: `Action.emissions["sector_number"]`
 - Candidate actions (already hard-filtered)
@@ -172,7 +172,7 @@ Exclusions are handled in the Hard Filter stage, so Alignment only scores eligib
 - Alignment scores per action
   - Output: `Alignment Scores` (one score per action, used in final ranking)
 - Optional trace fields
-  - Output: `Alignment Evidence` (component values, weights, contributions, sector diagnostics, policy summaries)
+  - Output: `Alignment Evidence` (component values, weights, contributions, sector diagnostics, policy summaries, resolved preferred co-benefits, unmappable fragments, matched preferred co-benefits, mapping source/model)
 
 ```mermaid
 graph TD

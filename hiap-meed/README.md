@@ -40,6 +40,10 @@ HIAP_MEED_LEGAL_DATA_SOURCE=mock
 HIAP_MEED_ACTION_DATA_SOURCE=mock
 HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE=mock
 HIAP_MEED_TOP_N=20
+HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL=
+OPENAI_API_KEY=
+OPENAI_TIMEOUT_SECONDS=30
+OPENAI_MAX_RETRIES=1
 ```
 
 Variables:
@@ -54,6 +58,10 @@ Variables:
 - `HIAP_MEED_ACTION_DATA_SOURCE`: action catalog source (`mock` or `api`)
 - `HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE`: policy-signal input source (`mock` or `api`)
 - `HIAP_MEED_TOP_N`: default number of ranked actions to return per city (default `20`)
+- `HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL`: OpenAI model used for alignment free-text co-benefit mapping
+- `OPENAI_API_KEY`: API key used by OpenAI-backed features
+- `OPENAI_TIMEOUT_SECONDS`: shared OpenAI client timeout in seconds (default `30`)
+- `OPENAI_MAX_RETRIES`: shared OpenAI client retries (default `1`)
 
 ### 2. Install dependencies
 
@@ -134,6 +142,18 @@ Impact block behavior (implemented):
   - `0.80 * reduction_share_of_city_emissions + 0.20 * timeline_score`
   - Timeline mapping: `<5 years -> 1.0`, `5-10 years -> 0.5`, `>10 years -> 0.0`
 - Unknown `impact_text` values are rejected with `422` (raised during Impact scoring and surfaced by the API error handler).
+
+Alignment block free-text behavior (implemented):
+
+- Alignment maps `requestData.cityDataList[].cityStrategicPreferenceOther` to co-benefit labels using OpenAI structured output parsing.
+- The mapping output is constrained to the current action-catalog taxonomy:
+  - `air_quality`, `cost_of_living`, `habitat`, `housing`, `mobility`, `stakeholder_engagement`, `water_quality`
+- `unmappable_preference_fragments` are captured when user intent cannot be confidently mapped to allowed labels.
+- Temporary scoring heuristic (future implementation note):
+  - `other_component_value = matched_preferred_co_benefits / total_preferred_co_benefits`
+  - This overlap-count scoring is intentionally simple until richer co-benefit scoring semantics are defined.
+- Fail-open behavior:
+  - blank free-text, model misconfiguration, timeout, or parse failure results in `other_component_value = 0.0` with fallback evidence.
 
 Response fields:
 
@@ -294,6 +314,8 @@ What each `requests/{UTC_TIMESTAMP}Z_{internal_request_id}/` run folder contains
 - Event metadata such as timestamp, request ID, event index, event/step type, and payload
 - `event_index` is shared between a summary event and its matching detail file, so `summary.jsonl` and `NNN_<step>.json` are directly pairable
 - Timing/count summaries plus request-scoped traceability in a single run directory
+- For the free-text other-preference feature, the `alignment` step detail includes mapping evidence such as `resolved_preferred_co_benefits`, `unmappable_preference_fragments`, `matched_preferred_co_benefits`, and mapping source/model fields
+- There are currently no dedicated LLM prompt/response artifact files for co-benefit mapping; the traceability lives inside the standard alignment evidence artifacts
 
 Inspect logs:
 

@@ -608,6 +608,8 @@ def run_prioritization(
             locode,
             len(scored_actions),
         )
+        llm_io_payload: dict[str, object] | None = None
+        explanation_error: Exception | None = None
         with time_block("explanations") as block:
             try:
                 explanations_by_action_id, llm_io_payload = generate_explanations(
@@ -617,83 +619,86 @@ def run_prioritization(
                     city_preference_other_text=city_preference_other_text,
                     excluded_actions_free_text=excluded_actions_free_text,
                 )
-                llm_input_payload = llm_io_payload.get("llm_input")
-                if isinstance(llm_input_payload, dict):
-                    prompt_text = llm_input_payload.get("prompt_text")
-                    if isinstance(prompt_text, str):
-                        prompt_file = artifact_writer.write_run_text_file(
-                            "llm/explanations_prompt.txt", prompt_text
-                        )
-                        llm_input_payload["prompt_text_file"] = (
-                            prompt_file.name
-                            if prompt_file is not None
-                            else "llm/explanations_prompt.txt"
-                        )
-                        llm_input_payload["prompt_text_characters"] = len(prompt_text)
-                        llm_input_payload.pop("prompt_text", None)
-                llm_io_file = artifact_writer.write_run_file(
-                    "llm/explanations_io.json", llm_io_payload
-                )
-                explanation_ids = sorted(explanations_by_action_id.keys())
-                explanations_payload = {
-                    "requested": len(scored_actions),
-                    "generated": len(explanations_by_action_id),
-                    "generated_action_ids": explanation_ids,
-                    "llm_io_file": (
-                        llm_io_file.name if llm_io_file is not None else "llm/explanations_io.json"
-                    ),
-                    "elapsed_seconds": block.elapsed_seconds,
-                }
-                explanations_event_index = artifact_writer.write_event(
-                    "explanations.completed", explanations_payload
-                )
-                artifact_writer.write_step_detail(
-                    "explanations",
-                    explanations_payload,
-                    event_index=explanations_event_index,
-                    event_type="explanations.completed",
-                )
-                logger.info(
-                    "Explanation generation completed internal_request_id=%s locode=%s generated=%s elapsed_seconds=%.3f",
-                    internal_request_id,
-                    locode,
-                    len(explanations_by_action_id),
-                    block.elapsed_seconds,
-                )
             except Exception as error:
-                logger.warning(
-                    "Explanation generation failed internal_request_id=%s locode=%s error=%s",
-                    internal_request_id,
-                    locode,
-                    error,
-                )
-                llm_error_file = artifact_writer.write_run_file(
-                    "llm/explanations_error.json",
-                    {
-                        "status": "failed",
-                        "locode": locode,
-                        "error": str(error),
-                        "ranked_action_ids": [item.action.action_id for item in scored_actions],
-                    },
-                )
-                explanations_failed_payload = {
-                    "requested": len(scored_actions),
-                    "generated": 0,
-                    "error": str(error),
-                    "llm_error_file": (
-                        llm_error_file.name if llm_error_file is not None else "llm/explanations_error.json"
-                    ),
-                    "elapsed_seconds": block.elapsed_seconds,
-                }
-                explanations_failed_event_index = artifact_writer.write_event(
-                    "explanations.failed", explanations_failed_payload
-                )
-                artifact_writer.write_step_detail(
-                    "explanations",
-                    explanations_failed_payload,
-                    event_index=explanations_failed_event_index,
-                    event_type="explanations.failed",
-                )
+                explanation_error = error
+        if explanation_error is None and llm_io_payload is not None:
+            llm_input_payload = llm_io_payload.get("llm_input")
+            if isinstance(llm_input_payload, dict):
+                prompt_text = llm_input_payload.get("prompt_text")
+                if isinstance(prompt_text, str):
+                    prompt_file = artifact_writer.write_run_text_file(
+                        "llm/explanations_prompt.txt", prompt_text
+                    )
+                    llm_input_payload["prompt_text_file"] = (
+                        prompt_file.name
+                        if prompt_file is not None
+                        else "llm/explanations_prompt.txt"
+                    )
+                    llm_input_payload["prompt_text_characters"] = len(prompt_text)
+                    llm_input_payload.pop("prompt_text", None)
+            llm_io_file = artifact_writer.write_run_file(
+                "llm/explanations_io.json", llm_io_payload
+            )
+            explanation_ids = sorted(explanations_by_action_id.keys())
+            explanations_payload = {
+                "requested": len(scored_actions),
+                "generated": len(explanations_by_action_id),
+                "generated_action_ids": explanation_ids,
+                "llm_io_file": (
+                    llm_io_file.name if llm_io_file is not None else "llm/explanations_io.json"
+                ),
+                "elapsed_seconds": block.elapsed_seconds,
+            }
+            explanations_event_index = artifact_writer.write_event(
+                "explanations.completed", explanations_payload
+            )
+            artifact_writer.write_step_detail(
+                "explanations",
+                explanations_payload,
+                event_index=explanations_event_index,
+                event_type="explanations.completed",
+            )
+            logger.info(
+                "Explanation generation completed internal_request_id=%s locode=%s generated=%s elapsed_seconds=%.3f",
+                internal_request_id,
+                locode,
+                len(explanations_by_action_id),
+                block.elapsed_seconds,
+            )
+        elif explanation_error is not None:
+            logger.warning(
+                "Explanation generation failed internal_request_id=%s locode=%s error=%s",
+                internal_request_id,
+                locode,
+                explanation_error,
+            )
+            llm_error_file = artifact_writer.write_run_file(
+                "llm/explanations_error.json",
+                {
+                    "status": "failed",
+                    "locode": locode,
+                    "error": str(explanation_error),
+                    "ranked_action_ids": [item.action.action_id for item in scored_actions],
+                },
+            )
+            explanations_failed_payload = {
+                "requested": len(scored_actions),
+                "generated": 0,
+                "error": str(explanation_error),
+                "llm_error_file": (
+                    llm_error_file.name if llm_error_file is not None else "llm/explanations_error.json"
+                ),
+                "elapsed_seconds": block.elapsed_seconds,
+            }
+            explanations_failed_event_index = artifact_writer.write_event(
+                "explanations.failed", explanations_failed_payload
+            )
+            artifact_writer.write_step_detail(
+                "explanations",
+                explanations_failed_payload,
+                event_index=explanations_failed_event_index,
+                event_type="explanations.failed",
+            )
         timings["explanations"] = block.elapsed_seconds
     else:
         artifact_writer.write_event(

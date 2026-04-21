@@ -232,12 +232,6 @@ Hard legal requirements are enforced in the Hard Filter stage.
 - Candidate actions (already hard-filtered)
   - Source: `Valid Actions for Scoring`
 
-Known mock-data limitation:
-
-- City indicators currently expose keys including `transport_logistics_employment` and `electricity_access`.
-- Action socioeconomic rules in `actions_api_mock_v2.json` currently include `employment_in_transport_and_logistics` and `electricity_access_rate`.
-- Without key aliasing/normalization, these rule keys miss city bucket lookup and produce zero contribution for those indicators.
-
 ### Outputs
 
 - Feasibility scores per action
@@ -297,7 +291,7 @@ This step combines the three pillar scores into a single ranking score and produ
 ### Outputs
 
 - Final prioritized action list
-  - Output: `ranked_action_ids` plus `ranked_actions[]` payload items containing `rank`, pillar scores, final score, compact `evidence_summary`, and `explanation` placeholder
+  - Output: `ranked_action_ids` plus `ranked_actions[]` payload items containing `rank`, pillar scores, final score, compact `evidence_summary`, and optional `explanation`
 
 ```mermaid
 graph TD

@@ -55,11 +55,11 @@ Source: Notion “Data Reviews” (exclusion intent)
 
 - **Current (v1)**: optional LLM explanations are generated after ranking from
   implemented in-memory evidence (impact/alignment/feasibility/hard-filter).
-- **Current limitation**: explanations cannot yet reason over future-work
-  features that are still stubs, including:
+- **Current limitations**:
+  - explanations cannot yet reason over future-work features that are still stubs, including:
   - semantic free-text exclusions (`excludedActionsFreeText`)
-  - free-text “other preference” matching (`cityStrategicPreferenceOther`)
   - richer implementation-note generation from non-blocking legal constraints
+  - explanations do not yet receive dedicated co-benefit mapping artifacts such as resolved preferred co-benefits or unmappable fragments for `cityStrategicPreferenceOther`; they rely on downstream alignment evidence plus the raw request context instead.
 - **Expectation**: explanations should explicitly avoid inventing reasoning for
   these unimplemented signals until their scoring/evidence pipelines exist.
 

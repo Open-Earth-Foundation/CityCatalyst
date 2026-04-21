@@ -3,6 +3,7 @@ Integration smoke tests for the `/v1/prioritize` endpoint.
 """
 
 from dataclasses import dataclass
+import time
 
 import pytest
 from fastapi.testclient import TestClient
@@ -684,5 +685,107 @@ def test_prioritize_fails_open_when_explanation_generation_errors(
         result = response.json()["results"][0]
         assert result["ranked_action_ids"] == ["A_1"]
         assert result["ranked_actions"][0]["explanation"] is None
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+def test_prioritize_logs_non_zero_explanation_elapsed_time(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Explanation completion logs should report measured elapsed time."""
+    city = CityData(
+        comuna_name="Santiago",
+        locode="CL-SCL",
+        region_name="Metropolitana",
+        comuna_code="13101",
+        region_code="13",
+        city_context=[],
+    )
+    actions = [Action(action_id="A_1", action_name="Action one")]
+    mock_city_client = MockCityDataApiClient(city=city)
+    mock_action_client = MockActionDataApiClient(actions=actions)
+    mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    logged_completion_elapsed_seconds: list[float] = []
+
+    def delayed_explanation_service(
+        *,
+        locode: str,
+        scored_actions: list[object],
+        city_preference_sectors: list[str],
+        city_preference_other_text: str | None,
+        excluded_actions_free_text: str | None,
+    ) -> tuple[dict[str, str], dict[str, object]]:
+        """Return one explanation after a small delay."""
+        del (
+            locode,
+            city_preference_sectors,
+            city_preference_other_text,
+            excluded_actions_free_text,
+        )
+        time.sleep(0.01)
+        return {"A_1": "Delayed explanation"}, {
+            "status": "completed",
+            "provider": "mock",
+            "llm_input": {"curated_actions_count": len(scored_actions)},
+            "llm_output": {"explanations_by_action_id": {"A_1": "Delayed explanation"}},
+        }
+
+    def capture_info(message: str, *args: object, **kwargs: object) -> None:
+        """Capture the elapsed time logged for explanation completion."""
+        del kwargs
+        if message.startswith("Explanation generation completed"):
+            logged_completion_elapsed_seconds.append(float(args[3]))
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
+    monkeypatch.setattr(
+        prioritizer_orchestrator, "generate_explanations", delayed_explanation_service
+    )
+    monkeypatch.setattr(prioritizer_orchestrator.logger, "info", capture_info)
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post(
+                "/v1/prioritize",
+                json={
+                    "meta": {
+                        "requestId": "req-explanation-timing",
+                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                        "backendConsumer": "hiap-meed",
+                        "upstreamProvider": "city_catalyst_frontend",
+                        "apiContext": {
+                            "endpoint": "POST /prioritizer/v1/start_prioritization",
+                            "locodes": ["CL-SCL"],
+                        },
+                        "totalRecords": 1,
+                    },
+                    "requestData": {
+                        "requestedLanguages": ["en"],
+                        "createExplanations": True,
+                        "cityDataList": [
+                            {
+                                "locode": "CL-SCL",
+                                "countryCode": "CL",
+                                "populationSize": 1000,
+                                "excludedActionsFreeText": None,
+                                "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceOther": None,
+                                "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
+                            }
+                        ],
+                    },
+                },
+            )
+
+        assert response.status_code == 200
+        assert logged_completion_elapsed_seconds
+        assert logged_completion_elapsed_seconds[0] > 0.0
+        result = response.json()["results"][0]
+        assert result["ranked_actions"][0]["explanation"] == "Delayed explanation"
     finally:
         app.dependency_overrides.clear()

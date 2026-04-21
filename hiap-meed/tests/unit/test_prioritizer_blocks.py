@@ -15,6 +15,7 @@ from app.modules.prioritizer.blocks import (
     impact,
 )
 from app.modules.prioritizer.internal_models import Action, CityData
+from app.modules.prioritizer.models import CityApiItem
 from app.services.data_clients import (
     MockActionDataApiClient,
     MockCityDataApiClient,
@@ -75,6 +76,48 @@ def _load_city_emissions_by_gpc_ref() -> dict[str, float]:
             activity.get("totalEmissions") or 0.0 for activity in activities
         )
     return emissions_by_gpc_ref
+
+
+@pytest.mark.unit
+def test_mock_city_loader_keeps_renamed_indicator_keys() -> None:
+    """Mock city parsing preserves renamed socioeconomic indicators in raw/context."""
+    city = _load_mock_city()
+
+    assert "employment_in_transport_and_logistics" in city.raw
+    assert "electricity_access_rate" in city.raw
+    city_context_names = {
+        row["attribute_name"] for row in city.city_context if "attribute_name" in row
+    }
+    assert "employment_in_transport_and_logistics" in city_context_names
+    assert "electricity_access_rate" in city_context_names
+
+
+@pytest.mark.unit
+def test_city_api_item_ignores_legacy_indicator_names() -> None:
+    """Legacy city indicator names are ignored so mismatches remain visible."""
+    city = CityApiItem.model_validate(
+        {
+            "comuna_name": "Iquique",
+            "locode": "CL IQQ",
+            "countryCode": "CL",
+            "region_name": "Tarapaca",
+            "comuna_code": "CL01101",
+            "region_code": "CL01",
+            "transport_logistics_employment": {
+                "attribute_value": 7.35,
+                "attribute_units": "percent",
+                "attribute_category": "low",
+            },
+            "electricity_access": {
+                "attribute_value": 100.0,
+                "attribute_units": "percent",
+                "attribute_category": "very low",
+            },
+        }
+    )
+
+    assert city.employment_in_transport_and_logistics is None
+    assert city.electricity_access_rate is None
 
 
 @pytest.mark.unit
@@ -267,17 +310,20 @@ def test_alignment_block_with_mock_api_data() -> None:
 
 
 @pytest.mark.unit
-def test_feasibility_block_with_mock_api_data() -> None:
+def test_feasibility_block_with_mock_api_data(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     """Feasibility block computes legal+socio canonical scores and evidence."""
     actions = _load_mock_actions()
     city = _load_mock_city()
     legal_requirements = _load_mock_legal_requirements()
 
-    result = feasibility.run(
-        actions=actions,
-        city=city,
-        legal_requirements_by_action_id=legal_requirements,
-    )
+    with caplog.at_level("WARNING", logger="app.modules.prioritizer.blocks.feasibility"):
+        result = feasibility.run(
+            actions=actions,
+            city=city,
+            legal_requirements_by_action_id=legal_requirements,
+        )
 
     assert len(result.score_by_action_id) == len(actions)
     assert all(0.0 <= score <= 1.0 for score in result.score_by_action_id.values())
@@ -287,6 +333,32 @@ def test_feasibility_block_with_mock_api_data() -> None:
     assert first_action_evidence["feasibility_score"] == pytest.approx(
         first_action_evidence["soft_legal_contribution"]
         + first_action_evidence["socioeconomic_indicators_contribution"]
+    )
+    first_action_rows = {
+        row["action_socioeconomic_indicator_key"]: row
+        for row in first_action_evidence["socioeconomic_indicator_rows"]
+    }
+    assert (
+        first_action_rows["employment_in_transport_and_logistics"][
+            "city_socioeconomic_bucket_label"
+        ]
+        == "low"
+    )
+    assert (
+        first_action_rows["electricity_access_rate"][
+            "city_socioeconomic_bucket_label"
+        ]
+        == "very_low"
+    )
+    missing_indicator_messages = [
+        record.message
+        for record in caplog.records
+        if "Missing city socioeconomic indicator" in record.message
+    ]
+    assert not any(
+        "employment_in_transport_and_logistics" in message
+        or "electricity_access_rate" in message
+        for message in missing_indicator_messages
     )
 
 

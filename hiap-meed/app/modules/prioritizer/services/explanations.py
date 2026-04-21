@@ -26,6 +26,8 @@ PROMPT_FILE_PATH = (
 SYSTEM_PROMPT_FILE_PATH = (
     Path(__file__).resolve().parents[1] / "prompts" / "ranking_explanation_system.md"
 )
+EXPLANATION_FREE_TEXT_MAX_CHARS = 400
+EXPLANATION_PROMPT_WARNING_CHARS = 20_000
 
 
 class ExplanationItem(BaseModel):
@@ -71,11 +73,23 @@ def generate_explanations(
             "OPENAI_API_KEY must be set when createExplanations=true"
         )
 
+    # Clamp free-text request fields before they reach the prompt.
+    truncated_city_preference_other_text = _truncate_explanation_free_text(
+        value=city_preference_other_text,
+        field_name="city_preference_other_text",
+        locode=locode,
+    )
+    truncated_excluded_actions_free_text = _truncate_explanation_free_text(
+        value=excluded_actions_free_text,
+        field_name="excluded_actions_free_text",
+        locode=locode,
+    )
+
     curated_actions = [
         _build_curated_action_payload(
             scored_action=scored_action,
-            city_preference_other_text=city_preference_other_text,
-            excluded_actions_free_text=excluded_actions_free_text,
+            city_preference_other_text=truncated_city_preference_other_text,
+            excluded_actions_free_text=truncated_excluded_actions_free_text,
         )
         for scored_action in scored_actions
     ]
@@ -83,9 +97,14 @@ def generate_explanations(
     prompt = _build_prompt(
         locode=locode,
         city_preference_sectors=city_preference_sectors,
-        city_preference_other_text=city_preference_other_text,
-        excluded_actions_free_text=excluded_actions_free_text,
+        city_preference_other_text=truncated_city_preference_other_text,
+        excluded_actions_free_text=truncated_excluded_actions_free_text,
         curated_actions=curated_actions,
+    )
+    _warn_if_prompt_is_large(
+        prompt=prompt,
+        locode=locode,
+        action_count=len(scored_actions),
     )
     system_prompt = _read_system_prompt_template()
     logger.info(
@@ -135,8 +154,8 @@ def generate_explanations(
         "request_context": {
             "locode": locode,
             "city_preference_sectors": city_preference_sectors,
-            "city_preference_other_text": city_preference_other_text,
-            "excluded_actions_free_text": excluded_actions_free_text,
+            "city_preference_other_text": truncated_city_preference_other_text,
+            "excluded_actions_free_text": truncated_excluded_actions_free_text,
             "ranked_action_ids": sorted(expected_action_ids),
         },
         "llm_input": {
@@ -150,6 +169,40 @@ def generate_explanations(
         },
     }
     return explanations_by_action_id, llm_io_payload
+
+
+def _truncate_explanation_free_text(
+    *, value: str | None, field_name: str, locode: str
+) -> str | None:
+    """Truncate explanation-only request text inputs to a safe prompt budget."""
+    if value is None:
+        return None
+    if len(value) <= EXPLANATION_FREE_TEXT_MAX_CHARS:
+        return value
+
+    logger.warning(
+        "Truncating explanation input field `%s` for locode=%s from %s to %s characters",
+        field_name,
+        locode,
+        len(value),
+        EXPLANATION_FREE_TEXT_MAX_CHARS,
+    )
+    return value[:EXPLANATION_FREE_TEXT_MAX_CHARS]
+
+
+def _warn_if_prompt_is_large(*, prompt: str, locode: str, action_count: int) -> None:
+    """Warn when the final explanation prompt is unusually large."""
+    prompt_characters = len(prompt)
+    if prompt_characters <= EXPLANATION_PROMPT_WARNING_CHARS:
+        return
+
+    logger.warning(
+        "Large explanation prompt detected locode=%s actions=%s prompt_characters=%s threshold=%s",
+        locode,
+        action_count,
+        prompt_characters,
+        EXPLANATION_PROMPT_WARNING_CHARS,
+    )
 
 
 def _build_prompt(

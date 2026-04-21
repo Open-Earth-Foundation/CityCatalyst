@@ -121,6 +121,7 @@ Exclusions:
 
 - The frontend provides exclusions as `excludedActionsFreeText` (free text).
 - Current behavior: this is a **stub** and does not exclude actions yet (the text is attached to metadata for downstream flagging).
+- When `requestData.createExplanations=true`, `excludedActionsFreeText` is truncated to at most `400` characters before explanation prompt rendering; the backend logs a warning when truncation happens.
 
 Hard legal requirements:
 
@@ -175,6 +176,8 @@ Explanation stage behavior:
 
 - Explanations are generated only when `requestData.createExplanations=true`.
 - Explanations are generated from post-ranking evidence and do not change ranks.
+- `cityStrategicPreferenceOther` and `excludedActionsFreeText` are each truncated to at most `400` characters before they are inserted into the explanation prompt.
+- The backend logs a warning if either field is truncated or if the final explanation prompt becomes unusually large.
 - If explanation generation fails or times out, the endpoint fails open and
   returns normal ranking output with `explanation=null`.
 

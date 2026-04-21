@@ -2,11 +2,18 @@
 
 from __future__ import annotations
 
+import pytest
+
+from app.modules.prioritizer.services import explanations as explanations_service
 from app.modules.prioritizer.internal_models import Action, ScoredAction
 from app.modules.prioritizer.services.explanations import (
+    EXPLANATION_FREE_TEXT_MAX_CHARS,
+    EXPLANATION_PROMPT_WARNING_CHARS,
     ExplanationItem,
     _build_curated_action_payload,
     _rows_to_explanations,
+    _truncate_explanation_free_text,
+    _warn_if_prompt_is_large,
 )
 
 
@@ -101,3 +108,43 @@ def test_rows_to_explanations_filters_unknown_ids_and_empty_text() -> None:
     )
 
     assert result == {"A_1": "First explanation."}
+
+
+def test_truncate_explanation_free_text_warns_and_clamps(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Oversized explanation inputs should be truncated with a warning."""
+    oversized_text = "x" * (EXPLANATION_FREE_TEXT_MAX_CHARS + 25)
+    warning_messages: list[str] = []
+
+    def fake_warning(message: str, *args: object) -> None:
+        warning_messages.append(message % args)
+
+    monkeypatch.setattr(explanations_service.logger, "warning", fake_warning)
+    truncated = _truncate_explanation_free_text(
+        value=oversized_text,
+        field_name="city_preference_other_text",
+        locode="CL IQQ",
+    )
+
+    assert truncated == oversized_text[:EXPLANATION_FREE_TEXT_MAX_CHARS]
+    assert any(
+        "Truncating explanation input field `city_preference_other_text`" in message
+        for message in warning_messages
+    )
+
+
+def test_warn_if_prompt_is_large_logs_warning(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Oversized explanation prompts should emit a warning."""
+    prompt = "x" * (EXPLANATION_PROMPT_WARNING_CHARS + 1)
+    warning_messages: list[str] = []
+
+    def fake_warning(message: str, *args: object) -> None:
+        warning_messages.append(message % args)
+
+    monkeypatch.setattr(explanations_service.logger, "warning", fake_warning)
+    _warn_if_prompt_is_large(prompt=prompt, locode="CL IQQ", action_count=25)
+
+    assert any("Large explanation prompt detected" in message for message in warning_messages)

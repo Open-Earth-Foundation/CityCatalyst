@@ -37,6 +37,7 @@ What these are used for:
 - `excludedActionsFreeText` is intended to remove actions, but is currently still a placeholder.
 - `cityStrategicPreferenceSectors[]` influences the Alignment block.
 - `cityStrategicPreferenceOther` is intended to influence the Alignment block, but is currently still a placeholder.
+- When explanations are enabled, `excludedActionsFreeText` and `cityStrategicPreferenceOther` are each truncated to at most `400` characters before the LLM prompt is rendered, and the backend logs a warning if truncation happens.
 - `totalEmissions` values are the main city emissions numbers used in the Impact block.
 
 ### City context data
@@ -806,7 +807,9 @@ For each ranked action, the output includes:
 - `explanation`
 
 Important current behavior:
-- `explanation` is always `null`
+- `explanation` is `null` unless `requestData.createExplanations=true` and the explanation call succeeds
+- The explanation stage truncates `excludedActionsFreeText` and `cityStrategicPreferenceOther` to at most `400` characters each before prompt rendering
+- The backend logs a warning if either field is truncated or if the final explanation prompt becomes unusually large
 
 Planned future behavior:
 - `explanation` is reserved for a future narrative explanation of why the action ranked where it did

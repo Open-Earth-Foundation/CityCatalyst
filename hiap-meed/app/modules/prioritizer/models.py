@@ -165,8 +165,8 @@ class CityApiItem(BaseModel):
     area: float | None = None
     unemployment_rate: CityIndicator | None = None
     renter_share: CityIndicator | None = None
-    transport_logistics_employment: CityIndicator | None = None
-    electricity_access: CityIndicator | None = None
+    employment_in_transport_and_logistics: CityIndicator | None = None
+    electricity_access_rate: CityIndicator | None = None
     industry_construction_employment: CityIndicator | None = None
     median_household_income: CityIndicator | None = None
     public_transport_share: CityIndicator | None = None

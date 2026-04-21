@@ -97,15 +97,15 @@ def test_prioritize_e2e_with_mock_api_payloads(
             "icare_0139",
             "icare_0121",
             "ipcc_0105",
-            "icare_0040",
             "icare_0156",
             "icare_0172",
             "icare_0176",
+            "icare_0040",
+            "c40_0049",
+            "icare_0164",
             "ipcc_0050",
             "icare_0072",
             "icare_0099",
-            "c40_0018",
-            "icare_0045",
         ]
         assert ranked_action_ids == expected_ranked_ids
         assert [item["action_id"] for item in ranked_actions] == expected_ranked_ids

@@ -51,6 +51,18 @@ Source: Notion “Data Reviews” (exclusion intent)
   - `hiap-meed/app/modules/prioritizer/services/co_benefit_mapping.py`
   - `hiap-meed/app/modules/prioritizer/blocks/alignment.py`
 
+## Post-ranking explanations (new v1 stage)
+
+- **Current (v1)**: optional LLM explanations are generated after ranking from
+  implemented in-memory evidence (impact/alignment/feasibility/hard-filter).
+- **Current limitation**: explanations cannot yet reason over future-work
+  features that are still stubs, including:
+  - semantic free-text exclusions (`excludedActionsFreeText`)
+  - free-text “other preference” matching (`cityStrategicPreferenceOther`)
+  - richer implementation-note generation from non-blocking legal constraints
+- **Expectation**: explanations should explicitly avoid inventing reasoning for
+  these unimplemented signals until their scoring/evidence pipelines exist.
+
 ## Replace mock data clients with real upstream API calls
 
 - **Current**: the pipeline defaults to mock (file-backed) data. The `Api*` data

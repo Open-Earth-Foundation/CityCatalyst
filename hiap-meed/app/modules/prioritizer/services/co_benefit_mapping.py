@@ -168,7 +168,7 @@ def _resolve_from_llm(
     client = create_openai_client()
     completion = client.chat.completions.parse(
         model=model_name,
-        temperature=0,
+        temperature=0.0,
         response_format=CoBenefitMappingResponse,
         messages=[
             {"role": "system", "content": system_prompt},

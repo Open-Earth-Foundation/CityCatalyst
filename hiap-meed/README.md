@@ -41,9 +41,11 @@ HIAP_MEED_ACTION_DATA_SOURCE=mock
 HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE=mock
 HIAP_MEED_TOP_N=20
 HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL=
+HIAP_MEED_EXPLANATIONS_ENABLED=true
+HIAP_MEED_EXPLANATIONS_MODEL=
 OPENAI_API_KEY=
 OPENAI_TIMEOUT_SECONDS=30
-OPENAI_MAX_RETRIES=1
+OPENAI_MAX_RETRIES=3
 ```
 
 Variables:
@@ -61,7 +63,9 @@ Variables:
 - `HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL`: OpenAI model used for alignment free-text co-benefit mapping
 - `OPENAI_API_KEY`: API key used by OpenAI-backed features
 - `OPENAI_TIMEOUT_SECONDS`: shared OpenAI client timeout in seconds (default `30`)
-- `OPENAI_MAX_RETRIES`: shared OpenAI client retries (default `1`)
+- `HIAP_MEED_EXPLANATIONS_ENABLED`: global switch for post-ranking explanation calls
+- `HIAP_MEED_EXPLANATIONS_MODEL`: model name used when `createExplanations=true`
+- `OPENAI_MAX_RETRIES`: shared OpenAI client retries (default `3`)
 
 ### 2. Install dependencies
 
@@ -112,11 +116,14 @@ Request body:
 
 - The endpoint accepts the frontend envelope `PrioritizerApiRequest` (see `app/modules/prioritizer/models.py`).
 - Single-city and multi-city payloads both use `requestData.cityDataList`.
+- Optional flag: `requestData.createExplanations` controls whether the post-ranking
+  explanation stage is executed.
 
 Exclusions:
 
 - The frontend provides exclusions as `excludedActionsFreeText` (free text).
 - Current behavior: this is a **stub** and does not exclude actions yet (the text is attached to metadata for downstream flagging).
+- When `requestData.createExplanations=true`, `excludedActionsFreeText` is truncated to at most `400` characters before explanation prompt rendering; the backend logs a warning when truncation happens.
 
 Hard legal requirements:
 
@@ -160,6 +167,10 @@ Alignment block free-text behavior (implemented):
 - Fail-open behavior:
   - blank free-text results in a neutral `other_component_value = 0.5`
   - model misconfiguration, timeout, or parse failure also result in a neutral `other_component_value = 0.5`, with fallback evidence showing the mapping did not succeed
+- Stability note:
+  - The prompt uses `temperature=0.0` and few-shot examples to reduce variation, but the mapping still depends on an external LLM and can remain non-deterministic.
+  - That means end-to-end ranking tests that rely on live mapping output can occasionally drift or fail even when application code has not changed.
+  - For fully deterministic tests, prefer mocking the co-benefit mapping step.
 
 Response fields:
 
@@ -174,16 +185,25 @@ Response fields:
     - `alignment_score` (`float`)
     - `feasibility_score` (`float`)
     - `evidence_summary` (`object`): compact explainability snapshot from hard-filter/impact/alignment/feasibility evidence
-    - `explanation` (`string | null`): reserved placeholder for future LLM-generated explanation text
+    - `explanation` (`string | null`): optional qualitative explanation text when `createExplanations=true`
   - `metadata` (`object`): request IDs, timings, counts, and hard-filter evidence.
 
 Ranking details:
 
 - Top-N selection is deterministic and uses this sort order:
-  1) `final_score` desc
-  2) tie-break by pillar scores in descending weight priority
-  3) `action_id` asc as the final fallback
+  1. `final_score` desc
+  2. tie-break by pillar scores in descending weight priority
+  3. `action_id` asc as the final fallback
 - Ranks are assigned after top-N truncation using competitive ranking (`1,2,2,4`).
+
+Explanation stage behavior:
+
+- Explanations are generated only when `requestData.createExplanations=true`.
+- Explanations are generated from post-ranking evidence and do not change ranks.
+- `cityStrategicPreferenceOther` and `excludedActionsFreeText` are each truncated to at most `400` characters before they are inserted into the explanation prompt.
+- The backend logs a warning if either field is truncated or if the final explanation prompt becomes unusually large.
+- If explanation generation fails or times out, the endpoint fails open and
+  returns normal ranking output with `explanation=null`.
 
 Example JSON request bodies (using mock data from `data/`):
 
@@ -203,6 +223,7 @@ Example JSON request bodies (using mock data from `data/`):
   "requestData": {
     "requestedLanguages": ["en"],
     "topN": 20,
+    "createExplanations": false,
     "cityDataList": [
       {
         "locode": "CL IQQ",
@@ -271,7 +292,7 @@ Example response:
           "discarded_excluded": 0,
           "discarded_legal": 0,
           "ranked_actions": 2
-        },
+        }
       }
     }
   ]
@@ -285,12 +306,6 @@ Common validation errors:
 - Missing `locode` or empty `locode` in a city entry -> HTTP `422`.
 
 Note: city, action, legal, and policy-signal clients now resolve to `mock` (file-backed) or `api` (placeholder until real upstream wiring is added). Default source for all four is `mock`, so local and Docker runs use checked-in mock payloads by default. Real upstream HTTP wiring is still pending; when wired, clients should use a synchronous HTTP client (e.g. `httpx.Client`). FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
-
-Known limitation (mock data):
-
-- The Feasibility socio-economic lookup currently expects city keys like `transport_logistics_employment` and `electricity_access`.
-- `actions_api_mock_v2.json` currently uses `employment_in_transport_and_logistics` and `electricity_access_rate` for some `indicator_key` values.
-- Until key normalization or aligned naming is implemented, those indicators are treated as missing and contribute `0` in the socio-economic feasibility component.
 
 ### 5. Logging and artifacts
 
@@ -316,6 +331,9 @@ What each `requests/{UTC_TIMESTAMP}Z_{internal_request_id}/` run folder contains
 - `NNN_<step>.json`: concise per-step detail files (fetch, filter, score, response summary)
 - `response_full.json`: full per-city API response payload in the same shape returned by `/v1/prioritize`
 - `input_snapshot.json`: reproducibility-critical run inputs (`locode`, resolved weights, resolved `top_n`, frontend city preference fields, emissions by GPC ref)
+- `llm/explanations_io.json`: explanation-stage LLM request/response artifact (only when explanations are generated successfully)
+- `llm/explanations_prompt.txt`: plain-text rendered user prompt with preserved newlines (only when explanations are generated successfully)
+- `llm/explanations_error.json`: explanation-stage failure artifact with request context and error (only when explanation generation fails)
 - `manifest.json`: run-level index of generated files, key counts, and pointers for top-ranked rows vs full evidence files
 - Event metadata such as timestamp, request ID, event index, event/step type, and payload
 - `event_index` is shared between a summary event and its matching detail file, so `summary.jsonl` and `NNN_<step>.json` are directly pairable
@@ -357,12 +375,6 @@ docker run -it --rm -p 8000:8000 --env-file .env hiap-meed-app
 To persist file logs and per-request artifacts on your machine (under `logs/`, including `logs/requests/`), bind-mount the host `logs` directory to `/app/logs` in the container (this matches default `LOG_DIR=logs`):
 
 ```bash
-docker run -it --rm -p 8000:8000 --env-file .env -v "%cd%\logs:/app/logs" hiap-meed-app
-```
-
-On **Windows Command Prompt**, from the `hiap-meed` directory:
-
-```cmd
 docker run -it --rm -p 8000:8000 --env-file .env -v "%cd%\logs:/app/logs" hiap-meed-app
 ```
 

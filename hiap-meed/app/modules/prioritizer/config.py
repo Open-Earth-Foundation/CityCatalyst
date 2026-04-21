@@ -18,7 +18,6 @@ DEFAULT_WEIGHTS: dict[str, float] = {
 
 REQUIRED_WEIGHT_KEYS: set[str] = set(DEFAULT_WEIGHTS.keys())
 DEFAULT_TOP_N = 20
-
 # Impact scoring knobs
 IMPACT_TEXT_TO_MULTIPLIER: dict[str, float] = {
     "very low": 0.2,
@@ -46,6 +45,7 @@ ALIGNMENT_WEIGHT_OTHER = 0.05
 # Feasibility scoring knobs
 FEASIBILITY_WEIGHT_LEGAL = 0.50
 FEASIBILITY_WEIGHT_SOCIO = 0.50
+
 
 def validate_weights(weights: Mapping[str, float] | None) -> dict[str, float]:
     """
@@ -172,3 +172,34 @@ def get_alignment_other_preference_mapping_model() -> str | None:
     if raw_value is None or not raw_value.strip():
         return None
     return raw_value.strip()
+
+
+def parse_bool_env(value: str | None, *, default: bool) -> bool:
+    """Parse common env-var boolean encodings with a fallback default."""
+    if value is None:
+        return default
+    normalized = value.strip().lower()
+    if not normalized:
+        return default
+    if normalized in {"1", "true", "yes", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "off"}:
+        return False
+    return default
+
+
+def is_explanations_enabled() -> bool:
+    """Return global feature switch for LLM explanation generation."""
+    raw_value = os.getenv("HIAP_MEED_EXPLANATIONS_ENABLED")
+    return parse_bool_env(raw_value, default=True)
+
+
+def get_explanations_model() -> str | None:
+    """Return configured explanation model name, if set."""
+    value = os.getenv("HIAP_MEED_EXPLANATIONS_MODEL")
+    if value is None:
+        return None
+    normalized = value.strip()
+    if not normalized:
+        return None
+    return normalized

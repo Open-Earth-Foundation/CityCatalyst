@@ -43,7 +43,9 @@ logger = logging.getLogger(__name__)
 
 def _normalize_preference_sectors(city_preference_sectors: list[str]) -> set[str]:
     """Normalize city strategic preference sector labels."""
-    return {sector.strip().lower() for sector in city_preference_sectors if sector.strip()}
+    return {
+        sector.strip().lower() for sector in city_preference_sectors if sector.strip()
+    }
 
 
 def run(
@@ -129,9 +131,7 @@ def run(
             "other_preference_input_text": city_preference_other_text,
             "available_co_benefit_keys": available_co_benefit_keys,
             "resolved_preferred_co_benefits": resolved_preferred_co_benefits,
-            "resolved_preferred_co_benefits_count": len(
-                resolved_preferred_co_benefits
-            ),
+            "resolved_preferred_co_benefits_count": len(resolved_preferred_co_benefits),
             "unmappable_preference_fragments": unmappable_preference_fragments,
             "action_co_benefit_keys": action_co_benefit_keys,
             "matched_preferred_co_benefits": matched_preferred_co_benefits,

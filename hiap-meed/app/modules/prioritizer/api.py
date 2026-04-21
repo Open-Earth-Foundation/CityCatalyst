@@ -95,10 +95,11 @@ def prioritize(
 
     try:
         logger.info(
-            "Prioritization request received frontend_request_id=%s cities=%s requested_top_n=%s",
+            "Prioritization request received frontend_request_id=%s cities=%s requested_top_n=%s create_explanations=%s",
             request_trace_id,
             len(request.requestData.cityDataList),
             request.requestData.topN,
+            request.requestData.createExplanations,
         )
         results: list[PrioritizerApiCityResult] = []
         for city_input in request.requestData.cityDataList:
@@ -114,6 +115,7 @@ def prioritize(
                 action_data_api_client=action_data_api_client,
                 legal_data_api_client=legal_data_api_client,
                 policy_signals_data_api_client=policy_signals_data_api_client,
+                create_explanations=request.requestData.createExplanations,
             )
             # Echo frontend request ID for response correlation in clients/logs.
             per_city_result.metadata["frontend_request_id"] = request_trace_id
@@ -160,6 +162,7 @@ def _run_for_city_input(
     policy_signals_data_api_client: (
         MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
     ),
+    create_explanations: bool,
 ) -> PrioritizationResponse:
     """
     Translate a single frontend city payload into a pipeline run.
@@ -188,5 +191,6 @@ def _run_for_city_input(
         action_data_api_client=action_data_api_client,
         legal_data_api_client=legal_data_api_client,
         policy_signals_data_api_client=policy_signals_data_api_client,
+        create_explanations=create_explanations,
     )
     return result

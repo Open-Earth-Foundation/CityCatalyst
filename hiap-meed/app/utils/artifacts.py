@@ -139,6 +139,21 @@ class ArtifactWriter:
             logger.exception("Failed to write run file `%s`", filename)
             return None
 
+    def write_run_text_file(self, filename: str, content: str) -> Path | None:
+        """Write one plain-text artifact file directly inside the run folder."""
+        if not self.enabled:
+            return None
+
+        output_path = self._run_dir / filename
+        try:
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            output_path.write_text(content, encoding="utf-8")
+            self._register_written_file(output_path)
+            return output_path
+        except Exception:
+            logger.exception("Failed to write run text file `%s`", filename)
+            return None
+
     def write_manifest(self, payload: Mapping[str, object]) -> Path | None:
         """Write run-level manifest describing generated artifact files."""
         if not self.enabled:

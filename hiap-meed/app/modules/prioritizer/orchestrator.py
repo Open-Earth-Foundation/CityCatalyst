@@ -15,6 +15,7 @@ from app.modules.prioritizer.blocks import (
 from app.modules.prioritizer.config import validate_weights
 from app.modules.prioritizer.internal_models import Action
 from app.modules.prioritizer.models import PrioritizationResponse, RankedActionResult
+from app.modules.prioritizer.services.explanations import generate_explanations
 from app.services.data_clients import (
     ApiActionDataApiClient,
     ApiCityDataApiClient,
@@ -165,6 +166,7 @@ def run_prioritization(
     policy_signals_data_api_client: (
         MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
     ),
+    create_explanations: bool,
 ) -> PrioritizationResponse:
     """
     Run the end-to-end prioritization workflow for one city request.
@@ -356,6 +358,7 @@ def run_prioritization(
     input_snapshot_payload = {
         "locode": locode,
         "resolved_top_n": top_n,
+        "create_explanations": create_explanations,
         "resolved_weights": weights,
         "city_emissions_by_gpc_ref": city_emissions_by_gpc_ref,
         "city_preference_sectors": city_preference_sectors,
@@ -520,6 +523,14 @@ def run_prioritization(
             "feasibility_actions": len(feasibility_result.score_by_action_id),
         },
     )
+    logger.info(
+        "Pillar scoring completed internal_request_id=%s locode=%s impact_actions=%s alignment_actions=%s feasibility_actions=%s",
+        internal_request_id,
+        locode,
+        len(impact_result.score_by_action_id),
+        len(alignment_result.score_by_action_id),
+        len(feasibility_result.score_by_action_id),
+    )
 
     # Phase 10: aggregate pillar scores into final ranking.
     with time_block("final_scoring") as block:
@@ -562,6 +573,14 @@ def run_prioritization(
         event_index=final_scoring_event_index,
         event_type="final_scoring.completed",
     )
+    logger.info(
+        "Final scoring completed internal_request_id=%s locode=%s ranked_actions=%s top_n=%s elapsed_seconds=%.3f",
+        internal_request_id,
+        locode,
+        len(scored_actions),
+        top_n,
+        block.elapsed_seconds,
+    )
 
     # Phase 11: attach per-block evidence into each ranked action object.
     for scored_action in scored_actions:
@@ -580,20 +599,128 @@ def run_prioritization(
             ),
         }
 
-    # Phase 12: build public ranked action payloads and response metadata.
+    # Phase 12: optionally generate post-ranking qualitative explanations.
+    explanations_by_action_id: dict[str, str] = {}
+    if create_explanations:
+        logger.info(
+            "Explanation generation started internal_request_id=%s locode=%s actions_to_explain=%s",
+            internal_request_id,
+            locode,
+            len(scored_actions),
+        )
+        with time_block("explanations") as block:
+            try:
+                explanations_by_action_id, llm_io_payload = generate_explanations(
+                    locode=locode,
+                    scored_actions=scored_actions,
+                    city_preference_sectors=city_preference_sectors,
+                    city_preference_other_text=city_preference_other_text,
+                    excluded_actions_free_text=excluded_actions_free_text,
+                )
+                llm_input_payload = llm_io_payload.get("llm_input")
+                if isinstance(llm_input_payload, dict):
+                    prompt_text = llm_input_payload.get("prompt_text")
+                    if isinstance(prompt_text, str):
+                        prompt_file = artifact_writer.write_run_text_file(
+                            "llm/explanations_prompt.txt", prompt_text
+                        )
+                        llm_input_payload["prompt_text_file"] = (
+                            prompt_file.name
+                            if prompt_file is not None
+                            else "llm/explanations_prompt.txt"
+                        )
+                        llm_input_payload["prompt_text_characters"] = len(prompt_text)
+                        llm_input_payload.pop("prompt_text", None)
+                llm_io_file = artifact_writer.write_run_file(
+                    "llm/explanations_io.json", llm_io_payload
+                )
+                explanation_ids = sorted(explanations_by_action_id.keys())
+                explanations_payload = {
+                    "requested": len(scored_actions),
+                    "generated": len(explanations_by_action_id),
+                    "generated_action_ids": explanation_ids,
+                    "llm_io_file": (
+                        llm_io_file.name if llm_io_file is not None else "llm/explanations_io.json"
+                    ),
+                    "elapsed_seconds": block.elapsed_seconds,
+                }
+                explanations_event_index = artifact_writer.write_event(
+                    "explanations.completed", explanations_payload
+                )
+                artifact_writer.write_step_detail(
+                    "explanations",
+                    explanations_payload,
+                    event_index=explanations_event_index,
+                    event_type="explanations.completed",
+                )
+                logger.info(
+                    "Explanation generation completed internal_request_id=%s locode=%s generated=%s elapsed_seconds=%.3f",
+                    internal_request_id,
+                    locode,
+                    len(explanations_by_action_id),
+                    block.elapsed_seconds,
+                )
+            except Exception as error:
+                logger.warning(
+                    "Explanation generation failed internal_request_id=%s locode=%s error=%s",
+                    internal_request_id,
+                    locode,
+                    error,
+                )
+                llm_error_file = artifact_writer.write_run_file(
+                    "llm/explanations_error.json",
+                    {
+                        "status": "failed",
+                        "locode": locode,
+                        "error": str(error),
+                        "ranked_action_ids": [item.action.action_id for item in scored_actions],
+                    },
+                )
+                explanations_failed_payload = {
+                    "requested": len(scored_actions),
+                    "generated": 0,
+                    "error": str(error),
+                    "llm_error_file": (
+                        llm_error_file.name if llm_error_file is not None else "llm/explanations_error.json"
+                    ),
+                    "elapsed_seconds": block.elapsed_seconds,
+                }
+                explanations_failed_event_index = artifact_writer.write_event(
+                    "explanations.failed", explanations_failed_payload
+                )
+                artifact_writer.write_step_detail(
+                    "explanations",
+                    explanations_failed_payload,
+                    event_index=explanations_failed_event_index,
+                    event_type="explanations.failed",
+                )
+        timings["explanations"] = block.elapsed_seconds
+    else:
+        artifact_writer.write_event(
+            "explanations.skipped",
+            {"create_explanations": False},
+        )
+        logger.info(
+            "Explanation generation skipped internal_request_id=%s locode=%s create_explanations=%s",
+            internal_request_id,
+            locode,
+            create_explanations,
+        )
+
+    # Phase 13: build public ranked action payloads and response metadata.
     ranked_actions: list[RankedActionResult] = []
     for scored_action in scored_actions:
+        action_id = scored_action.action.action_id
         ranked_actions.append(
             RankedActionResult(
-                action_id=scored_action.action.action_id,
+                action_id=action_id,
                 rank=scored_action.rank,
                 final_score=scored_action.final_score,
                 impact_score=scored_action.impact_score,
                 alignment_score=scored_action.alignment_score,
                 feasibility_score=scored_action.feasibility_score,
                 evidence_summary=_build_evidence_summary(scored_action.evidence),
-                # Placeholder for future LLM-generated narrative explanation.
-                explanation=None,
+                explanation=explanations_by_action_id.get(action_id),
             )
         )
 
@@ -611,6 +738,10 @@ def run_prioritization(
         },
         "weights": weights,
         "timings": timings,
+        "explanations": {
+            "requested": create_explanations,
+            "generated": len(explanations_by_action_id),
+        },
         "hard_filter_evidence_by_action_id": hard_filter_result.evidence,
     }
     # Build the full per-city API response shape for artifact logging.

@@ -970,7 +970,7 @@ requires-dist = [
     { name = "langgraph", specifier = ">=0.6.8" },
     { name = "langgraph-checkpoint", specifier = ">=2.1.1" },
     { name = "langgraph-prebuilt", specifier = ">=0.6.4" },
-    { name = "langgraph-sdk", specifier = ">=0.2.9" },
+    { name = "langgraph-sdk", specifier = ">=0.3.13" },
     { name = "langsmith", specifier = ">=0.7.30" },
     { name = "limits", specifier = ">=5.6.0" },
     { name = "openai", specifier = ">=2.0.0" },
@@ -1589,15 +1589,15 @@ wheels = [
 
 [[package]]
 name = "langgraph-sdk"
-version = "0.3.4"
+version = "0.3.13"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
     { name = "orjson" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/11/37/1c18ebb9090a29cd360abce7ee0d3c639fa680e20a078b8c5e85044443d9/langgraph_sdk-0.3.4.tar.gz", hash = "sha256:a8055464027c70ff7b454c0d67caec9a91c6a2bc75c66d023d3ce48773a2a774", size = 132239, upload-time = "2026-02-06T00:44:14.309Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/0e/db/77a45127dddcfea5e4256ba916182903e4c31dc4cfca305b8c386f0a9e53/langgraph_sdk-0.3.13.tar.gz", hash = "sha256:419ca5663eec3cec192ad194ac0647c0c826866b446073eb40f384f950986cd5", size = 196360, upload-time = "2026-04-07T20:34:18.766Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/74/e6/df257026e1370320b60d54492c0847631729ad80ca8d8571b55ece594281/langgraph_sdk-0.3.4-py3-none-any.whl", hash = "sha256:eb73a2fb57a4167aeb31efeaf0c4daecd2cf0c942e8a376670fd1cc636992f49", size = 67833, upload-time = "2026-02-06T00:44:12.795Z" },
+    { url = "https://files.pythonhosted.org/packages/fe/ef/64d64e9f8eea47ce7b939aa6da6863b674c8d418647813c20111645fcc62/langgraph_sdk-0.3.13-py3-none-any.whl", hash = "sha256:aee09e345c90775f6de9d6f4c7b847cfc652e49055c27a2aed0d981af2af3bd0", size = 96668, upload-time = "2026-04-07T20:34:17.866Z" },
 ]
 
 [[package]]

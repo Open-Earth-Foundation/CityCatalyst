@@ -150,7 +150,7 @@ Alignment answers: **Does this action align with what the city and policy enviro
 It combines:
 
 - Policy signals (supports, targets, funds, constrains)
-- City strategic preferences (priority sectors and political priorities)
+- City strategic preferences (priority sectors, timeframe preferences, and political priorities)
 
 Exclusions are handled in the Hard Filter stage, so Alignment only scores eligible actions.
 
@@ -160,6 +160,10 @@ Exclusions are handled in the Hard Filter stage, so Alignment only scores eligib
   - Source: `actions_policy_signals_api_mock.json` (`policy_support_score`, `policy_signals[]`)
 - City strategic preference sectors
   - Source: frontend request `cityStrategicPreferenceSectors`
+- City strategic preference timeframes
+  - Source: frontend request `cityStrategicPreferenceTimeframes`
+- Action implementation timeline
+  - Source: `Action.timelineForImplementation`
 - City strategic preference other text
   - Source: frontend request `cityStrategicPreferenceOther`, mapped to allowed co-benefit keys with OpenAI structured output
 - Action sector mapping for city preference overlap
@@ -172,7 +176,7 @@ Exclusions are handled in the Hard Filter stage, so Alignment only scores eligib
 - Alignment scores per action
   - Output: `Alignment Scores` (one score per action, used in final ranking)
 - Optional trace fields
-  - Output: `Alignment Evidence` (component values, weights, contributions, sector diagnostics, policy summaries, resolved preferred co-benefits, unmappable fragments, matched preferred co-benefits, mapping source/model)
+  - Output: `Alignment Evidence` (component values, weights, contributions, sector diagnostics, timeframe diagnostics, policy summaries, resolved preferred co-benefits, unmappable fragments, matched preferred co-benefits, mapping source/model)
 
 ```mermaid
 graph TD

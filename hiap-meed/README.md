@@ -153,8 +153,14 @@ Impact block behavior (implemented):
   - Timeline mapping: `<5 years -> 1.0`, `5-10 years -> 0.5`, `>10 years -> 0.0`
 - Unknown `impact_text` values are rejected with `422` (raised during Impact scoring and surfaced by the API error handler).
 
-Alignment block free-text behavior (implemented):
+Alignment block behavior (implemented):
 
+- Alignment also reads `requestData.cityDataList[].cityStrategicPreferenceTimeframes` and compares it against each action's `timelineForImplementation`.
+- Allowed request values are `short`, `medium`, `long`, and `no_preference`.
+- `no_preference` is mutually exclusive with the other values and is treated as a neutral `0.5` score across all actions.
+- Multiple selected timeframes use the best match across selections, with `1.0` for exact match, `0.5` for adjacent, and `0.0` for far mismatch.
+- Missing or unknown action timelines are treated as neutral `0.5` for this alignment component.
+- Alignment now uses weights: `policy=0.75`, `sector=0.15`, `other=0.05`, `timeframe=0.05`.
 - Alignment maps `requestData.cityDataList[].cityStrategicPreferenceOther` to co-benefit labels using OpenAI structured output parsing.
 - The mapping output is constrained to the current action-catalog taxonomy:
   - `air_quality`, `cost_of_living`, `habitat`, `housing`, `mobility`, `stakeholder_engagement`, `water_quality`
@@ -231,6 +237,7 @@ Example JSON request bodies (using mock data from `data/`):
         "populationSize": 125000,
         "excludedActionsFreeText": "Do not include new fossil fuel-based infrastructure ...",
         "cityStrategicPreferenceSectors": ["transportation"],
+        "cityStrategicPreferenceTimeframes": ["short", "medium"],
         "cityStrategicPreferenceOther": "Prioritize near-term air quality improvements ...",
         "cityEmissionsData": {
           "inventoryYear": null,

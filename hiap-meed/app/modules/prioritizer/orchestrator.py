@@ -128,6 +128,9 @@ def _build_evidence_summary(scored_action_evidence: dict[str, object]) -> dict[s
             "other_component_value": _safe_float(
                 alignment_evidence.get("other_component_value")
             ),
+            "timeframe_component_value": _safe_float(
+                alignment_evidence.get("timeframe_component_value")
+            ),
         },
         "feasibility": {
             "feasibility_score": _safe_float(
@@ -157,6 +160,7 @@ def run_prioritization(
     top_n: int | None,
     excluded_actions_free_text: str | None,
     city_preference_sectors: list[str],
+    city_preference_timeframes: list[str],
     city_preference_other_text: str | None,
     city_emissions_by_gpc_ref: dict[str, float],
     internal_request_id: UUID,
@@ -362,6 +366,7 @@ def run_prioritization(
         "resolved_weights": weights,
         "city_emissions_by_gpc_ref": city_emissions_by_gpc_ref,
         "city_preference_sectors": city_preference_sectors,
+        "city_preference_timeframes": city_preference_timeframes,
         "city_preference_other_text": city_preference_other_text,
         "excluded_actions_free_text": excluded_actions_free_text,
     }
@@ -463,6 +468,7 @@ def run_prioritization(
             hard_filter_result.valid_actions,
             policy_signals_by_action_id=policy_signals_by_action_id,
             city_preference_sectors=city_preference_sectors,
+            city_preference_timeframes=city_preference_timeframes,
             city_preference_other_text=city_preference_other_text,
         )
     # Emit alignment score stats and detailed evidence artifacts.

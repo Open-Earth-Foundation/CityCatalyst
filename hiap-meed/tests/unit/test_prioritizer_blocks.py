@@ -79,6 +79,29 @@ def _load_city_emissions_by_gpc_ref() -> dict[str, float]:
     return emissions_by_gpc_ref
 
 
+def _alignment_timeframe_evidence(
+    *,
+    city_preference_timeframes: list[str],
+    action_timeline: str | None,
+) -> dict[str, object]:
+    """Return alignment evidence for one action scored only against timeframe input."""
+    result = alignment.run(
+        actions=[
+            Action(
+                action_id="A_timeframe",
+                action_name="Timeframe alignment action",
+                implementation_timeline=action_timeline,
+            )
+        ],
+        policy_signals_by_action_id={},
+        city_preference_sectors=[],
+        city_preference_timeframes=city_preference_timeframes,
+        city_preference_other_text=None,
+    )
+    assert result.evidence_by_action_id is not None
+    return result.evidence_by_action_id["A_timeframe"]
+
+
 @pytest.mark.unit
 def test_mock_city_loader_keeps_renamed_indicator_keys() -> None:
     """Mock city parsing preserves renamed socioeconomic indicators in raw/context."""
@@ -292,6 +315,7 @@ def test_alignment_block_with_mock_api_data() -> None:
         actions=actions,
         policy_signals_by_action_id=policy_signals,
         city_preference_sectors=["stationary_energy", "transportation"],
+        city_preference_timeframes=["no_preference"],
         city_preference_other_text="Focus on local jobs and cleaner mobility",
     )
 
@@ -307,6 +331,7 @@ def test_alignment_block_with_mock_api_data() -> None:
         first_action_evidence["policy_contribution"]
         + first_action_evidence["sector_contribution"]
         + first_action_evidence["other_contribution"]
+        + first_action_evidence["timeframe_contribution"]
     )
 
 
@@ -337,6 +362,7 @@ def test_alignment_other_preference_component_uses_normalized_co_benefit_impacts
         actions=actions,
         policy_signals_by_action_id=policy_signals,
         city_preference_sectors=["stationary_energy", "transportation"],
+        city_preference_timeframes=["no_preference"],
         city_preference_other_text="Cleaner air and healthier homes",
     )
 
@@ -383,6 +409,7 @@ def test_alignment_other_preference_component_is_neutral_on_mapping_fallback(
         actions=actions,
         policy_signals_by_action_id=policy_signals,
         city_preference_sectors=["stationary_energy", "transportation"],
+        city_preference_timeframes=["no_preference"],
         city_preference_other_text="Cleaner air and healthier homes",
     )
 
@@ -391,6 +418,69 @@ def test_alignment_other_preference_component_is_neutral_on_mapping_fallback(
     assert first_action_evidence["resolved_preferred_co_benefits"] == []
     assert first_action_evidence["other_component_mapping_source"] == "fallback_error"
     assert first_action_evidence["other_component_value"] == pytest.approx(0.5)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("city_preference_timeframes", "action_timeline", "expected_component_value"),
+    [
+        (["short"], "<5 years", 1.0),
+        (["medium"], "5-10 years", 1.0),
+        (["long"], ">10 years", 1.0),
+        (["short"], "5-10 years", 0.5),
+        (["medium"], "<5 years", 0.5),
+        (["medium"], ">10 years", 0.5),
+        (["long"], "5-10 years", 0.5),
+        (["short"], ">10 years", 0.0),
+        (["long"], "<5 years", 0.0),
+        (["no_preference"], "<5 years", 0.5),
+        (["no_preference"], "5-10 years", 0.5),
+        (["no_preference"], ">10 years", 0.5),
+        (["short"], None, 0.5),
+    ],
+)
+def test_alignment_timeframe_component_scores_expected_matches(
+    city_preference_timeframes: list[str],
+    action_timeline: str | None,
+    expected_component_value: float,
+) -> None:
+    """Alignment timeframe component follows exact, adjacent, far, and neutral rules."""
+    evidence = _alignment_timeframe_evidence(
+        city_preference_timeframes=city_preference_timeframes,
+        action_timeline=action_timeline,
+    )
+
+    assert evidence["timeframe_component_value"] == pytest.approx(
+        expected_component_value
+    )
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("city_preference_timeframes", "action_timeline", "expected_component_value"),
+    [
+        (["short", "medium"], "5-10 years", 1.0),
+        (["short", "medium"], ">10 years", 0.5),
+        (["medium", "long"], "<5 years", 0.5),
+        (["short", "long"], "5-10 years", 0.5),
+        (["short", "long"], "<5 years", 1.0),
+        (["short", "long"], ">10 years", 1.0),
+    ],
+)
+def test_alignment_timeframe_component_uses_best_multi_select_match(
+    city_preference_timeframes: list[str],
+    action_timeline: str | None,
+    expected_component_value: float,
+) -> None:
+    """Multiple timeframe selections use the highest score across selected options."""
+    evidence = _alignment_timeframe_evidence(
+        city_preference_timeframes=city_preference_timeframes,
+        action_timeline=action_timeline,
+    )
+
+    assert evidence["timeframe_component_value"] == pytest.approx(
+        expected_component_value
+    )
 
 
 @pytest.mark.unit

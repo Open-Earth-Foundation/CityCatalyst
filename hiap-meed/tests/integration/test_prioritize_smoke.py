@@ -257,6 +257,10 @@ def test_prioritize_smoke() -> None:
                                 "populationSize": 1000,
                                 "excludedActionsFreeText": "Do not include ... (stub)",
                                 "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceTimeframes": [
+                                    "medium",
+                                    "long",
+                                ],
                                 "cityStrategicPreferenceOther": None,
                                 "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
                             }
@@ -281,6 +285,9 @@ def test_prioritize_smoke() -> None:
         assert "alignment_score" in first_ranked_action
         assert "feasibility_score" in first_ranked_action
         assert "evidence_summary" in first_ranked_action
+        assert first_ranked_action["evidence_summary"]["alignment"][
+            "timeframe_component_value"
+        ] == pytest.approx(0.5)
         assert first_ranked_action["explanation"] is None
         assert "metadata" in result
         assert result["metadata"]["frontend_request_id"] == "1234567890"
@@ -288,6 +295,163 @@ def test_prioritize_smoke() -> None:
         assert "counts" in result["metadata"]
         assert result["metadata"]["counts"]["discarded_excluded"] == 0
         assert result["metadata"]["counts"]["discarded_legal"] == 0
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+def test_prioritize_rejects_no_preference_with_other_timeframes() -> None:
+    """`no_preference` cannot be combined with explicit timeframe choices."""
+    city = CityData(
+        comuna_name="Santiago",
+        locode="CL-SCL",
+        region_name="Metropolitana",
+        comuna_code="13101",
+        region_code="13",
+        city_context=[],
+    )
+    actions = [Action(action_id="A_ok", action_name="Action")]
+    mock_city_client = MockCityDataApiClient(city=city)
+    mock_action_client = MockActionDataApiClient(actions=actions)
+    mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post(
+                "/v1/prioritize",
+                json={
+                    "meta": {
+                        "requestId": "req-invalid-timeframes",
+                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                        "backendConsumer": "hiap-meed",
+                        "upstreamProvider": "city_catalyst_frontend",
+                        "apiContext": {
+                            "endpoint": "POST /prioritizer/v1/start_prioritization",
+                            "locodes": ["CL-SCL"],
+                        },
+                        "totalRecords": 1,
+                    },
+                    "requestData": {
+                        "requestedLanguages": ["en"],
+                        "cityDataList": [
+                            {
+                                "locode": "CL-SCL",
+                                "countryCode": "CL",
+                                "populationSize": 1000,
+                                "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceTimeframes": [
+                                    "no_preference",
+                                    "short",
+                                ],
+                                "cityStrategicPreferenceOther": None,
+                                "cityEmissionsData": {
+                                    "inventoryYear": None,
+                                    "gpcData": {},
+                                },
+                            }
+                        ],
+                    },
+                },
+            )
+        assert response.status_code == 422
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+def test_prioritize_alignment_timeframe_multi_select_uses_best_match() -> None:
+    """Multi-select timeframes use the best score, including nearest selected bucket."""
+    city = CityData(
+        comuna_name="Santiago",
+        locode="CL-SCL",
+        region_name="Metropolitana",
+        comuna_code="13101",
+        region_code="13",
+        city_context=[],
+    )
+    actions = [
+        Action(
+            action_id="A_long",
+            action_name="Long action",
+            implementation_timeline=">10 years",
+        ),
+        Action(
+            action_id="A_short",
+            action_name="Short action",
+            implementation_timeline="<5 years",
+        ),
+    ]
+    mock_city_client = MockCityDataApiClient(city=city)
+    mock_action_client = MockActionDataApiClient(actions=actions)
+    mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post(
+                "/v1/prioritize",
+                json={
+                    "meta": {
+                        "requestId": "req-timeframe-best-match",
+                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                        "backendConsumer": "hiap-meed",
+                        "upstreamProvider": "city_catalyst_frontend",
+                        "apiContext": {
+                            "endpoint": "POST /prioritizer/v1/start_prioritization",
+                            "locodes": ["CL-SCL"],
+                        },
+                        "totalRecords": 1,
+                    },
+                    "requestData": {
+                        "requestedLanguages": ["en"],
+                        "cityDataList": [
+                            {
+                                "locode": "CL-SCL",
+                                "countryCode": "CL",
+                                "populationSize": 1000,
+                                "weightsOverride": {
+                                    "impact": 0.0,
+                                    "alignment": 1.0,
+                                    "feasibility": 0.0,
+                                },
+                                "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceTimeframes": [
+                                    "medium",
+                                    "long",
+                                ],
+                                "cityStrategicPreferenceOther": None,
+                                "cityEmissionsData": {
+                                    "inventoryYear": None,
+                                    "gpcData": {},
+                                },
+                            }
+                        ],
+                    },
+                },
+            )
+        assert response.status_code == 200
+        body = response.json()
+        result = body["results"][0]
+        assert result["ranked_action_ids"] == ["A_long", "A_short"]
+        assert result["ranked_actions"][0]["evidence_summary"]["alignment"][
+            "timeframe_component_value"
+        ] == pytest.approx(1.0)
+        assert result["ranked_actions"][1]["evidence_summary"]["alignment"][
+            "timeframe_component_value"
+        ] == pytest.approx(0.5)
     finally:
         app.dependency_overrides.clear()
 

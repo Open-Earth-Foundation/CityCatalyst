@@ -358,10 +358,19 @@ def _build_alignment_signals(alignment_evidence: dict[str, object]) -> dict[str,
         if mapped_sector_tag_value is not None
         else None
     )
+    action_timeline_bucket_value = alignment_evidence.get("action_timeline_bucket")
+    action_timeline_bucket = (
+        str(action_timeline_bucket_value).strip()
+        if action_timeline_bucket_value is not None
+        else None
+    )
     policy_signals_count_value = alignment_evidence.get("policy_signals_count")
+    city_preference_timeframes = alignment_evidence.get("city_preference_timeframes", [])
     return {
         "sector_match": bool(alignment_evidence.get("sector_match", False)),
         "mapped_sector_tag": mapped_sector_tag,
+        "action_timeline_bucket": action_timeline_bucket,
+        "city_preference_timeframes": city_preference_timeframes,
         "policy_signals_count": int(policy_signals_count_value)
         if isinstance(policy_signals_count_value, int | float)
         else 0,

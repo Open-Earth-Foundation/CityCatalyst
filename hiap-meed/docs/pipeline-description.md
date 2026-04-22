@@ -30,6 +30,7 @@ Fields that affect the result:
 - `requestData.cityDataList[].weightsOverride.feasibility`
 - `requestData.cityDataList[].excludedActionsFreeText`
 - `requestData.cityDataList[].cityStrategicPreferenceSectors[]`
+- `requestData.cityDataList[].cityStrategicPreferenceTimeframes[]`
 - `requestData.cityDataList[].cityStrategicPreferenceOther`
 - `requestData.cityDataList[].cityEmissionsData.gpcData.<reference>.activities[].totalEmissions`
 
@@ -39,6 +40,7 @@ What these are used for:
 - `weightsOverride` changes how much Impact, Alignment, and Feasibility matter in the final score.
 - `excludedActionsFreeText` is intended to remove actions, but is currently still a placeholder.
 - `cityStrategicPreferenceSectors[]` influences the Alignment block.
+- `cityStrategicPreferenceTimeframes[]` influences the Alignment block by comparing the city's preferred implementation horizon against each action's `timelineForImplementation`.
 - `cityStrategicPreferenceOther` influences the Alignment block through LLM-based co-benefit mapping.
 - When explanations are enabled, `excludedActionsFreeText` and `cityStrategicPreferenceOther` are each truncated to at most `400` characters before the LLM prompt is rendered, and the backend logs a warning if truncation happens.
 - `totalEmissions` values are the main city emissions numbers used in the Impact block.
@@ -86,7 +88,7 @@ Fields that affect the result:
 What these are used for:
 
 - `actionId` identifies and sorts actions.
-- `timelineForImplementation` affects the Impact score.
+- `timelineForImplementation` affects the Impact score and also the Alignment timeframe-preference component.
 - `emissions.sector_number` affects the Alignment score.
 - `emissions.gpc_reference_number[]` links each action to city emissions categories.
 - `emissions.impact_text` gives the action's expected strength of emissions reduction.

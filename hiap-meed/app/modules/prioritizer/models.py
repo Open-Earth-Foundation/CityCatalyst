@@ -4,9 +4,9 @@ Pydantic models for external API payloads and top-level endpoint contracts.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.modules.prioritizer.config import resolve_impact_text_multiplier
 
@@ -78,8 +78,50 @@ class FrontendCityInput(BaseModel):
     excludedActionsFreeText: str | None = None
     weightsOverride: dict[str, float] | None = None
     cityStrategicPreferenceSectors: list[str] = Field(default_factory=list)
+    cityStrategicPreferenceTimeframes: list[
+        Literal["short", "medium", "long", "no_preference"]
+    ] = Field(default_factory=lambda: ["no_preference"])
     cityStrategicPreferenceOther: str | None = None
     cityEmissionsData: FrontendCityEmissionsData
+
+    # Normalize only omission/duplication before Literal validation. All
+    # non-empty entries must already match the exact frontend contract.
+    @field_validator("cityStrategicPreferenceTimeframes", mode="before")
+    @classmethod
+    def _normalize_timeframe_preferences(cls, value: object) -> object:
+        """Normalize timeframe preferences before enum validation runs."""
+        # Missing or null input means "neutral" rather than "invalid".
+        if value is None:
+            return ["no_preference"]
+        if not isinstance(value, list):
+            return value
+
+        normalized_preferences: list[str] = []
+        for item in value:
+            # Keep frontend-provided values as-is so unexpected spellings,
+            # casing, or whitespace are rejected by the Literal validator.
+            if item != "":
+                normalized_preferences.append(str(item))
+
+        # An empty list behaves the same as no explicit preference.
+        if not normalized_preferences:
+            return ["no_preference"]
+        # Preserve user intent order while removing duplicates.
+        return list(dict.fromkeys(normalized_preferences))
+
+    # Run a second validation pass after normalization + Literal validation to
+    # enforce the business rule that "no_preference" cannot be combined with a
+    # concrete timeframe choice.
+    @model_validator(mode="after")
+    def _validate_timeframe_preferences(self) -> FrontendCityInput:
+        """Ensure `no_preference` is not mixed with explicit timeframe choices."""
+        preferences = self.cityStrategicPreferenceTimeframes
+        if "no_preference" in preferences and len(preferences) > 1:
+            raise ValueError(
+                "cityStrategicPreferenceTimeframes cannot combine `no_preference` "
+                "with other timeframe preferences"
+            )
+        return self
 
 
 class PrioritizerRequestData(BaseModel):

@@ -931,6 +931,7 @@ Important current behavior:
 
 - `explanation` is `null` unless `requestData.createExplanations=true` and the explanation call succeeds
 - The explanation stage truncates `excludedActionsFreeText` and `cityStrategicPreferenceOther` to at most `400` characters each before prompt rendering
+- When `cityStrategicPreferenceOther` mapping falls back (`fallback_*`), explanation payloads include a known limitation that the free-text preference did not affect ranking and neutral other-preference scoring was used
 - The backend logs a warning if either field is truncated or if the final explanation prompt becomes unusually large
 
 Key metadata includes:

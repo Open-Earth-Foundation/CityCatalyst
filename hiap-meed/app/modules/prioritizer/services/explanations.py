@@ -23,6 +23,9 @@ PROMPT_FILE_PATH = (
 SYSTEM_PROMPT_FILE_PATH = (
     Path(__file__).resolve().parents[1] / "prompts" / "ranking_explanation_system.md"
 )
+# Applies to request free-text inputs used in explanation prompts:
+# - `city_preference_other_text` (frontend `cityStrategicPreferenceOther`)
+# - `excluded_actions_free_text` (frontend `excludedActionsFreeText`)
 EXPLANATION_FREE_TEXT_MAX_CHARS = 400
 EXPLANATION_PROMPT_WARNING_CHARS = 20_000
 
@@ -366,11 +369,20 @@ def _build_alignment_signals(alignment_evidence: dict[str, object]) -> dict[str,
     )
     policy_signals_count_value = alignment_evidence.get("policy_signals_count")
     city_preference_timeframes = alignment_evidence.get("city_preference_timeframes", [])
+    other_component_mapping_source_value = alignment_evidence.get(
+        "other_component_mapping_source"
+    )
+    other_component_mapping_source = (
+        str(other_component_mapping_source_value).strip()
+        if other_component_mapping_source_value is not None
+        else None
+    )
     return {
         "sector_match": bool(alignment_evidence.get("sector_match", False)),
         "mapped_sector_tag": mapped_sector_tag,
         "action_timeline_bucket": action_timeline_bucket,
         "city_preference_timeframes": city_preference_timeframes,
+        "other_component_mapping_source": other_component_mapping_source,
         "policy_signals_count": int(policy_signals_count_value)
         if isinstance(policy_signals_count_value, int | float)
         else 0,
@@ -445,10 +457,19 @@ def _build_known_limitations(
             "Free-text action exclusions are not implemented yet and therefore do not affect ranking."
         )
 
-    other_component_is_stub = bool(alignment_evidence.get("other_component_is_stub"))
-    if city_preference_other_text and other_component_is_stub:
+    other_component_mapping_source = str(
+        alignment_evidence.get("other_component_mapping_source", "")
+    ).strip()
+    other_preference_text_provided = bool(
+        city_preference_other_text and city_preference_other_text.strip()
+    )
+    if (
+        other_preference_text_provided
+        and other_component_mapping_source
+        and other_component_mapping_source != "llm"
+    ):
         limitations.append(
-            "City free-text preference matching is currently not modeled."
+            "City free-text preference was provided, but mapping did not complete successfully; ranking used neutral other-preference scoring."
         )
 
     informational_requirements_count_value = feasibility_evidence.get(

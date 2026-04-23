@@ -15,6 +15,8 @@ from app.modules.prioritizer.config import (
 from app.services.openai_client import create_openai_client
 
 logger = logging.getLogger(__name__)
+CO_BENEFIT_MAPPING_FREE_TEXT_MAX_CHARS = 400
+CO_BENEFIT_MAPPING_PROMPT_MAX_CHARS = 20_000
 
 CoBenefitKey = Literal[
     "air_quality",
@@ -58,8 +60,9 @@ def resolve_city_preferred_co_benefits(
 ) -> dict[str, object]:
     """Resolve city free text into co-benefit keys with fail-open fallback behavior."""
     normalized_text = (city_preference_other_text or "").strip()
+    truncated_text = _truncate_mapping_free_text(value=normalized_text)
     available_key_set = set(available_co_benefit_keys)
-    if not normalized_text:
+    if not truncated_text:
         return {
             "resolved_preferred_co_benefits": [],
             "unmappable_preference_fragments": [],
@@ -93,11 +96,22 @@ def resolve_city_preferred_co_benefits(
     try:
         # Step 2: Build prompt and request structured output from OpenAI.
         mapped_response = _resolve_from_llm(
-            city_preference_other_text=normalized_text,
+            city_preference_other_text=truncated_text,
             available_co_benefit_keys=available_co_benefit_keys,
             model_name=model_name,
         )
     except Exception as error:
+        truncated_length = len(truncated_text)
+        prompt_too_large = "exceeds max length" in str(error).lower()
+        if prompt_too_large:
+            logger.warning(
+                "Skipping co-benefit mapping because prompt length guard triggered model=%s input_characters=%s max_prompt_characters=%s available_keys=%s error=%s",
+                model_name,
+                truncated_length,
+                CO_BENEFIT_MAPPING_PROMPT_MAX_CHARS,
+                len(available_co_benefit_keys),
+                error,
+            )
         logger.warning(
             "Co-benefit mapping failed model=%s error=%s",
             model_name,
@@ -164,6 +178,13 @@ def _resolve_from_llm(
         city_preference_other_text=city_preference_other_text,
         available_co_benefit_keys=available_co_benefit_keys,
     )
+    prompt_characters = len(prompt)
+    if prompt_characters > CO_BENEFIT_MAPPING_PROMPT_MAX_CHARS:
+        raise ValueError(
+            "Co-benefit mapping prompt exceeds max length: "
+            f"{prompt_characters}>{CO_BENEFIT_MAPPING_PROMPT_MAX_CHARS}"
+        )
+
     system_prompt = _read_system_prompt_template()
     client = create_openai_client()
     completion = client.chat.completions.parse(
@@ -192,6 +213,19 @@ def _build_prompt(
             available_co_benefit_keys, ensure_ascii=True
         ),
     )
+
+
+def _truncate_mapping_free_text(*, value: str) -> str:
+    """Clamp mapping free-text inputs to a fixed prompt-friendly length."""
+    if len(value) <= CO_BENEFIT_MAPPING_FREE_TEXT_MAX_CHARS:
+        return value
+
+    logger.warning(
+        "Truncating co-benefit mapping input from %s to %s characters",
+        len(value),
+        CO_BENEFIT_MAPPING_FREE_TEXT_MAX_CHARS,
+    )
+    return value[:CO_BENEFIT_MAPPING_FREE_TEXT_MAX_CHARS]
 
 
 def _read_prompt_template() -> str:

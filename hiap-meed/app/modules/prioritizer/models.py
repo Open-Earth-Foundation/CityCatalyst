@@ -272,17 +272,31 @@ class ActionApiItem(BaseModel):
 
     @model_validator(mode="after")
     def _validate_emissions_impact_text_band_present(self) -> ActionApiItem:
-        """Validate emissions impact includes a non-empty text band."""
+        """Validate emissions impact includes a non-empty, known text band."""
         emissions_entry = self.emissions
         if emissions_entry is None:
             return self
+
         impact_text = emissions_entry.impact_text
         if impact_text is None or not impact_text.strip():
-            raise ValueError(
-                f"Action `{self.actionId}` is missing emissions.impact_text"
-            )
+            raise ValueError(f"Action `{self.actionId}` is missing emissions.impact_text")
         # Validate that the text band can be resolved by configured impact mapping.
         resolve_impact_text_multiplier(impact_text)
+        return self
+
+    @model_validator(mode="after")
+    def _validate_co_benefit_impact_numeric_range(self) -> ActionApiItem:
+        """Validate co-benefit numeric impact values stay within `[-2, 2]`."""
+        for co_benefit_key, co_benefit_entry in self.coBenefits.items():
+            impact_numeric = co_benefit_entry.impact_numeric
+            if impact_numeric is None:
+                continue
+            if impact_numeric < -2 or impact_numeric > 2:
+                raise ValueError(
+                    "Action "
+                    f"`{self.actionId}` has coBenefits.{co_benefit_key}.impact_numeric="
+                    f"{impact_numeric} outside allowed range [-2, 2]"
+                )
         return self
 
 

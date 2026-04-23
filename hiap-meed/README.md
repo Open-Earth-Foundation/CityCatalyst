@@ -168,10 +168,13 @@ Alignment block behavior (implemented):
 - Other-preference scoring:
   - Only co-benefits selected by the city are scored.
   - Each selected co-benefit reads the action's `impact_numeric` value in `-2..2`.
+  - Upstream action payload validation enforces `coBenefits[*].impact_numeric` in `[-2, 2]` and rejects out-of-range values.
   - Missing co-benefit keys are treated as `0`.
   - The summed selected impacts are normalized into `0..1`, where `0.5` is neutral.
 - Fail-open behavior:
   - blank free-text results in a neutral `other_component_value = 0.5`
+  - `cityStrategicPreferenceOther` is truncated to at most `400` characters before co-benefit mapping prompt rendering, with a warning log when truncation happens
+  - oversized co-benefit mapping prompts are skipped by a max-length guard before the LLM call and fall back to neutral `other_component_value = 0.5`
   - model misconfiguration, timeout, or parse failure also result in a neutral `other_component_value = 0.5`, with fallback evidence showing the mapping did not succeed
 - Stability note:
   - The prompt uses `temperature=0.0` and few-shot examples to reduce variation, but the mapping still depends on an external LLM and can remain non-deterministic.
@@ -207,6 +210,7 @@ Explanation stage behavior:
 - Explanations are generated only when `requestData.createExplanations=true`.
 - Explanations are generated from post-ranking evidence and do not change ranks.
 - `cityStrategicPreferenceOther` and `excludedActionsFreeText` are each truncated to at most `400` characters before they are inserted into the explanation prompt.
+- When `cityStrategicPreferenceOther` mapping falls back (`fallback_*`), explanations include a known limitation that the free-text preference did not affect ranking and neutral other-preference scoring was used.
 - The backend logs a warning if either field is truncated or if the final explanation prompt becomes unusually large.
 - If explanation generation fails or times out, the endpoint fails open and
   returns normal ranking output with `explanation=null`.

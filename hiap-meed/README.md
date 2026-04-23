@@ -40,11 +40,12 @@ HIAP_MEED_LEGAL_DATA_SOURCE=mock
 HIAP_MEED_ACTION_DATA_SOURCE=mock
 HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE=mock
 HIAP_MEED_TOP_N=20
+HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL=
 HIAP_MEED_EXPLANATIONS_ENABLED=true
 HIAP_MEED_EXPLANATIONS_MODEL=
-HIAP_MEED_EXPLANATIONS_TIMEOUT_SECONDS=30
-HIAP_MEED_EXPLANATIONS_MAX_RETRIES=1
 OPENAI_API_KEY=
+OPENAI_TIMEOUT_SECONDS=30
+OPENAI_MAX_RETRIES=3
 ```
 
 Variables:
@@ -59,11 +60,12 @@ Variables:
 - `HIAP_MEED_ACTION_DATA_SOURCE`: action catalog source (`mock` or `api`)
 - `HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE`: policy-signal input source (`mock` or `api`)
 - `HIAP_MEED_TOP_N`: default number of ranked actions to return per city (default `20`)
+- `HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL`: OpenAI model used for alignment free-text co-benefit mapping
+- `OPENAI_API_KEY`: API key used by OpenAI-backed features
+- `OPENAI_TIMEOUT_SECONDS`: shared OpenAI client timeout in seconds (default `30`)
 - `HIAP_MEED_EXPLANATIONS_ENABLED`: global switch for post-ranking explanation calls
 - `HIAP_MEED_EXPLANATIONS_MODEL`: model name used when `createExplanations=true`
-- `HIAP_MEED_EXPLANATIONS_TIMEOUT_SECONDS`: timeout for one explanation call
-- `HIAP_MEED_EXPLANATIONS_MAX_RETRIES`: retries for explanation provider client
-- `OPENAI_API_KEY`: API key used for explanation generation
+- `OPENAI_MAX_RETRIES`: shared OpenAI client retries (default `3`)
 
 ### 2. Install dependencies
 
@@ -134,6 +136,9 @@ Score normalization policy:
 - Each block computes named component values in `0..1`.
 - Each block applies explicit internal weights that sum to `1.0`.
 - Block score is the canonical weighted sum of those components (no run-relative max-normalization).
+- For normalized components in this system, `0.5` is the neutral midpoint when a component is designed around beneficial vs harmful effects.
+  - Example: the Alignment other-preference co-benefit component and the Feasibility socio-economic component use `0.5` as neutral.
+  - By contrast, some one-sided components use `0.0` as the natural baseline because they measure absence of support rather than harmful effect, such as missing policy support or no preferred-sector match.
 
 Impact block behavior (implemented):
 
@@ -147,6 +152,34 @@ Impact block behavior (implemented):
   - `0.80 * reduction_share_of_city_emissions + 0.20 * timeline_score`
   - Timeline mapping: `<5 years -> 1.0`, `5-10 years -> 0.5`, `>10 years -> 0.0`
 - Unknown `impact_text` values are rejected with `422` (raised during Impact scoring and surfaced by the API error handler).
+
+Alignment block behavior (implemented):
+
+- Alignment also reads `requestData.cityDataList[].cityStrategicPreferenceTimeframes` and compares it against each action's `timelineForImplementation`.
+- Allowed request values are `short`, `medium`, `long`, and `no_preference`.
+- `no_preference` is mutually exclusive with the other values and is treated as a neutral `0.5` score across all actions.
+- Multiple selected timeframes use the best match across selections, with `1.0` for exact match, `0.5` for adjacent, and `0.0` for far mismatch.
+- Missing or unknown action timelines are treated as neutral `0.5` for this alignment component.
+- Alignment now uses weights: `policy=0.75`, `sector=0.15`, `other=0.05`, `timeframe=0.05`.
+- Alignment maps `requestData.cityDataList[].cityStrategicPreferenceOther` to co-benefit labels using OpenAI structured output parsing.
+- The mapping output is constrained to the current action-catalog taxonomy:
+  - `air_quality`, `cost_of_living`, `habitat`, `housing`, `mobility`, `stakeholder_engagement`, `water_quality`
+- `unmappable_preference_fragments` are captured when user intent cannot be confidently mapped to allowed labels.
+- Other-preference scoring:
+  - Only co-benefits selected by the city are scored.
+  - Each selected co-benefit reads the action's `impact_numeric` value in `-2..2`.
+  - Upstream action payload validation enforces `coBenefits[*].impact_numeric` in `[-2, 2]` and rejects out-of-range values.
+  - Missing co-benefit keys are treated as `0`.
+  - The summed selected impacts are normalized into `0..1`, where `0.5` is neutral.
+- Fail-open behavior:
+  - blank free-text results in a neutral `other_component_value = 0.5`
+  - `cityStrategicPreferenceOther` is truncated to at most `400` characters before co-benefit mapping prompt rendering, with a warning log when truncation happens
+  - oversized co-benefit mapping prompts are skipped by a max-length guard before the LLM call and fall back to neutral `other_component_value = 0.5`
+  - model misconfiguration, timeout, or parse failure also result in a neutral `other_component_value = 0.5`, with fallback evidence showing the mapping did not succeed
+- Stability note:
+  - The prompt uses `temperature=0.0` and few-shot examples to reduce variation, but the mapping still depends on an external LLM and can remain non-deterministic.
+  - That means end-to-end ranking tests that rely on live mapping output can occasionally drift or fail even when application code has not changed.
+  - For fully deterministic tests, prefer mocking the co-benefit mapping step.
 
 Response fields:
 
@@ -177,6 +210,7 @@ Explanation stage behavior:
 - Explanations are generated only when `requestData.createExplanations=true`.
 - Explanations are generated from post-ranking evidence and do not change ranks.
 - `cityStrategicPreferenceOther` and `excludedActionsFreeText` are each truncated to at most `400` characters before they are inserted into the explanation prompt.
+- When `cityStrategicPreferenceOther` mapping falls back (`fallback_*`), explanations include a known limitation that the free-text preference did not affect ranking and neutral other-preference scoring was used.
 - The backend logs a warning if either field is truncated or if the final explanation prompt becomes unusually large.
 - If explanation generation fails or times out, the endpoint fails open and
   returns normal ranking output with `explanation=null`.
@@ -207,6 +241,7 @@ Example JSON request bodies (using mock data from `data/`):
         "populationSize": 125000,
         "excludedActionsFreeText": "Do not include new fossil fuel-based infrastructure ...",
         "cityStrategicPreferenceSectors": ["transportation"],
+        "cityStrategicPreferenceTimeframes": ["short", "medium"],
         "cityStrategicPreferenceOther": "Prioritize near-term air quality improvements ...",
         "cityEmissionsData": {
           "inventoryYear": null,
@@ -283,12 +318,6 @@ Common validation errors:
 
 Note: city, action, legal, and policy-signal clients now resolve to `mock` (file-backed) or `api` (placeholder until real upstream wiring is added). Default source for all four is `mock`, so local and Docker runs use checked-in mock payloads by default. Real upstream HTTP wiring is still pending; when wired, clients should use a synchronous HTTP client (e.g. `httpx.Client`). FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
 
-Known limitation (mock data):
-
-- The Feasibility socio-economic lookup currently expects city keys like `transport_logistics_employment` and `electricity_access`.
-- `actions_api_mock_v2.json` currently uses `employment_in_transport_and_logistics` and `electricity_access_rate` for some `indicator_key` values.
-- Until key normalization or aligned naming is implemented, those indicators are treated as missing and contribute `0` in the socio-economic feasibility component.
-
 ### 5. Logging and artifacts
 
 The service writes:
@@ -320,6 +349,8 @@ What each `requests/{UTC_TIMESTAMP}Z_{internal_request_id}/` run folder contains
 - Event metadata such as timestamp, request ID, event index, event/step type, and payload
 - `event_index` is shared between a summary event and its matching detail file, so `summary.jsonl` and `NNN_<step>.json` are directly pairable
 - Timing/count summaries plus request-scoped traceability in a single run directory
+- For the free-text other-preference feature, the `alignment` step detail includes mapping evidence such as `resolved_preferred_co_benefits`, `unmappable_preference_fragments`, `matched_preferred_co_benefits`, and mapping source/model fields
+- There are currently no dedicated LLM prompt/response artifact files for co-benefit mapping; the traceability lives inside the standard alignment evidence artifacts
 
 Inspect logs:
 

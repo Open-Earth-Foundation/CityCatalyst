@@ -19,37 +19,44 @@ The current implementation combines one frontend request with several supporting
 ### Frontend request
 
 File:
+
 - `data/mock/prioritizer_request_mock.json`
 
 Fields that affect the result:
+
 - `requestData.topN`
 - `requestData.cityDataList[].weightsOverride.impact`
 - `requestData.cityDataList[].weightsOverride.alignment`
 - `requestData.cityDataList[].weightsOverride.feasibility`
 - `requestData.cityDataList[].excludedActionsFreeText`
 - `requestData.cityDataList[].cityStrategicPreferenceSectors[]`
+- `requestData.cityDataList[].cityStrategicPreferenceTimeframes[]`
 - `requestData.cityDataList[].cityStrategicPreferenceOther`
 - `requestData.cityDataList[].cityEmissionsData.gpcData.<reference>.activities[].totalEmissions`
 
 What these are used for:
+
 - `topN` controls how many ranked actions are returned.
 - `weightsOverride` changes how much Impact, Alignment, and Feasibility matter in the final score.
 - `excludedActionsFreeText` is intended to remove actions, but is currently still a placeholder.
 - `cityStrategicPreferenceSectors[]` influences the Alignment block.
-- `cityStrategicPreferenceOther` is intended to influence the Alignment block, but is currently still a placeholder.
+- `cityStrategicPreferenceTimeframes[]` influences the Alignment block by comparing the city's preferred implementation horizon against each action's `timelineForImplementation`.
+- `cityStrategicPreferenceOther` influences the Alignment block through LLM-based co-benefit mapping.
 - When explanations are enabled, `excludedActionsFreeText` and `cityStrategicPreferenceOther` are each truncated to at most `400` characters before the LLM prompt is rendered, and the backend logs a warning if truncation happens.
 - `totalEmissions` values are the main city emissions numbers used in the Impact block.
 
 ### City context data
 
 File:
+
 - `data/mock/city_api_mock.json`
 
 Fields that affect the result:
+
 - `city.unemployment_rate.attribute_category`
 - `city.renter_share.attribute_category`
-- `city.transport_logistics_employment.attribute_category`
-- `city.electricity_access.attribute_category`
+- `city.employment_in_transport_and_logistics.attribute_category`
+- `city.electricity_access_rate.attribute_category`
 - `city.industry_construction_employment.attribute_category`
 - `city.median_household_income.attribute_category`
 - `city.public_transport_share.attribute_category`
@@ -57,15 +64,18 @@ Fields that affect the result:
 - `city.home_ownership.attribute_category`
 
 What these are used for:
+
 - These category labels feed the Feasibility block.
 - They tell the system whether a city condition is very low, low, medium, high, or very high for a given socio-economic indicator.
 
 ### Action catalog
 
 File:
+
 - `data/mock/actions_api_mock_v2.json`
 
 Fields that affect the result:
+
 - `actions[].actionId`
 - `actions[].timelineForImplementation`
 - `actions[].emissions.sector_number`
@@ -76,8 +86,9 @@ Fields that affect the result:
 - `actions[].socioeconomicIndicators[].weight`
 
 What these are used for:
+
 - `actionId` identifies and sorts actions.
-- `timelineForImplementation` affects the Impact score.
+- `timelineForImplementation` affects the Impact score and also the Alignment timeframe-preference component.
 - `emissions.sector_number` affects the Alignment score.
 - `emissions.gpc_reference_number[]` links each action to city emissions categories.
 - `emissions.impact_text` gives the action's expected strength of emissions reduction.
@@ -86,14 +97,17 @@ What these are used for:
 ### Legal requirements data
 
 File:
+
 - `data/mock/actions_legal_api_mock.json`
 
 Fields that affect the result:
+
 - `legal_requirements[].action_id`
 - `legal_requirements[].requirements[].strength`
 - `legal_requirements[].requirements[].alignment_status`
 
 What these are used for:
+
 - `strength` tells the system whether a legal requirement is hard, soft, or only informational.
 - `alignment_status` tells the system whether the action aligns, does not align, or has no evidence.
 - These two fields drive both the Hard Filter and part of the Feasibility block.
@@ -101,16 +115,20 @@ What these are used for:
 ### Policy signals data
 
 File:
+
 - `data/mock/actions_policy_signals_api_mock.json`
 
 Fields that affect the result:
+
 - `policy_signals[].action_id`
 - `policy_signals[].policy_support_score`
 
 What these are used for:
+
 - `policy_support_score` is used directly in the Alignment block.
 
 Important note:
+
 - `hiap-meed` does not currently calculate `policy_support_score` itself.
 - It uses the already prepared value from the policy signals data as an input.
 
@@ -133,36 +151,44 @@ For one city, the pipeline runs in this order:
 ### 3.1 Number of results to return
 
 Input field:
+
 - `requestData.topN`
 
 Rule:
+
 - If `requestData.topN` is provided and greater than zero, the pipeline uses that value.
 - Otherwise the default is `20`.
 
 Output:
+
 - One final `topN` value for the run.
 
 ### 3.2 Final weights used across the three main scoring blocks
 
 Input fields:
+
 - `requestData.cityDataList[].weightsOverride.impact`
 - `requestData.cityDataList[].weightsOverride.alignment`
 - `requestData.cityDataList[].weightsOverride.feasibility`
 
 Default weights if there is no override:
+
 - Impact = `0.55`
 - Alignment = `0.22`
 - Feasibility = `0.23`
 
 Validation rules:
+
 - The three weights must exist.
 - No weight may be negative.
 - The three weights must add up to exactly `1.0`.
 
 Output:
+
 - One resolved set of final weights.
 
 Example from `prioritizer_request_mock.json`:
+
 - Impact = `0.5`
 - Alignment = `0.3`
 - Feasibility = `0.2`
@@ -170,9 +196,11 @@ Example from `prioritizer_request_mock.json`:
 ### 3.3 City emissions totals prepared for the Impact block
 
 Input field:
+
 - `requestData.cityDataList[].cityEmissionsData.gpcData.<reference>.activities[].totalEmissions`
 
 What the pipeline does:
+
 - For each emissions category in the request, it adds together all `totalEmissions` values found under that category.
 
 Plain-language formula:
@@ -183,9 +211,11 @@ City emissions for one emissions category
 ```
 
 Output:
+
 - A table that says, for each emissions category, how much total city emissions it represents.
 
 Example:
+
 - If one emissions category contains three activity rows, the pipeline adds the three `totalEmissions` values together and stores one total for that category.
 
 ## 4. Hard Filter
@@ -197,17 +227,21 @@ This block does not give a numeric score. Its role is simply to decide which act
 ### 4.1 Inputs
 
 From the frontend request:
+
 - `requestData.cityDataList[].excludedActionsFreeText`
 
 From the action catalog:
+
 - `actions[].actionId`
 
 From the legal requirements file:
+
 - `legal_requirements[].action_id`
 - `legal_requirements[].requirements[].strength`
 - `legal_requirements[].requirements[].alignment_status`
 
 Supporting legal fields that are returned as evidence, but do not drive the actual yes/no decision:
+
 - `legal_requirements[].requirements[].signal_code`
 - `legal_requirements[].requirements[].signal_name`
 - `legal_requirements[].requirements[].operator`
@@ -223,6 +257,7 @@ Supporting legal fields that are returned as evidence, but do not drive the actu
 #### Part A: exclusion based on free text
 
 Current behavior:
+
 - The request field `excludedActionsFreeText` is accepted.
 - However, the current implementation does not yet convert that text into specific action IDs.
 - As a result, this part currently excludes nothing.
@@ -234,6 +269,7 @@ Excluded actions from free text = none
 ```
 
 Planned future behavior:
+
 - Read the free-text instruction.
 - Match it to action names, descriptions, or a curated mapping.
 - Convert that instruction into a real list of actions to remove.
@@ -241,10 +277,12 @@ Planned future behavior:
 #### Part B: hard legal screening
 
 Hard legal requirements are only those with:
+
 - `strength = mandatory`
 - or `strength = required`
 
 Decision rule:
+
 - If at least one hard legal requirement has `alignment_status = not_aligned`, the action is removed.
 - If all hard legal requirements are either `aligns` or `no_evidence`, the action stays in the pipeline.
 
@@ -255,6 +293,7 @@ Remove the action if any mandatory or required legal requirement is marked not_a
 ```
 
 Important details:
+
 - `no_evidence` does not block the action at this stage.
 - `recommended`, `optional`, and `informational` do not affect this block.
 - The actual decision is driven by `strength` and `alignment_status`.
@@ -266,12 +305,14 @@ Important details:
 ### 4.4 Outputs
 
 Main outputs:
+
 - `valid_actions`
 - `discarded_excluded`
 - `discarded_legal`
 - `evidence`
 
 Important evidence fields:
+
 - `discard_reason`
 - `hard_requirements_checked_count`
 - `hard_requirements_failed_count`
@@ -280,6 +321,7 @@ Important evidence fields:
 - `unknown_requirements`
 
 Business interpretation:
+
 - `valid_actions` move into scoring.
 - Any action removed here never receives an Impact, Alignment, Feasibility, or Final score.
 
@@ -288,15 +330,28 @@ Business interpretation:
 The Impact block estimates how much emissions-reduction benefit an action could deliver for the city.
 
 It does this by linking each action to the city's emissions categories and then combining:
+
 - how much of the city's emissions the action seems to target,
 - and how quickly the action can be implemented.
+
+Score semantics used in this document:
+
+- All block scores and named components are expressed in `0..1`.
+- `1.0` means the strongest support available within that component's own logic.
+- `0.0` means the weakest support available within that component's own logic.
+- `0.5` is the neutral midpoint only for components that start from a signed scale and are then normalized into `0..1`.
+  - Current examples: the Alignment other-preference co-benefit component and the Feasibility socio-economic component.
+- Not every component uses `0.5` as neutral.
+  - Example: a missing policy support score remains `0.0` because that component measures support, not beneficial-versus-harmful effect.
 
 ### 5.1 Inputs
 
 From the frontend request:
+
 - `requestData.cityDataList[].cityEmissionsData.gpcData.<reference>.activities[].totalEmissions`
 
 From the action catalog:
+
 - `actions[].actionId`
 - `actions[].timelineForImplementation`
 - `actions[].emissions.gpc_reference_number[]`
@@ -307,11 +362,13 @@ From the action catalog:
 #### Part A: identify which city emissions categories the action targets
 
 The pipeline reads:
+
 - `actions[].emissions.gpc_reference_number[]`
 
 These are the emissions categories that the action claims to influence.
 
 If the same category appears more than once:
+
 - duplicates are removed before scoring.
 
 #### Part B: translate impact strength from words into numbers
@@ -325,14 +382,17 @@ The pipeline converts `actions[].emissions.impact_text` into a numeric multiplie
 - `very high` -> `1.0`
 
 Meaning:
+
 - The stronger the impact label, the more of the matched city emissions are counted as reducible.
 
 If the impact label is unknown:
+
 - the request fails instead of returning a ranking.
 
 #### Part C: estimate how much city emissions the action could reduce
 
 For each action, the pipeline:
+
 - finds which of the action's emissions categories also exist in the city's emissions data,
 - takes the city total for each matching category,
 - multiplies those totals by the action's impact multiplier,
@@ -360,17 +420,20 @@ Reduction share of city emissions
 ```
 
 If the city has zero total emissions in the request:
+
 - the reduction share is set to `0`.
 
 #### Part E: score the implementation timeline
 
 Timeline mapping:
+
 - `<5 years` -> `1.0`
 - `5-10 years` -> `0.5`
 - `>10 years` -> `0.0`
 - missing or unknown timeline -> `0.0`
 
 Meaning:
+
 - Faster implementation gets a better score.
 
 #### Part F: calculate the final Impact score
@@ -384,21 +447,25 @@ Impact score
 ```
 
 Important detail:
+
 - If an action does not match any city emissions categories, its reduction part becomes `0`.
 - It can still earn points from the timeline part.
 
 ### 5.3 Weights used
 
 Internal Impact weights:
+
 - Reduction share of city emissions = `0.80`
 - Timeline = `0.20`
 
 ### 5.4 Outputs
 
 Main output:
+
 - `impact_score`
 
 Key evidence fields:
+
 - `action_gpc_refs`
 - `impact_text`
 - `reduction_multiplier`
@@ -417,25 +484,30 @@ Key evidence fields:
 The Alignment block measures how well each action fits the city's strategic priorities.
 
 In the current implementation, this score is mostly driven by:
+
 - policy support,
 - and whether the action belongs to a sector the city said it prefers.
 
 ### 6.1 Inputs
 
 From the frontend request:
+
 - `requestData.cityDataList[].cityStrategicPreferenceSectors[]`
 - `requestData.cityDataList[].cityStrategicPreferenceOther`
 
 From the action catalog:
+
 - `actions[].actionId`
 - `actions[].emissions.sector_number`
 
 Fields planned for future use in the free-text part of Alignment:
+
 - `actions[].description`
 - `actions[].timelineForImplementation`
 - `actions[].coBenefits`
 
 From the policy signals file:
+
 - `policy_signals[].action_id`
 - `policy_signals[].policy_support_score`
 
@@ -446,9 +518,11 @@ The Alignment block has three parts.
 #### Part A: policy support
 
 For each action, the pipeline reads:
+
 - `policy_support_score`
 
 If it is missing:
+
 - the score used is `0.0`
 
 Plain-language formula:
@@ -460,12 +534,14 @@ or 0.0 if no score is available
 ```
 
 Important detail:
+
 - `hiap-meed` does not calculate this score itself.
 - It uses the already prepared value from the policy signals data directly.
 
 #### Part B: match to the city's preferred sectors
 
 The action's sector code is translated as follows:
+
 - `I` -> `stationary_energy`
 - `II` -> `transportation`
 - `III` -> `waste`
@@ -473,9 +549,11 @@ The action's sector code is translated as follows:
 - `V` -> `afolu`
 
 Then the pipeline checks whether the translated sector appears in:
+
 - `requestData.cityDataList[].cityStrategicPreferenceSectors[]`
 
 Scoring rule:
+
 - match = `1.0`
 - no match = `0.0`
 
@@ -490,22 +568,40 @@ Sector component
 #### Part C: match to the city's free-text strategic priorities
 
 Current behavior:
-- This is still a placeholder.
-- Every action receives `0.0` for this part.
+
+- The pipeline reads `cityStrategicPreferenceOther`.
+- It calls OpenAI with structured output parsing and a Pydantic schema to map free text into allowed co-benefit keys.
+- The output schema includes:
+  - `mapped_co_benefits`
+  - `unmappable_preference_fragments`
+- Allowed co-benefit keys are currently:
+  - `air_quality`
+  - `cost_of_living`
+  - `habitat`
+  - `housing`
+  - `mobility`
+  - `stakeholder_engagement`
+  - `water_quality`
+- If the free-text is blank, the model is misconfigured, or the call/parsing fails, the block stays neutral at `0.5`.
+- The mapping prompt uses `temperature=0.0` and few-shot examples to reduce variation, but because it still relies on an external LLM, identical requests can still occasionally produce different mapped co-benefits.
+- As a result, end-to-end tests that depend on live co-benefit mapping output can sometimes fail without any underlying code change unless the mapping step is mocked.
 
 Plain-language formula:
 
 ```text
-Other-preference component = 0.0
+Other-preference component
+= normalize(
+    sum(action.coBenefits[selected_key].impact_numeric or 0 for selected_key in resolved_preferred_co_benefits),
+    min=len(resolved_preferred_co_benefits) * -2,
+    max=len(resolved_preferred_co_benefits) * 2
+  )
+where missing co-benefit keys count as 0
+and no selected co-benefits returns 0.5 (neutral)
 ```
 
-Planned future behavior:
-- Read `cityStrategicPreferenceOther`
-- Compare it with action content such as:
-  - description,
-  - timeline,
-  - co-benefits
-- Turn that comparison into a score between `0` and `1`
+Fallback behavior note:
+
+- When non-blank free-text cannot be resolved because of model misconfiguration or call/parsing failure, the block remains neutral at `0.5`.
 
 #### Final Alignment formula
 
@@ -521,6 +617,7 @@ Alignment score
 ### 6.3 Weights used
 
 Internal Alignment weights:
+
 - Policy support = `0.80`
 - Sector match = `0.15`
 - Other free-text preference = `0.05`
@@ -528,9 +625,11 @@ Internal Alignment weights:
 ### 6.4 Outputs
 
 Main output:
+
 - `alignment_score`
 
 Key evidence fields:
+
 - `policy_component_value`
 - `sector_component_value`
 - `other_component_value`
@@ -551,17 +650,20 @@ Key evidence fields:
 The Feasibility block measures how practical the action looks for the city.
 
 It combines:
+
 - softer legal support,
 - and fit with the city's socio-economic profile.
 
 ### 7.1 Inputs
 
 From the legal requirements file:
+
 - `legal_requirements[].action_id`
 - `legal_requirements[].requirements[].strength`
 - `legal_requirements[].requirements[].alignment_status`
 
 Fields returned mainly as evidence:
+
 - `legal_requirements[].requirements[].signal_code`
 - `legal_requirements[].requirements[].signal_name`
 - `legal_requirements[].requirements[].location_scope`
@@ -569,6 +671,7 @@ Fields returned mainly as evidence:
 - `legal_requirements[].requirements[].evidence_count`
 
 From the action catalog:
+
 - `actions[].actionId`
 - `actions[].socioeconomicIndicators[].indicator_key`
 - `actions[].socioeconomicIndicators[].direction`
@@ -576,10 +679,11 @@ From the action catalog:
 - `actions[].socioeconomicIndicators[].rationale`
 
 From the city context file:
+
 - `city.unemployment_rate.attribute_category`
 - `city.renter_share.attribute_category`
-- `city.transport_logistics_employment.attribute_category`
-- `city.electricity_access.attribute_category`
+- `city.employment_in_transport_and_logistics.attribute_category`
+- `city.electricity_access_rate.attribute_category`
 - `city.industry_construction_employment.attribute_category`
 - `city.median_household_income.attribute_category`
 - `city.public_transport_share.attribute_category`
@@ -593,10 +697,12 @@ The Feasibility block has two equal parts.
 #### Part A: soft legal support
 
 Only these legal strengths are counted here:
+
 - `recommended`
 - `optional`
 
 Scoring rule:
+
 - Count how many soft legal requirements are marked `aligns`
 - Divide by the total number of soft legal requirements
 
@@ -610,15 +716,18 @@ Soft legal component
 ```
 
 If an action has no soft legal requirements:
+
 - the soft legal component is `0.0`
 
 Important details:
+
 - `mandatory` and `required` are not scored here because those already act as hard filters earlier.
 - `informational` is not scored here.
 
 #### Part B: socio-economic fit
 
 First, each city category is translated into a number:
+
 - `very_low` -> `-2`
 - `low` -> `-1`
 - `medium` -> `0`
@@ -626,11 +735,13 @@ First, each city category is translated into a number:
 - `very_high` -> `2`
 
 Then each action rule is processed using:
+
 - `indicator_key`
 - `direction`
 - `weight`
 
 Meaning of `direction`:
+
 - `supportive` means higher city values help the action
 - `constraining` means higher city values make the action harder
 
@@ -672,17 +783,13 @@ Socio-economic component
 ```
 
 Important details:
+
 - If the city is missing a needed indicator, that rule contributes `0`.
 - The weight of that missing rule is still included in the denominator.
 - If an action has no socio-economic rules at all, the pipeline sets:
   - socio-economic average = `0`
   - socio-economic component = `0.5`
 - So "no socio-economic information" becomes a neutral middle score, not a failure.
-
-Known current data gap:
-- The city file uses indicator names such as `transport_logistics_employment` and `electricity_access`.
-- Some action rules use names such as `employment_in_transport_and_logistics` and `electricity_access_rate`.
-- Because those names do not match, those rules are treated as missing and contribute `0`.
 
 #### Final Feasibility formula
 
@@ -697,15 +804,18 @@ Feasibility score
 ### 7.3 Weights used
 
 Internal Feasibility weights:
+
 - Soft legal support = `0.50`
 - Socio-economic fit = `0.50`
 
 ### 7.4 Outputs
 
 Main output:
+
 - `feasibility_score`
 
 Key evidence fields:
+
 - `counts_by_strength`
 - `counts_by_status`
 - `soft_legal_component_value`
@@ -727,19 +837,23 @@ The Final Scoring block turns the three block scores into one overall score and 
 ### 8.1 Inputs
 
 From earlier scoring blocks:
+
 - `impact_score`
 - `alignment_score`
 - `feasibility_score`
 
 From the request or the defaults:
+
 - `requestData.cityDataList[].weightsOverride.impact`
 - `requestData.cityDataList[].weightsOverride.alignment`
 - `requestData.cityDataList[].weightsOverride.feasibility`
 
 From the request size:
+
 - `requestData.topN`
 
 From the action catalog:
+
 - `actions[].actionId`
 
 ### 8.2 Logic
@@ -766,37 +880,44 @@ Actions are sorted in this order:
 3. If there is still a tie, sort alphabetically by `action_id`.
 
 Business interpretation:
+
 - If Impact has the largest final weight, then Impact becomes the first tie-breaker.
 - If Feasibility has the largest final weight, then Feasibility becomes the first tie-breaker.
 
 #### Part C: keep only the top results
 
 After sorting:
+
 - keep only the first `topN` actions
 
 #### Part D: assign ranks
 
 The ranking system is competitive ranking:
+
 - equal scores share the same rank
 - the next rank number is skipped accordingly
 
 Example:
+
 - `1, 2, 2, 4`
 
 ### 8.3 Weights used
 
 Final combination weights:
+
 - Default = Impact `0.55`, Alignment `0.22`, Feasibility `0.23`
 - Or the request-specific override values
 
 ### 8.4 Outputs
 
 Main outputs:
+
 - `ranked_action_ids`
 - `ranked_actions`
 - `metadata`
 
 For each ranked action, the output includes:
+
 - `action_id`
 - `rank`
 - `final_score`
@@ -807,14 +928,14 @@ For each ranked action, the output includes:
 - `explanation`
 
 Important current behavior:
+
 - `explanation` is `null` unless `requestData.createExplanations=true` and the explanation call succeeds
 - The explanation stage truncates `excludedActionsFreeText` and `cityStrategicPreferenceOther` to at most `400` characters each before prompt rendering
+- When `cityStrategicPreferenceOther` mapping falls back (`fallback_*`), explanation payloads include a known limitation that the free-text preference did not affect ranking and neutral other-preference scoring was used
 - The backend logs a warning if either field is truncated or if the final explanation prompt becomes unusually large
 
-Planned future behavior:
-- `explanation` is reserved for a future narrative explanation of why the action ranked where it did
-
 Key metadata includes:
+
 - `weights`
 - `timings`
 - `counts.total_actions`
@@ -841,11 +962,13 @@ The final ranked list is produced in this sequence:
 So the final list depends on two layers of weighting:
 
 Internal weights inside each scoring block:
+
 - Impact = `0.80 / 0.20`
 - Alignment = `0.80 / 0.15 / 0.05`
 - Feasibility = `0.50 / 0.50`
 
 Final weights across the three blocks:
+
 - Default = `0.55 / 0.22 / 0.23`
 - Or the request-specific `weightsOverride`
 
@@ -854,28 +977,35 @@ Final weights across the three blocks:
 ### Placeholder 1: `excludedActionsFreeText`
 
 Current behavior:
+
 - accepted in the request
 - does not currently exclude any actions
 
 Planned use:
+
 - convert natural-language exclusion instructions into real action removals
 
-### Placeholder 2: `cityStrategicPreferenceOther`
+### Current heuristic: `cityStrategicPreferenceOther`
 
 Current behavior:
-- accepted in the request
-- currently contributes `0.0` in the Alignment block
 
-Planned use:
-- compare the city's written strategic priorities with action content and score the match
+- accepted in the request
+- mapped into allowed co-benefit keys with OpenAI structured output
+- contributes to the Alignment block through a simple overlap score
+
+Future improvement:
+
+- keep the mapping stage, but replace the current overlap heuristic with richer scoring semantics when product requirements are defined
 
 ### Placeholder 3: ranked action `explanation`
 
 Current behavior:
-- always returned as `null`
+
+- `null` unless `requestData.createExplanations=true` and explanation generation succeeds
 
 Planned use:
-- provide a human-readable explanation of why the action ranked where it did
+
+- continue improving the generated explanation quality and prompt grounding
 
 ## 11. Practical Reading of the Current System
 
@@ -888,7 +1018,7 @@ In business terms, the current implementation works like this:
 - The final list is then created by applying the chosen top-level weights to those three scores.
 
 So the final ranking is not one black-box judgment. It is a step-by-step combination of:
+
 - rule-based filtering,
 - structured block-level scoring,
 - and one final weighted ranking calculation.
-

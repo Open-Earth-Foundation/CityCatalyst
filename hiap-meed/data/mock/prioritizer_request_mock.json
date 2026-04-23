@@ -26,6 +26,7 @@
           "feasibility": 0.2
         },
         "cityStrategicPreferenceSectors": ["transportation"],
+        "cityStrategicPreferenceTimeframes": ["short", "medium"],
         "cityStrategicPreferenceOther": "Prioritize near-term air quality improvements, reliable and affordable mobility, and climate resilience benefits for low-income neighborhoods.",
         "cityEmissionsData": {
           "inventoryYear": 2022,

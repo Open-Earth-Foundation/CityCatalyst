@@ -4,19 +4,16 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 from pathlib import Path
 
-from openai import OpenAI
 from pydantic import BaseModel
 
 from app.modules.prioritizer.config import (
-    get_explanations_max_retries,
     get_explanations_model,
-    get_explanations_timeout_seconds,
     is_explanations_enabled,
 )
 from app.modules.prioritizer.internal_models import ScoredAction
+from app.services.openai_client import create_openai_client
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +23,9 @@ PROMPT_FILE_PATH = (
 SYSTEM_PROMPT_FILE_PATH = (
     Path(__file__).resolve().parents[1] / "prompts" / "ranking_explanation_system.md"
 )
+# Applies to request free-text inputs used in explanation prompts:
+# - `city_preference_other_text` (frontend `cityStrategicPreferenceOther`)
+# - `excluded_actions_free_text` (frontend `excludedActionsFreeText`)
 EXPLANATION_FREE_TEXT_MAX_CHARS = 400
 EXPLANATION_PROMPT_WARNING_CHARS = 20_000
 
@@ -65,12 +65,6 @@ def generate_explanations(
     if model_name is None:
         raise ValueError(
             "HIAP_MEED_EXPLANATIONS_MODEL must be set when createExplanations=true"
-        )
-
-    api_key = os.getenv("OPENAI_API_KEY")
-    if api_key is None or not api_key.strip():
-        raise ValueError(
-            "OPENAI_API_KEY must be set when createExplanations=true"
         )
 
     # Clamp free-text request fields before they reach the prompt.
@@ -114,11 +108,7 @@ def generate_explanations(
         len(scored_actions),
     )
 
-    client = OpenAI(
-        api_key=api_key.strip(),
-        timeout=get_explanations_timeout_seconds(),
-        max_retries=get_explanations_max_retries(),
-    )
+    client = create_openai_client()
     completion = client.chat.completions.parse(
         # Parse helper converts the Pydantic model to JSON schema and returns
         # a typed parsed object in `message.parsed`.
@@ -371,10 +361,28 @@ def _build_alignment_signals(alignment_evidence: dict[str, object]) -> dict[str,
         if mapped_sector_tag_value is not None
         else None
     )
+    action_timeline_bucket_value = alignment_evidence.get("action_timeline_bucket")
+    action_timeline_bucket = (
+        str(action_timeline_bucket_value).strip()
+        if action_timeline_bucket_value is not None
+        else None
+    )
     policy_signals_count_value = alignment_evidence.get("policy_signals_count")
+    city_preference_timeframes = alignment_evidence.get("city_preference_timeframes", [])
+    other_component_mapping_source_value = alignment_evidence.get(
+        "other_component_mapping_source"
+    )
+    other_component_mapping_source = (
+        str(other_component_mapping_source_value).strip()
+        if other_component_mapping_source_value is not None
+        else None
+    )
     return {
         "sector_match": bool(alignment_evidence.get("sector_match", False)),
         "mapped_sector_tag": mapped_sector_tag,
+        "action_timeline_bucket": action_timeline_bucket,
+        "city_preference_timeframes": city_preference_timeframes,
+        "other_component_mapping_source": other_component_mapping_source,
         "policy_signals_count": int(policy_signals_count_value)
         if isinstance(policy_signals_count_value, int | float)
         else 0,
@@ -449,10 +457,19 @@ def _build_known_limitations(
             "Free-text action exclusions are not implemented yet and therefore do not affect ranking."
         )
 
-    other_component_is_stub = bool(alignment_evidence.get("other_component_is_stub"))
-    if city_preference_other_text and other_component_is_stub:
+    other_component_mapping_source = str(
+        alignment_evidence.get("other_component_mapping_source", "")
+    ).strip()
+    other_preference_text_provided = bool(
+        city_preference_other_text and city_preference_other_text.strip()
+    )
+    if (
+        other_preference_text_provided
+        and other_component_mapping_source
+        and other_component_mapping_source != "llm"
+    ):
         limitations.append(
-            "City free-text preference matching is currently not modeled."
+            "City free-text preference was provided, but mapping did not complete successfully; ranking used neutral other-preference scoring."
         )
 
     informational_requirements_count_value = feasibility_evidence.get(

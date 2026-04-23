@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -15,6 +16,10 @@ from app.modules.prioritizer.api import (
     get_legal_data_api_client,
     get_policy_signals_data_api_client,
 )
+from app.modules.prioritizer.config import (
+    get_alignment_other_preference_mapping_model,
+)
+from app.modules.prioritizer.services import co_benefit_mapping
 from app.services.data_clients import (
     MockActionDataApiClient,
     MockCityDataApiClient,
@@ -26,6 +31,19 @@ from app.services.data_clients import (
 def _mock_data_dir() -> Path:
     """Return the checked-in mock data directory path."""
     return Path(__file__).resolve().parents[2] / "data" / "mock"
+
+
+def _mock_other_preference_mapping(**_: object) -> dict[str, object]:
+    """Return a stable co-benefit mapping for deterministic ranking assertions."""
+    return {
+        "resolved_preferred_co_benefits": ["air_quality", "mobility"],
+        "unmappable_preference_fragments": [
+            "climate resilience benefits for low-income neighborhoods"
+        ],
+        "mapping_source": "mock",
+        "provider": "mock",
+        "model": "mock-model",
+    }
 
 
 @pytest.mark.integration
@@ -41,6 +59,12 @@ def test_prioritize_e2e_with_mock_api_payloads(
     mock_data_dir = _mock_data_dir()
     request_payload = json.loads(
         (mock_data_dir / "prioritizer_request_mock.json").read_text(encoding="utf-8")
+    )
+    request_payload["requestData"]["createExplanations"] = False
+    monkeypatch.setattr(
+        co_benefit_mapping,
+        "resolve_city_preferred_co_benefits",
+        _mock_other_preference_mapping,
     )
 
     mock_city_client = MockCityDataApiClient(mock_file_path=mock_data_dir / "city_api_mock.json")
@@ -91,10 +115,10 @@ def test_prioritize_e2e_with_mock_api_payloads(
             "icare_0016",
             "c40_0010",
             "c40_0015",
-            "icare_0002",
             "icare_0028",
-            "c40_0023",
+            "icare_0002",
             "icare_0139",
+            "c40_0023",
             "icare_0121",
             "ipcc_0105",
             "icare_0156",
@@ -103,9 +127,9 @@ def test_prioritize_e2e_with_mock_api_payloads(
             "icare_0040",
             "c40_0049",
             "icare_0164",
-            "ipcc_0050",
             "icare_0072",
             "icare_0099",
+            "c40_0018",
         ]
         assert ranked_action_ids == expected_ranked_ids
         assert [item["action_id"] for item in ranked_actions] == expected_ranked_ids
@@ -150,5 +174,61 @@ def test_prioritize_e2e_with_mock_api_payloads(
             response_full_payload["results"][0]["ranked_action_ids"]
             == result["ranked_action_ids"]
         )
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+def test_prioritize_e2e_live_other_preference_mapping_smoke(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Live LLM mapping smoke test asserts high-level invariants only."""
+    if not os.getenv("OPENAI_API_KEY"):
+        pytest.skip("OPENAI_API_KEY is required for live mapping smoke test")
+    if get_alignment_other_preference_mapping_model() is None:
+        pytest.skip(
+            "HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL is required for live mapping smoke test"
+        )
+
+    artifact_log_dir = tmp_path / "logs"
+    monkeypatch.setenv("LOG_DIR", str(artifact_log_dir))
+    monkeypatch.setenv("ARTIFACT_LOG_JSONL", "true")
+
+    mock_data_dir = _mock_data_dir()
+    request_payload = json.loads(
+        (mock_data_dir / "prioritizer_request_mock.json").read_text(encoding="utf-8")
+    )
+    request_payload["requestData"]["createExplanations"] = False
+
+    mock_city_client = MockCityDataApiClient(mock_file_path=mock_data_dir / "city_api_mock.json")
+    mock_action_client = MockActionDataApiClient(
+        mock_file_path=mock_data_dir / "actions_api_mock_v2.json"
+    )
+    mock_legal_client = MockLegalDataApiClient(
+        mock_file_path=mock_data_dir / "actions_legal_api_mock.json"
+    )
+    mock_policy_client = MockPolicySignalsDataApiClient(
+        mock_file_path=mock_data_dir / "actions_policy_signals_api_mock.json"
+    )
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post("/v1/prioritize", json=request_payload)
+
+        assert response.status_code == 200
+        body = response.json()
+        assert len(body["results"]) == 1
+        result = body["results"][0]
+        assert result["locode"] == "CL IQQ"
+        assert len(result["ranked_action_ids"]) == 20
+        assert len(result["ranked_actions"]) == 20
+        assert result["metadata"]["counts"]["ranked_actions"] == 20
+        assert all(item["explanation"] is None for item in result["ranked_actions"])
     finally:
         app.dependency_overrides.clear()

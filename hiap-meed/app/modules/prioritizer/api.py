@@ -184,6 +184,7 @@ def _run_for_city_input(
         top_n=resolve_top_n(requested_top_n),
         excluded_actions_free_text=city_input.excludedActionsFreeText,
         city_preference_sectors=list(city_input.cityStrategicPreferenceSectors),
+        city_preference_timeframes=list(city_input.cityStrategicPreferenceTimeframes),
         city_preference_other_text=city_input.cityStrategicPreferenceOther,
         city_emissions_by_gpc_ref=city_emissions_by_gpc_ref,
         internal_request_id=internal_request_id,

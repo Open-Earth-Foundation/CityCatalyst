@@ -11,6 +11,7 @@ from app.modules.prioritizer.services.explanations import (
     EXPLANATION_PROMPT_WARNING_CHARS,
     ExplanationItem,
     _build_curated_action_payload,
+    _build_known_limitations,
     _rows_to_explanations,
     _truncate_explanation_free_text,
     _warn_if_prompt_is_large,
@@ -37,7 +38,7 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
                 "sector_match": True,
                 "mapped_sector_tag": "stationary_energy",
                 "policy_signals_count": 2,
-                "other_component_is_stub": True,
+                "other_component_mapping_source": "fallback_error",
                 "policy_signal_summaries": [
                     {
                         "signal_type": "plan",
@@ -86,10 +87,14 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
     }
     assert payload["impact_signals"]["impact_band"] == "high"
     assert payload["alignment_signals"]["sector_match"] is True
+    assert (
+        payload["alignment_signals"]["other_component_mapping_source"]
+        == "fallback_error"
+    )
     assert payload["feasibility_signals"]["informational_requirements_count"] == 1
     assert payload["known_limitations"] == [
         "Free-text action exclusions are not implemented yet and therefore do not affect ranking.",
-        "City free-text preference matching is currently not modeled.",
+        "City free-text preference was provided, but mapping did not complete successfully; ranking used neutral other-preference scoring.",
         "Non-blocking legal constraints are included as evidence, but UI-friendly implementation notes are not fully implemented yet.",
     ]
 
@@ -108,6 +113,22 @@ def test_rows_to_explanations_filters_unknown_ids_and_empty_text() -> None:
     )
 
     assert result == {"A_1": "First explanation."}
+
+
+def test_known_limitations_skip_other_preference_note_when_mapping_succeeds() -> None:
+    """Successful mapping should not produce the neutral-fallback limitation note."""
+    limitations = _build_known_limitations(
+        hard_filter_evidence={},
+        alignment_evidence={"other_component_mapping_source": "llm"},
+        feasibility_evidence={},
+        city_preference_other_text="Prioritize cleaner air",
+        excluded_actions_free_text=None,
+    )
+
+    assert all(
+        "neutral other-preference scoring" not in limitation
+        for limitation in limitations
+    )
 
 
 def test_truncate_explanation_free_text_warns_and_clamps(

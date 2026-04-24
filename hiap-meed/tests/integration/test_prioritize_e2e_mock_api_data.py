@@ -144,11 +144,12 @@ def test_prioritize_e2e_with_mock_api_payloads(
         assert unknown_evidence["hard_requirements_unknown_count"] == 1
 
         # Verify artifact naming and full-response persistence.
-        request_runs = sorted((artifact_log_dir / "requests").glob("*"))
+        request_runs = sorted((artifact_log_dir / "requests" / "prioritization").glob("*"))
         assert len(request_runs) == 1
         run_dir = request_runs[0]
 
         manifest_payload = json.loads((run_dir / "manifest.json").read_text("utf-8"))
+        assert manifest_payload["request_kind"] == "prioritization"
         generated_files = set(manifest_payload["generated_files"])
         response_summary_files = [
             file_name

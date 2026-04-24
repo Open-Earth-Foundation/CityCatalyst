@@ -28,7 +28,7 @@ Fields that affect the result:
 - `requestData.cityDataList[].weightsOverride.impact`
 - `requestData.cityDataList[].weightsOverride.alignment`
 - `requestData.cityDataList[].weightsOverride.feasibility`
-- `requestData.cityDataList[].excludedActionsFreeText`
+- `requestData.cityDataList[].excludedActionIds[]`
 - `requestData.cityDataList[].cityStrategicPreferenceSectors[]`
 - `requestData.cityDataList[].cityStrategicPreferenceTimeframes[]`
 - `requestData.cityDataList[].cityStrategicPreferenceOther`
@@ -38,11 +38,17 @@ What these are used for:
 
 - `topN` controls how many ranked actions are returned.
 - `weightsOverride` changes how much Impact, Alignment, and Feasibility matter in the final score.
-- `excludedActionsFreeText` is intended to remove actions, but is currently still a placeholder.
+- `excludedActionIds[]` removes user-confirmed exclusions before scoring.
 - `cityStrategicPreferenceSectors[]` influences the Alignment block.
+- `cityStrategicPreferenceSectors[]` must use only:
+  - `stationary_energy`
+  - `transportation`
+  - `waste`
+  - `ippu`
+  - `afolu`
 - `cityStrategicPreferenceTimeframes[]` influences the Alignment block by comparing the city's preferred implementation horizon against each action's `timelineForImplementation`.
 - `cityStrategicPreferenceOther` influences the Alignment block through LLM-based co-benefit mapping.
-- When explanations are enabled, `excludedActionsFreeText` and `cityStrategicPreferenceOther` are each truncated to at most `400` characters before the LLM prompt is rendered, and the backend logs a warning if truncation happens.
+- When explanations are enabled, `cityStrategicPreferenceOther` is truncated to at most `400` characters before the LLM prompt is rendered, and the backend logs a warning if truncation happens.
 - `totalEmissions` values are the main city emissions numbers used in the Impact block.
 
 ### City context data
@@ -139,7 +145,7 @@ For one city, the pipeline runs in this order:
 1. Read the requested number of results (`topN`) and the final scoring weights.
 2. Build city emissions totals from the frontend request.
 3. Load city context, actions, legal requirements, and policy signals.
-4. Apply the Hard Filter to remove actions that should not be ranked.
+4. Apply the Hard Filter to remove confirmed exclusions and actions that should not be ranked.
 5. Score the remaining actions for Impact.
 6. Score the remaining actions for Alignment.
 7. Score the remaining actions for Feasibility.
@@ -228,7 +234,7 @@ This block does not give a numeric score. Its role is simply to decide which act
 
 From the frontend request:
 
-- `requestData.cityDataList[].excludedActionsFreeText`
+- `requestData.cityDataList[].excludedActionIds[]`
 
 From the action catalog:
 
@@ -254,25 +260,41 @@ Supporting legal fields that are returned as evidence, but do not drive the actu
 
 ### 4.2 Logic
 
-#### Part A: exclusion based on free text
+#### Part A: confirmed user exclusions
 
 Current behavior:
 
-- The request field `excludedActionsFreeText` is accepted.
-- However, the current implementation does not yet convert that text into specific action IDs.
-- As a result, this part currently excludes nothing.
+- The ranking request field `excludedActionIds[]` is accepted.
+- Each listed action ID is removed before scoring.
+- These IDs are expected to come from the separate exclusion preview and user review flow.
 
 Current output:
 
 ```text
-Excluded actions from free text = none
+Excluded actions = confirmed excludedActionIds
 ```
 
-Planned future behavior:
+Preview behavior before ranking:
 
-- Read the free-text instruction.
-- Match it to action names, descriptions, or a curated mapping.
-- Convert that instruction into a real list of actions to remove.
+- `POST /v1/prioritize/exclusions/preview` accepts `excludedSectorTags`, `excludedCoBenefitKeys`, and `excludedActionsFreeText`.
+- `excludedSectorTags` must use only:
+  - `stationary_energy`
+  - `transportation`
+  - `waste`
+  - `ippu`
+  - `afolu`
+- `excludedCoBenefitKeys` must use only:
+  - `air_quality`
+  - `cost_of_living`
+  - `habitat`
+  - `housing`
+  - `mobility`
+  - `stakeholder_engagement`
+  - `water_quality`
+- Sector preferences are resolved deterministically from action sector metadata.
+- Co-benefit preferences are resolved deterministically by finding selected co-benefits with negative `impact_numeric`.
+- Free-text preferences use a guarded LLM resolver only when enabled by `HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED=true` and `HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL`.
+- The preview response returns proposed actions, grouped summary counts, and warnings so the user can confirm the final `excludedActionIds[]`.
 
 #### Part B: hard legal screening
 
@@ -551,6 +573,15 @@ The action's sector code is translated as follows:
 Then the pipeline checks whether the translated sector appears in:
 
 - `requestData.cityDataList[].cityStrategicPreferenceSectors[]`
+
+Input contract:
+
+- `cityStrategicPreferenceSectors[]` is validated at the API boundary against:
+  - `stationary_energy`
+  - `transportation`
+  - `waste`
+  - `ippu`
+  - `afolu`
 
 Scoring rule:
 
@@ -930,7 +961,7 @@ For each ranked action, the output includes:
 Important current behavior:
 
 - `explanation` is `null` unless `requestData.createExplanations=true` and the explanation call succeeds
-- The explanation stage truncates `excludedActionsFreeText` and `cityStrategicPreferenceOther` to at most `400` characters each before prompt rendering
+- The explanation stage truncates `cityStrategicPreferenceOther` to at most `400` characters before prompt rendering
 - When `cityStrategicPreferenceOther` mapping falls back (`fallback_*`), explanation payloads include a known limitation that the free-text preference did not affect ranking and neutral other-preference scoring was used
 - The backend logs a warning if either field is truncated or if the final explanation prompt becomes unusually large
 
@@ -950,7 +981,7 @@ Key metadata includes:
 The final ranked list is produced in this sequence:
 
 1. Start with the full action catalog.
-2. Remove actions blocked by the Hard Filter.
+2. Remove confirmed exclusions and actions blocked by the Hard Filter.
 3. Score every remaining action for Impact.
 4. Score every remaining action for Alignment.
 5. Score every remaining action for Feasibility.
@@ -974,16 +1005,13 @@ Final weights across the three blocks:
 
 ## 10. Current Placeholders and Planned Extensions
 
-### Placeholder 1: `excludedActionsFreeText`
+### Implemented: exclusion preview
 
 Current behavior:
 
-- accepted in the request
-- does not currently exclude any actions
-
-Planned use:
-
-- convert natural-language exclusion instructions into real action removals
+- raw exclusion preferences are resolved by the preview endpoint before ranking
+- ranking accepts only confirmed `excludedActionIds[]`
+- free-text preview matching is optional and guarded by environment config
 
 ### Current heuristic: `cityStrategicPreferenceOther`
 

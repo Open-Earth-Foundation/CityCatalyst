@@ -9,6 +9,27 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.modules.prioritizer.config import resolve_impact_text_multiplier
+from app.modules.prioritizer.services.co_benefit_mapping import ALLOWED_CO_BENEFIT_KEYS
+from app.modules.prioritizer.utils.sector_mapping import ALLOWED_SECTOR_TAGS
+
+
+def _validate_allowed_string_list(
+    *,
+    values: list[str],
+    field_name: str,
+    allowed_values: set[str],
+) -> list[str]:
+    """Validate one string-list field against an exact allowed taxonomy."""
+    normalized_values = list(dict.fromkeys(values))
+    invalid_values = [
+        value for value in normalized_values if value not in allowed_values
+    ]
+    if invalid_values:
+        raise ValueError(
+            f"{field_name} must contain only supported values: "
+            f"{sorted(allowed_values)}; got invalid values {invalid_values}"
+        )
+    return normalized_values
 
 # ============================================================================
 # FRONTEND REQUEST ENVELOPE MODELS (CityCatalyst -> hiap-meed)
@@ -75,7 +96,7 @@ class FrontendCityInput(BaseModel):
     locode: str = Field(min_length=1)
     countryCode: str = Field(min_length=2, max_length=2)
     populationSize: int | None = None
-    excludedActionsFreeText: str | None = None
+    excludedActionIds: list[str] = Field(default_factory=list)
     weightsOverride: dict[str, float] | None = None
     cityStrategicPreferenceSectors: list[str] = Field(default_factory=list)
     cityStrategicPreferenceTimeframes: list[
@@ -83,6 +104,16 @@ class FrontendCityInput(BaseModel):
     ] = Field(default_factory=lambda: ["no_preference"])
     cityStrategicPreferenceOther: str | None = None
     cityEmissionsData: FrontendCityEmissionsData
+
+    @field_validator("cityStrategicPreferenceSectors")
+    @classmethod
+    def _validate_city_preference_sectors(cls, values: list[str]) -> list[str]:
+        """Validate that city preferred sectors use the supported taxonomy only."""
+        return _validate_allowed_string_list(
+            values=values,
+            field_name="cityStrategicPreferenceSectors",
+            allowed_values=ALLOWED_SECTOR_TAGS,
+        )
 
     # Normalize only omission/duplication before Literal validation. All
     # non-empty entries must already match the exact frontend contract.
@@ -138,6 +169,103 @@ class PrioritizerApiRequest(BaseModel):
 
     meta: FrontendRequestMeta
     requestData: PrioritizerRequestData
+
+
+# ============================================================================
+# EXCLUSION PREVIEW REQUEST/RESPONSE MODELS (CityCatalyst -> hiap-meed)
+# ----------------------------------------------------------------------------
+# Composition:
+# - ExclusionPreviewApiRequest
+#   - meta: FrontendRequestMeta
+#     - apiContext: FrontendApiContext
+#   - requestData: ExclusionPreviewRequestData
+#     - cityDataList: list[ExclusionPreviewCityInput]
+# - ExclusionPreviewApiResponse
+#   - results: list[ExclusionPreviewCityResult]
+#     - proposedExcludedActions: list[ProposedExcludedAction]
+#     - exclusionSummary: ExclusionSummary
+#       - byReasonType: dict[str, ExclusionSummaryReasonGroup]
+# ============================================================================
+
+
+class ExclusionPreviewCityInput(BaseModel):
+    """Single city payload for exclusion-preference preview."""
+
+    locode: str = Field(min_length=1)
+    excludedSectorTags: list[str] = Field(default_factory=list)
+    excludedCoBenefitKeys: list[str] = Field(default_factory=list)
+    excludedActionsFreeText: str | None = None
+
+    @field_validator("excludedSectorTags")
+    @classmethod
+    def _validate_excluded_sector_tags(cls, values: list[str]) -> list[str]:
+        """Validate that excluded sector tags use the supported taxonomy only."""
+        return _validate_allowed_string_list(
+            values=values,
+            field_name="excludedSectorTags",
+            allowed_values=ALLOWED_SECTOR_TAGS,
+        )
+
+    @field_validator("excludedCoBenefitKeys")
+    @classmethod
+    def _validate_excluded_co_benefit_keys(cls, values: list[str]) -> list[str]:
+        """Validate that excluded co-benefit keys use the supported taxonomy only."""
+        return _validate_allowed_string_list(
+            values=values,
+            field_name="excludedCoBenefitKeys",
+            allowed_values=set(ALLOWED_CO_BENEFIT_KEYS),
+        )
+
+
+class ExclusionPreviewRequestData(BaseModel):
+    """RequestData section for exclusion preview requests."""
+
+    cityDataList: list[ExclusionPreviewCityInput] = Field(min_length=1)
+
+
+class ExclusionPreviewApiRequest(BaseModel):
+    """Frontend -> hiap-meed request envelope for exclusion preview."""
+
+    meta: FrontendRequestMeta
+    requestData: ExclusionPreviewRequestData
+
+
+class ProposedExcludedAction(BaseModel):
+    """One action proposed for exclusion before user confirmation."""
+
+    actionId: str
+    actionName: str
+    reasons: list[str] = Field(default_factory=list)
+    matchedBy: list[str] = Field(default_factory=list)
+
+
+class ExclusionSummaryReasonGroup(BaseModel):
+    """Grouped exclusion count and action IDs for one reason type."""
+
+    count: int = 0
+    actionIds: list[str] = Field(default_factory=list)
+
+
+class ExclusionSummary(BaseModel):
+    """Summary of proposed exclusions grouped for frontend review."""
+
+    totalProposed: int = 0
+    byReasonType: dict[str, ExclusionSummaryReasonGroup] = Field(default_factory=dict)
+
+
+class ExclusionPreviewCityResult(BaseModel):
+    """Per-city exclusion preview response."""
+
+    locode: str = Field(min_length=1)
+    proposedExcludedActions: list[ProposedExcludedAction] = Field(default_factory=list)
+    exclusionSummary: ExclusionSummary = Field(default_factory=ExclusionSummary)
+    warnings: list[str] = Field(default_factory=list)
+
+
+class ExclusionPreviewApiResponse(BaseModel):
+    """Top-level response for exclusion preview."""
+
+    results: list[ExclusionPreviewCityResult] = Field(default_factory=list)
 
 
 # ============================================================================

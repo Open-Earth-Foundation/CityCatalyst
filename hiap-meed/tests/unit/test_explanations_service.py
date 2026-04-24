@@ -65,16 +65,12 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
                 ],
                 "missing_city_socioeconomic_indicator_keys": [],
             },
-            "hard_filter": {
-                "free_text_exclusion_is_stub": True,
-            },
         },
     )
 
     payload = _build_curated_action_payload(
         scored_action=scored_action,
         city_preference_other_text="Prioritize air quality outcomes",
-        excluded_actions_free_text="Exclude all highway expansion actions",
     )
 
     assert payload["action_id"] == "A_1"
@@ -93,7 +89,6 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
     )
     assert payload["feasibility_signals"]["informational_requirements_count"] == 1
     assert payload["known_limitations"] == [
-        "Free-text action exclusions are not implemented yet and therefore do not affect ranking.",
         "City free-text preference was provided, but mapping did not complete successfully; ranking used neutral other-preference scoring.",
         "Non-blocking legal constraints are included as evidence, but UI-friendly implementation notes are not fully implemented yet.",
     ]
@@ -118,11 +113,9 @@ def test_rows_to_explanations_filters_unknown_ids_and_empty_text() -> None:
 def test_known_limitations_skip_other_preference_note_when_mapping_succeeds() -> None:
     """Successful mapping should not produce the neutral-fallback limitation note."""
     limitations = _build_known_limitations(
-        hard_filter_evidence={},
         alignment_evidence={"other_component_mapping_source": "llm"},
         feasibility_evidence={},
         city_preference_other_text="Prioritize cleaner air",
-        excluded_actions_free_text=None,
     )
 
     assert all(

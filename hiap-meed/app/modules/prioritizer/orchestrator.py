@@ -158,7 +158,7 @@ def run_prioritization(
     locode: str,
     weights_override: dict[str, float] | None,
     top_n: int | None,
-    excluded_actions_free_text: str | None,
+    excluded_action_ids: list[str],
     city_preference_sectors: list[str],
     city_preference_timeframes: list[str],
     city_preference_other_text: str | None,
@@ -182,7 +182,10 @@ def run_prioritization(
     """
 
     # Phase 0: initialize request-scoped artifact writer and timing accumulator.
-    artifact_writer = ArtifactWriter(request_id=internal_request_id)
+    artifact_writer = ArtifactWriter(
+        request_id=internal_request_id,
+        request_kind="prioritization",
+    )
     timings: dict[str, float] = {}
     logger.info(
         "Prioritization started internal_request_id=%s locode=%s top_n=%s weights_override_provided=%s",
@@ -368,7 +371,7 @@ def run_prioritization(
         "city_preference_sectors": city_preference_sectors,
         "city_preference_timeframes": city_preference_timeframes,
         "city_preference_other_text": city_preference_other_text,
-        "excluded_actions_free_text": excluded_actions_free_text,
+        "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
     }
     input_snapshot_path = artifact_writer.write_run_file(
         "input_snapshot.json", input_snapshot_payload
@@ -385,7 +388,7 @@ def run_prioritization(
     with time_block("hard_filter") as block:
         hard_filter_result = hard_filter.run(
             actions=actions,
-            excluded_actions_free_text=excluded_actions_free_text,
+            excluded_action_ids=excluded_action_ids,
             legal_requirements_by_action_id=legal_requirements_by_action_id,
         )
     # Build discard diagnostics and emit hard-filter artifacts.
@@ -408,6 +411,7 @@ def run_prioritization(
             "discarded_excluded": len(discarded_excluded_ids),
             "discarded_legal": len(discarded_legal_ids),
             "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
+            "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
             "discarded_legal_action_ids": sorted(discarded_legal_ids),
             "valid_action_ids": _sorted_action_ids(hard_filter_result.valid_actions),
             "discarded_legal_reasons_by_action_id": {
@@ -623,7 +627,6 @@ def run_prioritization(
                     scored_actions=scored_actions,
                     city_preference_sectors=city_preference_sectors,
                     city_preference_other_text=city_preference_other_text,
-                    excluded_actions_free_text=excluded_actions_free_text,
                 )
             except Exception as error:
                 explanation_error = error
@@ -786,6 +789,7 @@ def run_prioritization(
             "weights": weights,
             "ranked_action_ids": ranked_action_ids,
             "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
+            "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
             "discarded_legal_action_ids": sorted(discarded_legal_ids),
             "timings": timings,
         },
@@ -799,6 +803,7 @@ def run_prioritization(
             "locode": locode,
             "counts": metadata["counts"],
             "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
+            "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
             "discarded_legal_action_ids": sorted(discarded_legal_ids),
             "timings": timings,
         },

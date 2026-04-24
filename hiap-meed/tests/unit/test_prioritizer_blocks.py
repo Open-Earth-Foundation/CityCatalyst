@@ -152,7 +152,7 @@ def test_hard_filter_block_with_mock_api_data() -> None:
 
     result = hard_filter.run(
         actions=actions,
-        excluded_actions_free_text="Exclude fossil-heavy actions (stub behavior today).",
+        excluded_action_ids=[],
         legal_requirements_by_action_id=legal_requirements,
     )
 

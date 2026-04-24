@@ -15,7 +15,6 @@ Context:
 - City locode: {locode}
 - City preferred sectors: {city_preference_sectors}
 - City free-text preference input: {city_preference_other_text}
-- Excluded-actions free-text input: {excluded_actions_free_text}
 
 Ranked actions evidence payload (JSON):
 {ranked_actions_json}

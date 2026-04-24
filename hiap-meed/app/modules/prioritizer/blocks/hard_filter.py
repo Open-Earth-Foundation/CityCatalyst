@@ -11,26 +11,10 @@ from app.modules.prioritizer.internal_models import (
 HARD_REQUIREMENT_STRENGTHS = {"mandatory", "required"}
 
 
-def _resolve_excluded_action_ids_from_text(
-    *, actions: list[Action], excluded_actions_free_text: str | None
-) -> set[str]:
-    """
-    Resolve free-text exclusion guidance into concrete action IDs.
-
-    Current behavior is a stub: it always returns an empty set.
-    Future behavior will semantically match free text against action metadata.
-    """
-
-    del actions
-    del excluded_actions_free_text
-    return set()
-
-
-def _apply_free_text_exclusion_filter(
+def _apply_confirmed_exclusion_filter(
     *,
     actions: list[Action],
     excluded_action_ids: set[str],
-    free_text_exclusion_text_provided: bool,
 ) -> tuple[list[Action], list[Action], dict[str, dict[str, object]]]:
     """
     Apply action exclusion by resolved action IDs.
@@ -45,22 +29,20 @@ def _apply_free_text_exclusion_filter(
     discarded_excluded: list[Action] = []
     evidence: dict[str, dict[str, object]] = {}
 
-    # First gate: explicit exclusions resolved from frontend free text.
+    # First gate: user-confirmed action IDs from the preview workflow.
     for action in actions:
         if action.action_id in excluded_action_ids:
             discarded_excluded.append(action)
             evidence[action.action_id] = {
-                "discard_reason": "excluded",
+                "discard_reason": "user_excluded",
                 "matched_excluded_action_id": action.action_id,
-                "free_text_exclusion_is_stub": True,
-                "free_text_exclusion_text_provided": free_text_exclusion_text_provided,
+                "confirmed_exclusion": True,
             }
             continue
         valid_actions.append(action)
         evidence[action.action_id] = {
             "discard_reason": None,
-            "free_text_exclusion_is_stub": True,
-            "free_text_exclusion_text_provided": free_text_exclusion_text_provided,
+            "confirmed_exclusion": False,
         }
 
     return valid_actions, discarded_excluded, evidence
@@ -146,7 +128,7 @@ def _apply_legal_hard_filter(
 
 def run(
     actions: list[Action],
-    excluded_actions_free_text: str | None,
+    excluded_action_ids: list[str] | None = None,
     legal_requirements_by_action_id: (
         dict[str, list[LegalRequirementRecord]] | None
     ) = None,
@@ -156,24 +138,16 @@ def run(
 
     Inputs:
     - `actions`: Full action list from data client.
-    - `excluded_actions_free_text`: Frontend free-text exclusion guidance.
+    - `excluded_action_ids`: User-confirmed action IDs to remove.
     """
 
-    # Step 1: resolve free-text exclusions into concrete action IDs (stub for now).
-    excluded_action_ids = _resolve_excluded_action_ids_from_text(
+    # Step 1: apply confirmed action exclusions and initialize evidence entries.
+    confirmed_excluded_action_ids = set(excluded_action_ids or [])
+    valid_actions, discarded_excluded, evidence = _apply_confirmed_exclusion_filter(
         actions=actions,
-        excluded_actions_free_text=excluded_actions_free_text,
+        excluded_action_ids=confirmed_excluded_action_ids,
     )
-    # Step 2: apply explicit action exclusions and initialize evidence entries.
-    free_text_exclusion_text_provided = bool(
-        excluded_actions_free_text and excluded_actions_free_text.strip()
-    )
-    valid_actions, discarded_excluded, evidence = _apply_free_text_exclusion_filter(
-        actions=actions,
-        excluded_action_ids=excluded_action_ids,
-        free_text_exclusion_text_provided=free_text_exclusion_text_provided,
-    )
-    # Step 3: apply hard legal gate to the remaining candidates.
+    # Step 2: apply hard legal gate to the remaining candidates.
     valid_actions, discarded_legal = _apply_legal_hard_filter(
         actions=valid_actions,
         evidence=evidence,

@@ -30,14 +30,10 @@ from app.modules.prioritizer.config import (
 from app.modules.prioritizer.internal_models import Action, BlockScoreResult
 from app.modules.prioritizer.models import PolicySignalByAction
 from app.modules.prioritizer.services import co_benefit_mapping
-
-SECTOR_NUMBER_TO_TAG: dict[str, str] = {
-    "I": "stationary_energy",
-    "II": "transportation",
-    "III": "waste",
-    "IV": "ippu",
-    "V": "afolu",
-}
+from app.modules.prioritizer.utils.sector_mapping import (
+    resolve_action_sector_tags,
+    normalize_sector_tags,
+)
 
 ACTION_TIMELINE_BUCKET_TO_PREFERENCE: dict[str, str] = {
     "<5 years": "short",
@@ -53,15 +49,6 @@ TIMEFRAME_ORDER: dict[str, int] = {
 
 
 logger = logging.getLogger(__name__)
-
-
-def _normalize_preference_sectors(city_preference_sectors: list[str]) -> set[str]:
-    """Normalize city strategic preference sector labels."""
-    return {
-        sector.strip().lower() for sector in city_preference_sectors if sector.strip()
-    }
-
-
 def _normalize_timeframe_preferences(
     city_preference_timeframes: list[str],
 ) -> list[str]:
@@ -137,7 +124,7 @@ def run(
     validate_block_component_weights()
 
     # Block 1: Pre-compute shared lookup inputs for all actions.
-    preferred_sectors = _normalize_preference_sectors(city_preference_sectors)
+    preferred_sectors = normalize_sector_tags(city_preference_sectors)
     preferred_timeframes = _normalize_timeframe_preferences(city_preference_timeframes)
     available_co_benefit_keys = list(co_benefit_mapping.ALLOWED_CO_BENEFIT_KEYS)
     co_benefit_mapping_result = co_benefit_mapping.resolve_city_preferred_co_benefits(
@@ -166,9 +153,10 @@ def run(
 
         # Block 3: Compute binary sector-match component from configured mapping.
         sector_number = str(action.emissions.get("sector_number", "")).strip().upper()
-        mapped_sector_tag = SECTOR_NUMBER_TO_TAG.get(sector_number)
+        mapped_sector_tags = sorted(resolve_action_sector_tags(action))
+        mapped_sector_tag = mapped_sector_tags[0] if mapped_sector_tags else None
         sector_component_value = 0.0
-        if mapped_sector_tag is not None and mapped_sector_tag in preferred_sectors:
+        if mapped_sector_tags and preferred_sectors.intersection(mapped_sector_tags):
             sector_component_value = 1.0
 
         # Block 4: Score selected co-benefit impacts against action co-benefits.
@@ -236,6 +224,7 @@ def run(
             "alignment_score": alignment_score,
             "action_sector_number": sector_number or None,
             "mapped_sector_tag": mapped_sector_tag,
+            "mapped_sector_tags": mapped_sector_tags,
             "city_preference_sectors": sorted(preferred_sectors),
             "city_preference_timeframes": preferred_timeframes,
             "action_timeline_bucket": action.implementation_timeline,

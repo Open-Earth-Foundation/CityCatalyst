@@ -42,7 +42,9 @@ Source: Notion "How Legal Signals, Policy Signals, and Socioeconomic Indicators 
 - **Current (v1)**: optional LLM explanations are generated after ranking from implemented in-memory evidence (impact/alignment/feasibility/hard-filter).
 - **Current limitations**:
   - explanations do not yet receive dedicated co-benefit mapping artifacts such as resolved preferred co-benefits or unmappable fragments for `cityStrategicPreferenceOther`; they rely on downstream alignment evidence plus the raw request context instead.
+  - explanations currently return a single `explanation` string per action, so `requestedLanguages` is handled with a temporary first-language-wins rule instead of true multilingual output.
 - **Expectation**: explanations should explicitly avoid inventing reasoning for these unimplemented signals until their scoring/evidence pipelines exist.
+- **Future work**: redesign the ranked-action explanation response contract and generation flow to support one request returning multiple localized explanation values per action.
 
 ## Replace `cityStrategicPreferenceOther` free-text mapping with direct co-benefit input
 

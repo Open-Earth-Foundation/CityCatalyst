@@ -71,6 +71,14 @@ def _extract_city_emissions_by_gpc_ref(city_input: FrontendCityInput) -> dict[st
     return emissions_by_gpc_ref
 
 
+def _resolve_requested_language(requested_languages: list[str]) -> str:
+    """Resolve the single explanation language currently supported by the API."""
+    normalized_languages = [language.strip() for language in requested_languages if language.strip()]
+    if not normalized_languages:
+        return "en"
+    return normalized_languages[0]
+
+
 def _safe_artifact_name(value: str) -> str:
     """Convert a free-form identifier like locode into a stable artifact stem."""
     return value.strip().lower().replace(" ", "_").replace("/", "_")
@@ -248,6 +256,9 @@ def prioritize(
             request.requestData.topN,
             request.requestData.createExplanations,
         )
+        explanation_language = _resolve_requested_language(
+            request.requestData.requestedLanguages
+        )
         results: list[PrioritizerApiCityResult] = []
         for city_input in request.requestData.cityDataList:
             logger.info(
@@ -263,6 +274,8 @@ def prioritize(
                 legal_data_api_client=legal_data_api_client,
                 policy_signals_data_api_client=policy_signals_data_api_client,
                 create_explanations=request.requestData.createExplanations,
+                requested_languages=list(request.requestData.requestedLanguages),
+                explanation_language=explanation_language,
             )
             # Echo frontend request ID for response correlation in clients/logs.
             per_city_result.metadata["frontend_request_id"] = request_trace_id
@@ -310,6 +323,8 @@ def _run_for_city_input(
         MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
     ),
     create_explanations: bool,
+    requested_languages: list[str],
+    explanation_language: str,
 ) -> PrioritizationResponse:
     """
     Translate a single frontend city payload into a pipeline run.
@@ -336,5 +351,7 @@ def _run_for_city_input(
         legal_data_api_client=legal_data_api_client,
         policy_signals_data_api_client=policy_signals_data_api_client,
         create_explanations=create_explanations,
+        requested_languages=requested_languages,
+        explanation_language=explanation_language,
     )
     return result

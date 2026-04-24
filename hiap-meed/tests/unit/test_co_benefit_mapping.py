@@ -145,3 +145,38 @@ def test_score_action_other_preference_component_is_neutral_without_priorities()
     )
     assert score == pytest.approx(0.5)
     assert matched == []
+
+
+@pytest.mark.unit
+def test_score_action_other_preference_component_rewards_broader_coverage() -> None:
+    """Actions covering more requested co-benefits should score higher."""
+    action_with_one_match_score, action_with_one_match = (
+        co_benefit_mapping.score_action_other_preference_component(
+            action_co_benefits={"air_quality": {"impact_numeric": 2}},
+            resolved_preferred_co_benefits=[
+                "air_quality",
+                "water_quality",
+                "habitat",
+            ],
+        )
+    )
+    action_with_three_matches_score, action_with_three_matches = (
+        co_benefit_mapping.score_action_other_preference_component(
+            action_co_benefits={
+                "air_quality": {"impact_numeric": 2},
+                "water_quality": {"impact_numeric": 2},
+                "habitat": {"impact_numeric": 2},
+            },
+            resolved_preferred_co_benefits=[
+                "air_quality",
+                "water_quality",
+                "habitat",
+            ],
+        )
+    )
+
+    assert action_with_one_match == ["air_quality"]
+    assert action_with_three_matches == ["air_quality", "habitat", "water_quality"]
+    assert action_with_one_match_score == pytest.approx(2 / 3)
+    assert action_with_three_matches_score == pytest.approx(1.0)
+    assert action_with_three_matches_score > action_with_one_match_score

@@ -86,12 +86,14 @@ class MockExplanationService:
         *,
         locode: str,
         scored_actions: list[object],
+        explanation_language: str,
         city_preference_sectors: list[str],
         city_preference_other_text: str | None,
     ) -> tuple[dict[str, str], dict[str, object]]:
         """Return predefined explanations and capture which actions were requested."""
         del (
             locode,
+            explanation_language,
             city_preference_sectors,
             city_preference_other_text,
         )
@@ -1159,12 +1161,14 @@ def test_prioritize_logs_non_zero_explanation_elapsed_time(
         *,
         locode: str,
         scored_actions: list[object],
+        explanation_language: str,
         city_preference_sectors: list[str],
         city_preference_other_text: str | None,
     ) -> tuple[dict[str, str], dict[str, object]]:
         """Return one explanation after a small delay."""
         del (
             locode,
+            explanation_language,
             city_preference_sectors,
             city_preference_other_text,
         )
@@ -1230,5 +1234,97 @@ def test_prioritize_logs_non_zero_explanation_elapsed_time(
         assert logged_completion_elapsed_seconds[0] > 0.0
         result = response.json()["results"][0]
         assert result["ranked_actions"][0]["explanation"] == "Delayed explanation"
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+def test_prioritize_explanations_use_first_requested_language(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Explanation flow should resolve the first requested language only."""
+    city = CityData(
+        comuna_name="Santiago",
+        locode="CL-SCL",
+        region_name="Metropolitana",
+        comuna_code="13101",
+        region_code="13",
+        city_context=[],
+    )
+    actions = [Action(action_id="A_1", action_name="Action one")]
+    mock_city_client = MockCityDataApiClient(city=city)
+    mock_action_client = MockActionDataApiClient(actions=actions)
+    mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    seen_languages: list[str] = []
+
+    def explanation_service_with_language_capture(
+        *,
+        locode: str,
+        scored_actions: list[object],
+        explanation_language: str,
+        city_preference_sectors: list[str],
+        city_preference_other_text: str | None,
+    ) -> tuple[dict[str, str], dict[str, object]]:
+        del locode, scored_actions, city_preference_sectors, city_preference_other_text
+        seen_languages.append(explanation_language)
+        return {"A_1": "Explicacion de prueba"}, {
+            "status": "completed",
+            "provider": "mock",
+            "request_context": {"explanation_language": explanation_language},
+            "llm_input": {"curated_actions_count": 1},
+            "llm_output": {"explanations_by_action_id": {"A_1": "Explicacion de prueba"}},
+        }
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
+    monkeypatch.setattr(
+        prioritizer_orchestrator,
+        "generate_explanations",
+        explanation_service_with_language_capture,
+    )
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post(
+                "/v1/prioritize",
+                json={
+                    "meta": {
+                        "requestId": "req-explanation-language",
+                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                        "backendConsumer": "hiap-meed",
+                        "upstreamProvider": "city_catalyst_frontend",
+                        "apiContext": {
+                            "endpoint": "POST /prioritizer/v1/start_prioritization",
+                            "locodes": ["CL-SCL"],
+                        },
+                        "totalRecords": 1,
+                    },
+                    "requestData": {
+                        "requestedLanguages": ["es", "en"],
+                        "createExplanations": True,
+                        "cityDataList": [
+                            {
+                                "locode": "CL-SCL",
+                                "countryCode": "CL",
+                                "populationSize": 1000,
+                                "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceOther": None,
+                                "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
+                            }
+                        ],
+                    },
+                },
+            )
+
+        assert response.status_code == 200
+        result = response.json()["results"][0]
+        assert seen_languages == ["es"]
+        assert result["ranked_actions"][0]["explanation"] == "Explicacion de prueba"
+        assert result["metadata"]["explanations"]["requested_languages"] == ["es", "en"]
+        assert result["metadata"]["explanations"]["language"] == "es"
     finally:
         app.dependency_overrides.clear()

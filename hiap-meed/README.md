@@ -124,6 +124,7 @@ Request body:
 - Single-city and multi-city payloads both use `requestData.cityDataList`.
 - Optional flag: `requestData.createExplanations` controls whether the post-ranking
   explanation stage is executed.
+- `requestData.requestedLanguages` is currently accepted as a list for frontend compatibility, but ranked-action explanations support only one returned language today. The backend uses the first list item as the explanation language and ignores the rest.
 
 Exclusions:
 
@@ -198,9 +199,11 @@ Alignment block behavior (implemented):
 - `unmappable_preference_fragments` are captured when user intent cannot be confidently mapped to allowed labels.
 - Other-preference scoring:
   - Only co-benefits selected by the city are scored.
+  - The denominator is the city's resolved preferred co-benefit set for that request.
   - Each selected co-benefit reads the action's `impact_numeric` value in `-2..2`.
   - Upstream action payload validation enforces `coBenefits[*].impact_numeric` in `[-2, 2]` and rejects out-of-range values.
-  - Missing co-benefit keys are treated as `0`.
+  - Missing co-benefit keys on the action are treated as `0`.
+  - Co-benefits present on the action but not selected by the city do not affect this component.
   - The summed selected impacts are normalized into `0..1`, where `0.5` is neutral.
 - Fail-open behavior:
   - blank free-text results in a neutral `other_component_value = 0.5`
@@ -240,6 +243,7 @@ Explanation stage behavior:
 
 - Explanations are generated only when `requestData.createExplanations=true`.
 - Explanations are generated from post-ranking evidence and do not change ranks.
+- The explanation stage currently supports one output language only. It resolves that language from the first item in `requestData.requestedLanguages`.
 - `cityStrategicPreferenceOther` is truncated to at most `400` characters before it is inserted into the explanation prompt.
 - When `cityStrategicPreferenceOther` mapping falls back (`fallback_*`), explanations include a known limitation that the free-text preference did not affect ranking and neutral other-preference scoring was used.
 - The backend logs a warning if either field is truncated or if the final explanation prompt becomes unusually large.
@@ -448,6 +452,7 @@ What each request run folder contains:
   - `llm/explanations_io.json`: explanation-stage LLM request/response artifact (only when explanations are generated successfully)
   - `llm/explanations_prompt.txt`: plain-text rendered user prompt with preserved newlines (only when explanations are generated successfully)
   - `llm/explanations_error.json`: explanation-stage failure artifact with request context and error (only when explanation generation fails)
+- Explanation artifacts and response metadata record both the original `requestedLanguages` list and the single resolved explanation language used for the run.
 - For the free-text other-preference feature, the `alignment` step detail includes mapping evidence such as `resolved_preferred_co_benefits`, `unmappable_preference_fragments`, `matched_preferred_co_benefits`, and mapping source/model fields
 - There are currently no dedicated LLM prompt/response artifact files for co-benefit mapping; the traceability lives inside the standard alignment evidence artifacts
 - Exclusion preview request folders additionally include:

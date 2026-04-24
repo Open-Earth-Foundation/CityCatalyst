@@ -159,6 +159,8 @@ def run_prioritization(
     weights_override: dict[str, float] | None,
     top_n: int | None,
     excluded_action_ids: list[str],
+    requested_languages: list[str],
+    explanation_language: str,
     city_preference_sectors: list[str],
     city_preference_timeframes: list[str],
     city_preference_other_text: str | None,
@@ -366,6 +368,8 @@ def run_prioritization(
         "locode": locode,
         "resolved_top_n": top_n,
         "create_explanations": create_explanations,
+        "requested_languages": requested_languages,
+        "explanation_language": explanation_language,
         "resolved_weights": weights,
         "city_emissions_by_gpc_ref": city_emissions_by_gpc_ref,
         "city_preference_sectors": city_preference_sectors,
@@ -625,6 +629,7 @@ def run_prioritization(
                 explanations_by_action_id, llm_io_payload = generate_explanations(
                     locode=locode,
                     scored_actions=scored_actions,
+                    explanation_language=explanation_language,
                     city_preference_sectors=city_preference_sectors,
                     city_preference_other_text=city_preference_other_text,
                 )
@@ -757,6 +762,8 @@ def run_prioritization(
         "explanations": {
             "requested": create_explanations,
             "generated": len(explanations_by_action_id),
+            "requested_languages": requested_languages,
+            "language": explanation_language,
         },
         "hard_filter_evidence_by_action_id": hard_filter_result.evidence,
     }

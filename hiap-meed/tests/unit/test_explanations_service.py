@@ -10,6 +10,7 @@ from app.modules.prioritizer.services.explanations import (
     EXPLANATION_FREE_TEXT_MAX_CHARS,
     EXPLANATION_PROMPT_WARNING_CHARS,
     ExplanationItem,
+    _build_prompt,
     _build_curated_action_payload,
     _build_known_limitations,
     _rows_to_explanations,
@@ -162,3 +163,16 @@ def test_warn_if_prompt_is_large_logs_warning(
     _warn_if_prompt_is_large(prompt=prompt, locode="CL IQQ", action_count=25)
 
     assert any("Large explanation prompt detected" in message for message in warning_messages)
+
+
+def test_build_prompt_includes_requested_explanation_language() -> None:
+    """Prompt should carry the resolved target language into the rendered text."""
+    prompt = _build_prompt(
+        locode="CL IQQ",
+        explanation_language="es",
+        city_preference_sectors=["waste"],
+        city_preference_other_text="Prioritize cleaner neighborhoods",
+        curated_actions=[],
+    )
+
+    assert "`explanation_language`: es" in prompt

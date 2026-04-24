@@ -151,6 +151,7 @@ What these are used for:
   - `no_preference`
 - `no_preference` is allowed as a neutral choice but may not be combined with other timeframe values.
 - When explanations are enabled, `cityStrategicPreferenceOther` is truncated to at most `400` characters before the LLM prompt is rendered, and the backend logs a warning if truncation happens.
+- `requestData.requestedLanguages` is currently consumed as a compatibility field only for explanations: the backend resolves one effective explanation language by taking the first list item and ignores additional entries.
 - `totalEmissions` values are the main city emissions numbers used in the Impact block.
 
 ### City context data
@@ -759,8 +760,11 @@ Other-preference component
     min=len(resolved_preferred_co_benefits) * -2,
     max=len(resolved_preferred_co_benefits) * 2
   )
-where missing co-benefit keys count as 0
-and no selected co-benefits returns 0.5 (neutral)
+where:
+- the denominator is defined only by the city's resolved preferred co-benefits
+- missing co-benefit keys on the action count as 0 for those preferred keys
+- co-benefits present on the action but not selected by the city do not affect this component
+- no selected co-benefits returns 0.5 (neutral)
 ```
 
 Fallback behavior note:
@@ -1128,6 +1132,7 @@ Important current behavior:
 - `explanation` is `null` unless `requestData.createExplanations=true` and the explanation call succeeds
 - Explanations are generated only after ranking is finished; they do not change scores or ranks
 - The explanation stage uses the ranked actions plus curated evidence from the Impact, Alignment, and Feasibility blocks
+- The explanation stage currently returns only one explanation string per action, so it uses only the first item from `requestData.requestedLanguages` as the target language
 - `cityStrategicPreferenceOther` is shortened to at most `400` characters before prompt rendering
 - The backend logs a warning if the explanation prompt becomes unusually large
 - If explanation generation fails or times out, ranking still returns normally with `explanation=null`
@@ -1206,6 +1211,7 @@ Current behavior:
 Planned use:
 
 - continue improving the generated explanation quality and prompt grounding
+- extend the response contract and explanation pipeline so one request can return fully multilingual explanation payloads instead of today's single-string, first-language-wins behavior
 
 ## 11. Practical Reading of the Current System
 

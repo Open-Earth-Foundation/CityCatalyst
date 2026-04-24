@@ -46,6 +46,7 @@ def generate_explanations(
     *,
     locode: str,
     scored_actions: list[ScoredAction],
+    explanation_language: str,
     city_preference_sectors: list[str],
     city_preference_other_text: str | None,
 ) -> tuple[dict[str, str], dict[str, object]]:
@@ -81,6 +82,7 @@ def generate_explanations(
     expected_action_ids = {item.action.action_id for item in scored_actions}
     prompt = _build_prompt(
         locode=locode,
+        explanation_language=explanation_language,
         city_preference_sectors=city_preference_sectors,
         city_preference_other_text=truncated_city_preference_other_text,
         curated_actions=curated_actions,
@@ -133,6 +135,7 @@ def generate_explanations(
         "model": model_name,
         "request_context": {
             "locode": locode,
+            "explanation_language": explanation_language,
             "city_preference_sectors": city_preference_sectors,
             "city_preference_other_text": truncated_city_preference_other_text,
             "ranked_action_ids": sorted(expected_action_ids),
@@ -187,6 +190,7 @@ def _warn_if_prompt_is_large(*, prompt: str, locode: str, action_count: int) -> 
 def _build_prompt(
     *,
     locode: str,
+    explanation_language: str,
     city_preference_sectors: list[str],
     city_preference_other_text: str | None,
     curated_actions: list[dict[str, object]],
@@ -195,6 +199,7 @@ def _build_prompt(
     template = _read_prompt_template()
     return template.format(
         locode=locode,
+        explanation_language=explanation_language,
         city_preference_sectors=json.dumps(city_preference_sectors, ensure_ascii=True),
         city_preference_other_text=city_preference_other_text or "",
         ranked_actions_json=json.dumps(curated_actions, ensure_ascii=True, indent=2),

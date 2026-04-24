@@ -163,6 +163,22 @@ class PrioritizerRequestData(BaseModel):
     createExplanations: bool = False
     cityDataList: list[FrontendCityInput] = Field(min_length=1)
 
+    @field_validator("requestedLanguages", mode="before")
+    @classmethod
+    def _normalize_requested_languages(cls, value: object) -> object:
+        """Normalize missing/empty requested languages to a single English default."""
+        if value is None:
+            return ["en"]
+        if not isinstance(value, list):
+            return value
+
+        normalized_languages = [
+            str(item).strip() for item in value if str(item).strip()
+        ]
+        if not normalized_languages:
+            return ["en"]
+        return normalized_languages
+
 
 class PrioritizerApiRequest(BaseModel):
     """Frontend -> hiap-meed request envelope for single or multi-city prioritization."""

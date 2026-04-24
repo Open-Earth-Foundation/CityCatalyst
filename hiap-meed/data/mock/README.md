@@ -76,10 +76,10 @@ The general logic is that this is the baseline and values might be updated by th
 Known alignment gap with action socioeconomic rules:
 
 - City keys currently include `transport_logistics_employment` and `electricity_access`.
-- `actions_api_mock_v2.json` currently includes indicator keys `employment_in_transport_and_logistics` and `electricity_access_rate`.
+- `actions_api_mock.json` currently includes indicator keys `employment_in_transport_and_logistics` and `electricity_access_rate`.
 - Until these names are aligned (or mapped in code), feasibility socio-economic lookup will treat those indicators as missing.
 
-# actions_api_mock_v2.json:
+# actions_api_mock.json:
 
 This is a mock response from the actions data API.
 It simulates a response from the actions data API containing information about the actions.

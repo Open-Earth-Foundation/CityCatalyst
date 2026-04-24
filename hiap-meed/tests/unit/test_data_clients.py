@@ -22,7 +22,7 @@ from app.services.data_clients import (
 def test_mock_action_client_loads_actions_from_file() -> None:
     """Mock action client reads and maps actions from the checked-in mock payload."""
     mock_file_path = (
-        Path(__file__).resolve().parents[2] / "data" / "mock" / "actions_api_mock_v2.json"
+        Path(__file__).resolve().parents[2] / "data" / "mock" / "actions_api_mock.json"
     )
     client = MockActionDataApiClient(mock_file_path=mock_file_path)
 

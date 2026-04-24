@@ -78,7 +78,7 @@ What these are used for:
 
 File:
 
-- `data/mock/actions_api_mock_v2.json`
+- `data/mock/actions_api_mock.json`
 
 Fields that affect the result:
 

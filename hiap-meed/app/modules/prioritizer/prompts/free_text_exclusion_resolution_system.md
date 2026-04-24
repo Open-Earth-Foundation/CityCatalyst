@@ -9,7 +9,7 @@ Select actions only when the free-text request clearly names an activity, techno
 <input>
 Input is a JSON object with:
 - `excluded_actions_free_text` (string): user-provided exclusion request.
-- `actions` (array): catalog rows with exact `action_id`, `action_name`, `description`, `action_category`, `action_subcategory`, and `co_benefit_keys`.
+- `actions` (array): catalog rows with exact `action_id`, `action_name`, `description`, `action_category`, and `action_subcategory`.
 </input>
 
 <output>

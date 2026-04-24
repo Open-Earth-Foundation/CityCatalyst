@@ -40,6 +40,7 @@ SYSTEM_PROMPT_FILE_PATH = (
 )
 FREE_TEXT_EXCLUSION_MAX_CHARS = 400
 FREE_TEXT_EXCLUSION_PROMPT_WARNING_CHARS = 30_000
+FREE_TEXT_EXCLUSION_DESCRIPTION_MAX_CHARS = 200
 
 
 class FreeTextExclusionMatch(BaseModel):
@@ -458,11 +459,20 @@ def _build_catalog_row(action: Action) -> dict[str, object]:
     return {
         "action_id": action.action_id,
         "action_name": action.action_name,
-        "description": action.description,
+        "description": _truncate_catalog_description(action.description),
         "action_category": action.action_category,
         "action_subcategory": action.action_subcategory,
-        "co_benefit_keys": sorted(action.co_benefits.keys()),
     }
+
+
+def _truncate_catalog_description(description: str | None) -> str | None:
+    """Trim long action descriptions before sending catalog rows to the LLM."""
+    if description is None:
+        return None
+    normalized_description = " ".join(description.split())
+    if len(normalized_description) <= FREE_TEXT_EXCLUSION_DESCRIPTION_MAX_CHARS:
+        return normalized_description
+    return normalized_description[:FREE_TEXT_EXCLUSION_DESCRIPTION_MAX_CHARS].rstrip() + "..."
 
 
 def _warn_if_prompt_is_large(*, prompt: str, action_count: int) -> None:

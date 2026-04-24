@@ -1,0 +1,23 @@
+{
+  "meta": {
+    "requestId": "1234567890-preview",
+    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+    "backendConsumer": "hiap-meed",
+    "upstreamProvider": "city_catalyst_frontend",
+    "apiContext": {
+      "endpoint": "POST /v1/prioritize/exclusions/preview",
+      "locodes": ["CL IQQ"]
+    },
+    "totalRecords": 1
+  },
+  "requestData": {
+    "cityDataList": [
+      {
+        "locode": "CL IQQ",
+        "excludedSectorTags": ["waste"],
+        "excludedCoBenefitKeys": ["air_quality", "housing"],
+        "excludedActionsFreeText": "Do not include new fossil fuel-based infrastructure or waste-to-energy projects that raise costs for vulnerable households."
+      }
+    ]
+  }
+}

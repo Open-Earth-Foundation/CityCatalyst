@@ -11,7 +11,7 @@ export interface AvatarProps extends ChakraAvatar.RootProps {
   src?: string
   srcSet?: string
   loading?: ImageProps["loading"]
-  icon?: React.ReactElement
+  icon?: React.ReactElement<any>
   fallback?: React.ReactNode
 }
 
@@ -33,7 +33,7 @@ export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
 
 interface AvatarFallbackProps extends ChakraAvatar.FallbackProps {
   name?: string
-  icon?: React.ReactElement
+  icon?: React.ReactElement<any>
 }
 
 const AvatarFallback = React.forwardRef<HTMLDivElement, AvatarFallbackProps>(

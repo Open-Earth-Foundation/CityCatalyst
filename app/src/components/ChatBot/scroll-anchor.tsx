@@ -4,7 +4,7 @@ import { Box } from "@chakra-ui/react";
 import { RefObject, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 
-export function useAtBottom(rootRef?: RefObject<HTMLDivElement>, offset = 0) {
+export function useAtBottom(rootRef?: RefObject<HTMLDivElement | null>, offset = 0) {
   const [isAtBottom, setIsAtBottom] = useState(false);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export function ScrollAnchor({
   rootRef,
 }: {
   trackVisibility?: boolean;
-  rootRef?: RefObject<HTMLDivElement>;
+  rootRef?: RefObject<HTMLDivElement | null>;
 }) {
   // const isAtBottom = useAtBottom(rootRef);
   const { ref, inView } = useInView({

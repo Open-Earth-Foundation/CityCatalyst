@@ -16,7 +16,7 @@ export const useModuleAccessLayout = ({
   moduleId,
   fallbackPath,
   children,
-}: UseModuleAccessLayoutProps): React.ReactElement => {
+}: UseModuleAccessLayoutProps): React.ReactElement<any> => {
   const { lng, cityId, inventory } = use(params);
 
   // Skip module access check when JN_ENABLED feature flag is OFF

@@ -3,9 +3,9 @@ import { ReactElement } from "react";
 import { BodyLarge } from "@/components/package/Texts/Body";
 
 interface DialogItemProps {
-  icon: ReactElement;
+  icon: ReactElement<any>;
   title: string;
-  description: string | ReactElement;
+  description: string | ReactElement<any>;
 }
 
 export default function DialogItem({

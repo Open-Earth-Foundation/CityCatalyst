@@ -23,9 +23,8 @@ PROMPT_FILE_PATH = (
 SYSTEM_PROMPT_FILE_PATH = (
     Path(__file__).resolve().parents[1] / "prompts" / "ranking_explanation_system.md"
 )
-# Applies to request free-text inputs used in explanation prompts:
+# Applies to request free-text input used in explanation prompts:
 # - `city_preference_other_text` (frontend `cityStrategicPreferenceOther`)
-# - `excluded_actions_free_text` (frontend `excludedActionsFreeText`)
 EXPLANATION_FREE_TEXT_MAX_CHARS = 400
 EXPLANATION_PROMPT_WARNING_CHARS = 20_000
 
@@ -47,9 +46,9 @@ def generate_explanations(
     *,
     locode: str,
     scored_actions: list[ScoredAction],
+    explanation_language: str,
     city_preference_sectors: list[str],
     city_preference_other_text: str | None,
-    excluded_actions_free_text: str | None,
 ) -> tuple[dict[str, str], dict[str, object]]:
     """
     Generate qualitative explanations for ranked actions.
@@ -73,26 +72,19 @@ def generate_explanations(
         field_name="city_preference_other_text",
         locode=locode,
     )
-    truncated_excluded_actions_free_text = _truncate_explanation_free_text(
-        value=excluded_actions_free_text,
-        field_name="excluded_actions_free_text",
-        locode=locode,
-    )
-
     curated_actions = [
         _build_curated_action_payload(
             scored_action=scored_action,
             city_preference_other_text=truncated_city_preference_other_text,
-            excluded_actions_free_text=truncated_excluded_actions_free_text,
         )
         for scored_action in scored_actions
     ]
     expected_action_ids = {item.action.action_id for item in scored_actions}
     prompt = _build_prompt(
         locode=locode,
+        explanation_language=explanation_language,
         city_preference_sectors=city_preference_sectors,
         city_preference_other_text=truncated_city_preference_other_text,
-        excluded_actions_free_text=truncated_excluded_actions_free_text,
         curated_actions=curated_actions,
     )
     _warn_if_prompt_is_large(
@@ -143,9 +135,9 @@ def generate_explanations(
         "model": model_name,
         "request_context": {
             "locode": locode,
+            "explanation_language": explanation_language,
             "city_preference_sectors": city_preference_sectors,
             "city_preference_other_text": truncated_city_preference_other_text,
-            "excluded_actions_free_text": truncated_excluded_actions_free_text,
             "ranked_action_ids": sorted(expected_action_ids),
         },
         "llm_input": {
@@ -198,18 +190,18 @@ def _warn_if_prompt_is_large(*, prompt: str, locode: str, action_count: int) -> 
 def _build_prompt(
     *,
     locode: str,
+    explanation_language: str,
     city_preference_sectors: list[str],
     city_preference_other_text: str | None,
-    excluded_actions_free_text: str | None,
     curated_actions: list[dict[str, object]],
 ) -> str:
     """Build final LLM prompt from template and curated payload."""
     template = _read_prompt_template()
     return template.format(
         locode=locode,
+        explanation_language=explanation_language,
         city_preference_sectors=json.dumps(city_preference_sectors, ensure_ascii=True),
         city_preference_other_text=city_preference_other_text or "",
-        excluded_actions_free_text=excluded_actions_free_text or "",
         ranked_actions_json=json.dumps(curated_actions, ensure_ascii=True, indent=2),
     )
 
@@ -244,17 +236,12 @@ def _build_curated_action_payload(
     *,
     scored_action: ScoredAction,
     city_preference_other_text: str | None,
-    excluded_actions_free_text: str | None,
 ) -> dict[str, object]:
     """Build qualitative, stable explanation input payload for one action."""
     impact_evidence_raw = scored_action.evidence.get("impact")
-    hard_filter_evidence_raw = scored_action.evidence.get("hard_filter")
     alignment_evidence_raw = scored_action.evidence.get("alignment")
     feasibility_evidence_raw = scored_action.evidence.get("feasibility")
     impact_evidence = impact_evidence_raw if isinstance(impact_evidence_raw, dict) else {}
-    hard_filter_evidence = (
-        hard_filter_evidence_raw if isinstance(hard_filter_evidence_raw, dict) else {}
-    )
     alignment_evidence = (
         alignment_evidence_raw if isinstance(alignment_evidence_raw, dict) else {}
     )
@@ -278,11 +265,9 @@ def _build_curated_action_payload(
         "alignment_signals": _build_alignment_signals(alignment_evidence),
         "feasibility_signals": _build_feasibility_signals(feasibility_evidence),
         "known_limitations": _build_known_limitations(
-            hard_filter_evidence=hard_filter_evidence,
             alignment_evidence=alignment_evidence,
             feasibility_evidence=feasibility_evidence,
             city_preference_other_text=city_preference_other_text,
-            excluded_actions_free_text=excluded_actions_free_text,
         ),
     }
     return payload
@@ -437,25 +422,12 @@ def _build_feasibility_signals(
 
 def _build_known_limitations(
     *,
-    hard_filter_evidence: dict[str, object],
     alignment_evidence: dict[str, object],
     feasibility_evidence: dict[str, object],
     city_preference_other_text: str | None,
-    excluded_actions_free_text: str | None,
 ) -> list[str]:
     """List known limitations that should be acknowledged in explanations."""
     limitations: list[str] = []
-
-    free_text_exclusion_is_stub = bool(
-        hard_filter_evidence.get("free_text_exclusion_is_stub")
-    )
-    excluded_actions_text_provided = bool(
-        excluded_actions_free_text and excluded_actions_free_text.strip()
-    )
-    if free_text_exclusion_is_stub and excluded_actions_text_provided:
-        limitations.append(
-            "Free-text action exclusions are not implemented yet and therefore do not affect ranking."
-        )
 
     other_component_mapping_source = str(
         alignment_evidence.get("other_component_mapping_source", "")

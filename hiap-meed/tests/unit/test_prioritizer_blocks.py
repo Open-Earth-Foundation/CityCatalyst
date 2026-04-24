@@ -33,7 +33,7 @@ def _mock_data_dir() -> Path:
 def _load_mock_actions() -> list[Action]:
     """Load actions from the mock actions API payload."""
     action_client = MockActionDataApiClient(
-        mock_file_path=_mock_data_dir() / "actions_api_mock_v2.json"
+        mock_file_path=_mock_data_dir() / "actions_api_mock.json"
     )
     return action_client.list_actions()
 
@@ -152,7 +152,7 @@ def test_hard_filter_block_with_mock_api_data() -> None:
 
     result = hard_filter.run(
         actions=actions,
-        excluded_actions_free_text="Exclude fossil-heavy actions (stub behavior today).",
+        excluded_action_ids=[],
         legal_requirements_by_action_id=legal_requirements,
     )
 

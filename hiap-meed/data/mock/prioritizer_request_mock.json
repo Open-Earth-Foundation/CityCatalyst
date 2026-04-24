@@ -5,7 +5,7 @@
     "backendConsumer": "hiap-meed",
     "upstreamProvider": "city_catalyst_frontend",
     "apiContext": {
-      "endpoint": "POST /prioritizer/v1/start_prioritization",
+      "endpoint": "POST /v1/prioritize",
       "locodes": ["CL IQQ"]
     },
     "totalRecords": 1
@@ -19,7 +19,7 @@
         "locode": "CL IQQ",
         "countryCode": "CL",
         "populationSize": 125000,
-        "excludedActionsFreeText": "Do not include new fossil fuel-based infrastructure or actions that significantly increase household costs for vulnerable communities.",
+        "excludedActionIds": ["c40_0029"],
         "weightsOverride": {
           "impact": 0.5,
           "alignment": 0.3,

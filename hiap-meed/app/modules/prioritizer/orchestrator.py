@@ -158,7 +158,9 @@ def run_prioritization(
     locode: str,
     weights_override: dict[str, float] | None,
     top_n: int | None,
-    excluded_actions_free_text: str | None,
+    excluded_action_ids: list[str],
+    requested_languages: list[str],
+    explanation_language: str,
     city_preference_sectors: list[str],
     city_preference_timeframes: list[str],
     city_preference_other_text: str | None,
@@ -182,7 +184,10 @@ def run_prioritization(
     """
 
     # Phase 0: initialize request-scoped artifact writer and timing accumulator.
-    artifact_writer = ArtifactWriter(request_id=internal_request_id)
+    artifact_writer = ArtifactWriter(
+        request_id=internal_request_id,
+        request_kind="prioritization",
+    )
     timings: dict[str, float] = {}
     logger.info(
         "Prioritization started internal_request_id=%s locode=%s top_n=%s weights_override_provided=%s",
@@ -363,12 +368,14 @@ def run_prioritization(
         "locode": locode,
         "resolved_top_n": top_n,
         "create_explanations": create_explanations,
+        "requested_languages": requested_languages,
+        "explanation_language": explanation_language,
         "resolved_weights": weights,
         "city_emissions_by_gpc_ref": city_emissions_by_gpc_ref,
         "city_preference_sectors": city_preference_sectors,
         "city_preference_timeframes": city_preference_timeframes,
         "city_preference_other_text": city_preference_other_text,
-        "excluded_actions_free_text": excluded_actions_free_text,
+        "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
     }
     input_snapshot_path = artifact_writer.write_run_file(
         "input_snapshot.json", input_snapshot_payload
@@ -385,7 +392,7 @@ def run_prioritization(
     with time_block("hard_filter") as block:
         hard_filter_result = hard_filter.run(
             actions=actions,
-            excluded_actions_free_text=excluded_actions_free_text,
+            excluded_action_ids=excluded_action_ids,
             legal_requirements_by_action_id=legal_requirements_by_action_id,
         )
     # Build discard diagnostics and emit hard-filter artifacts.
@@ -408,6 +415,7 @@ def run_prioritization(
             "discarded_excluded": len(discarded_excluded_ids),
             "discarded_legal": len(discarded_legal_ids),
             "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
+            "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
             "discarded_legal_action_ids": sorted(discarded_legal_ids),
             "valid_action_ids": _sorted_action_ids(hard_filter_result.valid_actions),
             "discarded_legal_reasons_by_action_id": {
@@ -621,9 +629,9 @@ def run_prioritization(
                 explanations_by_action_id, llm_io_payload = generate_explanations(
                     locode=locode,
                     scored_actions=scored_actions,
+                    explanation_language=explanation_language,
                     city_preference_sectors=city_preference_sectors,
                     city_preference_other_text=city_preference_other_text,
-                    excluded_actions_free_text=excluded_actions_free_text,
                 )
             except Exception as error:
                 explanation_error = error
@@ -636,7 +644,7 @@ def run_prioritization(
                         "llm/explanations_prompt.txt", prompt_text
                     )
                     llm_input_payload["prompt_text_file"] = (
-                        prompt_file.name
+                        prompt_file.relative_to(artifact_writer._run_dir).as_posix()
                         if prompt_file is not None
                         else "llm/explanations_prompt.txt"
                     )
@@ -651,7 +659,9 @@ def run_prioritization(
                 "generated": len(explanations_by_action_id),
                 "generated_action_ids": explanation_ids,
                 "llm_io_file": (
-                    llm_io_file.name if llm_io_file is not None else "llm/explanations_io.json"
+                    llm_io_file.relative_to(artifact_writer._run_dir).as_posix()
+                    if llm_io_file is not None
+                    else "llm/explanations_io.json"
                 ),
                 "elapsed_seconds": block.elapsed_seconds,
             }
@@ -752,6 +762,8 @@ def run_prioritization(
         "explanations": {
             "requested": create_explanations,
             "generated": len(explanations_by_action_id),
+            "requested_languages": requested_languages,
+            "language": explanation_language,
         },
         "hard_filter_evidence_by_action_id": hard_filter_result.evidence,
     }
@@ -786,6 +798,7 @@ def run_prioritization(
             "weights": weights,
             "ranked_action_ids": ranked_action_ids,
             "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
+            "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
             "discarded_legal_action_ids": sorted(discarded_legal_ids),
             "timings": timings,
         },
@@ -799,6 +812,7 @@ def run_prioritization(
             "locode": locode,
             "counts": metadata["counts"],
             "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
+            "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
             "discarded_legal_action_ids": sorted(discarded_legal_ids),
             "timings": timings,
         },

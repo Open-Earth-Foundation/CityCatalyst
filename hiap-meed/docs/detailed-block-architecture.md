@@ -4,7 +4,8 @@
 
 | Block        | Sub-feature                                    | Status                                           |
 | ------------ | ---------------------------------------------- | ------------------------------------------------ |
-| Hard Filter  | Exclusion by `action_id`                       | Partially implemented (resolver is a stub, so no actions are excluded from free text yet) |
+| Exclusion Preview | Sector, co-benefit, and guarded free-text proposal | Implemented |
+| Hard Filter  | Confirmed exclusion by `action_id`             | Implemented                                      |
 | Hard Filter  | Legal requirement check                        | Implemented                                      |
 | Impact       | GPC reference evidence collection              | Implemented                                      |
 | Impact       | Activity relevance × reduction band × timeline | Implemented                                      |
@@ -18,7 +19,7 @@
 
 This block removes actions that are not eligible before any scoring happens. It applies two binary checks:
 
-1. Explicit city exclusions
+1. Confirmed city exclusions
 2. Hard legal requirements (must be satisfied, otherwise remove)
 
 Biome filtering is intentionally not included yet.
@@ -27,9 +28,9 @@ Biome filtering is intentionally not included yet.
 
 - **All mitigation actions**
   - Source: `Action` (core actions list)
-- **City exclusions**
-  - Source: frontend request `excludedActionsFreeText`
-  - Current behavior: `_resolve_excluded_action_ids_from_text(...)` is a stub that always returns an empty set, so no action is excluded by free text yet
+- **Confirmed city exclusions**
+  - Source: frontend request `excludedActionIds[]`, usually confirmed after `POST /v1/prioritize/exclusions/preview`
+  - Current behavior: each matching `action_id` is discarded before legal filtering
 - **Hard legal requirements per action**
   - Source: legal requirements client payload (mock/API), filtered to hard strengths (`mandatory|required`)
 
@@ -43,8 +44,7 @@ Biome filtering is intentionally not included yet.
 ```mermaid
 graph TD
   ActionTbl[(Action)]
-  FreeText[(Frontend excludedActionsFreeText)]
-  ExclResolver[Stub resolver: excluded action IDs = empty set]
+  Confirmed[(Frontend excludedActionIds)]
   ReqTbl[(ActionLegalRequirement<br/>strength = hard)]
   SigTbl[(LegalSignal<br/>scoped to city or CL)]
 
@@ -56,8 +56,7 @@ graph TD
   Valid[Valid Actions for Scoring]
 
   ActionTbl --> Excl
-  FreeText -.-> ExclResolver
-  ExclResolver -.-> Excl
+  Confirmed -.-> Excl
 
   Excl -- Yes --> DiscardExcl
   Excl -- No --> Legal

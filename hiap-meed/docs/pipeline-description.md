@@ -1,20 +1,110 @@
 # Prioritization Pipeline Description
 
-This document explains, in plain language, how the current prioritization pipeline in `hiap-meed` works.
+This document explains, in plain language, how the current `hiap-meed` service works.
 
 The goal is to help a technical non-coder understand:
 
 - which input fields actually influence the result,
+- how the two API calls relate to each other,
 - how each scoring block works,
 - which weights are applied,
 - what each block outputs,
 - and which parts are still placeholders for future work.
 
-This document is based on the single-city mock request in `data/mock/prioritizer_request_mock.json`.
+This document is based on the checked-in mock payloads in `data/mock/`, especially:
 
-## 1. Data Sources That Actually Influence the Ranking
+- `prioritizer_exclusion_preview_request_mock.json`
+- `prioritizer_request_mock.json`
 
-The current implementation combines one frontend request with several supporting data files. This section lists only the fields that truly affect filtering, scoring, or the size of the final output.
+## 0. The Two-API Flow
+
+`hiap-meed` now has two related API calls:
+
+1. Exclusion preview: `POST /v1/prioritize/exclusions/preview`
+2. Ranking: `POST /v1/prioritize`
+
+They serve different purposes.
+
+### API 1: exclusion preview
+
+This call is used before ranking.
+
+Its job is to take raw exclusion preferences such as:
+
+- sectors to avoid,
+- co-benefits to avoid,
+- and optional free-text exclusion wording,
+
+and turn them into a reviewable list of proposed excluded actions.
+
+The user or frontend is then expected to decide which proposed exclusions should actually be confirmed.
+
+### API 2: ranking
+
+This call does not reinterpret raw exclusion preferences.
+
+Instead, it accepts only confirmed action IDs in:
+
+- `requestData.cityDataList[].excludedActionIds[]`
+
+and removes those confirmed actions before scoring starts.
+
+Important business meaning:
+
+- API 1 proposes exclusions
+- API 2 applies confirmed exclusions
+
+There is no automatic state-sharing between the two calls. They are separate requests.
+
+## 1. Data Sources That Influence the Result
+
+The current implementation combines one frontend request with several supporting data files.
+
+This section lists the fields that truly affect:
+
+- exclusion preview,
+- ranking,
+- filtering,
+- scoring,
+- explanation generation,
+- or the size of the final LLM prompts.
+
+### Exclusion preview request
+
+File:
+
+- `data/mock/prioritizer_exclusion_preview_request_mock.json`
+
+Fields that affect the result:
+
+- `requestData.cityDataList[].locode`
+- `requestData.cityDataList[].excludedSectorTags[]`
+- `requestData.cityDataList[].excludedCoBenefitKeys[]`
+- `requestData.cityDataList[].excludedActionsFreeText`
+
+What these are used for:
+
+- `locode` identifies which city request row is being processed.
+- `excludedSectorTags[]` proposes exclusions based on action sector.
+- `excludedCoBenefitKeys[]` proposes exclusions when an action has a negative effect on a selected co-benefit.
+- `excludedActionsFreeText` is optional free text used for guarded LLM matching.
+
+Validation rules:
+
+- `excludedSectorTags[]` must use only:
+  - `stationary_energy`
+  - `transportation`
+  - `waste`
+  - `ippu`
+  - `afolu`
+- `excludedCoBenefitKeys[]` must use only:
+  - `air_quality`
+  - `cost_of_living`
+  - `habitat`
+  - `housing`
+  - `mobility`
+  - `stakeholder_engagement`
+  - `water_quality`
 
 ### Frontend request
 
@@ -28,7 +118,7 @@ Fields that affect the result:
 - `requestData.cityDataList[].weightsOverride.impact`
 - `requestData.cityDataList[].weightsOverride.alignment`
 - `requestData.cityDataList[].weightsOverride.feasibility`
-- `requestData.cityDataList[].excludedActionsFreeText`
+- `requestData.cityDataList[].excludedActionIds[]`
 - `requestData.cityDataList[].cityStrategicPreferenceSectors[]`
 - `requestData.cityDataList[].cityStrategicPreferenceTimeframes[]`
 - `requestData.cityDataList[].cityStrategicPreferenceOther`
@@ -38,11 +128,30 @@ What these are used for:
 
 - `topN` controls how many ranked actions are returned.
 - `weightsOverride` changes how much Impact, Alignment, and Feasibility matter in the final score.
-- `excludedActionsFreeText` is intended to remove actions, but is currently still a placeholder.
+- `excludedActionIds[]` removes user-confirmed exclusions before scoring.
 - `cityStrategicPreferenceSectors[]` influences the Alignment block.
+- `cityStrategicPreferenceSectors[]` must use only:
+  - `stationary_energy`
+  - `transportation`
+  - `waste`
+  - `ippu`
+  - `afolu`
 - `cityStrategicPreferenceTimeframes[]` influences the Alignment block by comparing the city's preferred implementation horizon against each action's `timelineForImplementation`.
 - `cityStrategicPreferenceOther` influences the Alignment block through LLM-based co-benefit mapping.
-- When explanations are enabled, `excludedActionsFreeText` and `cityStrategicPreferenceOther` are each truncated to at most `400` characters before the LLM prompt is rendered, and the backend logs a warning if truncation happens.
+- This is a temporary input shape for the current implementation.
+- Today, the service still reads free text here and maps it into the supported co-benefit taxonomy before scoring.
+- Planned future direction:
+  - the frontend should send the city's preferred co-benefits directly
+  - those values should already match the current allowed taxonomy
+  - once that contract exists, this LLM mapping step can be removed for that part of Alignment
+- `cityStrategicPreferenceTimeframes[]` must use only:
+  - `short`
+  - `medium`
+  - `long`
+  - `no_preference`
+- `no_preference` is allowed as a neutral choice but may not be combined with other timeframe values.
+- When explanations are enabled, `cityStrategicPreferenceOther` is truncated to at most `400` characters before the LLM prompt is rendered, and the backend logs a warning if truncation happens.
+- `requestData.requestedLanguages` is currently consumed as a compatibility field only for explanations: the backend resolves one effective explanation language by taking the first list item and ignores additional entries.
 - `totalEmissions` values are the main city emissions numbers used in the Impact block.
 
 ### City context data
@@ -72,11 +181,16 @@ What these are used for:
 
 File:
 
-- `data/mock/actions_api_mock_v2.json`
+- `data/mock/actions_api_mock.json`
 
 Fields that affect the result:
 
 - `actions[].actionId`
+- `actions[].actionName`
+- `actions[].description`
+- `actions[].actionCategory`
+- `actions[].actionSubcategory`
+- `actions[].coBenefits`
 - `actions[].timelineForImplementation`
 - `actions[].emissions.sector_number`
 - `actions[].emissions.gpc_reference_number[]`
@@ -88,8 +202,17 @@ Fields that affect the result:
 What these are used for:
 
 - `actionId` identifies and sorts actions.
+- `actionName`, `description`, `actionCategory`, and `actionSubcategory` are used in exclusion preview free-text matching.
+- For the free-text preview prompt, the service sends all actions but only with:
+  - action ID
+  - action name
+  - action description
+  - action category
+  - action subcategory
+- Action descriptions are shortened to about `200` characters for that prompt.
+- `coBenefits` are used by exclusion preview and by the Alignment block's other-preference scoring.
 - `timelineForImplementation` affects the Impact score and also the Alignment timeframe-preference component.
-- `emissions.sector_number` affects the Alignment score.
+- `emissions.sector_number` affects exclusion preview and the Alignment score.
 - `emissions.gpc_reference_number[]` links each action to city emissions categories.
 - `emissions.impact_text` gives the action's expected strength of emissions reduction.
 - `socioeconomicIndicators[]` define how the action should be judged against city conditions in the Feasibility block.
@@ -132,19 +255,23 @@ Important note:
 - `hiap-meed` does not currently calculate `policy_support_score` itself.
 - It uses the already prepared value from the policy signals data as an input.
 
-## 2. End-to-End Pipeline Summary
+## 2. End-to-End Service Summary
 
-For one city, the pipeline runs in this order:
+For one city, the service now works in this order:
 
-1. Read the requested number of results (`topN`) and the final scoring weights.
-2. Build city emissions totals from the frontend request.
-3. Load city context, actions, legal requirements, and policy signals.
-4. Apply the Hard Filter to remove actions that should not be ranked.
-5. Score the remaining actions for Impact.
-6. Score the remaining actions for Alignment.
-7. Score the remaining actions for Feasibility.
-8. Combine those three scores into one final score.
-9. Sort the actions, keep the top results, and assign ranks.
+1. Optionally call the exclusion preview endpoint to resolve raw exclusion preferences.
+2. Review the proposed exclusions.
+3. Call the ranking endpoint with confirmed `excludedActionIds[]`.
+4. Read the requested number of results (`topN`) and the final scoring weights.
+5. Build city emissions totals from the frontend request.
+6. Load city context, actions, legal requirements, and policy signals.
+7. Apply the Hard Filter to remove confirmed exclusions and legally blocked actions.
+8. Score the remaining actions for Impact.
+9. Score the remaining actions for Alignment.
+10. Score the remaining actions for Feasibility.
+11. Combine those three scores into one final score.
+12. Sort the actions, keep the top results, and assign ranks.
+13. Optionally generate qualitative explanations for the ranked results.
 
 ## 3. Setup Before Scoring Starts
 
@@ -228,7 +355,7 @@ This block does not give a numeric score. Its role is simply to decide which act
 
 From the frontend request:
 
-- `requestData.cityDataList[].excludedActionsFreeText`
+- `requestData.cityDataList[].excludedActionIds[]`
 
 From the action catalog:
 
@@ -254,25 +381,43 @@ Supporting legal fields that are returned as evidence, but do not drive the actu
 
 ### 4.2 Logic
 
-#### Part A: exclusion based on free text
+#### Part A: confirmed user exclusions
 
 Current behavior:
 
-- The request field `excludedActionsFreeText` is accepted.
-- However, the current implementation does not yet convert that text into specific action IDs.
-- As a result, this part currently excludes nothing.
+- The ranking request field `excludedActionIds[]` is accepted.
+- Each listed action ID is removed before scoring.
+- These IDs are expected to come from the separate exclusion preview and user review flow.
 
 Current output:
 
 ```text
-Excluded actions from free text = none
+Excluded actions = confirmed excludedActionIds
 ```
 
-Planned future behavior:
+Preview behavior before ranking:
 
-- Read the free-text instruction.
-- Match it to action names, descriptions, or a curated mapping.
-- Convert that instruction into a real list of actions to remove.
+- `POST /v1/prioritize/exclusions/preview` accepts `excludedSectorTags`, `excludedCoBenefitKeys`, and `excludedActionsFreeText`.
+- `excludedSectorTags` must use only:
+  - `stationary_energy`
+  - `transportation`
+  - `waste`
+  - `ippu`
+  - `afolu`
+- `excludedCoBenefitKeys` must use only:
+  - `air_quality`
+  - `cost_of_living`
+  - `habitat`
+  - `housing`
+  - `mobility`
+  - `stakeholder_engagement`
+  - `water_quality`
+- Sector preferences are resolved deterministically from action sector metadata.
+- Co-benefit preferences are resolved deterministically by finding selected co-benefits with negative `impact_numeric`.
+- Free-text preferences use a guarded LLM resolver only when enabled by `HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED=true` and `HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL`.
+- The free-text request is shortened to at most `400` characters before prompt building.
+- The free-text prompt uses the full action catalog, but only action ID, action name, action category, action subcategory, and a shortened description are sent for each action.
+- The preview response returns proposed actions, grouped summary counts, and warnings so the user can confirm the final `excludedActionIds[]`.
 
 #### Part B: hard legal screening
 
@@ -483,26 +628,25 @@ Key evidence fields:
 
 The Alignment block measures how well each action fits the city's strategic priorities.
 
-In the current implementation, this score is mostly driven by:
+In the current implementation, this score is driven by:
 
 - policy support,
-- and whether the action belongs to a sector the city said it prefers.
+- sector preference,
+- other strategic preferences expressed in free text,
+- and preferred implementation timeframe.
 
 ### 6.1 Inputs
 
 From the frontend request:
 
 - `requestData.cityDataList[].cityStrategicPreferenceSectors[]`
+- `requestData.cityDataList[].cityStrategicPreferenceTimeframes[]`
 - `requestData.cityDataList[].cityStrategicPreferenceOther`
 
 From the action catalog:
 
 - `actions[].actionId`
 - `actions[].emissions.sector_number`
-
-Fields planned for future use in the free-text part of Alignment:
-
-- `actions[].description`
 - `actions[].timelineForImplementation`
 - `actions[].coBenefits`
 
@@ -513,7 +657,7 @@ From the policy signals file:
 
 ### 6.2 Logic
 
-The Alignment block has three parts.
+The Alignment block has four parts.
 
 #### Part A: policy support
 
@@ -540,7 +684,9 @@ Important detail:
 
 #### Part B: match to the city's preferred sectors
 
-The action's sector code is translated as follows:
+The action's sector is identified using action metadata.
+
+Primary sector mapping from emissions sector code:
 
 - `I` -> `stationary_energy`
 - `II` -> `transportation`
@@ -548,9 +694,20 @@ The action's sector code is translated as follows:
 - `IV` -> `ippu`
 - `V` -> `afolu`
 
-Then the pipeline checks whether the translated sector appears in:
+If the emissions sector code is missing, the service can also use exact canonical sector labels already present in action category or action subcategory. It does not use loose aliases such as "mobility" or "energy".
+
+Then the pipeline checks whether the resolved sector appears in:
 
 - `requestData.cityDataList[].cityStrategicPreferenceSectors[]`
+
+Input contract:
+
+- `cityStrategicPreferenceSectors[]` is validated at the API boundary against:
+  - `stationary_energy`
+  - `transportation`
+  - `waste`
+  - `ippu`
+  - `afolu`
 
 Scoring rule:
 
@@ -570,9 +727,9 @@ Sector component
 Current behavior:
 
 - The pipeline reads `cityStrategicPreferenceOther`.
-- It calls OpenAI with structured output parsing and a Pydantic schema to map free text into allowed co-benefit keys.
-- The output schema includes:
-  - `mapped_co_benefits`
+- It calls OpenAI with a structured output contract to map the text into allowed co-benefit keys.
+- The structured output includes:
+  - `resolved_preferred_co_benefits`
   - `unmappable_preference_fragments`
 - Allowed co-benefit keys are currently:
   - `air_quality`
@@ -583,8 +740,16 @@ Current behavior:
   - `stakeholder_engagement`
   - `water_quality`
 - If the free-text is blank, the model is misconfigured, or the call/parsing fails, the block stays neutral at `0.5`.
-- The mapping prompt uses `temperature=0.0` and few-shot examples to reduce variation, but because it still relies on an external LLM, identical requests can still occasionally produce different mapped co-benefits.
+- The free-text is shortened to at most `400` characters before prompt building.
+- If the prompt becomes too large, the mapping step is skipped and the block stays neutral at `0.5`.
+- The mapping call uses a deterministic temperature setting, but because it still relies on an external LLM, identical requests can still occasionally produce different mapped co-benefits.
 - As a result, end-to-end tests that depend on live co-benefit mapping output can sometimes fail without any underlying code change unless the mapping step is mocked.
+
+Important implementation note:
+
+- This free-text mapping is a current transitional solution.
+- The intended future contract is for the frontend to send preferred co-benefit values directly, already matching the allowed taxonomy.
+- When that happens, the Alignment block should be able to use those supplied co-benefit values directly and no longer need this LLM mapping step for city strategic preferences.
 
 Plain-language formula:
 
@@ -595,13 +760,39 @@ Other-preference component
     min=len(resolved_preferred_co_benefits) * -2,
     max=len(resolved_preferred_co_benefits) * 2
   )
-where missing co-benefit keys count as 0
-and no selected co-benefits returns 0.5 (neutral)
+where:
+- the denominator is defined only by the city's resolved preferred co-benefits
+- missing co-benefit keys on the action count as 0 for those preferred keys
+- co-benefits present on the action but not selected by the city do not affect this component
+- no selected co-benefits returns 0.5 (neutral)
 ```
 
 Fallback behavior note:
 
-- When non-blank free-text cannot be resolved because of model misconfiguration or call/parsing failure, the block remains neutral at `0.5`.
+- When non-blank free-text cannot be resolved because of model misconfiguration, prompt-size guard, timeout, or parsing failure, the block remains neutral at `0.5`.
+
+#### Part D: match to the city's preferred timeframe
+
+The service compares:
+
+- the city's requested timeframe preferences
+- and each action's `timelineForImplementation`
+
+Action timelines are translated as:
+
+- `<5 years` -> `short`
+- `5-10 years` -> `medium`
+- `>10 years` -> `long`
+
+Scoring rule:
+
+- exact match = `1.0`
+- adjacent match = `0.5`
+- far mismatch = `0.0`
+- missing or unknown action timeline = `0.5`
+- `no_preference` = `0.5`
+
+If the city selected more than one timeframe, the service keeps the best match for that action.
 
 #### Final Alignment formula
 
@@ -609,18 +800,20 @@ Plain-language formula:
 
 ```text
 Alignment score
-= 0.80 * policy component
+= 0.75 * policy component
  + 0.15 * sector component
  + 0.05 * other-preference component
+ + 0.05 * timeframe component
 ```
 
 ### 6.3 Weights used
 
 Internal Alignment weights:
 
-- Policy support = `0.80`
+- Policy support = `0.75`
 - Sector match = `0.15`
 - Other free-text preference = `0.05`
+- Timeframe preference = `0.05`
 
 ### 6.4 Outputs
 
@@ -633,13 +826,20 @@ Key evidence fields:
 - `policy_component_value`
 - `sector_component_value`
 - `other_component_value`
+- `timeframe_component_value`
 - `policy_contribution`
 - `sector_contribution`
 - `other_contribution`
+- `timeframe_contribution`
 - `alignment_score`
 - `action_sector_number`
 - `mapped_sector_tag`
+- `mapped_sector_tags`
 - `city_preference_sectors`
+- `city_preference_timeframes`
+- `action_timeline_bucket`
+- `action_timeframe_label`
+- `action_timeline_known`
 - `sector_match`
 - `policy_signals_count`
 - `policy_support_score_present`
@@ -930,9 +1130,15 @@ For each ranked action, the output includes:
 Important current behavior:
 
 - `explanation` is `null` unless `requestData.createExplanations=true` and the explanation call succeeds
-- The explanation stage truncates `excludedActionsFreeText` and `cityStrategicPreferenceOther` to at most `400` characters each before prompt rendering
-- When `cityStrategicPreferenceOther` mapping falls back (`fallback_*`), explanation payloads include a known limitation that the free-text preference did not affect ranking and neutral other-preference scoring was used
-- The backend logs a warning if either field is truncated or if the final explanation prompt becomes unusually large
+- Explanations are generated only after ranking is finished; they do not change scores or ranks
+- The explanation stage uses the ranked actions plus curated evidence from the Impact, Alignment, and Feasibility blocks
+- The explanation stage currently returns only one explanation string per action, so it uses only the first item from `requestData.requestedLanguages` as the target language
+- `cityStrategicPreferenceOther` is shortened to at most `400` characters before prompt rendering
+- The backend logs a warning if the explanation prompt becomes unusually large
+- If explanation generation fails or times out, ranking still returns normally with `explanation=null`
+- When explanation artifacts are enabled, the run folder stores:
+  - `llm/explanations_prompt.txt`
+  - `llm/explanations_io.json`
 
 Key metadata includes:
 
@@ -950,7 +1156,7 @@ Key metadata includes:
 The final ranked list is produced in this sequence:
 
 1. Start with the full action catalog.
-2. Remove actions blocked by the Hard Filter.
+2. Remove confirmed exclusions and actions blocked by the Hard Filter.
 3. Score every remaining action for Impact.
 4. Score every remaining action for Alignment.
 5. Score every remaining action for Feasibility.
@@ -964,7 +1170,7 @@ So the final list depends on two layers of weighting:
 Internal weights inside each scoring block:
 
 - Impact = `0.80 / 0.20`
-- Alignment = `0.80 / 0.15 / 0.05`
+- Alignment = `0.75 / 0.15 / 0.05 / 0.05`
 - Feasibility = `0.50 / 0.50`
 
 Final weights across the three blocks:
@@ -974,28 +1180,27 @@ Final weights across the three blocks:
 
 ## 10. Current Placeholders and Planned Extensions
 
-### Placeholder 1: `excludedActionsFreeText`
+### Implemented: exclusion preview
 
 Current behavior:
 
-- accepted in the request
-- does not currently exclude any actions
+- raw exclusion preferences are resolved by the preview endpoint before ranking
+- ranking accepts only confirmed `excludedActionIds[]`
+- free-text preview matching is optional and guarded by environment config
 
-Planned use:
-
-- convert natural-language exclusion instructions into real action removals
-
-### Current heuristic: `cityStrategicPreferenceOther`
+### Implemented but still simple: `cityStrategicPreferenceOther`
 
 Current behavior:
 
 - accepted in the request
 - mapped into allowed co-benefit keys with OpenAI structured output
-- contributes to the Alignment block through a simple overlap score
+- contributes to the Alignment block through normalized selected co-benefit impact values
 
 Future improvement:
 
-- keep the mapping stage, but replace the current overlap heuristic with richer scoring semantics when product requirements are defined
+- replace this free-text mapping path with direct frontend-supplied co-benefit values
+- keep the same supported co-benefit taxonomy
+- remove the LLM mapping step for city strategic preferences once the frontend provides those values directly
 
 ### Placeholder 3: ranked action `explanation`
 
@@ -1006,6 +1211,7 @@ Current behavior:
 Planned use:
 
 - continue improving the generated explanation quality and prompt grounding
+- extend the response contract and explanation pipeline so one request can return fully multilingual explanation payloads instead of today's single-string, first-language-wins behavior
 
 ## 11. Practical Reading of the Current System
 

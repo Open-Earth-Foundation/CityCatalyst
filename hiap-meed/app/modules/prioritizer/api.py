@@ -9,6 +9,9 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.modules.prioritizer.config import resolve_top_n
 from app.modules.prioritizer.models import (
+    ExclusionPreviewApiRequest,
+    ExclusionPreviewApiResponse,
+    ExclusionPreviewCityResult,
     FrontendCityInput,
     PrioritizationResponse,
     PrioritizerApiCityResult,
@@ -16,6 +19,9 @@ from app.modules.prioritizer.models import (
     PrioritizerApiResponse,
 )
 from app.modules.prioritizer.orchestrator import run_prioritization
+from app.modules.prioritizer.services.exclusion_resolution import (
+    resolve_exclusion_preview_with_diagnostics,
+)
 from app.services.data_clients import (
     ApiActionDataApiClient,
     ApiCityDataApiClient,
@@ -30,6 +36,7 @@ from app.services.data_clients import (
     get_legal_data_api_client,
     get_policy_signals_data_api_client,
 )
+from app.utils.artifacts import ArtifactWriter
 
 
 logger = logging.getLogger(__name__)
@@ -62,6 +69,154 @@ def _extract_city_emissions_by_gpc_ref(city_input: FrontendCityInput) -> dict[st
         emissions_by_gpc_ref[gpc_ref] = gpc_total
 
     return emissions_by_gpc_ref
+
+
+def _resolve_requested_language(requested_languages: list[str]) -> str:
+    """Resolve the single explanation language currently supported by the API."""
+    normalized_languages = [language.strip() for language in requested_languages if language.strip()]
+    if not normalized_languages:
+        return "en"
+    return normalized_languages[0]
+
+
+def _safe_artifact_name(value: str) -> str:
+    """Convert a free-form identifier like locode into a stable artifact stem."""
+    return value.strip().lower().replace(" ", "_").replace("/", "_")
+
+
+@router.post(
+    "/v1/prioritize/exclusions/preview",
+    response_model=ExclusionPreviewApiResponse,
+)
+def preview_exclusions(
+    request: ExclusionPreviewApiRequest,
+    action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient = Depends(
+        get_action_data_api_client
+    ),
+) -> ExclusionPreviewApiResponse:
+    """Preview proposed exclusions from raw exclusion preferences."""
+    request_trace_id = request.meta.requestId
+    internal_request_id = uuid4()
+    artifact_writer = ArtifactWriter(
+        request_id=internal_request_id,
+        request_kind="exclusion_preview",
+    )
+
+    try:
+        logger.info(
+            "Exclusion preview request received frontend_request_id=%s internal_request_id=%s cities=%s",
+            request_trace_id,
+            internal_request_id,
+            len(request.requestData.cityDataList),
+        )
+        artifact_writer.write_run_file(
+            "input_snapshot.json",
+            {
+                "frontend_request_id": request_trace_id,
+                "city_data_list": [
+                    city_input.model_dump(mode="json")
+                    for city_input in request.requestData.cityDataList
+                ],
+            },
+        )
+        actions = action_data_api_client.list_actions()
+        fetch_actions_event_index = artifact_writer.write_event(
+            "fetch_actions.completed",
+            {"total_actions": len(actions)},
+        )
+        artifact_writer.write_step_detail(
+            "fetch_actions",
+            {
+                "total_actions": len(actions),
+                "action_ids": sorted(action.action_id for action in actions),
+            },
+            event_index=fetch_actions_event_index,
+            event_type="fetch_actions.completed",
+        )
+        results: list[ExclusionPreviewCityResult] = []
+        for city_input in request.requestData.cityDataList:
+            city_result, diagnostics = resolve_exclusion_preview_with_diagnostics(
+                city_input=city_input,
+                actions=actions,
+            )
+            results.append(city_result)
+            preview_event_index = artifact_writer.write_event(
+                "exclusion_preview_city.completed",
+                {
+                    "locode": city_input.locode,
+                    "proposed_exclusions": city_result.exclusionSummary.totalProposed,
+                    "warnings_count": len(city_result.warnings),
+                },
+            )
+            safe_locode = _safe_artifact_name(city_input.locode)
+            artifact_writer.write_step_detail(
+                f"exclusion_preview_{safe_locode}",
+                diagnostics,
+                event_index=preview_event_index,
+                event_type="exclusion_preview_city.completed",
+            )
+            artifact_writer.write_run_file(
+                f"cities/{safe_locode}_preview.json",
+                diagnostics,
+            )
+            free_text_resolution = diagnostics.get("free_text_resolution")
+            if isinstance(free_text_resolution, dict) and free_text_resolution:
+                artifact_writer.write_run_file(
+                    f"llm/{safe_locode}_free_text_exclusion_io.json",
+                    free_text_resolution,
+                )
+        logger.info(
+            "Exclusion preview request completed frontend_request_id=%s internal_request_id=%s cities=%s",
+            request_trace_id,
+            internal_request_id,
+            len(results),
+        )
+        response = ExclusionPreviewApiResponse(results=results)
+        artifact_writer.write_event(
+            "response_summary.completed",
+            {
+                "cities": len(results),
+                "total_proposed_exclusions": sum(
+                    result.exclusionSummary.totalProposed for result in results
+                ),
+            },
+        )
+        artifact_writer.write_run_file(
+            "response_full.json",
+            response.model_dump(mode="json"),
+        )
+        artifact_writer.write_manifest(
+            {
+                "counts": {
+                    "cities": len(results),
+                    "total_proposed_exclusions": sum(
+                        result.exclusionSummary.totalProposed for result in results
+                    ),
+                },
+                "artifact_pointers": {
+                    "summary_events": "summary.jsonl",
+                    "input_snapshot": "input_snapshot.json",
+                    "response_full": "response_full.json",
+                },
+            }
+        )
+        return response
+    except ValueError as error:
+        logger.warning(
+            "Invalid exclusion preview request request_id=%s error=%s",
+            request_trace_id,
+            error,
+        )
+        raise HTTPException(
+            status_code=422,
+            detail=_error_payload(request_trace_id, str(error)),
+        ) from error
+    except Exception as error:
+        logger.exception("Exclusion preview failed request_id=%s", request_trace_id)
+        raise HTTPException(
+            status_code=500,
+            detail=_error_payload(request_trace_id, "Internal server error"),
+        ) from error
 
 
 @router.post("/v1/prioritize", response_model=PrioritizerApiResponse)
@@ -101,6 +256,9 @@ def prioritize(
             request.requestData.topN,
             request.requestData.createExplanations,
         )
+        explanation_language = _resolve_requested_language(
+            request.requestData.requestedLanguages
+        )
         results: list[PrioritizerApiCityResult] = []
         for city_input in request.requestData.cityDataList:
             logger.info(
@@ -116,6 +274,8 @@ def prioritize(
                 legal_data_api_client=legal_data_api_client,
                 policy_signals_data_api_client=policy_signals_data_api_client,
                 create_explanations=request.requestData.createExplanations,
+                requested_languages=list(request.requestData.requestedLanguages),
+                explanation_language=explanation_language,
             )
             # Echo frontend request ID for response correlation in clients/logs.
             per_city_result.metadata["frontend_request_id"] = request_trace_id
@@ -163,16 +323,14 @@ def _run_for_city_input(
         MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
     ),
     create_explanations: bool,
+    requested_languages: list[str],
+    explanation_language: str,
 ) -> PrioritizationResponse:
     """
     Translate a single frontend city payload into a pipeline run.
 
-    Current behavior:
-    - `excludedActionsFreeText` is treated as a **stub** and does not exclude actions.
-
-    Future behavior:
-    - Resolve free-text exclusions into concrete action exclusions via semantic
-      matching over action name/description and/or a curated mapping table.
+    Ranking trusts `excludedActionIds` supplied after the exclusion-preview
+    review step and does not reinterpret raw exclusion preferences.
     """
 
     # Create internal request ID used for orchestrator artifacts/tracing.
@@ -182,7 +340,7 @@ def _run_for_city_input(
         locode=city_input.locode,
         weights_override=city_input.weightsOverride,
         top_n=resolve_top_n(requested_top_n),
-        excluded_actions_free_text=city_input.excludedActionsFreeText,
+        excluded_action_ids=list(city_input.excludedActionIds),
         city_preference_sectors=list(city_input.cityStrategicPreferenceSectors),
         city_preference_timeframes=list(city_input.cityStrategicPreferenceTimeframes),
         city_preference_other_text=city_input.cityStrategicPreferenceOther,
@@ -193,5 +351,7 @@ def _run_for_city_input(
         legal_data_api_client=legal_data_api_client,
         policy_signals_data_api_client=policy_signals_data_api_client,
         create_explanations=create_explanations,
+        requested_languages=requested_languages,
+        explanation_language=explanation_language,
     )
     return result

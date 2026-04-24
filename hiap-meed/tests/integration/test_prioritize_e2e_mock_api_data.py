@@ -69,7 +69,7 @@ def test_prioritize_e2e_with_mock_api_payloads(
 
     mock_city_client = MockCityDataApiClient(mock_file_path=mock_data_dir / "city_api_mock.json")
     mock_action_client = MockActionDataApiClient(
-        mock_file_path=mock_data_dir / "actions_api_mock_v2.json"
+        mock_file_path=mock_data_dir / "actions_api_mock.json"
     )
     mock_legal_client = MockLegalDataApiClient(
         mock_file_path=mock_data_dir / "actions_legal_api_mock.json"
@@ -95,14 +95,14 @@ def test_prioritize_e2e_with_mock_api_payloads(
         metadata = result["metadata"]
         assert metadata["frontend_request_id"] == "1234567890"
 
-        expected_discarded_legal_ids = {"c40_0012", "c40_0034", "c40_0037", "c40_0029"}
+        expected_discarded_legal_ids = {"c40_0012", "c40_0034", "c40_0037"}
         ranked_action_ids = result["ranked_action_ids"]
         ranked_actions = result["ranked_actions"]
 
         assert result["locode"] == "CL IQQ"
         assert metadata["weights"] == {"impact": 0.5, "alignment": 0.3, "feasibility": 0.2}
         assert metadata["counts"]["total_actions"] == 155
-        assert metadata["counts"]["discarded_excluded"] == 0
+        assert metadata["counts"]["discarded_excluded"] == 1
         assert metadata["counts"]["discarded_legal"] == len(expected_discarded_legal_ids)
         assert metadata["counts"]["valid_actions"] == 151
         assert metadata["counts"]["ranked_actions"] == 20
@@ -144,11 +144,12 @@ def test_prioritize_e2e_with_mock_api_payloads(
         assert unknown_evidence["hard_requirements_unknown_count"] == 1
 
         # Verify artifact naming and full-response persistence.
-        request_runs = sorted((artifact_log_dir / "requests").glob("*"))
+        request_runs = sorted((artifact_log_dir / "requests" / "prioritization").glob("*"))
         assert len(request_runs) == 1
         run_dir = request_runs[0]
 
         manifest_payload = json.loads((run_dir / "manifest.json").read_text("utf-8"))
+        assert manifest_payload["request_kind"] == "prioritization"
         generated_files = set(manifest_payload["generated_files"])
         response_summary_files = [
             file_name
@@ -202,7 +203,7 @@ def test_prioritize_e2e_live_other_preference_mapping_smoke(
 
     mock_city_client = MockCityDataApiClient(mock_file_path=mock_data_dir / "city_api_mock.json")
     mock_action_client = MockActionDataApiClient(
-        mock_file_path=mock_data_dir / "actions_api_mock_v2.json"
+        mock_file_path=mock_data_dir / "actions_api_mock.json"
     )
     mock_legal_client = MockLegalDataApiClient(
         mock_file_path=mock_data_dir / "actions_legal_api_mock.json"

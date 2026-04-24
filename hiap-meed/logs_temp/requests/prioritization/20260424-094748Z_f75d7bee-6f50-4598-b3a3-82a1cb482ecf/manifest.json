@@ -2,8 +2,8 @@
   "counts": {
     "total_actions": 155,
     "valid_actions": 151,
-    "discarded_excluded": 0,
-    "discarded_legal": 4,
+    "discarded_excluded": 1,
+    "discarded_legal": 3,
     "ranked_actions": 20
   },
   "artifact_pointers": {
@@ -18,7 +18,8 @@
     }
   },
   "schema_version": "1.0",
-  "request_id": "7aa84c5b-ad1c-4581-8953-44711844626b",
+  "request_id": "f75d7bee-6f50-4598-b3a3-82a1cb482ecf",
+  "request_kind": "prioritization",
   "generated_files": [
     "001_fetch_city.json",
     "002_fetch_actions.json",
@@ -30,8 +31,11 @@
     "009_alignment.json",
     "010_feasibility.json",
     "012_final_scoring.json",
-    "013_response_summary.json",
+    "013_explanations.json",
+    "014_response_summary.json",
     "input_snapshot.json",
+    "llm/explanations_io.json",
+    "llm/explanations_prompt.txt",
     "response_full.json",
     "summary.jsonl"
   ]

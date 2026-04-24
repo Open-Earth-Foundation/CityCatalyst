@@ -1,22 +1,15 @@
 {
-  "timestamp": "2026-03-27T11:38:53.052880+00:00",
-  "request_id": "7aa84c5b-ad1c-4581-8953-44711844626b",
-  "event_index": 7,
-  "step_name": "hard_filter",
-  "event_type": "hard_filter.completed",
+  "timestamp": "2026-04-24T09:47:49.073311+00:00",
+  "request_id": "f75d7bee-6f50-4598-b3a3-82a1cb482ecf",
+  "request_kind": "prioritization",
+  "event_index": 4,
+  "step_name": "fetch_policy_signals",
+  "event_type": "fetch_policy_signals.completed",
   "payload": {
-    "valid_actions": 151,
-    "discarded_excluded": 0,
-    "discarded_legal": 4,
-    "discarded_excluded_action_ids": [],
-    "discarded_legal_action_ids": [
-      "c40_0012",
-      "c40_0029",
-      "c40_0034",
-      "c40_0037"
-    ],
-    "valid_action_ids": [
+    "actions_with_policy_signals": 142,
+    "action_ids_with_policy_signals": [
       "c40_0010",
+      "c40_0012",
       "c40_0013",
       "c40_0015",
       "c40_0016",
@@ -24,8 +17,11 @@
       "c40_0018",
       "c40_0023",
       "c40_0025",
+      "c40_0029",
+      "c40_0034",
       "c40_0035",
       "c40_0036",
+      "c40_0037",
       "c40_0040",
       "c40_0042",
       "c40_0046",
@@ -62,18 +58,15 @@
       "icare_0050",
       "icare_0053",
       "icare_0064",
-      "icare_0069",
       "icare_0071",
       "icare_0072",
       "icare_0074",
       "icare_0076",
       "icare_0078",
-      "icare_0079",
       "icare_0082",
       "icare_0099",
       "icare_0101",
       "icare_0104",
-      "icare_0105",
       "icare_0110",
       "icare_0111",
       "icare_0117",
@@ -82,8 +75,6 @@
       "icare_0122",
       "icare_0127",
       "icare_0128",
-      "icare_0131",
-      "icare_0132",
       "icare_0137",
       "icare_0139",
       "icare_0144",
@@ -101,15 +92,11 @@
       "icare_0172",
       "icare_0173",
       "icare_0176",
-      "icare_0178",
       "icare_0180",
       "icare_0181",
-      "icare_0182",
       "icare_0183",
       "icare_0184",
-      "icare_0185",
       "icare_0186",
-      "icare_0188",
       "ipcc_0001",
       "ipcc_0023",
       "ipcc_0024",
@@ -130,10 +117,6 @@
       "ipcc_0049",
       "ipcc_0050",
       "ipcc_0052",
-      "ipcc_0053",
-      "ipcc_0054",
-      "ipcc_0055",
-      "ipcc_0056",
       "ipcc_0057",
       "ipcc_0060",
       "ipcc_0062",
@@ -168,24 +151,6 @@
       "ipcc_0104",
       "ipcc_0105"
     ],
-    "discarded_legal_reasons_by_action_id": {
-      "c40_0012": {
-        "discard_reason": "legal_hard_requirement_failed",
-        "failed_requirements_count": 1
-      },
-      "c40_0029": {
-        "discard_reason": "legal_hard_requirement_failed",
-        "failed_requirements_count": 1
-      },
-      "c40_0034": {
-        "discard_reason": "legal_hard_requirement_failed",
-        "failed_requirements_count": 1
-      },
-      "c40_0037": {
-        "discard_reason": "legal_hard_requirement_failed",
-        "failed_requirements_count": 1
-      }
-    },
-    "elapsed_seconds": 0.0007928520062705502
+    "elapsed_seconds": 0.022132315000021663
   }
 }

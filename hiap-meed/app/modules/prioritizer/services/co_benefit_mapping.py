@@ -126,7 +126,7 @@ def resolve_city_preferred_co_benefits(
             "warning": str(error),
         }
 
-    # Step 3: Keep only taxonomy keys present in this action set.
+    # Step 3: Keep only keys allowed for this request's co-benefit taxonomy.
     resolved_preferred_co_benefits = sorted(
         key
         for key in set(mapped_response.mapped_co_benefits)
@@ -146,12 +146,14 @@ def score_action_other_preference_component(
     action_co_benefits: dict[str, dict[str, Any]],
     resolved_preferred_co_benefits: list[str],
 ) -> tuple[float, list[str]]:
-    """Normalize selected co-benefit impacts into a `0..1` score."""
+    """Score one action against the resolved city preference set on a `0..1` scale."""
     unique_preferred = sorted(set(resolved_preferred_co_benefits))
     if not unique_preferred:
         return 0.5, []
 
-    # Only city-selected co-benefits count. Missing keys are treated as neutral `0`.
+    # Only city-selected co-benefits count in the denominator.
+    # If an action does not provide one preferred co-benefit, it contributes `0`
+    # for that preference and lowers coverage relative to actions that do provide it.
     matched_preferred = sorted(
         key for key in unique_preferred if key in action_co_benefits
     )

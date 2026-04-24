@@ -25,8 +25,14 @@ def _artifacts_enabled() -> bool:
 class ArtifactWriter:
     """Best-effort artifact writer for one request."""
 
-    def __init__(self, request_id: UUID) -> None:
+    def __init__(
+        self,
+        request_id: UUID,
+        *,
+        request_kind: str = "prioritization",
+    ) -> None:
         self.request_id = request_id
+        self.request_kind = self._safe_file_stem(request_kind)
         self.enabled = _artifacts_enabled()
         log_dir = Path(os.getenv("LOG_DIR", "logs"))
         created_at_utc = datetime.now(UTC)
@@ -35,6 +41,7 @@ class ArtifactWriter:
         self._run_dir = (
             log_dir
             / "requests"
+            / self.request_kind
             / f"{timestamp_prefix}Z_{request_id}"
         )
         self.path = self._run_dir / "summary.jsonl"
@@ -69,6 +76,7 @@ class ArtifactWriter:
         event = {
             "timestamp": datetime.now(UTC).isoformat(),
             "request_id": str(self.request_id),
+            "request_kind": self.request_kind,
             "event_index": event_index,
             "event_type": event_type,
             "payload": dict(payload),
@@ -103,6 +111,7 @@ class ArtifactWriter:
         detail: dict[str, object] = {
             "timestamp": datetime.now(UTC).isoformat(),
             "request_id": str(self.request_id),
+            "request_kind": self.request_kind,
             "event_index": event_index,
             "step_name": step_name,
         }
@@ -169,6 +178,7 @@ class ArtifactWriter:
             **safe_payload,
             "schema_version": ARTIFACT_SCHEMA_VERSION,
             "request_id": str(self.request_id),
+            "request_kind": self.request_kind,
             "generated_files": sorted(self._written_files),
         }
         try:

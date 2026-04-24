@@ -256,7 +256,7 @@ Example JSON request bodies (using mock data from `data/`):
     "backendConsumer": "hiap-meed",
     "upstreamProvider": "city_catalyst_frontend",
     "apiContext": {
-      "endpoint": "POST /prioritizer/v1/start_prioritization",
+      "endpoint": "POST /v1/prioritize/exclusions/preview",
       "locodes": ["CL IQQ"]
     },
     "totalRecords": 1
@@ -270,7 +270,7 @@ Example JSON request bodies (using mock data from `data/`):
         "locode": "CL IQQ",
         "excludedSectorTags": ["waste"],
         "excludedCoBenefitKeys": ["air_quality"],
-        "excludedActionsFreeText": "Do not include new fossil fuel-based infrastructure",
+        "excludedActionsFreeText": "Do not include new fossil fuel-based infrastructure"
       }
     ]
   }
@@ -319,7 +319,7 @@ Example ranking request after review:
     "backendConsumer": "hiap-meed",
     "upstreamProvider": "city_catalyst_frontend",
     "apiContext": {
-      "endpoint": "POST /prioritizer/v1/start_prioritization",
+      "endpoint": "POST /v1/prioritize",
       "locodes": ["CL IQQ"]
     },
     "totalRecords": 1

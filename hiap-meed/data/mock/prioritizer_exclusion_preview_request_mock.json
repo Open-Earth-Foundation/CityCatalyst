@@ -16,7 +16,7 @@
         "locode": "CL IQQ",
         "excludedSectorTags": ["waste"],
         "excludedCoBenefitKeys": ["air_quality", "housing"],
-        "excludedActionsFreeText": "Do not include new fossil fuel-based infrastructure or waste-to-energy projects that raise costs for vulnerable households."
+        "excludedActionsFreeText": "Do not include actions related to electric vehicles or electric mobility"
       }
     ]
   }

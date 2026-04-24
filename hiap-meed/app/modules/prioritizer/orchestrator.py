@@ -639,7 +639,7 @@ def run_prioritization(
                         "llm/explanations_prompt.txt", prompt_text
                     )
                     llm_input_payload["prompt_text_file"] = (
-                        prompt_file.name
+                        prompt_file.relative_to(artifact_writer.run_dir).as_posix()
                         if prompt_file is not None
                         else "llm/explanations_prompt.txt"
                     )
@@ -654,7 +654,9 @@ def run_prioritization(
                 "generated": len(explanations_by_action_id),
                 "generated_action_ids": explanation_ids,
                 "llm_io_file": (
-                    llm_io_file.name if llm_io_file is not None else "llm/explanations_io.json"
+                    llm_io_file.relative_to(artifact_writer.run_dir).as_posix()
+                    if llm_io_file is not None
+                    else "llm/explanations_io.json"
                 ),
                 "elapsed_seconds": block.elapsed_seconds,
             }

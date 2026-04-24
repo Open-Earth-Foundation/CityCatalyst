@@ -1,0 +1,16 @@
+{
+  "frontend_request_id": "1234567890-preview",
+  "city_data_list": [
+    {
+      "locode": "CL IQQ",
+      "excludedSectorTags": [
+        "waste"
+      ],
+      "excludedCoBenefitKeys": [
+        "air_quality",
+        "housing"
+      ],
+      "excludedActionsFreeText": "Do not include actions related to electric vehicles or electric mobility"
+    }
+  ]
+}

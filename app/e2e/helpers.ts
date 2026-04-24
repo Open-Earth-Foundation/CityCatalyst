@@ -151,7 +151,7 @@ export async function createInventoryThroughOnboarding(
 
   // Select year - click the select trigger and then select an option
   const yearSelectTrigger = page
-    .locator('[data-testid="inventory-detils-year"]')
+    .locator('[data-testid="inventory-details-year"]')
     .locator("button");
   await yearSelectTrigger.click();
   await page.waitForTimeout(500); // Wait for dropdown to open

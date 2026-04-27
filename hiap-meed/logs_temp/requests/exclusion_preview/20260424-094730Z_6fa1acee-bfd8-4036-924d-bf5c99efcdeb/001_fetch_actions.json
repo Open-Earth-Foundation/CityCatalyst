@@ -1,7 +1,8 @@
 {
-  "timestamp": "2026-03-27T11:38:52.688695+00:00",
-  "request_id": "7aa84c5b-ad1c-4581-8953-44711844626b",
-  "event_index": 2,
+  "timestamp": "2026-04-24T09:47:30.648954+00:00",
+  "request_id": "6fa1acee-bfd8-4036-924d-bf5c99efcdeb",
+  "request_kind": "exclusion_preview",
+  "event_index": 1,
   "step_name": "fetch_actions",
   "event_type": "fetch_actions.completed",
   "payload": {
@@ -162,7 +163,6 @@
       "ipcc_0103",
       "ipcc_0104",
       "ipcc_0105"
-    ],
-    "elapsed_seconds": 0.02857981200213544
+    ]
   }
 }

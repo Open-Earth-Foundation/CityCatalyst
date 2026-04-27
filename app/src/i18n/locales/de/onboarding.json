@@ -67,7 +67,7 @@
   "gwp-description": "Wenn dies Ihr erstes Inventar ist, empfehlen wir die Verwendung von AR6 (neueste Version) für Ihre Inventarberechnungen. Wenn Ihre Stadt über frühere Inventare verfügt, verwenden Sie die gleiche Version wie zuvor. <2>Erfahren Sie mehr</2> über GWP.",
   "setup-population-data-heading": "Bevölkerungsdaten hinzufügen",
   "setup-population-data-description": "Geben Sie die Bevölkerungsdaten für Ihr Land, Ihre Region und Ihre Stadt an. Für genaue Ergebnisse verwenden Sie Werte aus dem Jahr, das Ihrem Inventarjahr am nächsten liegt. Wir verwenden offene Datenquellen, um die Informationen unten vorab auszufüllen.",
-  "region-or-province": "Region oder Provinz",
+  "region-or-province-population-title": "Region oder Provinz Bevölkerung",
   "source": "Quelle",
   "source-name": "Quellenname",
   "region-or-province-population-placeholder": "Bevölkerungszahl der Region oder Provinz",

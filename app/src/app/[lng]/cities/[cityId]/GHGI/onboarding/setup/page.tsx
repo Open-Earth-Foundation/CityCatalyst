@@ -134,6 +134,15 @@ export default function OnboardingSetup(props: {
     }
   }, [CCCityData, setValue, setOcCityData]);
 
+  // Inventory details step state
+  const [selectedYearArray, setSelectedYearArray] = useState<string[]>([]);
+  const [selectedInventoryGoalValue, setSelectedInventoryGoalValue] =
+    useState("");
+  const [
+    selectedGlobalWarmingPotentialValue,
+    setSelectedGlobalWarmingPotentialValue,
+  ] = useState("");
+
   const makeErrorToast = (title: string, description?: string) => {
     const { showErrorToast } = UseErrorToast({ description, title });
     showErrorToast();
@@ -204,12 +213,14 @@ export default function OnboardingSetup(props: {
         defaultCityId: cityId,
       }).unwrap();
       setConfirming(false);
-      
+
       // Check if we're in upload mode
       const mode = params.get("mode");
       if (mode === "upload") {
         // Route to import page with the newly created inventory ID
-        router.push(`/${lng}/cities/${cityId}/GHGI/onboarding/import?inventory=${inventory.inventoryId}`);
+        router.push(
+          `/${lng}/cities/${cityId}/GHGI/onboarding/import?inventory=${inventory.inventoryId}`,
+        );
       } else {
         // Default behavior: route to home page
         router.push(`/${lng}/cities/${cityId}/GHGI/${inventory.inventoryId}`);
@@ -275,6 +286,16 @@ export default function OnboardingSetup(props: {
               control={control}
               setValue={setValue}
               years={years}
+              selectedYearArray={selectedYearArray}
+              setSelectedYearArray={setSelectedYearArray}
+              selectedInventoryGoalValue={selectedInventoryGoalValue}
+              selectedGlobalWarmingPotentialValue={
+                selectedGlobalWarmingPotentialValue
+              }
+              setSelectedInventoryGoalValue={setSelectedInventoryGoalValue}
+              setSelectedGlobalWarmingPotentialValue={
+                setSelectedGlobalWarmingPotentialValue
+              }
             />
           )}
           {activeStep === 1 && (

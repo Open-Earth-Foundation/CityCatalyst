@@ -1,6 +1,7 @@
 {
-  "timestamp": "2026-03-27T11:38:52.745676+00:00",
-  "request_id": "7aa84c5b-ad1c-4581-8953-44711844626b",
+  "timestamp": "2026-04-24T09:47:48.959326+00:00",
+  "request_id": "f75d7bee-6f50-4598-b3a3-82a1cb482ecf",
+  "request_kind": "prioritization",
   "event_index": 3,
   "step_name": "fetch_legal_requirements",
   "event_type": "fetch_legal_requirements.completed",
@@ -18,6 +19,6 @@
       "c40_0040",
       "ipcc_0074"
     ],
-    "elapsed_seconds": 0.0007139119989005849
+    "elapsed_seconds": 0.000750048999975661
   }
 }

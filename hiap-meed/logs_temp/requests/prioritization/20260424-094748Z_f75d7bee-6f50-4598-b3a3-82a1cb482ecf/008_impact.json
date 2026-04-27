@@ -1,6 +1,7 @@
 {
-  "timestamp": "2026-03-27T11:38:53.118011+00:00",
-  "request_id": "7aa84c5b-ad1c-4581-8953-44711844626b",
+  "timestamp": "2026-04-24T09:47:49.220225+00:00",
+  "request_id": "f75d7bee-6f50-4598-b3a3-82a1cb482ecf",
+  "request_kind": "prioritization",
   "event_index": 8,
   "step_name": "impact",
   "event_type": "impact.completed",
@@ -3939,6 +3940,6 @@
         ]
       }
     },
-    "elapsed_seconds": 0.002933963987743482
+    "elapsed_seconds": 0.0020417310000198086
   }
 }

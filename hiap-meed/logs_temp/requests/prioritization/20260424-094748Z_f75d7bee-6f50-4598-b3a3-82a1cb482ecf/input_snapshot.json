@@ -1,6 +1,7 @@
 {
   "locode": "CL IQQ",
   "resolved_top_n": 20,
+  "create_explanations": true,
   "resolved_weights": {
     "impact": 0.5,
     "alignment": 0.3,
@@ -22,6 +23,12 @@
   "city_preference_sectors": [
     "transportation"
   ],
+  "city_preference_timeframes": [
+    "short",
+    "medium"
+  ],
   "city_preference_other_text": "Prioritize near-term air quality improvements, reliable and affordable mobility, and climate resilience benefits for low-income neighborhoods.",
-  "excluded_actions_free_text": "Do not include new fossil fuel-based infrastructure or actions that significantly increase household costs for vulnerable communities."
+  "confirmed_excluded_action_ids": [
+    "c40_0029"
+  ]
 }

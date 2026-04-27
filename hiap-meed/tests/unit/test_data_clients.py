@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from app.modules.prioritizer.models import PolicySignalByAction
+from app.modules.prioritizer.models import ActionApiItem, PolicySignalByAction
 from app.services.data_clients import (
     MockActionDataApiClient,
     MockCityDataApiClient,
@@ -22,7 +22,7 @@ from app.services.data_clients import (
 def test_mock_action_client_loads_actions_from_file() -> None:
     """Mock action client reads and maps actions from the checked-in mock payload."""
     mock_file_path = (
-        Path(__file__).resolve().parents[2] / "data" / "mock" / "actions_api_mock_v2.json"
+        Path(__file__).resolve().parents[2] / "data" / "mock" / "actions_api_mock.json"
     )
     client = MockActionDataApiClient(mock_file_path=mock_file_path)
 
@@ -95,4 +95,29 @@ def test_policy_support_score_must_be_between_zero_and_one() -> None:
             action_id="action_1",
             policy_signals=[],
             policy_support_score=1.2,
+        )
+
+
+@pytest.mark.unit
+def test_action_co_benefit_impact_numeric_must_be_between_minus2_and_2() -> None:
+    """Action co-benefit impact numeric values are constrained to `[-2, 2]`."""
+    with pytest.raises(ValidationError):
+        ActionApiItem(
+            actionId="action_1",
+            actionName="Action 1",
+            coBenefits={
+                "air_quality": {
+                    "sector_number": "I",
+                    "subsector_number": 1,
+                    "gpc_reference_number": ["I.1.1"],
+                    "impact_numeric": 3,
+                }
+            },
+            emissions={
+                "sector_number": "I",
+                "subsector_number": 1,
+                "gpc_reference_number": ["I.1.1"],
+                "impact_text": "high",
+                "impact_numeric": 2,
+            },
         )

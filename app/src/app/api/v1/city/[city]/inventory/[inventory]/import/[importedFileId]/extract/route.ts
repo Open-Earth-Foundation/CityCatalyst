@@ -43,6 +43,7 @@
  */
 
 import UserService from "@/backend/UserService";
+import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { ImportStatusEnum } from "@/util/enums";
@@ -168,14 +169,26 @@ export const POST = apiHandler(
       );
     }
 
-    const data = importedFile.data;
-    if (!data || !Buffer.isBuffer(data)) {
-      throw new createHttpError.BadRequest("No PDF data available to extract");
+    const s3Key = importedFile.s3Key;
+    if (!s3Key) {
+      throw new createHttpError.BadRequest(
+        "File reference (s3Key) is missing — please re-upload the file.",
+      );
+    }
+
+    let pdfBuffer: Buffer;
+    try {
+      pdfBuffer = await InventoryFileStorageService.getFileBuffer(s3Key);
+    } catch (err) {
+      logger.error({ err, importedFileId, s3Key }, "Failed to fetch PDF from S3");
+      throw new createHttpError.InternalServerError(
+        "Could not retrieve uploaded file from storage.",
+      );
     }
 
     let text: string;
     try {
-      const result = await pdfBufferToText(data);
+      const result = await pdfBufferToText(pdfBuffer);
       text = result.text;
       if (!text || !text.trim()) {
         throw new createHttpError.BadRequest(

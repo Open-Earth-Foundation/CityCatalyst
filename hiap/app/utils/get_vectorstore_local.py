@@ -1,20 +1,25 @@
-# utils/load_vectorstore.py
+from pathlib import Path
+import threading
+from typing import Optional
 
+from chromadb import PersistentClient
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
-from pathlib import Path
-from typing import Optional
-from chromadb import PersistentClient
 
 # Global dictionary to store loaded vector stores
 VECTOR_STORES = {}
+VECTOR_STORES_LOCK = threading.Lock()
 
 
 def get_vectorstore(collection_name: str) -> Optional[Chroma]:
-    """Load vector store once and reuse it across function calls."""
-    if collection_name not in VECTOR_STORES:
-        VECTOR_STORES[collection_name] = load_vectorstore(collection_name)
-    return VECTOR_STORES[collection_name]
+    """Load a vector store once and reuse it across concurrent callers."""
+    if collection_name in VECTOR_STORES:
+        return VECTOR_STORES[collection_name]
+
+    with VECTOR_STORES_LOCK:
+        if collection_name not in VECTOR_STORES:
+            VECTOR_STORES[collection_name] = load_vectorstore(collection_name)
+        return VECTOR_STORES[collection_name]
 
 
 def load_vectorstore(

@@ -120,3 +120,6 @@ sequenceDiagram
 | Weighted Sum | Aggregate pillar scores, sort, apply `top_n`                    | `ranked_action_ids` + `ranked_actions`  |
 
 See [`highlevel-architecture.md`](highlevel-architecture.md) and [`detailed-block-architecture.md`](detailed-block-architecture.md) for the scoring logic inside each block.
+
+Current alignment note:
+- The Alignment block now combines policy support, sector matching, a small timeframe-preference component based on `cityStrategicPreferenceTimeframes`, and LLM-based mapping of `cityStrategicPreferenceOther` into the co-benefit taxonomy.

@@ -24,6 +24,7 @@ from routes.get_climate_actions import api_router as climate_actions_route
 from routes.population_endpoint import api_router as population_route
 from routes.projects import api_router as projects_route
 from routes.policy_signals import api_router as policy_signals_route
+from routes.actions_pathway import api_router as actions_pathway_route
 from routes.emissionfactor_publisher_endpoint import api_router as emissionfactor_publisher_route
 from routes.emissionfactor_methodology_endpoint import api_router as emissionfactor_methodology_route
 from routes.emissionfactor_datasource_endpoint import api_router as emissionfactor_datasource_route
@@ -248,6 +249,11 @@ app.include_router(
 app.include_router(
     policy_signals_route,
     tags=["Policy Signals"],
+)
+
+app.include_router(
+    actions_pathway_route,
+    tags=["Action Pathways"],
 )
 
 """

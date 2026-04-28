@@ -4,11 +4,32 @@ Pydantic models for external API payloads and top-level endpoint contracts.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.modules.prioritizer.config import resolve_impact_text_multiplier
+from app.modules.prioritizer.services.co_benefit_mapping import ALLOWED_CO_BENEFIT_KEYS
+from app.modules.prioritizer.utils.sector_mapping import ALLOWED_SECTOR_TAGS
+
+
+def _validate_allowed_string_list(
+    *,
+    values: list[str],
+    field_name: str,
+    allowed_values: set[str],
+) -> list[str]:
+    """Validate one string-list field against an exact allowed taxonomy."""
+    normalized_values = list(dict.fromkeys(values))
+    invalid_values = [
+        value for value in normalized_values if value not in allowed_values
+    ]
+    if invalid_values:
+        raise ValueError(
+            f"{field_name} must contain only supported values: "
+            f"{sorted(allowed_values)}; got invalid values {invalid_values}"
+        )
+    return normalized_values
 
 # ============================================================================
 # FRONTEND REQUEST ENVELOPE MODELS (CityCatalyst -> hiap-meed)
@@ -75,11 +96,63 @@ class FrontendCityInput(BaseModel):
     locode: str = Field(min_length=1)
     countryCode: str = Field(min_length=2, max_length=2)
     populationSize: int | None = None
-    excludedActionsFreeText: str | None = None
+    excludedActionIds: list[str] = Field(default_factory=list)
     weightsOverride: dict[str, float] | None = None
     cityStrategicPreferenceSectors: list[str] = Field(default_factory=list)
+    cityStrategicPreferenceTimeframes: list[
+        Literal["short", "medium", "long", "no_preference"]
+    ] = Field(default_factory=lambda: ["no_preference"])
     cityStrategicPreferenceOther: str | None = None
     cityEmissionsData: FrontendCityEmissionsData
+
+    @field_validator("cityStrategicPreferenceSectors")
+    @classmethod
+    def _validate_city_preference_sectors(cls, values: list[str]) -> list[str]:
+        """Validate that city preferred sectors use the supported taxonomy only."""
+        return _validate_allowed_string_list(
+            values=values,
+            field_name="cityStrategicPreferenceSectors",
+            allowed_values=ALLOWED_SECTOR_TAGS,
+        )
+
+    # Normalize only omission/duplication before Literal validation. All
+    # non-empty entries must already match the exact frontend contract.
+    @field_validator("cityStrategicPreferenceTimeframes", mode="before")
+    @classmethod
+    def _normalize_timeframe_preferences(cls, value: object) -> object:
+        """Normalize timeframe preferences before enum validation runs."""
+        # Missing or null input means "neutral" rather than "invalid".
+        if value is None:
+            return ["no_preference"]
+        if not isinstance(value, list):
+            return value
+
+        normalized_preferences: list[str] = []
+        for item in value:
+            # Keep frontend-provided values as-is so unexpected spellings,
+            # casing, or whitespace are rejected by the Literal validator.
+            if item != "":
+                normalized_preferences.append(str(item))
+
+        # An empty list behaves the same as no explicit preference.
+        if not normalized_preferences:
+            return ["no_preference"]
+        # Preserve user intent order while removing duplicates.
+        return list(dict.fromkeys(normalized_preferences))
+
+    # Run a second validation pass after normalization + Literal validation to
+    # enforce the business rule that "no_preference" cannot be combined with a
+    # concrete timeframe choice.
+    @model_validator(mode="after")
+    def _validate_timeframe_preferences(self) -> FrontendCityInput:
+        """Ensure `no_preference` is not mixed with explicit timeframe choices."""
+        preferences = self.cityStrategicPreferenceTimeframes
+        if "no_preference" in preferences and len(preferences) > 1:
+            raise ValueError(
+                "cityStrategicPreferenceTimeframes cannot combine `no_preference` "
+                "with other timeframe preferences"
+            )
+        return self
 
 
 class PrioritizerRequestData(BaseModel):
@@ -87,7 +160,24 @@ class PrioritizerRequestData(BaseModel):
 
     requestedLanguages: list[str] = Field(default_factory=lambda: ["en"])
     topN: int | None = Field(default=None, ge=1)
+    createExplanations: bool = False
     cityDataList: list[FrontendCityInput] = Field(min_length=1)
+
+    @field_validator("requestedLanguages", mode="before")
+    @classmethod
+    def _normalize_requested_languages(cls, value: object) -> object:
+        """Normalize missing/empty requested languages to a single English default."""
+        if value is None:
+            return ["en"]
+        if not isinstance(value, list):
+            return value
+
+        normalized_languages = [
+            str(item).strip() for item in value if str(item).strip()
+        ]
+        if not normalized_languages:
+            return ["en"]
+        return normalized_languages
 
 
 class PrioritizerApiRequest(BaseModel):
@@ -95,6 +185,103 @@ class PrioritizerApiRequest(BaseModel):
 
     meta: FrontendRequestMeta
     requestData: PrioritizerRequestData
+
+
+# ============================================================================
+# EXCLUSION PREVIEW REQUEST/RESPONSE MODELS (CityCatalyst -> hiap-meed)
+# ----------------------------------------------------------------------------
+# Composition:
+# - ExclusionPreviewApiRequest
+#   - meta: FrontendRequestMeta
+#     - apiContext: FrontendApiContext
+#   - requestData: ExclusionPreviewRequestData
+#     - cityDataList: list[ExclusionPreviewCityInput]
+# - ExclusionPreviewApiResponse
+#   - results: list[ExclusionPreviewCityResult]
+#     - proposedExcludedActions: list[ProposedExcludedAction]
+#     - exclusionSummary: ExclusionSummary
+#       - byReasonType: dict[str, ExclusionSummaryReasonGroup]
+# ============================================================================
+
+
+class ExclusionPreviewCityInput(BaseModel):
+    """Single city payload for exclusion-preference preview."""
+
+    locode: str = Field(min_length=1)
+    excludedSectorTags: list[str] = Field(default_factory=list)
+    excludedCoBenefitKeys: list[str] = Field(default_factory=list)
+    excludedActionsFreeText: str | None = None
+
+    @field_validator("excludedSectorTags")
+    @classmethod
+    def _validate_excluded_sector_tags(cls, values: list[str]) -> list[str]:
+        """Validate that excluded sector tags use the supported taxonomy only."""
+        return _validate_allowed_string_list(
+            values=values,
+            field_name="excludedSectorTags",
+            allowed_values=ALLOWED_SECTOR_TAGS,
+        )
+
+    @field_validator("excludedCoBenefitKeys")
+    @classmethod
+    def _validate_excluded_co_benefit_keys(cls, values: list[str]) -> list[str]:
+        """Validate that excluded co-benefit keys use the supported taxonomy only."""
+        return _validate_allowed_string_list(
+            values=values,
+            field_name="excludedCoBenefitKeys",
+            allowed_values=set(ALLOWED_CO_BENEFIT_KEYS),
+        )
+
+
+class ExclusionPreviewRequestData(BaseModel):
+    """RequestData section for exclusion preview requests."""
+
+    cityDataList: list[ExclusionPreviewCityInput] = Field(min_length=1)
+
+
+class ExclusionPreviewApiRequest(BaseModel):
+    """Frontend -> hiap-meed request envelope for exclusion preview."""
+
+    meta: FrontendRequestMeta
+    requestData: ExclusionPreviewRequestData
+
+
+class ProposedExcludedAction(BaseModel):
+    """One action proposed for exclusion before user confirmation."""
+
+    actionId: str
+    actionName: str
+    reasons: list[str] = Field(default_factory=list)
+    matchedBy: list[str] = Field(default_factory=list)
+
+
+class ExclusionSummaryReasonGroup(BaseModel):
+    """Grouped exclusion count and action IDs for one reason type."""
+
+    count: int = 0
+    actionIds: list[str] = Field(default_factory=list)
+
+
+class ExclusionSummary(BaseModel):
+    """Summary of proposed exclusions grouped for frontend review."""
+
+    totalProposed: int = 0
+    byReasonType: dict[str, ExclusionSummaryReasonGroup] = Field(default_factory=dict)
+
+
+class ExclusionPreviewCityResult(BaseModel):
+    """Per-city exclusion preview response."""
+
+    locode: str = Field(min_length=1)
+    proposedExcludedActions: list[ProposedExcludedAction] = Field(default_factory=list)
+    exclusionSummary: ExclusionSummary = Field(default_factory=ExclusionSummary)
+    warnings: list[str] = Field(default_factory=list)
+
+
+class ExclusionPreviewApiResponse(BaseModel):
+    """Top-level response for exclusion preview."""
+
+    results: list[ExclusionPreviewCityResult] = Field(default_factory=list)
 
 
 # ============================================================================
@@ -164,8 +351,8 @@ class CityApiItem(BaseModel):
     area: float | None = None
     unemployment_rate: CityIndicator | None = None
     renter_share: CityIndicator | None = None
-    transport_logistics_employment: CityIndicator | None = None
-    electricity_access: CityIndicator | None = None
+    employment_in_transport_and_logistics: CityIndicator | None = None
+    electricity_access_rate: CityIndicator | None = None
     industry_construction_employment: CityIndicator | None = None
     median_household_income: CityIndicator | None = None
     public_transport_share: CityIndicator | None = None
@@ -229,17 +416,31 @@ class ActionApiItem(BaseModel):
 
     @model_validator(mode="after")
     def _validate_emissions_impact_text_band_present(self) -> ActionApiItem:
-        """Validate emissions impact includes a non-empty text band."""
+        """Validate emissions impact includes a non-empty, known text band."""
         emissions_entry = self.emissions
         if emissions_entry is None:
             return self
+
         impact_text = emissions_entry.impact_text
         if impact_text is None or not impact_text.strip():
-            raise ValueError(
-                f"Action `{self.actionId}` is missing emissions.impact_text"
-            )
+            raise ValueError(f"Action `{self.actionId}` is missing emissions.impact_text")
         # Validate that the text band can be resolved by configured impact mapping.
         resolve_impact_text_multiplier(impact_text)
+        return self
+
+    @model_validator(mode="after")
+    def _validate_co_benefit_impact_numeric_range(self) -> ActionApiItem:
+        """Validate co-benefit numeric impact values stay within `[-2, 2]`."""
+        for co_benefit_key, co_benefit_entry in self.coBenefits.items():
+            impact_numeric = co_benefit_entry.impact_numeric
+            if impact_numeric is None:
+                continue
+            if impact_numeric < -2 or impact_numeric > 2:
+                raise ValueError(
+                    "Action "
+                    f"`{self.actionId}` has coBenefits.{co_benefit_key}.impact_numeric="
+                    f"{impact_numeric} outside allowed range [-2, 2]"
+                )
         return self
 
 

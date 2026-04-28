@@ -14,6 +14,11 @@ function getS3Client(): S3Client {
   return new S3Client({ region: REGION });
 }
 
+/** Returns true when the S3 bucket is configured (production). Falls back to BYTEA in dev when false. */
+export function isS3Configured(): boolean {
+  return !!BUCKET;
+}
+
 function assertConfigured(): void {
   if (!BUCKET) {
     throw new Error(

@@ -169,20 +169,21 @@ export const POST = apiHandler(
       );
     }
 
-    const s3Key = importedFile.s3Key;
-    if (!s3Key) {
-      throw new createHttpError.BadRequest(
-        "File reference (s3Key) is missing — please re-upload the file.",
-      );
-    }
-
     let pdfBuffer: Buffer;
-    try {
-      pdfBuffer = await InventoryFileStorageService.getFileBuffer(s3Key);
-    } catch (err) {
-      logger.error({ err, importedFileId, s3Key }, "Failed to fetch PDF from S3");
-      throw new createHttpError.InternalServerError(
-        "Could not retrieve uploaded file from storage.",
+    if (importedFile.s3Key) {
+      try {
+        pdfBuffer = await InventoryFileStorageService.getFileBuffer(importedFile.s3Key);
+      } catch (err) {
+        logger.error({ err, importedFileId, s3Key: importedFile.s3Key }, "Failed to fetch PDF from S3");
+        throw new createHttpError.InternalServerError(
+          "Could not retrieve uploaded file from storage.",
+        );
+      }
+    } else if (importedFile.data && Buffer.isBuffer(importedFile.data)) {
+      pdfBuffer = importedFile.data as Buffer;
+    } else {
+      throw new createHttpError.BadRequest(
+        "File reference is missing — please re-upload the file.",
       );
     }
 

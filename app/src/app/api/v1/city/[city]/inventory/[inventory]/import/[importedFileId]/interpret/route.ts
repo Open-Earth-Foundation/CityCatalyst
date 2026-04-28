@@ -482,20 +482,21 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     );
   }
 
-  const s3Key = importedFile.s3Key;
-  if (!s3Key) {
-    throw new createHttpError.InternalServerError(
-      "File reference (s3Key) is missing — please re-upload the file.",
-    );
-  }
-
   let buffer: Buffer;
-  try {
-    buffer = await InventoryFileStorageService.getFileBuffer(s3Key);
-  } catch (err) {
-    logger.error({ err, importedFileId, s3Key }, "Failed to fetch file from S3 for interpretation");
+  if (importedFile.s3Key) {
+    try {
+      buffer = await InventoryFileStorageService.getFileBuffer(importedFile.s3Key);
+    } catch (err) {
+      logger.error({ err, importedFileId, s3Key: importedFile.s3Key }, "Failed to fetch file from S3 for interpretation");
+      throw new createHttpError.InternalServerError(
+        "Could not retrieve uploaded file from storage.",
+      );
+    }
+  } else if (importedFile.data && Buffer.isBuffer(importedFile.data)) {
+    buffer = importedFile.data as Buffer;
+  } else {
     throw new createHttpError.InternalServerError(
-      "Could not retrieve uploaded file from storage.",
+      "File reference is missing — please re-upload the file.",
     );
   }
 

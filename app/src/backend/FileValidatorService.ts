@@ -3,7 +3,8 @@ import FileParserService, { type ParsedFileData } from "./FileParserService";
 import FormatAdapterService, { type AdapterType } from "./FormatAdapterService";
 
 // File size limit: 20MB (in bytes)
-export const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+export const MAX_FILE_SIZE_MB = 20;
+export const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 // Accepted file formats for inventory import (xlsx/csv = eCRF; pdf = Path C AI extraction)
 export const ACCEPTED_FILE_FORMATS = ["xlsx", "csv", "pdf"] as const;
@@ -39,6 +40,8 @@ export interface ValidationResult {
  * Validates file type, size, and basic structure requirements
  */
 export default class FileValidatorService {
+  public static readonly MAX_FILE_SIZE_MB = MAX_FILE_SIZE_MB;
+
   /**
    * Validate file type
    * @param file - File object to validate

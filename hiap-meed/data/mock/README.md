@@ -12,19 +12,52 @@ This includes:
 
 - locode (city identifier for the prioritization request)
 - population size (potentally updated value from the frontend - will override the value from the city context data API)
-- excluded actions (free text field to provide a list of actions to exclude from the prioritization)
+- excluded action IDs (confirmed by the user after the exclusion preview step)
 - city strategic preference other (free text field to provide a strategic preference for the city)
 - city strategic preference sector (list of sectors to prioritize)
+- city strategic preference timeframes (list of preferred implementation horizons)
 - city emissions data (emissions data for the city from CityCatalyst)
 
 Single-city and multi-city requests use the same structure (`cityDataList`).
 A single-city request is represented by exactly one item in `cityDataList`.
+
+`meta.apiContext.endpoint` now reflects the current ranking API route:
+- `POST /v1/prioritize`
+
+# prioritizer_exclusion_preview_request_mock.json:
+
+This is a mock request for API 1, the exclusion preview API.
+It simulates the frontend sending raw exclusion preferences before the user confirms
+the final `excludedActionIds` that are later sent to the ranking API.
+
+This payload shape is modeled by:
+- `ExclusionPreviewApiRequest` (envelope)
+- `ExclusionPreviewRequestData` (`requestData`)
+- `ExclusionPreviewCityInput` (`cityDataList[]`)
+
+This includes:
+
+- locode (city identifier for the exclusion preview request)
+- excluded sector tags (strictly one of the supported sector taxonomy values)
+- excluded co-benefit keys (strictly one of the supported co-benefit taxonomy values)
+- excluded actions free text (optional free-text exclusion preference for guarded LLM matching)
+
+`meta.apiContext.endpoint` reflects the preview route:
+- `POST /v1/prioritize/exclusions/preview`
 
 # prioritizer_bulk_request_mock.json:
 
 This is the multi-city variant of the same frontend request contract. It uses
 the same envelope and schema as `prioritizer_request_mock.json` but includes
 more than one item in `cityDataList`.
+
+Even for multiple cities, the current API route is still:
+- `POST /v1/prioritize`
+
+The old one-step flow, where raw exclusion free text was sent directly to the
+ranking API, is no longer represented by the active mock request files. Raw
+exclusion preferences now live in `prioritizer_exclusion_preview_request_mock.json`,
+while ranking mocks use confirmed `excludedActionIds`.
 
 # city_api_mock.json:
 
@@ -43,10 +76,10 @@ The general logic is that this is the baseline and values might be updated by th
 Known alignment gap with action socioeconomic rules:
 
 - City keys currently include `transport_logistics_employment` and `electricity_access`.
-- `actions_api_mock_v2.json` currently includes indicator keys `employment_in_transport_and_logistics` and `electricity_access_rate`.
+- `actions_api_mock.json` currently includes indicator keys `employment_in_transport_and_logistics` and `electricity_access_rate`.
 - Until these names are aligned (or mapped in code), feasibility socio-economic lookup will treat those indicators as missing.
 
-# actions_api_mock_v2.json:
+# actions_api_mock.json:
 
 This is a mock response from the actions data API.
 It simulates a response from the actions data API containing information about the actions.

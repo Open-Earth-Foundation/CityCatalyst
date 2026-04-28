@@ -244,7 +244,7 @@ _default_mock_action_client = MockActionDataApiClient(
     mock_file_path=Path(__file__).resolve().parents[2]
     / "data"
     / "mock"
-    / "actions_api_mock_v2.json"
+    / "actions_api_mock.json"
 )
 _default_api_legal_client = ApiLegalDataApiClient()
 _default_mock_legal_client = MockLegalDataApiClient(

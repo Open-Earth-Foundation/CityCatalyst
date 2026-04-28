@@ -15,6 +15,7 @@ from app.modules.prioritizer.blocks import (
 from app.modules.prioritizer.config import validate_weights
 from app.modules.prioritizer.internal_models import Action
 from app.modules.prioritizer.models import PrioritizationResponse, RankedActionResult
+from app.modules.prioritizer.services.explanations import generate_explanations
 from app.services.data_clients import (
     ApiActionDataApiClient,
     ApiCityDataApiClient,
@@ -127,6 +128,9 @@ def _build_evidence_summary(scored_action_evidence: dict[str, object]) -> dict[s
             "other_component_value": _safe_float(
                 alignment_evidence.get("other_component_value")
             ),
+            "timeframe_component_value": _safe_float(
+                alignment_evidence.get("timeframe_component_value")
+            ),
         },
         "feasibility": {
             "feasibility_score": _safe_float(
@@ -154,8 +158,11 @@ def run_prioritization(
     locode: str,
     weights_override: dict[str, float] | None,
     top_n: int | None,
-    excluded_actions_free_text: str | None,
+    excluded_action_ids: list[str],
+    requested_languages: list[str],
+    explanation_language: str,
     city_preference_sectors: list[str],
+    city_preference_timeframes: list[str],
     city_preference_other_text: str | None,
     city_emissions_by_gpc_ref: dict[str, float],
     internal_request_id: UUID,
@@ -165,6 +172,7 @@ def run_prioritization(
     policy_signals_data_api_client: (
         MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
     ),
+    create_explanations: bool,
 ) -> PrioritizationResponse:
     """
     Run the end-to-end prioritization workflow for one city request.
@@ -176,7 +184,10 @@ def run_prioritization(
     """
 
     # Phase 0: initialize request-scoped artifact writer and timing accumulator.
-    artifact_writer = ArtifactWriter(request_id=internal_request_id)
+    artifact_writer = ArtifactWriter(
+        request_id=internal_request_id,
+        request_kind="prioritization",
+    )
     timings: dict[str, float] = {}
     logger.info(
         "Prioritization started internal_request_id=%s locode=%s top_n=%s weights_override_provided=%s",
@@ -356,11 +367,15 @@ def run_prioritization(
     input_snapshot_payload = {
         "locode": locode,
         "resolved_top_n": top_n,
+        "create_explanations": create_explanations,
+        "requested_languages": requested_languages,
+        "explanation_language": explanation_language,
         "resolved_weights": weights,
         "city_emissions_by_gpc_ref": city_emissions_by_gpc_ref,
         "city_preference_sectors": city_preference_sectors,
+        "city_preference_timeframes": city_preference_timeframes,
         "city_preference_other_text": city_preference_other_text,
-        "excluded_actions_free_text": excluded_actions_free_text,
+        "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
     }
     input_snapshot_path = artifact_writer.write_run_file(
         "input_snapshot.json", input_snapshot_payload
@@ -377,7 +392,7 @@ def run_prioritization(
     with time_block("hard_filter") as block:
         hard_filter_result = hard_filter.run(
             actions=actions,
-            excluded_actions_free_text=excluded_actions_free_text,
+            excluded_action_ids=excluded_action_ids,
             legal_requirements_by_action_id=legal_requirements_by_action_id,
         )
     # Build discard diagnostics and emit hard-filter artifacts.
@@ -400,6 +415,7 @@ def run_prioritization(
             "discarded_excluded": len(discarded_excluded_ids),
             "discarded_legal": len(discarded_legal_ids),
             "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
+            "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
             "discarded_legal_action_ids": sorted(discarded_legal_ids),
             "valid_action_ids": _sorted_action_ids(hard_filter_result.valid_actions),
             "discarded_legal_reasons_by_action_id": {
@@ -460,6 +476,7 @@ def run_prioritization(
             hard_filter_result.valid_actions,
             policy_signals_by_action_id=policy_signals_by_action_id,
             city_preference_sectors=city_preference_sectors,
+            city_preference_timeframes=city_preference_timeframes,
             city_preference_other_text=city_preference_other_text,
         )
     # Emit alignment score stats and detailed evidence artifacts.
@@ -520,6 +537,14 @@ def run_prioritization(
             "feasibility_actions": len(feasibility_result.score_by_action_id),
         },
     )
+    logger.info(
+        "Pillar scoring completed internal_request_id=%s locode=%s impact_actions=%s alignment_actions=%s feasibility_actions=%s",
+        internal_request_id,
+        locode,
+        len(impact_result.score_by_action_id),
+        len(alignment_result.score_by_action_id),
+        len(feasibility_result.score_by_action_id),
+    )
 
     # Phase 10: aggregate pillar scores into final ranking.
     with time_block("final_scoring") as block:
@@ -562,6 +587,14 @@ def run_prioritization(
         event_index=final_scoring_event_index,
         event_type="final_scoring.completed",
     )
+    logger.info(
+        "Final scoring completed internal_request_id=%s locode=%s ranked_actions=%s top_n=%s elapsed_seconds=%.3f",
+        internal_request_id,
+        locode,
+        len(scored_actions),
+        top_n,
+        block.elapsed_seconds,
+    )
 
     # Phase 11: attach per-block evidence into each ranked action object.
     for scored_action in scored_actions:
@@ -580,20 +613,135 @@ def run_prioritization(
             ),
         }
 
-    # Phase 12: build public ranked action payloads and response metadata.
+    # Phase 12: optionally generate post-ranking qualitative explanations.
+    explanations_by_action_id: dict[str, str] = {}
+    if create_explanations:
+        logger.info(
+            "Explanation generation started internal_request_id=%s locode=%s actions_to_explain=%s",
+            internal_request_id,
+            locode,
+            len(scored_actions),
+        )
+        llm_io_payload: dict[str, object] | None = None
+        explanation_error: Exception | None = None
+        with time_block("explanations") as block:
+            try:
+                explanations_by_action_id, llm_io_payload = generate_explanations(
+                    locode=locode,
+                    scored_actions=scored_actions,
+                    explanation_language=explanation_language,
+                    city_preference_sectors=city_preference_sectors,
+                    city_preference_other_text=city_preference_other_text,
+                )
+            except Exception as error:
+                explanation_error = error
+        if explanation_error is None and llm_io_payload is not None:
+            llm_input_payload = llm_io_payload.get("llm_input")
+            if isinstance(llm_input_payload, dict):
+                prompt_text = llm_input_payload.get("prompt_text")
+                if isinstance(prompt_text, str):
+                    prompt_file = artifact_writer.write_run_text_file(
+                        "llm/explanations_prompt.txt", prompt_text
+                    )
+                    llm_input_payload["prompt_text_file"] = (
+                        prompt_file.relative_to(artifact_writer._run_dir).as_posix()
+                        if prompt_file is not None
+                        else "llm/explanations_prompt.txt"
+                    )
+                    llm_input_payload["prompt_text_characters"] = len(prompt_text)
+                    llm_input_payload.pop("prompt_text", None)
+            llm_io_file = artifact_writer.write_run_file(
+                "llm/explanations_io.json", llm_io_payload
+            )
+            explanation_ids = sorted(explanations_by_action_id.keys())
+            explanations_payload = {
+                "requested": len(scored_actions),
+                "generated": len(explanations_by_action_id),
+                "generated_action_ids": explanation_ids,
+                "llm_io_file": (
+                    llm_io_file.relative_to(artifact_writer._run_dir).as_posix()
+                    if llm_io_file is not None
+                    else "llm/explanations_io.json"
+                ),
+                "elapsed_seconds": block.elapsed_seconds,
+            }
+            explanations_event_index = artifact_writer.write_event(
+                "explanations.completed", explanations_payload
+            )
+            artifact_writer.write_step_detail(
+                "explanations",
+                explanations_payload,
+                event_index=explanations_event_index,
+                event_type="explanations.completed",
+            )
+            logger.info(
+                "Explanation generation completed internal_request_id=%s locode=%s generated=%s elapsed_seconds=%.3f",
+                internal_request_id,
+                locode,
+                len(explanations_by_action_id),
+                block.elapsed_seconds,
+            )
+        elif explanation_error is not None:
+            logger.warning(
+                "Explanation generation failed internal_request_id=%s locode=%s error=%s",
+                internal_request_id,
+                locode,
+                explanation_error,
+            )
+            llm_error_file = artifact_writer.write_run_file(
+                "llm/explanations_error.json",
+                {
+                    "status": "failed",
+                    "locode": locode,
+                    "error": str(explanation_error),
+                    "ranked_action_ids": [item.action.action_id for item in scored_actions],
+                },
+            )
+            explanations_failed_payload = {
+                "requested": len(scored_actions),
+                "generated": 0,
+                "error": str(explanation_error),
+                "llm_error_file": (
+                    llm_error_file.name if llm_error_file is not None else "llm/explanations_error.json"
+                ),
+                "elapsed_seconds": block.elapsed_seconds,
+            }
+            explanations_failed_event_index = artifact_writer.write_event(
+                "explanations.failed", explanations_failed_payload
+            )
+            artifact_writer.write_step_detail(
+                "explanations",
+                explanations_failed_payload,
+                event_index=explanations_failed_event_index,
+                event_type="explanations.failed",
+            )
+        timings["explanations"] = block.elapsed_seconds
+    else:
+        artifact_writer.write_event(
+            "explanations.skipped",
+            {"create_explanations": False},
+        )
+        logger.info(
+            "Explanation generation skipped internal_request_id=%s locode=%s create_explanations=%s",
+            internal_request_id,
+            locode,
+            create_explanations,
+        )
+
+    # Phase 13: build public ranked action payloads and response metadata.
     ranked_actions: list[RankedActionResult] = []
     for scored_action in scored_actions:
+        action_id = scored_action.action.action_id
         ranked_actions.append(
             RankedActionResult(
-                action_id=scored_action.action.action_id,
+                action_id=action_id,
                 rank=scored_action.rank,
                 final_score=scored_action.final_score,
                 impact_score=scored_action.impact_score,
                 alignment_score=scored_action.alignment_score,
                 feasibility_score=scored_action.feasibility_score,
                 evidence_summary=_build_evidence_summary(scored_action.evidence),
-                # Placeholder for future LLM-generated narrative explanation.
-                explanation=None,
+                explanation=explanations_by_action_id.get(action_id),
             )
         )
 
@@ -611,6 +759,12 @@ def run_prioritization(
         },
         "weights": weights,
         "timings": timings,
+        "explanations": {
+            "requested": create_explanations,
+            "generated": len(explanations_by_action_id),
+            "requested_languages": requested_languages,
+            "language": explanation_language,
+        },
         "hard_filter_evidence_by_action_id": hard_filter_result.evidence,
     }
     # Build the full per-city API response shape for artifact logging.
@@ -644,6 +798,7 @@ def run_prioritization(
             "weights": weights,
             "ranked_action_ids": ranked_action_ids,
             "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
+            "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
             "discarded_legal_action_ids": sorted(discarded_legal_ids),
             "timings": timings,
         },
@@ -657,6 +812,7 @@ def run_prioritization(
             "locode": locode,
             "counts": metadata["counts"],
             "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
+            "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
             "discarded_legal_action_ids": sorted(discarded_legal_ids),
             "timings": timings,
         },

@@ -43,8 +43,8 @@ class CityData(BaseModel):
         indicators = (
             "unemployment_rate",
             "renter_share",
-            "transport_logistics_employment",
-            "electricity_access",
+            "employment_in_transport_and_logistics",
+            "electricity_access_rate",
             "industry_construction_employment",
             "median_household_income",
             "public_transport_share",

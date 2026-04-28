@@ -374,7 +374,7 @@ export default function SetPopulationDataStep({
               fontWeight="bold"
               lineHeight="24px"
             >
-              {t("region-or-province")}
+              {t("region-or-province-population-title")}
             </Text>
           </Box>
           <Box display="flex" gap="16px" alignItems="start">
@@ -494,7 +494,7 @@ export default function SetPopulationDataStep({
               fontWeight="bold"
               lineHeight="24px"
             >
-              {t("city")}
+              {t("city-population-title")}
             </Text>
           </Box>
           <Box display="flex" gap="16px" alignItems="start">

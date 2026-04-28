@@ -28,9 +28,9 @@ jsonpointer==3.0.0
 jsonschema==4.25.1
 jsonschema-specifications==2025.9.1
 langchain==1.2.7
-langchain-core==1.2.7
+langchain-core==1.2.13
 langchain-openai==1.1.6
-langchain-text-splitters==1.1.0
+langchain-text-splitters==1.1.1
 langgraph==1.0.7
 langgraph-checkpoint==4.0.0
 langgraph-prebuilt==1.0.7

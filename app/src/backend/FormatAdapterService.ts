@@ -303,6 +303,7 @@ export default class FormatAdapterService {
       "sectors sector",
       "category",
       "sectors",
+      "department",
     ]);
     const emissionsIdx = this.col(headers, [
       "ghg emissions (mt co2e)",
@@ -389,6 +390,7 @@ export default class FormatAdapterService {
       "sectors sector",
       "category",
       "sectors",
+      "department",
     ]);
     const subsectorIdx = this.col(h, [
       "subsector",
@@ -413,6 +415,22 @@ export default class FormatAdapterService {
       "emissions_mtco2e",
       "total emissions",
       "emissions (mt co2e)",
+    ]);
+    const activityAmountIdx = this.col(h, [
+      "consumption",
+      "consumed",
+      "activity amount",
+      "activity_amount",
+      "consumption amount",
+      "activity data - amount",
+    ]);
+    const activityUnitIdx = this.col(h, [
+      "consumption_units",
+      "consumption units",
+      "activity unit",
+      "activity_unit",
+      "source units",
+      "activity data - unit",
     ]);
     const scopeIdx = this.col(h, ["scope"]);
     const inventoryIdx = this.col(h, ["inventory", "inventory type"]);
@@ -449,8 +467,10 @@ export default class FormatAdapterService {
         year: get(yearIdx),
         sector: get(sectorIdx),
         subsector: get(subsectorIdx),
-        source_fuel: get(sourceIdx),
+        activity_type: get(sourceIdx),
         total_co2e_tonnes: get(emissionsIdx),
+        activity_amount: get(activityAmountIdx),
+        activity_unit: get(activityUnitIdx),
         scope: get(scopeIdx),
         inventory_type: get(inventoryIdx),
         department: get(deptIdx),
@@ -463,8 +483,10 @@ export default class FormatAdapterService {
         "year",
         "sector",
         "subsector",
-        "source_fuel",
+        "activity_type",
         "total_co2e_tonnes",
+        "activity_amount",
+        "activity_unit",
         "scope",
         "inventory_type",
         "department",
@@ -518,10 +540,28 @@ export default class FormatAdapterService {
       targetYear != null ? allYears.filter((y) => y === targetYear) : allYears;
     const years = candidateYears.length > 0 ? candidateYears : allYears;
 
-    // Category (non-year) columns — keep only first 6 to avoid bloat
-    const categoryHeaders = h
-      .filter((header) => !/\b(19|20)\d{2}\b/.test(header))
-      .slice(0, 6);
+    // Category (non-year) columns — all static descriptor columns, no hard limit
+    const categoryHeaders = h.filter(
+      (header) => !/\b(19|20)\d{2}\b/.test(header),
+    );
+
+    // Identify semantic columns by alias so the AI receives well-named fields
+    const activityTypeHeader =
+      categoryHeaders.find((header) =>
+        /source.?label|source.?name|fuel.?type|activity.?type|commodity/i.test(
+          header,
+        ),
+      ) ?? null;
+    const activityUnitHeader =
+      categoryHeaders.find((header) =>
+        /source.?unit|activity.?unit|consumption.?unit|unit/i.test(header),
+      ) ?? null;
+
+    // Remaining category columns (excluding the ones we'll rename)
+    const otherCategoryHeaders = categoryHeaders.filter(
+      (header) =>
+        header !== activityTypeHeader && header !== activityUnitHeader,
+    );
 
     const unpivotedRows: Record<string, unknown>[] = [];
 
@@ -557,11 +597,15 @@ export default class FormatAdapterService {
           continue;
 
         const newRow: Record<string, unknown> = { year };
-        for (const catHeader of categoryHeaders) {
+        for (const catHeader of otherCategoryHeaders) {
           newRow[catHeader] = row[catHeader];
         }
+        if (activityTypeHeader)
+          newRow["activity_type"] = row[activityTypeHeader];
+        if (activityUnitHeader)
+          newRow["activity_unit"] = row[activityUnitHeader];
         newRow["total_co2e_tonnes"] = totalCO2e;
-        if (consumedHeader) newRow["activity_consumed"] = row[consumedHeader];
+        if (consumedHeader) newRow["activity_amount"] = row[consumedHeader];
 
         unpivotedRows.push(newRow);
       }
@@ -571,9 +615,11 @@ export default class FormatAdapterService {
 
     const normalizedHeaders = [
       "year",
-      ...categoryHeaders,
+      ...otherCategoryHeaders,
+      ...(activityTypeHeader ? ["activity_type"] : []),
+      ...(activityUnitHeader ? ["activity_unit"] : []),
       "total_co2e_tonnes",
-      "activity_consumed",
+      "activity_amount",
     ].filter((hdr, i, arr) => arr.indexOf(hdr) === i);
 
     const normalizedSheet: ParsedSheet = {

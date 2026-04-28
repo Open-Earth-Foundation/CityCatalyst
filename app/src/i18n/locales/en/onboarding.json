@@ -148,5 +148,7 @@
   "upload-started": "Upload started",
   "upload-started-description": "Uploading {{fileName}}...",
   "loading-validation-results": "Loading validation results...",
-  "no-field-mappings": "No field mappings available"
+  "no-field-mappings": "No field mappings available",
+  "upload-failed": "Upload failed",
+  "failed-to-upload-file": "Failed to upload file"
 }

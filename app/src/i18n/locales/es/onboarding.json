@@ -67,7 +67,7 @@
   "gwp-description": "Si esta es tu primera inventario, recomendamos usar AR6 (última versión) para tus cálculos de inventario. Si tu ciudad tiene inventarios anteriores, usa la misma versión que antes. <2>Aprende más</2> sobre GWP.",
   "setup-population-data-heading": "Añadir datos de población",
   "setup-population-data-description": "Proporcione los datos de población para su país, región y ciudad. Para obtener resultados precisos, utilice valores del año más cercano a su año de inventario. Utilizamos fuentes de datos abiertos para completar previamente la información a continuación.",
-  "region-or-province": "Región o provincia",
+  "region-or-province-population-title": "Población de la región o provincia",
   "source": "Fuente",
   "source-name": "Nombre de la fuente",
   "region-or-province-population-placeholder": "Número de población de la región o provincia",

@@ -14,7 +14,9 @@ from app.modules.prioritizer.blocks import (
     hard_filter,
     impact,
 )
+from app.modules.prioritizer.services import co_benefit_mapping
 from app.modules.prioritizer.internal_models import Action, CityData
+from app.modules.prioritizer.models import CityApiItem
 from app.services.data_clients import (
     MockActionDataApiClient,
     MockCityDataApiClient,
@@ -31,7 +33,7 @@ def _mock_data_dir() -> Path:
 def _load_mock_actions() -> list[Action]:
     """Load actions from the mock actions API payload."""
     action_client = MockActionDataApiClient(
-        mock_file_path=_mock_data_dir() / "actions_api_mock_v2.json"
+        mock_file_path=_mock_data_dir() / "actions_api_mock.json"
     )
     return action_client.list_actions()
 
@@ -77,6 +79,71 @@ def _load_city_emissions_by_gpc_ref() -> dict[str, float]:
     return emissions_by_gpc_ref
 
 
+def _alignment_timeframe_evidence(
+    *,
+    city_preference_timeframes: list[str],
+    action_timeline: str | None,
+) -> dict[str, object]:
+    """Return alignment evidence for one action scored only against timeframe input."""
+    result = alignment.run(
+        actions=[
+            Action(
+                action_id="A_timeframe",
+                action_name="Timeframe alignment action",
+                implementation_timeline=action_timeline,
+            )
+        ],
+        policy_signals_by_action_id={},
+        city_preference_sectors=[],
+        city_preference_timeframes=city_preference_timeframes,
+        city_preference_other_text=None,
+    )
+    assert result.evidence_by_action_id is not None
+    return result.evidence_by_action_id["A_timeframe"]
+
+
+@pytest.mark.unit
+def test_mock_city_loader_keeps_renamed_indicator_keys() -> None:
+    """Mock city parsing preserves renamed socioeconomic indicators in raw/context."""
+    city = _load_mock_city()
+
+    assert "employment_in_transport_and_logistics" in city.raw
+    assert "electricity_access_rate" in city.raw
+    city_context_names = {
+        row["attribute_name"] for row in city.city_context if "attribute_name" in row
+    }
+    assert "employment_in_transport_and_logistics" in city_context_names
+    assert "electricity_access_rate" in city_context_names
+
+
+@pytest.mark.unit
+def test_city_api_item_ignores_legacy_indicator_names() -> None:
+    """Legacy city indicator names are ignored so mismatches remain visible."""
+    city = CityApiItem.model_validate(
+        {
+            "comuna_name": "Iquique",
+            "locode": "CL IQQ",
+            "countryCode": "CL",
+            "region_name": "Tarapaca",
+            "comuna_code": "CL01101",
+            "region_code": "CL01",
+            "transport_logistics_employment": {
+                "attribute_value": 7.35,
+                "attribute_units": "percent",
+                "attribute_category": "low",
+            },
+            "electricity_access": {
+                "attribute_value": 100.0,
+                "attribute_units": "percent",
+                "attribute_category": "very low",
+            },
+        }
+    )
+
+    assert city.employment_in_transport_and_logistics is None
+    assert city.electricity_access_rate is None
+
+
 @pytest.mark.unit
 def test_hard_filter_block_with_mock_api_data() -> None:
     """Hard filter removes known not-aligned actions from mock legal data."""
@@ -85,7 +152,7 @@ def test_hard_filter_block_with_mock_api_data() -> None:
 
     result = hard_filter.run(
         actions=actions,
-        excluded_actions_free_text="Exclude fossil-heavy actions (stub behavior today).",
+        excluded_action_ids=[],
         legal_requirements_by_action_id=legal_requirements,
     )
 
@@ -248,6 +315,7 @@ def test_alignment_block_with_mock_api_data() -> None:
         actions=actions,
         policy_signals_by_action_id=policy_signals,
         city_preference_sectors=["stationary_energy", "transportation"],
+        city_preference_timeframes=["no_preference"],
         city_preference_other_text="Focus on local jobs and cleaner mobility",
     )
 
@@ -258,26 +326,178 @@ def test_alignment_block_with_mock_api_data() -> None:
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
     assert first_action_evidence["policy_component_value"] > 0.0
     assert first_action_evidence["sector_component_value"] in {0.0, 1.0}
-    assert first_action_evidence["other_component_value"] == 0.0
+    assert first_action_evidence["other_component_value"] == pytest.approx(0.5)
     assert first_action_evidence["alignment_score"] == pytest.approx(
         first_action_evidence["policy_contribution"]
         + first_action_evidence["sector_contribution"]
         + first_action_evidence["other_contribution"]
+        + first_action_evidence["timeframe_contribution"]
     )
 
 
 @pytest.mark.unit
-def test_feasibility_block_with_mock_api_data() -> None:
+def test_alignment_other_preference_component_uses_normalized_co_benefit_impacts(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Alignment other-preference score reflects selected co-benefit impacts."""
+    actions = _load_mock_actions()
+    policy_signals = _load_mock_policy_signals()
+
+    def _fake_resolve(**_: object) -> dict[str, object]:
+        return {
+            "resolved_preferred_co_benefits": ["air_quality", "housing"],
+            "unmappable_preference_fragments": ["jobs"],
+            "mapping_source": "llm",
+            "provider": "openai",
+            "model": "gpt-test",
+        }
+
+    monkeypatch.setattr(
+        co_benefit_mapping,
+        "resolve_city_preferred_co_benefits",
+        _fake_resolve,
+    )
+
+    result = alignment.run(
+        actions=actions,
+        policy_signals_by_action_id=policy_signals,
+        city_preference_sectors=["stationary_energy", "transportation"],
+        city_preference_timeframes=["no_preference"],
+        city_preference_other_text="Cleaner air and healthier homes",
+    )
+
+    assert result.evidence_by_action_id is not None
+    first_action_evidence = result.evidence_by_action_id["c40_0010"]
+    assert first_action_evidence["resolved_preferred_co_benefits"] == [
+        "air_quality",
+        "housing",
+    ]
+    assert first_action_evidence["matched_preferred_co_benefits"] == [
+        "air_quality",
+        "housing",
+    ]
+    assert first_action_evidence["unmappable_preference_fragments"] == ["jobs"]
+    assert first_action_evidence["other_component_mapping_source"] == "llm"
+    assert first_action_evidence["other_component_value"] == pytest.approx(0.5)
+
+
+@pytest.mark.unit
+def test_alignment_other_preference_component_is_neutral_on_mapping_fallback(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Alignment keeps the other-preference component neutral when mapping fails."""
+    actions = _load_mock_actions()
+    policy_signals = _load_mock_policy_signals()
+
+    def _fake_resolve(**_: object) -> dict[str, object]:
+        return {
+            "resolved_preferred_co_benefits": [],
+            "unmappable_preference_fragments": [],
+            "mapping_source": "fallback_error",
+            "provider": "openai",
+            "model": "gpt-test",
+            "warning": "parse failed",
+        }
+
+    monkeypatch.setattr(
+        co_benefit_mapping,
+        "resolve_city_preferred_co_benefits",
+        _fake_resolve,
+    )
+
+    result = alignment.run(
+        actions=actions,
+        policy_signals_by_action_id=policy_signals,
+        city_preference_sectors=["stationary_energy", "transportation"],
+        city_preference_timeframes=["no_preference"],
+        city_preference_other_text="Cleaner air and healthier homes",
+    )
+
+    assert result.evidence_by_action_id is not None
+    first_action_evidence = result.evidence_by_action_id["c40_0010"]
+    assert first_action_evidence["resolved_preferred_co_benefits"] == []
+    assert first_action_evidence["other_component_mapping_source"] == "fallback_error"
+    assert first_action_evidence["other_component_value"] == pytest.approx(0.5)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("city_preference_timeframes", "action_timeline", "expected_component_value"),
+    [
+        (["short"], "<5 years", 1.0),
+        (["medium"], "5-10 years", 1.0),
+        (["long"], ">10 years", 1.0),
+        (["short"], "5-10 years", 0.5),
+        (["medium"], "<5 years", 0.5),
+        (["medium"], ">10 years", 0.5),
+        (["long"], "5-10 years", 0.5),
+        (["short"], ">10 years", 0.0),
+        (["long"], "<5 years", 0.0),
+        (["no_preference"], "<5 years", 0.5),
+        (["no_preference"], "5-10 years", 0.5),
+        (["no_preference"], ">10 years", 0.5),
+        (["short"], None, 0.5),
+    ],
+)
+def test_alignment_timeframe_component_scores_expected_matches(
+    city_preference_timeframes: list[str],
+    action_timeline: str | None,
+    expected_component_value: float,
+) -> None:
+    """Alignment timeframe component follows exact, adjacent, far, and neutral rules."""
+    evidence = _alignment_timeframe_evidence(
+        city_preference_timeframes=city_preference_timeframes,
+        action_timeline=action_timeline,
+    )
+
+    assert evidence["timeframe_component_value"] == pytest.approx(
+        expected_component_value
+    )
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("city_preference_timeframes", "action_timeline", "expected_component_value"),
+    [
+        (["short", "medium"], "5-10 years", 1.0),
+        (["short", "medium"], ">10 years", 0.5),
+        (["medium", "long"], "<5 years", 0.5),
+        (["short", "long"], "5-10 years", 0.5),
+        (["short", "long"], "<5 years", 1.0),
+        (["short", "long"], ">10 years", 1.0),
+    ],
+)
+def test_alignment_timeframe_component_uses_best_multi_select_match(
+    city_preference_timeframes: list[str],
+    action_timeline: str | None,
+    expected_component_value: float,
+) -> None:
+    """Multiple timeframe selections use the highest score across selected options."""
+    evidence = _alignment_timeframe_evidence(
+        city_preference_timeframes=city_preference_timeframes,
+        action_timeline=action_timeline,
+    )
+
+    assert evidence["timeframe_component_value"] == pytest.approx(
+        expected_component_value
+    )
+
+
+@pytest.mark.unit
+def test_feasibility_block_with_mock_api_data(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     """Feasibility block computes legal+socio canonical scores and evidence."""
     actions = _load_mock_actions()
     city = _load_mock_city()
     legal_requirements = _load_mock_legal_requirements()
 
-    result = feasibility.run(
-        actions=actions,
-        city=city,
-        legal_requirements_by_action_id=legal_requirements,
-    )
+    with caplog.at_level("WARNING", logger="app.modules.prioritizer.blocks.feasibility"):
+        result = feasibility.run(
+            actions=actions,
+            city=city,
+            legal_requirements_by_action_id=legal_requirements,
+        )
 
     assert len(result.score_by_action_id) == len(actions)
     assert all(0.0 <= score <= 1.0 for score in result.score_by_action_id.values())
@@ -287,6 +507,32 @@ def test_feasibility_block_with_mock_api_data() -> None:
     assert first_action_evidence["feasibility_score"] == pytest.approx(
         first_action_evidence["soft_legal_contribution"]
         + first_action_evidence["socioeconomic_indicators_contribution"]
+    )
+    first_action_rows = {
+        row["action_socioeconomic_indicator_key"]: row
+        for row in first_action_evidence["socioeconomic_indicator_rows"]
+    }
+    assert (
+        first_action_rows["employment_in_transport_and_logistics"][
+            "city_socioeconomic_bucket_label"
+        ]
+        == "low"
+    )
+    assert (
+        first_action_rows["electricity_access_rate"][
+            "city_socioeconomic_bucket_label"
+        ]
+        == "very_low"
+    )
+    missing_indicator_messages = [
+        record.message
+        for record in caplog.records
+        if "Missing city socioeconomic indicator" in record.message
+    ]
+    assert not any(
+        "employment_in_transport_and_logistics" in message
+        or "electricity_access_rate" in message
+        for message in missing_indicator_messages
     )
 
 

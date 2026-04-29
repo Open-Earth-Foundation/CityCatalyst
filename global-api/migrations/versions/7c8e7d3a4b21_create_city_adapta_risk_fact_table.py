@@ -1,7 +1,7 @@
 """create city adapta risk fact table
 
 Revision ID: 7c8e7d3a4b21
-Revises: 62abd6613eef
+Revises: c9a4e21bd301
 Create Date: 2026-04-29 13:02:00.000000
 
 """
@@ -14,7 +14,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = "7c8e7d3a4b21"
-down_revision: Union[str, None] = "62abd6613eef"
+down_revision: Union[str, None] = "c9a4e21bd301"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

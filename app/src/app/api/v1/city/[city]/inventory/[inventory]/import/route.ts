@@ -270,7 +270,14 @@ export const POST = apiHandler(
 
     await UserService.findUserInventory(inventoryId, session);
 
-    const formData = await req.formData();
+    let formData: FormData;
+    try {
+      formData = await req.formData();
+    } catch {
+      throw new createHttpError.BadRequest(
+        `File too large. Maximum allowed size is ${FileValidatorService.MAX_FILE_SIZE_MB}MB. Please reduce the file size and try again.`,
+      );
+    }
     const file = formData?.get("file") as unknown as File;
     const useAIInterpretationPath = formData?.get("pathB") === "true";
 

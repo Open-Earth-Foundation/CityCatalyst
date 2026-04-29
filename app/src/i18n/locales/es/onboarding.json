@@ -151,5 +151,7 @@
   "subsector": "Subsector",
   "category": "Categoría",
   "total-co2e": "Total de CO2e",
-  "map-rows-description-pdf": "Las filas extraídas ya están asignadas a los campos del inventario. Revisa los datos a continuación y continúa hasta el último paso."
+  "map-rows-description-pdf": "Las filas extraídas ya están asignadas a los campos del inventario. Revisa los datos a continuación y continúa hasta el último paso.",
+  "upload-failed": "Error al subir",
+  "failed-to-upload-file": "No se pudo subir el archivo"
 }

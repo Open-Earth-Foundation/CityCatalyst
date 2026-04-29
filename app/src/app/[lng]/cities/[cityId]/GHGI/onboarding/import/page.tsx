@@ -423,10 +423,12 @@ export default function ImportPage(props: {
         setTimeout(() => goToNextStep(), 150);
       }
     } catch (error: any) {
-      makeErrorToast(
-        "Upload failed",
-        error?.data?.message || error?.message || "Failed to upload file",
-      );
+      const message =
+        error?.data?.error?.message ||
+        error?.data?.message ||
+        error?.message ||
+        t("failed-to-upload-file");
+      makeErrorToast(t("upload-failed"), message);
     }
   };
 

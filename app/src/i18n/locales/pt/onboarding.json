@@ -150,5 +150,7 @@
   "subsector": "Subsector",
   "category": "Categoria",
   "total-co2e": "Total de CO2e",
-  "map-rows-description-pdf": "As linhas extraídas já estão mapeadas para os campos do inventário. Reveja os dados abaixo e continue para a etapa final."
+  "map-rows-description-pdf": "As linhas extraídas já estão mapeadas para os campos do inventário. Reveja os dados abaixo e continue para a etapa final.",
+  "upload-failed": "Falha no upload",
+  "failed-to-upload-file": "Falha ao enviar o arquivo"
 }

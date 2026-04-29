@@ -150,5 +150,7 @@
   "subsector": "Teilsektor",
   "category": "Kategorie",
   "total-co2e": "Gesamte CO2e",
-  "map-rows-description-pdf": "Extrahierte Zeilen sind bereits auf Bestandsfelder abgebildet. Überprüfen Sie die untenstehenden Daten und fahren Sie mit dem letzten Schritt fort."
+  "map-rows-description-pdf": "Extrahierte Zeilen sind bereits auf Bestandsfelder abgebildet. Überprüfen Sie die untenstehenden Daten und fahren Sie mit dem letzten Schritt fort.",
+  "upload-failed": "Upload fehlgeschlagen",
+  "failed-to-upload-file": "Datei konnte nicht hochgeladen werden"
 }

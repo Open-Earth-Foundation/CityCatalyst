@@ -595,7 +595,7 @@ Column names often vary: map "Category", "CRF - Sector", "Sector name", "Sector 
 </input>
 
 <output>
-Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown. Output one row for every data row in the table—do not output only a sample of 5 or 10 rows. Each row must use these exact keys: year (integer | null), sector (string | null), subsector (string | null), scope (string "1", "2", or "3" only), totalCO2e (number | null), gpcRefNo (string | null). Use null for missing. Format: {"rows": [ {"year": 2017, "sector": "...", "subsector": "...", "scope": "1", "totalCO2e": 38871, "gpcRefNo": null}, ... ]}.
+Return a single JSON object with one key "rows" whose value is an array of row objects. No other keys, no markdown. Output one row for every data row in the table—do not output only a sample of 5 or 10 rows. Each row must use these exact keys (use null for missing): year (integer | null), gpcRefNo (string | null), sector (string | null), subsector (string | null), scope (string "1", "2", or "3" only), category (string | null), totalCO2e (number | null), co2 (number | null), ch4 (number | null), n2o (number | null), source (string | null), methodology (string | null), activityAmount (number | null), activityUnit (string | null), activityType (string | null), activityDataSource (string | null), activityDataQuality (string | null). When the table contains columns named activity_type, activity_amount, activity_unit, total_co2e_tonnes — map them directly to activityType, activityAmount, activityUnit, totalCO2e respectively. Format: {"rows": [ {"year": 2017, "sector": "Stationary Energy", "subsector": "Residential Buildings", "scope": "1", "totalCO2e": 38871, "gpcRefNo": null, "co2": null, "ch4": null, "n2o": null, "source": null, "methodology": null, "activityAmount": 5500000, "activityUnit": "gallon", "activityType": "Natural gas", "activityDataSource": null, "activityDataQuality": null, "category": null}, ... ]}.
 </output>
 
 <taxonomy>
@@ -607,7 +607,7 @@ Mapping (report term → canonical): Sector: ${SECTOR_DICTIONARY_TEXT || "(none)
 
 <example_output>
 {"rows": [
-  {"year": 2017, "sector": "Stationary Energy", "subsector": "Energy Use", "scope": "1", "totalCO2e": 38871, "gpcRefNo": "I.1", "category": null}
+  {"year": 2017, "sector": "Stationary Energy", "subsector": "Residential Buildings", "scope": "1", "totalCO2e": 1255660, "gpcRefNo": null, "co2": null, "ch4": null, "n2o": null, "source": null, "methodology": null, "activityAmount": 122583830, "activityUnit": "gallon", "activityType": "#2 fuel oil", "activityDataSource": null, "activityDataQuality": null, "category": "Residential"}
 ]}
 </example_output>${pastMappingsBlock}`;
 }

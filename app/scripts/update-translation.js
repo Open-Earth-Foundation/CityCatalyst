@@ -1,16 +1,20 @@
-import fs from 'node:fs/promises'
-import path from 'node:path'
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import OpenAI from 'openai';
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import OpenAI from "openai";
+import { randomUUID } from "node:crypto";
+
+const AI_MODEL = "gpt-4";
+const NOTION_DATASOURCE_ID = "326eb557-728b-804a-9dd4-000bedd001dd";
 
 // Convert the module's URL to a file path
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 if (!process.env.OPENAI_API_KEY) {
-  console.error('Please set the OPENAI_API_KEY environment variable')
-  process.exit(1)
+  console.error("Please set the OPENAI_API_KEY environment variable");
+  process.exit(1);
 }
 
 const openai = new OpenAI({
@@ -18,24 +22,39 @@ const openai = new OpenAI({
 });
 
 function stripQuotes(s) {
-  return s.replace(/^"(.*)"$/, '$1')
+  return s.replace(/^"(.*)"$/, "$1");
 }
 
-async function translateString(sourceLanguage, targetLanguage, key, sourceValue) {
+async function translateString(
+  sourceLanguage,
+  targetLanguage,
+  key,
+  sourceValue,
+) {
+  const messages = [
+    {
+      role: "system",
+      content: `You are a climate tech translator concentrating on ${sourceLanguage}-${targetLanguage} translations. You return only the translated strings, no explanations or excuses. If you cannot translate the text, you return an empty string.`,
+    },
+    {
+      role: "user",
+      content: `Translate the following text from ${sourceLanguage} to ${targetLanguage} for the key ${key}:\n\n"${sourceValue}"`,
+    },
+  ];
   const response = await openai.chat.completions.create({
-    model: 'gpt-4',
-    messages: [
-      {
-        role: 'system',
-        content: `You are a climate tech translator concentrating on ${sourceLanguage}-${targetLanguage} translations. You return only the translated strings, no explanations or excuses. If you cannot translate the text, you return an empty string.`
-      },
-      {
-        role: 'user',
-        content: `Translate the following text from ${sourceLanguage} to ${targetLanguage} for the key ${key}:\n\n"${sourceValue}"`
-      }
-    ],
+    model: AI_MODEL,
+    messages,
   });
-  return stripQuotes(response.choices[0].message.content);
+  const tokensResponse = await openai.responses.input_tokens.count({
+    model: AI_MODEL,
+    input: messages,
+  });
+  const inputTokens = tokensResponse.input_tokens;
+
+  return {
+    result: stripQuotes(response.choices[0].message.content),
+    inputTokens,
+  };
 }
 
 async function pathExists(path) {
@@ -48,71 +67,224 @@ async function pathExists(path) {
 }
 
 async function synchDirectory(sourceLanguage, targetLanguage) {
+  const sourceDir = path.resolve(
+    __dirname,
+    `../src/i18n/locales/${sourceLanguage}`,
+  );
+  const targetDir = path.resolve(
+    __dirname,
+    `../src/i18n/locales/${targetLanguage}`,
+  );
 
-  const sourceDir = path.resolve(__dirname, `../src/i18n/locales/${sourceLanguage}`)
-  const targetDir = path.resolve(__dirname, `../src/i18n/locales/${targetLanguage}`)
-
-  if (!await pathExists(targetDir)) {
-    console.log(`Directory ${targetDir} does not exist. Creating...`)
-    await fs.mkdir(targetDir)
+  if (!(await pathExists(targetDir))) {
+    console.log(`Directory ${targetDir} does not exist. Creating...`);
+    await fs.mkdir(targetDir);
   }
 
-  const files = (await fs.readdir(sourceDir))
+  let totalInputTokens = 0;
+  let totalQueries = 0;
+
+  const files = await fs.readdir(sourceDir);
   for (const file of files.sort()) {
-    if (!file.endsWith('.json')) {
-      continue
+    if (!file.endsWith(".json")) {
+      continue;
     }
 
-    await synchFile(sourceLanguage, targetLanguage, file)
+    const stats = await synchFile(sourceLanguage, targetLanguage, file);
+    if (stats) {
+      totalInputTokens += stats.totalInputTokens;
+      totalQueries += stats.totalQueries;
+      console.log(
+        "Language file stats",
+        targetLanguage,
+        file,
+        "Tokens:",
+        totalInputTokens,
+        "Queries:",
+        totalQueries,
+      );
+    } else {
+      console.error("No stats returned!", sourceLanguage, targetLanguage, file);
+    }
   }
+
+  await submitStats({ totalInputTokens, totalQueries });
 }
 
 async function synchFile(sourceLanguage, targetLanguage, fileName) {
+  const sourceFile = path.resolve(
+    __dirname,
+    `../src/i18n/locales/${sourceLanguage}/${fileName}`,
+  );
+  const targetFile = path.resolve(
+    __dirname,
+    `../src/i18n/locales/${targetLanguage}/${fileName}`,
+  );
 
-  const sourceFile = path.resolve(__dirname, `../src/i18n/locales/${sourceLanguage}/${fileName}`)
-  const targetFile = path.resolve(__dirname, `../src/i18n/locales/${targetLanguage}/${fileName}`)
+  const sourceData = JSON.parse(await fs.readFile(sourceFile, "utf8"));
+  let targetData = {};
 
-  const sourceData = JSON.parse(await fs.readFile(sourceFile, 'utf8'))
-  let targetData = {}
-
-  if (!await pathExists(targetFile)) {
-    console.log(`File ${targetFile} does not exist. Creating...`)
+  if (!(await pathExists(targetFile))) {
+    console.log(`File ${targetFile} does not exist. Creating...`);
   } else {
-    console.log(`File ${targetFile} exists. Parsing...`)
-    targetData = JSON.parse(await fs.readFile(targetFile, 'utf8'))
+    console.log(`File ${targetFile} exists. Parsing...`);
+    targetData = JSON.parse(await fs.readFile(targetFile, "utf8"));
   }
 
-  await synchData(sourceData, sourceLanguage, targetData, targetLanguage);
+  const stats = await synchData(
+    sourceData,
+    sourceLanguage,
+    targetData,
+    targetLanguage,
+  );
 
-  await fs.writeFile(targetFile, JSON.stringify(targetData, null, 2) + '\n')
+  await fs.writeFile(targetFile, JSON.stringify(targetData, null, 2) + "\n");
+
+  return stats;
+}
+async function synchData(
+  sourceData,
+  sourceLanguage,
+  targetData,
+  targetLanguage,
+) {
+  let totalInputTokens = 0;
+  let totalQueries = 0;
+
+  for (const key in sourceData) {
+    if (typeof sourceData[key] === "string") {
+      if (!(key in targetData) || typeof targetData[key] !== "string") {
+        const result = await translateString(
+          sourceLanguage,
+          targetLanguage,
+          key,
+          sourceData[key],
+        );
+        targetData[key] = result.result;
+        totalInputTokens += result.inputTokens;
+        totalQueries += 1;
+        console.log(
+          "Tokens from translation",
+          result.inputTokens,
+          "Total tokens",
+          totalInputTokens,
+          "Total queries",
+          totalQueries,
+        );
+      }
+    } else if (
+      typeof sourceData[key] === "object" &&
+      !Array.isArray(sourceData[key])
+    ) {
+      if (!(key in targetData) || typeof targetData[key] !== "object") {
+        targetData[key] = {};
+      }
+      const { totalInputTokens: newInputTokens, totalQueries: newQueries } =
+        await synchData(
+          sourceData[key],
+          sourceLanguage,
+          targetData[key],
+          targetLanguage,
+        );
+      totalInputTokens += newInputTokens;
+      totalQueries += newQueries;
+    }
+
+    return { totalInputTokens, totalQueries };
+  }
 }
 
-async function synchData(sourceData, sourceLanguage, targetData, targetLanguage) {
-  for (const key in sourceData) {
-    if (typeof sourceData[key] === 'string') {
-      if (!(key in targetData) || typeof targetData[key] !== 'string') {
-        targetData[key] = await translateString(sourceLanguage, targetLanguage, key, sourceData[key])
-      }
-    } else if (typeof sourceData[key] === 'object' && !Array.isArray(sourceData[key])) {
-      if (!(key in targetData) || typeof targetData[key] !== 'object') {
-        targetData[key] = {}
-      }
-      await synchData(sourceData[key], sourceLanguage, targetData[key], targetLanguage)
+async function submitStats({ totalInputTokens, totalQueries }) {
+  console.log(
+    "Total input tokens:",
+    totalInputTokens,
+    " - Queries:",
+    totalQueries,
+  );
+
+  if (!process.env.NOTION_API_KEY) {
+    console.error("Please set the NOTION_API_KEY environment variable");
+    return;
+  }
+
+  try {
+    const entryId = randomUUID();
+    const response = await fetch("https://api.notion.com/v1/pages", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.NOTION_API_KEY}`,
+        "Content-Type": "application/json",
+        "Notion-Version": "2026-03-11",
+      },
+      body: JSON.stringify({
+        parent: {
+          type: "data_source_id",
+          data_source_id: NOTION_DATASOURCE_ID,
+        },
+        properties: {
+          id: {
+            type: "title",
+            id: entryId,
+            title: [
+              {
+                text: { content: entryId },
+              },
+            ],
+          },
+          queries: {
+            type: "number",
+            number: totalQueries,
+          },
+          input_tokens: {
+            type: "number",
+            number: totalInputTokens,
+          },
+          output_tokens: {
+            type: "number",
+            number: 0,
+          },
+          model: {
+            type: "rich_text",
+            rich_text: [{ text: { content: AI_MODEL } }],
+          },
+          usage: {
+            type: "rich_text",
+            rich_text: [{ text: { content: "update-translations" } }],
+          },
+          timestamp: {
+            type: "date",
+            date: {
+              start: new Date().toISOString(),
+            },
+          },
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(
+        "Failed to submit results to Notion, Status:",
+        response.status,
+      );
+      const result = await response.json();
+      console.error("Notion response:", result);
     }
+  } catch (error) {
+    console.error("Failed to submit results to Notion, error:", error.message);
   }
 }
 
 if (process.argv.length < 3) {
-  console.error('Usage: node update-translation.js <2-letter-language-code>')
-  process.exit(1)
+  console.error("Usage: node update-translation.js <2-letter-language-code>");
+  process.exit(1);
 }
 
-const languageCode = process.argv[2]
+const languageCode = process.argv[2];
 
-synchDirectory('en', languageCode)
+synchDirectory("en", languageCode)
   .then(() => {
-    console.log('Done')
+    console.log("Done");
   })
   .catch((err) => {
-    console.error(err)
-  })
+    console.error(err);
+  });

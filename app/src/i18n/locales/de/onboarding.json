@@ -49,7 +49,12 @@
   "interpret-with-ai": "Mit KI interpretieren",
   "interpretation-failed": "Interpretation fehlgeschlagen",
   "ai-extraction-failed-default": "KI-Extraktion fehlgeschlagen",
+  "ai-extract-no-rows": "Die KI konnte keine Inventarzeilen aus dieser Tabelle extrahieren. Die Datei verwendet möglicherweise Spaltennamen, die wir nicht erkennen. Verwenden Sie eine Datei mit Spalten wie Sektor, Teilsektor, Scope und Emissionen (z. B. CO2e gesamt) oder exportieren Sie aus Ihrer Quelle im Standard-eCRF/CIRIS-Layout.",
   "inventory-not-found-for-target-year": "Inventar für das Zieljahr nicht gefunden",
+  "file-year-mismatch-title": "Dateijahr stimmt nicht mit Inventar überein",
+  "file-year-mismatch": "Das Datenjahr der Datei stimmt nicht mit dem Zieljahr des Inventars überein. Bitte laden Sie eine Datei mit Daten für {{year}} hoch.",
+  "import-completed": "Import abgeschlossen",
+  "import-completed-description": "Ihre Inventardaten wurden erfolgreich importiert.",
   "extracting-chunk-progress": "Extraktion läuft... (Teil {{current}} von {{total}})",
   "breaking-into-chunks": "Datei wird in kleinere Teile für die Extraktion aufgeteilt",
   "interpreting-file": "Ihre Datei wird interpretiert",
@@ -62,7 +67,7 @@
   "gwp-description": "Wenn dies Ihr erstes Inventar ist, empfehlen wir die Verwendung von AR6 (neueste Version) für Ihre Inventarberechnungen. Wenn Ihre Stadt über frühere Inventare verfügt, verwenden Sie die gleiche Version wie zuvor. <2>Erfahren Sie mehr</2> über GWP.",
   "setup-population-data-heading": "Bevölkerungsdaten hinzufügen",
   "setup-population-data-description": "Geben Sie die Bevölkerungsdaten für Ihr Land, Ihre Region und Ihre Stadt an. Für genaue Ergebnisse verwenden Sie Werte aus dem Jahr, das Ihrem Inventarjahr am nächsten liegt. Wir verwenden offene Datenquellen, um die Informationen unten vorab auszufüllen.",
-  "region-or-province": "Region oder Provinz",
+  "region-or-province-population-title": "Region oder Provinz Bevölkerung",
   "source": "Quelle",
   "source-name": "Quellenname",
   "region-or-province-population-placeholder": "Bevölkerungszahl der Region oder Provinz",
@@ -145,5 +150,7 @@
   "subsector": "Teilsektor",
   "category": "Kategorie",
   "total-co2e": "Gesamte CO2e",
-  "map-rows-description-pdf": "Extrahierte Zeilen sind bereits auf Bestandsfelder abgebildet. Überprüfen Sie die untenstehenden Daten und fahren Sie mit dem letzten Schritt fort."
+  "map-rows-description-pdf": "Extrahierte Zeilen sind bereits auf Bestandsfelder abgebildet. Überprüfen Sie die untenstehenden Daten und fahren Sie mit dem letzten Schritt fort.",
+  "upload-failed": "Upload fehlgeschlagen",
+  "failed-to-upload-file": "Datei konnte nicht hochgeladen werden"
 }

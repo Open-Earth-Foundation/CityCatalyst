@@ -920,6 +920,8 @@ export interface ImportStatusResponse {
   validationResults: ValidationResults | null;
   columnMappings: ValidationResults | null;
   reviewData: ReviewData | null;
+  /** Year inferred from file data (eCRF); used to check match with inventory target year. */
+  inferredYearFromFile?: number;
   rowCount: number;
   processedRowCount: number;
   errorLog: string | null;
@@ -928,17 +930,23 @@ export interface ImportStatusResponse {
   completedAt: string | null;
 }
 
-type VersionChange = VersionAttributes & {
+export type VersionChange = VersionAttributes & {
   author: { name: string; userId: string };
-  previousVersion: VersionAttributes;
+  previousVersion: VersionAttributes | null;
 };
 
 export type VersionHistoryEntry = {
   version: VersionChange;
-  activities: VersionChange[];
-  subCategory: SubCategoryAttributes;
-  dataSource?: { datasourceName: string; datasetName: string };
-  previousDataSource?: { datasourceName: string; datasetName: string };
+  activities?: VersionChange[];
+  subCategory?: SubCategoryAttributes;
+  dataSource?: {
+    datasourceName?: string;
+    datasetName?: Record<string, string>;
+  };
+  previousDataSource?: {
+    datasourceName?: string;
+    datasetName?: Record<string, string>;
+  };
   mostRecentAssociatedVersion?: VersionChange;
 };
 

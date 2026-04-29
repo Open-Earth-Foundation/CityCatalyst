@@ -173,15 +173,7 @@ async def post_message(
             cc_access_token=cc_access_token,
             inventory_id=payload.inventory_id,
         )
-        
-        async def stream_wrapper():
-            """Wrapper to handle message persistence after streaming."""
-            async for chunk in handler.stream_response(payload, history_warning):
-                yield chunk
-            
-            # Persist assistant message after streaming completes
-            await handler.persist_message()
-        
+
         headers = {
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
@@ -189,7 +181,7 @@ async def post_message(
         }
         
         return StreamingResponse(
-            stream_wrapper(),
+            handler.stream_response(payload, history_warning),
             media_type="text/event-stream",
             headers=headers,
         )

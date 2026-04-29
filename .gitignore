@@ -161,5 +161,5 @@ climate-advisor/scripts/setup_local_db.py
 sdk/
 climate-advisor/service/tests/output/
 
-# cursor
-.cursor
+# Cursor plans
+.cursor/plans/

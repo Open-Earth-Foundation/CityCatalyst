@@ -137,7 +137,7 @@ export const api = createApi({
         transformResponse: (response: { data: CityAndYearsResponse[] }) =>
           response.data.map(({ city, years }) => ({
             city,
-            years: years.sort((a, b) => b.year - a.year),
+            years: years.sort((a, b) => a.year - b.year),
           })),
         providesTags: ["CitiesAndInventories"],
       }),
@@ -1402,7 +1402,7 @@ export const api = createApi({
         }) => {
           return response;
         },
-        invalidatesTags: ["Hiap"],
+        invalidatesTags: ["Hiap", "VersionHistory"],
       }),
       generateActionPlan: builder.mutation<
         { plan: string; timestamp: string; actionName: string },
@@ -1802,7 +1802,7 @@ export const api = createApi({
 
       // Inventory Import Endpoints
       uploadInventoryFile: builder.mutation<
-        ImportedFileResponse,
+        ImportedFileResponse | { accepted: true; id: string; message?: string },
         { cityId: string; inventoryId: string; file: File }
       >({
         query: ({ cityId, inventoryId, file }) => {
@@ -1814,8 +1814,11 @@ export const api = createApi({
             body: formData,
           };
         },
-        transformResponse: (response: { data: ImportedFileResponse }) =>
-          response.data,
+        transformResponse: (response: {
+          data:
+            | ImportedFileResponse
+            | { accepted: true; id: string; message?: string };
+        }) => response.data,
         invalidatesTags: ["Inventory"],
       }),
       getImportStatus: builder.query<
@@ -1868,7 +1871,7 @@ export const api = createApi({
         invalidatesTags: ["Inventory"],
       }),
       approveImport: builder.mutation<
-        ImportedFileResponse,
+        ImportedFileResponse | { accepted: true; id: string; message?: string },
         {
           cityId: string;
           inventoryId: string;
@@ -1884,8 +1887,11 @@ export const api = createApi({
             mappingOverrides,
           },
         }),
-        transformResponse: (response: { data: ImportedFileResponse }) =>
-          response.data,
+        transformResponse: (response: {
+          data:
+            | ImportedFileResponse
+            | { accepted: true; id: string; message?: string };
+        }) => response.data,
         invalidatesTags: [
           "Inventory",
           "InventoryProgress",
@@ -1898,9 +1904,10 @@ export const api = createApi({
       // Version Control Endpoints
       getVersionHistory: builder.query<
         VersionHistoryResponse,
-        { inventoryId: string }
+        { inventoryId: string; moduleName?: string }
       >({
-        query: ({ inventoryId }) => `inventory/${inventoryId}/version-history`,
+        query: ({ inventoryId, moduleName = "ghgi" }) =>
+          `inventory/${inventoryId}/version-history?module=${moduleName}`,
         transformResponse: (response: { data: VersionHistoryResponse }) =>
           response.data,
         providesTags: ["VersionHistory"],

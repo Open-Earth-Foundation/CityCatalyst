@@ -6,7 +6,7 @@ import {
   UseFormRegister,
 } from "react-hook-form";
 import type { GHGIFormInputs } from "@/util/GHGI/types";
-import { FC, useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Box,
   createListCollection,
@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { MdCheck, MdWarning } from "react-icons/md";
 import { Trans } from "react-i18next";
-import { CustomRadio, RadioGroup } from "@/components/ui/custom-radio";
+import { RadioGroup } from "@/components/ui/custom-radio";
 import { InputGroup } from "@/components/ui/input-group";
 import {
   SelectContent,
@@ -29,8 +29,6 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { Field } from "@/components/ui/field";
-import { Button } from "../../ui/button";
-import { InventoryButtonCheckIcon } from "../../icons";
 import CustomSelectableButton from "../../custom-selectable-buttons";
 
 export default function SetInventoryDetailsStep({
@@ -40,6 +38,12 @@ export default function SetInventoryDetailsStep({
   control,
   setValue,
   years,
+  selectedYearArray,
+  setSelectedYearArray,
+  selectedInventoryGoalValue,
+  selectedGlobalWarmingPotentialValue,
+  setSelectedInventoryGoalValue,
+  setSelectedGlobalWarmingPotentialValue,
 }: {
   t: TFunction;
   register: UseFormRegister<GHGIFormInputs>;
@@ -47,14 +51,13 @@ export default function SetInventoryDetailsStep({
   control: Control<GHGIFormInputs>;
   setValue: any;
   years: number[];
+  selectedYearArray?: string[];
+  setSelectedYearArray: (value: string[]) => void;
+  selectedInventoryGoalValue?: string;
+  setSelectedInventoryGoalValue: (value: string) => void;
+  selectedGlobalWarmingPotentialValue?: string;
+  setSelectedGlobalWarmingPotentialValue: (value: string) => void;
 }) {
-  const [selectedInventoryGoalValue, setSelectedInventoryGoalValue] =
-    useState("");
-  const [
-    selectedGlobalWarmingPotentialValue,
-    setSelectedGlobalWarmingPotentialValue,
-  ] = useState("");
-  let year;
   const inventoryGoalOptions: string[] = ["gpc_basic", "gpc_basic_plus"];
   const globalWarmingPotential: string[] = ["ar5", "ar6"];
 
@@ -126,12 +129,12 @@ export default function SetInventoryDetailsStep({
               invalid={!!errors.year}
               errorText={
                 <Box gap="6px" m={0}>
-                  <Icon as={MdWarning} boxSize={4} display="inline" />
                   <Text
                     fontSize="body.md"
                     color="content.tertiary"
                     fontStyle="normal"
                   >
+                    <Icon as={MdWarning} boxSize={4} display="inline" />
                     {errors.year?.message}
                   </Text>
                 </Box>
@@ -139,7 +142,7 @@ export default function SetInventoryDetailsStep({
             >
               <InputGroup
                 endElement={
-                  !!year && (
+                  (selectedYearArray?.length ?? 0) > 0 && (
                     <Icon
                       as={MdCheck}
                       color="semantic.success"
@@ -155,10 +158,12 @@ export default function SetInventoryDetailsStep({
                   size="lg"
                   w="400px"
                   _placeholder={{ color: "content.tertiary" }}
-                  data-testid="inventory-detils-year"
+                  data-testid="inventory-details-year"
                   {...register("year", {
                     required: t("inventory-year-required"),
                   })}
+                  value={selectedYearArray}
+                  onValueChange={({ value }) => setSelectedYearArray(value)}
                 >
                   <SelectLabel />
                   <SelectTrigger shadow="1dp">
@@ -214,7 +219,9 @@ export default function SetInventoryDetailsStep({
               <Trans i18nKey="inventory-goal-description" t={t}>
                 Want to learn more about these inventory formats?{" "}
                 <Link
-                  href="/"
+                  href="https://ghgprotocol.org/ghg-protocol-cities"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   fontFamily="heading"
                   fontWeight="bold"
                   color="content.link"
@@ -246,7 +253,7 @@ export default function SetInventoryDetailsStep({
                             field={field}
                             key={value}
                             value={value}
-                            inputValue={selectedInventoryGoalValue}
+                            inputValue={selectedInventoryGoalValue ?? ""}
                             inputValueFunction={setSelectedInventoryGoalValue}
                             t={t}
                           />
@@ -309,7 +316,9 @@ export default function SetInventoryDetailsStep({
               <Trans i18nKey="gwp-description" t={t}>
                 Want to learn more about these inventory formats?{" "}
                 <Link
-                  href="/"
+                  href="https://ghgprotocol.org/sites/default/files/2024-08/Global-Warming-Potential-Values%20(August%202024).pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   fontFamily="heading"
                   fontWeight="bold"
                   color="content.link"
@@ -343,7 +352,7 @@ export default function SetInventoryDetailsStep({
                           field={field}
                           key={value}
                           value={value}
-                          inputValue={selectedGlobalWarmingPotentialValue}
+                          inputValue={selectedGlobalWarmingPotentialValue ?? ""}
                           inputValueFunction={
                             setSelectedGlobalWarmingPotentialValue
                           }

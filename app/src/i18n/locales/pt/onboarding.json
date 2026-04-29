@@ -48,7 +48,12 @@
   "interpret-with-ai": "Interpretar com IA",
   "interpretation-failed": "Interpretação falhou",
   "ai-extraction-failed-default": "Extração por IA falhou",
+  "ai-extract-no-rows": "A IA não conseguiu extrair linhas de inventário desta tabela. O arquivo pode usar nomes de colunas que não reconhecemos. Tente um arquivo com colunas como Setor, Sub-setor, Escopo e emissões (ex.: CO2e total) ou exporte da sua fonte em um layout eCRF/CIRIS padrão.",
   "inventory-not-found-for-target-year": "Inventário não encontrado para o ano-alvo",
+  "file-year-mismatch-title": "O ano do arquivo não corresponde ao inventário",
+  "file-year-mismatch": "O ano dos dados do arquivo não corresponde ao ano-alvo do inventário. Envie um arquivo com dados de {{year}}.",
+  "import-completed": "Importação concluída",
+  "import-completed-description": "Os dados do seu inventário foram importados com sucesso.",
   "extracting-chunk-progress": "Extraindo... (parte {{current}} de {{total}})",
   "breaking-into-chunks": "Dividindo o arquivo em partes menores para extração mais fácil",
   "interpreting-file": "Interpretando seu arquivo",
@@ -61,7 +66,7 @@
   "gwp-description": "Se este é o seu primeiro inventário, recomendamos o uso do AR6 (última versão) para os cálculos do seu inventário. Se a sua cidade já tem inventários anteriores, use a mesma versão de antes. <2>Saiba mais</2> sobre o GWP.",
   "setup-population-data-heading": "Adicione dados da população",
   "setup-population-data-description": "Forneça os dados populacionais do seu país, região e cidade. Para resultados precisos, use valores do ano mais próximo ao ano do seu inventário. Usamos fontes de dados abertas para preencher previamente as informações abaixo.",
-  "region-or-province": "Região ou província",
+  "region-or-province-population-title": "População da região ou província",
   "source": "Fonte",
   "source-name": "Nome da fonte",
   "region-or-province-population-placeholder": "Número da população da região ou província",
@@ -145,5 +150,7 @@
   "subsector": "Subsector",
   "category": "Categoria",
   "total-co2e": "Total de CO2e",
-  "map-rows-description-pdf": "As linhas extraídas já estão mapeadas para os campos do inventário. Reveja os dados abaixo e continue para a etapa final."
+  "map-rows-description-pdf": "As linhas extraídas já estão mapeadas para os campos do inventário. Reveja os dados abaixo e continue para a etapa final.",
+  "upload-failed": "Falha no upload",
+  "failed-to-upload-file": "Falha ao enviar o arquivo"
 }

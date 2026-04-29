@@ -4,7 +4,7 @@ import { useTranslation } from "@/i18n/client";
 import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import React, { use, useState, useEffect, useRef } from "react";
+import React, { use, useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,20 @@ import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-ste
 import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
+import type { ImportStatusResponse } from "@/util/types";
+import { usePollUntil } from "@/hooks/usePollUntil";
 import { TFunction } from "i18next";
+
+/** If errorLog starts with "i18n:", return t(key); else return errorLog or fallback. */
+function resolveErrorMessage(
+  errorLog: string | null | undefined,
+  fallback: string,
+  t: TFunction,
+): string {
+  if (errorLog == null || errorLog === "") return fallback;
+  if (errorLog.startsWith("i18n:")) return t(errorLog.slice(5));
+  return errorLog;
+}
 
 function ImportButton({
   cityId,
@@ -35,6 +48,7 @@ function ImportButton({
 }) {
   const [approveImport, { isLoading: isImporting }] =
     api.useApproveImportMutation();
+  const [getImportStatus] = api.useLazyGetImportStatusQuery();
 
   const makeErrorToast = (title: string, description?: string) => {
     const { showErrorToast } = UseErrorToast({ description, title });
@@ -46,15 +60,41 @@ function ImportButton({
     showSuccessToast();
   };
 
+  const { startPolling: startImportPolling, stopPolling: stopImportPolling, isPolling: isImportPolling } =
+    usePollUntil<ImportStatusResponse>({
+      fetch: () =>
+        getImportStatus({ cityId, inventoryId, importedFileId }).unwrap() as Promise<ImportStatusResponse>,
+      isTerminal: (res) => {
+        if (res.importStatus === "completed")
+          return { done: true, success: true, data: res };
+        if (res.importStatus === "failed")
+          return { done: true, success: false, data: res };
+        return { done: false };
+      },
+      onSuccess: () => {
+        makeSuccessToast(t("import-completed"), t("import-completed-description"));
+        onImport();
+      },
+      onFailure: (res) =>
+        makeErrorToast("Import failed", resolveErrorMessage(res.errorLog, "Failed to import data", t)),
+      onPollError: (err) =>
+        logger.debug(
+          { err, cityId, inventoryId, importedFileId },
+          "Approve/import status poll failed",
+        ),
+      intervalMs: 3000,
+    });
+
   const handleImport = async () => {
     if (!importedFileId) return;
+    stopImportPolling();
 
     const overridesToSend = Object.fromEntries(
       Object.entries(mappingOverrides).filter(([, v]) => v !== ""),
     );
 
     try {
-      await approveImport({
+      const result = await approveImport({
         cityId,
         inventoryId,
         importedFileId,
@@ -63,8 +103,27 @@ function ImportButton({
           : undefined,
       }).unwrap();
 
-      makeSuccessToast("Import completed", "Your inventory data has been imported successfully.");
-      onImport();
+      if ("accepted" in result && result.accepted) {
+        startImportPolling();
+        return;
+      }
+
+      if ((result as { importStatus?: string }).importStatus === "completed") {
+        makeSuccessToast(t("import-completed"), t("import-completed-description"));
+        onImport();
+        return;
+      }
+      if ((result as { importStatus?: string }).importStatus === "failed") {
+        makeErrorToast(
+          "Import failed",
+          resolveErrorMessage(
+            (result as { errorLog?: string | null }).errorLog,
+            "Failed to import data",
+            t,
+          ),
+        );
+        return;
+      }
     } catch (error: any) {
       makeErrorToast(
         "Import failed",
@@ -81,8 +140,8 @@ function ImportButton({
       px="24px"
       onClick={handleImport}
       h="64px"
-      loading={isImporting}
-      disabled={isImporting}
+      loading={isImporting || isImportPolling}
+      disabled={isImporting || isImportPolling}
     >
       <Text
         fontFamily="button.md"
@@ -124,6 +183,7 @@ export default function ImportPage(props: {
 
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [importedFileId, setImportedFileId] = useState<string | null>(null);
+  const [lastImportStatus, setLastImportStatus] = useState<ImportStatusResponse | null>(null);
   const [pdfPendingExtraction, setPdfPendingExtraction] = useState(false);
   const [tabularPendingInterpretation, setTabularPendingInterpretation] =
     useState(false);
@@ -138,12 +198,11 @@ export default function ImportPage(props: {
     current: number;
     total: number;
   } | null>(null);
-  const extractionPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const interpretPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const extractionCompleteHandledRef = useRef(false);
-  const interpretCompleteHandledRef = useRef(false);
+  const uploadPendingFileRef = useRef<File | null>(null);
+  const uploadPendingIdRef = useRef<string | null>(null);
   const pathname = usePathname();
   const prevPathnameRef = useRef<string | null>(null);
+  const fileYearMismatchToastShownRef = useRef(false);
 
   // Check if there's unsaved progress
   const hasUnsavedProgress = uploadedFile !== null || importedFileId !== null;
@@ -165,14 +224,160 @@ export default function ImportPage(props: {
   const [interpretImport, { isLoading: isInterpreting }] =
     api.useInterpretImportMutation();
   const [getImportStatus] = api.useLazyGetImportStatusQuery();
+  const { data: inventory } = api.useGetInventoryQuery(inventoryId ?? "", {
+    skip: !inventoryId,
+  });
+
+  // Reset year-mismatch toast when the user switches to a different import
+  useEffect(() => {
+    fileYearMismatchToastShownRef.current = false;
+  }, [importedFileId]);
+
+  const inventoryYear =
+    inventory?.year != null && Number.isFinite(Number(inventory.year))
+      ? Number(inventory.year)
+      : null;
+  const fileYear =
+    lastImportStatus?.inferredYearFromFile != null &&
+    Number.isFinite(Number(lastImportStatus.inferredYearFromFile))
+      ? Number(lastImportStatus.inferredYearFromFile)
+      : null;
+  const fileYearMismatch =
+    inventoryYear != null && fileYear != null && inventoryYear !== fileYear;
+
+  useEffect(() => {
+    if (!fileYearMismatch || fileYearMismatchToastShownRef.current) return;
+    fileYearMismatchToastShownRef.current = true;
+    makeErrorToast(t("file-year-mismatch-title"), t("file-year-mismatch", { year: inventoryYear }));
+  }, [fileYearMismatch, inventoryYear, t]);
+
+  const {
+    startPolling: startUploadPolling,
+    stopPolling: stopUploadPolling,
+    isPolling: isUploadPolling,
+  } = usePollUntil<ImportStatusResponse>({
+    fetch: useCallback(() => {
+      const id = uploadPendingIdRef.current;
+      if (!id || !cityId || !inventoryId)
+        return Promise.reject(new Error("Upload poll: missing id or context"));
+      return getImportStatus({ cityId, inventoryId, importedFileId: id }).unwrap() as Promise<ImportStatusResponse>;
+    }, [cityId, inventoryId, getImportStatus]),
+    isTerminal: (res) => {
+      if (
+        res.importStatus === "pending_ai_extraction" ||
+        res.importStatus === "pending_ai_interpretation" ||
+        res.importStatus === "waiting_for_approval"
+      )
+        return { done: true, success: true, data: res };
+      if (res.importStatus === "failed") return { done: true, success: false, data: res };
+      return { done: false };
+    },
+    onSuccess: (res) => {
+      setLastImportStatus(res);
+      const file = uploadPendingFileRef.current;
+      if (file) setUploadedFile(file);
+      setImportedFileId(res.id);
+      if (res.importStatus === "pending_ai_extraction") {
+        setPdfPendingExtraction(true);
+        setTabularPendingInterpretation(false);
+      } else {
+        setPdfPendingExtraction(false);
+        setTabularPendingInterpretation(res.importStatus === "pending_ai_interpretation");
+        if (res.importStatus === "waiting_for_approval") setTimeout(() => goToNextStep(), 150);
+      }
+    },
+    onFailure: (res) =>
+      makeErrorToast("Upload failed", resolveErrorMessage(res.errorLog, "File validation or processing failed", t)),
+    onPollError: (err) =>
+      logger.debug(
+        { err, cityId, inventoryId, importedFileId: uploadPendingIdRef.current },
+        "Upload status poll failed",
+      ),
+    intervalMs: 3000,
+  });
+
+  const {
+    startPolling: startExtractionPolling,
+    stopPolling: stopExtractionPolling,
+    isPolling: isExtractionPolling,
+  } = usePollUntil<ImportStatusResponse>({
+    fetch: useCallback(() => {
+      if (!importedFileId || !inventoryId) return Promise.reject(new Error("Missing importedFileId or inventoryId"));
+      return getImportStatus({
+        cityId,
+        inventoryId: inventoryId as string,
+        importedFileId: importedFileId as string,
+      }).unwrap() as Promise<ImportStatusResponse>;
+    }, [cityId, inventoryId, importedFileId, getImportStatus]),
+    isTerminal: (res) => {
+      if (res.importStatus === "waiting_for_approval") return { done: true, success: true, data: res };
+      if (res.importStatus === "failed") return { done: true, success: false, data: res };
+      return { done: false };
+    },
+    onSuccess: (res) => {
+      setLastImportStatus(res);
+      setIsExtractInProgress(false);
+      setExtractionProgress(null);
+      setPdfPendingExtraction(false);
+      setTimeout(() => goToNextStep(), 150);
+    },
+    onFailure: (res) => {
+      setIsExtractInProgress(false);
+      setExtractionProgress(null);
+      makeErrorToast(t("extraction-failed"), resolveErrorMessage(res.errorLog, t("ai-extraction-failed-default"), t));
+    },
+    onTick: (res) => {
+      const progress = (res as ImportStatusResponse & { mappingConfiguration?: { extractionProgress?: { current: number; total?: number } } })
+        ?.mappingConfiguration?.extractionProgress;
+      const total = progress?.total;
+      if (progress != null && total != null && total > 1)
+        setExtractionProgress({ current: progress.current, total });
+    },
+    onPollError: (err) =>
+      logger.debug({ err, cityId, inventoryId, importedFileId }, "Import status poll failed"),
+    intervalMs: 3000,
+  });
+
+  const {
+    startPolling: startInterpretPolling,
+    stopPolling: stopInterpretPolling,
+    isPolling: isInterpretPolling,
+  } = usePollUntil<ImportStatusResponse>({
+    fetch: useCallback(() => {
+      if (!importedFileId || !inventoryId) return Promise.reject(new Error("Missing importedFileId or inventoryId"));
+      return getImportStatus({
+        cityId,
+        inventoryId: inventoryId as string,
+        importedFileId: importedFileId as string,
+      }).unwrap() as Promise<ImportStatusResponse>;
+    }, [cityId, inventoryId, importedFileId, getImportStatus]),
+    isTerminal: (res) => {
+      if (res.importStatus === "waiting_for_approval") return { done: true, success: true, data: res };
+      if (res.importStatus === "failed") return { done: true, success: false, data: res };
+      return { done: false };
+    },
+    onSuccess: (res) => {
+      setLastImportStatus(res);
+      setIsInterpretInProgress(false);
+      setTabularPendingInterpretation(false);
+      setTimeout(() => goToNextStep(), 150);
+    },
+    onFailure: (res) =>
+      makeErrorToast(
+        t("interpretation-failed") ?? "Interpretation failed",
+        resolveErrorMessage(res.errorLog, t("ai-extraction-failed-default"), t),
+      ),
+    onPollError: (err) =>
+      logger.debug({ err, cityId, inventoryId, importedFileId }, "Interpret status poll failed"),
+    intervalMs: 3000,
+  });
 
   const handleFileUpload = async (file: File) => {
     if (!inventoryId) {
       makeErrorToast("Error", "Inventory ID is required");
       return;
     }
-
-    // Show info toast when upload starts
+    stopUploadPolling();
     makeInfoToast(
       t("upload-started"),
       t("upload-started-description", { fileName: file.name }),
@@ -185,27 +390,45 @@ export default function ImportPage(props: {
         file,
       }).unwrap();
 
+      if ("accepted" in result && result.accepted) {
+        uploadPendingFileRef.current = file;
+        uploadPendingIdRef.current = result.id;
+        startUploadPolling();
+        return;
+      }
+
       setUploadedFile(file);
       setImportedFileId(result.id);
       setPdfPendingExtraction(
-        result.importStatus === "pending_ai_extraction" || result.fileType === "pdf",
+        (result as { importStatus?: string; fileType?: string }).importStatus === "pending_ai_extraction" ||
+          (result as { fileType?: string }).fileType === "pdf",
       );
       setTabularPendingInterpretation(
-        result.importStatus === "pending_ai_interpretation",
+        (result as { importStatus?: string }).importStatus === "pending_ai_interpretation",
       );
-
-      // PDF (Path C): stay on step 0 for "Extract with AI"; Path B (tabular): stay for "Interpret with AI"; eCRF: advance to step 1
       if (
-        result.importStatus !== "pending_ai_extraction" &&
-        result.importStatus !== "pending_ai_interpretation"
+        (result as { importStatus?: string }).importStatus !== "pending_ai_extraction" &&
+        (result as { importStatus?: string }).importStatus !== "pending_ai_interpretation"
       ) {
+        // Sync upload path (no polling): polls do not run, so fetch status for year-mismatch / inferredYearFromFile
+        getImportStatus({ cityId, inventoryId, importedFileId: result.id })
+          .unwrap()
+          .then(setLastImportStatus)
+          .catch((err) =>
+            logger.debug(
+              { err, cityId, inventoryId, importedFileId: result.id },
+              "Import status fetch after sync upload failed",
+            ),
+          );
         setTimeout(() => goToNextStep(), 150);
       }
     } catch (error: any) {
-      makeErrorToast(
-        "Upload failed",
-        error?.data?.message || error?.message || "Failed to upload file",
-      );
+      const message =
+        error?.data?.error?.message ||
+        error?.data?.message ||
+        error?.message ||
+        t("failed-to-upload-file");
+      makeErrorToast(t("upload-failed"), message);
     }
   };
 
@@ -219,72 +442,26 @@ export default function ImportPage(props: {
   };
 
   const handleRemoveFile = () => {
-    if (extractionPollRef.current) {
-      clearInterval(extractionPollRef.current);
-      extractionPollRef.current = null;
-    }
-    if (interpretPollRef.current) {
-      clearInterval(interpretPollRef.current);
-      interpretPollRef.current = null;
-    }
-    extractionCompleteHandledRef.current = false;
-    interpretCompleteHandledRef.current = false;
+    stopExtractionPolling();
+    stopInterpretPolling();
+    stopUploadPolling();
     setIsExtractInProgress(false);
     setIsInterpretInProgress(false);
     setUploadedFile(null);
     setImportedFileId(null);
+    setLastImportStatus(null);
     setPdfPendingExtraction(false);
     setTabularPendingInterpretation(false);
     setStep(0);
+    fileYearMismatchToastShownRef.current = false;
   };
 
   const handleExtractWithAi = async () => {
     if (!importedFileId || !inventoryId) return;
+    stopExtractionPolling();
     setIsExtractInProgress(true);
-    if (extractionPollRef.current) {
-      clearInterval(extractionPollRef.current);
-      extractionPollRef.current = null;
-    }
-    extractionCompleteHandledRef.current = false;
     setExtractionProgress(null);
-    extractionPollRef.current = setInterval(async () => {
-      if (!cityId || !inventoryId || !importedFileId) return;
-      try {
-        const res = await getImportStatus({
-          cityId,
-          inventoryId,
-          importedFileId,
-        }).unwrap();
-        if (extractionCompleteHandledRef.current) return;
-        const progress = (res as { mappingConfiguration?: { extractionProgress?: { current: number; total?: number } } })?.mappingConfiguration?.extractionProgress;
-        const total = progress?.total;
-        if (progress != null && total != null && total > 1) setExtractionProgress({ current: progress.current, total });
-        const status = (res as { importStatus?: string; errorLog?: string | null }).importStatus;
-        const errorLog = (res as { importStatus?: string; errorLog?: string | null }).errorLog;
-        if (status === "waiting_for_approval") {
-          extractionCompleteHandledRef.current = true;
-          if (extractionPollRef.current) {
-            clearInterval(extractionPollRef.current);
-            extractionPollRef.current = null;
-          }
-          setIsExtractInProgress(false);
-          setExtractionProgress(null);
-          setPdfPendingExtraction(false);
-          setTimeout(() => goToNextStep(), 150);
-        } else if (status === "failed") {
-          extractionCompleteHandledRef.current = true;
-          if (extractionPollRef.current) {
-            clearInterval(extractionPollRef.current);
-            extractionPollRef.current = null;
-          }
-          setIsExtractInProgress(false);
-          setExtractionProgress(null);
-          makeErrorToast(t("extraction-failed"), errorLog ?? t("ai-extraction-failed-default"));
-        }
-      } catch (err) {
-        logger.debug({ err, cityId, inventoryId, importedFileId }, "Import status poll failed");
-      }
-    }, 3000);
+    startExtractionPolling();
     try {
       const result = await extractImport({
         cityId,
@@ -292,10 +469,7 @@ export default function ImportPage(props: {
         importedFileId,
       }).unwrap();
       if ("accepted" in result && result.accepted) return;
-      if (extractionPollRef.current) {
-        clearInterval(extractionPollRef.current);
-        extractionPollRef.current = null;
-      }
+      stopExtractionPolling();
       setIsExtractInProgress(false);
       setPdfPendingExtraction(false);
       await getImportStatus({
@@ -305,10 +479,7 @@ export default function ImportPage(props: {
       }).unwrap();
       setTimeout(() => goToNextStep(), 150);
     } catch (error: any) {
-      if (extractionPollRef.current) {
-        clearInterval(extractionPollRef.current);
-        extractionPollRef.current = null;
-      }
+      stopExtractionPolling();
       setIsExtractInProgress(false);
       setExtractionProgress(null);
       const apiMessage = error?.data?.message || error?.message || "";
@@ -322,11 +493,7 @@ export default function ImportPage(props: {
 
   const handleInterpretWithAi = async () => {
     if (!importedFileId || !inventoryId) return;
-    if (interpretPollRef.current) {
-      clearInterval(interpretPollRef.current);
-      interpretPollRef.current = null;
-    }
-    interpretCompleteHandledRef.current = false;
+    stopInterpretPolling();
     setIsInterpretInProgress(true);
     makeInfoToast(
       t("interpreting-file"),
@@ -339,42 +506,7 @@ export default function ImportPage(props: {
         importedFileId,
       }).unwrap();
       if ("accepted" in result && result.accepted) {
-        interpretPollRef.current = setInterval(async () => {
-          if (!cityId || !inventoryId || !importedFileId) return;
-          try {
-            const res = await getImportStatus({
-              cityId,
-              inventoryId,
-              importedFileId,
-            }).unwrap();
-            if (interpretCompleteHandledRef.current) return;
-            const status = (res as { importStatus?: string; errorLog?: string | null }).importStatus;
-            const errorLog = (res as { importStatus?: string; errorLog?: string | null }).errorLog;
-            if (status === "waiting_for_approval") {
-              interpretCompleteHandledRef.current = true;
-              if (interpretPollRef.current) {
-                clearInterval(interpretPollRef.current);
-                interpretPollRef.current = null;
-              }
-              setIsInterpretInProgress(false);
-              setTabularPendingInterpretation(false);
-              setTimeout(() => goToNextStep(), 150);
-            } else if (status === "failed") {
-              interpretCompleteHandledRef.current = true;
-              if (interpretPollRef.current) {
-                clearInterval(interpretPollRef.current);
-                interpretPollRef.current = null;
-              }
-              setIsInterpretInProgress(false);
-              makeErrorToast(
-                t("interpretation-failed") ?? "Interpretation failed",
-                errorLog ?? t("ai-extraction-failed-default"),
-              );
-            }
-          } catch (err) {
-            logger.debug({ err, cityId, inventoryId, importedFileId }, "Interpret status poll failed");
-          }
-        }, 3000);
+        startInterpretPolling();
         return;
       }
       setIsInterpretInProgress(false);
@@ -382,7 +514,7 @@ export default function ImportPage(props: {
         const errorLog = (result as { errorLog?: string | null }).errorLog;
         makeErrorToast(
           t("interpretation-failed") ?? "Interpretation failed",
-          errorLog ?? t("ai-extraction-failed-default"),
+          resolveErrorMessage(errorLog, t("ai-extraction-failed-default"), t),
         );
         return;
       }
@@ -488,7 +620,7 @@ export default function ImportPage(props: {
                       uploadedFile={uploadedFile}
                       onFileUpload={handleFileUpload}
                       onRemoveFile={handleRemoveFile}
-                      isUploading={isUploadingFile}
+                      isUploading={isUploadingFile || isUploadPolling}
                     />
                     {pdfPendingExtraction && (isExtracting || isExtractInProgress) && (
                       <Box w="full" mt={2}>
@@ -719,6 +851,7 @@ export default function ImportPage(props: {
                   px="24px"
                   onClick={handleContinue}
                   h="64px"
+                  disabled={fileYearMismatch}
                 >
                   <Text
                     fontFamily="button.md"

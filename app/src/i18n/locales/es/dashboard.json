@@ -299,5 +299,6 @@
   "status-preview": "Vista previa",
   "status-early-access": "Acceso Anticipado",
   "status-beta": "Beta",
-  "status-active": "Activo"
+  "status-active": "Activo",
+  "legend": "Leyenda"
 }

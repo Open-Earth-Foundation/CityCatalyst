@@ -49,7 +49,12 @@
   "interpret-with-ai": "Interpretar con IA",
   "interpretation-failed": "Interpretación fallida",
   "ai-extraction-failed-default": "Extracción con IA fallida",
+  "ai-extract-no-rows": "La IA no pudo extraer filas de inventario de esta tabla. El archivo puede usar nombres de columnas que no reconocemos. Pruebe un archivo con columnas como Sector, Sub-sector, Alcance y emisiones (p. ej. CO2e total), o exporte desde su fuente en un diseño eCRF/CIRIS estándar.",
   "inventory-not-found-for-target-year": "Inventario no encontrado para el año objetivo",
+  "file-year-mismatch-title": "El año del archivo no coincide con el inventario",
+  "file-year-mismatch": "El año de los datos del archivo no coincide con el año objetivo del inventario. Suba un archivo con datos de {{year}}.",
+  "import-completed": "Importación completada",
+  "import-completed-description": "Los datos de su inventario se han importado correctamente.",
   "extracting-chunk-progress": "Extrayendo... (parte {{current}} de {{total}})",
   "breaking-into-chunks": "Dividiendo el archivo en partes más pequeñas para una extracción más sencilla",
   "interpreting-file": "Interpretando su archivo",
@@ -62,7 +67,7 @@
   "gwp-description": "Si esta es tu primera inventario, recomendamos usar AR6 (última versión) para tus cálculos de inventario. Si tu ciudad tiene inventarios anteriores, usa la misma versión que antes. <2>Aprende más</2> sobre GWP.",
   "setup-population-data-heading": "Añadir datos de población",
   "setup-population-data-description": "Proporcione los datos de población para su país, región y ciudad. Para obtener resultados precisos, utilice valores del año más cercano a su año de inventario. Utilizamos fuentes de datos abiertos para completar previamente la información a continuación.",
-  "region-or-province": "Región o provincia",
+  "region-or-province-population-title": "Población de la región o provincia",
   "source": "Fuente",
   "source-name": "Nombre de la fuente",
   "region-or-province-population-placeholder": "Número de población de la región o provincia",
@@ -146,5 +151,7 @@
   "subsector": "Subsector",
   "category": "Categoría",
   "total-co2e": "Total de CO2e",
-  "map-rows-description-pdf": "Las filas extraídas ya están asignadas a los campos del inventario. Revisa los datos a continuación y continúa hasta el último paso."
+  "map-rows-description-pdf": "Las filas extraídas ya están asignadas a los campos del inventario. Revisa los datos a continuación y continúa hasta el último paso.",
+  "upload-failed": "Error al subir",
+  "failed-to-upload-file": "No se pudo subir el archivo"
 }

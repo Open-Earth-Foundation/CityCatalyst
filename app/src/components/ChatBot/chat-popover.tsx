@@ -38,8 +38,7 @@ export default function ChatPopover({
   const [hasAcceptedDisclaimer, setHasAcceptedDisclaimer] = useState(false);
 
   // get user info
-  const { data: userInfo, isLoading: isUserInfoLoading } =
-    api.useGetUserInfoQuery();
+  const { data: userInfo } = api.useGetUserInfoQuery();
 
   const effectiveInventoryId =
     inventoryId ?? userInfo?.defaultInventoryId ?? "";
@@ -72,17 +71,24 @@ export default function ChatPopover({
     onOpen();
   };
 
-  const handleDisclaimerCancel = () => {
-    setShowDisclaimer(false);
-  };
+  // Lock body scroll while popover is open
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   // Use the new hook to position the AI button
   const dynamicBottomPosition = useAIButtonPosition();
 
   const pathname = usePathname();
 
-  // Hide the ChatPopover on auth pages
-  if (pathname.startsWith(`/${lng}/auth`)) {
+  // Hide the ChatPopover on auth and onboarding pages
+  if (
+    pathname.startsWith(`/${lng}/auth`) ||
+    pathname.includes("/onboarding")
+  ) {
     return null;
   }
 

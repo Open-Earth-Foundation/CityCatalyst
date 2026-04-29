@@ -1,0 +1,71 @@
+---
+description: Jest API testing and Playwright E2E testing patterns
+globs: app/tests/**/*.jest.ts,app/tests/**/*.spec.ts
+alwaysApply: false
+---
+
+# Testing Patterns
+
+## Jest (Unit/API Tests)
+
+Test files MUST be named `*.jest.ts` (not `*.test.ts`). Located in `app/tests/`.
+
+### API Test Template
+
+```typescript
+import { setupTests, teardownTests, mockRequest, expectStatusCode, testUserData } from "../helpers";
+import { db } from "@/models";
+import { GET, POST } from "@/app/api/v1/my-route/route";
+
+describe("My Route", () => {
+  beforeAll(async () => {
+    setupTests();
+    await db.initialize();
+  });
+  afterAll(() => {
+    teardownTests();
+  });
+
+  describe("GET /api/v1/my-route", () => {
+    it("should return data", async () => {
+      const req = mockRequest();
+      const res = await GET(req, { params: Promise.resolve({}) });
+      expectStatusCode(res, 200);
+      const data = await res.json();
+      expect(data).toBeDefined();
+    });
+  });
+});
+```
+
+### Test Helpers (tests/helpers.ts)
+
+- `setupTests()` — loads env, mocks `Auth.getServerSession` with test user
+- `teardownTests()` — restores session spy
+- `mockRequest(body?, searchParams?, headers?)` — creates mock `NextRequest`
+- `mockRequestFormData(formData)` — for file uploads
+- `expectStatusCode(response, code)` — asserts with helpful error messages
+- `testUserID`, `testCityID`, `testUserData` — test fixtures
+
+### Running Tests
+
+```bash
+npm run jest                    # All Jest tests
+npx jest --testPathPattern=path/to/test.jest.ts  # Single test
+```
+
+## Playwright (E2E Tests)
+
+Located in `app/tests/` with `.spec.ts` extension.
+
+```bash
+npm run e2e:test               # Run E2E suite
+npx playwright test tests/path/to/test.spec.ts   # Single test
+```
+
+## Important Notes
+
+- Jest uses ESM with `ts-jest` — config in `app/jest.config.ts`
+- `@/` paths work in tests via `moduleNameMapper`
+- DB is initialized per test suite, not per test
+- Session is mocked — tests don't need a running auth server

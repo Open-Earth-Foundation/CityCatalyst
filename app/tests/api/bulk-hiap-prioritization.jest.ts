@@ -611,6 +611,7 @@ describe("Bulk HIAP Prioritization API", () => {
           type: ACTION_TYPES.Mitigation,
           langs: [LANGUAGES.en],
           status: HighImpactActionRankingStatus.PENDING,
+          userId: testData.userId,
         });
 
         const citiesData = [
@@ -655,6 +656,7 @@ describe("Bulk HIAP Prioritization API", () => {
               langs: [LANGUAGES.en],
               status: HighImpactActionRankingStatus.TO_DO,
               jobId: null,
+              userId: testData.userId,
             }),
           ),
         );
@@ -726,6 +728,7 @@ describe("Bulk HIAP Prioritization API", () => {
               langs: [LANGUAGES.en],
               status: HighImpactActionRankingStatus.TO_DO,
               jobId: null,
+              userId: testData.userId,
             }),
           ),
         );
@@ -823,6 +826,7 @@ describe("Bulk HIAP Prioritization API", () => {
               langs: [LANGUAGES.en],
               status: HighImpactActionRankingStatus.TO_DO,
               jobId: null,
+              userId: testData.userId,
             }),
           ),
         );
@@ -898,6 +902,7 @@ describe("Bulk HIAP Prioritization API", () => {
               langs: [LANGUAGES.en],
               status: HighImpactActionRankingStatus.TO_DO,
               jobId: null,
+              userId: testData.userId,
             }),
           ),
         );
@@ -960,6 +965,7 @@ describe("Bulk HIAP Prioritization API", () => {
               langs: [LANGUAGES.en],
               status: HighImpactActionRankingStatus.TO_DO,
               jobId: null,
+              userId: testData.userId,
             }),
           ),
         );
@@ -1017,6 +1023,7 @@ describe("Bulk HIAP Prioritization API", () => {
         langs: [LANGUAGES.en],
         jobId: "test-success-job-id",
         status: HighImpactActionRankingStatus.PENDING,
+        userId: testData.userId,
       });
 
       // Mock HIAP API to return successful completion
@@ -1118,6 +1125,7 @@ describe("Bulk HIAP Prioritization API", () => {
         langs: [LANGUAGES.en],
         jobId: "test-mixed-actions-job",
         status: HighImpactActionRankingStatus.PENDING,
+        userId: testData.userId,
       });
 
       // Mock result with both mitigation and adaptation actions
@@ -1204,6 +1212,7 @@ describe("Bulk HIAP Prioritization API", () => {
           langs: [LANGUAGES.en],
           jobId: "test-batch-job",
           status: HighImpactActionRankingStatus.PENDING,
+          userId: testData.userId,
         }),
         db.models.HighImpactActionRanking.create({
           id: randomUUID(),
@@ -1213,6 +1222,7 @@ describe("Bulk HIAP Prioritization API", () => {
           langs: [LANGUAGES.en],
           jobId: "test-batch-job",
           status: HighImpactActionRankingStatus.PENDING,
+          userId: testData.userId,
         }),
         db.models.HighImpactActionRanking.create({
           id: randomUUID(),
@@ -1222,6 +1232,7 @@ describe("Bulk HIAP Prioritization API", () => {
           langs: [LANGUAGES.en],
           jobId: "test-batch-job",
           status: HighImpactActionRankingStatus.PENDING,
+          userId: testData.userId,
         }),
       ]);
 
@@ -1319,6 +1330,7 @@ describe("Bulk HIAP Prioritization API", () => {
         langs: [LANGUAGES.en, LANGUAGES.pt], // Multiple languages
         jobId: "test-multi-lang-job",
         status: HighImpactActionRankingStatus.PENDING,
+        userId: testData.userId,
       });
 
       // Mock result with ranked actions
@@ -1404,6 +1416,7 @@ describe("Bulk HIAP Prioritization API", () => {
             langs: [LANGUAGES.en],
             jobId: "test-unique-rankings-job",
             status: HighImpactActionRankingStatus.PENDING,
+            userId: testData.userId,
           }),
         ),
       );
@@ -1537,6 +1550,7 @@ describe("Bulk HIAP Prioritization API", () => {
         langs: [LANGUAGES.en],
         jobId: "test-failed-job-id",
         status: HighImpactActionRankingStatus.PENDING,
+        userId: testData.userId,
       });
 
       // Call checkBulkActionRankingJob directly
@@ -1586,6 +1600,7 @@ describe("Bulk HIAP Prioritization API", () => {
         langs: [LANGUAGES.en],
         jobId: "test-missing-city-job-id",
         status: HighImpactActionRankingStatus.PENDING,
+        userId: testData.userId,
       });
 
       // Call checkBulkActionRankingJob
@@ -1631,6 +1646,7 @@ describe("Bulk HIAP Prioritization API", () => {
             status: HighImpactActionRankingStatus.TO_DO,
             jobId: null,
             isBulk: true,
+            userId: testData.userId,
           }),
         ),
       );
@@ -1695,6 +1711,7 @@ describe("Bulk HIAP Prioritization API", () => {
         status: HighImpactActionRankingStatus.PENDING,
         jobId: "existing-job-id",
         isBulk: true, // Mark as bulk job
+        userId: testData.userId,
       });
 
       // Create 1 TO_DO ranking (should NOT be picked up while PENDING is active)
@@ -1707,6 +1724,7 @@ describe("Bulk HIAP Prioritization API", () => {
         status: HighImpactActionRankingStatus.TO_DO,
         jobId: null,
         isBulk: true,
+        userId: testData.userId,
       });
 
       // Mock HIAP API to return "pending" for existing job (still processing)
@@ -1764,6 +1782,7 @@ describe("Bulk HIAP Prioritization API", () => {
         jobId: "test-single-job-id",
         status: HighImpactActionRankingStatus.PENDING,
         isBulk: false, // Single job
+        userId: testData.userId,
       });
 
       // Mock single job API endpoint
@@ -1937,6 +1956,7 @@ describe("Bulk HIAP Prioritization API", () => {
             status: HighImpactActionRankingStatus.FAILURE,
             jobId: "failed-job-id",
             errorMessage: "Batch failed",
+            userId: testData.userId,
           }),
         ),
       );
@@ -1997,6 +2017,7 @@ describe("Bulk HIAP Prioritization API", () => {
             langs: [LANGUAGES.en],
             status: HighImpactActionRankingStatus.FAILURE,
             jobId: "failed-job-id",
+            userId: testData.userId,
           }),
         ),
       );
@@ -2032,6 +2053,7 @@ describe("Bulk HIAP Prioritization API", () => {
             langs: [LANGUAGES.en],
             status: HighImpactActionRankingStatus.FAILURE,
             jobId: "failed-job-id",
+            userId: testData.userId,
           }),
         ),
       );
@@ -2077,6 +2099,7 @@ describe("Bulk HIAP Prioritization API", () => {
             langs: [LANGUAGES.en],
             status: HighImpactActionRankingStatus.FAILURE,
             jobId: "batch-1",
+            userId: testData.userId,
           }),
         ),
       );
@@ -2089,6 +2112,7 @@ describe("Bulk HIAP Prioritization API", () => {
         langs: [LANGUAGES.en],
         status: HighImpactActionRankingStatus.FAILURE,
         jobId: "batch-2",
+        userId: testData.userId,
       });
 
       const req = mockRequest({
@@ -2138,6 +2162,7 @@ describe("Bulk HIAP Prioritization API", () => {
             langs: [LANGUAGES.en],
             status: HighImpactActionRankingStatus.EXCLUDED,
             errorMessage: "City excluded from retry",
+            userId: testData.userId,
           }),
         ),
       );
@@ -2182,6 +2207,7 @@ describe("Bulk HIAP Prioritization API", () => {
             langs: [LANGUAGES.en],
             status: HighImpactActionRankingStatus.EXCLUDED,
             errorMessage: "Excluded",
+            userId: testData.userId,
           }),
         ),
       );
@@ -2283,6 +2309,7 @@ describe("Bulk HIAP Prioritization API", () => {
         jobId: "non-existent-job-id",
         status: HighImpactActionRankingStatus.PENDING,
         isBulk: true, // Mark as bulk job
+        userId: testData.userId,
       });
 
       // Mock HIAP API to throw 404 error (task not found)
@@ -2336,6 +2363,7 @@ describe("Bulk HIAP Prioritization API", () => {
         jobId: "failing-job-id",
         status: HighImpactActionRankingStatus.PENDING,
         isBulk: true, // Mark as bulk job
+        userId: testData.userId,
       });
 
       const ranking2 = await db.models.HighImpactActionRanking.create({
@@ -2347,6 +2375,7 @@ describe("Bulk HIAP Prioritization API", () => {
         jobId: "successful-job-id",
         status: HighImpactActionRankingStatus.PENDING,
         isBulk: true, // Mark as bulk job
+        userId: testData.userId,
       });
 
       // Mock HIAP API to fail for first job but succeed for second

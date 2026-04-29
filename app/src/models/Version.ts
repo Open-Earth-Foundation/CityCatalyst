@@ -10,6 +10,7 @@ export interface VersionAttributes {
   entryId?: string; // ID of the table entry that was changed
   previousVersionId?: string; // ID of the previous version entry of the same table entry
   table?: string;
+  moduleName?: string;
   data?: Record<string, any>;
   isDeleted?: boolean;
   created?: Date;
@@ -24,6 +25,7 @@ export type VersionOptionalAttributes =
   | "entryId"
   | "previousVersionId"
   | "table"
+  | "moduleName"
   | "data"
   | "isDeleted"
   | "created"
@@ -43,6 +45,7 @@ export class Version
   declare entryId?: string; // ID of the table entry that was changed
   declare previousVersionId?: string; // ID of the previous version entry of the same table entry
   declare table?: string;
+  declare moduleName?: string;
   declare data?: Record<string, any>;
   declare isDeleted?: boolean;
   declare created?: Date;
@@ -114,6 +117,12 @@ export class Version
         table: {
           type: DataTypes.STRING,
           allowNull: false,
+        },
+        moduleName: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          defaultValue: "ghgi",
+          field: "module_name",
         },
         data: {
           type: DataTypes.JSONB,

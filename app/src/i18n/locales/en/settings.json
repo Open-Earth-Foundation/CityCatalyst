@@ -212,5 +212,6 @@
   "token-create-error": "Failed to create token",
   "token-deleted-success": "Token deleted successfully",
   "token-delete-error": "Failed to delete token",
-  "copied-to-clipboard": "Copied to clipboard"
+  "copied-to-clipboard": "Copied to clipboard",
+  "select-theme": "Select theme..."
 }

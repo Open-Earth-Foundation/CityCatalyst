@@ -1,0 +1,8 @@
+signal_code,signal_name,signal_type,action_areas,priority,description
+MUNI_WASTE_AUTHORITY,Municipal waste management authority,authority,waste,high,Whether the municipality has exclusive or shared authority over waste collection and management
+MUNI_TRANSPORT_AUTHORITY,Municipal transport authority,authority,transport,high,Whether the municipality has authority over public transport and traffic within the commune
+MUNI_ENV_STANDARDS,Municipal environmental standards,enablement,environment|buildings,high,Whether the municipality may apply environmental protection standards (e.g. building efficiency)
+MUNI_PLANNING_AUTHORITY,Municipal planning authority,authority,land_use|spatial_planning,high,Whether the municipality has authority over urban planning and the communal regulatory plan
+PLANS_ALIGNMENT,Plans alignment requirement,restriction,governance,high,Municipal actions must comply with national and regional plans (cross-cutting)
+PROCUREMENT_PUBLIC_BIDDING,Public bidding for procurement,process,procurement,medium,Whether municipalities may contract private entities via public bidding for works or services
+SUBSIDY_CAP_7PCT,Subsidy cap for non-profits,threshold,finance,medium,Maximum share of municipal budget that may be granted as subsidies to non-profit entities (e.g. 7%)

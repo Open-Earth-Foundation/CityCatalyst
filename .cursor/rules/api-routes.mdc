@@ -1,0 +1,110 @@
+---
+description: API route handler patterns using apiHandler, Swagger JSDoc, and validation
+globs: app/src/app/api/**/*.ts
+alwaysApply: false
+---
+
+# API Route Patterns
+
+## Handler Template
+
+Every API route MUST use `apiHandler` from `@/util/api`. It provides auth, rate limiting, org frozen checks, DB init, and error handling.
+
+```typescript
+import { NextResponse } from "next/server";
+import { apiHandler } from "@/util/api";
+import createHttpError from "http-errors";
+
+export const GET = apiHandler(async (req, { session, params, searchParams }) => {
+  if (!session) throw new createHttpError.Unauthorized("Unauthorized");
+
+  const { inventory } = params;
+  // ... business logic using services from @/backend/
+  return NextResponse.json({ data: result });
+});
+
+export const POST = apiHandler(async (req, { session, params }) => {
+  if (!session) throw new createHttpError.Unauthorized("Unauthorized");
+
+  const body = await req.json();
+  const validated = myZodSchema.parse(body);
+  // ... create logic
+  return NextResponse.json({ data: created }, { status: 201 });
+});
+```
+
+## Handler Signature
+
+```typescript
+type NextHandler = (
+  req: NextRequest,
+  props: {
+    params: Record<string, string>;     // Route params (already resolved)
+    session: AppSession | null;          // NextAuth session or Bearer/PAT/OAuth
+    searchParams: Record<string, string>; // Query string params
+  },
+) => Promise<NextResponse | Response>;
+```
+
+## Swagger JSDoc
+
+Add `@swagger` comments above the import block for OpenAPI generation:
+
+```typescript
+/**
+ * @swagger
+ * /api/v1/inventory/{inventory}:
+ *   get:
+ *     operationId: getInventory
+ *     summary: Get inventory details
+ *     tags:
+ *       - inventory
+ *     parameters:
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+```
+
+## Error Handling
+
+Use `http-errors` for HTTP errors — they are automatically caught by `errorHandler`:
+
+```typescript
+import createHttpError from "http-errors";
+
+// 404
+throw new createHttpError.NotFound("Inventory not found");
+// 400
+throw new createHttpError.BadRequest("Invalid input");
+// 403
+throw new createHttpError.Forbidden("Access denied");
+```
+
+For validation, use Zod schemas from `@/util/validation.ts` — `ZodError` is auto-caught as 400.
+
+## File Placement
+
+```
+src/app/api/v1/
+├── route.ts                           # GET /api/v1
+├── inventory/[inventory]/
+│   ├── route.ts                       # GET/PATCH/DELETE /api/v1/inventory/:id
+│   └── activity-value/route.ts        # Nested resources
+├── city/[city]/route.ts
+└── organization/[organization]/route.ts
+```
+
+## Service Layer
+
+Keep route handlers thin. Put business logic in `src/backend/`:
+
+```typescript
+import UserService from "@/backend/UserService";
+import { InventoryService } from "@/backend/InventoryService";
+```

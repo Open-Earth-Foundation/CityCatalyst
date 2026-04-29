@@ -61,7 +61,7 @@ export default function HIAPInventoryPage(props: {
         inventoryId: inv.inventoryId,
         lastUpdate: inv.lastUpdated || new Date(),
       }))
-      .sort((a, b) => b.year - a.year); // Sort by year, newest first
+      .sort((a, b) => a.year - b.year); // Sort by year, oldest first
   }, [allInventories]);
 
   const handleYearSelect = (yearData: YearSelectorItem) => {

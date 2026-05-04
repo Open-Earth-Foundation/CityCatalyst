@@ -112,35 +112,37 @@ def _build_evidence_summary(scored_action_evidence: dict[str, object]) -> dict[s
             "matched_city_gpc_refs_count": int(
                 impact_evidence.get("matched_city_gpc_refs_count", 0)
             ),
-            "reduction_share_of_city_emissions": _safe_float(
-                impact_evidence.get("reduction_share_of_city_emissions")
+            "emissions_reduction_share_of_city_total": _safe_float(
+                impact_evidence.get("emissions_reduction_share_of_city_total")
             ),
-            "timeline_score": _safe_float(impact_evidence.get("timeline_score")),
+            "timeline_component_score": _safe_float(
+                impact_evidence.get("timeline_component_score")
+            ),
         },
         "alignment": {
             "alignment_score": _safe_float(alignment_evidence.get("alignment_score")),
-            "policy_component_value": _safe_float(
-                alignment_evidence.get("policy_component_value")
+            "policy_component_score": _safe_float(
+                alignment_evidence.get("policy_component_score")
             ),
-            "sector_component_value": _safe_float(
-                alignment_evidence.get("sector_component_value")
+            "sector_component_score": _safe_float(
+                alignment_evidence.get("sector_component_score")
             ),
-            "other_component_value": _safe_float(
-                alignment_evidence.get("other_component_value")
+            "co_benefit_component_score": _safe_float(
+                alignment_evidence.get("co_benefit_component_score")
             ),
-            "timeframe_component_value": _safe_float(
-                alignment_evidence.get("timeframe_component_value")
+            "timeframe_component_score": _safe_float(
+                alignment_evidence.get("timeframe_component_score")
             ),
         },
         "feasibility": {
             "feasibility_score": _safe_float(
                 feasibility_evidence.get("feasibility_score")
             ),
-            "soft_legal_component_value": _safe_float(
-                feasibility_evidence.get("soft_legal_component_value")
+            "soft_legal_component_score": _safe_float(
+                feasibility_evidence.get("soft_legal_component_score")
             ),
-            "socioeconomic_indicators_component_value": _safe_float(
-                feasibility_evidence.get("socioeconomic_indicators_component_value")
+            "socioeconomic_component_score": _safe_float(
+                feasibility_evidence.get("socioeconomic_component_score")
             ),
         },
     }
@@ -782,12 +784,17 @@ def run_prioritization(
         ]
     }
 
-    # Emit response summary and run-summary artifacts.
+    # Emit the single run-level summary artifact used for overview/debugging.
     response_event_index = artifact_writer.write_event(
         "response_summary.completed",
         {
+            "locode": locode,
             "ranked_action_ids": ranked_action_ids,
             "counts": metadata["counts"],
+            "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
+            "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
+            "discarded_legal_action_ids": sorted(discarded_legal_ids),
+            "timings": timings,
         },
     )
     artifact_writer.write_step_detail(
@@ -797,6 +804,13 @@ def run_prioritization(
             "counts": metadata["counts"],
             "weights": weights,
             "ranked_action_ids": ranked_action_ids,
+            "top_ranked_actions": [
+                {
+                    "rank": ranked_action.rank,
+                    "action_id": ranked_action.action_id,
+                }
+                for ranked_action in ranked_actions
+            ],
             "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
             "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
             "discarded_legal_action_ids": sorted(discarded_legal_ids),
@@ -806,17 +820,6 @@ def run_prioritization(
         event_type="response_summary.completed",
     )
     artifact_writer.write_run_file("response_full.json", full_response_payload)
-    artifact_writer.write_event(
-        "run_summary.completed",
-        {
-            "locode": locode,
-            "counts": metadata["counts"],
-            "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
-            "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
-            "discarded_legal_action_ids": sorted(discarded_legal_ids),
-            "timings": timings,
-        },
-    )
 
     # Emit run-level manifest after all other artifact files are written.
     final_scoring_detail_file = _detail_filename(
@@ -832,8 +835,11 @@ def run_prioritization(
             "artifact_pointers": {
                 "summary_events": "summary.jsonl",
                 "input_snapshot": "input_snapshot.json",
+                "response_summary": _detail_filename(
+                    response_event_index, "response_summary"
+                ),
                 "top_ranked_actions": final_scoring_detail_file,
-                "full_evidence": {
+                "block_evidence": {
                     "hard_filter": hard_filter_detail_file,
                     "impact": impact_detail_file,
                     "alignment": alignment_detail_file,

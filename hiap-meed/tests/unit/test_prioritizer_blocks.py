@@ -185,13 +185,13 @@ def test_impact_block_with_mock_api_data() -> None:
     assert first_action_evidence["has_any_action_gpc_ref"] is True
     assert first_action_evidence["action_gpc_refs"] == ["I.1.1", "I.1.2"]
     assert first_action_evidence["matched_city_gpc_refs_count"] == 2
-    assert first_action_evidence["reduction_share_of_city_emissions"] > 0.0
+    assert first_action_evidence["emissions_reduction_share_of_city_total"] > 0.0
     assert first_action_evidence["impact_block_score"] == pytest.approx(
         result.score_by_action_id["c40_0010"]
     )
     assert first_action_evidence["impact_block_score"] == pytest.approx(
-        first_action_evidence["reduction_component_contribution"]
-        + first_action_evidence["timeline_component_contribution"]
+        first_action_evidence["emissions_reduction_contribution"]
+        + first_action_evidence["timeline_contribution"]
     )
 
 
@@ -298,8 +298,8 @@ def test_impact_block_timeline_mapping_prefers_faster_implementation() -> None:
         city_emissions_by_gpc_ref={"I.1.1": 100.0},
     )
     assert (
-        result.evidence_by_action_id["A_fast"]["timeline_score"]
-        > result.evidence_by_action_id["A_slow"]["timeline_score"]
+        result.evidence_by_action_id["A_fast"]["timeline_component_score"]
+        > result.evidence_by_action_id["A_slow"]["timeline_component_score"]
     )
     assert result.score_by_action_id["A_fast"] > result.score_by_action_id["A_slow"]
 
@@ -323,13 +323,13 @@ def test_alignment_block_with_mock_api_data() -> None:
     assert result.evidence_by_action_id is not None
 
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
-    assert first_action_evidence["policy_component_value"] > 0.0
-    assert first_action_evidence["sector_component_value"] in {0.0, 1.0}
-    assert first_action_evidence["other_component_value"] == pytest.approx(0.5)
+    assert first_action_evidence["policy_component_score"] > 0.0
+    assert first_action_evidence["sector_component_score"] in {0.0, 1.0}
+    assert first_action_evidence["co_benefit_component_score"] == pytest.approx(0.5)
     assert first_action_evidence["alignment_score"] == pytest.approx(
         first_action_evidence["policy_contribution"]
         + first_action_evidence["sector_contribution"]
-        + first_action_evidence["other_contribution"]
+        + first_action_evidence["co_benefit_contribution"]
         + first_action_evidence["timeframe_contribution"]
     )
 
@@ -350,7 +350,7 @@ def test_alignment_other_preference_component_uses_selected_co_benefit_keys() ->
 
     assert result.evidence_by_action_id is not None
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
-    assert first_action_evidence["resolved_preferred_co_benefits"] == [
+    assert first_action_evidence["scored_city_co_benefit_keys"] == [
         "air_quality",
         "housing",
     ]
@@ -358,7 +358,7 @@ def test_alignment_other_preference_component_uses_selected_co_benefit_keys() ->
         "air_quality",
         "housing",
     ]
-    assert first_action_evidence["other_component_value"] == pytest.approx(0.5)
+    assert first_action_evidence["co_benefit_component_score"] == pytest.approx(0.5)
 
 
 @pytest.mark.unit
@@ -377,8 +377,8 @@ def test_alignment_other_preference_component_is_neutral_without_selected_keys()
 
     assert result.evidence_by_action_id is not None
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
-    assert first_action_evidence["resolved_preferred_co_benefits"] == []
-    assert first_action_evidence["other_component_value"] == pytest.approx(0.5)
+    assert first_action_evidence["scored_city_co_benefit_keys"] == []
+    assert first_action_evidence["co_benefit_component_score"] == pytest.approx(0.5)
 
 
 @pytest.mark.unit
@@ -411,7 +411,7 @@ def test_alignment_timeframe_component_scores_expected_matches(
         action_timeline=action_timeline,
     )
 
-    assert evidence["timeframe_component_value"] == pytest.approx(
+    assert evidence["timeframe_component_score"] == pytest.approx(
         expected_component_value
     )
 
@@ -439,7 +439,7 @@ def test_alignment_timeframe_component_uses_best_multi_select_match(
         action_timeline=action_timeline,
     )
 
-    assert evidence["timeframe_component_value"] == pytest.approx(
+    assert evidence["timeframe_component_score"] == pytest.approx(
         expected_component_value
     )
 
@@ -467,7 +467,7 @@ def test_feasibility_block_with_mock_api_data(
     assert "socioeconomic_indicator_rows" in first_action_evidence
     assert first_action_evidence["feasibility_score"] == pytest.approx(
         first_action_evidence["soft_legal_contribution"]
-        + first_action_evidence["socioeconomic_indicators_contribution"]
+        + first_action_evidence["socioeconomic_contribution"]
     )
     first_action_rows = {
         row["action_socioeconomic_indicator_key"]: row

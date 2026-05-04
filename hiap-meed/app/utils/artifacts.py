@@ -12,7 +12,7 @@ from uuid import UUID
 
 
 logger = logging.getLogger(__name__)
-ARTIFACT_SCHEMA_VERSION = "1.0"
+ARTIFACT_SCHEMA_VERSION = "1.2"
 RESERVED_MANIFEST_KEYS = {"schema_version", "request_id", "generated_files"}
 
 

@@ -287,7 +287,7 @@ def test_prioritize_smoke() -> None:
         assert "feasibility_score" in first_ranked_action
         assert "evidence_summary" in first_ranked_action
         assert first_ranked_action["evidence_summary"]["alignment"][
-            "timeframe_component_value"
+            "timeframe_component_score"
         ] == pytest.approx(0.5)
         assert first_ranked_action["explanation"] is None
         assert "metadata" in result
@@ -799,10 +799,10 @@ def test_prioritize_alignment_timeframe_multi_select_uses_best_match() -> None:
         result = body["results"][0]
         assert result["ranked_action_ids"] == ["A_long", "A_short"]
         assert result["ranked_actions"][0]["evidence_summary"]["alignment"][
-            "timeframe_component_value"
+            "timeframe_component_score"
         ] == pytest.approx(1.0)
         assert result["ranked_actions"][1]["evidence_summary"]["alignment"][
-            "timeframe_component_value"
+            "timeframe_component_score"
         ] == pytest.approx(0.5)
     finally:
         app.dependency_overrides.clear()

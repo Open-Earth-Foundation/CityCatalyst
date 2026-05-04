@@ -27,7 +27,7 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
         rank=1,
         evidence={
             "impact": {
-                "impact_text": "high",
+                "impact_band": "high",
                 "timeline_bucket": "<5 years",
                 "matched_city_gpc_refs_count": 2,
                 "matched_city_gpc_refs": ["I.1.1", "I.1.2"],
@@ -46,12 +46,12 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
                         "evidence_count": 4,
                     }
                 ],
-                "other_component_value": 0.0,
+                "co_benefit_component_score": 0.0,
             },
             "feasibility": {
                 "soft_legal_aligned_count": 1,
                 "soft_legal_total_count": 2,
-                "informational_requirements_notes_are_stub": True,
+                "informational_requirements_summary_available": False,
                 "informational_requirements": [{"signal_code": "PERMIT"}],
                 "socioeconomic_indicator_rows": [
                     {

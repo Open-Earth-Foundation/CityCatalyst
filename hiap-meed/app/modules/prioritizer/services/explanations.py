@@ -248,8 +248,8 @@ def _build_impact_signals(impact_evidence: dict[str, object]) -> dict[str, objec
     matched_gpc_refs = impact_evidence.get("matched_city_gpc_refs")
     matched_count_value = impact_evidence.get("matched_city_gpc_refs_count")
     matched_count = int(matched_count_value) if isinstance(matched_count_value, int | float) else 0
-    impact_text_value = impact_evidence.get("impact_text")
-    impact_text = str(impact_text_value).strip() if impact_text_value is not None else None
+    impact_band_value = impact_evidence.get("impact_band")
+    impact_band = str(impact_band_value).strip() if impact_band_value is not None else None
     timeline_bucket_value = impact_evidence.get("timeline_bucket")
     timeline_bucket = (
         str(timeline_bucket_value).strip()
@@ -264,7 +264,7 @@ def _build_impact_signals(impact_evidence: dict[str, object]) -> dict[str, objec
         ]
 
     return {
-        "impact_band": impact_text,
+        "impact_band": impact_band,
         "timeline_bucket": timeline_bucket,
         "matched_city_gpc_refs_count": matched_count,
         "top_matched_city_gpc_refs": top_gpc_refs,
@@ -396,10 +396,10 @@ def _build_known_limitations(
         if isinstance(informational_requirements_count_value, list)
         else 0
     )
-    informational_notes_are_stub = bool(
-        feasibility_evidence.get("informational_requirements_notes_are_stub")
+    informational_summary_available = bool(
+        feasibility_evidence.get("informational_requirements_summary_available")
     )
-    if informational_requirements_count > 0 and informational_notes_are_stub:
+    if informational_requirements_count > 0 and not informational_summary_available:
         limitations.append(
             "Non-blocking legal constraints are included as evidence, but UI-friendly implementation notes are not fully implemented yet."
         )

@@ -737,7 +737,7 @@ Current behavior:
   - `mobility`
   - `stakeholder_engagement`
   - `water_quality`
-- The Alignment block uses those selected keys directly and does not call an LLM in the active ranking flow.
+- The Alignment block uses those selected keys directly.
 
 Plain-language formula:
 

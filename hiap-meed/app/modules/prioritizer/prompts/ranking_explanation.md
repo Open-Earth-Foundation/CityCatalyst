@@ -22,7 +22,7 @@ Input is a rendered prompt context with:
 - `locode` (string): City identifier for the request.
 - `explanation_language` (string): Language to use for every explanation.
 - `city_preference_sectors` (list[string]): City-selected preferred sectors.
-- `city_preference_other_text` (string): Optional free-text strategic preference input. This may be empty.
+- `city_preference_co_benefit_keys` (list[string]): City-selected preferred co-benefit keys.
 - `ranked_actions_json` (list[object]): Ranked action evidence payload. Each object includes:
   - `action_id` (string): Stable action identifier.
   - `action_name` (string): Human-readable action name.
@@ -37,7 +37,7 @@ Runtime values:
 - `locode`: {locode}
 - `explanation_language`: {explanation_language}
 - `city_preference_sectors`: {city_preference_sectors}
-- `city_preference_other_text`: {city_preference_other_text}
+- `city_preference_co_benefit_keys`: {city_preference_co_benefit_keys}
 - `ranked_actions_json`:
 {ranked_actions_json}
 </input>

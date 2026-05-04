@@ -8,8 +8,8 @@ Plain-language approach:
 - Combine reduction + timeline with fixed weights into one final Impact score.
 
 Final score formula per action:
-- `impact_block_score = (reduction_weight * reduction_component_value)`
-- `+ (timeline_weight * timeline_component_value)`
+- `impact_block_score = (reduction_weight * emissions_reduction_share_of_city_total)`
+- `+ (timeline_weight * timeline_component_score)`
 """
 
 from __future__ import annotations
@@ -64,14 +64,14 @@ def _read_emissions_entry(action: Action) -> dict[str, object] | None:
     return emissions_entry
 
 
-def _read_impact_text(*, action_id: str, emissions_entry: dict[str, object]) -> str:
-    """Return validated impact text value for one action emissions entry."""
-    raw_impact_text = emissions_entry.get("impact_text")
-    if raw_impact_text is None or not str(raw_impact_text).strip():
+def _read_impact_band(*, action_id: str, emissions_entry: dict[str, object]) -> str:
+    """Return the validated categorical impact band for one action emissions entry."""
+    raw_impact_band = emissions_entry.get("impact_text")
+    if raw_impact_band is None or not str(raw_impact_band).strip():
         raise ValueError(
             f"Action `{action_id}` is missing emissions.impact_text"
         )
-    return str(raw_impact_text)
+    return str(raw_impact_band)
 
 
 def _compute_impact_block_score(
@@ -116,18 +116,18 @@ def run(
         # Block 2: Read and validate action emissions targeting metadata.
         emissions_entry = _read_emissions_entry(action)
         action_gpc_refs: list[str] = []
-        impact_text: str | None = None
+        impact_band: str | None = None
         reduction_multiplier: float | None = None
         if emissions_entry is not None:
             action_gpc_refs = _read_gpc_reference_numbers(
                 action_id=action.action_id,
                 emissions_entry=emissions_entry,
             )
-            impact_text = _read_impact_text(
+            impact_band = _read_impact_band(
                 action_id=action.action_id,
                 emissions_entry=emissions_entry,
             )
-            reduction_multiplier = resolve_impact_text_multiplier(impact_text)
+            reduction_multiplier = resolve_impact_text_multiplier(impact_band)
 
         # Block 3: Estimate reduction component from matched city emissions.
         matched_city_gpc_refs: list[str] = []
@@ -196,7 +196,7 @@ def run(
             "has_emissions_entry": emissions_entry is not None,
             "has_any_action_gpc_ref": len(action_gpc_refs) > 0,
             "action_gpc_refs": action_gpc_refs,
-            "impact_text": impact_text,
+            "impact_band": impact_band,
             "reduction_multiplier": reduction_multiplier,
             "timeline_bucket": action.implementation_timeline,
             "timeline_bucket_known": action.implementation_timeline in {
@@ -209,11 +209,10 @@ def run(
             "matched_city_gpc_refs": matched_city_gpc_refs,
             "total_city_emissions": total_city_emissions,
             "total_reduction_amount": total_reduction_amount,
-            "reduction_share_of_city_emissions": reduction_share_of_city_emissions,
-            "reduction_component_value": reduction_share_of_city_emissions,
-            "timeline_component_value": timeline_score,
-            "reduction_component_contribution": reduction_component_contribution,
-            "timeline_component_contribution": timeline_component_contribution,
+            "emissions_reduction_share_of_city_total": reduction_share_of_city_emissions,
+            "timeline_component_score": timeline_score,
+            "emissions_reduction_contribution": reduction_component_contribution,
+            "timeline_contribution": timeline_component_contribution,
             "impact_block_score": impact_block_score,
             "gpc_contributors": gpc_contributors,
         }

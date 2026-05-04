@@ -41,25 +41,10 @@ Source: Notion "How Legal Signals, Policy Signals, and Socioeconomic Indicators 
 
 - **Current (v1)**: optional LLM explanations are generated after ranking from implemented in-memory evidence (impact/alignment/feasibility/hard-filter).
 - **Current limitations**:
-  - explanations do not yet receive dedicated co-benefit mapping artifacts such as resolved preferred co-benefits or unmappable fragments for `cityStrategicPreferenceOther`; they rely on downstream alignment evidence plus the raw request context instead.
+  - explanations do not yet receive richer alignment-specific UI summaries beyond the current resolved preferred co-benefits and matched preferred co-benefits carried in standard evidence.
   - explanations currently return a single `explanation` string per action, so `requestedLanguages` is handled with a temporary first-language-wins rule instead of true multilingual output.
 - **Expectation**: explanations should explicitly avoid inventing reasoning for these unimplemented signals until their scoring/evidence pipelines exist.
 - **Future work**: redesign the ranked-action explanation response contract and generation flow to support one request returning multiple localized explanation values per action.
-
-## Replace `cityStrategicPreferenceOther` free-text mapping with direct co-benefit input
-
-- **Current**:
-  - the ranking request still uses `cityStrategicPreferenceOther` as free text
-  - the Alignment block maps that free text into the allowed co-benefit taxonomy using an OpenAI step
-  - this is a transitional implementation, not the preferred long-term request contract
-- **Future**:
-  - the frontend should send the city's preferred co-benefits directly
-  - those values should already match the current supported co-benefit taxonomy
-  - the Alignment block should use those supplied values directly instead of calling the LLM for this mapping step
-- **Why this matters**:
-  - removes avoidable LLM dependence from a core ranking input
-  - makes the city preference contract more explicit and deterministic
-  - keeps frontend and backend aligned on one shared co-benefit taxonomy
 
 ## Replace mock data clients with real upstream API calls
 

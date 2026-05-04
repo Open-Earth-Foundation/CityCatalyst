@@ -1,42 +1,26 @@
-"""LLM-assisted free-text mapping to action co-benefit taxonomy."""
+"""Legacy LLM-assisted mapping helpers for free-text co-benefit preferences."""
 
 from __future__ import annotations
 
 import json
 import logging
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any
 
 from pydantic import BaseModel, Field
 
 from app.modules.prioritizer.config import (
     get_alignment_other_preference_mapping_model,
 )
+from app.modules.prioritizer.utils.co_benefit_taxonomy import (
+    ALLOWED_CO_BENEFIT_KEYS,
+    CoBenefitKey,
+)
 from app.services.openai_client import create_openai_client
 
 logger = logging.getLogger(__name__)
 CO_BENEFIT_MAPPING_FREE_TEXT_MAX_CHARS = 400
 CO_BENEFIT_MAPPING_PROMPT_MAX_CHARS = 20_000
-
-CoBenefitKey = Literal[
-    "air_quality",
-    "cost_of_living",
-    "habitat",
-    "housing",
-    "mobility",
-    "stakeholder_engagement",
-    "water_quality",
-]
-
-ALLOWED_CO_BENEFIT_KEYS: tuple[CoBenefitKey, ...] = (
-    "air_quality",
-    "cost_of_living",
-    "habitat",
-    "housing",
-    "mobility",
-    "stakeholder_engagement",
-    "water_quality",
-)
 
 PROMPT_FILE_PATH = (
     Path(__file__).resolve().parents[1] / "prompts" / "co_benefit_mapping.md"
@@ -51,14 +35,15 @@ class CoBenefitMappingResponse(BaseModel):
 
     mapped_co_benefits: list[CoBenefitKey] = Field(default_factory=list)
     unmappable_preference_fragments: list[str] = Field(default_factory=list)
-
-
 def resolve_city_preferred_co_benefits(
     *,
     city_preference_other_text: str | None,
     available_co_benefit_keys: list[str],
 ) -> dict[str, object]:
-    """Resolve city free text into co-benefit keys with fail-open fallback behavior."""
+    """Deprecated legacy helper for resolving free text into co-benefit keys."""
+    logger.warning(
+        "Deprecated free-text co-benefit resolver invoked; active request flow should use direct checkbox values instead"
+    )
     normalized_text = (city_preference_other_text or "").strip()
     truncated_text = _truncate_mapping_free_text(value=normalized_text)
     available_key_set = set(available_co_benefit_keys)

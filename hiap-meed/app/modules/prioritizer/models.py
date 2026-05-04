@@ -9,7 +9,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.modules.prioritizer.config import resolve_impact_text_multiplier
-from app.modules.prioritizer.services.co_benefit_mapping import ALLOWED_CO_BENEFIT_KEYS
+from app.modules.prioritizer.utils.co_benefit_taxonomy import ALLOWED_CO_BENEFIT_KEYS
 from app.modules.prioritizer.utils.sector_mapping import ALLOWED_SECTOR_TAGS
 
 
@@ -102,7 +102,7 @@ class FrontendCityInput(BaseModel):
     cityStrategicPreferenceTimeframes: list[
         Literal["short", "medium", "long", "no_preference"]
     ] = Field(default_factory=lambda: ["no_preference"])
-    cityStrategicPreferenceOther: str | None = None
+    cityStrategicPreferenceCoBenefitKeys: list[str] = Field(default_factory=list)
     cityEmissionsData: FrontendCityEmissionsData
 
     @field_validator("cityStrategicPreferenceSectors")
@@ -113,6 +113,18 @@ class FrontendCityInput(BaseModel):
             values=values,
             field_name="cityStrategicPreferenceSectors",
             allowed_values=ALLOWED_SECTOR_TAGS,
+        )
+
+    @field_validator("cityStrategicPreferenceCoBenefitKeys")
+    @classmethod
+    def _validate_city_preference_co_benefit_keys(
+        cls, values: list[str]
+    ) -> list[str]:
+        """Validate that selected co-benefits use the supported taxonomy only."""
+        return _validate_allowed_string_list(
+            values=values,
+            field_name="cityStrategicPreferenceCoBenefitKeys",
+            allowed_values=set(ALLOWED_CO_BENEFIT_KEYS),
         )
 
     # Normalize only omission/duplication before Literal validation. All

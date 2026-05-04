@@ -1,4 +1,4 @@
-{
+﻿{
   "onboarding-heading": "Beginnen Sie Ihr Emissions-Inventar!",
   "onboarding-details": "Wir müssen die Stadt und das Jahr bestätigen, für die Sie das Inventar erstellen möchten.<br/>Sie sind einen Schritt näher an Ihrem GPC Emissions-Inventar!",
   "start-button": "Emissions-Inventar beginnen",
@@ -152,5 +152,9 @@
   "total-co2e": "Gesamte CO2e",
   "map-rows-description-pdf": "Extrahierte Zeilen sind bereits auf Bestandsfelder abgebildet. Überprüfen Sie die untenstehenden Daten und fahren Sie mit dem letzten Schritt fort.",
   "upload-failed": "Upload fehlgeschlagen",
-  "failed-to-upload-file": "Datei konnte nicht hochgeladen werden"
+  "failed-to-upload-file": "Datei konnte nicht hochgeladen werden",
+  "citycatalyst-demo": "CityCatalyst Demo",
+  "inventory-goal-description-ghgi": "The GPC provides a robust framework for accounting and reporting city-wide greenhouse gas emissions.",
+  "gwp-description-ghgi": "Global warming potential (GWP) is a measure of how much heat a greenhouse gas traps in the atmosphere over a specific time period, relative to carbon dioxide.",
+  "gwp-description-ghgi-tip": "We recommend using AR6 (latest version) for your inventory calculations. If your city has previous inventories, use the same version as before."
 }

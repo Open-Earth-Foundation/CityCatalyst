@@ -150,5 +150,6 @@
   "loading-validation-results": "Loading validation results...",
   "no-field-mappings": "No field mappings available",
   "upload-failed": "Upload failed",
-  "failed-to-upload-file": "Failed to upload file"
+  "failed-to-upload-file": "Failed to upload file",
+  "citycatalyst-demo": "CityCatalyst Demo"
 }

@@ -124,11 +124,14 @@ export default function SelectCityStep({
     return createListCollection({
       items:
         projectsList?.map((project) => ({
-          label: project.name,
+          label:
+            project.name === "cc_project_default"
+              ? t("citycatalyst-demo")
+              : project.name,
           value: project.projectId,
         })) ?? [],
     });
-  }, [projectsList]);
+  }, [projectsList, t]);
 
   useEffect(() => {
     if (year && ocCityData) {

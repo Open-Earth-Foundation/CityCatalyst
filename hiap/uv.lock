@@ -972,7 +972,7 @@ requires-dist = [
     { name = "langchain-text-splitters", specifier = ">=0.3.11" },
     { name = "langgraph", specifier = ">=1.1.8" },
     { name = "langgraph-checkpoint", specifier = ">=4.0.2" },
-    { name = "langgraph-prebuilt", specifier = ">=0.6.4" },
+    { name = "langgraph-prebuilt", specifier = ">=1.0.11" },
     { name = "langgraph-sdk", specifier = ">=0.3.13" },
     { name = "langsmith", specifier = ">=0.7.30" },
     { name = "limits", specifier = ">=5.6.0" },
@@ -1592,15 +1592,15 @@ wheels = [
 
 [[package]]
 name = "langgraph-prebuilt"
-version = "1.0.10"
+version = "1.0.11"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "langchain-core" },
     { name = "langgraph-checkpoint" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/fe/c8/01471b1b5601f2e9c9a69c39fc9a2fb8611613ede0002e5a2b81c0acd850/langgraph_prebuilt-1.0.10.tar.gz", hash = "sha256:5a6fc513f8907074563b6218ff991c4ed9db19ac63101314919686e8029ddb07", size = 169769, upload-time = "2026-04-17T17:59:45.373Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8d/bb/0e0b3eb33b1f2f32f8810a49aa24b7d11a5b0ed45f679386095946a59557/langgraph_prebuilt-1.0.11.tar.gz", hash = "sha256:0e71545f706a134b6a80a2a56916562797b499e3e4ab6eed5ce89396ac03d322", size = 171759, upload-time = "2026-04-24T18:18:34.528Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/50/49/d073375beabdc6955df6cbe570ba7786836bd4c817ae998955d35037f2fd/langgraph_prebuilt-1.0.10-py3-none-any.whl", hash = "sha256:e3baa1977d819982e690a357ba5bb77ccc1d4d8d4a029c48e502a3b6d171185f", size = 36086, upload-time = "2026-04-17T17:59:44.395Z" },
+    { url = "https://files.pythonhosted.org/packages/f6/8c/f4c574cb75ae9b8a474215d03a029ea723c919f65771ca1c82fe532d0297/langgraph_prebuilt-1.0.11-py3-none-any.whl", hash = "sha256:7afbaf5d64959e452976664c75bb8ec24098d3510cf9c205919baf443e7342ec", size = 36832, upload-time = "2026-04-24T18:18:33.586Z" },
 ]
 
 [[package]]

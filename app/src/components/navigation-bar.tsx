@@ -6,6 +6,7 @@ import { languages } from "@/i18n/settings";
 import {
   Box,
   Heading,
+  HStack,
   Icon,
   IconButton,
   Link,
@@ -109,6 +110,15 @@ export function NavigationBar({
     api.useGetUserInfoQuery();
   const router = useRouter();
 
+  // Derive the active module name from the current pathname
+  const moduleName = useMemo(() => {
+    if (!pathname) return null;
+    if (pathname.includes("/GHGI")) return t("page-title-ghg-inventories");
+    if (pathname.includes("/HIAP")) return t("page-title-hiap");
+    if (pathname.includes("/dashboard")) return t("page-title-dashboard");
+    return null;
+  }, [pathname, t]);
+
   // Memoize city and inventory IDs to ensure they update when route changes
   const currentInventoryId = useMemo(
     () => inventoryIdFromRoute ?? userInfo?.defaultInventoryId,
@@ -191,7 +201,7 @@ export function NavigationBar({
                 />
               </Link>
             ) : (
-              <>
+              <HStack display="flex" alignItems="center" gap={2}>
                 {!isAuth && (
                   <Link width={9} height={9} href={homePath}>
                     <Image
@@ -207,7 +217,19 @@ export function NavigationBar({
                     {t("title")}
                   </Heading>
                 </Link>
-              </>
+                {moduleName && (
+                  <>
+                    <Separator
+                      orientation="vertical"
+                      height="5"
+                      borderColor="base.light"
+                    />
+                    <Heading size="lg" color="base.light" fontWeight="normal">
+                      {moduleName}
+                    </Heading>
+                  </>
+                )}
+              </HStack>
             )}
           </Box>
           <Box flex={1} />

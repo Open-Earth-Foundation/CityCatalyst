@@ -76,7 +76,7 @@ typing-inspection==0.4.2
 typing_extensions==4.15.0
 urllib3==2.5.0
 uuid_utils==0.13.0
-uv==0.9.7
+uv==0.11.7
 watchfiles==1.1.1
 websockets==15.0.1
 xxhash==3.6.0

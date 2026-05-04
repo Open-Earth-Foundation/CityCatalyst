@@ -6,12 +6,13 @@ import pytest
 from pydantic import ValidationError
 
 from app.modules.prioritizer.services import co_benefit_mapping
+from app.modules.prioritizer.utils.co_benefit_taxonomy import ALLOWED_CO_BENEFIT_KEYS
 
 
 @pytest.mark.unit
 def test_allowed_co_benefit_keys_matches_canonical_taxonomy() -> None:
     """Allowed co-benefit keys expose the canonical taxonomy list."""
-    assert list(co_benefit_mapping.ALLOWED_CO_BENEFIT_KEYS) == [
+    assert list(ALLOWED_CO_BENEFIT_KEYS) == [
         "air_quality",
         "cost_of_living",
         "habitat",
@@ -23,14 +24,25 @@ def test_allowed_co_benefit_keys_matches_canonical_taxonomy() -> None:
 
 
 @pytest.mark.unit
-def test_resolve_city_preferred_co_benefits_skips_blank_input() -> None:
-    """Blank city free text returns a blank-input fallback mapping result."""
+def test_resolve_city_preferred_co_benefits_logs_deprecation_warning(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Legacy free-text resolver should warn immediately when invoked."""
+    warning_messages: list[str] = []
+
+    def fake_warning(message: str, *args: object) -> None:
+        warning_messages.append(message % args if args else message)
+
+    monkeypatch.setattr(co_benefit_mapping.logger, "warning", fake_warning)
+
     result = co_benefit_mapping.resolve_city_preferred_co_benefits(
         city_preference_other_text="   ",
         available_co_benefit_keys=["air_quality", "housing"],
     )
+
     assert result["resolved_preferred_co_benefits"] == []
     assert result["mapping_source"] == "fallback_blank_input"
+    assert any("Deprecated free-text co-benefit resolver invoked" in message for message in warning_messages)
 
 
 @pytest.mark.unit

@@ -343,7 +343,9 @@ def _run_for_city_input(
         excluded_action_ids=list(city_input.excludedActionIds),
         city_preference_sectors=list(city_input.cityStrategicPreferenceSectors),
         city_preference_timeframes=list(city_input.cityStrategicPreferenceTimeframes),
-        city_preference_other_text=city_input.cityStrategicPreferenceOther,
+        city_preference_co_benefit_keys=list(
+            city_input.cityStrategicPreferenceCoBenefitKeys
+        ),
         city_emissions_by_gpc_ref=city_emissions_by_gpc_ref,
         internal_request_id=internal_request_id,
         city_data_api_client=city_data_api_client,

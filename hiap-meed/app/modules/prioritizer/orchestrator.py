@@ -163,7 +163,7 @@ def run_prioritization(
     explanation_language: str,
     city_preference_sectors: list[str],
     city_preference_timeframes: list[str],
-    city_preference_other_text: str | None,
+    city_preference_co_benefit_keys: list[str],
     city_emissions_by_gpc_ref: dict[str, float],
     internal_request_id: UUID,
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient,
@@ -374,7 +374,7 @@ def run_prioritization(
         "city_emissions_by_gpc_ref": city_emissions_by_gpc_ref,
         "city_preference_sectors": city_preference_sectors,
         "city_preference_timeframes": city_preference_timeframes,
-        "city_preference_other_text": city_preference_other_text,
+        "city_preference_co_benefit_keys": city_preference_co_benefit_keys,
         "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
     }
     input_snapshot_path = artifact_writer.write_run_file(
@@ -477,7 +477,7 @@ def run_prioritization(
             policy_signals_by_action_id=policy_signals_by_action_id,
             city_preference_sectors=city_preference_sectors,
             city_preference_timeframes=city_preference_timeframes,
-            city_preference_other_text=city_preference_other_text,
+            city_preference_co_benefit_keys=city_preference_co_benefit_keys,
         )
     # Emit alignment score stats and detailed evidence artifacts.
     timings["alignment"] = block.elapsed_seconds
@@ -631,7 +631,7 @@ def run_prioritization(
                     scored_actions=scored_actions,
                     explanation_language=explanation_language,
                     city_preference_sectors=city_preference_sectors,
-                    city_preference_other_text=city_preference_other_text,
+                    city_preference_co_benefit_keys=city_preference_co_benefit_keys,
                 )
             except Exception as error:
                 explanation_error = error

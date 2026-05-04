@@ -23,9 +23,6 @@ PROMPT_FILE_PATH = (
 SYSTEM_PROMPT_FILE_PATH = (
     Path(__file__).resolve().parents[1] / "prompts" / "ranking_explanation_system.md"
 )
-# Applies to request free-text input used in explanation prompts:
-# - `city_preference_other_text` (frontend `cityStrategicPreferenceOther`)
-EXPLANATION_FREE_TEXT_MAX_CHARS = 400
 EXPLANATION_PROMPT_WARNING_CHARS = 20_000
 
 
@@ -48,7 +45,7 @@ def generate_explanations(
     scored_actions: list[ScoredAction],
     explanation_language: str,
     city_preference_sectors: list[str],
-    city_preference_other_text: str | None,
+    city_preference_co_benefit_keys: list[str],
 ) -> tuple[dict[str, str], dict[str, object]]:
     """
     Generate qualitative explanations for ranked actions.
@@ -66,16 +63,9 @@ def generate_explanations(
             "HIAP_MEED_EXPLANATIONS_MODEL must be set when createExplanations=true"
         )
 
-    # Clamp free-text request fields before they reach the prompt.
-    truncated_city_preference_other_text = _truncate_explanation_free_text(
-        value=city_preference_other_text,
-        field_name="city_preference_other_text",
-        locode=locode,
-    )
     curated_actions = [
         _build_curated_action_payload(
             scored_action=scored_action,
-            city_preference_other_text=truncated_city_preference_other_text,
         )
         for scored_action in scored_actions
     ]
@@ -84,7 +74,7 @@ def generate_explanations(
         locode=locode,
         explanation_language=explanation_language,
         city_preference_sectors=city_preference_sectors,
-        city_preference_other_text=truncated_city_preference_other_text,
+        city_preference_co_benefit_keys=city_preference_co_benefit_keys,
         curated_actions=curated_actions,
     )
     _warn_if_prompt_is_large(
@@ -137,7 +127,7 @@ def generate_explanations(
             "locode": locode,
             "explanation_language": explanation_language,
             "city_preference_sectors": city_preference_sectors,
-            "city_preference_other_text": truncated_city_preference_other_text,
+            "city_preference_co_benefit_keys": city_preference_co_benefit_keys,
             "ranked_action_ids": sorted(expected_action_ids),
         },
         "llm_input": {
@@ -151,25 +141,6 @@ def generate_explanations(
         },
     }
     return explanations_by_action_id, llm_io_payload
-
-
-def _truncate_explanation_free_text(
-    *, value: str | None, field_name: str, locode: str
-) -> str | None:
-    """Truncate explanation-only request text inputs to a safe prompt budget."""
-    if value is None:
-        return None
-    if len(value) <= EXPLANATION_FREE_TEXT_MAX_CHARS:
-        return value
-
-    logger.warning(
-        "Truncating explanation input field `%s` for locode=%s from %s to %s characters",
-        field_name,
-        locode,
-        len(value),
-        EXPLANATION_FREE_TEXT_MAX_CHARS,
-    )
-    return value[:EXPLANATION_FREE_TEXT_MAX_CHARS]
 
 
 def _warn_if_prompt_is_large(*, prompt: str, locode: str, action_count: int) -> None:
@@ -192,7 +163,7 @@ def _build_prompt(
     locode: str,
     explanation_language: str,
     city_preference_sectors: list[str],
-    city_preference_other_text: str | None,
+    city_preference_co_benefit_keys: list[str],
     curated_actions: list[dict[str, object]],
 ) -> str:
     """Build final LLM prompt from template and curated payload."""
@@ -201,7 +172,9 @@ def _build_prompt(
         locode=locode,
         explanation_language=explanation_language,
         city_preference_sectors=json.dumps(city_preference_sectors, ensure_ascii=True),
-        city_preference_other_text=city_preference_other_text or "",
+        city_preference_co_benefit_keys=json.dumps(
+            city_preference_co_benefit_keys, ensure_ascii=True
+        ),
         ranked_actions_json=json.dumps(curated_actions, ensure_ascii=True, indent=2),
     )
 
@@ -235,7 +208,6 @@ def _rows_to_explanations(
 def _build_curated_action_payload(
     *,
     scored_action: ScoredAction,
-    city_preference_other_text: str | None,
 ) -> dict[str, object]:
     """Build qualitative, stable explanation input payload for one action."""
     impact_evidence_raw = scored_action.evidence.get("impact")
@@ -265,9 +237,7 @@ def _build_curated_action_payload(
         "alignment_signals": _build_alignment_signals(alignment_evidence),
         "feasibility_signals": _build_feasibility_signals(feasibility_evidence),
         "known_limitations": _build_known_limitations(
-            alignment_evidence=alignment_evidence,
             feasibility_evidence=feasibility_evidence,
-            city_preference_other_text=city_preference_other_text,
         ),
     }
     return payload
@@ -354,20 +324,11 @@ def _build_alignment_signals(alignment_evidence: dict[str, object]) -> dict[str,
     )
     policy_signals_count_value = alignment_evidence.get("policy_signals_count")
     city_preference_timeframes = alignment_evidence.get("city_preference_timeframes", [])
-    other_component_mapping_source_value = alignment_evidence.get(
-        "other_component_mapping_source"
-    )
-    other_component_mapping_source = (
-        str(other_component_mapping_source_value).strip()
-        if other_component_mapping_source_value is not None
-        else None
-    )
     return {
         "sector_match": bool(alignment_evidence.get("sector_match", False)),
         "mapped_sector_tag": mapped_sector_tag,
         "action_timeline_bucket": action_timeline_bucket,
         "city_preference_timeframes": city_preference_timeframes,
-        "other_component_mapping_source": other_component_mapping_source,
         "policy_signals_count": int(policy_signals_count_value)
         if isinstance(policy_signals_count_value, int | float)
         else 0,
@@ -422,27 +383,10 @@ def _build_feasibility_signals(
 
 def _build_known_limitations(
     *,
-    alignment_evidence: dict[str, object],
     feasibility_evidence: dict[str, object],
-    city_preference_other_text: str | None,
 ) -> list[str]:
     """List known limitations that should be acknowledged in explanations."""
     limitations: list[str] = []
-
-    other_component_mapping_source = str(
-        alignment_evidence.get("other_component_mapping_source", "")
-    ).strip()
-    other_preference_text_provided = bool(
-        city_preference_other_text and city_preference_other_text.strip()
-    )
-    if (
-        other_preference_text_provided
-        and other_component_mapping_source
-        and other_component_mapping_source != "llm"
-    ):
-        limitations.append(
-            "City free-text preference was provided, but mapping did not complete successfully; ranking used neutral other-preference scoring."
-        )
 
     informational_requirements_count_value = feasibility_evidence.get(
         "informational_requirements"

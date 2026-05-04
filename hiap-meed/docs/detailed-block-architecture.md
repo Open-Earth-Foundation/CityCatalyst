@@ -9,7 +9,7 @@
 | Hard Filter  | Legal requirement check                        | Implemented                                      |
 | Impact       | GPC reference evidence collection              | Implemented                                      |
 | Impact       | Activity relevance × reduction band × timeline | Implemented                                      |
-| Alignment    | Policy + sector + other components             | Implemented (`other` uses LLM-based co-benefit mapping plus normalized selected co-benefit scoring) |
+| Alignment    | Policy + sector + other components             | Implemented (`other` uses direct co-benefit selections plus normalized selected co-benefit scoring) |
 | Feasibility  | Soft legal + socio-economic weighted component | Implemented                                      |
 | Weighted Sum | Weighted aggregation, sort, rank, `top_n`      | Implemented                                      |
 
@@ -163,8 +163,8 @@ Exclusions are handled in the Hard Filter stage, so Alignment only scores eligib
   - Source: frontend request `cityStrategicPreferenceTimeframes`
 - Action implementation timeline
   - Source: `Action.timelineForImplementation`
-- City strategic preference other text
-  - Source: frontend request `cityStrategicPreferenceOther`, mapped to allowed co-benefit keys with OpenAI structured output
+- City strategic preference co-benefit keys
+  - Source: frontend request `cityStrategicPreferenceCoBenefitKeys`, validated against the allowed co-benefit taxonomy
 - Action sector mapping for city preference overlap
   - Source: `Action.emissions["sector_number"]`
 - Candidate actions (already hard-filtered)

@@ -88,14 +88,14 @@ class MockExplanationService:
         scored_actions: list[object],
         explanation_language: str,
         city_preference_sectors: list[str],
-        city_preference_other_text: str | None,
+        city_preference_co_benefit_keys: list[str],
     ) -> tuple[dict[str, str], dict[str, object]]:
         """Return predefined explanations and capture which actions were requested."""
         del (
             locode,
             explanation_language,
             city_preference_sectors,
-            city_preference_other_text,
+            city_preference_co_benefit_keys,
         )
         if self.should_raise:
             raise RuntimeError("simulated explanation provider failure")
@@ -166,7 +166,7 @@ def test_prioritize_rejects_invalid_weights_override(
                                 "populationSize": 1000,
                                 "weightsOverride": weights_override,
                                 "cityStrategicPreferenceSectors": [],
-                                "cityStrategicPreferenceOther": None,
+                                "cityStrategicPreferenceCoBenefitKeys": [],
                                 "cityEmissionsData": {
                                     "inventoryYear": None,
                                     "gpcData": {},
@@ -262,7 +262,7 @@ def test_prioritize_smoke() -> None:
                                     "medium",
                                     "long",
                                 ],
-                                "cityStrategicPreferenceOther": None,
+                                "cityStrategicPreferenceCoBenefitKeys": [],
                                 "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
                             }
                         ],
@@ -502,7 +502,7 @@ def test_prioritize_honors_confirmed_excluded_action_ids() -> None:
                                 "populationSize": 1000,
                                 "excludedActionIds": ["A_exclude"],
                                 "cityStrategicPreferenceSectors": [],
-                                "cityStrategicPreferenceOther": None,
+                                "cityStrategicPreferenceCoBenefitKeys": [],
                                 "cityEmissionsData": {
                                     "inventoryYear": None,
                                     "gpcData": {},
@@ -576,7 +576,7 @@ def test_prioritize_rejects_no_preference_with_other_timeframes() -> None:
                                     "no_preference",
                                     "short",
                                 ],
-                                "cityStrategicPreferenceOther": None,
+                                "cityStrategicPreferenceCoBenefitKeys": [],
                                 "cityEmissionsData": {
                                     "inventoryYear": None,
                                     "gpcData": {},
@@ -638,7 +638,70 @@ def test_prioritize_rejects_invalid_city_preference_sector_tag() -> None:
                                 "countryCode": "CL",
                                 "populationSize": 1000,
                                 "cityStrategicPreferenceSectors": ["energy"],
-                                "cityStrategicPreferenceOther": None,
+                                "cityStrategicPreferenceCoBenefitKeys": [],
+                                "cityEmissionsData": {
+                                    "inventoryYear": None,
+                                    "gpcData": {},
+                                },
+                            }
+                        ],
+                    },
+                },
+            )
+
+        assert response.status_code == 422
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+def test_prioritize_rejects_invalid_city_preference_co_benefit_key() -> None:
+    """Prioritize endpoint should reject unsupported preferred co-benefit keys."""
+    city = CityData(
+        comuna_name="Santiago",
+        locode="CL-SCL",
+        region_name="Metropolitana",
+        comuna_code="13101",
+        region_code="13",
+        city_context=[],
+    )
+    actions = [Action(action_id="A_ok", action_name="Action")]
+    mock_city_client = MockCityDataApiClient(city=city)
+    mock_action_client = MockActionDataApiClient(actions=actions)
+    mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post(
+                "/v1/prioritize",
+                json={
+                    "meta": {
+                        "requestId": "req-invalid-co-benefit-key",
+                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                        "backendConsumer": "hiap-meed",
+                        "upstreamProvider": "city_catalyst_frontend",
+                        "apiContext": {
+                            "endpoint": "POST /prioritizer/v1/start_prioritization",
+                            "locodes": ["CL-SCL"],
+                        },
+                        "totalRecords": 1,
+                    },
+                    "requestData": {
+                        "requestedLanguages": ["en"],
+                        "cityDataList": [
+                            {
+                                "locode": "CL-SCL",
+                                "countryCode": "CL",
+                                "populationSize": 1000,
+                                "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceCoBenefitKeys": ["jobs"],
                                 "cityEmissionsData": {
                                     "inventoryYear": None,
                                     "gpcData": {},
@@ -721,7 +784,7 @@ def test_prioritize_alignment_timeframe_multi_select_uses_best_match() -> None:
                                     "medium",
                                     "long",
                                 ],
-                                "cityStrategicPreferenceOther": None,
+                                "cityStrategicPreferenceCoBenefitKeys": [],
                                 "cityEmissionsData": {
                                     "inventoryYear": None,
                                     "gpcData": {},
@@ -814,7 +877,7 @@ def test_prioritize_discards_hard_legal_mismatch() -> None:
                                 "countryCode": "CL",
                                 "populationSize": 1000,
                                 "cityStrategicPreferenceSectors": [],
-                                "cityStrategicPreferenceOther": None,
+                                "cityStrategicPreferenceCoBenefitKeys": [],
                                 "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
                             }
                         ],
@@ -896,7 +959,7 @@ def test_prioritize_keeps_no_evidence_hard_legal_requirements() -> None:
                                 "countryCode": "CL",
                                 "populationSize": 1000,
                                 "cityStrategicPreferenceSectors": [],
-                                "cityStrategicPreferenceOther": None,
+                                "cityStrategicPreferenceCoBenefitKeys": [],
                                 "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
                             }
                         ],
@@ -975,7 +1038,7 @@ def test_prioritize_skips_explanations_when_flag_false(
                                 "countryCode": "CL",
                                 "populationSize": 1000,
                                 "cityStrategicPreferenceSectors": [],
-                                "cityStrategicPreferenceOther": None,
+                                "cityStrategicPreferenceCoBenefitKeys": [],
                                 "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
                             }
                         ],
@@ -1050,7 +1113,7 @@ def test_prioritize_generates_explanations_for_returned_top_n_only(
                                 "countryCode": "CL",
                                 "populationSize": 1000,
                                 "cityStrategicPreferenceSectors": [],
-                                "cityStrategicPreferenceOther": None,
+                                "cityStrategicPreferenceCoBenefitKeys": [],
                                 "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
                             }
                         ],
@@ -1121,7 +1184,7 @@ def test_prioritize_fails_open_when_explanation_generation_errors(
                                 "countryCode": "CL",
                                 "populationSize": 1000,
                                 "cityStrategicPreferenceSectors": [],
-                                "cityStrategicPreferenceOther": None,
+                                "cityStrategicPreferenceCoBenefitKeys": [],
                                 "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
                             }
                         ],
@@ -1163,14 +1226,14 @@ def test_prioritize_logs_non_zero_explanation_elapsed_time(
         scored_actions: list[object],
         explanation_language: str,
         city_preference_sectors: list[str],
-        city_preference_other_text: str | None,
+        city_preference_co_benefit_keys: list[str],
     ) -> tuple[dict[str, str], dict[str, object]]:
         """Return one explanation after a small delay."""
         del (
             locode,
             explanation_language,
             city_preference_sectors,
-            city_preference_other_text,
+            city_preference_co_benefit_keys,
         )
         time.sleep(0.01)
         return {"A_1": "Delayed explanation"}, {
@@ -1221,7 +1284,7 @@ def test_prioritize_logs_non_zero_explanation_elapsed_time(
                                 "countryCode": "CL",
                                 "populationSize": 1000,
                                 "cityStrategicPreferenceSectors": [],
-                                "cityStrategicPreferenceOther": None,
+                                "cityStrategicPreferenceCoBenefitKeys": [],
                                 "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
                             }
                         ],
@@ -1264,9 +1327,9 @@ def test_prioritize_explanations_use_first_requested_language(
         scored_actions: list[object],
         explanation_language: str,
         city_preference_sectors: list[str],
-        city_preference_other_text: str | None,
+        city_preference_co_benefit_keys: list[str],
     ) -> tuple[dict[str, str], dict[str, object]]:
-        del locode, scored_actions, city_preference_sectors, city_preference_other_text
+        del locode, scored_actions, city_preference_sectors, city_preference_co_benefit_keys
         seen_languages.append(explanation_language)
         return {"A_1": "Explicacion de prueba"}, {
             "status": "completed",
@@ -1312,7 +1375,7 @@ def test_prioritize_explanations_use_first_requested_language(
                                 "countryCode": "CL",
                                 "populationSize": 1000,
                                 "cityStrategicPreferenceSectors": [],
-                                "cityStrategicPreferenceOther": None,
+                                "cityStrategicPreferenceCoBenefitKeys": [],
                                 "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
                             }
                         ],

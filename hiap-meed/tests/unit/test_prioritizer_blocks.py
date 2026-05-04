@@ -14,7 +14,6 @@ from app.modules.prioritizer.blocks import (
     hard_filter,
     impact,
 )
-from app.modules.prioritizer.services import co_benefit_mapping
 from app.modules.prioritizer.internal_models import Action, CityData
 from app.modules.prioritizer.models import CityApiItem
 from app.services.data_clients import (
@@ -96,7 +95,7 @@ def _alignment_timeframe_evidence(
         policy_signals_by_action_id={},
         city_preference_sectors=[],
         city_preference_timeframes=city_preference_timeframes,
-        city_preference_other_text=None,
+        city_preference_co_benefit_keys=[],
     )
     assert result.evidence_by_action_id is not None
     return result.evidence_by_action_id["A_timeframe"]
@@ -316,7 +315,7 @@ def test_alignment_block_with_mock_api_data() -> None:
         policy_signals_by_action_id=policy_signals,
         city_preference_sectors=["stationary_energy", "transportation"],
         city_preference_timeframes=["no_preference"],
-        city_preference_other_text="Focus on local jobs and cleaner mobility",
+        city_preference_co_benefit_keys=["mobility"],
     )
 
     assert len(result.score_by_action_id) == len(actions)
@@ -336,34 +335,17 @@ def test_alignment_block_with_mock_api_data() -> None:
 
 
 @pytest.mark.unit
-def test_alignment_other_preference_component_uses_normalized_co_benefit_impacts(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_alignment_other_preference_component_uses_selected_co_benefit_keys() -> None:
     """Alignment other-preference score reflects selected co-benefit impacts."""
     actions = _load_mock_actions()
     policy_signals = _load_mock_policy_signals()
-
-    def _fake_resolve(**_: object) -> dict[str, object]:
-        return {
-            "resolved_preferred_co_benefits": ["air_quality", "housing"],
-            "unmappable_preference_fragments": ["jobs"],
-            "mapping_source": "llm",
-            "provider": "openai",
-            "model": "gpt-test",
-        }
-
-    monkeypatch.setattr(
-        co_benefit_mapping,
-        "resolve_city_preferred_co_benefits",
-        _fake_resolve,
-    )
 
     result = alignment.run(
         actions=actions,
         policy_signals_by_action_id=policy_signals,
         city_preference_sectors=["stationary_energy", "transportation"],
         city_preference_timeframes=["no_preference"],
-        city_preference_other_text="Cleaner air and healthier homes",
+        city_preference_co_benefit_keys=["air_quality", "housing"],
     )
 
     assert result.evidence_by_action_id is not None
@@ -376,47 +358,26 @@ def test_alignment_other_preference_component_uses_normalized_co_benefit_impacts
         "air_quality",
         "housing",
     ]
-    assert first_action_evidence["unmappable_preference_fragments"] == ["jobs"]
-    assert first_action_evidence["other_component_mapping_source"] == "llm"
     assert first_action_evidence["other_component_value"] == pytest.approx(0.5)
 
 
 @pytest.mark.unit
-def test_alignment_other_preference_component_is_neutral_on_mapping_fallback(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Alignment keeps the other-preference component neutral when mapping fails."""
+def test_alignment_other_preference_component_is_neutral_without_selected_keys() -> None:
+    """Alignment keeps the other-preference component neutral without selections."""
     actions = _load_mock_actions()
     policy_signals = _load_mock_policy_signals()
-
-    def _fake_resolve(**_: object) -> dict[str, object]:
-        return {
-            "resolved_preferred_co_benefits": [],
-            "unmappable_preference_fragments": [],
-            "mapping_source": "fallback_error",
-            "provider": "openai",
-            "model": "gpt-test",
-            "warning": "parse failed",
-        }
-
-    monkeypatch.setattr(
-        co_benefit_mapping,
-        "resolve_city_preferred_co_benefits",
-        _fake_resolve,
-    )
 
     result = alignment.run(
         actions=actions,
         policy_signals_by_action_id=policy_signals,
         city_preference_sectors=["stationary_energy", "transportation"],
         city_preference_timeframes=["no_preference"],
-        city_preference_other_text="Cleaner air and healthier homes",
+        city_preference_co_benefit_keys=[],
     )
 
     assert result.evidence_by_action_id is not None
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
     assert first_action_evidence["resolved_preferred_co_benefits"] == []
-    assert first_action_evidence["other_component_mapping_source"] == "fallback_error"
     assert first_action_evidence["other_component_value"] == pytest.approx(0.5)
 
 

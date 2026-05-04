@@ -1,8 +1,10 @@
-import { Box, Card, Heading, Icon, Text } from "@chakra-ui/react";
+import { BodyMedium } from "@/components/package";
+import { Box, Card, Heading, Icon, Link, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import dynamic from "next/dynamic";
 import { CircleFlag } from "react-circle-flags";
-import { MdOutlineAspectRatio } from "react-icons/md";
+import { Trans } from "react-i18next";
+import { MdInfoOutline, MdOutlineAspectRatio } from "react-icons/md";
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
 export default function ConfirmStep({
@@ -120,6 +122,27 @@ export default function ConfirmStep({
           </Box>
           <Box w="full">
             <CityMap locode={locode} height={400} width={450} />
+            <Box display="flex" alignItems="top" gap="6px" mt={4}>
+              <Icon as={MdInfoOutline} mt={1} />
+              <BodyMedium
+                color="content.secondary"
+                fontWeight="normal"
+                letterSpacing="wide"
+              >
+                <Trans i18nKey="city-boundary-info" t={t}>
+                  <Link
+                    color="content.link"
+                    fontWeight="bold"
+                    textDecoration="underline"
+                    letterSpacing="wide"
+                    display="block"
+                    href="mailto:greta@openearth.org"
+                  >
+                    Contact Us
+                  </Link>
+                </Trans>
+              </BodyMedium>
+            </Box>
           </Box>
         </Card.Root>
       </Box>

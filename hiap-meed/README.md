@@ -45,6 +45,7 @@ HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED=false
 HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL=
 HIAP_MEED_EXPLANATIONS_ENABLED=true
 HIAP_MEED_EXPLANATIONS_MODEL=
+HIAP_MEED_EXPLANATION_TRANSLATIONS_MODEL=
 OPENAI_API_KEY=
 OPENAI_TIMEOUT_SECONDS=30
 OPENAI_MAX_RETRIES=3
@@ -68,7 +69,8 @@ Variables:
 - `OPENAI_API_KEY`: API key used by OpenAI-backed features
 - `OPENAI_TIMEOUT_SECONDS`: shared OpenAI client timeout in seconds (default `30`)
 - `HIAP_MEED_EXPLANATIONS_ENABLED`: global switch for post-ranking explanation calls
-- `HIAP_MEED_EXPLANATIONS_MODEL`: model name used when `createExplanations=true`
+- `HIAP_MEED_EXPLANATIONS_MODEL`: model name used for canonical explanation generation when `createExplanations=true`
+- `HIAP_MEED_EXPLANATION_TRANSLATIONS_MODEL`: model name used for explanation translation
 - `OPENAI_MAX_RETRIES`: shared OpenAI client retries (default `3`)
 
 ### 2. Install dependencies
@@ -92,6 +94,7 @@ Verify the service:
 - Health check: `curl http://localhost:8000/health`
 - OpenAPI docs: `http://localhost:8000/docs`
 - Prioritization endpoint: `POST /v1/prioritize`
+- Explanation translation endpoint: `POST /v1/explanations/translate`
 - Exclusion preview endpoint: `POST /v1/prioritize/exclusions/preview`
 
 ### External API contracts (modeled, integration pending)
@@ -124,7 +127,9 @@ Request body:
 - Single-city and multi-city payloads both use `requestData.cityDataList`.
 - Optional flag: `requestData.createExplanations` controls whether the post-ranking
   explanation stage is executed.
-- `requestData.requestedLanguages` is currently accepted as a list for frontend compatibility, but ranked-action explanations support only one returned language today. The backend uses the first list item as the explanation language and ignores the rest.
+- `requestData.requestedLanguages` controls which explanation languages are returned.
+- Canonical explanation generation is always English.
+- If non-English languages are requested, the backend generates English once and then translates from English into each requested target language.
 
 Exclusions:
 
@@ -219,8 +224,9 @@ Response fields:
     - `alignment_score` (`float`)
     - `feasibility_score` (`float`)
     - `evidence_summary` (`object`): compact explainability snapshot from hard-filter/impact/alignment/feasibility evidence
-    - `explanation` (`string | null`): optional qualitative explanation text when `createExplanations=true`
+    - `explanations` (`object`): optional explanation texts keyed by language code when `createExplanations=true`
   - `metadata` (`object`): request IDs, timings, counts, and hard-filter evidence.
+  - `warnings` (`string[]`): human-readable translation warnings when canonical English inputs appear non-English or mixed-language
 
 Ranking details:
 
@@ -234,11 +240,25 @@ Explanation stage behavior:
 
 - Explanations are generated only when `requestData.createExplanations=true`.
 - Explanations are generated from post-ranking evidence and do not change ranks.
-- The explanation stage currently supports one output language only. It resolves that language from the first item in `requestData.requestedLanguages`.
+- Explanations are always authored canonically in English.
+- Requested non-English explanations are translations of the canonical English text.
 - Explanations receive the selected `cityStrategicPreferenceCoBenefitKeys` directly.
+- If translation detects that a canonical explanation labeled as English appears non-English or mixed-language, translation still returns results and adds a warning to logs and the API response.
+- That language-check warning is determined internally per action, then aggregated by the backend into the public top-level `warnings` list returned by the API.
 - The backend logs a warning if the final explanation prompt becomes unusually large.
 - If explanation generation fails or times out, the endpoint fails open and
-  returns normal ranking output with `explanation=null`.
+  returns normal ranking output with `explanations={}`.
+
+### 5. Call the explanation translation endpoint
+
+- The endpoint accepts the frontend envelope `ExplanationTranslationApiRequest`.
+- `requestData.sourceLanguage` must be `en`.
+- `requestData.targetLanguages` must contain only non-English target languages.
+- `requestData.rankedActions[*]` includes:
+  - `actionId`
+  - `canonicalExplanation`
+- The endpoint is stateless: the frontend sends the canonical English explanations it wants translated.
+- The endpoint returns only the requested target-language translations, not the original English text.
 
 Example JSON request bodies (using mock data from `data/`):
 
@@ -363,9 +383,10 @@ Example response:
               "matched_city_gpc_refs_count": 2
             }
           },
-          "explanation": null
+          "explanations": {}
         }
       ],
+      "warnings": [],
       "metadata": {
         "internal_request_id": "d1db6269-4cf9-4d62-8f4c-8f4ce631fbd2",
         "frontend_request_id": "1234567890",
@@ -442,7 +463,14 @@ What each request run folder contains:
   - `llm/explanations_io.json`: explanation-stage LLM request/response artifact (only when explanations are generated successfully)
   - `llm/explanations_prompt.txt`: plain-text rendered user prompt with preserved newlines (only when explanations are generated successfully)
   - `llm/explanations_error.json`: explanation-stage failure artifact with request context and error (only when explanation generation fails)
-- Explanation artifacts and response metadata record both the original `requestedLanguages` list and the single resolved explanation language used for the run.
+  - `llm/explanation_translations_io.json`: translation-stage LLM request/response artifact (only when translations are generated successfully)
+  - `llm/explanation_translations_prompt.txt`: plain-text rendered translation prompt (only when translations are generated successfully)
+  - `llm/explanation_translations_error.json`: translation-stage failure artifact with request context and error (only when translation fails)
+- Prioritization explanation artifacts and response metadata record the original `requestedLanguages`, canonical language `en`, generated languages, and any translation warnings.
+- Explanation translation request folders additionally include:
+  - `llm/explanation_translations_io.json`
+  - `llm/explanation_translations_prompt.txt`
+- Explanation translation artifacts record the source language contract, requested target languages, and any LLM language-check warnings.
 - For the direct other-preference feature, the `alignment` step detail includes evidence such as `resolved_preferred_co_benefits`, `matched_preferred_co_benefits`, and mapping source fields
 - The active request flow does not emit dedicated LLM prompt/response artifact files for Alignment because direct co-benefit selections are deterministic
 - Exclusion preview request folders additionally include:

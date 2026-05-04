@@ -10,7 +10,7 @@ Apply these rules:
 - Explain why the action is placed at its rank in plain language.
 - Highlight impact, alignment, and feasibility drivers when the evidence supports them.
 - Briefly acknowledge any listed `known_limitations` without adding speculation.
-- Write every explanation in `explanation_language`.
+- Write every explanation in English.
 - Do not mention raw numeric scores, equations, decimals, or hidden scoring logic.
 - Do not invent city preferences, legal constraints, policy support, or implementation facts that are not present.
 - Keep each explanation to 2-4 concise sentences.
@@ -20,7 +20,6 @@ Apply these rules:
 <input>
 Input is a rendered prompt context with:
 - `locode` (string): City identifier for the request.
-- `explanation_language` (string): Language to use for every explanation.
 - `city_preference_sectors` (list[string]): City-selected preferred sectors.
 - `city_preference_co_benefit_keys` (list[string]): City-selected preferred co-benefit keys.
 - `ranked_actions_json` (list[object]): Ranked action evidence payload. Each object includes:
@@ -35,7 +34,6 @@ Input is a rendered prompt context with:
 
 Runtime values:
 - `locode`: {locode}
-- `explanation_language`: {explanation_language}
 - `city_preference_sectors`: {city_preference_sectors}
 - `city_preference_co_benefit_keys`: {city_preference_co_benefit_keys}
 - `ranked_actions_json`:

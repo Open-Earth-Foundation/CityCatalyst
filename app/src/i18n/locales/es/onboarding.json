@@ -153,5 +153,9 @@
   "total-co2e": "Total de CO2e",
   "map-rows-description-pdf": "Las filas extraídas ya están asignadas a los campos del inventario. Revisa los datos a continuación y continúa hasta el último paso.",
   "upload-failed": "Error al subir",
-  "failed-to-upload-file": "No se pudo subir el archivo"
+  "failed-to-upload-file": "No se pudo subir el archivo",
+  "citycatalyst-demo": "CityCatalyst Demo",
+  "inventory-goal-description-ghgi": "El GPC proporciona un marco sólido para contabilizar e informar las emisiones de gases de efecto invernadero a escala municipal.",
+  "gwp-description-ghgi": "El potencial de calentamiento global (GWP) mide cuánto calor atrapa un gas de efecto invernadero en la atmósfera durante un período específico, en relación con el dióxido de carbono.",
+  "gwp-description-ghgi-tip": "Recomendamos utilizar AR6 (versión más reciente) para los cálculos de su inventario. Si su ciudad tiene inventarios anteriores, utilice la misma versión que antes."
 }

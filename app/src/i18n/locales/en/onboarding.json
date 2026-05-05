@@ -150,5 +150,9 @@
   "loading-validation-results": "Loading validation results...",
   "no-field-mappings": "No field mappings available",
   "upload-failed": "Upload failed",
-  "failed-to-upload-file": "Failed to upload file"
+  "failed-to-upload-file": "Failed to upload file",
+  "citycatalyst-demo": "CityCatalyst Demo",
+  "inventory-goal-description-ghgi": "The GPC provides a robust framework for accounting and reporting city-wide greenhouse gas emissions.",
+  "gwp-description-ghgi": "Global warming potential (GWP) is a measure of how much heat a greenhouse gas traps in the atmosphere over a specific time period, relative to carbon dioxide.",
+  "gwp-description-ghgi-tip": "We recommend using AR6 (latest version) for your inventory calculations. If your city has previous inventories, use the same version as before."
 }

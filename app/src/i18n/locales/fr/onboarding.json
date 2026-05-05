@@ -150,5 +150,9 @@
   "total-co2e": "Total CO2e",
   "map-rows-description-pdf": "Les rangées extraites sont déjà mappées aux champs d'inventaire. Examinez les données ci-dessous et passez à l'étape finale.",
   "upload-failed": "Échec du téléchargement",
-  "failed-to-upload-file": "Échec de l'envoi du fichier"
+  "failed-to-upload-file": "Échec de l'envoi du fichier",
+  "citycatalyst-demo": "CityCatalyst Demo",
+  "inventory-goal-description-ghgi": "Le GPC fournit un cadre solide pour la comptabilisation et la déclaration des émissions de gaz à effet de serre à l'échelle de la ville.",
+  "gwp-description-ghgi": "Le potentiel de réchauffement global (GWP) mesure la quantité de chaleur qu'un gaz à effet de serre piège dans l'atmosphère sur une période donnée, par rapport au dioxyde de carbone.",
+  "gwp-description-ghgi-tip": "Nous recommandons d'utiliser AR6 (version la plus récente) pour vos calculs d'inventaire. Si votre ville dispose d'inventaires antérieurs, utilisez la même version qu'auparavant."
 }

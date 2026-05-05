@@ -81,10 +81,10 @@ export function Hero({
   );
 
   const moduleLabel = useMemo(() => {
-    if (pathname.includes("/HIAP")) return "High Impact Action Plan";
-    if (pathname.includes("/dashboard")) return "Dashboard";
-    return "GHG Inventories";
-  }, [pathname]);
+    if (pathname.includes("/HIAP")) return t("breadcrumb-hiap");
+    if (pathname.includes("/dashboard")) return t("dashboard");
+    return t("ghg-inventories");
+  }, [pathname, t]);
 
   const cityId = inventory?.cityId ?? city?.cityId;
   const breadcrumbsHomeHref = cityId ? `/${lng}/cities/${cityId}` : `/${lng}`;
@@ -116,7 +116,7 @@ export function Hero({
                   _hover={{ textDecoration: "underline" }}
                   textUnderlineOffset="8px"
                 >
-                  CityCatalyst
+                  {t("citycatalyst")}
                 </Text>
               </Link>
             </BreadcrumbLink>

@@ -9,11 +9,12 @@ import type { GHGIFormInputs } from "@/util/GHGI/types";
 import { useEffect } from "react";
 import {
   Box,
+  CloseButton,
   createListCollection,
   Heading,
   HStack,
   Icon,
-  Link,
+  List,
   Text,
 } from "@chakra-ui/react";
 import { MdCheck, MdWarning } from "react-icons/md";
@@ -30,6 +31,9 @@ import {
 } from "@/components/ui/select";
 import { Field } from "@/components/ui/field";
 import CustomSelectableButton from "../../custom-selectable-buttons";
+import { ButtonMedium } from "@/components/package";
+import { BiLink } from "react-icons/bi";
+import InventoryDetailsHelpDrawer from "./InventoryDetailsHelpDrawer";
 
 export default function SetInventoryDetailsStep({
   t,
@@ -85,9 +89,12 @@ export default function SetInventoryDetailsStep({
         gap="24px"
         mb="48px"
       >
-        <Heading data-testid="inventory-details-heading" size="xl">
-          {t("setup-inventory-details-heading")}
-        </Heading>
+        <HStack justifyContent="space-between" w="full">
+          <Heading data-testid="inventory-details-heading" size="xl">
+            {t("setup-inventory-details-heading")}
+          </Heading>
+          <InventoryDetailsHelpDrawer t={t} />
+        </HStack>
         <Text
           color="content.tertiary"
           fontSize="body.lg"

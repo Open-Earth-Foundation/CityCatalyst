@@ -2,7 +2,11 @@ import { db } from "@/models";
 import { getEmissionResults } from "@/backend/ResultsService";
 import { fetchRanking } from "@/backend/hiap/HiapService";
 import { logger } from "@/services/logger";
-import { ACTION_TYPES, HighImpactActionRankingStatus, LANGUAGES } from "@/util/types";
+import {
+  ACTION_TYPES,
+  HighImpactActionRankingStatus,
+  LANGUAGES,
+} from "@/util/types";
 import { ModuleService } from "@/backend/ModuleService";
 import { Modules } from "@/util/constants";
 import createHttpError from "http-errors";
@@ -195,7 +199,7 @@ export class ModuleDashboardService {
   ): Promise<any> {
     try {
       const locode = await InventoryService.getLocode(inventoryId);
-      
+
       // Find any existing ranking for this inventory/locode/type
       const ranking = await db.models.HighImpactActionRanking.findOne({
         where: {
@@ -208,19 +212,19 @@ export class ModuleDashboardService {
       });
 
       if (!ranking) {
-        return { 
-          status: "not_found", 
+        return {
+          status: "not_found",
           rankedActions: [],
-          rankingId: null 
+          rankingId: null,
         };
       }
 
       // Get existing actions for this language and type
       const existingActions = await db.models.HighImpactActionRanked.findAll({
-        where: { 
-          hiaRankingId: ranking.id, 
+        where: {
+          hiaRankingId: ranking.id,
           lang: lng,
-          type: type
+          type: type,
         },
         order: [["rank", "ASC"]],
       });
@@ -231,13 +235,16 @@ export class ModuleDashboardService {
         rankedActions: existingActions,
       };
     } catch (error) {
-      logger.error({
-        err: error,
-        inventoryId,
-        type,
-        lng,
-      }, "Error getting HIAP status data");
-      
+      logger.error(
+        {
+          err: error,
+          inventoryId,
+          type,
+          lng,
+        },
+        "Error getting HIAP status data",
+      );
+
       return {
         status: "failure",
         rankedActions: [],

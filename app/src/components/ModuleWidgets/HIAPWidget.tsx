@@ -69,21 +69,11 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
 
   const isLoading = isInventoryLoading || isHiapLoading;
 
-  // Calculate topPickActions whenever actionType or data changes
-  const topPickActions = useMemo(() => {
-    const actions = hiapData?.[actionType]?.rankedActions || [];
-    return getTopPickActions(actions);
-  }, [actionType, hiapData]);
-
   // Check if there are ANY actions (either Mitigation or Adaptation)
   const hasAnyContent: boolean =
     !!hiapData &&
     (hiapData?.[ACTION_TYPES.Mitigation]?.rankedActions?.length > 0 ||
       hiapData?.[ACTION_TYPES.Adaptation]?.rankedActions?.length > 0);
-
-  // Check if current tab has content
-  const currentTabHasContent: boolean =
-    !!hiapData && hiapData?.[actionType]?.rankedActions?.length > 0;
 
   React.useEffect(() => {
     if (!isLoading) {

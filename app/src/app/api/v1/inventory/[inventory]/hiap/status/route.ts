@@ -56,7 +56,11 @@
  *                       format: uuid
  */
 import { apiHandler } from "@/util/api";
-import { LANGUAGES, ACTION_TYPES, HighImpactActionRankingStatus } from "@/util/types";
+import {
+  LANGUAGES,
+  ACTION_TYPES,
+  HighImpactActionRankingStatus,
+} from "@/util/types";
 import { NextRequest } from "next/server";
 import UserService from "@/backend/UserService";
 import { logger } from "@/services/logger";
@@ -131,8 +135,8 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
         data: {
           status: "not_found",
           rankedActions: [],
-          rankingId: null
-        }
+          rankingId: null,
+        },
       });
     }
 
@@ -141,7 +145,7 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
       where: {
         hiaRankingId: ranking.id,
         lang: lng,
-        type: type
+        type: type,
       },
       order: [["rank", "ASC"]],
     });
@@ -201,21 +205,22 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
 
       // Extract ranked action IDs to filter them out from unranked
       const rankedActionIds = new Set(
-        existingActions.map((action: any) => action.actionId)
+        existingActions.map((action: any) => action.actionId),
       );
 
       // Get unranked action selections from database
-      const unrankedSelections = await db.models.UnrankedActionSelection.findAll({
-        where: {
-          inventoryId: params.inventory,
-          actionType: type,
-          lang: lng,
-          isSelected: true,
-        },
-      });
+      const unrankedSelections =
+        await db.models.UnrankedActionSelection.findAll({
+          where: {
+            inventoryId: params.inventory,
+            actionType: type,
+            lang: lng,
+            isSelected: true,
+          },
+        });
 
       const selectedUnrankedActionIds = new Set(
-        unrankedSelections.map((selection: any) => selection.actionId)
+        unrankedSelections.map((selection: any) => selection.actionId),
       );
 
       // Get unranked actions (all actions of this type minus ranked ones) and transform them
@@ -247,8 +252,10 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
           institutionalRequirements: "",
           subActions: [],
           monitoringAndEvaluation: "",
-          costInvestmentNeeded: action.CostInvestmentNeeded || action.Cost || "",
-          timelineForImplementation: action.TimelineForImplementation || action.Timeline || "",
+          costInvestmentNeeded:
+            action.CostInvestmentNeeded || action.Cost || "",
+          timelineForImplementation:
+            action.TimelineForImplementation || action.Timeline || "",
           keyPerformanceIndicators: action.KeyPerformanceIndicators || [],
           powersAndMandates: action.PowersAndMandates || [],
         };
@@ -259,10 +266,12 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
             type: "adaptation",
             hazards: action.Hazard || [],
             adaptationEffectiveness: action.AdaptationEffectiveness || "medium",
-            adaptationEffectivenessPerHazard: action.AdaptationEffectivenessPerHazard || {},
+            adaptationEffectivenessPerHazard:
+              action.AdaptationEffectivenessPerHazard || {},
             qualitativeEffectivenessEvidence: "",
             quantitativeEffectivenessEvidence: "",
-            equityAndInclusionConsiderations: action.EquityAndInclusionConsiderations || "",
+            equityAndInclusionConsiderations:
+              action.EquityAndInclusionConsiderations || "",
             vulnerabilityAnalysisEvidence: "",
             riskReductionEvidence: "",
             socioEconomicImpacts: "",
@@ -284,7 +293,8 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
             adaptationEffectivenessPerHazard: {},
             qualitativeEffectivenessEvidence: "",
             quantitativeEffectivenessEvidence: "",
-            equityAndInclusionConsiderations: action.EquityAndInclusionConsiderations || "",
+            equityAndInclusionConsiderations:
+              action.EquityAndInclusionConsiderations || "",
             vulnerabilityAnalysisEvidence: "",
             riskReductionEvidence: "",
             socioEconomicImpacts: "",
@@ -294,21 +304,27 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
         }
       });
 
-      logger.info({
-        inventoryId: params.inventory,
-        type,
-        lng,
-        totalActionsOfType: actionsOfType.length,
-        rankedCount: existingActions.length,
-        unrankedCount: unrankedActions.length,
-      }, "Fetched unranked actions for status endpoint");
+      logger.info(
+        {
+          inventoryId: params.inventory,
+          type,
+          lng,
+          totalActionsOfType: actionsOfType.length,
+          rankedCount: existingActions.length,
+          unrankedCount: unrankedActions.length,
+        },
+        "Fetched unranked actions for status endpoint",
+      );
     } catch (error) {
-      logger.error({
-        err: error,
-        inventoryId: params.inventory,
-        type,
-        lng,
-      }, "Failed to fetch unranked actions for status endpoint");
+      logger.error(
+        {
+          err: error,
+          inventoryId: params.inventory,
+          type,
+          lng,
+        },
+        "Failed to fetch unranked actions for status endpoint",
+      );
       // Continue with empty unranked actions rather than failing the request
     }
 
@@ -319,24 +335,30 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
       unrankedActions: unrankedActions,
     };
 
-    logger.info({
-      inventoryId: params.inventory,
-      locode,
-      type,
-      lng,
-      rankedActionCount: existingActions.length,
-      unrankedActionCount: unrankedActions.length,
-      status: ranking.status,
-    }, "HIAP status check completed");
+    logger.info(
+      {
+        inventoryId: params.inventory,
+        locode,
+        type,
+        lng,
+        rankedActionCount: existingActions.length,
+        unrankedActionCount: unrankedActions.length,
+        status: ranking.status,
+      },
+      "HIAP status check completed",
+    );
 
     return Response.json({ data: response });
   } catch (error) {
-    logger.error({
-      err: error,
-      inventory: params.inventory,
-      type,
-      lng,
-    }, "Error checking HIAP status");
+    logger.error(
+      {
+        err: error,
+        inventory: params.inventory,
+        type,
+        lng,
+      },
+      "Error checking HIAP status",
+    );
 
     throw new Error(
       `Failed to check HIAP status for city ${inventory.city.locode}: ${(error as Error).message}`,

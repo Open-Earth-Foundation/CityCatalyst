@@ -140,27 +140,87 @@ def _rows_to_translations(
     target_languages: list[str],
 ) -> tuple[dict[str, dict[str, str]], list[str]]:
     """Convert structured translation rows into validated action-language mappings."""
+    # Track the cleaned translations we will return plus any contract violations.
     translations_by_action_id: dict[str, dict[str, str]] = {}
     warning_action_ids: list[str] = []
+    unexpected_action_ids: set[str] = set()
+    duplicate_action_ids: set[str] = set()
+    unknown_languages_by_action_id: dict[str, set[str]] = {}
+    duplicate_languages_by_action_id: dict[str, set[str]] = {}
 
+    # Validate each action row and normalize the translated text we keep.
     for row in translation_rows:
         action_id = row.action_id.strip()
         if action_id not in expected_action_ids:
+            unexpected_action_ids.add(action_id)
+            continue
+        if action_id in translations_by_action_id:
+            duplicate_action_ids.add(action_id)
             continue
 
         cleaned_translations: dict[str, str] = {}
         for translation in row.translations:
             language = translation.language.strip().lower()
             if language not in target_languages:
+                unknown_languages_by_action_id.setdefault(action_id, set()).add(language)
+                continue
+            if language in cleaned_translations:
+                duplicate_languages_by_action_id.setdefault(action_id, set()).add(
+                    language
+                )
                 continue
             cleaned_text = " ".join(translation.text.strip().split())
             if cleaned_text:
                 cleaned_translations[language] = cleaned_text
 
-        if cleaned_translations:
-            translations_by_action_id[action_id] = cleaned_translations
+        translations_by_action_id[action_id] = cleaned_translations
         if row.source_language_warning:
             warning_action_ids.append(action_id)
+
+    # Confirm that the LLM returned one complete translation set per action.
+    missing_action_ids = sorted(expected_action_ids - set(translations_by_action_id.keys()))
+    incomplete_languages_by_action_id = {
+        action_id: sorted(set(target_languages) - set(translations.keys()))
+        for action_id, translations in translations_by_action_id.items()
+        if set(translations.keys()) != set(target_languages)
+    }
+    if (
+        unexpected_action_ids
+        or duplicate_action_ids
+        or unknown_languages_by_action_id
+        or duplicate_languages_by_action_id
+        or missing_action_ids
+        or incomplete_languages_by_action_id
+    ):
+        # Fail fast with one explicit error so callers never receive partial translations silently.
+        error_details: list[str] = []
+        if unexpected_action_ids:
+            error_details.append(
+                f"unexpected action IDs {sorted(unexpected_action_ids)}"
+            )
+        if duplicate_action_ids:
+            error_details.append(f"duplicate action rows {sorted(duplicate_action_ids)}")
+        if unknown_languages_by_action_id:
+            error_details.append(
+                "unexpected languages "
+                f"{_sorted_detail_map(unknown_languages_by_action_id)}"
+            )
+        if duplicate_languages_by_action_id:
+            error_details.append(
+                "duplicate language rows "
+                f"{_sorted_detail_map(duplicate_languages_by_action_id)}"
+            )
+        if missing_action_ids:
+            error_details.append(f"missing action rows {missing_action_ids}")
+        if incomplete_languages_by_action_id:
+            error_details.append(
+                "missing target-language coverage "
+                f"{incomplete_languages_by_action_id}"
+            )
+        raise ValueError(
+            "LLM translation output did not satisfy the required action/language coverage: "
+            + "; ".join(error_details)
+        )
 
     return translations_by_action_id, sorted(set(warning_action_ids))
 
@@ -172,6 +232,14 @@ def _build_translation_warnings(*, warning_action_ids: list[str]) -> list[str]:
     return [
         "One or more canonical explanations labeled as English appeared non-English or mixed-language. Translations were still returned."
     ]
+
+
+def _sorted_detail_map(detail_map: dict[str, set[str]]) -> dict[str, list[str]]:
+    """Convert a string->set mapping into a deterministic string->sorted-list mapping."""
+    return {
+        action_id: sorted(values)
+        for action_id, values in sorted(detail_map.items())
+    }
 
 
 def _build_prompt(

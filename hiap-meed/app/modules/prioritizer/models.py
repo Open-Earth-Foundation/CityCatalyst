@@ -328,6 +328,24 @@ class ExplanationTranslationRequestData(BaseModel):
             raise ValueError("targetLanguages must not include `en`")
         return value
 
+    @model_validator(mode="after")
+    def _validate_unique_ranked_action_ids(self) -> ExplanationTranslationRequestData:
+        """Reject duplicate action IDs so translation rows cannot be collapsed silently."""
+        seen_action_ids: set[str] = set()
+        duplicate_action_ids: set[str] = set()
+        for row in self.rankedActions:
+            action_id = row.actionId
+            if action_id in seen_action_ids:
+                duplicate_action_ids.add(action_id)
+                continue
+            seen_action_ids.add(action_id)
+        if duplicate_action_ids:
+            raise ValueError(
+                "rankedActions must not contain duplicate actionId values; "
+                f"got duplicates {sorted(duplicate_action_ids)}"
+            )
+        return self
+
 
 class ExplanationTranslationApiRequest(BaseModel):
     """Frontend -> hiap-meed request envelope for stateless explanation translation."""

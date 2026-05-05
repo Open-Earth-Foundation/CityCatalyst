@@ -1557,3 +1557,41 @@ def test_translate_endpoint_rejects_non_english_source_language() -> None:
         )
 
     assert response.status_code == 422
+
+
+@pytest.mark.integration
+def test_translate_endpoint_rejects_duplicate_action_ids() -> None:
+    """Translation endpoint should reject duplicate action IDs instead of collapsing rows silently."""
+    with TestClient(app) as test_client:
+        response = test_client.post(
+            "/v1/explanations/translate",
+            json={
+                "meta": {
+                    "requestId": "req-translate-duplicate-action-id",
+                    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                    "backendConsumer": "hiap-meed",
+                    "upstreamProvider": "city_catalyst_frontend",
+                    "apiContext": {
+                        "endpoint": "POST /v1/explanations/translate",
+                        "locodes": [],
+                    },
+                    "totalRecords": 1,
+                },
+                "requestData": {
+                    "sourceLanguage": "en",
+                    "targetLanguages": ["pt"],
+                    "rankedActions": [
+                        {
+                            "actionId": "A_1",
+                            "canonicalExplanation": "First canonical explanation",
+                        },
+                        {
+                            "actionId": "A_1",
+                            "canonicalExplanation": "Second canonical explanation",
+                        },
+                    ],
+                },
+            },
+        )
+
+    assert response.status_code == 422

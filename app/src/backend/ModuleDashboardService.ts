@@ -1,6 +1,5 @@
 import { db } from "@/models";
 import { getEmissionResults } from "@/backend/ResultsService";
-import { fetchRanking } from "@/backend/hiap/HiapService";
 import { logger } from "@/services/logger";
 import {
   ACTION_TYPES,
@@ -14,8 +13,7 @@ import { Inventory } from "@/models/Inventory";
 import { CcraService, TopRisksResult } from "./ccra/CcraService";
 import { fetchCCRATopRisksData } from "./ccra/CcraApiService";
 import { AppSession } from "@/lib/auth";
-import { InventoryService } from "@/backend/InventoryService";
-import { Op } from "sequelize";
+import ActionService from "./hiap/ActionService";
 
 export class ModuleDashboardService {
   /**
@@ -198,18 +196,8 @@ export class ModuleDashboardService {
     lng: LANGUAGES,
   ): Promise<any> {
     try {
-      const locode = await InventoryService.getLocode(inventoryId);
-
-      // Find any existing ranking for this inventory/locode/type
-      const ranking = await db.models.HighImpactActionRanking.findOne({
-        where: {
-          inventoryId,
-          locode,
-          type,
-          langs: { [Op.contains]: [lng] }, // Check if the langs array contains this language
-        },
-        order: [["created", "DESC"]],
-      });
+      const { ranking, rankedActions, unrankedActions } =
+        await ActionService.getActions(inventoryId, type, lng);
 
       if (!ranking) {
         return {
@@ -219,20 +207,12 @@ export class ModuleDashboardService {
         };
       }
 
-      // Get existing actions for this language and type
-      const existingActions = await db.models.HighImpactActionRanked.findAll({
-        where: {
-          hiaRankingId: ranking.id,
-          lang: lng,
-          type: type,
-        },
-        order: [["rank", "ASC"]],
-      });
-
+      // Get ranked and unranked actions for this language and type
       return {
         ...ranking.toJSON(),
         status: ranking.status || HighImpactActionRankingStatus.PENDING,
-        rankedActions: existingActions,
+        rankedActions,
+        unrankedActions,
       };
     } catch (error) {
       logger.error(

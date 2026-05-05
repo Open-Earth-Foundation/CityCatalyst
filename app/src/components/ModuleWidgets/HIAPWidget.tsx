@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { Box, Text, HStack, Tabs, Icon } from "@chakra-ui/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/i18n/client";
@@ -161,7 +161,9 @@ export const HIAPWidget: React.FC<HIAPWidgetProps> = ({
             ))}
           </Tabs.List>
           {Object.values(ACTION_TYPES).map((type) => {
-            const tabActions = hiapData?.[type]?.rankedActions || [];
+            const rankedActions = hiapData?.[type]?.rankedActions || [];
+            const unrankedActions = hiapData?.[type]?.unrankedActions || [];
+            const tabActions = rankedActions.concat(unrankedActions);
             const tabTopPicks = getTopPickActions(tabActions);
             const tabHasContent = tabTopPicks.length > 0;
 

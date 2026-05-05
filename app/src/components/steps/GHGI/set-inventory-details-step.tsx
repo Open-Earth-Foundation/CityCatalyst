@@ -215,22 +215,9 @@ export default function SetInventoryDetailsStep({
               lineHeight="24px"
               letterSpacing="wide"
               color="content.tertiary"
+              fontFamily="body"
             >
-              <Trans i18nKey="inventory-goal-description" t={t}>
-                Want to learn more about these inventory formats?{" "}
-                <Link
-                  href="https://ghgprotocol.org/ghg-protocol-cities"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  fontFamily="heading"
-                  fontWeight="bold"
-                  color="content.link"
-                  textDecorationLine="underline"
-                >
-                  Learn more
-                </Link>{" "}
-                about the GPC Framework.
-              </Trans>
+              {t("inventory-goal-description-ghgi")}
             </Text>
           </Box>
           <Box>
@@ -311,23 +298,20 @@ export default function SetInventoryDetailsStep({
               fontStyle="normal"
               lineHeight="24px"
               letterSpacing="wide"
+              fontFamily="body"
               color="content.tertiary"
             >
-              <Trans i18nKey="gwp-description" t={t}>
-                Want to learn more about these inventory formats?{" "}
-                <Link
-                  href="https://ghgprotocol.org/sites/default/files/2024-08/Global-Warming-Potential-Values%20(August%202024).pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  fontFamily="heading"
-                  fontWeight="bold"
-                  color="content.link"
-                  textDecorationLine="underline"
-                >
-                  Learn more
-                </Link>{" "}
-                about the GPC Framework.
-              </Trans>
+              {t("gwp-description-ghgi")}
+            </Text>
+            <Text
+              fontSize="body.md"
+              fontStyle="normal"
+              lineHeight="16px"
+              letterSpacing="wide"
+              color="content.tertiary"
+              w="421px"
+            >
+              {t("gwp-description-ghgi-tip")}
             </Text>
           </Box>
           <Box>

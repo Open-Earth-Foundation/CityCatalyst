@@ -1,0 +1,22 @@
+{
+  "counts": {
+    "actions": 2,
+    "warnings": 0
+  },
+  "artifact_pointers": {
+    "summary_events": "summary.jsonl",
+    "input_snapshot": "input_snapshot.json",
+    "response_full": "response_full.json"
+  },
+  "schema_version": "1.2",
+  "request_id": "c9719468-ffe9-4458-a75c-06e96a97f7e6",
+  "request_kind": "explanation_translation",
+  "generated_files": [
+    "001_explanation_translation.json",
+    "input_snapshot.json",
+    "llm/explanation_translations_io.json",
+    "llm/explanation_translations_prompt.txt",
+    "response_full.json",
+    "summary.jsonl"
+  ]
+}

@@ -3,6 +3,7 @@
 `hiap-meed` is a synchronous FastAPI service that implements the MEED prioritization pipeline. It sits between the CityCatalyst frontend and the upstream Global API, fetching city context and action data before running a configurable scoring pipeline.
 
 See [`docs/service-architecture.md`](docs/service-architecture.md) for the full system diagram.
+See [`docs/prioritization-accuracy-initial-benchmark.md`](docs/prioritization-accuracy-initial-benchmark.md) for the planned validation mechanism of ranking quality.
 
 ## Repository layout
 

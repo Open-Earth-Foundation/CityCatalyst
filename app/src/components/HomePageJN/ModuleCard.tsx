@@ -5,7 +5,7 @@ import React from "react";
 import type { TFunction } from "i18next";
 import { ButtonMedium } from "@/components/package/Texts/Button";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { MdArrowForward } from "react-icons/md";
+import { MdArrowForward, MdOpenInNew } from "react-icons/md";
 import { MdInfoOutline } from "react-icons/md";
 import { TitleLarge } from "@/components/package/Texts/Title";
 import { ModuleAttributes } from "@/models/Module";
@@ -52,7 +52,8 @@ export function ModuleCard({
   React.useEffect(() => {
     if (!isGhgi) return;
 
-    const isHidden = localStorage.getItem(GHGI_START_HERE_HIDDEN_KEY) === "true";
+    const isHidden =
+      localStorage.getItem(GHGI_START_HERE_HIDDEN_KEY) === "true";
     if (isHidden) {
       setHideStartHereTag(true);
     }
@@ -186,11 +187,11 @@ export function ModuleCard({
           <NextLink
             href={resolvedUrl}
             onClick={handleModuleLaunch}
-            target={isExternal ? "_blank" : undefined}
-            rel={isExternal ? "noopener noreferrer" : undefined}
+            target={"_blank"}
+            rel={"noopener noreferrer"}
           >
             <ButtonMedium>{t("launch")}</ButtonMedium>
-            <MdArrowForward />
+            <Icon as={MdOpenInNew} boxSize={5} />
           </NextLink>
         </Button>
       </Card.Footer>

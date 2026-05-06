@@ -1,18 +1,19 @@
-"use client";
-
+import type { Metadata } from "next";
 import React from "react";
-import { useModuleAccessLayout } from "@/hooks/useModuleAccessLayout";
-import { Modules } from "@/util/constants";
+import HIAPClientLayout from "./HIAPClientLayout";
 
-const HIAP_MODULE_ID = Modules.HIAP.id;
+// TODO: translate page titles using i18n once a RSC-safe locale helper is available
+export const metadata: Metadata = {
+  title: "High Impact Action Plan",
+};
 
 export default function HIAPLayout(props: {
   children: React.ReactNode;
   params: Promise<{ lng: string; cityId: string }>;
 }) {
-  return useModuleAccessLayout({
-    params: props.params,
-    moduleId: HIAP_MODULE_ID,
-    children: props.children,
-  });
+  return (
+    <HIAPClientLayout params={props.params}>
+      {props.children}
+    </HIAPClientLayout>
+  );
 }

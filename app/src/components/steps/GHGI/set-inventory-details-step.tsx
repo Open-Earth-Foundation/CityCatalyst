@@ -9,11 +9,12 @@ import type { GHGIFormInputs } from "@/util/GHGI/types";
 import { useEffect } from "react";
 import {
   Box,
+  CloseButton,
   createListCollection,
   Heading,
   HStack,
   Icon,
-  Link,
+  List,
   Text,
 } from "@chakra-ui/react";
 import { MdCheck, MdWarning } from "react-icons/md";
@@ -30,6 +31,9 @@ import {
 } from "@/components/ui/select";
 import { Field } from "@/components/ui/field";
 import CustomSelectableButton from "../../custom-selectable-buttons";
+import { ButtonMedium } from "@/components/package";
+import { BiLink } from "react-icons/bi";
+import InventoryDetailsHelpDrawer from "./InventoryDetailsHelpDrawer";
 
 export default function SetInventoryDetailsStep({
   t,
@@ -85,9 +89,12 @@ export default function SetInventoryDetailsStep({
         gap="24px"
         mb="48px"
       >
-        <Heading data-testid="inventory-details-heading" size="xl">
-          {t("setup-inventory-details-heading")}
-        </Heading>
+        <HStack justifyContent="space-between" w="full">
+          <Heading data-testid="inventory-details-heading" size="xl">
+            {t("setup-inventory-details-heading")}
+          </Heading>
+          <InventoryDetailsHelpDrawer t={t} />
+        </HStack>
         <Text
           color="content.tertiary"
           fontSize="body.lg"
@@ -215,22 +222,9 @@ export default function SetInventoryDetailsStep({
               lineHeight="24px"
               letterSpacing="wide"
               color="content.tertiary"
+              fontFamily="body"
             >
-              <Trans i18nKey="inventory-goal-description" t={t}>
-                Want to learn more about these inventory formats?{" "}
-                <Link
-                  href="https://ghgprotocol.org/ghg-protocol-cities"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  fontFamily="heading"
-                  fontWeight="bold"
-                  color="content.link"
-                  textDecorationLine="underline"
-                >
-                  Learn more
-                </Link>{" "}
-                about the GPC Framework.
-              </Trans>
+              {t("inventory-goal-description-ghgi")}
             </Text>
           </Box>
           <Box>
@@ -311,23 +305,20 @@ export default function SetInventoryDetailsStep({
               fontStyle="normal"
               lineHeight="24px"
               letterSpacing="wide"
+              fontFamily="body"
               color="content.tertiary"
             >
-              <Trans i18nKey="gwp-description" t={t}>
-                Want to learn more about these inventory formats?{" "}
-                <Link
-                  href="https://ghgprotocol.org/sites/default/files/2024-08/Global-Warming-Potential-Values%20(August%202024).pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  fontFamily="heading"
-                  fontWeight="bold"
-                  color="content.link"
-                  textDecorationLine="underline"
-                >
-                  Learn more
-                </Link>{" "}
-                about the GPC Framework.
-              </Trans>
+              {t("gwp-description-ghgi")}
+            </Text>
+            <Text
+              fontSize="body.md"
+              fontStyle="normal"
+              lineHeight="16px"
+              letterSpacing="wide"
+              color="content.tertiary"
+              w="421px"
+            >
+              {t("gwp-description-ghgi-tip")}
             </Text>
           </Box>
           <Box>

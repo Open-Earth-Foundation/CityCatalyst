@@ -305,5 +305,6 @@
   "inventory-versions-restore-failed": "Failed to restore version",
   "legend": "Legend",
   "citycatalyst": "CityCatalyst",
-  "breadcrumb-hiap": "High Impact Action Plan"
+  "breadcrumb-hiap": "High Impact Action Plan",
+  "start-here": "Start here"
 }

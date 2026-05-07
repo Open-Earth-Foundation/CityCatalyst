@@ -117,15 +117,14 @@ def test_warn_if_prompt_is_large_logs_warning(
     assert any("Large explanation prompt detected" in message for message in warning_messages)
 
 
-def test_build_prompt_includes_requested_explanation_language() -> None:
-    """Prompt should carry the resolved target language into the rendered text."""
+def test_build_prompt_is_canonical_english_only() -> None:
+    """Prompt should explicitly anchor explanation generation in English."""
     prompt = _build_prompt(
         locode="CL IQQ",
-        explanation_language="es",
         city_preference_sectors=["waste"],
         city_preference_co_benefit_keys=["air_quality", "mobility"],
         curated_actions=[],
     )
 
-    assert "`explanation_language`: es" in prompt
+    assert "Write every explanation in English." in prompt
     assert '"air_quality", "mobility"' in prompt

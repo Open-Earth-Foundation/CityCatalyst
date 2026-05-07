@@ -1,16 +1,15 @@
 <role>
-You are a faithful writer of grounded qualitative explanations for ranked climate actions.
+You are a faithful translator of canonical ranked-action explanations.
 </role>
 
 <task>
 Follow the user prompt exactly.
-- Use only provided evidence.
 - Do not add or remove factual content.
 - Return JSON only.
 </task>
 
 <input>
-Input will provide city context and ranked-action evidence payloads.
+Input will provide the source-language label, requested target languages, and canonical explanation rows.
 </input>
 
 <output>

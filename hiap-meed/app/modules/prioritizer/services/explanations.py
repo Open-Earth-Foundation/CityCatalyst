@@ -43,7 +43,6 @@ def generate_explanations(
     *,
     locode: str,
     scored_actions: list[ScoredAction],
-    explanation_language: str,
     city_preference_sectors: list[str],
     city_preference_co_benefit_keys: list[str],
 ) -> tuple[dict[str, str], dict[str, object]]:
@@ -72,7 +71,6 @@ def generate_explanations(
     expected_action_ids = {item.action.action_id for item in scored_actions}
     prompt = _build_prompt(
         locode=locode,
-        explanation_language=explanation_language,
         city_preference_sectors=city_preference_sectors,
         city_preference_co_benefit_keys=city_preference_co_benefit_keys,
         curated_actions=curated_actions,
@@ -125,7 +123,7 @@ def generate_explanations(
         "model": model_name,
         "request_context": {
             "locode": locode,
-            "explanation_language": explanation_language,
+            "canonical_language": "en",
             "city_preference_sectors": city_preference_sectors,
             "city_preference_co_benefit_keys": city_preference_co_benefit_keys,
             "ranked_action_ids": sorted(expected_action_ids),
@@ -161,7 +159,6 @@ def _warn_if_prompt_is_large(*, prompt: str, locode: str, action_count: int) -> 
 def _build_prompt(
     *,
     locode: str,
-    explanation_language: str,
     city_preference_sectors: list[str],
     city_preference_co_benefit_keys: list[str],
     curated_actions: list[dict[str, object]],
@@ -170,12 +167,11 @@ def _build_prompt(
     template = _read_prompt_template()
     return template.format(
         locode=locode,
-        explanation_language=explanation_language,
-        city_preference_sectors=json.dumps(city_preference_sectors, ensure_ascii=True),
+        city_preference_sectors=json.dumps(city_preference_sectors, ensure_ascii=False),
         city_preference_co_benefit_keys=json.dumps(
-            city_preference_co_benefit_keys, ensure_ascii=True
+            city_preference_co_benefit_keys, ensure_ascii=False
         ),
-        ranked_actions_json=json.dumps(curated_actions, ensure_ascii=True, indent=2),
+        ranked_actions_json=json.dumps(curated_actions, ensure_ascii=False, indent=2),
     )
 
 

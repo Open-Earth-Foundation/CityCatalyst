@@ -207,6 +207,17 @@ def get_explanations_model() -> str | None:
     return normalized
 
 
+def get_explanation_translations_model() -> str | None:
+    """Return configured translation model name, if set."""
+    value = os.getenv("HIAP_MEED_EXPLANATION_TRANSLATIONS_MODEL")
+    if value is None:
+        return None
+    normalized = value.strip()
+    if not normalized:
+        return None
+    return normalized
+
+
 def is_free_text_exclusion_resolution_enabled() -> bool:
     """Return feature switch for preview-time LLM exclusion resolution."""
     raw_value = os.getenv("HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED")

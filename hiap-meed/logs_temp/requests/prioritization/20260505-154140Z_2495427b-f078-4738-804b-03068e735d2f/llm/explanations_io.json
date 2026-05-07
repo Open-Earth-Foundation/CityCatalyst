@@ -1,0 +1,1468 @@
+{
+  "status": "completed",
+  "provider": "openai",
+  "model": "gpt-5.4-mini",
+  "request_context": {
+    "locode": "CL IQQ",
+    "canonical_language": "en",
+    "city_preference_sectors": [
+      "transportation"
+    ],
+    "city_preference_co_benefit_keys": [
+      "air_quality",
+      "mobility"
+    ],
+    "ranked_action_ids": [
+      "c40_0010",
+      "c40_0015",
+      "c40_0018",
+      "c40_0023",
+      "c40_0025",
+      "c40_0049",
+      "icare_0002",
+      "icare_0016",
+      "icare_0025",
+      "icare_0028",
+      "icare_0040",
+      "icare_0072",
+      "icare_0099",
+      "icare_0121",
+      "icare_0139",
+      "icare_0156",
+      "icare_0164",
+      "icare_0172",
+      "icare_0176",
+      "ipcc_0105"
+    ]
+  },
+  "llm_input": {
+    "system_prompt": "<role>\nYou are a faithful writer of grounded qualitative explanations for ranked climate actions.\n</role>\n\n<task>\nFollow the user prompt exactly.\n- Use only provided evidence.\n- Do not add or remove factual content.\n- Return JSON only.\n</task>\n\n<input>\nInput will provide city context and ranked-action evidence payloads.\n</input>\n\n<output>\nReturn exactly the fields requested in the user prompt.\n</output>",
+    "curated_actions": [
+      {
+        "action_id": "icare_0025",
+        "action_name": "Promote energy-efficient and climate-resilient housing for low-income and informal settlements",
+        "rank": 1,
+        "score_bands": {
+          "final": "moderate",
+          "impact": "moderate",
+          "alignment": "high",
+          "feasibility": "very low"
+        },
+        "impact_signals": {
+          "impact_band": "high",
+          "timeline_bucket": "5-10 years",
+          "matched_city_gpc_refs_count": 2,
+          "top_matched_city_gpc_refs": [
+            "I.1.1",
+            "I.1.2"
+          ]
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "mapped_sector_tag": "stationary_energy",
+          "action_timeline_bucket": "5-10 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [
+            "Higher poverty may require more free provision (bins, outreach) to sustain participation.",
+            "If AD/biogas recovery is used, stable power access supports operations and monitoring.",
+            "Collection/hauling and logistics capacity supports organics diversion systems."
+          ],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "c40_0025",
+        "action_name": "Promote deployment of zero-emission freight fleets (trucks)",
+        "rank": 2,
+        "score_bands": {
+          "final": "moderate",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "very low",
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 1,
+          "top_matched_city_gpc_refs": [
+            "II.1.1"
+          ]
+        },
+        "alignment_signals": {
+          "sector_match": true,
+          "mapped_sector_tag": "transportation",
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 2,
+          "soft_legal_total_count": 2,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [
+            "Higher poverty may require more free provision (bins, outreach) to sustain participation.",
+            "If AD/biogas recovery is used, stable power access supports operations and monitoring.",
+            "Collection/hauling and logistics capacity supports organics diversion systems."
+          ],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "icare_0016",
+        "action_name": "Promote solar thermal and heat pump systems for water heating in residential, commercial, and public buildings",
+        "rank": 3,
+        "score_bands": {
+          "final": "moderate",
+          "impact": "moderate",
+          "alignment": "high",
+          "feasibility": "very low"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 2,
+          "top_matched_city_gpc_refs": [
+            "I.1.1",
+            "I.1.2"
+          ]
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "mapped_sector_tag": "stationary_energy",
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [
+            "Higher poverty may require more free provision (bins, outreach) to sustain participation.",
+            "If AD/biogas recovery is used, stable power access supports operations and monitoring.",
+            "Collection/hauling and logistics capacity supports organics diversion systems."
+          ],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "c40_0010",
+        "action_name": "Introduce energy-efficiency standards for new residential buildings",
+        "rank": 4,
+        "score_bands": {
+          "final": "low",
+          "impact": "low",
+          "alignment": "high",
+          "feasibility": "very low"
+        },
+        "impact_signals": {
+          "impact_band": "very low",
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 2,
+          "top_matched_city_gpc_refs": [
+            "I.1.1",
+            "I.1.2"
+          ]
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "mapped_sector_tag": "stationary_energy",
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [
+            "Higher poverty may require more free provision (bins, outreach) to sustain participation.",
+            "If AD/biogas recovery is used, stable power access supports operations and monitoring.",
+            "Collection/hauling and logistics capacity supports organics diversion systems."
+          ],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "c40_0015",
+        "action_name": "Retrofit residential buildings for energy efficiency",
+        "rank": 4,
+        "score_bands": {
+          "final": "low",
+          "impact": "low",
+          "alignment": "high",
+          "feasibility": "very low"
+        },
+        "impact_signals": {
+          "impact_band": "very low",
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 2,
+          "top_matched_city_gpc_refs": [
+            "I.1.1",
+            "I.1.2"
+          ]
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "mapped_sector_tag": "stationary_energy",
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [
+            "Higher poverty may require more free provision (bins, outreach) to sustain participation.",
+            "If AD/biogas recovery is used, stable power access supports operations and monitoring.",
+            "Collection/hauling and logistics capacity supports organics diversion systems."
+          ],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "icare_0028",
+        "action_name": "Promote passive cooling through natural shading and ventilation in residential, commercial, and public buildings",
+        "rank": 6,
+        "score_bands": {
+          "final": "low",
+          "impact": "moderate",
+          "alignment": "moderate",
+          "feasibility": "very low"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 2,
+          "top_matched_city_gpc_refs": [
+            "I.1.1",
+            "I.1.2"
+          ]
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "mapped_sector_tag": "stationary_energy",
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 5,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [
+            "Higher poverty may require more free provision (bins, outreach) to sustain participation.",
+            "If AD/biogas recovery is used, stable power access supports operations and monitoring.",
+            "Collection/hauling and logistics capacity supports organics diversion systems."
+          ],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "icare_0002",
+        "action_name": "Promote and expand the use of the Brazilian Energy Labeling Program for Buildings",
+        "rank": 7,
+        "score_bands": {
+          "final": "low",
+          "impact": "moderate",
+          "alignment": "moderate",
+          "feasibility": "very low"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 2,
+          "top_matched_city_gpc_refs": [
+            "I.1.1",
+            "I.1.2"
+          ]
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "mapped_sector_tag": "stationary_energy",
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 5,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [
+            "Higher poverty may require more free provision (bins, outreach) to sustain participation.",
+            "If AD/biogas recovery is used, stable power access supports operations and monitoring.",
+            "Collection/hauling and logistics capacity supports organics diversion systems."
+          ],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "icare_0139",
+        "action_name": "Implement congestion pricing and restrictions on high-polluting vehicles",
+        "rank": 8,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "very low"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 1,
+          "top_matched_city_gpc_refs": [
+            "II.1.1"
+          ]
+        },
+        "alignment_signals": {
+          "sector_match": true,
+          "mapped_sector_tag": "transportation",
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [
+            "Higher poverty may require more free provision (bins, outreach) to sustain participation.",
+            "If AD/biogas recovery is used, stable power access supports operations and monitoring.",
+            "Collection/hauling and logistics capacity supports organics diversion systems."
+          ],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "c40_0023",
+        "action_name": "Adopt zero-emission bus fleets for public transport",
+        "rank": 9,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "very low"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 1,
+          "top_matched_city_gpc_refs": [
+            "II.1.1"
+          ]
+        },
+        "alignment_signals": {
+          "sector_match": true,
+          "mapped_sector_tag": "transportation",
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 1,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [
+            "Higher poverty may require more free provision (bins, outreach) to sustain participation.",
+            "If AD/biogas recovery is used, stable power access supports operations and monitoring.",
+            "Collection/hauling and logistics capacity supports organics diversion systems."
+          ],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "icare_0121",
+        "action_name": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "rank": 10,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "very low"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 1,
+          "top_matched_city_gpc_refs": [
+            "II.1.1"
+          ]
+        },
+        "alignment_signals": {
+          "sector_match": true,
+          "mapped_sector_tag": "transportation",
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [
+            "Higher poverty may require more free provision (bins, outreach) to sustain participation.",
+            "If AD/biogas recovery is used, stable power access supports operations and monitoring.",
+            "Collection/hauling and logistics capacity supports organics diversion systems."
+          ],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "ipcc_0105",
+        "action_name": "Promote active mobility through road space reallocation",
+        "rank": 11,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "very low"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 1,
+          "top_matched_city_gpc_refs": [
+            "II.1.1"
+          ]
+        },
+        "alignment_signals": {
+          "sector_match": true,
+          "mapped_sector_tag": "transportation",
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [
+            "Higher poverty may require more free provision (bins, outreach) to sustain participation.",
+            "If AD/biogas recovery is used, stable power access supports operations and monitoring.",
+            "Collection/hauling and logistics capacity supports organics diversion systems."
+          ],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "icare_0156",
+        "action_name": "Improve Implementation of urban gardens",
+        "rank": 12,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "low"
+        },
+        "impact_signals": {
+          "impact_band": null,
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 0,
+          "top_matched_city_gpc_refs": []
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "mapped_sector_tag": null,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "icare_0172",
+        "action_name": "Develop and implement the Municipal Risk Reduction Plan (PMRR) and identify population groups vulnerable to climate risks.",
+        "rank": 12,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "low"
+        },
+        "impact_signals": {
+          "impact_band": null,
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 0,
+          "top_matched_city_gpc_refs": []
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "mapped_sector_tag": null,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "icare_0176",
+        "action_name": "Develop a Climate Action Plan",
+        "rank": 12,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "low"
+        },
+        "impact_signals": {
+          "impact_band": null,
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 0,
+          "top_matched_city_gpc_refs": []
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "mapped_sector_tag": null,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "icare_0040",
+        "action_name": "Deploy energy-efficient and solar-powered street lighting across all neighborhoods",
+        "rank": 15,
+        "score_bands": {
+          "final": "low",
+          "impact": "low",
+          "alignment": "high",
+          "feasibility": "very low"
+        },
+        "impact_signals": {
+          "impact_band": "very low",
+          "timeline_bucket": "5-10 years",
+          "matched_city_gpc_refs_count": 2,
+          "top_matched_city_gpc_refs": [
+            "I.1.1",
+            "I.1.2"
+          ]
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "mapped_sector_tag": "stationary_energy",
+          "action_timeline_bucket": "5-10 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [
+            "Higher poverty may require more free provision (bins, outreach) to sustain participation.",
+            "If AD/biogas recovery is used, stable power access supports operations and monitoring.",
+            "Collection/hauling and logistics capacity supports organics diversion systems."
+          ],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "c40_0049",
+        "action_name": "Build and maintain shelters for critical climate hazards",
+        "rank": 16,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "low"
+        },
+        "impact_signals": {
+          "impact_band": null,
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 0,
+          "top_matched_city_gpc_refs": []
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "mapped_sector_tag": null,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "icare_0164",
+        "action_name": "Improve Hydrological Monitoring System with Telemetry Stations",
+        "rank": 16,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "low"
+        },
+        "impact_signals": {
+          "impact_band": null,
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 0,
+          "top_matched_city_gpc_refs": []
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "mapped_sector_tag": null,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "icare_0072",
+        "action_name": "Improve Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
+        "rank": 18,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "very low"
+        },
+        "impact_signals": {
+          "impact_band": "very low",
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 1,
+          "top_matched_city_gpc_refs": [
+            "IV.1"
+          ]
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "mapped_sector_tag": "ippu",
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [
+            "Higher poverty may require more free provision (bins, outreach) to sustain participation.",
+            "If AD/biogas recovery is used, stable power access supports operations and monitoring.",
+            "Collection/hauling and logistics capacity supports organics diversion systems."
+          ],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "icare_0099",
+        "action_name": "Increase local participation in Agroecological Certification Programmes",
+        "rank": 19,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "very low"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 1,
+          "top_matched_city_gpc_refs": [
+            "V.1"
+          ]
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "mapped_sector_tag": "stationary_energy",
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [
+            "Higher poverty may require more free provision (bins, outreach) to sustain participation.",
+            "If AD/biogas recovery is used, stable power access supports operations and monitoring.",
+            "Collection/hauling and logistics capacity supports organics diversion systems."
+          ],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      },
+      {
+        "action_id": "c40_0018",
+        "action_name": "Optimize energy efficiency and sustainability standards for existing industrial infrastructure",
+        "rank": 20,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "very low"
+        },
+        "impact_signals": {
+          "impact_band": "very low",
+          "timeline_bucket": "<5 years",
+          "matched_city_gpc_refs_count": 0,
+          "top_matched_city_gpc_refs": []
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "mapped_sector_tag": "stationary_energy",
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "short",
+            "medium"
+          ],
+          "policy_signals_count": 10,
+          "top_policy_signals": [
+            {
+              "signal_type": "target",
+              "signal_relation": "commits",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 43
+            },
+            {
+              "signal_type": "funding",
+              "signal_relation": "provides",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 36
+            },
+            {
+              "signal_type": "governance",
+              "signal_relation": "assigns",
+              "signal_strength": "medium",
+              "location_scope": "National",
+              "location_name": "Chile",
+              "evidence_count": 26
+            }
+          ]
+        },
+        "feasibility_signals": {
+          "soft_legal_aligned_count": 0,
+          "soft_legal_total_count": 0,
+          "informational_requirements_count": 0,
+          "socioeconomic_rationales": [
+            "Higher poverty may require more free provision (bins, outreach) to sustain participation.",
+            "If AD/biogas recovery is used, stable power access supports operations and monitoring.",
+            "Collection/hauling and logistics capacity supports organics diversion systems."
+          ],
+          "missing_city_indicator_keys": []
+        },
+        "known_limitations": []
+      }
+    ],
+    "prompt_text_file": "llm/explanations_prompt.txt",
+    "prompt_text_characters": 42960
+  },
+  "llm_output": {
+    "parsed": {
+      "explanations": [
+        {
+          "action_id": "icare_0025",
+          "explanation": "This action is ranked first because it shows strong alignment with the evidence and matches the city’s preferred timeframes, even though it is not in the preferred transportation sector. It also has matched city references and multiple national policy signals, which support its placement. Feasibility is limited, and the evidence notes that higher poverty may require more free provision and that stable power and logistics capacity would help operations."
+        },
+        {
+          "action_id": "c40_0025",
+          "explanation": "This action ranks near the top because it aligns with the city’s transportation preference and fits the city’s short- to medium-term timeframes. It also has matched city references, multiple policy signals, and soft legal alignment, which support implementation. Its placement is held back by very low impact evidence."
+        },
+        {
+          "action_id": "icare_0016",
+          "explanation": "This action is placed high because it has strong alignment with the evidence and fits the city’s preferred timeframes. It also has matched city references and multiple policy signals, which support its relevance. However, the impact evidence is limited and feasibility is very low."
+        },
+        {
+          "action_id": "c40_0010",
+          "explanation": "This action is ranked below the top options because, while it aligns well with the city’s timeframes and has matched city references, the impact evidence is limited. The evidence also shows supportive policy signals, but feasibility is very low. That combination keeps it in the lower part of the list."
+        },
+        {
+          "action_id": "c40_0015",
+          "explanation": "This action is tied at the same rank because it has the same pattern of strong alignment, matched city references, and very low feasibility. The evidence supports its relevance to the city’s preferred timeframes, but the impact evidence remains limited. That keeps it below the higher-ranked actions."
+        },
+        {
+          "action_id": "icare_0028",
+          "explanation": "This action is lower in the ranking because, although it has some impact and moderate alignment, the evidence is weaker than for the actions above it. It still matches the city’s preferred timeframes and has policy support, but feasibility is very low. The limited feasibility keeps it from ranking higher."
+        },
+        {
+          "action_id": "icare_0002",
+          "explanation": "This action is placed below the stronger building-efficiency options because it has only moderate alignment and limited impact evidence. It still matches the city’s preferred timeframes and has policy signals, but the evidence does not show stronger support than the higher-ranked actions. Feasibility is also very low."
+        },
+        {
+          "action_id": "icare_0139",
+          "explanation": "This action ranks lower because, despite strong alignment with the transportation sector and the city’s preferred timeframes, the impact evidence is very limited. It has matched city references and policy signals, but feasibility remains very low. That combination keeps it below the higher transportation actions."
+        },
+        {
+          "action_id": "c40_0023",
+          "explanation": "This action is ranked below congestion pricing because it shares strong transportation alignment and matched city references, but the impact evidence is still very limited. The evidence also shows policy support, yet feasibility is very low. It therefore sits in the lower part of the transportation group."
+        },
+        {
+          "action_id": "icare_0121",
+          "explanation": "This action is placed below the other transportation options because it has strong alignment but very limited impact evidence. It matches the city’s preferred timeframes and has policy signals, but feasibility is very low. That keeps it behind the more directly supported transportation measures."
+        },
+        {
+          "action_id": "ipcc_0105",
+          "explanation": "This action ranks lower because, although it aligns with the transportation sector and the city’s preferred timeframes, the impact evidence is very limited. It has matched city references and policy signals, but feasibility is very low. The evidence does not show enough strength to place it higher."
+        },
+        {
+          "action_id": "icare_0156",
+          "explanation": "This action is lower because it has no matched city references and no sector match, even though it aligns with the city’s preferred timeframes and has policy signals. The impact evidence is also very limited, and feasibility is only low. Those factors keep it near the bottom of the list."
+        },
+        {
+          "action_id": "icare_0172",
+          "explanation": "This action is tied at a low rank because it has no matched city references and no sector match, while the impact evidence is very limited. It still aligns with the city’s preferred timeframes and has policy signals, but the evidence does not show stronger support. Feasibility is also low."
+        },
+        {
+          "action_id": "icare_0176",
+          "explanation": "This action is tied at a low rank for the same reasons as the other planning actions: no matched city references, no sector match, and very limited impact evidence. It does align with the city’s preferred timeframes and has policy signals, but feasibility is only low. That keeps it near the bottom."
+        },
+        {
+          "action_id": "icare_0040",
+          "explanation": "This action is ranked low because it has limited impact evidence and very low feasibility, even though it has matched city references and policy signals. It does not match the city’s preferred sector, and its timeline is longer than the city’s preferred short- to medium-term focus. Those factors keep it below the transportation actions."
+        },
+        {
+          "action_id": "c40_0049",
+          "explanation": "This action is low in the ranking because there is no matched city reference and no sector match, and the impact evidence is not available. It still aligns with the city’s preferred timeframes and has policy signals, but feasibility is only low. The lack of direct impact evidence keeps it near the bottom."
+        },
+        {
+          "action_id": "icare_0164",
+          "explanation": "This action is tied at a low rank because it has no matched city references and no sector match, and the impact evidence is not available. It does align with the city’s preferred timeframes and has policy signals, but feasibility is only low. That leaves it near the bottom of the list."
+        },
+        {
+          "action_id": "icare_0072",
+          "explanation": "This action ranks low because it has very limited impact evidence and very low feasibility, even though it has one matched city reference and strong alignment signals. It is mapped to a different sector than the city’s preference, which weakens its placement. The evidence supports relevance, but not enough to move it higher."
+        },
+        {
+          "action_id": "icare_0099",
+          "explanation": "This action is low because it has limited impact evidence and very low feasibility, despite having a matched city reference and policy signals. It does not match the city’s preferred sector, which weakens alignment with local priorities. That keeps it below the more directly relevant actions."
+        },
+        {
+          "action_id": "c40_0018",
+          "explanation": "This action is ranked low because it has no matched city references and very low feasibility, even though it aligns with the city’s preferred timeframes and has policy signals. The impact evidence is also very limited. Those factors keep it near the bottom of the ranking."
+        }
+      ]
+    },
+    "explanations_by_action_id": {
+      "icare_0025": "This action is ranked first because it shows strong alignment with the evidence and matches the city’s preferred timeframes, even though it is not in the preferred transportation sector. It also has matched city references and multiple national policy signals, which support its placement. Feasibility is limited, and the evidence notes that higher poverty may require more free provision and that stable power and logistics capacity would help operations.",
+      "c40_0025": "This action ranks near the top because it aligns with the city’s transportation preference and fits the city’s short- to medium-term timeframes. It also has matched city references, multiple policy signals, and soft legal alignment, which support implementation. Its placement is held back by very low impact evidence.",
+      "icare_0016": "This action is placed high because it has strong alignment with the evidence and fits the city’s preferred timeframes. It also has matched city references and multiple policy signals, which support its relevance. However, the impact evidence is limited and feasibility is very low.",
+      "c40_0010": "This action is ranked below the top options because, while it aligns well with the city’s timeframes and has matched city references, the impact evidence is limited. The evidence also shows supportive policy signals, but feasibility is very low. That combination keeps it in the lower part of the list.",
+      "c40_0015": "This action is tied at the same rank because it has the same pattern of strong alignment, matched city references, and very low feasibility. The evidence supports its relevance to the city’s preferred timeframes, but the impact evidence remains limited. That keeps it below the higher-ranked actions.",
+      "icare_0028": "This action is lower in the ranking because, although it has some impact and moderate alignment, the evidence is weaker than for the actions above it. It still matches the city’s preferred timeframes and has policy support, but feasibility is very low. The limited feasibility keeps it from ranking higher.",
+      "icare_0002": "This action is placed below the stronger building-efficiency options because it has only moderate alignment and limited impact evidence. It still matches the city’s preferred timeframes and has policy signals, but the evidence does not show stronger support than the higher-ranked actions. Feasibility is also very low.",
+      "icare_0139": "This action ranks lower because, despite strong alignment with the transportation sector and the city’s preferred timeframes, the impact evidence is very limited. It has matched city references and policy signals, but feasibility remains very low. That combination keeps it below the higher transportation actions.",
+      "c40_0023": "This action is ranked below congestion pricing because it shares strong transportation alignment and matched city references, but the impact evidence is still very limited. The evidence also shows policy support, yet feasibility is very low. It therefore sits in the lower part of the transportation group.",
+      "icare_0121": "This action is placed below the other transportation options because it has strong alignment but very limited impact evidence. It matches the city’s preferred timeframes and has policy signals, but feasibility is very low. That keeps it behind the more directly supported transportation measures.",
+      "ipcc_0105": "This action ranks lower because, although it aligns with the transportation sector and the city’s preferred timeframes, the impact evidence is very limited. It has matched city references and policy signals, but feasibility is very low. The evidence does not show enough strength to place it higher.",
+      "icare_0156": "This action is lower because it has no matched city references and no sector match, even though it aligns with the city’s preferred timeframes and has policy signals. The impact evidence is also very limited, and feasibility is only low. Those factors keep it near the bottom of the list.",
+      "icare_0172": "This action is tied at a low rank because it has no matched city references and no sector match, while the impact evidence is very limited. It still aligns with the city’s preferred timeframes and has policy signals, but the evidence does not show stronger support. Feasibility is also low.",
+      "icare_0176": "This action is tied at a low rank for the same reasons as the other planning actions: no matched city references, no sector match, and very limited impact evidence. It does align with the city’s preferred timeframes and has policy signals, but feasibility is only low. That keeps it near the bottom.",
+      "icare_0040": "This action is ranked low because it has limited impact evidence and very low feasibility, even though it has matched city references and policy signals. It does not match the city’s preferred sector, and its timeline is longer than the city’s preferred short- to medium-term focus. Those factors keep it below the transportation actions.",
+      "c40_0049": "This action is low in the ranking because there is no matched city reference and no sector match, and the impact evidence is not available. It still aligns with the city’s preferred timeframes and has policy signals, but feasibility is only low. The lack of direct impact evidence keeps it near the bottom.",
+      "icare_0164": "This action is tied at a low rank because it has no matched city references and no sector match, and the impact evidence is not available. It does align with the city’s preferred timeframes and has policy signals, but feasibility is only low. That leaves it near the bottom of the list.",
+      "icare_0072": "This action ranks low because it has very limited impact evidence and very low feasibility, even though it has one matched city reference and strong alignment signals. It is mapped to a different sector than the city’s preference, which weakens its placement. The evidence supports relevance, but not enough to move it higher.",
+      "icare_0099": "This action is low because it has limited impact evidence and very low feasibility, despite having a matched city reference and policy signals. It does not match the city’s preferred sector, which weakens alignment with local priorities. That keeps it below the more directly relevant actions.",
+      "c40_0018": "This action is ranked low because it has no matched city references and very low feasibility, even though it aligns with the city’s preferred timeframes and has policy signals. The impact evidence is also very limited. Those factors keep it near the bottom of the ranking."
+    }
+  }
+}

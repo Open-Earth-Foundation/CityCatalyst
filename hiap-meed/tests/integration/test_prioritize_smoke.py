@@ -86,14 +86,12 @@ class MockExplanationService:
         *,
         locode: str,
         scored_actions: list[object],
-        explanation_language: str,
         city_preference_sectors: list[str],
         city_preference_co_benefit_keys: list[str],
     ) -> tuple[dict[str, str], dict[str, object]]:
         """Return predefined explanations and capture which actions were requested."""
         del (
             locode,
-            explanation_language,
             city_preference_sectors,
             city_preference_co_benefit_keys,
         )
@@ -107,6 +105,42 @@ class MockExplanationService:
             "llm_input": {"curated_actions_count": len(action_ids)},
             "llm_output": {"explanations_by_action_id": dict(self.explanations_by_action_id or {})},
         }
+
+
+@dataclass
+class MockTranslationService:
+    """In-memory translation service double for endpoint integration tests."""
+
+    translations_by_action_id: dict[str, dict[str, str]] | None = None
+    warnings: list[str] | None = None
+    should_raise: bool = False
+    seen_target_languages: list[str] | None = None
+
+    def __call__(
+        self,
+        *,
+        canonical_explanations_by_action_id: dict[str, str],
+        target_languages: list[str],
+    ) -> tuple[dict[str, dict[str, str]], list[str], dict[str, object]]:
+        """Return predefined translations and capture the requested target languages."""
+        del canonical_explanations_by_action_id
+        if self.should_raise:
+            raise RuntimeError("simulated translation provider failure")
+        self.seen_target_languages = list(target_languages)
+        return (
+            dict(self.translations_by_action_id or {}),
+            list(self.warnings or []),
+            {
+                "status": "completed",
+                "provider": "mock",
+                "llm_input": {"target_languages": list(target_languages)},
+                "llm_output": {
+                    "translations_by_action_id": dict(self.translations_by_action_id or {}),
+                    "warning_action_ids": ["A_1"] if self.warnings else [],
+                    "warnings": list(self.warnings or []),
+                },
+            },
+        )
 
 
 @pytest.mark.integration
@@ -289,7 +323,7 @@ def test_prioritize_smoke() -> None:
         assert first_ranked_action["evidence_summary"]["alignment"][
             "timeframe_component_score"
         ] == pytest.approx(0.5)
-        assert first_ranked_action["explanation"] is None
+        assert first_ranked_action["explanations"] == {}
         assert "metadata" in result
         assert result["metadata"]["frontend_request_id"] == "1234567890"
         assert "timings" in result["metadata"]
@@ -1048,7 +1082,7 @@ def test_prioritize_skips_explanations_when_flag_false(
 
         assert response.status_code == 200
         result = response.json()["results"][0]
-        assert result["ranked_actions"][0]["explanation"] is None
+        assert result["ranked_actions"][0]["explanations"] == {}
     finally:
         app.dependency_overrides.clear()
 
@@ -1125,7 +1159,7 @@ def test_prioritize_generates_explanations_for_returned_top_n_only(
         result = response.json()["results"][0]
         assert result["ranked_action_ids"] == ["A_second"]
         assert mock_explanation_service.seen_action_ids == ["A_second"]
-        assert result["ranked_actions"][0]["explanation"] is None
+        assert result["ranked_actions"][0]["explanations"] == {}
     finally:
         app.dependency_overrides.clear()
 
@@ -1195,7 +1229,7 @@ def test_prioritize_fails_open_when_explanation_generation_errors(
         assert response.status_code == 200
         result = response.json()["results"][0]
         assert result["ranked_action_ids"] == ["A_1"]
-        assert result["ranked_actions"][0]["explanation"] is None
+        assert result["ranked_actions"][0]["explanations"] == {}
     finally:
         app.dependency_overrides.clear()
 
@@ -1224,14 +1258,12 @@ def test_prioritize_logs_non_zero_explanation_elapsed_time(
         *,
         locode: str,
         scored_actions: list[object],
-        explanation_language: str,
         city_preference_sectors: list[str],
         city_preference_co_benefit_keys: list[str],
     ) -> tuple[dict[str, str], dict[str, object]]:
         """Return one explanation after a small delay."""
         del (
             locode,
-            explanation_language,
             city_preference_sectors,
             city_preference_co_benefit_keys,
         )
@@ -1296,16 +1328,18 @@ def test_prioritize_logs_non_zero_explanation_elapsed_time(
         assert logged_completion_elapsed_seconds
         assert logged_completion_elapsed_seconds[0] > 0.0
         result = response.json()["results"][0]
-        assert result["ranked_actions"][0]["explanation"] == "Delayed explanation"
+        assert result["ranked_actions"][0]["explanations"] == {
+            "en": "Delayed explanation"
+        }
     finally:
         app.dependency_overrides.clear()
 
 
 @pytest.mark.integration
-def test_prioritize_explanations_use_first_requested_language(
+def test_prioritize_returns_canonical_english_and_requested_translations(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Explanation flow should resolve the first requested language only."""
+    """Prioritization should always return English plus requested translated explanations."""
     city = CityData(
         comuna_name="Santiago",
         locode="CL-SCL",
@@ -1319,25 +1353,12 @@ def test_prioritize_explanations_use_first_requested_language(
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
     mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
-    seen_languages: list[str] = []
-
-    def explanation_service_with_language_capture(
-        *,
-        locode: str,
-        scored_actions: list[object],
-        explanation_language: str,
-        city_preference_sectors: list[str],
-        city_preference_co_benefit_keys: list[str],
-    ) -> tuple[dict[str, str], dict[str, object]]:
-        del locode, scored_actions, city_preference_sectors, city_preference_co_benefit_keys
-        seen_languages.append(explanation_language)
-        return {"A_1": "Explicacion de prueba"}, {
-            "status": "completed",
-            "provider": "mock",
-            "request_context": {"explanation_language": explanation_language},
-            "llm_input": {"curated_actions_count": 1},
-            "llm_output": {"explanations_by_action_id": {"A_1": "Explicacion de prueba"}},
-        }
+    mock_explanation_service = MockExplanationService(
+        explanations_by_action_id={"A_1": "English explanation"}
+    )
+    mock_translation_service = MockTranslationService(
+        translations_by_action_id={"A_1": {"es": "Explicacion de prueba"}}
+    )
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
@@ -1348,7 +1369,12 @@ def test_prioritize_explanations_use_first_requested_language(
     monkeypatch.setattr(
         prioritizer_orchestrator,
         "generate_explanations",
-        explanation_service_with_language_capture,
+        mock_explanation_service,
+    )
+    monkeypatch.setattr(
+        prioritizer_orchestrator,
+        "translate_explanations",
+        mock_translation_service,
     )
     try:
         with TestClient(app) as test_client:
@@ -1385,9 +1411,271 @@ def test_prioritize_explanations_use_first_requested_language(
 
         assert response.status_code == 200
         result = response.json()["results"][0]
-        assert seen_languages == ["es"]
-        assert result["ranked_actions"][0]["explanation"] == "Explicacion de prueba"
+        assert mock_explanation_service.seen_action_ids == ["A_1"]
+        assert mock_translation_service.seen_target_languages == ["es"]
+        assert result["ranked_actions"][0]["explanations"] == {
+            "en": "English explanation",
+            "es": "Explicacion de prueba",
+        }
         assert result["metadata"]["explanations"]["requested_languages"] == ["es", "en"]
-        assert result["metadata"]["explanations"]["language"] == "es"
+        assert result["metadata"]["explanations"]["canonical_language"] == "en"
+        assert result["metadata"]["explanations"]["generated_languages"] == ["en", "es"]
     finally:
         app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+def test_prioritize_reports_only_successfully_generated_languages(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Metadata should reflect only explanation languages present in the response."""
+    city = CityData(
+        comuna_name="Santiago",
+        locode="CL-SCL",
+        region_name="Metropolitana",
+        comuna_code="13101",
+        region_code="13",
+        city_context=[],
+    )
+    actions = [Action(action_id="A_1", action_name="Action one")]
+    mock_city_client = MockCityDataApiClient(city=city)
+    mock_action_client = MockActionDataApiClient(actions=actions)
+    mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_explanation_service = MockExplanationService(
+        explanations_by_action_id={"A_1": "English explanation"}
+    )
+    mock_translation_service = MockTranslationService(should_raise=True)
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
+    monkeypatch.setattr(
+        prioritizer_orchestrator,
+        "generate_explanations",
+        mock_explanation_service,
+    )
+    monkeypatch.setattr(
+        prioritizer_orchestrator,
+        "translate_explanations",
+        mock_translation_service,
+    )
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post(
+                "/v1/prioritize",
+                json={
+                    "meta": {
+                        "requestId": "req-translation-failure-languages",
+                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                        "backendConsumer": "hiap-meed",
+                        "upstreamProvider": "city_catalyst_frontend",
+                        "apiContext": {
+                            "endpoint": "POST /prioritizer/v1/start_prioritization",
+                            "locodes": ["CL-SCL"],
+                        },
+                        "totalRecords": 1,
+                    },
+                    "requestData": {
+                        "requestedLanguages": ["es", "en"],
+                        "createExplanations": True,
+                        "cityDataList": [
+                            {
+                                "locode": "CL-SCL",
+                                "countryCode": "CL",
+                                "populationSize": 1000,
+                                "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceCoBenefitKeys": [],
+                                "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
+                            }
+                        ],
+                    },
+                },
+            )
+
+        assert response.status_code == 200
+        result = response.json()["results"][0]
+        assert mock_explanation_service.seen_action_ids == ["A_1"]
+        assert result["ranked_actions"][0]["explanations"] == {
+            "en": "English explanation"
+        }
+        assert result["metadata"]["explanations"]["requested_languages"] == ["es", "en"]
+        assert result["metadata"]["explanations"]["generated_languages"] == ["en"]
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+def test_translate_endpoint_returns_requested_translations_only(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Translation endpoint should return only the requested non-English targets."""
+    mock_translation_service = MockTranslationService(
+        translations_by_action_id={"A_1": {"pt": "Traducao de teste"}}
+    )
+    monkeypatch.setattr(
+        "app.modules.prioritizer.api.translate_explanations",
+        mock_translation_service,
+    )
+
+    with TestClient(app) as test_client:
+        response = test_client.post(
+            "/v1/explanations/translate",
+            json={
+                "meta": {
+                    "requestId": "req-translate-endpoint",
+                    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                    "backendConsumer": "hiap-meed",
+                    "upstreamProvider": "city_catalyst_frontend",
+                    "apiContext": {
+                        "endpoint": "POST /v1/explanations/translate",
+                        "locodes": [],
+                    },
+                    "totalRecords": 1,
+                },
+                "requestData": {
+                    "sourceLanguage": "en",
+                    "targetLanguages": ["pt"],
+                    "rankedActions": [
+                        {
+                            "actionId": "A_1",
+                            "canonicalExplanation": "English explanation",
+                        }
+                    ],
+                },
+            },
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["warnings"] == []
+    assert body["translations"] == [
+        {"actionId": "A_1", "explanations": {"pt": "Traducao de teste"}}
+    ]
+
+
+@pytest.mark.integration
+def test_translate_endpoint_warns_when_source_text_is_likely_not_english(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Translation endpoint should still return translations when source text looks non-English."""
+    mock_translation_service = MockTranslationService(
+        translations_by_action_id={"A_1": {"pt": "Traducao de teste"}},
+        warnings=[
+            "One or more canonical explanations labeled as English appeared non-English or mixed-language. Translations were still returned."
+        ],
+    )
+    monkeypatch.setattr(
+        "app.modules.prioritizer.api.translate_explanations",
+        mock_translation_service,
+    )
+
+    with TestClient(app) as test_client:
+        response = test_client.post(
+            "/v1/explanations/translate",
+            json={
+                "meta": {
+                    "requestId": "req-translate-warning",
+                    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                    "backendConsumer": "hiap-meed",
+                    "upstreamProvider": "city_catalyst_frontend",
+                    "apiContext": {
+                        "endpoint": "POST /v1/explanations/translate",
+                        "locodes": [],
+                    },
+                    "totalRecords": 1,
+                },
+                "requestData": {
+                    "sourceLanguage": "en",
+                    "targetLanguages": ["pt"],
+                    "rankedActions": [
+                        {
+                            "actionId": "A_1",
+                            "canonicalExplanation": "Explicacion de prueba",
+                        }
+                    ],
+                },
+            },
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert len(body["warnings"]) == 1
+    assert body["translations"] == [
+        {"actionId": "A_1", "explanations": {"pt": "Traducao de teste"}}
+    ]
+
+
+@pytest.mark.integration
+def test_translate_endpoint_rejects_non_english_source_language() -> None:
+    """Translation endpoint should reject any source-language contract other than English."""
+    with TestClient(app) as test_client:
+        response = test_client.post(
+            "/v1/explanations/translate",
+            json={
+                "meta": {
+                    "requestId": "req-translate-invalid-source",
+                    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                    "backendConsumer": "hiap-meed",
+                    "upstreamProvider": "city_catalyst_frontend",
+                    "apiContext": {
+                        "endpoint": "POST /v1/explanations/translate",
+                        "locodes": [],
+                    },
+                    "totalRecords": 1,
+                },
+                "requestData": {
+                    "sourceLanguage": "es",
+                    "targetLanguages": ["pt"],
+                    "rankedActions": [
+                        {
+                            "actionId": "A_1",
+                            "canonicalExplanation": "English explanation",
+                        }
+                    ],
+                },
+            },
+        )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.integration
+def test_translate_endpoint_rejects_duplicate_action_ids() -> None:
+    """Translation endpoint should reject duplicate action IDs instead of collapsing rows silently."""
+    with TestClient(app) as test_client:
+        response = test_client.post(
+            "/v1/explanations/translate",
+            json={
+                "meta": {
+                    "requestId": "req-translate-duplicate-action-id",
+                    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                    "backendConsumer": "hiap-meed",
+                    "upstreamProvider": "city_catalyst_frontend",
+                    "apiContext": {
+                        "endpoint": "POST /v1/explanations/translate",
+                        "locodes": [],
+                    },
+                    "totalRecords": 1,
+                },
+                "requestData": {
+                    "sourceLanguage": "en",
+                    "targetLanguages": ["pt"],
+                    "rankedActions": [
+                        {
+                            "actionId": "A_1",
+                            "canonicalExplanation": "First canonical explanation",
+                        },
+                        {
+                            "actionId": "A_1",
+                            "canonicalExplanation": "Second canonical explanation",
+                        },
+                    ],
+                },
+            },
+        )
+
+    assert response.status_code == 422

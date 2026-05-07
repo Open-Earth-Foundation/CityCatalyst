@@ -86,7 +86,7 @@ export function ActionCards({
               >
                 <Button
                   variant="outline"
-                  borderWidth="2px"
+                  borderWidth="1px"
                   borderColor="border.neutral"
                   borderRadius="4xl"
                   px={6}

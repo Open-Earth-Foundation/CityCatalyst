@@ -1425,6 +1425,90 @@ def test_prioritize_returns_canonical_english_and_requested_translations(
 
 
 @pytest.mark.integration
+def test_prioritize_reports_only_successfully_generated_languages(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Metadata should reflect only explanation languages present in the response."""
+    city = CityData(
+        comuna_name="Santiago",
+        locode="CL-SCL",
+        region_name="Metropolitana",
+        comuna_code="13101",
+        region_code="13",
+        city_context=[],
+    )
+    actions = [Action(action_id="A_1", action_name="Action one")]
+    mock_city_client = MockCityDataApiClient(city=city)
+    mock_action_client = MockActionDataApiClient(actions=actions)
+    mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_explanation_service = MockExplanationService(
+        explanations_by_action_id={"A_1": "English explanation"}
+    )
+    mock_translation_service = MockTranslationService(should_raise=True)
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
+    monkeypatch.setattr(
+        prioritizer_orchestrator,
+        "generate_explanations",
+        mock_explanation_service,
+    )
+    monkeypatch.setattr(
+        prioritizer_orchestrator,
+        "translate_explanations",
+        mock_translation_service,
+    )
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post(
+                "/v1/prioritize",
+                json={
+                    "meta": {
+                        "requestId": "req-translation-failure-languages",
+                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                        "backendConsumer": "hiap-meed",
+                        "upstreamProvider": "city_catalyst_frontend",
+                        "apiContext": {
+                            "endpoint": "POST /prioritizer/v1/start_prioritization",
+                            "locodes": ["CL-SCL"],
+                        },
+                        "totalRecords": 1,
+                    },
+                    "requestData": {
+                        "requestedLanguages": ["es", "en"],
+                        "createExplanations": True,
+                        "cityDataList": [
+                            {
+                                "locode": "CL-SCL",
+                                "countryCode": "CL",
+                                "populationSize": 1000,
+                                "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceCoBenefitKeys": [],
+                                "cityEmissionsData": {"inventoryYear": None, "gpcData": {}},
+                            }
+                        ],
+                    },
+                },
+            )
+
+        assert response.status_code == 200
+        result = response.json()["results"][0]
+        assert mock_explanation_service.seen_action_ids == ["A_1"]
+        assert result["ranked_actions"][0]["explanations"] == {
+            "en": "English explanation"
+        }
+        assert result["metadata"]["explanations"]["requested_languages"] == ["es", "en"]
+        assert result["metadata"]["explanations"]["generated_languages"] == ["en"]
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
 def test_translate_endpoint_returns_requested_translations_only(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

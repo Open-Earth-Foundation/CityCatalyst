@@ -160,13 +160,42 @@ def _detail_filename(event_index: int | None, step_name: str) -> str:
     return f"{event_index:03d}_{step_name}.json"
 
 
-def _resolve_generated_languages(requested_languages: list[str]) -> list[str]:
+def _resolve_requested_output_languages(requested_languages: list[str]) -> list[str]:
     """Return canonical English plus any additional requested target languages."""
-    generated_languages = ["en"]
+    resolved_languages = ["en"]
     for language in requested_languages:
         normalized = language.strip().lower()
-        if normalized and normalized not in generated_languages:
-            generated_languages.append(normalized)
+        if normalized and normalized not in resolved_languages:
+            resolved_languages.append(normalized)
+    return resolved_languages
+
+
+def _collect_generated_languages(
+    *,
+    requested_languages: list[str],
+    explanations_by_action_id: dict[str, str],
+    explanation_translations_by_action_id: dict[str, dict[str, str]],
+) -> list[str]:
+    """Return explanation languages actually present in the returned payload."""
+    generated_languages: list[str] = []
+    if explanations_by_action_id:
+        generated_languages.append("en")
+
+    translated_languages: set[str] = set()
+    for translations in explanation_translations_by_action_id.values():
+        for language in translations.keys():
+            normalized = language.strip().lower()
+            if normalized:
+                translated_languages.add(normalized)
+
+    for language in _resolve_requested_output_languages(requested_languages):
+        if language != "en" and language in translated_languages:
+            generated_languages.append(language)
+
+    # Keep unexpected-but-returned languages visible even if they were not requested.
+    for language in sorted(translated_languages):
+        if language not in generated_languages:
+            generated_languages.append(language)
     return generated_languages
 
 
@@ -388,7 +417,9 @@ def run_prioritization(
         "create_explanations": create_explanations,
         "requested_languages": requested_languages,
         "canonical_language": "en",
-        "generated_languages": _resolve_generated_languages(requested_languages),
+        "requested_output_languages": _resolve_requested_output_languages(
+            requested_languages
+        ),
         "resolved_weights": weights,
         "city_emissions_by_gpc_ref": city_emissions_by_gpc_ref,
         "city_preference_sectors": city_preference_sectors,
@@ -754,7 +785,7 @@ def run_prioritization(
         # Phase 12b: optionally translate canonical English explanations.
         target_languages = [
             language
-            for language in _resolve_generated_languages(requested_languages)
+            for language in _resolve_requested_output_languages(requested_languages)
             if language != "en"
         ]
         translation_error: Exception | None = None
@@ -940,6 +971,11 @@ def run_prioritization(
         )
 
     ranked_action_ids = [item.action.action_id for item in scored_actions]
+    generated_languages = _collect_generated_languages(
+        requested_languages=requested_languages,
+        explanations_by_action_id=explanations_by_action_id,
+        explanation_translations_by_action_id=explanation_translations_by_action_id,
+    )
 
     metadata: dict[str, object] = {
         "locode": locode,
@@ -958,7 +994,7 @@ def run_prioritization(
             "generated": len(explanations_by_action_id),
             "requested_languages": requested_languages,
             "canonical_language": "en",
-            "generated_languages": _resolve_generated_languages(requested_languages),
+            "generated_languages": generated_languages,
             "translation_warnings": translation_warnings,
         },
         "hard_filter_evidence_by_action_id": hard_filter_result.evidence,

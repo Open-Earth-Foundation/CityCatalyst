@@ -128,9 +128,10 @@ Request body:
 - Single-city and multi-city payloads both use `requestData.cityDataList`.
 - Optional flag: `requestData.createExplanations` controls whether the post-ranking
   explanation stage is executed.
-- `requestData.requestedLanguages` controls which explanation languages are returned.
+- `requestData.requestedLanguages` controls which explanation languages the backend attempts to return.
 - Canonical explanation generation is always English.
 - If non-English languages are requested, the backend generates English once and then translates from English into each requested target language.
+- Response metadata reports `generated_languages` as the languages actually present in the returned explanation payload.
 
 Exclusions:
 
@@ -243,6 +244,7 @@ Explanation stage behavior:
 - Explanations are generated from post-ranking evidence and do not change ranks.
 - Explanations are always authored canonically in English.
 - Requested non-English explanations are translations of the canonical English text.
+- In response metadata, `generated_languages` is the response-level union of explanation languages actually returned across `ranked_actions[].explanations`.
 - Explanations receive the selected `cityStrategicPreferenceCoBenefitKeys` directly.
 - If translation detects that a canonical explanation labeled as English appears non-English or mixed-language, translation still returns results and adds a warning to logs and the API response.
 - That language-check warning is determined internally per action, then aggregated by the backend into the public top-level `warnings` list returned by the API.
@@ -467,7 +469,7 @@ What each request run folder contains:
   - `llm/explanation_translations_io.json`: translation-stage LLM request/response artifact (only when translations are generated successfully)
   - `llm/explanation_translations_prompt.txt`: plain-text rendered translation prompt (only when translations are generated successfully)
   - `llm/explanation_translations_error.json`: translation-stage failure artifact with request context and error (only when translation fails)
-- Prioritization explanation artifacts and response metadata record the original `requestedLanguages`, canonical language `en`, generated languages, and any translation warnings.
+- Prioritization explanation artifacts and response metadata record the original `requestedLanguages`, canonical language `en`, generated languages actually returned in the response, and any translation warnings.
 - Explanation translation request folders additionally include:
   - `llm/explanation_translations_io.json`
   - `llm/explanation_translations_prompt.txt`

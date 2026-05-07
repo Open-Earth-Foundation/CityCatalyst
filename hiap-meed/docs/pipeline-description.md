@@ -152,7 +152,8 @@ What these are used for:
   - `long`
   - `no_preference`
 - `no_preference` is allowed as a neutral choice but may not be combined with other timeframe values.
-- `requestData.requestedLanguages` is currently consumed as a compatibility field only for explanations: the backend resolves one effective explanation language by taking the first list item and ignores additional entries.
+- `requestData.requestedLanguages` controls the explanation languages requested for post-ranking output.
+- The backend always generates canonical English explanations first, then translates from English into each requested non-English target language.
 - `totalEmissions` values are the main city emissions numbers used in the Impact block.
 
 ### City context data
@@ -1120,7 +1121,10 @@ Important current behavior:
 - `explanation` is `null` unless `requestData.createExplanations=true` and the explanation call succeeds
 - Explanations are generated only after ranking is finished; they do not change scores or ranks
 - The explanation stage uses the ranked actions plus curated evidence from the Impact, Alignment, and Feasibility blocks
-- The explanation stage currently returns only one explanation string per action, so it uses only the first item from `requestData.requestedLanguages` as the target language
+- The explanation stage returns explanation texts keyed by language code per action.
+- The canonical explanation language is `en`.
+- Requested non-English explanation languages are produced by translating the canonical English explanation after ranking.
+- Response metadata records `generated_languages` as the languages actually present in the returned explanation payload.
 - Explanations receive `cityStrategicPreferenceCoBenefitKeys[]` directly from the request context
 - The backend logs a warning if the explanation prompt becomes unusually large
 - If explanation generation fails or times out, ranking still returns normally with `explanation=null`

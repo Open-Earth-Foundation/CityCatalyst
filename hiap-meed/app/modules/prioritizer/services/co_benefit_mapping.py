@@ -197,7 +197,7 @@ def _build_prompt(
     return template.format(
         city_preference_other_text=city_preference_other_text,
         available_co_benefit_keys=json.dumps(
-            available_co_benefit_keys, ensure_ascii=True
+            available_co_benefit_keys, ensure_ascii=False
         ),
     )
 

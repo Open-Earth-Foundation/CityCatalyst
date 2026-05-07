@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "requestId": "1234567890-translate",
+    "generatedAtUtc": "2026-05-04T10:15:00.000000+00:00",
+    "backendConsumer": "hiap-meed",
+    "upstreamProvider": "city_catalyst_frontend",
+    "apiContext": {
+      "endpoint": "POST /v1/explanations/translate",
+      "locodes": ["CL IQQ"]
+    },
+    "totalRecords": 1
+  },
+  "requestData": {
+    "sourceLanguage": "en",
+    "targetLanguages": ["pt"],
+    "rankedActions": [
+      {
+        "actionId": "c40_0010",
+        "canonicalExplanation": "This action ranks highly because the evidence indicates strong expected impact, clear alignment with the city's transport priorities, and supportive implementation conditions."
+      },
+      {
+        "actionId": "c40_0030",
+        "canonicalExplanation": "This action ranks slightly lower because the evidence suggests useful impact and alignment benefits, but the implementation conditions appear more mixed."
+      }
+    ]
+  }
+}

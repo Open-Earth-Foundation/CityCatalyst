@@ -402,12 +402,11 @@ export const clamp = (num: number, min: number = 0, max: number = 1) =>
 // Helper function to get top picks - reused from ActionPlanSection
 export const getTopPickActions = (actions: HIAction[]): HIAction[] => {
   const selectedActions = actions.filter((action) => action.isSelected);
+  const usedActions = selectedActions.length > 0 ? selectedActions : actions;
 
-  if (selectedActions.length > 0) {
-    return [...selectedActions].sort((a, b) => a.rank - b.rank).slice(0, 3);
-  } else {
-    return [...actions].sort((a, b) => a.rank - b.rank).slice(0, 3);
-  }
+  return [...usedActions]
+    .sort((a, b) => (a.rank ?? 100000) - (b.rank ?? 100000))
+    .slice(0, 3);
 };
 
 /**
@@ -442,12 +441,14 @@ export const shortSectorNameToKebabCase = (sectorName: string) => {
 };
 
 export function toTranslationString(str?: string): string {
-  return (str ?? "")
-    // Convert camelCase/PascalCase to snake_case (e.g., "StationaryEnergy" -> "Stationary_Energy")
-    .replace(/([a-z])([A-Z])/g, "$1_$2")
-    .toLowerCase()
-    // Replace spaces with underscores
-    .replaceAll(" ", "_")
-    // Remove any characters that aren't alphanumeric or underscores
-    .replaceAll(/[^a-z\d_]/g, "");
+  return (
+    (str ?? "")
+      // Convert camelCase/PascalCase to snake_case (e.g., "StationaryEnergy" -> "Stationary_Energy")
+      .replace(/([a-z])([A-Z])/g, "$1_$2")
+      .toLowerCase()
+      // Replace spaces with underscores
+      .replaceAll(" ", "_")
+      // Remove any characters that aren't alphanumeric or underscores
+      .replaceAll(/[^a-z\d_]/g, "")
+  );
 }

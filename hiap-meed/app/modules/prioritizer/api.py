@@ -9,6 +9,9 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.modules.prioritizer.config import resolve_top_n
 from app.modules.prioritizer.models import (
+    ExplanationTranslationApiRequest,
+    ExplanationTranslationApiResponse,
+    ExplanationTranslationResult,
     ExclusionPreviewApiRequest,
     ExclusionPreviewApiResponse,
     ExclusionPreviewCityResult,
@@ -22,6 +25,7 @@ from app.modules.prioritizer.orchestrator import run_prioritization
 from app.modules.prioritizer.services.exclusion_resolution import (
     resolve_exclusion_preview_with_diagnostics,
 )
+from app.modules.prioritizer.services.translation import translate_explanations
 from app.services.data_clients import (
     ApiActionDataApiClient,
     ApiCityDataApiClient,
@@ -71,12 +75,16 @@ def _extract_city_emissions_by_gpc_ref(city_input: FrontendCityInput) -> dict[st
     return emissions_by_gpc_ref
 
 
-def _resolve_requested_language(requested_languages: list[str]) -> str:
-    """Resolve the single explanation language currently supported by the API."""
-    normalized_languages = [language.strip() for language in requested_languages if language.strip()]
+def _normalize_requested_languages(requested_languages: list[str]) -> list[str]:
+    """Normalize requested languages while preserving caller intent order."""
+    normalized_languages: list[str] = []
+    for language in requested_languages:
+        normalized = language.strip().lower()
+        if normalized and normalized not in normalized_languages:
+            normalized_languages.append(normalized)
     if not normalized_languages:
-        return "en"
-    return normalized_languages[0]
+        return ["en"]
+    return normalized_languages
 
 
 def _safe_artifact_name(value: str) -> str:
@@ -87,6 +95,20 @@ def _safe_artifact_name(value: str) -> str:
 @router.post(
     "/v1/prioritize/exclusions/preview",
     response_model=ExclusionPreviewApiResponse,
+    summary="Preview proposed action exclusions",
+    description=(
+        "Evaluates raw exclusion preferences before ranking and returns a preview "
+        "of the actions that would likely be excluded. This endpoint does not run "
+        "the full prioritization pipeline and does not require confirmed "
+        "`excludedActionIds` yet."
+    ),
+    responses={
+        200: {
+            "description": "Preview completed. Response contains proposed exclusions and warnings per city."
+        },
+        422: {"description": "Validation error in the request envelope or exclusion values."},
+        500: {"description": "Internal server error while building the exclusion preview."},
+    },
 )
 def preview_exclusions(
     request: ExclusionPreviewApiRequest,
@@ -219,7 +241,24 @@ def preview_exclusions(
         ) from error
 
 
-@router.post("/v1/prioritize", response_model=PrioritizerApiResponse)
+@router.post(
+    "/v1/prioritize",
+    response_model=PrioritizerApiResponse,
+    summary="Run action prioritization synchronously",
+    description=(
+        "Ranks actions for one or more cities from the frontend request envelope. "
+        "When `createExplanations=true`, the backend first generates canonical "
+        "English explanations and then translates them into any additionally "
+        "requested languages."
+    ),
+    responses={
+        200: {
+            "description": "Ranking completed. Response contains ranked actions, metadata, and optional warnings."
+        },
+        422: {"description": "Validation error in the request envelope or prioritization inputs."},
+        500: {"description": "Internal server error while running the prioritization pipeline."},
+    },
+)
 def prioritize(
     request: PrioritizerApiRequest,
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient = Depends(
@@ -256,7 +295,7 @@ def prioritize(
             request.requestData.topN,
             request.requestData.createExplanations,
         )
-        explanation_language = _resolve_requested_language(
+        requested_languages = _normalize_requested_languages(
             request.requestData.requestedLanguages
         )
         results: list[PrioritizerApiCityResult] = []
@@ -274,8 +313,7 @@ def prioritize(
                 legal_data_api_client=legal_data_api_client,
                 policy_signals_data_api_client=policy_signals_data_api_client,
                 create_explanations=request.requestData.createExplanations,
-                requested_languages=list(request.requestData.requestedLanguages),
-                explanation_language=explanation_language,
+                requested_languages=requested_languages,
             )
             # Echo frontend request ID for response correlation in clients/logs.
             per_city_result.metadata["frontend_request_id"] = request_trace_id
@@ -285,6 +323,7 @@ def prioritize(
                     ranked_action_ids=per_city_result.ranked_action_ids,
                     ranked_actions=per_city_result.ranked_actions,
                     metadata=per_city_result.metadata,
+                    warnings=per_city_result.warnings,
                 )
             )
 
@@ -312,6 +351,171 @@ def prioritize(
         ) from error
 
 
+@router.post(
+    "/v1/explanations/translate",
+    response_model=ExplanationTranslationApiResponse,
+    summary="Translate canonical explanations synchronously",
+    description=(
+        "Accepts canonical English explanations and returns translations for the "
+        "requested non-English target languages without rerunning prioritization. "
+        "The endpoint is stateless: callers must provide the source explanation "
+        "text in the request body."
+    ),
+    responses={
+        200: {
+            "description": "Translation completed. Response contains translated explanations and aggregated warnings."
+        },
+        422: {"description": "Validation error in the request envelope, source language, or target languages."},
+        500: {"description": "Internal server error while translating explanations."},
+    },
+)
+def translate_ranked_action_explanations(
+    request: ExplanationTranslationApiRequest,
+) -> ExplanationTranslationApiResponse:
+    """Translate canonical English explanations without rerunning prioritization."""
+    request_trace_id = request.meta.requestId
+    internal_request_id = uuid4()
+    artifact_writer = ArtifactWriter(
+        request_id=internal_request_id,
+        request_kind="explanation_translation",
+    )
+
+    try:
+        logger.info(
+            "Explanation translation request received frontend_request_id=%s internal_request_id=%s actions=%s target_languages=%s",
+            request_trace_id,
+            internal_request_id,
+            len(request.requestData.rankedActions),
+            request.requestData.targetLanguages,
+        )
+        input_snapshot_payload = {
+            "frontend_request_id": request_trace_id,
+            "source_language": request.requestData.sourceLanguage,
+            "target_languages": request.requestData.targetLanguages,
+            "ranked_actions": [
+                row.model_dump(mode="json") for row in request.requestData.rankedActions
+            ],
+        }
+        artifact_writer.write_run_file("input_snapshot.json", input_snapshot_payload)
+
+        canonical_explanations_by_action_id = {
+            row.actionId: row.canonicalExplanation
+            for row in request.requestData.rankedActions
+        }
+        translations_by_action_id, warnings, llm_io_payload = translate_explanations(
+            canonical_explanations_by_action_id=canonical_explanations_by_action_id,
+            target_languages=request.requestData.targetLanguages,
+        )
+        llm_input_payload = llm_io_payload.get("llm_input")
+        if isinstance(llm_input_payload, dict):
+            prompt_text = llm_input_payload.get("prompt_text")
+            if isinstance(prompt_text, str):
+                prompt_file = artifact_writer.write_run_text_file(
+                    "llm/explanation_translations_prompt.txt", prompt_text
+                )
+                llm_input_payload["prompt_text_file"] = (
+                    prompt_file.relative_to(artifact_writer._run_dir).as_posix()
+                    if prompt_file is not None
+                    else "llm/explanation_translations_prompt.txt"
+                )
+                llm_input_payload["prompt_text_characters"] = len(prompt_text)
+                llm_input_payload.pop("prompt_text", None)
+
+        llm_io_file = artifact_writer.write_run_file(
+            "llm/explanation_translations_io.json", llm_io_payload
+        )
+        translations = [
+            ExplanationTranslationResult(
+                actionId=action_id,
+                explanations=translations_by_action_id.get(action_id, {}),
+            )
+            for action_id in sorted(canonical_explanations_by_action_id.keys())
+        ]
+        response = ExplanationTranslationApiResponse(
+            translations=translations,
+            warnings=warnings,
+        )
+        if warnings:
+            warning_action_ids = (
+                llm_io_payload.get("llm_output", {}).get("warning_action_ids", [])
+                if isinstance(llm_io_payload.get("llm_output"), dict)
+                else []
+            )
+            logger.warning(
+                "Explanation translation warning frontend_request_id=%s internal_request_id=%s action_ids=%s",
+                request_trace_id,
+                internal_request_id,
+                warning_action_ids,
+            )
+        response_payload = response.model_dump(mode="json")
+        translation_event_index = artifact_writer.write_event(
+            "explanation_translation.completed",
+            {
+                "actions": len(translations),
+                "target_languages": request.requestData.targetLanguages,
+                "warnings_count": len(warnings),
+                "llm_io_file": (
+                    llm_io_file.relative_to(artifact_writer._run_dir).as_posix()
+                    if llm_io_file is not None
+                    else "llm/explanation_translations_io.json"
+                ),
+            },
+        )
+        artifact_writer.write_step_detail(
+            "explanation_translation",
+            {
+                "source_language": request.requestData.sourceLanguage,
+                "target_languages": request.requestData.targetLanguages,
+                "translated_action_ids": [row.actionId for row in translations],
+                "warnings": warnings,
+                "response": response_payload,
+            },
+            event_index=translation_event_index,
+            event_type="explanation_translation.completed",
+        )
+        artifact_writer.write_run_file("response_full.json", response_payload)
+        artifact_writer.write_manifest(
+            {
+                "counts": {
+                    "actions": len(translations),
+                    "warnings": len(warnings),
+                },
+                "artifact_pointers": {
+                    "summary_events": "summary.jsonl",
+                    "input_snapshot": "input_snapshot.json",
+                    "response_full": "response_full.json",
+                },
+            }
+        )
+        logger.info(
+            "Explanation translation request completed frontend_request_id=%s internal_request_id=%s actions=%s",
+            request_trace_id,
+            internal_request_id,
+            len(translations),
+        )
+        return response
+    except ValueError as error:
+        logger.warning(
+            "Invalid explanation translation request request_id=%s error=%s",
+            request_trace_id,
+            error,
+        )
+        raise HTTPException(
+            status_code=422,
+            detail=_error_payload(request_trace_id, str(error)),
+        ) from error
+    except Exception as error:
+        logger.exception(
+            "Explanation translation failed request_id=%s internal_request_id=%s",
+            request_trace_id,
+            internal_request_id,
+        )
+        raise HTTPException(
+            status_code=500,
+            detail=_error_payload(request_trace_id, "Internal server error"),
+        ) from error
+
+
 def _run_for_city_input(
     *,
     city_input: FrontendCityInput,
@@ -324,7 +528,6 @@ def _run_for_city_input(
     ),
     create_explanations: bool,
     requested_languages: list[str],
-    explanation_language: str,
 ) -> PrioritizationResponse:
     """
     Translate a single frontend city payload into a pipeline run.
@@ -354,6 +557,5 @@ def _run_for_city_input(
         policy_signals_data_api_client=policy_signals_data_api_client,
         create_explanations=create_explanations,
         requested_languages=requested_languages,
-        explanation_language=explanation_language,
     )
     return result

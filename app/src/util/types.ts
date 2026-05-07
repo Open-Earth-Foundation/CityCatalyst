@@ -721,10 +721,12 @@ export interface HIAPSummary {
   mitigation: {
     id: string;
     rankedActions: HIAction[];
+    unrankedActions: HIAction[];
   };
   adaptation: {
     id: string;
     rankedActions: HIAction[];
+    unrankedActions: HIAction[];
   };
   inventoryId: string;
 }

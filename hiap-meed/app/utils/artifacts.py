@@ -84,7 +84,7 @@ class ArtifactWriter:
         try:
             self.path.parent.mkdir(parents=True, exist_ok=True)
             with self.path.open("a", encoding="utf-8") as handle:
-                handle.write(json.dumps(event, ensure_ascii=True))
+                handle.write(json.dumps(event, ensure_ascii=False))
                 handle.write("\n")
             self._register_written_file(self.path)
         except Exception:
@@ -123,7 +123,7 @@ class ArtifactWriter:
         try:
             detail_path.parent.mkdir(parents=True, exist_ok=True)
             detail_path.write_text(
-                json.dumps(detail, ensure_ascii=True, indent=2),
+                json.dumps(detail, ensure_ascii=False, indent=2),
                 encoding="utf-8",
             )
             self._register_written_file(detail_path)
@@ -139,7 +139,7 @@ class ArtifactWriter:
         try:
             output_path.parent.mkdir(parents=True, exist_ok=True)
             output_path.write_text(
-                json.dumps(dict(payload), ensure_ascii=True, indent=2),
+                json.dumps(dict(payload), ensure_ascii=False, indent=2),
                 encoding="utf-8",
             )
             self._register_written_file(output_path)
@@ -184,7 +184,7 @@ class ArtifactWriter:
         try:
             manifest_path.parent.mkdir(parents=True, exist_ok=True)
             manifest_path.write_text(
-                json.dumps(manifest, ensure_ascii=True, indent=2),
+                json.dumps(manifest, ensure_ascii=False, indent=2),
                 encoding="utf-8",
             )
             self._register_written_file(manifest_path)

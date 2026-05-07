@@ -111,8 +111,8 @@ def test_prioritize_e2e_with_mock_api_payloads(
         assert ranked_action_ids == expected_ranked_ids
         assert [item["action_id"] for item in ranked_actions] == expected_ranked_ids
         assert ranked_actions[0]["rank"] == 1
-        assert ranked_actions[0]["explanation"] is None or isinstance(
-            ranked_actions[0]["explanation"], str
+        assert ranked_actions[0]["explanations"] == {} or isinstance(
+            ranked_actions[0]["explanations"], dict
         )
 
         blocked_evidence = metadata["hard_filter_evidence_by_action_id"]["c40_0012"]

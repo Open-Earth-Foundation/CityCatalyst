@@ -167,6 +167,15 @@ def _co_benefit_effect_label(impact_numeric: float | None, *, present: bool) -> 
     return "neutral"
 
 
+def _co_benefit_score_source(impact_numeric: float | None, *, present: bool) -> str:
+    """Explain whether the normalized score came from a real value or a missing fallback."""
+    if not present:
+        return "missing_co_benefit"
+    if impact_numeric is None:
+        return "missing_impact_numeric"
+    return "derived_from_value"
+
+
 def _build_selected_co_benefit_match_details(
     *,
     action_co_benefits: dict[str, dict[str, object]],
@@ -196,7 +205,11 @@ def _build_selected_co_benefit_match_details(
                 "normalized_preference_score": (
                     _normalized_co_benefit_score(impact_numeric)
                     if impact_numeric is not None
-                    else 0.0
+                    else 0.5
+                ),
+                "score_source": _co_benefit_score_source(
+                    impact_numeric,
+                    present=benefit is not None,
                 ),
                 "effect_label": _co_benefit_effect_label(
                     impact_numeric,

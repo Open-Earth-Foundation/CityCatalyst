@@ -188,7 +188,7 @@ Impact block behavior (implemented):
   - The service sums activity emissions per GPC key before scoring.
 - Impact computes canonical score as:
   - `0.80 * reduction_share_of_city_emissions + 0.20 * timeline_score`
-  - Timeline mapping: `<5 years -> 1.0`, `5-10 years -> 0.5`, `>10 years -> 0.0`
+  - Timeline mapping: `<5 years -> 1.0`, `5-10 years -> 0.5`, `>10 years -> 0.0`, missing or unknown timeline `-> 0.5`
 - Unknown `impact_text` values are rejected with `422` (raised during Impact scoring and surfaced by the API error handler).
 
 Alignment block behavior (implemented):

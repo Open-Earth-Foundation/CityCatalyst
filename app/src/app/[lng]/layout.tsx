@@ -14,7 +14,10 @@ import { HighlightInit } from "@highlight-run/next/client";
 import HighlightIdentifier from "@/components/HighlightIo/HighlightIdentifier";
 import { hasServerFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 export const metadata: Metadata = {
-  title: "CityCatalyst",
+  title: {
+    default: "CityCatalyst",
+    template: "CityCatalyst - %s",
+  },
   description: "Make building a climate inventory a breeze",
 };
 

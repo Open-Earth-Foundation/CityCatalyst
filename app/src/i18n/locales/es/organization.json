@@ -20,5 +20,6 @@
   "organization-load-failed": "No se puede cargar la organización",
   "discover-cities-description": "Descubre las ciudades destacadas en este proyecto. Haz clic en cada ciudad para ver su panel de control y los módulos disponibles.",
   "country-name": "Nombre del país",
-  "city-name": "Nombre de la ciudad"
+  "city-name": "Nombre de la ciudad",
+  "citycatalyst-demo": "CityCatalyst Demo"
 }

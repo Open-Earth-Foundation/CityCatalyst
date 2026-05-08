@@ -120,3 +120,9 @@ sequenceDiagram
 | Weighted Sum | Aggregate pillar scores, sort, apply `top_n`                    | `ranked_action_ids` + `ranked_actions`  |
 
 See [`highlevel-architecture.md`](highlevel-architecture.md) and [`detailed-block-architecture.md`](detailed-block-architecture.md) for the scoring logic inside each block.
+
+Current flow note:
+- exclusion preview and prioritization are intentionally separate request flows
+- exclusion preview resolves raw exclusion preferences into proposals for user review
+- prioritization consumes confirmed `excludedActionIds` and runs the scoring pipeline
+- prioritization artifacts are assembled in the orchestrator layer, while exclusion preview artifacts are currently assembled from `api.py`

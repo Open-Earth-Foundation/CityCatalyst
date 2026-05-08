@@ -18,7 +18,6 @@ DEFAULT_WEIGHTS: dict[str, float] = {
 
 REQUIRED_WEIGHT_KEYS: set[str] = set(DEFAULT_WEIGHTS.keys())
 DEFAULT_TOP_N = 20
-
 # Impact scoring knobs
 IMPACT_TEXT_TO_MULTIPLIER: dict[str, float] = {
     "very low": 0.2,
@@ -28,7 +27,7 @@ IMPACT_TEXT_TO_MULTIPLIER: dict[str, float] = {
     "very high": 1.0,
 }
 
-IMPACT_DEFAULT_TIMELINE_SCORE = 0.0
+IMPACT_DEFAULT_TIMELINE_SCORE = 0.5
 
 IMPACT_TIMELINE_TO_SCORE: dict[str, float] = {
     "<5 years": 1.0,
@@ -39,9 +38,10 @@ IMPACT_WEIGHT_REDUCTION_SHARE = 0.80
 IMPACT_WEIGHT_TIMELINE = 0.20
 
 # Alignment scoring knobs
-ALIGNMENT_WEIGHT_POLICY = 0.80
+ALIGNMENT_WEIGHT_POLICY = 0.75
 ALIGNMENT_WEIGHT_SECTOR = 0.15
 ALIGNMENT_WEIGHT_OTHER = 0.05
+ALIGNMENT_WEIGHT_TIMEFRAME = 0.05
 
 # Feasibility scoring knobs
 FEASIBILITY_WEIGHT_LEGAL = 0.50
@@ -100,6 +100,7 @@ def validate_block_component_weights() -> None:
             "ALIGNMENT_WEIGHT_POLICY": ALIGNMENT_WEIGHT_POLICY,
             "ALIGNMENT_WEIGHT_SECTOR": ALIGNMENT_WEIGHT_SECTOR,
             "ALIGNMENT_WEIGHT_OTHER": ALIGNMENT_WEIGHT_OTHER,
+            "ALIGNMENT_WEIGHT_TIMEFRAME": ALIGNMENT_WEIGHT_TIMEFRAME,
         },
         "feasibility": {
             "FEASIBILITY_WEIGHT_LEGAL": FEASIBILITY_WEIGHT_LEGAL,
@@ -165,3 +166,70 @@ def resolve_impact_text_multiplier(impact_text: str) -> float:
             f"`{impact_text}` (normalized: `{normalized}`)"
         )
     return IMPACT_TEXT_TO_MULTIPLIER[normalized]
+
+
+def get_alignment_other_preference_mapping_model() -> str | None:
+    """Return configured model name for alignment other-preference mapping."""
+    raw_value = os.getenv("HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL")
+    if raw_value is None or not raw_value.strip():
+        return None
+    return raw_value.strip()
+
+
+def parse_bool_env(value: str | None, *, default: bool) -> bool:
+    """Parse common env-var boolean encodings with a fallback default."""
+    if value is None:
+        return default
+    normalized = value.strip().lower()
+    if not normalized:
+        return default
+    if normalized in {"1", "true", "yes", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "off"}:
+        return False
+    return default
+
+
+def is_explanations_enabled() -> bool:
+    """Return global feature switch for LLM explanation generation."""
+    raw_value = os.getenv("HIAP_MEED_EXPLANATIONS_ENABLED")
+    return parse_bool_env(raw_value, default=True)
+
+
+def get_explanations_model() -> str | None:
+    """Return configured explanation model name, if set."""
+    value = os.getenv("HIAP_MEED_EXPLANATIONS_MODEL")
+    if value is None:
+        return None
+    normalized = value.strip()
+    if not normalized:
+        return None
+    return normalized
+
+
+def get_explanation_translations_model() -> str | None:
+    """Return configured translation model name, if set."""
+    value = os.getenv("HIAP_MEED_EXPLANATION_TRANSLATIONS_MODEL")
+    if value is None:
+        return None
+    normalized = value.strip()
+    if not normalized:
+        return None
+    return normalized
+
+
+def is_free_text_exclusion_resolution_enabled() -> bool:
+    """Return feature switch for preview-time LLM exclusion resolution."""
+    raw_value = os.getenv("HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED")
+    return parse_bool_env(raw_value, default=False)
+
+
+def get_free_text_exclusion_model() -> str | None:
+    """Return configured model name for free-text exclusion resolution."""
+    value = os.getenv("HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL")
+    if value is None:
+        return None
+    normalized = value.strip()
+    if not normalized:
+        return None
+    return normalized

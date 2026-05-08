@@ -258,6 +258,11 @@ function SubSectorPage(props: {
                     <BreadcrumbLink
                       href={pathname.replace(`/${step}/${subsector}`, "")}
                       color="content.tertiary"
+                      textDecoration="none"
+                      _hover={{
+                        textDecoration: "underline",
+                        textUnderlineOffset: "4px",
+                      }}
                       truncate
                     >
                       {t("all-sectors")}
@@ -265,13 +270,18 @@ function SubSectorPage(props: {
                     <BreadcrumbLink
                       href={pathname.replace(`/${subsector}`, "")}
                       color="content.tertiary"
+                      textDecoration="none"
+                      _hover={{
+                        textDecoration: "underline",
+                        textUnderlineOffset: "4px",
+                      }}
                       truncate
                     >
                       {t(getSectorName(step))}
                     </BreadcrumbLink>
                     <BreadcrumbCurrentLink
                       color="content.link"
-                      textDecoration="underline"
+                      textDecoration="none"
                     >
                       <Text truncate lineClamp={1}>
                         {!subSectorData ? (

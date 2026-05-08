@@ -10,7 +10,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
 
 # Install uv from the official Astral image
-COPY --from=ghcr.io/astral-sh/uv:0.9.7 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.11.7 /uv /uvx /bin/
 
 # Copy uv project metadata and install production dependencies
 COPY pyproject.toml uv.lock ./

@@ -29,12 +29,12 @@
       "attribute_units": "percent",
       "attribute_category": "high"
     },
-    "transport_logistics_employment": {
+    "employment_in_transport_and_logistics": {
       "attribute_value": 7.35,
       "attribute_units": "percent",
       "attribute_category": "low"
     },
-    "electricity_access": {
+    "electricity_access_rate": {
       "attribute_value": 100.0,
       "attribute_units": "percent",
       "attribute_category": "very low"

@@ -304,5 +304,7 @@
   "subcategory": "Sub-category",
   "inventory-versions-restore-failed": "Failed to restore version",
   "legend": "Legend",
-  "citycatalyst": "CityCatalyst"
+  "citycatalyst": "CityCatalyst",
+  "breadcrumb-hiap": "Actions & Plans",
+  "start-here": "Start here"
 }

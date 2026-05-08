@@ -12,6 +12,7 @@ import { Box, Heading, Icon, Spinner, Text } from "@chakra-ui/react";
 import { CircleFlag } from "react-circle-flags";
 import {
   MdArrowOutward,
+  MdChevronRight,
   MdGroup,
   MdInfoOutline,
   MdOutlineAspectRatio,
@@ -22,6 +23,12 @@ import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
 import Link from "next/link";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { useTranslation } from "@/i18n/client";
+import {
+  BreadcrumbCurrentLink,
+  BreadcrumbLink,
+  BreadcrumbRoot,
+} from "@/components/ui/breadcrumb";
+import { usePathname } from "next/navigation";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -47,6 +54,7 @@ export function Hero({
   city,
 }: HeroProps) {
   const { t } = useTranslation(lng, "dashboard");
+  const pathname = usePathname();
   const activeCity = inventory?.city?.name ?? city?.name;
   const activeProject = (() => {
     const projectName = inventory?.city?.project?.name ?? city?.project?.name;
@@ -72,15 +80,60 @@ export function Hero({
     [cityData?.population, population?.population, population?.year],
   );
 
+  const moduleLabel = useMemo(() => {
+    if (pathname.includes("/HIAP")) return t("breadcrumb-hiap");
+    if (pathname.includes("/dashboard")) return t("dashboard");
+    return t("ghg-inventories");
+  }, [pathname, t]);
+
+  const cityId = inventory?.cityId ?? city?.cityId;
+  const breadcrumbsHomeHref = cityId ? `/${lng}/cities/${cityId}` : `/${lng}`;
+
   return (
-    <Box bg="content.alternative" w="full" h="491px" pt="150px" px={8}>
-      <Box display="flex" mx="auto" maxW="full" w="1090px">
+    <Box bg="content.alternative" w="full" h="491px" pt="80px" px={8}>
+      <Box
+        display="flex"
+        flexDirection="column"
+        gap="24px"
+        mx="auto"
+        maxW="full"
+        w="1090px"
+      >
+        <Box>
+          <BreadcrumbRoot
+            separator={
+              <Icon as={MdChevronRight} boxSize={4} color="base.light" />
+            }
+            separatorGap="8px"
+            fontFamily="body"
+          >
+            <BreadcrumbLink href={breadcrumbsHomeHref} asChild>
+              <Link href={breadcrumbsHomeHref} color="base.light">
+                <Text
+                  fontSize="body.md"
+                  color="base.light"
+                  lineHeight="20px"
+                  _hover={{ textDecoration: "underline" }}
+                  textUnderlineOffset="8px"
+                >
+                  {t("citycatalyst")}
+                </Text>
+              </Link>
+            </BreadcrumbLink>
+            <BreadcrumbCurrentLink>
+              <Text fontSize="body.md" color="border.neutral">
+                {moduleLabel}
+              </Text>
+            </BreadcrumbCurrentLink>
+          </BreadcrumbRoot>
+        </Box>
         <Box
           w="full"
           h="240px"
           display="flex"
           flexDirection="column"
           justifyContent="center"
+          pt="36px"
         >
           <Box display="flex" h="240px">
             <Box
@@ -98,6 +151,7 @@ export function Hero({
               >
                 {!inventory ? t("welcome") : null}
               </Text>
+
               <Box display="flex" flexDirection="column" gap={2}>
                 {!isPublic &&
                 hasFeatureFlag(FeatureFlags.PROJECT_OVERVIEW_ENABLED) ? (

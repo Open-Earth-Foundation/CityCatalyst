@@ -34,7 +34,6 @@
     "prettier": "npx prettier . --write",
     "email": "email dev --dir src/lib/emails",
     "create-admin": "tsx scripts/create-admin.ts",
-    "demo:clear-chicago-2022": "tsx scripts/clear-demo-inventory.ts --year 2022",
     "update-brazil-emissions": "tsx scripts/update-country-emissions.ts",
     "generate:changelog": "node scripts/generate-changelog.js",
     "upgrade:ui": "npm uninstall @emotion/styled framer-motion && npm install @chakra-ui/react@latest @emotion/react@latest",

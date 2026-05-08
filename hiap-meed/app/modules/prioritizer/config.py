@@ -27,7 +27,7 @@ IMPACT_TEXT_TO_MULTIPLIER: dict[str, float] = {
     "very high": 1.0,
 }
 
-IMPACT_DEFAULT_TIMELINE_SCORE = 0.0
+IMPACT_DEFAULT_TIMELINE_SCORE = 0.5
 
 IMPACT_TIMELINE_TO_SCORE: dict[str, float] = {
     "<5 years": 1.0,

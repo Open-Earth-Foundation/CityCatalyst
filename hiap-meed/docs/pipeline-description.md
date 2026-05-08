@@ -577,7 +577,7 @@ Timeline mapping:
 - `<5 years` -> `1.0`
 - `5-10 years` -> `0.5`
 - `>10 years` -> `0.0`
-- missing or unknown timeline -> `0.0`
+- missing or unknown timeline -> `0.5`
 
 Meaning:
 

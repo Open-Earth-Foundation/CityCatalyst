@@ -34,26 +34,10 @@ type Inputs = {
   preferredLanguage: LANGUAGES;
 };
 
-const normalizeInviteEmail = (value: string | null): string =>
-  (value ?? "").replaceAll(" ", "+");
-
 export default function Signup(props: { params: Promise<{ lng: string }> }) {
   const lng = i18next.language as LANGUAGES;
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const callbackUrlParam = searchParams.get("callbackUrl");
-  const decodedCallbackUrl = callbackUrlParam
-    ? decodeURIComponent(callbackUrlParam)
-    : "";
-  const callbackUrlSearch = decodedCallbackUrl.includes("?")
-    ? decodedCallbackUrl.split("?")[1]
-    : "";
-  const callbackParams = new URLSearchParams(callbackUrlSearch);
-  const prefilledEmail =
-    normalizeInviteEmail(searchParams.get("email")) ||
-    normalizeInviteEmail(callbackParams.get("email"));
 
   const {
     handleSubmit,
@@ -64,7 +48,6 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
   } = useForm<Inputs>({
     defaultValues: {
       preferredLanguage: lng as LANGUAGES,
-      email: prefilledEmail,
     },
   });
 
@@ -72,6 +55,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
 
   const [error, setError] = useState("");
 
+  const searchParams = useSearchParams();
   let callbackUrl = searchParams.get("callbackUrl") ?? undefined;
   if (!callbackUrl || callbackUrl === "null" || callbackUrl === "undefined") {
     callbackUrl = undefined;
@@ -188,13 +172,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
             })}
           />
         </Field>
-        <EmailInput
-          register={register}
-          error={errors.email}
-          t={t}
-          disabled={Boolean(prefilledEmail)}
-          defaultValue={prefilledEmail}
-        />
+        <EmailInput register={register} error={errors.email} t={t} />
         <PasswordInput
           register={register}
           error={errors.password}

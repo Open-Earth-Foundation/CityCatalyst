@@ -242,13 +242,13 @@
   "contact-us": "CONTACT US",
   "journey": {
     "assess-&-analyze": "Assess and Analyze",
-    "assess-&-analyze-description": "Support cities in creating a solid evidence base to understand their climate impact and vulnerabilities. This phase focuses on assessing emissions and climate risks to set the foundation for effective planning.",
+    "assess-&-analyze-description": "These tools enable you to accurately measure your city’s carbon emissions, building a robust evidence base that empowers informed decision-making. This foundation supports effective adaptation and mitigation planning tailored to your city’s unique challenges.",
     "plan": "Plan",
-    "plan-description": "Enable cities to transition from understanding to strategy. This phase supports action planning and aligning efforts with available financing opportunities.",
+    "plan-description": "These tools enable you to transform your city’s assessment into effective strategies. You’ll create a plan that aligns your projects with available funding opportunities for maximum impact.",
     "implement": "Implement",
-    "implement-description": "Support cities in moving from plans to funding and execution. This phase ensures ideas turn into funded projects aligned with city goals and financing mechanisms.",
+    "implement-description": "These tools empower you to implement your plan by developing actionable projects that align with your city’s goals and financing mechanisms, ensuring seamless execution.",
     "monitor-evaluate-&-report": "Monitor, Evaluate & Report",
-    "monitor-evaluate-&-report-description": "Support cities in moving from plans to funding and execution. This phase ensures ideas turn into funded projects aligned with city goals and financing mechanisms.",
+    "monitor-evaluate-&-report-description": "These tools enable you to monitor your implementation effectively. You’ll be able to evaluate and report on your city’s progress, ensuring smooth and transparent tracking every step of the way.",
     "GHGI": "GHG Inventories",
     "HIAP": "Actions & Plans",
     "your-city-dashboard": "Your city's dashboard"
@@ -304,5 +304,7 @@
   "subcategory": "Sub-category",
   "inventory-versions-restore-failed": "Failed to restore version",
   "legend": "Legend",
-  "citycatalyst": "CityCatalyst"
+  "citycatalyst": "CityCatalyst",
+  "breadcrumb-hiap": "Actions & Plans",
+  "start-here": "Start here"
 }

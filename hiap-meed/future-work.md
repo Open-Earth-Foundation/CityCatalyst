@@ -39,12 +39,11 @@ Source: Notion "How Legal Signals, Policy Signals, and Socioeconomic Indicators 
 
 ## Post-ranking explanations (new v1 stage)
 
-- **Current (v1)**: optional LLM explanations are generated after ranking from implemented in-memory evidence (impact/alignment/feasibility/hard-filter).
+- **Current (v1)**: optional LLM explanations are generated after ranking from implemented in-memory evidence (impact/alignment/feasibility/hard-filter), canonically in English, with optional stateless translation into requested non-English languages.
 - **Current limitations**:
   - explanations do not yet receive richer alignment-specific UI summaries beyond the current resolved preferred co-benefits and matched preferred co-benefits carried in standard evidence.
-  - explanations currently return a single `explanation` string per action, so `requestedLanguages` is handled with a temporary first-language-wins rule instead of true multilingual output.
 - **Expectation**: explanations should explicitly avoid inventing reasoning for these unimplemented signals until their scoring/evidence pipelines exist.
-- **Future work**: redesign the ranked-action explanation response contract and generation flow to support one request returning multiple localized explanation values per action.
+- **Future work**: consider adding an in-memory, process-local translation cache keyed by canonical explanation text, source language, target language, translation model, and prompt version to reduce repeated translation token usage without introducing persistent state.
 
 ## Replace mock data clients with real upstream API calls
 

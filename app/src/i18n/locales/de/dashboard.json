@@ -235,10 +235,10 @@
     "plan": "Planen",
     "implement": "Umsetzen",
     "monitor-evaluate-&-report": "Überwachen, Bewerten und Berichten",
-    "assess-&-analyze-description": "Unterstützen Sie Städte dabei, eine solide Datenbasis zu schaffen, um ihre Klimaauswirkungen und Verwundbarkeiten zu verstehen. In dieser Phase liegt der Schwerpunkt auf der Bewertung von Emissionen und Klimarisiken, um die Grundlage für eine effektive Planung zu legen.",
-    "plan-description": "Ermöglichen Sie Städten den Übergang vom Verständnis zur Strategie. Diese Phase unterstützt die Aktionsplanung und die Abstimmung der Bemühungen mit verfügbaren Finanzierungsmöglichkeiten.",
-    "implement-description": "Unterstützen Sie Städte dabei, von Plänen zur Finanzierung und Umsetzung überzugehen. Diese Phase stellt sicher, dass Ideen zu finanzierten Projekten werden, die mit den Zielen der Stadt und den Finanzierungsmechanismen übereinstimmen.",
-    "monitor-evaluate-&-report-description": "Unterstützen Sie Städte dabei, von Plänen zur Finanzierung und Umsetzung überzugehen. Diese Phase stellt sicher, dass Ideen zu finanzierten Projekten werden, die mit den Zielen der Stadt und Finanzierungsmechanismen übereinstimmen.",
+    "assess-&-analyze-description": "Diese Tools ermöglichen es Ihnen, die CO2-Emissionen Ihrer Stadt präzise zu messen und eine belastbare Evidenzbasis für fundierte Entscheidungen aufzubauen. Diese Grundlage unterstützt eine wirksame Anpassungs- und Minderungsplanung, die auf die besonderen Herausforderungen Ihrer Stadt zugeschnitten ist.",
+    "plan-description": "Diese Tools helfen Ihnen, die Bewertung Ihrer Stadt in wirksame Strategien zu überführen. Sie erstellen einen Plan, der Ihre Projekte auf verfügbare Finanzierungsmöglichkeiten ausrichtet, um maximale Wirkung zu erzielen.",
+    "implement-description": "Diese Tools befähigen Sie, Ihren Plan umzusetzen, indem Sie umsetzbare Projekte entwickeln, die mit den Zielen Ihrer Stadt und den Finanzierungsmechanismen übereinstimmen, und so eine nahtlose Umsetzung sicherstellen.",
+    "monitor-evaluate-&-report-description": "Diese Tools ermöglichen es Ihnen, Ihre Umsetzung effektiv zu überwachen. Sie können den Fortschritt Ihrer Stadt bewerten und darüber berichten und so eine reibungslose und transparente Nachverfolgung in jeder Phase sicherstellen.",
     "GHGI": "Treibhausgasinventare",
     "HIAP": "Aktionen & Pläne",
     "your-city-dashboard": "Dashboard Ihrer Stadt"
@@ -298,5 +298,7 @@
   "status-beta": "Betaversion",
   "status-active": "Aktiv",
   "legend": "Legende",
-  "citycatalyst": "CityCatalyst"
+  "citycatalyst": "CityCatalyst",
+  "breadcrumb-hiap": "Actions & Plans",
+  "start-here": "Hier starten"
 }

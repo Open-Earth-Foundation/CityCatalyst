@@ -1,0 +1,44 @@
+{
+  "counts": {
+    "total_actions": 155,
+    "valid_actions": 151,
+    "discarded_excluded": 1,
+    "discarded_legal": 3,
+    "ranked_actions": 20
+  },
+  "artifact_pointers": {
+    "summary_events": "summary.jsonl",
+    "input_snapshot": "input_snapshot.json",
+    "response_summary": "015_response_summary.json",
+    "top_ranked_actions": "012_final_scoring.json",
+    "block_evidence": {
+      "hard_filter": "007_hard_filter.json",
+      "impact": "008_impact.json",
+      "alignment": "009_alignment.json",
+      "feasibility": "010_feasibility.json"
+    },
+    "explanation_translations": "<disabled>_explanation_translations.json"
+  },
+  "schema_version": "1.2",
+  "request_id": "2495427b-f078-4738-804b-03068e735d2f",
+  "request_kind": "prioritization",
+  "generated_files": [
+    "001_fetch_city.json",
+    "002_fetch_actions.json",
+    "003_fetch_legal_requirements.json",
+    "004_fetch_policy_signals.json",
+    "005_validate_weights.json",
+    "007_hard_filter.json",
+    "008_impact.json",
+    "009_alignment.json",
+    "010_feasibility.json",
+    "012_final_scoring.json",
+    "013_explanations.json",
+    "015_response_summary.json",
+    "input_snapshot.json",
+    "llm/explanations_io.json",
+    "llm/explanations_prompt.txt",
+    "response_full.json",
+    "summary.jsonl"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-05-05T15:42:11.602361+00:00",
+  "request_id": "c9719468-ffe9-4458-a75c-06e96a97f7e6",
+  "request_kind": "explanation_translation",
+  "event_index": 1,
+  "step_name": "explanation_translation",
+  "event_type": "explanation_translation.completed",
+  "payload": {
+    "source_language": "en",
+    "target_languages": [
+      "pt"
+    ],
+    "translated_action_ids": [
+      "c40_0010",
+      "c40_0030"
+    ],
+    "warnings": [],
+    "response": {
+      "translations": [
+        {
+          "actionId": "c40_0010",
+          "explanations": {
+            "pt": "Esta ação tem classificação elevada porque a evidência indica forte impacto esperado, alinhamento claro com as prioridades de transporte da cidade e condições de implementação favoráveis."
+          }
+        },
+        {
+          "actionId": "c40_0030",
+          "explanations": {
+            "pt": "Esta ação tem classificação ligeiramente inferior porque a evidência sugere impacto útil e benefícios de alinhamento, mas as condições de implementação parecem mais mistas."
+          }
+        }
+      ],
+      "warnings": []
+    }
+  }
+}

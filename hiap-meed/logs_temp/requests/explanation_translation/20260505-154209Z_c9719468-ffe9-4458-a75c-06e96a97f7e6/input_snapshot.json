@@ -1,0 +1,17 @@
+{
+  "frontend_request_id": "1234567890-translate",
+  "source_language": "en",
+  "target_languages": [
+    "pt"
+  ],
+  "ranked_actions": [
+    {
+      "actionId": "c40_0010",
+      "canonicalExplanation": "This action ranks highly because the evidence indicates strong expected impact, clear alignment with the city's transport priorities, and supportive implementation conditions."
+    },
+    {
+      "actionId": "c40_0030",
+      "canonicalExplanation": "This action ranks slightly lower because the evidence suggests useful impact and alignment benefits, but the implementation conditions appear more mixed."
+    }
+  ]
+}

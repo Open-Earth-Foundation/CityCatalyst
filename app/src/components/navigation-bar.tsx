@@ -25,6 +25,7 @@ import {
   MdArrowDropUp,
   MdAspectRatio,
   MdLogout,
+  MdOpenInNew,
   MdOutlineMenu,
 } from "react-icons/md";
 import Cookies from "js-cookie";
@@ -245,17 +246,15 @@ export function NavigationBar({
             </Link>
             <Link
               rel="help noopener"
+              target="_blank"
               href="https://citycatalyst.openearth.org/learning-hub"
             >
-              <Heading
-                color="base.light"
-                size="md"
-                opacity={0.75}
-                whiteSpace="nowrap"
-                ml={6}
-              >
-                {t("learning-hub")}
-              </Heading>
+              <HStack ml={6} gap={2} color="base.light" opacity={0.75}>
+                <Heading size="md" whiteSpace="nowrap">
+                  {t("learning-hub")}
+                </Heading>
+                <Icon as={MdOpenInNew} boxSize={4} />
+              </HStack>
             </Link>
             <Separator
               orientation="vertical"

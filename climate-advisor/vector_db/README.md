@@ -288,7 +288,7 @@ embedding_service:
 
 **Important Notes:**
 
-- Documents are automatically chunked by Climate Advisor's local recursive text splitter before embedding
+- Documents are automatically chunked by LangChain's recursive text splitter before embedding
 - The `max_token_limit` is used for validation only - chunks should already be under this limit
 - If you see warnings about chunks exceeding the token limit, reduce `default_chunk_size` in the config
 - Token counting is done using `tiktoken` for accurate OpenAI token calculation

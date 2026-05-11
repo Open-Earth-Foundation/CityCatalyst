@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import List, Optional, Dict, Any
 
 from PyPDF2 import PdfReader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # Import configuration
 try:
@@ -59,8 +60,8 @@ class PDFProcessor:
             raise Exception(f"Error extracting text from PDF {file_path}: {str(e)}")
 
 
-class TextSplitter:
-    """Handles text splitting for embedding generation."""
+class LocalRecursiveTextSplitter:
+    """Local recursive splitter retained for benchmark comparison."""
 
     MIN_CHUNK_CHARS = 50
 
@@ -252,6 +253,49 @@ class TextSplitter:
             start = next_start if next_start < end else end
 
         return chunks
+
+
+class TextSplitter(LocalRecursiveTextSplitter):
+    """Runtime text splitter backed by LangChain.
+
+    The local recursive implementation stays in this module so the splitter
+    benchmark can continue to exercise it, but production chunking uses
+    LangChain's RecursiveCharacterTextSplitter again.
+    """
+
+    def __init__(
+        self,
+        chunk_size: Optional[int] = None,
+        chunk_overlap: Optional[int] = None,
+        separators: Optional[List[str]] = None
+    ):
+        super().__init__(chunk_size=chunk_size, chunk_overlap=chunk_overlap, separators=separators)
+        self.splitter = RecursiveCharacterTextSplitter(
+            chunk_size=self.chunk_size,
+            chunk_overlap=self.chunk_overlap,
+            separators=self.separators,
+            keep_separator=True,
+        )
+
+    def split_text(self, text: str) -> List[str]:
+        """
+        Split text into chunks suitable for embedding.
+
+        Args:
+            text: The text to split
+
+        Returns:
+            List of text chunks
+        """
+        if not text or not text.strip():
+            return []
+
+        cleaned_text = self._clean_text(text)
+        if not cleaned_text:
+            return []
+
+        chunks = self.splitter.split_text(cleaned_text)
+        return [chunk for chunk in chunks if len(chunk.strip()) >= self.MIN_CHUNK_CHARS]
 
 
 class DocumentProcessor:

@@ -37,7 +37,7 @@ export function ModuleCard({
   };
 
   const statusLabelMap: Record<string, string> = {
-    poc: "status-poc",
+    poc: "status-beta",
     prototype: "status-prototype",
     preview: "status-preview",
     early_access: "status-early-access",

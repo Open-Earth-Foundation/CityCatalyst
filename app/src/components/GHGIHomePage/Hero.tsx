@@ -23,6 +23,7 @@ import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
 import Link from "next/link";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { useTranslation } from "@/i18n/client";
+import { HeatIcon } from "../icons";
 import {
   BreadcrumbCurrentLink,
   BreadcrumbLink,
@@ -193,11 +194,7 @@ export function Hero({
               </Box>
               <Box display="flex" gap={8} mt="24px">
                 <Box display="flex" alignItems="baseline" gap={3}>
-                  <Icon
-                    as={MdArrowOutward}
-                    boxSize={6}
-                    fill="sentiment.negativeDefault"
-                  />
+                  <Icon as={HeatIcon} boxSize={6} fill="background.overlay" />
                   <Box>
                     <Box display="flex" gap={1}>
                       <Text

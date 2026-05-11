@@ -19,7 +19,7 @@ dependencies = [
     "cryptography==46.0.3",
     "distro==1.9.0",
     "greenlet==3.2.4",
-    "griffe==1.14.0",
+    "griffe==2.0.2",
     "h11==0.16.0",
     "httpcore==1.0.9",
     "httptools==0.7.1",

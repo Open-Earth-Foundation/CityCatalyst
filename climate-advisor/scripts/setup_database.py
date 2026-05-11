@@ -16,13 +16,13 @@ Outputs:
 
 Usage:
     # Run migrations (recommended)
-    python scripts/setup_database.py
+    uv run python scripts/setup_database.py
 
     # Reset database completely (drops all tables, then runs migrations)
-    python scripts/setup_database.py --drop
+    uv run python scripts/setup_database.py --drop
 
     # Check database connectivity only
-    python scripts/setup_database.py --check
+    uv run python scripts/setup_database.py --check
 
 Prerequisites:
     - PostgreSQL database must be running and accessible
@@ -108,7 +108,7 @@ async def _check_database_connection() -> bool:
         
     except ImportError as e:
         print(f"[!] Error: Missing dependency: {e}")
-        print("    Install with: pip install asyncpg")
+        print("    Install CA dependencies with: uv sync --locked")
         return False
     except Exception as e:
         print(f"[!] Database connection failed: {e}")
@@ -194,7 +194,7 @@ def _run_alembic_migrations() -> bool:
         return True
         
     except FileNotFoundError:
-        print("[!] Error: Alembic not found. Install with: pip install alembic")
+        print("[!] Error: Alembic not found. Install CA dependencies with: uv sync --locked")
         return False
     except Exception as e:
         print(f"[!] Error running migrations: {e}")
@@ -307,7 +307,7 @@ For more information, see: climate-advisor/README.md
             print("[+] Database setup completed successfully!")
             if not args.check:
                 print("\nNext steps:")
-                print("   1. Start the service: cd service && uvicorn app.main:app --reload")
+                print("   1. Start the service: uv run --directory service uvicorn app.main:app --reload")
                 print("   2. Visit: http://localhost:8080/docs")
         else:
             print("\n" + "=" * 50)

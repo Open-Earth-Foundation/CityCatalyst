@@ -110,7 +110,7 @@ class EmbeddingService:
                     error="Empty text provided"
                 )
 
-            # Validate token count (text should already be chunked by LangChain text splitter)
+            # Validate token count against the configured document chunker.
             # Log a warning if chunk exceeds token limit - this shouldn't happen with proper chunking
             text_tokens = self.calculate_tokens(text)
             if text_tokens > self.max_tokens:

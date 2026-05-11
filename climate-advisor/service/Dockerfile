@@ -2,16 +2,19 @@ FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1
+    PATH="/app/.venv/bin:$PATH"
 
 WORKDIR /app
 
-# Copy requirements from service directory
-COPY service/requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
-
 # Install PostgreSQL client for database connectivity testing
 RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
+
+# Install uv from the official Astral image
+COPY --from=ghcr.io/astral-sh/uv:0.11.7 /uv /uvx /bin/
+
+# Copy uv project metadata and install production dependencies
+COPY pyproject.toml uv.lock ./
+RUN uv sync --locked --no-dev
 
 # Copy the llm_config.yaml from the build context (climate-advisor directory)
 COPY llm_config.yaml ./llm_config.yaml
@@ -19,12 +22,10 @@ COPY llm_config.yaml ./llm_config.yaml
 # Copy the prompts directory from the build context (climate-advisor directory)
 COPY prompts ./prompts
 
-# Copy application code from service/app
-COPY service/app ./app
+# Copy the service runtime
+COPY service ./service
 
-# Copy migrations for database schema management
-COPY service/migrations ./migrations
-COPY service/alembic.ini ./alembic.ini
+WORKDIR /app/service
 
 EXPOSE 8080
 

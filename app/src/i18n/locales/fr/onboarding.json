@@ -50,7 +50,7 @@
   "save-button": "Enregistrer et Continuer",
   "search-city-button": "Rechercher une autre ville",
   "confirm-button": "Confirmer et Continuer",
-  "confirm-description": "Vérifiez les données que vous avez saisies pour votre inventaire jusqu'à présent. Veuillez examiner attentivement tous les détails avant de continuer.",
+  "confirm-description": "Veuillez consulter les données relatives à votre ville avant de poursuivre.",
   "confirm-heading": "Confirmez les informations de la ville",
   "inventory-format": "Format d'inventaire",
   "confirm-details": "Vérifiez et confirmez ces informations sur votre ville. Si une erreur se présente, veuillez nous envoyer un email pour la corriger.<br /><br />Nous utilisons des <2>sources de données ouvertes</2> pour pré-remplir le profil de la ville.",

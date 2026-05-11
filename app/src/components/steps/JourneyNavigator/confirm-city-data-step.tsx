@@ -1,4 +1,4 @@
-import { BodyMedium } from "@/components/package";
+import { BodyMedium } from "@/components/package/Texts/Body";
 import { Box, Card, Heading, Icon, Link, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import dynamic from "next/dynamic";

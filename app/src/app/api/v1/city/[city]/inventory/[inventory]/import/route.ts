@@ -346,7 +346,7 @@ export const POST = apiHandler(
     } else {
       logger.warn(
         { cityId, inventoryId, fileName },
-        "AWS_IMPORT_FILES_BUCKET not set — storing file as BYTEA (dev fallback)",
+        "AWS_FILE_UPLOAD_S3_BUCKET_ID not set — storing file as BYTEA (dev fallback)",
       );
       dataBuffer = buffer;
     }

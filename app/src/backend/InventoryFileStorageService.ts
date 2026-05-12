@@ -7,8 +7,11 @@ import {
 import { Readable } from "node:stream";
 import { logger } from "@/services/logger";
 
-const BUCKET = process.env.AWS_IMPORT_FILES_BUCKET;
-const REGION = process.env.AWS_IMPORT_FILES_REGION ?? "us-east-1";
+// Reuses the shared file-upload bucket already provisioned across envs
+// (citycatalyst-files / citycatalyst-files-prod) instead of a dedicated
+// imports bucket, so no new infra or workflow secrets are required.
+const BUCKET = process.env.AWS_FILE_UPLOAD_S3_BUCKET_ID;
+const REGION = process.env.AWS_FILE_UPLOAD_REGION ?? "us-east-1";
 
 function getS3Client(): S3Client {
   return new S3Client({ region: REGION });
@@ -22,7 +25,7 @@ export function isS3Configured(): boolean {
 function assertConfigured(): void {
   if (!BUCKET) {
     throw new Error(
-      "AWS_IMPORT_FILES_BUCKET environment variable is not set. " +
+      "AWS_FILE_UPLOAD_S3_BUCKET_ID environment variable is not set. " +
         "Configure it to enable S3-backed file storage for inventory imports.",
     );
   }
@@ -34,9 +37,9 @@ function assertConfigured(): void {
  * Key convention: imports/{cityId}/{inventoryId}/{fileName}
  * where fileName is already a UUID-prefixed sanitized name.
  *
- * Required env vars:
- *   AWS_IMPORT_FILES_BUCKET  — S3 bucket name
- *   AWS_IMPORT_FILES_REGION  — AWS region (default: us-east-1)
+ * Required env vars (shared with the generic file-upload service):
+ *   AWS_FILE_UPLOAD_S3_BUCKET_ID  — S3 bucket name
+ *   AWS_FILE_UPLOAD_REGION        — AWS region (default: us-east-1)
  */
 export default class InventoryFileStorageService {
   /**

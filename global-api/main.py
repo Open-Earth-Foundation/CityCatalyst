@@ -16,6 +16,7 @@ from routes.region_code_endpoint import api_router as region_code_endpoint_route
 from routes.citywide_emission_endpoint import api_router as citywide_route
 from routes.ghgi_emissions import api_router as actor_emissions_route
 from routes.ccra_assessment import api_router as ccra_assessment
+from routes.city_adapta_risk import api_router as city_adapta_risk_route
 from routes.ghgi_emission_forecast import api_router as emission_forecast
 from routes.ghgi_notation_key import api_router as ghgi_notation_key_route
 from routes.city_context import api_router as city_context_route
@@ -230,6 +231,11 @@ app.include_router(
 
 app.include_router(
     ccra_assessment,
+    tags=["CCRA Assessment"],
+)
+
+app.include_router(
+    city_adapta_risk_route,
     tags=["CCRA Assessment"],
 )
 

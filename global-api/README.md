@@ -79,3 +79,16 @@ python3 main.py
 `.github` will have setup github actions to run our tests
 
 `utils` will have utility scripts
+
+### New CCRA Adapta endpoint
+
+`GET /api/v1/cities/{actor_id}/climate-risk/adapta`
+
+Optional query params:
+- `timeframe` (int; defaults to latest available timeframe for city + scenario)
+- `scenario` (text; defaults to `current`)
+- `level` (`summary` or `chain`; defaults to `summary`)
+
+Response shape:
+- `meta`: city/scenario/release provenance
+- `data`: risk rows with `null_type` and derived `value_status`

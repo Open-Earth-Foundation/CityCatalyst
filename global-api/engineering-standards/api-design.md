@@ -36,6 +36,8 @@ The top-level resources in this API are:
 | `/reference` | Shared lookup tables (emission factors, formula inputs) |
 | `/ccra` | Climate Change Risk Assessment data |
 | `/catalog` | Dataset and datasource catalogue |
+| `/action-pathways` | Mitigation action pathways (per catalog release) |
+| `/action-legal-assessments` | SSG legal viability assessments per action and release (``modelled.action_legal_assessement``) |
 
 ### City sub-resources
 
@@ -126,6 +128,7 @@ GET /cities/{locode}/emissions
 | Catalog (noun) | `catalog` | American English spelling throughout |
 | GPC reference | `gpc_ref` | Shortened form acceptable in query params; full form `gpc_reference_number` in code |
 | Locode | `locode` | Lowercase throughout — this is the standard city identifier |
+| JSON response property names | `camelCase` | ``GET /action-legal-assessments``; other endpoints may still use ``snake_case`` until migrated |
 
 ---
 

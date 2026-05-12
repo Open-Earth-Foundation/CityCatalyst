@@ -29,8 +29,8 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
             "impact": {
                 "impact_band": "high",
                 "timeline_bucket": "<5 years",
-                "matched_city_gpc_refs_count": 2,
-                "matched_city_gpc_refs": ["I.1.1", "I.1.2"],
+                "matched_city_subsector_keys_count": 2,
+                "matched_city_subsector_keys": ["I.1", "I.2"],
             },
             "alignment": {
                 "sector_match": True,
@@ -78,6 +78,8 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
         "feasibility": "moderate",
     }
     assert payload["impact_signals"]["impact_band"] == "high"
+    assert payload["impact_signals"]["matched_city_subsector_keys_count"] == 2
+    assert payload["impact_signals"]["top_matched_city_subsector_keys"] == ["I.1", "I.2"]
     assert payload["alignment_signals"]["sector_match"] is True
     assert payload["feasibility_signals"]["informational_requirements_count"] == 1
     assert payload["known_limitations"] == [

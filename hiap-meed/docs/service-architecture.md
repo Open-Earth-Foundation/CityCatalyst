@@ -99,7 +99,7 @@ sequenceDiagram
 
     CC->>API: POST /v1/prioritize PrioritizerApiRequest (meta + requestData.cityDataList)
     Note over API: FastAPI validates request body (Pydantic)
-    API->>Orch: run_prioritization(locode, city_emissions_by_gpc_ref, clients, per_city_options...)
+    API->>Orch: run_prioritization(locode, city_emissions_context, clients, per_city_options...)
     Orch->>Clients: get_city / list_actions / get_action_legal_requirements / get_action_policy_signals
     Clients-->>Orch: CityData / Action[] / legal requirements / policy signals
     Note over Orch: Hard Filter -> Impact -> Alignment -> Feasibility -> Weighted Sum

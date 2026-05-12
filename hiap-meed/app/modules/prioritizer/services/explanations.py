@@ -241,8 +241,8 @@ def _build_curated_action_payload(
 
 def _build_impact_signals(impact_evidence: dict[str, object]) -> dict[str, object]:
     """Build qualitative impact-focused signals from block evidence."""
-    matched_gpc_refs = impact_evidence.get("matched_city_gpc_refs")
-    matched_count_value = impact_evidence.get("matched_city_gpc_refs_count")
+    matched_subsector_keys = impact_evidence.get("matched_city_subsector_keys")
+    matched_count_value = impact_evidence.get("matched_city_subsector_keys_count")
     matched_count = int(matched_count_value) if isinstance(matched_count_value, int | float) else 0
     impact_band_value = impact_evidence.get("impact_band")
     impact_band = str(impact_band_value).strip() if impact_band_value is not None else None
@@ -253,17 +253,17 @@ def _build_impact_signals(impact_evidence: dict[str, object]) -> dict[str, objec
         else None
     )
 
-    top_gpc_refs: list[str] = []
-    if isinstance(matched_gpc_refs, list):
-        top_gpc_refs = [
-            str(item).strip() for item in matched_gpc_refs[:3] if str(item).strip()
+    top_subsector_keys: list[str] = []
+    if isinstance(matched_subsector_keys, list):
+        top_subsector_keys = [
+            str(item).strip() for item in matched_subsector_keys[:3] if str(item).strip()
         ]
 
     return {
         "impact_band": impact_band,
         "timeline_bucket": timeline_bucket,
-        "matched_city_gpc_refs_count": matched_count,
-        "top_matched_city_gpc_refs": top_gpc_refs,
+        "matched_city_subsector_keys_count": matched_count,
+        "top_matched_city_subsector_keys": top_subsector_keys,
     }
 
 

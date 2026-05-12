@@ -240,6 +240,8 @@ def test_prioritize_smoke() -> None:
             action_name="Retrofit buildings",
             implementation_timeline="<5 years",
             emissions={
+                "sector_number": "I",
+                "subsector_number": [1],
                 "gpc_reference_number": ["I.1.1", "I.1.2"],
                 "impact_relationship": "positive",
                 "impact_text": "high",
@@ -250,6 +252,8 @@ def test_prioritize_smoke() -> None:
             action_name="Fleet expansion",
             implementation_timeline=">10 years",
             emissions={
+                "sector_number": "I",
+                "subsector_number": [2],
                 "gpc_reference_number": ["I.2.1"],
                 "impact_relationship": "negative",
                 "impact_text": "low",

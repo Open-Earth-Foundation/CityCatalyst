@@ -122,6 +122,7 @@ Fields that affect the result:
 - `requestData.cityDataList[].cityStrategicPreferenceSectors[]`
 - `requestData.cityDataList[].cityStrategicPreferenceTimeframes[]`
 - `requestData.cityDataList[].cityStrategicPreferenceCoBenefitKeys[]`
+- `requestData.cityDataList[].cityEmissionsData.gpcData.<reference>.activities[].activityType`
 - `requestData.cityDataList[].cityEmissionsData.gpcData.<reference>.activities[].totalEmissions`
 
 What these are used for:
@@ -193,8 +194,10 @@ Fields that affect the result:
 - `actions[].actionCategory`
 - `actions[].actionSubcategory`
 - `actions[].coBenefits`
+- `actions[].activity_type_description`
 - `actions[].timelineForImplementation`
 - `actions[].emissions.sector_number`
+- `actions[].emissions.subsector_number[]`
 - `actions[].emissions.gpc_reference_number[]`
 - `actions[].emissions.impact_text`
 - `actions[].socioeconomicIndicators[].indicator_key`
@@ -213,9 +216,12 @@ What these are used for:
   - action subcategory
 - Action descriptions are shortened to about `200` characters for that prompt.
 - `coBenefits` are used by exclusion preview and by the Alignment block's other-preference scoring.
+- `coBenefits[*]` only need co-benefit impact metadata (`impact_numeric`, plus optional relationship/text/methodology); they do not use sector, subsector, or GPC reference fields.
+- `activity_type_description` is stored now for a future guarded activity-data-level mapping step in Impact.
 - `timelineForImplementation` affects the Impact score and also the Alignment timeframe-preference component.
 - `emissions.sector_number` affects exclusion preview and the Alignment score.
-- `emissions.gpc_reference_number[]` links each action to city emissions categories.
+- `emissions.subsector_number[]` defines the active true subsector join used by Impact.
+- `emissions.gpc_reference_number[]` remains reference data and is also used to keep the mock catalog consistent.
 - `emissions.impact_text` gives the action's expected strength of emissions reduction.
 - `socioeconomicIndicators[]` define how the action should be judged against city conditions in the Feasibility block.
 
@@ -501,22 +507,29 @@ From the action catalog:
 
 - `actions[].actionId`
 - `actions[].timelineForImplementation`
+- `actions[].emissions.sector_number`
+- `actions[].emissions.subsector_number[]`
 - `actions[].emissions.gpc_reference_number[]`
 - `actions[].emissions.impact_text`
+- `actions[].activity_type_description`
 
 ### 5.2 Logic
 
-#### Part A: identify which city emissions categories the action targets
+#### Part A: identify which true subsector keys the action targets
 
 The pipeline reads:
 
-- `actions[].emissions.gpc_reference_number[]`
+- `actions[].emissions.sector_number`
+- `actions[].emissions.subsector_number[]`
 
-These are the emissions categories that the action claims to influence.
+These define the active `sector.subsector` keys that the action claims to influence.
 
-If the same category appears more than once:
+Examples:
 
-- duplicates are removed before scoring.
+- `sector_number="I"` and `subsector_number=[1]` -> `I.1`
+- `sector_number="V"` and `subsector_number=[1, 2]` -> `V.1`, `V.2`
+
+`gpc_reference_number[]` remains in the payload as reference data, but it is no longer the active Impact join key.
 
 #### Part B: translate impact strength from words into numbers
 
@@ -540,8 +553,8 @@ If the impact label is unknown:
 
 For each action, the pipeline:
 
-- finds which of the action's emissions categories also exist in the city's emissions data,
-- takes the city total for each matching category,
+- finds which of the action's subsector keys also exist in the city's emissions data,
+- takes the city total for each matching subsector,
 - multiplies those totals by the action's impact multiplier,
 - and adds the results together.
 
@@ -550,7 +563,7 @@ Plain-language formula:
 ```text
 Estimated reduction amount for one action
 = sum of:
-    city emissions in each matched category
+    city emissions in each matched subsector
     multiplied by
     the action's impact multiplier
 ```
@@ -613,18 +626,18 @@ Main output:
 
 Key evidence fields:
 
-- `action_gpc_refs`
+- `action_subsector_keys`
 - `impact_text`
 - `reduction_multiplier`
 - `timeline_bucket`
 - `timeline_score`
-- `matched_city_gpc_refs_count`
-- `matched_city_gpc_refs`
+- `matched_city_subsector_keys_count`
+- `matched_city_subsector_keys`
 - `total_city_emissions`
 - `total_reduction_amount`
 - `reduction_share_of_city_emissions`
 - `impact_block_score`
-- `gpc_contributors`
+- `subsector_contributors`
 
 ## 6. Alignment Block
 
@@ -1214,3 +1227,8 @@ So the final ranking is not one black-box judgment. It is a step-by-step combina
 - rule-based filtering,
 - structured block-level scoring,
 - and one final weighted ranking calculation.
+Implementation note:
+
+- The request now preserves `activities[].activityType` rows and action `activity_type_description`.
+- `ACTIVITY_DATA_LEVEL_MAPPING=false` keeps true subsector-only matching.
+- `ACTIVITY_DATA_LEVEL_MAPPING=true` calls a stub that logs `not implemented` and returns the same subsector-level matches for now.

@@ -78,7 +78,7 @@ class FrontendRequestMeta(BaseModel):
 class GpcActivity(BaseModel):
     """Single activity record for one GPC key."""
 
-    activityName: str
+    activityType: str | None = None
     totalEmissions: float | None = None
     totalEmissionsUnit: str | None = None
     activityValue: float | None = None
@@ -468,7 +468,7 @@ class ExclusionPreviewApiResponse(BaseModel):
 #   - meta: UpstreamMeta
 #   - actions: list[ActionApiItem]
 #     - emissions: ActionImpactEntry
-#     - coBenefits: dict[str, ActionImpactEntry]
+#     - coBenefits: dict[str, ActionCoBenefitEntry]
 #     - socioeconomicIndicators: list[ActionSocioeconomicIndicatorRule]
 # - ActionsPolicySignalsApiResponse
 #   - meta: UpstreamMeta
@@ -533,8 +533,30 @@ class ActionImpactEntry(BaseModel):
     """Single impact entry (emissions or co-benefit category) for one action."""
 
     sector_number: str
-    subsector_number: int
+    subsector_number: list[int] = Field(min_length=1)
     gpc_reference_number: list[str]
+    impact_relationship: str | None = None
+    impact_text: str | None = None
+    impact_numeric: int | None = None
+    methodology: str | None = None
+
+    @field_validator("subsector_number")
+    @classmethod
+    def _validate_subsector_number_list(cls, value: list[int]) -> list[int]:
+        """Ensure subsector_number uses a deduplicated positive integer list."""
+        deduplicated_values = list(dict.fromkeys(value))
+        invalid_values = [item for item in deduplicated_values if item <= 0]
+        if invalid_values:
+            raise ValueError(
+                "subsector_number must contain only positive integers, "
+                f"got invalid values {invalid_values}"
+        )
+        return deduplicated_values
+
+
+class ActionCoBenefitEntry(BaseModel):
+    """Single co-benefit entry for one action."""
+
     impact_relationship: str | None = None
     impact_text: str | None = None
     impact_numeric: int | None = None
@@ -572,12 +594,13 @@ class ActionApiItem(BaseModel):
 
     actionId: str
     actionName: str
+    activity_type_description: str | None = None
     description: str | None = None
     actionCategory: str | None = None
     actionSubcategory: str | None = None
     costInvestmentNeeded: str | None = None
     timelineForImplementation: str | None = None
-    coBenefits: dict[str, ActionImpactEntry] = Field(default_factory=dict)
+    coBenefits: dict[str, ActionCoBenefitEntry] = Field(default_factory=dict)
     emissions: ActionImpactEntry | None = None
     socioeconomicIndicators: list[ActionSocioeconomicIndicatorRule] = Field(
         default_factory=list

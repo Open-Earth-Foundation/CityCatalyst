@@ -7,7 +7,12 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from app.modules.prioritizer.models import ActionApiItem, PolicySignalByAction
+from app.modules.prioritizer.config import is_activity_data_level_mapping_enabled
+from app.modules.prioritizer.models import (
+    ActionApiItem,
+    PolicySignalByAction,
+    PrioritizerApiRequest,
+)
 from app.services.data_clients import (
     MockActionDataApiClient,
     MockCityDataApiClient,
@@ -32,6 +37,7 @@ def test_mock_action_client_loads_actions_from_file() -> None:
     assert actions[0].action_id
     assert actions[0].action_name
     assert isinstance(actions[0].emissions, dict)
+    assert isinstance(actions[0].emissions.get("subsector_number"), list)
     assert isinstance(actions[0].co_benefits, dict)
 
 
@@ -107,17 +113,123 @@ def test_action_co_benefit_impact_numeric_must_be_between_minus2_and_2() -> None
             actionName="Action 1",
             coBenefits={
                 "air_quality": {
-                    "sector_number": "I",
-                    "subsector_number": 1,
-                    "gpc_reference_number": ["I.1.1"],
                     "impact_numeric": 3,
                 }
             },
             emissions={
                 "sector_number": "I",
-                "subsector_number": 1,
+                "subsector_number": [1],
                 "gpc_reference_number": ["I.1.1"],
                 "impact_text": "high",
                 "impact_numeric": 2,
             },
         )
+
+
+@pytest.mark.unit
+def test_action_api_item_accepts_subsector_number_list_and_activity_type_description() -> None:
+    """Action payload accepts one-element subsector lists and nullable mapping text."""
+    action = ActionApiItem.model_validate(
+        {
+            "actionId": "action_1",
+            "actionName": "Action 1",
+            "activity_type_description": None,
+            "coBenefits": {
+                "air_quality": {
+                    "impact_numeric": 1,
+                }
+            },
+            "emissions": {
+                "sector_number": "I",
+                "subsector_number": [1],
+                "gpc_reference_number": ["I.1.1"],
+                "impact_text": "high",
+                "impact_numeric": 2,
+            },
+        }
+    )
+
+    assert action.activity_type_description is None
+    assert action.emissions is not None
+    assert action.emissions.subsector_number == [1]
+    assert action.coBenefits["air_quality"].impact_numeric == 1
+
+
+@pytest.mark.unit
+def test_action_api_item_rejects_scalar_subsector_number() -> None:
+    """Action payload requires subsector_number to stay a list, not a scalar."""
+    with pytest.raises(ValidationError):
+        ActionApiItem.model_validate(
+            {
+                "actionId": "action_1",
+                "actionName": "Action 1",
+                "emissions": {
+                    "sector_number": "I",
+                    "subsector_number": 1,
+                    "gpc_reference_number": ["I.1.1"],
+                    "impact_text": "high",
+                },
+            }
+        )
+
+
+@pytest.mark.unit
+def test_prioritizer_request_accepts_activity_type_field() -> None:
+    """Frontend request contract accepts `activityType` in city activity rows."""
+    request = PrioritizerApiRequest.model_validate(
+        {
+            "meta": {
+                "requestId": "req-1",
+                "generatedAtUtc": "2026-05-12T00:00:00+00:00",
+                "backendConsumer": "hiap-meed",
+                "upstreamProvider": "city_catalyst_frontend",
+                "apiContext": {
+                    "endpoint": "POST /v1/prioritize",
+                    "locodes": ["CL-SCL"],
+                },
+                "totalRecords": 1,
+            },
+            "requestData": {
+                "requestedLanguages": ["en"],
+                "cityDataList": [
+                    {
+                        "locode": "CL-SCL",
+                        "countryCode": "CL",
+                        "cityStrategicPreferenceSectors": [],
+                        "cityStrategicPreferenceCoBenefitKeys": [],
+                        "cityEmissionsData": {
+                            "inventoryYear": 2022,
+                            "gpcData": {
+                                "I.1.1": {
+                                    "activities": [
+                                        {
+                                            "activityType": "Natural gas",
+                                            "totalEmissions": 12.5,
+                                            "activityValue": 10.0,
+                                        }
+                                    ]
+                                }
+                            },
+                        },
+                    }
+                ],
+            },
+        }
+    )
+
+    activity = (
+        request.requestData.cityDataList[0]
+        .cityEmissionsData.gpcData["I.1.1"]
+        .activities[0]
+    )
+    assert activity.activityType == "Natural gas"
+
+
+@pytest.mark.unit
+def test_activity_data_level_mapping_flag_defaults_to_false(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Activity-data-level mapping stays disabled unless explicitly enabled."""
+    monkeypatch.delenv("ACTIVITY_DATA_LEVEL_MAPPING", raising=False)
+
+    assert is_activity_data_level_mapping_enabled() is False

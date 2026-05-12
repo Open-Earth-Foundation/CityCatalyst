@@ -8,6 +8,7 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.modules.prioritizer.config import resolve_top_n
+from app.modules.prioritizer.internal_models import CityActivityRow, CityEmissionsContext
 from app.modules.prioritizer.models import (
     ExplanationTranslationApiRequest,
     ExplanationTranslationApiResponse,
@@ -22,6 +23,9 @@ from app.modules.prioritizer.models import (
     PrioritizerApiResponse,
 )
 from app.modules.prioritizer.orchestrator import run_prioritization
+from app.modules.prioritizer.utils.subsector_mapping import (
+    normalize_gpc_reference_to_subsector_key,
+)
 from app.modules.prioritizer.services.exclusion_resolution import (
     resolve_exclusion_preview_with_diagnostics,
 )
@@ -53,26 +57,45 @@ def _error_payload(request_id: str, message: str) -> dict[str, str]:
     return {"request_id": request_id, "error": message}
 
 
-def _extract_city_emissions_by_gpc_ref(city_input: FrontendCityInput) -> dict[str, float]:
-    """
-    Build city emissions totals keyed by GPC reference.
+def _extract_city_emissions_context(city_input: FrontendCityInput) -> CityEmissionsContext:
+    """Build normalized subsector totals plus preserved activity rows."""
+    emissions_by_subsector_key: dict[str, float] = {}
+    activity_rows: list[CityActivityRow] = []
 
-    The frontend request carries emissions per GPC key under
-    `cityEmissionsData.gpcData[*].activities[*].totalEmissions`. This helper
-    sums activity totals per key and ignores missing totals (`None`).
-    """
-    emissions_by_gpc_ref: dict[str, float] = {}
-
-    # Sum activity emissions for each GPC key from frontend request schema.
+    # Normalize each GPC bucket to the active `sector.subsector` join key.
     for gpc_ref, gpc_entry in city_input.cityEmissionsData.gpcData.items():
+        sector_subsector_key = normalize_gpc_reference_to_subsector_key(gpc_ref)
         gpc_total = 0.0
         for activity in gpc_entry.activities:
-            if activity.totalEmissions is None:
-                continue
-            gpc_total += activity.totalEmissions
-        emissions_by_gpc_ref[gpc_ref] = gpc_total
+            if activity.activityType is None:
+                logger.warning(
+                    "City activity row missing activityType locode=%s gpc_reference_number=%s",
+                    city_input.locode,
+                    gpc_ref,
+                )
+            if activity.totalEmissions is not None:
+                gpc_total += activity.totalEmissions
+            activity_rows.append(
+                CityActivityRow(
+                    gpc_reference_number=gpc_ref,
+                    sector_subsector_key=sector_subsector_key,
+                    activity_type=activity.activityType,
+                    activity_value=activity.activityValue,
+                    activity_unit=activity.activityUnit,
+                    total_emissions=activity.totalEmissions,
+                    total_emissions_unit=activity.totalEmissionsUnit,
+                    data_source=activity.dataSource,
+                    notation_key=activity.notationKey,
+                )
+            )
+        emissions_by_subsector_key[sector_subsector_key] = (
+            emissions_by_subsector_key.get(sector_subsector_key, 0.0) + gpc_total
+        )
 
-    return emissions_by_gpc_ref
+    return CityEmissionsContext(
+        emissions_by_subsector_key=emissions_by_subsector_key,
+        activity_rows=activity_rows,
+    )
 
 
 def _normalize_requested_languages(requested_languages: list[str]) -> list[str]:
@@ -538,7 +561,7 @@ def _run_for_city_input(
 
     # Create internal request ID used for orchestrator artifacts/tracing.
     internal_request_id = uuid4()
-    city_emissions_by_gpc_ref = _extract_city_emissions_by_gpc_ref(city_input)
+    city_emissions_context = _extract_city_emissions_context(city_input)
     result = run_prioritization(
         locode=city_input.locode,
         weights_override=city_input.weightsOverride,
@@ -549,7 +572,7 @@ def _run_for_city_input(
         city_preference_co_benefit_keys=list(
             city_input.cityStrategicPreferenceCoBenefitKeys
         ),
-        city_emissions_by_gpc_ref=city_emissions_by_gpc_ref,
+        city_emissions_context=city_emissions_context,
         internal_request_id=internal_request_id,
         city_data_api_client=city_data_api_client,
         action_data_api_client=action_data_api_client,

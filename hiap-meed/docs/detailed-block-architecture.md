@@ -108,7 +108,7 @@ Canonical score policy:
 Current implementation detail:
 
 - `impact_block_score = (0.80 × reduction_share_of_city_emissions) + (0.20 × timeline_score)`
-- `reduction_share_of_city_emissions` is computed from matched action `gpc_reference_number` keys only.
+- `reduction_share_of_city_emissions` is computed from matched action `sector.subsector` keys.
 
 ```mermaid
 graph TD

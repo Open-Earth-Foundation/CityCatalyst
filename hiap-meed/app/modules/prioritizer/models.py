@@ -4,11 +4,32 @@ Pydantic models for external API payloads and top-level endpoint contracts.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.modules.prioritizer.config import resolve_impact_text_multiplier
+from app.modules.prioritizer.utils.co_benefit_taxonomy import ALLOWED_CO_BENEFIT_KEYS
+from app.modules.prioritizer.utils.sector_mapping import ALLOWED_SECTOR_TAGS
+
+
+def _validate_allowed_string_list(
+    *,
+    values: list[str],
+    field_name: str,
+    allowed_values: set[str],
+) -> list[str]:
+    """Validate one string-list field against an exact allowed taxonomy."""
+    normalized_values = list(dict.fromkeys(values))
+    invalid_values = [
+        value for value in normalized_values if value not in allowed_values
+    ]
+    if invalid_values:
+        raise ValueError(
+            f"{field_name} must contain only supported values: "
+            f"{sorted(allowed_values)}; got invalid values {invalid_values}"
+        )
+    return normalized_values
 
 # ============================================================================
 # FRONTEND REQUEST ENVELOPE MODELS (CityCatalyst -> hiap-meed)
@@ -28,19 +49,30 @@ from app.modules.prioritizer.config import resolve_impact_text_multiplier
 class FrontendApiContext(BaseModel):
     """Frontend request API context metadata."""
 
-    endpoint: str
-    locodes: list[str] = Field(default_factory=list)
+    endpoint: str = Field(description="Frontend route that originated the request.")
+    locodes: list[str] = Field(
+        default_factory=list,
+        description="One or more UN/LOCODE values included in the request context.",
+    )
 
 
 class FrontendRequestMeta(BaseModel):
     """Metadata envelope for prioritizer requests sent by CityCatalyst."""
 
-    requestId: str
-    generatedAtUtc: str
-    backendConsumer: str
-    upstreamProvider: str
-    apiContext: FrontendApiContext
-    totalRecords: int
+    requestId: str = Field(description="Frontend-generated request identifier.")
+    generatedAtUtc: str = Field(
+        description="Frontend timestamp for when the request envelope was created."
+    )
+    backendConsumer: str = Field(
+        description="Backend service expected to consume this request."
+    )
+    upstreamProvider: str = Field(
+        description="Originating frontend or upstream caller name."
+    )
+    apiContext: FrontendApiContext = Field(
+        description="Lightweight frontend route context for observability."
+    )
+    totalRecords: int = Field(description="Number of city records carried in the request.")
 
 
 class GpcActivity(BaseModel):
@@ -65,37 +97,360 @@ class GpcDataEntry(BaseModel):
 class FrontendCityEmissionsData(BaseModel):
     """City emissions payload provided by frontend request."""
 
-    inventoryYear: int | None = None
-    gpcData: dict[str, GpcDataEntry] = Field(default_factory=dict)
+    inventoryYear: int | None = Field(
+        default=None,
+        description="Inventory year for the provided city emissions data, when known.",
+    )
+    gpcData: dict[str, GpcDataEntry] = Field(
+        default_factory=dict,
+        description="City emissions keyed by GPC reference number.",
+    )
 
 
 class FrontendCityInput(BaseModel):
     """Single city payload within frontend prioritizer request."""
 
-    locode: str = Field(min_length=1)
-    countryCode: str = Field(min_length=2, max_length=2)
-    populationSize: int | None = None
-    excludedActionsFreeText: str | None = None
-    weightsOverride: dict[str, float] | None = None
-    cityStrategicPreferenceSectors: list[str] = Field(default_factory=list)
-    cityStrategicPreferenceOther: str | None = None
-    cityEmissionsData: FrontendCityEmissionsData
+    locode: str = Field(min_length=1, description="UN/LOCODE for the city to rank actions for.")
+    countryCode: str = Field(
+        min_length=2,
+        max_length=2,
+        description="ISO 3166-1 alpha-2 country code.",
+    )
+    populationSize: int | None = Field(
+        default=None,
+        description="Optional frontend-supplied population override for the city.",
+    )
+    excludedActionIds: list[str] = Field(
+        default_factory=list,
+        description="Confirmed action IDs to exclude from ranking.",
+    )
+    weightsOverride: dict[str, float] | None = Field(
+        default=None,
+        description="Optional override for impact/alignment/feasibility weights.",
+    )
+    cityStrategicPreferenceSectors: list[str] = Field(
+        default_factory=list,
+        description="Selected sector tags the city wants to prioritize.",
+    )
+    cityStrategicPreferenceTimeframes: list[
+        Literal["short", "medium", "long", "no_preference"]
+    ] = Field(
+        default_factory=lambda: ["no_preference"],
+        description="Preferred implementation timeframes for ranked actions.",
+    )
+    cityStrategicPreferenceCoBenefitKeys: list[str] = Field(
+        default_factory=list,
+        description="Selected co-benefit keys the city wants to prioritize.",
+    )
+    cityEmissionsData: FrontendCityEmissionsData = Field(
+        description="Frontend-supplied city emissions payload used by impact scoring."
+    )
+
+    @field_validator("cityStrategicPreferenceSectors")
+    @classmethod
+    def _validate_city_preference_sectors(cls, values: list[str]) -> list[str]:
+        """Validate that city preferred sectors use the supported taxonomy only."""
+        return _validate_allowed_string_list(
+            values=values,
+            field_name="cityStrategicPreferenceSectors",
+            allowed_values=ALLOWED_SECTOR_TAGS,
+        )
+
+    @field_validator("cityStrategicPreferenceCoBenefitKeys")
+    @classmethod
+    def _validate_city_preference_co_benefit_keys(
+        cls, values: list[str]
+    ) -> list[str]:
+        """Validate that selected co-benefits use the supported taxonomy only."""
+        return _validate_allowed_string_list(
+            values=values,
+            field_name="cityStrategicPreferenceCoBenefitKeys",
+            allowed_values=set(ALLOWED_CO_BENEFIT_KEYS),
+        )
+
+    # Normalize only omission/duplication before Literal validation. All
+    # non-empty entries must already match the exact frontend contract.
+    @field_validator("cityStrategicPreferenceTimeframes", mode="before")
+    @classmethod
+    def _normalize_timeframe_preferences(cls, value: object) -> object:
+        """Normalize timeframe preferences before enum validation runs."""
+        # Missing or null input means "neutral" rather than "invalid".
+        if value is None:
+            return ["no_preference"]
+        if not isinstance(value, list):
+            return value
+
+        normalized_preferences: list[str] = []
+        for item in value:
+            # Keep frontend-provided values as-is so unexpected spellings,
+            # casing, or whitespace are rejected by the Literal validator.
+            if item != "":
+                normalized_preferences.append(str(item))
+
+        # An empty list behaves the same as no explicit preference.
+        if not normalized_preferences:
+            return ["no_preference"]
+        # Preserve user intent order while removing duplicates.
+        return list(dict.fromkeys(normalized_preferences))
+
+    # Run a second validation pass after normalization + Literal validation to
+    # enforce the business rule that "no_preference" cannot be combined with a
+    # concrete timeframe choice.
+    @model_validator(mode="after")
+    def _validate_timeframe_preferences(self) -> FrontendCityInput:
+        """Ensure `no_preference` is not mixed with explicit timeframe choices."""
+        preferences = self.cityStrategicPreferenceTimeframes
+        if "no_preference" in preferences and len(preferences) > 1:
+            raise ValueError(
+                "cityStrategicPreferenceTimeframes cannot combine `no_preference` "
+                "with other timeframe preferences"
+            )
+        return self
 
 
 class PrioritizerRequestData(BaseModel):
     """RequestData section of frontend prioritizer request payload."""
 
-    requestedLanguages: list[str] = Field(default_factory=lambda: ["en"])
-    topN: int | None = Field(default=None, ge=1)
-    createExplanations: bool = False
-    cityDataList: list[FrontendCityInput] = Field(min_length=1)
+    requestedLanguages: list[str] = Field(
+        default_factory=lambda: ["en"],
+        description="Languages to include in the explanation output. English is always canonical.",
+    )
+    topN: int | None = Field(
+        default=None,
+        ge=1,
+        description="Optional number of top-ranked actions to return per city.",
+    )
+    createExplanations: bool = Field(
+        default=False,
+        description="Whether to generate qualitative explanations after ranking.",
+    )
+    cityDataList: list[FrontendCityInput] = Field(
+        min_length=1,
+        description="One or more city inputs to prioritize within the same request.",
+    )
+
+    @field_validator("requestedLanguages", mode="before")
+    @classmethod
+    def _normalize_requested_languages(cls, value: object) -> object:
+        """Normalize missing/empty requested languages to a single English default."""
+        if value is None:
+            return ["en"]
+        if not isinstance(value, list):
+            return value
+
+        normalized_languages = [
+            str(item).strip().lower() for item in value if str(item).strip()
+        ]
+        if not normalized_languages:
+            return ["en"]
+        return list(dict.fromkeys(normalized_languages))
 
 
 class PrioritizerApiRequest(BaseModel):
     """Frontend -> hiap-meed request envelope for single or multi-city prioritization."""
 
+    meta: FrontendRequestMeta = Field(description="Frontend request metadata envelope.")
+    requestData: PrioritizerRequestData = Field(
+        description="Prioritization request payload."
+    )
+
+
+# ============================================================================
+# EXPLANATION TRANSLATION REQUEST/RESPONSE MODELS (CityCatalyst -> hiap-meed)
+# ----------------------------------------------------------------------------
+# Composition:
+# - ExplanationTranslationApiRequest
+#   - meta: FrontendRequestMeta
+#     - apiContext: FrontendApiContext
+#   - requestData: ExplanationTranslationRequestData
+#     - rankedActions: list[ExplanationTranslationActionInput]
+# - ExplanationTranslationApiResponse
+#   - translations: list[ExplanationTranslationResult]
+# ============================================================================ 
+
+
+class ExplanationTranslationActionInput(BaseModel):
+    """One canonical explanation row provided for stateless translation."""
+
+    actionId: str = Field(
+        min_length=1,
+        description="Action ID whose canonical explanation should be translated.",
+    )
+    canonicalExplanation: str = Field(
+        min_length=1,
+        description="Canonical English explanation text to translate from.",
+    )
+
+
+class ExplanationTranslationRequestData(BaseModel):
+    """RequestData section for explanation translation requests."""
+
+    sourceLanguage: str = Field(
+        default="en",
+        description="Source language label for canonical explanation text. Must be `en`.",
+    )
+    targetLanguages: list[str] = Field(
+        min_length=1,
+        description="Non-English language codes to translate the canonical explanations into.",
+    )
+    rankedActions: list[ExplanationTranslationActionInput] = Field(
+        min_length=1,
+        description="Canonical explanation rows to translate.",
+    )
+
+    @field_validator("sourceLanguage")
+    @classmethod
+    def _validate_source_language(cls, value: str) -> str:
+        """Require canonical explanation inputs to be explicitly labeled English."""
+        normalized = value.strip().lower()
+        if normalized != "en":
+            raise ValueError("sourceLanguage must be `en`")
+        return normalized
+
+    @field_validator("targetLanguages", mode="before")
+    @classmethod
+    def _normalize_target_languages(cls, value: object) -> object:
+        """Normalize target languages and reject empty translation requests."""
+        if not isinstance(value, list):
+            return value
+        normalized_languages = [
+            str(item).strip().lower() for item in value if str(item).strip()
+        ]
+        return list(dict.fromkeys(normalized_languages))
+
+    @field_validator("targetLanguages")
+    @classmethod
+    def _validate_target_languages(cls, value: list[str]) -> list[str]:
+        """Ensure translation targets are non-empty and do not include English."""
+        if not value:
+            raise ValueError("targetLanguages must contain at least one language")
+        if "en" in value:
+            raise ValueError("targetLanguages must not include `en`")
+        return value
+
+    @model_validator(mode="after")
+    def _validate_unique_ranked_action_ids(self) -> ExplanationTranslationRequestData:
+        """Reject duplicate action IDs so translation rows cannot be collapsed silently."""
+        seen_action_ids: set[str] = set()
+        duplicate_action_ids: set[str] = set()
+        for row in self.rankedActions:
+            action_id = row.actionId
+            if action_id in seen_action_ids:
+                duplicate_action_ids.add(action_id)
+                continue
+            seen_action_ids.add(action_id)
+        if duplicate_action_ids:
+            raise ValueError(
+                "rankedActions must not contain duplicate actionId values; "
+                f"got duplicates {sorted(duplicate_action_ids)}"
+            )
+        return self
+
+
+class ExplanationTranslationApiRequest(BaseModel):
+    """Frontend -> hiap-meed request envelope for stateless explanation translation."""
+
+    meta: FrontendRequestMeta = Field(description="Frontend request metadata envelope.")
+    requestData: ExplanationTranslationRequestData = Field(
+        description="Explanation translation request payload."
+    )
+
+
+# ============================================================================
+# EXCLUSION PREVIEW REQUEST/RESPONSE MODELS (CityCatalyst -> hiap-meed)
+# ----------------------------------------------------------------------------
+# Composition:
+# - ExclusionPreviewApiRequest
+#   - meta: FrontendRequestMeta
+#     - apiContext: FrontendApiContext
+#   - requestData: ExclusionPreviewRequestData
+#     - cityDataList: list[ExclusionPreviewCityInput]
+# - ExclusionPreviewApiResponse
+#   - results: list[ExclusionPreviewCityResult]
+#     - proposedExcludedActions: list[ProposedExcludedAction]
+#     - exclusionSummary: ExclusionSummary
+#       - byReasonType: dict[str, ExclusionSummaryReasonGroup]
+# ============================================================================
+
+
+class ExclusionPreviewCityInput(BaseModel):
+    """Single city payload for exclusion-preference preview."""
+
+    locode: str = Field(min_length=1)
+    excludedSectorTags: list[str] = Field(default_factory=list)
+    excludedCoBenefitKeys: list[str] = Field(default_factory=list)
+    excludedActionsFreeText: str | None = None
+
+    @field_validator("excludedSectorTags")
+    @classmethod
+    def _validate_excluded_sector_tags(cls, values: list[str]) -> list[str]:
+        """Validate that excluded sector tags use the supported taxonomy only."""
+        return _validate_allowed_string_list(
+            values=values,
+            field_name="excludedSectorTags",
+            allowed_values=ALLOWED_SECTOR_TAGS,
+        )
+
+    @field_validator("excludedCoBenefitKeys")
+    @classmethod
+    def _validate_excluded_co_benefit_keys(cls, values: list[str]) -> list[str]:
+        """Validate that excluded co-benefit keys use the supported taxonomy only."""
+        return _validate_allowed_string_list(
+            values=values,
+            field_name="excludedCoBenefitKeys",
+            allowed_values=set(ALLOWED_CO_BENEFIT_KEYS),
+        )
+
+
+class ExclusionPreviewRequestData(BaseModel):
+    """RequestData section for exclusion preview requests."""
+
+    cityDataList: list[ExclusionPreviewCityInput] = Field(min_length=1)
+
+
+class ExclusionPreviewApiRequest(BaseModel):
+    """Frontend -> hiap-meed request envelope for exclusion preview."""
+
     meta: FrontendRequestMeta
-    requestData: PrioritizerRequestData
+    requestData: ExclusionPreviewRequestData
+
+
+class ProposedExcludedAction(BaseModel):
+    """One action proposed for exclusion before user confirmation."""
+
+    actionId: str
+    actionName: str
+    reasons: list[str] = Field(default_factory=list)
+    matchedBy: list[str] = Field(default_factory=list)
+
+
+class ExclusionSummaryReasonGroup(BaseModel):
+    """Grouped exclusion count and action IDs for one reason type."""
+
+    count: int = 0
+    actionIds: list[str] = Field(default_factory=list)
+
+
+class ExclusionSummary(BaseModel):
+    """Summary of proposed exclusions grouped for frontend review."""
+
+    totalProposed: int = 0
+    byReasonType: dict[str, ExclusionSummaryReasonGroup] = Field(default_factory=dict)
+
+
+class ExclusionPreviewCityResult(BaseModel):
+    """Per-city exclusion preview response."""
+
+    locode: str = Field(min_length=1)
+    proposedExcludedActions: list[ProposedExcludedAction] = Field(default_factory=list)
+    exclusionSummary: ExclusionSummary = Field(default_factory=ExclusionSummary)
+    warnings: list[str] = Field(default_factory=list)
+
+
+class ExclusionPreviewApiResponse(BaseModel):
+    """Top-level response for exclusion preview."""
+
+    results: list[ExclusionPreviewCityResult] = Field(default_factory=list)
 
 
 # ============================================================================
@@ -230,17 +585,31 @@ class ActionApiItem(BaseModel):
 
     @model_validator(mode="after")
     def _validate_emissions_impact_text_band_present(self) -> ActionApiItem:
-        """Validate emissions impact includes a non-empty text band."""
+        """Validate emissions impact includes a non-empty, known text band."""
         emissions_entry = self.emissions
         if emissions_entry is None:
             return self
+
         impact_text = emissions_entry.impact_text
         if impact_text is None or not impact_text.strip():
-            raise ValueError(
-                f"Action `{self.actionId}` is missing emissions.impact_text"
-            )
+            raise ValueError(f"Action `{self.actionId}` is missing emissions.impact_text")
         # Validate that the text band can be resolved by configured impact mapping.
         resolve_impact_text_multiplier(impact_text)
+        return self
+
+    @model_validator(mode="after")
+    def _validate_co_benefit_impact_numeric_range(self) -> ActionApiItem:
+        """Validate co-benefit numeric impact values stay within `[-2, 2]`."""
+        for co_benefit_key, co_benefit_entry in self.coBenefits.items():
+            impact_numeric = co_benefit_entry.impact_numeric
+            if impact_numeric is None:
+                continue
+            if impact_numeric < -2 or impact_numeric > 2:
+                raise ValueError(
+                    "Action "
+                    f"`{self.actionId}` has coBenefits.{co_benefit_key}.impact_numeric="
+                    f"{impact_numeric} outside allowed range [-2, 2]"
+                )
         return self
 
 
@@ -335,33 +704,79 @@ class PrioritizationResponse(BaseModel):
     ranked_action_ids: list[str] = Field(default_factory=list)
     ranked_actions: list[RankedActionResult] = Field(default_factory=list)
     metadata: dict[str, object] = Field(default_factory=dict)
+    warnings: list[str] = Field(default_factory=list)
 
 
 class RankedActionResult(BaseModel):
     """Public ranked action payload returned to API consumers."""
 
-    action_id: str
-    rank: int
-    final_score: float
-    impact_score: float
-    alignment_score: float
-    feasibility_score: float
-    evidence_summary: dict[str, object] = Field(default_factory=dict)
-    explanation: str | None = None
+    action_id: str = Field(description="Stable action identifier.")
+    rank: int = Field(description="Competitive rank position within the returned top-N set.")
+    final_score: float = Field(description="Final weighted prioritization score.")
+    impact_score: float = Field(description="Impact block score.")
+    alignment_score: float = Field(description="Alignment block score.")
+    feasibility_score: float = Field(description="Feasibility block score.")
+    evidence_summary: dict[str, object] = Field(
+        default_factory=dict,
+        description="Compact public evidence snapshot used to explain the ranking.",
+    )
+    explanations: dict[str, str] = Field(
+        default_factory=dict,
+        description="Explanation texts keyed by language code.",
+    )
+
+
+class ExplanationTranslationResult(BaseModel):
+    """Translated explanation rows returned by the translation endpoint."""
+
+    actionId: str = Field(description="Action ID for the translated explanation row.")
+    explanations: dict[str, str] = Field(
+        default_factory=dict,
+        description="Translated explanation texts keyed by requested target language code.",
+    )
+
+
+class ExplanationTranslationApiResponse(BaseModel):
+    """Top-level response for the stateless explanation translation endpoint."""
+
+    translations: list[ExplanationTranslationResult] = Field(
+        default_factory=list,
+        description="Translated explanation rows, one per requested action.",
+    )
+    warnings: list[str] = Field(
+        default_factory=list,
+        description="Top-level human-readable warnings aggregated by the backend.",
+    )
 
 
 class PrioritizerApiCityResult(BaseModel):
     """One city result entry returned by the prioritization endpoint."""
 
-    locode: str = Field(min_length=1)
-    ranked_action_ids: list[str] = Field(default_factory=list)
-    ranked_actions: list[RankedActionResult] = Field(default_factory=list)
-    metadata: dict[str, object] = Field(default_factory=dict)
+    locode: str = Field(min_length=1, description="UN/LOCODE for the ranked city.")
+    ranked_action_ids: list[str] = Field(
+        default_factory=list,
+        description="Ordered action IDs returned for this city.",
+    )
+    ranked_actions: list[RankedActionResult] = Field(
+        default_factory=list,
+        description="Detailed ranked actions with scores, evidence, and explanations.",
+    )
+    metadata: dict[str, object] = Field(
+        default_factory=dict,
+        description="Diagnostics, timings, counts, and artifact-oriented metadata.",
+    )
+    warnings: list[str] = Field(
+        default_factory=list,
+        description="Top-level warnings for this city's explanation/translation flow.",
+    )
 
 
 class PrioritizerApiResponse(BaseModel):
     """Top-level response for the frontend prioritization request envelope."""
 
-    results: list[PrioritizerApiCityResult] = Field(default_factory=list)
+    results: list[PrioritizerApiCityResult] = Field(
+        default_factory=list,
+        description="One prioritization result entry per requested city.",
+    )
 
 

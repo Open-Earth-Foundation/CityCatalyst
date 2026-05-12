@@ -1,0 +1,105 @@
+{
+  "timestamp": "2026-05-05T15:42:39.895742+00:00",
+  "request_id": "f4772968-2689-44a6-beca-c620a3a44288",
+  "request_kind": "exclusion_preview",
+  "event_index": 2,
+  "step_name": "exclusion_preview_cl_iqq",
+  "event_type": "exclusion_preview_city.completed",
+  "payload": {
+    "locode": "CL IQQ",
+    "input": {
+      "excludedSectorTags": [
+        "waste"
+      ],
+      "excludedCoBenefitKeys": [
+        "air_quality",
+        "housing"
+      ],
+      "excludedActionsFreeText": "Do not include actions related to electric vehicles or electric mobility"
+    },
+    "counts": {
+      "actions_considered": 155,
+      "proposed_exclusions": 20
+    },
+    "free_text_resolution": {
+      "status": "completed",
+      "provider": "openai",
+      "model": "gpt-5.4-mini",
+      "input_text": "Do not include actions related to electric vehicles or electric mobility",
+      "llm_output": {
+        "matches": [
+          {
+            "action_id": "c40_0029",
+            "reason": "The request explicitly mentions electric vehicles, and this action is about electrifying municipal vehicle fleets.",
+            "match_is_clear": true
+          },
+          {
+            "action_id": "icare_0121",
+            "reason": "The request mentions electric mobility, and this action specifically promotes bike-sharing with a focus on electric bikes.",
+            "match_is_clear": true
+          },
+          {
+            "action_id": "icare_0076",
+            "reason": "This action is about electrifying industrial processes, but it is not clearly about electric mobility or vehicles, so it is not a clear match.",
+            "match_is_clear": false
+          }
+        ],
+        "warnings": [
+          "Ignored broader mobility-related actions that do not explicitly mention electric vehicles or electric bikes.",
+          "The request is broad; only direct electric vehicle/electric bike matches were selected."
+        ]
+      },
+      "validation": {
+        "returned_matches_count": 3,
+        "accepted_matches_count": 2,
+        "dropped_rows": [
+          {
+            "action_id": "icare_0076",
+            "normalized_action_id": "icare_0076",
+            "reason": "This action is about electrifying industrial processes, but it is not clearly about electric mobility or vehicles, so it is not a clear match.",
+            "normalized_reason": "This action is about electrifying industrial processes, but it is not clearly about electric mobility or vehicles, so it is not a clear match.",
+            "match_is_clear": false,
+            "drop_reason": "ambiguous_match"
+          }
+        ],
+        "drop_counts": {
+          "unknown_action_id": 0,
+          "ambiguous_match": 1,
+          "empty_reason": 0
+        }
+      },
+      "warnings": [
+        "Ignored broader mobility-related actions that do not explicitly mention electric vehicles or electric bikes.",
+        "The request is broad; only direct electric vehicle/electric bike matches were selected.",
+        "Some free-text matches were ignored because they were ambiguous."
+      ]
+    },
+    "warnings": [
+      "Ignored broader mobility-related actions that do not explicitly mention electric vehicles or electric bikes.",
+      "The request is broad; only direct electric vehicle/electric bike matches were selected.",
+      "Some free-text matches were ignored because they were ambiguous."
+    ],
+    "proposed_excluded_action_ids": [
+      "c40_0010",
+      "c40_0012",
+      "c40_0013",
+      "c40_0015",
+      "c40_0016",
+      "c40_0017",
+      "c40_0018",
+      "c40_0029",
+      "c40_0034",
+      "c40_0035",
+      "c40_0036",
+      "c40_0037",
+      "c40_0040",
+      "icare_0009",
+      "icare_0031",
+      "icare_0053",
+      "icare_0064",
+      "icare_0110",
+      "icare_0111",
+      "icare_0121"
+    ]
+  }
+}

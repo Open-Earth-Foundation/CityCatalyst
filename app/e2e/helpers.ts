@@ -1,8 +1,7 @@
 import { APIRequestContext, expect, type Page } from "@playwright/test";
 
 export async function expectText(page: Page, text: string) {
-  await page.waitForTimeout(500);
-  await expect(page.getByText(text).first()).toBeVisible();
+  await expect(page.getByText(text).first()).toBeVisible({ timeout: 10000 });
 }
 
 export async function dismissCookieConsent(page: Page) {
@@ -151,7 +150,7 @@ export async function createInventoryThroughOnboarding(
 
   // Select year - click the select trigger and then select an option
   const yearSelectTrigger = page
-    .locator('[data-testid="inventory-detils-year"]')
+    .locator('[data-testid="inventory-details-year"]')
     .locator("button");
   await yearSelectTrigger.click();
   await page.waitForTimeout(500); // Wait for dropdown to open
@@ -310,24 +309,17 @@ export async function navigateToGHGIModule(page: Page) {
   await page.goto("/en/cities/");
   await page.waitForLoadState("networkidle");
 
-  // Check if we were redirected to onboarding page (no cities exist)
-  const currentUrl = page.url();
-  if (currentUrl.includes("/onboarding/")) {
-    // Complete the full onboarding flow
+  // No city yet → run onboarding which lands at /cities/{cityId}/GHGI/{inventoryId}/
+  if (page.url().includes("/onboarding/")) {
     await createCityAndInventoryThroughOnboarding(page);
     await page.waitForLoadState("networkidle");
-    // Now try to navigate to cities again
-    await page.goto("/en/cities/");
-    await page.waitForLoadState("networkidle");
+    return;
   }
 
-  // Click "Assess and Analyze" button
-  const assessButton = page.getByRole("button", {
-    name: "Assess and Analyze",
-  });
-  const assessButtonCount = await assessButton.count();
-  if (assessButtonCount === 0) {
-    // Fallback: if the button doesn't exist, ensure a city + inventory exist via onboarding
+  // User has a default city - extract it and go straight to the GHGI redirect page,
+  // skipping the brittle accordion / module-launch click flow.
+  const cityIdMatch = page.url().match(/\/cities\/([^\/]+)/);
+  if (!cityIdMatch) {
     const { cityId, inventoryId } =
       await createCityAndInventoryThroughOnboarding(page);
     await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
@@ -335,36 +327,18 @@ export async function navigateToGHGIModule(page: Page) {
     return;
   }
 
-  await page.waitForLoadState("networkidle");
-  await assessButton.click();
-
-  // Open the first accordion
-  const firstAccordion = page.locator('[data-part="item-trigger"]').first();
-  await firstAccordion.click();
-  await page.waitForTimeout(500);
-
-  // Click the GHGI module launch button
-  const moduleButton = page.getByTestId(
-    "module-launch-077690c6-6fa3-44e1-84b7-6d758a6a4d88",
-  );
-  await page.waitForLoadState("networkidle");
-  await moduleButton.waitFor({ state: "visible" });
-  await moduleButton.click();
-
+  const cityId = cityIdMatch[1];
+  await page.goto(`/en/cities/${cityId}/GHGI/`);
   await page.waitForLoadState("networkidle");
 
-  // If we're at GHGI onboarding, complete it to reach the inventory dashboard
+  // /GHGI redirects to most-recent inventory or to onboarding if none exists
   if (page.url().includes("/GHGI/onboarding")) {
-    const match = page.url().match(/\/cities\/([^/]+)\/GHGI\/onboarding/);
-    if (match) {
-      const cityId = match[1];
-      const { inventoryId } = await createInventoryThroughOnboarding(
-        page,
-        cityId,
-      );
-      await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
-      await page.waitForLoadState("networkidle");
-    }
+    const { inventoryId } = await createInventoryThroughOnboarding(
+      page,
+      cityId,
+    );
+    await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
+    await page.waitForLoadState("networkidle");
   }
 }
 

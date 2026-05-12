@@ -7,12 +7,11 @@ import pytest
 from app.modules.prioritizer.services import explanations as explanations_service
 from app.modules.prioritizer.internal_models import Action, ScoredAction
 from app.modules.prioritizer.services.explanations import (
-    EXPLANATION_FREE_TEXT_MAX_CHARS,
     EXPLANATION_PROMPT_WARNING_CHARS,
     ExplanationItem,
+    _build_prompt,
     _build_curated_action_payload,
     _rows_to_explanations,
-    _truncate_explanation_free_text,
     _warn_if_prompt_is_large,
 )
 
@@ -28,7 +27,7 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
         rank=1,
         evidence={
             "impact": {
-                "impact_text": "high",
+                "impact_band": "high",
                 "timeline_bucket": "<5 years",
                 "matched_city_gpc_refs_count": 2,
                 "matched_city_gpc_refs": ["I.1.1", "I.1.2"],
@@ -37,7 +36,6 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
                 "sector_match": True,
                 "mapped_sector_tag": "stationary_energy",
                 "policy_signals_count": 2,
-                "other_component_is_stub": True,
                 "policy_signal_summaries": [
                     {
                         "signal_type": "plan",
@@ -48,12 +46,12 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
                         "evidence_count": 4,
                     }
                 ],
-                "other_component_value": 0.0,
+                "co_benefit_component_score": 0.0,
             },
             "feasibility": {
                 "soft_legal_aligned_count": 1,
                 "soft_legal_total_count": 2,
-                "informational_requirements_notes_are_stub": True,
+                "informational_requirements_summary_available": False,
                 "informational_requirements": [{"signal_code": "PERMIT"}],
                 "socioeconomic_indicator_rows": [
                     {
@@ -64,16 +62,11 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
                 ],
                 "missing_city_socioeconomic_indicator_keys": [],
             },
-            "hard_filter": {
-                "free_text_exclusion_is_stub": True,
-            },
         },
     )
 
     payload = _build_curated_action_payload(
         scored_action=scored_action,
-        city_preference_other_text="Prioritize air quality outcomes",
-        excluded_actions_free_text="Exclude all highway expansion actions",
     )
 
     assert payload["action_id"] == "A_1"
@@ -88,8 +81,6 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
     assert payload["alignment_signals"]["sector_match"] is True
     assert payload["feasibility_signals"]["informational_requirements_count"] == 1
     assert payload["known_limitations"] == [
-        "Free-text action exclusions are not implemented yet and therefore do not affect ranking.",
-        "City free-text preference matching is currently not modeled.",
         "Non-blocking legal constraints are included as evidence, but UI-friendly implementation notes are not fully implemented yet.",
     ]
 
@@ -110,30 +101,6 @@ def test_rows_to_explanations_filters_unknown_ids_and_empty_text() -> None:
     assert result == {"A_1": "First explanation."}
 
 
-def test_truncate_explanation_free_text_warns_and_clamps(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Oversized explanation inputs should be truncated with a warning."""
-    oversized_text = "x" * (EXPLANATION_FREE_TEXT_MAX_CHARS + 25)
-    warning_messages: list[str] = []
-
-    def fake_warning(message: str, *args: object) -> None:
-        warning_messages.append(message % args)
-
-    monkeypatch.setattr(explanations_service.logger, "warning", fake_warning)
-    truncated = _truncate_explanation_free_text(
-        value=oversized_text,
-        field_name="city_preference_other_text",
-        locode="CL IQQ",
-    )
-
-    assert truncated == oversized_text[:EXPLANATION_FREE_TEXT_MAX_CHARS]
-    assert any(
-        "Truncating explanation input field `city_preference_other_text`" in message
-        for message in warning_messages
-    )
-
-
 def test_warn_if_prompt_is_large_logs_warning(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -148,3 +115,16 @@ def test_warn_if_prompt_is_large_logs_warning(
     _warn_if_prompt_is_large(prompt=prompt, locode="CL IQQ", action_count=25)
 
     assert any("Large explanation prompt detected" in message for message in warning_messages)
+
+
+def test_build_prompt_is_canonical_english_only() -> None:
+    """Prompt should explicitly anchor explanation generation in English."""
+    prompt = _build_prompt(
+        locode="CL IQQ",
+        city_preference_sectors=["waste"],
+        city_preference_co_benefit_keys=["air_quality", "mobility"],
+        curated_actions=[],
+    )
+
+    assert "Write every explanation in English." in prompt
+    assert '"air_quality", "mobility"' in prompt

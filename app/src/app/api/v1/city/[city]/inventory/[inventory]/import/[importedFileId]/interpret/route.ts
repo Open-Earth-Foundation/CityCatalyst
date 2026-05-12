@@ -278,6 +278,31 @@ async function runInterpretationInBackground(
             { importedFileId, chunkCount: chunks.length, totalShapedRows: shapedRows.length },
             "Table shape chunks merged",
           );
+
+          // DEBUG: inspect first extracted row and count nulls per field
+          if (shapedRows.length > 0) {
+            const TRACKED_FIELDS = [
+              "sector", "subsector", "gpcRefNo", "scope", "year",
+              "totalCO2e", "co2", "ch4", "n2o",
+              "activityType", "activityAmount", "activityUnit",
+              "source", "methodology",
+            ] as const;
+            const nullCounts: Record<string, number> = {};
+            for (const field of TRACKED_FIELDS) {
+              nullCounts[field] = shapedRows.filter(
+                (r) => r[field] == null,
+              ).length;
+            }
+            logger.debug(
+              {
+                importedFileId,
+                firstRow: shapedRows[0],
+                nullCountsPerField: nullCounts,
+                totalRows: shapedRows.length,
+              },
+              "[DEBUG] AI extraction result — null counts per field",
+            );
+          }
         }
       } catch (err) {
         if (err instanceof LLMError) {
@@ -566,6 +591,21 @@ export const POST = apiHandler(async (_req, { session, params }) => {
         "Format adapter normalization failed; proceeding with raw parsed data",
       );
     }
+  }
+
+  // DEBUG: log normalized headers and first row so we can confirm adapter output
+  if (effectiveParsedData.primarySheet) {
+    const sheet = effectiveParsedData.primarySheet;
+    logger.debug(
+      {
+        importedFileId,
+        adapterType: adapterType ?? "none",
+        normalizedHeaders: sheet.headers,
+        sampleRow: sheet.rows[0] ?? null,
+        totalRows: sheet.rows.length,
+      },
+      "[DEBUG] Normalized table sent to AI",
+    );
   }
 
   const documentContent = serializeSheetsForInterpretation(effectiveParsedData, 100, isCIRIS);

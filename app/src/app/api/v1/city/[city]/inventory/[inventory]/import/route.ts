@@ -86,6 +86,9 @@ import FileValidatorService from "@/backend/FileValidatorService";
 import FileParserService from "@/backend/FileParserService";
 import ECRFImportService from "@/backend/ECRFImportService";
 import FormatAdapterService from "@/backend/FormatAdapterService";
+import InventoryFileStorageService, {
+  isS3Configured,
+} from "@/backend/InventoryFileStorageService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { ImportStatusEnum } from "@/util/enums";
@@ -112,11 +115,28 @@ async function runUploadProcessingInBackground(
     return;
   }
 
-  const buffer = importedFile.data as Buffer;
   const originalFileName = (importedFile.originalFileName as string) || "upload";
   const fileType = importedFile.fileType as "xlsx" | "csv";
-  const file = new File([buffer], originalFileName, {
-    type: fileType === "xlsx" ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : "text/csv",
+
+  let buffer: Buffer;
+  if (importedFile.s3Key) {
+    try {
+      buffer = await InventoryFileStorageService.getFileBuffer(importedFile.s3Key);
+    } catch (err) {
+      logger.error({ err, importedFileId, s3Key: importedFile.s3Key }, "Upload background: failed to fetch file from S3");
+      await importedFile.update({ importStatus: ImportStatusEnum.FAILED, errorLog: "Could not retrieve uploaded file from storage.", lastUpdated: new Date() });
+      return;
+    }
+  } else if (importedFile.data && Buffer.isBuffer(importedFile.data)) {
+    buffer = importedFile.data as Buffer;
+  } else {
+    logger.error({ importedFileId }, "Upload background: neither s3Key nor data buffer found on importedFile");
+    await importedFile.update({ importStatus: ImportStatusEnum.FAILED, errorLog: "File reference missing; please re-upload.", lastUpdated: new Date() });
+    return;
+  }
+
+  const file = new File([new Uint8Array(buffer)], originalFileName, {
+    type: InventoryFileStorageService.mimeTypeForFileType(fileType),
   });
 
   const setFailed = async (message: string) => {
@@ -297,10 +317,39 @@ export const POST = apiHandler(
     const isPdf = basicValidation.fileType === "pdf";
     const isTabular = basicValidation.fileType === "xlsx" || basicValidation.fileType === "csv";
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const buffer = Buffer.from(await file.arrayBuffer());
     const originalFileName = file.name;
     const fileName = `${randomUUID()}-${originalFileName}`;
+    const mimeType = InventoryFileStorageService.mimeTypeForFileType(
+      basicValidation.fileType as "csv" | "xlsx" | "pdf",
+    );
+
+    // Upload to S3 when configured; fall back to BYTEA for local dev.
+    let s3Key: string | undefined;
+    let dataBuffer: Buffer | undefined;
+
+    if (isS3Configured()) {
+      try {
+        s3Key = await InventoryFileStorageService.uploadFile(
+          buffer,
+          cityId,
+          inventoryId,
+          fileName,
+          mimeType,
+        );
+      } catch (err) {
+        logger.error({ err, cityId, inventoryId, fileName }, "Failed to upload file to S3");
+        throw new createHttpError.InternalServerError(
+          "Failed to store uploaded file. Please try again.",
+        );
+      }
+    } else {
+      logger.warn(
+        { cityId, inventoryId, fileName },
+        "AWS_FILE_UPLOAD_S3_BUCKET_ID not set — storing file as BYTEA (dev fallback)",
+      );
+      dataBuffer = buffer;
+    }
 
     if (isPdf) {
       const importedFile = await db.models.ImportedInventoryFile.create({
@@ -311,12 +360,16 @@ export const POST = apiHandler(
         fileName,
         fileType: basicValidation.fileType,
         fileSize: basicValidation.fileSize!,
-        data: buffer,
+        s3Key,
+        data: dataBuffer,
         originalFileName,
         importStatus: ImportStatusEnum.PENDING_AI_EXTRACTION,
         validationResults: { errors: basicValidation.errors, warnings: basicValidation.warnings },
       });
-      logger.info({ importedFileId: importedFile.id }, "PDF uploaded, pending AI extraction");
+      logger.info(
+        { importedFileId: importedFile.id, storageMode: s3Key ? "s3" : "bytea" },
+        "PDF uploaded, pending AI extraction",
+      );
       return NextResponse.json(
         {
           data: {
@@ -339,7 +392,8 @@ export const POST = apiHandler(
         fileName,
         fileType: basicValidation.fileType,
         fileSize: basicValidation.fileSize!,
-        data: buffer,
+        s3Key,
+        data: dataBuffer,
         originalFileName,
         importStatus: ImportStatusEnum.PROCESSING,
         validationResults: null,

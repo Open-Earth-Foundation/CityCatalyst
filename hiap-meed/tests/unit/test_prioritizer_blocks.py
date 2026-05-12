@@ -349,6 +349,92 @@ def test_city_emissions_context_normalizes_to_true_subsector_keys() -> None:
 
 
 @pytest.mark.unit
+def test_impact_block_zero_emissions_subsector_does_not_count_as_match() -> None:
+    """Impact should not match zero-emissions subsectors."""
+    result = impact.run(
+        actions=[
+            Action(
+                action_id="A_zero_bucket",
+                action_name="Zero-emissions bucket action",
+                implementation_timeline="<5 years",
+                emissions={
+                    "sector_number": "III",
+                    "subsector_number": [1],
+                    "gpc_reference_number": ["III.1.1"],
+                    "impact_text": "high",
+                },
+            )
+        ],
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"III.1": 0.0},
+            activity_rows=[],
+        ),
+    )
+
+    evidence = result.evidence_by_action_id["A_zero_bucket"]
+    assert evidence["matched_city_subsector_keys_count"] == 0
+    assert evidence["matched_city_subsector_keys"] == []
+    assert evidence["total_reduction_amount"] == 0.0
+    assert evidence["subsector_contributors"] == []
+
+
+@pytest.mark.unit
+def test_impact_block_afolu_negative_emissions_still_count_as_match() -> None:
+    """Impact should treat negative AFOLU inventory values as matchable."""
+    result = impact.run(
+        actions=[
+            Action(
+                action_id="A_afolu_negative",
+                action_name="AFOLU removals action",
+                implementation_timeline="<5 years",
+                emissions={
+                    "sector_number": "V",
+                    "subsector_number": [2],
+                    "gpc_reference_number": ["V.2"],
+                    "impact_text": "high",
+                },
+            )
+        ],
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"V.2": -50.0},
+            activity_rows=[],
+        ),
+    )
+
+    evidence = result.evidence_by_action_id["A_afolu_negative"]
+    assert evidence["matched_city_subsector_keys_count"] == 1
+    assert evidence["matched_city_subsector_keys"] == ["V.2"]
+
+
+@pytest.mark.unit
+def test_impact_block_non_afolu_negative_emissions_do_not_count_as_match() -> None:
+    """Impact should not match negative inventory values outside AFOLU."""
+    result = impact.run(
+        actions=[
+            Action(
+                action_id="A_non_afolu_negative",
+                action_name="Non-AFOLU negative bucket action",
+                implementation_timeline="<5 years",
+                emissions={
+                    "sector_number": "III",
+                    "subsector_number": [1],
+                    "gpc_reference_number": ["III.1.1"],
+                    "impact_text": "high",
+                },
+            )
+        ],
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"III.1": -50.0},
+            activity_rows=[],
+        ),
+    )
+
+    evidence = result.evidence_by_action_id["A_non_afolu_negative"]
+    assert evidence["matched_city_subsector_keys_count"] == 0
+    assert evidence["matched_city_subsector_keys"] == []
+
+
+@pytest.mark.unit
 def test_impact_block_stubbed_activity_mapping_keeps_same_scores(
     monkeypatch: pytest.MonkeyPatch,
     caplog: pytest.LogCaptureFixture,

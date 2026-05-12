@@ -217,6 +217,78 @@ def test_prioritize_rejects_invalid_weights_override(
 
 
 @pytest.mark.integration
+def test_prioritize_rejects_negative_non_afolu_total_emissions() -> None:
+    """Endpoint rejects negative city emissions outside AFOLU at request validation."""
+    city = CityData(
+        comuna_name="Santiago",
+        locode="CL-SCL",
+        region_name="Metropolitana",
+        comuna_code="13101",
+        region_code="13",
+        city_context=[],
+    )
+    actions = [Action(action_id="A_ok", action_name="Action")]
+    mock_city_client = MockCityDataApiClient(city=city)
+    mock_action_client = MockActionDataApiClient(actions=actions)
+    mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post(
+                "/v1/prioritize",
+                json={
+                    "meta": {
+                        "requestId": "req-invalid-non-afolu-negative",
+                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                        "backendConsumer": "hiap-meed",
+                        "upstreamProvider": "city_catalyst_frontend",
+                        "apiContext": {
+                            "endpoint": "POST /prioritizer/v1/start_prioritization",
+                            "locodes": ["CL-SCL"],
+                        },
+                        "totalRecords": 1,
+                    },
+                    "requestData": {
+                        "requestedLanguages": ["en"],
+                        "cityDataList": [
+                            {
+                                "locode": "CL-SCL",
+                                "countryCode": "CL",
+                                "populationSize": 1000,
+                                "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceCoBenefitKeys": [],
+                                "cityEmissionsData": {
+                                    "inventoryYear": 2022,
+                                    "gpcData": {
+                                        "III.1.1": {
+                                            "activities": [
+                                                {
+                                                    "activityType": "Combustion",
+                                                    "totalEmissions": -5.0,
+                                                }
+                                            ]
+                                        }
+                                    },
+                                },
+                            }
+                        ],
+                    },
+                },
+            )
+        assert response.status_code == 422
+        assert "only `V.*` may be negative" in response.json()["detail"][0]["msg"]
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
 def test_prioritize_smoke() -> None:
     """Frontend envelope request returns deterministic ranked action IDs."""
     city = CityData(

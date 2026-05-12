@@ -88,6 +88,24 @@ def _read_impact_band(*, action_id: str, emissions_entry: dict[str, object]) -> 
     return str(raw_impact_band)
 
 
+def _has_matchable_city_emissions(
+    *, sector_subsector_key: str, city_emissions_by_subsector_key: dict[str, float]
+) -> bool:
+    """
+    Return whether the city inventory has a matchable emissions value for one key.
+
+    General rule:
+    - non-AFOLU subsectors must be strictly positive
+
+    AFOLU exception:
+    - `V.*` may legitimately be negative under GPC, so any non-zero value counts
+    """
+    emissions_value = city_emissions_by_subsector_key.get(sector_subsector_key, 0.0)
+    if sector_subsector_key.startswith("V."):
+        return emissions_value != 0.0
+    return emissions_value > 0.0
+
+
 def _compute_impact_block_score(
     *, reduction_share_of_city_emissions: float, timeline_score: float
 ) -> float:
@@ -247,7 +265,10 @@ def run(actions: list[Action], city_emissions_context: CityEmissionsContext) -> 
             matched_city_subsector_keys = [
                 subsector_key
                 for subsector_key in action_subsector_keys
-                if subsector_key in city_emissions_by_subsector_key
+                if _has_matchable_city_emissions(
+                    sector_subsector_key=subsector_key,
+                    city_emissions_by_subsector_key=city_emissions_by_subsector_key,
+                )
             ]
             for subsector_key in matched_city_subsector_keys:
                 candidate_action_ids_by_subsector_key.setdefault(subsector_key, []).append(

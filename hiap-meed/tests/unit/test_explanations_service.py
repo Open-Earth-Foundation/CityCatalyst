@@ -34,32 +34,17 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
             },
             "alignment": {
                 "sector_match": True,
-                "mapped_sector_tag": "stationary_energy",
+                "city_preference_sectors": ["stationary_energy"],
                 "policy_signals_count": 2,
-                "policy_signal_summaries": [
-                    {
-                        "signal_type": "plan",
-                        "signal_relation": "supports",
-                        "signal_strength": "strong",
-                        "location_scope": "city",
-                        "location_name": "Santiago",
-                        "evidence_count": 4,
-                    }
-                ],
-                "co_benefit_component_score": 0.0,
+                "matched_preferred_co_benefits_count": 1,
+                "timeframe_match_label": "preferred_match",
+                "city_preference_timeframes": ["short"],
             },
             "feasibility": {
                 "soft_legal_aligned_count": 1,
                 "soft_legal_total_count": 2,
                 "informational_requirements_summary_available": False,
                 "informational_requirements": [{"signal_code": "PERMIT"}],
-                "socioeconomic_indicator_rows": [
-                    {
-                        "action_socioeconomic_indicator_key": "unemployment_rate",
-                        "weighted_contribution": 1.2,
-                        "rationale": "Labor market conditions support delivery pace.",
-                    }
-                ],
                 "missing_city_socioeconomic_indicator_keys": [],
             },
         },
@@ -70,6 +55,7 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
     )
 
     assert payload["action_id"] == "A_1"
+    assert "action_name" not in payload
     assert payload["rank"] == 1
     assert payload["score_bands"] == {
         "final": "moderate",
@@ -79,9 +65,15 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
     }
     assert payload["impact_signals"]["impact_band"] == "high"
     assert payload["impact_signals"]["matched_city_subsector_keys_count"] == 2
-    assert payload["impact_signals"]["top_matched_city_subsector_keys"] == ["I.1", "I.2"]
     assert payload["alignment_signals"]["sector_match"] is True
+    assert payload["alignment_signals"]["matched_preferred_co_benefits_count"] == 1
     assert payload["feasibility_signals"]["informational_requirements_count"] == 1
+    assert payload["main_strengths"] == [
+        "Expected to make a relatively strong emissions reduction in the current city inventory.",
+        "Matches the city's preferred sector.",
+        "Fits the city's preferred implementation timeframe.",
+    ]
+    assert payload["main_constraints"] == []
     assert payload["known_limitations"] == [
         "Non-blocking legal constraints are included as evidence, but UI-friendly implementation notes are not fully implemented yet.",
     ]
@@ -129,4 +121,6 @@ def test_build_prompt_is_canonical_english_only() -> None:
     )
 
     assert "Write every explanation in English." in prompt
+    assert "Focus on the biggest ranking drivers" in prompt
+    assert "Do not infer extra benefits" in prompt
     assert '"air_quality", "mobility"' in prompt

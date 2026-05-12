@@ -226,6 +226,102 @@ def test_prioritizer_request_accepts_activity_type_field() -> None:
 
 
 @pytest.mark.unit
+def test_prioritizer_request_rejects_negative_non_afolu_total_emissions() -> None:
+    """Negative city activity emissions are only allowed for AFOLU `V.*` keys."""
+    with pytest.raises(ValidationError, match="only `V\\.\\*` may be negative"):
+        PrioritizerApiRequest.model_validate(
+            {
+                "meta": {
+                    "requestId": "req-1",
+                    "generatedAtUtc": "2026-05-12T00:00:00+00:00",
+                    "backendConsumer": "hiap-meed",
+                    "upstreamProvider": "city_catalyst_frontend",
+                    "apiContext": {
+                        "endpoint": "POST /v1/prioritize",
+                        "locodes": ["CL-SCL"],
+                    },
+                    "totalRecords": 1,
+                },
+                "requestData": {
+                    "requestedLanguages": ["en"],
+                    "cityDataList": [
+                        {
+                            "locode": "CL-SCL",
+                            "countryCode": "CL",
+                            "cityStrategicPreferenceSectors": [],
+                            "cityStrategicPreferenceCoBenefitKeys": [],
+                            "cityEmissionsData": {
+                                "inventoryYear": 2022,
+                                "gpcData": {
+                                    "III.1.1": {
+                                        "activities": [
+                                            {
+                                                "activityType": "Combustion",
+                                                "totalEmissions": -12.5,
+                                            }
+                                        ]
+                                    }
+                                },
+                            },
+                        }
+                    ],
+                },
+            }
+        )
+
+
+@pytest.mark.unit
+def test_prioritizer_request_accepts_negative_afolu_total_emissions() -> None:
+    """Negative city activity emissions remain valid for AFOLU `V.*` keys."""
+    request = PrioritizerApiRequest.model_validate(
+        {
+            "meta": {
+                "requestId": "req-1",
+                "generatedAtUtc": "2026-05-12T00:00:00+00:00",
+                "backendConsumer": "hiap-meed",
+                "upstreamProvider": "city_catalyst_frontend",
+                "apiContext": {
+                    "endpoint": "POST /v1/prioritize",
+                    "locodes": ["CL-SCL"],
+                },
+                "totalRecords": 1,
+            },
+            "requestData": {
+                "requestedLanguages": ["en"],
+                "cityDataList": [
+                    {
+                        "locode": "CL-SCL",
+                        "countryCode": "CL",
+                        "cityStrategicPreferenceSectors": [],
+                        "cityStrategicPreferenceCoBenefitKeys": [],
+                        "cityEmissionsData": {
+                            "inventoryYear": 2022,
+                            "gpcData": {
+                                "V.2": {
+                                    "activities": [
+                                        {
+                                            "activityType": "Land sink",
+                                            "totalEmissions": -12.5,
+                                        }
+                                    ]
+                                }
+                            },
+                        },
+                    }
+                ],
+            },
+        }
+    )
+
+    activity = (
+        request.requestData.cityDataList[0]
+        .cityEmissionsData.gpcData["V.2"]
+        .activities[0]
+    )
+    assert activity.totalEmissions == -12.5
+
+
+@pytest.mark.unit
 def test_activity_data_level_mapping_flag_defaults_to_false(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

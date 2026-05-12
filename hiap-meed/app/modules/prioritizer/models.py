@@ -106,6 +106,31 @@ class FrontendCityEmissionsData(BaseModel):
         description="City emissions keyed by GPC reference number.",
     )
 
+    @model_validator(mode="after")
+    def _validate_total_emissions_signs(self) -> FrontendCityEmissionsData:
+        """
+        Enforce GPC emissions sign rules on frontend activity rows.
+
+        General rule:
+        - non-AFOLU GPC keys may be zero or positive only
+
+        AFOLU exception:
+        - `V.*` may be negative, zero, or positive
+        """
+        for gpc_reference_number, gpc_entry in self.gpcData.items():
+            is_afolu = gpc_reference_number.startswith("V.")
+            for activity_index, activity in enumerate(gpc_entry.activities):
+                if activity.totalEmissions is None:
+                    continue
+                if activity.totalEmissions < 0 and not is_afolu:
+                    raise ValueError(
+                        "cityEmissionsData.gpcData contains negative totalEmissions "
+                        "outside AFOLU; only `V.*` may be negative "
+                        f"(gpc_reference_number={gpc_reference_number}, "
+                        f"activity_index={activity_index})"
+                    )
+        return self
+
 
 class FrontendCityInput(BaseModel):
     """Single city payload within frontend prioritizer request."""

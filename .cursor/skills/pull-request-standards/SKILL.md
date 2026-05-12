@@ -27,6 +27,19 @@ Derive context instead of asking by default:
 
 If the user provides an explicit base, head, PR number, draft setting, title, or body requirement, use it.
 
+### PR change scope (what actually ships on this branch)
+
+Summaries and **Changes** bullets must describe work **introduced by the head branch relative to the PR base**, not arbitrary differences between branch tips.
+
+- **Use a three-dot diff** (merge-base range), same idea as GitHub’s “Files changed” for a normal PR into `base`:  
+  `git diff origin/<base>...HEAD --stat`  
+  Optionally narrow paths, e.g. `git diff origin/<base>...HEAD --stat -- hiap-meed/`.
+- **Two-dot** `git diff origin/<base>..HEAD` compares the **tips** of `base` and `HEAD`. If the branches **diverged** (base moved ahead without those commits on the head branch), that diff can list files the author never touched—misleading for PR copy.
+- **Commits on the branch only** stay as `git log origin/<base>..HEAD` (two dots in `log` is correct here: commits reachable from `HEAD` but not from `origin/<base>`).
+- **Refresh the base ref** before comparing when drafting against the remote default branch, e.g. `git fetch origin <base>`.
+
+If three-dot scope is empty or surprising, say so briefly (e.g. branch only merges/reverts) instead of inferring from a two-dot diff alone.
+
 ## Output
 
 ### Title
@@ -73,7 +86,7 @@ Briefly states the user-visible outcome and motivation.
 
 1. Derive `owner`, `repo`, `head`, and `base` from git state.
 2. Check whether a PR already exists for the branch.
-3. Inspect commits between `origin/<base>` and `HEAD`.
+3. Inspect commits between `origin/<base>` and `HEAD`, and **scope file/area lists** with `git diff origin/<base>...HEAD` (three-dot), not two-dot tip diff—see **PR change scope** above.
 4. Draft a concise title and body using the standards above.
 5. Create a PR when none exists, or update the existing PR when one exists or when the user asks to update.
 6. Return the PR URL and summarize only the metadata changed.

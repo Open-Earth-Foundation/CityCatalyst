@@ -121,5 +121,8 @@ sequenceDiagram
 
 See [`highlevel-architecture.md`](highlevel-architecture.md) and [`detailed-block-architecture.md`](detailed-block-architecture.md) for the scoring logic inside each block.
 
-Current alignment note:
-- The Alignment block now combines policy support, sector matching, a small timeframe-preference component based on `cityStrategicPreferenceTimeframes`, and LLM-based mapping of `cityStrategicPreferenceOther` into the co-benefit taxonomy.
+Current flow note:
+- exclusion preview and prioritization are intentionally separate request flows
+- exclusion preview resolves raw exclusion preferences into proposals for user review
+- prioritization consumes confirmed `excludedActionIds` and runs the scoring pipeline
+- prioritization artifacts are assembled in the orchestrator layer, while exclusion preview artifacts are currently assembled from `api.py`

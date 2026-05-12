@@ -48,6 +48,7 @@ import FileParserService, {
 } from "@/backend/FileParserService";
 import FormatAdapterService, { type AdapterType } from "@/backend/FormatAdapterService";
 import ECRFImportService from "@/backend/ECRFImportService";
+import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import {
   detectedColumnsMatchECRFStructure,
   interpretTabular,
@@ -506,10 +507,21 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     );
   }
 
-  const buffer = importedFile.data as Buffer;
-  if (!buffer || !Buffer.isBuffer(buffer)) {
+  let buffer: Buffer;
+  if (importedFile.s3Key) {
+    try {
+      buffer = await InventoryFileStorageService.getFileBuffer(importedFile.s3Key);
+    } catch (err) {
+      logger.error({ err, importedFileId, s3Key: importedFile.s3Key }, "Failed to fetch file from S3 for interpretation");
+      throw new createHttpError.InternalServerError(
+        "Could not retrieve uploaded file from storage.",
+      );
+    }
+  } else if (importedFile.data && Buffer.isBuffer(importedFile.data)) {
+    buffer = importedFile.data as Buffer;
+  } else {
     throw new createHttpError.InternalServerError(
-      "Stored file data is missing or invalid",
+      "File reference is missing — please re-upload the file.",
     );
   }
 

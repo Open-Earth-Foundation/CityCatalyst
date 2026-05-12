@@ -98,6 +98,7 @@ export default function OnboardingSetup(props: {
     value: activeStep,
     goToNextStep,
     goToPrevStep,
+    setStep,
   } = useSteps({
     defaultStep: 0,
     count: steps.length,
@@ -324,6 +325,7 @@ export default function OnboardingSetup(props: {
               }
               inventoryGoal={inventoryGoal}
               year={data.year}
+              setStep={setStep}
             />
           )}
         </Box>
@@ -335,7 +337,6 @@ export default function OnboardingSetup(props: {
           left={0}
           pb={8}
           px={1}
-          zIndex={9999}
           transition="all"
           data-onboarding-bottom-bar
         >

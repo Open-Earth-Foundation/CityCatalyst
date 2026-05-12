@@ -121,7 +121,7 @@ Fields that affect the result:
 - `requestData.cityDataList[].excludedActionIds[]`
 - `requestData.cityDataList[].cityStrategicPreferenceSectors[]`
 - `requestData.cityDataList[].cityStrategicPreferenceTimeframes[]`
-- `requestData.cityDataList[].cityStrategicPreferenceOther`
+- `requestData.cityDataList[].cityStrategicPreferenceCoBenefitKeys[]`
 - `requestData.cityDataList[].cityEmissionsData.gpcData.<reference>.activities[].totalEmissions`
 
 What these are used for:
@@ -137,21 +137,23 @@ What these are used for:
   - `ippu`
   - `afolu`
 - `cityStrategicPreferenceTimeframes[]` influences the Alignment block by comparing the city's preferred implementation horizon against each action's `timelineForImplementation`.
-- `cityStrategicPreferenceOther` influences the Alignment block through LLM-based co-benefit mapping.
-- This is a temporary input shape for the current implementation.
-- Today, the service still reads free text here and maps it into the supported co-benefit taxonomy before scoring.
-- Planned future direction:
-  - the frontend should send the city's preferred co-benefits directly
-  - those values should already match the current allowed taxonomy
-  - once that contract exists, this LLM mapping step can be removed for that part of Alignment
+- `cityStrategicPreferenceCoBenefitKeys[]` influences the Alignment block directly through the supported co-benefit taxonomy.
+- `cityStrategicPreferenceCoBenefitKeys[]` must use only:
+  - `air_quality`
+  - `cost_of_living`
+  - `habitat`
+  - `housing`
+  - `mobility`
+  - `stakeholder_engagement`
+  - `water_quality`
 - `cityStrategicPreferenceTimeframes[]` must use only:
   - `short`
   - `medium`
   - `long`
   - `no_preference`
 - `no_preference` is allowed as a neutral choice but may not be combined with other timeframe values.
-- When explanations are enabled, `cityStrategicPreferenceOther` is truncated to at most `400` characters before the LLM prompt is rendered, and the backend logs a warning if truncation happens.
-- `requestData.requestedLanguages` is currently consumed as a compatibility field only for explanations: the backend resolves one effective explanation language by taking the first list item and ignores additional entries.
+- `requestData.requestedLanguages` controls the explanation languages requested for post-ranking output.
+- The backend always generates canonical English explanations first, then translates from English into each requested non-English target language.
 - `totalEmissions` values are the main city emissions numbers used in the Impact block.
 
 ### City context data
@@ -575,7 +577,7 @@ Timeline mapping:
 - `<5 years` -> `1.0`
 - `5-10 years` -> `0.5`
 - `>10 years` -> `0.0`
-- missing or unknown timeline -> `0.0`
+- missing or unknown timeline -> `0.5`
 
 Meaning:
 
@@ -641,7 +643,7 @@ From the frontend request:
 
 - `requestData.cityDataList[].cityStrategicPreferenceSectors[]`
 - `requestData.cityDataList[].cityStrategicPreferenceTimeframes[]`
-- `requestData.cityDataList[].cityStrategicPreferenceOther`
+- `requestData.cityDataList[].cityStrategicPreferenceCoBenefitKeys[]`
 
 From the action catalog:
 
@@ -722,16 +724,13 @@ Sector component
 = 0.0 otherwise
 ```
 
-#### Part C: match to the city's free-text strategic priorities
+#### Part C: match to the city's selected co-benefit priorities
 
 Current behavior:
 
-- The pipeline reads `cityStrategicPreferenceOther`.
-- It calls OpenAI with a structured output contract to map the text into allowed co-benefit keys.
-- The structured output includes:
-  - `resolved_preferred_co_benefits`
-  - `unmappable_preference_fragments`
-- Allowed co-benefit keys are currently:
+- The pipeline reads `cityStrategicPreferenceCoBenefitKeys[]`.
+- These values are validated at the API boundary against the allowed co-benefit taxonomy.
+- Allowed co-benefit keys are:
   - `air_quality`
   - `cost_of_living`
   - `habitat`
@@ -739,17 +738,7 @@ Current behavior:
   - `mobility`
   - `stakeholder_engagement`
   - `water_quality`
-- If the free-text is blank, the model is misconfigured, or the call/parsing fails, the block stays neutral at `0.5`.
-- The free-text is shortened to at most `400` characters before prompt building.
-- If the prompt becomes too large, the mapping step is skipped and the block stays neutral at `0.5`.
-- The mapping call uses a deterministic temperature setting, but because it still relies on an external LLM, identical requests can still occasionally produce different mapped co-benefits.
-- As a result, end-to-end tests that depend on live co-benefit mapping output can sometimes fail without any underlying code change unless the mapping step is mocked.
-
-Important implementation note:
-
-- This free-text mapping is a current transitional solution.
-- The intended future contract is for the frontend to send preferred co-benefit values directly, already matching the allowed taxonomy.
-- When that happens, the Alignment block should be able to use those supplied co-benefit values directly and no longer need this LLM mapping step for city strategic preferences.
+- The Alignment block uses those selected keys directly.
 
 Plain-language formula:
 
@@ -769,7 +758,7 @@ where:
 
 Fallback behavior note:
 
-- When non-blank free-text cannot be resolved because of model misconfiguration, prompt-size guard, timeout, or parsing failure, the block remains neutral at `0.5`.
+- When no co-benefit keys are selected, the block remains neutral at `0.5`.
 
 #### Part D: match to the city's preferred timeframe
 
@@ -812,7 +801,7 @@ Internal Alignment weights:
 
 - Policy support = `0.75`
 - Sector match = `0.15`
-- Other free-text preference = `0.05`
+- Other co-benefit preference = `0.05`
 - Timeframe preference = `0.05`
 
 ### 6.4 Outputs
@@ -1132,8 +1121,11 @@ Important current behavior:
 - `explanation` is `null` unless `requestData.createExplanations=true` and the explanation call succeeds
 - Explanations are generated only after ranking is finished; they do not change scores or ranks
 - The explanation stage uses the ranked actions plus curated evidence from the Impact, Alignment, and Feasibility blocks
-- The explanation stage currently returns only one explanation string per action, so it uses only the first item from `requestData.requestedLanguages` as the target language
-- `cityStrategicPreferenceOther` is shortened to at most `400` characters before prompt rendering
+- The explanation stage returns explanation texts keyed by language code per action.
+- The canonical explanation language is `en`.
+- Requested non-English explanation languages are produced by translating the canonical English explanation after ranking.
+- Response metadata records `generated_languages` as the languages actually present in the returned explanation payload.
+- Explanations receive `cityStrategicPreferenceCoBenefitKeys[]` directly from the request context
 - The backend logs a warning if the explanation prompt becomes unusually large
 - If explanation generation fails or times out, ranking still returns normally with `explanation=null`
 - When explanation artifacts are enabled, the run folder stores:
@@ -1188,19 +1180,13 @@ Current behavior:
 - ranking accepts only confirmed `excludedActionIds[]`
 - free-text preview matching is optional and guarded by environment config
 
-### Implemented but still simple: `cityStrategicPreferenceOther`
+### Implemented and deterministic: `cityStrategicPreferenceCoBenefitKeys`
 
 Current behavior:
 
 - accepted in the request
-- mapped into allowed co-benefit keys with OpenAI structured output
+- validated against the allowed co-benefit taxonomy
 - contributes to the Alignment block through normalized selected co-benefit impact values
-
-Future improvement:
-
-- replace this free-text mapping path with direct frontend-supplied co-benefit values
-- keep the same supported co-benefit taxonomy
-- remove the LLM mapping step for city strategic preferences once the frontend provides those values directly
 
 ### Placeholder 3: ranked action `explanation`
 

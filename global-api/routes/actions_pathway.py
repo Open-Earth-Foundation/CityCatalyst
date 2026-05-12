@@ -1,6 +1,7 @@
 """
-``GET /api/v1/action-pathways`` — JSON array of actions from ``modelled.action_pathway`` and
-``modelled.action_pathway_mitigation_impact`` (emissions + coBenefits only; no meta wrapper).
+``GET /api/v1/action-pathways`` — JSON object with ``meta`` and ``actions``; all property names
+use **camelCase** (including ``meta`` and nested impact objects). Data from ``modelled.action_pathway``
+and ``modelled.action_pathway_mitigation_impact`` (emissions + coBenefits on each item).
 """
 
 from __future__ import annotations
@@ -20,6 +21,14 @@ from db.database import SessionLocal
 api_router = APIRouter(prefix="/api/v1")
 
 _EMISSIONS_METRIC = "emissions_reduction"
+
+
+def _snake_to_camel(name: str) -> str:
+    """``snake_case`` / ``snake_case_i18n`` → ``camelCase`` / ``camelI18n`` for JSON keys."""
+    parts = name.split("_")
+    if not parts:
+        return name
+    return parts[0] + "".join(p[:1].upper() + p[1:] if p else "" for p in parts[1:])
 
 _PATHWAY_SQL = text(
     """
@@ -119,8 +128,26 @@ def _gpc_codes(raw: Any) -> List[str]:
     return []
 
 
-def _impact_as_legacy(row: Dict[str, Any]) -> Dict[str, Any]:
-    """Impact row -> hiap-style impact dict."""
+def _subsector_number_from_gpc_codes(gpcs: List[str]) -> List[int]:
+    """
+    First numeric segment after the sector for each GPC code (``1`` in ``I.1.1`` and ``I.1.2``).
+
+    Returns a **sorted list of distinct** values (always an array, e.g. ``[1]`` or ``[1, 2]``).
+    """
+    subs: set[int] = set()
+    for code in gpcs:
+        parts = [p.strip() for p in str(code).split(".") if p.strip()]
+        if len(parts) < 2:
+            continue
+        try:
+            subs.add(int(parts[1]))
+        except (ValueError, TypeError):
+            continue
+    return sorted(subs)
+
+
+def _impact_dict(row: Dict[str, Any], *, include_gpc: bool) -> Dict[str, Any]:
+    """Impact row -> API dict. Co-benefits omit GPC sector/refs; emissions may include them."""
     num = row.get("metric_value_numeric")
     rel = None
     if num is not None:
@@ -129,16 +156,6 @@ def _impact_as_legacy(row: Dict[str, Any]) -> Dict[str, Any]:
             rel = "positive" if f > 0 else "negative" if f < 0 else "neutral"
         except (TypeError, ValueError):
             pass
-    gpcs = _gpc_codes(row.get("gpc_reference_number"))
-    sector = gpcs[0].split(".")[0] if gpcs else ""
-    sub = 0
-    if gpcs and "." in gpcs[0]:
-        parts = gpcs[0].split(".")
-        if len(parts) > 1:
-            try:
-                sub = int(parts[1])
-            except ValueError:
-                sub = 0
     n_int = None
     if num is not None:
         try:
@@ -146,15 +163,19 @@ def _impact_as_legacy(row: Dict[str, Any]) -> Dict[str, Any]:
         except (ArithmeticError, ValueError):
             pass
     units = (row.get("metric_units") or "").lower()
-    return {
-        "sector_number": sector,
-        "subsector_number": sub,
-        "gpc_reference_number": gpcs,
-        "impact_relationship": rel,
-        "impact_text": row.get("metric_value_text"),
-        "impact_numeric": n_int,
+    out: Dict[str, Any] = {
+        "impactRelationship": rel,
+        "impactText": row.get("metric_value_text"),
+        "impactNumeric": n_int,
         "methodology": "expert review" if units == "qualitative" else (row.get("metric_units") or "dataset"),
     }
+    if include_gpc:
+        gpcs = _gpc_codes(row.get("gpc_reference_number"))
+        sector = gpcs[0].split(".")[0] if gpcs else ""
+        out["sectorNumber"] = sector
+        out["subsectorNumber"] = _subsector_number_from_gpc_codes(gpcs)
+        out["gpcReferenceNumber"] = gpcs
+    return out
 
 
 def _emissions_and_cobenefits(impacts: List[Dict[str, Any]]) -> Tuple[Optional[Dict[str, Any]], Dict[str, Any]]:
@@ -165,11 +186,11 @@ def _emissions_and_cobenefits(impacts: List[Dict[str, Any]]) -> Tuple[Optional[D
         name = (im.get("metric_name") or "").strip()
         if not name:
             continue
-        shaped = _impact_as_legacy(im)
-        if name == _EMISSIONS_METRIC and shaped.get("impact_text"):
+        shaped = _impact_dict(im, include_gpc=(name == _EMISSIONS_METRIC))
+        if name == _EMISSIONS_METRIC and shaped.get("impactText"):
             emissions = shaped
         elif name != _EMISSIONS_METRIC and (
-            shaped.get("impact_text") is not None or shaped.get("impact_numeric") is not None
+            shaped.get("impactText") is not None or shaped.get("impactNumeric") is not None
         ):
             co_benefits[name] = shaped
     return emissions, co_benefits
@@ -180,24 +201,52 @@ def _action_dict(row: Dict[str, Any], lang: str, impacts: List[Dict[str, Any]]) 
     emissions, co_benefits = _emissions_and_cobenefits(impacts)
     out: Dict[str, Any] = {
         "actionId": row.get("src_action_id") or "",
-        "action_type": row.get("action_type"),
+        "actionType": row.get("action_type"),
         "actionName": _i18n_text(row.get("name_i18n"), lang) or row.get("src_action_id") or "",
         "description": _i18n_text(row.get("description_i18n"), lang),
-        "intervention_summary": _i18n_text(row.get("intervention_summary_i18n"), "en"),
-        "outcome_summary": _i18n_text(row.get("outcome_summary_i18n"), "en"),
-        "intervention_type": row.get("intervention_type"),
-        "action_role": row.get("action_role"),
+        "interventionSummary": _i18n_text(row.get("intervention_summary_i18n"), "en"),
+        "outcomeSummary": _i18n_text(row.get("outcome_summary_i18n"), "en"),
+        "interventionType": row.get("intervention_type"),
+        "actionRole": row.get("action_role"),
         "costInvestmentNeeded": row.get("investment_cost"),
         "timelineForImplementation": row.get("implementation_timeline"),
         "coBenefits": co_benefits,
         "emissions": emissions,
     }
     for key in _EXTRA_COLUMNS:
-        out[key] = _jsonify(row.get(key))
+        out[_snake_to_camel(key)] = _jsonify(row.get(key))
     return out
 
 
-@api_router.get("/action-pathways", summary="List action pathways")
+def _action_pathways_meta(*, total_records: int) -> Dict[str, Any]:
+    """Envelope aligned with hiap-meed ``UpstreamMeta`` (camelCase JSON from this API)."""
+    return {
+        "generatedAtUtc": datetime.now(timezone.utc).isoformat(),
+        # Caller is unknown at this edge; aggregators (e.g. hiap-meed) may overwrite when proxying.
+        "backendConsumer": "unspecified",
+        "upstreamProvider": "global-api",
+        "apiContext": {"endpoint": "GET /api/v1/action-pathways"},
+        "totalRecords": total_records,
+    }
+
+
+_LIST_ACTION_PATHWAYS_ROUTE_METADATA = {
+    "summary": "List action pathways",
+    "description": (
+        "Returns ``meta`` and ``actions`` with **camelCase** property names. ``meta`` includes "
+        "``generatedAtUtc``, ``backendConsumer``, ``upstreamProvider``, ``apiContext``, "
+        "``totalRecords``. ``emissions`` may include GPC sector and reference fields when present; "
+        "``coBenefits`` impact objects omit those GPC fields. ``emissions.subsectorNumber`` is "
+        "always an array of sorted distinct first numeric segments after the sector across "
+        "``gpcReferenceNumber`` (e.g. ``[1]`` for ``I.1.1`` and ``I.1.2``, or ``[1, 2]`` when they "
+        "differ). Optional ``release_id`` scopes results "
+        "to one catalog release; omit it "
+        "to return rows from all releases (subject to ``limit``)."
+    ),
+    "operation_id": "list_action_pathways",
+}
+
+@api_router.get("/action-pathways", **_LIST_ACTION_PATHWAYS_ROUTE_METADATA)
 def list_actions_pathways(
     release_id: Optional[UUID] = Query(default=None),
     limit: int = Query(default=500, ge=1, le=2000),
@@ -209,7 +258,7 @@ def list_actions_pathways(
     with SessionLocal() as session:
         pathways = list(session.execute(_PATHWAY_SQL, {"rid": rid, "limit": limit}).mappings().all())
         if not pathways:
-            return []
+            return {"meta": _action_pathways_meta(total_records=0), "actions": []}
         ids = [p["pathway_id"] for p in pathways]
         impact_rows = list(session.execute(_IMPACT_SQL, {"pids": ids}).mappings().all())
 
@@ -218,6 +267,10 @@ def list_actions_pathways(
         d = dict(r)
         by_pathway[str(d["pathway_id"])].append(d)
 
-    return [
+    actions = [
         _action_dict(dict(p), lang, by_pathway[str(p["pathway_id"])]) for p in pathways
     ]
+    return {
+        "meta": _action_pathways_meta(total_records=len(actions)),
+        "actions": actions,
+    }

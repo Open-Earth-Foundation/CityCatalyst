@@ -1,0 +1,17 @@
+{
+  "translations": [
+    {
+      "actionId": "c40_0010",
+      "explanations": {
+        "pt": "Esta ação tem classificação elevada porque a evidência indica forte impacto esperado, alinhamento claro com as prioridades de transporte da cidade e condições de implementação favoráveis."
+      }
+    },
+    {
+      "actionId": "c40_0030",
+      "explanations": {
+        "pt": "Esta ação tem classificação ligeiramente inferior porque a evidência sugere impacto útil e benefícios de alinhamento, mas as condições de implementação parecem mais mistas."
+      }
+    }
+  ],
+  "warnings": []
+}

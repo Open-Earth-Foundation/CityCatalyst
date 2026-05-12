@@ -27,7 +27,7 @@ IMPACT_TEXT_TO_MULTIPLIER: dict[str, float] = {
     "very high": 1.0,
 }
 
-IMPACT_DEFAULT_TIMELINE_SCORE = 0.0
+IMPACT_DEFAULT_TIMELINE_SCORE = 0.5
 
 IMPACT_TIMELINE_TO_SCORE: dict[str, float] = {
     "<5 years": 1.0,
@@ -199,6 +199,17 @@ def is_explanations_enabled() -> bool:
 def get_explanations_model() -> str | None:
     """Return configured explanation model name, if set."""
     value = os.getenv("HIAP_MEED_EXPLANATIONS_MODEL")
+    if value is None:
+        return None
+    normalized = value.strip()
+    if not normalized:
+        return None
+    return normalized
+
+
+def get_explanation_translations_model() -> str | None:
+    """Return configured translation model name, if set."""
+    value = os.getenv("HIAP_MEED_EXPLANATION_TRANSLATIONS_MODEL")
     if value is None:
         return None
     normalized = value.strip()

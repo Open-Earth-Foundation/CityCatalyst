@@ -3,6 +3,7 @@
 `hiap-meed` is a synchronous FastAPI service that implements the MEED prioritization pipeline. It sits between the CityCatalyst frontend and the upstream Global API, fetching city context and action data before running a configurable scoring pipeline.
 
 See [`docs/service-architecture.md`](docs/service-architecture.md) for the full system diagram.
+See [`docs/prioritization-accuracy-initial-benchmark.md`](docs/prioritization-accuracy-initial-benchmark.md) for the planned validation mechanism of ranking quality.
 
 ## Repository layout
 
@@ -45,6 +46,7 @@ HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED=false
 HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL=
 HIAP_MEED_EXPLANATIONS_ENABLED=true
 HIAP_MEED_EXPLANATIONS_MODEL=
+HIAP_MEED_EXPLANATION_TRANSLATIONS_MODEL=
 OPENAI_API_KEY=
 OPENAI_TIMEOUT_SECONDS=30
 OPENAI_MAX_RETRIES=3
@@ -62,13 +64,14 @@ Variables:
 - `HIAP_MEED_ACTION_DATA_SOURCE`: action catalog source (`mock` or `api`)
 - `HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE`: policy-signal input source (`mock` or `api`)
 - `HIAP_MEED_TOP_N`: default number of ranked actions to return per city (default `20`)
-- `HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL`: OpenAI model used for alignment free-text co-benefit mapping
+- `HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL`: OpenAI model used only by the deprecated legacy free-text co-benefit mapping helper
 - `HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED`: if `true`, the exclusion preview endpoint calls OpenAI to resolve clear free-text action exclusions
 - `HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL`: OpenAI model used for preview free-text action exclusion matching
 - `OPENAI_API_KEY`: API key used by OpenAI-backed features
 - `OPENAI_TIMEOUT_SECONDS`: shared OpenAI client timeout in seconds (default `30`)
 - `HIAP_MEED_EXPLANATIONS_ENABLED`: global switch for post-ranking explanation calls
-- `HIAP_MEED_EXPLANATIONS_MODEL`: model name used when `createExplanations=true`
+- `HIAP_MEED_EXPLANATIONS_MODEL`: model name used for canonical explanation generation when `createExplanations=true`
+- `HIAP_MEED_EXPLANATION_TRANSLATIONS_MODEL`: model name used for explanation translation
 - `OPENAI_MAX_RETRIES`: shared OpenAI client retries (default `3`)
 
 ### 2. Install dependencies
@@ -92,6 +95,7 @@ Verify the service:
 - Health check: `curl http://localhost:8000/health`
 - OpenAPI docs: `http://localhost:8000/docs`
 - Prioritization endpoint: `POST /v1/prioritize`
+- Explanation translation endpoint: `POST /v1/explanations/translate`
 - Exclusion preview endpoint: `POST /v1/prioritize/exclusions/preview`
 
 ### External API contracts (modeled, integration pending)
@@ -112,7 +116,7 @@ Design note:
 
 - For the upcoming frontend contract, single-city and multi-city payloads both
   use `cityDataList`; single-city is represented as a list with one item.
-- Current implementation note: prioritization uses a dedicated orchestrator for run-level artifact writing, while exclusion preview currently writes its request artifacts directly from the API layer. If the preview flow grows, it will likely want its own orchestrator too.
+- Current implementation note: exclusion preview and prioritization are separate flows. Exclusion preview resolves raw exclusion preferences into proposals for review, while prioritization consumes confirmed `excludedActionIds`. Prioritization uses a dedicated orchestrator for run-level artifact writing, while exclusion preview currently writes its request artifacts directly from the API layer.
 
 ### 4. Call the prioritization endpoint
 
@@ -124,7 +128,10 @@ Request body:
 - Single-city and multi-city payloads both use `requestData.cityDataList`.
 - Optional flag: `requestData.createExplanations` controls whether the post-ranking
   explanation stage is executed.
-- `requestData.requestedLanguages` is currently accepted as a list for frontend compatibility, but ranked-action explanations support only one returned language today. The backend uses the first list item as the explanation language and ignores the rest.
+- `requestData.requestedLanguages` controls which explanation languages the backend attempts to return.
+- Canonical explanation generation is always English.
+- If non-English languages are requested, the backend generates English once and then translates from English into each requested target language.
+- Response metadata reports `generated_languages` as the languages actually present in the returned explanation payload.
 
 Exclusions:
 
@@ -181,7 +188,7 @@ Impact block behavior (implemented):
   - The service sums activity emissions per GPC key before scoring.
 - Impact computes canonical score as:
   - `0.80 * reduction_share_of_city_emissions + 0.20 * timeline_score`
-  - Timeline mapping: `<5 years -> 1.0`, `5-10 years -> 0.5`, `>10 years -> 0.0`
+  - Timeline mapping: `<5 years -> 1.0`, `5-10 years -> 0.5`, `>10 years -> 0.0`, missing or unknown timeline `-> 0.5`
 - Unknown `impact_text` values are rejected with `422` (raised during Impact scoring and surfaced by the API error handler).
 
 Alignment block behavior (implemented):
@@ -193,10 +200,9 @@ Alignment block behavior (implemented):
 - Multiple selected timeframes use the best match across selections, with `1.0` for exact match, `0.5` for adjacent, and `0.0` for far mismatch.
 - Missing or unknown action timelines are treated as neutral `0.5` for this alignment component.
 - Alignment now uses weights: `policy=0.75`, `sector=0.15`, `other=0.05`, `timeframe=0.05`.
-- Alignment maps `requestData.cityDataList[].cityStrategicPreferenceOther` to co-benefit labels using OpenAI structured output parsing.
+- Alignment reads `requestData.cityDataList[].cityStrategicPreferenceCoBenefitKeys` directly from the request.
 - The mapping output is constrained to the current action-catalog taxonomy:
   - `air_quality`, `cost_of_living`, `habitat`, `housing`, `mobility`, `stakeholder_engagement`, `water_quality`
-- `unmappable_preference_fragments` are captured when user intent cannot be confidently mapped to allowed labels.
 - Other-preference scoring:
   - Only co-benefits selected by the city are scored.
   - The denominator is the city's resolved preferred co-benefit set for that request.
@@ -205,15 +211,7 @@ Alignment block behavior (implemented):
   - Missing co-benefit keys on the action are treated as `0`.
   - Co-benefits present on the action but not selected by the city do not affect this component.
   - The summed selected impacts are normalized into `0..1`, where `0.5` is neutral.
-- Fail-open behavior:
-  - blank free-text results in a neutral `other_component_value = 0.5`
-  - `cityStrategicPreferenceOther` is truncated to at most `400` characters before co-benefit mapping prompt rendering, with a warning log when truncation happens
-  - oversized co-benefit mapping prompts are skipped by a max-length guard before the LLM call and fall back to neutral `other_component_value = 0.5`
-  - model misconfiguration, timeout, or parse failure also result in a neutral `other_component_value = 0.5`, with fallback evidence showing the mapping did not succeed
-- Stability note:
-  - The prompt uses `temperature=0.0` and few-shot examples to reduce variation, but the mapping still depends on an external LLM and can remain non-deterministic.
-  - That means end-to-end ranking tests that rely on live mapping output can occasionally drift or fail even when application code has not changed.
-  - For fully deterministic tests, prefer mocking the co-benefit mapping step.
+- With no selected co-benefit keys, Alignment uses a neutral `other_component_value = 0.5`.
 
 Response fields:
 
@@ -228,8 +226,9 @@ Response fields:
     - `alignment_score` (`float`)
     - `feasibility_score` (`float`)
     - `evidence_summary` (`object`): compact explainability snapshot from hard-filter/impact/alignment/feasibility evidence
-    - `explanation` (`string | null`): optional qualitative explanation text when `createExplanations=true`
+    - `explanations` (`object`): optional explanation texts keyed by language code when `createExplanations=true`
   - `metadata` (`object`): request IDs, timings, counts, and hard-filter evidence.
+  - `warnings` (`string[]`): human-readable translation warnings when canonical English inputs appear non-English or mixed-language
 
 Ranking details:
 
@@ -243,12 +242,26 @@ Explanation stage behavior:
 
 - Explanations are generated only when `requestData.createExplanations=true`.
 - Explanations are generated from post-ranking evidence and do not change ranks.
-- The explanation stage currently supports one output language only. It resolves that language from the first item in `requestData.requestedLanguages`.
-- `cityStrategicPreferenceOther` is truncated to at most `400` characters before it is inserted into the explanation prompt.
-- When `cityStrategicPreferenceOther` mapping falls back (`fallback_*`), explanations include a known limitation that the free-text preference did not affect ranking and neutral other-preference scoring was used.
-- The backend logs a warning if either field is truncated or if the final explanation prompt becomes unusually large.
+- Explanations are always authored canonically in English.
+- Requested non-English explanations are translations of the canonical English text.
+- In response metadata, `generated_languages` is the response-level union of explanation languages actually returned across `ranked_actions[].explanations`.
+- Explanations receive the selected `cityStrategicPreferenceCoBenefitKeys` directly.
+- If translation detects that a canonical explanation labeled as English appears non-English or mixed-language, translation still returns results and adds a warning to logs and the API response.
+- That language-check warning is determined internally per action, then aggregated by the backend into the public top-level `warnings` list returned by the API.
+- The backend logs a warning if the final explanation prompt becomes unusually large.
 - If explanation generation fails or times out, the endpoint fails open and
-  returns normal ranking output with `explanation=null`.
+  returns normal ranking output with `explanations={}`.
+
+### 5. Call the explanation translation endpoint
+
+- The endpoint accepts the frontend envelope `ExplanationTranslationApiRequest`.
+- `requestData.sourceLanguage` must be `en`.
+- `requestData.targetLanguages` must contain only non-English target languages.
+- `requestData.rankedActions[*]` includes:
+  - `actionId`
+  - `canonicalExplanation`
+- The endpoint is stateless: the frontend sends the canonical English explanations it wants translated.
+- The endpoint returns only the requested target-language translations, not the original English text.
 
 Example JSON request bodies (using mock data from `data/`):
 
@@ -340,7 +353,7 @@ Example ranking request after review:
         "excludedActionIds": ["c40_0029"],
         "cityStrategicPreferenceSectors": ["transportation"],
         "cityStrategicPreferenceTimeframes": ["short", "medium"],
-        "cityStrategicPreferenceOther": "Prioritize near-term air quality improvements ...",
+        "cityStrategicPreferenceCoBenefitKeys": ["air_quality", "mobility"],
         "cityEmissionsData": {
           "inventoryYear": null,
           "gpcData": {}
@@ -373,9 +386,10 @@ Example response:
               "matched_city_gpc_refs_count": 2
             }
           },
-          "explanation": null
+          "explanations": {}
         }
       ],
+      "warnings": [],
       "metadata": {
         "internal_request_id": "d1db6269-4cf9-4d62-8f4c-8f4ce631fbd2",
         "frontend_request_id": "1234567890",
@@ -452,9 +466,16 @@ What each request run folder contains:
   - `llm/explanations_io.json`: explanation-stage LLM request/response artifact (only when explanations are generated successfully)
   - `llm/explanations_prompt.txt`: plain-text rendered user prompt with preserved newlines (only when explanations are generated successfully)
   - `llm/explanations_error.json`: explanation-stage failure artifact with request context and error (only when explanation generation fails)
-- Explanation artifacts and response metadata record both the original `requestedLanguages` list and the single resolved explanation language used for the run.
-- For the free-text other-preference feature, the `alignment` step detail includes mapping evidence such as `resolved_preferred_co_benefits`, `unmappable_preference_fragments`, `matched_preferred_co_benefits`, and mapping source/model fields
-- There are currently no dedicated LLM prompt/response artifact files for co-benefit mapping; the traceability lives inside the standard alignment evidence artifacts
+  - `llm/explanation_translations_io.json`: translation-stage LLM request/response artifact (only when translations are generated successfully)
+  - `llm/explanation_translations_prompt.txt`: plain-text rendered translation prompt (only when translations are generated successfully)
+  - `llm/explanation_translations_error.json`: translation-stage failure artifact with request context and error (only when translation fails)
+- Prioritization explanation artifacts and response metadata record the original `requestedLanguages`, canonical language `en`, generated languages actually returned in the response, and any translation warnings.
+- Explanation translation request folders additionally include:
+  - `llm/explanation_translations_io.json`
+  - `llm/explanation_translations_prompt.txt`
+- Explanation translation artifacts record the source language contract, requested target languages, and any LLM language-check warnings.
+- For the direct other-preference feature, the `alignment` step detail includes evidence such as `resolved_preferred_co_benefits`, `matched_preferred_co_benefits`, and mapping source fields
+- The active request flow does not emit dedicated LLM prompt/response artifact files for Alignment because direct co-benefit selections are deterministic
 - Exclusion preview request folders additionally include:
   - `cities/<locode>_preview.json`: per-city exclusion preview diagnostics
   - `llm/<locode>_free_text_exclusion_io.json`: free-text exclusion LLM input/output and validation diagnostics

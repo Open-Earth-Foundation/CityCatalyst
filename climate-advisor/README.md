@@ -195,14 +195,13 @@ Agent Continue (with tool result)
 
 - Python 3.11+
 - PostgreSQL 15+ (via Docker recommended)
-- pip / venv
+- uv
 
 ### 1. Clone and Setup
 
 ```bash
 cd climate-advisor
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+uv sync --locked --group dev
 ```
 
 ### 2. Configure Environment
@@ -237,6 +236,9 @@ cd climate-advisor
 docker compose up -d postgres
 ```
 
+Make sure Docker Desktop (or another Docker daemon) is running before invoking
+`docker compose`.
+
 If you use this compose-based PostgreSQL setup and run the CA service on your host
 (not in Docker), use:
 
@@ -263,19 +265,16 @@ docker exec ca-postgres psql -U climateadvisor -d climateadvisor -c "CREATE EXTE
 ### 4. Install Dependencies & Setup Database
 
 ```bash
-cd climate-advisor/service
-pip install -r requirements.txt
-
-# Run database migrations
-cd ..
-python scripts/setup_database.py
+cd climate-advisor
+uv sync --locked --group dev
+uv run python scripts/setup_database.py
 ```
 
 ### 5. Run the Service
 
 ```bash
-cd climate-advisor/service
-uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+cd climate-advisor
+uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 ```
 
 ### 6. Verify Setup
@@ -396,13 +395,13 @@ WITH (lists = 100);
 ### 1. Populate Vector Database
 
 ```bash
-cd climate-advisor/vector_db
+cd climate-advisor
 
 # Add PDF files to `files/` directory
-cp /path/to/documents/*.pdf files/
+cp /path/to/documents/*.pdf vector_db/files/
 
 # Process PDFs and upload embeddings
-python upload_to_db.py --directory files
+uv run python vector_db/upload_to_db.py --directory vector_db/files
 ```
 
 ### 2. Vector Search Configuration
@@ -540,20 +539,20 @@ Agent incorporates data into response
 ### Run All Tests
 
 ```bash
-cd climate-advisor/service
-pytest tests/ -v
+cd climate-advisor
+uv run --directory service pytest tests/ -v
 ```
 
 ### Run Specific Test
 
 ```bash
-pytest tests/test_e2e_conversation.py -v
+uv run --directory service pytest tests/test_e2e_conversation.py -v
 ```
 
-### Quick Streaming Test
+### Prompt Flow Smoke Test
 
 ```bash
-python climate-advisor/scripts/test_service_stream.py http://localhost:8080
+uv run python service/tests/run_ca_e2e.py
 ```
 
 ## Docker Deployment (Local Testing)
@@ -635,15 +634,29 @@ Each request includes a unique request ID (X-Request-Id header) for tracing:
 
 ## Troubleshooting
 
+### `uv sync` TLS / Certificate Errors on Windows
+
+If `uv sync --locked --group dev` fails with `invalid peer certificate:
+UnknownIssuer` and your shell is exporting `SSL_CERT_FILE` from Anaconda,
+clear that variable for the current shell and retry:
+
+```powershell
+Remove-Item Env:SSL_CERT_FILE -ErrorAction SilentlyContinue
+uv sync --locked --group dev --native-tls
+```
+
 ### Database Connection Issues
+
+If `docker compose up -d postgres` fails before creating the container, confirm
+that Docker Desktop is running and `docker version` shows both client and
+server sections.
 
 ```bash
 # Test connection
-python -c "from app.db.session import get_session_factory; print('OK')"
+uv run --directory service python -c "from app.db.session import get_session_factory; print('OK')"
 
 # Check migrations
-cd service
-alembic current
+uv run --directory service python -m alembic current
 ```
 
 ### Vector Search Not Working
@@ -662,16 +675,28 @@ Enable debug logging:
 
 ```bash
 export CA_LOG_LEVEL=debug
-uvicorn app.main:app --reload
+uv run --directory service uvicorn app.main:app --reload
 ```
 
 Check token handler logs for CC_BASE_URL and token endpoint issues.
+
+### LangSmith SSL Warnings During Local Tests
+
+If the test suite passes but LangSmith emits post-run SSL warnings because the
+local machine cannot validate `api.smith.langchain.com`, disable tracing for the
+current shell while running tests:
+
+```powershell
+Remove-Item Env:LANGSMITH_API_KEY -ErrorAction SilentlyContinue
+$env:LANGSMITH_TRACING = "false"
+uv run --directory service pytest tests/ -v
+```
 
 ## Contributing
 
 1. Create a feature branch: `git checkout -b feature/my-feature`
 2. Make changes and add tests
-3. Run `pytest` to ensure tests pass
+3. Run `cd climate-advisor && uv run --directory service pytest tests/ -v`
 4. Submit a pull request
 
 ## License

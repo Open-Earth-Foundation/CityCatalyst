@@ -82,6 +82,7 @@ export default function ClimaAIAssistantDisclaimerDialog({
                         color="content.link"
                         textDecoration="underline"
                         fontWeight="bold"
+                        href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAILS}`}
                       >
                         {t("contact-support")}
                       </Link>

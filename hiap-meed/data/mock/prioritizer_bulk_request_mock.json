@@ -27,7 +27,7 @@
         },
         "cityStrategicPreferenceSectors": ["transportation"],
         "cityStrategicPreferenceTimeframes": ["short", "medium"],
-        "cityStrategicPreferenceOther": "Prioritize near-term air quality improvements, reliable and affordable mobility, and climate resilience benefits for low-income neighborhoods.",
+        "cityStrategicPreferenceCoBenefitKeys": ["air_quality", "mobility"],
         "cityEmissionsData": {
           "inventoryYear": null,
           "gpcData": {
@@ -74,7 +74,7 @@
           "waste"
         ],
         "cityStrategicPreferenceTimeframes": ["short"],
-        "cityStrategicPreferenceOther": "Prioritize public health co-benefits, cleaner mobility, and emission reductions in high-impact urban activities.",
+        "cityStrategicPreferenceCoBenefitKeys": ["air_quality", "mobility"],
         "cityEmissionsData": {
           "inventoryYear": 2022,
           "gpcData": {

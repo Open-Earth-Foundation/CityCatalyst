@@ -59,6 +59,28 @@ ranking API, is no longer represented by the active mock request files. Raw
 exclusion preferences now live in `prioritizer_exclusion_preview_request_mock.json`,
 while ranking mocks use confirmed `excludedActionIds`.
 
+# prioritizer_explanation_translation_request_mock.json:
+
+This is a mock request for the explanation translation API.
+It simulates the frontend sending canonical English explanations for
+stateless translation into one or more requested target languages.
+
+This payload shape is modeled by:
+- `ExplanationTranslationApiRequest` (envelope)
+- `ExplanationTranslationRequestData` (`requestData`)
+- `ExplanationTranslationActionInput` (`rankedActions[]`)
+
+This includes:
+
+- source language (must currently be `en`)
+- target languages (non-English translation targets)
+- ranked actions with:
+  - `actionId`
+  - `canonicalExplanation`
+
+`meta.apiContext.endpoint` reflects the translation route:
+- `POST /v1/explanations/translate`
+
 # city_api_mock.json:
 
 This is a mock response from the city context data API.

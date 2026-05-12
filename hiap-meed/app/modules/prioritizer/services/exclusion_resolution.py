@@ -450,7 +450,7 @@ def _build_prompt(*, excluded_actions_free_text: str, actions: list[Action]) -> 
         "actions": [_build_catalog_row(action) for action in actions],
     }
     return template.format(
-        payload_json=json.dumps(payload, ensure_ascii=True, indent=2)
+        payload_json=json.dumps(payload, ensure_ascii=False, indent=2)
     )
 
 

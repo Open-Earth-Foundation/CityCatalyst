@@ -329,6 +329,32 @@ erDiagram
         datetime created_at
         datetime updated_at
     }
+    modelled__action_legal_assessement {
+        string legal_analysis_id "PK"
+        string src_action_id
+        string country_code
+        string gpc_sector
+        string verdict_category
+        float verdict_score
+        string ownership_category
+        float ownership_score
+        float ownership_weight
+        string ownership_description
+        string restrictions_category
+        float restrictions_score
+        float restrictions_weight
+        string restrictions_description
+        string legal_justification
+        string analysis_date
+        string generation_method
+        json legal_references
+        string release_id "FK"
+        datetime created_at
+        datetime updated_at
+        json ownership_description_i18n
+        json restrictions_description_i18n
+        json legal_justification_i18n
+    }
     modelled__population {
         string population_id "PK"
         string publisher_id "FK"
@@ -422,6 +448,7 @@ erDiagram
     modelled__formula_input }o--|| modelled__publisher_datasource : references
     modelled__ghgi_methodology }o--|| modelled__gpc_sector : references
     modelled__policy_signals }o--|| modelled__dataset_release : references
+    modelled__action_legal_assessement }o--|| modelled__dataset_release : references
     modelled__population }o--|| modelled__publisher_datasource : references
     modelled__project_portfolio }o--|| modelled__dataset_release : references
     modelled__project_summary }o--|| modelled__dataset_release : references

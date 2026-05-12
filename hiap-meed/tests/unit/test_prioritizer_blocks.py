@@ -14,7 +14,6 @@ from app.modules.prioritizer.blocks import (
     hard_filter,
     impact,
 )
-from app.modules.prioritizer.services import co_benefit_mapping
 from app.modules.prioritizer.internal_models import Action, CityData
 from app.modules.prioritizer.models import CityApiItem
 from app.services.data_clients import (
@@ -96,7 +95,7 @@ def _alignment_timeframe_evidence(
         policy_signals_by_action_id={},
         city_preference_sectors=[],
         city_preference_timeframes=city_preference_timeframes,
-        city_preference_other_text=None,
+        city_preference_co_benefit_keys=[],
     )
     assert result.evidence_by_action_id is not None
     return result.evidence_by_action_id["A_timeframe"]
@@ -186,13 +185,13 @@ def test_impact_block_with_mock_api_data() -> None:
     assert first_action_evidence["has_any_action_gpc_ref"] is True
     assert first_action_evidence["action_gpc_refs"] == ["I.1.1", "I.1.2"]
     assert first_action_evidence["matched_city_gpc_refs_count"] == 2
-    assert first_action_evidence["reduction_share_of_city_emissions"] > 0.0
+    assert first_action_evidence["emissions_reduction_share_of_city_total"] > 0.0
     assert first_action_evidence["impact_block_score"] == pytest.approx(
         result.score_by_action_id["c40_0010"]
     )
     assert first_action_evidence["impact_block_score"] == pytest.approx(
-        first_action_evidence["reduction_component_contribution"]
-        + first_action_evidence["timeline_component_contribution"]
+        first_action_evidence["emissions_reduction_contribution"]
+        + first_action_evidence["timeline_contribution"]
     )
 
 
@@ -299,10 +298,34 @@ def test_impact_block_timeline_mapping_prefers_faster_implementation() -> None:
         city_emissions_by_gpc_ref={"I.1.1": 100.0},
     )
     assert (
-        result.evidence_by_action_id["A_fast"]["timeline_score"]
-        > result.evidence_by_action_id["A_slow"]["timeline_score"]
+        result.evidence_by_action_id["A_fast"]["timeline_component_score"]
+        > result.evidence_by_action_id["A_slow"]["timeline_component_score"]
     )
     assert result.score_by_action_id["A_fast"] > result.score_by_action_id["A_slow"]
+
+
+@pytest.mark.unit
+def test_impact_block_missing_timeline_is_neutral_not_punitive() -> None:
+    """Missing impact timeline uses the neutral 0.5 fallback score."""
+    result = impact.run(
+        actions=[
+            Action(
+                action_id="A_missing_timeline",
+                action_name="Missing timeline",
+                implementation_timeline=None,
+                emissions={
+                    "gpc_reference_number": ["I.1.1"],
+                    "impact_text": "high",
+                },
+            )
+        ],
+        city_emissions_by_gpc_ref={"I.1.1": 100.0},
+    )
+
+    evidence = result.evidence_by_action_id["A_missing_timeline"]
+    assert evidence["timeline_bucket_known"] is False
+    assert evidence["timeline_component_score"] == pytest.approx(0.5)
+    assert evidence["timeline_score"] == pytest.approx(0.5)
 
 
 @pytest.mark.unit
@@ -316,7 +339,7 @@ def test_alignment_block_with_mock_api_data() -> None:
         policy_signals_by_action_id=policy_signals,
         city_preference_sectors=["stationary_energy", "transportation"],
         city_preference_timeframes=["no_preference"],
-        city_preference_other_text="Focus on local jobs and cleaner mobility",
+        city_preference_co_benefit_keys=["mobility"],
     )
 
     assert len(result.score_by_action_id) == len(actions)
@@ -324,51 +347,34 @@ def test_alignment_block_with_mock_api_data() -> None:
     assert result.evidence_by_action_id is not None
 
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
-    assert first_action_evidence["policy_component_value"] > 0.0
-    assert first_action_evidence["sector_component_value"] in {0.0, 1.0}
-    assert first_action_evidence["other_component_value"] == pytest.approx(0.5)
+    assert first_action_evidence["policy_component_score"] > 0.0
+    assert first_action_evidence["sector_component_score"] in {0.0, 1.0}
+    assert first_action_evidence["co_benefit_component_score"] == pytest.approx(0.5)
     assert first_action_evidence["alignment_score"] == pytest.approx(
         first_action_evidence["policy_contribution"]
         + first_action_evidence["sector_contribution"]
-        + first_action_evidence["other_contribution"]
+        + first_action_evidence["co_benefit_contribution"]
         + first_action_evidence["timeframe_contribution"]
     )
 
 
 @pytest.mark.unit
-def test_alignment_other_preference_component_uses_normalized_co_benefit_impacts(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_alignment_other_preference_component_uses_selected_co_benefit_keys() -> None:
     """Alignment other-preference score reflects selected co-benefit impacts."""
     actions = _load_mock_actions()
     policy_signals = _load_mock_policy_signals()
-
-    def _fake_resolve(**_: object) -> dict[str, object]:
-        return {
-            "resolved_preferred_co_benefits": ["air_quality", "housing"],
-            "unmappable_preference_fragments": ["jobs"],
-            "mapping_source": "llm",
-            "provider": "openai",
-            "model": "gpt-test",
-        }
-
-    monkeypatch.setattr(
-        co_benefit_mapping,
-        "resolve_city_preferred_co_benefits",
-        _fake_resolve,
-    )
 
     result = alignment.run(
         actions=actions,
         policy_signals_by_action_id=policy_signals,
         city_preference_sectors=["stationary_energy", "transportation"],
         city_preference_timeframes=["no_preference"],
-        city_preference_other_text="Cleaner air and healthier homes",
+        city_preference_co_benefit_keys=["air_quality", "housing"],
     )
 
     assert result.evidence_by_action_id is not None
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
-    assert first_action_evidence["resolved_preferred_co_benefits"] == [
+    assert first_action_evidence["scored_city_co_benefit_keys"] == [
         "air_quality",
         "housing",
     ]
@@ -376,48 +382,121 @@ def test_alignment_other_preference_component_uses_normalized_co_benefit_impacts
         "air_quality",
         "housing",
     ]
-    assert first_action_evidence["unmappable_preference_fragments"] == ["jobs"]
-    assert first_action_evidence["other_component_mapping_source"] == "llm"
-    assert first_action_evidence["other_component_value"] == pytest.approx(0.5)
+    assert first_action_evidence["co_benefit_component_score"] == pytest.approx(0.5)
 
 
 @pytest.mark.unit
-def test_alignment_other_preference_component_is_neutral_on_mapping_fallback(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Alignment keeps the other-preference component neutral when mapping fails."""
+def test_alignment_other_preference_component_is_neutral_without_selected_keys() -> None:
+    """Alignment keeps the other-preference component neutral without selections."""
     actions = _load_mock_actions()
     policy_signals = _load_mock_policy_signals()
-
-    def _fake_resolve(**_: object) -> dict[str, object]:
-        return {
-            "resolved_preferred_co_benefits": [],
-            "unmappable_preference_fragments": [],
-            "mapping_source": "fallback_error",
-            "provider": "openai",
-            "model": "gpt-test",
-            "warning": "parse failed",
-        }
-
-    monkeypatch.setattr(
-        co_benefit_mapping,
-        "resolve_city_preferred_co_benefits",
-        _fake_resolve,
-    )
 
     result = alignment.run(
         actions=actions,
         policy_signals_by_action_id=policy_signals,
         city_preference_sectors=["stationary_energy", "transportation"],
         city_preference_timeframes=["no_preference"],
-        city_preference_other_text="Cleaner air and healthier homes",
+        city_preference_co_benefit_keys=[],
     )
 
     assert result.evidence_by_action_id is not None
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
-    assert first_action_evidence["resolved_preferred_co_benefits"] == []
-    assert first_action_evidence["other_component_mapping_source"] == "fallback_error"
-    assert first_action_evidence["other_component_value"] == pytest.approx(0.5)
+    assert first_action_evidence["scored_city_co_benefit_keys"] == []
+    assert first_action_evidence["co_benefit_component_score"] == pytest.approx(0.5)
+
+
+@pytest.mark.unit
+def test_alignment_selected_co_benefit_evidence_marks_missing_entry_as_neutral() -> None:
+    """Missing selected co-benefit entries stay neutral in evidence and say why."""
+    result = alignment.run(
+        actions=[
+            Action(
+                action_id="A_missing_key",
+                action_name="Missing key action",
+                co_benefits={},
+            )
+        ],
+        policy_signals_by_action_id={},
+        city_preference_sectors=[],
+        city_preference_timeframes=[],
+        city_preference_co_benefit_keys=["air_quality"],
+    )
+
+    evidence = result.evidence_by_action_id["A_missing_key"]
+    assert evidence["co_benefit_component_score"] == pytest.approx(0.5)
+    assert evidence["matched_preferred_co_benefits"] == []
+    detail = evidence["selected_co_benefit_match_details"][0]
+    assert detail["co_benefit_key"] == "air_quality"
+    assert detail["action_has_co_benefit"] is False
+    assert detail["impact_numeric"] is None
+    assert detail["normalized_preference_score"] == pytest.approx(0.5)
+    assert detail["score_source"] == "missing_co_benefit"
+    assert detail["effect_label"] == "not_provided"
+
+
+@pytest.mark.unit
+def test_alignment_selected_co_benefit_evidence_marks_missing_numeric_as_neutral() -> None:
+    """Missing impact_numeric stays neutral in evidence and is distinct from missing key."""
+    result = alignment.run(
+        actions=[
+            Action(
+                action_id="A_missing_numeric",
+                action_name="Missing numeric action",
+                co_benefits={
+                    "air_quality": {
+                        "impact_text": "unknown",
+                        "impact_relationship": "unknown",
+                    }
+                },
+            )
+        ],
+        policy_signals_by_action_id={},
+        city_preference_sectors=[],
+        city_preference_timeframes=[],
+        city_preference_co_benefit_keys=["air_quality"],
+    )
+
+    evidence = result.evidence_by_action_id["A_missing_numeric"]
+    assert evidence["co_benefit_component_score"] == pytest.approx(0.5)
+    assert evidence["matched_preferred_co_benefits"] == ["air_quality"]
+    detail = evidence["selected_co_benefit_match_details"][0]
+    assert detail["co_benefit_key"] == "air_quality"
+    assert detail["action_has_co_benefit"] is True
+    assert detail["impact_numeric"] is None
+    assert detail["normalized_preference_score"] == pytest.approx(0.5)
+    assert detail["score_source"] == "missing_impact_numeric"
+    assert detail["effect_label"] == "unknown"
+
+
+@pytest.mark.unit
+def test_alignment_selected_co_benefit_evidence_marks_real_value_source() -> None:
+    """Known co-benefit values keep their normalized score and explicit value source."""
+    result = alignment.run(
+        actions=[
+            Action(
+                action_id="A_known_numeric",
+                action_name="Known numeric action",
+                co_benefits={
+                    "air_quality": {
+                        "impact_numeric": 1,
+                        "impact_text": "beneficial",
+                        "impact_relationship": "positive",
+                    }
+                },
+            )
+        ],
+        policy_signals_by_action_id={},
+        city_preference_sectors=[],
+        city_preference_timeframes=[],
+        city_preference_co_benefit_keys=["air_quality"],
+    )
+
+    detail = result.evidence_by_action_id["A_known_numeric"][
+        "selected_co_benefit_match_details"
+    ][0]
+    assert detail["normalized_preference_score"] == pytest.approx(0.75)
+    assert detail["score_source"] == "derived_from_value"
+    assert detail["effect_label"] == "beneficial"
 
 
 @pytest.mark.unit
@@ -450,7 +529,7 @@ def test_alignment_timeframe_component_scores_expected_matches(
         action_timeline=action_timeline,
     )
 
-    assert evidence["timeframe_component_value"] == pytest.approx(
+    assert evidence["timeframe_component_score"] == pytest.approx(
         expected_component_value
     )
 
@@ -478,7 +557,7 @@ def test_alignment_timeframe_component_uses_best_multi_select_match(
         action_timeline=action_timeline,
     )
 
-    assert evidence["timeframe_component_value"] == pytest.approx(
+    assert evidence["timeframe_component_score"] == pytest.approx(
         expected_component_value
     )
 
@@ -506,7 +585,7 @@ def test_feasibility_block_with_mock_api_data(
     assert "socioeconomic_indicator_rows" in first_action_evidence
     assert first_action_evidence["feasibility_score"] == pytest.approx(
         first_action_evidence["soft_legal_contribution"]
-        + first_action_evidence["socioeconomic_indicators_contribution"]
+        + first_action_evidence["socioeconomic_contribution"]
     )
     first_action_rows = {
         row["action_socioeconomic_indicator_key"]: row

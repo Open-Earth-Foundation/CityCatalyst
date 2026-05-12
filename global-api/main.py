@@ -16,6 +16,7 @@ from routes.region_code_endpoint import api_router as region_code_endpoint_route
 from routes.citywide_emission_endpoint import api_router as citywide_route
 from routes.ghgi_emissions import api_router as actor_emissions_route
 from routes.ccra_assessment import api_router as ccra_assessment
+from routes.city_adapta_risk import api_router as city_adapta_risk_route
 from routes.ghgi_emission_forecast import api_router as emission_forecast
 from routes.ghgi_notation_key import api_router as ghgi_notation_key_route
 from routes.city_context import api_router as city_context_route
@@ -25,6 +26,7 @@ from routes.population_endpoint import api_router as population_route
 from routes.projects import api_router as projects_route
 from routes.policy_signals import api_router as policy_signals_route
 from routes.actions_pathway import api_router as actions_pathway_route
+from routes.action_legal_assessments import api_router as action_legal_assessments_route
 from routes.emissionfactor_publisher_endpoint import api_router as emissionfactor_publisher_route
 from routes.emissionfactor_methodology_endpoint import api_router as emissionfactor_methodology_route
 from routes.emissionfactor_datasource_endpoint import api_router as emissionfactor_datasource_route
@@ -232,6 +234,11 @@ app.include_router(
     tags=["CCRA Assessment"],
 )
 
+app.include_router(
+    city_adapta_risk_route,
+    tags=["CCRA Assessment"],
+)
+
 ## Endpoints for CAP
 
 app.include_router(
@@ -254,6 +261,11 @@ app.include_router(
 app.include_router(
     actions_pathway_route,
     tags=["Action Pathways"],
+)
+
+app.include_router(
+    action_legal_assessments_route,
+    tags=["Action Legal Assessments"],
 )
 
 """

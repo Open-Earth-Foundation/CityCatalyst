@@ -1,15 +1,11 @@
 import { TFunction } from "i18next";
-import {  Link, VStack, Text, Card, Icon } from "@chakra-ui/react";
+import { Link, VStack, Text, Card, Icon } from "@chakra-ui/react";
 import { MdArrowForward } from "react-icons/md";
 import { TitleMedium } from "@/components/package/Texts/Title";
-import {BodyMedium} from "@/components/package/Texts/Body";
-import {ButtonMedium} from "@/components/package/Texts/Button";
+import { BodyMedium } from "@/components/package/Texts/Body";
+import { ButtonMedium } from "@/components/package/Texts/Button";
 
-export const NoModulesCard = ({
-  t,
-}: {
-  t: TFunction;
-}) => {
+export const NoModulesCard = ({ t }: { t: TFunction }) => {
   const emails =
     process.env.NEXT_PUBLIC_SUPPORT_EMAILS ||
     "info@openearth.org,greta@openearth.org";
@@ -41,9 +37,9 @@ export const NoModulesCard = ({
             gap={2}
             target="_blank"
             rel="noopener noreferrer"
+            _hover={{ textDecoration: "underline" }}
           >
-            <ButtonMedium>{t("contact-us")}</ButtonMedium>
-            <Icon as={MdArrowForward} boxSize={4} />
+            {t("contact-us")}
           </Link>
         </VStack>
       </Card.Body>

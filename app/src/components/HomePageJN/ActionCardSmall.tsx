@@ -18,7 +18,8 @@ const ActionCardSmall: React.FC<ActionCardSmallProps> = ({
     <Card.Root
       onClick={onClick}
       shadow="none"
-      backgroundColor="base.light"
+      borderWidth="2px"
+      borderColor="border.neutral"
       py={0}
       px={6}
       cursor="pointer"

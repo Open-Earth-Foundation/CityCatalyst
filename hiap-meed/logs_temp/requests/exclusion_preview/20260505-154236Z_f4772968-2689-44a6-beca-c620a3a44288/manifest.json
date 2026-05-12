@@ -1,0 +1,23 @@
+{
+  "counts": {
+    "cities": 1,
+    "total_proposed_exclusions": 20
+  },
+  "artifact_pointers": {
+    "summary_events": "summary.jsonl",
+    "input_snapshot": "input_snapshot.json",
+    "response_full": "response_full.json"
+  },
+  "schema_version": "1.2",
+  "request_id": "f4772968-2689-44a6-beca-c620a3a44288",
+  "request_kind": "exclusion_preview",
+  "generated_files": [
+    "001_fetch_actions.json",
+    "002_exclusion_preview_cl_iqq.json",
+    "cities/cl_iqq_preview.json",
+    "input_snapshot.json",
+    "llm/cl_iqq_free_text_exclusion_io.json",
+    "response_full.json",
+    "summary.jsonl"
+  ]
+}

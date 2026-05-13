@@ -8,6 +8,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
+from app.services.city_attributes_api import CityAttributesApiService
 from app.modules.prioritizer.internal_models import (
     Action,
     CityData,
@@ -51,16 +52,20 @@ class MockCityDataApiClient:
             city_for_validation = dict(city_raw)
             city_for_validation.update(
                 {
-                    "comuna_name": city.comuna_name,
+                    "city_name": city.city_name,
                     "locode": city.locode,
-                    "country_code": city.countryCode,
+                    "country_code": city.country_code,
                     "region_name": city.region_name,
-                    "comuna_code": city.comuna_code,
                     "region_code": city.region_code,
-                    "population_size": city.populationSize,
-                    "population_density": city.populationDensity,
-                    "area": city.area,
+                    "population_size": city.population_size,
+                    "population_density": city.population_density,
+                    "area_km2": city.area_km2,
                     "raw": city_raw,
+                    "source": "mock_city_api",
+                    "source_metadata": {
+                        "mock_file_path": str(self.mock_file_path),
+                        "requested_locode": requested_locode,
+                    },
                 }
             )
             return CityData.model_validate(city_for_validation)
@@ -224,13 +229,13 @@ class ApiCityDataApiClient:
     Current behavior fails fast until real HTTP integration is implemented.
     """
 
+    def __init__(self, service: CityAttributesApiService | None = None) -> None:
+        """Create the city API client with a small synchronous service wrapper."""
+        self._service = service or CityAttributesApiService()
+
     def get_city(self, locode: str) -> CityData:
-        """Raise until city API integration is implemented."""
-        del locode
-        raise NotImplementedError(
-            "ApiCityDataApiClient is not implemented yet. "
-            "Set HIAP_MEED_CITY_DATA_SOURCE=mock for local runs."
-        )
+        """Fetch city context from the upstream city attributes API."""
+        return self._service.get_city(locode)
 
 
 _default_api_city_client = ApiCityDataApiClient()
@@ -265,7 +270,7 @@ _default_mock_policy_signals_client = MockPolicySignalsDataApiClient(
 
 def get_city_data_api_client() -> MockCityDataApiClient | ApiCityDataApiClient:
     """FastAPI dependency provider for city data client."""
-    source = os.getenv("HIAP_MEED_CITY_DATA_SOURCE", "mock").strip().lower()
+    source = os.getenv("HIAP_MEED_CITY_DATA_SOURCE", "api").strip().lower()
     if source == "api":
         return _default_api_city_client
 

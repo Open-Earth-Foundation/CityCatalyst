@@ -36,7 +36,10 @@ API_PORT=8000
 LOG_LEVEL=INFO
 LOG_DIR=logs
 ARTIFACT_LOG_JSONL=true
-HIAP_MEED_CITY_DATA_SOURCE=mock
+HIAP_MEED_CITY_DATA_SOURCE=api
+UPSTREAM_HTTP_TIMEOUT_SECONDS=30
+UPSTREAM_HTTP_MAX_RETRIES=2
+UPSTREAM_HTTP_RETRY_BACKOFF_SECONDS=0.5
 HIAP_MEED_LEGAL_DATA_SOURCE=mock
 HIAP_MEED_ACTION_DATA_SOURCE=mock
 HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE=mock
@@ -61,6 +64,9 @@ Variables:
 - `LOG_DIR`: output folder for file logs and request artifacts
 - `ARTIFACT_LOG_JSONL`: if `true`, writes per-request artifact files
 - `HIAP_MEED_CITY_DATA_SOURCE`: city input source (`mock` or `api`)
+- `UPSTREAM_HTTP_TIMEOUT_SECONDS`: shared timeout in seconds for upstream HTTP API calls (default `30`)
+- `UPSTREAM_HTTP_MAX_RETRIES`: shared retry count for transient upstream HTTP failures (default `2`)
+- `UPSTREAM_HTTP_RETRY_BACKOFF_SECONDS`: fixed sleep between upstream HTTP retry attempts (default `0.5`)
 - `HIAP_MEED_LEGAL_DATA_SOURCE`: legal input source (`mock` or `api`)
 - `HIAP_MEED_ACTION_DATA_SOURCE`: action catalog source (`mock` or `api`)
 - `HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE`: policy-signal input source (`mock` or `api`)
@@ -100,7 +106,7 @@ Verify the service:
 - Explanation translation endpoint: `POST /v1/explanations/translate`
 - Exclusion preview endpoint: `POST /v1/prioritize/exclusions/preview`
 
-### External API contracts (modeled, integration pending)
+### External API contracts
 
 The repository now includes explicit Pydantic contracts for upcoming request and
 upstream response integrations in `app/modules/prioritizer/models.py`.
@@ -441,7 +447,7 @@ Common validation errors:
 - Missing `requestData.cityDataList` or empty `cityDataList` -> HTTP `422`.
 - Missing `locode` or empty `locode` in a city entry -> HTTP `422`.
 
-Note: city, action, legal, and policy-signal clients now resolve to `mock` (file-backed) or `api` (placeholder until real upstream wiring is added). Default source for all four is `mock`, so local and Docker runs use checked-in mock payloads by default. Real upstream HTTP wiring is still pending; when wired, clients should use a synchronous HTTP client (e.g. `httpx.Client`). FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
+Note: city, action, legal, and policy-signal clients resolve to `mock` (file-backed) or `api`. The city client now uses a synchronous upstream HTTP integration for `GET /api/v0/city_attributes/{locode}` when `HIAP_MEED_CITY_DATA_SOURCE=api`, which is the default. That shared upstream HTTP path now includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. The action, legal, and policy-signal API clients are still placeholders, so their default source remains `mock`. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
 
 ### 5. Logging and artifacts
 
@@ -453,6 +459,8 @@ The service writes:
   - `LOG_DIR/requests/prioritization/{UTC_TIMESTAMP}Z_{internal_request_id}/`
   - `LOG_DIR/requests/exclusion_preview/{UTC_TIMESTAMP}Z_{internal_request_id}/`
   when `ARTIFACT_LOG_JSONL=true`
+
+For city fetches, the `fetch_city` step artifact now also records the upstream city endpoint details used for that request, including the resolved URL, the endpoint template, the requested locode, the HTTP status code, and upstream `meta.generated_at_utc` when present.
 
 To disable `app.log` file writes (for example, during tests), set `LOG_FILE_ENABLED=false`.
 

@@ -23,6 +23,7 @@ from app.modules.prioritizer.internal_models import (
     CityData,
     LegalRequirementRecord,
 )
+from app.services.http_client import UpstreamApiError
 
 
 @dataclass
@@ -71,6 +72,18 @@ class MockPolicySignalsDataApiClient:
         """Return policy support signals for the requested city test case."""
         del locode
         return dict(self.policy_signals_by_action_id)
+
+
+@dataclass
+class FailingCityDataApiClient:
+    """City client double that raises a structured upstream API error."""
+
+    error: UpstreamApiError
+
+    def get_city(self, locode: str) -> CityData:
+        """Raise the configured upstream API error for the requested locode."""
+        del locode
+        raise self.error
 
 
 @dataclass
@@ -156,10 +169,11 @@ def test_prioritize_rejects_invalid_weights_override(
 ) -> None:
     """Invalid `weightsOverride` values are rejected with HTTP 422."""
     city = CityData(
-        comuna_name="Santiago",
+        city_name="Santiago",
         locode="CL-SCL",
         region_name="Metropolitana",
-        comuna_code="13101",
+
+
         region_code="13",
         city_context=[],
     )
@@ -217,13 +231,139 @@ def test_prioritize_rejects_invalid_weights_override(
 
 
 @pytest.mark.integration
+def test_prioritize_returns_404_when_upstream_city_is_missing() -> None:
+    """Prioritize returns HTTP 404 when the upstream city API has no city data."""
+    mock_city_client = FailingCityDataApiClient(
+        error=UpstreamApiError(
+            status_code=404,
+            message="city attributes API call failed with upstream status 404",
+            upstream_status_code=404,
+            url="https://example.test/api/v0/city_attributes/CL-SCL",
+        )
+    )
+    mock_action_client = MockActionDataApiClient(actions=[])
+    mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post(
+                "/v1/prioritize",
+                json={
+                    "meta": {
+                        "requestId": "req-city-404",
+                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                        "backendConsumer": "hiap-meed",
+                        "upstreamProvider": "city_catalyst_frontend",
+                        "apiContext": {
+                            "endpoint": "POST /v1/prioritize",
+                            "locodes": ["CL-SCL"],
+                        },
+                        "totalRecords": 1,
+                    },
+                    "requestData": {
+                        "requestedLanguages": ["en"],
+                        "cityDataList": [
+                            {
+                                "locode": "CL-SCL",
+                                "countryCode": "CL",
+                                "populationSize": 1000,
+                                "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceCoBenefitKeys": [],
+                                "cityEmissionsData": {
+                                    "inventoryYear": None,
+                                    "gpcData": {},
+                                },
+                            }
+                        ],
+                    },
+                },
+            )
+        assert response.status_code == 404
+        assert response.json()["detail"]["request_id"] == "req-city-404"
+        assert response.json()["detail"]["upstream_status_code"] == 404
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+def test_prioritize_returns_503_for_retryable_upstream_city_failure() -> None:
+    """Prioritize returns HTTP 503 when the upstream city API is unavailable."""
+    mock_city_client = FailingCityDataApiClient(
+        error=UpstreamApiError(
+            status_code=503,
+            message="city attributes API call is temporarily unavailable",
+            url="https://example.test/api/v0/city_attributes/CL-SCL",
+        )
+    )
+    mock_action_client = MockActionDataApiClient(actions=[])
+    mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post(
+                "/v1/prioritize",
+                json={
+                    "meta": {
+                        "requestId": "req-city-503",
+                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                        "backendConsumer": "hiap-meed",
+                        "upstreamProvider": "city_catalyst_frontend",
+                        "apiContext": {
+                            "endpoint": "POST /v1/prioritize",
+                            "locodes": ["CL-SCL"],
+                        },
+                        "totalRecords": 1,
+                    },
+                    "requestData": {
+                        "requestedLanguages": ["en"],
+                        "cityDataList": [
+                            {
+                                "locode": "CL-SCL",
+                                "countryCode": "CL",
+                                "populationSize": 1000,
+                                "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceCoBenefitKeys": [],
+                                "cityEmissionsData": {
+                                    "inventoryYear": None,
+                                    "gpcData": {},
+                                },
+                            }
+                        ],
+                    },
+                },
+            )
+        assert response.status_code == 503
+        assert response.json()["detail"]["request_id"] == "req-city-503"
+        assert response.json()["detail"]["upstream_url"] == (
+            "https://example.test/api/v0/city_attributes/CL-SCL"
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
 def test_prioritize_rejects_negative_non_afolu_total_emissions() -> None:
     """Endpoint rejects negative city emissions outside AFOLU at request validation."""
     city = CityData(
-        comuna_name="Santiago",
+        city_name="Santiago",
         locode="CL-SCL",
         region_name="Metropolitana",
-        comuna_code="13101",
+
+
         region_code="13",
         city_context=[],
     )
@@ -292,10 +432,11 @@ def test_prioritize_rejects_negative_non_afolu_total_emissions() -> None:
 def test_prioritize_smoke() -> None:
     """Frontend envelope request returns deterministic ranked action IDs."""
     city = CityData(
-        comuna_name="Santiago",
+        city_name="Santiago",
         locode="CL-SCL",
         region_name="Metropolitana",
-        comuna_code="13101",
+
+
         region_code="13",
         city_context=[
             {
@@ -565,10 +706,11 @@ def test_exclusion_preview_rejects_invalid_co_benefit_key() -> None:
 def test_prioritize_honors_confirmed_excluded_action_ids() -> None:
     """Ranking endpoint removes confirmed exclusions before scoring."""
     city = CityData(
-        comuna_name="Santiago",
+        city_name="Santiago",
         locode="CL-SCL",
         region_name="Metropolitana",
-        comuna_code="13101",
+
+
         region_code="13",
         city_context=[],
     )
@@ -639,10 +781,11 @@ def test_prioritize_honors_confirmed_excluded_action_ids() -> None:
 def test_prioritize_rejects_no_preference_with_other_timeframes() -> None:
     """`no_preference` cannot be combined with explicit timeframe choices."""
     city = CityData(
-        comuna_name="Santiago",
+        city_name="Santiago",
         locode="CL-SCL",
         region_name="Metropolitana",
-        comuna_code="13101",
+
+
         region_code="13",
         city_context=[],
     )
@@ -705,10 +848,11 @@ def test_prioritize_rejects_no_preference_with_other_timeframes() -> None:
 def test_prioritize_rejects_invalid_city_preference_sector_tag() -> None:
     """Prioritize endpoint should reject unsupported preferred sector tags."""
     city = CityData(
-        comuna_name="Santiago",
+        city_name="Santiago",
         locode="CL-SCL",
         region_name="Metropolitana",
-        comuna_code="13101",
+
+
         region_code="13",
         city_context=[],
     )
@@ -768,10 +912,11 @@ def test_prioritize_rejects_invalid_city_preference_sector_tag() -> None:
 def test_prioritize_rejects_invalid_city_preference_co_benefit_key() -> None:
     """Prioritize endpoint should reject unsupported preferred co-benefit keys."""
     city = CityData(
-        comuna_name="Santiago",
+        city_name="Santiago",
         locode="CL-SCL",
         region_name="Metropolitana",
-        comuna_code="13101",
+
+
         region_code="13",
         city_context=[],
     )
@@ -831,10 +976,11 @@ def test_prioritize_rejects_invalid_city_preference_co_benefit_key() -> None:
 def test_prioritize_alignment_timeframe_multi_select_uses_best_match() -> None:
     """Multi-select timeframes use the best score, including nearest selected bucket."""
     city = CityData(
-        comuna_name="Santiago",
+        city_name="Santiago",
         locode="CL-SCL",
         region_name="Metropolitana",
-        comuna_code="13101",
+
+
         region_code="13",
         city_context=[],
     )
@@ -922,10 +1068,11 @@ def test_prioritize_alignment_timeframe_multi_select_uses_best_match() -> None:
 def test_prioritize_discards_hard_legal_mismatch() -> None:
     """Actions failing hard legal requirements are removed before ranking."""
     city = CityData(
-        comuna_name="Santiago",
+        city_name="Santiago",
         locode="CL-SCL",
         region_name="Metropolitana",
-        comuna_code="13101",
+
+
         region_code="13",
         city_context=[],
     )
@@ -1007,10 +1154,11 @@ def test_prioritize_discards_hard_legal_mismatch() -> None:
 def test_prioritize_keeps_no_evidence_hard_legal_requirements() -> None:
     """No-evidence hard requirements keep actions but expose unknown requirement evidence."""
     city = CityData(
-        comuna_name="Santiago",
+        city_name="Santiago",
         locode="CL-SCL",
         region_name="Metropolitana",
-        comuna_code="13101",
+
+
         region_code="13",
         city_context=[],
     )
@@ -1098,10 +1246,11 @@ def test_prioritize_skips_explanations_when_flag_false(
 ) -> None:
     """Request flag=false must skip explanation service invocation."""
     city = CityData(
-        comuna_name="Santiago",
+        city_name="Santiago",
         locode="CL-SCL",
         region_name="Metropolitana",
-        comuna_code="13101",
+
+
         region_code="13",
         city_context=[],
     )
@@ -1169,10 +1318,11 @@ def test_prioritize_generates_explanations_for_returned_top_n_only(
 ) -> None:
     """Explanation service receives only top-N scored actions from orchestrator."""
     city = CityData(
-        comuna_name="Santiago",
+        city_name="Santiago",
         locode="CL-SCL",
         region_name="Metropolitana",
-        comuna_code="13101",
+
+
         region_code="13",
         city_context=[],
     )
@@ -1246,10 +1396,11 @@ def test_prioritize_fails_open_when_explanation_generation_errors(
 ) -> None:
     """LLM failures should not break ranking response semantics."""
     city = CityData(
-        comuna_name="Santiago",
+        city_name="Santiago",
         locode="CL-SCL",
         region_name="Metropolitana",
-        comuna_code="13101",
+
+
         region_code="13",
         city_context=[],
     )
@@ -1316,10 +1467,11 @@ def test_prioritize_logs_non_zero_explanation_elapsed_time(
 ) -> None:
     """Explanation completion logs should report measured elapsed time."""
     city = CityData(
-        comuna_name="Santiago",
+        city_name="Santiago",
         locode="CL-SCL",
         region_name="Metropolitana",
-        comuna_code="13101",
+
+
         region_code="13",
         city_context=[],
     )
@@ -1417,10 +1569,11 @@ def test_prioritize_returns_canonical_english_and_requested_translations(
 ) -> None:
     """Prioritization should always return English plus requested translated explanations."""
     city = CityData(
-        comuna_name="Santiago",
+        city_name="Santiago",
         locode="CL-SCL",
         region_name="Metropolitana",
-        comuna_code="13101",
+
+
         region_code="13",
         city_context=[],
     )
@@ -1506,10 +1659,11 @@ def test_prioritize_reports_only_successfully_generated_languages(
 ) -> None:
     """Metadata should reflect only explanation languages present in the response."""
     city = CityData(
-        comuna_name="Santiago",
+        city_name="Santiago",
         locode="CL-SCL",
         region_name="Metropolitana",
-        comuna_code="13101",
+
+
         region_code="13",
         city_context=[],
     )
@@ -1755,3 +1909,5 @@ def test_translate_endpoint_rejects_duplicate_action_ids() -> None:
         )
 
     assert response.status_code == 422
+
+

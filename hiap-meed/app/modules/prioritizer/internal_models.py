@@ -16,19 +16,18 @@ class CityData(BaseModel):
     upstream response DTOs.
     """
 
-    comuna_name: str
+    city_name: str
     locode: str = Field(min_length=1)
     country_code: str | None = None
     region_name: str
-    comuna_code: str
     region_code: str
     population_size: int | None = None
     population_density: float | None = None
-    area: float | None = None
-    comuna: str | None = None
+    area_km2: float | None = None
     city_context: list[dict[str, Any]] = Field(default_factory=list)
     as_of: datetime | None = None
     source: str | None = None
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
     raw: dict[str, Any] = Field(default_factory=dict)
 
     @model_validator(mode="before")

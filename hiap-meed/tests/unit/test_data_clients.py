@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import httpx
 import pytest
 from pydantic import ValidationError
 
@@ -13,7 +14,9 @@ from app.modules.prioritizer.models import (
     PolicySignalByAction,
     PrioritizerApiRequest,
 )
+from app.services.http_client import UpstreamApiError, get_json_with_retries
 from app.services.data_clients import (
+    ApiCityDataApiClient,
     MockActionDataApiClient,
     MockCityDataApiClient,
     MockPolicySignalsDataApiClient,
@@ -63,22 +66,216 @@ def test_mock_city_client_loads_city_from_file() -> None:
 
     city = client.get_city("CL IQQ")
 
-    assert city.comuna_name == "Iquique"
-    assert city.region_name == "Tarapacá"
+    assert city.city_name == "Iquique"
+    assert city.region_name == "Tarapaca"
     assert city.city_context
     assert any(
         row.get("attribute_name") == "unemployment_rate" for row in city.city_context
     )
+    assert city.source_metadata["mock_file_path"].endswith("city_api_mock.json")
 
 
 @pytest.mark.unit
-def test_get_city_data_client_defaults_to_mock(monkeypatch: pytest.MonkeyPatch) -> None:
-    """City dependency provider defaults to mock data source."""
+def test_get_city_data_client_defaults_to_api(monkeypatch: pytest.MonkeyPatch) -> None:
+    """City dependency provider defaults to API data source."""
     monkeypatch.delenv("HIAP_MEED_CITY_DATA_SOURCE", raising=False)
 
     client = get_city_data_api_client()
 
-    assert isinstance(client, MockCityDataApiClient)
+    assert isinstance(client, ApiCityDataApiClient)
+
+
+@pytest.mark.unit
+def test_api_city_client_maps_remote_payload_and_metadata(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """API city client maps remote payload fields and exposes fetch metadata."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        request = httpx.Request("GET", url, headers=headers)
+        return httpx.Response(
+            200,
+            request=request,
+            json={
+                "meta": {
+                    "generated_at_utc": "2026-05-13T09:39:51.706285+00:00",
+                    "api_context": {
+                        "endpoint": "GET /api/v0/city_attributes/{locode}",
+                        "locode": "CL IQQ",
+                        "version_label": None,
+                    },
+                    "datasources": [],
+                },
+                "city": {
+                    "locode": "CL IQQ",
+                    "city_name": "Iquique",
+                    "country_code": "CL",
+                    "region_code": "CL01",
+                    "region_name": "Tarapaca",
+                    "area_km2": 2646,
+                    "population_size": 214857,
+                    "population_density": 953.69,
+                    "unemployment_rate": {
+                        "attribute_value": 9.44,
+                        "attribute_units": "percent",
+                        "attribute_category": "high",
+                        "datasource": "cl-ine-censo",
+                        "version_label": "2024",
+                    },
+                },
+            },
+        )
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    client = ApiCityDataApiClient()
+
+    city = client.get_city("CL IQQ")
+
+    assert city.city_name == "Iquique"
+    assert city.population_size == 214857
+    assert city.population_density == pytest.approx(953.69)
+    assert city.area_km2 == pytest.approx(2646)
+    assert city.source_metadata["upstream_endpoint"] == (
+        "GET /api/v0/city_attributes/{locode}"
+    )
+    assert city.source_metadata["http_status_code"] == 200
+    assert city.source_metadata["requested_locode"] == "CL IQQ"
+    assert city.source_metadata["upstream_generated_at_utc"] == (
+        "2026-05-13T09:39:51.706285+00:00"
+    )
+
+
+@pytest.mark.unit
+def test_api_city_client_rejects_incomplete_remote_payload(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """API city client fails fast when required city fields are missing upstream."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        request = httpx.Request("GET", url, headers=headers)
+        return httpx.Response(
+            200,
+            request=request,
+            json={
+                "meta": {
+                    "generated_at_utc": "2026-05-13T09:39:51.706285+00:00",
+                    "api_context": {
+                        "endpoint": "GET /api/v0/city_attributes/{locode}",
+                        "locode": "CL IQQ",
+                        "version_label": None,
+                    },
+                    "datasources": [],
+                },
+                "city": {
+                    "locode": "CL IQQ",
+                    "country_code": "CL",
+                    "region_code": "CL01",
+                    "region_name": "Tarapaca",
+                },
+            },
+        )
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    client = ApiCityDataApiClient()
+
+    with pytest.raises(ValidationError):
+        client.get_city("CL IQQ")
+
+
+@pytest.mark.unit
+def test_get_json_with_retries_retries_retryable_http_status(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Shared HTTP helper retries once for retryable upstream HTTP statuses."""
+    responses = iter(
+        [
+            httpx.Response(
+                503,
+                request=httpx.Request("GET", "https://example.test/city"),
+            ),
+            httpx.Response(
+                200,
+                request=httpx.Request("GET", "https://example.test/city"),
+                json={"ok": True},
+            ),
+        ]
+    )
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        del self, url, headers
+        return next(responses)
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    monkeypatch.setattr("time.sleep", lambda _: None)
+    monkeypatch.setenv("UPSTREAM_HTTP_MAX_RETRIES", "1")
+
+    payload, status_code = get_json_with_retries(
+        url="https://example.test/city",
+        operation_name="test upstream call",
+    )
+
+    assert payload == {"ok": True}
+    assert status_code == 200
+
+
+@pytest.mark.unit
+def test_get_json_with_retries_maps_timeout_to_504(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Shared HTTP helper maps exhausted timeouts to HTTP 504."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        del self, url, headers
+        raise httpx.ReadTimeout("timed out")
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    monkeypatch.setattr("time.sleep", lambda _: None)
+    monkeypatch.setenv("UPSTREAM_HTTP_MAX_RETRIES", "0")
+
+    with pytest.raises(UpstreamApiError) as error_info:
+        get_json_with_retries(
+            url="https://example.test/city",
+            operation_name="test upstream call",
+        )
+
+    assert error_info.value.status_code == 504
+
+
+@pytest.mark.unit
+def test_get_json_with_retries_maps_invalid_json_to_502(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Shared HTTP helper maps invalid JSON upstream payloads to HTTP 502."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        request = httpx.Request("GET", url, headers=headers)
+        return httpx.Response(
+            200,
+            request=request,
+            content=b"not-json",
+            headers={"content-type": "application/json"},
+        )
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    monkeypatch.setenv("UPSTREAM_HTTP_MAX_RETRIES", "0")
+
+    with pytest.raises(UpstreamApiError) as error_info:
+        get_json_with_retries(
+            url="https://example.test/city",
+            operation_name="test upstream call",
+        )
+
+    assert error_info.value.status_code == 502
 
 
 @pytest.mark.unit

@@ -163,6 +163,11 @@ File:
 
 - `data/mock/city_api_mock.json`
 
+Shape note:
+
+- This mock now follows the upstream `GET /api/v0/city_attributes/{locode}` schema.
+- The city payload uses snake_case names such as `city_name`, `country_code`, `population_size`, `population_density`, and `area_km2`.
+
 Fields that affect the result:
 
 - `city.unemployment_rate.attribute_category`

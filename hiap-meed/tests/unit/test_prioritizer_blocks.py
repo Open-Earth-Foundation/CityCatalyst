@@ -119,11 +119,10 @@ def test_city_api_item_ignores_legacy_indicator_names() -> None:
     """Legacy city indicator names are ignored so mismatches remain visible."""
     city = CityApiItem.model_validate(
         {
-            "comuna_name": "Iquique",
+            "city_name": "Iquique",
             "locode": "CL IQQ",
-            "countryCode": "CL",
+            "country_code": "CL",
             "region_name": "Tarapaca",
-            "comuna_code": "CL01101",
             "region_code": "CL01",
             "transport_logistics_employment": {
                 "attribute_value": 7.35,

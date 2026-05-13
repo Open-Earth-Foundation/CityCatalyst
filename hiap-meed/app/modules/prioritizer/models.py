@@ -511,16 +511,39 @@ class UpstreamApiContext(BaseModel):
 
     endpoint: str
     locode: str | None = None
+    version_label: str | None = None
 
 
 class UpstreamMeta(BaseModel):
     """Common metadata envelope returned by upstream APIs."""
 
     generated_at_utc: str
-    backend_consumer: str
-    upstream_provider: str
     api_context: UpstreamApiContext
-    total_records: int
+    backend_consumer: str | None = None
+    upstream_provider: str | None = None
+    total_records: int | None = None
+
+
+class UpstreamDatasource(BaseModel):
+    """One datasource entry attached to upstream city metadata."""
+
+    datasource_name: str
+    publisher_name: str | None = None
+    publisher_url: str | None = None
+    dataset_name: str | None = None
+    dataset_url: str | None = None
+    version_label: str | None = None
+    released_at: str | None = None
+    source_url: str | None = None
+    is_latest: bool | None = None
+
+
+class CityApiMeta(BaseModel):
+    """Exact metadata envelope returned by the upstream city attributes API."""
+
+    generated_at_utc: str
+    api_context: UpstreamApiContext
+    datasources: list[UpstreamDatasource] = Field(default_factory=list)
 
 
 class CityIndicator(BaseModel):
@@ -529,20 +552,21 @@ class CityIndicator(BaseModel):
     attribute_value: float | str | None = None
     attribute_units: str | None = None
     attribute_category: str | None = None
+    datasource: str | None = None
+    version_label: str | None = None
 
 
 class CityApiItem(BaseModel):
-    """City item shape returned by upstream `GET /v1/cities/{locode}`."""
+    """City item shape returned by upstream `GET /api/v0/city_attributes/{locode}`."""
 
-    comuna_name: str
+    city_name: str
     locode: str
-    countryCode: str | None = None
+    country_code: str | None = None
     region_name: str
-    comuna_code: str
     region_code: str
-    populationSize: int | None = None
-    populationDensity: float | None = None
-    area: float | None = None
+    population_size: int | None = None
+    population_density: float | None = None
+    area_km2: float | None = None
     unemployment_rate: CityIndicator | None = None
     renter_share: CityIndicator | None = None
     employment_in_transport_and_logistics: CityIndicator | None = None
@@ -662,16 +686,16 @@ class ActionApiItem(BaseModel):
 
 
 class CityApiResponse(BaseModel):
-    """Response model for `GET /v1/cities/{locode}`."""
+    """Response model for `GET /api/v0/city_attributes/{locode}`."""
 
-    meta: UpstreamMeta
+    meta: CityApiMeta
     city: CityApiItem
 
 
 class CitiesApiResponse(BaseModel):
     """Response model for city list endpoints."""
 
-    meta: UpstreamMeta
+    meta: CityApiMeta
     cities: list[CityApiItem] = Field(default_factory=list)
 
 

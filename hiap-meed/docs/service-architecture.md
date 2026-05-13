@@ -38,7 +38,7 @@ graph TD
     Orch -->|"getActionLegalRequirements(locode)"| LegalClient
     Orch -->|"getActionPolicySignals(locode)"| PolicyClient
 
-    CityClient -.->|"API mode (not implemented yet)"| GlobalAPI
+    CityClient -.->|"API mode: GET /api/v0/city_attributes/{locode}"| GlobalAPI
     ActionClient -.->|"API mode (not implemented yet)"| GlobalAPI
     LegalClient -.->|"API mode (not implemented yet)"| GlobalAPI
     PolicyClient -.->|"API mode (not implemented yet)"| GlobalAPI
@@ -79,12 +79,12 @@ This is the right choice as long as the orchestrator and data clients are synchr
 
 | Client                    | Method                                | Status                                                                                  | Target upstream |
 | ------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------- | --------------- |
-| City data client          | `get_city(locode)`                    | Mock/API switch (`HIAP_MEED_CITY_DATA_SOURCE`); `mock` is file-backed, `api` is placeholder and raises `NotImplementedError` | Global API (future) |
+| City data client          | `get_city(locode)`                    | Mock/API switch (`HIAP_MEED_CITY_DATA_SOURCE`); `mock` is file-backed, `api` performs synchronous HTTP GET `/api/v0/city_attributes/{locode}` | `ccglobal.openearth.dev` city attributes API |
 | Action data client        | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_DATA_SOURCE`); `mock` is file-backed, `api` is placeholder and raises `NotImplementedError` | Global API (future) |
 | Legal data client         | `get_action_legal_requirements(locode)` | Mock/API switch (`HIAP_MEED_LEGAL_DATA_SOURCE`); `mock` is file-backed, `api` is placeholder and raises `NotImplementedError` | Global API (future) |
 | Policy signals data client | `get_action_policy_signals(locode)`    | Mock/API switch (`HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE`); `mock` is file-backed, `api` is placeholder and raises `NotImplementedError` | Global API (future) |
 
-Clients are injected via FastAPI's `Depends()` pattern. Mock clients are active by default; API clients are scaffolds for future HTTP integration.
+Clients are injected via FastAPI's `Depends()` pattern. The city client defaults to the live city attributes API, while the action, legal, and policy clients still default to checked-in mock payloads.
 
 ---
 

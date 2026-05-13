@@ -142,6 +142,17 @@ def test_prioritize_e2e_with_mock_api_payloads(
         assert response_summary_payload["event_type"] == "response_summary.completed"
         assert response_summary_payload["step_name"] == "response_summary"
 
+        fetch_city_files = [
+            file_name for file_name in generated_files if file_name.endswith("_fetch_city.json")
+        ]
+        assert len(fetch_city_files) == 1
+        fetch_city_payload = json.loads(
+            (run_dir / fetch_city_files[0]).read_text("utf-8")
+        )["payload"]
+        assert fetch_city_payload["city_name"] == "Iquique"
+        assert fetch_city_payload["source"] == "mock_city_api"
+        assert fetch_city_payload["source_metadata"]["requested_locode"] == "CL IQQ"
+
         response_full_payload = json.loads(
             (run_dir / "response_full.json").read_text("utf-8")
         )

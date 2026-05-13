@@ -117,8 +117,8 @@ def _build_evidence_summary(
             "matched_city_subsector_keys_count": int(
                 impact_evidence.get("matched_city_subsector_keys_count", 0)
             ),
-            "emissions_reduction_share_of_city_total": _safe_float(
-                impact_evidence.get("emissions_reduction_share_of_city_total")
+            "emissions_reduction_component_score": _safe_float(
+                impact_evidence.get("emissions_reduction_component_score")
             ),
             "timeline_component_score": _safe_float(
                 impact_evidence.get("timeline_component_score")

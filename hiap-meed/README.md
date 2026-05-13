@@ -195,6 +195,10 @@ Impact block behavior (implemented):
 - `coBenefits[*]` now only carry co-benefit impact metadata (`impact_numeric`, optional relationship/text/methodology). They do not carry sector or GPC targeting fields.
 - `ACTIVITY_DATA_LEVEL_MAPPING=false` keeps the new true subsector matching path.
 - `ACTIVITY_DATA_LEVEL_MAPPING=true` calls the current activity-data stub, logs `not implemented`, and still returns the same subsector-level result.
+- Negative `V.*` AFOLU inventory values remain valid request data, but Impact does not treat them as reducible emissions.
+  - Matching for Impact uses strictly positive city emissions only.
+  - The reduction-share denominator also uses strictly positive city emissions only.
+  - This is an intentional product rule so Impact stays in `0..1` and measures reducible emissions rather than existing removals.
 - Impact computes canonical score as:
   - `0.80 * reduction_share_of_city_emissions + 0.20 * timeline_score`
   - Timeline mapping: `<5 years -> 1.0`, `5-10 years -> 0.5`, `>10 years -> 0.0`, missing or unknown timeline `-> 0.5`

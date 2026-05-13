@@ -269,7 +269,7 @@ def preview_exclusions(
     response_model=PrioritizerApiResponse,
     summary="Run action prioritization synchronously",
     description=(
-        "Ranks actions for one or more cities from the frontend request envelope. "
+        "Ranks actions for one or more cities from the caller request envelope. "
         "When `createExplanations=true`, the backend first generates canonical "
         "English explanations and then translates them into any additionally "
         "requested languages."
@@ -300,7 +300,7 @@ def prioritize(
     ),
 ) -> PrioritizerApiResponse:
     """
-    Prioritize actions from the CityCatalyst frontend request envelope.
+    Prioritize actions from the caller request envelope.
 
     This endpoint is synchronous because the orchestrator and data clients
     are synchronous; FastAPI runs sync routes in a threadpool to avoid

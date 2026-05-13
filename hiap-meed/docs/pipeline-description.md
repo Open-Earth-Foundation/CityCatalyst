@@ -37,7 +37,7 @@ Its job is to take raw exclusion preferences such as:
 
 and turn them into a reviewable list of proposed excluded actions.
 
-The user or frontend is then expected to decide which proposed exclusions should actually be confirmed.
+The user or current caller frontend is then expected to decide which proposed exclusions should actually be confirmed.
 
 ### API 2: ranking
 
@@ -58,7 +58,7 @@ There is no automatic state-sharing between the two calls. They are separate req
 
 ## 1. Data Sources That Influence the Result
 
-The current implementation combines one frontend request with several supporting data files.
+The current implementation combines one caller-provided request with several supporting data files.
 
 This section lists the fields that truly affect:
 
@@ -106,7 +106,7 @@ Validation rules:
   - `stakeholder_engagement`
   - `water_quality`
 
-### Frontend request
+### Caller request
 
 File:
 
@@ -271,7 +271,7 @@ For one city, the service now works in this order:
 2. Review the proposed exclusions.
 3. Call the ranking endpoint with confirmed `excludedActionIds[]`.
 4. Read the requested number of results (`topN`) and the final scoring weights.
-5. Build city emissions totals from the frontend request.
+5. Build city emissions totals from the caller request.
 6. Load city context, actions, legal requirements, and policy signals.
 7. Apply the Hard Filter to remove confirmed exclusions and legally blocked actions.
 8. Score the remaining actions for Impact.
@@ -361,7 +361,7 @@ This block does not give a numeric score. Its role is simply to decide which act
 
 ### 4.1 Inputs
 
-From the frontend request:
+From the caller request:
 
 - `requestData.cityDataList[].excludedActionIds[]`
 
@@ -499,7 +499,7 @@ Score semantics used in this document:
 
 ### 5.1 Inputs
 
-From the frontend request:
+From the caller request:
 
 - `requestData.cityDataList[].cityEmissionsData.gpcData.<reference>.activities[].totalEmissions`
 
@@ -553,10 +553,16 @@ If the impact label is unknown:
 
 For each action, the pipeline:
 
-- finds which of the action's subsector keys also exist in the city's emissions data,
+- finds which of the action's subsector keys also have strictly positive emissions in the city's emissions data,
 - takes the city total for each matching subsector,
 - multiplies those totals by the action's impact multiplier,
 - and adds the results together.
+
+Important product rule:
+
+- Negative `V.*` AFOLU inventory values remain valid request data because they are real city removals.
+- But Impact does not treat those negative values as reducible emissions.
+- So negative or zero-emissions subsectors do not count as Impact matches and do not contribute to the reduction amount.
 
 Plain-language formula:
 
@@ -576,10 +582,15 @@ Plain-language formula:
 Reduction share of city emissions
 = estimated reduction amount
   divided by
-  total city emissions across all categories
+  total reducible positive city emissions across all subsectors
 ```
 
-If the city has zero total emissions in the request:
+Important product rule:
+
+- The denominator uses strictly positive city emissions only.
+- Existing negative AFOLU removals are kept in the request data for validation and traceability, but they are excluded from reducible-emissions scoring.
+
+If the city has zero reducible emissions in the request:
 
 - the reduction share is set to `0`.
 
@@ -635,7 +646,7 @@ Key evidence fields:
 - `matched_city_subsector_keys`
 - `total_city_emissions`
 - `total_reduction_amount`
-- `reduction_share_of_city_emissions`
+- `emissions_reduction_component_score`
 - `impact_block_score`
 - `subsector_contributors`
 
@@ -652,7 +663,7 @@ In the current implementation, this score is driven by:
 
 ### 6.1 Inputs
 
-From the frontend request:
+From the caller request:
 
 - `requestData.cityDataList[].cityStrategicPreferenceSectors[]`
 - `requestData.cityDataList[].cityStrategicPreferenceTimeframes[]`

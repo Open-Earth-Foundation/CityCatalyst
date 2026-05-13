@@ -1,6 +1,6 @@
 # Service Architecture
 
-This document describes how `hiap-meed` fits into the wider CityCatalyst system and how a prioritization request flows through the service.
+This document describes how `hiap-meed` fits into the current caller setup and how a prioritization request flows through the service.
 
 ---
 
@@ -8,7 +8,7 @@ This document describes how `hiap-meed` fits into the wider CityCatalyst system 
 
 ```mermaid
 graph TD
-    CC["CityCatalyst (frontend / caller)"]
+    FE["External hiap-meed frontend / caller"]
 
     subgraph hiap-meed ["hiap-meed (FastAPI service)"]
         Router["POST /v1/prioritize (sync route → threadpool)"]
@@ -30,7 +30,7 @@ graph TD
 
     GlobalAPI["Global API (future upstream integration)"]
 
-    CC -->|"POST /v1/prioritize JSON body: PrioritizerApiRequest (meta + requestData.cityDataList)"| Router
+    FE -->|"POST /v1/prioritize JSON body: PrioritizerApiRequest (meta + requestData.cityDataList)"| Router
     Router --> Orch
 
     Orch -->|"getCityContext(locode)"| CityClient
@@ -62,7 +62,7 @@ graph TD
     Feas --> WS
 
     WS -->|"PrioritizationResponse (per city: ranked_action_ids + ranked_actions + metadata)"| Router
-    Router -->|"JSON response PrioritizerApiResponse (results[])"| CC
+    Router -->|"JSON response PrioritizerApiResponse (results[])"| FE
 ```
 
 ---
@@ -92,19 +92,19 @@ Clients are injected via FastAPI's `Depends()` pattern. Mock clients are active 
 
 ```mermaid
 sequenceDiagram
-    participant CC as CityCatalyst
+    participant FE as External hiap-meed frontend
     participant API as hiap-meed FastAPI
     participant Orch as Orchestrator
     participant Clients as Data clients (mock by default)
 
-    CC->>API: POST /v1/prioritize PrioritizerApiRequest (meta + requestData.cityDataList)
+    FE->>API: POST /v1/prioritize PrioritizerApiRequest (meta + requestData.cityDataList)
     Note over API: FastAPI validates request body (Pydantic)
     API->>Orch: run_prioritization(locode, city_emissions_context, clients, per_city_options...)
     Orch->>Clients: get_city / list_actions / get_action_legal_requirements / get_action_policy_signals
     Clients-->>Orch: CityData / Action[] / legal requirements / policy signals
     Note over Orch: Hard Filter -> Impact -> Alignment -> Feasibility -> Weighted Sum
     Orch-->>API: PrioritizationResponse (per city)
-    API-->>CC: 200 PrioritizerApiResponse (results[])
+    API-->>FE: 200 PrioritizerApiResponse (results[])
 ```
 
 ---

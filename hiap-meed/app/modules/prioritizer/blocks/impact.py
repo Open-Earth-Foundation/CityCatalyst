@@ -8,7 +8,7 @@ Plain-language approach:
 - Keep a guarded placeholder for future activity-data-level refinement.
 
 Final score formula per action:
-- `impact_block_score = (reduction_weight * emissions_reduction_share_of_city_total)`
+- `impact_block_score = (reduction_weight * emissions_reduction_component_score)`
 - `+ (timeline_weight * timeline_component_score)`
 """
 
@@ -94,15 +94,10 @@ def _has_matchable_city_emissions(
     """
     Return whether the city inventory has a matchable emissions value for one key.
 
-    General rule:
-    - non-AFOLU subsectors must be strictly positive
-
-    AFOLU exception:
-    - `V.*` may legitimately be negative under GPC, so any non-zero value counts
+    Impact only scores reducible emissions. Negative AFOLU removals remain valid
+    inventory data, but they are not treated as reducible emissions for matching.
     """
     emissions_value = city_emissions_by_subsector_key.get(sector_subsector_key, 0.0)
-    if sector_subsector_key.startswith("V."):
-        return emissions_value != 0.0
     return emissions_value > 0.0
 
 
@@ -236,7 +231,11 @@ def run(actions: list[Action], city_emissions_context: CityEmissionsContext) -> 
     score_by_action_id: dict[str, float] = {}
     evidence_by_action_id: dict[str, dict[str, object]] = {}
     city_emissions_by_subsector_key = city_emissions_context.emissions_by_subsector_key
-    total_city_emissions = sum(city_emissions_by_subsector_key.values())
+    total_city_emissions = sum(
+        emissions_value
+        for emissions_value in city_emissions_by_subsector_key.values()
+        if emissions_value > 0.0
+    )
     activity_data_level_mapping_enabled = is_activity_data_level_mapping_enabled()
 
     prepared_actions: dict[str, dict[str, object]] = {}
@@ -387,7 +386,7 @@ def run(actions: list[Action], city_emissions_context: CityEmissionsContext) -> 
             "matched_city_subsector_keys": matched_city_subsector_keys,
             "total_city_emissions": total_city_emissions,
             "total_reduction_amount": total_reduction_amount,
-            "emissions_reduction_share_of_city_total": reduction_share_of_city_emissions,
+            "emissions_reduction_component_score": reduction_share_of_city_emissions,
             "timeline_component_score": timeline_score,
             "emissions_reduction_contribution": reduction_component_contribution,
             "timeline_contribution": timeline_component_contribution,

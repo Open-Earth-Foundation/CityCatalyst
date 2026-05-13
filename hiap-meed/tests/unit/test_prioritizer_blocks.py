@@ -186,7 +186,7 @@ def test_impact_block_with_mock_api_data() -> None:
     assert first_action_evidence["action_subsector_keys"] == ["I.1"]
     assert first_action_evidence["matched_city_subsector_keys_count"] == 1
     assert first_action_evidence["matched_city_subsector_keys"] == ["I.1"]
-    assert first_action_evidence["emissions_reduction_share_of_city_total"] > 0.0
+    assert first_action_evidence["emissions_reduction_component_score"] > 0.0
     assert first_action_evidence["impact_block_score"] == pytest.approx(
         result.score_by_action_id["c40_0010"]
     )
@@ -379,8 +379,8 @@ def test_impact_block_zero_emissions_subsector_does_not_count_as_match() -> None
 
 
 @pytest.mark.unit
-def test_impact_block_afolu_negative_emissions_still_count_as_match() -> None:
-    """Impact should treat negative AFOLU inventory values as matchable."""
+def test_impact_block_afolu_negative_emissions_do_not_count_as_match() -> None:
+    """Impact should not match AFOLU removals because they are not reducible emissions."""
     result = impact.run(
         actions=[
             Action(
@@ -402,8 +402,41 @@ def test_impact_block_afolu_negative_emissions_still_count_as_match() -> None:
     )
 
     evidence = result.evidence_by_action_id["A_afolu_negative"]
+    assert evidence["matched_city_subsector_keys_count"] == 0
+    assert evidence["matched_city_subsector_keys"] == []
+    assert evidence["total_reduction_amount"] == 0.0
+    assert evidence["emissions_reduction_component_score"] == 0.0
+
+
+@pytest.mark.unit
+def test_impact_block_mixed_sign_inventory_stays_within_zero_to_one() -> None:
+    """Impact should normalize against reducible positive emissions only."""
+    result = impact.run(
+        actions=[
+            Action(
+                action_id="A_positive_inventory",
+                action_name="Positive inventory action",
+                implementation_timeline="<5 years",
+                emissions={
+                    "sector_number": "I",
+                    "subsector_number": [1],
+                    "gpc_reference_number": ["I.1"],
+                    "impact_text": "high",
+                },
+            )
+        ],
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"I.1": 100.0, "V.2": -50.0},
+            activity_rows=[],
+        ),
+    )
+
+    evidence = result.evidence_by_action_id["A_positive_inventory"]
     assert evidence["matched_city_subsector_keys_count"] == 1
-    assert evidence["matched_city_subsector_keys"] == ["V.2"]
+    assert evidence["matched_city_subsector_keys"] == ["I.1"]
+    assert evidence["total_city_emissions"] == pytest.approx(100.0)
+    assert evidence["emissions_reduction_component_score"] == pytest.approx(0.8)
+    assert evidence["impact_block_score"] == pytest.approx(0.84)
 
 
 @pytest.mark.unit

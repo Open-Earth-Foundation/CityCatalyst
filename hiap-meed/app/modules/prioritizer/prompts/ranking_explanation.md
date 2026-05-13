@@ -64,7 +64,7 @@ Output rules:
   "explanations": [
     {{
       "action_id": "c40_0010",
-      "explanation": "This action ranks highly because the evidence shows strong expected impact and clear alignment with the city's stated priorities. The payload also indicates supportive policy context and feasible implementation conditions, which strengthen its position."
+      "explanation": "This action ranks highly because it combines strong expected impact with a good fit for the city's stated priorities. It also looks more feasible to move forward than lower-ranked actions."
     }}
   ]
 }}

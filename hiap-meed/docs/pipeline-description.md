@@ -37,7 +37,7 @@ Its job is to take raw exclusion preferences such as:
 
 and turn them into a reviewable list of proposed excluded actions.
 
-The user or frontend is then expected to decide which proposed exclusions should actually be confirmed.
+The user or current caller frontend is then expected to decide which proposed exclusions should actually be confirmed.
 
 ### API 2: ranking
 
@@ -58,7 +58,7 @@ There is no automatic state-sharing between the two calls. They are separate req
 
 ## 1. Data Sources That Influence the Result
 
-The current implementation combines one frontend request with several supporting data files.
+The current implementation combines one caller-provided request with several supporting data files.
 
 This section lists the fields that truly affect:
 
@@ -106,7 +106,7 @@ Validation rules:
   - `stakeholder_engagement`
   - `water_quality`
 
-### Frontend request
+### Caller request
 
 File:
 
@@ -122,6 +122,7 @@ Fields that affect the result:
 - `requestData.cityDataList[].cityStrategicPreferenceSectors[]`
 - `requestData.cityDataList[].cityStrategicPreferenceTimeframes[]`
 - `requestData.cityDataList[].cityStrategicPreferenceCoBenefitKeys[]`
+- `requestData.cityDataList[].cityEmissionsData.gpcData.<reference>.activities[].activityType`
 - `requestData.cityDataList[].cityEmissionsData.gpcData.<reference>.activities[].totalEmissions`
 
 What these are used for:
@@ -193,8 +194,10 @@ Fields that affect the result:
 - `actions[].actionCategory`
 - `actions[].actionSubcategory`
 - `actions[].coBenefits`
+- `actions[].activity_type_description`
 - `actions[].timelineForImplementation`
 - `actions[].emissions.sector_number`
+- `actions[].emissions.subsector_number[]`
 - `actions[].emissions.gpc_reference_number[]`
 - `actions[].emissions.impact_text`
 - `actions[].socioeconomicIndicators[].indicator_key`
@@ -213,9 +216,12 @@ What these are used for:
   - action subcategory
 - Action descriptions are shortened to about `200` characters for that prompt.
 - `coBenefits` are used by exclusion preview and by the Alignment block's other-preference scoring.
+- `coBenefits[*]` only need co-benefit impact metadata (`impact_numeric`, plus optional relationship/text/methodology); they do not use sector, subsector, or GPC reference fields.
+- `activity_type_description` is stored now for a future guarded activity-data-level mapping step in Impact.
 - `timelineForImplementation` affects the Impact score and also the Alignment timeframe-preference component.
 - `emissions.sector_number` affects exclusion preview and the Alignment score.
-- `emissions.gpc_reference_number[]` links each action to city emissions categories.
+- `emissions.subsector_number[]` defines the active true subsector join used by Impact.
+- `emissions.gpc_reference_number[]` remains reference data and is also used to keep the mock catalog consistent.
 - `emissions.impact_text` gives the action's expected strength of emissions reduction.
 - `socioeconomicIndicators[]` define how the action should be judged against city conditions in the Feasibility block.
 
@@ -265,7 +271,7 @@ For one city, the service now works in this order:
 2. Review the proposed exclusions.
 3. Call the ranking endpoint with confirmed `excludedActionIds[]`.
 4. Read the requested number of results (`topN`) and the final scoring weights.
-5. Build city emissions totals from the frontend request.
+5. Build city emissions totals from the caller request.
 6. Load city context, actions, legal requirements, and policy signals.
 7. Apply the Hard Filter to remove confirmed exclusions and legally blocked actions.
 8. Score the remaining actions for Impact.
@@ -355,7 +361,7 @@ This block does not give a numeric score. Its role is simply to decide which act
 
 ### 4.1 Inputs
 
-From the frontend request:
+From the caller request:
 
 - `requestData.cityDataList[].excludedActionIds[]`
 
@@ -493,7 +499,7 @@ Score semantics used in this document:
 
 ### 5.1 Inputs
 
-From the frontend request:
+From the caller request:
 
 - `requestData.cityDataList[].cityEmissionsData.gpcData.<reference>.activities[].totalEmissions`
 
@@ -501,22 +507,29 @@ From the action catalog:
 
 - `actions[].actionId`
 - `actions[].timelineForImplementation`
+- `actions[].emissions.sector_number`
+- `actions[].emissions.subsector_number[]`
 - `actions[].emissions.gpc_reference_number[]`
 - `actions[].emissions.impact_text`
+- `actions[].activity_type_description`
 
 ### 5.2 Logic
 
-#### Part A: identify which city emissions categories the action targets
+#### Part A: identify which true subsector keys the action targets
 
 The pipeline reads:
 
-- `actions[].emissions.gpc_reference_number[]`
+- `actions[].emissions.sector_number`
+- `actions[].emissions.subsector_number[]`
 
-These are the emissions categories that the action claims to influence.
+These define the active `sector.subsector` keys that the action claims to influence.
 
-If the same category appears more than once:
+Examples:
 
-- duplicates are removed before scoring.
+- `sector_number="I"` and `subsector_number=[1]` -> `I.1`
+- `sector_number="V"` and `subsector_number=[1, 2]` -> `V.1`, `V.2`
+
+`gpc_reference_number[]` remains in the payload as reference data, but it is no longer the active Impact join key.
 
 #### Part B: translate impact strength from words into numbers
 
@@ -540,17 +553,23 @@ If the impact label is unknown:
 
 For each action, the pipeline:
 
-- finds which of the action's emissions categories also exist in the city's emissions data,
-- takes the city total for each matching category,
+- finds which of the action's subsector keys also have strictly positive emissions in the city's emissions data,
+- takes the city total for each matching subsector,
 - multiplies those totals by the action's impact multiplier,
 - and adds the results together.
+
+Important product rule:
+
+- Negative `V.*` AFOLU inventory values remain valid request data because they are real city removals.
+- But Impact does not treat those negative values as reducible emissions.
+- So negative or zero-emissions subsectors do not count as Impact matches and do not contribute to the reduction amount.
 
 Plain-language formula:
 
 ```text
 Estimated reduction amount for one action
 = sum of:
-    city emissions in each matched category
+    city emissions in each matched subsector
     multiplied by
     the action's impact multiplier
 ```
@@ -563,10 +582,15 @@ Plain-language formula:
 Reduction share of city emissions
 = estimated reduction amount
   divided by
-  total city emissions across all categories
+  total reducible positive city emissions across all subsectors
 ```
 
-If the city has zero total emissions in the request:
+Important product rule:
+
+- The denominator uses strictly positive city emissions only.
+- Existing negative AFOLU removals are kept in the request data for validation and traceability, but they are excluded from reducible-emissions scoring.
+
+If the city has zero reducible emissions in the request:
 
 - the reduction share is set to `0`.
 
@@ -613,18 +637,18 @@ Main output:
 
 Key evidence fields:
 
-- `action_gpc_refs`
+- `action_subsector_keys`
 - `impact_text`
 - `reduction_multiplier`
 - `timeline_bucket`
 - `timeline_score`
-- `matched_city_gpc_refs_count`
-- `matched_city_gpc_refs`
+- `matched_city_subsector_keys_count`
+- `matched_city_subsector_keys`
 - `total_city_emissions`
 - `total_reduction_amount`
-- `reduction_share_of_city_emissions`
+- `emissions_reduction_component_score`
 - `impact_block_score`
-- `gpc_contributors`
+- `subsector_contributors`
 
 ## 6. Alignment Block
 
@@ -639,7 +663,7 @@ In the current implementation, this score is driven by:
 
 ### 6.1 Inputs
 
-From the frontend request:
+From the caller request:
 
 - `requestData.cityDataList[].cityStrategicPreferenceSectors[]`
 - `requestData.cityDataList[].cityStrategicPreferenceTimeframes[]`
@@ -1214,3 +1238,8 @@ So the final ranking is not one black-box judgment. It is a step-by-step combina
 - rule-based filtering,
 - structured block-level scoring,
 - and one final weighted ranking calculation.
+Implementation note:
+
+- The request now preserves `activities[].activityType` rows and action `activity_type_description`.
+- `ACTIVITY_DATA_LEVEL_MAPPING=false` keeps true subsector-only matching.
+- `ACTIVITY_DATA_LEVEL_MAPPING=true` calls a stub that logs `not implemented` and returns the same subsector-level matches for now.

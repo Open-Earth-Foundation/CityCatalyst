@@ -41,6 +41,7 @@ HIAP_MEED_LEGAL_DATA_SOURCE=mock
 HIAP_MEED_ACTION_DATA_SOURCE=mock
 HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE=mock
 HIAP_MEED_TOP_N=20
+ACTIVITY_DATA_LEVEL_MAPPING=false
 HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL=
 HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED=false
 HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL=
@@ -64,6 +65,7 @@ Variables:
 - `HIAP_MEED_ACTION_DATA_SOURCE`: action catalog source (`mock` or `api`)
 - `HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE`: policy-signal input source (`mock` or `api`)
 - `HIAP_MEED_TOP_N`: default number of ranked actions to return per city (default `20`)
+- `ACTIVITY_DATA_LEVEL_MAPPING`: guarded future Impact mapping switch; `false` keeps true subsector-only matching, `true` calls the current stub and still returns subsector-only results
 - `HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL`: OpenAI model used only by the deprecated legacy free-text co-benefit mapping helper
 - `HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED`: if `true`, the exclusion preview endpoint calls OpenAI to resolve clear free-text action exclusions
 - `HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL`: OpenAI model used for preview free-text action exclusion matching
@@ -181,11 +183,22 @@ Score normalization policy:
 Impact block behavior (implemented):
 
 - Impact reads action emissions targeting from `emissions`, including:
+  - `sector_number`
+  - `subsector_number` (**list** of subsector integers, even when only one subsector is covered)
   - `gpc_reference_number` (**list** of GPC refs in the mock/API schema)
   - `impact_text` (`very low`, `low`, `medium`, `high`, `very high`)
 - Impact reads city emissions from the frontend request:
+  - `requestData.cityDataList[].cityEmissionsData.gpcData[*].activities[*].activityType`
   - `requestData.cityDataList[].cityEmissionsData.gpcData[*].activities[*].totalEmissions`
-  - The service sums activity emissions per GPC key before scoring.
+  - The service normalizes each outer GPC key to `sector.subsector` and sums activity emissions at that true subsector level before scoring.
+- `gpc_reference_number` remains stored as passive reference data, but the active Impact join now uses `sector_number + subsector_number[]`.
+- `coBenefits[*]` now only carry co-benefit impact metadata (`impact_numeric`, optional relationship/text/methodology). They do not carry sector or GPC targeting fields.
+- `ACTIVITY_DATA_LEVEL_MAPPING=false` keeps the new true subsector matching path.
+- `ACTIVITY_DATA_LEVEL_MAPPING=true` calls the current activity-data stub, logs `not implemented`, and still returns the same subsector-level result.
+- Negative `V.*` AFOLU inventory values remain valid request data, but Impact does not treat them as reducible emissions.
+  - Matching for Impact uses strictly positive city emissions only.
+  - The reduction-share denominator also uses strictly positive city emissions only.
+  - This is an intentional product rule so Impact stays in `0..1` and measures reducible emissions rather than existing removals.
 - Impact computes canonical score as:
   - `0.80 * reduction_share_of_city_emissions + 0.20 * timeline_score`
   - Timeline mapping: `<5 years -> 1.0`, `5-10 years -> 0.5`, `>10 years -> 0.0`, missing or unknown timeline `-> 0.5`
@@ -383,7 +396,7 @@ Example response:
           "evidence_summary": {
             "impact": {
               "impact_block_score": 0.88,
-              "matched_city_gpc_refs_count": 2
+              "matched_city_subsector_keys_count": 1
             }
           },
           "explanations": {}
@@ -455,6 +468,7 @@ What each request run folder contains:
 
 - `summary.jsonl`: one JSON line per high-level pipeline event for that request
 - `NNN_<step>.json`: concise per-step detail files (fetch, filter, score, response summary)
+- Impact step details include true subsector matching diagnostics plus the `ACTIVITY_DATA_LEVEL_MAPPING` flag/stub metadata.
 - `response_full.json`: full API response payload for that request
 - `input_snapshot.json`: reproducibility-critical request inputs
 - `manifest.json`: run-level index of generated files, key counts, and pointers for top-ranked rows vs full evidence files

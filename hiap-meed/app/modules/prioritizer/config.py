@@ -218,6 +218,12 @@ def get_explanation_translations_model() -> str | None:
     return normalized
 
 
+def is_activity_data_level_mapping_enabled() -> bool:
+    """Return feature switch for the future activity-data-level matching stage."""
+    raw_value = os.getenv("ACTIVITY_DATA_LEVEL_MAPPING")
+    return parse_bool_env(raw_value, default=False)
+
+
 def is_free_text_exclusion_resolution_enabled() -> bool:
     """Return feature switch for preview-time LLM exclusion resolution."""
     raw_value = os.getenv("HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED")

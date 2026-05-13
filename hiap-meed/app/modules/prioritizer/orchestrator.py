@@ -13,7 +13,7 @@ from app.modules.prioritizer.blocks import (
     impact,
 )
 from app.modules.prioritizer.config import validate_weights
-from app.modules.prioritizer.internal_models import Action
+from app.modules.prioritizer.internal_models import Action, CityEmissionsContext
 from app.modules.prioritizer.models import PrioritizationResponse, RankedActionResult
 from app.modules.prioritizer.services.explanations import generate_explanations
 from app.modules.prioritizer.services.translation import translate_explanations
@@ -114,11 +114,11 @@ def _build_evidence_summary(
             "impact_block_score": _safe_float(
                 impact_evidence.get("impact_block_score")
             ),
-            "matched_city_gpc_refs_count": int(
-                impact_evidence.get("matched_city_gpc_refs_count", 0)
+            "matched_city_subsector_keys_count": int(
+                impact_evidence.get("matched_city_subsector_keys_count", 0)
             ),
-            "emissions_reduction_share_of_city_total": _safe_float(
-                impact_evidence.get("emissions_reduction_share_of_city_total")
+            "emissions_reduction_component_score": _safe_float(
+                impact_evidence.get("emissions_reduction_component_score")
             ),
             "timeline_component_score": _safe_float(
                 impact_evidence.get("timeline_component_score")
@@ -209,7 +209,7 @@ def run_prioritization(
     city_preference_sectors: list[str],
     city_preference_timeframes: list[str],
     city_preference_co_benefit_keys: list[str],
-    city_emissions_by_gpc_ref: dict[str, float],
+    city_emissions_context: CityEmissionsContext,
     internal_request_id: UUID,
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient,
     action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient,
@@ -421,7 +421,12 @@ def run_prioritization(
             requested_languages
         ),
         "resolved_weights": weights,
-        "city_emissions_by_gpc_ref": city_emissions_by_gpc_ref,
+        "city_emissions_by_subsector_key": (
+            city_emissions_context.emissions_by_subsector_key
+        ),
+        "city_activity_rows": [
+            row.model_dump(mode="json") for row in city_emissions_context.activity_rows
+        ],
         "city_preference_sectors": city_preference_sectors,
         "city_preference_timeframes": city_preference_timeframes,
         "city_preference_co_benefit_keys": city_preference_co_benefit_keys,
@@ -506,7 +511,7 @@ def run_prioritization(
     with time_block("impact") as block:
         impact_result = impact.run(
             hard_filter_result.valid_actions,
-            city_emissions_by_gpc_ref=city_emissions_by_gpc_ref,
+            city_emissions_context=city_emissions_context,
         )
     # Emit impact score stats and detailed evidence artifacts.
     timings["impact"] = block.elapsed_seconds
@@ -519,6 +524,7 @@ def run_prioritization(
         "impact",
         {
             **_score_stats(impact_result.score_by_action_id),
+            "impact_matching": dict(impact_result.metadata),
             "evidence_by_action_id": _all_block_evidence(
                 impact_result.evidence_by_action_id
             ),

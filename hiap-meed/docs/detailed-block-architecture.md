@@ -29,7 +29,7 @@ Biome filtering is intentionally not included yet.
 - **All mitigation actions**
   - Source: `Action` (core actions list)
 - **Confirmed city exclusions**
-  - Source: frontend request `excludedActionIds[]`, usually confirmed after `POST /v1/prioritize/exclusions/preview`
+  - Source: caller request `excludedActionIds[]`, usually confirmed after `POST /v1/prioritize/exclusions/preview`
   - Current behavior: each matching `action_id` is discarded before legal filtering
 - **Hard legal requirements per action**
   - Source: legal requirements client payload (mock/API), filtered to hard strengths (`mandatory|required`)
@@ -81,7 +81,7 @@ It combines:
 ### Inputs (and where they come from)
 
 - City emissions, activity-level
-  - Source: frontend request `requestData.cityDataList[].cityEmissionsData.gpcData[*].activities[*].totalEmissions`
+  - Source: caller request `requestData.cityDataList[].cityEmissionsData.gpcData[*].activities[*].totalEmissions`
 - Action to activity targeting (`gpc_ref` mapping)
   - Source: `Action.emissions`
 - Reduction potential band
@@ -96,7 +96,7 @@ It combines:
 - Impact scores per action
   - Output: `Impact Scores` (one score per action, used in final ranking)
 - Optional trace fields
-  - Output: `Impact Evidence` (top contributing activities and multipliers)
+  - Output: `Impact Evidence` (top contributing subsectors and multipliers)
 
 Canonical score policy:
 
@@ -104,11 +104,15 @@ Canonical score policy:
 - Canonical score formula:
   - `IMPACT_SCORE = (IMPACT_WEIGHT_REDUCTION_SHARE * reduction_component) + (IMPACT_WEIGHT_TIMELINE * timeline_component)`
 - No run-relative max-normalization is applied.
+- Negative `V.*` AFOLU inventory values remain valid input data, but Impact only scores reducible emissions.
+  - Subsector matching for Impact uses strictly positive city emissions only.
+  - The reduction denominator also sums strictly positive city emissions only.
+  - This is intentional: existing removals are treated as valid inventory context, not as emissions that an action can reduce further.
 
 Current implementation detail:
 
 - `impact_block_score = (0.80 × reduction_share_of_city_emissions) + (0.20 × timeline_score)`
-- `reduction_share_of_city_emissions` is computed from matched action `gpc_reference_number` keys only.
+- `reduction_share_of_city_emissions` is computed from matched action `sector.subsector` keys.
 
 ```mermaid
 graph TD
@@ -158,13 +162,13 @@ Exclusions are handled in the Hard Filter stage, so Alignment only scores eligib
 - Policy support score and signals
   - Source: `actions_policy_signals_api_mock.json` (`policy_support_score`, `policy_signals[]`)
 - City strategic preference sectors
-  - Source: frontend request `cityStrategicPreferenceSectors`
+  - Source: caller request `cityStrategicPreferenceSectors`
 - City strategic preference timeframes
-  - Source: frontend request `cityStrategicPreferenceTimeframes`
+  - Source: caller request `cityStrategicPreferenceTimeframes`
 - Action implementation timeline
   - Source: `Action.timelineForImplementation`
 - City strategic preference co-benefit keys
-  - Source: frontend request `cityStrategicPreferenceCoBenefitKeys`, validated against the allowed co-benefit taxonomy
+  - Source: caller request `cityStrategicPreferenceCoBenefitKeys`, validated against the allowed co-benefit taxonomy
 - Action sector mapping for city preference overlap
   - Source: `Action.emissions["sector_number"]`
 - Candidate actions (already hard-filtered)

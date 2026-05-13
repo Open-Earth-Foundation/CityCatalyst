@@ -154,3 +154,72 @@ def test_prioritize_e2e_with_mock_api_payloads(
         )
     finally:
         app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+def test_prioritize_e2e_stubbed_activity_mapping_matches_disabled_mode(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Stub-enabled activity mapping should preserve the same prioritization output."""
+    artifact_log_dir = tmp_path / "logs"
+    monkeypatch.setenv("LOG_DIR", str(artifact_log_dir))
+    monkeypatch.setenv("ARTIFACT_LOG_JSONL", "true")
+
+    mock_data_dir = _mock_data_dir()
+    request_payload = json.loads(
+        (mock_data_dir / "prioritizer_request_mock.json").read_text(encoding="utf-8")
+    )
+    request_payload["requestData"]["createExplanations"] = False
+
+    mock_city_client = MockCityDataApiClient(mock_file_path=mock_data_dir / "city_api_mock.json")
+    mock_action_client = MockActionDataApiClient(
+        mock_file_path=mock_data_dir / "actions_api_mock.json"
+    )
+    mock_legal_client = MockLegalDataApiClient(
+        mock_file_path=mock_data_dir / "actions_legal_api_mock.json"
+    )
+    mock_policy_client = MockPolicySignalsDataApiClient(
+        mock_file_path=mock_data_dir / "actions_policy_signals_api_mock.json"
+    )
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
+    try:
+        with TestClient(app) as test_client:
+            monkeypatch.setenv("ACTIVITY_DATA_LEVEL_MAPPING", "false")
+            disabled_response = test_client.post("/v1/prioritize", json=request_payload)
+            monkeypatch.setenv("ACTIVITY_DATA_LEVEL_MAPPING", "true")
+            enabled_response = test_client.post("/v1/prioritize", json=request_payload)
+
+        assert disabled_response.status_code == 200
+        assert enabled_response.status_code == 200
+        assert enabled_response.json()["results"][0]["ranked_action_ids"] == (
+            disabled_response.json()["results"][0]["ranked_action_ids"]
+        )
+        assert enabled_response.json()["results"][0]["ranked_actions"] == (
+            disabled_response.json()["results"][0]["ranked_actions"]
+        )
+
+        request_runs = sorted((artifact_log_dir / "requests" / "prioritization").glob("*"))
+        assert len(request_runs) == 2
+        enabled_internal_request_id = enabled_response.json()["results"][0]["metadata"][
+            "internal_request_id"
+        ]
+        enabled_run_dir = next(
+            run_dir
+            for run_dir in request_runs
+            if enabled_internal_request_id in run_dir.name
+        )
+        impact_detail_file = sorted(enabled_run_dir.glob("*_impact.json"))[-1]
+        impact_payload = json.loads(impact_detail_file.read_text("utf-8"))["payload"]
+        assert impact_payload["impact_matching"]["stub_invoked"] is True
+        assert (
+            impact_payload["impact_matching"]["activity_data_level_mapping_enabled"]
+            is True
+        )
+    finally:
+        app.dependency_overrides.clear()

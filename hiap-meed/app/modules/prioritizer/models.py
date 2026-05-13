@@ -32,7 +32,7 @@ def _validate_allowed_string_list(
     return normalized_values
 
 # ============================================================================
-# FRONTEND REQUEST ENVELOPE MODELS (CityCatalyst -> hiap-meed)
+# CALLER REQUEST ENVELOPE MODELS (external frontend or upstream caller -> hiap-meed)
 # ----------------------------------------------------------------------------
 # Composition:
 # - PrioritizerApiRequest
@@ -47,9 +47,9 @@ def _validate_allowed_string_list(
 
 
 class FrontendApiContext(BaseModel):
-    """Frontend request API context metadata."""
+    """Caller request API context metadata."""
 
-    endpoint: str = Field(description="Frontend route that originated the request.")
+    endpoint: str = Field(description="Caller route or endpoint that originated the request.")
     locodes: list[str] = Field(
         default_factory=list,
         description="One or more UN/LOCODE values included in the request context.",
@@ -57,11 +57,11 @@ class FrontendApiContext(BaseModel):
 
 
 class FrontendRequestMeta(BaseModel):
-    """Metadata envelope for prioritizer requests sent by CityCatalyst."""
+    """Metadata envelope for prioritizer requests sent by the current caller."""
 
-    requestId: str = Field(description="Frontend-generated request identifier.")
+    requestId: str = Field(description="Caller-generated request identifier.")
     generatedAtUtc: str = Field(
-        description="Frontend timestamp for when the request envelope was created."
+        description="Caller timestamp for when the request envelope was created."
     )
     backendConsumer: str = Field(
         description="Backend service expected to consume this request."
@@ -70,7 +70,7 @@ class FrontendRequestMeta(BaseModel):
         description="Originating frontend or upstream caller name."
     )
     apiContext: FrontendApiContext = Field(
-        description="Lightweight frontend route context for observability."
+        description="Lightweight caller route context for observability."
     )
     totalRecords: int = Field(description="Number of city records carried in the request.")
 
@@ -78,7 +78,7 @@ class FrontendRequestMeta(BaseModel):
 class GpcActivity(BaseModel):
     """Single activity record for one GPC key."""
 
-    activityName: str
+    activityType: str | None = None
     totalEmissions: float | None = None
     totalEmissionsUnit: str | None = None
     activityValue: float | None = None
@@ -95,7 +95,7 @@ class GpcDataEntry(BaseModel):
 
 
 class FrontendCityEmissionsData(BaseModel):
-    """City emissions payload provided by frontend request."""
+    """City emissions payload provided by the caller request."""
 
     inventoryYear: int | None = Field(
         default=None,
@@ -105,6 +105,31 @@ class FrontendCityEmissionsData(BaseModel):
         default_factory=dict,
         description="City emissions keyed by GPC reference number.",
     )
+
+    @model_validator(mode="after")
+    def _validate_total_emissions_signs(self) -> FrontendCityEmissionsData:
+        """
+        Enforce GPC emissions sign rules on frontend activity rows.
+
+        General rule:
+        - non-AFOLU GPC keys may be zero or positive only
+
+        AFOLU exception:
+        - `V.*` may be negative, zero, or positive
+        """
+        for gpc_reference_number, gpc_entry in self.gpcData.items():
+            is_afolu = gpc_reference_number.startswith("V.")
+            for activity_index, activity in enumerate(gpc_entry.activities):
+                if activity.totalEmissions is None:
+                    continue
+                if activity.totalEmissions < 0 and not is_afolu:
+                    raise ValueError(
+                        "cityEmissionsData.gpcData contains negative totalEmissions "
+                        "outside AFOLU; only `V.*` may be negative "
+                        f"(gpc_reference_number={gpc_reference_number}, "
+                        f"activity_index={activity_index})"
+                    )
+        return self
 
 
 class FrontendCityInput(BaseModel):
@@ -118,7 +143,7 @@ class FrontendCityInput(BaseModel):
     )
     populationSize: int | None = Field(
         default=None,
-        description="Optional frontend-supplied population override for the city.",
+        description="Optional caller-supplied population override for the city.",
     )
     excludedActionIds: list[str] = Field(
         default_factory=list,
@@ -143,7 +168,7 @@ class FrontendCityInput(BaseModel):
         description="Selected co-benefit keys the city wants to prioritize.",
     )
     cityEmissionsData: FrontendCityEmissionsData = Field(
-        description="Frontend-supplied city emissions payload used by impact scoring."
+        description="Caller-supplied city emissions payload used by impact scoring."
     )
 
     @field_validator("cityStrategicPreferenceSectors")
@@ -182,7 +207,7 @@ class FrontendCityInput(BaseModel):
 
         normalized_preferences: list[str] = []
         for item in value:
-            # Keep frontend-provided values as-is so unexpected spellings,
+            # Keep caller-provided values as-is so unexpected spellings,
             # casing, or whitespace are rejected by the Literal validator.
             if item != "":
                 normalized_preferences.append(str(item))
@@ -209,7 +234,7 @@ class FrontendCityInput(BaseModel):
 
 
 class PrioritizerRequestData(BaseModel):
-    """RequestData section of frontend prioritizer request payload."""
+    """RequestData section of the caller prioritizer request payload."""
 
     requestedLanguages: list[str] = Field(
         default_factory=lambda: ["en"],
@@ -247,16 +272,16 @@ class PrioritizerRequestData(BaseModel):
 
 
 class PrioritizerApiRequest(BaseModel):
-    """Frontend -> hiap-meed request envelope for single or multi-city prioritization."""
+    """Caller -> hiap-meed request envelope for single or multi-city prioritization."""
 
-    meta: FrontendRequestMeta = Field(description="Frontend request metadata envelope.")
+    meta: FrontendRequestMeta = Field(description="Caller request metadata envelope.")
     requestData: PrioritizerRequestData = Field(
         description="Prioritization request payload."
     )
 
 
 # ============================================================================
-# EXPLANATION TRANSLATION REQUEST/RESPONSE MODELS (CityCatalyst -> hiap-meed)
+# EXPLANATION TRANSLATION REQUEST/RESPONSE MODELS (caller -> hiap-meed)
 # ----------------------------------------------------------------------------
 # Composition:
 # - ExplanationTranslationApiRequest
@@ -348,16 +373,16 @@ class ExplanationTranslationRequestData(BaseModel):
 
 
 class ExplanationTranslationApiRequest(BaseModel):
-    """Frontend -> hiap-meed request envelope for stateless explanation translation."""
+    """Caller -> hiap-meed request envelope for stateless explanation translation."""
 
-    meta: FrontendRequestMeta = Field(description="Frontend request metadata envelope.")
+    meta: FrontendRequestMeta = Field(description="Caller request metadata envelope.")
     requestData: ExplanationTranslationRequestData = Field(
         description="Explanation translation request payload."
     )
 
 
 # ============================================================================
-# EXCLUSION PREVIEW REQUEST/RESPONSE MODELS (CityCatalyst -> hiap-meed)
+# EXCLUSION PREVIEW REQUEST/RESPONSE MODELS (caller -> hiap-meed)
 # ----------------------------------------------------------------------------
 # Composition:
 # - ExclusionPreviewApiRequest
@@ -409,7 +434,7 @@ class ExclusionPreviewRequestData(BaseModel):
 
 
 class ExclusionPreviewApiRequest(BaseModel):
-    """Frontend -> hiap-meed request envelope for exclusion preview."""
+    """Caller -> hiap-meed request envelope for exclusion preview."""
 
     meta: FrontendRequestMeta
     requestData: ExclusionPreviewRequestData
@@ -432,7 +457,7 @@ class ExclusionSummaryReasonGroup(BaseModel):
 
 
 class ExclusionSummary(BaseModel):
-    """Summary of proposed exclusions grouped for frontend review."""
+    """Summary of proposed exclusions grouped for caller review."""
 
     totalProposed: int = 0
     byReasonType: dict[str, ExclusionSummaryReasonGroup] = Field(default_factory=dict)
@@ -468,7 +493,7 @@ class ExclusionPreviewApiResponse(BaseModel):
 #   - meta: UpstreamMeta
 #   - actions: list[ActionApiItem]
 #     - emissions: ActionImpactEntry
-#     - coBenefits: dict[str, ActionImpactEntry]
+#     - coBenefits: dict[str, ActionCoBenefitEntry]
 #     - socioeconomicIndicators: list[ActionSocioeconomicIndicatorRule]
 # - ActionsPolicySignalsApiResponse
 #   - meta: UpstreamMeta
@@ -533,8 +558,30 @@ class ActionImpactEntry(BaseModel):
     """Single impact entry (emissions or co-benefit category) for one action."""
 
     sector_number: str
-    subsector_number: int
+    subsector_number: list[int] = Field(min_length=1)
     gpc_reference_number: list[str]
+    impact_relationship: str | None = None
+    impact_text: str | None = None
+    impact_numeric: int | None = None
+    methodology: str | None = None
+
+    @field_validator("subsector_number")
+    @classmethod
+    def _validate_subsector_number_list(cls, value: list[int]) -> list[int]:
+        """Ensure subsector_number uses a deduplicated positive integer list."""
+        deduplicated_values = list(dict.fromkeys(value))
+        invalid_values = [item for item in deduplicated_values if item <= 0]
+        if invalid_values:
+            raise ValueError(
+                "subsector_number must contain only positive integers, "
+                f"got invalid values {invalid_values}"
+        )
+        return deduplicated_values
+
+
+class ActionCoBenefitEntry(BaseModel):
+    """Single co-benefit entry for one action."""
+
     impact_relationship: str | None = None
     impact_text: str | None = None
     impact_numeric: int | None = None
@@ -572,12 +619,13 @@ class ActionApiItem(BaseModel):
 
     actionId: str
     actionName: str
+    activity_type_description: str | None = None
     description: str | None = None
     actionCategory: str | None = None
     actionSubcategory: str | None = None
     costInvestmentNeeded: str | None = None
     timelineForImplementation: str | None = None
-    coBenefits: dict[str, ActionImpactEntry] = Field(default_factory=dict)
+    coBenefits: dict[str, ActionCoBenefitEntry] = Field(default_factory=dict)
     emissions: ActionImpactEntry | None = None
     socioeconomicIndicators: list[ActionSocioeconomicIndicatorRule] = Field(
         default_factory=list
@@ -772,7 +820,7 @@ class PrioritizerApiCityResult(BaseModel):
 
 
 class PrioritizerApiResponse(BaseModel):
-    """Top-level response for the frontend prioritization request envelope."""
+    """Top-level response for the caller prioritization request envelope."""
 
     results: list[PrioritizerApiCityResult] = Field(
         default_factory=list,

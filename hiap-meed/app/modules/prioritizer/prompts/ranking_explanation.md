@@ -7,13 +7,17 @@ Write one short explanation for each ranked action using only the provided evide
 
 Apply these rules:
 - Use only evidence present in the input payload.
-- Explain why the action is placed at its rank in plain language.
+- Explain why the action is placed at its rank in plain language for a non-technical city user.
+- Focus on the biggest ranking drivers, especially the provided `main_strengths` and `main_constraints`.
 - Highlight impact, alignment, and feasibility drivers when the evidence supports them.
 - Briefly acknowledge any listed `known_limitations` without adding speculation.
 - Write every explanation in English.
 - Do not mention raw numeric scores, equations, decimals, or hidden scoring logic.
 - Do not invent city preferences, legal constraints, policy support, or implementation facts that are not present.
+- Do not infer extra benefits or implementation facts from the action ID or action theme alone.
+- Avoid meta phrases like `the evidence shows`, `the payload indicates`, `mixed profile`, or `grounded in`.
 - Keep each explanation to 2-4 concise sentences.
+- Prefer one or two main reasons over a long list of minor details.
 - Preserve stable ordering by returning one row per input action.
 </task>
 
@@ -24,12 +28,13 @@ Input is a rendered prompt context with:
 - `city_preference_co_benefit_keys` (list[string]): City-selected preferred co-benefit keys.
 - `ranked_actions_json` (list[object]): Ranked action evidence payload. Each object includes:
   - `action_id` (string): Stable action identifier.
-  - `action_name` (string): Human-readable action name.
   - `rank` (integer): Final rank position.
   - `score_bands` (object): Qualitative score bands for `final`, `impact`, `alignment`, and `feasibility`.
   - `impact_signals` (object): Qualitative impact evidence.
   - `alignment_signals` (object): Qualitative alignment evidence.
   - `feasibility_signals` (object): Qualitative feasibility evidence.
+  - `main_strengths` (list[string]): Main reasons the action ranked well.
+  - `main_constraints` (list[string]): Main reasons the action did not rank higher.
   - `known_limitations` (list[string]): Known evidence limitations that may need brief acknowledgement.
 
 Runtime values:
@@ -59,7 +64,7 @@ Output rules:
   "explanations": [
     {{
       "action_id": "c40_0010",
-      "explanation": "This action ranks highly because the evidence shows strong expected impact and clear alignment with the city's stated priorities. The payload also indicates supportive policy context and feasible implementation conditions, which strengthen its position."
+      "explanation": "This action ranks highly because it combines strong expected impact with a good fit for the city's stated priorities. It also looks more feasible to move forward than lower-ranked actions."
     }}
   ]
 }}

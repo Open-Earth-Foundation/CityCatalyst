@@ -67,6 +67,7 @@ class Action(BaseModel):
     action_id: str = Field(min_length=1)
     action_name: str
     action_type: str | None = None
+    activity_type_description: str | None = None
     description: str | None = None
     action_category: str | None = None
     action_subcategory: str | None = None
@@ -86,6 +87,28 @@ class BlockScoreResult(BaseModel):
 
     score_by_action_id: dict[str, float] = Field(default_factory=dict)
     evidence_by_action_id: dict[str, dict[str, object]] | None = None
+    metadata: dict[str, object] = Field(default_factory=dict)
+
+
+class CityActivityRow(BaseModel):
+    """Normalized city activity row retained for future activity-data matching."""
+
+    gpc_reference_number: str = Field(min_length=1)
+    sector_subsector_key: str = Field(min_length=3)
+    activity_type: str | None = None
+    activity_value: float | None = None
+    activity_unit: str | None = None
+    total_emissions: float | None = None
+    total_emissions_unit: str | None = None
+    data_source: str | None = None
+    notation_key: str | None = None
+
+
+class CityEmissionsContext(BaseModel):
+    """Normalized city emissions inputs used by the Impact block."""
+
+    emissions_by_subsector_key: dict[str, float] = Field(default_factory=dict)
+    activity_rows: list[CityActivityRow] = Field(default_factory=list)
 
 
 class HardFilterResult(BaseModel):

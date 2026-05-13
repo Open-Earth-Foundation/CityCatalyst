@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from app.modules.prioritizer.api import _extract_city_emissions_context
 from app.modules.prioritizer.blocks import (
     alignment,
     feasibility,
@@ -14,8 +15,12 @@ from app.modules.prioritizer.blocks import (
     hard_filter,
     impact,
 )
-from app.modules.prioritizer.internal_models import Action, CityData
-from app.modules.prioritizer.models import CityApiItem
+from app.modules.prioritizer.internal_models import (
+    Action,
+    CityData,
+    CityEmissionsContext,
+)
+from app.modules.prioritizer.models import CityApiItem, FrontendCityInput
 from app.services.data_clients import (
     MockActionDataApiClient,
     MockCityDataApiClient,
@@ -61,21 +66,15 @@ def _load_mock_policy_signals() -> dict[str, object]:
     return policy_client.get_action_policy_signals(locode="CL IQQ")
 
 
-def _load_city_emissions_by_gpc_ref() -> dict[str, float]:
-    """Return city emissions totals per GPC key from frontend request mock payload."""
+def _load_city_emissions_context() -> CityEmissionsContext:
+    """Return normalized city emissions context from the frontend request mock payload."""
     request_payload = json.loads(
         (_mock_data_dir() / "prioritizer_request_mock.json").read_text(encoding="utf-8")
     )
-    city_input = request_payload["requestData"]["cityDataList"][0]
-    gpc_data = city_input["cityEmissionsData"]["gpcData"]
-
-    emissions_by_gpc_ref: dict[str, float] = {}
-    for gpc_ref, gpc_entry in gpc_data.items():
-        activities = gpc_entry.get("activities", [])
-        emissions_by_gpc_ref[gpc_ref] = sum(
-            activity.get("totalEmissions") or 0.0 for activity in activities
-        )
-    return emissions_by_gpc_ref
+    city_input = FrontendCityInput.model_validate(
+        request_payload["requestData"]["cityDataList"][0]
+    )
+    return _extract_city_emissions_context(city_input)
 
 
 def _alignment_timeframe_evidence(
@@ -169,23 +168,25 @@ def test_hard_filter_block_with_mock_api_data() -> None:
 def test_impact_block_with_mock_api_data() -> None:
     """Impact block emits canonical weighted-sum scores and explainability evidence."""
     actions = _load_mock_actions()
-    city_emissions_by_gpc_ref = _load_city_emissions_by_gpc_ref()
+    city_emissions_context = _load_city_emissions_context()
 
     result = impact.run(
         actions=actions,
-        city_emissions_by_gpc_ref=city_emissions_by_gpc_ref,
+        city_emissions_context=city_emissions_context,
     )
 
     assert len(result.score_by_action_id) == len(actions)
     assert all(0.0 <= score <= 1.0 for score in result.score_by_action_id.values())
     assert result.evidence_by_action_id is not None
+    assert result.metadata["matching_mode"] == "subsector_only"
 
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
     assert first_action_evidence["has_emissions_entry"] is True
-    assert first_action_evidence["has_any_action_gpc_ref"] is True
-    assert first_action_evidence["action_gpc_refs"] == ["I.1.1", "I.1.2"]
-    assert first_action_evidence["matched_city_gpc_refs_count"] == 2
-    assert first_action_evidence["emissions_reduction_share_of_city_total"] > 0.0
+    assert first_action_evidence["has_any_action_subsector_key"] is True
+    assert first_action_evidence["action_subsector_keys"] == ["I.1"]
+    assert first_action_evidence["matched_city_subsector_keys_count"] == 1
+    assert first_action_evidence["matched_city_subsector_keys"] == ["I.1"]
+    assert first_action_evidence["emissions_reduction_component_score"] > 0.0
     assert first_action_evidence["impact_block_score"] == pytest.approx(
         result.score_by_action_id["c40_0010"]
     )
@@ -204,14 +205,21 @@ def test_impact_block_rejects_unknown_impact_text_band() -> None:
             action_name="Unknown impact text action",
             implementation_timeline="<5 years",
             emissions={
+                "sector_number": "I",
+                "subsector_number": [1],
                 "gpc_reference_number": ["I.1.1"],
                 "impact_text": "extreme",
             },
         )
     ]
-
     with pytest.raises(ValueError, match="Unknown mitigation impact_text value"):
-        impact.run(actions=actions, city_emissions_by_gpc_ref={"I.1.1": 100.0})
+        impact.run(
+            actions=actions,
+            city_emissions_context=CityEmissionsContext(
+                emissions_by_subsector_key={"I.1": 100.0},
+                activity_rows=[],
+            ),
+        )
 
 
 @pytest.mark.unit
@@ -223,6 +231,8 @@ def test_impact_block_ranks_higher_emissions_target_above_lower_target() -> None
             action_name="Targets high emissions",
             implementation_timeline="<5 years",
             emissions={
+                "sector_number": "I",
+                "subsector_number": [1],
                 "gpc_reference_number": ["I.1.1"],
                 "impact_text": "medium",
             },
@@ -232,6 +242,8 @@ def test_impact_block_ranks_higher_emissions_target_above_lower_target() -> None
             action_name="Targets low emissions",
             implementation_timeline="<5 years",
             emissions={
+                "sector_number": "II",
+                "subsector_number": [1],
                 "gpc_reference_number": ["II.1.1"],
                 "impact_text": "medium",
             },
@@ -240,33 +252,13 @@ def test_impact_block_ranks_higher_emissions_target_above_lower_target() -> None
 
     result = impact.run(
         actions=actions,
-        city_emissions_by_gpc_ref={"I.1.1": 1_000.0, "II.1.1": 100.0},
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"I.1": 1_000.0, "II.1": 100.0},
+            activity_rows=[],
+        ),
     )
 
     assert result.score_by_action_id["A_high"] > result.score_by_action_id["A_low"]
-
-
-@pytest.mark.unit
-def test_impact_block_accepts_gpc_reference_number_list_shape() -> None:
-    """Impact block accepts the mock schema where gpc_reference_number is a list."""
-    action = Action(
-        action_id="A_refs",
-        action_name="Action with repeated refs",
-        implementation_timeline="5-10 years",
-        emissions={
-            "gpc_reference_number": ["I.1.1", "I.1.1", "I.1.2"],
-            "impact_text": "low",
-        },
-    )
-
-    result = impact.run(
-        actions=[action],
-        city_emissions_by_gpc_ref={"I.1.1": 10.0, "I.1.2": 5.0},
-    )
-
-    evidence = result.evidence_by_action_id["A_refs"]
-    assert evidence["action_gpc_refs"] == ["I.1.1", "I.1.2"]
-    assert evidence["matched_city_gpc_refs_count"] == 2
 
 
 @pytest.mark.unit
@@ -278,6 +270,8 @@ def test_impact_block_timeline_mapping_prefers_faster_implementation() -> None:
             action_name="Fast timeline",
             implementation_timeline="<5 years",
             emissions={
+                "sector_number": "I",
+                "subsector_number": [1],
                 "gpc_reference_number": ["I.1.1"],
                 "impact_text": "high",
             },
@@ -287,6 +281,8 @@ def test_impact_block_timeline_mapping_prefers_faster_implementation() -> None:
             action_name="Slow timeline",
             implementation_timeline=">10 years",
             emissions={
+                "sector_number": "I",
+                "subsector_number": [1],
                 "gpc_reference_number": ["I.1.1"],
                 "impact_text": "high",
             },
@@ -295,7 +291,10 @@ def test_impact_block_timeline_mapping_prefers_faster_implementation() -> None:
 
     result = impact.run(
         actions=actions,
-        city_emissions_by_gpc_ref={"I.1.1": 100.0},
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"I.1": 100.0},
+            activity_rows=[],
+        ),
     )
     assert (
         result.evidence_by_action_id["A_fast"]["timeline_component_score"]
@@ -314,18 +313,187 @@ def test_impact_block_missing_timeline_is_neutral_not_punitive() -> None:
                 action_name="Missing timeline",
                 implementation_timeline=None,
                 emissions={
+                    "sector_number": "I",
+                    "subsector_number": [1],
                     "gpc_reference_number": ["I.1.1"],
                     "impact_text": "high",
                 },
             )
         ],
-        city_emissions_by_gpc_ref={"I.1.1": 100.0},
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"I.1": 100.0},
+            activity_rows=[],
+        ),
     )
 
     evidence = result.evidence_by_action_id["A_missing_timeline"]
     assert evidence["timeline_bucket_known"] is False
     assert evidence["timeline_component_score"] == pytest.approx(0.5)
     assert evidence["timeline_score"] == pytest.approx(0.5)
+
+
+@pytest.mark.unit
+def test_city_emissions_context_normalizes_to_true_subsector_keys() -> None:
+    """Frontend city emissions are aggregated to `sector.subsector` join keys."""
+    city_emissions_context = _load_city_emissions_context()
+
+    assert city_emissions_context.emissions_by_subsector_key["I.1"] == pytest.approx(
+        599.532 + 818452.245 + 42200.983 + 2955600.0 + 1438300.0 + 3524785.0
+    )
+    assert city_emissions_context.emissions_by_subsector_key["II.1"] == pytest.approx(
+        1943.87 + 24808.289 + 836.075
+    )
+    assert city_emissions_context.emissions_by_subsector_key["IV.1"] == pytest.approx(
+        28588.499 + 69.867
+    )
+
+
+@pytest.mark.unit
+def test_impact_block_zero_emissions_subsector_does_not_count_as_match() -> None:
+    """Impact should not match zero-emissions subsectors."""
+    result = impact.run(
+        actions=[
+            Action(
+                action_id="A_zero_bucket",
+                action_name="Zero-emissions bucket action",
+                implementation_timeline="<5 years",
+                emissions={
+                    "sector_number": "III",
+                    "subsector_number": [1],
+                    "gpc_reference_number": ["III.1.1"],
+                    "impact_text": "high",
+                },
+            )
+        ],
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"III.1": 0.0},
+            activity_rows=[],
+        ),
+    )
+
+    evidence = result.evidence_by_action_id["A_zero_bucket"]
+    assert evidence["matched_city_subsector_keys_count"] == 0
+    assert evidence["matched_city_subsector_keys"] == []
+    assert evidence["total_reduction_amount"] == 0.0
+    assert evidence["subsector_contributors"] == []
+
+
+@pytest.mark.unit
+def test_impact_block_afolu_negative_emissions_do_not_count_as_match() -> None:
+    """Impact should not match AFOLU removals because they are not reducible emissions."""
+    result = impact.run(
+        actions=[
+            Action(
+                action_id="A_afolu_negative",
+                action_name="AFOLU removals action",
+                implementation_timeline="<5 years",
+                emissions={
+                    "sector_number": "V",
+                    "subsector_number": [2],
+                    "gpc_reference_number": ["V.2"],
+                    "impact_text": "high",
+                },
+            )
+        ],
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"V.2": -50.0},
+            activity_rows=[],
+        ),
+    )
+
+    evidence = result.evidence_by_action_id["A_afolu_negative"]
+    assert evidence["matched_city_subsector_keys_count"] == 0
+    assert evidence["matched_city_subsector_keys"] == []
+    assert evidence["total_reduction_amount"] == 0.0
+    assert evidence["emissions_reduction_component_score"] == 0.0
+
+
+@pytest.mark.unit
+def test_impact_block_mixed_sign_inventory_stays_within_zero_to_one() -> None:
+    """Impact should normalize against reducible positive emissions only."""
+    result = impact.run(
+        actions=[
+            Action(
+                action_id="A_positive_inventory",
+                action_name="Positive inventory action",
+                implementation_timeline="<5 years",
+                emissions={
+                    "sector_number": "I",
+                    "subsector_number": [1],
+                    "gpc_reference_number": ["I.1"],
+                    "impact_text": "high",
+                },
+            )
+        ],
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"I.1": 100.0, "V.2": -50.0},
+            activity_rows=[],
+        ),
+    )
+
+    evidence = result.evidence_by_action_id["A_positive_inventory"]
+    assert evidence["matched_city_subsector_keys_count"] == 1
+    assert evidence["matched_city_subsector_keys"] == ["I.1"]
+    assert evidence["total_city_emissions"] == pytest.approx(100.0)
+    assert evidence["emissions_reduction_component_score"] == pytest.approx(0.8)
+    assert evidence["impact_block_score"] == pytest.approx(0.84)
+
+
+@pytest.mark.unit
+def test_impact_block_non_afolu_negative_emissions_do_not_count_as_match() -> None:
+    """Impact should not match negative inventory values outside AFOLU."""
+    result = impact.run(
+        actions=[
+            Action(
+                action_id="A_non_afolu_negative",
+                action_name="Non-AFOLU negative bucket action",
+                implementation_timeline="<5 years",
+                emissions={
+                    "sector_number": "III",
+                    "subsector_number": [1],
+                    "gpc_reference_number": ["III.1.1"],
+                    "impact_text": "high",
+                },
+            )
+        ],
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"III.1": -50.0},
+            activity_rows=[],
+        ),
+    )
+
+    evidence = result.evidence_by_action_id["A_non_afolu_negative"]
+    assert evidence["matched_city_subsector_keys_count"] == 0
+    assert evidence["matched_city_subsector_keys"] == []
+
+
+@pytest.mark.unit
+def test_impact_block_stubbed_activity_mapping_keeps_same_scores(
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Enabling the stubbed activity-data mapping should not change Impact output."""
+    actions = _load_mock_actions()
+    city_emissions_context = _load_city_emissions_context()
+
+    with caplog.at_level("WARNING", logger="app.modules.prioritizer.blocks.impact"):
+        disabled_result = impact.run(
+            actions=actions,
+            city_emissions_context=city_emissions_context,
+        )
+        monkeypatch.setenv("ACTIVITY_DATA_LEVEL_MAPPING", "true")
+        enabled_result = impact.run(
+            actions=actions,
+            city_emissions_context=city_emissions_context,
+        )
+
+    assert enabled_result.score_by_action_id == disabled_result.score_by_action_id
+    assert enabled_result.metadata["activity_data_level_mapping_enabled"] is True
+    assert enabled_result.metadata["stub_invoked"] is True
+    assert any(
+        "not implemented" in warning
+        for warning in enabled_result.metadata["warnings"]
+    )
 
 
 @pytest.mark.unit

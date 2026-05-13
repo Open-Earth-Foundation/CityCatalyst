@@ -1,4 +1,4 @@
-{
+﻿{
   "meta": {
     "generated_at_utc": "2026-02-26T11:38:45.183100+00:00",
     "backend_consumer": "hiap-meed",
@@ -29,8 +29,8 @@
       "region_name": "Tarapacá",
       "comuna_code": "CL01101",
       "region_code": "CL01",
-      "populationSize": 214857,
-      "populationDensity": 953.69,
+      "population_size": 214857,
+      "population_density": 953.69,
       "area": 225,
       "unemployment_rate": {
         "attribute_value": 9.44,
@@ -85,8 +85,8 @@
       "region_name": "Tarapacá",
       "comuna_code": "CL01107",
       "region_code": "CL01",
-      "populationSize": 128312,
-      "populationDensity": 224.67,
+      "population_size": 128312,
+      "population_density": 224.67,
       "area": 571,
       "electricity_access": {
         "attribute_value": 100.0,
@@ -141,8 +141,8 @@
       "region_name": "Tarapacá",
       "comuna_code": "CL01402",
       "region_code": "CL01",
-      "populationSize": 1298,
-      "populationDensity": 0.9,
+      "population_size": 1298,
+      "population_density": 0.9,
       "area": 1437,
       "industry_construction_employment": {
         "attribute_value": 0.0,
@@ -192,8 +192,8 @@
       "region_name": "Tarapacá",
       "comuna_code": "CL01403",
       "region_code": "CL01",
-      "populationSize": 1728,
-      "populationDensity": 0.11,
+      "population_size": 1728,
+      "population_density": 0.11,
       "area": 15855,
       "public_transport_share": {
         "attribute_value": 31.84,
@@ -223,8 +223,8 @@
       "region_name": "Tarapacá",
       "comuna_code": "CL01404",
       "region_code": "CL01",
-      "populationSize": 3127,
-      "populationDensity": 0.03,
+      "population_size": 3127,
+      "population_density": 0.03,
       "area": 105061,
       "median_household_income": {
         "attribute_value": 1200000.0,
@@ -279,8 +279,8 @@
       "region_name": "Tarapacá",
       "comuna_code": "CL01405",
       "region_code": "CL01",
-      "populationSize": 10450,
-      "populationDensity": 1.16,
+      "population_size": 10450,
+      "population_density": 1.16,
       "area": 8989,
       "transport_logistics_employment": {
         "attribute_value": 0.0,
@@ -335,8 +335,8 @@
       "region_name": "Antofagasta",
       "comuna_code": "CL02101",
       "region_code": "CL02",
-      "populationSize": 105093,
-      "populationDensity": 180.11,
+      "population_size": 105093,
+      "population_density": 180.11,
       "area": 590,
       "home_ownership": {
         "attribute_value": 40.09,
@@ -391,8 +391,8 @@
       "region_name": "Antofagasta",
       "comuna_code": "CL02102",
       "region_code": "CL02",
-      "populationSize": 12954,
-      "populationDensity": 3.44,
+      "population_size": 12954,
+      "population_density": 3.44,
       "area": 3768,
       "unemployment_rate": {
         "attribute_value": 9.26,
@@ -447,8 +447,8 @@
       "region_name": "Antofagasta",
       "comuna_code": "CL02103",
       "region_code": "CL02",
-      "populationSize": 1867,
-      "populationDensity": 0.15,
+      "population_size": 1867,
+      "population_density": 0.15,
       "area": 12467,
       "public_transport_share": {
         "attribute_value": 34.19,
@@ -478,8 +478,8 @@
       "region_name": "Antofagasta",
       "comuna_code": "CL02104",
       "region_code": "CL02",
-      "populationSize": 13602,
-      "populationDensity": 0.66,
+      "population_size": 13602,
+      "population_density": 0.66,
       "area": 20405,
       "poverty_rate": {
         "attribute_value": 19.53,
@@ -534,8 +534,8 @@
       "region_name": "Arica y Parinacota",
       "comuna_code": "CL15101",
       "region_code": "CL15",
-      "populationSize": 247552,
-      "populationDensity": 515.73,
+      "population_size": 247552,
+      "population_density": 515.73,
       "area": 480,
       "industry_construction_employment": {
         "attribute_value": 22.4,

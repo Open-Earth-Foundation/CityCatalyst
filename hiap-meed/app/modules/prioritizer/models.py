@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.modules.prioritizer.config import resolve_impact_text_multiplier
 from app.modules.prioritizer.utils.co_benefit_taxonomy import ALLOWED_CO_BENEFIT_KEYS
@@ -49,6 +49,8 @@ def _validate_allowed_string_list(
 class FrontendApiContext(BaseModel):
     """Caller request API context metadata."""
 
+    model_config = ConfigDict(extra="forbid")
+
     endpoint: str = Field(description="Caller route or endpoint that originated the request.")
     locodes: list[str] = Field(
         default_factory=list,
@@ -58,6 +60,8 @@ class FrontendApiContext(BaseModel):
 
 class FrontendRequestMeta(BaseModel):
     """Metadata envelope for prioritizer requests sent by the current caller."""
+
+    model_config = ConfigDict(extra="forbid")
 
     requestId: str = Field(description="Caller-generated request identifier.")
     generatedAtUtc: str = Field(
@@ -78,6 +82,8 @@ class FrontendRequestMeta(BaseModel):
 class GpcActivity(BaseModel):
     """Single activity record for one GPC key."""
 
+    model_config = ConfigDict(extra="forbid")
+
     activityType: str | None = None
     totalEmissions: float | None = None
     totalEmissionsUnit: str | None = None
@@ -90,12 +96,16 @@ class GpcActivity(BaseModel):
 class GpcDataEntry(BaseModel):
     """One GPC reference key payload containing optional activities."""
 
+    model_config = ConfigDict(extra="forbid")
+
     notationKey: str | None = None
     activities: list[GpcActivity] = Field(default_factory=list)
 
 
 class FrontendCityEmissionsData(BaseModel):
     """City emissions payload provided by the caller request."""
+
+    model_config = ConfigDict(extra="forbid")
 
     inventoryYear: int | None = Field(
         default=None,
@@ -134,6 +144,8 @@ class FrontendCityEmissionsData(BaseModel):
 
 class FrontendCityInput(BaseModel):
     """Single city payload within frontend prioritizer request."""
+
+    model_config = ConfigDict(extra="forbid")
 
     locode: str = Field(min_length=1, description="UN/LOCODE for the city to rank actions for.")
     countryCode: str = Field(
@@ -236,6 +248,8 @@ class FrontendCityInput(BaseModel):
 class PrioritizerRequestData(BaseModel):
     """RequestData section of the caller prioritizer request payload."""
 
+    model_config = ConfigDict(extra="forbid")
+
     requestedLanguages: list[str] = Field(
         default_factory=lambda: ["en"],
         description="Languages to include in the explanation output. English is always canonical.",
@@ -274,6 +288,8 @@ class PrioritizerRequestData(BaseModel):
 class PrioritizerApiRequest(BaseModel):
     """Caller -> hiap-meed request envelope for single or multi-city prioritization."""
 
+    model_config = ConfigDict(extra="forbid")
+
     meta: FrontendRequestMeta = Field(description="Caller request metadata envelope.")
     requestData: PrioritizerRequestData = Field(
         description="Prioritization request payload."
@@ -297,6 +313,8 @@ class PrioritizerApiRequest(BaseModel):
 class ExplanationTranslationActionInput(BaseModel):
     """One canonical explanation row provided for stateless translation."""
 
+    model_config = ConfigDict(extra="forbid")
+
     actionId: str = Field(
         min_length=1,
         description="Action ID whose canonical explanation should be translated.",
@@ -309,6 +327,8 @@ class ExplanationTranslationActionInput(BaseModel):
 
 class ExplanationTranslationRequestData(BaseModel):
     """RequestData section for explanation translation requests."""
+
+    model_config = ConfigDict(extra="forbid")
 
     sourceLanguage: str = Field(
         default="en",
@@ -375,6 +395,8 @@ class ExplanationTranslationRequestData(BaseModel):
 class ExplanationTranslationApiRequest(BaseModel):
     """Caller -> hiap-meed request envelope for stateless explanation translation."""
 
+    model_config = ConfigDict(extra="forbid")
+
     meta: FrontendRequestMeta = Field(description="Caller request metadata envelope.")
     requestData: ExplanationTranslationRequestData = Field(
         description="Explanation translation request payload."
@@ -400,6 +422,8 @@ class ExplanationTranslationApiRequest(BaseModel):
 
 class ExclusionPreviewCityInput(BaseModel):
     """Single city payload for exclusion-preference preview."""
+
+    model_config = ConfigDict(extra="forbid")
 
     locode: str = Field(min_length=1)
     excludedSectorTags: list[str] = Field(default_factory=list)
@@ -430,11 +454,15 @@ class ExclusionPreviewCityInput(BaseModel):
 class ExclusionPreviewRequestData(BaseModel):
     """RequestData section for exclusion preview requests."""
 
+    model_config = ConfigDict(extra="forbid")
+
     cityDataList: list[ExclusionPreviewCityInput] = Field(min_length=1)
 
 
 class ExclusionPreviewApiRequest(BaseModel):
     """Caller -> hiap-meed request envelope for exclusion preview."""
+
+    model_config = ConfigDict(extra="forbid")
 
     meta: FrontendRequestMeta
     requestData: ExclusionPreviewRequestData
@@ -509,6 +537,8 @@ class ExclusionPreviewApiResponse(BaseModel):
 class UpstreamApiContext(BaseModel):
     """Common API context metadata returned by upstream APIs."""
 
+    model_config = ConfigDict(extra="forbid")
+
     endpoint: str
     locode: str | None = None
     version_label: str | None = None
@@ -516,6 +546,8 @@ class UpstreamApiContext(BaseModel):
 
 class UpstreamMeta(BaseModel):
     """Common metadata envelope returned by upstream APIs."""
+
+    model_config = ConfigDict(extra="forbid")
 
     generated_at_utc: str
     api_context: UpstreamApiContext
@@ -526,6 +558,8 @@ class UpstreamMeta(BaseModel):
 
 class UpstreamDatasource(BaseModel):
     """One datasource entry attached to upstream city metadata."""
+
+    model_config = ConfigDict(extra="forbid")
 
     datasource_name: str
     publisher_name: str | None = None
@@ -541,6 +575,8 @@ class UpstreamDatasource(BaseModel):
 class CityApiMeta(BaseModel):
     """Exact metadata envelope returned by the upstream city attributes API."""
 
+    model_config = ConfigDict(extra="forbid")
+
     generated_at_utc: str
     api_context: UpstreamApiContext
     datasources: list[UpstreamDatasource] = Field(default_factory=list)
@@ -548,6 +584,8 @@ class CityApiMeta(BaseModel):
 
 class CityIndicator(BaseModel):
     """Single city indicator object used in city API payload."""
+
+    model_config = ConfigDict(extra="forbid")
 
     attribute_value: float | str | None = None
     attribute_units: str | None = None
@@ -559,6 +597,8 @@ class CityIndicator(BaseModel):
 class CityApiItem(BaseModel):
     """City item shape returned by upstream `GET /api/v0/city_attributes/{locode}`."""
 
+    model_config = ConfigDict(extra="forbid")
+
     city_name: str
     locode: str
     country_code: str | None = None
@@ -567,6 +607,7 @@ class CityApiItem(BaseModel):
     population_size: int | None = None
     population_density: float | None = None
     area_km2: float | None = None
+    population: CityIndicator | None = None
     unemployment_rate: CityIndicator | None = None
     renter_share: CityIndicator | None = None
     employment_in_transport_and_logistics: CityIndicator | None = None
@@ -580,6 +621,8 @@ class CityApiItem(BaseModel):
 
 class ActionImpactEntry(BaseModel):
     """Single impact entry (emissions or co-benefit category) for one action."""
+
+    model_config = ConfigDict(extra="forbid")
 
     sector_number: str
     subsector_number: list[int] = Field(min_length=1)
@@ -606,6 +649,8 @@ class ActionImpactEntry(BaseModel):
 class ActionCoBenefitEntry(BaseModel):
     """Single co-benefit entry for one action."""
 
+    model_config = ConfigDict(extra="forbid")
+
     impact_relationship: str | None = None
     impact_text: str | None = None
     impact_numeric: int | None = None
@@ -614,6 +659,8 @@ class ActionCoBenefitEntry(BaseModel):
 
 class ActionSocioeconomicIndicatorRule(BaseModel):
     """One socioeconomic fit rule row attached to an action."""
+
+    model_config = ConfigDict(extra="forbid")
 
     indicator_key: str
     direction: str
@@ -641,8 +688,11 @@ class ActionSocioeconomicIndicatorRule(BaseModel):
 class ActionApiItem(BaseModel):
     """Action item shape returned by upstream `GET /v1/actions`."""
 
+    model_config = ConfigDict(extra="forbid")
+
     actionId: str
     actionName: str
+    biome: str | None = None
     activity_type_description: str | None = None
     description: str | None = None
     actionCategory: str | None = None
@@ -688,12 +738,16 @@ class ActionApiItem(BaseModel):
 class CityApiResponse(BaseModel):
     """Response model for `GET /api/v0/city_attributes/{locode}`."""
 
+    model_config = ConfigDict(extra="forbid")
+
     meta: CityApiMeta
     city: CityApiItem
 
 
 class CitiesApiResponse(BaseModel):
     """Response model for city list endpoints."""
+
+    model_config = ConfigDict(extra="forbid")
 
     meta: CityApiMeta
     cities: list[CityApiItem] = Field(default_factory=list)
@@ -702,12 +756,16 @@ class CitiesApiResponse(BaseModel):
 class ActionsApiResponse(BaseModel):
     """Response model for `GET /v1/actions`."""
 
+    model_config = ConfigDict(extra="forbid")
+
     meta: UpstreamMeta
     actions: list[ActionApiItem] = Field(default_factory=list)
 
 
 class PolicySignal(BaseModel):
     """Single policy signal evidence item for one action."""
+
+    model_config = ConfigDict(extra="forbid")
 
     location_scope: str
     location_name: str
@@ -721,6 +779,8 @@ class PolicySignal(BaseModel):
 class PolicySignalByAction(BaseModel):
     """Policy signal collection grouped by action ID."""
 
+    model_config = ConfigDict(extra="forbid")
+
     action_id: str
     policy_signals: list[PolicySignal] = Field(default_factory=list)
     policy_support_score: float | None = Field(default=None, ge=0.0, le=1.0)
@@ -729,12 +789,16 @@ class PolicySignalByAction(BaseModel):
 class ActionsPolicySignalsApiResponse(BaseModel):
     """Response model for city-scoped policy alignment endpoint."""
 
+    model_config = ConfigDict(extra="forbid")
+
     meta: UpstreamMeta
     policy_signals: list[PolicySignalByAction] = Field(default_factory=list)
 
 
 class LegalRequirement(BaseModel):
     """Single legal requirement alignment check for one action."""
+
+    model_config = ConfigDict(extra="forbid")
 
     signal_code: str
     signal_name: str
@@ -752,6 +816,8 @@ class LegalRequirement(BaseModel):
 class LegalRequirementsByAction(BaseModel):
     """Legal requirements grouped by action ID."""
 
+    model_config = ConfigDict(extra="forbid")
+
     action_id: str
     requirements: list[LegalRequirement] = Field(default_factory=list)
 
@@ -759,12 +825,16 @@ class LegalRequirementsByAction(BaseModel):
 class ActionsLegalApiMeta(UpstreamMeta):
     """Metadata for actions/legal response including test descriptors."""
 
+    model_config = ConfigDict(extra="forbid")
+
     test_cases: dict[str, str] = Field(default_factory=dict)
     strength_scale: list[str] = Field(default_factory=list)
 
 
 class ActionsLegalApiResponse(BaseModel):
     """Response model for city-scoped legal alignment endpoint."""
+
+    model_config = ConfigDict(extra="forbid")
 
     meta: ActionsLegalApiMeta
     legal_requirements: list[LegalRequirementsByAction] = Field(default_factory=list)

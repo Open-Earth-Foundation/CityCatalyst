@@ -117,6 +117,13 @@ def test_api_city_client_maps_remote_payload_and_metadata(
                     "area_km2": 2646,
                     "population_size": 214857,
                     "population_density": 953.69,
+                    "population": {
+                        "attribute_value": 214857,
+                        "attribute_units": "persons",
+                        "attribute_category": "very high",
+                        "datasource": "cl-ine-censo",
+                        "version_label": "2024",
+                    },
                     "unemployment_rate": {
                         "attribute_value": 9.44,
                         "attribute_units": "percent",
@@ -184,6 +191,49 @@ def test_api_city_client_rejects_incomplete_remote_payload(
 
     with pytest.raises(ValidationError):
         client.get_city("CL IQQ")
+
+
+@pytest.mark.unit
+def test_api_city_client_rejects_camelcase_population_fields(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """API city client rejects camelCase population fields from a drifted upstream schema."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        request = httpx.Request("GET", url, headers=headers)
+        return httpx.Response(
+            200,
+            request=request,
+            json={
+                "meta": {
+                    "generated_at_utc": "2026-05-13T14:43:41.038750+00:00",
+                    "api_context": {
+                        "endpoint": "GET /api/v0/city_attributes/{locode}",
+                        "locode": "CL ARI",
+                        "version_label": None,
+                    },
+                    "datasources": [],
+                },
+                "city": {
+                    "locode": "CL ARI",
+                    "city_name": "Arica",
+                    "country_code": "CL",
+                    "region_code": "CL15",
+                    "region_name": "Arica y Parinacota",
+                    "area_km2": 5371,
+                    "populationSize": 236109,
+                    "populationDensity": 43.96,
+                },
+            },
+        )
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    client = ApiCityDataApiClient()
+
+    with pytest.raises(ValidationError):
+        client.get_city("CL ARI")
 
 
 @pytest.mark.unit
@@ -371,6 +421,25 @@ def test_action_api_item_rejects_scalar_subsector_number() -> None:
 
 
 @pytest.mark.unit
+def test_action_api_item_rejects_unexpected_upstream_field() -> None:
+    """Upstream action contract rejects unexpected extra fields instead of dropping them."""
+    with pytest.raises(ValidationError):
+        ActionApiItem.model_validate(
+            {
+                "actionId": "action_1",
+                "actionName": "Action 1",
+                "unexpectedField": "should-fail",
+                "emissions": {
+                    "sector_number": "I",
+                    "subsector_number": [1],
+                    "gpc_reference_number": ["I.1.1"],
+                    "impact_text": "high",
+                },
+            }
+        )
+
+
+@pytest.mark.unit
 def test_prioritizer_request_accepts_activity_type_field() -> None:
     """Frontend request contract accepts `activityType` in city activity rows."""
     request = PrioritizerApiRequest.model_validate(
@@ -420,6 +489,43 @@ def test_prioritizer_request_accepts_activity_type_field() -> None:
         .activities[0]
     )
     assert activity.activityType == "Natural gas"
+
+
+@pytest.mark.unit
+def test_prioritizer_request_rejects_unexpected_frontend_field() -> None:
+    """Frontend request contract rejects unexpected extra fields at the API boundary."""
+    with pytest.raises(ValidationError):
+        PrioritizerApiRequest.model_validate(
+            {
+                "meta": {
+                    "requestId": "req-1",
+                    "generatedAtUtc": "2026-05-12T00:00:00+00:00",
+                    "backendConsumer": "hiap-meed",
+                    "upstreamProvider": "city_catalyst_frontend",
+                    "apiContext": {
+                        "endpoint": "POST /v1/prioritize",
+                        "locodes": ["CL-SCL"],
+                    },
+                    "totalRecords": 1,
+                },
+                "requestData": {
+                    "requestedLanguages": ["en"],
+                    "cityDataList": [
+                        {
+                            "locode": "CL-SCL",
+                            "countryCode": "CL",
+                            "cityStrategicPreferenceSectors": [],
+                            "cityStrategicPreferenceCoBenefitKeys": [],
+                            "unexpectedField": "should-fail",
+                            "cityEmissionsData": {
+                                "inventoryYear": 2022,
+                                "gpcData": {},
+                            },
+                        }
+                    ],
+                },
+            }
+        )
 
 
 @pytest.mark.unit

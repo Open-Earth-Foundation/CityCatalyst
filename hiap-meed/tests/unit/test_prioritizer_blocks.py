@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
 from app.modules.prioritizer.api import _extract_city_emissions_context
 from app.modules.prioritizer.blocks import (
@@ -107,6 +108,7 @@ def test_mock_city_loader_keeps_renamed_indicator_keys() -> None:
 
     assert "employment_in_transport_and_logistics" in city.raw
     assert "electricity_access_rate" in city.raw
+    assert "population" in city.raw
     city_context_names = {
         row["attribute_name"] for row in city.city_context if "attribute_name" in row
     }
@@ -115,30 +117,28 @@ def test_mock_city_loader_keeps_renamed_indicator_keys() -> None:
 
 
 @pytest.mark.unit
-def test_city_api_item_ignores_legacy_indicator_names() -> None:
-    """Legacy city indicator names are ignored so mismatches remain visible."""
-    city = CityApiItem.model_validate(
-        {
-            "city_name": "Iquique",
-            "locode": "CL IQQ",
-            "country_code": "CL",
-            "region_name": "Tarapaca",
-            "region_code": "CL01",
-            "transport_logistics_employment": {
-                "attribute_value": 7.35,
-                "attribute_units": "percent",
-                "attribute_category": "low",
-            },
-            "electricity_access": {
-                "attribute_value": 100.0,
-                "attribute_units": "percent",
-                "attribute_category": "very low",
-            },
-        }
-    )
-
-    assert city.employment_in_transport_and_logistics is None
-    assert city.electricity_access_rate is None
+def test_city_api_item_rejects_unknown_indicator_names() -> None:
+    """Strict city contract rejects unknown upstream keys instead of dropping them silently."""
+    with pytest.raises(ValidationError):
+        CityApiItem.model_validate(
+            {
+                "city_name": "Iquique",
+                "locode": "CL IQQ",
+                "country_code": "CL",
+                "region_name": "Tarapaca",
+                "region_code": "CL01",
+                "transport_logistics_employment": {
+                    "attribute_value": 7.35,
+                    "attribute_units": "percent",
+                    "attribute_category": "low",
+                },
+                "electricity_access": {
+                    "attribute_value": 100.0,
+                    "attribute_units": "percent",
+                    "attribute_category": "very low",
+                },
+            }
+        )
 
 
 @pytest.mark.unit

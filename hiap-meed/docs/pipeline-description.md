@@ -167,6 +167,8 @@ Shape note:
 
 - This mock now follows the upstream `GET /api/v0/city_attributes/{locode}` schema.
 - The city payload uses snake_case names such as `city_name`, `country_code`, `population_size`, `population_density`, and `area_km2`.
+- The city payload also includes a `population` indicator object alongside the top-level `population_size` and `population_density` fields.
+- The city API contract is strict, so unexpected keys or wrong casing now fail validation instead of being ignored.
 
 Fields that affect the result:
 
@@ -190,6 +192,12 @@ What these are used for:
 File:
 
 - `data/mock/actions_api_mock.json`
+
+Future contract note:
+
+- This file still represents the current action mock/upstream shape used by this branch.
+- It may include fields such as `biome` that are not expected in the future `GET /api/v1/action-pathways` payload.
+- When that new action API is integrated, the strict action response DTOs and the mock action file should be updated together in one dedicated contract migration.
 
 Fields that affect the result:
 

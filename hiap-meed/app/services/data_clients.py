@@ -97,6 +97,7 @@ class MockActionDataApiClient:
                 Action(
                     action_id=action.actionId,
                     action_name=action.actionName,
+                    biome=action.biome,
                     activity_type_description=action.activity_type_description,
                     description=action.description,
                     action_category=action.actionCategory,

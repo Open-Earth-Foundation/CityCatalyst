@@ -29,6 +29,13 @@
     "area_km2": 2646,
     "population_size": 214857,
     "population_density": 953.69,
+    "population": {
+      "attribute_value": 214857,
+      "attribute_units": "persons",
+      "attribute_category": "very high",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
+    },
     "unemployment_rate": {
       "attribute_value": 9.44,
       "attribute_units": "percent",

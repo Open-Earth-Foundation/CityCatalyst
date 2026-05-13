@@ -124,6 +124,14 @@ Design note:
 
 - For the upcoming frontend contract, single-city and multi-city payloads both
   use `cityDataList`; single-city is represented as a list with one item.
+- Boundary validation note: incoming frontend request contracts and upstream/mock
+  response contracts are strict. Unexpected fields and wrong casing are rejected
+  at validation time instead of being silently ignored.
+- Future action API note: the current strict `ActionsApiResponse` contract still
+  matches the checked-in `actions_api_mock.json`, including optional fields such
+  as `biome`. When `GET /api/v1/action-pathways` is integrated, this action
+  contract will need a dedicated update to match that new payload, including
+  removing `biome` and aligning to the new field names and nested shapes.
 - Current implementation note: exclusion preview and prioritization are separate flows. Exclusion preview resolves raw exclusion preferences into proposals for review, while prioritization consumes confirmed `excludedActionIds`. Prioritization uses a dedicated orchestrator for run-level artifact writing, while exclusion preview currently writes its request artifacts directly from the API layer.
 
 ### 4. Call the prioritization endpoint
@@ -447,7 +455,7 @@ Common validation errors:
 - Missing `requestData.cityDataList` or empty `cityDataList` -> HTTP `422`.
 - Missing `locode` or empty `locode` in a city entry -> HTTP `422`.
 
-Note: city, action, legal, and policy-signal clients resolve to `mock` (file-backed) or `api`. The city client now uses a synchronous upstream HTTP integration for `GET /api/v0/city_attributes/{locode}` when `HIAP_MEED_CITY_DATA_SOURCE=api`, which is the default. That shared upstream HTTP path now includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. The action, legal, and policy-signal API clients are still placeholders, so their default source remains `mock`. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
+Note: city, action, legal, and policy-signal clients resolve to `mock` (file-backed) or `api`. The city client now uses a synchronous upstream HTTP integration for `GET /api/v0/city_attributes/{locode}` when `HIAP_MEED_CITY_DATA_SOURCE=api`, which is the default. That shared upstream HTTP path now includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. The city upstream response contract is strict: unknown or misnamed fields are rejected instead of being silently dropped. The action, legal, and policy-signal API clients are still placeholders, so their default source remains `mock`. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
 
 ### 5. Logging and artifacts
 

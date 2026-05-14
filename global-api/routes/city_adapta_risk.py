@@ -35,7 +35,12 @@ def _default_timeframe(actor_id: str, scenario: str) -> int | None:
 
 
 def db_city_adapta_risk_fact(actor_id: str, timeframe: int, scenario: str, level: str):
-    """Fetch AdaptaBrasil risk rows for one city and selection level."""
+    """Fetch AdaptaBrasil risk rows for one city and selection level.
+
+    Storage grain is one row per impact-chain / base-indicator leaf. For ``summary``,
+    those dimensions are omitted from the response, so we collapse rows that share the
+    same sector, risk, and risk component (otherwise identical summary payloads repeat).
+    """
     level_columns = """
         r.impact_chain_id_1,
         r.impact_chain_name_1,
@@ -76,10 +81,17 @@ def db_city_adapta_risk_fact(actor_id: str, timeframe: int, scenario: str, level
             NULL::TEXT AS base_indicator_value_string
         """
 
+    # One summary row per (sector, risk, component); pick a deterministic leaf row.
+    distinct_prefix = (
+        "DISTINCT ON (r.sector_id, r.risk_id, r.risk_component_id) "
+        if level == "summary"
+        else ""
+    )
+
     with SessionLocal() as session:
         query = text(
             f"""
-            SELECT
+            SELECT {distinct_prefix}
                 r.actor_id,
                 r.city_name,
                 r.country_code,

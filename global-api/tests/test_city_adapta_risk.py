@@ -8,15 +8,13 @@ client = TestClient(app)
 
 @pytest.fixture(autouse=True)
 def mock_adapta_db(monkeypatch):
-    monkeypatch.setattr("routes.city_adapta_risk._default_timeframe", lambda actor_id, scenario: 2020)
     monkeypatch.setattr("routes.city_adapta_risk._has_any_adapta_rows", lambda actor_id, scenario: True)
 
-    def _mock_rows(actor_id, timeframe, scenario, level, merge_across_timeframes=False):
-        row = {
+    def _mock_rows(actor_id, timeframe, scenario, level, omit_timeframe_filter=False):
+        row_base = {
             "actor_id": actor_id,
             "city_name": "Abadia de Goias",
             "country_code": "BR",
-            "timeframe": timeframe if timeframe is not None else 2020,
             "scenario": scenario,
             "scenario_family": None,
             "sector_id": 1,
@@ -53,6 +51,11 @@ def mock_adapta_db(monkeypatch):
             "source_vintage": None,
             "spatial_support_level": "municipal",
         }
+        if omit_timeframe_filter and level == "chain":
+            r1 = {**row_base, "timeframe": 2015, "base_indicator_id": 500}
+            r2 = {**row_base, "timeframe": 2020, "base_indicator_id": 501}
+            return [r1, r2]
+        row = {**row_base, "timeframe": timeframe if timeframe is not None else 2020}
         return [row]
 
     monkeypatch.setattr("routes.city_adapta_risk.db_city_adapta_risk_fact", _mock_rows)
@@ -65,11 +68,12 @@ def test_get_city_adapta_risk_summary():
 
     assert payload["meta"]["actor_id"] == "BR ADG"
     assert payload["meta"]["timeframe"] is None
-    assert payload["meta"]["timeframe_resolution"] == "latest_year_per_sector_risk_component"
+    assert payload["meta"]["timeframe_resolution"] == "all_years"
     assert payload["meta"]["scenario"] == "current"
     assert payload["meta"]["level"] == "summary"
 
     first = payload["data"][0]
+    assert first["timeframe"] == 2020
     assert first["risk_name"] == "Risk of water stress"
     assert first["null_type"] == "none"
     assert first["value_status"] == "ok"
@@ -82,6 +86,9 @@ def test_get_city_adapta_risk_summary_explicit_timeframe_is_single_year():
     meta = response.json()["meta"]
     assert meta["timeframe"] == 2020
     assert meta["timeframe_resolution"] == "single_year"
+    assert response.json()["data"][0]["timeframe"] == 2020
+
+
 def test_get_city_adapta_risk_chain():
     response = client.get("/api/v1/cities/BR%20ADG/climate-risk/adapta?level=chain&scenario=current&timeframe=2020")
     assert response.status_code == 200
@@ -91,8 +98,20 @@ def test_get_city_adapta_risk_chain():
     assert payload["meta"]["level"] == "chain"
     assert payload["meta"]["timeframe"] == 2020
     assert payload["meta"]["timeframe_resolution"] == "single_year"
+    assert first["timeframe"] == 2020
     assert first["impact_chain_id_1"] == 10
     assert first["base_indicator_id"] == 500
+
+
+def test_get_city_adapta_risk_chain_all_years():
+    response = client.get("/api/v1/cities/BR%20ADG/climate-risk/adapta?level=chain&scenario=current")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["meta"]["timeframe"] is None
+    assert payload["meta"]["timeframe_resolution"] == "all_years"
+    assert len(payload["data"]) == 2
+    tfs = {row["timeframe"] for row in payload["data"]}
+    assert tfs == {2015, 2020}
 
 
 def test_get_city_adapta_risk_invalid_level():
@@ -103,20 +122,19 @@ def test_get_city_adapta_risk_invalid_level():
 
 def test_get_city_adapta_risk_not_found(monkeypatch):
     monkeypatch.setattr("routes.city_adapta_risk._has_any_adapta_rows", lambda actor_id, scenario: False)
-    monkeypatch.setattr("routes.city_adapta_risk._default_timeframe", lambda actor_id, scenario: None)
     response = client.get("/api/v1/cities/BR%20XYZ/climate-risk/adapta")
     assert response.status_code == 404
     assert response.json() == {"detail": "No data available"}
 
 
 def test_data_gap_value_status(monkeypatch):
-    def _mock_data_gap(actor_id, timeframe, scenario, level, merge_across_timeframes=False):
+    def _mock_data_gap(actor_id, timeframe, scenario, level, omit_timeframe_filter=False):
         return [
             {
                 "actor_id": actor_id,
                 "city_name": "Abadia de Goias",
                 "country_code": "BR",
-                "timeframe": timeframe,
+                "timeframe": 2020,
                 "scenario": scenario,
                 "scenario_family": None,
                 "sector_id": 1,

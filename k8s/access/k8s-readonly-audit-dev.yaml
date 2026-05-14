@@ -7,9 +7,11 @@ rules:
   resources:
     - namespaces
     - nodes
+    - persistentvolumes
     - pods
     - pods/log
     - services
+    - serviceaccounts
     - endpoints
     - configmaps
     - events

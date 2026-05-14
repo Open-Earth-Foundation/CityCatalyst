@@ -21,9 +21,14 @@ The access flow is:
 This is meant for safe cluster inspection workflows such as:
 
 - listing pods, deployments, jobs, services, and ingress
+- reading service accounts, configmaps, PVCs, and PVs when they are relevant to diagnosis
 - reading warning events
 - reading pod logs
 - checking node and workload health
+
+The goal is not just passive listing. This RBAC shape is intended to support a deeper read-only incident workflow where an audit agent can follow likely root-cause trails across workload specs, service accounts, autoscaling objects, storage references, and recent warning history without ever mutating cluster state.
+
+It intentionally does not include Secret reads. Secret names may still appear indirectly in workload specs or events, but the read-only audit role should not fetch Secret objects or Secret data directly.
 
 It is not meant for writes such as:
 

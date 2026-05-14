@@ -9,9 +9,30 @@ Use this skill when the user wants a Kubernetes health inspection or incident-st
 
 ## Primary objective
 
-Inspect cluster and workload health, gather evidence for unhealthy resources, and return a concise report with likely causes.
+Inspect cluster and workload health, follow as many readonly evidence trails as possible, and return a guided report with issue-by-issue chapters, likely causes, automated findings, and concrete next steps only where the agent cannot continue safely on its own.
 
 This skill is read-only.
+
+## Investigation contract
+
+The expected behavior is:
+
+1. Sweep broadly for unhealthy resources and warning signals.
+2. For each issue, follow every useful readonly trail the agent can reach on its own:
+   - workload spec
+   - owner resource
+   - related pod state
+   - `describe` output
+   - current and previous logs when available
+   - warning events
+   - supporting readonly resources such as service accounts, daemonsets, HPA targets, configmaps, PVCs, and PVs when RBAC allows it
+3. Stop only when one of these is true:
+   - the agent has enough evidence to state a likely root cause
+   - the agent has exhausted the useful readonly evidence available to it
+   - the next meaningful step would require write access, higher privileges, deleted historical data, or a live failure that no longer exists
+4. Only after that should the report hand off further action to the user.
+
+The report should never ask the user to run a readonly command that the agent could have run itself.
 
 ## Hard guardrails
 
@@ -38,10 +59,10 @@ python .cursor/skills/k8s-health-audit/scripts/k8s_health_audit.py --context dev
 
 3. Read the generated report and summarize:
 - overall cluster status
-- unhealthy resources
-- strongest evidence
-- likely root cause
-- safe next checks
+- issue chapters
+- strongest automated findings
+- likely root causes
+- concrete next steps that remain after readonly automation
 
 ## What the script does
 
@@ -49,14 +70,25 @@ python .cursor/skills/k8s-health-audit/scripts/k8s_health_audit.py --context dev
 - Verifies the target context is a readonly context before doing any cluster inspection.
 - Runs `kubectl auth can-i` checks for read permissions and common write permissions.
 - Refuses to continue if any sampled write permission is still allowed.
-- Collects nodes, pods, deployments, jobs, cronjobs, services, ingress, and warning events.
+- Collects nodes, pods, deployments, daemonsets, jobs, cronjobs, services, HPA, ingress, and warning events.
 - Identifies unhealthy resources such as:
   - non-ready nodes
   - pods not in `Running` or `Succeeded`
   - deployments with unavailable replicas
   - failed jobs
-- Follows up automatically with `describe` and `logs` for a bounded number of unhealthy resources.
-- Produces a Markdown report and a JSON artifact.
+- Follows up automatically with `describe`, logs, and related readonly evidence for unhealthy pods, unhealthy deployments, failed jobs, and selected supporting resources such as service accounts when RBAC allows it.
+- Tries to resolve issue-specific root causes before handing off, for example by:
+  - checking autoscaler workload wiring and logs for AWS credential failures
+  - checking CNI daemonset state when sandbox creation fails
+  - checking HPA target existence when autoscaling objects are broken
+  - checking job-family templates and owners instead of only listing failed jobs
+- Uses a very high pod follow-up limit by default so the audit is exhaustive in normal cluster sizes.
+- If a safety limit is ever reached, the report calls that out explicitly so no hidden issues are mistaken for a full sweep.
+- Pod logs are still collected with a bounded tail per call, and the report calls that out explicitly so log sampling is not mistaken for full log capture.
+- Produces:
+  - a main Markdown report for humans
+  - a JSON artifact with structured evidence
+  - a separate raw warnings artifact so the main report stays clean
 
 ## Output expectations
 
@@ -64,11 +96,10 @@ Return a concise report with sections like:
 
 - Context
 - Overall status
-- Findings
-- Likely causes
-- Safe next steps
+- Issue chapters
+- Final next steps
 
-Be explicit about uncertainty. If logs are unavailable or RBAC blocks inspection, say that clearly.
+Be explicit about uncertainty. If logs are unavailable, pods are already gone, or RBAC blocks deeper inspection, say that clearly and explain that this is why the workflow is handing off.
 
 ## Notes for this repo
 

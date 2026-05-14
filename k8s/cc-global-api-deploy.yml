@@ -41,8 +41,10 @@ spec:
               httpHeaders:
               - name: X-Liveness-Probe
                 value: "True"
-            initialDelaySeconds: 5
-            periodSeconds: 5
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /health
@@ -51,7 +53,9 @@ spec:
               - name: X-Liveness-Probe
                 value: "True"
             initialDelaySeconds: 5
-            periodSeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           startupProbe:
             httpGet:
               path: /health
@@ -59,6 +63,7 @@ spec:
               httpHeaders:
               - name: X-Liveness-Probe
                 value: "True"
-            initialDelaySeconds: 5
+            initialDelaySeconds: 10
             periodSeconds: 5
-            failureThreshold: 30
+            timeoutSeconds: 5
+            failureThreshold: 60

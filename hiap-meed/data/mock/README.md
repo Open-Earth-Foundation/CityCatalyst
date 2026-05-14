@@ -98,7 +98,7 @@ The general logic is that this is the baseline and values might be updated by th
 This mock follows the active upstream city attributes schema:
 
 - `GET /api/v0/city_attributes/{locode}`
-- snake_case city fields such as `city_name`, `country_code`, `population_size`, `population_density`, and `area_km2`
+- city fields such as `city_name`, `country_code`, `populationSize`, `populationDensity`, and `area_km2`
 - a `population` indicator object in addition to the top-level population fields
 - all 9 socioeconomic indicator keys currently used by Feasibility
 - strict city payload validation, so unexpected keys or wrong casing are rejected
@@ -130,7 +130,7 @@ It includes:
 
 - policy_signals: array of { action_id, policy_signals: [...], policy_support_score }
 - each signal: location_scope, location_name, signal_type, signal_relation, signal_strength, evidence_ids, evidence_count
-- policy_support_score: 0–1 score per action (relation × strength × scope multiplier, normalized)
+- policy_support_score: 0â€“1 score per action (relation Ã— strength Ã— scope multiplier, normalized)
 - meta.locode, meta.comuna_name, meta.region_name
 
 This payload shape is modeled by:
@@ -163,7 +163,7 @@ It includes:
 # actions_legal_api_mock.json:
 
 Mock for GET /v1/actions/legal (or /v1/legal-requirements).
-Returns action_id → legal alignment + evidence per action.
+Returns action_id â†’ legal alignment + evidence per action.
 
 It includes:
 

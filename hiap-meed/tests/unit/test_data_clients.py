@@ -115,8 +115,8 @@ def test_api_city_client_maps_remote_payload_and_metadata(
                     "region_code": "CL01",
                     "region_name": "Tarapaca",
                     "area_km2": 2646,
-                    "population_size": 214857,
-                    "population_density": 953.69,
+                    "populationSize": 214857,
+                    "populationDensity": 953.69,
                     "population": {
                         "attribute_value": 214857,
                         "attribute_units": "persons",
@@ -194,10 +194,10 @@ def test_api_city_client_rejects_incomplete_remote_payload(
 
 
 @pytest.mark.unit
-def test_api_city_client_rejects_camelcase_population_fields(
+def test_api_city_client_accepts_camelcase_population_fields(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """API city client rejects camelCase population fields from a drifted upstream schema."""
+    """API city client accepts the current upstream camelCase population fields."""
 
     def _mock_get(
         self: httpx.Client, url: str, headers: dict[str, str] | None = None
@@ -232,8 +232,12 @@ def test_api_city_client_rejects_camelcase_population_fields(
     monkeypatch.setattr(httpx.Client, "get", _mock_get)
     client = ApiCityDataApiClient()
 
-    with pytest.raises(ValidationError):
-        client.get_city("CL ARI")
+    city = client.get_city("CL ARI")
+
+    assert city.locode == "CL ARI"
+    assert city.city_name == "Arica"
+    assert city.population_size == 236109
+    assert city.population_density == pytest.approx(43.96)
 
 
 @pytest.mark.unit

@@ -27,8 +27,8 @@
     "region_code": "CL01",
     "region_name": "Tarapaca",
     "area_km2": 2646,
-    "population_size": 214857,
-    "population_density": 953.69,
+    "populationSize": 214857,
+    "populationDensity": 953.69,
     "population": {
       "attribute_value": 214857,
       "attribute_units": "persons",

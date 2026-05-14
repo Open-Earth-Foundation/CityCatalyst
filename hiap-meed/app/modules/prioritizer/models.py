@@ -537,7 +537,7 @@ class ExclusionPreviewApiResponse(BaseModel):
 class UpstreamApiContext(BaseModel):
     """Common API context metadata returned by upstream APIs."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     endpoint: str
     locode: str | None = None
@@ -575,7 +575,7 @@ class UpstreamDatasource(BaseModel):
 class CityApiMeta(BaseModel):
     """Exact metadata envelope returned by the upstream city attributes API."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     generated_at_utc: str
     api_context: UpstreamApiContext
@@ -585,7 +585,7 @@ class CityApiMeta(BaseModel):
 class CityIndicator(BaseModel):
     """Single city indicator object used in city API payload."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     attribute_value: float | str | None = None
     attribute_units: str | None = None
@@ -597,15 +597,17 @@ class CityIndicator(BaseModel):
 class CityApiItem(BaseModel):
     """City item shape returned by upstream `GET /api/v0/city_attributes/{locode}`."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     city_name: str
     locode: str
     country_code: str | None = None
     region_name: str
     region_code: str
-    population_size: int | None = None
-    population_density: float | None = None
+    population_size: int | None = Field(default=None, validation_alias="populationSize")
+    population_density: float | None = Field(
+        default=None, validation_alias="populationDensity"
+    )
     area_km2: float | None = None
     population: CityIndicator | None = None
     unemployment_rate: CityIndicator | None = None
@@ -738,7 +740,7 @@ class ActionApiItem(BaseModel):
 class CityApiResponse(BaseModel):
     """Response model for `GET /api/v0/city_attributes/{locode}`."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     meta: CityApiMeta
     city: CityApiItem
@@ -747,7 +749,7 @@ class CityApiResponse(BaseModel):
 class CitiesApiResponse(BaseModel):
     """Response model for city list endpoints."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     meta: CityApiMeta
     cities: list[CityApiItem] = Field(default_factory=list)

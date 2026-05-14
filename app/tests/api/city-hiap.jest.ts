@@ -7,7 +7,7 @@ import {
   it,
   jest,
 } from "@jest/globals";
-import { mockRequest, setupTests } from "../helpers";
+import { expectStatusCode, mockRequest, setupTests } from "../helpers";
 import {
   createTestData,
   cleanupTestData,
@@ -128,7 +128,7 @@ describe("Inventory HIAP API", () => {
         params: Promise.resolve({ inventory: inventoryId }),
       });
 
-      expect(res.status).toBe(500);
+      await expectStatusCode(res, 500);
       const body = await res.json();
       expect(body?.error).toBeTruthy();
     });
@@ -143,7 +143,7 @@ describe("Inventory HIAP API", () => {
         params: Promise.resolve({ inventory: inventoryId }),
       });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
       expect(body.data).toBeTruthy();
 
@@ -209,7 +209,7 @@ describe("Inventory HIAP API", () => {
         params: Promise.resolve({ inventory: inventoryId }),
       });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
       expect(body.data).toBeTruthy();
       // The response contains the ranking data directly
@@ -269,7 +269,7 @@ describe("Inventory HIAP API", () => {
         params: Promise.resolve({ inventory: inventoryId }),
       });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const json = await res.json();
       expect(json.success).toBe(true);
       expect(typeof json.updated).toBe("number");
@@ -300,7 +300,7 @@ describe("Inventory HIAP API", () => {
         params: Promise.resolve({ inventory: inventoryId }),
       });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const json = await res.json();
       expect(json.success).toBe(true);
       expect(json.updated).toBe(0);

@@ -1,7 +1,7 @@
 import { GET as getOpenAPISpec } from "@/app/api/openapi/json/route";
 import { db } from "@/models";
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
-import { mockRequest, setupTests } from "../helpers";
+import { expectStatusCode, mockRequest, setupTests } from "../helpers";
 import packageJson from "@/../package.json";
 
 describe("OpenAPI Specification Endpoint", () => {
@@ -21,7 +21,7 @@ describe("OpenAPI Specification Endpoint", () => {
       const req = mockRequest();
       const res = await getOpenAPISpec(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toEqual(200);
+      await expectStatusCode(res, 200);
       expect(res.headers.get("Content-Type")).toEqual("application/json");
 
       openApiSpec = await res.json();
@@ -45,7 +45,9 @@ describe("OpenAPI Specification Endpoint", () => {
     it("should have security schemes defined", () => {
       expect(openApiSpec).toHaveProperty("components");
       expect(openApiSpec.components).toHaveProperty("securitySchemes");
-      expect(openApiSpec.components.securitySchemes).toHaveProperty("BearerAuth");
+      expect(openApiSpec.components.securitySchemes).toHaveProperty(
+        "BearerAuth",
+      );
 
       const bearerAuth = openApiSpec.components.securitySchemes.BearerAuth;
       expect(bearerAuth.type).toBe("http");
@@ -82,7 +84,7 @@ describe("OpenAPI Specification Endpoint", () => {
       expect(methods.length).toBeGreaterThan(0);
 
       // Each method should have proper structure
-      methods.forEach(method => {
+      methods.forEach((method) => {
         const methodDef = pathDefinition[method];
         expect(methodDef).toHaveProperty("tags");
         expect(methodDef).toHaveProperty("summary");
@@ -94,7 +96,7 @@ describe("OpenAPI Specification Endpoint", () => {
       const paths = Object.keys(openApiSpec.paths);
 
       // Most paths should be under /api/v1/
-      const v1Paths = paths.filter(path => path.startsWith("/api/v1/"));
+      const v1Paths = paths.filter((path) => path.startsWith("/api/v1/"));
       expect(v1Paths.length).toBeGreaterThan(0);
 
       // Should represent majority of documented endpoints
@@ -111,3 +113,4 @@ describe("OpenAPI Specification Endpoint", () => {
     });
   });
 });
+

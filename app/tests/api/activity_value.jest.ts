@@ -11,7 +11,12 @@ import {
 
 import { db } from "@/models";
 import { randomUUID } from "node:crypto";
-import { mockRequest, setupTests, testUserID } from "../helpers";
+import {
+  expectStatusCode,
+  mockRequest,
+  setupTests,
+  testUserID,
+} from "../helpers";
 import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
 import { SubCategory } from "@/models/SubCategory";
@@ -154,7 +159,7 @@ describe.skip("Activity Value API", () => {
     const res = await createActivityValue(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
-    expect(res.status).toBe(400);
+    await expectStatusCode(res, 400);
   });
 
   it("should not create an activity value with with formulas with invalid data", async () => {
@@ -171,7 +176,7 @@ describe.skip("Activity Value API", () => {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
 
-    expect(res.status).toBe(400);
+    await expectStatusCode(res, 400);
   });
 
   it("should create an activity value with activity times emissions factor", async () => {
@@ -188,7 +193,7 @@ describe.skip("Activity Value API", () => {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
 
-    expect(res.status).toBe(200);
+    await expectStatusCode(res, 200);
     const { data } = await res.json();
 
     createdActivityValue2 = data;
@@ -215,7 +220,7 @@ describe.skip("Activity Value API", () => {
 
     const { data } = await res.json();
 
-    expect(res.status).toBe(200);
+    await expectStatusCode(res, 200);
     expect(data.activityData.co2_amount).toBe(
       updatedActivityValueWithFormula.activityData.co2_amount,
     );
@@ -234,7 +239,7 @@ describe.skip("Activity Value API", () => {
       }),
     });
 
-    expect(res.status).toBe(400);
+    await expectStatusCode(res, 400);
   });
 
   it("should create an activity, creating an inventory value with inventoryValue params", async () => {
@@ -248,7 +253,7 @@ describe.skip("Activity Value API", () => {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
 
-    expect(res.status).toBe(200);
+    await expectStatusCode(res, 200);
     const { data } = await res.json();
     createdActivityValue2 = data;
     expect(data.activityData.co2_amount).toBe(
@@ -272,7 +277,7 @@ describe.skip("Activity Value API", () => {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
 
-    expect(res.status).toBe(200);
+    await expectStatusCode(res, 200);
     const { data } = await res.json();
     createdActivityValue = data;
     expect(data.activityData.co2_amount).toBe(
@@ -291,7 +296,7 @@ describe.skip("Activity Value API", () => {
     });
 
     const { data } = await res.json();
-    expect(res.status).toBe(200);
+    await expectStatusCode(res, 200);
     expect(data.co2eq).toBe(createdActivityValue.co2eq);
     expect(data.co2eqYears).toBe(createdActivityValue.co2eqYears);
     expect(data.inventoryValueId).toBe(inventoryValue.id);
@@ -325,7 +330,7 @@ describe.skip("Activity Value API", () => {
     });
 
     const { data } = await res.json();
-    expect(res.status).toBe(200);
+    await expectStatusCode(res, 200);
     expect(data.activityData.co2_amount).toBe(
       updatedActivityValue.activityData.co2_amount,
     );
@@ -341,7 +346,7 @@ describe.skip("Activity Value API", () => {
     });
 
     const { data } = await res.json();
-    expect(res.status).toBe(200);
+    await expectStatusCode(res, 200);
     expect(data).toBe(true);
   });
 

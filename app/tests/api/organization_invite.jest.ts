@@ -12,7 +12,12 @@ import {
   POST as createOrganizationInvite,
 } from "@/app/api/v1/organizations/[organization]/invitations/route";
 import { db } from "@/models";
-import { mockRequest, setupTests, testUserID } from "../helpers";
+import {
+  expectStatusCode,
+  mockRequest,
+  setupTests,
+  testUserID,
+} from "../helpers";
 import { Organization } from "@/models/Organization";
 import { OrganizationInvite } from "@/models/OrganizationInvite";
 import { randomUUID } from "node:crypto";
@@ -85,7 +90,7 @@ describe("Organization Invitations API", () => {
 
     console.log(res, "the response from the invite API");
 
-    expect(res.status).toEqual(200);
+    await expectStatusCode(res, 200);
     const data = await res.json();
     expect(data.success).toEqual(true);
     expect(data.inviteUrls).toBeDefined();
@@ -98,7 +103,7 @@ describe("Organization Invitations API", () => {
     const res = await createOrganizationInvite(req, {
       params: Promise.resolve({ organization: inviteData.organizationId }),
     });
-    expect(res.status).toEqual(403);
+    await expectStatusCode(res, 403);
   });
 
   it("should allow admin to fetch all invitations", async () => {
@@ -114,7 +119,7 @@ describe("Organization Invitations API", () => {
     const res = await getOrganizationInvites(req, {
       params: Promise.resolve({ organization: inviteData.organizationId }),
     });
-    expect(res.status).toEqual(200);
+    await expectStatusCode(res, 200);
     const data = await res.json();
     expect(data).toHaveLength(1);
     expect(data[0].email).toEqual(inviteData.inviteeEmails[0]);
@@ -128,6 +133,6 @@ describe("Organization Invitations API", () => {
     const res = await getOrganizationInvites(req, {
       params: Promise.resolve({ organization: inviteData.organizationId }),
     });
-    expect(res.status).toEqual(403);
+    await expectStatusCode(res, 403);
   });
 });

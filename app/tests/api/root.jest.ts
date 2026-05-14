@@ -1,7 +1,7 @@
 import { GET as getRootMessage } from "@/app/api/v1/route";
 import { db } from "@/models";
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
-import { mockRequest, setupTests } from "../helpers";
+import { expectStatusCode, mockRequest, setupTests } from "../helpers";
 
 describe("Root API", () => {
   beforeAll(async () => {
@@ -18,9 +18,10 @@ describe("Root API", () => {
       const req = mockRequest();
       const res = await getRootMessage(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const data = await res.json();
       expect(data.message).toBe("Welcome to the CityCatalyst backend API!");
     });
   });
 });
+

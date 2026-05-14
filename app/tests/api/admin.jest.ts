@@ -11,7 +11,13 @@ import {
   expect,
   jest,
 } from "@jest/globals";
-import { mockRequest, setupTests, testUserData, testUserID } from "../helpers";
+import {
+  expectStatusCode,
+  mockRequest,
+  setupTests,
+  testUserData,
+  testUserID,
+} from "../helpers";
 import { AppSession, Auth } from "@/lib/auth";
 import { Roles } from "@/util/types";
 import {
@@ -79,7 +85,7 @@ describe("Admin API", () => {
     const req = mockRequest(mockBulkInventoriesRequest);
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
     const res = await createBulkInventories(req, emptyParams);
-    expect(res.status).toBe(200);
+    await expectStatusCode(res, 200);
     const body = await res.json();
     expect(body.errors.length).toBe(0);
     expect(body.results.length).toBe(
@@ -147,7 +153,7 @@ describe("Admin API", () => {
     const req = mockRequest(mockConnectSourcesRequest);
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
     const res = await bulkConnectDataSources(req, emptyParams);
-    expect(res.status).toBe(200);
+    await expectStatusCode(res, 200);
     const body = await res.json();
     // expect(body.errors.length).toBe(0);
     console.error(body.errors.slice(0, 10));
@@ -160,7 +166,7 @@ describe("Admin API", () => {
     });
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
     const res = await changeRole(req, emptyParams);
-    expect(res.status).toBe(200);
+    await expectStatusCode(res, 200);
     const body = await res.json();
     expect(body.success).toBe(true);
 
@@ -176,7 +182,7 @@ describe("Admin API", () => {
       role: Roles.Admin,
     });
     const res = await changeRole(req, emptyParams);
-    expect(res.status).toBe(403);
+    await expectStatusCode(res, 403);
 
     const user = await db.models.User.findOne({
       where: { email: testUserData.email },
@@ -191,7 +197,7 @@ describe("Admin API", () => {
     });
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
     const res = await changeRole(req, emptyParams);
-    expect(res.status).toBe(404);
+    await expectStatusCode(res, 404);
   });
 
   it("should validate the request", async () => {
@@ -199,7 +205,7 @@ describe("Admin API", () => {
 
     const req = mockRequest({ email: testUserData.email, role: "invalid" });
     const res = await changeRole(req, emptyParams);
-    expect(res.status).toBe(400);
+    await expectStatusCode(res, 400);
 
     const req2 = mockRequest({ email: "not-an-email", role: "admin" });
     const res2 = await changeRole(req2, emptyParams);

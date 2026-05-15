@@ -116,7 +116,7 @@ def test_city_attributes_service_uses_env_base_url_override(
     assert service.base_url == "https://city-attributes.example.test/root/"
     assert (
         service._build_city_url("CL IQQ")
-        == "https://city-attributes.example.test/root/api/v0/city_attributes/CL IQQ"
+        == "https://city-attributes.example.test/root/api/v0/city_attributes/CL%20IQQ"
     )
 
 
@@ -231,7 +231,7 @@ def test_api_city_client_rejects_incomplete_remote_payload(
     assert error_info.value.upstream_status_code == 200
     assert (
         error_info.value.url
-        == f"{DEFAULT_CITY_ATTRIBUTES_BASE_URL.rstrip('/')}/api/v0/city_attributes/CL IQQ"
+        == f"{DEFAULT_CITY_ATTRIBUTES_BASE_URL.rstrip('/')}/api/v0/city_attributes/CL%20IQQ"
     )
 
 
@@ -467,22 +467,24 @@ def test_action_api_item_rejects_scalar_subsector_number() -> None:
 
 
 @pytest.mark.unit
-def test_action_api_item_rejects_unexpected_upstream_field() -> None:
-    """Upstream action contract rejects unexpected extra fields instead of dropping them."""
-    with pytest.raises(ValidationError):
-        ActionApiItem.model_validate(
-            {
-                "actionId": "action_1",
-                "actionName": "Action 1",
-                "unexpectedField": "should-fail",
-                "emissions": {
-                    "sector_number": "I",
-                    "subsector_number": [1],
-                    "gpc_reference_number": ["I.1.1"],
-                    "impact_text": "high",
-                },
-            }
-        )
+def test_action_api_item_ignores_unexpected_upstream_field() -> None:
+    """Upstream action DTO ignores additive extra fields it does not use."""
+    action = ActionApiItem.model_validate(
+        {
+            "actionId": "action_1",
+            "actionName": "Action 1",
+            "unexpectedField": "ignored",
+            "emissions": {
+                "sector_number": "I",
+                "subsector_number": [1],
+                "gpc_reference_number": ["I.1.1"],
+                "impact_text": "high",
+            },
+        }
+    )
+
+    assert action.actionId == "action_1"
+    assert not hasattr(action, "unexpectedField")
 
 
 @pytest.mark.unit

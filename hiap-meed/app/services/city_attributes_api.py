@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from urllib.parse import quote
 
 from pydantic import ValidationError
 
@@ -37,7 +38,8 @@ class CityAttributesApiService:
     def _build_city_url(self, locode: str) -> str:
         """Return the full upstream city attributes URL for one locode."""
         normalized_locode = locode.strip().upper()
-        return f"{self.base_url.rstrip('/')}/api/v0/city_attributes/{normalized_locode}"
+        encoded_locode = quote(normalized_locode, safe="")
+        return f"{self.base_url.rstrip('/')}/api/v0/city_attributes/{encoded_locode}"
 
     def get_city(self, locode: str) -> CityData:
         """Fetch one city payload from the upstream API and map it to `CityData`."""

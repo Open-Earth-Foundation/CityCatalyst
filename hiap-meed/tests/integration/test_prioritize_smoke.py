@@ -440,7 +440,7 @@ def test_prioritize_returns_502_for_upstream_city_schema_drift(
         assert response.json()["detail"]["request_id"] == "req-city-schema-drift"
         assert response.json()["detail"]["upstream_status_code"] == 200
         assert response.json()["detail"]["upstream_url"] == (
-            f"{DEFAULT_CITY_ATTRIBUTES_BASE_URL.rstrip('/')}/api/v0/city_attributes/CL SCL"
+            f"{DEFAULT_CITY_ATTRIBUTES_BASE_URL.rstrip('/')}/api/v0/city_attributes/CL%20SCL"
         )
     finally:
         app.dependency_overrides.clear()

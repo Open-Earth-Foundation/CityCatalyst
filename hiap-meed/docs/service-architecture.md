@@ -87,7 +87,7 @@ This is the right choice as long as the orchestrator and data clients are synchr
 Clients are injected via FastAPI's `Depends()` pattern. The city client defaults to the live city attributes API, while the action, legal, and policy clients still default to checked-in mock payloads.
 
 Future action API note:
-- the current strict action DTOs still match the checked-in `actions_api_mock.json`
+- the current action DTOs still match the checked-in `actions_api_mock.json`
 - that current mock contract still includes optional fields such as `biome`
 - when `GET /api/v1/action-pathways` is integrated, the action DTOs and mapping layer should be updated in one dedicated change to match the new payload shape, including dropping `biome` and aligning to the new action/co-benefit/emissions field names
 

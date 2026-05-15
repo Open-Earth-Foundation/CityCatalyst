@@ -101,7 +101,7 @@ This mock follows the active upstream city attributes schema:
 - city fields such as `city_name`, `country_code`, `populationSize`, `populationDensity`, and `area_km2`
 - a `population` indicator object in addition to the top-level population fields
 - all 9 socioeconomic indicator keys currently used by Feasibility
-- strict city payload validation, so unexpected keys or wrong casing are rejected
+- the current city response DTOs still accept the camelCase population aliases and ignore unexpected extra keys
 
 # actions_api_mock.json:
 
@@ -119,7 +119,7 @@ Future action API note:
 
 - This mock still matches the current action contract used by this branch.
 - It may include optional fields such as `biome`.
-- When the future `GET /api/v1/action-pathways` payload replaces this mock, the strict action DTOs and this mock file should be updated together, including removing `biome` and aligning to the new payload field names.
+- When the future `GET /api/v1/action-pathways` payload replaces this mock, the action DTOs and this mock file should be updated together, including removing `biome` and aligning to the new payload field names.
 
 # actions_policy_signals_api_mock.json:
 

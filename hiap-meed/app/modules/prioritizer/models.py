@@ -547,7 +547,7 @@ class UpstreamApiContext(BaseModel):
 class UpstreamMeta(BaseModel):
     """Common metadata envelope returned by upstream APIs."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     generated_at_utc: str
     api_context: UpstreamApiContext
@@ -559,7 +559,7 @@ class UpstreamMeta(BaseModel):
 class UpstreamDatasource(BaseModel):
     """One datasource entry attached to upstream city metadata."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     datasource_name: str
     publisher_name: str | None = None
@@ -624,7 +624,7 @@ class CityApiItem(BaseModel):
 class ActionImpactEntry(BaseModel):
     """Single impact entry (emissions or co-benefit category) for one action."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     sector_number: str
     subsector_number: list[int] = Field(min_length=1)
@@ -651,7 +651,7 @@ class ActionImpactEntry(BaseModel):
 class ActionCoBenefitEntry(BaseModel):
     """Single co-benefit entry for one action."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     impact_relationship: str | None = None
     impact_text: str | None = None
@@ -662,7 +662,7 @@ class ActionCoBenefitEntry(BaseModel):
 class ActionSocioeconomicIndicatorRule(BaseModel):
     """One socioeconomic fit rule row attached to an action."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     indicator_key: str
     direction: str
@@ -690,7 +690,7 @@ class ActionSocioeconomicIndicatorRule(BaseModel):
 class ActionApiItem(BaseModel):
     """Action item shape returned by upstream `GET /v1/actions`."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     actionId: str
     actionName: str
@@ -758,7 +758,7 @@ class CitiesApiResponse(BaseModel):
 class ActionsApiResponse(BaseModel):
     """Response model for `GET /v1/actions`."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     meta: UpstreamMeta
     actions: list[ActionApiItem] = Field(default_factory=list)
@@ -767,7 +767,7 @@ class ActionsApiResponse(BaseModel):
 class PolicySignal(BaseModel):
     """Single policy signal evidence item for one action."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     location_scope: str
     location_name: str
@@ -781,7 +781,7 @@ class PolicySignal(BaseModel):
 class PolicySignalByAction(BaseModel):
     """Policy signal collection grouped by action ID."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     action_id: str
     policy_signals: list[PolicySignal] = Field(default_factory=list)
@@ -791,7 +791,7 @@ class PolicySignalByAction(BaseModel):
 class ActionsPolicySignalsApiResponse(BaseModel):
     """Response model for city-scoped policy alignment endpoint."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     meta: UpstreamMeta
     policy_signals: list[PolicySignalByAction] = Field(default_factory=list)
@@ -800,7 +800,7 @@ class ActionsPolicySignalsApiResponse(BaseModel):
 class LegalRequirement(BaseModel):
     """Single legal requirement alignment check for one action."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     signal_code: str
     signal_name: str
@@ -818,7 +818,7 @@ class LegalRequirement(BaseModel):
 class LegalRequirementsByAction(BaseModel):
     """Legal requirements grouped by action ID."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     action_id: str
     requirements: list[LegalRequirement] = Field(default_factory=list)
@@ -827,7 +827,7 @@ class LegalRequirementsByAction(BaseModel):
 class ActionsLegalApiMeta(UpstreamMeta):
     """Metadata for actions/legal response including test descriptors."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     test_cases: dict[str, str] = Field(default_factory=dict)
     strength_scale: list[str] = Field(default_factory=list)
@@ -836,7 +836,7 @@ class ActionsLegalApiMeta(UpstreamMeta):
 class ActionsLegalApiResponse(BaseModel):
     """Response model for city-scoped legal alignment endpoint."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     meta: ActionsLegalApiMeta
     legal_requirements: list[LegalRequirementsByAction] = Field(default_factory=list)

@@ -127,9 +127,10 @@ Design note:
 - For the upcoming frontend contract, single-city and multi-city payloads both
   use `cityDataList`; single-city is represented as a list with one item.
 - Boundary validation note: incoming frontend request contracts and upstream/mock
-  response contracts are strict. Unexpected fields and wrong casing are rejected
-  at validation time instead of being silently ignored.
-- Future action API note: the current strict `ActionsApiResponse` contract still
+  response contracts are handled differently by design. Frontend request DTOs
+  reject unexpected fields, while upstream response DTOs ignore unexpected extra
+  fields and still validate the fields we actually use.
+- Future action API note: the current `ActionsApiResponse` contract still
   matches the checked-in `actions_api_mock.json`, including optional fields such
   as `biome`. When `GET /api/v1/action-pathways` is integrated, this action
   contract will need a dedicated update to match that new payload, including
@@ -457,7 +458,7 @@ Common validation errors:
 - Missing `requestData.cityDataList` or empty `cityDataList` -> HTTP `422`.
 - Missing `locode` or empty `locode` in a city entry -> HTTP `422`.
 
-Note: city, action, legal, and policy-signal clients resolve to `mock` (file-backed) or `api`. The city client now uses a synchronous upstream HTTP integration for `GET /api/v0/city_attributes/{locode}` when `HIAP_MEED_CITY_DATA_SOURCE=api`, which is the default. The shared `CCGLOBAL_API_BASE_URL` defaults to `https://ccglobal.openearth.dev` for local/dev use; the hiap-meed GitHub workflows override it per environment, with dev using `https://ccglobal.openearth.dev` and test/prod using `https://api.citycatalyst.io/`. If that host mapping changes, update both the runtime config and the hiap-meed deploy workflows together. The shared upstream HTTP path also includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. The city upstream response contract is strict: unknown or misnamed fields are rejected instead of being silently dropped. The action, legal, and policy-signal API clients are still placeholders, so their default source remains `mock`. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
+Note: city, action, legal, and policy-signal clients resolve to `mock` (file-backed) or `api`. The city client now uses a synchronous upstream HTTP integration for `GET /api/v0/city_attributes/{locode}` when `HIAP_MEED_CITY_DATA_SOURCE=api`, which is the default. The shared `CCGLOBAL_API_BASE_URL` defaults to `https://ccglobal.openearth.dev` for local/dev use; the hiap-meed GitHub workflows override it per environment, with dev using `https://ccglobal.openearth.dev` and test/prod using `https://api.citycatalyst.io/`. If that host mapping changes, update both the runtime config and the hiap-meed deploy workflows together. The shared upstream HTTP path also includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. Upstream response DTOs are intentionally additive-tolerant right now: they ignore unexpected extra fields while still validating the fields the pipeline depends on. The action, legal, and policy-signal API clients are still placeholders, so their default source remains `mock`. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
 
 ### 5. Logging and artifacts
 

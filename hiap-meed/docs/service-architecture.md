@@ -79,7 +79,7 @@ This is the right choice as long as the orchestrator and data clients are synchr
 
 | Client                    | Method                                | Status                                                                                  | Target upstream |
 | ------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------- | --------------- |
-| City data client          | `get_city(locode)`                    | Mock/API switch (`HIAP_MEED_CITY_DATA_SOURCE`); `mock` is file-backed, `api` performs synchronous HTTP GET `/api/v0/city_attributes/{locode}` | `ccglobal.openearth.dev` city attributes API |
+| City data client          | `get_city(locode)`                    | Mock/API switch (`HIAP_MEED_CITY_DATA_SOURCE`); `mock` is file-backed, `api` performs synchronous HTTP GET `/api/v0/city_attributes/{locode}` against the shared `CCGLOBAL_API_BASE_URL` (default `https://ccglobal.openearth.dev` locally; overridden in workflows per environment) | configurable city attributes API host |
 | Action data client        | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_DATA_SOURCE`); `mock` is file-backed, `api` is placeholder and raises `NotImplementedError` | Global API (future) |
 | Legal data client         | `get_action_legal_requirements(locode)` | Mock/API switch (`HIAP_MEED_LEGAL_DATA_SOURCE`); `mock` is file-backed, `api` is placeholder and raises `NotImplementedError` | Global API (future) |
 | Policy signals data client | `get_action_policy_signals(locode)`    | Mock/API switch (`HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE`); `mock` is file-backed, `api` is placeholder and raises `NotImplementedError` | Global API (future) |

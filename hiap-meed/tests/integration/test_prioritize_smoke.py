@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import time
 
+import httpx
 import pytest
 from fastapi.testclient import TestClient
 
@@ -23,7 +24,9 @@ from app.modules.prioritizer.internal_models import (
     CityData,
     LegalRequirementRecord,
 )
+from app.services.city_attributes_api import DEFAULT_CITY_ATTRIBUTES_BASE_URL
 from app.services.http_client import UpstreamApiError
+from app.services.data_clients import ApiCityDataApiClient
 
 
 @dataclass
@@ -350,6 +353,94 @@ def test_prioritize_returns_503_for_retryable_upstream_city_failure() -> None:
         assert response.json()["detail"]["request_id"] == "req-city-503"
         assert response.json()["detail"]["upstream_url"] == (
             "https://example.test/api/v0/city_attributes/CL-SCL"
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+
+@pytest.mark.integration
+def test_prioritize_returns_502_for_upstream_city_schema_drift(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Prioritize returns HTTP 502 when the upstream city payload fails schema validation."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        request = httpx.Request("GET", url, headers=headers)
+        return httpx.Response(
+            200,
+            request=request,
+            json={
+                "meta": {
+                    "generated_at_utc": "2026-05-13T09:39:51.706285+00:00",
+                    "api_context": {
+                        "endpoint": "GET /api/v0/city_attributes/{locode}",
+                        "locode": "CL SCL",
+                        "version_label": None,
+                    },
+                    "datasources": [],
+                },
+                "city": {
+                    "locode": "CL SCL",
+                    "country_code": "CL",
+                    "region_code": "13",
+                    "region_name": "Metropolitana",
+                },
+            },
+        )
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+
+    mock_action_client = MockActionDataApiClient(actions=[])
+    mock_legal_client = MockLegalDataApiClient(requirements_by_action_id={})
+    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+
+    app.dependency_overrides[get_city_data_api_client] = lambda: ApiCityDataApiClient()
+    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
+    app.dependency_overrides[get_policy_signals_data_api_client] = (
+        lambda: mock_policy_client
+    )
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post(
+                "/v1/prioritize",
+                json={
+                    "meta": {
+                        "requestId": "req-city-schema-drift",
+                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
+                        "backendConsumer": "hiap-meed",
+                        "upstreamProvider": "city_catalyst_frontend",
+                        "apiContext": {
+                            "endpoint": "POST /v1/prioritize",
+                            "locodes": ["CL SCL"],
+                        },
+                        "totalRecords": 1,
+                    },
+                    "requestData": {
+                        "requestedLanguages": ["en"],
+                        "cityDataList": [
+                            {
+                                "locode": "CL SCL",
+                                "countryCode": "CL",
+                                "populationSize": 1000,
+                                "cityStrategicPreferenceSectors": [],
+                                "cityStrategicPreferenceCoBenefitKeys": [],
+                                "cityEmissionsData": {
+                                    "inventoryYear": None,
+                                    "gpcData": {},
+                                },
+                            }
+                        ],
+                    },
+                },
+            )
+        assert response.status_code == 502
+        assert response.json()["detail"]["request_id"] == "req-city-schema-drift"
+        assert response.json()["detail"]["upstream_status_code"] == 200
+        assert response.json()["detail"]["upstream_url"] == (
+            f"{DEFAULT_CITY_ATTRIBUTES_BASE_URL.rstrip('/')}/api/v0/city_attributes/CL SCL"
         )
     finally:
         app.dependency_overrides.clear()

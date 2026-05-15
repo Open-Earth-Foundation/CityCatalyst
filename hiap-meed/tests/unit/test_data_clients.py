@@ -14,6 +14,10 @@ from app.modules.prioritizer.models import (
     PolicySignalByAction,
     PrioritizerApiRequest,
 )
+from app.services.city_attributes_api import (
+    DEFAULT_CITY_ATTRIBUTES_BASE_URL,
+    CityAttributesApiService,
+)
 from app.services.http_client import UpstreamApiError, get_json_with_retries
 from app.services.data_clients import (
     ApiCityDataApiClient,
@@ -83,6 +87,37 @@ def test_get_city_data_client_defaults_to_api(monkeypatch: pytest.MonkeyPatch) -
     client = get_city_data_api_client()
 
     assert isinstance(client, ApiCityDataApiClient)
+
+
+@pytest.mark.unit
+def test_city_attributes_service_uses_default_base_url_when_env_is_unset(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """City attributes service falls back to the documented default host."""
+    monkeypatch.delenv("CCGLOBAL_API_BASE_URL", raising=False)
+
+    service = CityAttributesApiService()
+
+    assert service.base_url == DEFAULT_CITY_ATTRIBUTES_BASE_URL
+
+
+@pytest.mark.unit
+def test_city_attributes_service_uses_env_base_url_override(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """City attributes service honors the configured upstream host override."""
+    monkeypatch.setenv(
+        "CCGLOBAL_API_BASE_URL",
+        "https://city-attributes.example.test/root/ ",
+    )
+
+    service = CityAttributesApiService()
+
+    assert service.base_url == "https://city-attributes.example.test/root/"
+    assert (
+        service._build_city_url("CL IQQ")
+        == "https://city-attributes.example.test/root/api/v0/city_attributes/CL IQQ"
+    )
 
 
 @pytest.mark.unit
@@ -158,7 +193,7 @@ def test_api_city_client_maps_remote_payload_and_metadata(
 def test_api_city_client_rejects_incomplete_remote_payload(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """API city client fails fast when required city fields are missing upstream."""
+    """API city client maps invalid upstream payloads to a structured 502 error."""
 
     def _mock_get(
         self: httpx.Client, url: str, headers: dict[str, str] | None = None
@@ -189,8 +224,15 @@ def test_api_city_client_rejects_incomplete_remote_payload(
     monkeypatch.setattr(httpx.Client, "get", _mock_get)
     client = ApiCityDataApiClient()
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(UpstreamApiError) as error_info:
         client.get_city("CL IQQ")
+
+    assert error_info.value.status_code == 502
+    assert error_info.value.upstream_status_code == 200
+    assert (
+        error_info.value.url
+        == f"{DEFAULT_CITY_ATTRIBUTES_BASE_URL.rstrip('/')}/api/v0/city_attributes/CL IQQ"
+    )
 
 
 @pytest.mark.unit

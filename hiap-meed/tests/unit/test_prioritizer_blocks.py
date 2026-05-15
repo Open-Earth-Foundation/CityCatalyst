@@ -107,6 +107,7 @@ def test_mock_city_loader_keeps_renamed_indicator_keys() -> None:
 
     assert "employment_in_transport_and_logistics" in city.raw
     assert "electricity_access_rate" in city.raw
+    assert "population" in city.raw
     city_context_names = {
         row["attribute_name"] for row in city.city_context if "attribute_name" in row
     }
@@ -115,15 +116,14 @@ def test_mock_city_loader_keeps_renamed_indicator_keys() -> None:
 
 
 @pytest.mark.unit
-def test_city_api_item_ignores_legacy_indicator_names() -> None:
-    """Legacy city indicator names are ignored so mismatches remain visible."""
+def test_city_api_item_ignores_unknown_indicator_names() -> None:
+    """City API parsing tolerates additive upstream keys we do not consume yet."""
     city = CityApiItem.model_validate(
         {
-            "comuna_name": "Iquique",
+            "city_name": "Iquique",
             "locode": "CL IQQ",
-            "countryCode": "CL",
+            "country_code": "CL",
             "region_name": "Tarapaca",
-            "comuna_code": "CL01101",
             "region_code": "CL01",
             "transport_logistics_employment": {
                 "attribute_value": 7.35,
@@ -138,8 +138,8 @@ def test_city_api_item_ignores_legacy_indicator_names() -> None:
         }
     )
 
-    assert city.employment_in_transport_and_logistics is None
-    assert city.electricity_access_rate is None
+    assert city.locode == "CL IQQ"
+    assert city.city_name == "Iquique"
 
 
 @pytest.mark.unit

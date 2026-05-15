@@ -1,68 +1,103 @@
 {
   "meta": {
-    "generated_at_utc": "2026-02-26T11:38:45.183100+00:00",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
+    "generated_at_utc": "2026-05-13T09:39:51.706285+00:00",
     "api_context": {
-      "endpoint": "GET /v1/cities/{locode}",
-      "locode": "CL IQQ"
+      "endpoint": "GET /api/v0/city_attributes/{locode}",
+      "locode": "CL IQQ",
+      "version_label": null
     },
-    "total_records": 1
+    "datasources": [
+      {
+        "datasource_name": "cl-ine-censo",
+        "publisher_name": "Instituto Nacional de Estadisticas (Chile)",
+        "publisher_url": "https://www.ine.gob.cl/",
+        "dataset_name": "Chile Population and Housing Census",
+        "dataset_url": "https://www.ine.gob.cl/estadisticas/sociales/censos-de-poblacion-y-vivienda/poblacion-y-vivienda",
+        "version_label": "2024",
+        "released_at": "2025-01-01",
+        "source_url": "https://censo2024.ine.gob.cl/resultados/",
+        "is_latest": true
+      }
+    ]
   },
   "city": {
-    "comuna_name": "Iquique",
     "locode": "CL IQQ",
-    "countryCode": "CL",
-    "region_name": "Tarapacá",
-    "comuna_code": "CL01101",
+    "city_name": "Iquique",
+    "country_code": "CL",
     "region_code": "CL01",
+    "region_name": "Tarapaca",
+    "area_km2": 2646,
     "populationSize": 214857,
     "populationDensity": 953.69,
-    "area": 225,
+    "population": {
+      "attribute_value": 214857,
+      "attribute_units": "persons",
+      "attribute_category": "very high",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
+    },
     "unemployment_rate": {
       "attribute_value": 9.44,
       "attribute_units": "percent",
-      "attribute_category": "high"
+      "attribute_category": "high",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
     },
     "renter_share": {
       "attribute_value": 43.48,
       "attribute_units": "percent",
-      "attribute_category": "high"
+      "attribute_category": "high",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
     },
     "employment_in_transport_and_logistics": {
       "attribute_value": 7.35,
       "attribute_units": "percent",
-      "attribute_category": "low"
+      "attribute_category": "low",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
     },
     "electricity_access_rate": {
       "attribute_value": 100.0,
       "attribute_units": "percent",
-      "attribute_category": "very low"
+      "attribute_category": "very low",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
     },
     "industry_construction_employment": {
       "attribute_value": 22.79,
       "attribute_units": "percent",
-      "attribute_category": "high"
+      "attribute_category": "high",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
     },
     "median_household_income": {
       "attribute_value": 1200000.0,
       "attribute_units": "CLP",
-      "attribute_category": "high"
+      "attribute_category": "high",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
     },
     "public_transport_share": {
       "attribute_value": 31.84,
       "attribute_units": "percent",
-      "attribute_category": "medium"
+      "attribute_category": "medium",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
     },
     "poverty_rate": {
       "attribute_value": 26.77,
       "attribute_units": "percent",
-      "attribute_category": "very high"
+      "attribute_category": "very high",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
     },
     "home_ownership": {
       "attribute_value": 40.0,
       "attribute_units": "percent",
-      "attribute_category": "very low"
+      "attribute_category": "very low",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
     }
   }
 }

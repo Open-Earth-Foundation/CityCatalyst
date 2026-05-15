@@ -122,13 +122,13 @@ Fields that affect the result:
 - `requestData.cityDataList[].cityStrategicPreferenceSectors[]`
 - `requestData.cityDataList[].cityStrategicPreferenceTimeframes[]`
 - `requestData.cityDataList[].cityStrategicPreferenceCoBenefitKeys[]`
-- `requestData.cityDataList[].cityEmissionsData.gpcData.<reference>.activities[].activityType`
 - `requestData.cityDataList[].cityEmissionsData.gpcData.<reference>.activities[].totalEmissions`
 
 What these are used for:
 
 - `topN` controls how many ranked actions are returned.
 - `weightsOverride` changes how much Impact, Alignment, and Feasibility matter in the final score.
+- `weightsOverride` may be partial. Any missing keys are filled from the defaults before validation, and the resolved final `impact/alignment/feasibility` set must sum to `1.0`.
 - `excludedActionIds[]` removes user-confirmed exclusions before scoring.
 - `cityStrategicPreferenceSectors[]` influences the Alignment block.
 - `cityStrategicPreferenceSectors[]` must use only:
@@ -156,12 +156,20 @@ What these are used for:
 - `requestData.requestedLanguages` controls the explanation languages requested for post-ranking output.
 - The backend always generates canonical English explanations first, then translates from English into each requested non-English target language.
 - `totalEmissions` values are the main city emissions numbers used in the Impact block.
+- `activityType` rows are preserved for future activity-data-level matching and diagnostics, but they do not currently change ranking output.
 
 ### City context data
 
 File:
 
 - `data/mock/city_api_mock.json`
+
+Shape note:
+
+- This mock now follows the upstream `GET /api/v0/city_attributes/{locode}` schema.
+- The city payload uses fields such as `city_name`, `country_code`, `populationSize`, `populationDensity`, and `area_km2`.
+- The city payload also includes a `population` indicator object alongside the top-level population fields.
+- The current city response DTOs are intentionally lenient: they still accept the current camelCase population aliases and ignore unexpected extra keys.
 
 Fields that affect the result:
 
@@ -185,6 +193,12 @@ What these are used for:
 File:
 
 - `data/mock/actions_api_mock.json`
+
+Future contract note:
+
+- This file still represents the current action mock/upstream shape used by this branch.
+- It may include fields such as `biome` that are not expected in the future `GET /api/v1/action-pathways` payload.
+- When that new action API is integrated, the action response DTOs and the mock action file should be updated together in one dedicated contract migration.
 
 Fields that affect the result:
 
@@ -336,22 +350,23 @@ Input field:
 
 What the pipeline does:
 
-- For each emissions category in the request, it adds together all `totalEmissions` values found under that category.
+- For each outer GPC key in the request, the pipeline first normalizes that key to a `sector.subsector` key.
+- It then adds together all `totalEmissions` values found under that normalized subsector key.
 
 Plain-language formula:
 
 ```text
-City emissions for one emissions category
-= sum of all activity-level totalEmissions values inside that category
+ City emissions for one normalized subsector key
+= sum of all activity-level totalEmissions values inside request rows that normalize to that subsector key
 ```
 
 Output:
 
-- A table that says, for each emissions category, how much total city emissions it represents.
+- A table that says, for each normalized `sector.subsector` key, how much total city emissions it represents.
 
 Example:
 
-- If one emissions category contains three activity rows, the pipeline adds the three `totalEmissions` values together and stores one total for that category.
+- If multiple request rows normalize to the same `sector.subsector` key, the pipeline adds their activity-level `totalEmissions` values together and stores one total for that normalized subsector key.
 
 ## 4. Hard Filter
 
@@ -1060,6 +1075,7 @@ From the request or the defaults:
 - `requestData.cityDataList[].weightsOverride.impact`
 - `requestData.cityDataList[].weightsOverride.alignment`
 - `requestData.cityDataList[].weightsOverride.feasibility`
+- partial overrides are allowed; missing keys are filled from defaults before validating the resolved final weights
 
 From the request size:
 
@@ -1138,11 +1154,11 @@ For each ranked action, the output includes:
 - `alignment_score`
 - `feasibility_score`
 - `evidence_summary`
-- `explanation`
+- `explanations`
 
 Important current behavior:
 
-- `explanation` is `null` unless `requestData.createExplanations=true` and the explanation call succeeds
+- `explanations` is `{}` unless `requestData.createExplanations=true` and the explanation call succeeds
 - Explanations are generated only after ranking is finished; they do not change scores or ranks
 - The explanation stage uses the ranked actions plus curated evidence from the Impact, Alignment, and Feasibility blocks
 - The explanation stage returns explanation texts keyed by language code per action.
@@ -1151,7 +1167,7 @@ Important current behavior:
 - Response metadata records `generated_languages` as the languages actually present in the returned explanation payload.
 - Explanations receive `cityStrategicPreferenceCoBenefitKeys[]` directly from the request context
 - The backend logs a warning if the explanation prompt becomes unusually large
-- If explanation generation fails or times out, ranking still returns normally with `explanation=null`
+- If explanation generation fails or times out, ranking still returns normally with `explanations={}`
 - When explanation artifacts are enabled, the run folder stores:
   - `llm/explanations_prompt.txt`
   - `llm/explanations_io.json`
@@ -1212,16 +1228,18 @@ Current behavior:
 - validated against the allowed co-benefit taxonomy
 - contributes to the Alignment block through normalized selected co-benefit impact values
 
-### Placeholder 3: ranked action `explanation`
+### Placeholder 3: ranked action `explanations`
 
 Current behavior:
 
-- `null` unless `requestData.createExplanations=true` and explanation generation succeeds
+- `{}` unless `requestData.createExplanations=true` and explanation generation succeeds
+- when generated, the field is an object keyed by language code
+- canonical English explanations are generated first and requested non-English languages are returned through the current translation flow
+- `/v1/explanations/translate` is already available as the stateless translation endpoint for canonical explanation text
 
-Planned use:
+Planned improvements:
 
 - continue improving the generated explanation quality and prompt grounding
-- extend the response contract and explanation pipeline so one request can return fully multilingual explanation payloads instead of today's single-string, first-language-wins behavior
 
 ## 11. Practical Reading of the Current System
 

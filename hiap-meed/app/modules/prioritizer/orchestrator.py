@@ -259,8 +259,10 @@ def run_prioritization(
         "fetch_city",
         {
             "locode": locode,
-            "comuna_name": city.comuna_name,
+            "city_name": city.city_name,
             "region_name": city.region_name,
+            "source": city.source,
+            "source_metadata": city.source_metadata,
             "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=fetch_city_event_index,

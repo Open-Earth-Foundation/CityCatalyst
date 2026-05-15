@@ -44,6 +44,7 @@ from app.services.data_clients import (
     get_legal_data_api_client,
     get_policy_signals_data_api_client,
 )
+from app.services.http_client import UpstreamApiError
 from app.utils.artifacts import ArtifactWriter
 
 
@@ -55,6 +56,22 @@ router = APIRouter(tags=["prioritization"])
 def _error_payload(request_id: str, message: str) -> dict[str, str]:
     """Build a consistent JSON error body including the request ID."""
     return {"request_id": request_id, "error": message}
+
+
+def _upstream_error_payload(
+    request_id: str,
+    error: UpstreamApiError,
+) -> dict[str, str | int]:
+    """Build a consistent JSON error body for upstream dependency failures."""
+    payload: dict[str, str | int] = {
+        "request_id": request_id,
+        "error": error.message,
+    }
+    if error.upstream_status_code is not None:
+        payload["upstream_status_code"] = error.upstream_status_code
+    if error.url is not None:
+        payload["upstream_url"] = error.url
+    return payload
 
 
 def _extract_city_emissions_context(city_input: FrontendCityInput) -> CityEmissionsContext:
@@ -256,6 +273,17 @@ def preview_exclusions(
             status_code=422,
             detail=_error_payload(request_trace_id, str(error)),
         ) from error
+    except UpstreamApiError as error:
+        logger.warning(
+            "Exclusion preview upstream dependency failed request_id=%s status_code=%s error=%s",
+            request_trace_id,
+            error.status_code,
+            error,
+        )
+        raise HTTPException(
+            status_code=error.status_code,
+            detail=_upstream_error_payload(request_trace_id, error),
+        ) from error
     except Exception as error:
         logger.exception("Exclusion preview failed request_id=%s", request_trace_id)
         raise HTTPException(
@@ -365,6 +393,17 @@ def prioritize(
         raise HTTPException(
             status_code=422,
             detail=_error_payload(request_trace_id, str(error)),
+        ) from error
+    except UpstreamApiError as error:
+        logger.warning(
+            "Prioritization upstream dependency failed request_id=%s status_code=%s error=%s",
+            request_trace_id,
+            error.status_code,
+            error,
+        )
+        raise HTTPException(
+            status_code=error.status_code,
+            detail=_upstream_error_payload(request_trace_id, error),
         ) from error
     except Exception as error:
         logger.exception("Prioritization failed request_id=%s", request_trace_id)

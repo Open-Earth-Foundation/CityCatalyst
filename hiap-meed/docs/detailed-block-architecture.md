@@ -6,11 +6,11 @@
 | ------------ | ---------------------------------------------- | ------------------------------------------------ |
 | Exclusion Preview | Sector, co-benefit, and guarded free-text proposal | Implemented |
 | Hard Filter  | Confirmed exclusion by `action_id`             | Implemented                                      |
-| Hard Filter  | Legal requirement check                        | Implemented                                      |
+| Hard Filter  | Legal verdict check                            | Implemented                                      |
 | Impact       | GPC reference evidence collection              | Implemented                                      |
 | Impact       | Activity relevance × reduction band × timeline | Implemented                                      |
 | Alignment    | Policy + sector + other components             | Implemented (`other` uses direct co-benefit selections plus normalized selected co-benefit scoring) |
-| Feasibility  | Soft legal + socio-economic weighted component | Implemented                                      |
+| Feasibility  | Legal verdict score + socio-economic weighted component | Implemented                                      |
 | Weighted Sum | Weighted aggregation, sort, rank, `top_n`      | Implemented                                      |
 
 ---
@@ -20,7 +20,7 @@
 This block removes actions that are not eligible before any scoring happens. It applies two binary checks:
 
 1. Confirmed city exclusions
-2. Hard legal requirements (must be satisfied, otherwise remove)
+2. Legal verdict screening (`blocked` actions are removed)
 
 Biome filtering is intentionally not included yet.
 
@@ -31,8 +31,8 @@ Biome filtering is intentionally not included yet.
 - **Confirmed city exclusions**
   - Source: caller request `excludedActionIds[]`, usually confirmed after `POST /v1/prioritize/exclusions/preview`
   - Current behavior: each matching `action_id` is discarded before legal filtering
-- **Hard legal requirements per action**
-  - Source: legal requirements client payload (mock/API), filtered to hard strengths (`mandatory|required`)
+- **Legal assessment per action**
+  - Source: legal assessments client payload (mock/API), filtered by request `countryCode`
 
 ### Outputs
 
@@ -45,11 +45,10 @@ Biome filtering is intentionally not included yet.
 graph TD
   ActionTbl[(Action)]
   Confirmed[(Frontend excludedActionIds)]
-  ReqTbl[(ActionLegalRequirement<br/>strength = hard)]
-  SigTbl[(LegalSignal<br/>scoped to city or CL)]
+  LegalTbl[(ActionLegalAssessment<br/>country filtered)]
 
   Excl{Excluded by city?}
-  Legal{Meets hard legal requirements?}
+  Legal{Verdict category blocked?}
 
   DiscardExcl((Discarded<br/>Excluded))
   DiscardLegal((Discarded<br/>Legally blocked))
@@ -61,11 +60,10 @@ graph TD
   Excl -- Yes --> DiscardExcl
   Excl -- No --> Legal
 
-  ReqTbl -.-> Legal
-  SigTbl -.-> Legal
+  LegalTbl -.-> Legal
 
-  Legal -- No --> DiscardLegal
-  Legal -- Yes --> Valid
+  Legal -- Yes --> DiscardLegal
+  Legal -- No --> Valid
 ```
 
 ## Impact Architecture
@@ -219,19 +217,19 @@ Feasibility answers: **Can this city realistically implement this action?**
 
 It combines:
 
-- Legal feasibility using soft signals for boosts and penalties
+- Legal feasibility using the direct legal verdict score
 - Socio-economic fit via action-defined fit rules applied to city indicator buckets
 
-Hard legal requirements are enforced in the Hard Filter stage.
+Blocked legal verdicts are enforced in the Hard Filter stage.
 
 ### Inputs (and where they come from)
 
-- Legal requirement rows by action
-  - Source: `actions_legal_api_mock.json` grouped by `action_id`
-- Soft legal strengths used in scoring
-  - Source: legal requirements where `strength in {recommended, optional}`
-- Informational legal constraints (evidence only)
-  - Source: legal requirements where `strength == informational`
+- Legal assessment rows by action
+  - Source: `actions_legal_api_mock.json` filtered by `countryCode` and mapped by `srcActionId`
+- Legal verdict score used in scoring
+  - Source: `verdictScore`
+- Legal evidence fields
+  - Source: `ownership*`, `restrictions*`, `legalJustification*`, `legalReferences`, and timestamps
 - Socio-economic indicator buckets for the city
   - Source: city indicators (`attribute_category`) from `city_api_mock.json`
 - Action socio-economic fit rules
@@ -244,7 +242,7 @@ Hard legal requirements are enforced in the Hard Filter stage.
 - Feasibility scores per action
   - Output: `Feasibility Scores` (one score per action, used in final ranking)
 - Optional trace fields
-  - Output: `Feasibility Evidence` (counts by strength/status, component values, per-indicator contributions)
+  - Output: `Feasibility Evidence` (legal component values, fallback source, per-indicator contributions)
 
 ```mermaid
 graph TD

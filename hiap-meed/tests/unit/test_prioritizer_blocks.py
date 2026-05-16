@@ -50,12 +50,12 @@ def _load_mock_city() -> CityData:
     return city_client.get_city("CL IQQ")
 
 
-def _load_mock_legal_requirements() -> dict[str, object]:
-    """Load legal requirements from the mock legal API payload."""
+def _load_mock_legal_assessments() -> dict[str, object]:
+    """Load legal assessments from the mock legal API payload."""
     legal_client = MockLegalDataApiClient(
         mock_file_path=_mock_data_dir() / "actions_legal_api_mock.json"
     )
-    return legal_client.get_action_legal_requirements(locode="CL IQQ")
+    return legal_client.get_action_legal_assessments(country_code="CL")
 
 
 def _load_mock_policy_signals() -> dict[str, object]:
@@ -144,24 +144,30 @@ def test_city_api_item_ignores_unknown_indicator_names() -> None:
 
 @pytest.mark.unit
 def test_hard_filter_block_with_mock_api_data() -> None:
-    """Hard filter removes known not-aligned actions from mock legal data."""
+    """Hard filter removes actions whose legal verdict category is blocked."""
     actions = _load_mock_actions()
-    legal_requirements = _load_mock_legal_requirements()
+    legal_assessments = _load_mock_legal_assessments()
 
     result = hard_filter.run(
         actions=actions,
         excluded_action_ids=[],
-        legal_requirements_by_action_id=legal_requirements,
+        legal_assessments_by_action_id=legal_assessments,
     )
 
     discarded_legal_ids = {action.action_id for action in result.discarded_legal}
-    expected_discarded_legal_ids = {"c40_0012", "c40_0034", "c40_0037", "c40_0029"}
-    assert discarded_legal_ids == expected_discarded_legal_ids
+    assert "c40_0013" in discarded_legal_ids
+    assert "c40_0012" not in discarded_legal_ids
     assert len(result.discarded_excluded) == 0
-    assert len(result.valid_actions) == len(actions) - len(expected_discarded_legal_ids)
+    assert len(result.valid_actions) == len(actions) - len(discarded_legal_ids)
 
-    assert result.evidence["c40_0012"]["discard_reason"] == "legal_hard_requirement_failed"
-    assert result.evidence["c40_0013"]["hard_requirements_unknown_count"] == 1
+    assert result.evidence["c40_0013"]["discard_reason"] == "legal_hard_requirement_failed"
+    assert result.evidence["c40_0012"]["legal_verdict_category"] == "enabled"
+    missing_action_id = next(
+        action.action_id
+        for action in actions
+        if action.action_id not in legal_assessments
+    )
+    assert result.evidence[missing_action_id]["legal_assessment_present"] is False
 
 
 @pytest.mark.unit
@@ -737,13 +743,13 @@ def test_feasibility_block_with_mock_api_data(
     """Feasibility block computes legal+socio canonical scores and evidence."""
     actions = _load_mock_actions()
     city = _load_mock_city()
-    legal_requirements = _load_mock_legal_requirements()
+    legal_assessments = _load_mock_legal_assessments()
 
     with caplog.at_level("WARNING", logger="app.modules.prioritizer.blocks.feasibility"):
         result = feasibility.run(
             actions=actions,
             city=city,
-            legal_requirements_by_action_id=legal_requirements,
+            legal_assessments_by_action_id=legal_assessments,
         )
 
     assert len(result.score_by_action_id) == len(actions)
@@ -752,9 +758,11 @@ def test_feasibility_block_with_mock_api_data(
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
     assert "socioeconomic_indicator_rows" in first_action_evidence
     assert first_action_evidence["feasibility_score"] == pytest.approx(
-        first_action_evidence["soft_legal_contribution"]
+        first_action_evidence["legal_contribution"]
         + first_action_evidence["socioeconomic_contribution"]
     )
+    assert first_action_evidence["legal_component_score"] == pytest.approx(0.5)
+    assert first_action_evidence["legal_component_source"] == "verdict_score"
     first_action_rows = {
         row["action_socioeconomic_indicator_key"]: row
         for row in first_action_evidence["socioeconomic_indicator_rows"]
@@ -781,6 +789,15 @@ def test_feasibility_block_with_mock_api_data(
         or "electricity_access_rate" in message
         for message in missing_indicator_messages
     )
+    missing_action_id = next(
+        action.action_id
+        for action in actions
+        if action.action_id not in legal_assessments
+    )
+    missing_action_evidence = result.evidence_by_action_id[missing_action_id]
+    assert missing_action_evidence["legal_component_score"] == pytest.approx(0.5)
+    assert missing_action_evidence["legal_component_source"] == "neutral_fallback"
+    assert missing_action_evidence["legal_assessment_missing"] is True
 
 
 @pytest.mark.unit

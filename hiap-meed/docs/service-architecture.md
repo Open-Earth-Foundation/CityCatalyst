@@ -35,17 +35,17 @@ graph TD
 
     Orch -->|"getCityContext(locode)"| CityClient
     Orch -->|"listActions()"| ActionClient
-    Orch -->|"getActionLegalRequirements(locode)"| LegalClient
+    Orch -->|"getActionLegalAssessments(country_code)"| LegalClient
     Orch -->|"getActionPolicySignals(locode)"| PolicyClient
 
     CityClient -.->|"API mode: GET /api/v0/city_attributes/{locode}"| GlobalAPI
     ActionClient -.->|"API mode (not implemented yet)"| GlobalAPI
-    LegalClient -.->|"API mode (not implemented yet)"| GlobalAPI
+    LegalClient -.->|"API mode: GET /api/v1/action-legal-assessments?countryCode=..."| GlobalAPI
     PolicyClient -.->|"API mode (not implemented yet)"| GlobalAPI
 
     GlobalAPI -.->|"CityData"| CityClient
     GlobalAPI -.->|"Action list"| ActionClient
-    GlobalAPI -.->|"Action legal requirements"| LegalClient
+    GlobalAPI -.->|"Action legal assessments"| LegalClient
     GlobalAPI -.->|"Action policy signals"| PolicyClient
 
     CityClient --> Orch
@@ -81,10 +81,10 @@ This is the right choice as long as the orchestrator and data clients are synchr
 | ------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------- | --------------- |
 | City data client          | `get_city(locode)`                    | Mock/API switch (`HIAP_MEED_CITY_DATA_SOURCE`); `mock` is file-backed, `api` performs synchronous HTTP GET `/api/v0/city_attributes/{locode}` against the shared `CCGLOBAL_API_BASE_URL` (default `https://ccglobal.openearth.dev` locally; overridden in workflows per environment) | configurable city attributes API host |
 | Action data client        | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_DATA_SOURCE`); `mock` is file-backed, `api` is placeholder and raises `NotImplementedError` | Global API (future) |
-| Legal data client         | `get_action_legal_requirements(locode)` | Mock/API switch (`HIAP_MEED_LEGAL_DATA_SOURCE`); `mock` is file-backed, `api` is placeholder and raises `NotImplementedError` | Global API (future) |
+| Legal data client         | `get_action_legal_assessments(country_code)` | Mock/API switch (`HIAP_MEED_LEGAL_DATA_SOURCE`); `mock` is file-backed, `api` performs synchronous HTTP GET `/api/v1/action-legal-assessments?countryCode=...` against the shared `CCGLOBAL_API_BASE_URL` | configurable legal assessments API host |
 | Policy signals data client | `get_action_policy_signals(locode)`    | Mock/API switch (`HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE`); `mock` is file-backed, `api` is placeholder and raises `NotImplementedError` | Global API (future) |
 
-Clients are injected via FastAPI's `Depends()` pattern. The city client defaults to the live city attributes API, while the action, legal, and policy clients still default to checked-in mock payloads.
+Clients are injected via FastAPI's `Depends()` pattern. The city and legal clients default to their live upstream APIs, while the action and policy clients still default to checked-in mock payloads.
 
 Future action API note:
 - the current action DTOs still match the checked-in `actions_api_mock.json`
@@ -105,8 +105,8 @@ sequenceDiagram
     FE->>API: POST /v1/prioritize PrioritizerApiRequest (meta + requestData.cityDataList)
     Note over API: FastAPI validates request body (Pydantic)
     API->>Orch: run_prioritization(locode, city_emissions_context, clients, per_city_options...)
-    Orch->>Clients: get_city / list_actions / get_action_legal_requirements / get_action_policy_signals
-    Clients-->>Orch: CityData / Action[] / legal requirements / policy signals
+    Orch->>Clients: get_city / list_actions / get_action_legal_assessments / get_action_policy_signals
+    Clients-->>Orch: CityData / Action[] / legal assessments / policy signals
     Note over Orch: Hard Filter -> Impact -> Alignment -> Feasibility -> Weighted Sum
     Orch-->>API: PrioritizationResponse (per city)
     API-->>FE: 200 PrioritizerApiResponse (results[])
@@ -118,7 +118,7 @@ sequenceDiagram
 
 | Stage        | Purpose                                                         | Removes / produces                      |
 | ------------ | --------------------------------------------------------------- | --------------------------------------- |
-| Hard Filter  | Remove ineligible actions (exclusions, hard legal requirements) | Discards actions; produces eligible set |
+| Hard Filter  | Remove ineligible actions (exclusions, blocked legal verdicts) | Discards actions; produces eligible set |
 | Impact       | Score emissions reduction potential per city                    | Impact score per action                 |
 | Alignment    | Score alignment with city strategy and policy signals           | Alignment score per action              |
 | Feasibility  | Score realistic implementability for the city                   | Feasibility score per action            |

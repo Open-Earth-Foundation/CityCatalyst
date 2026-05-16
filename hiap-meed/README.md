@@ -41,7 +41,7 @@ CCGLOBAL_API_BASE_URL=https://ccglobal.openearth.dev
 UPSTREAM_HTTP_TIMEOUT_SECONDS=30
 UPSTREAM_HTTP_MAX_RETRIES=2
 UPSTREAM_HTTP_RETRY_BACKOFF_SECONDS=0.5
-HIAP_MEED_LEGAL_DATA_SOURCE=mock
+HIAP_MEED_LEGAL_DATA_SOURCE=api
 HIAP_MEED_ACTION_DATA_SOURCE=mock
 HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE=mock
 HIAP_MEED_TOP_N=20
@@ -119,7 +119,7 @@ Key models:
 - Frontend city input row: `FrontendCityInput`
 - Global city API response: `CityApiResponse`
 - Global actions API response: `ActionsApiResponse`
-- Global legal alignment API response: `ActionsLegalApiResponse`
+- Global legal assessment API row: `ActionLegalAssessmentApiItem`
 - Global policy alignment API response: `ActionsPolicySignalsApiResponse`
 
 Design note:
@@ -182,11 +182,13 @@ Exclusions:
   - `ippu`
   - `afolu`
 
-Hard legal requirements:
+Legal filtering:
 
-- The hard filter now enforces legal requirements with `strength` in `mandatory|required`.
-- Actions with hard `alignment_status="not_aligned"` are discarded before scoring.
-- Actions with hard `alignment_status="no_evidence"` are kept and surfaced in hard-filter evidence.
+- The hard filter now uses `verdictCategory` from `GET /api/v1/action-legal-assessments`.
+- Actions with `verdictCategory="blocked"` are discarded before scoring.
+- Missing `verdictCategory` does not hard-filter the action.
+- The Feasibility legal component uses `verdictScore` directly.
+- Missing `verdictScore` falls back to neutral `0.5`.
 
 Score normalization policy:
 
@@ -458,7 +460,7 @@ Common validation errors:
 - Missing `requestData.cityDataList` or empty `cityDataList` -> HTTP `422`.
 - Missing `locode` or empty `locode` in a city entry -> HTTP `422`.
 
-Note: city, action, legal, and policy-signal clients resolve to `mock` (file-backed) or `api`. The city client now uses a synchronous upstream HTTP integration for `GET /api/v0/city_attributes/{locode}` when `HIAP_MEED_CITY_DATA_SOURCE=api`, which is the default. The shared `CCGLOBAL_API_BASE_URL` defaults to `https://ccglobal.openearth.dev` for local/dev use; the hiap-meed GitHub workflows override it per environment, with dev using `https://ccglobal.openearth.dev` and test/prod using `https://api.citycatalyst.io/`. If that host mapping changes, update both the runtime config and the hiap-meed deploy workflows together. The shared upstream HTTP path also includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. Upstream response DTOs are intentionally additive-tolerant right now: they ignore unexpected extra fields while still validating the fields the pipeline depends on. The action, legal, and policy-signal API clients are still placeholders, so their default source remains `mock`. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
+Note: city, action, legal, and policy-signal clients resolve to `mock` (file-backed) or `api`. The city client uses a synchronous upstream HTTP integration for `GET /api/v0/city_attributes/{locode}` when `HIAP_MEED_CITY_DATA_SOURCE=api`, which is the default. The legal client now uses a synchronous upstream HTTP integration for the flat `GET /api/v1/action-legal-assessments?countryCode=...` endpoint when `HIAP_MEED_LEGAL_DATA_SOURCE=api`, which is also the default. The shared `CCGLOBAL_API_BASE_URL` defaults to `https://ccglobal.openearth.dev` for local/dev use; the hiap-meed GitHub workflows override it per environment, with dev using `https://ccglobal.openearth.dev` and test/prod using `https://api.citycatalyst.io/`. If that host mapping changes, update both the runtime config and the hiap-meed deploy workflows together. The shared upstream HTTP path also includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. Upstream response DTOs are intentionally additive-tolerant right now: they ignore unexpected extra fields while still validating the fields the pipeline depends on. The action and policy-signal API clients are still placeholders, so their default source remains `mock`. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
 
 ### 5. Logging and artifacts
 

@@ -45,7 +45,7 @@ Source: Notion "How Legal Signals, Policy Signals, and Socioeconomic Indicators 
 - **Expectation**: explanations should explicitly avoid inventing reasoning for these unimplemented signals until their scoring/evidence pipelines exist.
 - **Future work**: consider adding an in-memory, process-local translation cache keyed by canonical explanation text, source language, target language, translation model, and prompt version to reduce repeated translation token usage without introducing persistent state.
 
-## Replace mock data clients with real upstream API calls
+## Replace remaining mock data clients with real upstream API calls
 
 - **Current**: the pipeline defaults to mock (file-backed) data. The `Api*` data clients exist but intentionally raise `NotImplementedError` so misconfiguration fails fast.
 - **Future**: implement synchronous HTTP clients for upstream data and switch to `HIAP_MEED_*_DATA_SOURCE=api` in deployment.
@@ -53,7 +53,6 @@ Source: Notion "How Legal Signals, Policy Signals, and Socioeconomic Indicators 
   - `hiap-meed/app/services/data_clients.py`
     - `ApiCityDataApiClient.get_city(locode)`
     - `ApiActionDataApiClient.list_actions()`
-    - `ApiLegalDataApiClient.get_action_legal_requirements(locode)`
     - `ApiPolicySignalsDataApiClient.get_action_policy_signals(locode)`
 - **Notes**:
   - keep responses validated through Pydantic models in `app/modules/prioritizer/models.py`

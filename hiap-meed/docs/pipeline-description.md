@@ -239,7 +239,7 @@ What these are used for:
 - `emissions.impact_text` gives the action's expected strength of emissions reduction.
 - `socioeconomicIndicators[]` define how the action should be judged against city conditions in the Feasibility block.
 
-### Legal requirements data
+### Legal assessments data
 
 File:
 
@@ -247,15 +247,16 @@ File:
 
 Fields that affect the result:
 
-- `legal_requirements[].action_id`
-- `legal_requirements[].requirements[].strength`
-- `legal_requirements[].requirements[].alignment_status`
+- `[].srcActionId`
+- `[].countryCode`
+- `[].verdictCategory`
+- `[].verdictScore`
 
 What these are used for:
 
-- `strength` tells the system whether a legal requirement is hard, soft, or only informational.
-- `alignment_status` tells the system whether the action aligns, does not align, or has no evidence.
-- These two fields drive both the Hard Filter and part of the Feasibility block.
+- `countryCode` selects the legal rows for the request.
+- `verdictCategory` drives the Hard Filter.
+- `verdictScore` drives the legal half of the Feasibility block.
 
 ### Policy signals data
 
@@ -286,7 +287,7 @@ For one city, the service now works in this order:
 3. Call the ranking endpoint with confirmed `excludedActionIds[]`.
 4. Read the requested number of results (`topN`) and the final scoring weights.
 5. Build city emissions totals from the caller request.
-6. Load city context, actions, legal requirements, and policy signals.
+6. Load city context, actions, legal assessments, and policy signals.
 7. Apply the Hard Filter to remove confirmed exclusions and legally blocked actions.
 8. Score the remaining actions for Impact.
 9. Score the remaining actions for Alignment.
@@ -384,23 +385,24 @@ From the action catalog:
 
 - `actions[].actionId`
 
-From the legal requirements file:
+From the legal assessments file:
 
-- `legal_requirements[].action_id`
-- `legal_requirements[].requirements[].strength`
-- `legal_requirements[].requirements[].alignment_status`
+- `[].srcActionId`
+- `[].verdictCategory`
+- `[].verdictScore`
 
 Supporting legal fields that are returned as evidence, but do not drive the actual yes/no decision:
 
-- `legal_requirements[].requirements[].signal_code`
-- `legal_requirements[].requirements[].signal_name`
-- `legal_requirements[].requirements[].operator`
-- `legal_requirements[].requirements[].required_value`
-- `legal_requirements[].requirements[].legal_signal_value`
-- `legal_requirements[].requirements[].location_scope`
-- `legal_requirements[].requirements[].location_name`
-- `legal_requirements[].requirements[].evidence_ids[]`
-- `legal_requirements[].requirements[].evidence_count`
+- `[].ownershipCategory`
+- `[].ownershipScore`
+- `[].restrictionsCategory`
+- `[].restrictionsScore`
+- `[].ownershipDescriptionI18n`
+- `[].restrictionsDescriptionI18n`
+- `[].legalJustificationI18n`
+- `[].legalReferences`
+- `[].analysisDate`
+- `[].generationMethod`
 
 ### 4.2 Logic
 
@@ -442,29 +444,25 @@ Preview behavior before ranking:
 - The free-text prompt uses the full action catalog, but only action ID, action name, action category, action subcategory, and a shortened description are sent for each action.
 - The preview response returns proposed actions, grouped summary counts, and warnings so the user can confirm the final `excludedActionIds[]`.
 
-#### Part B: hard legal screening
-
-Hard legal requirements are only those with:
-
-- `strength = mandatory`
-- or `strength = required`
+#### Part B: legal verdict screening
 
 Decision rule:
 
-- If at least one hard legal requirement has `alignment_status = not_aligned`, the action is removed.
-- If all hard legal requirements are either `aligns` or `no_evidence`, the action stays in the pipeline.
+- If `verdictCategory = blocked`, the action is removed.
+- If `verdictCategory` is missing, the action stays in the pipeline.
+- Any non-`blocked` category also stays in the pipeline.
 
 Plain-language rule:
 
 ```text
-Remove the action if any mandatory or required legal requirement is marked not_aligned.
+Remove the action only when the legal verdict category is blocked.
 ```
 
 Important details:
 
-- `no_evidence` does not block the action at this stage.
-- `recommended`, `optional`, and `informational` do not affect this block.
-- The actual decision is driven by `strength` and `alignment_status`.
+- Hard filtering depends only on `verdictCategory`.
+- `verdictScore` does not decide removal.
+- Missing category is treated as "do not block."
 
 ### 4.3 Weights used
 
@@ -482,11 +480,11 @@ Main outputs:
 Important evidence fields:
 
 - `discard_reason`
-- `hard_requirements_checked_count`
-- `hard_requirements_failed_count`
-- `hard_requirements_unknown_count`
-- `failed_requirements`
-- `unknown_requirements`
+- `legal_assessment_present`
+- `legal_verdict_category`
+- `legal_verdict_score`
+- `legal_ownership_category`
+- `legal_restrictions_category`
 
 Business interpretation:
 
@@ -879,24 +877,26 @@ The Feasibility block measures how practical the action looks for the city.
 
 It combines:
 
-- softer legal support,
+- the direct legal verdict score,
 - and fit with the city's socio-economic profile.
 
 ### 7.1 Inputs
 
-From the legal requirements file:
+From the legal assessments file:
 
-- `legal_requirements[].action_id`
-- `legal_requirements[].requirements[].strength`
-- `legal_requirements[].requirements[].alignment_status`
+- `[].srcActionId`
+- `[].verdictCategory`
+- `[].verdictScore`
 
 Fields returned mainly as evidence:
 
-- `legal_requirements[].requirements[].signal_code`
-- `legal_requirements[].requirements[].signal_name`
-- `legal_requirements[].requirements[].location_scope`
-- `legal_requirements[].requirements[].location_name`
-- `legal_requirements[].requirements[].evidence_count`
+- `[].ownershipCategory`
+- `[].ownershipScore`
+- `[].restrictionsCategory`
+- `[].restrictionsScore`
+- `[].legalReferences`
+- `[].analysisDate`
+- `[].generationMethod`
 
 From the action catalog:
 
@@ -922,35 +922,30 @@ From the city context file:
 
 The Feasibility block has two equal parts.
 
-#### Part A: soft legal support
-
-Only these legal strengths are counted here:
-
-- `recommended`
-- `optional`
+#### Part A: legal verdict score
 
 Scoring rule:
 
-- Count how many soft legal requirements are marked `aligns`
-- Divide by the total number of soft legal requirements
+- Use `verdictScore` directly as the legal component.
+- If `verdictScore` is missing, use neutral `0.5`.
 
 Plain-language formula:
 
 ```text
-Soft legal component
-= number of aligned recommended/optional requirements
-  divided by
-  total number of recommended/optional requirements
+Legal component
+= verdictScore
 ```
 
-If an action has no soft legal requirements:
+Fallback rule:
 
-- the soft legal component is `0.0`
+```text
+If verdictScore is missing, legal component = 0.5
+```
 
 Important details:
 
-- `mandatory` and `required` are not scored here because those already act as hard filters earlier.
-- `informational` is not scored here.
+- `verdictCategory` is not used for the numeric feasibility score.
+- If the legal row is missing entirely, the component also falls back to `0.5`.
 
 #### Part B: socio-economic fit
 
@@ -1025,7 +1020,7 @@ Plain-language formula:
 
 ```text
 Feasibility score
-= 0.50 * soft legal component
+= 0.50 * legal component
  + 0.50 * socio-economic component
 ```
 
@@ -1033,7 +1028,7 @@ Feasibility score
 
 Internal Feasibility weights:
 
-- Soft legal support = `0.50`
+- Legal verdict score = `0.50`
 - Socio-economic fit = `0.50`
 
 ### 7.4 Outputs
@@ -1044,18 +1039,18 @@ Main output:
 
 Key evidence fields:
 
-- `counts_by_strength`
-- `counts_by_status`
-- `soft_legal_component_value`
-- `soft_legal_aligned_count`
-- `soft_legal_total_count`
+- `legal_assessment_present`
+- `legal_assessment_missing`
+- `legal_verdict_category`
+- `legal_component_score`
+- `legal_component_source`
+- `legal_verdict_score_missing`
 - `socioeconomic_indicators_component_value`
 - `socioeconomic_indicators_weighted_sum`
 - `total_socioeconomic_indicator_weight`
 - `socioeconomic_indicators_avg`
 - `socioeconomic_indicator_rows`
 - `missing_city_socioeconomic_indicator_keys`
-- `informational_requirements`
 - `feasibility_score`
 
 ## 8. Final Scoring Block
@@ -1245,10 +1240,10 @@ Planned improvements:
 
 In business terms, the current implementation works like this:
 
-- Actions that clearly fail hard legal requirements are removed before ranking.
+- Actions that have `verdictCategory = blocked` are removed before ranking.
 - Actions score higher on Impact when they target large city emissions sources and can be implemented sooner.
 - Actions score higher on Alignment when they already have stronger policy support and belong to sectors the city has said it prefers.
-- Actions score higher on Feasibility when softer legal conditions are favorable and the city's socio-economic profile looks supportive.
+- Actions score higher on Feasibility when the legal verdict score is stronger and the city's socio-economic profile looks supportive.
 - The final list is then created by applying the chosen top-level weights to those three scores.
 
 So the final ranking is not one black-box judgment. It is a step-by-step combination of:

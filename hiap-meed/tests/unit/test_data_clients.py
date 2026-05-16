@@ -18,14 +18,26 @@ from app.services.city_attributes_api import (
     DEFAULT_CITY_ATTRIBUTES_BASE_URL,
     CityAttributesApiService,
 )
-from app.services.http_client import UpstreamApiError, get_json_with_retries
+from app.services.action_legal_assessments_api import (
+    ActionLegalAssessmentsApiService,
+    DEFAULT_LEGAL_ASSESSMENTS_BASE_URL,
+    LEGAL_ASSESSMENTS_ENDPOINT_TEMPLATE,
+)
+from app.services.http_client import (
+    UpstreamApiError,
+    get_json_list_with_retries,
+    get_json_with_retries,
+)
 from app.services.data_clients import (
     ApiCityDataApiClient,
+    ApiLegalDataApiClient,
     MockActionDataApiClient,
     MockCityDataApiClient,
+    MockLegalDataApiClient,
     MockPolicySignalsDataApiClient,
     get_action_data_api_client,
     get_city_data_api_client,
+    get_legal_data_api_client,
     get_policy_signals_data_api_client,
 )
 
@@ -80,6 +92,25 @@ def test_mock_city_client_loads_city_from_file() -> None:
 
 
 @pytest.mark.unit
+def test_mock_legal_client_loads_flat_assessments_from_file() -> None:
+    """Mock legal client filters flat legal rows by country and maps by action ID."""
+    mock_file_path = (
+        Path(__file__).resolve().parents[2]
+        / "data"
+        / "mock"
+        / "actions_legal_api_mock.json"
+    )
+    client = MockLegalDataApiClient(mock_file_path=mock_file_path)
+
+    assessments = client.get_action_legal_assessments("CL")
+
+    assert len(assessments) > 0
+    assert assessments["c40_0010"].verdict_category == "conditional"
+    assert assessments["c40_0010"].verdict_score == pytest.approx(0.5)
+    assert assessments["c40_0010"].source_metadata["requested_country_code"] == "CL"
+
+
+@pytest.mark.unit
 def test_get_city_data_client_defaults_to_api(monkeypatch: pytest.MonkeyPatch) -> None:
     """City dependency provider defaults to API data source."""
     monkeypatch.delenv("HIAP_MEED_CITY_DATA_SOURCE", raising=False)
@@ -87,6 +118,16 @@ def test_get_city_data_client_defaults_to_api(monkeypatch: pytest.MonkeyPatch) -
     client = get_city_data_api_client()
 
     assert isinstance(client, ApiCityDataApiClient)
+
+
+@pytest.mark.unit
+def test_get_legal_data_client_defaults_to_api(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Legal dependency provider defaults to API data source."""
+    monkeypatch.delenv("HIAP_MEED_LEGAL_DATA_SOURCE", raising=False)
+
+    client = get_legal_data_api_client()
+
+    assert isinstance(client, ApiLegalDataApiClient)
 
 
 @pytest.mark.unit
@@ -117,6 +158,37 @@ def test_city_attributes_service_uses_env_base_url_override(
     assert (
         service._build_city_url("CL IQQ")
         == "https://city-attributes.example.test/root/api/v0/city_attributes/CL%20IQQ"
+    )
+
+
+@pytest.mark.unit
+def test_legal_assessments_service_uses_default_base_url_when_env_is_unset(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Legal assessments service falls back to the documented default host."""
+    monkeypatch.delenv("CCGLOBAL_API_BASE_URL", raising=False)
+
+    service = ActionLegalAssessmentsApiService()
+
+    assert service.base_url == DEFAULT_LEGAL_ASSESSMENTS_BASE_URL
+
+
+@pytest.mark.unit
+def test_legal_assessments_service_uses_env_base_url_override(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Legal assessments service honors the configured upstream host override."""
+    monkeypatch.setenv(
+        "CCGLOBAL_API_BASE_URL",
+        "https://legal.example.test/root/ ",
+    )
+
+    service = ActionLegalAssessmentsApiService()
+
+    assert service.base_url == "https://legal.example.test/root/"
+    assert (
+        service._build_legal_assessments_url("CL")
+        == "https://legal.example.test/root/api/v1/action-legal-assessments?countryCode=CL"
     )
 
 
@@ -283,6 +355,108 @@ def test_api_city_client_accepts_camelcase_population_fields(
 
 
 @pytest.mark.unit
+def test_api_legal_client_maps_remote_payload_and_metadata(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """API legal client maps remote flat legal rows and exposes fetch metadata."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        request = httpx.Request("GET", url, headers=headers)
+        return httpx.Response(
+            200,
+            request=request,
+            json=[
+                {
+                    "legalAnalysisId": "id-1",
+                    "srcActionId": "c40_0010",
+                    "countryCode": "CL",
+                    "gpcSector": "stationary_energy",
+                    "verdictCategory": "conditional",
+                    "verdictScore": 0.5,
+                    "ownershipCategory": "conditional",
+                    "ownershipScore": 0.5,
+                    "ownershipWeight": 0.67,
+                    "ownershipDescription": "Authority exists but is conditional.",
+                    "restrictionsCategory": "conditional",
+                    "restrictionsScore": 0.5,
+                    "restrictionsWeight": 0.33,
+                    "restrictionsDescription": "Moderate legal risk.",
+                    "legalJustification": "Test justification",
+                    "analysisDate": "2026-04-30",
+                    "generationMethod": "expert review",
+                    "legalReferences": ["Law 1"],
+                    "releaseId": "release-1",
+                    "createdAt": "2026-05-12T10:36:49.530687+00:00",
+                    "updatedAt": "2026-05-12T10:36:49.530687+00:00",
+                    "ownershipDescriptionI18n": {"en": "Authority exists but is conditional."},
+                    "restrictionsDescriptionI18n": {"en": "Moderate legal risk."},
+                    "legalJustificationI18n": {"en": "Test justification"},
+                }
+            ],
+        )
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    client = ApiLegalDataApiClient()
+
+    assessments = client.get_action_legal_assessments("CL")
+
+    assert assessments["c40_0010"].verdict_category == "conditional"
+    assert assessments["c40_0010"].verdict_score == pytest.approx(0.5)
+    assert assessments["c40_0010"].source_metadata["upstream_endpoint"] == (
+        LEGAL_ASSESSMENTS_ENDPOINT_TEMPLATE
+    )
+    assert assessments["c40_0010"].source_metadata["requested_country_code"] == "CL"
+    assert assessments["c40_0010"].source_metadata["http_status_code"] == 200
+
+
+@pytest.mark.unit
+def test_api_legal_client_rejects_duplicate_action_ids(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """API legal client rejects duplicate action IDs for one country."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        request = httpx.Request("GET", url, headers=headers)
+        row = {
+            "legalAnalysisId": "id-1",
+            "srcActionId": "c40_0010",
+            "countryCode": "CL",
+            "gpcSector": "stationary_energy",
+            "verdictCategory": "conditional",
+            "verdictScore": 0.5,
+            "ownershipCategory": "conditional",
+            "ownershipScore": 0.5,
+            "ownershipWeight": 0.67,
+            "ownershipDescription": "Authority exists but is conditional.",
+            "restrictionsCategory": "conditional",
+            "restrictionsScore": 0.5,
+            "restrictionsWeight": 0.33,
+            "restrictionsDescription": "Moderate legal risk.",
+            "legalJustification": "Test justification",
+            "analysisDate": "2026-04-30",
+            "generationMethod": "expert review",
+            "legalReferences": ["Law 1"],
+            "releaseId": "release-1",
+            "createdAt": "2026-05-12T10:36:49.530687+00:00",
+            "updatedAt": "2026-05-12T10:36:49.530687+00:00",
+            "ownershipDescriptionI18n": {"en": "Authority exists but is conditional."},
+            "restrictionsDescriptionI18n": {"en": "Moderate legal risk."},
+            "legalJustificationI18n": {"en": "Test justification"},
+        }
+        return httpx.Response(200, request=request, json=[row, dict(row)])
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    client = ApiLegalDataApiClient()
+
+    with pytest.raises(UpstreamApiError, match="duplicate srcActionId"):
+        client.get_action_legal_assessments("CL")
+
+
+@pytest.mark.unit
 def test_get_json_with_retries_retries_retryable_http_status(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -372,6 +546,30 @@ def test_get_json_with_retries_maps_invalid_json_to_502(
         )
 
     assert error_info.value.status_code == 502
+
+
+@pytest.mark.unit
+def test_get_json_list_with_retries_accepts_top_level_json_lists(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Shared HTTP helper accepts top-level JSON lists for list endpoints."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        request = httpx.Request("GET", url, headers=headers)
+        return httpx.Response(200, request=request, json=[{"ok": True}])
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    monkeypatch.setenv("UPSTREAM_HTTP_MAX_RETRIES", "0")
+
+    payload, status_code = get_json_list_with_retries(
+        url="https://example.test/legal",
+        operation_name="test legal list call",
+    )
+
+    assert payload == [{"ok": True}]
+    assert status_code == 200
 
 
 @pytest.mark.unit

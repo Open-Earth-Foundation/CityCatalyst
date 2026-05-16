@@ -27,6 +27,7 @@ from app.services.data_clients import (
     MockLegalDataApiClient,
     MockPolicySignalsDataApiClient,
 )
+from app.services.http_client import UpstreamApiError
 from app.utils.artifacts import ArtifactWriter
 from app.utils.timing import time_block
 
@@ -103,11 +104,11 @@ def _build_evidence_summary(
     return {
         "hard_filter": {
             "discard_reason": hard_filter_evidence.get("discard_reason"),
-            "hard_requirements_failed_count": hard_filter_evidence.get(
-                "hard_requirements_failed_count", 0
+            "legal_assessment_present": bool(
+                hard_filter_evidence.get("legal_assessment_present", False)
             ),
-            "hard_requirements_unknown_count": hard_filter_evidence.get(
-                "hard_requirements_unknown_count", 0
+            "legal_verdict_category": hard_filter_evidence.get(
+                "legal_verdict_category"
             ),
         },
         "impact": {
@@ -143,8 +144,8 @@ def _build_evidence_summary(
             "feasibility_score": _safe_float(
                 feasibility_evidence.get("feasibility_score")
             ),
-            "soft_legal_component_score": _safe_float(
-                feasibility_evidence.get("soft_legal_component_score")
+            "legal_component_score": _safe_float(
+                feasibility_evidence.get("legal_component_score")
             ),
             "socioeconomic_component_score": _safe_float(
                 feasibility_evidence.get("socioeconomic_component_score")
@@ -202,6 +203,7 @@ def _collect_generated_languages(
 def run_prioritization(
     *,
     locode: str,
+    country_code: str,
     weights_override: dict[str, float] | None,
     top_n: int | None,
     excluded_action_ids: list[str],
@@ -235,9 +237,10 @@ def run_prioritization(
     )
     timings: dict[str, float] = {}
     logger.info(
-        "Prioritization started internal_request_id=%s locode=%s top_n=%s weights_override_provided=%s",
+        "Prioritization started internal_request_id=%s locode=%s country_code=%s top_n=%s weights_override_provided=%s",
         internal_request_id,
         locode,
+        country_code,
         top_n,
         weights_override is not None,
     )
@@ -274,6 +277,21 @@ def run_prioritization(
         locode,
         block.elapsed_seconds,
     )
+    if city.country_code != country_code:
+        logger.error(
+            "Fetched city country_code mismatch internal_request_id=%s locode=%s requested_country_code=%s fetched_country_code=%s",
+            internal_request_id,
+            locode,
+            country_code,
+            city.country_code,
+        )
+        raise UpstreamApiError(
+            status_code=502,
+            message=(
+                "city attributes API returned a country_code that does not match "
+                f"the request countryCode for locode={locode}"
+            ),
+        )
 
     # Phase 2: fetch action catalog that enters hard filtering.
     with time_block("fetch_actions") as block:
@@ -305,37 +323,40 @@ def run_prioritization(
         block.elapsed_seconds,
     )
 
-    # Phase 3: fetch legal requirements used by hard legal filtering.
-    with time_block("fetch_legal_requirements") as block:
-        legal_requirements_by_action_id = (
-            legal_data_api_client.get_action_legal_requirements(locode)
+    # Phase 3: fetch legal assessments used by hard legal filtering.
+    with time_block("fetch_legal_assessments") as block:
+        legal_assessments_by_action_id = legal_data_api_client.get_action_legal_assessments(
+            country_code
         )
-    # Emit high-level and step-detail artifacts for legal requirement fetch.
-    timings["fetch_legal_requirements"] = block.elapsed_seconds
+    # Emit high-level and step-detail artifacts for legal assessment fetch.
+    timings["fetch_legal_assessments"] = block.elapsed_seconds
     fetch_legal_payload = {
-        "actions_with_legal_requirements": len(legal_requirements_by_action_id),
+        "requested_country_code": country_code,
+        "actions_with_legal_assessments": len(legal_assessments_by_action_id),
         "elapsed_seconds": block.elapsed_seconds,
     }
     fetch_legal_event_index = artifact_writer.write_event(
-        "fetch_legal_requirements.completed", fetch_legal_payload
+        "fetch_legal_assessments.completed", fetch_legal_payload
     )
     artifact_writer.write_step_detail(
-        "fetch_legal_requirements",
+        "fetch_legal_assessments",
         {
-            "actions_with_legal_requirements": len(legal_requirements_by_action_id),
-            "action_ids_with_requirements": sorted(
-                legal_requirements_by_action_id.keys()
+            "requested_country_code": country_code,
+            "actions_with_legal_assessments": len(legal_assessments_by_action_id),
+            "action_ids_with_legal_assessments": sorted(
+                legal_assessments_by_action_id.keys()
             ),
             "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=fetch_legal_event_index,
-        event_type="fetch_legal_requirements.completed",
+        event_type="fetch_legal_assessments.completed",
     )
     logger.info(
-        "Fetched legal requirements internal_request_id=%s locode=%s actions_with_requirements=%s elapsed_seconds=%.3f",
+        "Fetched legal assessments internal_request_id=%s locode=%s country_code=%s actions_with_assessments=%s elapsed_seconds=%.3f",
         internal_request_id,
         locode,
-        len(legal_requirements_by_action_id),
+        country_code,
+        len(legal_assessments_by_action_id),
         block.elapsed_seconds,
     )
 
@@ -415,6 +436,7 @@ def run_prioritization(
     # Persist reproducibility-critical inputs in one dedicated run artifact.
     input_snapshot_payload = {
         "locode": locode,
+        "country_code": country_code,
         "resolved_top_n": top_n,
         "create_explanations": create_explanations,
         "requested_languages": requested_languages,
@@ -454,7 +476,7 @@ def run_prioritization(
         hard_filter_result = hard_filter.run(
             actions=actions,
             excluded_action_ids=excluded_action_ids,
-            legal_requirements_by_action_id=legal_requirements_by_action_id,
+            legal_assessments_by_action_id=legal_assessments_by_action_id,
         )
     # Build discard diagnostics and emit hard-filter artifacts.
     timings["hard_filter"] = block.elapsed_seconds
@@ -488,9 +510,9 @@ def run_prioritization(
                     "discard_reason": hard_filter_result.evidence.get(
                         action_id, {}
                     ).get("discard_reason"),
-                    "failed_requirements_count": hard_filter_result.evidence.get(
+                    "legal_verdict_category": hard_filter_result.evidence.get(
                         action_id, {}
-                    ).get("hard_requirements_failed_count", 0),
+                    ).get("legal_verdict_category"),
                 }
                 for action_id in sorted(discarded_legal_ids)
             },
@@ -572,7 +594,7 @@ def run_prioritization(
         feasibility_result = feasibility.run(
             hard_filter_result.valid_actions,
             city=city,
-            legal_requirements_by_action_id=legal_requirements_by_action_id,
+            legal_assessments_by_action_id=legal_assessments_by_action_id,
         )
     # Emit feasibility score stats and detailed evidence artifacts.
     timings["feasibility"] = block.elapsed_seconds

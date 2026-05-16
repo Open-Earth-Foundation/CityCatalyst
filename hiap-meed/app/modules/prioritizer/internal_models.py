@@ -119,20 +119,34 @@ class HardFilterResult(BaseModel):
     evidence: dict[str, dict[str, object]] = Field(default_factory=dict)
 
 
-class LegalRequirementRecord(BaseModel):
-    """Internal legal requirement contract shared across scoring blocks."""
+class LegalAssessmentRecord(BaseModel):
+    """Internal flat legal assessment contract shared across scoring blocks."""
 
-    signal_code: str
-    signal_name: str
-    operator: str
-    required_value: str | None = None
-    legal_signal_value: str | None = None
-    strength: str
-    alignment_status: str
-    location_scope: str | None = None
-    location_name: str | None = None
-    evidence_ids: list[str] = Field(default_factory=list)
-    evidence_count: int = 0
+    action_id: str = Field(min_length=1)
+    country_code: str
+    gpc_sector: str | None = None
+    verdict_category: str | None = None
+    verdict_score: float | None = None
+    ownership_category: str | None = None
+    ownership_score: float | None = None
+    ownership_weight: float | None = None
+    ownership_description: str | None = None
+    restrictions_category: str | None = None
+    restrictions_score: float | None = None
+    restrictions_weight: float | None = None
+    restrictions_description: str | None = None
+    legal_justification: str | None = None
+    analysis_date: str | None = None
+    generation_method: str | None = None
+    legal_references: list[str] = Field(default_factory=list)
+    release_id: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+    ownership_description_i18n: dict[str, str] = Field(default_factory=dict)
+    restrictions_description_i18n: dict[str, str] = Field(default_factory=dict)
+    legal_justification_i18n: dict[str, str] = Field(default_factory=dict)
+    raw: dict[str, Any] = Field(default_factory=dict)
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class ScoredAction(BaseModel):

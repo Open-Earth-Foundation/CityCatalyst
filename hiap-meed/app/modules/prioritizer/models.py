@@ -527,10 +527,7 @@ class ExclusionPreviewApiResponse(BaseModel):
 #   - meta: UpstreamMeta
 #   - policy_signals: list[PolicySignalByAction]
 #     - policy_signals: list[PolicySignal]
-# - ActionsLegalApiResponse
-#   - meta: ActionsLegalApiMeta (extends UpstreamMeta)
-#   - legal_requirements: list[LegalRequirementsByAction]
-#     - requirements: list[LegalRequirement]
+# - ActionLegalAssessmentApiItem
 # ============================================================================
 
 
@@ -797,49 +794,35 @@ class ActionsPolicySignalsApiResponse(BaseModel):
     policy_signals: list[PolicySignalByAction] = Field(default_factory=list)
 
 
-class LegalRequirement(BaseModel):
-    """Single legal requirement alignment check for one action."""
+class ActionLegalAssessmentApiItem(BaseModel):
+    """Flat legal assessment row returned by `GET /api/v1/action-legal-assessments`."""
 
     model_config = ConfigDict(extra="ignore")
 
-    signal_code: str
-    signal_name: str
-    operator: str
-    required_value: str | None = None
-    legal_signal_value: str | None = None
-    strength: str
-    alignment_status: str
-    location_scope: str | None = None
-    location_name: str | None = None
-    evidence_ids: list[str] = Field(default_factory=list)
-    evidence_count: int = 0
-
-
-class LegalRequirementsByAction(BaseModel):
-    """Legal requirements grouped by action ID."""
-
-    model_config = ConfigDict(extra="ignore")
-
-    action_id: str
-    requirements: list[LegalRequirement] = Field(default_factory=list)
-
-
-class ActionsLegalApiMeta(UpstreamMeta):
-    """Metadata for actions/legal response including test descriptors."""
-
-    model_config = ConfigDict(extra="ignore")
-
-    test_cases: dict[str, str] = Field(default_factory=dict)
-    strength_scale: list[str] = Field(default_factory=list)
-
-
-class ActionsLegalApiResponse(BaseModel):
-    """Response model for city-scoped legal alignment endpoint."""
-
-    model_config = ConfigDict(extra="ignore")
-
-    meta: ActionsLegalApiMeta
-    legal_requirements: list[LegalRequirementsByAction] = Field(default_factory=list)
+    legalAnalysisId: str
+    srcActionId: str
+    countryCode: str
+    gpcSector: str | None = None
+    verdictCategory: str | None = None
+    verdictScore: float | None = Field(default=None, ge=0.0, le=1.0)
+    ownershipCategory: str | None = None
+    ownershipScore: float | None = Field(default=None, ge=0.0, le=1.0)
+    ownershipWeight: float | None = None
+    ownershipDescription: str | None = None
+    restrictionsCategory: str | None = None
+    restrictionsScore: float | None = Field(default=None, ge=0.0, le=1.0)
+    restrictionsWeight: float | None = None
+    restrictionsDescription: str | None = None
+    legalJustification: str | None = None
+    analysisDate: str | None = None
+    generationMethod: str | None = None
+    legalReferences: list[str] = Field(default_factory=list)
+    releaseId: str | None = None
+    createdAt: str | None = None
+    updatedAt: str | None = None
+    ownershipDescriptionI18n: dict[str, str] = Field(default_factory=dict)
+    restrictionsDescriptionI18n: dict[str, str] = Field(default_factory=dict)
+    legalJustificationI18n: dict[str, str] = Field(default_factory=dict)
 
 
 class PrioritizationResponse(BaseModel):

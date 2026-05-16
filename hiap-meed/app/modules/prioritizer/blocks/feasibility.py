@@ -2,14 +2,13 @@
 Feasibility block that scores how practical each action is for the city context.
 
 Approach:
-- Legal support component: checks how many soft legal requirements
-  (`recommended`/`optional`) are aligned for the action.
+- Legal component: uses the lawyer-provided `verdict_score` when available.
 - Socioeconomic component: evaluates whether city indicator buckets support or
   constrain the action, based on action-defined indicator rules.
 - Combine both components with fixed weights into one Feasibility score.
 
 Final score formula per action:
-- `feasibility_score = (legal_weight * soft_legal_component_score)`
+- `feasibility_score = (legal_weight * legal_component_score)`
 - `+ (socioeconomic_weight * socioeconomic_component_score)`
 """
 
@@ -26,7 +25,7 @@ from app.modules.prioritizer.internal_models import (
     Action,
     BlockScoreResult,
     CityData,
-    LegalRequirementRecord,
+    LegalAssessmentRecord,
 )
 
 logger = logging.getLogger(__name__)
@@ -38,8 +37,7 @@ SOCIO_BUCKET_TO_SCORE: dict[str, int] = {
     "high": 1,
     "very_high": 2,
 }
-SOFT_REQUIREMENT_STRENGTHS = {"recommended", "optional"}
-INFORMATIONAL_REQUIREMENT_STRENGTH = "informational"
+NEUTRAL_LEGAL_COMPONENT_SCORE = 0.5
 CANONICAL_CITY_SOCIOECONOMIC_INDICATORS = (
     "unemployment_rate",
     "renter_share",
@@ -81,25 +79,11 @@ def _extract_city_socioeconomic_indicator_buckets(city: CityData) -> dict[str, s
     return socioeconomic_indicator_buckets
 
 
-def _build_legal_counts(
-    requirements: list[LegalRequirementRecord],
-) -> tuple[dict[str, int], dict[str, int]]:
-    """Build legal requirement counters by strength and alignment status."""
-    strength_counts: dict[str, int] = {}
-    status_counts: dict[str, int] = {}
-    for requirement in requirements:
-        strength_key = requirement.strength.strip().lower()
-        status_key = requirement.alignment_status.strip().lower()
-        strength_counts[strength_key] = strength_counts.get(strength_key, 0) + 1
-        status_counts[status_key] = status_counts.get(status_key, 0) + 1
-    return strength_counts, status_counts
-
-
 def run(
     actions: list[Action],
     *,
     city: CityData,
-    legal_requirements_by_action_id: dict[str, list[LegalRequirementRecord]],
+    legal_assessments_by_action_id: dict[str, LegalAssessmentRecord],
 ) -> BlockScoreResult:
     """
     Compute Feasibility scores and explainability evidence for candidate actions.
@@ -107,7 +91,7 @@ def run(
     Inputs:
     - `actions`: Actions that passed hard filtering.
     - `city`: CityData for socioeconomic fit lookups.
-    - `legal_requirements_by_action_id`: Legal requirement evidence keyed by action ID.
+    - `legal_assessments_by_action_id`: Legal assessment evidence keyed by action ID.
 
     Output:
     - `score_by_action_id`: final Feasibility score per action in `[0,1]`.
@@ -124,21 +108,21 @@ def run(
     evidence_by_action_id: dict[str, dict[str, object]] = {}
 
     for action in actions:
-        # Block 2: Compute soft-legal component from recommended/optional requirements.
-        requirements = legal_requirements_by_action_id.get(action.action_id, [])
-        soft_requirements = [
-            requirement
-            for requirement in requirements
-            if requirement.strength.strip().lower() in SOFT_REQUIREMENT_STRENGTHS
-        ]
-        aligned_soft_count = sum(
-            1
-            for requirement in soft_requirements
-            if requirement.alignment_status.strip().lower() == "aligns"
+        # Block 2: Use the flat legal verdict score with a neutral fallback.
+        assessment = legal_assessments_by_action_id.get(action.action_id)
+        legal_component_score = (
+            assessment.verdict_score
+            if assessment is not None and assessment.verdict_score is not None
+            else NEUTRAL_LEGAL_COMPONENT_SCORE
         )
-        total_soft_count = len(soft_requirements)
-        feasibility_soft_legal_component = (
-            aligned_soft_count / total_soft_count if total_soft_count > 0 else 0.0
+        legal_component_source = (
+            "verdict_score"
+            if assessment is not None and assessment.verdict_score is not None
+            else "neutral_fallback"
+        )
+        legal_assessment_present = assessment is not None
+        legal_verdict_category = (
+            assessment.verdict_category if assessment is not None else None
         )
 
         # Block 3: Compute socioeconomic component from action rules + city buckets.
@@ -203,42 +187,46 @@ def run(
         feasibility_socio_component = (socio_avg + 2.0) / 4.0
 
         # Block 4: Combine weighted components into final Feasibility score.
-        soft_legal_contribution = (
-            FEASIBILITY_WEIGHT_LEGAL * feasibility_soft_legal_component
-        )
+        legal_contribution = FEASIBILITY_WEIGHT_LEGAL * legal_component_score
         socioeconomic_indicators_contribution = (
             FEASIBILITY_WEIGHT_SOCIO * feasibility_socio_component
         )
-        feasibility_score = (
-            soft_legal_contribution + socioeconomic_indicators_contribution
-        )
+        feasibility_score = legal_contribution + socioeconomic_indicators_contribution
         score_by_action_id[action.action_id] = feasibility_score
 
-        # Block 5: Build legal summary diagnostics for explainability.
-        strength_counts, status_counts = _build_legal_counts(requirements)
-        informational_requirements = [
-            {
-                "signal_code": requirement.signal_code,
-                "signal_name": requirement.signal_name,
-                "alignment_status": requirement.alignment_status,
-                "location_scope": requirement.location_scope,
-                "location_name": requirement.location_name,
-                "evidence_count": requirement.evidence_count,
-            }
-            for requirement in requirements
-            if requirement.strength.strip().lower()
-            == INFORMATIONAL_REQUIREMENT_STRENGTH
-        ]
-
-        # Block 6: Store action-level explainability payload.
+        # Block 5: Store action-level explainability payload.
         evidence_by_action_id[action.action_id] = {
-            "legal_requirements_by_strength": strength_counts,
-            "legal_requirements_by_alignment_status": status_counts,
-            "soft_legal_component_score": feasibility_soft_legal_component,
-            "soft_legal_weight": FEASIBILITY_WEIGHT_LEGAL,
-            "soft_legal_contribution": soft_legal_contribution,
-            "soft_legal_aligned_count": aligned_soft_count,
-            "soft_legal_total_count": total_soft_count,
+            "legal_assessment_present": legal_assessment_present,
+            "legal_assessment_missing": not legal_assessment_present,
+            "legal_verdict_category": legal_verdict_category,
+            "legal_component_score": legal_component_score,
+            "legal_component_source": legal_component_source,
+            "legal_weight": FEASIBILITY_WEIGHT_LEGAL,
+            "legal_contribution": legal_contribution,
+            "legal_verdict_score_missing": (
+                assessment is not None and assessment.verdict_score is None
+            ),
+            "ownership_category": (
+                assessment.ownership_category if assessment is not None else None
+            ),
+            "ownership_score": (
+                assessment.ownership_score if assessment is not None else None
+            ),
+            "restrictions_category": (
+                assessment.restrictions_category if assessment is not None else None
+            ),
+            "restrictions_score": (
+                assessment.restrictions_score if assessment is not None else None
+            ),
+            "legal_analysis_date": (
+                assessment.analysis_date if assessment is not None else None
+            ),
+            "legal_generation_method": (
+                assessment.generation_method if assessment is not None else None
+            ),
+            "legal_references": (
+                list(assessment.legal_references) if assessment is not None else []
+            ),
             "socioeconomic_component_score": feasibility_socio_component,
             "socioeconomic_weight": FEASIBILITY_WEIGHT_SOCIO,
             "socioeconomic_contribution": socioeconomic_indicators_contribution,
@@ -249,8 +237,6 @@ def run(
             "missing_city_socioeconomic_indicator_keys": sorted(
                 set(missing_socioeconomic_indicator_keys)
             ),
-            "informational_requirements": informational_requirements,
-            "informational_requirements_summary_available": False,
             "feasibility_score": feasibility_score,
         }
 

@@ -8,17 +8,18 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
+from app.services.action_legal_assessments_api import ActionLegalAssessmentsApiService
 from app.services.city_attributes_api import CityAttributesApiService
 from app.modules.prioritizer.internal_models import (
     Action,
     CityData,
-    LegalRequirementRecord,
+    LegalAssessmentRecord,
 )
 from app.modules.prioritizer.models import (
     ActionsPolicySignalsApiResponse,
     CityApiResponse,
     ActionsApiResponse,
-    ActionsLegalApiResponse,
+    ActionLegalAssessmentApiItem,
     CitiesApiResponse,
     PolicySignalByAction,
 )
@@ -124,37 +125,63 @@ class MockLegalDataApiClient:
     """
     File-backed legal client loading the checked-in mock legal API payload.
 
-    The mock data is city-agnostic in this scaffold and returned for any locode.
+    The mock data is filtered by request country code and mapped by action ID.
     """
 
     mock_file_path: Path
 
-    def get_action_legal_requirements(
-        self, locode: str
-    ) -> dict[str, list[LegalRequirementRecord]]:
-        """Load mock legal requirements grouped by action ID."""
-        _ = locode  # Locode is unused because mock legal payload is city-agnostic.
+    def get_action_legal_assessments(
+        self, country_code: str
+    ) -> dict[str, LegalAssessmentRecord]:
+        """Load flat mock legal assessments grouped by action ID."""
         payload = json.loads(self.mock_file_path.read_text(encoding="utf-8"))
-        response = ActionsLegalApiResponse.model_validate(payload)
-        requirements_by_action_id: dict[str, list[LegalRequirementRecord]] = {}
-        for action_group in response.legal_requirements:
-            requirements_by_action_id[action_group.action_id] = [
-                LegalRequirementRecord(
-                    signal_code=requirement.signal_code,
-                    signal_name=requirement.signal_name,
-                    operator=requirement.operator,
-                    required_value=requirement.required_value,
-                    legal_signal_value=requirement.legal_signal_value,
-                    strength=requirement.strength,
-                    alignment_status=requirement.alignment_status,
-                    location_scope=requirement.location_scope,
-                    location_name=requirement.location_name,
-                    evidence_ids=requirement.evidence_ids,
-                    evidence_count=requirement.evidence_count,
+        assessment_rows = [
+            ActionLegalAssessmentApiItem.model_validate(item) for item in payload
+        ]
+        assessments_by_action_id: dict[str, LegalAssessmentRecord] = {}
+        for assessment in assessment_rows:
+            if assessment.countryCode.strip().upper() != country_code.strip().upper():
+                continue
+            action_id = assessment.srcActionId
+            if action_id in assessments_by_action_id:
+                raise ValueError(
+                    "Mock legal payload contains duplicate srcActionId values for "
+                    f"countryCode={country_code.strip().upper()}"
                 )
-                for requirement in action_group.requirements
-            ]
-        return requirements_by_action_id
+            assessment_raw = assessment.model_dump()
+            assessments_by_action_id[action_id] = LegalAssessmentRecord.model_validate(
+                {
+                    "action_id": action_id,
+                    "country_code": assessment.countryCode,
+                    "gpc_sector": assessment.gpcSector,
+                    "verdict_category": assessment.verdictCategory,
+                    "verdict_score": assessment.verdictScore,
+                    "ownership_category": assessment.ownershipCategory,
+                    "ownership_score": assessment.ownershipScore,
+                    "ownership_weight": assessment.ownershipWeight,
+                    "ownership_description": assessment.ownershipDescription,
+                    "restrictions_category": assessment.restrictionsCategory,
+                    "restrictions_score": assessment.restrictionsScore,
+                    "restrictions_weight": assessment.restrictionsWeight,
+                    "restrictions_description": assessment.restrictionsDescription,
+                    "legal_justification": assessment.legalJustification,
+                    "analysis_date": assessment.analysisDate,
+                    "generation_method": assessment.generationMethod,
+                    "legal_references": assessment.legalReferences,
+                    "release_id": assessment.releaseId,
+                    "created_at": assessment.createdAt,
+                    "updated_at": assessment.updatedAt,
+                    "ownership_description_i18n": assessment.ownershipDescriptionI18n,
+                    "restrictions_description_i18n": assessment.restrictionsDescriptionI18n,
+                    "legal_justification_i18n": assessment.legalJustificationI18n,
+                    "raw": assessment_raw,
+                    "source_metadata": {
+                        "mock_file_path": str(self.mock_file_path),
+                        "requested_country_code": country_code.strip().upper(),
+                    },
+                }
+            )
+        return assessments_by_action_id
 
 
 @dataclass
@@ -175,21 +202,19 @@ class MockPolicySignalsDataApiClient:
 
 
 class ApiLegalDataApiClient:
-    """
-    Placeholder legal client for future upstream HTTP integration.
+    """API-backed legal client using the flat upstream legal assessments service."""
 
-    Current behavior fails fast until real HTTP integration is implemented.
-    """
+    def __init__(
+        self, service: ActionLegalAssessmentsApiService | None = None
+    ) -> None:
+        """Create the legal API client with a small synchronous service wrapper."""
+        self._service = service or ActionLegalAssessmentsApiService()
 
-    def get_action_legal_requirements(
-        self, locode: str
-    ) -> dict[str, list[LegalRequirementRecord]]:
-        """Raise until legal API integration is implemented."""
-        del locode
-        raise NotImplementedError(
-            "ApiLegalDataApiClient is not implemented yet. "
-            "Set HIAP_MEED_LEGAL_DATA_SOURCE=mock for local runs."
-        )
+    def get_action_legal_assessments(
+        self, country_code: str
+    ) -> dict[str, LegalAssessmentRecord]:
+        """Fetch country-scoped legal assessments from the upstream legal API."""
+        return self._service.get_assessments_by_action_id(country_code)
 
 
 class ApiPolicySignalsDataApiClient:
@@ -311,8 +336,8 @@ def get_action_data_api_client() -> MockActionDataApiClient | ApiActionDataApiCl
 
 
 def get_legal_data_api_client() -> MockLegalDataApiClient | ApiLegalDataApiClient:
-    """FastAPI dependency provider for legal requirement client."""
-    source = os.getenv("HIAP_MEED_LEGAL_DATA_SOURCE", "mock").strip().lower()
+    """FastAPI dependency provider for legal assessment client."""
+    source = os.getenv("HIAP_MEED_LEGAL_DATA_SOURCE", "api").strip().lower()
     if source == "api":
         return _default_api_legal_client
 

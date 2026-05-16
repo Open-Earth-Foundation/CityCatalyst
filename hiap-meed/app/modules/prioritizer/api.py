@@ -132,6 +132,14 @@ def _safe_artifact_name(value: str) -> str:
     return value.strip().lower().replace(" ", "_").replace("/", "_")
 
 
+def _country_code_from_locode(locode: str) -> str:
+    """Return the first two locode characters as the caller country prefix."""
+    normalized_locode = locode.strip().upper()
+    if len(normalized_locode) < 2:
+        raise ValueError(f"Locode `{locode}` must contain a 2-letter country prefix")
+    return normalized_locode[:2]
+
+
 @router.post(
     "/v1/prioritize/exclusions/preview",
     response_model=ExclusionPreviewApiResponse,
@@ -600,9 +608,16 @@ def _run_for_city_input(
 
     # Create internal request ID used for orchestrator artifacts/tracing.
     internal_request_id = uuid4()
+    locode_country_code = _country_code_from_locode(city_input.locode)
+    if locode_country_code != city_input.countryCode.strip().upper():
+        raise ValueError(
+            "Request countryCode does not match the locode country prefix "
+            f"(locode={city_input.locode}, countryCode={city_input.countryCode})"
+        )
     city_emissions_context = _extract_city_emissions_context(city_input)
     result = run_prioritization(
         locode=city_input.locode,
+        country_code=city_input.countryCode.strip().upper(),
         weights_override=city_input.weightsOverride,
         top_n=resolve_top_n(requested_top_n),
         excluded_action_ids=list(city_input.excludedActionIds),

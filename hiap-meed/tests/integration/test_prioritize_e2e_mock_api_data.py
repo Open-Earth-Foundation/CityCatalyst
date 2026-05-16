@@ -100,7 +100,7 @@ def test_prioritize_e2e_with_mock_api_payloads(
 
         blocked_evidence = metadata["hard_filter_evidence_by_action_id"]["c40_0013"]
         missing_evidence = metadata["hard_filter_evidence_by_action_id"]["icare_0172"]
-        assert blocked_evidence["discard_reason"] == "legal_hard_requirement_failed"
+        assert blocked_evidence["discard_reason"] == "legal_verdict_blocked"
         assert blocked_evidence["legal_verdict_category"] == "blocked"
         assert missing_evidence["legal_assessment_present"] is False
 
@@ -108,6 +108,12 @@ def test_prioritize_e2e_with_mock_api_payloads(
         request_runs = sorted((artifact_log_dir / "requests" / "prioritization").glob("*"))
         assert len(request_runs) == 1
         run_dir = request_runs[0]
+
+        feasibility_step = json.loads((run_dir / "010_feasibility.json").read_text("utf-8"))
+        assert feasibility_step["payload"]["missing_legal_assessment_actions_count"] > 0
+        assert "icare_0172" in feasibility_step["payload"]["missing_legal_assessment_action_ids"]
+        assert feasibility_step["payload"]["neutral_legal_fallback_actions_count"] > 0
+        assert "icare_0172" in feasibility_step["payload"]["neutral_legal_fallback_action_ids"]
 
         manifest_payload = json.loads((run_dir / "manifest.json").read_text("utf-8"))
         assert manifest_payload["request_kind"] == "prioritization"
@@ -136,6 +142,51 @@ def test_prioritize_e2e_with_mock_api_payloads(
         assert fetch_city_payload["city_name"] == "Iquique"
         assert fetch_city_payload["source"] == "mock_city_api"
         assert fetch_city_payload["source_metadata"]["requested_locode"] == "CL IQQ"
+        assert fetch_city_payload["source_metadata"]["mock_file_path"].endswith(
+            "city_api_mock.json"
+        )
+
+        fetch_actions_files = [
+            file_name for file_name in generated_files if file_name.endswith("_fetch_actions.json")
+        ]
+        assert len(fetch_actions_files) == 1
+        fetch_actions_payload = json.loads(
+            (run_dir / fetch_actions_files[0]).read_text("utf-8")
+        )["payload"]
+        assert fetch_actions_payload["source"] == "mock_actions_api"
+        assert fetch_actions_payload["source_metadata"]["mock_file_path"].endswith(
+            "actions_api_mock.json"
+        )
+
+        fetch_legal_files = [
+            file_name
+            for file_name in generated_files
+            if file_name.endswith("_fetch_legal_assessments.json")
+        ]
+        assert len(fetch_legal_files) == 1
+        fetch_legal_payload = json.loads(
+            (run_dir / fetch_legal_files[0]).read_text("utf-8")
+        )["payload"]
+        assert fetch_legal_payload["source"] == "mock_action_legal_assessments_api"
+        assert fetch_legal_payload["source_metadata"]["requested_country_code"] == "CL"
+        assert fetch_legal_payload["source_metadata"]["mock_file_path"].endswith(
+            "actions_legal_api_mock.json"
+        )
+
+        fetch_policy_files = [
+            file_name
+            for file_name in generated_files
+            if file_name.endswith("_fetch_policy_signals.json")
+        ]
+        assert len(fetch_policy_files) == 1
+        fetch_policy_payload = json.loads(
+            (run_dir / fetch_policy_files[0]).read_text("utf-8")
+        )["payload"]
+        assert fetch_policy_payload["source"] == "mock_policy_signals_api"
+        assert fetch_policy_payload["source_metadata"]["requested_locode"] == "CL IQQ"
+        assert fetch_policy_payload["source_metadata"]["mock_file_path"].endswith(
+            "actions_policy_signals_api_mock.json"
+        )
 
         response_full_payload = json.loads(
             (run_dir / "response_full.json").read_text("utf-8")

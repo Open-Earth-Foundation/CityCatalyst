@@ -160,7 +160,7 @@ def test_hard_filter_block_with_mock_api_data() -> None:
     assert len(result.discarded_excluded) == 0
     assert len(result.valid_actions) == len(actions) - len(discarded_legal_ids)
 
-    assert result.evidence["c40_0013"]["discard_reason"] == "legal_hard_requirement_failed"
+    assert result.evidence["c40_0013"]["discard_reason"] == "legal_verdict_blocked"
     assert result.evidence["c40_0012"]["legal_verdict_category"] == "enabled"
     missing_action_id = next(
         action.action_id
@@ -798,6 +798,10 @@ def test_feasibility_block_with_mock_api_data(
     assert missing_action_evidence["legal_component_score"] == pytest.approx(0.5)
     assert missing_action_evidence["legal_component_source"] == "neutral_fallback"
     assert missing_action_evidence["legal_assessment_missing"] is True
+    assert result.metadata["missing_legal_assessment_actions_count"] > 0
+    assert missing_action_id in result.metadata["missing_legal_assessment_action_ids"]
+    assert result.metadata["neutral_legal_fallback_actions_count"] > 0
+    assert missing_action_id in result.metadata["neutral_legal_fallback_action_ids"]
 
 
 @pytest.mark.unit

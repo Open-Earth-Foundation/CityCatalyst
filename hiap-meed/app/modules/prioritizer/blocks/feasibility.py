@@ -106,6 +106,9 @@ def run(
 
     score_by_action_id: dict[str, float] = {}
     evidence_by_action_id: dict[str, dict[str, object]] = {}
+    missing_legal_assessment_action_ids: list[str] = []
+    neutral_legal_fallback_action_ids: list[str] = []
+    neutral_legal_fallback_missing_score_action_ids: list[str] = []
 
     for action in actions:
         # Block 2: Use the flat legal verdict score with a neutral fallback.
@@ -124,6 +127,15 @@ def run(
         legal_verdict_category = (
             assessment.verdict_category if assessment is not None else None
         )
+        legal_verdict_score_missing = (
+            assessment is not None and assessment.verdict_score is None
+        )
+        if not legal_assessment_present:
+            missing_legal_assessment_action_ids.append(action.action_id)
+        if legal_component_source == "neutral_fallback":
+            neutral_legal_fallback_action_ids.append(action.action_id)
+        if legal_verdict_score_missing:
+            neutral_legal_fallback_missing_score_action_ids.append(action.action_id)
 
         # Block 3: Compute socioeconomic component from action rules + city buckets.
         socioeconomic_indicator_rows: list[dict[str, object]] = []
@@ -203,9 +215,7 @@ def run(
             "legal_component_source": legal_component_source,
             "legal_weight": FEASIBILITY_WEIGHT_LEGAL,
             "legal_contribution": legal_contribution,
-            "legal_verdict_score_missing": (
-                assessment is not None and assessment.verdict_score is None
-            ),
+            "legal_verdict_score_missing": legal_verdict_score_missing,
             "ownership_category": (
                 assessment.ownership_category if assessment is not None else None
             ),
@@ -243,4 +253,24 @@ def run(
     return BlockScoreResult(
         score_by_action_id=score_by_action_id,
         evidence_by_action_id=evidence_by_action_id,
+        metadata={
+            "missing_legal_assessment_actions_count": len(
+                missing_legal_assessment_action_ids
+            ),
+            "missing_legal_assessment_action_ids": sorted(
+                missing_legal_assessment_action_ids
+            ),
+            "neutral_legal_fallback_actions_count": len(
+                neutral_legal_fallback_action_ids
+            ),
+            "neutral_legal_fallback_action_ids": sorted(
+                neutral_legal_fallback_action_ids
+            ),
+            "neutral_legal_fallback_missing_score_actions_count": len(
+                neutral_legal_fallback_missing_score_action_ids
+            ),
+            "neutral_legal_fallback_missing_score_action_ids": sorted(
+                neutral_legal_fallback_missing_score_action_ids
+            ),
+        },
     )

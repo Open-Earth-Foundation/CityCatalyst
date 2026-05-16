@@ -27,6 +27,88 @@ from app.modules.prioritizer.models import (
 logger = logging.getLogger(__name__)
 
 
+def _base_source_metadata() -> dict[str, object]:
+    """Return the canonical source-metadata shape used in artifacts."""
+    return {
+        "mock_file_path": None,
+        "upstream_url": None,
+        "upstream_endpoint": None,
+        "http_status_code": None,
+        "upstream_generated_at_utc": None,
+    }
+
+
+def describe_action_data_source(
+    client: MockActionDataApiClient | ApiActionDataApiClient,
+) -> dict[str, object]:
+    """Return artifact-friendly source metadata for the configured action client."""
+    if isinstance(client, MockActionDataApiClient):
+        source_metadata = _base_source_metadata()
+        source_metadata["mock_file_path"] = str(client.mock_file_path)
+        return {
+            "source": "mock_actions_api",
+            "source_metadata": source_metadata,
+        }
+    return {
+        "source": "actions_api",
+        "source_metadata": _base_source_metadata(),
+    }
+
+
+def describe_legal_data_source(
+    client: MockLegalDataApiClient | ApiLegalDataApiClient,
+    *,
+    country_code: str,
+) -> dict[str, object]:
+    """Return artifact-friendly source metadata for the configured legal client."""
+    normalized_country_code = country_code.strip().upper()
+    if hasattr(client, "mock_file_path"):
+        source_metadata = _base_source_metadata()
+        source_metadata["mock_file_path"] = str(getattr(client, "mock_file_path"))
+        source_metadata["requested_country_code"] = normalized_country_code
+        return {
+            "source": "mock_action_legal_assessments_api",
+            "source_metadata": source_metadata,
+        }
+    source_metadata = _base_source_metadata()
+    source_metadata["requested_country_code"] = normalized_country_code
+    service = getattr(client, "_service", None)
+    if service is not None and hasattr(service, "_build_legal_assessments_url"):
+        source_metadata["upstream_url"] = service._build_legal_assessments_url(
+            normalized_country_code
+        )
+        source_metadata["upstream_endpoint"] = (
+            "GET /api/v1/action-legal-assessments?countryCode={country_code}"
+        )
+    return {
+        "source": "action_legal_assessments_api",
+        "source_metadata": source_metadata,
+    }
+
+
+def describe_policy_signals_data_source(
+    client: MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient,
+    *,
+    locode: str,
+) -> dict[str, object]:
+    """Return artifact-friendly source metadata for the configured policy client."""
+    normalized_locode = locode.strip().upper()
+    if isinstance(client, MockPolicySignalsDataApiClient):
+        source_metadata = _base_source_metadata()
+        source_metadata["mock_file_path"] = str(client.mock_file_path)
+        source_metadata["requested_locode"] = normalized_locode
+        return {
+            "source": "mock_policy_signals_api",
+            "source_metadata": source_metadata,
+        }
+    source_metadata = _base_source_metadata()
+    source_metadata["requested_locode"] = normalized_locode
+    return {
+        "source": "policy_signals_api",
+        "source_metadata": source_metadata,
+    }
+
+
 @dataclass
 class MockCityDataApiClient:
     """File-backed city client loading checked-in mock city API payload."""
@@ -64,6 +146,7 @@ class MockCityDataApiClient:
                     "raw": city_raw,
                     "source": "mock_city_api",
                     "source_metadata": {
+                        **_base_source_metadata(),
                         "mock_file_path": str(self.mock_file_path),
                         "requested_locode": requested_locode,
                     },
@@ -176,6 +259,7 @@ class MockLegalDataApiClient:
                     "legal_justification_i18n": assessment.legalJustificationI18n,
                     "raw": assessment_raw,
                     "source_metadata": {
+                        **_base_source_metadata(),
                         "mock_file_path": str(self.mock_file_path),
                         "requested_country_code": country_code.strip().upper(),
                     },

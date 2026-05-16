@@ -473,7 +473,7 @@ The service writes:
   - `LOG_DIR/requests/exclusion_preview/{UTC_TIMESTAMP}Z_{internal_request_id}/`
   when `ARTIFACT_LOG_JSONL=true`
 
-For city fetches, the `fetch_city` step artifact now also records the upstream city endpoint details used for that request, including the resolved URL, the endpoint template, the requested locode, the HTTP status code, and upstream `meta.generated_at_utc` when present.
+Fetch-step artifacts record the active data source for each upstream/mock dependency. API-backed fetches include upstream request metadata such as endpoint templates, resolved URLs, request keys, HTTP status codes, and upstream timestamps when available. Mock-backed fetches include the resolved `mock_file_path` plus the relevant request key such as `requested_locode` or `requested_country_code`.
 
 To disable `app.log` file writes (for example, during tests), set `LOG_FILE_ENABLED=false`.
 

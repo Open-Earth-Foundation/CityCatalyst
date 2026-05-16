@@ -1,0 +1,2395 @@
+{
+  "results": [
+    {
+      "locode": "CL IQQ",
+      "ranked_action_ids": [
+        "icare_0016",
+        "icare_0121",
+        "icare_0040",
+        "c40_0010",
+        "icare_0028",
+        "icare_0002",
+        "c40_0012",
+        "ipcc_0105",
+        "icare_0072",
+        "icare_0099",
+        "icare_0045",
+        "ipcc_0050",
+        "c40_0034",
+        "icare_0110",
+        "ipcc_0045",
+        "icare_0122",
+        "icare_0012",
+        "icare_0064",
+        "icare_0027",
+        "icare_0156"
+      ],
+      "ranked_actions": [
+        {
+          "action_id": "icare_0016",
+          "rank": 1,
+          "final_score": 0.6691234586057906,
+          "impact_score": 0.509546917211581,
+          "alignment_score": 0.7770000000000001,
+          "feasibility_score": 0.90625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": true,
+              "legal_verdict_category": "enabled"
+            },
+            "impact": {
+              "impact_block_score": 0.509546917211581,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.3869336465144761,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.7770000000000001,
+              "policy_component_score": 0.936,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.90625,
+              "legal_component_score": 1.0,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action ranks first because it fits the city's preferred timeframe, has very strong policy support, and looks highly feasible under the current legal and socioeconomic conditions. Its main drawback is that the expected emissions reduction is limited and it does not match the city's preferred sector."
+          }
+        },
+        {
+          "action_id": "icare_0121",
+          "rank": 2,
+          "final_score": 0.5673363276380454,
+          "impact_score": 0.20097265527609068,
+          "alignment_score": 0.9520000000000002,
+          "feasibility_score": 0.90625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": true,
+              "legal_verdict_category": "enabled"
+            },
+            "impact": {
+              "impact_block_score": 0.20097265527609068,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.0012158190951133407,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.9520000000000002,
+              "policy_component_score": 0.936,
+              "sector_component_score": 1.0,
+              "co_benefit_component_score": 1.0,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.90625,
+              "legal_component_score": 1.0,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action ranks near the top because it matches the city's preferred sector and co-benefits, while also fitting the preferred timeframe and showing strong policy and legal support. It is held back mainly because its expected emissions reduction is very limited in the current city inventory."
+          }
+        },
+        {
+          "action_id": "icare_0040",
+          "rank": 3,
+          "final_score": 0.5473617293028953,
+          "impact_score": 0.2547734586057905,
+          "alignment_score": 0.7957500000000001,
+          "feasibility_score": 0.90625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": true,
+              "legal_verdict_category": "enabled"
+            },
+            "impact": {
+              "impact_block_score": 0.2547734586057905,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.19346682325723805,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.7957500000000001,
+              "policy_component_score": 0.936,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.875,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.90625,
+              "legal_component_score": 1.0,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action stays high in the ranking because it fits the city's preferred timeframe, has strong policy support, and aligns well with the city's preferred co-benefits. It ranks below the top two because its expected emissions reduction is very limited and it does not match the city's preferred sector."
+          }
+        },
+        {
+          "action_id": "c40_0010",
+          "rank": 4,
+          "final_score": 0.5436117293028953,
+          "impact_score": 0.35477345860579046,
+          "alignment_score": 0.7832500000000001,
+          "feasibility_score": 0.65625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": true,
+              "legal_verdict_category": "conditional"
+            },
+            "impact": {
+              "impact_block_score": 0.35477345860579046,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.19346682325723805,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.7832500000000001,
+              "policy_component_score": 0.936,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.625,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.65625,
+              "legal_component_score": 0.5,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action is placed just below the top group because it fits the city's preferred timeframe, has strong policy support, and supports the city's preferred co-benefits. It ranks lower because its expected emissions reduction is very limited and the legal case is only conditional."
+          }
+        },
+        {
+          "action_id": "icare_0028",
+          "rank": 5,
+          "final_score": 0.5399984586057904,
+          "impact_score": 0.509546917211581,
+          "alignment_score": 0.51325,
+          "feasibility_score": 0.65625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": true,
+              "legal_verdict_category": "conditional"
+            },
+            "impact": {
+              "impact_block_score": 0.509546917211581,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.3869336465144761,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.51325,
+              "policy_component_score": 0.576,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.625,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.65625,
+              "legal_component_score": 0.5,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action ranks in the middle because it fits the preferred timeframe, has strong policy support, and supports the city's preferred co-benefits. It does not rank higher because its expected emissions reduction is limited and it does not match the city's preferred sector."
+          }
+        },
+        {
+          "action_id": "icare_0002",
+          "rank": 6,
+          "final_score": 0.5381234586057905,
+          "impact_score": 0.509546917211581,
+          "alignment_score": 0.507,
+          "feasibility_score": 0.65625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.509546917211581,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.3869336465144761,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.507,
+              "policy_component_score": 0.576,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.65625,
+              "legal_component_score": 0.5,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action is supported by a favorable timeline, strong policy context, and a very good fit with the city's socioeconomic context. It ranks lower than similar actions because its expected emissions reduction is limited, it does not match the city's preferred sector, and there is no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "c40_0012",
+          "rank": 7,
+          "final_score": 0.516225,
+          "impact_score": 0.2,
+          "alignment_score": 0.7832500000000001,
+          "feasibility_score": 0.90625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": true,
+              "legal_verdict_category": "enabled"
+            },
+            "impact": {
+              "impact_block_score": 0.2,
+              "matched_city_subsector_keys_count": 0,
+              "emissions_reduction_component_score": 0.0,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.7832500000000001,
+              "policy_component_score": 0.936,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.625,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.90625,
+              "legal_component_score": 1.0,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action remains in the lower middle because it fits the city's preferred timeframe and has very strong policy and legal support. It is held back because it does not directly match a subsector with recorded city emissions and does not match the city's preferred sector."
+          }
+        },
+        {
+          "action_id": "ipcc_0105",
+          "rank": 8,
+          "final_score": 0.5135863276380453,
+          "impact_score": 0.20097265527609068,
+          "alignment_score": 0.9395000000000001,
+          "feasibility_score": 0.65625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.20097265527609068,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.0012158190951133407,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.9395000000000001,
+              "policy_component_score": 0.936,
+              "sector_component_score": 1.0,
+              "co_benefit_component_score": 0.75,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.65625,
+              "legal_component_score": 0.5,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action ranks below the stronger matches because it fits the city's preferred sector and timeframe and has strong co-benefit support. Its main limitation is that the expected emissions reduction is very limited, and there is no legal assessment row available."
+          }
+        },
+        {
+          "action_id": "icare_0072",
+          "rank": 9,
+          "final_score": 0.48087759600609126,
+          "impact_score": 0.2005051920121824,
+          "alignment_score": 0.83125,
+          "feasibility_score": 0.65625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.2005051920121824,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.0006314900152279941,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.83125,
+              "policy_component_score": 1.0,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.625,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.65625,
+              "legal_component_score": 0.5,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action is kept lower because, although it fits the preferred timeframe and has strong policy support, its expected emissions reduction is very limited. It also does not match the city's preferred sector, and no legal assessment row was available."
+          }
+        },
+        {
+          "action_id": "icare_0099",
+          "rank": 10,
+          "final_score": 0.4806272856041661,
+          "impact_score": 0.20000457120833223,
+          "alignment_score": 0.83125,
+          "feasibility_score": 0.65625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.20000457120833223,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 5.714010415277413e-06,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.83125,
+              "policy_component_score": 1.0,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.625,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.65625,
+              "legal_component_score": 0.5,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action sits in the lower tier because it fits the preferred timeframe and has strong policy support, but its expected emissions reduction is very limited. It also does not match the city's preferred sector, and no legal assessment row was available."
+          }
+        },
+        {
+          "action_id": "icare_0045",
+          "rank": 11,
+          "final_score": 0.48062499999999997,
+          "impact_score": 0.2,
+          "alignment_score": 0.83125,
+          "feasibility_score": 0.65625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.2,
+              "matched_city_subsector_keys_count": 0,
+              "emissions_reduction_component_score": 0.0,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.83125,
+              "policy_component_score": 1.0,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.625,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.65625,
+              "legal_component_score": 0.5,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action ranks low because it fits the preferred timeframe and has strong policy support, but it does not match the city's preferred sector. It also does not directly match a subsector with recorded city emissions, and no legal assessment row was available."
+          }
+        },
+        {
+          "action_id": "ipcc_0050",
+          "rank": 12,
+          "final_score": 0.47925519201218236,
+          "impact_score": 0.2010103840243648,
+          "alignment_score": 0.8250000000000001,
+          "feasibility_score": 0.65625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.2010103840243648,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.0012629800304559881,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.8250000000000001,
+              "policy_component_score": 1.0,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.65625,
+              "legal_component_score": 0.5,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action is held down by its very limited expected emissions reduction, even though it fits the preferred timeframe and has strong policy support. It also does not match the city's preferred sector, and no legal assessment row was available."
+          }
+        },
+        {
+          "action_id": "c40_0034",
+          "rank": 13,
+          "final_score": 0.47875,
+          "impact_score": 0.2,
+          "alignment_score": 0.8250000000000001,
+          "feasibility_score": 0.65625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": true,
+              "legal_verdict_category": "conditional"
+            },
+            "impact": {
+              "impact_block_score": 0.2,
+              "matched_city_subsector_keys_count": 0,
+              "emissions_reduction_component_score": 0.0,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.8250000000000001,
+              "policy_component_score": 1.0,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.65625,
+              "legal_component_score": 0.5,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action ranks low because it fits the preferred timeframe and has very strong policy support, but it does not directly match a subsector with recorded city emissions. It also does not match the city's preferred sector."
+          }
+        },
+        {
+          "action_id": "icare_0110",
+          "rank": 13,
+          "final_score": 0.47875,
+          "impact_score": 0.2,
+          "alignment_score": 0.8250000000000001,
+          "feasibility_score": 0.65625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": true,
+              "legal_verdict_category": "conditional"
+            },
+            "impact": {
+              "impact_block_score": 0.2,
+              "matched_city_subsector_keys_count": 0,
+              "emissions_reduction_component_score": 0.0,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.8250000000000001,
+              "policy_component_score": 1.0,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.65625,
+              "legal_component_score": 0.5,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action is placed low because it fits the preferred timeframe and has very strong policy support, but it does not directly match a subsector with recorded city emissions. It also does not match the city's preferred sector."
+          }
+        },
+        {
+          "action_id": "ipcc_0045",
+          "rank": 15,
+          "final_score": 0.46673019201218247,
+          "impact_score": 0.2010103840243648,
+          "alignment_score": 0.7832500000000001,
+          "feasibility_score": 0.65625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.2010103840243648,
+              "matched_city_subsector_keys_count": 1,
+              "emissions_reduction_component_score": 0.0012629800304559881,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.7832500000000001,
+              "policy_component_score": 0.936,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.625,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.65625,
+              "legal_component_score": 0.5,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action stays low because it fits the preferred timeframe and has strong co-benefit support, but its expected emissions reduction is very limited. It also does not match the city's preferred sector, and no legal assessment row was available."
+          }
+        },
+        {
+          "action_id": "icare_0122",
+          "rank": 16,
+          "final_score": 0.466225,
+          "impact_score": 0.2,
+          "alignment_score": 0.7832500000000001,
+          "feasibility_score": 0.65625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": true,
+              "legal_verdict_category": "conditional"
+            },
+            "impact": {
+              "impact_block_score": 0.2,
+              "matched_city_subsector_keys_count": 0,
+              "emissions_reduction_component_score": 0.0,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.7832500000000001,
+              "policy_component_score": 0.936,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.625,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.65625,
+              "legal_component_score": 0.5,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action ranks low because it fits the preferred timeframe and has strong policy and co-benefit support, but it does not directly match a subsector with recorded city emissions. It also does not match the city's preferred sector."
+          }
+        },
+        {
+          "action_id": "icare_0012",
+          "rank": 17,
+          "final_score": 0.46435000000000004,
+          "impact_score": 0.1,
+          "alignment_score": 0.7770000000000001,
+          "feasibility_score": 0.90625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": true,
+              "legal_verdict_category": "enabled"
+            },
+            "impact": {
+              "impact_block_score": 0.1,
+              "matched_city_subsector_keys_count": 0,
+              "emissions_reduction_component_score": 0.0,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.7770000000000001,
+              "policy_component_score": 0.936,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.90625,
+              "legal_component_score": 1.0,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action is held low because it fits the preferred timeframe and has very strong policy and legal support, but it does not directly match a subsector with recorded city emissions. It also does not match the city's preferred sector."
+          }
+        },
+        {
+          "action_id": "icare_0064",
+          "rank": 17,
+          "final_score": 0.46435000000000004,
+          "impact_score": 0.1,
+          "alignment_score": 0.7770000000000001,
+          "feasibility_score": 0.90625,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": true,
+              "legal_verdict_category": "enabled"
+            },
+            "impact": {
+              "impact_block_score": 0.1,
+              "matched_city_subsector_keys_count": 0,
+              "emissions_reduction_component_score": 0.0,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.7770000000000001,
+              "policy_component_score": 0.936,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.90625,
+              "legal_component_score": 1.0,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action ranks low because it fits the preferred timeframe and has very strong policy and legal support, but it does not directly match a subsector with recorded city emissions. It also does not match the city's preferred sector."
+          }
+        },
+        {
+          "action_id": "icare_0027",
+          "rank": 19,
+          "final_score": 0.4521,
+          "impact_score": 0.1,
+          "alignment_score": 0.7895000000000001,
+          "feasibility_score": 0.8262499999999999,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": true,
+              "legal_verdict_category": "conditional"
+            },
+            "impact": {
+              "impact_block_score": 0.1,
+              "matched_city_subsector_keys_count": 0,
+              "emissions_reduction_component_score": 0.0,
+              "timeline_component_score": 0.5
+            },
+            "alignment": {
+              "alignment_score": 0.7895000000000001,
+              "policy_component_score": 0.936,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.75,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.8262499999999999,
+              "legal_component_score": 0.84,
+              "socioeconomic_component_score": 0.8125
+            }
+          },
+          "explanations": {
+            "en": "This action is kept low because it fits the preferred timeframe and has very strong policy support, but it does not directly match a subsector with recorded city emissions. It also does not match the city's preferred sector."
+          }
+        },
+        {
+          "action_id": "icare_0156",
+          "rank": 20,
+          "final_score": 0.4475,
+          "impact_score": 0.2,
+          "alignment_score": 0.8250000000000001,
+          "feasibility_score": 0.5,
+          "evidence_summary": {
+            "hard_filter": {
+              "discard_reason": null,
+              "legal_assessment_present": false,
+              "legal_verdict_category": null
+            },
+            "impact": {
+              "impact_block_score": 0.2,
+              "matched_city_subsector_keys_count": 0,
+              "emissions_reduction_component_score": 0.0,
+              "timeline_component_score": 1.0
+            },
+            "alignment": {
+              "alignment_score": 0.8250000000000001,
+              "policy_component_score": 1.0,
+              "sector_component_score": 0.0,
+              "co_benefit_component_score": 0.5,
+              "timeframe_component_score": 1.0
+            },
+            "feasibility": {
+              "feasibility_score": 0.5,
+              "legal_component_score": 0.5,
+              "socioeconomic_component_score": 0.5
+            }
+          },
+          "explanations": {
+            "en": "This action ranks at the bottom because it fits the preferred timeframe and has very strong policy support, but it does not directly match a subsector with recorded city emissions. It also does not match the city's preferred sector, and no legal assessment row was available."
+          }
+        }
+      ],
+      "metadata": {
+        "locode": "CL IQQ",
+        "internal_request_id": "84afea18-4a08-4992-9a17-ffc2596dd150",
+        "counts": {
+          "total_actions": 155,
+          "valid_actions": 135,
+          "discarded_excluded": 1,
+          "discarded_legal": 19,
+          "ranked_actions": 20
+        },
+        "weights": {
+          "impact": 0.5,
+          "alignment": 0.3,
+          "feasibility": 0.2
+        },
+        "timings": {
+          "fetch_city": 0.7760794040000292,
+          "fetch_actions": 0.023001008000164802,
+          "fetch_legal_assessments": 1.014370966999877,
+          "fetch_policy_signals": 0.0199580529999821,
+          "validate_weights": 6.419300007109996e-05,
+          "hard_filter": 0.0004467290000320645,
+          "impact": 0.0014791309999964142,
+          "alignment": 0.005440569000029427,
+          "feasibility": 0.0022946089998185926,
+          "final_scoring": 0.0008961170001384744,
+          "explanations": 6.930947167000113
+        },
+        "explanations": {
+          "requested": true,
+          "generated": 20,
+          "requested_languages": [
+            "en"
+          ],
+          "canonical_language": "en",
+          "generated_languages": [
+            "en"
+          ],
+          "translation_warnings": []
+        },
+        "hard_filter_evidence_by_action_id": {
+          "c40_0010": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.5,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "c40_0012": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "enabled",
+            "legal_verdict_score": 1.0,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "enabled",
+              "ownership_score": 1.0,
+              "restrictions_category": "enabled",
+              "restrictions_score": 1.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "c40_0013": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.16,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "c40_0015": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.16,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "c40_0016": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.5,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "c40_0017": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "enabled",
+            "legal_verdict_score": 1.0,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "enabled",
+              "ownership_score": 1.0,
+              "restrictions_category": "enabled",
+              "restrictions_score": 1.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "c40_0018": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.16,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "c40_0023": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.0,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "transportation",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "blocked",
+              "restrictions_score": 0.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "c40_0025": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.0,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "transportation",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "blocked",
+              "restrictions_score": 0.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "c40_0029": {
+            "discard_reason": "user_excluded",
+            "matched_excluded_action_id": "c40_0029",
+            "confirmed_exclusion": true
+          },
+          "c40_0034": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.5,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "waste",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "c40_0035": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.84,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "waste",
+              "ownership_category": "enabled",
+              "ownership_score": 1.0,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "c40_0036": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.0,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "waste",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "blocked",
+              "restrictions_score": 0.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "c40_0037": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.34,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "waste",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "blocked",
+              "restrictions_score": 0.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "c40_0040": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.5,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "waste",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "c40_0042": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0046": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0048": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0049": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0051": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0052": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0053": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0056": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0062": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "c40_0071": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.5,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0001": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0002": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0006": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.5,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0008": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.0,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "blocked",
+              "restrictions_score": 0.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0009": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.0,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "blocked",
+              "restrictions_score": 0.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0010": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.66,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "enabled",
+              "restrictions_score": 1.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0012": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "enabled",
+            "legal_verdict_score": 1.0,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "enabled",
+              "ownership_score": 1.0,
+              "restrictions_category": "enabled",
+              "restrictions_score": 1.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0015": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.5,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0016": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "enabled",
+            "legal_verdict_score": 1.0,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "enabled",
+              "ownership_score": 1.0,
+              "restrictions_category": "enabled",
+              "restrictions_score": 1.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0023": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.0,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "blocked",
+              "restrictions_score": 0.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0024": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.5,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0025": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.16,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0026": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.0,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "blocked",
+              "restrictions_score": 0.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0027": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.84,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "enabled",
+              "ownership_score": 1.0,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0028": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.5,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0031": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.0,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "blocked",
+              "restrictions_score": 0.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0033": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.5,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0034": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0035": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.16,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0040": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "enabled",
+            "legal_verdict_score": 1.0,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "enabled",
+              "ownership_score": 1.0,
+              "restrictions_category": "enabled",
+              "restrictions_score": 1.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0045": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0049": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.0,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "blocked",
+              "restrictions_score": 0.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0050": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0053": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.5,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "waste",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0064": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "enabled",
+            "legal_verdict_score": 1.0,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "waste",
+              "ownership_category": "enabled",
+              "ownership_score": 1.0,
+              "restrictions_category": "enabled",
+              "restrictions_score": 1.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0069": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0071": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0072": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0074": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0076": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0078": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0079": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0082": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0099": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0101": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0104": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.5,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0105": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.0,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "blocked",
+              "restrictions_score": 0.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0110": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.5,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "waste",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0111": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.0,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "waste",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "blocked",
+              "restrictions_score": 0.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0117": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.16,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "transportation",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0120": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "enabled",
+            "legal_verdict_score": 1.0,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "enabled",
+              "ownership_score": 1.0,
+              "restrictions_category": "enabled",
+              "restrictions_score": 1.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0121": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "enabled",
+            "legal_verdict_score": 1.0,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "transportation",
+              "ownership_category": "enabled",
+              "ownership_score": 1.0,
+              "restrictions_category": "enabled",
+              "restrictions_score": 1.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0122": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.5,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "waste",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0127": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0128": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0131": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0132": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0137": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "enabled",
+            "legal_verdict_score": 1.0,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "enabled",
+              "ownership_score": 1.0,
+              "restrictions_category": "enabled",
+              "restrictions_score": 1.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0139": {
+            "discard_reason": "legal_verdict_blocked",
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "blocked",
+            "legal_verdict_score": 0.0,
+            "legal_hard_filter_blocked": true,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "transportation",
+              "ownership_category": "blocked",
+              "ownership_score": 0.0,
+              "restrictions_category": "blocked",
+              "restrictions_score": 0.0,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "icare_0144": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0145": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0154": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0156": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0160": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0162": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0163": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0164": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0165": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0169": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0170": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0171": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0172": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0173": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0176": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0178": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0180": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0181": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0182": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0183": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0184": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0185": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0186": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "icare_0188": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0001": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.5,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "transportation",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "ipcc_0023": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0024": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0025": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0026": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0028": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0031": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0033": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0034": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0037": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0038": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0039": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0040": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0041": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0042": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0043": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0045": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0049": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0050": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0052": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0053": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0054": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0055": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0056": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0057": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0060": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0062": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0064": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0067": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0068": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0069": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0070": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0071": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0074": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": true,
+            "legal_verdict_category": "conditional",
+            "legal_verdict_score": 0.5,
+            "legal_hard_filter_blocked": false,
+            "legal_assessment_summary": {
+              "country_code": "CL",
+              "gpc_sector": "stationary_energy",
+              "ownership_category": "conditional",
+              "ownership_score": 0.5,
+              "restrictions_category": "conditional",
+              "restrictions_score": 0.5,
+              "analysis_date": "2026-04-30",
+              "generation_method": "expert review"
+            }
+          },
+          "ipcc_0076": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0078": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0083": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0084": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0085": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0086": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0087": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0088": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0089": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0090": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0091": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0092": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0094": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0096": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0097": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0098": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0099": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0100": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0101": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0102": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0103": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0104": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          },
+          "ipcc_0105": {
+            "discard_reason": null,
+            "confirmed_exclusion": false,
+            "legal_assessment_present": false,
+            "legal_verdict_category": null,
+            "legal_hard_filter_blocked": false
+          }
+        }
+      },
+      "warnings": []
+    }
+  ]
+}

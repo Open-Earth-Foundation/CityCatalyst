@@ -98,7 +98,7 @@ def _apply_legal_hard_filter(
         }
 
         if verdict_category == "blocked":
-            action_evidence["discard_reason"] = "legal_hard_requirement_failed"
+            action_evidence["discard_reason"] = "legal_verdict_blocked"
             discarded_legal.append(action)
             continue
 

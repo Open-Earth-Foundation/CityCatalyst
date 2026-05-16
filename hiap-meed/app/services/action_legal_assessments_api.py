@@ -118,10 +118,12 @@ class ActionLegalAssessmentsApiService:
                     "legal_justification_i18n": assessment.legalJustificationI18n,
                     "raw": assessment_raw,
                     "source_metadata": {
+                        "mock_file_path": None,
                         "upstream_url": legal_url,
                         "upstream_endpoint": LEGAL_ASSESSMENTS_ENDPOINT_TEMPLATE,
                         "requested_country_code": country_code.strip().upper(),
                         "http_status_code": http_status_code,
+                        "upstream_generated_at_utc": None,
                     },
                 }
             )

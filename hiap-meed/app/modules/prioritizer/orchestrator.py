@@ -26,6 +26,9 @@ from app.services.data_clients import (
     MockCityDataApiClient,
     MockLegalDataApiClient,
     MockPolicySignalsDataApiClient,
+    describe_action_data_source,
+    describe_legal_data_source,
+    describe_policy_signals_data_source,
 )
 from app.services.http_client import UpstreamApiError
 from app.utils.artifacts import ArtifactWriter
@@ -81,6 +84,25 @@ def _safe_float(value: object, default: float = 0.0) -> float:
     if isinstance(value, int | float):
         return float(value)
     return default
+
+
+def _legal_fetch_source_descriptor(
+    *,
+    legal_assessments_by_action_id: dict[str, object],
+    fallback_descriptor: dict[str, object],
+) -> dict[str, object]:
+    """Prefer the returned legal record metadata over a generic source descriptor."""
+    if not legal_assessments_by_action_id:
+        return fallback_descriptor
+    first_action_id = sorted(legal_assessments_by_action_id.keys())[0]
+    first_assessment = legal_assessments_by_action_id[first_action_id]
+    first_source_metadata = getattr(first_assessment, "source_metadata", None)
+    if not isinstance(first_source_metadata, dict):
+        return fallback_descriptor
+    return {
+        "source": fallback_descriptor["source"],
+        "source_metadata": dict(first_source_metadata),
+    }
 
 
 def _build_evidence_summary(
@@ -298,8 +320,10 @@ def run_prioritization(
         actions = action_data_api_client.list_actions()
     # Emit high-level and step-detail artifacts for action fetch.
     timings["fetch_actions"] = block.elapsed_seconds
+    action_source_descriptor = describe_action_data_source(action_data_api_client)
     fetch_actions_payload = {
         "total_actions": len(actions),
+        "source": action_source_descriptor["source"],
         "elapsed_seconds": block.elapsed_seconds,
     }
     fetch_actions_event_index = artifact_writer.write_event(
@@ -310,6 +334,8 @@ def run_prioritization(
         {
             "total_actions": len(actions),
             "action_ids": _sorted_action_ids(actions),
+            "source": action_source_descriptor["source"],
+            "source_metadata": action_source_descriptor["source_metadata"],
             "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=fetch_actions_event_index,
@@ -330,9 +356,18 @@ def run_prioritization(
         )
     # Emit high-level and step-detail artifacts for legal assessment fetch.
     timings["fetch_legal_assessments"] = block.elapsed_seconds
+    legal_source_descriptor = describe_legal_data_source(
+        legal_data_api_client,
+        country_code=country_code,
+    )
+    legal_source_descriptor = _legal_fetch_source_descriptor(
+        legal_assessments_by_action_id=legal_assessments_by_action_id,
+        fallback_descriptor=legal_source_descriptor,
+    )
     fetch_legal_payload = {
         "requested_country_code": country_code,
         "actions_with_legal_assessments": len(legal_assessments_by_action_id),
+        "source": legal_source_descriptor["source"],
         "elapsed_seconds": block.elapsed_seconds,
     }
     fetch_legal_event_index = artifact_writer.write_event(
@@ -346,6 +381,8 @@ def run_prioritization(
             "action_ids_with_legal_assessments": sorted(
                 legal_assessments_by_action_id.keys()
             ),
+            "source": legal_source_descriptor["source"],
+            "source_metadata": legal_source_descriptor["source_metadata"],
             "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=fetch_legal_event_index,
@@ -366,8 +403,13 @@ def run_prioritization(
             policy_signals_data_api_client.get_action_policy_signals(locode)
         )
     timings["fetch_policy_signals"] = block.elapsed_seconds
+    policy_source_descriptor = describe_policy_signals_data_source(
+        policy_signals_data_api_client,
+        locode=locode,
+    )
     fetch_policy_payload = {
         "actions_with_policy_signals": len(policy_signals_by_action_id),
+        "source": policy_source_descriptor["source"],
         "elapsed_seconds": block.elapsed_seconds,
     }
     fetch_policy_event_index = artifact_writer.write_event(
@@ -380,6 +422,8 @@ def run_prioritization(
             "action_ids_with_policy_signals": sorted(
                 policy_signals_by_action_id.keys()
             ),
+            "source": policy_source_descriptor["source"],
+            "source_metadata": policy_source_descriptor["source_metadata"],
             "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=fetch_policy_event_index,
@@ -609,6 +653,7 @@ def run_prioritization(
         "feasibility",
         {
             **_score_stats(feasibility_result.score_by_action_id),
+            **feasibility_result.metadata,
             "evidence_by_action_id": _all_block_evidence(
                 feasibility_result.evidence_by_action_id
             ),

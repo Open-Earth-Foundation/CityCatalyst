@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-05-16T14:35:45.174670+00:00",
+  "request_id": "84afea18-4a08-4992-9a17-ffc2596dd150",
+  "request_kind": "prioritization",
+  "event_index": 1,
+  "step_name": "fetch_city",
+  "event_type": "fetch_city.completed",
+  "payload": {
+    "locode": "CL IQQ",
+    "city_name": "Iquique",
+    "region_name": "Tarapacá",
+    "source": "city_attributes_api",
+    "source_metadata": {
+      "mock_file_path": null,
+      "upstream_url": "https://ccglobal.openearth.dev/api/v0/city_attributes/CL%20IQQ",
+      "upstream_endpoint": "GET /api/v0/city_attributes/{locode}",
+      "requested_locode": "CL IQQ",
+      "http_status_code": 200,
+      "upstream_generated_at_utc": "2026-05-16T14:35:43.979292+00:00"
+    },
+    "elapsed_seconds": 0.7760794040000292
+  }
+}

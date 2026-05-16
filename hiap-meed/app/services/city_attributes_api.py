@@ -63,6 +63,7 @@ class CityAttributesApiService:
                     "raw": city_raw,
                     "source": "city_attributes_api",
                     "source_metadata": {
+                        "mock_file_path": None,
                         "upstream_url": city_url,
                         "upstream_endpoint": CITY_ATTRIBUTES_ENDPOINT_TEMPLATE,
                         "requested_locode": locode.strip().upper(),

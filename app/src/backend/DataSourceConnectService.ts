@@ -11,6 +11,7 @@ import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
 import DataSourceService from "./DataSourceService";
 import InventoryProgressService from "./InventoryProgressService";
+import { resolveDataSourceLinkUrl } from "@/util/datasource-url";
 
 const DEFAULT_PRIORITY = 0; // 10 is the highest priority
 
@@ -26,7 +27,12 @@ export type DataSourcePreviewItem = {
 };
 
 export type DataSourcePreviewResult = {
+  /** GPC reference lines in scope that have at least one applicable catalogue source */
   count: number;
+  /** Total GPC reference lines for the inventory type (denominator for coverage) */
+  totalGpcCombinations: number;
+  /** Rounded 0–100: count / totalGpcCombinations */
+  coveragePercent: number;
   sources: DataSourcePreviewItem[];
 };
 
@@ -70,6 +76,32 @@ export default class DataSourceConnectService {
         "unknown",
     );
 
+    const combinations = inventoryType
+      ? await DataSourceConnectService.getAllPossibleGPCCombinations(
+          inventoryType,
+        )
+      : [];
+
+    const allowedRefs = new Set(combinations.map((c) => c.gpcReferenceNumber));
+
+    const coveredGpcCount =
+      inventoryType && combinations.length > 0
+        ? combinations.filter(
+            (c) => (sourcesByReferenceNumber[c.gpcReferenceNumber]?.length ?? 0) > 0,
+          ).length
+        : Object.keys(sourcesByReferenceNumber).filter((ref) => ref !== "unknown")
+            .length;
+
+    const totalGpcCombinations =
+      inventoryType && combinations.length > 0
+        ? combinations.length
+        : coveredGpcCount;
+
+    const coveragePercent =
+      totalGpcCombinations > 0
+        ? Math.round((coveredGpcCount / totalGpcCombinations) * 100)
+        : 0;
+
     let previewItems = Object.values(sourcesByReferenceNumber).map((group) => {
       const winner = [...group].sort(
         (a, b) =>
@@ -79,13 +111,6 @@ export default class DataSourceConnectService {
     });
 
     if (inventoryType) {
-      const combinations =
-        await DataSourceConnectService.getAllPossibleGPCCombinations(
-          inventoryType,
-        );
-      const allowedRefs = new Set(
-        combinations.map((c) => c.gpcReferenceNumber),
-      );
       previewItems = previewItems.filter((item) =>
         allowedRefs.has(item.gpcReferenceNumber),
       );
@@ -97,7 +122,12 @@ export default class DataSourceConnectService {
       return a.gpcReferenceNumber.localeCompare(b.gpcReferenceNumber);
     });
 
-    return { count: previewItems.length, sources: previewItems };
+    return {
+      count: coveredGpcCount,
+      totalGpcCombinations,
+      coveragePercent,
+      sources: previewItems,
+    };
   }
 
   /**
@@ -271,7 +301,7 @@ export default class DataSourceConnectService {
     return {
       datasourceId: source.datasourceId,
       datasourceName: source.datasourceName ?? source.datasourceId,
-      url: source.url,
+      url: resolveDataSourceLinkUrl(source),
       sectorName,
       subSectorName,
       subCategoryName,

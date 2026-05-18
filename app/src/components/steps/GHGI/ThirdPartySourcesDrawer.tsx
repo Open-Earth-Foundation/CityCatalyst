@@ -1,24 +1,26 @@
 import { TFunction } from "i18next";
 import { useMemo } from "react";
 import {
-  Accordion,
   Box,
   Drawer,
-  Icon,
   Link,
   Portal,
-  Span,
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { BiChevronDown } from "react-icons/bi";
 import { CloseButton } from "@/components/ui/close-button";
+import {
+  AccordionItem,
+  AccordionItemContent,
+  AccordionItemTrigger,
+  AccordionRoot,
+} from "@/components/ui/accordion";
 import { api } from "@/services/api";
 import type { DataSourcePreviewItem } from "@/util/types";
 
 interface SourceLink {
   label: string;
-  href: string;
+  href?: string;
 }
 
 interface SourceSubcategory {
@@ -61,15 +63,15 @@ function groupPreviewSources(
     }
     subMap.get(subTitle)!.push({
       label: item.datasourceName,
-      href: item.url?.trim() || "#",
+      href: item.url,
     });
   }
 
   return Array.from(sectorMap.entries()).map(([sectorName, subMap]) => ({
     value: slugify(sectorName),
     title: sectorName,
-    subcategories: Array.from(subMap.entries()).map(([title, links]) => ({
-      value: slugify(`${sectorName}-${title}`),
+    subcategories: Array.from(subMap.entries()).map(([title, links], index) => ({
+      value: `${slugify(sectorName)}-sub-${index}`,
       title,
       links,
     })),
@@ -80,23 +82,24 @@ function SourceLinksList({ links }: { links: SourceLink[] }) {
   if (links.length === 0) return null;
 
   return (
-    <Box as="ol" listStyleType="decimal" pl="24px" spaceY="8px">
+    <Box as="ol" listStyleType="decimal" pl="24px" display="flex" flexDirection="column" gap="8px">
       {links.map((link) => (
-        <Box as="li" key={`${link.label}-${link.href}`} fontSize="body.md">
-          <Link
-            href={link.href}
-            color="content.link"
-            textDecoration="underline"
-            target={link.href.startsWith("http") ? "_blank" : undefined}
-            rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-            onClick={(e) => {
-              if (link.href === "#") {
-                e.preventDefault();
-              }
-            }}
-          >
-            {link.label}
-          </Link>
+        <Box as="li" key={`${link.label}-${link.href ?? "no-url"}`} fontSize="body.md">
+          {link.href ? (
+            <Link
+              href={link.href}
+              color="content.link"
+              textDecoration="underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {link.label}
+            </Link>
+          ) : (
+            <Text as="span" color="content.primary">
+              {link.label}
+            </Text>
+          )}
         </Box>
       ))}
     </Box>
@@ -111,38 +114,42 @@ function SubcategoryAccordion({
   const defaultSubcategory = subcategories[0]?.value;
 
   return (
-    <Accordion.Root
+    <AccordionRoot
       collapsible
-      multiple
       defaultValue={defaultSubcategory ? [defaultSubcategory] : []}
+      display="flex"
+      flexDirection="column"
+      width="full"
       borderTopWidth="0"
     >
       {subcategories.map((subcategory) => (
-        <Accordion.Item key={subcategory.value} value={subcategory.value}>
-          <Accordion.ItemTrigger h="52px" px="8px">
-            <Span
+        <AccordionItem
+          key={subcategory.value}
+          value={subcategory.value}
+          borderBottomWidth="1px"
+          borderColor="border.overlay"
+          width="full"
+        >
+          <AccordionItemTrigger indicatorPlacement="end" py="12px" px="8px">
+            <Text
               flex="1"
               fontSize="body.lg"
               fontFamily="body"
-              fontStyle="normal"
               fontWeight="medium"
               lineHeight="24px"
               textAlign="left"
+              whiteSpace="normal"
+              wordBreak="break-word"
             >
               {subcategory.title}
-            </Span>
-            <Accordion.ItemIndicator>
-              <Icon as={BiChevronDown} color="content.secondary" boxSize={8} />
-            </Accordion.ItemIndicator>
-          </Accordion.ItemTrigger>
-          <Accordion.ItemContent px="8px">
-            <Accordion.ItemBody pb="16px">
-              <SourceLinksList links={subcategory.links} />
-            </Accordion.ItemBody>
-          </Accordion.ItemContent>
-        </Accordion.Item>
+            </Text>
+          </AccordionItemTrigger>
+          <AccordionItemContent px="8px" pb="16px">
+            <SourceLinksList links={subcategory.links} />
+          </AccordionItemContent>
+        </AccordionItem>
       ))}
-    </Accordion.Root>
+    </AccordionRoot>
   );
 }
 
@@ -243,53 +250,54 @@ export default function ThirdPartySourcesDrawer({
                 </Text>
               )}
               {canFetch && !isLoading && !isError && categories.length > 0 && (
-                <Accordion.Root
+                <AccordionRoot
                   collapsible
                   multiple
                   defaultValue={defaultCategory ? [defaultCategory] : []}
+                  display="flex"
+                  flexDirection="column"
+                  width="full"
                 >
                   {categories.map((category) => (
-                    <Accordion.Item key={category.value} value={category.value}>
-                      <Accordion.ItemTrigger h="52px" px="8px">
-                        <Span
+                    <AccordionItem
+                      key={category.value}
+                      value={category.value}
+                      borderBottomWidth="1px"
+                      borderColor="border.overlay"
+                      width="full"
+                    >
+                      <AccordionItemTrigger indicatorPlacement="end" py="12px" px="8px">
+                        <Text
                           flex="1"
                           fontSize="title.md"
                           fontFamily="heading"
-                          fontStyle="normal"
                           fontWeight="medium"
                           lineHeight="24px"
                           textAlign="left"
+                          whiteSpace="normal"
+                          wordBreak="break-word"
                         >
                           {category.title}
-                        </Span>
-                        <Accordion.ItemIndicator>
-                          <Icon
-                            as={BiChevronDown}
-                            color="content.secondary"
-                            boxSize={8}
+                        </Text>
+                      </AccordionItemTrigger>
+                      <AccordionItemContent px="8px" pb="16px">
+                        {category.subcategories.length > 0 ? (
+                          <SubcategoryAccordion
+                            subcategories={category.subcategories}
                           />
-                        </Accordion.ItemIndicator>
-                      </Accordion.ItemTrigger>
-                      <Accordion.ItemContent px="8px">
-                        <Accordion.ItemBody pb="16px">
-                          {category.subcategories.length > 0 ? (
-                            <SubcategoryAccordion
-                              subcategories={category.subcategories}
-                            />
-                          ) : (
-                            <Text
-                              fontSize="body.md"
-                              color="content.tertiary"
-                              fontStyle="italic"
-                            >
-                              {t("sources-category-empty-placeholder")}
-                            </Text>
-                          )}
-                        </Accordion.ItemBody>
-                      </Accordion.ItemContent>
-                    </Accordion.Item>
+                        ) : (
+                          <Text
+                            fontSize="body.md"
+                            color="content.tertiary"
+                            fontStyle="italic"
+                          >
+                            {t("sources-category-empty-placeholder")}
+                          </Text>
+                        )}
+                      </AccordionItemContent>
+                    </AccordionItem>
                   ))}
-                </Accordion.Root>
+                </AccordionRoot>
               )}
             </Drawer.Body>
           </Drawer.Content>

@@ -31,7 +31,7 @@
   "setup-inventory-details-description": "Provide some basic details about the inventory you want to create. You can edit these settings afterwards.",
   "third-party-inventory-data-input-label": "Would you like to fill your inventory third-party data?",
   "third-party-inventory-data-yes-label": "Yes, fill my inventory with available third-party data",
-  "third-party-inventory-data-yes-badge": "Accounts for <1>70%</1> of all sectors data",
+  "third-party-inventory-data-yes-badge": "Accounts for <1>{{percent}}%</1> of all sectors data",
   "third-party-inventory-data-yes-description": "This will include third-party data for GPC basic or GPC+ depending on your previous selection.",
   "third-party-inventory-data-check-sources": "Check sources",
   "third-party-inventory-data-no-label": "No, I'd prefer to enter all data manually",

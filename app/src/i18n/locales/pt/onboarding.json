@@ -63,7 +63,7 @@
   "setup-inventory-details-description": "Forneça alguns detalhes básicos sobre o inventário que deseja criar. Você pode editar essas configurações posteriormente.",
   "third-party-inventory-data-input-label": "Gostaria de preencher os dados de terceiros do seu inventário?",
   "third-party-inventory-data-yes-label": "Sim, preencher meu inventário com dados de terceiros disponíveis",
-  "third-party-inventory-data-yes-badge": "Representa <1>70%</1> dos dados de todos os setores",
+  "third-party-inventory-data-yes-badge": "Representa <1>{{percent}}%</1> dos dados de todos os setores",
   "third-party-inventory-data-yes-description": "Isso incluirá dados de terceiros para GPC básico ou GPC+ conforme sua seleção anterior.",
   "third-party-inventory-data-check-sources": "Ver fontes",
   "third-party-inventory-data-no-label": "Não, prefiro inserir todos os dados manualmente",

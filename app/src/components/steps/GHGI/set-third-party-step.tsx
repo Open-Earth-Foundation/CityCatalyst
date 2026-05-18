@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next";
-import { Badge, Box, Text, VStack } from "@chakra-ui/react";
+import { Badge, Box, Spinner, Text, VStack } from "@chakra-ui/react";
 import { Radio, RadioGroup } from "@/components/ui/radio";
 import InventoryDetailsHeader from "./inventory-details-header";
 import ThirdPartySourcesDrawer from "./ThirdPartySourcesDrawer";
+import { api } from "@/services/api";
 
 export const THIRD_PARTY_DATA_FILL_YES = "yes";
 export const THIRD_PARTY_DATA_FILL_NO = "no";
@@ -38,6 +39,18 @@ export default function ThirdPartyInventoryDataStep({
     }
     onValueChange?.(next);
   };
+
+  const canPreviewCoverage =
+    Boolean(cityId) && year > 0 && Boolean(inventoryType);
+
+  const { data: previewData, isLoading: isPreviewLoading } =
+    api.useGetDataSourcePreviewQuery(
+      { cityId, year, inventoryType },
+      { skip: !canPreviewCoverage },
+    );
+
+  const showCoverageBadge =
+    canPreviewCoverage && !isPreviewLoading && previewData != null;
 
   return (
     <Box w="full">
@@ -86,31 +99,55 @@ export default function ThirdPartyInventoryDataStep({
                     >
                       {t("third-party-inventory-data-yes-label")}
                     </Text>
-                    <Badge
-                      borderWidth="1px"
-                      borderColor="border.neutral"
-                      py="4px"
-                      px="12px"
-                      borderRadius="30px"
-                      bg="base.light"
-                      fontSize="body.sm"
-                      fontWeight="medium"
-                      color="content.secondary"
-                    >
-                      <Trans
-                        t={t}
-                        i18nKey="third-party-inventory-data-yes-badge"
-                        components={{
-                          1: (
-                            <Text
-                              as="span"
-                              color="interactive.quaternary"
-                              fontWeight="bold"
-                            />
-                          ),
-                        }}
-                      />
-                    </Badge>
+                    {canPreviewCoverage && isPreviewLoading && (
+                      <Badge
+                        borderWidth="1px"
+                        borderColor="border.neutral"
+                        py="4px"
+                        px="12px"
+                        borderRadius="30px"
+                        bg="base.light"
+                        display="inline-flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        minW="72px"
+                        minH="28px"
+                      >
+                        <Spinner
+                          size="sm"
+                          color="interactive.quaternary"
+                          borderWidth="2px"
+                        />
+                      </Badge>
+                    )}
+                    {showCoverageBadge && (
+                      <Badge
+                        borderWidth="1px"
+                        borderColor="border.neutral"
+                        py="4px"
+                        px="12px"
+                        borderRadius="30px"
+                        bg="base.light"
+                        fontSize="body.sm"
+                        fontWeight="medium"
+                        color="content.secondary"
+                      >
+                        <Trans
+                          t={t}
+                          i18nKey="third-party-inventory-data-yes-badge"
+                          values={{ percent: previewData.coveragePercent }}
+                          components={{
+                            1: (
+                              <Text
+                                as="span"
+                                color="interactive.quaternary"
+                                fontWeight="bold"
+                              />
+                            ),
+                          }}
+                        />
+                      </Badge>
+                    )}
                   </Box>
                   <Text
                     fontSize="body.md"

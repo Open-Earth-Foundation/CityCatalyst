@@ -28,6 +28,7 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
 import ProjectLimitModal from "@/components/project-limit";
 import { useGetCityQuery } from "@/services/api";
+import ThirdPartyInventoryDataStep from "@/components/steps/GHGI/set-third-party-step";
 
 type Inputs = GHGIFormInputs;
 type OnboardingData = GHGIOnboardingData;
@@ -143,6 +144,9 @@ export default function OnboardingSetup(props: {
     selectedGlobalWarmingPotentialValue,
     setSelectedGlobalWarmingPotentialValue,
   ] = useState("");
+  const [thirdPartyDataChoice, setThirdPartyDataChoice] = useState<
+    string | null
+  >(null);
 
   const makeErrorToast = (title: string, description?: string) => {
     const { showErrorToast } = UseErrorToast({ description, title });
@@ -243,6 +247,13 @@ export default function OnboardingSetup(props: {
     goToNextStep();
   };
 
+  // Reset third-party choice each time the user enters that step
+  useEffect(() => {
+    if (activeStep === 2) {
+      setThirdPartyDataChoice(null);
+    }
+  }, [activeStep]);
+
   const [selectedProject, setSelectedProject] = useState<string[]>([]);
   useEffect(() => {
     if (projectId) {
@@ -314,6 +325,13 @@ export default function OnboardingSetup(props: {
             />
           )}
           {activeStep === 2 && (
+            <ThirdPartyInventoryDataStep
+              t={t}
+              value={thirdPartyDataChoice}
+              onValueChange={setThirdPartyDataChoice}
+            />
+          )}
+          {activeStep === 3 && (
             <ConfirmStep
               cityName={data.name}
               t={t}
@@ -391,10 +409,10 @@ export default function OnboardingSetup(props: {
                   w="auto"
                   gap="8px"
                   py="16px"
-                  onClick={onConfirm}
+                  onClick={goToNextStep}
                   px="24px"
                   h="64px"
-                  loading={isConfirming}
+                  disabled={!thirdPartyDataChoice}
                 >
                   <Text
                     fontFamily="button.md"

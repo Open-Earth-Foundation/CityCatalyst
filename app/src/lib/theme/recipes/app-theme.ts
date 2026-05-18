@@ -184,6 +184,10 @@ export const appTheme = createSystem(defaultConfig, {
               _violet_theme: "{colors.violet_theme.background.overlay}",
             },
           },
+          /** Unselected filled radio control (zinc-200). */
+          radioUnselected: {
+            value: "#E4E4E7",
+          },
         },
         border: {
           neutral: {

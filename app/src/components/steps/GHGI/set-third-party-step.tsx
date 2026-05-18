@@ -11,12 +11,18 @@ export const THIRD_PARTY_DATA_FILL_NO = "no";
 
 interface ThirdPartyInventoryDataStepProps {
   t: TFunction;
+  cityId: string;
+  year: number;
+  inventoryType?: string;
   value?: string | null;
   onValueChange?: (value: string) => void;
 }
 
 export default function ThirdPartyInventoryDataStep({
   t,
+  cityId,
+  year,
+  inventoryType,
   value: controlledValue,
   onValueChange,
 }: ThirdPartyInventoryDataStepProps) {
@@ -113,7 +119,12 @@ export default function ThirdPartyInventoryDataStep({
                   >
                     {t("third-party-inventory-data-yes-description")}
                   </Text>
-                  <ThirdPartySourcesDrawer t={t} />
+                  <ThirdPartySourcesDrawer
+                    t={t}
+                    cityId={cityId}
+                    year={year}
+                    inventoryType={inventoryType}
+                  />
                 </VStack>
               </Radio>
 

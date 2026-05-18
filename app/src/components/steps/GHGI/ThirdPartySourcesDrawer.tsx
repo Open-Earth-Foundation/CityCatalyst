@@ -1,4 +1,5 @@
 import { TFunction } from "i18next";
+import { useMemo } from "react";
 import {
   Accordion,
   Box,
@@ -7,10 +8,13 @@ import {
   Link,
   Portal,
   Span,
+  Spinner,
   Text,
 } from "@chakra-ui/react";
 import { BiChevronDown } from "react-icons/bi";
 import { CloseButton } from "@/components/ui/close-button";
+import { api } from "@/services/api";
+import type { DataSourcePreviewItem } from "@/util/types";
 
 interface SourceLink {
   label: string;
@@ -29,88 +33,48 @@ interface SourceCategory {
   subcategories: SourceSubcategory[];
 }
 
-/** Mock third-party data sources tree for the onboarding sources drawer. */
-const getSourceCategories = (t: TFunction): SourceCategory[] => [
-  {
-    value: "stationary_energy",
-    title: t("sources-category-stationary-energy"),
-    subcategories: [
-      {
-        value: "residential_buildings",
-        title: t("sources-subcategory-residential-buildings"),
-        links: [
-          {
-            label: t("sources-link-oil-gas-plant"),
-            href: "#",
-          },
-          {
-            label: t("sources-link-lng-terminal"),
-            href: "#",
-          },
-          {
-            label: t("sources-link-power-plant"),
-            href: "#",
-          },
-        ],
-      },
-      {
-        value: "commercial_buildings",
-        title: t("sources-subcategory-commercial-buildings"),
-        links: [],
-      },
-      {
-        value: "manufacturing",
-        title: t("sources-subcategory-manufacturing"),
-        links: [],
-      },
-      {
-        value: "energy_industries",
-        title: t("sources-subcategory-energy-industries"),
-        links: [],
-      },
-      {
-        value: "agriculture_forestry_fishing",
-        title: t("sources-subcategory-agriculture-forestry-fishing"),
-        links: [],
-      },
-      {
-        value: "non_specified",
-        title: t("sources-subcategory-non-specified"),
-        links: [],
-      },
-      {
-        value: "fugitive_coal",
-        title: t("sources-subcategory-fugitive-coal"),
-        links: [],
-      },
-      {
-        value: "fugitive_oil_gas",
-        title: t("sources-subcategory-fugitive-oil-gas"),
-        links: [],
-      },
-    ],
-  },
-  {
-    value: "transportation",
-    title: t("sources-category-transportation"),
-    subcategories: [],
-  },
-  {
-    value: "waste_wastewater",
-    title: t("sources-category-waste-wastewater"),
-    subcategories: [],
-  },
-  {
-    value: "ippu",
-    title: t("sources-category-ippu"),
-    subcategories: [],
-  },
-  {
-    value: "afolu",
-    title: t("sources-category-afolu"),
-    subcategories: [],
-  },
-];
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_|_$/g, "");
+}
+
+function groupPreviewSources(
+  items: DataSourcePreviewItem[],
+): SourceCategory[] {
+  const sectorMap = new Map<string, Map<string, SourceLink[]>>();
+
+  for (const item of items) {
+    const sectorName = item.sectorName || "Other";
+    const subTitle =
+      item.subCategoryName ||
+      item.subSectorName ||
+      item.gpcReferenceNumber;
+
+    if (!sectorMap.has(sectorName)) {
+      sectorMap.set(sectorName, new Map());
+    }
+    const subMap = sectorMap.get(sectorName)!;
+    if (!subMap.has(subTitle)) {
+      subMap.set(subTitle, []);
+    }
+    subMap.get(subTitle)!.push({
+      label: item.datasourceName,
+      href: item.url?.trim() || "#",
+    });
+  }
+
+  return Array.from(sectorMap.entries()).map(([sectorName, subMap]) => ({
+    value: slugify(sectorName),
+    title: sectorName,
+    subcategories: Array.from(subMap.entries()).map(([title, links]) => ({
+      value: slugify(`${sectorName}-${title}`),
+      title,
+      links,
+    })),
+  }));
+}
 
 function SourceLinksList({ links }: { links: SourceLink[] }) {
   if (links.length === 0) return null;
@@ -118,12 +82,18 @@ function SourceLinksList({ links }: { links: SourceLink[] }) {
   return (
     <Box as="ol" listStyleType="decimal" pl="24px" spaceY="8px">
       {links.map((link) => (
-        <Box as="li" key={link.label} fontSize="body.md">
+        <Box as="li" key={`${link.label}-${link.href}`} fontSize="body.md">
           <Link
             href={link.href}
             color="content.link"
             textDecoration="underline"
-            onClick={(e) => e.preventDefault()}
+            target={link.href.startsWith("http") ? "_blank" : undefined}
+            rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+            onClick={(e) => {
+              if (link.href === "#") {
+                e.preventDefault();
+              }
+            }}
           >
             {link.label}
           </Link>
@@ -138,11 +108,13 @@ function SubcategoryAccordion({
 }: {
   subcategories: SourceSubcategory[];
 }) {
+  const defaultSubcategory = subcategories[0]?.value;
+
   return (
     <Accordion.Root
       collapsible
       multiple
-      defaultValue={["residential_buildings"]}
+      defaultValue={defaultSubcategory ? [defaultSubcategory] : []}
       borderTopWidth="0"
     >
       {subcategories.map((subcategory) => (
@@ -174,8 +146,33 @@ function SubcategoryAccordion({
   );
 }
 
-export default function ThirdPartySourcesDrawer({ t }: { t: TFunction }) {
-  const categories = getSourceCategories(t);
+interface ThirdPartySourcesDrawerProps {
+  t: TFunction;
+  cityId: string;
+  year: number;
+  inventoryType?: string;
+}
+
+export default function ThirdPartySourcesDrawer({
+  t,
+  cityId,
+  year,
+  inventoryType,
+}: ThirdPartySourcesDrawerProps) {
+  const canFetch =
+    Boolean(cityId) && year > 0 && Boolean(inventoryType);
+
+  const { data, isLoading, isError } = api.useGetDataSourcePreviewQuery(
+    { cityId, year, inventoryType },
+    { skip: !canFetch },
+  );
+
+  const categories = useMemo(
+    () => groupPreviewSources(data?.sources ?? []),
+    [data?.sources],
+  );
+
+  const defaultCategory = categories[0]?.value;
 
   return (
     <Drawer.Root size="sm">
@@ -225,53 +222,75 @@ export default function ThirdPartySourcesDrawer({ t }: { t: TFunction }) {
               >
                 {t("sources-drawer-description")}
               </Text>
-              <Accordion.Root
-                collapsible
-                multiple
-                defaultValue={["stationary_energy"]}
-              >
-                {categories.map((category) => (
-                  <Accordion.Item key={category.value} value={category.value}>
-                    <Accordion.ItemTrigger h="52px" px="8px">
-                      <Span
-                        flex="1"
-                        fontSize="title.md"
-                        fontFamily="heading"
-                        fontStyle="normal"
-                        fontWeight="medium"
-                        lineHeight="24px"
-                        textAlign="left"
-                      >
-                        {category.title}
-                      </Span>
-                      <Accordion.ItemIndicator>
-                        <Icon
-                          as={BiChevronDown}
-                          color="content.secondary"
-                          boxSize={8}
-                        />
-                      </Accordion.ItemIndicator>
-                    </Accordion.ItemTrigger>
-                    <Accordion.ItemContent px="8px">
-                      <Accordion.ItemBody pb="16px">
-                        {category.subcategories.length > 0 ? (
-                          <SubcategoryAccordion
-                            subcategories={category.subcategories}
+              {!canFetch && (
+                <Text fontSize="body.md" color="content.tertiary">
+                  {t("sources-drawer-incomplete-setup")}
+                </Text>
+              )}
+              {canFetch && isLoading && (
+                <Box display="flex" justifyContent="center" py="24px">
+                  <Spinner size="lg" />
+                </Box>
+              )}
+              {canFetch && isError && (
+                <Text fontSize="body.md" color="content.tertiary">
+                  {t("sources-drawer-load-error")}
+                </Text>
+              )}
+              {canFetch && !isLoading && !isError && categories.length === 0 && (
+                <Text fontSize="body.md" color="content.tertiary">
+                  {t("sources-drawer-no-sources")}
+                </Text>
+              )}
+              {canFetch && !isLoading && !isError && categories.length > 0 && (
+                <Accordion.Root
+                  collapsible
+                  multiple
+                  defaultValue={defaultCategory ? [defaultCategory] : []}
+                >
+                  {categories.map((category) => (
+                    <Accordion.Item key={category.value} value={category.value}>
+                      <Accordion.ItemTrigger h="52px" px="8px">
+                        <Span
+                          flex="1"
+                          fontSize="title.md"
+                          fontFamily="heading"
+                          fontStyle="normal"
+                          fontWeight="medium"
+                          lineHeight="24px"
+                          textAlign="left"
+                        >
+                          {category.title}
+                        </Span>
+                        <Accordion.ItemIndicator>
+                          <Icon
+                            as={BiChevronDown}
+                            color="content.secondary"
+                            boxSize={8}
                           />
-                        ) : (
-                          <Text
-                            fontSize="body.md"
-                            color="content.tertiary"
-                            fontStyle="italic"
-                          >
-                            {t("sources-category-empty-placeholder")}
-                          </Text>
-                        )}
-                      </Accordion.ItemBody>
-                    </Accordion.ItemContent>
-                  </Accordion.Item>
-                ))}
-              </Accordion.Root>
+                        </Accordion.ItemIndicator>
+                      </Accordion.ItemTrigger>
+                      <Accordion.ItemContent px="8px">
+                        <Accordion.ItemBody pb="16px">
+                          {category.subcategories.length > 0 ? (
+                            <SubcategoryAccordion
+                              subcategories={category.subcategories}
+                            />
+                          ) : (
+                            <Text
+                              fontSize="body.md"
+                              color="content.tertiary"
+                              fontStyle="italic"
+                            >
+                              {t("sources-category-empty-placeholder")}
+                            </Text>
+                          )}
+                        </Accordion.ItemBody>
+                      </Accordion.ItemContent>
+                    </Accordion.Item>
+                  ))}
+                </Accordion.Root>
+              )}
             </Drawer.Body>
           </Drawer.Content>
         </Drawer.Positioner>

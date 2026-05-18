@@ -6,6 +6,7 @@ import {
   api,
   useAddCityPopulationMutation,
   useAddInventoryMutation,
+  useConnectAllInventoryDataSourcesMutation,
   useSetUserInfoMutation,
 } from "@/services/api";
 
@@ -28,7 +29,9 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
 import ProjectLimitModal from "@/components/project-limit";
 import { useGetCityQuery } from "@/services/api";
-import ThirdPartyInventoryDataStep from "@/components/steps/GHGI/set-third-party-step";
+import ThirdPartyInventoryDataStep, {
+  THIRD_PARTY_DATA_FILL_YES,
+} from "@/components/steps/GHGI/set-third-party-step";
 
 type Inputs = GHGIFormInputs;
 type OnboardingData = GHGIOnboardingData;
@@ -92,6 +95,7 @@ export default function OnboardingSetup(props: {
   const steps = [
     { title: t("set-inventory-details-step") },
     { title: t("set-population-step") },
+    { title: t("set-third-party-data-step") },
     { title: t("confirm-step") },
   ];
 
@@ -107,6 +111,8 @@ export default function OnboardingSetup(props: {
 
   const [addCityPopulation] = useAddCityPopulationMutation();
   const [addInventory] = useAddInventoryMutation();
+  const [connectAllInventoryDataSources] =
+    useConnectAllInventoryDataSourcesMutation();
   const [setUserInfo] = useSetUserInfoMutation();
 
   const [data, setData] = useState<OnboardingData>({
@@ -217,6 +223,23 @@ export default function OnboardingSetup(props: {
         defaultInventoryId: inventory.inventoryId,
         defaultCityId: cityId,
       }).unwrap();
+
+      if (thirdPartyDataChoice === THIRD_PARTY_DATA_FILL_YES) {
+        const { errors } = await connectAllInventoryDataSources({
+          inventoryId: inventory.inventoryId,
+        }).unwrap();
+        if (errors.length > 0) {
+          logger.warn(
+            { errors, inventoryId: inventory.inventoryId },
+            "Some third-party sources failed to connect during onboarding",
+          );
+          makeErrorToast(
+            t("connect-data-sources-partial-failure-title"),
+            t("connect-data-sources-partial-failure-description"),
+          );
+        }
+      }
+
       setConfirming(false);
 
       // Check if we're in upload mode
@@ -327,6 +350,13 @@ export default function OnboardingSetup(props: {
           {activeStep === 2 && (
             <ThirdPartyInventoryDataStep
               t={t}
+              cityId={cityId}
+              year={
+                typeof data.year === "string"
+                  ? parseInt(data.year, 10)
+                  : data.year
+              }
+              inventoryType={inventoryGoal}
               value={thirdPartyDataChoice}
               onValueChange={setThirdPartyDataChoice}
             />
@@ -413,6 +443,24 @@ export default function OnboardingSetup(props: {
                   px="24px"
                   h="64px"
                   disabled={!thirdPartyDataChoice}
+                >
+                  <Text
+                    fontFamily="button.md"
+                    fontWeight="600"
+                    letterSpacing="wider"
+                  >
+                    {t("continue")}
+                  </Text>
+                  <MdArrowForward height="24px" width="24px" />
+                </Button>
+              )}
+              {activeStep == 3 && (
+                <Button
+                  h={16}
+                  w="auto"
+                  loading={isConfirming}
+                  px="24px"
+                  onClick={onConfirm}
                 >
                   <Text
                     fontFamily="button.md"

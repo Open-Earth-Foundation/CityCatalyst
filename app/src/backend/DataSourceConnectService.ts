@@ -4,9 +4,7 @@ import { DataSourceI18n as DataSource } from "@/models/DataSourceI18n";
 import { Inventory } from "@/models/Inventory";
 import { logger } from "@/services/logger";
 import { groupBy } from "@/util/helpers";
-import {
-  getScopesForInventoryAndSector,
-} from "@/util/constants";
+import { getScopesForInventoryAndSector } from "@/util/constants";
 import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
 import DataSourceService from "./DataSourceService";
@@ -87,10 +85,12 @@ export default class DataSourceConnectService {
     const coveredGpcCount =
       inventoryType && combinations.length > 0
         ? combinations.filter(
-            (c) => (sourcesByReferenceNumber[c.gpcReferenceNumber]?.length ?? 0) > 0,
+            (c) =>
+              (sourcesByReferenceNumber[c.gpcReferenceNumber]?.length ?? 0) > 0,
           ).length
-        : Object.keys(sourcesByReferenceNumber).filter((ref) => ref !== "unknown")
-            .length;
+        : Object.keys(sourcesByReferenceNumber).filter(
+            (ref) => ref !== "unknown",
+          ).length;
 
     const totalGpcCombinations =
       inventoryType && combinations.length > 0

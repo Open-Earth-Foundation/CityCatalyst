@@ -1,13 +1,6 @@
 import { TFunction } from "i18next";
 import { useMemo } from "react";
-import {
-  Box,
-  Drawer,
-  Link,
-  Portal,
-  Spinner,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Drawer, Link, Portal, Spinner, Text } from "@chakra-ui/react";
 import { CloseButton } from "@/components/ui/close-button";
 import {
   AccordionItem,
@@ -42,17 +35,13 @@ function slugify(value: string): string {
     .replace(/^_|_$/g, "");
 }
 
-function groupPreviewSources(
-  items: DataSourcePreviewItem[],
-): SourceCategory[] {
+function groupPreviewSources(items: DataSourcePreviewItem[]): SourceCategory[] {
   const sectorMap = new Map<string, Map<string, SourceLink[]>>();
 
   for (const item of items) {
     const sectorName = item.sectorName || "Other";
     const subTitle =
-      item.subCategoryName ||
-      item.subSectorName ||
-      item.gpcReferenceNumber;
+      item.subCategoryName || item.subSectorName || item.gpcReferenceNumber;
 
     if (!sectorMap.has(sectorName)) {
       sectorMap.set(sectorName, new Map());
@@ -70,11 +59,13 @@ function groupPreviewSources(
   return Array.from(sectorMap.entries()).map(([sectorName, subMap]) => ({
     value: slugify(sectorName),
     title: sectorName,
-    subcategories: Array.from(subMap.entries()).map(([title, links], index) => ({
-      value: `${slugify(sectorName)}-sub-${index}`,
-      title,
-      links,
-    })),
+    subcategories: Array.from(subMap.entries()).map(
+      ([title, links], index) => ({
+        value: `${slugify(sectorName)}-sub-${index}`,
+        title,
+        links,
+      }),
+    ),
   }));
 }
 
@@ -82,9 +73,20 @@ function SourceLinksList({ links }: { links: SourceLink[] }) {
   if (links.length === 0) return null;
 
   return (
-    <Box as="ol" listStyleType="decimal" pl="24px" display="flex" flexDirection="column" gap="8px">
+    <Box
+      as="ol"
+      listStyleType="decimal"
+      pl="24px"
+      display="flex"
+      flexDirection="column"
+      gap="8px"
+    >
       {links.map((link) => (
-        <Box as="li" key={`${link.label}-${link.href ?? "no-url"}`} fontSize="body.md">
+        <Box
+          as="li"
+          key={`${link.label}-${link.href ?? "no-url"}`}
+          fontSize="body.md"
+        >
           {link.href ? (
             <Link
               href={link.href}
@@ -166,8 +168,7 @@ export default function ThirdPartySourcesDrawer({
   year,
   inventoryType,
 }: ThirdPartySourcesDrawerProps) {
-  const canFetch =
-    Boolean(cityId) && year > 0 && Boolean(inventoryType);
+  const canFetch = Boolean(cityId) && year > 0 && Boolean(inventoryType);
 
   const { data, isLoading, isError } = api.useGetDataSourcePreviewQuery(
     { cityId, year, inventoryType },
@@ -244,11 +245,14 @@ export default function ThirdPartySourcesDrawer({
                   {t("sources-drawer-load-error")}
                 </Text>
               )}
-              {canFetch && !isLoading && !isError && categories.length === 0 && (
-                <Text fontSize="body.md" color="content.tertiary">
-                  {t("sources-drawer-no-sources")}
-                </Text>
-              )}
+              {canFetch &&
+                !isLoading &&
+                !isError &&
+                categories.length === 0 && (
+                  <Text fontSize="body.md" color="content.tertiary">
+                    {t("sources-drawer-no-sources")}
+                  </Text>
+                )}
               {canFetch && !isLoading && !isError && categories.length > 0 && (
                 <AccordionRoot
                   collapsible
@@ -266,7 +270,11 @@ export default function ThirdPartySourcesDrawer({
                       borderColor="border.overlay"
                       width="full"
                     >
-                      <AccordionItemTrigger indicatorPlacement="end" py="12px" px="8px">
+                      <AccordionItemTrigger
+                        indicatorPlacement="end"
+                        py="12px"
+                        px="8px"
+                      >
                         <Text
                           flex="1"
                           fontSize="title.md"

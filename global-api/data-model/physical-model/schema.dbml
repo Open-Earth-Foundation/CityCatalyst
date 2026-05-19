@@ -19,7 +19,6 @@ TableGroup modelled {
   "modelled"."global_warming_potential"
   "modelled"."gpc_methodology"
   "modelled"."gpc_sector"
-  "modelled"."policy_signals"
   "modelled"."population"
   "modelled"."project_portfolio"
   "modelled"."project_summary"
@@ -353,22 +352,33 @@ Table "modelled"."gpc_sector" {
   "gpc_version" varchar [not null]
 }
 
-Table "modelled"."policy_signals" {
+Table "modelled"."action_policy_signals" {
   "policy_signal_id" uuid [pk]
-  "location_code" varchar
-  "location_name" text [not null]
+  "src_action_id" varchar [not null]
   "location_scope" varchar [not null]
+  "location_code" varchar [not null]
+  "location_name" text [not null]
   "signal_type" varchar [not null]
   "signal_relation" varchar [not null]
-  "signal_strength" varchar
-  "signal_subject" text [not null]
-  "gpc_sector" varchar
-  "signal_summary" text
-  "key_numeric" json
-  "evidence_anchors" json
+  "signal_strength" varchar [not null]
+  "explicitness" varchar [not null]
+  "document_type" varchar [not null]
+  "document_name" text [not null]
+  "doc_relevance" varchar [not null]
+  "signal_summary" text [not null]
+  "evidence_text" text [not null]
+  "page" integer [not null]
   "release_id" uuid [not null]
-  "created_at" datetime [not null]
-  "updated_at" datetime [not null]
+  "created_at" timestamptz [not null]
+  "updated_at" timestamptz [not null]
+
+  Indexes {
+    (release_id) [name: 'idx_action_policy_signals_release_id']
+    (location_code) [name: 'idx_action_policy_signals_location_code']
+    (signal_type) [name: 'idx_action_policy_signals_signal_type']
+    (release_id, src_action_id) [name: 'idx_action_policy_signals_release_src_action']
+    (release_id, location_scope, location_code) [name: 'idx_action_policy_signals_release_territory']
+  }
 }
 
 Table "modelled"."action_legal_assessement" {
@@ -502,7 +512,7 @@ Ref: "modelled"."formula_input"."publisher_id" > "modelled"."publisher_datasourc
 Ref: "modelled"."formula_input"."dataset_id" > "modelled"."publisher_datasource"."dataset_id"
 Ref: "modelled"."formula_input"."gpc_reference_number" > "modelled"."gpc_sector"."gpc_reference_number"
 Ref: "modelled"."ghgi_methodology"."gpc_reference_number" > "modelled"."gpc_sector"."gpc_reference_number"
-Ref: "modelled"."policy_signals"."release_id" > "modelled"."dataset_release"."release_id"
+Ref: "modelled"."action_policy_signals"."release_id" > "modelled"."dataset_release"."release_id"
 Ref: "modelled"."action_legal_assessement"."release_id" > "modelled"."dataset_release"."release_id"
 Ref: "modelled"."population"."publisher_id" > "modelled"."publisher_datasource"."publisher_id"
 Ref: "modelled"."population"."dataset_id" > "modelled"."publisher_datasource"."dataset_id"

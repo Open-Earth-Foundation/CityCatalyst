@@ -56,6 +56,7 @@ export default function ThirdPartyInventoryDataStep({
     <Box w="full">
       <InventoryDetailsHeader t={t} />
       <Box
+        data-testid="third-party-data-step"
         w="full"
         my="32px"
         borderWidth="1px"
@@ -80,6 +81,7 @@ export default function ThirdPartyInventoryDataStep({
           >
             <VStack align="stretch" gap="32px" w="full">
               <Radio
+                data-testid="third-party-data-choice-yes"
                 variant="filled"
                 value={THIRD_PARTY_DATA_FILL_YES}
                 alignItems="flex-start"
@@ -166,6 +168,7 @@ export default function ThirdPartyInventoryDataStep({
               </Radio>
 
               <Radio
+                data-testid="third-party-data-choice-no"
                 variant="filled"
                 value={THIRD_PARTY_DATA_FILL_NO}
                 alignItems="flex-start"

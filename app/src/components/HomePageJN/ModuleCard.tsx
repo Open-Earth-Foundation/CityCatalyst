@@ -112,7 +112,14 @@ export function ModuleCard({
               />
 
               {status && status !== "active" && (
-                <Tag size="sm" colorPalette={statusColorMap[status] || "gray"}>
+                <Tag
+                  size="sm"
+                  colorPalette={statusColorMap[status] || "gray"}
+                  borderRadius="10px"
+                  textTransform="uppercase"
+                  borderWidth="1px"
+                  borderColor="content.tertiary"
+                >
                   {t(statusLabelMap[status] || status)}
                 </Tag>
               )}

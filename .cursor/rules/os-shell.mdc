@@ -1,0 +1,36 @@
+---
+description: Default to POSIX shell commands (macOS / Linux). Document Windows fallbacks only when needed.
+alwaysApply: true
+---
+
+# OS / Shell Defaults
+
+The OEF engineering team and CI run on **macOS** and **Linux**. Default every command you suggest or execute to **POSIX `bash`/`zsh`**.
+
+## Defaults
+
+- Use POSIX commands: `ls`, `cat`, `grep`, `find`, `sed`, `awk`, `cp`, `mv`, `rm`, `chmod`, `export`, `./script.sh`.
+- Use forward-slash paths: `app/src/...`, `~/Desktop/openearth/...`.
+- Use `&&` to chain on success, `||` for fallback, `;` for sequence.
+- Heredocs for multi-line text: `cat <<'EOF' > file …`.
+- Environment vars: `export NAME=value`, `KEY=val command …`.
+
+## Inside `package.json` scripts
+
+Scripts must work on macOS and Linux. Avoid bashisms that break on plain `sh` if not strictly needed. Prefer cross-platform tools (`cross-env`, `rimraf`) when a script must also run on Windows.
+
+## Windows users (the minority case)
+
+Some contributors use Windows. They run inside **WSL2** by default. Native Windows shells (CMD / PowerShell) are not the agent's default. If a contributor is explicitly working in CMD/PowerShell:
+
+- Translate POSIX commands to PowerShell on demand (do not assume CMD).
+- Quote Windows paths: `"C:\Users\...\file"`.
+- Replace `&&` with `;` (PowerShell) or chain with `if ($?) { … }`.
+
+## Cursor "agent terminal" sessions
+
+When invoking commands through agent tools (Cursor agent, agentic-coder), assume a non-interactive POSIX shell. Avoid commands that require a TTY (`vim`, `less`, `top`). Prefer flags that disable pagers (`--no-pager` for `git log`, `| cat`).
+
+## Output requirements
+
+After running commands, summarise: the command, the relevant output / error, the next step. Do not paste 1000s of lines — head/tail or filter.

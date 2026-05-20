@@ -1,0 +1,64 @@
+---
+description: OpenAPI / Swagger conventions and SDK generation triggers.
+globs: app/src/app/api/**/*.ts,app/src/api/**/*,app/public/openapi-spec.json
+alwaysApply: false
+---
+
+# OpenAPI & SDK
+
+## Swagger JSDoc on every public route
+
+Every file under `app/src/app/api/v1/**` that exports an HTTP handler must include a `@swagger` JSDoc block above the imports describing the route, parameters, and response schema. This is consumed by `next-swagger-doc` and feeds `public/openapi-spec.json`.
+
+Template:
+
+```ts
+/**
+ * @swagger
+ * /api/v1/widget/{widget}:
+ *   get:
+ *     operationId: getWidget
+ *     summary: Get a widget by id
+ *     tags: [widget]
+ *     parameters:
+ *       - in: path
+ *         name: widget
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data: { $ref: '#/components/schemas/Widget' }
+ *       404: { description: Not found }
+ */
+```
+
+Don't invent new tags — reuse the existing tag set (`inventory`, `city`, `organization`, `user`, `auth`, `hiap`, `ccra`, `chat`, `cron`, `policy-signal`, `project`, …).
+
+## Lint the spec on every API change
+
+Before pushing changes to anything under `src/app/api/` or `src/api/`:
+
+```bash
+cd app
+npm run openapi:lint
+```
+
+This runs Spectral against `public/openapi-spec.json`. CI runs it too — fix locally to avoid round-trips.
+
+## SDK generator workflow
+
+`.github/workflows/sdk-generator.yml` triggers on **any push** that touches `app/src/api/**`. It builds the app, lints the OpenAPI spec, and uploads the spec as a CI artifact.
+
+When you change the API surface, expect this workflow to run. If it fails, the spec is broken — fix the JSDoc.
+
+## Versioning
+
+The current public surface is `/api/v1/`. **Do not** introduce `/api/v2/` without a CTO sign-off — we'd rather extend v1 carefully (additive fields, optional params, deprecation headers) than fork.
+
+`/api/v0/` exists for k8s probes (`liveness`, `health`) and a few legacy proxies. Don't add new public routes there.

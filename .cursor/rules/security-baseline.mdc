@@ -1,0 +1,71 @@
+---
+description: Security baseline — secrets, auth, network, error handling. Always-on guardrails.
+alwaysApply: true
+---
+
+# Security Baseline
+
+These checks apply to **every** change. PRs that violate them are returned regardless of feature merit.
+
+## Secrets
+
+- **Never** commit secrets. Anything matching `*.env`, `credentials*.json`, `*key*.pem`, `*.p12`, or values starting with `sk-`, `xoxb-`, `AKIA`, `eyJ...` is a hard stop.
+- Use `.env.example` (and only `.env.example`) for the shape of required env vars.
+- Reference secrets via the existing config layer (`process.env.X` in Node, `os.environ["X"]` in Python). Do not invent a parallel loader.
+- Never log a secret. Mask before logging (`****` after the first 4 chars maximum).
+
+## Auth — incoming
+
+- Every protected API route uses `apiHandler` from `@/util/api`. It resolves auth in this order: NextAuth session → Bearer JWT → PAT → OAuth client → service-to-service (`X-Service-Name` + `X-Service-Key`).
+- Inside the handler, gate with `if (!session) throw new createHttpError.Unauthorized()`.
+- Inside protected routes, **always validate that the authenticated user actually owns / can access the requested resource** — not just that they are logged in. Use `useUserPermissions` or service-layer checks.
+- For Bearer-token endpoints (cron, service-to-service), reject empty / malformed tokens **before** comparing. Treat `Bearer ` (empty) as invalid.
+
+## Auth — outgoing (cron, k8s)
+
+- Cron endpoints (e.g. `/api/v1/cron/check-hiap-jobs`) require a hard-coded shared key from env (`CC_CRON_JOB_API_KEY`). Compare with `crypto.timingSafeEqual` where feasible, never with `===`.
+- Cron k8s shell scripts use `if [ -z "$VAR" ]` (zero-length test) when checking required vars; never invert with `-n` for "missing."
+
+## Network — outbound
+
+- Every `fetch()` against an **external** service (HIAP, Global API, OpenAI, OpenClimate, CCRA) must include:
+  - an `AbortSignal` with timeout (default 30s, document if higher),
+  - try/catch around the call,
+  - a `.catch()` on any background promise (no unhandled rejections).
+- See `.cursor/skills/tighten-fetch-resilience/SKILL.md` for the exact pattern.
+
+## Error responses
+
+- 5xx responses **must not leak internal details**. Sanitise with the central `errorHandler` in `src/util/api.ts`. Never `JSON.stringify(err)` to the client.
+- Validation errors (Zod) → `400` with `{ issues }`.
+- HTTP errors via `http-errors` are auto-handled.
+
+## DB
+
+- Initialise the DB pool through `db.initialize()` only — there's a mutex pattern in `src/models/index.ts`. Do not re-implement.
+- Use parameterised queries (Sequelize handles this). Never string-interpolate user input into raw SQL.
+
+## Background work
+
+- Async functions started outside a request handler must be wrapped in `try/catch` and end with a `.catch(logger.error)` — no `void`-ed promises.
+- HIAP batch handlers (`HiapService.startBothActionRankingJobs`) — see ROADMAP item 1.3 for the canonical example.
+
+## Rate limiting
+
+- The in-memory IP map in `src/util/rateLimit.ts` (or wherever it lives) must have a `setInterval(cleanup, …)` to bound memory.
+
+## Headers
+
+- `Content-Type: application/json` on JSON responses (Next handles this when using `NextResponse.json`).
+- `Cache-Control: no-store` on auth/admin/personal data.
+- Don't log full `Authorization` headers.
+
+## File uploads / paths
+
+- Validate file MIME + size limits in the handler.
+- Use `path.join(allowedRoot, …)` and resolve to ensure path-traversal safety. Never accept user input as a raw filesystem path.
+
+## Dependency hygiene
+
+- See `.cursor/skills/bump-deps-safely/SKILL.md` for Dependabot triage.
+- Major bumps require a smoke test in the relevant subproject (`app`, `global-api`, `hiap`, …) before merge.

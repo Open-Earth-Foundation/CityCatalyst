@@ -1,0 +1,94 @@
+---
+description: Branch naming, commit format, PR text, and base-branch policy for CityCatalyst.
+alwaysApply: true
+---
+
+# Git Conventions
+
+## Base branches
+
+| Target | Base | Promoted to |
+|--------|------|-------------|
+| Day-to-day work | `develop` | `main` (test) → tags `v*.*.*` (prod) |
+
+Always branch from a freshly-pulled `develop` unless the task explicitly says otherwise.
+
+## Branch naming
+
+```
+<author>/<scope>-<slug>            # human work, e.g. pborges/feat-zod-env
+feat/<TICKET>-<slug>               # ticket-driven feature (Linear/Jira)
+fix/<TICKET>-<slug>                # ticket-driven bugfix
+chore/<slug>                       # housekeeping, deps, CI
+agent/<slug>                       # human-driven Cursor agent work
+agentic-coder/<slug>               # autonomous agentic-coder runs
+dependabot/<...>                   # tooling-managed
+```
+
+`<TICKET>` is the Linear / Jira key (e.g. `ON-5532`).
+`<slug>` is kebab-case, ≤ 6 words, no trailing punctuation.
+
+## Commit messages — Conventional Commits
+
+```
+<type>(<scope>): <imperative summary>   # ≤72 chars first line
+
+<body — wrap at 72; explain WHY, not WHAT>
+
+<footer — Refs: ON-1234, BREAKING CHANGE: …>
+```
+
+Allowed `<type>`: `feat`, `fix`, `chore`, `docs`, `refactor`, `perf`, `test`, `build`, `ci`, `revert`.
+
+Allowed `<scope>` (recommended): `app`, `api`, `ui`, `auth`, `db`, `i18n`, `hiap`, `meed`, `advisor`, `global-api`, `k8s`, `ci`, `deps`.
+
+Examples:
+
+```
+feat(api): add /widgets endpoint with Zod validation (ON-5512)
+fix(ui): prevent freeze when language switches mid-page (ON-5532)
+chore(deps): bump fastapi 0.128 → 0.135 in /climate-advisor
+refactor(api): split services/api.ts (was 2171 lines) (ON-5601)
+```
+
+## Pull requests
+
+- Title: imperative + ticket prefix when applicable. ≤72 chars.
+  - `ON-5532: prevent freeze when language switches mid-page`
+  - `Fix sanitize 500 responses to avoid leaking internal details`
+- Body (use `pull-request-standards` skill):
+  1. **Summary** — 1–3 sentences: what changed, why.
+  2. **Changes** — optional bullets if non-obvious.
+  3. **Commits** (optional) — `git log origin/develop..HEAD --oneline`.
+  4. **Screenshots** — for UI changes.
+- Link the ticket: `Refs ON-####` in the body.
+- Do **not** dump the full diff. Do **not** add generic checklists.
+
+## Merge policy
+
+- **Product code** (`app/`, `global-api/`, `hiap/`, `climate-advisor/`, `k8s/`, etc.) — any tech-team member can merge after standard review (≥ 1 approval, CI green).
+- **Agentic foundation** (`AGENTS.md`, `.cursor/rules/`, `.cursor/skills/`, `docs/agent-runbook.md`) — the **CTO is the single curator**. PRs touching these files need CTO sign-off; after approval, anyone in the tech team merges.
+- **Agents (Cursor, agentic-coder, Cloud Agents)** push branches and stop. They do **not** open PRs unless explicitly told to in the active task. They never merge their own PRs.
+
+This isn't bureaucracy — the foundation is one coherent system across repos and we don't want it drifting per-author. Once stable (Q3), the curator role expands to a `agent-foundation` reviewer team.
+
+## Pull-only-fast-forward defaults
+
+```bash
+git config --global pull.ff only
+```
+
+If a rebase / merge conflict is required, surface it; do not silently rewrite history.
+
+## Verifying state before pushing
+
+```bash
+git status                                   # clean working tree
+git fetch origin
+git log origin/develop..HEAD --oneline       # commits this PR will introduce
+git diff origin/develop...HEAD --stat        # files touched
+```
+
+## Squash policy
+
+We **do not** squash on merge by default — preserve the commit chain so reviewers can read it. If a branch has wip-noise, the author cleans up locally with `git rebase -i origin/develop` **before** pushing.

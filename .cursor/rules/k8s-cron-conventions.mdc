@@ -1,0 +1,93 @@
+---
+description: Kubernetes cron-job and deploy patterns — probes, secrets, shell logic.
+globs: k8s/**/*.yml,k8s/**/*.yaml
+alwaysApply: false
+---
+
+# K8s / Cron Conventions
+
+## Deployments
+
+Every web/API Deployment manifest **must** include:
+
+- `livenessProbe` (typically `httpGet: /api/v0/check/liveness`)
+- `readinessProbe` (typically `httpGet: /api/v0/check/health`)
+- `startupProbe` for slow boots (Climate Advisor, HIAP)
+- `resources.requests` and `resources.limits` (CPU + memory)
+- `imagePullPolicy: Always` for tagged-by-SHA images
+
+Test deployments (`k8s/test/*.yml`) historically lacked probes — that is a known bug, not a pattern. Always add them.
+
+## CronJobs
+
+Required:
+
+- `successfulJobsHistoryLimit` and `failedJobsHistoryLimit` (small, e.g. 1 / 3)
+- `concurrencyPolicy: Forbid` for jobs that must not overlap
+- `restartPolicy: Never`
+- explicit `activeDeadlineSeconds` for long-running cron bodies
+
+## Cron shell scripts
+
+When the cron body is a shell script:
+
+- Use `set -euo pipefail` at the top.
+- Test for **missing** env with `[ -z "$VAR" ]`. Test for **present** with `[ -n "$VAR" ]`. Inverting these is the canonical historical bug (see ROADMAP §1.2).
+- Quote variables: `"$VAR"`, never `$VAR`.
+- Reference secrets via `valueFrom.secretKeyRef`, never inline.
+- Auth headers: `"Authorization: Bearer $CC_CRON_JOB_API_KEY"` — never blank.
+
+## Example cron skeleton
+
+```yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cc-check-hiap-jobs
+spec:
+  schedule: "* * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 120
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              env:
+                - name: CC_CRON_JOB_API_KEY
+                  valueFrom:
+                    secretKeyRef: { name: cc-cron, key: api-key }
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -euo pipefail
+                  if [ -z "$CC_CRON_JOB_API_KEY" ]; then
+                    echo "missing CC_CRON_JOB_API_KEY"; exit 1
+                  fi
+                  curl -fsS --max-time 30 \
+                    -H "Authorization: Bearer $CC_CRON_JOB_API_KEY" \
+                    "https://citycatalyst.openearth.dev/api/v1/cron/check-hiap-jobs"
+```
+
+## Environments (informal)
+
+| Env | Domain | Branch | k8s files |
+|-----|--------|--------|-----------|
+| dev / develop | `citycatalyst.openearth.dev` | `develop` | `k8s/cc-*.yml` |
+| test | `citycatalyst-test.openearth.dev` | `main` | `k8s/test/*.yml` |
+| prod | (external) | `v*.*.*` tags | `k8s/prod/*.yml` |
+
+When you change a deployment manifest, mirror the change across all three envs unless the diff is intentionally env-specific (mark with a comment).
+
+## Workflow → manifest mapping
+
+`web-develop.yml` applies:
+- `cc-web-deploy.yml`, `cc-web-service.yml`, `cc-web-ingress.yml`
+- `cc-check-hiap-jobs.yml`, `cc-sync-catalogue.yml`
+
+Keep this list in sync if you add manifests under `k8s/cc-*.yml`.

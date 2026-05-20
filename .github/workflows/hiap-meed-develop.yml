@@ -125,7 +125,8 @@ jobs:
           kubectl set env deployment/hiap-meed-dev \
             API_HOST=0.0.0.0 \
             API_PORT=8000 \
-            LOG_LEVEL=INFO
+            LOG_LEVEL=INFO \
+            CCGLOBAL_API_BASE_URL=https://ccglobal.openearth.dev
 
           kubectl rollout restart deployment hiap-meed-dev -n default
           kubectl rollout status deployment/hiap-meed-dev -n default

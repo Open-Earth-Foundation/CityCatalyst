@@ -29,6 +29,7 @@ import { DisplayMedium } from "@/components/package/Texts/Display";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import { FiArrowUpRight } from "react-icons/fi";
+import { HeatIcon } from "../icons";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -112,11 +113,7 @@ export function Hero({
               {/* Total co2 emissions */}
               <VStack align="start" gap={2}>
                 <HStack gap={2} align="baseline">
-                  <Icon
-                    as={FiArrowUpRight}
-                    boxSize={6}
-                    color="sentiment.negativeDefault"
-                  />
+                  <Icon as={HeatIcon} boxSize={6} fill="content.secondary" />
                   <HeadlineSmall
                     fontSize="2xl"
                     fontWeight="bold"

@@ -7,6 +7,7 @@ import {
   Icon,
   Link,
   HStack,
+  Button,
 } from "@chakra-ui/react";
 import { AddCollaboratorButton } from "./AddCollaboratorButton";
 import { MdBarChart } from "react-icons/md";
@@ -19,6 +20,7 @@ import {
 import { MdArrowForward } from "react-icons/md";
 import { AllProjectsIcon } from "../icons";
 import ActionCardSmall from "./ActionCardSmall";
+import { ButtonMedium } from "../package";
 
 export function ActionCards({
   organization,
@@ -45,19 +47,21 @@ export function ActionCards({
           <GridItem
             colSpan={1}
             rowSpan={{ base: 1, md: 2 }}
-            bg="content.link"
+            bg="base.light"
             borderRadius="lg"
             p={6}
-            color="white"
+            color="base.dark"
             display="flex"
             flexDirection="column"
             justifyContent="space-between"
             minH={0}
             h="100%"
+            borderWidth="2px"
+            borderColor="border.neutral"
           >
             <Box>
-              <HStack>
-                <Icon as={MdBarChart} boxSize={6} mb={2} />
+              <HStack alignItems="center">
+                <Icon as={MdBarChart} boxSize={6} color="interactive.control" />
                 <Text fontWeight="bold" fontSize="xl">
                   {t("check-your-dashboard")}
                 </Text>
@@ -71,17 +75,28 @@ export function ActionCards({
               mt={4}
             >
               <Link
+                p={1}
                 href={
                   city
                     ? `/${lng}/cities/${city.cityId}/dashboard`
                     : `/${lng}/organization/${organization.organizationId}/dashboard`
                 }
-                color="white"
+                color="base.dark"
                 fontWeight="bold"
-                _hover={{ textDecoration: "underline" }}
               >
-                {t("go-to-dashboard-cta")}
-                <Icon as={MdArrowForward} boxSize={8} />
+                <Button
+                  variant="outline"
+                  borderWidth="1px"
+                  borderColor="border.neutral"
+                  borderRadius="4xl"
+                  px={6}
+                  py={2}
+                  color="base.dark"
+                  fontWeight="bold"
+                >
+                  {t("go-to-dashboard-cta")}
+                  <Icon as={MdArrowForward} boxSize={5} color="content.link" />
+                </Button>
               </Link>
             </Box>
           </GridItem>

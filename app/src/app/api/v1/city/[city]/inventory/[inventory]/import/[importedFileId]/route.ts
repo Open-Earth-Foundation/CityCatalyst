@@ -165,6 +165,7 @@
 import UserService from "@/backend/UserService";
 import ImportMappingService from "@/backend/ImportMappingService";
 import FileParserService from "@/backend/FileParserService";
+import FileValidatorService from "@/backend/FileValidatorService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
@@ -184,7 +185,7 @@ const PDF_IMPORT_FIELD_DEFS: Array<{ key: string; label: string }> = [
   { key: "ch4", label: "CH4" },
   { key: "n2o", label: "N2O" },
   { key: "source", label: "Source" },
-  { key: "methodology", label: "Methodology" },
+  { key: "methodology", label: "Activity data - Description and Methodology" },
   { key: "activityAmount", label: "Activity Amount" },
   { key: "activityUnit", label: "Activity Unit" },
   { key: "activityType", label: "Activity Type" },
@@ -275,7 +276,7 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
     activityType: "Activity Type / Fuel Type",
     activityAmount: "Activity Amount",
     activityUnit: "Activity Unit",
-    methodology: "Methodology",
+    methodology: "Activity data - Description and Methodology",
     activityDataSource: "Activity Data Source",
     activityDataQuality: "Activity Data Quality",
     emissionFactorSource: "Emission Factor Source",
@@ -398,17 +399,20 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
             const headers = parsedData.primarySheet.headers;
             const rows = parsedData.primarySheet.rows || [];
 
+            // Re-run detection live so fixes to aliases are immediately reflected
+            // without needing to re-upload the file.
+            const liveDetectedColumns =
+              FileValidatorService.detectRequiredColumns(headers);
+
             // Build detected columns list (exclude non-required columns)
             for (const header of headers) {
               if (!header || isExcludedColumn(header)) continue;
 
-              // Find which GPC field this column maps to
+              // Find which GPC field this column maps to (live detection)
               let interpretedAs: string | null = null;
               let status: "detected" | "manual" = "manual";
 
-              for (const [key, index] of Object.entries(
-                importedFile.validationResults.detectedColumns,
-              )) {
+              for (const [key, index] of Object.entries(liveDetectedColumns)) {
                 if (headers[Number(index)] === header) {
                   interpretedAs = gpcFieldNames[key] || key;
                   status = "detected";

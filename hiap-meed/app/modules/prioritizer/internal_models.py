@@ -16,19 +16,18 @@ class CityData(BaseModel):
     upstream response DTOs.
     """
 
-    comuna_name: str
+    city_name: str
     locode: str = Field(min_length=1)
     country_code: str | None = None
     region_name: str
-    comuna_code: str
     region_code: str
     population_size: int | None = None
     population_density: float | None = None
-    area: float | None = None
-    comuna: str | None = None
+    area_km2: float | None = None
     city_context: list[dict[str, Any]] = Field(default_factory=list)
     as_of: datetime | None = None
     source: str | None = None
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
     raw: dict[str, Any] = Field(default_factory=dict)
 
     @model_validator(mode="before")
@@ -43,8 +42,8 @@ class CityData(BaseModel):
         indicators = (
             "unemployment_rate",
             "renter_share",
-            "transport_logistics_employment",
-            "electricity_access",
+            "employment_in_transport_and_logistics",
+            "electricity_access_rate",
             "industry_construction_employment",
             "median_household_income",
             "public_transport_share",
@@ -67,6 +66,7 @@ class Action(BaseModel):
     action_id: str = Field(min_length=1)
     action_name: str
     action_type: str | None = None
+    activity_type_description: str | None = None
     description: str | None = None
     action_category: str | None = None
     action_subcategory: str | None = None
@@ -86,6 +86,28 @@ class BlockScoreResult(BaseModel):
 
     score_by_action_id: dict[str, float] = Field(default_factory=dict)
     evidence_by_action_id: dict[str, dict[str, object]] | None = None
+    metadata: dict[str, object] = Field(default_factory=dict)
+
+
+class CityActivityRow(BaseModel):
+    """Normalized city activity row retained for future activity-data matching."""
+
+    gpc_reference_number: str = Field(min_length=1)
+    sector_subsector_key: str = Field(min_length=3)
+    activity_type: str | None = None
+    activity_value: float | None = None
+    activity_unit: str | None = None
+    total_emissions: float | None = None
+    total_emissions_unit: str | None = None
+    data_source: str | None = None
+    notation_key: str | None = None
+
+
+class CityEmissionsContext(BaseModel):
+    """Normalized city emissions inputs used by the Impact block."""
+
+    emissions_by_subsector_key: dict[str, float] = Field(default_factory=dict)
+    activity_rows: list[CityActivityRow] = Field(default_factory=list)
 
 
 class HardFilterResult(BaseModel):

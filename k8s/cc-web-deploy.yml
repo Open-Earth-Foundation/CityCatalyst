@@ -67,6 +67,7 @@ spec:
             timeoutSeconds: 5
             periodSeconds: 10
             failureThreshold: 6
+            initialDelaySeconds: 5
           readinessProbe:
             httpGet:
               path: /api/v0/check/health
@@ -74,6 +75,7 @@ spec:
             timeoutSeconds: 5
             periodSeconds: 10
             failureThreshold: 6
+            initialDelaySeconds: 5
           startupProbe:
             httpGet:
               path: /api/v0/check/liveness
@@ -81,3 +83,4 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 60
             periodSeconds: 10
+            initialDelaySeconds: 5

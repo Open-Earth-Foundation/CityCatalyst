@@ -25,7 +25,7 @@ from app.services.data_clients import (
     MockActionDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
-    MockPolicySignalsDataApiClient,
+    MockActionPolicyScoresDataApiClient,
 )
 
 
@@ -50,20 +50,20 @@ def _load_mock_city() -> CityData:
     return city_client.get_city("CL IQQ")
 
 
-def _load_mock_legal_requirements() -> dict[str, object]:
-    """Load legal requirements from the mock legal API payload."""
+def _load_mock_legal_assessments() -> dict[str, object]:
+    """Load legal assessments from the mock legal API payload."""
     legal_client = MockLegalDataApiClient(
         mock_file_path=_mock_data_dir() / "actions_legal_api_mock.json"
     )
-    return legal_client.get_action_legal_requirements(locode="CL IQQ")
+    return legal_client.get_action_legal_assessments(country_code="CL")
 
 
-def _load_mock_policy_signals() -> dict[str, object]:
-    """Load policy support signals from the mock policy-signals payload."""
-    policy_client = MockPolicySignalsDataApiClient(
-        mock_file_path=_mock_data_dir() / "actions_policy_signals_api_mock.json"
+def _load_mock_action_policy_scores() -> dict[str, object]:
+    """Load action policy scores from the mock action policy scores payload."""
+    policy_client = MockActionPolicyScoresDataApiClient(
+        mock_file_path=_mock_data_dir() / "action_policy_scores_api_mock.json"
     )
-    return policy_client.get_action_policy_signals(locode="CL IQQ")
+    return policy_client.get_action_policy_scores(locode="CL IQQ").scores_by_action_id
 
 
 def _load_city_emissions_context() -> CityEmissionsContext:
@@ -91,7 +91,7 @@ def _alignment_timeframe_evidence(
                 implementation_timeline=action_timeline,
             )
         ],
-        policy_signals_by_action_id={},
+        action_policy_scores_by_action_id={},
         city_preference_sectors=[],
         city_preference_timeframes=city_preference_timeframes,
         city_preference_co_benefit_keys=[],
@@ -144,24 +144,30 @@ def test_city_api_item_ignores_unknown_indicator_names() -> None:
 
 @pytest.mark.unit
 def test_hard_filter_block_with_mock_api_data() -> None:
-    """Hard filter removes known not-aligned actions from mock legal data."""
+    """Hard filter removes actions whose legal verdict category is blocked."""
     actions = _load_mock_actions()
-    legal_requirements = _load_mock_legal_requirements()
+    legal_assessments = _load_mock_legal_assessments()
 
     result = hard_filter.run(
         actions=actions,
         excluded_action_ids=[],
-        legal_requirements_by_action_id=legal_requirements,
+        legal_assessments_by_action_id=legal_assessments,
     )
 
     discarded_legal_ids = {action.action_id for action in result.discarded_legal}
-    expected_discarded_legal_ids = {"c40_0012", "c40_0034", "c40_0037", "c40_0029"}
-    assert discarded_legal_ids == expected_discarded_legal_ids
+    assert "c40_0013" in discarded_legal_ids
+    assert "c40_0012" not in discarded_legal_ids
     assert len(result.discarded_excluded) == 0
-    assert len(result.valid_actions) == len(actions) - len(expected_discarded_legal_ids)
+    assert len(result.valid_actions) == len(actions) - len(discarded_legal_ids)
 
-    assert result.evidence["c40_0012"]["discard_reason"] == "legal_hard_requirement_failed"
-    assert result.evidence["c40_0013"]["hard_requirements_unknown_count"] == 1
+    assert result.evidence["c40_0013"]["discard_reason"] == "legal_verdict_blocked"
+    assert result.evidence["c40_0012"]["legal_verdict_category"] == "enabled"
+    missing_action_id = next(
+        action.action_id
+        for action in actions
+        if action.action_id not in legal_assessments
+    )
+    assert result.evidence[missing_action_id]["legal_assessment_present"] is False
 
 
 @pytest.mark.unit
@@ -500,11 +506,11 @@ def test_impact_block_stubbed_activity_mapping_keeps_same_scores(
 def test_alignment_block_with_mock_api_data() -> None:
     """Alignment block computes canonical weighted scores with policy and sectors."""
     actions = _load_mock_actions()
-    policy_signals = _load_mock_policy_signals()
+    action_policy_scores = _load_mock_action_policy_scores()
 
     result = alignment.run(
         actions=actions,
-        policy_signals_by_action_id=policy_signals,
+        action_policy_scores_by_action_id=action_policy_scores,
         city_preference_sectors=["stationary_energy", "transportation"],
         city_preference_timeframes=["no_preference"],
         city_preference_co_benefit_keys=["mobility"],
@@ -516,6 +522,7 @@ def test_alignment_block_with_mock_api_data() -> None:
 
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
     assert first_action_evidence["policy_component_score"] > 0.0
+    assert "policy_source_metadata" not in first_action_evidence
     assert first_action_evidence["sector_component_score"] in {0.0, 1.0}
     assert first_action_evidence["co_benefit_component_score"] == pytest.approx(0.5)
     assert first_action_evidence["alignment_score"] == pytest.approx(
@@ -530,11 +537,11 @@ def test_alignment_block_with_mock_api_data() -> None:
 def test_alignment_other_preference_component_uses_selected_co_benefit_keys() -> None:
     """Alignment other-preference score reflects selected co-benefit impacts."""
     actions = _load_mock_actions()
-    policy_signals = _load_mock_policy_signals()
+    action_policy_scores = _load_mock_action_policy_scores()
 
     result = alignment.run(
         actions=actions,
-        policy_signals_by_action_id=policy_signals,
+        action_policy_scores_by_action_id=action_policy_scores,
         city_preference_sectors=["stationary_energy", "transportation"],
         city_preference_timeframes=["no_preference"],
         city_preference_co_benefit_keys=["air_quality", "housing"],
@@ -557,11 +564,11 @@ def test_alignment_other_preference_component_uses_selected_co_benefit_keys() ->
 def test_alignment_other_preference_component_is_neutral_without_selected_keys() -> None:
     """Alignment keeps the other-preference component neutral without selections."""
     actions = _load_mock_actions()
-    policy_signals = _load_mock_policy_signals()
+    action_policy_scores = _load_mock_action_policy_scores()
 
     result = alignment.run(
         actions=actions,
-        policy_signals_by_action_id=policy_signals,
+        action_policy_scores_by_action_id=action_policy_scores,
         city_preference_sectors=["stationary_energy", "transportation"],
         city_preference_timeframes=["no_preference"],
         city_preference_co_benefit_keys=[],
@@ -584,7 +591,7 @@ def test_alignment_selected_co_benefit_evidence_marks_missing_entry_as_neutral()
                 co_benefits={},
             )
         ],
-        policy_signals_by_action_id={},
+        action_policy_scores_by_action_id={},
         city_preference_sectors=[],
         city_preference_timeframes=[],
         city_preference_co_benefit_keys=["air_quality"],
@@ -618,7 +625,7 @@ def test_alignment_selected_co_benefit_evidence_marks_missing_numeric_as_neutral
                 },
             )
         ],
-        policy_signals_by_action_id={},
+        action_policy_scores_by_action_id={},
         city_preference_sectors=[],
         city_preference_timeframes=[],
         city_preference_co_benefit_keys=["air_quality"],
@@ -653,7 +660,7 @@ def test_alignment_selected_co_benefit_evidence_marks_real_value_source() -> Non
                 },
             )
         ],
-        policy_signals_by_action_id={},
+        action_policy_scores_by_action_id={},
         city_preference_sectors=[],
         city_preference_timeframes=[],
         city_preference_co_benefit_keys=["air_quality"],
@@ -737,13 +744,13 @@ def test_feasibility_block_with_mock_api_data(
     """Feasibility block computes legal+socio canonical scores and evidence."""
     actions = _load_mock_actions()
     city = _load_mock_city()
-    legal_requirements = _load_mock_legal_requirements()
+    legal_assessments = _load_mock_legal_assessments()
 
     with caplog.at_level("WARNING", logger="app.modules.prioritizer.blocks.feasibility"):
         result = feasibility.run(
             actions=actions,
             city=city,
-            legal_requirements_by_action_id=legal_requirements,
+            legal_assessments_by_action_id=legal_assessments,
         )
 
     assert len(result.score_by_action_id) == len(actions)
@@ -752,9 +759,11 @@ def test_feasibility_block_with_mock_api_data(
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
     assert "socioeconomic_indicator_rows" in first_action_evidence
     assert first_action_evidence["feasibility_score"] == pytest.approx(
-        first_action_evidence["soft_legal_contribution"]
+        first_action_evidence["legal_contribution"]
         + first_action_evidence["socioeconomic_contribution"]
     )
+    assert first_action_evidence["legal_component_score"] == pytest.approx(0.5)
+    assert first_action_evidence["legal_component_source"] == "verdict_score"
     first_action_rows = {
         row["action_socioeconomic_indicator_key"]: row
         for row in first_action_evidence["socioeconomic_indicator_rows"]
@@ -781,6 +790,19 @@ def test_feasibility_block_with_mock_api_data(
         or "electricity_access_rate" in message
         for message in missing_indicator_messages
     )
+    missing_action_id = next(
+        action.action_id
+        for action in actions
+        if action.action_id not in legal_assessments
+    )
+    missing_action_evidence = result.evidence_by_action_id[missing_action_id]
+    assert missing_action_evidence["legal_component_score"] == pytest.approx(0.5)
+    assert missing_action_evidence["legal_component_source"] == "neutral_fallback"
+    assert missing_action_evidence["legal_assessment_missing"] is True
+    assert result.metadata["missing_legal_assessment_actions_count"] > 0
+    assert missing_action_id in result.metadata["missing_legal_assessment_action_ids"]
+    assert result.metadata["neutral_legal_fallback_actions_count"] > 0
+    assert missing_action_id in result.metadata["neutral_legal_fallback_action_ids"]
 
 
 @pytest.mark.unit

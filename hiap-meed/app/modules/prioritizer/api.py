@@ -34,15 +34,15 @@ from app.services.data_clients import (
     ApiActionDataApiClient,
     ApiCityDataApiClient,
     ApiLegalDataApiClient,
-    ApiPolicySignalsDataApiClient,
+    ApiActionPolicyScoresDataApiClient,
     MockActionDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
-    MockPolicySignalsDataApiClient,
+    MockActionPolicyScoresDataApiClient,
     get_action_data_api_client,
     get_city_data_api_client,
     get_legal_data_api_client,
-    get_policy_signals_data_api_client,
+    get_action_policy_scores_data_api_client,
 )
 from app.services.http_client import UpstreamApiError
 from app.utils.artifacts import ArtifactWriter
@@ -130,6 +130,14 @@ def _normalize_requested_languages(requested_languages: list[str]) -> list[str]:
 def _safe_artifact_name(value: str) -> str:
     """Convert a free-form identifier like locode into a stable artifact stem."""
     return value.strip().lower().replace(" ", "_").replace("/", "_")
+
+
+def _country_code_from_locode(locode: str) -> str:
+    """Return the first two locode characters as the caller country prefix."""
+    normalized_locode = locode.strip().upper()
+    if len(normalized_locode) < 2:
+        raise ValueError(f"Locode `{locode}` must contain a 2-letter country prefix")
+    return normalized_locode[:2]
 
 
 @router.post(
@@ -321,10 +329,10 @@ def prioritize(
     legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient = Depends(
         get_legal_data_api_client
     ),
-    policy_signals_data_api_client: (
-        MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
+    action_policy_scores_data_api_client: (
+        MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
     ) = Depends(
-        get_policy_signals_data_api_client
+        get_action_policy_scores_data_api_client
     ),
 ) -> PrioritizerApiResponse:
     """
@@ -362,7 +370,7 @@ def prioritize(
                 city_data_api_client=city_data_api_client,
                 action_data_api_client=action_data_api_client,
                 legal_data_api_client=legal_data_api_client,
-                policy_signals_data_api_client=policy_signals_data_api_client,
+                action_policy_scores_data_api_client=action_policy_scores_data_api_client,
                 create_explanations=request.requestData.createExplanations,
                 requested_languages=requested_languages,
             )
@@ -585,8 +593,8 @@ def _run_for_city_input(
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient,
     action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient,
     legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient,
-    policy_signals_data_api_client: (
-        MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
+    action_policy_scores_data_api_client: (
+        MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
     ),
     create_explanations: bool,
     requested_languages: list[str],
@@ -600,9 +608,16 @@ def _run_for_city_input(
 
     # Create internal request ID used for orchestrator artifacts/tracing.
     internal_request_id = uuid4()
+    locode_country_code = _country_code_from_locode(city_input.locode)
+    if locode_country_code != city_input.countryCode.strip().upper():
+        raise ValueError(
+            "Request countryCode does not match the locode country prefix "
+            f"(locode={city_input.locode}, countryCode={city_input.countryCode})"
+        )
     city_emissions_context = _extract_city_emissions_context(city_input)
     result = run_prioritization(
         locode=city_input.locode,
+        country_code=city_input.countryCode.strip().upper(),
         weights_override=city_input.weightsOverride,
         top_n=resolve_top_n(requested_top_n),
         excluded_action_ids=list(city_input.excludedActionIds),
@@ -616,7 +631,7 @@ def _run_for_city_input(
         city_data_api_client=city_data_api_client,
         action_data_api_client=action_data_api_client,
         legal_data_api_client=legal_data_api_client,
-        policy_signals_data_api_client=policy_signals_data_api_client,
+        action_policy_scores_data_api_client=action_policy_scores_data_api_client,
         create_explanations=create_explanations,
         requested_languages=requested_languages,
     )

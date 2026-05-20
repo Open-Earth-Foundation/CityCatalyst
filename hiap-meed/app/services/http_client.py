@@ -84,12 +84,12 @@ def _map_upstream_http_status_to_api_status(upstream_status_code: int) -> int:
     return 502
 
 
-def get_json_with_retries(
+def _get_json_with_retries(
     *,
     url: str,
     operation_name: str,
     headers: dict[str, str] | None = None,
-) -> tuple[dict[str, Any], int]:
+) -> tuple[Any, int]:
     """GET one JSON payload with simple retries for transient upstream failures."""
     timeout_seconds = _get_upstream_http_timeout_seconds()
     max_retries = _get_upstream_http_max_retries()
@@ -110,13 +110,6 @@ def get_json_with_retries(
                         upstream_status_code=response.status_code,
                         url=url,
                     ) from error
-            if not isinstance(payload, dict):
-                raise UpstreamApiError(
-                    status_code=502,
-                    message=f"{operation_name} returned a non-object JSON payload",
-                    upstream_status_code=response.status_code,
-                    url=url,
-                )
             return payload, response.status_code
         except httpx.TimeoutException as error:
             if attempt_number < attempts:
@@ -155,3 +148,54 @@ def get_json_with_retries(
                 upstream_status_code=upstream_status_code,
                 url=url,
             ) from error
+
+
+def get_json_with_retries(
+    *,
+    url: str,
+    operation_name: str,
+    headers: dict[str, str] | None = None,
+) -> tuple[dict[str, Any], int]:
+    """GET one JSON object payload with retries and object-shape validation."""
+    payload, status_code = _get_json_with_retries(
+        url=url,
+        operation_name=operation_name,
+        headers=headers,
+    )
+    if not isinstance(payload, dict):
+        raise UpstreamApiError(
+            status_code=502,
+            message=f"{operation_name} returned a non-object JSON payload",
+            upstream_status_code=status_code,
+            url=url,
+        )
+    return payload, status_code
+
+
+def get_json_list_with_retries(
+    *,
+    url: str,
+    operation_name: str,
+    headers: dict[str, str] | None = None,
+) -> tuple[list[dict[str, Any]], int]:
+    """GET one top-level JSON list payload with retries and list-shape validation."""
+    payload, status_code = _get_json_with_retries(
+        url=url,
+        operation_name=operation_name,
+        headers=headers,
+    )
+    if not isinstance(payload, list):
+        raise UpstreamApiError(
+            status_code=502,
+            message=f"{operation_name} returned a non-list JSON payload",
+            upstream_status_code=status_code,
+            url=url,
+        )
+    if not all(isinstance(item, dict) for item in payload):
+        raise UpstreamApiError(
+            status_code=502,
+            message=f"{operation_name} returned a JSON list with non-object items",
+            upstream_status_code=status_code,
+            url=url,
+        )
+    return payload, status_code

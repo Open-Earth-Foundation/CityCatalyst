@@ -523,14 +523,11 @@ class ExclusionPreviewApiResponse(BaseModel):
 #     - emissions: ActionImpactEntry
 #     - coBenefits: dict[str, ActionCoBenefitEntry]
 #     - socioeconomicIndicators: list[ActionSocioeconomicIndicatorRule]
-# - ActionsPolicySignalsApiResponse
-#   - meta: UpstreamMeta
-#   - policy_signals: list[PolicySignalByAction]
-#     - policy_signals: list[PolicySignal]
-# - ActionsLegalApiResponse
-#   - meta: ActionsLegalApiMeta (extends UpstreamMeta)
-#   - legal_requirements: list[LegalRequirementsByAction]
-#     - requirements: list[LegalRequirement]
+# - ActionPolicyScoresApiResponse
+#   - meta: ActionPolicyScoresApiMeta
+#   - scores: list[ActionPolicyScoreApiItem]
+#     - policy_evidence: list[ActionPolicyEvidence]
+# - ActionLegalAssessmentApiItem
 # ============================================================================
 
 
@@ -764,82 +761,99 @@ class ActionsApiResponse(BaseModel):
     actions: list[ActionApiItem] = Field(default_factory=list)
 
 
-class PolicySignal(BaseModel):
-    """Single policy signal evidence item for one action."""
+class ActionPolicyScoresApiContext(BaseModel):
+    """API context metadata returned by the action policy scores endpoint."""
 
     model_config = ConfigDict(extra="ignore")
 
-    location_scope: str
-    location_name: str
-    signal_type: str
-    signal_relation: str
-    signal_strength: str
-    evidence_ids: list[str] = Field(default_factory=list)
-    evidence_count: int = 0
+    endpoint: str
+    locode: str
+    city_name: str | None = None
+    release_id: str | None = None
+    top_evidence_limit: int | None = None
+    src_action_id: str | None = None
 
 
-class PolicySignalByAction(BaseModel):
-    """Policy signal collection grouped by action ID."""
+class ActionPolicyScoresApiMeta(UpstreamMeta):
+    """Metadata envelope returned by the action policy scores endpoint."""
+
+    api_context: ActionPolicyScoresApiContext
+    total_evidence_items: int | None = None
+    scoring_rubric_version: str | None = None
+    spatial_document_coverage: dict[str, object] | None = None
+
+
+class ActionPolicyEvidence(BaseModel):
+    """One ranked evidence row returned by the action policy scores endpoint."""
 
     model_config = ConfigDict(extra="ignore")
 
-    action_id: str
-    policy_signals: list[PolicySignal] = Field(default_factory=list)
+    evidence_rank: int
+    signal_type: str | None = None
+    signal_relation: str | None = None
+    signal_strength: str | None = None
+    document_name: str | None = None
+    document_type: str | None = None
+    doc_relevance: str | None = None
+    explicitness: str | None = None
+    page: int | None = None
+    evidence_strength: float | None = None
+    evidence_text: str | None = None
+
+
+class ActionPolicyScoreApiItem(BaseModel):
+    """Single action score row returned by the action policy scores endpoint."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    src_action_id: str
     policy_support_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    policy_support_category: str | None = None
+    best_relevance: str | None = None
+    n_findings: int | None = None
+    n_docs: int | None = None
+    sum_strength: float | None = None
+    policy_evidence: list[ActionPolicyEvidence] = Field(default_factory=list)
 
 
-class ActionsPolicySignalsApiResponse(BaseModel):
-    """Response model for city-scoped policy alignment endpoint."""
-
-    model_config = ConfigDict(extra="ignore")
-
-    meta: UpstreamMeta
-    policy_signals: list[PolicySignalByAction] = Field(default_factory=list)
-
-
-class LegalRequirement(BaseModel):
-    """Single legal requirement alignment check for one action."""
+class ActionPolicyScoresApiResponse(BaseModel):
+    """Response model for city-scoped action policy scores endpoint."""
 
     model_config = ConfigDict(extra="ignore")
 
-    signal_code: str
-    signal_name: str
-    operator: str
-    required_value: str | None = None
-    legal_signal_value: str | None = None
-    strength: str
-    alignment_status: str
-    location_scope: str | None = None
-    location_name: str | None = None
-    evidence_ids: list[str] = Field(default_factory=list)
-    evidence_count: int = 0
+    meta: ActionPolicyScoresApiMeta
+    scores: list[ActionPolicyScoreApiItem] = Field(default_factory=list)
 
 
-class LegalRequirementsByAction(BaseModel):
-    """Legal requirements grouped by action ID."""
+class ActionLegalAssessmentApiItem(BaseModel):
+    """Flat legal assessment row returned by `GET /api/v1/action-legal-assessments`."""
 
     model_config = ConfigDict(extra="ignore")
 
-    action_id: str
-    requirements: list[LegalRequirement] = Field(default_factory=list)
-
-
-class ActionsLegalApiMeta(UpstreamMeta):
-    """Metadata for actions/legal response including test descriptors."""
-
-    model_config = ConfigDict(extra="ignore")
-
-    test_cases: dict[str, str] = Field(default_factory=dict)
-    strength_scale: list[str] = Field(default_factory=list)
-
-
-class ActionsLegalApiResponse(BaseModel):
-    """Response model for city-scoped legal alignment endpoint."""
-
-    model_config = ConfigDict(extra="ignore")
-
-    meta: ActionsLegalApiMeta
-    legal_requirements: list[LegalRequirementsByAction] = Field(default_factory=list)
+    legalAnalysisId: str
+    srcActionId: str
+    countryCode: str
+    gpcSector: str | None = None
+    verdictCategory: str | None = None
+    verdictScore: float | None = Field(default=None, ge=0.0, le=1.0)
+    ownershipCategory: str | None = None
+    ownershipScore: float | None = Field(default=None, ge=0.0, le=1.0)
+    ownershipWeight: float | None = None
+    ownershipDescription: str | None = None
+    restrictionsCategory: str | None = None
+    restrictionsScore: float | None = Field(default=None, ge=0.0, le=1.0)
+    restrictionsWeight: float | None = None
+    restrictionsDescription: str | None = None
+    legalJustification: str | None = None
+    analysisDate: str | None = None
+    generationMethod: str | None = None
+    legalReferences: list[str] = Field(default_factory=list)
+    releaseId: str | None = None
+    createdAt: str | None = None
+    updatedAt: str | None = None
+    ownershipDescriptionI18n: dict[str, str] = Field(default_factory=dict)
+    restrictionsDescriptionI18n: dict[str, str] = Field(default_factory=dict)
+    legalJustificationI18n: dict[str, str] = Field(default_factory=dict)
 
 
 class PrioritizationResponse(BaseModel):

@@ -53,7 +53,12 @@ export function SectorCard({
     uploadedProgress = clamp(sectorProgress.uploaded / sectorProgress.total);
     reasonNEProgress = clamp(sectorProgress.reasonNE / sectorProgress.total);
     reasonNOProgress = clamp(sectorProgress.reasonNO / sectorProgress.total);
-    totalProgress = clamp(thirdPartyProgress + uploadedProgress + reasonNEProgress + reasonNOProgress);
+    totalProgress = clamp(
+      thirdPartyProgress +
+        uploadedProgress +
+        reasonNEProgress +
+        reasonNOProgress,
+    );
   }
   /*** Data ***/
   const {
@@ -120,7 +125,25 @@ export function SectorCard({
                 {(sectorScopes || [])?.join(", ") || t("none")}
               </Heading>
             </Box>
-            <Box>
+            <Box display="flex" flexDirection="column" gap={3}>
+              {sector.referenceNumber === "I" &&
+                pathname.includes("/GHGI/") && (
+                  <NextLink href={`${pathname}/draft/stationary-energy`}>
+                    <Button
+                      variant="solid"
+                      w="256px"
+                      h="48px"
+                      py="16px"
+                      gap={2}
+                      ml={2}
+                    >
+                      {/* eslint-disable-next-line i18next/no-literal-string */}
+                      <Text fontFamily="heading" fontSize="button.md">
+                        Let the agent draft this
+                      </Text>
+                    </Button>
+                  </NextLink>
+                )}
               <NextLink href={`${pathname}/data/${sector.number}`}>
                 <Button
                   variant="outline"
@@ -147,8 +170,18 @@ export function SectorCard({
             gap={6}
           >
             <SegmentedProgress
-              values={[thirdPartyProgress, uploadedProgress, reasonNEProgress, reasonNOProgress]}
-              colors={["interactive.connected", "interactive.tertiary", "interactive.control", "striped"]}
+              values={[
+                thirdPartyProgress,
+                uploadedProgress,
+                reasonNEProgress,
+                reasonNOProgress,
+              ]}
+              colors={[
+                "interactive.connected",
+                "interactive.tertiary",
+                "interactive.control",
+                "striped",
+              ]}
               height={2}
             />
             <Text

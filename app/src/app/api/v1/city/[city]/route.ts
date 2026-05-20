@@ -112,8 +112,8 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 export const DELETE = apiHandler(async (_req, { params, session }) => {
   const city = await UserService.findUserCity(params.city, session);
   const userId = session!.user.id;
-  const currentDefaultInventory = await User.findOne({
-    attributes: [],
+  const currentUserDefaults = await User.findOne({
+    attributes: ["defaultCityId"],
     where: {
       userId,
     },
@@ -127,7 +127,8 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
   });
 
   const currentDefaultCityId =
-    currentDefaultInventory?.defaultInventory?.cityId;
+    currentUserDefaults?.defaultCityId ||
+    currentUserDefaults?.defaultInventory?.cityId;
   if (currentDefaultCityId === params.city) {
     const rawQuery = `
         SELECT i.inventory_id, i.city_id

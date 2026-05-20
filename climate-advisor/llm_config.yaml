@@ -29,6 +29,9 @@ prompts:
   # Prompt for data analysis tasks
   data_analysis: "prompts/data_analysis.md"
 
+  # Prompt for the inventory Bulk Filler structured output route
+  inventory_bulk_filler: "prompts/inventory_bulk_filler.md"
+
 # API Configuration
 api:
   # OpenRouter configuration

@@ -1,8 +1,8 @@
 """
 Review CA E2E output with the same LLM and print pass/fail summary.
 
-Usage (from climate-advisor, with venv activated):
-  python service/tests/review_ca_e2e.py
+Usage (from climate-advisor/):
+  uv run python service/tests/review_ca_e2e.py
 
 Optional flags:
   --input  Path to the CA E2E response JSON (default: service/tests/output/ca_e2e_responses.json)

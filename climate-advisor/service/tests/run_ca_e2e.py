@@ -1,8 +1,8 @@
 """
 Run Climate Advisor E2E prompt flow without pytest and save results to disk.
 
-Usage (from climate-advisor, with venv activated):
-  python service/tests/run_ca_e2e.py
+Usage (from climate-advisor/):
+  uv run python service/tests/run_ca_e2e.py
 
 Optional flags:
   --prompts     Path to the JSON prompt file (default: service/tests/fixtures/ca_e2e_prompts.json)
@@ -25,11 +25,11 @@ Getting a user_id and JWT token for CA_E2E_CC_TOKEN:
      - From the app helper script (requires node):
        npx tsx app/scripts/print-user-id.ts --email <email>
   2) Mint a non-expired JWT token and save it to climate-advisor/.env:
-       python -m scripts.mint_ca_e2e_token --user-id <user_id>
+       uv run --directory service python -m scripts.mint_ca_e2e_token --user-id <user_id>
      This requires CC_BASE_URL and CC_API_KEY in climate-advisor/.env.
   3) Confirm CA_E2E_CC_TOKEN is set before running this script.
   4) (Optional) Run automatic verification on the output:
-       python service/tests/review_ca_e2e.py --input service/tests/output/ca_e2e_responses.json
+       uv run python service/tests/review_ca_e2e.py --input service/tests/output/ca_e2e_responses.json
      This writes service/tests/output/responses_eval.json by default.
 """
 

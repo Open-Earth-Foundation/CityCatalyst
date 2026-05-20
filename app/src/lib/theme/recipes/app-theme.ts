@@ -71,6 +71,9 @@ export const appTheme = createSystem(defaultConfig, {
               _violet_theme: "{colors.violet_theme.content.tertiary}",
             },
           },
+          "tertiary-light": {
+            value: "#4B4C63",
+          },
           secondary: {
             value: {
               base: "{colors.blue_theme.content.secondary}",

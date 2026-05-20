@@ -627,7 +627,7 @@ const JNDrawer = ({
               <NavigationLinks
                 items={[
                   {
-                    label: "home",
+                    label: "citycatalyst",
                     icon: BiHomeAlt,
                     href: `/${lng}/cities/${selectedCity}`,
                   },

@@ -382,9 +382,6 @@ def run(
             "policy_evidence": (
                 policy_payload.policy_evidence if policy_payload is not None else []
             ),
-            "policy_source_metadata": (
-                policy_payload.source_metadata if policy_payload is not None else {}
-            ),
         }
         score_by_action_id[action.action_id] = alignment_score
     return BlockScoreResult(

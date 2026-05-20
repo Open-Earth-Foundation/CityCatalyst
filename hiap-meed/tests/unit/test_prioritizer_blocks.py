@@ -522,6 +522,7 @@ def test_alignment_block_with_mock_api_data() -> None:
 
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
     assert first_action_evidence["policy_component_score"] > 0.0
+    assert "policy_source_metadata" not in first_action_evidence
     assert first_action_evidence["sector_component_score"] in {0.0, 1.0}
     assert first_action_evidence["co_benefit_component_score"] == pytest.approx(0.5)
     assert first_action_evidence["alignment_score"] == pytest.approx(

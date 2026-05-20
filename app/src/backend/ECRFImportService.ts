@@ -349,6 +349,7 @@ export default class ECRFImportService {
         : undefined;
 
       const methodologyHeader = this.findHeader(headers, [
+        "activity data - description and methodology",
         "methodology",
         "input methodology",
         "input_methodology",

@@ -10,7 +10,6 @@ This module provides functions for:
 import re
 from pathlib import Path
 from typing import List, Optional, Dict, Any
-from uuid import uuid4
 
 from PyPDF2 import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -61,8 +60,10 @@ class PDFProcessor:
             raise Exception(f"Error extracting text from PDF {file_path}: {str(e)}")
 
 
-class TextSplitter:
-    """Handles text splitting for embedding generation."""
+class LocalRecursiveTextSplitter:
+    """Local recursive splitter retained for benchmark comparison."""
+
+    MIN_CHUNK_CHARS = 50
 
     def __init__(
         self,
@@ -100,12 +101,6 @@ class TextSplitter:
         ]
 
         self.separators = separators or default_separators
-        self.splitter = RecursiveCharacterTextSplitter(
-            chunk_size=chunk_size,
-            chunk_overlap=chunk_overlap,
-            separators=self.separators,
-            keep_separator=True
-        )
 
     def split_text(self, text: str) -> List[str]:
         """
@@ -122,12 +117,13 @@ class TextSplitter:
 
         # Clean the text before splitting
         cleaned_text = self._clean_text(text)
+        if not cleaned_text:
+            return []
 
-        # Split the text
-        chunks = self.splitter.split_text(cleaned_text)
+        chunks = self._split_cleaned_text(cleaned_text)
 
         # Filter out very short chunks (less than 50 characters)
-        filtered_chunks = [chunk for chunk in chunks if len(chunk.strip()) >= 50]
+        filtered_chunks = [chunk for chunk in chunks if len(chunk.strip()) >= self.MIN_CHUNK_CHARS]
 
         return filtered_chunks
 
@@ -141,16 +137,165 @@ class TextSplitter:
         Returns:
             Cleaned text
         """
-        # Replace multiple whitespace with single space
-        text = re.sub(r'\s+', ' ', text)
+        text = text.replace('\r\n', '\n').replace('\r', '\n')
+        text = text.replace('\u00a0', ' ')
 
-        # Remove excessive newlines
-        text = re.sub(r'\n\s*\n\s*\n', '\n\n', text)
+        # Normalize horizontal whitespace while preserving line and paragraph boundaries.
+        text = re.sub(r'[ \t\f\v]+', ' ', text)
+        text = re.sub(r' *\n *', '\n', text)
+        text = re.sub(r'\n{3,}', '\n\n', text)
 
         # Remove leading/trailing whitespace
         text = text.strip()
 
         return text
+
+    def _split_cleaned_text(self, cleaned_text: str) -> List[str]:
+        """Split already-cleaned text into raw chunks before min-size filtering."""
+        if not cleaned_text:
+            return []
+
+        units = self._split_into_units(cleaned_text, self.separators)
+        return self._merge_units(units)
+
+    def _split_into_units(self, text: str, separators: List[str]) -> List[str]:
+        """Recursively split text into ordered units that can be merged into chunks."""
+        if not text:
+            return []
+
+        if len(text) <= self.chunk_size:
+            return [text]
+
+        separator, remaining_separators = self._select_separator(text, separators)
+        if separator == "":
+            return list(text)
+
+        units: List[str] = []
+        for part in self._split_keep_separator(text, separator):
+            if not part:
+                continue
+            if len(part) <= self.chunk_size:
+                units.append(part)
+            else:
+                units.extend(self._split_into_units(part, remaining_separators))
+
+        return units
+
+    def _select_separator(self, text: str, separators: List[str]) -> tuple[str, List[str]]:
+        """Choose the highest-priority separator present in the text."""
+        for index, separator in enumerate(separators):
+            if separator == "" or separator in text:
+                next_separators = separators[index + 1:] or [""]
+                return separator, next_separators
+        return "", [""]
+
+    def _split_keep_separator(self, text: str, separator: str) -> List[str]:
+        """Split text while keeping the separator attached to the preceding unit."""
+        if separator == "":
+            return list(text)
+
+        parts = text.split(separator)
+        chunks: List[str] = []
+        for index, part in enumerate(parts):
+            if not part and index == len(parts) - 1:
+                continue
+
+            piece = part
+            if index < len(parts) - 1:
+                piece += separator
+
+            if piece:
+                chunks.append(piece)
+
+        return chunks
+
+    def _merge_units(self, units: List[str]) -> List[str]:
+        """Merge ordered units into chunks capped by chunk_size with overlap."""
+        if not units:
+            return []
+
+        chunks: List[str] = []
+        start = 0
+        overlap_target = max(0, self.chunk_overlap)
+
+        while start < len(units):
+            total_size = 0
+            end = start
+
+            while end < len(units):
+                next_size = len(units[end])
+                if total_size and total_size + next_size > self.chunk_size:
+                    break
+                if not total_size and next_size > self.chunk_size:
+                    break
+                total_size += next_size
+                end += 1
+
+            if end == start:
+                # Defensive fallback if an oversized unit survives recursion.
+                end = start + 1
+
+            chunks.append("".join(units[start:end]))
+
+            if end >= len(units):
+                break
+
+            if overlap_target == 0:
+                start = end
+                continue
+
+            overlap_size = 0
+            next_start = end
+            while next_start > start + 1 and overlap_size + len(units[next_start - 1]) <= overlap_target:
+                next_start -= 1
+                overlap_size += len(units[next_start])
+
+            start = next_start if next_start < end else end
+
+        return chunks
+
+
+class TextSplitter(LocalRecursiveTextSplitter):
+    """Runtime text splitter backed by LangChain.
+
+    The local recursive implementation stays in this module so the splitter
+    benchmark can continue to exercise it, but production chunking uses
+    LangChain's RecursiveCharacterTextSplitter again.
+    """
+
+    def __init__(
+        self,
+        chunk_size: Optional[int] = None,
+        chunk_overlap: Optional[int] = None,
+        separators: Optional[List[str]] = None
+    ):
+        super().__init__(chunk_size=chunk_size, chunk_overlap=chunk_overlap, separators=separators)
+        self.splitter = RecursiveCharacterTextSplitter(
+            chunk_size=self.chunk_size,
+            chunk_overlap=self.chunk_overlap,
+            separators=self.separators,
+            keep_separator=True,
+        )
+
+    def split_text(self, text: str) -> List[str]:
+        """
+        Split text into chunks suitable for embedding.
+
+        Args:
+            text: The text to split
+
+        Returns:
+            List of text chunks
+        """
+        if not text or not text.strip():
+            return []
+
+        cleaned_text = self._clean_text(text)
+        if not cleaned_text:
+            return []
+
+        chunks = self.splitter.split_text(cleaned_text)
+        return [chunk for chunk in chunks if len(chunk.strip()) >= self.MIN_CHUNK_CHARS]
 
 
 class DocumentProcessor:

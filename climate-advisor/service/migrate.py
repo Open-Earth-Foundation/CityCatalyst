@@ -27,7 +27,7 @@ def run_alembic(cmd_args: list[str]) -> int:
     os.chdir(service_dir)
     
     # Build the alembic command
-    alembic_cmd = ["python", "-m", "alembic"] + cmd_args
+    alembic_cmd = [sys.executable, "-m", "alembic"] + cmd_args
     
     print(f"Running: {' '.join(alembic_cmd)}")
     

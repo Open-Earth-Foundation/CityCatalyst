@@ -4,5 +4,8 @@
   "cities": "villes",
   "settings": "Paramètres",
   "account-settings": "Paramètres du compte",
-  "account-frozen-warning-text": "Votre compte est gelé. Veuillez contacter un administrateur ou <bold>{{ email }}</bold> pour le réactiver"
+  "account-frozen-warning-text": "Votre compte est gelé. Veuillez contacter un administrateur ou <bold>{{ email }}</bold> pour le réactiver",
+  "page-title-ghg-inventories": "GHG Inventories",
+  "page-title-hiap": "High Impact Action Plan",
+  "page-title-dashboard": "Dashboard"
 }

@@ -676,13 +676,18 @@ export default function AddDataSteps() {
                 <BreadcrumbLink
                   href={`/${inventory}/data`}
                   color="content.tertiary"
+                  textDecoration="none"
+                  _hover={{
+                    textDecoration: "underline",
+                    textUnderlineOffset: "4px",
+                  }}
                 >
                   {t("all-sectors")}
                 </BreadcrumbLink>
 
                 <BreadcrumbCurrentLink
                   color="content.link"
-                  textDecoration="underline"
+                  textDecoration="none"
                 >
                   {t(kebab(currentStep.name || ""))}
                 </BreadcrumbCurrentLink>

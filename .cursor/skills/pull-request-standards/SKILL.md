@@ -1,85 +1,109 @@
 ---
 name: pull-request-standards
-description: Create pull requests with repository-derived context, concise title/body standards, and GitHub MCP execution steps. Use when creating or automating a PR, generating PR title/body text, or preparing `create_pull_request` payloads.
+description: Create or update pull requests with repository-derived context and concise title/body standards. Use when creating, updating, automating, drafting, or polishing PRs, or preparing GitHub PR tool payloads.
 ---
 
 # Pull Request Standards
 
-Use this skill whenever the user asks to create, automate, draft, or polish a pull request.
+Use this skill whenever the user asks to create, update, automate, draft, or polish a pull request.
 
-## Derive context from the repository
+## Role
 
-Do not ask for owner, repo, or base branch by default. Derive them:
+Act as a PR author who keeps pull request metadata accurate, short, and useful for reviewers.
+
+## Task
+
+Create a new PR or update an existing PR title/body from repository context. Do not paste full diffs, long prose, or generic checklists unless the project explicitly requires them.
+
+## Input
+
+Derive context instead of asking by default:
 
 - **Owner and repo:** `git remote get-url origin`
 - **Head branch:** `git rev-parse --abbrev-ref HEAD`
-- **Base branch:** `git symbolic-ref refs/remotes/origin/HEAD` (extract branch name after `origin/`)
+- **Base branch:** `git symbolic-ref refs/remotes/origin/HEAD` (extract the branch after `origin/`)
+- **Commit context:** `git log origin/<base>..HEAD --oneline -20`
+- **Detailed commit context when useful:** `git log origin/<base>..HEAD --pretty=format:"%s%n%b" -20`
 
-Use these values in GitHub MCP `create_pull_request`.
+If the user provides an explicit base, head, PR number, draft setting, title, or body requirement, use it.
 
-## PR title rules
+### PR change scope (what actually ships on this branch)
 
-- Keep title to one line and about 72 characters or fewer.
+Summaries and **Changes** bullets must describe work **introduced by the head branch relative to the PR base**, not arbitrary differences between branch tips.
+
+- **Use a three-dot diff** (merge-base range), same idea as GitHub’s “Files changed” for a normal PR into `base`:  
+  `git diff origin/<base>...HEAD --stat`  
+  Optionally narrow paths, e.g. `git diff origin/<base>...HEAD --stat -- hiap-meed/`.
+- **Two-dot** `git diff origin/<base>..HEAD` compares the **tips** of `base` and `HEAD`. If the branches **diverged** (base moved ahead without those commits on the head branch), that diff can list files the author never touched—misleading for PR copy.
+- **Commits on the branch only** stay as `git log origin/<base>..HEAD` (two dots in `log` is correct here: commits reachable from `HEAD` but not from `origin/<base>`).
+- **Refresh the base ref** before comparing when drafting against the remote default branch, e.g. `git fetch origin <base>`.
+
+If three-dot scope is empty or surprising, say so briefly (e.g. branch only merges/reverts) instead of inferring from a two-dot diff alone.
+
+## Output
+
+### Title
+
+- One line, about 72 characters or fewer.
 - State what the PR does, not how it was implemented.
-- Prefix with ticket ID when branch/work is tied to one (for example `ON-5396: ...`).
-- Prefer imperative wording: `Add`, `Fix`, `Update`.
+- Prefix with a ticket ID when the branch or work is tied to one, for example `ON-123: Short feature name`.
+- Prefer imperative wording: `Add`, `Fix`, `Update`, `Align`.
 
 Examples:
 
-- `ON-5396: MEED high-level implementation - pipeline and architecture`
 - `Fix inventory API null path handling`
-- `Add version history tests`
+- `Add regression tests for session expiry`
+- `ON-1234: Align export job with new schema`
 
-## PR body rules
+### Body
 
-Keep the body short and practical:
+Keep the body short and concise. Prefer this structure:
 
-1. **Summary** (1-3 sentences): What changed and why.
-2. **Changes** (optional): Bullet list of key changes if helpful.
-3. **Commits** (optional): Short commit subject list, commonly from `git log origin/<base>..HEAD --oneline`.
-
-Avoid pasting full diffs and avoid generic checklists unless explicitly requested by project standards.
+1. **Summary** (1-3 sentences): What this PR does and why.
+2. **Changes** (optional): Bullet list of main changes, only if it adds clarity.
+3. **Commits** (optional): Short commit subject list when drafting from history.
 
 Example:
 
 ```markdown
 ## Summary
 
-Adds basic MEED pipeline frontend with stubs and mock data, plus architecture and implementation plan.
+Briefly states the user-visible outcome and motivation.
 
 ## Changes
 
-- Pipeline frontend with stubs and mock values
-- Implementation plan and architecture doc
-- Sample data for development
+- Touched area A
+- Touched area B
 
-## Commits (4)
+## Commits (3)
 
-- chore: implemented basic pipeline frontend with stubs and mock data
-- chore: updated implementation plan and uploaded sample data
-- chore: added architecture and implementation plan
-- chore: updated gitignore for cursor rules and agents md
+- fix: handle null path in inventory API
+- test: add regression coverage
+- docs: clarify export limits
 ```
 
-## GitHub MCP execution guidance
+## Create Or Update Workflow
 
-- Prefer `create_pull_request` with derived `owner`, `repo`, `head`, `base`, and generated `title`/`body`.
-- Generate commit context with `git log origin/<base>..HEAD --oneline -20`.
-- Use `--pretty=format:"%s%n%b"` variant when body context is needed.
-- If user asks for draft PR, set draft mode.
-- If user requests explicit base/head overrides, follow user input.
+1. Derive `owner`, `repo`, `head`, and `base` from git state.
+2. Check whether a PR already exists for the branch.
+3. Inspect commits between `origin/<base>` and `HEAD`, and **scope file/area lists** with `git diff origin/<base>...HEAD` (three-dot), not two-dot tip diff—see **PR change scope** above.
+4. Draft a concise title and body using the standards above.
+5. Create a PR when none exists, or update the existing PR when one exists or when the user asks to update.
+6. Return the PR URL and summarize only the metadata changed.
 
-## Remote branch and push policy
+## GitHub Tool Guidance
 
-- Assume the branch is already pushed when the user asks to create a PR.
-- Do **not** run `git push` or `git push -u` unless the user explicitly asks.
-- If PR creation fails because the head branch is missing remotely, report that clearly and ask whether to push.
-- When push is explicitly requested, prefer the minimal command needed and continue PR creation after push succeeds.
+- Use GitHub MCP first for PR create/update operations.
+- Before calling a GitHub MCP tool, read its schema/descriptor and follow the required parameters.
+- If GitHub MCP is unavailable, unauthenticated, or not configured for the needed operation, fall back to the `gh` CLI.
+- If both GitHub MCP and `gh` fail, stop and report the attempted paths, the relevant error, and the next action needed from the user.
+- For creation, pass derived `owner`, `repo`, `head`, `base`, `title`, `body`, and draft mode when requested.
+- For updates, first identify the existing PR by branch or user-provided PR number, then update only the requested or generated metadata.
+- Preserve existing PR body sections that are clearly hand-authored and still relevant. Replace stale generated summaries, changes, or commit lists.
+- If the branch is missing remotely, report that clearly and ask whether to push unless the user already requested a push.
 
-## Minimal workflow checklist
+## Push Policy
 
-- [ ] Derive `owner/repo/head/base` from git state.
-- [ ] Inspect commits between `origin/<base>` and `HEAD`.
-- [ ] Draft concise title and body with the structure above.
-- [ ] Skip push by default; only push when explicitly requested.
-- [ ] Create PR using GitHub MCP `create_pull_request`.
+- Assume the branch is already pushed when the user only asks to create or update PR metadata.
+- Do not run `git push` or `git push -u` unless the user explicitly asks.
+- When push is explicitly requested, use the minimal push needed and continue the PR operation after push succeeds.

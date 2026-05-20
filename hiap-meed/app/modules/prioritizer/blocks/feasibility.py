@@ -9,8 +9,8 @@ Approach:
 - Combine both components with fixed weights into one Feasibility score.
 
 Final score formula per action:
-- `feasibility_score = (legal_weight * soft_legal_component_value)`
-- `+ (socioeconomic_indicators_weight * socioeconomic_indicators_component_value)`
+- `feasibility_score = (legal_weight * soft_legal_component_score)`
+- `+ (socioeconomic_weight * socioeconomic_component_score)`
 """
 
 from __future__ import annotations
@@ -43,8 +43,8 @@ INFORMATIONAL_REQUIREMENT_STRENGTH = "informational"
 CANONICAL_CITY_SOCIOECONOMIC_INDICATORS = (
     "unemployment_rate",
     "renter_share",
-    "transport_logistics_employment",
-    "electricity_access",
+    "employment_in_transport_and_logistics",
+    "electricity_access_rate",
     "industry_construction_employment",
     "median_household_income",
     "public_transport_share",
@@ -150,9 +150,11 @@ def run(
             action_socioeconomic_indicator_key = str(
                 socioeconomic_indicator.get("indicator_key", "")
             ).strip()
-            direction = str(
-                socioeconomic_indicator.get("direction", "supportive")
-            ).strip().lower()
+            direction = (
+                str(socioeconomic_indicator.get("direction", "supportive"))
+                .strip()
+                .lower()
+            )
             socioeconomic_indicator_weight = float(
                 socioeconomic_indicator.get("weight", 0.0)
             )
@@ -230,24 +232,25 @@ def run(
 
         # Block 6: Store action-level explainability payload.
         evidence_by_action_id[action.action_id] = {
-            "counts_by_strength": strength_counts,
-            "counts_by_status": status_counts,
-            "soft_legal_component_value": feasibility_soft_legal_component,
+            "legal_requirements_by_strength": strength_counts,
+            "legal_requirements_by_alignment_status": status_counts,
+            "soft_legal_component_score": feasibility_soft_legal_component,
             "soft_legal_weight": FEASIBILITY_WEIGHT_LEGAL,
             "soft_legal_contribution": soft_legal_contribution,
             "soft_legal_aligned_count": aligned_soft_count,
             "soft_legal_total_count": total_soft_count,
-            "socioeconomic_indicators_component_value": feasibility_socio_component,
-            "socioeconomic_indicators_weight": FEASIBILITY_WEIGHT_SOCIO,
-            "socioeconomic_indicators_contribution": socioeconomic_indicators_contribution,
-            "socioeconomic_indicators_weighted_sum": socio_weighted_sum,
+            "socioeconomic_component_score": feasibility_socio_component,
+            "socioeconomic_weight": FEASIBILITY_WEIGHT_SOCIO,
+            "socioeconomic_contribution": socioeconomic_indicators_contribution,
+            "socioeconomic_weighted_sum": socio_weighted_sum,
             "total_socioeconomic_indicator_weight": total_socioeconomic_indicator_weight,
-            "socioeconomic_indicators_avg": socio_avg,
+            "socioeconomic_average_score_before_normalization": socio_avg,
             "socioeconomic_indicator_rows": socioeconomic_indicator_rows,
             "missing_city_socioeconomic_indicator_keys": sorted(
                 set(missing_socioeconomic_indicator_keys)
             ),
             "informational_requirements": informational_requirements,
+            "informational_requirements_summary_available": False,
             "feasibility_score": feasibility_score,
         }
 

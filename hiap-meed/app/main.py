@@ -60,7 +60,7 @@ if __name__ == "__main__":
         os.getenv("LOG_LEVEL", "INFO"),
         os.getenv("LOG_DIR", "logs"),
         os.getenv("ARTIFACT_LOG_JSONL", "true"),
-        os.getenv("HIAP_MEED_CITY_DATA_SOURCE", "mock"),
+        os.getenv("HIAP_MEED_CITY_DATA_SOURCE", "api"),
         os.getenv("HIAP_MEED_ACTION_DATA_SOURCE", "mock"),
         os.getenv("HIAP_MEED_LEGAL_DATA_SOURCE", "mock"),
     )

@@ -5,11 +5,14 @@ import React from "react";
 import type { TFunction } from "i18next";
 import { ButtonMedium } from "@/components/package/Texts/Button";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { MdArrowForward } from "react-icons/md";
+import { MdArrowForward, MdOpenInNew } from "react-icons/md";
 import { MdInfoOutline } from "react-icons/md";
 import { TitleLarge } from "@/components/package/Texts/Title";
 import { ModuleAttributes } from "@/models/Module";
 import NextLink from "next/link";
+import { Modules } from "@/util/constants";
+
+const GHGI_START_HERE_HIDDEN_KEY = "ghgi-start-here-hidden";
 
 export function ModuleCard({
   module,
@@ -34,7 +37,7 @@ export function ModuleCard({
   };
 
   const statusLabelMap: Record<string, string> = {
-    poc: "status-poc",
+    poc: "status-beta",
     prototype: "status-prototype",
     preview: "status-preview",
     early_access: "status-early-access",
@@ -43,6 +46,18 @@ export function ModuleCard({
   };
 
   const { name, author, description, tagline, url, logo, status } = module;
+  const isGhgi = module.id === Modules.GHGI.id;
+  const [hideStartHereTag, setHideStartHereTag] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!isGhgi) return;
+
+    const isHidden =
+      localStorage.getItem(GHGI_START_HERE_HIDDEN_KEY) === "true";
+    if (isHidden) {
+      setHideStartHereTag(true);
+    }
+  }, [isGhgi]);
 
   const getTranslationInLanguage = (
     obj: { [lng: string]: string } | undefined,
@@ -57,6 +72,11 @@ export function ModuleCard({
   const resolvedUrl = isExternal ? url : `${baseUrl}${url}`;
 
   const handleModuleLaunch = (e: React.MouseEvent) => {
+    if (isGhgi) {
+      setHideStartHereTag(true);
+      localStorage.setItem(GHGI_START_HERE_HIDDEN_KEY, "true");
+    }
+
     if (isExternal) {
       e.preventDefault();
       window.open(url, "_blank", "noopener,noreferrer");
@@ -84,39 +104,55 @@ export function ModuleCard({
       <Card.Body gap={2} flex="1">
         <VStack w="full" align="start" gap={2}>
           <HStack justify="space-between" w="full">
-            <HStack gap={2}>
+            <HStack gap={2} justifyContent="space-between">
               <Image
                 src={logo || "/assets/icon_inverted.svg"}
                 boxSize={8}
                 alt={`${name} module logo`}
               />
+
               {status && status !== "active" && (
                 <Tag size="sm" colorPalette={statusColorMap[status] || "gray"}>
                   {t(statusLabelMap[status] || status)}
                 </Tag>
               )}
             </HStack>
-
-            <Tooltip
-              content={getTranslationInLanguage(description)}
-              showArrow
-              closeDelay={8000}
-              contentProps={{
-                bg: "content.secondary",
-                color: "background.default",
-                borderRadius: "md",
-                p: 3,
-                maxW: "300px",
-                fontSize: "sm",
-              }}
-            >
-              <Icon
-                as={MdInfoOutline}
-                boxSize={6}
-                color="interactive.control"
-                cursor="pointer"
-              />
-            </Tooltip>
+            <HStack gap={2} justifyContent="flex-end">
+              {isGhgi && !hideStartHereTag && (
+                <Tag
+                  size="sm"
+                  colorPalette="gray"
+                  p={2}
+                  borderRadius={"8px"}
+                  bg="border.neutral"
+                  color="content.secondary"
+                  fontWeight="semibold"
+                  textTransform="uppercase"
+                >
+                  {t("start-here")}
+                </Tag>
+              )}
+              <Tooltip
+                content={getTranslationInLanguage(description)}
+                showArrow
+                closeDelay={8000}
+                contentProps={{
+                  bg: "content.secondary",
+                  color: "background.default",
+                  borderRadius: "md",
+                  p: 3,
+                  maxW: "300px",
+                  fontSize: "sm",
+                }}
+              >
+                <Icon
+                  as={MdInfoOutline}
+                  boxSize={6}
+                  color="interactive.control"
+                  cursor="pointer"
+                />
+              </Tooltip>
+            </HStack>
           </HStack>
           <Card.Title
             mt={2}
@@ -151,11 +187,11 @@ export function ModuleCard({
           <NextLink
             href={resolvedUrl}
             onClick={handleModuleLaunch}
-            target={isExternal ? "_blank" : undefined}
-            rel={isExternal ? "noopener noreferrer" : undefined}
+            target={"_blank"}
+            rel={"noopener noreferrer"}
           >
             <ButtonMedium>{t("launch")}</ButtonMedium>
-            <MdArrowForward />
+            <Icon as={MdOpenInNew} boxSize={5} />
           </NextLink>
         </Button>
       </Card.Footer>

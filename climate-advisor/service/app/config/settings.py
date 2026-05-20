@@ -391,7 +391,7 @@ class Settings(BaseModel):
                 self.langsmith_tracing_enabled = False
                 return
 
-            # Surface configuration to the expected environment variables for LangSmith/LangChain SDKs
+            # Surface configuration for LangSmith plus retained LANGCHAIN_* compatibility aliases.
             os.environ.setdefault("LANGSMITH_TRACING_V2", "true")
             os.environ.setdefault("LANGCHAIN_TRACING_V2", "true")
 

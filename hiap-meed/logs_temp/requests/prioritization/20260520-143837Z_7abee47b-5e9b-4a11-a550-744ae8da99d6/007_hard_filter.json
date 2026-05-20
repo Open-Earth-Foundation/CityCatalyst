@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-05-16T14:35:46.463366+00:00",
-  "request_id": "84afea18-4a08-4992-9a17-ffc2596dd150",
+  "timestamp": "2026-05-20T14:38:41.319518+00:00",
+  "request_id": "7abee47b-5e9b-4a11-a550-744ae8da99d6",
   "request_kind": "prioritization",
   "event_index": 7,
   "step_name": "hard_filter",
@@ -251,6 +251,6 @@
         "legal_verdict_category": "blocked"
       }
     },
-    "elapsed_seconds": 0.0004467290000320645
+    "elapsed_seconds": 0.0005600819995379425
   }
 }

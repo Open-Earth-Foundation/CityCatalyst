@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-05-16T14:35:45.252542+00:00",
-  "request_id": "84afea18-4a08-4992-9a17-ffc2596dd150",
+  "timestamp": "2026-05-20T14:38:38.734707+00:00",
+  "request_id": "7abee47b-5e9b-4a11-a550-744ae8da99d6",
   "request_kind": "prioritization",
   "event_index": 2,
   "step_name": "fetch_actions",
@@ -172,6 +172,6 @@
       "http_status_code": null,
       "upstream_generated_at_utc": null
     },
-    "elapsed_seconds": 0.023001008000164802
+    "elapsed_seconds": 0.01275582000016584
   }
 }

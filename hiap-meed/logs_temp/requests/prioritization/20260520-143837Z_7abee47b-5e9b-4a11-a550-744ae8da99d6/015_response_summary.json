@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-05-16T14:35:53.757299+00:00",
-  "request_id": "84afea18-4a08-4992-9a17-ffc2596dd150",
+  "timestamp": "2026-05-20T14:38:52.807604+00:00",
+  "request_id": "7abee47b-5e9b-4a11-a550-744ae8da99d6",
   "request_kind": "prioritization",
   "event_index": 15,
   "step_name": "response_summary",
@@ -21,25 +21,25 @@
     },
     "ranked_action_ids": [
       "icare_0016",
-      "icare_0121",
-      "icare_0040",
-      "c40_0010",
       "icare_0028",
-      "icare_0002",
-      "c40_0012",
+      "c40_0010",
+      "icare_0121",
+      "c40_0035",
+      "icare_0040",
       "ipcc_0105",
-      "icare_0072",
-      "icare_0099",
-      "icare_0045",
-      "ipcc_0050",
-      "c40_0034",
-      "icare_0110",
-      "ipcc_0045",
-      "icare_0122",
-      "icare_0012",
+      "icare_0002",
+      "icare_0033",
+      "c40_0012",
+      "c40_0017",
+      "icare_0120",
       "icare_0064",
-      "icare_0027",
-      "icare_0156"
+      "icare_0010",
+      "ipcc_0049",
+      "ipcc_0067",
+      "icare_0045",
+      "ipcc_0045",
+      "ipcc_0043",
+      "c40_0016"
     ],
     "translation_warnings": [],
     "top_ranked_actions": [
@@ -49,79 +49,79 @@
       },
       {
         "rank": 2,
-        "action_id": "icare_0121"
-      },
-      {
-        "rank": 3,
-        "action_id": "icare_0040"
-      },
-      {
-        "rank": 4,
-        "action_id": "c40_0010"
-      },
-      {
-        "rank": 5,
         "action_id": "icare_0028"
       },
       {
+        "rank": 3,
+        "action_id": "c40_0010"
+      },
+      {
+        "rank": 4,
+        "action_id": "icare_0121"
+      },
+      {
+        "rank": 5,
+        "action_id": "c40_0035"
+      },
+      {
         "rank": 6,
-        "action_id": "icare_0002"
+        "action_id": "icare_0040"
       },
       {
         "rank": 7,
-        "action_id": "c40_0012"
-      },
-      {
-        "rank": 8,
         "action_id": "ipcc_0105"
       },
       {
+        "rank": 8,
+        "action_id": "icare_0002"
+      },
+      {
         "rank": 9,
-        "action_id": "icare_0072"
+        "action_id": "icare_0033"
       },
       {
         "rank": 10,
-        "action_id": "icare_0099"
+        "action_id": "c40_0012"
       },
       {
-        "rank": 11,
-        "action_id": "icare_0045"
+        "rank": 10,
+        "action_id": "c40_0017"
       },
       {
         "rank": 12,
-        "action_id": "ipcc_0050"
+        "action_id": "icare_0120"
       },
       {
         "rank": 13,
-        "action_id": "c40_0034"
-      },
-      {
-        "rank": 13,
-        "action_id": "icare_0110"
-      },
-      {
-        "rank": 15,
-        "action_id": "ipcc_0045"
-      },
-      {
-        "rank": 16,
-        "action_id": "icare_0122"
-      },
-      {
-        "rank": 17,
-        "action_id": "icare_0012"
-      },
-      {
-        "rank": 17,
         "action_id": "icare_0064"
       },
       {
+        "rank": 14,
+        "action_id": "icare_0010"
+      },
+      {
+        "rank": 15,
+        "action_id": "ipcc_0049"
+      },
+      {
+        "rank": 16,
+        "action_id": "ipcc_0067"
+      },
+      {
+        "rank": 17,
+        "action_id": "icare_0045"
+      },
+      {
+        "rank": 18,
+        "action_id": "ipcc_0045"
+      },
+      {
         "rank": 19,
-        "action_id": "icare_0027"
+        "action_id": "ipcc_0043"
       },
       {
         "rank": 20,
-        "action_id": "icare_0156"
+        "action_id": "c40_0016"
       }
     ],
     "discarded_excluded_action_ids": [
@@ -152,17 +152,17 @@
       "icare_0139"
     ],
     "timings": {
-      "fetch_city": 0.7760794040000292,
-      "fetch_actions": 0.023001008000164802,
-      "fetch_legal_assessments": 1.014370966999877,
-      "fetch_policy_signals": 0.0199580529999821,
-      "validate_weights": 6.419300007109996e-05,
-      "hard_filter": 0.0004467290000320645,
-      "impact": 0.0014791309999964142,
-      "alignment": 0.005440569000029427,
-      "feasibility": 0.0022946089998185926,
-      "final_scoring": 0.0008961170001384744,
-      "explanations": 6.930947167000113
+      "fetch_city": 1.109262903999479,
+      "fetch_actions": 0.01275582000016584,
+      "fetch_legal_assessments": 1.1349247529997228,
+      "fetch_action_policy_scores": 1.2709640470002341,
+      "validate_weights": 0.00017059300080290996,
+      "hard_filter": 0.0005600819995379425,
+      "impact": 0.0012554509994515684,
+      "alignment": 0.005619182999907935,
+      "feasibility": 0.0014957659996071015,
+      "final_scoring": 0.0009173610005746013,
+      "explanations": 11.139328329999444
     }
   }
 }

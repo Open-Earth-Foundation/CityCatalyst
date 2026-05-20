@@ -13,8 +13,10 @@ from app.modules.prioritizer.blocks import (
     impact,
 )
 from app.modules.prioritizer.config import validate_weights
-from app.modules.prioritizer.internal_models import Action
+from app.modules.prioritizer.internal_models import Action, CityEmissionsContext
 from app.modules.prioritizer.models import PrioritizationResponse, RankedActionResult
+from app.modules.prioritizer.services.explanations import generate_explanations
+from app.modules.prioritizer.services.translation import translate_explanations
 from app.services.data_clients import (
     ApiActionDataApiClient,
     ApiCityDataApiClient,
@@ -80,7 +82,9 @@ def _safe_float(value: object, default: float = 0.0) -> float:
     return default
 
 
-def _build_evidence_summary(scored_action_evidence: dict[str, object]) -> dict[str, object]:
+def _build_evidence_summary(
+    scored_action_evidence: dict[str, object],
+) -> dict[str, object]:
     """Build compact public explainability fields for one ranked action."""
     hard_filter_evidence = scored_action_evidence.get("hard_filter", {})
     impact_evidence = scored_action_evidence.get("impact", {})
@@ -107,36 +111,43 @@ def _build_evidence_summary(scored_action_evidence: dict[str, object]) -> dict[s
             ),
         },
         "impact": {
-            "impact_block_score": _safe_float(impact_evidence.get("impact_block_score")),
-            "matched_city_gpc_refs_count": int(
-                impact_evidence.get("matched_city_gpc_refs_count", 0)
+            "impact_block_score": _safe_float(
+                impact_evidence.get("impact_block_score")
             ),
-            "reduction_share_of_city_emissions": _safe_float(
-                impact_evidence.get("reduction_share_of_city_emissions")
+            "matched_city_subsector_keys_count": int(
+                impact_evidence.get("matched_city_subsector_keys_count", 0)
             ),
-            "timeline_score": _safe_float(impact_evidence.get("timeline_score")),
+            "emissions_reduction_component_score": _safe_float(
+                impact_evidence.get("emissions_reduction_component_score")
+            ),
+            "timeline_component_score": _safe_float(
+                impact_evidence.get("timeline_component_score")
+            ),
         },
         "alignment": {
             "alignment_score": _safe_float(alignment_evidence.get("alignment_score")),
-            "policy_component_value": _safe_float(
-                alignment_evidence.get("policy_component_value")
+            "policy_component_score": _safe_float(
+                alignment_evidence.get("policy_component_score")
             ),
-            "sector_component_value": _safe_float(
-                alignment_evidence.get("sector_component_value")
+            "sector_component_score": _safe_float(
+                alignment_evidence.get("sector_component_score")
             ),
-            "other_component_value": _safe_float(
-                alignment_evidence.get("other_component_value")
+            "co_benefit_component_score": _safe_float(
+                alignment_evidence.get("co_benefit_component_score")
+            ),
+            "timeframe_component_score": _safe_float(
+                alignment_evidence.get("timeframe_component_score")
             ),
         },
         "feasibility": {
             "feasibility_score": _safe_float(
                 feasibility_evidence.get("feasibility_score")
             ),
-            "soft_legal_component_value": _safe_float(
-                feasibility_evidence.get("soft_legal_component_value")
+            "soft_legal_component_score": _safe_float(
+                feasibility_evidence.get("soft_legal_component_score")
             ),
-            "socioeconomic_indicators_component_value": _safe_float(
-                feasibility_evidence.get("socioeconomic_indicators_component_value")
+            "socioeconomic_component_score": _safe_float(
+                feasibility_evidence.get("socioeconomic_component_score")
             ),
         },
     }
@@ -149,15 +160,56 @@ def _detail_filename(event_index: int | None, step_name: str) -> str:
     return f"{event_index:03d}_{step_name}.json"
 
 
+def _resolve_requested_output_languages(requested_languages: list[str]) -> list[str]:
+    """Return canonical English plus any additional requested target languages."""
+    resolved_languages = ["en"]
+    for language in requested_languages:
+        normalized = language.strip().lower()
+        if normalized and normalized not in resolved_languages:
+            resolved_languages.append(normalized)
+    return resolved_languages
+
+
+def _collect_generated_languages(
+    *,
+    requested_languages: list[str],
+    explanations_by_action_id: dict[str, str],
+    explanation_translations_by_action_id: dict[str, dict[str, str]],
+) -> list[str]:
+    """Return explanation languages actually present in the returned payload."""
+    generated_languages: list[str] = []
+    if explanations_by_action_id:
+        generated_languages.append("en")
+
+    translated_languages: set[str] = set()
+    for translations in explanation_translations_by_action_id.values():
+        for language in translations.keys():
+            normalized = language.strip().lower()
+            if normalized:
+                translated_languages.add(normalized)
+
+    for language in _resolve_requested_output_languages(requested_languages):
+        if language != "en" and language in translated_languages:
+            generated_languages.append(language)
+
+    # Keep unexpected-but-returned languages visible even if they were not requested.
+    for language in sorted(translated_languages):
+        if language not in generated_languages:
+            generated_languages.append(language)
+    return generated_languages
+
+
 def run_prioritization(
     *,
     locode: str,
     weights_override: dict[str, float] | None,
     top_n: int | None,
-    excluded_actions_free_text: str | None,
+    excluded_action_ids: list[str],
+    requested_languages: list[str],
     city_preference_sectors: list[str],
-    city_preference_other_text: str | None,
-    city_emissions_by_gpc_ref: dict[str, float],
+    city_preference_timeframes: list[str],
+    city_preference_co_benefit_keys: list[str],
+    city_emissions_context: CityEmissionsContext,
     internal_request_id: UUID,
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient,
     action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient,
@@ -165,6 +217,7 @@ def run_prioritization(
     policy_signals_data_api_client: (
         MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
     ),
+    create_explanations: bool,
 ) -> PrioritizationResponse:
     """
     Run the end-to-end prioritization workflow for one city request.
@@ -176,7 +229,10 @@ def run_prioritization(
     """
 
     # Phase 0: initialize request-scoped artifact writer and timing accumulator.
-    artifact_writer = ArtifactWriter(request_id=internal_request_id)
+    artifact_writer = ArtifactWriter(
+        request_id=internal_request_id,
+        request_kind="prioritization",
+    )
     timings: dict[str, float] = {}
     logger.info(
         "Prioritization started internal_request_id=%s locode=%s top_n=%s weights_override_provided=%s",
@@ -203,8 +259,10 @@ def run_prioritization(
         "fetch_city",
         {
             "locode": locode,
-            "comuna_name": city.comuna_name,
+            "city_name": city.city_name,
             "region_name": city.region_name,
+            "source": city.source,
+            "source_metadata": city.source_metadata,
             "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=fetch_city_event_index,
@@ -249,8 +307,8 @@ def run_prioritization(
 
     # Phase 3: fetch legal requirements used by hard legal filtering.
     with time_block("fetch_legal_requirements") as block:
-        legal_requirements_by_action_id = legal_data_api_client.get_action_legal_requirements(
-            locode
+        legal_requirements_by_action_id = (
+            legal_data_api_client.get_action_legal_requirements(locode)
         )
     # Emit high-level and step-detail artifacts for legal requirement fetch.
     timings["fetch_legal_requirements"] = block.elapsed_seconds
@@ -283,8 +341,8 @@ def run_prioritization(
 
     # Phase 4: fetch policy signals used by alignment scoring.
     with time_block("fetch_policy_signals") as block:
-        policy_signals_by_action_id = policy_signals_data_api_client.get_action_policy_signals(
-            locode
+        policy_signals_by_action_id = (
+            policy_signals_data_api_client.get_action_policy_signals(locode)
         )
     timings["fetch_policy_signals"] = block.elapsed_seconds
     fetch_policy_payload = {
@@ -298,7 +356,9 @@ def run_prioritization(
         "fetch_policy_signals",
         {
             "actions_with_policy_signals": len(policy_signals_by_action_id),
-            "action_ids_with_policy_signals": sorted(policy_signals_by_action_id.keys()),
+            "action_ids_with_policy_signals": sorted(
+                policy_signals_by_action_id.keys()
+            ),
             "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=fetch_policy_event_index,
@@ -356,11 +416,23 @@ def run_prioritization(
     input_snapshot_payload = {
         "locode": locode,
         "resolved_top_n": top_n,
+        "create_explanations": create_explanations,
+        "requested_languages": requested_languages,
+        "canonical_language": "en",
+        "requested_output_languages": _resolve_requested_output_languages(
+            requested_languages
+        ),
         "resolved_weights": weights,
-        "city_emissions_by_gpc_ref": city_emissions_by_gpc_ref,
+        "city_emissions_by_subsector_key": (
+            city_emissions_context.emissions_by_subsector_key
+        ),
+        "city_activity_rows": [
+            row.model_dump(mode="json") for row in city_emissions_context.activity_rows
+        ],
         "city_preference_sectors": city_preference_sectors,
-        "city_preference_other_text": city_preference_other_text,
-        "excluded_actions_free_text": excluded_actions_free_text,
+        "city_preference_timeframes": city_preference_timeframes,
+        "city_preference_co_benefit_keys": city_preference_co_benefit_keys,
+        "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
     }
     input_snapshot_path = artifact_writer.write_run_file(
         "input_snapshot.json", input_snapshot_payload
@@ -368,7 +440,11 @@ def run_prioritization(
     artifact_writer.write_event(
         "input_snapshot.completed",
         {
-            "file": input_snapshot_path.name if input_snapshot_path else "input_snapshot.json",
+            "file": (
+                input_snapshot_path.name
+                if input_snapshot_path
+                else "input_snapshot.json"
+            ),
             "locode": locode,
         },
     )
@@ -377,13 +453,17 @@ def run_prioritization(
     with time_block("hard_filter") as block:
         hard_filter_result = hard_filter.run(
             actions=actions,
-            excluded_actions_free_text=excluded_actions_free_text,
+            excluded_action_ids=excluded_action_ids,
             legal_requirements_by_action_id=legal_requirements_by_action_id,
         )
     # Build discard diagnostics and emit hard-filter artifacts.
     timings["hard_filter"] = block.elapsed_seconds
-    discarded_excluded_ids = [item.action_id for item in hard_filter_result.discarded_excluded]
-    discarded_legal_ids = [item.action_id for item in hard_filter_result.discarded_legal]
+    discarded_excluded_ids = [
+        item.action_id for item in hard_filter_result.discarded_excluded
+    ]
+    discarded_legal_ids = [
+        item.action_id for item in hard_filter_result.discarded_legal
+    ]
     hard_filter_payload = {
         "valid_actions": len(hard_filter_result.valid_actions),
         "discarded_excluded": len(discarded_excluded_ids),
@@ -400,13 +480,14 @@ def run_prioritization(
             "discarded_excluded": len(discarded_excluded_ids),
             "discarded_legal": len(discarded_legal_ids),
             "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
+            "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
             "discarded_legal_action_ids": sorted(discarded_legal_ids),
             "valid_action_ids": _sorted_action_ids(hard_filter_result.valid_actions),
             "discarded_legal_reasons_by_action_id": {
                 action_id: {
-                    "discard_reason": hard_filter_result.evidence.get(action_id, {}).get(
-                        "discard_reason"
-                    ),
+                    "discard_reason": hard_filter_result.evidence.get(
+                        action_id, {}
+                    ).get("discard_reason"),
                     "failed_requirements_count": hard_filter_result.evidence.get(
                         action_id, {}
                     ).get("hard_requirements_failed_count", 0),
@@ -432,7 +513,7 @@ def run_prioritization(
     with time_block("impact") as block:
         impact_result = impact.run(
             hard_filter_result.valid_actions,
-            city_emissions_by_gpc_ref=city_emissions_by_gpc_ref,
+            city_emissions_context=city_emissions_context,
         )
     # Emit impact score stats and detailed evidence artifacts.
     timings["impact"] = block.elapsed_seconds
@@ -445,6 +526,7 @@ def run_prioritization(
         "impact",
         {
             **_score_stats(impact_result.score_by_action_id),
+            "impact_matching": dict(impact_result.metadata),
             "evidence_by_action_id": _all_block_evidence(
                 impact_result.evidence_by_action_id
             ),
@@ -460,7 +542,8 @@ def run_prioritization(
             hard_filter_result.valid_actions,
             policy_signals_by_action_id=policy_signals_by_action_id,
             city_preference_sectors=city_preference_sectors,
-            city_preference_other_text=city_preference_other_text,
+            city_preference_timeframes=city_preference_timeframes,
+            city_preference_co_benefit_keys=city_preference_co_benefit_keys,
         )
     # Emit alignment score stats and detailed evidence artifacts.
     timings["alignment"] = block.elapsed_seconds
@@ -520,6 +603,14 @@ def run_prioritization(
             "feasibility_actions": len(feasibility_result.score_by_action_id),
         },
     )
+    logger.info(
+        "Pillar scoring completed internal_request_id=%s locode=%s impact_actions=%s alignment_actions=%s feasibility_actions=%s",
+        internal_request_id,
+        locode,
+        len(impact_result.score_by_action_id),
+        len(alignment_result.score_by_action_id),
+        len(feasibility_result.score_by_action_id),
+    )
 
     # Phase 10: aggregate pillar scores into final ranking.
     with time_block("final_scoring") as block:
@@ -562,6 +653,14 @@ def run_prioritization(
         event_index=final_scoring_event_index,
         event_type="final_scoring.completed",
     )
+    logger.info(
+        "Final scoring completed internal_request_id=%s locode=%s ranked_actions=%s top_n=%s elapsed_seconds=%.3f",
+        internal_request_id,
+        locode,
+        len(scored_actions),
+        top_n,
+        block.elapsed_seconds,
+    )
 
     # Phase 11: attach per-block evidence into each ranked action object.
     for scored_action in scored_actions:
@@ -580,24 +679,311 @@ def run_prioritization(
             ),
         }
 
-    # Phase 12: build public ranked action payloads and response metadata.
+    # Phase 12: optionally generate post-ranking qualitative explanations in English.
+    explanations_by_action_id: dict[str, str] = {}
+    explanation_translations_by_action_id: dict[str, dict[str, str]] = {}
+    translation_warnings: list[str] = []
+    translation_event_index: int | None = None
+    if create_explanations:
+        logger.info(
+            "Explanation generation started internal_request_id=%s locode=%s actions_to_explain=%s",
+            internal_request_id,
+            locode,
+            len(scored_actions),
+        )
+        llm_io_payload: dict[str, object] | None = None
+        explanation_error: Exception | None = None
+        with time_block("explanations") as block:
+            try:
+                explanations_by_action_id, llm_io_payload = generate_explanations(
+                    locode=locode,
+                    scored_actions=scored_actions,
+                    city_preference_sectors=city_preference_sectors,
+                    city_preference_co_benefit_keys=city_preference_co_benefit_keys,
+                )
+            except Exception as error:
+                explanation_error = error
+        if explanation_error is None and llm_io_payload is not None:
+            llm_input_payload = llm_io_payload.get("llm_input")
+            if isinstance(llm_input_payload, dict):
+                prompt_text = llm_input_payload.get("prompt_text")
+                if isinstance(prompt_text, str):
+                    prompt_file = artifact_writer.write_run_text_file(
+                        "llm/explanations_prompt.txt", prompt_text
+                    )
+                    llm_input_payload["prompt_text_file"] = (
+                        prompt_file.relative_to(artifact_writer._run_dir).as_posix()
+                        if prompt_file is not None
+                        else "llm/explanations_prompt.txt"
+                    )
+                    llm_input_payload["prompt_text_characters"] = len(prompt_text)
+                    llm_input_payload.pop("prompt_text", None)
+            llm_io_file = artifact_writer.write_run_file(
+                "llm/explanations_io.json", llm_io_payload
+            )
+            explanation_ids = sorted(explanations_by_action_id.keys())
+            explanations_payload = {
+                "requested": len(scored_actions),
+                "generated": len(explanations_by_action_id),
+                "generated_action_ids": explanation_ids,
+                "canonical_language": "en",
+                "llm_io_file": (
+                    llm_io_file.relative_to(artifact_writer._run_dir).as_posix()
+                    if llm_io_file is not None
+                    else "llm/explanations_io.json"
+                ),
+                "elapsed_seconds": block.elapsed_seconds,
+            }
+            explanations_event_index = artifact_writer.write_event(
+                "explanations.completed", explanations_payload
+            )
+            artifact_writer.write_step_detail(
+                "explanations",
+                explanations_payload,
+                event_index=explanations_event_index,
+                event_type="explanations.completed",
+            )
+            logger.info(
+                "Explanation generation completed internal_request_id=%s locode=%s generated=%s elapsed_seconds=%.3f",
+                internal_request_id,
+                locode,
+                len(explanations_by_action_id),
+                block.elapsed_seconds,
+            )
+        elif explanation_error is not None:
+            logger.warning(
+                "Explanation generation failed internal_request_id=%s locode=%s error=%s",
+                internal_request_id,
+                locode,
+                explanation_error,
+            )
+            llm_error_file = artifact_writer.write_run_file(
+                "llm/explanations_error.json",
+                {
+                    "status": "failed",
+                    "locode": locode,
+                    "error": str(explanation_error),
+                    "ranked_action_ids": [
+                        item.action.action_id for item in scored_actions
+                    ],
+                },
+            )
+            explanations_failed_payload = {
+                "requested": len(scored_actions),
+                "generated": 0,
+                "error": str(explanation_error),
+                "llm_error_file": (
+                    llm_error_file.name
+                    if llm_error_file is not None
+                    else "llm/explanations_error.json"
+                ),
+                "elapsed_seconds": block.elapsed_seconds,
+            }
+            explanations_failed_event_index = artifact_writer.write_event(
+                "explanations.failed", explanations_failed_payload
+            )
+            artifact_writer.write_step_detail(
+                "explanations",
+                explanations_failed_payload,
+                event_index=explanations_failed_event_index,
+                event_type="explanations.failed",
+            )
+        timings["explanations"] = block.elapsed_seconds
+
+        # Phase 12b: optionally translate canonical English explanations.
+        target_languages = [
+            language
+            for language in _resolve_requested_output_languages(requested_languages)
+            if language != "en"
+        ]
+        translation_error: Exception | None = None
+        translation_llm_io_payload: dict[str, object] | None = None
+        if target_languages and explanations_by_action_id:
+            logger.info(
+                "Explanation translation started internal_request_id=%s locode=%s target_languages=%s actions_to_translate=%s",
+                internal_request_id,
+                locode,
+                target_languages,
+                len(explanations_by_action_id),
+            )
+            with time_block("explanation_translations") as block:
+                try:
+                    (
+                        explanation_translations_by_action_id,
+                        translation_warnings,
+                        translation_llm_io_payload,
+                    ) = translate_explanations(
+                        canonical_explanations_by_action_id=explanations_by_action_id,
+                        target_languages=target_languages,
+                    )
+                except Exception as error:
+                    translation_error = error
+            timings["explanation_translations"] = block.elapsed_seconds
+            if translation_error is None and translation_llm_io_payload is not None:
+                llm_input_payload = translation_llm_io_payload.get("llm_input")
+                if isinstance(llm_input_payload, dict):
+                    prompt_text = llm_input_payload.get("prompt_text")
+                    if isinstance(prompt_text, str):
+                        prompt_file = artifact_writer.write_run_text_file(
+                            "llm/explanation_translations_prompt.txt", prompt_text
+                        )
+                        llm_input_payload["prompt_text_file"] = (
+                            prompt_file.relative_to(artifact_writer._run_dir).as_posix()
+                            if prompt_file is not None
+                            else "llm/explanation_translations_prompt.txt"
+                        )
+                        llm_input_payload["prompt_text_characters"] = len(prompt_text)
+                        llm_input_payload.pop("prompt_text", None)
+                llm_io_file = artifact_writer.write_run_file(
+                    "llm/explanation_translations_io.json",
+                    translation_llm_io_payload,
+                )
+                translation_payload = {
+                    "requested": len(explanations_by_action_id),
+                    "translated": len(explanation_translations_by_action_id),
+                    "target_languages": target_languages,
+                    "warning_count": len(translation_warnings),
+                    "llm_io_file": (
+                        llm_io_file.relative_to(artifact_writer._run_dir).as_posix()
+                        if llm_io_file is not None
+                        else "llm/explanation_translations_io.json"
+                    ),
+                    "elapsed_seconds": block.elapsed_seconds,
+                }
+                translation_event_index = artifact_writer.write_event(
+                    "explanation_translations.completed",
+                    translation_payload,
+                )
+                artifact_writer.write_step_detail(
+                    "explanation_translations",
+                    {
+                        **translation_payload,
+                        "warning_action_ids": (
+                            translation_llm_io_payload.get("llm_output", {}).get(
+                                "warning_action_ids", []
+                            )
+                            if isinstance(
+                                translation_llm_io_payload.get("llm_output"), dict
+                            )
+                            else []
+                        ),
+                        "warnings": translation_warnings,
+                    },
+                    event_index=translation_event_index,
+                    event_type="explanation_translations.completed",
+                )
+                if translation_warnings:
+                    warning_action_ids = (
+                        translation_llm_io_payload.get("llm_output", {}).get(
+                            "warning_action_ids", []
+                        )
+                        if isinstance(
+                            translation_llm_io_payload.get("llm_output"), dict
+                        )
+                        else []
+                    )
+                    logger.warning(
+                        "Explanation translation warning internal_request_id=%s locode=%s action_ids=%s",
+                        internal_request_id,
+                        locode,
+                        warning_action_ids,
+                    )
+                logger.info(
+                    "Explanation translation completed internal_request_id=%s locode=%s translated=%s elapsed_seconds=%.3f",
+                    internal_request_id,
+                    locode,
+                    len(explanation_translations_by_action_id),
+                    block.elapsed_seconds,
+                )
+            elif translation_error is not None:
+                logger.warning(
+                    "Explanation translation failed internal_request_id=%s locode=%s error=%s",
+                    internal_request_id,
+                    locode,
+                    translation_error,
+                )
+                llm_error_file = artifact_writer.write_run_file(
+                    "llm/explanation_translations_error.json",
+                    {
+                        "status": "failed",
+                        "locode": locode,
+                        "error": str(translation_error),
+                        "ranked_action_ids": sorted(explanations_by_action_id.keys()),
+                        "target_languages": target_languages,
+                    },
+                )
+                translation_failed_payload = {
+                    "requested": len(explanations_by_action_id),
+                    "translated": 0,
+                    "target_languages": target_languages,
+                    "error": str(translation_error),
+                    "llm_error_file": (
+                        llm_error_file.name
+                        if llm_error_file is not None
+                        else "llm/explanation_translations_error.json"
+                    ),
+                    "elapsed_seconds": block.elapsed_seconds,
+                }
+                translation_event_index = artifact_writer.write_event(
+                    "explanation_translations.failed",
+                    translation_failed_payload,
+                )
+                artifact_writer.write_step_detail(
+                    "explanation_translations",
+                    translation_failed_payload,
+                    event_index=translation_event_index,
+                    event_type="explanation_translations.failed",
+                )
+        else:
+            artifact_writer.write_event(
+                "explanation_translations.skipped",
+                {
+                    "target_languages": target_languages,
+                    "generated_english_explanations": len(explanations_by_action_id),
+                },
+            )
+    else:
+        artifact_writer.write_event(
+            "explanations.skipped",
+            {"create_explanations": False},
+        )
+        logger.info(
+            "Explanation generation skipped internal_request_id=%s locode=%s create_explanations=%s",
+            internal_request_id,
+            locode,
+            create_explanations,
+        )
+
+    # Phase 13: build public ranked action payloads and response metadata.
     ranked_actions: list[RankedActionResult] = []
     for scored_action in scored_actions:
+        action_id = scored_action.action.action_id
         ranked_actions.append(
             RankedActionResult(
-                action_id=scored_action.action.action_id,
+                action_id=action_id,
                 rank=scored_action.rank,
                 final_score=scored_action.final_score,
                 impact_score=scored_action.impact_score,
                 alignment_score=scored_action.alignment_score,
                 feasibility_score=scored_action.feasibility_score,
                 evidence_summary=_build_evidence_summary(scored_action.evidence),
-                # Placeholder for future LLM-generated narrative explanation.
-                explanation=None,
+                explanations={
+                    language: text
+                    for language, text in {
+                        "en": explanations_by_action_id.get(action_id),
+                        **explanation_translations_by_action_id.get(action_id, {}),
+                    }.items()
+                    if text
+                },
             )
         )
 
     ranked_action_ids = [item.action.action_id for item in scored_actions]
+    generated_languages = _collect_generated_languages(
+        requested_languages=requested_languages,
+        explanations_by_action_id=explanations_by_action_id,
+        explanation_translations_by_action_id=explanation_translations_by_action_id,
+    )
 
     metadata: dict[str, object] = {
         "locode": locode,
@@ -611,6 +997,14 @@ def run_prioritization(
         },
         "weights": weights,
         "timings": timings,
+        "explanations": {
+            "requested": create_explanations,
+            "generated": len(explanations_by_action_id),
+            "requested_languages": requested_languages,
+            "canonical_language": "en",
+            "generated_languages": generated_languages,
+            "translation_warnings": translation_warnings,
+        },
         "hard_filter_evidence_by_action_id": hard_filter_result.evidence,
     }
     # Build the full per-city API response shape for artifact logging.
@@ -624,16 +1018,22 @@ def run_prioritization(
                     for ranked_action in ranked_actions
                 ],
                 "metadata": metadata,
+                "warnings": translation_warnings,
             }
         ]
     }
 
-    # Emit response summary and run-summary artifacts.
+    # Emit the single run-level summary artifact used for overview/debugging.
     response_event_index = artifact_writer.write_event(
         "response_summary.completed",
         {
+            "locode": locode,
             "ranked_action_ids": ranked_action_ids,
             "counts": metadata["counts"],
+            "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
+            "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
+            "discarded_legal_action_ids": sorted(discarded_legal_ids),
+            "timings": timings,
         },
     )
     artifact_writer.write_step_detail(
@@ -643,7 +1043,16 @@ def run_prioritization(
             "counts": metadata["counts"],
             "weights": weights,
             "ranked_action_ids": ranked_action_ids,
+            "translation_warnings": translation_warnings,
+            "top_ranked_actions": [
+                {
+                    "rank": ranked_action.rank,
+                    "action_id": ranked_action.action_id,
+                }
+                for ranked_action in ranked_actions
+            ],
             "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
+            "confirmed_excluded_action_ids": sorted(set(excluded_action_ids)),
             "discarded_legal_action_ids": sorted(discarded_legal_ids),
             "timings": timings,
         },
@@ -651,16 +1060,6 @@ def run_prioritization(
         event_type="response_summary.completed",
     )
     artifact_writer.write_run_file("response_full.json", full_response_payload)
-    artifact_writer.write_event(
-        "run_summary.completed",
-        {
-            "locode": locode,
-            "counts": metadata["counts"],
-            "discarded_excluded_action_ids": sorted(discarded_excluded_ids),
-            "discarded_legal_action_ids": sorted(discarded_legal_ids),
-            "timings": timings,
-        },
-    )
 
     # Emit run-level manifest after all other artifact files are written.
     final_scoring_detail_file = _detail_filename(
@@ -670,19 +1069,26 @@ def run_prioritization(
     impact_detail_file = _detail_filename(impact_event_index, "impact")
     alignment_detail_file = _detail_filename(alignment_event_index, "alignment")
     feasibility_detail_file = _detail_filename(feasibility_event_index, "feasibility")
+    explanation_translations_detail_file = _detail_filename(
+        translation_event_index, "explanation_translations"
+    )
     artifact_writer.write_manifest(
         {
             "counts": metadata["counts"],
             "artifact_pointers": {
                 "summary_events": "summary.jsonl",
                 "input_snapshot": "input_snapshot.json",
+                "response_summary": _detail_filename(
+                    response_event_index, "response_summary"
+                ),
                 "top_ranked_actions": final_scoring_detail_file,
-                "full_evidence": {
+                "block_evidence": {
                     "hard_filter": hard_filter_detail_file,
                     "impact": impact_detail_file,
                     "alignment": alignment_detail_file,
                     "feasibility": feasibility_detail_file,
                 },
+                "explanation_translations": explanation_translations_detail_file,
             },
         }
     )
@@ -697,4 +1103,5 @@ def run_prioritization(
         ranked_action_ids=ranked_action_ids,
         ranked_actions=ranked_actions,
         metadata=metadata,
+        warnings=translation_warnings,
     )

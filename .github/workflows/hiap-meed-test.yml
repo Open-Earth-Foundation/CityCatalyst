@@ -111,7 +111,8 @@ jobs:
           kubectl set env deployment/hiap-meed-test \
             API_HOST=0.0.0.0 \
             API_PORT=8000 \
-            LOG_LEVEL=INFO
+            LOG_LEVEL=INFO \
+            CCGLOBAL_API_BASE_URL=https://api.citycatalyst.io/
 
           kubectl rollout restart deployment hiap-meed-test -n default
           kubectl rollout status deployment/hiap-meed-test -n default

@@ -12,19 +12,74 @@ This includes:
 
 - locode (city identifier for the prioritization request)
 - population size (potentally updated value from the frontend - will override the value from the city context data API)
-- excluded actions (free text field to provide a list of actions to exclude from the prioritization)
+- excluded action IDs (confirmed by the user after the exclusion preview step)
 - city strategic preference other (free text field to provide a strategic preference for the city)
 - city strategic preference sector (list of sectors to prioritize)
+- city strategic preference timeframes (list of preferred implementation horizons)
 - city emissions data (emissions data for the city from CityCatalyst)
 
 Single-city and multi-city requests use the same structure (`cityDataList`).
 A single-city request is represented by exactly one item in `cityDataList`.
+
+`meta.apiContext.endpoint` now reflects the current ranking API route:
+- `POST /v1/prioritize`
+
+# prioritizer_exclusion_preview_request_mock.json:
+
+This is a mock request for API 1, the exclusion preview API.
+It simulates the frontend sending raw exclusion preferences before the user confirms
+the final `excludedActionIds` that are later sent to the ranking API.
+
+This payload shape is modeled by:
+- `ExclusionPreviewApiRequest` (envelope)
+- `ExclusionPreviewRequestData` (`requestData`)
+- `ExclusionPreviewCityInput` (`cityDataList[]`)
+
+This includes:
+
+- locode (city identifier for the exclusion preview request)
+- excluded sector tags (strictly one of the supported sector taxonomy values)
+- excluded co-benefit keys (strictly one of the supported co-benefit taxonomy values)
+- excluded actions free text (optional free-text exclusion preference for guarded LLM matching)
+
+`meta.apiContext.endpoint` reflects the preview route:
+- `POST /v1/prioritize/exclusions/preview`
 
 # prioritizer_bulk_request_mock.json:
 
 This is the multi-city variant of the same frontend request contract. It uses
 the same envelope and schema as `prioritizer_request_mock.json` but includes
 more than one item in `cityDataList`.
+
+Even for multiple cities, the current API route is still:
+- `POST /v1/prioritize`
+
+The old one-step flow, where raw exclusion free text was sent directly to the
+ranking API, is no longer represented by the active mock request files. Raw
+exclusion preferences now live in `prioritizer_exclusion_preview_request_mock.json`,
+while ranking mocks use confirmed `excludedActionIds`.
+
+# prioritizer_explanation_translation_request_mock.json:
+
+This is a mock request for the explanation translation API.
+It simulates the frontend sending canonical English explanations for
+stateless translation into one or more requested target languages.
+
+This payload shape is modeled by:
+- `ExplanationTranslationApiRequest` (envelope)
+- `ExplanationTranslationRequestData` (`requestData`)
+- `ExplanationTranslationActionInput` (`rankedActions[]`)
+
+This includes:
+
+- source language (must currently be `en`)
+- target languages (non-English translation targets)
+- ranked actions with:
+  - `actionId`
+  - `canonicalExplanation`
+
+`meta.apiContext.endpoint` reflects the translation route:
+- `POST /v1/explanations/translate`
 
 # city_api_mock.json:
 
@@ -34,19 +89,21 @@ The upstream provider is the global-api.
 
 This payload shape is modeled by:
 - `CityApiResponse` (envelope)
-- `CityData` (`city`)
+- `CityApiItem` (`city`)
 
 It is being used to fetch basic city context data and also more specific city context data like unemployment rate, renter share, transport logistics employment, electricity access, industry construction employment, median household income, public transport share, poverty rate and home ownership.
 
 The general logic is that this is the baseline and values might be updated by the city user via the frontend request.
 
-Known alignment gap with action socioeconomic rules:
+This mock follows the active upstream city attributes schema:
 
-- City keys currently include `transport_logistics_employment` and `electricity_access`.
-- `actions_api_mock_v2.json` currently includes indicator keys `employment_in_transport_and_logistics` and `electricity_access_rate`.
-- Until these names are aligned (or mapped in code), feasibility socio-economic lookup will treat those indicators as missing.
+- `GET /api/v0/city_attributes/{locode}`
+- city fields such as `city_name`, `country_code`, `populationSize`, `populationDensity`, and `area_km2`
+- a `population` indicator object in addition to the top-level population fields
+- all 9 socioeconomic indicator keys currently used by Feasibility
+- the current city response DTOs still accept the camelCase population aliases and ignore unexpected extra keys
 
-# actions_api_mock_v2.json:
+# actions_api_mock.json:
 
 This is a mock response from the actions data API.
 It simulates a response from the actions data API containing information about the actions.
@@ -58,6 +115,12 @@ This payload shape is modeled by:
 - `ActionsApiResponse` (envelope)
 - `Action` (`actions[]`)
 
+Future action API note:
+
+- This mock still matches the current action contract used by this branch.
+- It may include optional fields such as `biome`.
+- When the future `GET /api/v1/action-pathways` payload replaces this mock, the action DTOs and this mock file should be updated together, including removing `biome` and aligning to the new payload field names.
+
 # actions_policy_signals_api_mock.json:
 
 Mock for GET /v1/cities/{locode}/policy-signals.
@@ -67,7 +130,7 @@ It includes:
 
 - policy_signals: array of { action_id, policy_signals: [...], policy_support_score }
 - each signal: location_scope, location_name, signal_type, signal_relation, signal_strength, evidence_ids, evidence_count
-- policy_support_score: 0–1 score per action (relation × strength × scope multiplier, normalized)
+- policy_support_score: 0â€“1 score per action (relation Ã— strength Ã— scope multiplier, normalized)
 - meta.locode, meta.comuna_name, meta.region_name
 
 This payload shape is modeled by:
@@ -100,7 +163,7 @@ It includes:
 # actions_legal_api_mock.json:
 
 Mock for GET /v1/actions/legal (or /v1/legal-requirements).
-Returns action_id → legal alignment + evidence per action.
+Returns action_id â†’ legal alignment + evidence per action.
 
 It includes:
 

@@ -33,39 +33,39 @@ migrations/
 
 ### Running Migrations
 
-Use the helper script from the service directory:
+Use the helper script from the `climate-advisor/` root:
 
 ```bash
 # Apply all pending migrations
-python migrate.py upgrade
+uv run --directory service python migrate.py upgrade
 
 # Check current migration status
-python migrate.py current
+uv run --directory service python migrate.py current
 
 # View migration history
-python migrate.py history
+uv run --directory service python migrate.py history
 ```
 
 ### Creating New Migrations
 
 #### Auto-generate from model changes (recommended):
 ```bash
-python migrate.py auto "add new column to users table"
+uv run --directory service python migrate.py auto "add new column to users table"
 ```
 
 #### Create empty migration for custom changes:
 ```bash
-python migrate.py create "add custom index"
+uv run --directory service python migrate.py create "add custom index"
 ```
 
 ### Rolling Back Migrations
 
 ```bash
 # Downgrade one migration
-python migrate.py downgrade
+uv run --directory service python migrate.py downgrade
 
 # Downgrade to specific revision
-python -m alembic downgrade <revision_id>
+uv run --directory service python -m alembic downgrade <revision_id>
 ```
 
 ## Migration Best Practices
@@ -76,15 +76,15 @@ Auto-generated migrations might not capture all changes correctly. Always review
 ### 2. **Use Descriptive Names**
 ```bash
 # Good
-python migrate.py auto "add user preferences table"
+uv run --directory service python migrate.py auto "add user preferences table"
 
 # Bad  
-python migrate.py auto "changes"
+uv run --directory service python migrate.py auto "changes"
 ```
 
 ### 3. **Test Migrations Both Ways**
-- Test upgrade: `python migrate.py upgrade`
-- Test downgrade: `python migrate.py downgrade`
+- Test upgrade: `uv run --directory service python migrate.py upgrade`
+- Test downgrade: `uv run --directory service python migrate.py downgrade`
 
 ### 4. **Handle Data Migrations Carefully**
 For complex data transformations, create custom migrations:
@@ -117,15 +117,15 @@ def upgrade() -> None:
 
 1. Create/modify your SQLAlchemy models in `app/models/db/`
 2. Import the model in `migrations/env.py` (if not already imported)
-3. Generate migration: `python migrate.py auto "add new model"`
+3. Generate migration: `uv run --directory service python migrate.py auto "add new model"`
 4. Review the generated migration file
-5. Test the migration: `python migrate.py upgrade`
-6. Test rollback: `python migrate.py downgrade`
+5. Test the migration: `uv run --directory service python migrate.py upgrade`
+6. Test rollback: `uv run --directory service python migrate.py downgrade`
 
 ### Modifying Existing Models
 
 1. Update your SQLAlchemy model
-2. Generate migration: `python migrate.py auto "modify model description"`
+2. Generate migration: `uv run --directory service python migrate.py auto "modify model description"`
 3. Review and test as above
 
 ## Environment Variables
@@ -142,10 +142,10 @@ def upgrade() -> None:
 #### **Migration fails with "relation already exists"**
 ```bash
 # Check current migration state
-python migrate.py current
+uv run --directory service python migrate.py current
 
 # Mark current state without running migrations
-python -m alembic stamp head
+uv run --directory service python -m alembic stamp head
 ```
 
 #### **Auto-generation not detecting changes**
@@ -163,13 +163,13 @@ python -m alembic stamp head
 If you need more control, use Alembic directly:
 
 ```bash
-# From the service directory
-python -m alembic current
-python -m alembic upgrade head
-python -m alembic downgrade -1
-python -m alembic revision -m "description"
-python -m alembic revision --autogenerate -m "description"
-python -m alembic history
+# From the climate-advisor root
+uv run --directory service python -m alembic current
+uv run --directory service python -m alembic upgrade head
+uv run --directory service python -m alembic downgrade -1
+uv run --directory service python -m alembic revision -m "description"
+uv run --directory service python -m alembic revision --autogenerate -m "description"
+uv run --directory service python -m alembic history
 ```
 
 ## Integration with Docker
@@ -178,7 +178,7 @@ When running in Docker, migrations should be run as part of the container startu
 
 ```dockerfile
 # In your Dockerfile or docker-compose.yml
-CMD ["sh", "-c", "python migrate.py upgrade && python -m uvicorn app.main:app --host 0.0.0.0 --port 8080"]
+CMD ["sh", "-c", "python -m alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8080"]
 ```
 
 ## Testing
@@ -188,9 +188,9 @@ For testing with different databases:
 ```bash
 # SQLite (for testing)
 export CA_DATABASE_URL="sqlite:///./test.db"
-python migrate.py upgrade
+uv run --directory service python migrate.py upgrade
 
 # PostgreSQL (production)
 export CA_DATABASE_URL="postgresql://user:pass@localhost:5432/climate_advisor"
-python migrate.py upgrade
+uv run --directory service python migrate.py upgrade
 ```

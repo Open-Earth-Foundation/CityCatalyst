@@ -4,11 +4,12 @@
 
 | Block        | Sub-feature                                    | Status                                           |
 | ------------ | ---------------------------------------------- | ------------------------------------------------ |
-| Hard Filter  | Exclusion by `action_id`                       | Partially implemented (resolver is a stub, so no actions are excluded from free text yet) |
+| Exclusion Preview | Sector, co-benefit, and guarded free-text proposal | Implemented |
+| Hard Filter  | Confirmed exclusion by `action_id`             | Implemented                                      |
 | Hard Filter  | Legal requirement check                        | Implemented                                      |
 | Impact       | GPC reference evidence collection              | Implemented                                      |
 | Impact       | Activity relevance × reduction band × timeline | Implemented                                      |
-| Alignment    | Policy + sector + other components             | Implemented (`other` currently stubbed as `0.0`) |
+| Alignment    | Policy + sector + other components             | Implemented (`other` uses direct co-benefit selections plus normalized selected co-benefit scoring) |
 | Feasibility  | Soft legal + socio-economic weighted component | Implemented                                      |
 | Weighted Sum | Weighted aggregation, sort, rank, `top_n`      | Implemented                                      |
 
@@ -18,7 +19,7 @@
 
 This block removes actions that are not eligible before any scoring happens. It applies two binary checks:
 
-1. Explicit city exclusions
+1. Confirmed city exclusions
 2. Hard legal requirements (must be satisfied, otherwise remove)
 
 Biome filtering is intentionally not included yet.
@@ -27,9 +28,9 @@ Biome filtering is intentionally not included yet.
 
 - **All mitigation actions**
   - Source: `Action` (core actions list)
-- **City exclusions**
-  - Source: frontend request `excludedActionsFreeText`
-  - Current behavior: `_resolve_excluded_action_ids_from_text(...)` is a stub that always returns an empty set, so no action is excluded by free text yet
+- **Confirmed city exclusions**
+  - Source: caller request `excludedActionIds[]`, usually confirmed after `POST /v1/prioritize/exclusions/preview`
+  - Current behavior: each matching `action_id` is discarded before legal filtering
 - **Hard legal requirements per action**
   - Source: legal requirements client payload (mock/API), filtered to hard strengths (`mandatory|required`)
 
@@ -43,8 +44,7 @@ Biome filtering is intentionally not included yet.
 ```mermaid
 graph TD
   ActionTbl[(Action)]
-  FreeText[(Frontend excludedActionsFreeText)]
-  ExclResolver[Stub resolver: excluded action IDs = empty set]
+  Confirmed[(Frontend excludedActionIds)]
   ReqTbl[(ActionLegalRequirement<br/>strength = hard)]
   SigTbl[(LegalSignal<br/>scoped to city or CL)]
 
@@ -56,8 +56,7 @@ graph TD
   Valid[Valid Actions for Scoring]
 
   ActionTbl --> Excl
-  FreeText -.-> ExclResolver
-  ExclResolver -.-> Excl
+  Confirmed -.-> Excl
 
   Excl -- Yes --> DiscardExcl
   Excl -- No --> Legal
@@ -82,7 +81,7 @@ It combines:
 ### Inputs (and where they come from)
 
 - City emissions, activity-level
-  - Source: frontend request `requestData.cityDataList[].cityEmissionsData.gpcData[*].activities[*].totalEmissions`
+  - Source: caller request `requestData.cityDataList[].cityEmissionsData.gpcData[*].activities[*].totalEmissions`
 - Action to activity targeting (`gpc_ref` mapping)
   - Source: `Action.emissions`
 - Reduction potential band
@@ -97,7 +96,7 @@ It combines:
 - Impact scores per action
   - Output: `Impact Scores` (one score per action, used in final ranking)
 - Optional trace fields
-  - Output: `Impact Evidence` (top contributing activities and multipliers)
+  - Output: `Impact Evidence` (top contributing subsectors and multipliers)
 
 Canonical score policy:
 
@@ -105,11 +104,15 @@ Canonical score policy:
 - Canonical score formula:
   - `IMPACT_SCORE = (IMPACT_WEIGHT_REDUCTION_SHARE * reduction_component) + (IMPACT_WEIGHT_TIMELINE * timeline_component)`
 - No run-relative max-normalization is applied.
+- Negative `V.*` AFOLU inventory values remain valid input data, but Impact only scores reducible emissions.
+  - Subsector matching for Impact uses strictly positive city emissions only.
+  - The reduction denominator also sums strictly positive city emissions only.
+  - This is intentional: existing removals are treated as valid inventory context, not as emissions that an action can reduce further.
 
 Current implementation detail:
 
 - `impact_block_score = (0.80 × reduction_share_of_city_emissions) + (0.20 × timeline_score)`
-- `reduction_share_of_city_emissions` is computed from matched action `gpc_reference_number` keys only.
+- `reduction_share_of_city_emissions` is computed from matched action `sector.subsector` keys.
 
 ```mermaid
 graph TD
@@ -150,7 +153,7 @@ Alignment answers: **Does this action align with what the city and policy enviro
 It combines:
 
 - Policy signals (supports, targets, funds, constrains)
-- City strategic preferences (priority sectors and political priorities)
+- City strategic preferences (priority sectors, timeframe preferences, and political priorities)
 
 Exclusions are handled in the Hard Filter stage, so Alignment only scores eligible actions.
 
@@ -159,9 +162,13 @@ Exclusions are handled in the Hard Filter stage, so Alignment only scores eligib
 - Policy support score and signals
   - Source: `actions_policy_signals_api_mock.json` (`policy_support_score`, `policy_signals[]`)
 - City strategic preference sectors
-  - Source: frontend request `cityStrategicPreferenceSectors`
-- City strategic preference other text (currently stubbed as `0.0`)
-  - Source: frontend request `cityStrategicPreferenceOther`
+  - Source: caller request `cityStrategicPreferenceSectors`
+- City strategic preference timeframes
+  - Source: caller request `cityStrategicPreferenceTimeframes`
+- Action implementation timeline
+  - Source: `Action.timelineForImplementation`
+- City strategic preference co-benefit keys
+  - Source: caller request `cityStrategicPreferenceCoBenefitKeys`, validated against the allowed co-benefit taxonomy
 - Action sector mapping for city preference overlap
   - Source: `Action.emissions["sector_number"]`
 - Candidate actions (already hard-filtered)
@@ -172,7 +179,7 @@ Exclusions are handled in the Hard Filter stage, so Alignment only scores eligib
 - Alignment scores per action
   - Output: `Alignment Scores` (one score per action, used in final ranking)
 - Optional trace fields
-  - Output: `Alignment Evidence` (component values, weights, contributions, sector diagnostics, policy summaries)
+  - Output: `Alignment Evidence` (component values, weights, contributions, sector diagnostics, timeframe diagnostics, policy summaries, resolved preferred co-benefits, unmappable fragments, matched preferred co-benefits, mapping source/model)
 
 ```mermaid
 graph TD
@@ -231,12 +238,6 @@ Hard legal requirements are enforced in the Hard Filter stage.
   - Source: `Action.socioeconomic_indicators` (`indicator_key`, `direction`, `weight`, `rationale`)
 - Candidate actions (already hard-filtered)
   - Source: `Valid Actions for Scoring`
-
-Known mock-data limitation:
-
-- City indicators currently expose keys including `transport_logistics_employment` and `electricity_access`.
-- Action socioeconomic rules in `actions_api_mock_v2.json` currently include `employment_in_transport_and_logistics` and `electricity_access_rate`.
-- Without key aliasing/normalization, these rule keys miss city bucket lookup and produce zero contribution for those indicators.
 
 ### Outputs
 
@@ -297,7 +298,7 @@ This step combines the three pillar scores into a single ranking score and produ
 ### Outputs
 
 - Final prioritized action list
-  - Output: `ranked_action_ids` plus `ranked_actions[]` payload items containing `rank`, pillar scores, final score, compact `evidence_summary`, and `explanation` placeholder
+  - Output: `ranked_action_ids` plus `ranked_actions[]` payload items containing `rank`, pillar scores, final score, compact `evidence_summary`, and optional `explanation`
 
 ```mermaid
 graph TD

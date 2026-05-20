@@ -7,7 +7,7 @@ generates embeddings using OpenAI, and stores everything in a PostgreSQL
 database with pgvector support.
 
 USAGE:
-    python upload_to_db.py [OPTIONS]
+    uv run python vector_db/upload_to_db.py [OPTIONS]
 
 OPTIONS:
     --directory PATH    Directory containing PDF files (default: files)
@@ -15,13 +15,13 @@ OPTIONS:
 
 EXAMPLES:
     # Process all PDFs in the default 'files' directory
-    python upload_to_db.py
+    uv run python vector_db/upload_to_db.py
 
     # Process PDFs from a specific directory
-    python upload_to_db.py --directory /path/to/pdfs
+    uv run python vector_db/upload_to_db.py --directory /path/to/pdfs
 
     # Show help
-    python upload_to_db.py --help
+    uv run python vector_db/upload_to_db.py --help
 
 PREREQUISITES:
     1. PostgreSQL database with pgvector extension installed
@@ -29,8 +29,8 @@ PREREQUISITES:
        - CA_DATABASE_URL: PostgreSQL connection string
        - OPENAI_API_KEY: OpenAI API key for embeddings
 
-    3. Required Python packages installed (run in climate-advisor/service/):
-       pip install -r requirements.txt
+    3. Required Python packages installed:
+       uv sync --locked
 
 CONFIGURATION:
     Configuration parameters are defined in embedding_config.yml:

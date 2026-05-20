@@ -237,10 +237,10 @@
     "plan": "Planificar",
     "implement": "Implementar",
     "monitor-evaluate-&-report": "Monitorear, Evaluar e Informar",
-    "assess-&-analyze-description": "Apoyar a las ciudades en la creación de una sólida base de evidencia para entender su impacto climático y vulnerabilidades. Esta fase se centra en evaluar las emisiones y los riesgos climáticos para establecer la base para una planificación efectiva.",
-    "plan-description": "Habilitar a las ciudades para pasar de la comprensión a la estrategia. Esta fase apoya la planificación de acciones y alinea los esfuerzos con las oportunidades de financiación disponibles.",
-    "implement-description": "Apoyar a las ciudades en la transición de los planes a la financiación y ejecución. Esta fase garantiza que las ideas se conviertan en proyectos financiados alineados con los objetivos de la ciudad y los mecanismos de financiación.",
-    "monitor-evaluate-&-report-description": "Apoyar a las ciudades en la transición de los planes a la financiación y ejecución. Esta fase garantiza que las ideas se conviertan en proyectos financiados alineados con los objetivos de la ciudad y los mecanismos de financiación.",
+    "assess-&-analyze-description": "Estas herramientas le permiten medir con precisión las emisiones de carbono de su ciudad, construyendo una base sólida de evidencia que facilite una toma de decisiones informada. Esta base respalda una planificación eficaz de adaptación y mitigación, ajustada a los desafíos específicos de su ciudad.",
+    "plan-description": "Estas herramientas le permiten transformar la evaluación de su ciudad en estrategias efectivas. Creará un plan que alinee sus proyectos con las oportunidades de financiación disponibles para lograr el máximo impacto.",
+    "implement-description": "Estas herramientas le ayudan a implementar su plan mediante el desarrollo de proyectos accionables alineados con los objetivos de su ciudad y los mecanismos de financiación, garantizando una ejecución fluida.",
+    "monitor-evaluate-&-report-description": "Estas herramientas le permiten monitorear su implementación de manera efectiva. Podrá evaluar e informar el progreso de su ciudad, asegurando un seguimiento fluido y transparente en cada etapa.",
     "GHGI": "Inventarios de GEI",
     "HIAP": "Acciones y Planes",
     "your-city-dashboard": "El panel de control de tu ciudad"
@@ -300,5 +300,8 @@
   "status-early-access": "Acceso Anticipado",
   "status-beta": "Beta",
   "status-active": "Activo",
-  "legend": "Leyenda"
+  "legend": "Leyenda",
+  "citycatalyst": "CityCatalyst",
+  "breadcrumb-hiap": "Actions & Plans",
+  "start-here": "Empieza aquí"
 }

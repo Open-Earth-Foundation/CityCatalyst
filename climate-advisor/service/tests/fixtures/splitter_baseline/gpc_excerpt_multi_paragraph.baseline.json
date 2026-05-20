@@ -1,0 +1,79 @@
+{
+  "fixture_name": "gpc_excerpt_multi_paragraph",
+  "chunk_size": 2000,
+  "chunk_overlap": 200,
+  "min_chunk_chars": 50,
+  "tokenizer": {
+    "model": "text-embedding-3-large",
+    "fallback_encoding": "cl100k_base"
+  },
+  "input_metrics": {
+    "char_count": 5290,
+    "cleaned_char_count": 5282,
+    "paragraph_count": 8,
+    "line_count": 15
+  },
+  "output_metrics": {
+    "chunk_count": 3,
+    "char_min": 1575,
+    "char_max": 1948,
+    "char_mean": 1791.0,
+    "char_p50": 1850.0,
+    "char_p95": 1938.2,
+    "token_min": 276,
+    "token_max": 344,
+    "token_mean": 318.6666666666667,
+    "token_p50": 336.0,
+    "token_p95": 343.2,
+    "over_limit_chunk_count": 0,
+    "filtered_short_chunk_count": 0,
+    "mid_word_start_count": 0,
+    "mid_sentence_start_count": 0,
+    "paragraph_boundary_start_count": 1,
+    "line_boundary_start_count": 1
+  },
+  "overlap_metrics": {
+    "pair_count": 2,
+    "shared_prefix_suffix_char_min": 0,
+    "shared_prefix_suffix_char_max": 91,
+    "shared_prefix_suffix_char_mean": 45.5
+  },
+  "chunks": [
+    {
+      "index": 0,
+      "start_index": 0,
+      "char_count": 1948,
+      "token_count": 344,
+      "sha256": "572792738b50bbae1414804f78319c06dfe766961d8fd5a171e007e498220ce1",
+      "starts_at_paragraph_boundary": true,
+      "starts_at_line_boundary": true,
+      "starts_mid_sentence": false,
+      "starts_mid_word": false,
+      "preview": "Cities are the global centers of communication, commerce and culture. They are also a significant, and growing, source of energy consumption and greenhouse gas "
+    },
+    {
+      "index": 1,
+      "start_index": 1857,
+      "char_count": 1850,
+      "token_count": 336,
+      "sha256": "f19a4c1d3f4c8475a903e5a21622e0fc024b0ddc56ccab4c43a030f185d973ff",
+      "starts_at_paragraph_boundary": false,
+      "starts_at_line_boundary": false,
+      "starts_mid_sentence": false,
+      "starts_mid_word": false,
+      "preview": ". The other categorizes all emissions into scopes, depending on where they physically occur. Separate accounting of emissions physically released within the cit"
+    },
+    {
+      "index": 2,
+      "start_index": 3707,
+      "char_count": 1575,
+      "token_count": 276,
+      "sha256": "e58e08e3300db746a6e3cc6f122c86336eeac6d8dc2e5d5159a824b34b7f2b7e",
+      "starts_at_paragraph_boundary": false,
+      "starts_at_line_boundary": false,
+      "starts_mid_sentence": false,
+      "starts_mid_word": false,
+      "preview": ". Aggregation of multiple city inventories can be accomplished by combining the scope 1 territorial emissions of cities whose inventory boundaries do not overla"
+    }
+  ]
+}

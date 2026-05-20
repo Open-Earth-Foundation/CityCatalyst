@@ -8,20 +8,29 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-from app.services.action_legal_assessments_api import ActionLegalAssessmentsApiService
+from app.services.action_legal_assessments_api import (
+    ActionLegalAssessmentsApiService,
+    LEGAL_ASSESSMENTS_ENDPOINT_TEMPLATE,
+)
+from app.services.action_policy_scores_api import (
+    ACTION_POLICY_SCORES_ENDPOINT_TEMPLATE,
+    ActionPolicyScoresApiService,
+)
 from app.services.city_attributes_api import CityAttributesApiService
 from app.modules.prioritizer.internal_models import (
     Action,
+    ActionPolicyScoreRecord,
+    ActionPolicyScoresFetchResult,
     CityData,
     LegalAssessmentRecord,
 )
 from app.modules.prioritizer.models import (
-    ActionsPolicySignalsApiResponse,
+    ActionPolicyScoreApiItem,
+    ActionPolicyScoresApiResponse,
     CityApiResponse,
     ActionsApiResponse,
     ActionLegalAssessmentApiItem,
     CitiesApiResponse,
-    PolicySignalByAction,
 )
 
 logger = logging.getLogger(__name__)
@@ -77,34 +86,9 @@ def describe_legal_data_source(
         source_metadata["upstream_url"] = service._build_legal_assessments_url(
             normalized_country_code
         )
-        source_metadata["upstream_endpoint"] = (
-            "GET /api/v1/action-legal-assessments?countryCode={country_code}"
-        )
+        source_metadata["upstream_endpoint"] = LEGAL_ASSESSMENTS_ENDPOINT_TEMPLATE
     return {
         "source": "action_legal_assessments_api",
-        "source_metadata": source_metadata,
-    }
-
-
-def describe_policy_signals_data_source(
-    client: MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient,
-    *,
-    locode: str,
-) -> dict[str, object]:
-    """Return artifact-friendly source metadata for the configured policy client."""
-    normalized_locode = locode.strip().upper()
-    if isinstance(client, MockPolicySignalsDataApiClient):
-        source_metadata = _base_source_metadata()
-        source_metadata["mock_file_path"] = str(client.mock_file_path)
-        source_metadata["requested_locode"] = normalized_locode
-        return {
-            "source": "mock_policy_signals_api",
-            "source_metadata": source_metadata,
-        }
-    source_metadata = _base_source_metadata()
-    source_metadata["requested_locode"] = normalized_locode
-    return {
-        "source": "policy_signals_api",
         "source_metadata": source_metadata,
     }
 
@@ -268,21 +252,70 @@ class MockLegalDataApiClient:
         return assessments_by_action_id
 
 
+def _map_action_policy_score_item(
+    *,
+    score: ActionPolicyScoreApiItem,
+    source_metadata: dict[str, object],
+) -> ActionPolicyScoreRecord:
+    """Map one upstream policy score item into the internal action-keyed record."""
+    score_raw = score.model_dump(mode="json")
+    return ActionPolicyScoreRecord.model_validate(
+        {
+            "action_id": score.src_action_id,
+            "policy_support_score": score.policy_support_score,
+            "policy_support_category": score.policy_support_category,
+            "best_relevance": score.best_relevance,
+            "n_findings": score.n_findings,
+            "n_docs": score.n_docs,
+            "sum_strength": score.sum_strength,
+            "policy_evidence": [
+                evidence.model_dump(mode="json") for evidence in score.policy_evidence
+            ],
+            "raw": score_raw,
+            "source_metadata": source_metadata,
+        }
+    )
+
+
 @dataclass
-class MockPolicySignalsDataApiClient:
-    """File-backed policy-signal client loading checked-in mock payload."""
+class MockActionPolicyScoresDataApiClient:
+    """File-backed action policy scores client loading checked-in mock payload."""
 
     mock_file_path: Path
 
-    def get_action_policy_signals(self, locode: str) -> dict[str, PolicySignalByAction]:
-        """Load policy support signals grouped by action ID."""
-        _ = locode  # Locode is unused because mock policy payload is city-agnostic.
+    def get_action_policy_scores(
+        self, locode: str
+    ) -> ActionPolicyScoresFetchResult:
+        """Load action policy scores grouped by action ID."""
         payload = json.loads(self.mock_file_path.read_text(encoding="utf-8"))
-        response = ActionsPolicySignalsApiResponse.model_validate(payload)
-        return {
-            signal_by_action.action_id: signal_by_action
-            for signal_by_action in response.policy_signals
+        response = ActionPolicyScoresApiResponse.model_validate(payload)
+        requested_locode = locode.strip().upper()
+        response_meta = response.meta.model_dump(mode="json")
+        source_metadata = {
+            **_base_source_metadata(),
+            "mock_file_path": str(self.mock_file_path),
+            "requested_locode": requested_locode,
+            "upstream_endpoint": ACTION_POLICY_SCORES_ENDPOINT_TEMPLATE,
+            "upstream_generated_at_utc": response.meta.generated_at_utc,
         }
+        scores_by_action_id: dict[str, ActionPolicyScoreRecord] = {}
+        for score in response.scores:
+            action_id = score.src_action_id
+            if action_id in scores_by_action_id:
+                raise ValueError(
+                    "Mock action policy scores payload contains duplicate "
+                    f"src_action_id values for locode={requested_locode}"
+                )
+            scores_by_action_id[action_id] = _map_action_policy_score_item(
+                score=score,
+                source_metadata=source_metadata,
+            )
+        return ActionPolicyScoresFetchResult(
+            scores_by_action_id=scores_by_action_id,
+            source_metadata=source_metadata,
+            upstream_meta=response_meta,
+            warning=None,
+        )
 
 
 class ApiLegalDataApiClient:
@@ -301,20 +334,18 @@ class ApiLegalDataApiClient:
         return self._service.get_assessments_by_action_id(country_code)
 
 
-class ApiPolicySignalsDataApiClient:
-    """
-    Placeholder policy-signals client for future upstream HTTP integration.
+class ApiActionPolicyScoresDataApiClient:
+    """API-backed policy client using the upstream action policy scores service."""
 
-    Current behavior fails fast until real HTTP integration is implemented.
-    """
+    def __init__(self, service: ActionPolicyScoresApiService | None = None) -> None:
+        """Create the policy API client with a small synchronous service wrapper."""
+        self._service = service or ActionPolicyScoresApiService()
 
-    def get_action_policy_signals(self, locode: str) -> dict[str, PolicySignalByAction]:
-        """Raise until policy signals API integration is implemented."""
-        del locode
-        raise NotImplementedError(
-            "ApiPolicySignalsDataApiClient is not implemented yet. "
-            "Set HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE=mock for local runs."
-        )
+    def get_action_policy_scores(
+        self, locode: str
+    ) -> ActionPolicyScoresFetchResult:
+        """Fetch city-scoped action policy scores from the upstream policy API."""
+        return self._service.get_scores_by_action_id(locode)
 
 
 class ApiActionDataApiClient:
@@ -369,12 +400,15 @@ _default_mock_legal_client = MockLegalDataApiClient(
     / "mock"
     / "actions_legal_api_mock.json"
 )
-_default_api_policy_signals_client = ApiPolicySignalsDataApiClient()
-_default_mock_policy_signals_client = MockPolicySignalsDataApiClient(
-    mock_file_path=Path(__file__).resolve().parents[2]
+_default_action_policy_scores_mock_file_path = (
+    Path(__file__).resolve().parents[2]
     / "data"
     / "mock"
-    / "actions_policy_signals_api_mock.json"
+    / "action_policy_scores_api_mock.json"
+)
+_default_api_action_policy_scores_client = ApiActionPolicyScoresDataApiClient()
+_default_mock_action_policy_scores_client = MockActionPolicyScoresDataApiClient(
+    mock_file_path=_default_action_policy_scores_mock_file_path
 )
 
 
@@ -440,24 +474,24 @@ def get_legal_data_api_client() -> MockLegalDataApiClient | ApiLegalDataApiClien
     return _default_mock_legal_client
 
 
-def get_policy_signals_data_api_client() -> (
-    MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
+def get_action_policy_scores_data_api_client() -> (
+    MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
 ):
-    """FastAPI dependency provider for policy signals client."""
-    source = os.getenv("HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE", "mock").strip().lower()
+    """FastAPI dependency provider for action policy scores client."""
+    source = os.getenv("HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE", "api").strip().lower()
     if source == "api":
-        return _default_api_policy_signals_client
+        return _default_api_action_policy_scores_client
 
-    if not _default_mock_policy_signals_client.mock_file_path.exists():
+    if not _default_action_policy_scores_mock_file_path.exists():
         logger.warning(
-            "Mock policy signals file not found at `%s`; using API policy signals client",
-            _default_mock_policy_signals_client.mock_file_path,
+            "Mock action policy scores file not found at `%s`; using API action policy scores client",
+            _default_action_policy_scores_mock_file_path,
         )
-        return _default_api_policy_signals_client
+        return _default_api_action_policy_scores_client
 
     if source not in {"mock", "api"}:
         logger.warning(
-            "Unknown HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE=`%s`; using mock policy signals client",
+            "Unknown HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE=`%s`; using mock action policy scores client",
             source,
         )
-    return _default_mock_policy_signals_client
+    return _default_mock_action_policy_scores_client

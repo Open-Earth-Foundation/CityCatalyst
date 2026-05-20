@@ -43,7 +43,7 @@ UPSTREAM_HTTP_MAX_RETRIES=2
 UPSTREAM_HTTP_RETRY_BACKOFF_SECONDS=0.5
 HIAP_MEED_LEGAL_DATA_SOURCE=api
 HIAP_MEED_ACTION_DATA_SOURCE=mock
-HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE=mock
+HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE=api
 HIAP_MEED_TOP_N=20
 ACTIVITY_DATA_LEVEL_MAPPING=false
 HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL=
@@ -64,14 +64,14 @@ Variables:
 - `LOG_LEVEL`: Python logging level (for example `DEBUG`, `INFO`)
 - `LOG_DIR`: output folder for file logs and request artifacts
 - `ARTIFACT_LOG_JSONL`: if `true`, writes per-request artifact files
-- `HIAP_MEED_CITY_DATA_SOURCE`: city input source (`mock` or `api`)
+- `HIAP_MEED_CITY_DATA_SOURCE`: city input source (`api` or `mock`)
 - `CCGLOBAL_API_BASE_URL`: shared Global API base host for upstream API-backed clients (default `https://ccglobal.openearth.dev` for local/dev)
 - `UPSTREAM_HTTP_TIMEOUT_SECONDS`: shared timeout in seconds for upstream HTTP API calls (default `30`)
 - `UPSTREAM_HTTP_MAX_RETRIES`: shared retry count for transient upstream HTTP failures (default `2`)
 - `UPSTREAM_HTTP_RETRY_BACKOFF_SECONDS`: fixed sleep between upstream HTTP retry attempts (default `0.5`)
-- `HIAP_MEED_LEGAL_DATA_SOURCE`: legal input source (`mock` or `api`)
-- `HIAP_MEED_ACTION_DATA_SOURCE`: action catalog source (`mock` or `api`)
-- `HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE`: policy-signal input source (`mock` or `api`)
+- `HIAP_MEED_LEGAL_DATA_SOURCE`: legal input source (`api` or `mock`)
+- `HIAP_MEED_ACTION_DATA_SOURCE`: action catalog source (`api` or `mock`)
+- `HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE`: action policy scores input source (`api` or `mock`)
 - `HIAP_MEED_TOP_N`: default number of ranked actions to return per city (default `20`)
 - `ACTIVITY_DATA_LEVEL_MAPPING`: guarded future Impact mapping switch; `false` keeps true subsector-only matching, `true` calls the current stub and still returns subsector-only results
 - `HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL`: OpenAI model used only by the deprecated legacy free-text co-benefit mapping helper
@@ -120,7 +120,7 @@ Key models:
 - Global city API response: `CityApiResponse`
 - Global actions API response: `ActionsApiResponse`
 - Global legal assessment API row: `ActionLegalAssessmentApiItem`
-- Global policy alignment API response: `ActionsPolicySignalsApiResponse`
+- Global policy alignment API response: `ActionPolicyScoresApiResponse`
 
 Design note:
 
@@ -542,7 +542,7 @@ Typical per-request artifact events:
 
 - `fetch_city.completed`
 - `fetch_actions.completed`
-- `fetch_policy_signals.completed`
+- `fetch_action_policy_scores.completed`
 - `validate_weights.completed`
 - `hard_filter.completed`
 - `pillar_scores.completed`

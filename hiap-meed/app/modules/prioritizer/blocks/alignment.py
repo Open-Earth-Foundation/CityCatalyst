@@ -2,7 +2,7 @@
 Alignment block that scores how well each action matches city priorities.
 
 How the score is built (0..1):
-- Policy component: uses `policy_support_score` from policy signals.
+- Policy component: uses `policy_support_score` from action policy scores.
 - Sector component: checks whether the action's emissions sector overlaps with
   requested city preference sectors (`1.0` for overlap, else `0.0`).
 - Other-preference component: direct co-benefit selections from the request,
@@ -27,8 +27,11 @@ from app.modules.prioritizer.config import (
     ALIGNMENT_WEIGHT_TIMEFRAME,
     validate_block_component_weights,
 )
-from app.modules.prioritizer.internal_models import Action, BlockScoreResult
-from app.modules.prioritizer.models import PolicySignalByAction
+from app.modules.prioritizer.internal_models import (
+    Action,
+    ActionPolicyScoreRecord,
+    BlockScoreResult,
+)
 from app.modules.prioritizer.services import co_benefit_mapping
 from app.modules.prioritizer.utils.co_benefit_taxonomy import ALLOWED_CO_BENEFIT_KEYS
 from app.modules.prioritizer.utils.sector_mapping import (
@@ -223,7 +226,7 @@ def _build_selected_co_benefit_match_details(
 def run(
     actions: list[Action],
     *,
-    policy_signals_by_action_id: dict[str, PolicySignalByAction],
+    action_policy_scores_by_action_id: dict[str, ActionPolicyScoreRecord],
     city_preference_sectors: list[str],
     city_preference_timeframes: list[str],
     city_preference_co_benefit_keys: list[str],
@@ -233,7 +236,7 @@ def run(
 
     Inputs:
     - `actions`: Actions that passed hard filtering.
-    - `policy_signals_by_action_id`: Policy support scores and policy signal evidence.
+    - `action_policy_scores_by_action_id`: Policy support scores and evidence.
     - `city_preference_sectors`: City strategic sectors from request payload.
     - `city_preference_timeframes`: City strategic timeframe preferences from request.
     - `city_preference_co_benefit_keys`: Selected co-benefit preference keys.
@@ -258,13 +261,11 @@ def run(
     evidence_by_action_id: dict[str, dict[str, object]] = {}
 
     for action in actions:
-        # Block 2: Compute policy component from policy signals payload.
-        policy_payload = policy_signals_by_action_id.get(action.action_id)
+        # Block 2: Compute policy component from action policy scores payload.
+        policy_payload = action_policy_scores_by_action_id.get(action.action_id)
         policy_component_value = 0.0
-        policy_signals_count = 0
         if policy_payload is not None:
             policy_component_value = float(policy_payload.policy_support_score or 0.0)
-            policy_signals_count = len(policy_payload.policy_signals)
 
         # Block 3: Compute binary sector-match component from configured mapping.
         sector_number = str(action.emissions.get("sector_number", "")).strip().upper()
@@ -356,23 +357,33 @@ def run(
             "sector_match_label": (
                 "match" if sector_component_value == 1.0 else "no_match"
             ),
-            "policy_signals_count": policy_signals_count,
-            "policy_support_score_present": policy_payload is not None
+            "policy_score_present": policy_payload is not None
             and policy_payload.policy_support_score is not None,
-            "policy_signal_summaries": (
-                [
-                    {
-                        "signal_type": signal.signal_type,
-                        "signal_relation": signal.signal_relation,
-                        "signal_strength": signal.signal_strength,
-                        "location_scope": signal.location_scope,
-                        "location_name": signal.location_name,
-                        "evidence_count": signal.evidence_count,
-                    }
-                    for signal in policy_payload.policy_signals
-                ]
+            "policy_support_score": (
+                policy_payload.policy_support_score
                 if policy_payload is not None
-                else []
+                else None
+            ),
+            "policy_support_category": (
+                policy_payload.policy_support_category
+                if policy_payload is not None
+                else None
+            ),
+            "best_relevance": (
+                policy_payload.best_relevance if policy_payload is not None else None
+            ),
+            "n_findings": (
+                policy_payload.n_findings if policy_payload is not None else None
+            ),
+            "n_docs": policy_payload.n_docs if policy_payload is not None else None,
+            "sum_strength": (
+                policy_payload.sum_strength if policy_payload is not None else None
+            ),
+            "policy_evidence": (
+                policy_payload.policy_evidence if policy_payload is not None else []
+            ),
+            "policy_source_metadata": (
+                policy_payload.source_metadata if policy_payload is not None else {}
             ),
         }
         score_by_action_id[action.action_id] = alignment_score

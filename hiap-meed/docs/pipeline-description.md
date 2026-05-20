@@ -258,16 +258,16 @@ What these are used for:
 - `verdictCategory` drives the Hard Filter.
 - `verdictScore` drives the legal half of the Feasibility block.
 
-### Policy signals data
+### Action policy scores data
 
 File:
 
-- `data/mock/actions_policy_signals_api_mock.json`
+- `data/mock/action_policy_scores_api_mock.json`
 
 Fields that affect the result:
 
-- `policy_signals[].action_id`
-- `policy_signals[].policy_support_score`
+- `scores[].src_action_id`
+- `scores[].policy_support_score`
 
 What these are used for:
 
@@ -276,7 +276,7 @@ What these are used for:
 Important note:
 
 - `hiap-meed` does not currently calculate `policy_support_score` itself.
-- It uses the already prepared value from the policy signals data as an input.
+- It uses the already prepared value from the action policy scores data as an input.
 
 ## 2. End-to-End Service Summary
 
@@ -287,7 +287,7 @@ For one city, the service now works in this order:
 3. Call the ranking endpoint with confirmed `excludedActionIds[]`.
 4. Read the requested number of results (`topN`) and the final scoring weights.
 5. Build city emissions totals from the caller request.
-6. Load city context, actions, legal assessments, and policy signals.
+6. Load city context, actions, legal assessments, and action policy scores.
 7. Apply the Hard Filter to remove confirmed exclusions and legally blocked actions.
 8. Score the remaining actions for Impact.
 9. Score the remaining actions for Alignment.
@@ -689,10 +689,10 @@ From the action catalog:
 - `actions[].timelineForImplementation`
 - `actions[].coBenefits`
 
-From the policy signals file:
+From the action policy scores file:
 
-- `policy_signals[].action_id`
-- `policy_signals[].policy_support_score`
+- `scores[].src_action_id`
+- `scores[].policy_support_score`
 
 ### 6.2 Logic
 
@@ -719,7 +719,7 @@ or 0.0 if no score is available
 Important detail:
 
 - `hiap-meed` does not calculate this score itself.
-- It uses the already prepared value from the policy signals data directly.
+- It uses the already prepared value from the action policy scores data directly.
 
 #### Part B: match to the city's preferred sectors
 
@@ -867,9 +867,8 @@ Key evidence fields:
 - `action_timeframe_label`
 - `action_timeline_known`
 - `sector_match`
-- `policy_signals_count`
-- `policy_support_score_present`
-- `policy_signal_summaries`
+- `policy_score_present`
+- `policy_evidence`
 
 ## 7. Feasibility Block
 

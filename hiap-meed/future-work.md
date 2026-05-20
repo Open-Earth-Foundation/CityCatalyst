@@ -53,7 +53,7 @@ Source: Notion "How Legal Signals, Policy Signals, and Socioeconomic Indicators 
   - `hiap-meed/app/services/data_clients.py`
     - `ApiCityDataApiClient.get_city(locode)`
     - `ApiActionDataApiClient.list_actions()`
-    - `ApiPolicySignalsDataApiClient.get_action_policy_signals(locode)`
+    - action policy scores now use `ApiActionPolicyScoresDataApiClient.get_action_policy_scores(locode)`
 - **Notes**:
   - keep responses validated through Pydantic models in `app/modules/prioritizer/models.py`
   - define base URLs / auth via environment variables (avoid hardcoding)

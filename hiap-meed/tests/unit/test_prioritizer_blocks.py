@@ -25,7 +25,7 @@ from app.services.data_clients import (
     MockActionDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
-    MockPolicySignalsDataApiClient,
+    MockActionPolicyScoresDataApiClient,
 )
 
 
@@ -58,12 +58,12 @@ def _load_mock_legal_assessments() -> dict[str, object]:
     return legal_client.get_action_legal_assessments(country_code="CL")
 
 
-def _load_mock_policy_signals() -> dict[str, object]:
-    """Load policy support signals from the mock policy-signals payload."""
-    policy_client = MockPolicySignalsDataApiClient(
-        mock_file_path=_mock_data_dir() / "actions_policy_signals_api_mock.json"
+def _load_mock_action_policy_scores() -> dict[str, object]:
+    """Load action policy scores from the mock action policy scores payload."""
+    policy_client = MockActionPolicyScoresDataApiClient(
+        mock_file_path=_mock_data_dir() / "action_policy_scores_api_mock.json"
     )
-    return policy_client.get_action_policy_signals(locode="CL IQQ")
+    return policy_client.get_action_policy_scores(locode="CL IQQ").scores_by_action_id
 
 
 def _load_city_emissions_context() -> CityEmissionsContext:
@@ -91,7 +91,7 @@ def _alignment_timeframe_evidence(
                 implementation_timeline=action_timeline,
             )
         ],
-        policy_signals_by_action_id={},
+        action_policy_scores_by_action_id={},
         city_preference_sectors=[],
         city_preference_timeframes=city_preference_timeframes,
         city_preference_co_benefit_keys=[],
@@ -506,11 +506,11 @@ def test_impact_block_stubbed_activity_mapping_keeps_same_scores(
 def test_alignment_block_with_mock_api_data() -> None:
     """Alignment block computes canonical weighted scores with policy and sectors."""
     actions = _load_mock_actions()
-    policy_signals = _load_mock_policy_signals()
+    action_policy_scores = _load_mock_action_policy_scores()
 
     result = alignment.run(
         actions=actions,
-        policy_signals_by_action_id=policy_signals,
+        action_policy_scores_by_action_id=action_policy_scores,
         city_preference_sectors=["stationary_energy", "transportation"],
         city_preference_timeframes=["no_preference"],
         city_preference_co_benefit_keys=["mobility"],
@@ -536,11 +536,11 @@ def test_alignment_block_with_mock_api_data() -> None:
 def test_alignment_other_preference_component_uses_selected_co_benefit_keys() -> None:
     """Alignment other-preference score reflects selected co-benefit impacts."""
     actions = _load_mock_actions()
-    policy_signals = _load_mock_policy_signals()
+    action_policy_scores = _load_mock_action_policy_scores()
 
     result = alignment.run(
         actions=actions,
-        policy_signals_by_action_id=policy_signals,
+        action_policy_scores_by_action_id=action_policy_scores,
         city_preference_sectors=["stationary_energy", "transportation"],
         city_preference_timeframes=["no_preference"],
         city_preference_co_benefit_keys=["air_quality", "housing"],
@@ -563,11 +563,11 @@ def test_alignment_other_preference_component_uses_selected_co_benefit_keys() ->
 def test_alignment_other_preference_component_is_neutral_without_selected_keys() -> None:
     """Alignment keeps the other-preference component neutral without selections."""
     actions = _load_mock_actions()
-    policy_signals = _load_mock_policy_signals()
+    action_policy_scores = _load_mock_action_policy_scores()
 
     result = alignment.run(
         actions=actions,
-        policy_signals_by_action_id=policy_signals,
+        action_policy_scores_by_action_id=action_policy_scores,
         city_preference_sectors=["stationary_energy", "transportation"],
         city_preference_timeframes=["no_preference"],
         city_preference_co_benefit_keys=[],
@@ -590,7 +590,7 @@ def test_alignment_selected_co_benefit_evidence_marks_missing_entry_as_neutral()
                 co_benefits={},
             )
         ],
-        policy_signals_by_action_id={},
+        action_policy_scores_by_action_id={},
         city_preference_sectors=[],
         city_preference_timeframes=[],
         city_preference_co_benefit_keys=["air_quality"],
@@ -624,7 +624,7 @@ def test_alignment_selected_co_benefit_evidence_marks_missing_numeric_as_neutral
                 },
             )
         ],
-        policy_signals_by_action_id={},
+        action_policy_scores_by_action_id={},
         city_preference_sectors=[],
         city_preference_timeframes=[],
         city_preference_co_benefit_keys=["air_quality"],
@@ -659,7 +659,7 @@ def test_alignment_selected_co_benefit_evidence_marks_real_value_source() -> Non
                 },
             )
         ],
-        policy_signals_by_action_id={},
+        action_policy_scores_by_action_id={},
         city_preference_sectors=[],
         city_preference_timeframes=[],
         city_preference_co_benefit_keys=["air_quality"],

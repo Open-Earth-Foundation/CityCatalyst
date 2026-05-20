@@ -17,10 +17,11 @@ from app.modules.prioritizer.api import (
     get_action_data_api_client,
     get_city_data_api_client,
     get_legal_data_api_client,
-    get_policy_signals_data_api_client,
+    get_action_policy_scores_data_api_client,
 )
 from app.modules.prioritizer.internal_models import (
     Action,
+    ActionPolicyScoresFetchResult,
     CityData,
     LegalAssessmentRecord,
 )
@@ -66,15 +67,17 @@ class MockLegalDataApiClient:
 
 
 @dataclass
-class MockPolicySignalsDataApiClient:
-    """In-memory policy signal client for alignment integration tests."""
+class MockActionPolicyScoresDataApiClient:
+    """In-memory action policy score client for alignment integration tests."""
 
-    policy_signals_by_action_id: dict[str, object]
+    action_policy_scores_by_action_id: dict[str, object]
 
-    def get_action_policy_signals(self, locode: str) -> dict[str, object]:
-        """Return policy support signals for the requested city test case."""
+    def get_action_policy_scores(self, locode: str) -> ActionPolicyScoresFetchResult:
+        """Return action policy scores for the requested city test case."""
         del locode
-        return dict(self.policy_signals_by_action_id)
+        return ActionPolicyScoresFetchResult(
+            scores_by_action_id=dict(self.action_policy_scores_by_action_id)
+        )
 
 
 @dataclass
@@ -183,12 +186,12 @@ def test_prioritize_rejects_invalid_weights_override(
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -245,12 +248,12 @@ def test_prioritize_returns_404_when_upstream_city_is_missing() -> None:
     )
     mock_action_client = MockActionDataApiClient(actions=[])
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -306,12 +309,12 @@ def test_prioritize_returns_503_for_retryable_upstream_city_failure() -> None:
     )
     mock_action_client = MockActionDataApiClient(actions=[])
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -393,12 +396,12 @@ def test_prioritize_returns_502_for_upstream_city_schema_drift(
 
     mock_action_client = MockActionDataApiClient(actions=[])
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: ApiCityDataApiClient()
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -460,12 +463,12 @@ def test_prioritize_rejects_negative_non_afolu_total_emissions() -> None:
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -564,12 +567,12 @@ def test_prioritize_smoke() -> None:
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -808,12 +811,12 @@ def test_prioritize_honors_confirmed_excluded_action_ids() -> None:
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -879,12 +882,12 @@ def test_prioritize_rejects_no_preference_with_other_timeframes() -> None:
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -945,12 +948,12 @@ def test_prioritize_rejects_invalid_city_preference_sector_tag() -> None:
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -1008,12 +1011,12 @@ def test_prioritize_rejects_invalid_city_preference_co_benefit_key() -> None:
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -1082,12 +1085,12 @@ def test_prioritize_alignment_timeframe_multi_select_uses_best_match() -> None:
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -1175,12 +1178,12 @@ def test_prioritize_discards_hard_legal_mismatch() -> None:
     mock_legal_client = MockLegalDataApiClient(
         assessments_by_action_id=assessments_by_action_id
     )
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -1248,12 +1251,12 @@ def test_prioritize_keeps_missing_legal_category_and_uses_score() -> None:
     mock_legal_client = MockLegalDataApiClient(
         assessments_by_action_id=assessments_by_action_id
     )
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -1317,12 +1320,12 @@ def test_prioritize_rejects_country_code_mismatch_with_locode_prefix() -> None:
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=[])
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -1379,12 +1382,12 @@ def test_prioritize_returns_502_for_city_country_code_mismatch() -> None:
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=[])
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -1444,7 +1447,7 @@ def test_prioritize_skips_explanations_when_flag_false(
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
     mock_explanation_service = MockExplanationService(
         should_raise=True
     )
@@ -1452,7 +1455,7 @@ def test_prioritize_skips_explanations_when_flag_false(
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     monkeypatch.setattr(
@@ -1518,7 +1521,7 @@ def test_prioritize_generates_explanations_for_returned_top_n_only(
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
     mock_explanation_service = MockExplanationService(
         explanations_by_action_id={"A_top": "Top action explanation"}
     )
@@ -1526,7 +1529,7 @@ def test_prioritize_generates_explanations_for_returned_top_n_only(
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     monkeypatch.setattr(
@@ -1592,13 +1595,13 @@ def test_prioritize_fails_open_when_explanation_generation_errors(
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
     mock_explanation_service = MockExplanationService(should_raise=True)
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     monkeypatch.setattr(
@@ -1662,7 +1665,7 @@ def test_prioritize_logs_non_zero_explanation_elapsed_time(
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
     logged_completion_elapsed_seconds: list[float] = []
 
     def delayed_explanation_service(
@@ -1695,7 +1698,7 @@ def test_prioritize_logs_non_zero_explanation_elapsed_time(
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     monkeypatch.setattr(
@@ -1763,7 +1766,7 @@ def test_prioritize_returns_canonical_english_and_requested_translations(
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
     mock_explanation_service = MockExplanationService(
         explanations_by_action_id={"A_1": "English explanation"}
     )
@@ -1774,7 +1777,7 @@ def test_prioritize_returns_canonical_english_and_requested_translations(
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     monkeypatch.setattr(
@@ -1852,7 +1855,7 @@ def test_prioritize_reports_only_successfully_generated_languages(
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
-    mock_policy_client = MockPolicySignalsDataApiClient(policy_signals_by_action_id={})
+    mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
     mock_explanation_service = MockExplanationService(
         explanations_by_action_id={"A_1": "English explanation"}
     )
@@ -1861,7 +1864,7 @@ def test_prioritize_reports_only_successfully_generated_languages(
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     monkeypatch.setattr(

@@ -13,13 +13,13 @@ from app.modules.prioritizer.api import (
     get_action_data_api_client,
     get_city_data_api_client,
     get_legal_data_api_client,
-    get_policy_signals_data_api_client,
+    get_action_policy_scores_data_api_client,
 )
 from app.services.data_clients import (
     MockActionDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
-    MockPolicySignalsDataApiClient,
+    MockActionPolicyScoresDataApiClient,
 )
 
 
@@ -51,14 +51,14 @@ def test_prioritize_e2e_with_mock_api_payloads(
     mock_legal_client = MockLegalDataApiClient(
         mock_file_path=mock_data_dir / "actions_legal_api_mock.json"
     )
-    mock_policy_client = MockPolicySignalsDataApiClient(
-        mock_file_path=mock_data_dir / "actions_policy_signals_api_mock.json"
+    mock_policy_client = MockActionPolicyScoresDataApiClient(
+        mock_file_path=mock_data_dir / "action_policy_scores_api_mock.json"
     )
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -97,6 +97,14 @@ def test_prioritize_e2e_with_mock_api_payloads(
         assert ranked_actions[0]["explanations"] == {} or isinstance(
             ranked_actions[0]["explanations"], dict
         )
+        alignment_summary = ranked_actions[0]["evidence_summary"]["alignment"]
+        assert set(alignment_summary.keys()) == {
+            "alignment_score",
+            "policy_component_score",
+            "sector_component_score",
+            "co_benefit_component_score",
+            "timeframe_component_score",
+        }
 
         blocked_evidence = metadata["hard_filter_evidence_by_action_id"]["c40_0013"]
         missing_evidence = metadata["hard_filter_evidence_by_action_id"]["icare_0172"]
@@ -176,16 +184,16 @@ def test_prioritize_e2e_with_mock_api_payloads(
         fetch_policy_files = [
             file_name
             for file_name in generated_files
-            if file_name.endswith("_fetch_policy_signals.json")
+            if file_name.endswith("_fetch_action_policy_scores.json")
         ]
         assert len(fetch_policy_files) == 1
         fetch_policy_payload = json.loads(
             (run_dir / fetch_policy_files[0]).read_text("utf-8")
         )["payload"]
-        assert fetch_policy_payload["source"] == "mock_policy_signals_api"
+        assert fetch_policy_payload["source"] == "mock_action_policy_scores_api"
         assert fetch_policy_payload["source_metadata"]["requested_locode"] == "CL IQQ"
         assert fetch_policy_payload["source_metadata"]["mock_file_path"].endswith(
-            "actions_policy_signals_api_mock.json"
+            "action_policy_scores_api_mock.json"
         )
 
         response_full_payload = json.loads(
@@ -224,14 +232,14 @@ def test_prioritize_e2e_stubbed_activity_mapping_matches_disabled_mode(
     mock_legal_client = MockLegalDataApiClient(
         mock_file_path=mock_data_dir / "actions_legal_api_mock.json"
     )
-    mock_policy_client = MockPolicySignalsDataApiClient(
-        mock_file_path=mock_data_dir / "actions_policy_signals_api_mock.json"
+    mock_policy_client = MockActionPolicyScoresDataApiClient(
+        mock_file_path=mock_data_dir / "action_policy_scores_api_mock.json"
     )
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:

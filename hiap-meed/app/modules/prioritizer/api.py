@@ -34,15 +34,15 @@ from app.services.data_clients import (
     ApiActionDataApiClient,
     ApiCityDataApiClient,
     ApiLegalDataApiClient,
-    ApiPolicySignalsDataApiClient,
+    ApiActionPolicyScoresDataApiClient,
     MockActionDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
-    MockPolicySignalsDataApiClient,
+    MockActionPolicyScoresDataApiClient,
     get_action_data_api_client,
     get_city_data_api_client,
     get_legal_data_api_client,
-    get_policy_signals_data_api_client,
+    get_action_policy_scores_data_api_client,
 )
 from app.services.http_client import UpstreamApiError
 from app.utils.artifacts import ArtifactWriter
@@ -329,10 +329,10 @@ def prioritize(
     legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient = Depends(
         get_legal_data_api_client
     ),
-    policy_signals_data_api_client: (
-        MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
+    action_policy_scores_data_api_client: (
+        MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
     ) = Depends(
-        get_policy_signals_data_api_client
+        get_action_policy_scores_data_api_client
     ),
 ) -> PrioritizerApiResponse:
     """
@@ -370,7 +370,7 @@ def prioritize(
                 city_data_api_client=city_data_api_client,
                 action_data_api_client=action_data_api_client,
                 legal_data_api_client=legal_data_api_client,
-                policy_signals_data_api_client=policy_signals_data_api_client,
+                action_policy_scores_data_api_client=action_policy_scores_data_api_client,
                 create_explanations=request.requestData.createExplanations,
                 requested_languages=requested_languages,
             )
@@ -593,8 +593,8 @@ def _run_for_city_input(
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient,
     action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient,
     legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient,
-    policy_signals_data_api_client: (
-        MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
+    action_policy_scores_data_api_client: (
+        MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
     ),
     create_explanations: bool,
     requested_languages: list[str],
@@ -631,7 +631,7 @@ def _run_for_city_input(
         city_data_api_client=city_data_api_client,
         action_data_api_client=action_data_api_client,
         legal_data_api_client=legal_data_api_client,
-        policy_signals_data_api_client=policy_signals_data_api_client,
+        action_policy_scores_data_api_client=action_policy_scores_data_api_client,
         create_explanations=create_explanations,
         requested_languages=requested_languages,
     )

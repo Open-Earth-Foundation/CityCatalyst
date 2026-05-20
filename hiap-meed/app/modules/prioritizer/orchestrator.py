@@ -21,14 +21,13 @@ from app.services.data_clients import (
     ApiActionDataApiClient,
     ApiCityDataApiClient,
     ApiLegalDataApiClient,
-    ApiPolicySignalsDataApiClient,
+    ApiActionPolicyScoresDataApiClient,
     MockActionDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
-    MockPolicySignalsDataApiClient,
+    MockActionPolicyScoresDataApiClient,
     describe_action_data_source,
     describe_legal_data_source,
-    describe_policy_signals_data_source,
 )
 from app.services.http_client import UpstreamApiError
 from app.utils.artifacts import ArtifactWriter
@@ -238,8 +237,8 @@ def run_prioritization(
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient,
     action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient,
     legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient,
-    policy_signals_data_api_client: (
-        MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
+    action_policy_scores_data_api_client: (
+        MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
     ),
     create_explanations: bool,
 ) -> PrioritizationResponse:
@@ -397,43 +396,54 @@ def run_prioritization(
         block.elapsed_seconds,
     )
 
-    # Phase 4: fetch policy signals used by alignment scoring.
-    with time_block("fetch_policy_signals") as block:
-        policy_signals_by_action_id = (
-            policy_signals_data_api_client.get_action_policy_signals(locode)
+    # Phase 4: fetch action policy scores used by alignment scoring.
+    with time_block("fetch_action_policy_scores") as block:
+        action_policy_scores_fetch_result = (
+            action_policy_scores_data_api_client.get_action_policy_scores(locode)
         )
-    timings["fetch_policy_signals"] = block.elapsed_seconds
-    policy_source_descriptor = describe_policy_signals_data_source(
-        policy_signals_data_api_client,
-        locode=locode,
+    action_policy_scores_by_action_id = (
+        action_policy_scores_fetch_result.scores_by_action_id
     )
+    timings["fetch_action_policy_scores"] = block.elapsed_seconds
     fetch_policy_payload = {
-        "actions_with_policy_signals": len(policy_signals_by_action_id),
-        "source": policy_source_descriptor["source"],
+        "actions_with_policy_scores": len(action_policy_scores_by_action_id),
+        "source": (
+            "mock_action_policy_scores_api"
+            if isinstance(
+                action_policy_scores_data_api_client,
+                MockActionPolicyScoresDataApiClient,
+            )
+            else "action_policy_scores_api"
+        ),
+        "source_metadata": action_policy_scores_fetch_result.source_metadata,
+        "upstream_meta": action_policy_scores_fetch_result.upstream_meta,
+        "warning": action_policy_scores_fetch_result.warning,
         "elapsed_seconds": block.elapsed_seconds,
     }
     fetch_policy_event_index = artifact_writer.write_event(
-        "fetch_policy_signals.completed", fetch_policy_payload
+        "fetch_action_policy_scores.completed", fetch_policy_payload
     )
     artifact_writer.write_step_detail(
-        "fetch_policy_signals",
+        "fetch_action_policy_scores",
         {
-            "actions_with_policy_signals": len(policy_signals_by_action_id),
-            "action_ids_with_policy_signals": sorted(
-                policy_signals_by_action_id.keys()
+            "actions_with_policy_scores": len(action_policy_scores_by_action_id),
+            "action_ids_with_policy_scores": sorted(
+                action_policy_scores_by_action_id.keys()
             ),
-            "source": policy_source_descriptor["source"],
-            "source_metadata": policy_source_descriptor["source_metadata"],
+            "source": fetch_policy_payload["source"],
+            "source_metadata": action_policy_scores_fetch_result.source_metadata,
+            "upstream_meta": action_policy_scores_fetch_result.upstream_meta,
+            "warning": action_policy_scores_fetch_result.warning,
             "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=fetch_policy_event_index,
-        event_type="fetch_policy_signals.completed",
+        event_type="fetch_action_policy_scores.completed",
     )
     logger.info(
-        "Fetched policy signals internal_request_id=%s locode=%s actions_with_policy_signals=%s elapsed_seconds=%.3f",
+        "Fetched action policy scores internal_request_id=%s locode=%s actions_with_policy_scores=%s elapsed_seconds=%.3f",
         internal_request_id,
         locode,
-        len(policy_signals_by_action_id),
+        len(action_policy_scores_by_action_id),
         block.elapsed_seconds,
     )
 
@@ -606,7 +616,7 @@ def run_prioritization(
     with time_block("alignment") as block:
         alignment_result = alignment.run(
             hard_filter_result.valid_actions,
-            policy_signals_by_action_id=policy_signals_by_action_id,
+            action_policy_scores_by_action_id=action_policy_scores_by_action_id,
             city_preference_sectors=city_preference_sectors,
             city_preference_timeframes=city_preference_timeframes,
             city_preference_co_benefit_keys=city_preference_co_benefit_keys,

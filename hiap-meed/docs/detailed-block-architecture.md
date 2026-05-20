@@ -8,7 +8,7 @@
 | Hard Filter  | Confirmed exclusion by `action_id`             | Implemented                                      |
 | Hard Filter  | Legal verdict check                            | Implemented                                      |
 | Impact       | GPC reference evidence collection              | Implemented                                      |
-| Impact       | Activity relevance × reduction band × timeline | Implemented                                      |
+| Impact       | Activity relevance x reduction band x timeline | Implemented                                      |
 | Alignment    | Policy + sector + other components             | Implemented (`other` uses direct co-benefit selections plus normalized selected co-benefit scoring) |
 | Feasibility  | Legal verdict score + socio-economic weighted component | Implemented                                      |
 | Weighted Sum | Weighted aggregation, sort, rank, `top_n`      | Implemented                                      |
@@ -109,7 +109,7 @@ Canonical score policy:
 
 Current implementation detail:
 
-- `impact_block_score = (0.80 × reduction_share_of_city_emissions) + (0.20 × timeline_score)`
+- `impact_block_score = (0.80 x reduction_share_of_city_emissions) + (0.20 x timeline_score)`
 - `reduction_share_of_city_emissions` is computed from matched action `sector.subsector` keys.
 
 ```mermaid
@@ -150,7 +150,7 @@ Alignment answers: **Does this action align with what the city and policy enviro
 
 It combines:
 
-- Policy signals (supports, targets, funds, constrains)
+- Action policy scores (supports, targets, funds, constrains)
 - City strategic preferences (priority sectors, timeframe preferences, and political priorities)
 
 Exclusions are handled in the Hard Filter stage, so Alignment only scores eligible actions.
@@ -158,7 +158,7 @@ Exclusions are handled in the Hard Filter stage, so Alignment only scores eligib
 ### Inputs (and where they come from)
 
 - Policy support score and signals
-  - Source: `actions_policy_signals_api_mock.json` (`policy_support_score`, `policy_signals[]`)
+  - Source: `action_policy_scores_api_mock.json` (`policy_support_score`, `policy_evidence[]`)
 - City strategic preference sectors
   - Source: caller request `cityStrategicPreferenceSectors`
 - City strategic preference timeframes
@@ -182,8 +182,7 @@ Exclusions are handled in the Hard Filter stage, so Alignment only scores eligib
 ```mermaid
 graph TD
   Valid[(Valid Actions for Scoring)]
-  PolSig[(PolicySignal)]
-  ActPol[(ActionPolicySignal)]
+  PolicyScore[(ActionPolicyScore)]
   Pref[(CityStrategicPreferences)]
   ActionTbl[(Action)]
 
@@ -195,8 +194,7 @@ graph TD
   AlignExplain[Alignment Evidence optional]
 
   Valid --> Policy
-  PolSig -.-> Policy
-  ActPol -.-> Policy
+  PolicyScore -.-> Policy
 
   Valid --> PrefBoost
   Pref -.-> PrefBoost

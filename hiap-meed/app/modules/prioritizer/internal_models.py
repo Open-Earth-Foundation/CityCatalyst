@@ -149,6 +149,32 @@ class LegalAssessmentRecord(BaseModel):
     source_metadata: dict[str, Any] = Field(default_factory=dict)
 
 
+class ActionPolicyScoreRecord(BaseModel):
+    """Internal action policy score contract consumed by the Alignment block."""
+
+    action_id: str = Field(min_length=1)
+    policy_support_score: float | None = None
+    policy_support_category: str | None = None
+    best_relevance: str | None = None
+    n_findings: int | None = None
+    n_docs: int | None = None
+    sum_strength: float | None = None
+    policy_evidence: list[dict[str, Any]] = Field(default_factory=list)
+    raw: dict[str, Any] = Field(default_factory=dict)
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class ActionPolicyScoresFetchResult(BaseModel):
+    """Action policy score rows plus request-scoped fetch metadata."""
+
+    scores_by_action_id: dict[str, ActionPolicyScoreRecord] = Field(
+        default_factory=dict
+    )
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
+    upstream_meta: dict[str, Any] = Field(default_factory=dict)
+    warning: str | None = None
+
+
 class ScoredAction(BaseModel):
     """Action scores after weighted aggregation and ranking."""
 

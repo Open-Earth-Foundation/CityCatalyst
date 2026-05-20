@@ -121,33 +121,33 @@ Future action API note:
 - It may include optional fields such as `biome`.
 - When the future `GET /api/v1/action-pathways` payload replaces this mock, the action DTOs and this mock file should be updated together, including removing `biome` and aligning to the new payload field names.
 
-# actions_policy_signals_api_mock.json:
+# action_policy_scores_api_mock.json:
 
-Mock for GET /v1/cities/{locode}/policy-signals.
-Policy signals filtered by city's location_scope/location_name (National Chile + Regional + Communal).
+Mock for GET /api/v1/cities/{locode}/action-policy-scores.
+Action policy scores are city-scoped and use the live action policy scores schema.
 
 It includes:
 
-- policy_signals: array of { action_id, policy_signals: [...], policy_support_score }
-- each signal: location_scope, location_name, signal_type, signal_relation, signal_strength, evidence_ids, evidence_count
-- policy_support_score: 0â€“1 score per action (relation Ã— strength Ã— scope multiplier, normalized)
-- meta.locode, meta.comuna_name, meta.region_name
+- scores: array of { src_action_id, policy_support_score, policy_evidence: [...] }
+- each evidence row: evidence_rank, signal_type, signal_relation, signal_strength, document_name, document_type, doc_relevance, explicitness, page, evidence_strength, evidence_text
+- policy_support_score: 0..1 score per action supplied by the upstream API
+- meta.api_context, meta.total_records, meta.total_evidence_items, meta.spatial_document_coverage
 
 This payload shape is modeled by:
-- `ActionsPolicySignalsApiResponse` (envelope)
-- `PolicySignalByAction` (`policy_signals[]`)
-- `PolicySignal` (nested signal rows)
+- `ActionPolicyScoresApiResponse` (envelope)
+- `ActionPolicyScoreApiItem` (`scores[]`)
+- `ActionPolicyEvidence` (nested evidence rows)
 
 # policy_framework_api_mock.json:
 
 This is a mock response from a policy framework API.
-It simulates policy signals extracted from plans, targets, and budgets, and links these signals to actions.
+It simulates policy context extracted from plans, targets, and budgets, and links this context to actions.
 The upstream provider is the global-api.
 
 It includes:
 
-- policy signals (national, regional, municipal scopes)
-- action to policy signal mapping records
+- policy context rows
+- action to policy mapping records
 
 # legal_api_mock.json:
 

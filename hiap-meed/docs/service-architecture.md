@@ -11,7 +11,7 @@ graph TD
     FE["External hiap-meed frontend / caller"]
 
     subgraph hiap-meed ["hiap-meed (FastAPI service)"]
-        Router["POST /v1/prioritize (sync route → threadpool)"]
+        Router["POST /v1/prioritize (sync route -> threadpool)"]
         Orch["Orchestrator run_prioritization()"]
 
         subgraph pipeline ["Prioritization pipeline"]
@@ -25,7 +25,7 @@ graph TD
         CityClient["City data client (sync data client)"]
         ActionClient["Action data client (sync data client)"]
         LegalClient["Legal data client (sync data client)"]
-        PolicyClient["Policy signals data client (sync data client)"]
+        PolicyClient["Action policy scores data client (sync data client)"]
     end
 
     GlobalAPI["Global API (future upstream integration)"]
@@ -36,17 +36,17 @@ graph TD
     Orch -->|"getCityContext(locode)"| CityClient
     Orch -->|"listActions()"| ActionClient
     Orch -->|"getActionLegalAssessments(country_code)"| LegalClient
-    Orch -->|"getActionPolicySignals(locode)"| PolicyClient
+    Orch -->|"getActionPolicyScores(locode)"| PolicyClient
 
     CityClient -.->|"API mode: GET /api/v0/city_attributes/{locode}"| GlobalAPI
     ActionClient -.->|"API mode (not implemented yet)"| GlobalAPI
     LegalClient -.->|"API mode: GET /api/v1/action-legal-assessments?countryCode=..."| GlobalAPI
-    PolicyClient -.->|"API mode (not implemented yet)"| GlobalAPI
+    PolicyClient -.->|"API mode: GET /api/v1/cities/{locode}/action-policy-scores"| GlobalAPI
 
     GlobalAPI -.->|"CityData"| CityClient
     GlobalAPI -.->|"Action list"| ActionClient
     GlobalAPI -.->|"Action legal assessments"| LegalClient
-    GlobalAPI -.->|"Action policy signals"| PolicyClient
+    GlobalAPI -.->|"Action policy scores"| PolicyClient
 
     CityClient --> Orch
     ActionClient --> Orch
@@ -80,11 +80,11 @@ This is the right choice as long as the orchestrator and data clients are synchr
 | Client                    | Method                                | Status                                                                                  | Target upstream |
 | ------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------- | --------------- |
 | City data client          | `get_city(locode)`                    | Mock/API switch (`HIAP_MEED_CITY_DATA_SOURCE`); `mock` is file-backed, `api` performs synchronous HTTP GET `/api/v0/city_attributes/{locode}` against the shared `CCGLOBAL_API_BASE_URL` (default `https://ccglobal.openearth.dev` locally; overridden in workflows per environment) | configurable city attributes API host |
-| Action data client        | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_DATA_SOURCE`); `mock` is file-backed, `api` is placeholder and raises `NotImplementedError` | Global API (future) |
+| Action data client        | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_DATA_SOURCE`); `api` is not implemented yet; `mock` is file-backed | Global API (future) |
 | Legal data client         | `get_action_legal_assessments(country_code)` | Mock/API switch (`HIAP_MEED_LEGAL_DATA_SOURCE`); `mock` is file-backed, `api` performs synchronous HTTP GET `/api/v1/action-legal-assessments?countryCode=...` against the shared `CCGLOBAL_API_BASE_URL` | configurable legal assessments API host |
-| Policy signals data client | `get_action_policy_signals(locode)`    | Mock/API switch (`HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE`); `mock` is file-backed, `api` is placeholder and raises `NotImplementedError` | Global API (future) |
+| Action policy scores data client | `get_action_policy_scores(locode)`    | Mock/API switch (`HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/cities/{locode}/action-policy-scores`; `mock` is file-backed | Global API (future) |
 
-Clients are injected via FastAPI's `Depends()` pattern. The city and legal clients default to their live upstream APIs, while the action and policy clients still default to checked-in mock payloads.
+Clients are injected via FastAPI's `Depends()` pattern. The city, legal, and action policy scores clients default to their live upstream APIs, while the action client still defaults to the checked-in mock payload.
 
 Future action API note:
 - the current action DTOs still match the checked-in `actions_api_mock.json`
@@ -105,8 +105,8 @@ sequenceDiagram
     FE->>API: POST /v1/prioritize PrioritizerApiRequest (meta + requestData.cityDataList)
     Note over API: FastAPI validates request body (Pydantic)
     API->>Orch: run_prioritization(locode, city_emissions_context, clients, per_city_options...)
-    Orch->>Clients: get_city / list_actions / get_action_legal_assessments / get_action_policy_signals
-    Clients-->>Orch: CityData / Action[] / legal assessments / policy signals
+    Orch->>Clients: get_city / list_actions / get_action_legal_assessments / get_action_policy_scores
+    Clients-->>Orch: CityData / Action[] / legal assessments / action policy scores
     Note over Orch: Hard Filter -> Impact -> Alignment -> Feasibility -> Weighted Sum
     Orch-->>API: PrioritizationResponse (per city)
     API-->>FE: 200 PrioritizerApiResponse (results[])
@@ -120,7 +120,7 @@ sequenceDiagram
 | ------------ | --------------------------------------------------------------- | --------------------------------------- |
 | Hard Filter  | Remove ineligible actions (exclusions, blocked legal verdicts) | Discards actions; produces eligible set |
 | Impact       | Score emissions reduction potential per city                    | Impact score per action                 |
-| Alignment    | Score alignment with city strategy and policy signals           | Alignment score per action              |
+| Alignment    | Score alignment with city strategy and action policy scores           | Alignment score per action              |
 | Feasibility  | Score realistic implementability for the city                   | Feasibility score per action            |
 | Weighted Sum | Aggregate pillar scores, sort, apply `top_n`                    | `ranked_action_ids` + `ranked_actions`  |
 

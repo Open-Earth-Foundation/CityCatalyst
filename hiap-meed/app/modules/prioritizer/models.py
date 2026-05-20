@@ -523,10 +523,10 @@ class ExclusionPreviewApiResponse(BaseModel):
 #     - emissions: ActionImpactEntry
 #     - coBenefits: dict[str, ActionCoBenefitEntry]
 #     - socioeconomicIndicators: list[ActionSocioeconomicIndicatorRule]
-# - ActionsPolicySignalsApiResponse
-#   - meta: UpstreamMeta
-#   - policy_signals: list[PolicySignalByAction]
-#     - policy_signals: list[PolicySignal]
+# - ActionPolicyScoresApiResponse
+#   - meta: ActionPolicyScoresApiMeta
+#   - scores: list[ActionPolicyScoreApiItem]
+#     - policy_evidence: list[ActionPolicyEvidence]
 # - ActionLegalAssessmentApiItem
 # ============================================================================
 
@@ -761,37 +761,68 @@ class ActionsApiResponse(BaseModel):
     actions: list[ActionApiItem] = Field(default_factory=list)
 
 
-class PolicySignal(BaseModel):
-    """Single policy signal evidence item for one action."""
+class ActionPolicyScoresApiContext(BaseModel):
+    """API context metadata returned by the action policy scores endpoint."""
 
     model_config = ConfigDict(extra="ignore")
 
-    location_scope: str
-    location_name: str
-    signal_type: str
-    signal_relation: str
-    signal_strength: str
-    evidence_ids: list[str] = Field(default_factory=list)
-    evidence_count: int = 0
+    endpoint: str
+    locode: str
+    city_name: str | None = None
+    release_id: str | None = None
+    top_evidence_limit: int | None = None
+    src_action_id: str | None = None
 
 
-class PolicySignalByAction(BaseModel):
-    """Policy signal collection grouped by action ID."""
+class ActionPolicyScoresApiMeta(UpstreamMeta):
+    """Metadata envelope returned by the action policy scores endpoint."""
+
+    api_context: ActionPolicyScoresApiContext
+    total_evidence_items: int | None = None
+    scoring_rubric_version: str | None = None
+    spatial_document_coverage: dict[str, object] | None = None
+
+
+class ActionPolicyEvidence(BaseModel):
+    """One ranked evidence row returned by the action policy scores endpoint."""
 
     model_config = ConfigDict(extra="ignore")
 
-    action_id: str
-    policy_signals: list[PolicySignal] = Field(default_factory=list)
+    evidence_rank: int
+    signal_type: str | None = None
+    signal_relation: str | None = None
+    signal_strength: str | None = None
+    document_name: str | None = None
+    document_type: str | None = None
+    doc_relevance: str | None = None
+    explicitness: str | None = None
+    page: int | None = None
+    evidence_strength: float | None = None
+    evidence_text: str | None = None
+
+
+class ActionPolicyScoreApiItem(BaseModel):
+    """Single action score row returned by the action policy scores endpoint."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    src_action_id: str
     policy_support_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    policy_support_category: str | None = None
+    best_relevance: str | None = None
+    n_findings: int | None = None
+    n_docs: int | None = None
+    sum_strength: float | None = None
+    policy_evidence: list[ActionPolicyEvidence] = Field(default_factory=list)
 
 
-class ActionsPolicySignalsApiResponse(BaseModel):
-    """Response model for city-scoped policy alignment endpoint."""
+class ActionPolicyScoresApiResponse(BaseModel):
+    """Response model for city-scoped action policy scores endpoint."""
 
     model_config = ConfigDict(extra="ignore")
 
-    meta: UpstreamMeta
-    policy_signals: list[PolicySignalByAction] = Field(default_factory=list)
+    meta: ActionPolicyScoresApiMeta
+    scores: list[ActionPolicyScoreApiItem] = Field(default_factory=list)
 
 
 class ActionLegalAssessmentApiItem(BaseModel):

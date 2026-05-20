@@ -284,7 +284,6 @@ def _build_alignment_signals(alignment_evidence: dict[str, object]) -> dict[str,
         if action_timeline_bucket_value is not None
         else None
     )
-    policy_signals_count_value = alignment_evidence.get("policy_signals_count")
     matched_preferred_co_benefits_count_value = alignment_evidence.get(
         "matched_preferred_co_benefits_count"
     )
@@ -303,9 +302,6 @@ def _build_alignment_signals(alignment_evidence: dict[str, object]) -> dict[str,
             if timeframe_match_label_value is not None
             else None
         ),
-        "policy_signals_count": int(policy_signals_count_value)
-        if isinstance(policy_signals_count_value, int | float)
-        else 0,
         "policy_component_bucket": _component_score_bucket(policy_component_score),
         "sector_component_bucket": _component_score_bucket(sector_component_score),
         "co_benefit_component_bucket": _component_score_bucket(
@@ -399,7 +395,7 @@ def _build_main_strengths(
             very_strong_message="Fits the city's preferred implementation timeframe.",
         )
 
-    if bool(alignment_evidence.get("policy_support_score_present", False)):
+    if bool(alignment_evidence.get("policy_score_present", False)):
         _append_strength_message_for_score(
             strengths,
             score_value=alignment_evidence.get("policy_component_score"),
@@ -482,7 +478,7 @@ def _build_main_constraints(
             very_weak_message="Does not fit the city's preferred implementation timeframe.",
         )
 
-    if bool(alignment_evidence.get("policy_support_score_present", False)):
+    if bool(alignment_evidence.get("policy_score_present", False)):
         _append_constraint_message_for_score(
             constraints,
             score_value=alignment_evidence.get("policy_component_score"),

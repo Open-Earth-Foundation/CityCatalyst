@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  HStack,
-  IconButton,
-  Textarea,
-} from "@chakra-ui/react";
+import { HStack, IconButton, Textarea } from "@chakra-ui/react";
 import { MdOutlineSend, MdStop } from "react-icons/md";
 import { useEnterSubmit } from "@/hooks/useEnterSubmit";
 
@@ -46,14 +42,16 @@ export function ChatInput({
           value={value}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
+          _placeholder={{
+            color: "content.tertiary",
+          }}
           onKeyDown={onKeyDown}
+          borderWidth="1px"
+          borderColor="interactive.primary"
+          borderRadius="rounded-xl"
         />
         {disabled ? (
-          <IconButton
-            onClick={onStop}
-            colorScheme="red"
-            aria-label={stopLabel}
-          >
+          <IconButton onClick={onStop} colorScheme="red" aria-label={stopLabel}>
             <MdStop />
           </IconButton>
         ) : (

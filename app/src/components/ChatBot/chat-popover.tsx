@@ -38,9 +38,8 @@ export default function ChatPopover({
   const [hasAcceptedDisclaimer, setHasAcceptedDisclaimer] = useState(false);
 
   // Context-specific suggestions injected by external components via custom event
-  const [contextSuggestions, setContextSuggestions] = useState<
-    ChatBotProps["contextSuggestions"]
-  >(null);
+  const [contextSuggestions, setContextSuggestions] =
+    useState<ChatBotProps["contextSuggestions"]>(null);
 
   // get user info
   const { data: userInfo } = api.useGetUserInfoQuery();
@@ -80,8 +79,11 @@ export default function ChatPopover({
   // The event detail may include context-specific suggestions to replace the defaults.
   const handleOpenClimaAI = useCallback(
     (e: Event) => {
-      const detail = (e as CustomEvent<{ suggestions?: { preview: string; message: string }[] }>)
-        .detail;
+      const detail = (
+        e as CustomEvent<{
+          suggestions?: { preview: string; message: string }[];
+        }>
+      ).detail;
       setContextSuggestions(detail?.suggestions ?? null);
       onOpenChange({ open: true });
     },
@@ -155,16 +157,16 @@ export default function ChatPopover({
         </PopoverTrigger>
         <PopoverContent
           p={0}
-          w="57vw"
+          w="533px"
           maxHeight={"76vh"}
-          bg="background.neutral"
+          bg="sentiment.backgroundOverlay"
           className="drop-shadow-md"
           pos="relative"
           zIndex={9999}
         >
           <PopoverHeader
-            bg="background.overlay"
-            color="content.alternative"
+            bg="interactive.tertiary"
+            color="base.light"
             fontWeight="600"
             fontSize="28px"
             fontFamily="heading"
@@ -173,7 +175,7 @@ export default function ChatPopover({
             borderTopRadius={4}
             p={6}
           >
-            {t("ask-ai-expert")}
+            {t("ask-clima")}
           </PopoverHeader>
           <PopoverBody w="full" p={6} borderRadius={4}>
             <ChatBot
@@ -183,13 +185,7 @@ export default function ChatPopover({
               contextSuggestions={contextSuggestions}
             />
           </PopoverBody>
-          <PopoverCloseTrigger
-            color="content.secondary"
-            w={8}
-            h={8}
-            mr={4}
-            mt={6}
-          />
+          <PopoverCloseTrigger color="base.light" boxSize={10} mr={4} mt={4} />
         </PopoverContent>
       </PopoverRoot>
     </>

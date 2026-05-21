@@ -10,6 +10,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
+import { CloseButton } from "@/components/ui/close-button";
 import { BiChevronDown, BiLinkExternal } from "react-icons/bi";
 
 interface HelpDrawerItem {
@@ -104,7 +105,12 @@ export default function InventoryDetailsHelpDrawer({ t }: { t: TFunction }) {
       <Portal>
         <Drawer.Positioner>
           <Drawer.Content>
-            <Drawer.Header>
+            <Drawer.Header
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              gap="16px"
+            >
               <Drawer.Title
                 fontFamily="heading"
                 fontSize="title.lg"
@@ -113,6 +119,9 @@ export default function InventoryDetailsHelpDrawer({ t }: { t: TFunction }) {
               >
                 {t("drawer-help-section-title")}
               </Drawer.Title>
+              <Drawer.CloseTrigger asChild>
+                <CloseButton size="sm" color="content.secondary" />
+              </Drawer.CloseTrigger>
             </Drawer.Header>
             <Drawer.Body spaceY="32px">
               <Text

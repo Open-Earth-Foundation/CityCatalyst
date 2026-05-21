@@ -112,8 +112,13 @@ export function Hero({
             <HStack gap={8} align="start">
               {/* Total co2 emissions */}
               <VStack align="start" gap={2}>
-                <HStack gap={2} align="baseline">
-                  <Icon as={HeatIcon} boxSize={6} fill="content.secondary" />
+                <HStack gap={2} align="center">
+                  <Icon
+                    as={HeatIcon}
+                    boxSize={6}
+                    fill="content.tertiary"
+                    mt={-1}
+                  />
                   <HeadlineSmall
                     fontSize="2xl"
                     fontWeight="bold"
@@ -148,8 +153,9 @@ export function Hero({
                     <Icon
                       as={MdInfoOutline}
                       boxSize={4}
-                      color="content.secondary"
+                      color="content.tertiary"
                       cursor="pointer"
+                      alignSelf="start"
                     />
                   </Tooltip>
                 </HStack>
@@ -159,11 +165,12 @@ export function Hero({
               </VStack>
               {/* Land Area */}
               <VStack align="start" gap={2}>
-                <HStack gap={2} align="baseline">
+                <HStack gap={2} align="center">
                   <Icon
                     as={MdOutlineAspectRatio}
                     boxSize={5}
-                    color="content.primary"
+                    color="content.tertiary"
+                    mt={-1}
                   />
                   <HeadlineSmall
                     fontSize="2xl"
@@ -199,8 +206,9 @@ export function Hero({
                     <Icon
                       as={MdInfoOutline}
                       boxSize={4}
-                      color="content.secondary"
+                      color="content.tertiary"
                       cursor="pointer"
+                      alignSelf="start"
                     />
                   </Tooltip>
                 </HStack>

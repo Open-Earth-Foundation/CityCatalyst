@@ -47,8 +47,13 @@ export function ChatInput({
           }}
           onKeyDown={onKeyDown}
           borderWidth="1px"
-          borderColor="interactive.primary"
+          borderColor="border.neutral"
           borderRadius="rounded-xl"
+          _focus={{
+            borderWidth: "2px",
+            borderColor: "interactive.primary",
+            outline: "none",
+          }}
         />
         {disabled ? (
           <IconButton onClick={onStop} colorScheme="red" aria-label={stopLabel}>

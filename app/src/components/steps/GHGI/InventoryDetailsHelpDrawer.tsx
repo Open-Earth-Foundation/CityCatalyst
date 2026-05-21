@@ -1,3 +1,5 @@
+"use client";
+
 import { TFunction } from "i18next";
 import {
   Accordion,
@@ -9,6 +11,7 @@ import {
   Portal,
   Span,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
 import { BiChevronDown, BiLinkExternal } from "react-icons/bi";
@@ -128,11 +131,16 @@ const getHelpDrawerItems = (t: TFunction): HelpDrawerItem[] => [
 
 export default function InventoryDetailsHelpDrawer({ t }: { t: TFunction }) {
   const items = getHelpDrawerItems(t);
+  const { open, onOpen, onClose } = useDisclosure();
 
   return (
-    <Drawer.Root size="sm">
+    <Drawer.Root
+      size="sm"
+      open={open}
+      onOpenChange={(e) => (e.open ? onOpen() : onClose())}
+    >
       <Drawer.Trigger asChild>
-        <Button variant="outline">{t("help-section")}</Button>
+        <Button variant="outline" onClick={onOpen}>{t("help-section")}</Button>
       </Drawer.Trigger>
       <Portal>
         <Drawer.Positioner>
@@ -219,13 +227,14 @@ export default function InventoryDetailsHelpDrawer({ t }: { t: TFunction }) {
                             color="interactive.primary"
                             px="24px"
                             py="16px"
-                            onClick={() =>
+                            onClick={() => {
+                              onClose();
                               window.dispatchEvent(
                                 new CustomEvent("open-clima-ai", {
                                   detail: { suggestions: item.suggestions },
                                 }),
-                              )
-                            }
+                              );
+                            }}
                           >
                             <Icon as={AskAiIconOutline2} h={24} w={24} />
                             {t("ask-ai")}

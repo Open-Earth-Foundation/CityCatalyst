@@ -103,7 +103,6 @@ export default function InventoryDetailsHelpDrawer({ t }: { t: TFunction }) {
         <Button variant="outline">{t("help-section")}</Button>
       </Drawer.Trigger>
       <Portal>
-        {/* <Drawer.Backdrop /> */}
         <Drawer.Positioner>
           <Drawer.Content>
             <Drawer.Header

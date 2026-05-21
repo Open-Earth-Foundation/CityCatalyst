@@ -1,4 +1,4 @@
-"""FastAPI routes for MEED prioritization."""
+﻿"""FastAPI routes for MEED prioritization."""
 
 from __future__ import annotations
 
@@ -31,15 +31,18 @@ from app.modules.prioritizer.services.exclusion_resolution import (
 )
 from app.modules.prioritizer.services.translation import translate_explanations
 from app.services.data_clients import (
-    ApiActionDataApiClient,
+    ApiActionPathwaysDataApiClient,
+    ApiActionMitigationFeasibilityScoresDataApiClient,
     ApiCityDataApiClient,
     ApiLegalDataApiClient,
     ApiActionPolicyScoresDataApiClient,
-    MockActionDataApiClient,
+    MockActionPathwaysDataApiClient,
+    MockActionMitigationFeasibilityScoresDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
     MockActionPolicyScoresDataApiClient,
-    get_action_data_api_client,
+    get_action_mitigation_feasibility_scores_data_api_client,
+    get_action_pathways_data_api_client,
     get_city_data_api_client,
     get_legal_data_api_client,
     get_action_policy_scores_data_api_client,
@@ -160,8 +163,8 @@ def _country_code_from_locode(locode: str) -> str:
 )
 def preview_exclusions(
     request: ExclusionPreviewApiRequest,
-    action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient = Depends(
-        get_action_data_api_client
+    action_pathways_data_api_client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient = Depends(
+        get_action_pathways_data_api_client
     ),
 ) -> ExclusionPreviewApiResponse:
     """Preview proposed exclusions from raw exclusion preferences."""
@@ -189,7 +192,7 @@ def preview_exclusions(
                 ],
             },
         )
-        actions = action_data_api_client.list_actions()
+        actions = action_pathways_data_api_client.list_actions()
         fetch_actions_event_index = artifact_writer.write_event(
             "fetch_actions.completed",
             {"total_actions": len(actions)},
@@ -323,8 +326,8 @@ def prioritize(
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient = Depends(
         get_city_data_api_client
     ),
-    action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient = Depends(
-        get_action_data_api_client
+    action_pathways_data_api_client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient = Depends(
+        get_action_pathways_data_api_client
     ),
     legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient = Depends(
         get_legal_data_api_client
@@ -334,6 +337,10 @@ def prioritize(
     ) = Depends(
         get_action_policy_scores_data_api_client
     ),
+    action_mitigation_feasibility_scores_data_api_client: (
+        MockActionMitigationFeasibilityScoresDataApiClient
+        | ApiActionMitigationFeasibilityScoresDataApiClient
+    ) = Depends(get_action_mitigation_feasibility_scores_data_api_client),
 ) -> PrioritizerApiResponse:
     """
     Prioritize actions from the caller request envelope.
@@ -368,9 +375,12 @@ def prioritize(
                 city_input=city_input,
                 requested_top_n=request.requestData.topN,
                 city_data_api_client=city_data_api_client,
-                action_data_api_client=action_data_api_client,
+                action_pathways_data_api_client=action_pathways_data_api_client,
                 legal_data_api_client=legal_data_api_client,
                 action_policy_scores_data_api_client=action_policy_scores_data_api_client,
+                action_mitigation_feasibility_scores_data_api_client=(
+                    action_mitigation_feasibility_scores_data_api_client
+                ),
                 create_explanations=request.requestData.createExplanations,
                 requested_languages=requested_languages,
             )
@@ -591,10 +601,14 @@ def _run_for_city_input(
     city_input: FrontendCityInput,
     requested_top_n: int | None,
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient,
-    action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient,
+    action_pathways_data_api_client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient,
     legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient,
     action_policy_scores_data_api_client: (
         MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
+    ),
+    action_mitigation_feasibility_scores_data_api_client: (
+        MockActionMitigationFeasibilityScoresDataApiClient
+        | ApiActionMitigationFeasibilityScoresDataApiClient
     ),
     create_explanations: bool,
     requested_languages: list[str],
@@ -629,10 +643,14 @@ def _run_for_city_input(
         city_emissions_context=city_emissions_context,
         internal_request_id=internal_request_id,
         city_data_api_client=city_data_api_client,
-        action_data_api_client=action_data_api_client,
+        action_pathways_data_api_client=action_pathways_data_api_client,
         legal_data_api_client=legal_data_api_client,
         action_policy_scores_data_api_client=action_policy_scores_data_api_client,
+        action_mitigation_feasibility_scores_data_api_client=(
+            action_mitigation_feasibility_scores_data_api_client
+        ),
         create_explanations=create_explanations,
         requested_languages=requested_languages,
     )
     return result
+

@@ -1,4 +1,4 @@
-"""Pipeline orchestrator for MEED prioritization."""
+﻿"""Pipeline orchestrator for MEED prioritization."""
 
 from __future__ import annotations
 
@@ -18,15 +18,17 @@ from app.modules.prioritizer.models import PrioritizationResponse, RankedActionR
 from app.modules.prioritizer.services.explanations import generate_explanations
 from app.modules.prioritizer.services.translation import translate_explanations
 from app.services.data_clients import (
-    ApiActionDataApiClient,
+    ApiActionPathwaysDataApiClient,
+    ApiActionMitigationFeasibilityScoresDataApiClient,
     ApiCityDataApiClient,
     ApiLegalDataApiClient,
     ApiActionPolicyScoresDataApiClient,
-    MockActionDataApiClient,
+    MockActionPathwaysDataApiClient,
+    MockActionMitigationFeasibilityScoresDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
     MockActionPolicyScoresDataApiClient,
-    describe_action_data_source,
+    describe_action_pathways_data_source,
     describe_legal_data_source,
 )
 from app.services.http_client import UpstreamApiError
@@ -168,8 +170,8 @@ def _build_evidence_summary(
             "legal_component_score": _safe_float(
                 feasibility_evidence.get("legal_component_score")
             ),
-            "socioeconomic_component_score": _safe_float(
-                feasibility_evidence.get("socioeconomic_component_score")
+            "mitigation_feasibility_component_score": _safe_float(
+                feasibility_evidence.get("mitigation_feasibility_component_score")
             ),
         },
     }
@@ -235,10 +237,14 @@ def run_prioritization(
     city_emissions_context: CityEmissionsContext,
     internal_request_id: UUID,
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient,
-    action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient,
+    action_pathways_data_api_client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient,
     legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient,
     action_policy_scores_data_api_client: (
         MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
+    ),
+    action_mitigation_feasibility_scores_data_api_client: (
+        MockActionMitigationFeasibilityScoresDataApiClient
+        | ApiActionMitigationFeasibilityScoresDataApiClient
     ),
     create_explanations: bool,
 ) -> PrioritizationResponse:
@@ -316,10 +322,10 @@ def run_prioritization(
 
     # Phase 2: fetch action catalog that enters hard filtering.
     with time_block("fetch_actions") as block:
-        actions = action_data_api_client.list_actions()
+        actions = action_pathways_data_api_client.list_actions()
     # Emit high-level and step-detail artifacts for action fetch.
     timings["fetch_actions"] = block.elapsed_seconds
-    action_source_descriptor = describe_action_data_source(action_data_api_client)
+    action_source_descriptor = describe_action_pathways_data_source(action_pathways_data_api_client)
     fetch_actions_payload = {
         "total_actions": len(actions),
         "source": action_source_descriptor["source"],
@@ -447,7 +453,70 @@ def run_prioritization(
         block.elapsed_seconds,
     )
 
-    # Phase 5: validate and resolve ranking weights for this run.
+    # Phase 5: fetch mitigation feasibility scores used by Feasibility scoring.
+    with time_block("fetch_action_mitigation_feasibility_scores") as block:
+        mitigation_feasibility_scores_fetch_result = (
+            action_mitigation_feasibility_scores_data_api_client
+            .get_action_mitigation_feasibility_scores(
+                locode,
+                country_code,
+            )
+        )
+    mitigation_feasibility_scores_by_action_id = (
+        mitigation_feasibility_scores_fetch_result.scores_by_action_id
+    )
+    timings["fetch_action_mitigation_feasibility_scores"] = block.elapsed_seconds
+    fetch_mitigation_feasibility_payload = {
+        "actions_with_mitigation_feasibility_scores": len(
+            mitigation_feasibility_scores_by_action_id
+        ),
+        "source": (
+            "mock_action_mitigation_feasibility_scores_api"
+            if isinstance(
+                action_mitigation_feasibility_scores_data_api_client,
+                MockActionMitigationFeasibilityScoresDataApiClient,
+            )
+            else "action_mitigation_feasibility_scores_api"
+        ),
+        "source_metadata": mitigation_feasibility_scores_fetch_result.source_metadata,
+        "upstream_meta": mitigation_feasibility_scores_fetch_result.upstream_meta,
+        "warning": mitigation_feasibility_scores_fetch_result.warning,
+        "elapsed_seconds": block.elapsed_seconds,
+    }
+    fetch_mitigation_feasibility_event_index = artifact_writer.write_event(
+        "fetch_action_mitigation_feasibility_scores.completed",
+        fetch_mitigation_feasibility_payload,
+    )
+    artifact_writer.write_step_detail(
+        "fetch_action_mitigation_feasibility_scores",
+        {
+            "actions_with_mitigation_feasibility_scores": len(
+                mitigation_feasibility_scores_by_action_id
+            ),
+            "action_ids_with_mitigation_feasibility_scores": sorted(
+                mitigation_feasibility_scores_by_action_id.keys()
+            ),
+            "source": fetch_mitigation_feasibility_payload["source"],
+            "source_metadata": (
+                mitigation_feasibility_scores_fetch_result.source_metadata
+            ),
+            "upstream_meta": mitigation_feasibility_scores_fetch_result.upstream_meta,
+            "warning": mitigation_feasibility_scores_fetch_result.warning,
+            "elapsed_seconds": block.elapsed_seconds,
+        },
+        event_index=fetch_mitigation_feasibility_event_index,
+        event_type="fetch_action_mitigation_feasibility_scores.completed",
+    )
+    logger.info(
+        "Fetched action mitigation feasibility scores internal_request_id=%s "
+        "locode=%s actions_with_scores=%s elapsed_seconds=%.3f",
+        internal_request_id,
+        locode,
+        len(mitigation_feasibility_scores_by_action_id),
+        block.elapsed_seconds,
+    )
+
+    # Phase 6: validate and resolve ranking weights for this run.
     with time_block("validate_weights") as block:
         try:
             weights = validate_weights(weights_override)
@@ -643,12 +712,14 @@ def run_prioritization(
         event_type="alignment.completed",
     )
 
-    # Phase 9: run Feasibility block scoring on hard-filtered actions.
+    # Phase 10: run Feasibility block scoring on hard-filtered actions.
     with time_block("feasibility") as block:
         feasibility_result = feasibility.run(
             hard_filter_result.valid_actions,
-            city=city,
             legal_assessments_by_action_id=legal_assessments_by_action_id,
+            mitigation_feasibility_scores_by_action_id=(
+                mitigation_feasibility_scores_by_action_id
+            ),
         )
     # Emit feasibility score stats and detailed evidence artifacts.
     timings["feasibility"] = block.elapsed_seconds
@@ -689,7 +760,7 @@ def run_prioritization(
         len(feasibility_result.score_by_action_id),
     )
 
-    # Phase 10: aggregate pillar scores into final ranking.
+    # Phase 11: aggregate pillar scores into final ranking.
     with time_block("final_scoring") as block:
         scored_actions = final_scoring.run(
             actions=hard_filter_result.valid_actions,
@@ -1182,3 +1253,4 @@ def run_prioritization(
         metadata=metadata,
         warnings=translation_warnings,
     )
+

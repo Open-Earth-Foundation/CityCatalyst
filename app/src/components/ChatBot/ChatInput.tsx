@@ -56,7 +56,12 @@ export function ChatInput({
           }}
         />
         {disabled ? (
-          <IconButton onClick={onStop} colorScheme="red" aria-label={stopLabel}>
+          <IconButton
+            onClick={onStop}
+            colorScheme="red"
+            aria-label={stopLabel}
+            bg="interactive.tertiary"
+          >
             <MdStop />
           </IconButton>
         ) : (

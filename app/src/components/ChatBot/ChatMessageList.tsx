@@ -241,7 +241,7 @@ export function ChatMessageList({
                     borderTopRadius="2xl"
                     px={6}
                     py={4}
-                    bg={isUser ? "content.link" : "base.light"}
+                    bg={isUser ? "interactive.tertiary" : "base.light"}
                     whiteSpace={isUser ? "pre-wrap" : undefined}
                     color={isUser ? "base.light" : "content.tertiary"}
                     letterSpacing="0.5px"

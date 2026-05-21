@@ -29,7 +29,7 @@ import { SubSector } from "@/models/SubSector";
 import { SubCategory } from "@/models/SubCategory";
 import { Op } from "sequelize";
 import Excel from "exceljs";
-import { expectStatusCode, expectStatusCodes } from "helpers";
+import { expectStatusCode, expectStatusCodes } from "../helpers";
 
 // Test helpers (avoiding helpers.ts due to import.meta.url ESM issue)
 const mockUrl = "http://localhost:3000/api/v1";

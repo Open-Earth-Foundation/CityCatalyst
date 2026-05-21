@@ -40,7 +40,7 @@ def _load_mock_actions() -> list[Action]:
     action_client = MockActionPathwaysDataApiClient(
         mock_file_path=_mock_data_dir() / "action_pathways_api_mock.json"
     )
-    return action_client.list_actions()
+    return action_client.list_actions().actions
 
 
 def _load_mock_city() -> CityData:

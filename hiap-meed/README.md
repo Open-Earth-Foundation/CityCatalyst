@@ -76,7 +76,7 @@ Variables:
 - `HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE`: mitigation feasibility scores input source (`api` or `mock`)
 - `HIAP_MEED_TOP_N`: default number of ranked actions to return per city (default `20`)
 - `ACTIVITY_DATA_LEVEL_MAPPING`: guarded future Impact mapping switch; `false` keeps true subsector-only matching, `true` calls the current stub and still returns subsector-only results
-- `HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL`: OpenAI model used by the optional free-text co-benefit mapping helper
+- `HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL`: OpenAI model used only by the deprecated legacy free-text co-benefit mapping helper
 - `HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED`: if `true`, the exclusion preview endpoint calls OpenAI to resolve clear free-text action exclusions
 - `HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL`: OpenAI model used for preview free-text action exclusion matching
 - `OPENAI_API_KEY`: API key used by OpenAI-backed features
@@ -340,9 +340,7 @@ Example exclusion preview response:
         {
           "actionId": "c40_0029",
           "actionName": "Waste-to-energy plant",
-          "reasons": [
-            "Action belongs to excluded sector(s): waste"
-          ],
+          "reasons": ["Action belongs to excluded sector(s): waste"],
           "matchedBy": ["sector"]
         }
       ],
@@ -463,7 +461,7 @@ Common validation errors:
 - Missing `requestData.cityDataList` or empty `cityDataList` -> HTTP `422`.
 - Missing `locode` or empty `locode` in a city entry -> HTTP `422`.
 
-Note: city, action, legal, policy-score, and mitigation-feasibility clients resolve to `mock` (file-backed) or `api`. The city client uses synchronous HTTP for `GET /api/v0/city_attributes/{locode}`. The action client uses `GET /api/v1/action-pathways` without query parameters and returns the full upstream catalog. The prioritization pipeline then keeps only mitigation actions and records fetched-versus-kept counts in the `fetch_actions` artifacts. The legal client uses `GET /api/v1/action-legal-assessments?countryCode=...`. Policy scores use `GET /api/v1/cities/{locode}/action-policy-scores`. Mitigation feasibility uses `GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; 404 or missing rows are treated as neutral `0.5` in scoring. These API-backed clients default to `api`. The shared `CCGLOBAL_API_BASE_URL` defaults to `https://ccglobal.openearth.dev` for local/dev use; the hiap-meed GitHub workflows override it per environment, with dev using `https://ccglobal.openearth.dev` and test/prod using `https://api.citycatalyst.io/`. If that host mapping changes, update both the runtime config and the hiap-meed deploy workflows together. The shared upstream HTTP path also includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. Upstream response DTOs are intentionally additive-tolerant right now: they ignore unexpected extra fields while still validating the fields the pipeline depends on. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
+Note: city, action, legal, policy-score, and mitigation-feasibility clients resolve to `mock` (file-backed) or `api`. The city client uses synchronous HTTP for `GET /api/v0/city_attributes/{locode}`. The action client uses `GET /api/v1/action-pathways` without query parameters and returns the full upstream catalog plus fetch metadata. The prioritization pipeline then keeps only mitigation actions and records fetched-versus-kept counts in the `fetch_actions` artifacts. The legal client uses `GET /api/v1/action-legal-assessments?countryCode=...`. Policy scores use `GET /api/v1/cities/{locode}/action-policy-scores`. Mitigation feasibility uses `GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; 404 or missing rows are treated as neutral `0.5` in scoring. These API-backed clients default to `api`. The shared `CCGLOBAL_API_BASE_URL` defaults to `https://ccglobal.openearth.dev` for local/dev use; the hiap-meed GitHub workflows override it per environment, with dev using `https://ccglobal.openearth.dev` and test/prod using `https://api.citycatalyst.io/`. If that host mapping changes, update both the runtime config and the hiap-meed deploy workflows together. The shared upstream HTTP path also includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. Upstream response DTOs are intentionally additive-tolerant right now: they ignore unexpected extra fields while still validating the fields the pipeline depends on. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests. Legal fetch artifacts intentionally keep `source_metadata.upstream_generated_at_utc = null` because the current legal assessments endpoint does not expose a top-level generated-at field.
 
 ### 5. Logging and artifacts
 
@@ -474,7 +472,7 @@ The service writes:
 - Per-request artifacts at:
   - `LOG_DIR/requests/prioritization/{UTC_TIMESTAMP}Z_{internal_request_id}/`
   - `LOG_DIR/requests/exclusion_preview/{UTC_TIMESTAMP}Z_{internal_request_id}/`
-  when `ARTIFACT_LOG_JSONL=true`
+    when `ARTIFACT_LOG_JSONL=true`
 
 Fetch-step artifacts record the active data source for each upstream/mock dependency. API-backed fetches include upstream request metadata such as endpoint templates, resolved URLs, request keys, HTTP status codes, and upstream timestamps when available. Mock-backed fetches include the resolved `mock_file_path` plus the relevant request key such as `requested_locode` or `requested_country_code`.
 
@@ -581,4 +579,3 @@ From the `hiap-meed` directory:
 ```bash
 uv run pytest -c pytest.ini
 ```
-

@@ -19,6 +19,10 @@ from app.services.action_policy_scores_api import (
     ActionPolicyScoresApiService,
     DEFAULT_ACTION_POLICY_SCORES_BASE_URL,
 )
+from app.services.action_pathways_api import (
+    ACTION_PATHWAYS_ENDPOINT,
+    ActionPathwaysApiService,
+)
 from app.services.city_attributes_api import (
     DEFAULT_CITY_ATTRIBUTES_BASE_URL,
     CityAttributesApiService,
@@ -34,6 +38,7 @@ from app.services.http_client import (
     get_json_with_retries,
 )
 from app.services.data_clients import (
+    ApiActionPathwaysDataApiClient,
     ApiActionPolicyScoresDataApiClient,
     ApiCityDataApiClient,
     ApiLegalDataApiClient,
@@ -57,7 +62,8 @@ def test_mock_action_client_loads_actions_from_file() -> None:
     )
     client = MockActionPathwaysDataApiClient(mock_file_path=mock_file_path)
 
-    actions = client.list_actions()
+    fetch_result = client.list_actions()
+    actions = fetch_result.actions
 
     assert len(actions) > 0
     assert actions[0].action_id
@@ -113,10 +119,54 @@ def test_mock_action_client_returns_full_catalog_without_action_type_filter(
     )
     client = MockActionPathwaysDataApiClient(mock_file_path=mock_file_path)
 
-    actions = client.list_actions()
+    fetch_result = client.list_actions()
+    actions = fetch_result.actions
 
     assert [action.action_id for action in actions] == ["mitigation_1", "adaptation_1"]
     assert [action.action_type for action in actions] == ["mitigation", "adaptation"]
+
+
+@pytest.mark.unit
+def test_mock_action_client_records_fetch_metadata(tmp_path: Path) -> None:
+    """Mock action client exposes generated-at metadata for fetch artifacts."""
+    mock_file_path = tmp_path / "action_pathways_api_mock.json"
+    mock_file_path.write_text(
+        """
+        {
+          "meta": {
+            "generatedAtUtc": "2026-05-21T00:00:00+00:00",
+            "apiContext": {"endpoint": "GET /api/v1/action-pathways"},
+            "totalRecords": 1
+          },
+          "actions": [
+            {
+              "actionId": "mitigation_1",
+              "actionType": "mitigation",
+              "actionName": "Mitigation action",
+              "coBenefits": {},
+              "emissions": {
+                "sectorNumber": "I",
+                "subsectorNumber": [1],
+                "gpcReferenceNumber": ["I.1.1"],
+                "impactText": "high"
+              }
+            }
+          ]
+        }
+        """.strip(),
+        encoding="utf-8",
+    )
+    client = MockActionPathwaysDataApiClient(mock_file_path=mock_file_path)
+
+    fetch_result = client.list_actions()
+
+    assert fetch_result.source_metadata["mock_file_path"].endswith(
+        "action_pathways_api_mock.json"
+    )
+    assert fetch_result.source_metadata["upstream_endpoint"] == ACTION_PATHWAYS_ENDPOINT
+    assert fetch_result.source_metadata["upstream_generated_at_utc"] == (
+        "2026-05-21T00:00:00+00:00"
+    )
 
 
 @pytest.mark.unit
@@ -128,6 +178,93 @@ def test_get_action_pathways_data_client_rejects_invalid_source(
 
     with pytest.raises(ValueError, match="HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE"):
         get_action_pathways_data_api_client()
+
+
+@pytest.mark.unit
+def test_action_pathways_service_uses_default_base_url_when_env_is_unset(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Action pathways service falls back to the documented default host."""
+    monkeypatch.delenv("CCGLOBAL_API_BASE_URL", raising=False)
+
+    service = ActionPathwaysApiService()
+
+    assert service.base_url == "https://ccglobal.openearth.dev"
+
+
+@pytest.mark.unit
+def test_action_pathways_service_uses_env_base_url_override(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Action pathways service honors the configured upstream host override."""
+    monkeypatch.setenv(
+        "CCGLOBAL_API_BASE_URL",
+        "https://pathways.example.test/root/ ",
+    )
+
+    service = ActionPathwaysApiService()
+
+    assert service.base_url == "https://pathways.example.test/root/"
+    assert (
+        service._build_action_pathways_url()
+        == "https://pathways.example.test/root/api/v1/action-pathways"
+    )
+
+
+@pytest.mark.unit
+def test_api_action_pathways_client_maps_remote_payload_and_metadata(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """API action client exposes fetch metadata from the live-shaped payload."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        request = httpx.Request("GET", url, headers=headers)
+        return httpx.Response(
+            200,
+            request=request,
+            json={
+                "meta": {
+                    "generatedAtUtc": "2026-05-21T14:07:38.144930+00:00",
+                    "backendConsumer": "unspecified",
+                    "upstreamProvider": "global-api",
+                    "apiContext": {"endpoint": ACTION_PATHWAYS_ENDPOINT},
+                    "totalRecords": 1,
+                },
+                "actions": [
+                    {
+                        "actionId": "icare_0001",
+                        "actionType": "mitigation",
+                        "actionName": "Improve heat and energy recovery",
+                        "coBenefits": {},
+                        "emissions": {
+                            "sectorNumber": "IV",
+                            "subsectorNumber": [1],
+                            "gpcReferenceNumber": ["IV.1"],
+                            "impactText": "low",
+                            "impactNumeric": 2,
+                        },
+                    }
+                ],
+            },
+        )
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    client = ApiActionPathwaysDataApiClient()
+
+    fetch_result = client.list_actions()
+    actions = fetch_result.actions
+
+    assert actions[0].action_id == "icare_0001"
+    assert fetch_result.source_metadata["upstream_endpoint"] == ACTION_PATHWAYS_ENDPOINT
+    assert fetch_result.source_metadata["http_status_code"] == 200
+    assert fetch_result.source_metadata["upstream_generated_at_utc"] == (
+        "2026-05-21T14:07:38.144930+00:00"
+    )
+    assert fetch_result.source_metadata["upstream_url"].endswith(
+        "/api/v1/action-pathways"
+    )
 
 
 @pytest.mark.unit

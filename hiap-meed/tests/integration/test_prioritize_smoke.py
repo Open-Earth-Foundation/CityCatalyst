@@ -22,6 +22,7 @@ from app.modules.prioritizer.api import (
 )
 from app.modules.prioritizer.internal_models import (
     Action,
+    ActionPathwaysFetchResult,
     ActionMitigationFeasibilityScoresFetchResult,
     ActionPolicyScoresFetchResult,
     CityData,
@@ -50,8 +51,8 @@ class MockActionPathwaysDataApiClient:
 
     actions: list[Action]
 
-    def list_actions(self) -> list[Action]:
-        return list(self.actions)
+    def list_actions(self) -> ActionPathwaysFetchResult:
+        return ActionPathwaysFetchResult(actions=list(self.actions))
 
 
 @dataclass

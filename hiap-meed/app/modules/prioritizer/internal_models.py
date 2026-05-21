@@ -86,6 +86,15 @@ class Action(BaseModel):
     raw: dict[str, Any] = Field(default_factory=dict)
 
 
+class ActionPathwaysFetchResult(BaseModel):
+    """Action pathway rows plus request-scoped fetch metadata."""
+
+    actions: list[Action] = Field(default_factory=list)
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
+    upstream_meta: dict[str, Any] = Field(default_factory=dict)
+    warning: str | None = None
+
+
 class BlockScoreResult(BaseModel):
     """Per-block action scores and optional explainability metadata."""
 

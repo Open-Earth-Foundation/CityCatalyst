@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 from pydantic import ValidationError
 
-from app.modules.prioritizer.internal_models import Action
+from app.modules.prioritizer.internal_models import Action, ActionPathwaysFetchResult
 from app.modules.prioritizer.models import (
     ActionPathwayApiItem,
     ActionPathwaysApiResponse,
@@ -65,12 +65,27 @@ class ActionPathwaysApiService:
         """Resolve the upstream action pathways host from config when omitted."""
         if self.base_url is None:
             self.base_url = get_action_pathways_base_url()
-
     def _build_action_pathways_url(self) -> str:
         """Return the full upstream action pathways URL without query parameters."""
         return f"{self.base_url.rstrip('/')}/api/v1/action-pathways"
 
-    def list_actions(self) -> list[Action]:
+    def _base_source_metadata(
+        self,
+        *,
+        url: str,
+        http_status_code: int | None,
+        upstream_generated_at_utc: str | None,
+    ) -> dict[str, object]:
+        """Return artifact-friendly source metadata for one request."""
+        return {
+            "mock_file_path": None,
+            "upstream_url": url,
+            "upstream_endpoint": ACTION_PATHWAYS_ENDPOINT,
+            "http_status_code": http_status_code,
+            "upstream_generated_at_utc": upstream_generated_at_utc,
+        }
+
+    def list_actions(self) -> ActionPathwaysFetchResult:
         """Fetch and map the full upstream action pathways catalog."""
         action_url = self._build_action_pathways_url()
         payload, http_status_code = get_json_with_retries(
@@ -88,4 +103,17 @@ class ActionPathwaysApiService:
                 url=action_url,
             ) from error
 
-        return [map_action_pathway_api_item_to_action(action) for action in response.actions]
+        source_metadata = self._base_source_metadata(
+            url=action_url,
+            http_status_code=http_status_code,
+            upstream_generated_at_utc=response.meta.generated_at_utc,
+        )
+        return ActionPathwaysFetchResult(
+            actions=[
+                map_action_pathway_api_item_to_action(action)
+                for action in response.actions
+            ],
+            source_metadata=source_metadata,
+            upstream_meta=response.meta.model_dump(mode="json"),
+            warning=None,
+        )

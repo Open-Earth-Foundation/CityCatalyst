@@ -28,7 +28,6 @@ from app.services.data_clients import (
     MockCityDataApiClient,
     MockLegalDataApiClient,
     MockActionPolicyScoresDataApiClient,
-    describe_action_pathways_data_source,
     describe_legal_data_source,
 )
 from app.services.http_client import UpstreamApiError
@@ -50,17 +49,22 @@ def _filter_supported_action_type(
     actions: list[Action],
     *,
     action_type: str,
-) -> tuple[list[Action], list[Action]]:
-    """Split fetched actions into supported and filtered-out action types."""
+) -> tuple[list[Action], list[Action], list[Action]]:
+    """Split fetched actions into supported, filtered-out, and missing-type groups."""
     normalized_action_type = action_type.strip().lower()
     kept_actions: list[Action] = []
     filtered_actions: list[Action] = []
+    missing_action_type_actions: list[Action] = []
     for action in actions:
+        if action.action_type is None or not action.action_type.strip():
+            missing_action_type_actions.append(action)
+            kept_actions.append(action)
+            continue
         if action.action_type.strip().lower() == normalized_action_type:
             kept_actions.append(action)
             continue
         filtered_actions.append(action)
-    return kept_actions, filtered_actions
+    return kept_actions, filtered_actions, missing_action_type_actions
 
 
 def _score_stats(score_by_action_id: dict[str, float]) -> dict[str, float | int | bool]:
@@ -340,20 +344,32 @@ def run_prioritization(
 
     # Phase 2: fetch action catalog that enters hard filtering.
     with time_block("fetch_actions") as block:
-        fetched_actions = action_pathways_data_api_client.list_actions()
-        actions, filtered_out_action_type_actions = _filter_supported_action_type(
+        action_pathways_fetch_result = action_pathways_data_api_client.list_actions()
+        fetched_actions = action_pathways_fetch_result.actions
+        (
+            actions,
+            filtered_out_action_type_actions,
+            missing_action_type_actions,
+        ) = _filter_supported_action_type(
             fetched_actions,
             action_type=SUPPORTED_ACTION_TYPE,
         )
     # Emit high-level and step-detail artifacts for action fetch.
     timings["fetch_actions"] = block.elapsed_seconds
-    action_source_descriptor = describe_action_pathways_data_source(action_pathways_data_api_client)
     fetch_actions_payload = {
         "total_fetched_actions": len(fetched_actions),
         "total_actions": len(actions),
         "supported_action_type": SUPPORTED_ACTION_TYPE,
         "filtered_out_action_type_actions_count": len(filtered_out_action_type_actions),
-        "source": action_source_descriptor["source"],
+        "missing_action_type_actions_count": len(missing_action_type_actions),
+        "source": (
+            "mock_action_pathways_api"
+            if isinstance(
+                action_pathways_data_api_client,
+                MockActionPathwaysDataApiClient,
+            )
+            else "action_pathways_api"
+        ),
         "elapsed_seconds": block.elapsed_seconds,
     }
     fetch_actions_event_index = artifact_writer.write_event(
@@ -371,21 +387,28 @@ def run_prioritization(
             "filtered_out_action_type_action_ids": _sorted_action_ids(
                 filtered_out_action_type_actions
             ),
+            "missing_action_type_actions_count": len(missing_action_type_actions),
+            "missing_action_type_action_ids": _sorted_action_ids(
+                missing_action_type_actions
+            ),
             "action_ids": _sorted_action_ids(actions),
-            "source": action_source_descriptor["source"],
-            "source_metadata": action_source_descriptor["source_metadata"],
+            "source": fetch_actions_payload["source"],
+            "source_metadata": action_pathways_fetch_result.source_metadata,
+            "upstream_meta": action_pathways_fetch_result.upstream_meta,
+            "warning": action_pathways_fetch_result.warning,
             "elapsed_seconds": block.elapsed_seconds,
         },
         event_index=fetch_actions_event_index,
         event_type="fetch_actions.completed",
     )
     logger.info(
-        "Fetched actions internal_request_id=%s locode=%s total_fetched_actions=%s total_supported_actions=%s filtered_out_action_type_actions_count=%s supported_action_type=%s elapsed_seconds=%.3f",
+        "Fetched actions internal_request_id=%s locode=%s total_fetched_actions=%s total_supported_actions=%s filtered_out_action_type_actions_count=%s missing_action_type_actions_count=%s supported_action_type=%s elapsed_seconds=%.3f",
         internal_request_id,
         locode,
         len(fetched_actions),
         len(actions),
         len(filtered_out_action_type_actions),
+        len(missing_action_type_actions),
         SUPPORTED_ACTION_TYPE,
         block.elapsed_seconds,
     )

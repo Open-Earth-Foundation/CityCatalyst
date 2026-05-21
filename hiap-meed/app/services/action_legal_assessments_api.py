@@ -123,6 +123,8 @@ class ActionLegalAssessmentsApiService:
                         "upstream_endpoint": LEGAL_ASSESSMENTS_ENDPOINT_TEMPLATE,
                         "requested_country_code": country_code.strip().upper(),
                         "http_status_code": http_status_code,
+                        # The current upstream legal endpoint is a top-level JSON list
+                        # and does not publish a generated-at meta field.
                         "upstream_generated_at_utc": None,
                     },
                 }

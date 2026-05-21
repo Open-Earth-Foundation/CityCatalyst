@@ -82,7 +82,7 @@ This is the right choice as long as the orchestrator and data clients are synchr
 | Client                    | Method                                | Status                                                                                  | Target upstream |
 | ------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------- | --------------- |
 | City data client          | `get_city(locode)`                    | Mock/API switch (`HIAP_MEED_CITY_DATA_SOURCE`); `mock` is file-backed, `api` performs synchronous HTTP GET `/api/v0/city_attributes/{locode}` against the shared `CCGLOBAL_API_BASE_URL` (default `https://ccglobal.openearth.dev` locally; overridden in workflows per environment) | configurable city attributes API host |
-| Action pathways data client | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/action-pathways` with no query parameters and returns the full upstream catalog; `mock` is file-backed | Global API |
+| Action pathways data client | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/action-pathways` with no query parameters and returns the full upstream catalog plus fetch metadata; `mock` is file-backed and returns the same shape | Global API |
 | Legal data client         | `get_action_legal_assessments(country_code)` | Mock/API switch (`HIAP_MEED_LEGAL_DATA_SOURCE`); `mock` is file-backed, `api` performs synchronous HTTP GET `/api/v1/action-legal-assessments?countryCode=...` against the shared `CCGLOBAL_API_BASE_URL` | configurable legal assessments API host |
 | Action policy scores data client | `get_action_policy_scores(locode)`    | Mock/API switch (`HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/cities/{locode}/action-policy-scores`; `mock` is file-backed | Global API (future) |
 | Action mitigation feasibility scores data client | `get_action_mitigation_feasibility_scores(locode, country_code)` | Mock/API switch (`HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; `mock` is file-backed | Global API |
@@ -92,6 +92,10 @@ Clients are injected via FastAPI's `Depends()` pattern. The city, action, legal,
 Action API note:
 - `GET /api/v1/action-pathways` is called without `limit`, `lang`, or other query parameters
 - mitigation feasibility now comes from the separate city-scoped scores endpoint and missing action rows use the neutral `0.5` fallback in Feasibility scoring
+
+Fetch metadata note:
+- city attributes, action pathways, action policy scores, and action mitigation feasibility scores expose upstream generated-at metadata in their current contracts, so artifacts record `source_metadata.upstream_generated_at_utc`
+- the legal assessments endpoint does not currently expose an equivalent top-level generated-at field, so legal fetch artifacts intentionally keep `source_metadata.upstream_generated_at_utc = null`
 
 ---
 

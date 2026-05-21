@@ -224,10 +224,15 @@ def test_action_pathways_live_payload_matches_expected_contract() -> None:
 @pytest.mark.external
 def test_action_pathways_live_service_maps_current_upstream_payload() -> None:
     """The synchronous action service maps the live upstream payload into actions."""
-    actions = ActionPathwaysApiService().list_actions()
+    service = ActionPathwaysApiService()
+    fetch_result = service.list_actions()
+    actions = fetch_result.actions
 
     assert actions
     assert all(action.action_type == "mitigation" for action in actions)
     assert actions[0].action_id
     assert actions[0].action_name
     assert "socioeconomicIndicators" not in actions[0].raw
+    assert fetch_result.source_metadata["http_status_code"] == 200
+    assert isinstance(fetch_result.source_metadata["upstream_generated_at_utc"], str)
+    assert fetch_result.source_metadata["upstream_generated_at_utc"]

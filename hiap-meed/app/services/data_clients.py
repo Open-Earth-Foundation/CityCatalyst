@@ -28,6 +28,7 @@ from app.services.action_policy_scores_api import (
 from app.services.city_attributes_api import CityAttributesApiService
 from app.modules.prioritizer.internal_models import (
     Action,
+    ActionPathwaysFetchResult,
     ActionMitigationFeasibilityScoreRecord,
     ActionMitigationFeasibilityScoresFetchResult,
     ActionPolicyScoreRecord,
@@ -72,29 +73,6 @@ def _base_source_metadata() -> dict[str, object]:
         "upstream_endpoint": None,
         "http_status_code": None,
         "upstream_generated_at_utc": None,
-    }
-
-
-def describe_action_pathways_data_source(
-    client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient,
-) -> dict[str, object]:
-    """Return artifact-friendly source metadata for the configured action client."""
-    if isinstance(client, MockActionPathwaysDataApiClient):
-        source_metadata = _base_source_metadata()
-        source_metadata["mock_file_path"] = str(client.mock_file_path)
-        source_metadata["upstream_endpoint"] = ACTION_PATHWAYS_ENDPOINT
-        return {
-            "source": "mock_action_pathways_api",
-            "source_metadata": source_metadata,
-        }
-    source_metadata = _base_source_metadata()
-    service = getattr(client, "_service", None)
-    if service is not None and hasattr(service, "_build_action_pathways_url"):
-        source_metadata["upstream_url"] = service._build_action_pathways_url()
-        source_metadata["upstream_endpoint"] = ACTION_PATHWAYS_ENDPOINT
-    return {
-        "source": "action_pathways_api",
-        "source_metadata": source_metadata,
     }
 
 
@@ -185,11 +163,25 @@ class MockActionPathwaysDataApiClient:
 
     mock_file_path: Path
 
-    def list_actions(self) -> list[Action]:
+    def list_actions(self) -> ActionPathwaysFetchResult:
         """Load and map the full mock action pathways catalog."""
         payload = json.loads(self.mock_file_path.read_text(encoding="utf-8"))
         response = ActionPathwaysApiResponse.model_validate(payload)
-        return [map_action_pathway_api_item_to_action(action) for action in response.actions]
+        source_metadata = {
+            **_base_source_metadata(),
+            "mock_file_path": str(self.mock_file_path),
+            "upstream_endpoint": ACTION_PATHWAYS_ENDPOINT,
+            "upstream_generated_at_utc": response.meta.generated_at_utc,
+        }
+        return ActionPathwaysFetchResult(
+            actions=[
+                map_action_pathway_api_item_to_action(action)
+                for action in response.actions
+            ],
+            source_metadata=source_metadata,
+            upstream_meta=response.meta.model_dump(mode="json"),
+            warning=None,
+        )
 
 
 @dataclass
@@ -445,7 +437,7 @@ class ApiActionPathwaysDataApiClient:
         """Create the action API client with a small synchronous service wrapper."""
         self._service = service or ActionPathwaysApiService()
 
-    def list_actions(self) -> list[Action]:
+    def list_actions(self) -> ActionPathwaysFetchResult:
         """Fetch the full action pathways catalog from the upstream action API."""
         return self._service.list_actions()
 

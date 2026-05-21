@@ -192,16 +192,23 @@ def preview_exclusions(
                 ],
             },
         )
-        actions = action_pathways_data_api_client.list_actions()
+        action_pathways_fetch_result = action_pathways_data_api_client.list_actions()
+        actions = action_pathways_fetch_result.actions
         fetch_actions_event_index = artifact_writer.write_event(
             "fetch_actions.completed",
-            {"total_actions": len(actions)},
+            {
+                "total_actions": len(actions),
+                "source_metadata": action_pathways_fetch_result.source_metadata,
+            },
         )
         artifact_writer.write_step_detail(
             "fetch_actions",
             {
                 "total_actions": len(actions),
                 "action_ids": sorted(action.action_id for action in actions),
+                "source_metadata": action_pathways_fetch_result.source_metadata,
+                "upstream_meta": action_pathways_fetch_result.upstream_meta,
+                "warning": action_pathways_fetch_result.warning,
             },
             event_index=fetch_actions_event_index,
             event_type="fetch_actions.completed",

@@ -312,19 +312,22 @@ erDiagram
         string reporting_level
         string gpc_version
     }
-    modelled__policy_signals {
+    modelled__action_policy_signals {
         string policy_signal_id "PK"
+        string src_action_id
+        string location_scope
         string location_code
         string location_name
-        string location_scope
         string signal_type
         string signal_relation
         string signal_strength
-        string signal_subject
-        string gpc_sector
+        string explicitness
+        string document_type
+        string document_name
+        string doc_relevance
         string signal_summary
-        json key_numeric
-        json evidence_anchors
+        string evidence_text
+        int page
         string release_id "FK"
         datetime created_at
         datetime updated_at
@@ -447,7 +450,7 @@ erDiagram
     modelled__formula_input }o--|| modelled__gpc_sector : references
     modelled__formula_input }o--|| modelled__publisher_datasource : references
     modelled__ghgi_methodology }o--|| modelled__gpc_sector : references
-    modelled__policy_signals }o--|| modelled__dataset_release : references
+    modelled__action_policy_signals }o--|| modelled__dataset_release : references
     modelled__action_legal_assessement }o--|| modelled__dataset_release : references
     modelled__population }o--|| modelled__publisher_datasource : references
     modelled__project_portfolio }o--|| modelled__dataset_release : references

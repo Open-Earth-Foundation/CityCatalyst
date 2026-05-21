@@ -284,7 +284,6 @@ def _build_alignment_signals(alignment_evidence: dict[str, object]) -> dict[str,
         if action_timeline_bucket_value is not None
         else None
     )
-    policy_signals_count_value = alignment_evidence.get("policy_signals_count")
     matched_preferred_co_benefits_count_value = alignment_evidence.get(
         "matched_preferred_co_benefits_count"
     )
@@ -303,9 +302,6 @@ def _build_alignment_signals(alignment_evidence: dict[str, object]) -> dict[str,
             if timeframe_match_label_value is not None
             else None
         ),
-        "policy_signals_count": int(policy_signals_count_value)
-        if isinstance(policy_signals_count_value, int | float)
-        else 0,
         "policy_component_bucket": _component_score_bucket(policy_component_score),
         "sector_component_bucket": _component_score_bucket(sector_component_score),
         "co_benefit_component_bucket": _component_score_bucket(
@@ -326,24 +322,19 @@ def _build_feasibility_signals(
     feasibility_evidence: dict[str, object],
 ) -> dict[str, object]:
     """Build qualitative feasibility signals from block evidence."""
-    informational_rows = feasibility_evidence.get("informational_requirements")
-    informational_count = (
-        len(informational_rows) if isinstance(informational_rows, list) else 0
-    )
-    soft_legal_aligned_count_value = feasibility_evidence.get("soft_legal_aligned_count")
-    soft_legal_total_count_value = feasibility_evidence.get("soft_legal_total_count")
-    soft_legal_component_score = feasibility_evidence.get("soft_legal_component_score")
+    legal_component_score = feasibility_evidence.get("legal_component_score")
     socioeconomic_component_score = feasibility_evidence.get(
         "socioeconomic_component_score"
     )
     return {
-        "soft_legal_aligned_count": int(soft_legal_aligned_count_value)
-        if isinstance(soft_legal_aligned_count_value, int | float)
-        else 0,
-        "soft_legal_total_count": int(soft_legal_total_count_value)
-        if isinstance(soft_legal_total_count_value, int | float)
-        else 0,
-        "informational_requirements_count": informational_count,
+        "legal_assessment_present": bool(
+            feasibility_evidence.get("legal_assessment_present", False)
+        ),
+        "legal_assessment_missing": bool(
+            feasibility_evidence.get("legal_assessment_missing", False)
+        ),
+        "legal_verdict_category": feasibility_evidence.get("legal_verdict_category"),
+        "legal_component_source": feasibility_evidence.get("legal_component_source"),
         "missing_city_indicator_keys_count": len(
             feasibility_evidence.get("missing_city_socioeconomic_indicator_keys", [])
         )
@@ -352,8 +343,8 @@ def _build_feasibility_signals(
             list,
         )
         else 0,
-        "soft_legal_component_bucket": _component_score_bucket(
-            soft_legal_component_score
+        "legal_component_bucket": _component_score_bucket(
+            legal_component_score
         ),
         "socioeconomic_component_bucket": _component_score_bucket(
             socioeconomic_component_score
@@ -404,7 +395,7 @@ def _build_main_strengths(
             very_strong_message="Fits the city's preferred implementation timeframe.",
         )
 
-    if bool(alignment_evidence.get("policy_support_score_present", False)):
+    if bool(alignment_evidence.get("policy_score_present", False)):
         _append_strength_message_for_score(
             strengths,
             score_value=alignment_evidence.get("policy_component_score"),
@@ -420,13 +411,12 @@ def _build_main_strengths(
             very_strong_message="Supports the city's preferred co-benefits very well.",
         )
 
-    soft_legal_total_count = int(feasibility_evidence.get("soft_legal_total_count", 0))
-    if soft_legal_total_count > 0:
+    if bool(feasibility_evidence.get("legal_assessment_present", False)):
         _append_strength_message_for_score(
             strengths,
-            score_value=feasibility_evidence.get("soft_legal_component_score"),
-            strong_message="Shows strong supportive soft legal conditions in the current evidence.",
-            very_strong_message="Shows very strong supportive soft legal conditions in the current evidence.",
+            score_value=feasibility_evidence.get("legal_component_score"),
+            strong_message="Shows supportive legal feasibility conditions in the current evidence.",
+            very_strong_message="Shows very supportive legal feasibility conditions in the current evidence.",
         )
 
     socioeconomic_rows = feasibility_evidence.get("socioeconomic_indicator_rows", [])
@@ -488,7 +478,7 @@ def _build_main_constraints(
             very_weak_message="Does not fit the city's preferred implementation timeframe.",
         )
 
-    if bool(alignment_evidence.get("policy_support_score_present", False)):
+    if bool(alignment_evidence.get("policy_score_present", False)):
         _append_constraint_message_for_score(
             constraints,
             score_value=alignment_evidence.get("policy_component_score"),
@@ -504,13 +494,12 @@ def _build_main_constraints(
             very_weak_message="Offers very weak support for the city's preferred co-benefits.",
         )
 
-    soft_legal_total_count = int(feasibility_evidence.get("soft_legal_total_count", 0))
-    if soft_legal_total_count > 0:
+    if bool(feasibility_evidence.get("legal_assessment_present", False)):
         _append_constraint_message_for_score(
             constraints,
-            score_value=feasibility_evidence.get("soft_legal_component_score"),
-            weak_message="Shows weak supportive soft legal conditions in the current evidence.",
-            very_weak_message="Shows very weak supportive soft legal conditions in the current evidence.",
+            score_value=feasibility_evidence.get("legal_component_score"),
+            weak_message="Shows weak legal feasibility conditions in the current evidence.",
+            very_weak_message="Shows very weak legal feasibility conditions in the current evidence.",
         )
 
     socioeconomic_rows = feasibility_evidence.get("socioeconomic_indicator_rows", [])
@@ -532,20 +521,13 @@ def _build_known_limitations(
     """List known limitations that should be acknowledged in explanations."""
     limitations: list[str] = []
 
-    informational_requirements_count_value = feasibility_evidence.get(
-        "informational_requirements"
-    )
-    informational_requirements_count = (
-        len(informational_requirements_count_value)
-        if isinstance(informational_requirements_count_value, list)
-        else 0
-    )
-    informational_summary_available = bool(
-        feasibility_evidence.get("informational_requirements_summary_available")
-    )
-    if informational_requirements_count > 0 and not informational_summary_available:
+    if bool(feasibility_evidence.get("legal_assessment_missing", False)):
         limitations.append(
-            "Non-blocking legal constraints are included as evidence, but UI-friendly implementation notes are not fully implemented yet."
+            "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        )
+    elif bool(feasibility_evidence.get("legal_verdict_score_missing", False)):
+        limitations.append(
+            "The legal assessment was incomplete for this action, so the legal component used a neutral fallback."
         )
     return limitations
 

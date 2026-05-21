@@ -1,0 +1,168 @@
+{
+  "timestamp": "2026-05-20T14:38:52.807604+00:00",
+  "request_id": "7abee47b-5e9b-4a11-a550-744ae8da99d6",
+  "request_kind": "prioritization",
+  "event_index": 15,
+  "step_name": "response_summary",
+  "event_type": "response_summary.completed",
+  "payload": {
+    "locode": "CL IQQ",
+    "counts": {
+      "total_actions": 155,
+      "valid_actions": 135,
+      "discarded_excluded": 1,
+      "discarded_legal": 19,
+      "ranked_actions": 20
+    },
+    "weights": {
+      "impact": 0.5,
+      "alignment": 0.3,
+      "feasibility": 0.2
+    },
+    "ranked_action_ids": [
+      "icare_0016",
+      "icare_0028",
+      "c40_0010",
+      "icare_0121",
+      "c40_0035",
+      "icare_0040",
+      "ipcc_0105",
+      "icare_0002",
+      "icare_0033",
+      "c40_0012",
+      "c40_0017",
+      "icare_0120",
+      "icare_0064",
+      "icare_0010",
+      "ipcc_0049",
+      "ipcc_0067",
+      "icare_0045",
+      "ipcc_0045",
+      "ipcc_0043",
+      "c40_0016"
+    ],
+    "translation_warnings": [],
+    "top_ranked_actions": [
+      {
+        "rank": 1,
+        "action_id": "icare_0016"
+      },
+      {
+        "rank": 2,
+        "action_id": "icare_0028"
+      },
+      {
+        "rank": 3,
+        "action_id": "c40_0010"
+      },
+      {
+        "rank": 4,
+        "action_id": "icare_0121"
+      },
+      {
+        "rank": 5,
+        "action_id": "c40_0035"
+      },
+      {
+        "rank": 6,
+        "action_id": "icare_0040"
+      },
+      {
+        "rank": 7,
+        "action_id": "ipcc_0105"
+      },
+      {
+        "rank": 8,
+        "action_id": "icare_0002"
+      },
+      {
+        "rank": 9,
+        "action_id": "icare_0033"
+      },
+      {
+        "rank": 10,
+        "action_id": "c40_0012"
+      },
+      {
+        "rank": 10,
+        "action_id": "c40_0017"
+      },
+      {
+        "rank": 12,
+        "action_id": "icare_0120"
+      },
+      {
+        "rank": 13,
+        "action_id": "icare_0064"
+      },
+      {
+        "rank": 14,
+        "action_id": "icare_0010"
+      },
+      {
+        "rank": 15,
+        "action_id": "ipcc_0049"
+      },
+      {
+        "rank": 16,
+        "action_id": "ipcc_0067"
+      },
+      {
+        "rank": 17,
+        "action_id": "icare_0045"
+      },
+      {
+        "rank": 18,
+        "action_id": "ipcc_0045"
+      },
+      {
+        "rank": 19,
+        "action_id": "ipcc_0043"
+      },
+      {
+        "rank": 20,
+        "action_id": "c40_0016"
+      }
+    ],
+    "discarded_excluded_action_ids": [
+      "c40_0029"
+    ],
+    "confirmed_excluded_action_ids": [
+      "c40_0029"
+    ],
+    "discarded_legal_action_ids": [
+      "c40_0013",
+      "c40_0015",
+      "c40_0018",
+      "c40_0023",
+      "c40_0025",
+      "c40_0036",
+      "c40_0037",
+      "icare_0008",
+      "icare_0009",
+      "icare_0023",
+      "icare_0025",
+      "icare_0026",
+      "icare_0031",
+      "icare_0035",
+      "icare_0049",
+      "icare_0105",
+      "icare_0111",
+      "icare_0117",
+      "icare_0139"
+    ],
+    "timings": {
+      "fetch_city": 1.109262903999479,
+      "fetch_actions": 0.01275582000016584,
+      "fetch_legal_assessments": 1.1349247529997228,
+      "fetch_action_policy_scores": 1.2709640470002341,
+      "validate_weights": 0.00017059300080290996,
+      "hard_filter": 0.0005600819995379425,
+      "impact": 0.0012554509994515684,
+      "alignment": 0.005619182999907935,
+      "feasibility": 0.0014957659996071015,
+      "final_scoring": 0.0009173610005746013,
+      "explanations": 11.139328329999444
+    }
+  }
+}

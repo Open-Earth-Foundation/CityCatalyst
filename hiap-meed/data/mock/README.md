@@ -121,33 +121,33 @@ Future action API note:
 - It may include optional fields such as `biome`.
 - When the future `GET /api/v1/action-pathways` payload replaces this mock, the action DTOs and this mock file should be updated together, including removing `biome` and aligning to the new payload field names.
 
-# actions_policy_signals_api_mock.json:
+# action_policy_scores_api_mock.json:
 
-Mock for GET /v1/cities/{locode}/policy-signals.
-Policy signals filtered by city's location_scope/location_name (National Chile + Regional + Communal).
+Mock for GET /api/v1/cities/{locode}/action-policy-scores.
+Action policy scores are city-scoped and use the live action policy scores schema.
 
 It includes:
 
-- policy_signals: array of { action_id, policy_signals: [...], policy_support_score }
-- each signal: location_scope, location_name, signal_type, signal_relation, signal_strength, evidence_ids, evidence_count
-- policy_support_score: 0â€“1 score per action (relation Ã— strength Ã— scope multiplier, normalized)
-- meta.locode, meta.comuna_name, meta.region_name
+- scores: array of { src_action_id, policy_support_score, policy_evidence: [...] }
+- each evidence row: evidence_rank, signal_type, signal_relation, signal_strength, document_name, document_type, doc_relevance, explicitness, page, evidence_strength, evidence_text
+- policy_support_score: 0..1 score per action supplied by the upstream API
+- meta.api_context, meta.total_records, meta.total_evidence_items, meta.spatial_document_coverage
 
 This payload shape is modeled by:
-- `ActionsPolicySignalsApiResponse` (envelope)
-- `PolicySignalByAction` (`policy_signals[]`)
-- `PolicySignal` (nested signal rows)
+- `ActionPolicyScoresApiResponse` (envelope)
+- `ActionPolicyScoreApiItem` (`scores[]`)
+- `ActionPolicyEvidence` (nested evidence rows)
 
 # policy_framework_api_mock.json:
 
 This is a mock response from a policy framework API.
-It simulates policy signals extracted from plans, targets, and budgets, and links these signals to actions.
+It simulates policy context extracted from plans, targets, and budgets, and links this context to actions.
 The upstream provider is the global-api.
 
 It includes:
 
-- policy signals (national, regional, municipal scopes)
-- action to policy signal mapping records
+- policy context rows
+- action to policy mapping records
 
 # legal_api_mock.json:
 
@@ -162,36 +162,28 @@ It includes:
 
 # actions_legal_api_mock.json:
 
-Mock for GET /v1/actions/legal (or /v1/legal-requirements).
-Returns action_id â†’ legal alignment + evidence per action.
+Mock for `GET /api/v1/action-legal-assessments?countryCode=...`.
+Returns the same flat list shape as the live legal assessments API.
 
 It includes:
 
-- legal_requirements: array of { action_id, requirements: [...] }
-- each requirement: signal_code, signal_name, required_value, legal_signal_value, strength, alignment_status, location_scope, location_name, evidence_ids, evidence_count
-- meta.locode: null for now; can filter by city when city-scoped legal data exists
+- one row per assessed action
+- `srcActionId` for action mapping
+- `countryCode` for country filtering
+- `verdictCategory` for hard filtering
+- `verdictScore` for the Feasibility legal component
+- supporting evidence/debug fields such as `ownership*`, `restrictions*`, `legalJustification*`, and timestamps
 
-This payload shape is modeled by:
-- `ActionsLegalApiResponse` (envelope)
-- `LegalRequirementsByAction` (`legal_requirements[]`)
-- `LegalRequirement` (nested requirement rows)
+# Legal mock coverage notes:
 
-# actions_legal_api_mock_test_cases.json:
+The flat legal mock now mirrors the live legal assessments API rather than the older requirement-based mock.
 
-Test mock for ranking validation. Covers all alignment statuses (aligns, not_aligned, no_evidence) and strength types (mandatory, required, recommended, optional, informational).
+For ranking validation, the important cases are:
 
-| action_id | scenario | description |
-|-----------|----------|-------------|
-| c40_0010 | all_aligns | All requirements met (mandatory + required) |
-| c40_0012 | mix_aligns_not_aligned | One aligns, one not_aligned |
-| c40_0013 | mix_aligns_no_evidence | One aligns, one no_evidence |
-| c40_0023 | mix_all_three | Aligns + not_aligned (recommended) + no_evidence |
-| c40_0034 | all_not_aligned | Waste authority shared, not exclusive |
-| c40_0040 | all_no_evidence | No legal signal found |
-| c40_0037 | aligns_with_one_not_aligned | Subsidy cap exceeded (required) |
-| ipcc_0074 | aligns_with_one_no_evidence | Planning aligns, PLANS_ALIGNMENT no_evidence (optional) |
-| c40_0025 | mixed_strengths | mandatory + recommended + optional, all align |
-| c40_0029 | all_strength_types | All 5 strength types with mixed alignment |
+- rows with `verdictCategory = "blocked"` to exercise the hard filter
+- rows with non-blocked categories and non-null `verdictScore`
+- rows with `verdictScore = null` to exercise the neutral `0.5` fallback
+- actions with no row at all for the selected country to exercise missing-coverage fallback
 
 # projects_api_mock.json:
 

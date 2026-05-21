@@ -1,8 +1,8 @@
 "use client";
 
 import { Icon, PopoverHeader, useDisclosure } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import ChatBot from "./chat-bot";
+import React, { useCallback, useEffect, useState } from "react";
+import ChatBot, { type ChatBotProps } from "./chat-bot";
 import ClimaAIAssistantDisclaimerDialog from "./clima-ai-assistant-disclaimer-dialog";
 import { useTranslation } from "@/i18n/client";
 import { AskAiIcon } from "../icons";
@@ -36,6 +36,11 @@ export default function ChatPopover({
   // Disclaimer dialog state
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [hasAcceptedDisclaimer, setHasAcceptedDisclaimer] = useState(false);
+
+  // Context-specific suggestions injected by external components via custom event
+  const [contextSuggestions, setContextSuggestions] = useState<
+    ChatBotProps["contextSuggestions"]
+  >(null);
 
   // get user info
   const { data: userInfo } = api.useGetUserInfoQuery();
@@ -71,6 +76,23 @@ export default function ChatPopover({
     onOpen();
   };
 
+  // Allow external components to open the popover via a custom event.
+  // The event detail may include context-specific suggestions to replace the defaults.
+  const handleOpenClimaAI = useCallback(
+    (e: Event) => {
+      const detail = (e as CustomEvent<{ suggestions?: { preview: string; message: string }[] }>)
+        .detail;
+      setContextSuggestions(detail?.suggestions ?? null);
+      onOpenChange({ open: true });
+    },
+    [onOpenChange],
+  );
+
+  useEffect(() => {
+    window.addEventListener("open-clima-ai", handleOpenClimaAI);
+    return () => window.removeEventListener("open-clima-ai", handleOpenClimaAI);
+  }, [handleOpenClimaAI]);
+
   // Lock body scroll while popover is open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -87,7 +109,7 @@ export default function ChatPopover({
   // Hide the ChatPopover on auth and onboarding pages
   if (
     pathname.startsWith(`/${lng}/auth`) ||
-    pathname.includes("/onboarding")
+    pathname.includes("/cities/onboarding") // only hide on ghgi onboarding page
   ) {
     return null;
   }
@@ -120,6 +142,7 @@ export default function ChatPopover({
             fontWeight="600"
             letterSpacing="wider"
             py="26px"
+            bg="interactive.tertiary"
             maxW="220px"
             fontFamily="heading"
             aria-label={t("ai-expert")}
@@ -157,6 +180,7 @@ export default function ChatPopover({
               inputRef={inputRef}
               t={t}
               inventoryId={effectiveInventoryId}
+              contextSuggestions={contextSuggestions}
             />
           </PopoverBody>
           <PopoverCloseTrigger

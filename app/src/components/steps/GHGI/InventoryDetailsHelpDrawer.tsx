@@ -3,6 +3,7 @@ import {
   Accordion,
   Box,
   Drawer,
+  HStack,
   Icon,
   Link,
   Portal,
@@ -11,6 +12,12 @@ import {
 } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
 import { BiChevronDown, BiLinkExternal } from "react-icons/bi";
+import { AskAiIconOutline2 } from "@/components/icons";
+
+interface ChatSuggestion {
+  preview: string;
+  message: string;
+}
 
 interface HelpDrawerItem {
   value: string;
@@ -20,6 +27,7 @@ interface HelpDrawerItem {
   bulletPoints: string[];
   itemSummary?: string;
   learnMoreLink: string;
+  suggestions: ChatSuggestion[];
 }
 
 const getHelpDrawerItems = (t: TFunction): HelpDrawerItem[] => [
@@ -36,6 +44,11 @@ const getHelpDrawerItems = (t: TFunction): HelpDrawerItem[] => [
     ],
     itemSummary: t("gpc-definition-summary"),
     learnMoreLink: "https://ghgprotocol.org/ghg-protocol-cities",
+    suggestions: [
+      { preview: t("chat-suggestion-gpc-definition-1"), message: t("chat-suggestion-gpc-definition-1-message") },
+      { preview: t("chat-suggestion-gpc-definition-2"), message: t("chat-suggestion-gpc-definition-2-message") },
+      { preview: t("chat-suggestion-gpc-definition-3"), message: t("chat-suggestion-gpc-definition-3-message") },
+    ],
   },
   {
     value: "gpc_basic_definition",
@@ -48,6 +61,11 @@ const getHelpDrawerItems = (t: TFunction): HelpDrawerItem[] => [
     ],
     learnMoreLink:
       "https://ghgprotocol.org/sites/default/files/ghgp/standards/GHGP_GPC_0.pdf",
+    suggestions: [
+      { preview: t("chat-suggestion-gpc-basic-1"), message: t("chat-suggestion-gpc-basic-1-message") },
+      { preview: t("chat-suggestion-gpc-basic-2"), message: t("chat-suggestion-gpc-basic-2-message") },
+      { preview: t("chat-suggestion-gpc-basic-3"), message: t("chat-suggestion-gpc-basic-3-message") },
+    ],
   },
   {
     value: "gpc_basic_plus_definition",
@@ -62,6 +80,11 @@ const getHelpDrawerItems = (t: TFunction): HelpDrawerItem[] => [
     itemSummary: t("gpc-basic-plus-definition-summary"),
     learnMoreLink:
       "https://ghgprotocol.org/sites/default/files/ghgp/standards/GHGP_GPC_0.pdf",
+    suggestions: [
+      { preview: t("chat-suggestion-gpc-basic-plus-1"), message: t("chat-suggestion-gpc-basic-plus-1-message") },
+      { preview: t("chat-suggestion-gpc-basic-plus-2"), message: t("chat-suggestion-gpc-basic-plus-2-message") },
+      { preview: t("chat-suggestion-gpc-basic-plus-3"), message: t("chat-suggestion-gpc-basic-plus-3-message") },
+    ],
   },
   {
     value: "gwp_ar5_definition",
@@ -76,6 +99,11 @@ const getHelpDrawerItems = (t: TFunction): HelpDrawerItem[] => [
     ],
     itemSummary: t("gwp-ar5-definition-summary"),
     learnMoreLink: "https://www.ipcc.ch/assessment-report/ar5/",
+    suggestions: [
+      { preview: t("chat-suggestion-ar5-1"), message: t("chat-suggestion-ar5-1-message") },
+      { preview: t("chat-suggestion-ar5-2"), message: t("chat-suggestion-ar5-2-message") },
+      { preview: t("chat-suggestion-ar5-3"), message: t("chat-suggestion-ar5-3-message") },
+    ],
   },
   {
     value: "gwp_ar6_definition",
@@ -90,6 +118,11 @@ const getHelpDrawerItems = (t: TFunction): HelpDrawerItem[] => [
     ],
     itemSummary: t("gwp-ar6-definition-summary"),
     learnMoreLink: "https://www.ipcc.ch/assessment-report/ar6/",
+    suggestions: [
+      { preview: t("chat-suggestion-ar6-1"), message: t("chat-suggestion-ar6-1-message") },
+      { preview: t("chat-suggestion-ar6-2"), message: t("chat-suggestion-ar6-2-message") },
+      { preview: t("chat-suggestion-ar6-3"), message: t("chat-suggestion-ar6-3-message") },
+    ],
   },
 ];
 
@@ -179,10 +212,29 @@ export default function InventoryDetailsHelpDrawer({ t }: { t: TFunction }) {
                         >
                           {item.itemSummary ?? ""}
                         </Text>
-                        <Link href={item.learnMoreLink} target="_blank">
-                          <Text>{t("learn-more")}</Text>
-                          <Icon as={BiLinkExternal} boxSize={4} />
-                        </Link>
+                        <HStack w="full" spaceX="24px">
+                          <Button
+                            variant="outline"
+                            borderColor="interactive.primary"
+                            color="interactive.primary"
+                            px="24px"
+                            py="16px"
+                            onClick={() =>
+                              window.dispatchEvent(
+                                new CustomEvent("open-clima-ai", {
+                                  detail: { suggestions: item.suggestions },
+                                }),
+                              )
+                            }
+                          >
+                            <Icon as={AskAiIconOutline2} h={24} w={24} />
+                            {t("ask-ai")}
+                          </Button>
+                          <Link href={item.learnMoreLink} target="_blank">
+                            <Text>{t("learn-more")}</Text>
+                            <Icon as={BiLinkExternal} boxSize={4} />
+                          </Link>
+                        </HStack>
                       </Accordion.ItemBody>
                     </Accordion.ItemContent>
                   </Accordion.Item>

@@ -54,9 +54,7 @@ more than one item in `cityDataList`.
 Even for multiple cities, the current API route is still:
 - `POST /v1/prioritize`
 
-The old one-step flow, where raw exclusion free text was sent directly to the
-ranking API, is no longer represented by the active mock request files. Raw
-exclusion preferences now live in `prioritizer_exclusion_preview_request_mock.json`,
+Raw exclusion preferences live in `prioritizer_exclusion_preview_request_mock.json`,
 while ranking mocks use confirmed `excludedActionIds`.
 
 # prioritizer_explanation_translation_request_mock.json:
@@ -118,14 +116,14 @@ This payload shape is modeled by:
 Action API note:
 
 - This mock matches `GET /api/v1/action-pathways` with no query parameters.
-- It does not include removed fields such as `actionCategory`, `actionSubcategory`, `biome`, or `socioeconomicIndicators`.
-- The client keeps mitigation actions only; current mock rows are mitigation actions.
+- It includes the action fields used by the current prioritization flow and action-pathways client.
+- The prioritization pipeline keeps mitigation actions only; current mock rows are mitigation actions.
 
 # action_mitigation_feasibility_scores_api_mock.json:
 
 Mock for GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores.
-Mitigation feasibility scores are city-scoped and replace the old action-side
-`socioeconomicIndicators` logic in Feasibility scoring.
+Mitigation feasibility scores are city-scoped and provide the feasibility input
+used in Feasibility scoring.
 
 It includes:
 

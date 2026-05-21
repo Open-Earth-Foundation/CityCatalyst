@@ -37,12 +37,30 @@ from app.utils.timing import time_block
 
 
 logger = logging.getLogger(__name__)
+SUPPORTED_ACTION_TYPE = "mitigation"
 
 
 def _sorted_action_ids(actions: list[Action]) -> list[str]:
     """Return all action IDs in deterministic sorted order."""
     action_ids = [action.action_id for action in actions]
     return sorted(action_ids)
+
+
+def _filter_supported_action_type(
+    actions: list[Action],
+    *,
+    action_type: str,
+) -> tuple[list[Action], list[Action]]:
+    """Split fetched actions into supported and filtered-out action types."""
+    normalized_action_type = action_type.strip().lower()
+    kept_actions: list[Action] = []
+    filtered_actions: list[Action] = []
+    for action in actions:
+        if action.action_type.strip().lower() == normalized_action_type:
+            kept_actions.append(action)
+            continue
+        filtered_actions.append(action)
+    return kept_actions, filtered_actions
 
 
 def _score_stats(score_by_action_id: dict[str, float]) -> dict[str, float | int | bool]:
@@ -322,12 +340,19 @@ def run_prioritization(
 
     # Phase 2: fetch action catalog that enters hard filtering.
     with time_block("fetch_actions") as block:
-        actions = action_pathways_data_api_client.list_actions()
+        fetched_actions = action_pathways_data_api_client.list_actions()
+        actions, filtered_out_action_type_actions = _filter_supported_action_type(
+            fetched_actions,
+            action_type=SUPPORTED_ACTION_TYPE,
+        )
     # Emit high-level and step-detail artifacts for action fetch.
     timings["fetch_actions"] = block.elapsed_seconds
     action_source_descriptor = describe_action_pathways_data_source(action_pathways_data_api_client)
     fetch_actions_payload = {
+        "total_fetched_actions": len(fetched_actions),
         "total_actions": len(actions),
+        "supported_action_type": SUPPORTED_ACTION_TYPE,
+        "filtered_out_action_type_actions_count": len(filtered_out_action_type_actions),
         "source": action_source_descriptor["source"],
         "elapsed_seconds": block.elapsed_seconds,
     }
@@ -337,7 +362,15 @@ def run_prioritization(
     artifact_writer.write_step_detail(
         "fetch_actions",
         {
+            "total_fetched_actions": len(fetched_actions),
             "total_actions": len(actions),
+            "supported_action_type": SUPPORTED_ACTION_TYPE,
+            "filtered_out_action_type_actions_count": len(
+                filtered_out_action_type_actions
+            ),
+            "filtered_out_action_type_action_ids": _sorted_action_ids(
+                filtered_out_action_type_actions
+            ),
             "action_ids": _sorted_action_ids(actions),
             "source": action_source_descriptor["source"],
             "source_metadata": action_source_descriptor["source_metadata"],
@@ -347,10 +380,13 @@ def run_prioritization(
         event_type="fetch_actions.completed",
     )
     logger.info(
-        "Fetched actions internal_request_id=%s locode=%s total_actions=%s elapsed_seconds=%.3f",
+        "Fetched actions internal_request_id=%s locode=%s total_fetched_actions=%s total_supported_actions=%s filtered_out_action_type_actions_count=%s supported_action_type=%s elapsed_seconds=%.3f",
         internal_request_id,
         locode,
+        len(fetched_actions),
         len(actions),
+        len(filtered_out_action_type_actions),
+        SUPPORTED_ACTION_TYPE,
         block.elapsed_seconds,
     )
 

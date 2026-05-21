@@ -54,10 +54,10 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
                 "legal_verdict_category": "conditional",
                 "legal_component_source": "verdict_score",
                 "legal_component_score": 0.5,
-                "socioeconomic_component_score": 0.5,
-                "socioeconomic_indicator_rows": [],
+                "mitigation_feasibility_component_score": 0.5,
+                "mitigation_feasibility_score_present": False,
                 "legal_verdict_score_missing": False,
-                "missing_city_socioeconomic_indicator_keys": [],
+                "mitigation_feasibility_score_missing": False,
             },
         },
     )
@@ -84,6 +84,10 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
     assert payload["alignment_signals"]["policy_component_bucket"] == "neutral"
     assert payload["alignment_signals"]["co_benefit_component_bucket"] == "neutral"
     assert payload["feasibility_signals"]["legal_component_bucket"] == "neutral"
+    assert (
+        payload["feasibility_signals"]["mitigation_feasibility_component_bucket"]
+        == "neutral"
+    )
     assert payload["main_strengths"] == [
         "Expected to make a very strong emissions reduction in the current city inventory.",
         "Matches the city's preferred sector.",
@@ -113,8 +117,8 @@ def test_build_curated_action_payload_uses_policy_buckets_for_strength() -> None
             "legal_component_score": 0.5,
             "legal_component_source": "neutral_fallback",
             "legal_verdict_score_missing": False,
-            "socioeconomic_indicator_rows": [],
-            "missing_city_socioeconomic_indicator_keys": [],
+            "mitigation_feasibility_score_present": False,
+            "mitigation_feasibility_score_missing": True,
         },
     }
 
@@ -221,9 +225,9 @@ def test_build_curated_action_payload_uses_component_buckets_for_constraints() -
                     "legal_component_score": 0.0,
                     "legal_component_source": "verdict_score",
                     "legal_verdict_score_missing": False,
-                    "socioeconomic_component_score": 0.25,
-                    "socioeconomic_indicator_rows": [{"indicator_key": "poverty_rate"}],
-                    "missing_city_socioeconomic_indicator_keys": [],
+                    "mitigation_feasibility_component_score": 0.25,
+                    "mitigation_feasibility_score_present": True,
+                    "mitigation_feasibility_score_missing": False,
                 },
             },
         )
@@ -237,7 +241,7 @@ def test_build_curated_action_payload_uses_component_buckets_for_constraints() -
         "Shows very weak supportive policy context in the current evidence.",
         "Offers very weak support for the city's preferred co-benefits.",
         "Shows very weak legal feasibility conditions in the current evidence.",
-        "Fits the current city socioeconomic context less well.",
+        "Shows weaker mitigation feasibility for the current city.",
     ]
 
 

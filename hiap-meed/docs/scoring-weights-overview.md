@@ -148,4 +148,4 @@ This means Impact is a bit more than twice as influential as Alignment or Feasib
 - The biggest single driver in the current setup is usually Impact.
 - Inside Alignment, Policy support dominates the other Alignment subcomponents.
 - Alignment timeframe matters, but its effect on the final score is small relative to Impact timeline.
-- Missing Impact timeline is now neutral at `0.5`, so it no longer penalizes actions just because the timeline is unknown.
+- Missing Impact timeline is neutral at `0.5`, so actions are not penalized just because the timeline is unknown.

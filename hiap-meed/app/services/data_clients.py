@@ -1,4 +1,4 @@
-"""Repository data clients for file-backed and API-backed inputs."""
+﻿"""Repository data clients for file-backed and API-backed inputs."""
 
 from __future__ import annotations
 
@@ -12,6 +12,15 @@ from app.services.action_legal_assessments_api import (
     ActionLegalAssessmentsApiService,
     LEGAL_ASSESSMENTS_ENDPOINT_TEMPLATE,
 )
+from app.services.action_mitigation_feasibility_scores_api import (
+    ACTION_MITIGATION_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE,
+    ActionMitigationFeasibilityScoresApiService,
+)
+from app.services.action_pathways_api import (
+    ACTION_PATHWAYS_ENDPOINT,
+    ActionPathwaysApiService,
+    map_action_pathway_api_item_to_action,
+)
 from app.services.action_policy_scores_api import (
     ACTION_POLICY_SCORES_ENDPOINT_TEMPLATE,
     ActionPolicyScoresApiService,
@@ -19,21 +28,40 @@ from app.services.action_policy_scores_api import (
 from app.services.city_attributes_api import CityAttributesApiService
 from app.modules.prioritizer.internal_models import (
     Action,
+    ActionMitigationFeasibilityScoreRecord,
+    ActionMitigationFeasibilityScoresFetchResult,
     ActionPolicyScoreRecord,
     ActionPolicyScoresFetchResult,
     CityData,
     LegalAssessmentRecord,
 )
 from app.modules.prioritizer.models import (
+    ActionMitigationFeasibilityScoreApiItem,
+    ActionMitigationFeasibilityScoresApiResponse,
     ActionPolicyScoreApiItem,
     ActionPolicyScoresApiResponse,
     CityApiResponse,
-    ActionsApiResponse,
+    ActionPathwaysApiResponse,
     ActionLegalAssessmentApiItem,
     CitiesApiResponse,
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _resolve_configured_data_source(env_var_name: str, default: str = "api") -> str:
+    """Return a validated data-source mode from the environment."""
+    source = os.getenv(env_var_name, default).strip().lower()
+    if source in {"mock", "api"}:
+        return source
+    logger.error(
+        "Invalid %s=`%s`; expected one of: api, mock",
+        env_var_name,
+        source,
+    )
+    raise ValueError(
+        f"Invalid {env_var_name}=`{source}`; expected one of: api, mock"
+    )
 
 
 def _base_source_metadata() -> dict[str, object]:
@@ -47,20 +75,26 @@ def _base_source_metadata() -> dict[str, object]:
     }
 
 
-def describe_action_data_source(
-    client: MockActionDataApiClient | ApiActionDataApiClient,
+def describe_action_pathways_data_source(
+    client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient,
 ) -> dict[str, object]:
     """Return artifact-friendly source metadata for the configured action client."""
-    if isinstance(client, MockActionDataApiClient):
+    if isinstance(client, MockActionPathwaysDataApiClient):
         source_metadata = _base_source_metadata()
         source_metadata["mock_file_path"] = str(client.mock_file_path)
+        source_metadata["upstream_endpoint"] = ACTION_PATHWAYS_ENDPOINT
         return {
-            "source": "mock_actions_api",
+            "source": "mock_action_pathways_api",
             "source_metadata": source_metadata,
         }
+    source_metadata = _base_source_metadata()
+    service = getattr(client, "_service", None)
+    if service is not None and hasattr(service, "_build_action_pathways_url"):
+        source_metadata["upstream_url"] = service._build_action_pathways_url()
+        source_metadata["upstream_endpoint"] = ACTION_PATHWAYS_ENDPOINT
     return {
-        "source": "actions_api",
-        "source_metadata": _base_source_metadata(),
+        "source": "action_pathways_api",
+        "source_metadata": source_metadata,
     }
 
 
@@ -142,7 +176,7 @@ class MockCityDataApiClient:
 
 
 @dataclass
-class MockActionDataApiClient:
+class MockActionPathwaysDataApiClient:
     """
     File-backed action client loading the checked-in mock actions API payload.
 
@@ -152,39 +186,10 @@ class MockActionDataApiClient:
     mock_file_path: Path
 
     def list_actions(self) -> list[Action]:
-        """Load and map mock action catalog rows into internal action models."""
+        """Load and map the full mock action pathways catalog."""
         payload = json.loads(self.mock_file_path.read_text(encoding="utf-8"))
-        response = ActionsApiResponse.model_validate(payload)
-        actions: list[Action] = []
-        for action in response.actions:
-            co_benefits = {
-                impact_type: impact_entry.model_dump()
-                for impact_type, impact_entry in action.coBenefits.items()
-            }
-            actions.append(
-                Action(
-                    action_id=action.actionId,
-                    action_name=action.actionName,
-                    biome=action.biome,
-                    activity_type_description=action.activity_type_description,
-                    description=action.description,
-                    action_category=action.actionCategory,
-                    action_subcategory=action.actionSubcategory,
-                    investment_cost=action.costInvestmentNeeded,
-                    implementation_timeline=action.timelineForImplementation,
-                    emissions=(
-                        action.emissions.model_dump()
-                        if action.emissions is not None
-                        else {}
-                    ),
-                    co_benefits=co_benefits,
-                    socioeconomic_indicators=[
-                        item.model_dump() for item in action.socioeconomicIndicators
-                    ],
-                    raw=action.model_dump(),
-                )
-            )
-        return actions
+        response = ActionPathwaysApiResponse.model_validate(payload)
+        return [map_action_pathway_api_item_to_action(action) for action in response.actions]
 
 
 @dataclass
@@ -207,40 +212,40 @@ class MockLegalDataApiClient:
         ]
         assessments_by_action_id: dict[str, LegalAssessmentRecord] = {}
         for assessment in assessment_rows:
-            if assessment.countryCode.strip().upper() != country_code.strip().upper():
+            if assessment.country_code.strip().upper() != country_code.strip().upper():
                 continue
-            action_id = assessment.srcActionId
+            action_id = assessment.src_action_id
             if action_id in assessments_by_action_id:
                 raise ValueError(
-                    "Mock legal payload contains duplicate srcActionId values for "
+                    "Mock legal payload contains duplicate src_action_id values for "
                     f"countryCode={country_code.strip().upper()}"
                 )
             assessment_raw = assessment.model_dump()
             assessments_by_action_id[action_id] = LegalAssessmentRecord.model_validate(
                 {
                     "action_id": action_id,
-                    "country_code": assessment.countryCode,
-                    "gpc_sector": assessment.gpcSector,
-                    "verdict_category": assessment.verdictCategory,
-                    "verdict_score": assessment.verdictScore,
-                    "ownership_category": assessment.ownershipCategory,
-                    "ownership_score": assessment.ownershipScore,
-                    "ownership_weight": assessment.ownershipWeight,
-                    "ownership_description": assessment.ownershipDescription,
-                    "restrictions_category": assessment.restrictionsCategory,
-                    "restrictions_score": assessment.restrictionsScore,
-                    "restrictions_weight": assessment.restrictionsWeight,
-                    "restrictions_description": assessment.restrictionsDescription,
-                    "legal_justification": assessment.legalJustification,
-                    "analysis_date": assessment.analysisDate,
-                    "generation_method": assessment.generationMethod,
-                    "legal_references": assessment.legalReferences,
-                    "release_id": assessment.releaseId,
-                    "created_at": assessment.createdAt,
-                    "updated_at": assessment.updatedAt,
-                    "ownership_description_i18n": assessment.ownershipDescriptionI18n,
-                    "restrictions_description_i18n": assessment.restrictionsDescriptionI18n,
-                    "legal_justification_i18n": assessment.legalJustificationI18n,
+                    "country_code": assessment.country_code,
+                    "gpc_sector": assessment.gpc_sector,
+                    "verdict_category": assessment.verdict_category,
+                    "verdict_score": assessment.verdict_score,
+                    "ownership_category": assessment.ownership_category,
+                    "ownership_score": assessment.ownership_score,
+                    "ownership_weight": assessment.ownership_weight,
+                    "ownership_description": assessment.ownership_description,
+                    "restrictions_category": assessment.restrictions_category,
+                    "restrictions_score": assessment.restrictions_score,
+                    "restrictions_weight": assessment.restrictions_weight,
+                    "restrictions_description": assessment.restrictions_description,
+                    "legal_justification": assessment.legal_justification,
+                    "analysis_date": assessment.analysis_date,
+                    "generation_method": assessment.generation_method,
+                    "legal_references": assessment.legal_references,
+                    "release_id": assessment.release_id,
+                    "created_at": assessment.created_at,
+                    "updated_at": assessment.updated_at,
+                    "ownership_description_i18n": assessment.ownership_description_i18n,
+                    "restrictions_description_i18n": assessment.restrictions_description_i18n,
+                    "legal_justification_i18n": assessment.legal_justification_i18n,
                     "raw": assessment_raw,
                     "source_metadata": {
                         **_base_source_metadata(),
@@ -318,6 +323,75 @@ class MockActionPolicyScoresDataApiClient:
         )
 
 
+def _map_action_mitigation_feasibility_score_item(
+    *,
+    score: ActionMitigationFeasibilityScoreApiItem,
+    source_metadata: dict[str, object],
+) -> ActionMitigationFeasibilityScoreRecord:
+    """Map one upstream feasibility score item into the internal action-keyed record."""
+    score_raw = score.model_dump(mode="json")
+    return ActionMitigationFeasibilityScoreRecord.model_validate(
+        {
+            "action_id": score.src_action_id,
+            "locode": score.locode,
+            "global_mitigation_option": score.global_mitigation_option,
+            "action_mapping_strength": score.action_mapping_strength,
+            "option_family": score.option_family,
+            "action_score": score.action_score,
+            "n_feasibility_dimensions": score.n_feasibility_dimensions,
+            "dimension_scores": score.dimension_scores,
+            "breakdown": score.breakdown,
+            "rank_within_city": score.rank_within_city,
+            "raw": score_raw,
+            "source_metadata": source_metadata,
+        }
+    )
+
+
+@dataclass
+class MockActionMitigationFeasibilityScoresDataApiClient:
+    """File-backed mitigation feasibility scores client loading mock payload."""
+
+    mock_file_path: Path
+
+    def get_action_mitigation_feasibility_scores(
+        self, locode: str, country_code: str
+    ) -> ActionMitigationFeasibilityScoresFetchResult:
+        """Load mitigation feasibility scores grouped by action ID."""
+        payload = json.loads(self.mock_file_path.read_text(encoding="utf-8"))
+        response = ActionMitigationFeasibilityScoresApiResponse.model_validate(payload)
+        requested_locode = locode.strip().upper()
+        requested_country_code = country_code.strip().upper()
+        source_metadata = {
+            **_base_source_metadata(),
+            "mock_file_path": str(self.mock_file_path),
+            "requested_locode": requested_locode,
+            "requested_country_code": requested_country_code,
+            "upstream_endpoint": ACTION_MITIGATION_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE,
+            "upstream_generated_at_utc": response.meta.generated_at_utc,
+        }
+        scores_by_action_id: dict[str, ActionMitigationFeasibilityScoreRecord] = {}
+        for score in response.scores:
+            action_id = score.src_action_id
+            if action_id in scores_by_action_id:
+                raise ValueError(
+                    "Mock action mitigation feasibility scores payload contains duplicate "
+                    f"src_action_id values for locode={requested_locode}"
+                )
+            scores_by_action_id[action_id] = (
+                _map_action_mitigation_feasibility_score_item(
+                    score=score,
+                    source_metadata=source_metadata,
+                )
+            )
+        return ActionMitigationFeasibilityScoresFetchResult(
+            scores_by_action_id=scores_by_action_id,
+            source_metadata=source_metadata,
+            upstream_meta=response.meta.model_dump(mode="json"),
+            warning=None,
+        )
+
+
 class ApiLegalDataApiClient:
     """API-backed legal client using the flat upstream legal assessments service."""
 
@@ -348,19 +422,32 @@ class ApiActionPolicyScoresDataApiClient:
         return self._service.get_scores_by_action_id(locode)
 
 
-class ApiActionDataApiClient:
-    """
-    Placeholder action client for future upstream HTTP integration.
+class ApiActionMitigationFeasibilityScoresDataApiClient:
+    """API-backed feasibility client using the upstream score service."""
 
-    Current behavior fails fast until real HTTP integration is implemented.
-    """
+    def __init__(
+        self, service: ActionMitigationFeasibilityScoresApiService | None = None
+    ) -> None:
+        """Create the feasibility API client with a small synchronous service wrapper."""
+        self._service = service or ActionMitigationFeasibilityScoresApiService()
+
+    def get_action_mitigation_feasibility_scores(
+        self, locode: str, country_code: str
+    ) -> ActionMitigationFeasibilityScoresFetchResult:
+        """Fetch city-scoped mitigation feasibility scores from the upstream API."""
+        return self._service.get_scores_by_action_id(locode, country_code)
+
+
+class ApiActionPathwaysDataApiClient:
+    """API-backed action catalog client using the upstream action pathways service."""
+
+    def __init__(self, service: ActionPathwaysApiService | None = None) -> None:
+        """Create the action API client with a small synchronous service wrapper."""
+        self._service = service or ActionPathwaysApiService()
 
     def list_actions(self) -> list[Action]:
-        """Raise until actions API integration is implemented."""
-        raise NotImplementedError(
-            "ApiActionDataApiClient is not implemented yet. "
-            "Set HIAP_MEED_ACTION_DATA_SOURCE=mock for local runs."
-        )
+        """Fetch the full action pathways catalog from the upstream action API."""
+        return self._service.list_actions()
 
 
 class ApiCityDataApiClient:
@@ -386,12 +473,12 @@ _default_mock_city_client = MockCityDataApiClient(
     / "mock"
     / "city_api_mock.json"
 )
-_default_api_action_client = ApiActionDataApiClient()
-_default_mock_action_client = MockActionDataApiClient(
+_default_api_action_client = ApiActionPathwaysDataApiClient()
+_default_mock_action_client = MockActionPathwaysDataApiClient(
     mock_file_path=Path(__file__).resolve().parents[2]
     / "data"
     / "mock"
-    / "actions_api_mock.json"
+    / "action_pathways_api_mock.json"
 )
 _default_api_legal_client = ApiLegalDataApiClient()
 _default_mock_legal_client = MockLegalDataApiClient(
@@ -410,11 +497,25 @@ _default_api_action_policy_scores_client = ApiActionPolicyScoresDataApiClient()
 _default_mock_action_policy_scores_client = MockActionPolicyScoresDataApiClient(
     mock_file_path=_default_action_policy_scores_mock_file_path
 )
+_default_action_mitigation_feasibility_scores_mock_file_path = (
+    Path(__file__).resolve().parents[2]
+    / "data"
+    / "mock"
+    / "action_mitigation_feasibility_scores_api_mock.json"
+)
+_default_api_action_mitigation_feasibility_scores_client = (
+    ApiActionMitigationFeasibilityScoresDataApiClient()
+)
+_default_mock_action_mitigation_feasibility_scores_client = (
+    MockActionMitigationFeasibilityScoresDataApiClient(
+        mock_file_path=_default_action_mitigation_feasibility_scores_mock_file_path
+    )
+)
 
 
 def get_city_data_api_client() -> MockCityDataApiClient | ApiCityDataApiClient:
     """FastAPI dependency provider for city data client."""
-    source = os.getenv("HIAP_MEED_CITY_DATA_SOURCE", "api").strip().lower()
+    source = _resolve_configured_data_source("HIAP_MEED_CITY_DATA_SOURCE")
     if source == "api":
         return _default_api_city_client
 
@@ -425,16 +526,12 @@ def get_city_data_api_client() -> MockCityDataApiClient | ApiCityDataApiClient:
         )
         return _default_api_city_client
 
-    if source not in {"mock", "api"}:
-        logger.warning(
-            "Unknown HIAP_MEED_CITY_DATA_SOURCE=`%s`; using mock city client", source
-        )
     return _default_mock_city_client
 
 
-def get_action_data_api_client() -> MockActionDataApiClient | ApiActionDataApiClient:
+def get_action_pathways_data_api_client() -> MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient:
     """FastAPI dependency provider for action catalog client."""
-    source = os.getenv("HIAP_MEED_ACTION_DATA_SOURCE", "mock").strip().lower()
+    source = _resolve_configured_data_source("HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE")
     if source == "api":
         return _default_api_action_client
 
@@ -445,17 +542,12 @@ def get_action_data_api_client() -> MockActionDataApiClient | ApiActionDataApiCl
         )
         return _default_api_action_client
 
-    if source not in {"mock", "api"}:
-        logger.warning(
-            "Unknown HIAP_MEED_ACTION_DATA_SOURCE=`%s`; using mock action client",
-            source,
-        )
     return _default_mock_action_client
 
 
 def get_legal_data_api_client() -> MockLegalDataApiClient | ApiLegalDataApiClient:
     """FastAPI dependency provider for legal assessment client."""
-    source = os.getenv("HIAP_MEED_LEGAL_DATA_SOURCE", "api").strip().lower()
+    source = _resolve_configured_data_source("HIAP_MEED_LEGAL_DATA_SOURCE")
     if source == "api":
         return _default_api_legal_client
 
@@ -466,11 +558,6 @@ def get_legal_data_api_client() -> MockLegalDataApiClient | ApiLegalDataApiClien
         )
         return _default_api_legal_client
 
-    if source not in {"mock", "api"}:
-        logger.warning(
-            "Unknown HIAP_MEED_LEGAL_DATA_SOURCE=`%s`; using mock legal client",
-            source,
-        )
     return _default_mock_legal_client
 
 
@@ -478,20 +565,41 @@ def get_action_policy_scores_data_api_client() -> (
     MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
 ):
     """FastAPI dependency provider for action policy scores client."""
-    source = os.getenv("HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE", "api").strip().lower()
+    source = _resolve_configured_data_source(
+        "HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE"
+    )
     if source == "api":
         return _default_api_action_policy_scores_client
 
     if not _default_action_policy_scores_mock_file_path.exists():
         logger.warning(
-            "Mock action policy scores file not found at `%s`; using API action policy scores client",
+            "Mock action policy scores file not found at `%s`; "
+            "using API action policy scores client",
             _default_action_policy_scores_mock_file_path,
         )
         return _default_api_action_policy_scores_client
 
-    if source not in {"mock", "api"}:
-        logger.warning(
-            "Unknown HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE=`%s`; using mock action policy scores client",
-            source,
-        )
     return _default_mock_action_policy_scores_client
+
+
+def get_action_mitigation_feasibility_scores_data_api_client() -> (
+    MockActionMitigationFeasibilityScoresDataApiClient
+    | ApiActionMitigationFeasibilityScoresDataApiClient
+):
+    """FastAPI dependency provider for mitigation feasibility scores client."""
+    source = _resolve_configured_data_source(
+        "HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE"
+    )
+    if source == "api":
+        return _default_api_action_mitigation_feasibility_scores_client
+
+    if not _default_action_mitigation_feasibility_scores_mock_file_path.exists():
+        logger.warning(
+            "Mock action mitigation feasibility scores file not found at `%s`; "
+            "using API action mitigation feasibility scores client",
+            _default_action_mitigation_feasibility_scores_mock_file_path,
+        )
+        return _default_api_action_mitigation_feasibility_scores_client
+
+    return _default_mock_action_mitigation_feasibility_scores_client
+

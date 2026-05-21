@@ -15,8 +15,7 @@ Neutral `0.5` fallback rules:
 - Mitigation feasibility component: use `0.5` when the mitigation feasibility
   row is missing or when the row is present but `action_score` is missing.
 
-The older action-side socioeconomic-indicator rule calculation was removed.
-This block now reads the mitigation feasibility component directly from the
+This block reads the mitigation feasibility component directly from the
 upstream city-scoped feasibility scores API.
 """
 

@@ -1,4 +1,4 @@
-# Only add information to this file that was clearly stated. Do not invent or assume future implementation work.
+﻿# Only add information to this file that was clearly stated. Do not invent or assume future implementation work.
 
 # Future work (HIAP-MEED)
 
@@ -52,9 +52,10 @@ Source: Notion "How Legal Signals, Policy Signals, and Socioeconomic Indicators 
 - **Where**:
   - `hiap-meed/app/services/data_clients.py`
     - `ApiCityDataApiClient.get_city(locode)`
-    - `ApiActionDataApiClient.list_actions()`
+    - `ApiActionPathwaysDataApiClient.list_actions()`
     - action policy scores now use `ApiActionPolicyScoresDataApiClient.get_action_policy_scores(locode)`
 - **Notes**:
   - keep responses validated through Pydantic models in `app/modules/prioritizer/models.py`
   - define base URLs / auth via environment variables (avoid hardcoding)
   - keep error behavior explicit (timeouts, non-200s, malformed payloads)
+

@@ -1,4 +1,4 @@
-# Service Architecture
+﻿# Service Architecture
 
 This document describes how `hiap-meed` fits into the current caller setup and how a prioritization request flows through the service.
 
@@ -23,7 +23,7 @@ graph TD
         end
 
         CityClient["City data client (sync data client)"]
-        ActionClient["Action data client (sync data client)"]
+        ActionClient["Action pathways data client (sync data client)"]
         LegalClient["Legal data client (sync data client)"]
         PolicyClient["Action policy scores data client (sync data client)"]
     end
@@ -37,11 +37,13 @@ graph TD
     Orch -->|"listActions()"| ActionClient
     Orch -->|"getActionLegalAssessments(country_code)"| LegalClient
     Orch -->|"getActionPolicyScores(locode)"| PolicyClient
+    Orch -->|"getActionMitigationFeasibilityScores(locode, country_code)"| FeasibilityClient
 
     CityClient -.->|"API mode: GET /api/v0/city_attributes/{locode}"| GlobalAPI
-    ActionClient -.->|"API mode (not implemented yet)"| GlobalAPI
+    ActionClient -.->|"API mode: GET /api/v1/action-pathways"| GlobalAPI
     LegalClient -.->|"API mode: GET /api/v1/action-legal-assessments?countryCode=..."| GlobalAPI
     PolicyClient -.->|"API mode: GET /api/v1/cities/{locode}/action-policy-scores"| GlobalAPI
+    FeasibilityClient -.->|"API mode: GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=..."| GlobalAPI
 
     GlobalAPI -.->|"CityData"| CityClient
     GlobalAPI -.->|"Action list"| ActionClient
@@ -80,16 +82,16 @@ This is the right choice as long as the orchestrator and data clients are synchr
 | Client                    | Method                                | Status                                                                                  | Target upstream |
 | ------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------- | --------------- |
 | City data client          | `get_city(locode)`                    | Mock/API switch (`HIAP_MEED_CITY_DATA_SOURCE`); `mock` is file-backed, `api` performs synchronous HTTP GET `/api/v0/city_attributes/{locode}` against the shared `CCGLOBAL_API_BASE_URL` (default `https://ccglobal.openearth.dev` locally; overridden in workflows per environment) | configurable city attributes API host |
-| Action data client        | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_DATA_SOURCE`); `api` is not implemented yet; `mock` is file-backed | Global API (future) |
+| Action pathways data client | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/action-pathways` with no query parameters and returns the full upstream catalog; `mock` is file-backed | Global API |
 | Legal data client         | `get_action_legal_assessments(country_code)` | Mock/API switch (`HIAP_MEED_LEGAL_DATA_SOURCE`); `mock` is file-backed, `api` performs synchronous HTTP GET `/api/v1/action-legal-assessments?countryCode=...` against the shared `CCGLOBAL_API_BASE_URL` | configurable legal assessments API host |
 | Action policy scores data client | `get_action_policy_scores(locode)`    | Mock/API switch (`HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/cities/{locode}/action-policy-scores`; `mock` is file-backed | Global API (future) |
+| Action mitigation feasibility scores data client | `get_action_mitigation_feasibility_scores(locode, country_code)` | Mock/API switch (`HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; `mock` is file-backed | Global API |
 
-Clients are injected via FastAPI's `Depends()` pattern. The city, legal, and action policy scores clients default to their live upstream APIs, while the action client still defaults to the checked-in mock payload.
+Clients are injected via FastAPI's `Depends()` pattern. The city, action, legal, action policy scores, and mitigation feasibility clients default to their live upstream APIs.
 
-Future action API note:
-- the current action DTOs still match the checked-in `actions_api_mock.json`
-- that current mock contract still includes optional fields such as `biome`
-- when `GET /api/v1/action-pathways` is integrated, the action DTOs and mapping layer should be updated in one dedicated change to match the new payload shape, including dropping `biome` and aligning to the new action/co-benefit/emissions field names
+Action API note:
+- `GET /api/v1/action-pathways` is called without `limit`, `lang`, or other query parameters
+- mitigation feasibility now comes from the separate city-scoped scores endpoint and missing action rows use the neutral `0.5` fallback in Feasibility scoring
 
 ---
 
@@ -131,3 +133,4 @@ Current flow note:
 - exclusion preview resolves raw exclusion preferences into proposals for user review
 - prioritization consumes confirmed `excludedActionIds` and runs the scoring pipeline
 - prioritization artifacts are assembled in the orchestrator layer, while exclusion preview artifacts are currently assembled from `api.py`
+

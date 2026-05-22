@@ -1,3 +1,12 @@
+-- Function return type changes when this file is updated (e.g. adding strength_weight /
+-- raw_score columns). PostgreSQL refuses CREATE OR REPLACE FUNCTION on a changed return type,
+-- so drop first to keep this SQL file idempotent across redeploys.
+DROP FUNCTION IF EXISTS modelled.city_action_mitigation_feasibility_scores(
+    varchar,
+    uuid,
+    varchar
+);
+
 CREATE OR REPLACE FUNCTION modelled.city_action_mitigation_feasibility_scores(
     p_locode varchar,
     p_release_id uuid,
@@ -8,8 +17,10 @@ RETURNS TABLE (
     src_action_id varchar,
     global_mitigation_option text,
     action_mapping_strength varchar,
+    strength_weight numeric,
     option_family varchar,
     score numeric,
+    raw_score numeric,
     n_indicators_total integer,
     n_dims_scored integer,
     econ numeric,
@@ -48,7 +59,19 @@ action_metadata AS (
         c.src_action_id,
         c.global_mitigation_option,
         c.action_mapping_strength,
-        c.option_family
+        c.option_family,
+        -- Mapping-confidence weight applied as: score = 0.5 + strength_weight * (raw_score - 0.5).
+        -- Tempers the headline score for weak / cross-cutting mappings (where the SR1.5 option
+        -- only loosely describes the action). Keep in sync with STRENGTH_WEIGHT in
+        -- CityCatalyst-global-data/.../releases/2018/scorer_simple.ipynb (canonical source).
+        CASE c.action_mapping_strength
+            WHEN 'direct'        THEN 1.00::numeric
+            WHEN 'partial'       THEN 0.95::numeric
+            WHEN 'cross_cutting' THEN 0.90::numeric
+            WHEN 'weak'          THEN 0.85::numeric
+            WHEN 'no_match'      THEN 0.00::numeric
+            ELSE 0.00::numeric
+        END AS strength_weight
     FROM modelled.action_mitigation_feasibility_chain c
     WHERE c.release_id = p_release_id
       AND c.country_code = p_country_code
@@ -154,7 +177,9 @@ action_detail AS (
     SELECT
         locode,
         src_action_id,
-        ROUND(AVG(dim_score), 3) AS score,
+        -- raw_score is the pure IPCC+city evidence blend (mean of dimension scores).
+        -- The headline score in the outer SELECT shrinks this toward 0.5 by strength_weight.
+        ROUND(AVG(dim_score), 3) AS raw_score,
         SUM(n_indicators)::integer AS n_indicators_total,
         COUNT(DISTINCT feasibility_dimension)::integer AS n_dims_scored,
         jsonb_object_agg(
@@ -173,8 +198,13 @@ SELECT
     a.src_action_id,
     m.global_mitigation_option,
     m.action_mapping_strength,
+    m.strength_weight,
     m.option_family,
-    a.score,
+    -- Headline action_score = raw_score shrunk toward 0.5 by mapping-confidence weight.
+    -- Per-dimension scores (econ / tech / inst / soc / env / geo) stay raw and reflect the
+    -- IPCC+city evidence independent of mapping confidence. Sort and rank by this shrunk score.
+    ROUND(0.5 + COALESCE(m.strength_weight, 0::numeric) * (a.raw_score - 0.5), 3) AS score,
+    a.raw_score,
     a.n_indicators_total,
     a.n_dims_scored,
     MAX(CASE WHEN d.feasibility_dimension = 'economic' THEN d.dim_score END) AS econ,
@@ -184,7 +214,10 @@ SELECT
     MAX(CASE WHEN d.feasibility_dimension = 'environmental' THEN d.dim_score END) AS env,
     MAX(CASE WHEN d.feasibility_dimension = 'geophysical' THEN d.dim_score END) AS geo,
     a.breakdown,
-    ROW_NUMBER() OVER (PARTITION BY a.locode ORDER BY a.score DESC, a.src_action_id) AS rank_within_city
+    ROW_NUMBER() OVER (
+        PARTITION BY a.locode
+        ORDER BY (0.5 + COALESCE(m.strength_weight, 0::numeric) * (a.raw_score - 0.5)) DESC, a.src_action_id
+    ) AS rank_within_city
 FROM action_detail a
 LEFT JOIN action_metadata m
   ON m.src_action_id = a.src_action_id
@@ -196,10 +229,11 @@ GROUP BY
     a.src_action_id,
     m.global_mitigation_option,
     m.action_mapping_strength,
+    m.strength_weight,
     m.option_family,
-    a.score,
+    a.raw_score,
     a.n_indicators_total,
     a.n_dims_scored,
     a.breakdown
-ORDER BY a.locode, a.score DESC, a.src_action_id;
+ORDER BY a.locode, score DESC, a.src_action_id;
 $$;

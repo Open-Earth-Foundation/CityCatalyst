@@ -54,9 +54,7 @@ more than one item in `cityDataList`.
 Even for multiple cities, the current API route is still:
 - `POST /v1/prioritize`
 
-The old one-step flow, where raw exclusion free text was sent directly to the
-ranking API, is no longer represented by the active mock request files. Raw
-exclusion preferences now live in `prioritizer_exclusion_preview_request_mock.json`,
+Raw exclusion preferences live in `prioritizer_exclusion_preview_request_mock.json`,
 while ranking mocks use confirmed `excludedActionIds`.
 
 # prioritizer_explanation_translation_request_mock.json:
@@ -103,23 +101,38 @@ This mock follows the active upstream city attributes schema:
 - all 9 socioeconomic indicator keys currently used by Feasibility
 - the current city response DTOs still accept the camelCase population aliases and ignore unexpected extra keys
 
-# actions_api_mock.json:
+# action_pathways_api_mock.json:
 
 This is a mock response from the actions data API.
 It simulates a response from the actions data API containing information about the actions.
 The upstream provider is the global-api.
 
-It is being used to fetch the list of actions and their associated emissions, co-benefits, and socioeconomic indicator-fit data.
+It is being used to fetch the list of actions and their associated emissions, co-benefits, and TEF metadata.
 
 This payload shape is modeled by:
-- `ActionsApiResponse` (envelope)
-- `Action` (`actions[]`)
+- `ActionPathwaysApiResponse` (envelope)
+- `ActionPathwayApiItem` (`actions[]`)
 
-Future action API note:
+Action API note:
 
-- This mock still matches the current action contract used by this branch.
-- It may include optional fields such as `biome`.
-- When the future `GET /api/v1/action-pathways` payload replaces this mock, the action DTOs and this mock file should be updated together, including removing `biome` and aligning to the new payload field names.
+- This mock matches `GET /api/v1/action-pathways` with no query parameters.
+- It includes the action fields used by the current prioritization flow and action-pathways client.
+- The prioritization pipeline keeps mitigation actions only; current mock rows are mitigation actions.
+
+# action_mitigation_feasibility_scores_api_mock.json:
+
+Mock for GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores.
+Mitigation feasibility scores are city-scoped and provide the feasibility input
+used in Feasibility scoring.
+
+It includes:
+
+- envelope metadata (`meta.generated_at_utc`, `meta.locode`, `meta.country_code`, `meta.release_id`)
+- `scores[]` rows keyed by `src_action_id`
+- `action_score` used as the mitigation feasibility component
+- optional dimension detail (`dimension_scores`, `breakdown`) retained for artifacts and explainability evidence
+
+Missing action rows are expected for unmapped actions and score neutrally as `0.5`.
 
 # action_policy_scores_api_mock.json:
 

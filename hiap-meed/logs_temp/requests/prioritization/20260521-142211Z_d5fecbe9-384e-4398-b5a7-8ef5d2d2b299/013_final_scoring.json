@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-05-20T14:38:41.506129+00:00",
-  "request_id": "7abee47b-5e9b-4a11-a550-744ae8da99d6",
+  "timestamp": "2026-05-21T14:22:20.037930+00:00",
+  "request_id": "d5fecbe9-384e-4398-b5a7-8ef5d2d2b299",
   "request_kind": "prioritization",
-  "event_index": 12,
+  "event_index": 13,
   "step_name": "final_scoring",
   "event_type": "final_scoring.completed",
   "payload": {
@@ -12,164 +12,164 @@
       {
         "rank": 1,
         "action_id": "icare_0016",
-        "final_score": 0.6377359586057905,
+        "final_score": 0.6509859586057904,
         "impact_score": 0.509546917211581,
         "alignment_score": 0.6723750000000001,
-        "feasibility_score": 0.90625
+        "feasibility_score": 0.9724999999999999
       },
       {
         "rank": 2,
         "action_id": "icare_0028",
-        "final_score": 0.5566484586057905,
+        "final_score": 0.5695984586057905,
         "impact_score": 0.509546917211581,
         "alignment_score": 0.5687500000000001,
-        "feasibility_score": 0.65625
+        "feasibility_score": 0.721
       },
       {
         "rank": 3,
         "action_id": "c40_0010",
-        "final_score": 0.5115042293028952,
+        "final_score": 0.5244542293028952,
         "impact_score": 0.35477345860579046,
         "alignment_score": 0.6762250000000001,
-        "feasibility_score": 0.65625
+        "feasibility_score": 0.721
       },
       {
         "rank": 4,
         "action_id": "icare_0121",
-        "final_score": 0.5107038276380453,
+        "final_score": 0.5234038276380453,
         "impact_score": 0.20097265527609068,
-        "alignment_score": 0.7632250000000002,
-        "feasibility_score": 0.90625
+        "alignment_score": 0.7507250000000001,
+        "feasibility_score": 0.9884999999999999
       },
       {
         "rank": 5,
         "action_id": "c40_0035",
-        "final_score": 0.501815,
+        "final_score": 0.519565,
         "impact_score": 0.2,
         "alignment_score": 0.7885500000000001,
-        "feasibility_score": 0.8262499999999999
+        "feasibility_score": 0.915
       },
       {
         "rank": 6,
-        "action_id": "icare_0040",
-        "final_score": 0.48301172930289527,
-        "impact_score": 0.2547734586057905,
-        "alignment_score": 0.58125,
-        "feasibility_score": 0.90625
+        "action_id": "ipcc_0105",
+        "final_score": 0.4990088276380453,
+        "impact_score": 0.20097265527609068,
+        "alignment_score": 0.8360750000000001,
+        "feasibility_score": 0.7384999999999999
       },
       {
         "rank": 7,
-        "action_id": "ipcc_0105",
-        "final_score": 0.48255882763804536,
-        "impact_score": 0.20097265527609068,
-        "alignment_score": 0.8360750000000001,
-        "feasibility_score": 0.65625
+        "action_id": "icare_0040",
+        "final_score": 0.4943867293028953,
+        "impact_score": 0.2547734586057905,
+        "alignment_score": 0.5750000000000001,
+        "feasibility_score": 0.9724999999999999
       },
       {
         "rank": 8,
         "action_id": "icare_0002",
-        "final_score": 0.4805234586057905,
+        "final_score": 0.4934734586057905,
         "impact_score": 0.509546917211581,
         "alignment_score": 0.315,
-        "feasibility_score": 0.65625
+        "feasibility_score": 0.721
       },
       {
         "rank": 9,
-        "action_id": "icare_0033",
-        "final_score": 0.46429,
-        "impact_score": 0.2,
-        "alignment_score": 0.7768,
-        "feasibility_score": 0.65625
+        "action_id": "icare_0064",
+        "final_score": 0.46635000000000004,
+        "impact_score": 0.1,
+        "alignment_score": 0.7245,
+        "feasibility_score": 0.995
       },
       {
         "rank": 10,
         "action_id": "c40_0012",
-        "final_score": 0.451875,
+        "final_score": 0.46482500000000004,
         "impact_score": 0.2,
         "alignment_score": 0.5687500000000001,
-        "feasibility_score": 0.90625
+        "feasibility_score": 0.971
       },
       {
         "rank": 10,
         "action_id": "c40_0017",
-        "final_score": 0.451875,
+        "final_score": 0.46482500000000004,
         "impact_score": 0.2,
         "alignment_score": 0.5687500000000001,
-        "feasibility_score": 0.90625
+        "feasibility_score": 0.971
       },
       {
         "rank": 12,
         "action_id": "icare_0120",
-        "final_score": 0.45000000000000007,
+        "final_score": 0.4629500000000001,
         "impact_score": 0.2,
         "alignment_score": 0.5625000000000001,
-        "feasibility_score": 0.90625
+        "feasibility_score": 0.971
       },
       {
         "rank": 13,
-        "action_id": "icare_0064",
-        "final_score": 0.44860000000000005,
-        "impact_score": 0.1,
-        "alignment_score": 0.7245,
-        "feasibility_score": 0.90625
+        "action_id": "icare_0010",
+        "final_score": 0.4582117293028953,
+        "impact_score": 0.2547734586057905,
+        "alignment_score": 0.5687500000000001,
+        "feasibility_score": 0.8009999999999999
       },
       {
         "rank": 14,
-        "action_id": "icare_0010",
-        "final_score": 0.4471367293028953,
-        "impact_score": 0.2547734586057905,
-        "alignment_score": 0.5750000000000001,
-        "feasibility_score": 0.7362500000000001
+        "action_id": "ipcc_0049",
+        "final_score": 0.4390677880182736,
+        "impact_score": 0.10151557603654719,
+        "alignment_score": 0.7977000000000001,
+        "feasibility_score": 0.745
       },
       {
         "rank": 15,
-        "action_id": "ipcc_0049",
-        "final_score": 0.4213177880182736,
-        "impact_score": 0.10151557603654719,
-        "alignment_score": 0.7977000000000001,
-        "feasibility_score": 0.65625
+        "action_id": "ipcc_0067",
+        "final_score": 0.4390172856041661,
+        "impact_score": 0.10000457120833223,
+        "alignment_score": 0.80005,
+        "feasibility_score": 0.745
       },
       {
         "rank": 16,
-        "action_id": "ipcc_0067",
-        "final_score": 0.42126728560416615,
-        "impact_score": 0.10000457120833223,
-        "alignment_score": 0.80005,
-        "feasibility_score": 0.65625
+        "action_id": "icare_0045",
+        "final_score": 0.428725,
+        "impact_score": 0.2,
+        "alignment_score": 0.61375,
+        "feasibility_score": 0.723
       },
       {
         "rank": 17,
-        "action_id": "icare_0045",
-        "final_score": 0.41537500000000005,
-        "impact_score": 0.2,
-        "alignment_score": 0.61375,
-        "feasibility_score": 0.65625
+        "action_id": "ipcc_0045",
+        "final_score": 0.4187301920121824,
+        "impact_score": 0.2010103840243648,
+        "alignment_score": 0.5687500000000001,
+        "feasibility_score": 0.738
       },
       {
         "rank": 18,
-        "action_id": "ipcc_0045",
-        "final_score": 0.40238019201218245,
-        "impact_score": 0.2010103840243648,
-        "alignment_score": 0.5687500000000001,
-        "feasibility_score": 0.65625
+        "action_id": "icare_0012",
+        "final_score": 0.41635000000000005,
+        "impact_score": 0.1,
+        "alignment_score": 0.5625000000000001,
+        "feasibility_score": 0.988
       },
       {
         "rank": 19,
-        "action_id": "ipcc_0043",
-        "final_score": 0.4022377880182736,
-        "impact_score": 0.10151557603654719,
-        "alignment_score": 0.7341000000000001,
-        "feasibility_score": 0.65625
+        "action_id": "c40_0016",
+        "final_score": 0.414825,
+        "impact_score": 0.2,
+        "alignment_score": 0.5687500000000001,
+        "feasibility_score": 0.721
       },
       {
         "rank": 20,
-        "action_id": "c40_0016",
-        "final_score": 0.401875,
+        "action_id": "icare_0132",
+        "final_score": 0.41291999999999995,
         "impact_score": 0.2,
-        "alignment_score": 0.5687500000000001,
-        "feasibility_score": 0.65625
+        "alignment_score": 0.5464,
+        "feasibility_score": 0.745
       }
     ],
-    "elapsed_seconds": 0.0009173610005746013
+    "elapsed_seconds": 0.0011345689999870956
   }
 }

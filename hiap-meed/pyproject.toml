@@ -8,7 +8,7 @@ dependencies = [
     "fastapi>=0.136.1",
     "httpx>=0.28.1",
     "openai>=2.36.0",
-    "python-dotenv>=1.2.1",
+    "python-dotenv>=1.2.2",
     "uvicorn>=0.47.0",
 ]
 

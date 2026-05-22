@@ -72,6 +72,10 @@ flowchart TD
 
 - `0.5` is not universally neutral across all components.
 - `0.5` is a true neutral midpoint only for components normalized from a signed scale such as `-2..2`.
+- Impact emissions share now uses scoring magnitude rather than raw signed inventory:
+  - AFOLU `V.*` contributes `abs(totalEmissions)` in both the numerator and denominator.
+  - Non-AFOLU subsectors contribute only when `totalEmissions > 0`.
+  - This denominator is not the city's signed net emissions total; it is a ranking-only climate-relevant magnitude.
 - Timeline is scored differently in Impact and Alignment:
   - Impact uses intrinsic speed scoring.
   - Alignment uses match-to-city-preference scoring.

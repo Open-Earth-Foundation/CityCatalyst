@@ -570,23 +570,24 @@ If the impact label is unknown:
 
 For each action, the pipeline:
 
-- finds which of the action's subsector keys also have strictly positive emissions in the city's emissions data,
-- takes the city total for each matching subsector,
+- finds which of the action's subsector keys have matchable scoring magnitude in the city's emissions data,
+- takes the scoring magnitude for each matching subsector,
 - multiplies those totals by the action's impact multiplier,
 - and adds the results together.
 
 Important product rule:
 
-- Negative `V.*` AFOLU inventory values remain valid request data because they are real city removals.
-- But Impact does not treat those negative values as reducible emissions.
-- So negative or zero-emissions subsectors do not count as Impact matches and do not contribute to the reduction amount.
+- AFOLU `V.*` uses absolute inventory magnitude for Impact scoring.
+  - Example: `V.2 = -50` contributes `50` to matching and to the reduction amount before the action multiplier is applied.
+- Non-AFOLU subsectors still contribute only when the city inventory value is strictly positive.
+- This means AFOLU removals are no longer ignored in Impact. They now contribute by size, even when the raw inventory value is negative.
 
 Plain-language formula:
 
 ```text
 Estimated reduction amount for one action
 = sum of:
-    city emissions in each matched subsector
+    scoring emissions magnitude in each matched subsector
     multiplied by
     the action's impact multiplier
 ```
@@ -599,15 +600,23 @@ Plain-language formula:
 Reduction share of city emissions
 = estimated reduction amount
   divided by
-  total reducible positive city emissions across all subsectors
+  total scoring emissions magnitude across all subsectors
 ```
 
 Important product rule:
 
-- The denominator uses strictly positive city emissions only.
-- Existing negative AFOLU removals are kept in the request data for validation and traceability, but they are excluded from reducible-emissions scoring.
+- The denominator includes absolute AFOLU `V.*` magnitude plus strictly positive non-AFOLU emissions.
+- In plain language:
+  - AFOLU contributes `abs(totalEmissions)`
+  - all other sectors contribute `totalEmissions` only when that value is positive
+- This denominator is a ranking-only metric. It is not the city's signed net emissions total.
+- Net city emissions remain signed and can be negative.
+- So the model is not asking:
+  - "What share of the city's net emissions could this action affect?"
+- It is asking something closer to:
+  - "What share of the city's total climate-relevant emissions magnitude could this action affect?"
 
-If the city has zero reducible emissions in the request:
+If the city has zero scoring emissions magnitude in the request:
 
 - the reduction share is set to `0`.
 

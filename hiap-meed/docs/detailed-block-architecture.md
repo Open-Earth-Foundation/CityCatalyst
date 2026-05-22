@@ -102,10 +102,13 @@ Canonical score policy:
 - Canonical score formula:
   - `IMPACT_SCORE = (IMPACT_WEIGHT_REDUCTION_SHARE * reduction_component) + (IMPACT_WEIGHT_TIMELINE * timeline_component)`
 - No run-relative max-normalization is applied.
-- Negative `V.*` AFOLU inventory values remain valid input data, but Impact only scores reducible emissions.
-  - Subsector matching for Impact uses strictly positive city emissions only.
-  - The reduction denominator also sums strictly positive city emissions only.
-  - This is intentional: existing removals are treated as valid inventory context, not as emissions that an action can reduce further.
+- Negative `V.*` AFOLU inventory values remain valid input data, and Impact now scores AFOLU by absolute magnitude.
+  - Subsector matching for Impact uses `abs(totalEmissions)` for AFOLU `V.*`.
+  - The reduction denominator also includes `abs(totalEmissions)` for AFOLU `V.*`.
+  - Non-AFOLU subsectors still require strictly positive city emissions.
+  - This is intentional: AFOLU removals are not ignored, but negative non-AFOLU values still do not contribute to Impact scoring.
+  - Net city emissions remain signed and can be negative; this denominator is a separate metric used only for ranking.
+  - Conceptually, the denominator measures climate-relevant scoring magnitude, not signed net city emissions.
 
 Current implementation detail:
 

@@ -26,6 +26,13 @@ updates:
       interval: "weekly"
     cooldown:
       default-days: 7
+  # ── HIAP-MEED (uv)
+  - package-ecosystem: "uv"
+    directory: "/hiap-meed"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
   # ── Climate Advisor (pip)
   - package-ecosystem: "pip"
     directory: "/climate-advisor"

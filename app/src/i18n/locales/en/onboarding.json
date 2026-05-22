@@ -53,6 +53,7 @@
   "search-city-button": "Search for another City",
   "confirm-button": "Confirm and Continue",
   "confirm-description": "Review the data for your city before proceeding.",
+  "confirm-inventory-description": "Review the data for your city's inventory before proceeding.",
   "confirm-heading": "Confirm city information",
   "inventory-format": "Inventory format",
   "confirm-details": "Review and confirm this information about your city. If there is an error please send us an email to edit it.<br /><br />We use <2>open data sources</2> to pre-fill the city profile.",

@@ -53,7 +53,7 @@ dependencies = [
     "Pygments==2.19.2",
     "PyJWT==2.10.1",
     "PyPDF2==3.0.1",
-    "python-dotenv==1.2.1",
+    "python-dotenv==1.2.2",
     "python-multipart==0.0.21",
     "PyYAML==6.0.3",
     "referencing==0.37.0",

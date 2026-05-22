@@ -48,7 +48,7 @@
     "@emotion/react": "^11.14.0",
     "@highlight-run/next": "^7.9.38",
     "@hookform/resolvers": "^5.1.1",
-    "@huggingface/inference": "^4.7.1",
+    "@huggingface/inference": "^4.13.15",
     "@isaacs/ttlcache": "^1.4.1",
     "@modelcontextprotocol/sdk": "^1.25.2",
     "@next/env": "^15.5.2",

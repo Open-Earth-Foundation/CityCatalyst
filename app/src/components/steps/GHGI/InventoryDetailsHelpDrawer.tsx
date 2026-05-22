@@ -100,7 +100,7 @@ export default function InventoryDetailsHelpDrawer({ t }: { t: TFunction }) {
   return (
     <Drawer.Root size="sm">
       <Drawer.Trigger asChild>
-        <Button variant="outline">{t("help-section")}</Button>
+        <Button variant="outline">{t("help-button")}</Button>
       </Drawer.Trigger>
       <Portal>
         <Drawer.Positioner>

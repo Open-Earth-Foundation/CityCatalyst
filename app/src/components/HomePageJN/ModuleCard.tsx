@@ -12,8 +12,6 @@ import { ModuleAttributes } from "@/models/Module";
 import NextLink from "next/link";
 import { Modules } from "@/util/constants";
 
-const GHGI_START_HERE_HIDDEN_KEY = "ghgi-start-here-hidden";
-
 export function ModuleCard({
   module,
   t,
@@ -46,18 +44,6 @@ export function ModuleCard({
   };
 
   const { name, author, description, tagline, url, logo, status } = module;
-  const isGhgi = module.id === Modules.GHGI.id;
-  const [hideStartHereTag, setHideStartHereTag] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!isGhgi) return;
-
-    const isHidden =
-      localStorage.getItem(GHGI_START_HERE_HIDDEN_KEY) === "true";
-    if (isHidden) {
-      setHideStartHereTag(true);
-    }
-  }, [isGhgi]);
 
   const getTranslationInLanguage = (
     obj: { [lng: string]: string } | undefined,
@@ -72,11 +58,6 @@ export function ModuleCard({
   const resolvedUrl = isExternal ? url : `${baseUrl}${url}`;
 
   const handleModuleLaunch = (e: React.MouseEvent) => {
-    if (isGhgi) {
-      setHideStartHereTag(true);
-      localStorage.setItem(GHGI_START_HERE_HIDDEN_KEY, "true");
-    }
-
     if (isExternal) {
       e.preventDefault();
       window.open(url, "_blank", "noopener,noreferrer");
@@ -112,26 +93,19 @@ export function ModuleCard({
               />
 
               {status && status !== "active" && (
-                <Tag size="sm" colorPalette={statusColorMap[status] || "gray"}>
+                <Tag
+                  size="sm"
+                  colorPalette={statusColorMap[status] || "gray"}
+                  borderRadius="10px"
+                  textTransform="uppercase"
+                  borderWidth="1px"
+                  borderColor="content.tertiary"
+                >
                   {t(statusLabelMap[status] || status)}
                 </Tag>
               )}
             </HStack>
             <HStack gap={2} justifyContent="flex-end">
-              {isGhgi && !hideStartHereTag && (
-                <Tag
-                  size="sm"
-                  colorPalette="gray"
-                  p={2}
-                  borderRadius={"8px"}
-                  bg="border.neutral"
-                  color="content.secondary"
-                  fontWeight="semibold"
-                  textTransform="uppercase"
-                >
-                  {t("start-here")}
-                </Tag>
-              )}
               <Tooltip
                 content={getTranslationInLanguage(description)}
                 showArrow

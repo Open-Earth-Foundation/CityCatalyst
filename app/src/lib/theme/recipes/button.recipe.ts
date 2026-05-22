@@ -30,11 +30,11 @@ export const buttonRecipe = defineRecipe({
         },
       },
       solid: {
-        bg: "content.alternative",
+        bg: "content.link",
         color: "white",
         _hover: {
           opacity: 0.5,
-          bg: "content.alternative",
+          bg: "content.link",
         },
         _loading: {
           bg: "background.overlay",

@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "boto3>=1.43.8",
-    "chromadb>=1.1.0",
+    "chromadb>=1.5.9",
     "fastapi>=0.136.1",
     "httpx>=0.28.1",
     "langchain>=0.3.27",

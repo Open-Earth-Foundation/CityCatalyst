@@ -228,10 +228,8 @@ Blocked legal verdicts are enforced in the Hard Filter stage.
   - Source: `verdictScore`
 - Legal evidence fields
   - Source: `ownership*`, `restrictions*`, `legalJustification*`, `legalReferences`, and timestamps
-- Socio-economic indicator buckets for the city
-  - Source: city indicators (`attribute_category`) from `city_api_mock.json`
-- Action socio-economic fit rules
-  - Source: `Action.socioeconomic_indicators` (`indicator_key`, `direction`, `weight`, `rationale`)
+- Mitigation feasibility scores for the city
+  - Source: `action_mitigation_feasibility_scores_api_mock.json` or the matching live endpoint, keyed by `src_action_id`
 - Candidate actions (already hard-filtered)
   - Source: `Valid Actions for Scoring`
 

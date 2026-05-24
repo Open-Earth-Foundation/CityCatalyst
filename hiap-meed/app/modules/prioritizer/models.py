@@ -511,22 +511,25 @@ class ExclusionPreviewApiResponse(BaseModel):
 # ----------------------------------------------------------------------------
 # Composition:
 # - CityApiResponse
-#   - meta: UpstreamMeta
+#   - meta: CityApiMeta
 #     - api_context: UpstreamApiContext
 #   - city: CityApiItem
 # - CitiesApiResponse
-#   - meta: UpstreamMeta
+#   - meta: CityApiMeta
 #   - cities: list[CityApiItem]
-# - ActionsApiResponse
-#   - meta: UpstreamMeta
-#   - actions: list[ActionApiItem]
-#     - emissions: ActionImpactEntry
-#     - coBenefits: dict[str, ActionCoBenefitEntry]
-#     - socioeconomicIndicators: list[ActionSocioeconomicIndicatorRule]
+# - ActionPathwaysApiResponse
+#   - meta: ActionPathwaysApiMeta
+#     - api_context: ActionPathwaysApiContext
+#   - actions: list[ActionPathwayApiItem]
+#     - emissions: ActionPathwayImpactEntry
+#     - co_benefits: dict[str, ActionPathwayCoBenefitEntry]
 # - ActionPolicyScoresApiResponse
 #   - meta: ActionPolicyScoresApiMeta
 #   - scores: list[ActionPolicyScoreApiItem]
 #     - policy_evidence: list[ActionPolicyEvidence]
+# - ActionMitigationFeasibilityScoresApiResponse
+#   - meta: ActionMitigationFeasibilityScoresApiMeta
+#   - scores: list[ActionMitigationFeasibilityScoreApiItem]
 # - ActionLegalAssessmentApiItem
 # ============================================================================
 
@@ -618,17 +621,29 @@ class CityApiItem(BaseModel):
     home_ownership: CityIndicator | None = None
 
 
-class ActionImpactEntry(BaseModel):
-    """Single impact entry (emissions or co-benefit category) for one action."""
+class ActionPathwayImpactEntry(BaseModel):
+    """Single emissions impact entry for one action pathways row."""
 
     model_config = ConfigDict(extra="ignore")
 
-    sector_number: str
-    subsector_number: list[int] = Field(min_length=1)
-    gpc_reference_number: list[str]
-    impact_relationship: str | None = None
-    impact_text: str | None = None
-    impact_numeric: int | None = None
+    sector_number: str = Field(validation_alias="sectorNumber")
+    subsector_number: list[int] = Field(
+        min_length=1,
+        validation_alias="subsectorNumber",
+    )
+    gpc_reference_number: list[str] = Field(validation_alias="gpcReferenceNumber")
+    impact_relationship: str | None = Field(
+        default=None,
+        validation_alias="impactRelationship",
+    )
+    impact_text: str | None = Field(
+        default=None,
+        validation_alias="impactText",
+    )
+    impact_numeric: int | None = Field(
+        default=None,
+        validation_alias="impactNumeric",
+    )
     methodology: str | None = None
 
     @field_validator("subsector_number")
@@ -645,67 +660,79 @@ class ActionImpactEntry(BaseModel):
         return deduplicated_values
 
 
-class ActionCoBenefitEntry(BaseModel):
-    """Single co-benefit entry for one action."""
+class ActionPathwayCoBenefitEntry(BaseModel):
+    """Single co-benefit entry for one action pathways row."""
 
     model_config = ConfigDict(extra="ignore")
 
-    impact_relationship: str | None = None
-    impact_text: str | None = None
-    impact_numeric: int | None = None
+    impact_relationship: str | None = Field(
+        default=None,
+        validation_alias="impactRelationship",
+    )
+    impact_text: str | None = Field(
+        default=None,
+        validation_alias="impactText",
+    )
+    impact_numeric: int | None = Field(
+        default=None,
+        validation_alias="impactNumeric",
+    )
     methodology: str | None = None
 
 
-class ActionSocioeconomicIndicatorRule(BaseModel):
-    """One socioeconomic fit rule row attached to an action."""
+class ActionPathwayApiItem(BaseModel):
+    """Action row shape returned by upstream `GET /api/v1/action-pathways`."""
 
     model_config = ConfigDict(extra="ignore")
 
-    indicator_key: str
-    direction: str
-    weight: float
-    rationale: str | None = None
-
-    @model_validator(mode="after")
-    def _validate_direction_and_weight(self) -> ActionSocioeconomicIndicatorRule:
-        """Validate direction enum and weight bounds for socioeconomic rules."""
-        normalized_direction = self.direction.strip().lower()
-        if normalized_direction not in {"supportive", "constraining"}:
-            raise ValueError(
-                "socioeconomicIndicators[].direction must be `supportive` or "
-                f"`constraining`, got `{self.direction}`"
-            )
-        if self.weight < 0.0 or self.weight > 1.0:
-            raise ValueError(
-                "socioeconomicIndicators[].weight must be within [0, 1], "
-                f"got {self.weight}"
-            )
-        self.direction = normalized_direction
-        return self
-
-
-class ActionApiItem(BaseModel):
-    """Action item shape returned by upstream `GET /v1/actions`."""
-
-    model_config = ConfigDict(extra="ignore")
-
-    actionId: str
-    actionName: str
-    biome: str | None = None
-    activity_type_description: str | None = None
+    action_id: str = Field(validation_alias="actionId")
+    action_type: str = Field(default="mitigation", validation_alias="actionType")
+    action_name: str = Field(validation_alias="actionName")
     description: str | None = None
-    actionCategory: str | None = None
-    actionSubcategory: str | None = None
-    costInvestmentNeeded: str | None = None
-    timelineForImplementation: str | None = None
-    coBenefits: dict[str, ActionCoBenefitEntry] = Field(default_factory=dict)
-    emissions: ActionImpactEntry | None = None
-    socioeconomicIndicators: list[ActionSocioeconomicIndicatorRule] = Field(
-        default_factory=list
+    intervention_summary: str | None = Field(
+        default=None,
+        validation_alias="interventionSummary",
+    )
+    outcome_summary: str | None = Field(default=None, validation_alias="outcomeSummary")
+    intervention_type: str | None = Field(
+        default=None,
+        validation_alias="interventionType",
+    )
+    action_role: str | None = Field(default=None, validation_alias="actionRole")
+    cost_investment_needed: str | None = Field(
+        default=None,
+        validation_alias="costInvestmentNeeded",
+    )
+    timeline_for_implementation: str | None = Field(
+        default=None,
+        validation_alias="timelineForImplementation",
+    )
+    co_benefits: dict[str, ActionPathwayCoBenefitEntry] = Field(
+        default_factory=dict,
+        validation_alias="coBenefits",
+    )
+    emissions: ActionPathwayImpactEntry | None = None
+    publisher_id: str | None = Field(default=None, validation_alias="publisherId")
+    generation_method: str | None = Field(
+        default=None,
+        validation_alias="generationMethod",
+    )
+    name_i18n: dict[str, str] = Field(default_factory=dict, validation_alias="nameI18n")
+    description_i18n: dict[str, str] = Field(
+        default_factory=dict,
+        validation_alias="descriptionI18n",
+    )
+    intervention_summary_i18n: dict[str, str] = Field(
+        default_factory=dict,
+        validation_alias="interventionSummaryI18n",
+    )
+    outcome_summary_i18n: dict[str, str] = Field(
+        default_factory=dict,
+        validation_alias="outcomeSummaryI18n",
     )
 
     @model_validator(mode="after")
-    def _validate_emissions_impact_text_band_present(self) -> ActionApiItem:
+    def _validate_emissions_impact_text_band_present(self) -> ActionPathwayApiItem:
         """Validate emissions impact includes a non-empty, known text band."""
         emissions_entry = self.emissions
         if emissions_entry is None:
@@ -713,22 +740,22 @@ class ActionApiItem(BaseModel):
 
         impact_text = emissions_entry.impact_text
         if impact_text is None or not impact_text.strip():
-            raise ValueError(f"Action `{self.actionId}` is missing emissions.impact_text")
+            raise ValueError(f"Action `{self.action_id}` is missing emissions.impact_text")
         # Validate that the text band can be resolved by configured impact mapping.
         resolve_impact_text_multiplier(impact_text)
         return self
 
     @model_validator(mode="after")
-    def _validate_co_benefit_impact_numeric_range(self) -> ActionApiItem:
+    def _validate_co_benefit_impact_numeric_range(self) -> ActionPathwayApiItem:
         """Validate co-benefit numeric impact values stay within `[-2, 2]`."""
-        for co_benefit_key, co_benefit_entry in self.coBenefits.items():
+        for co_benefit_key, co_benefit_entry in self.co_benefits.items():
             impact_numeric = co_benefit_entry.impact_numeric
             if impact_numeric is None:
                 continue
             if impact_numeric < -2 or impact_numeric > 2:
                 raise ValueError(
                     "Action "
-                    f"`{self.actionId}` has coBenefits.{co_benefit_key}.impact_numeric="
+                    f"`{self.action_id}` has coBenefits.{co_benefit_key}.impact_numeric="
                     f"{impact_numeric} outside allowed range [-2, 2]"
                 )
         return self
@@ -752,13 +779,36 @@ class CitiesApiResponse(BaseModel):
     cities: list[CityApiItem] = Field(default_factory=list)
 
 
-class ActionsApiResponse(BaseModel):
-    """Response model for `GET /v1/actions`."""
+class ActionPathwaysApiContext(BaseModel):
+    """API context metadata returned by the action pathways endpoint."""
 
     model_config = ConfigDict(extra="ignore")
 
-    meta: UpstreamMeta
-    actions: list[ActionApiItem] = Field(default_factory=list)
+    endpoint: str
+
+
+class ActionPathwaysApiMeta(BaseModel):
+    """Metadata envelope returned by the action pathways endpoint."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    generated_at_utc: str | None = Field(default=None, validation_alias="generatedAtUtc")
+    backend_consumer: str | None = Field(default=None, validation_alias="backendConsumer")
+    upstream_provider: str | None = Field(default=None, validation_alias="upstreamProvider")
+    api_context: ActionPathwaysApiContext | None = Field(
+        default=None,
+        validation_alias="apiContext",
+    )
+    total_records: int | None = Field(default=None, validation_alias="totalRecords")
+
+
+class ActionPathwaysApiResponse(BaseModel):
+    """Response model for `GET /api/v1/action-pathways`."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    meta: ActionPathwaysApiMeta
+    actions: list[ActionPathwayApiItem] = Field(default_factory=list)
 
 
 class ActionPolicyScoresApiContext(BaseModel):
@@ -825,35 +875,117 @@ class ActionPolicyScoresApiResponse(BaseModel):
     scores: list[ActionPolicyScoreApiItem] = Field(default_factory=list)
 
 
+class ActionMitigationFeasibilityScoresApiMeta(BaseModel):
+    """Metadata envelope returned by the mitigation feasibility scores endpoint."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    generated_at_utc: str | None = None
+    endpoint: str | None = None
+    locode: str | None = None
+    country_code: str | None = None
+    release_id: str | None = None
+    src_action_id: str | None = None
+    total_records: int | None = None
+
+
+class ActionMitigationFeasibilityScoreApiItem(BaseModel):
+    """Single score row returned by the mitigation feasibility scores endpoint."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    locode: str
+    src_action_id: str
+    global_mitigation_option: str | None = None
+    action_mapping_strength: str | None = None
+    option_family: str | None = None
+    action_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    n_feasibility_dimensions: int | None = None
+    dimension_scores: dict[str, float] = Field(default_factory=dict)
+    breakdown: dict[str, object] = Field(default_factory=dict)
+    rank_within_city: int | None = None
+
+
+class ActionMitigationFeasibilityScoresApiResponse(BaseModel):
+    """Response model for city-scoped mitigation feasibility scores endpoint."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    meta: ActionMitigationFeasibilityScoresApiMeta
+    scores: list[ActionMitigationFeasibilityScoreApiItem] = Field(default_factory=list)
+
+
 class ActionLegalAssessmentApiItem(BaseModel):
     """Flat legal assessment row returned by `GET /api/v1/action-legal-assessments`."""
 
     model_config = ConfigDict(extra="ignore")
 
-    legalAnalysisId: str
-    srcActionId: str
-    countryCode: str
-    gpcSector: str | None = None
-    verdictCategory: str | None = None
-    verdictScore: float | None = Field(default=None, ge=0.0, le=1.0)
-    ownershipCategory: str | None = None
-    ownershipScore: float | None = Field(default=None, ge=0.0, le=1.0)
-    ownershipWeight: float | None = None
-    ownershipDescription: str | None = None
-    restrictionsCategory: str | None = None
-    restrictionsScore: float | None = Field(default=None, ge=0.0, le=1.0)
-    restrictionsWeight: float | None = None
-    restrictionsDescription: str | None = None
-    legalJustification: str | None = None
-    analysisDate: str | None = None
-    generationMethod: str | None = None
-    legalReferences: list[str] = Field(default_factory=list)
-    releaseId: str | None = None
-    createdAt: str | None = None
-    updatedAt: str | None = None
-    ownershipDescriptionI18n: dict[str, str] = Field(default_factory=dict)
-    restrictionsDescriptionI18n: dict[str, str] = Field(default_factory=dict)
-    legalJustificationI18n: dict[str, str] = Field(default_factory=dict)
+    legal_analysis_id: str = Field(validation_alias="legalAnalysisId")
+    src_action_id: str = Field(validation_alias="srcActionId")
+    country_code: str = Field(validation_alias="countryCode")
+    gpc_sector: str | None = Field(default=None, validation_alias="gpcSector")
+    verdict_category: str | None = Field(default=None, validation_alias="verdictCategory")
+    verdict_score: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=1.0,
+        validation_alias="verdictScore",
+    )
+    ownership_category: str | None = Field(default=None, validation_alias="ownershipCategory")
+    ownership_score: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=1.0,
+        validation_alias="ownershipScore",
+    )
+    ownership_weight: float | None = Field(default=None, validation_alias="ownershipWeight")
+    ownership_description: str | None = Field(
+        default=None,
+        validation_alias="ownershipDescription",
+    )
+    restrictions_category: str | None = Field(
+        default=None,
+        validation_alias="restrictionsCategory",
+    )
+    restrictions_score: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=1.0,
+        validation_alias="restrictionsScore",
+    )
+    restrictions_weight: float | None = Field(
+        default=None,
+        validation_alias="restrictionsWeight",
+    )
+    restrictions_description: str | None = Field(
+        default=None,
+        validation_alias="restrictionsDescription",
+    )
+    legal_justification: str | None = Field(
+        default=None,
+        validation_alias="legalJustification",
+    )
+    analysis_date: str | None = Field(default=None, validation_alias="analysisDate")
+    generation_method: str | None = Field(default=None, validation_alias="generationMethod")
+    legal_references: list[str] = Field(
+        default_factory=list,
+        validation_alias="legalReferences",
+    )
+    release_id: str | None = Field(default=None, validation_alias="releaseId")
+    created_at: str | None = Field(default=None, validation_alias="createdAt")
+    updated_at: str | None = Field(default=None, validation_alias="updatedAt")
+    ownership_description_i18n: dict[str, str] = Field(
+        default_factory=dict,
+        validation_alias="ownershipDescriptionI18n",
+    )
+    restrictions_description_i18n: dict[str, str] = Field(
+        default_factory=dict,
+        validation_alias="restrictionsDescriptionI18n",
+    )
+    legal_justification_i18n: dict[str, str] = Field(
+        default_factory=dict,
+        validation_alias="legalJustificationI18n",
+    )
 
 
 class PrioritizationResponse(BaseModel):

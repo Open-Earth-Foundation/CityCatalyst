@@ -77,14 +77,14 @@ class ActionLegalAssessmentsApiService:
 
         # Filter by country and fail fast on duplicate action IDs.
         for assessment in assessment_rows:
-            if assessment.countryCode.strip().upper() != country_code.strip().upper():
+            if assessment.country_code.strip().upper() != country_code.strip().upper():
                 continue
-            action_id = assessment.srcActionId
+            action_id = assessment.src_action_id
             if action_id in assessments_by_action_id:
                 raise UpstreamApiError(
                     status_code=502,
                     message=(
-                        "legal assessments API returned duplicate srcActionId values "
+                        "legal assessments API returned duplicate src_action_id values "
                         f"for countryCode={country_code.strip().upper()}"
                     ),
                     upstream_status_code=http_status_code,
@@ -94,28 +94,28 @@ class ActionLegalAssessmentsApiService:
             assessments_by_action_id[action_id] = LegalAssessmentRecord.model_validate(
                 {
                     "action_id": action_id,
-                    "country_code": assessment.countryCode,
-                    "gpc_sector": assessment.gpcSector,
-                    "verdict_category": assessment.verdictCategory,
-                    "verdict_score": assessment.verdictScore,
-                    "ownership_category": assessment.ownershipCategory,
-                    "ownership_score": assessment.ownershipScore,
-                    "ownership_weight": assessment.ownershipWeight,
-                    "ownership_description": assessment.ownershipDescription,
-                    "restrictions_category": assessment.restrictionsCategory,
-                    "restrictions_score": assessment.restrictionsScore,
-                    "restrictions_weight": assessment.restrictionsWeight,
-                    "restrictions_description": assessment.restrictionsDescription,
-                    "legal_justification": assessment.legalJustification,
-                    "analysis_date": assessment.analysisDate,
-                    "generation_method": assessment.generationMethod,
-                    "legal_references": assessment.legalReferences,
-                    "release_id": assessment.releaseId,
-                    "created_at": assessment.createdAt,
-                    "updated_at": assessment.updatedAt,
-                    "ownership_description_i18n": assessment.ownershipDescriptionI18n,
-                    "restrictions_description_i18n": assessment.restrictionsDescriptionI18n,
-                    "legal_justification_i18n": assessment.legalJustificationI18n,
+                    "country_code": assessment.country_code,
+                    "gpc_sector": assessment.gpc_sector,
+                    "verdict_category": assessment.verdict_category,
+                    "verdict_score": assessment.verdict_score,
+                    "ownership_category": assessment.ownership_category,
+                    "ownership_score": assessment.ownership_score,
+                    "ownership_weight": assessment.ownership_weight,
+                    "ownership_description": assessment.ownership_description,
+                    "restrictions_category": assessment.restrictions_category,
+                    "restrictions_score": assessment.restrictions_score,
+                    "restrictions_weight": assessment.restrictions_weight,
+                    "restrictions_description": assessment.restrictions_description,
+                    "legal_justification": assessment.legal_justification,
+                    "analysis_date": assessment.analysis_date,
+                    "generation_method": assessment.generation_method,
+                    "legal_references": assessment.legal_references,
+                    "release_id": assessment.release_id,
+                    "created_at": assessment.created_at,
+                    "updated_at": assessment.updated_at,
+                    "ownership_description_i18n": assessment.ownership_description_i18n,
+                    "restrictions_description_i18n": assessment.restrictions_description_i18n,
+                    "legal_justification_i18n": assessment.legal_justification_i18n,
                     "raw": assessment_raw,
                     "source_metadata": {
                         "mock_file_path": None,
@@ -123,6 +123,8 @@ class ActionLegalAssessmentsApiService:
                         "upstream_endpoint": LEGAL_ASSESSMENTS_ENDPOINT_TEMPLATE,
                         "requested_country_code": country_code.strip().upper(),
                         "http_status_code": http_status_code,
+                        # The current upstream legal endpoint is a top-level JSON list
+                        # and does not publish a generated-at meta field.
                         "upstream_generated_at_utc": None,
                     },
                 }

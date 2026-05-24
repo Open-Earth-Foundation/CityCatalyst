@@ -1,4 +1,4 @@
-"""Unit tests for prioritizer pipeline blocks using mock API payloads."""
+﻿"""Unit tests for prioritizer pipeline blocks using mock API payloads."""
 
 from __future__ import annotations
 
@@ -22,7 +22,8 @@ from app.modules.prioritizer.internal_models import (
 )
 from app.modules.prioritizer.models import CityApiItem, FrontendCityInput
 from app.services.data_clients import (
-    MockActionDataApiClient,
+    MockActionPathwaysDataApiClient,
+    MockActionMitigationFeasibilityScoresDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
     MockActionPolicyScoresDataApiClient,
@@ -36,10 +37,10 @@ def _mock_data_dir() -> Path:
 
 def _load_mock_actions() -> list[Action]:
     """Load actions from the mock actions API payload."""
-    action_client = MockActionDataApiClient(
-        mock_file_path=_mock_data_dir() / "actions_api_mock.json"
+    action_client = MockActionPathwaysDataApiClient(
+        mock_file_path=_mock_data_dir() / "action_pathways_api_mock.json"
     )
-    return action_client.list_actions()
+    return action_client.list_actions().actions
 
 
 def _load_mock_city() -> CityData:
@@ -64,6 +65,19 @@ def _load_mock_action_policy_scores() -> dict[str, object]:
         mock_file_path=_mock_data_dir() / "action_policy_scores_api_mock.json"
     )
     return policy_client.get_action_policy_scores(locode="CL IQQ").scores_by_action_id
+
+
+def _load_mock_action_mitigation_feasibility_scores() -> dict[str, object]:
+    """Load mitigation feasibility scores from the mock payload."""
+    feasibility_client = MockActionMitigationFeasibilityScoresDataApiClient(
+        mock_file_path=(
+            _mock_data_dir() / "action_mitigation_feasibility_scores_api_mock.json"
+        )
+    )
+    return feasibility_client.get_action_mitigation_feasibility_scores(
+        locode="CL ARI",
+        country_code="CL",
+    ).scores_by_action_id
 
 
 def _load_city_emissions_context() -> CityEmissionsContext:
@@ -557,7 +571,7 @@ def test_alignment_other_preference_component_uses_selected_co_benefit_keys() ->
         "air_quality",
         "housing",
     ]
-    assert first_action_evidence["co_benefit_component_score"] == pytest.approx(0.5)
+    assert first_action_evidence["co_benefit_component_score"] == pytest.approx(0.75)
 
 
 @pytest.mark.unit
@@ -738,57 +752,38 @@ def test_alignment_timeframe_component_uses_best_multi_select_match(
 
 
 @pytest.mark.unit
-def test_feasibility_block_with_mock_api_data(
-    caplog: pytest.LogCaptureFixture,
-) -> None:
-    """Feasibility block computes legal+socio canonical scores and evidence."""
+def test_feasibility_block_with_mock_api_data() -> None:
+    """Feasibility block computes legal+mitigation feasibility scores and evidence."""
     actions = _load_mock_actions()
-    city = _load_mock_city()
     legal_assessments = _load_mock_legal_assessments()
+    mitigation_feasibility_scores = _load_mock_action_mitigation_feasibility_scores()
 
-    with caplog.at_level("WARNING", logger="app.modules.prioritizer.blocks.feasibility"):
-        result = feasibility.run(
-            actions=actions,
-            city=city,
-            legal_assessments_by_action_id=legal_assessments,
-        )
+    result = feasibility.run(
+        actions=actions,
+        legal_assessments_by_action_id=legal_assessments,
+        mitigation_feasibility_scores_by_action_id=mitigation_feasibility_scores,
+    )
 
     assert len(result.score_by_action_id) == len(actions)
     assert all(0.0 <= score <= 1.0 for score in result.score_by_action_id.values())
     assert result.evidence_by_action_id is not None
-    first_action_evidence = result.evidence_by_action_id["c40_0010"]
-    assert "socioeconomic_indicator_rows" in first_action_evidence
+    first_action_evidence = result.evidence_by_action_id["c40_0034"]
     assert first_action_evidence["feasibility_score"] == pytest.approx(
         first_action_evidence["legal_contribution"]
-        + first_action_evidence["socioeconomic_contribution"]
-    )
-    assert first_action_evidence["legal_component_score"] == pytest.approx(0.5)
-    assert first_action_evidence["legal_component_source"] == "verdict_score"
-    first_action_rows = {
-        row["action_socioeconomic_indicator_key"]: row
-        for row in first_action_evidence["socioeconomic_indicator_rows"]
-    }
-    assert (
-        first_action_rows["employment_in_transport_and_logistics"][
-            "city_socioeconomic_bucket_label"
-        ]
-        == "low"
+        + first_action_evidence["mitigation_feasibility_contribution"]
     )
     assert (
-        first_action_rows["electricity_access_rate"][
-            "city_socioeconomic_bucket_label"
-        ]
-        == "very_low"
+        first_action_evidence["mitigation_feasibility_component_source"]
+        == "action_mitigation_feasibility_score"
     )
-    missing_indicator_messages = [
-        record.message
-        for record in caplog.records
-        if "Missing city socioeconomic indicator" in record.message
+    assert first_action_evidence["mitigation_feasibility_component_score"] == pytest.approx(0.969)
+    assert first_action_evidence["mitigation_feasibility_score_present"] is True
+    missing_score_action_ids = result.metadata[
+        "missing_mitigation_feasibility_score_action_ids"
     ]
-    assert not any(
-        "employment_in_transport_and_logistics" in message
-        or "electricity_access_rate" in message
-        for message in missing_indicator_messages
+    assert isinstance(missing_score_action_ids, list)
+    assert set(missing_score_action_ids).issubset(
+        {action.action_id for action in actions}
     )
     missing_action_id = next(
         action.action_id
@@ -889,3 +884,4 @@ def test_final_scoring_competitive_ranks_skip_after_ties() -> None:
         top_n=4,
     )
     assert [item.rank for item in scored_actions] == [1, 2, 2, 4]
+

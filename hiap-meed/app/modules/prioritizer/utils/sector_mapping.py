@@ -37,17 +37,9 @@ def resolve_action_sector_tags(action: Action) -> set[str]:
     """Resolve all canonical sector tags visible in an action's metadata."""
     sector_tags: set[str] = set()
 
-    # Prefer the GPC emissions sector number when present.
+    # Use the GPC emissions sector number returned by the action pathways API.
     sector_number = str(action.emissions.get("sector_number", "")).strip().upper()
     if sector_number in SECTOR_NUMBER_TO_TAG:
         sector_tags.add(SECTOR_NUMBER_TO_TAG[sector_number])
-
-    # Also inspect catalog category fields, but only accept already-canonical tags.
-    for value in (action.action_category, action.action_subcategory):
-        if value is None:
-            continue
-        sector_tag = normalize_sector_tag(value)
-        if sector_tag is not None:
-            sector_tags.add(sector_tag)
 
     return sector_tags

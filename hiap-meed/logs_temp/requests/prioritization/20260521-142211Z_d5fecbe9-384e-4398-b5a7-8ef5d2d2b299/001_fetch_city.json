@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-05-20T14:38:38.677077+00:00",
-  "request_id": "7abee47b-5e9b-4a11-a550-744ae8da99d6",
+  "timestamp": "2026-05-21T14:22:12.989840+00:00",
+  "request_id": "d5fecbe9-384e-4398-b5a7-8ef5d2d2b299",
   "request_kind": "prioritization",
   "event_index": 1,
   "step_name": "fetch_city",
@@ -16,8 +16,8 @@
       "upstream_endpoint": "GET /api/v0/city_attributes/{locode}",
       "requested_locode": "CL IQQ",
       "http_status_code": 200,
-      "upstream_generated_at_utc": "2026-05-20T14:38:38.466278+00:00"
+      "upstream_generated_at_utc": "2026-05-21T14:22:12.050239+00:00"
     },
-    "elapsed_seconds": 1.109262903999479
+    "elapsed_seconds": 1.2547079519999897
   }
 }

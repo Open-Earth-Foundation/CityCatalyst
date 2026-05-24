@@ -323,8 +323,8 @@ def _build_feasibility_signals(
 ) -> dict[str, object]:
     """Build qualitative feasibility signals from block evidence."""
     legal_component_score = feasibility_evidence.get("legal_component_score")
-    socioeconomic_component_score = feasibility_evidence.get(
-        "socioeconomic_component_score"
+    mitigation_feasibility_component_score = feasibility_evidence.get(
+        "mitigation_feasibility_component_score"
     )
     return {
         "legal_assessment_present": bool(
@@ -335,19 +335,11 @@ def _build_feasibility_signals(
         ),
         "legal_verdict_category": feasibility_evidence.get("legal_verdict_category"),
         "legal_component_source": feasibility_evidence.get("legal_component_source"),
-        "missing_city_indicator_keys_count": len(
-            feasibility_evidence.get("missing_city_socioeconomic_indicator_keys", [])
-        )
-        if isinstance(
-            feasibility_evidence.get("missing_city_socioeconomic_indicator_keys", []),
-            list,
-        )
-        else 0,
         "legal_component_bucket": _component_score_bucket(
             legal_component_score
         ),
-        "socioeconomic_component_bucket": _component_score_bucket(
-            socioeconomic_component_score
+        "mitigation_feasibility_component_bucket": _component_score_bucket(
+            mitigation_feasibility_component_score
         ),
     }
 
@@ -419,13 +411,14 @@ def _build_main_strengths(
             very_strong_message="Shows very supportive legal feasibility conditions in the current evidence.",
         )
 
-    socioeconomic_rows = feasibility_evidence.get("socioeconomic_indicator_rows", [])
-    if isinstance(socioeconomic_rows, list) and socioeconomic_rows:
+    if bool(feasibility_evidence.get("mitigation_feasibility_score_present", False)):
         _append_strength_message_for_score(
             strengths,
-            score_value=feasibility_evidence.get("socioeconomic_component_score"),
-            strong_message="Fits the current city socioeconomic context well.",
-            very_strong_message="Fits the current city socioeconomic context very well.",
+            score_value=feasibility_evidence.get(
+                "mitigation_feasibility_component_score"
+            ),
+            strong_message="Shows strong mitigation feasibility for the current city.",
+            very_strong_message="Shows very strong mitigation feasibility for the current city.",
         )
 
     return strengths
@@ -502,13 +495,14 @@ def _build_main_constraints(
             very_weak_message="Shows very weak legal feasibility conditions in the current evidence.",
         )
 
-    socioeconomic_rows = feasibility_evidence.get("socioeconomic_indicator_rows", [])
-    if isinstance(socioeconomic_rows, list) and socioeconomic_rows:
+    if bool(feasibility_evidence.get("mitigation_feasibility_score_present", False)):
         _append_constraint_message_for_score(
             constraints,
-            score_value=feasibility_evidence.get("socioeconomic_component_score"),
-            weak_message="Fits the current city socioeconomic context less well.",
-            very_weak_message="Fits the current city socioeconomic context poorly.",
+            score_value=feasibility_evidence.get(
+                "mitigation_feasibility_component_score"
+            ),
+            weak_message="Shows weaker mitigation feasibility for the current city.",
+            very_weak_message="Shows very weak mitigation feasibility for the current city.",
         )
 
     return constraints
@@ -528,6 +522,16 @@ def _build_known_limitations(
     elif bool(feasibility_evidence.get("legal_verdict_score_missing", False)):
         limitations.append(
             "The legal assessment was incomplete for this action, so the legal component used a neutral fallback."
+        )
+    if bool(feasibility_evidence.get("mitigation_feasibility_score_missing", False)):
+        limitations.append(
+            "No mitigation feasibility score row was available for this action, so the feasibility component used a neutral fallback."
+        )
+    elif bool(
+        feasibility_evidence.get("mitigation_feasibility_action_score_missing", False)
+    ):
+        limitations.append(
+            "The mitigation feasibility score row was incomplete for this action, so the feasibility component used a neutral fallback."
         )
     return limitations
 

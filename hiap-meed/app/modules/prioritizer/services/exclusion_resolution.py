@@ -460,8 +460,8 @@ def _build_catalog_row(action: Action) -> dict[str, object]:
         "action_id": action.action_id,
         "action_name": action.action_name,
         "description": _truncate_catalog_description(action.description),
-        "action_category": action.action_category,
-        "action_subcategory": action.action_subcategory,
+        "intervention_type": action.intervention_type,
+        "action_role": action.action_role,
     }
 
 

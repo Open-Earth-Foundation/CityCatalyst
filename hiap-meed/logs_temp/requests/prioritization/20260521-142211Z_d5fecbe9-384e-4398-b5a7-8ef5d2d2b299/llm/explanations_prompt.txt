@@ -78,16 +78,15 @@ Runtime values:
       "legal_assessment_missing": false,
       "legal_verdict_category": "enabled",
       "legal_component_source": "verdict_score",
-      "missing_city_indicator_keys_count": 0,
       "legal_component_bucket": "very_strong",
-      "socioeconomic_component_bucket": "very_strong"
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Can deliver emissions benefits on a very favorable timeline.",
       "Fits the city's preferred implementation timeframe.",
       "Shows very strong supportive policy context in the current evidence.",
       "Shows very supportive legal feasibility conditions in the current evidence.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Its expected emissions reduction is limited in the current city inventory.",
@@ -130,16 +129,15 @@ Runtime values:
       "legal_assessment_missing": false,
       "legal_verdict_category": "conditional",
       "legal_component_source": "verdict_score",
-      "missing_city_indicator_keys_count": 0,
       "legal_component_bucket": "neutral",
-      "socioeconomic_component_bucket": "very_strong"
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Can deliver emissions benefits on a very favorable timeline.",
       "Fits the city's preferred implementation timeframe.",
       "Shows strong supportive policy context in the current evidence.",
       "Supports the city's preferred co-benefits well.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Its expected emissions reduction is limited in the current city inventory.",
@@ -182,16 +180,15 @@ Runtime values:
       "legal_assessment_missing": false,
       "legal_verdict_category": "conditional",
       "legal_component_source": "verdict_score",
-      "missing_city_indicator_keys_count": 0,
       "legal_component_bucket": "neutral",
-      "socioeconomic_component_bucket": "very_strong"
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Can deliver emissions benefits on a very favorable timeline.",
       "Fits the city's preferred implementation timeframe.",
       "Shows very strong supportive policy context in the current evidence.",
       "Supports the city's preferred co-benefits well.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Its expected emissions reduction is very limited in the current city inventory.",
@@ -225,7 +222,7 @@ Runtime values:
       "timeframe_match_label": "exact_match",
       "policy_component_bucket": "strong",
       "sector_component_bucket": "very_strong",
-      "co_benefit_component_bucket": "very_strong",
+      "co_benefit_component_bucket": "strong",
       "timeframe_component_bucket": "very_strong",
       "matched_preferred_co_benefits_count": 2
     },
@@ -234,18 +231,17 @@ Runtime values:
       "legal_assessment_missing": false,
       "legal_verdict_category": "enabled",
       "legal_component_source": "verdict_score",
-      "missing_city_indicator_keys_count": 0,
       "legal_component_bucket": "very_strong",
-      "socioeconomic_component_bucket": "very_strong"
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Can deliver emissions benefits on a very favorable timeline.",
       "Matches the city's preferred sector.",
       "Fits the city's preferred implementation timeframe.",
       "Shows strong supportive policy context in the current evidence.",
-      "Supports the city's preferred co-benefits very well.",
+      "Supports the city's preferred co-benefits well.",
       "Shows very supportive legal feasibility conditions in the current evidence.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Its expected emissions reduction is very limited in the current city inventory."
@@ -287,16 +283,15 @@ Runtime values:
       "legal_assessment_missing": false,
       "legal_verdict_category": "conditional",
       "legal_component_source": "verdict_score",
-      "missing_city_indicator_keys_count": 0,
       "legal_component_bucket": "very_strong",
-      "socioeconomic_component_bucket": "very_strong"
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Can deliver emissions benefits on a very favorable timeline.",
       "Fits the city's preferred implementation timeframe.",
       "Shows very strong supportive policy context in the current evidence.",
       "Shows very supportive legal feasibility conditions in the current evidence.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Does not directly match a subsector with recorded city emissions in the current inventory.",
@@ -305,60 +300,8 @@ Runtime values:
     "known_limitations": []
   },
   {
-    "action_id": "icare_0040",
-    "rank": 6,
-    "score_bands": {
-      "final": "low",
-      "impact": "low",
-      "alignment": "moderate",
-      "feasibility": "high"
-    },
-    "impact_signals": {
-      "impact_band": "very low",
-      "timeline_bucket": "5-10 years",
-      "matched_city_subsector_keys_count": 1,
-      "emissions_reduction_component_bucket": "very_weak",
-      "timeline_component_bucket": "neutral"
-    },
-    "alignment_signals": {
-      "sector_match": false,
-      "action_timeline_bucket": "5-10 years",
-      "city_preference_timeframes": [
-        "short",
-        "medium"
-      ],
-      "timeframe_match_label": "exact_match",
-      "policy_component_bucket": "strong",
-      "sector_component_bucket": "very_weak",
-      "co_benefit_component_bucket": "very_strong",
-      "timeframe_component_bucket": "very_strong",
-      "matched_preferred_co_benefits_count": 2
-    },
-    "feasibility_signals": {
-      "legal_assessment_present": true,
-      "legal_assessment_missing": false,
-      "legal_verdict_category": "enabled",
-      "legal_component_source": "verdict_score",
-      "missing_city_indicator_keys_count": 0,
-      "legal_component_bucket": "very_strong",
-      "socioeconomic_component_bucket": "very_strong"
-    },
-    "main_strengths": [
-      "Fits the city's preferred implementation timeframe.",
-      "Shows strong supportive policy context in the current evidence.",
-      "Supports the city's preferred co-benefits very well.",
-      "Shows very supportive legal feasibility conditions in the current evidence.",
-      "Fits the current city socioeconomic context very well."
-    ],
-    "main_constraints": [
-      "Its expected emissions reduction is very limited in the current city inventory.",
-      "Does not match the city's preferred sector."
-    ],
-    "known_limitations": []
-  },
-  {
     "action_id": "ipcc_0105",
-    "rank": 7,
+    "rank": 6,
     "score_bands": {
       "final": "low",
       "impact": "very low",
@@ -391,9 +334,8 @@ Runtime values:
       "legal_assessment_missing": true,
       "legal_verdict_category": null,
       "legal_component_source": "neutral_fallback",
-      "missing_city_indicator_keys_count": 0,
       "legal_component_bucket": "neutral",
-      "socioeconomic_component_bucket": "very_strong"
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Can deliver emissions benefits on a very favorable timeline.",
@@ -401,7 +343,7 @@ Runtime values:
       "Fits the city's preferred implementation timeframe.",
       "Shows very strong supportive policy context in the current evidence.",
       "Supports the city's preferred co-benefits well.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Its expected emissions reduction is very limited in the current city inventory."
@@ -409,6 +351,57 @@ Runtime values:
     "known_limitations": [
       "No legal assessment row was available for this action, so the legal component used a neutral fallback."
     ]
+  },
+  {
+    "action_id": "icare_0040",
+    "rank": 7,
+    "score_bands": {
+      "final": "low",
+      "impact": "low",
+      "alignment": "moderate",
+      "feasibility": "high"
+    },
+    "impact_signals": {
+      "impact_band": "very low",
+      "timeline_bucket": "5-10 years",
+      "matched_city_subsector_keys_count": 1,
+      "emissions_reduction_component_bucket": "very_weak",
+      "timeline_component_bucket": "neutral"
+    },
+    "alignment_signals": {
+      "sector_match": false,
+      "action_timeline_bucket": "5-10 years",
+      "city_preference_timeframes": [
+        "short",
+        "medium"
+      ],
+      "timeframe_match_label": "exact_match",
+      "policy_component_bucket": "strong",
+      "sector_component_bucket": "very_weak",
+      "co_benefit_component_bucket": "strong",
+      "timeframe_component_bucket": "very_strong",
+      "matched_preferred_co_benefits_count": 2
+    },
+    "feasibility_signals": {
+      "legal_assessment_present": true,
+      "legal_assessment_missing": false,
+      "legal_verdict_category": "enabled",
+      "legal_component_source": "verdict_score",
+      "legal_component_bucket": "very_strong",
+      "mitigation_feasibility_component_bucket": "very_strong"
+    },
+    "main_strengths": [
+      "Fits the city's preferred implementation timeframe.",
+      "Shows strong supportive policy context in the current evidence.",
+      "Supports the city's preferred co-benefits well.",
+      "Shows very supportive legal feasibility conditions in the current evidence.",
+      "Shows very strong mitigation feasibility for the current city."
+    ],
+    "main_constraints": [
+      "Its expected emissions reduction is very limited in the current city inventory.",
+      "Does not match the city's preferred sector."
+    ],
+    "known_limitations": []
   },
   {
     "action_id": "icare_0002",
@@ -445,14 +438,13 @@ Runtime values:
       "legal_assessment_missing": true,
       "legal_verdict_category": null,
       "legal_component_source": "neutral_fallback",
-      "missing_city_indicator_keys_count": 0,
       "legal_component_bucket": "neutral",
-      "socioeconomic_component_bucket": "very_strong"
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Can deliver emissions benefits on a very favorable timeline.",
       "Fits the city's preferred implementation timeframe.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Its expected emissions reduction is limited in the current city inventory.",
@@ -464,24 +456,24 @@ Runtime values:
     ]
   },
   {
-    "action_id": "icare_0033",
+    "action_id": "icare_0064",
     "rank": 9,
     "score_bands": {
       "final": "low",
       "impact": "very low",
-      "alignment": "high",
-      "feasibility": "moderate"
+      "alignment": "moderate",
+      "feasibility": "high"
     },
     "impact_signals": {
-      "impact_band": "very low",
-      "timeline_bucket": "<5 years",
+      "impact_band": "low",
+      "timeline_bucket": "5-10 years",
       "matched_city_subsector_keys_count": 0,
       "emissions_reduction_component_bucket": "very_weak",
-      "timeline_component_bucket": "very_strong"
+      "timeline_component_bucket": "neutral"
     },
     "alignment_signals": {
       "sector_match": false,
-      "action_timeline_bucket": "<5 years",
+      "action_timeline_bucket": "5-10 years",
       "city_preference_timeframes": [
         "short",
         "medium"
@@ -489,25 +481,23 @@ Runtime values:
       "timeframe_match_label": "exact_match",
       "policy_component_bucket": "very_strong",
       "sector_component_bucket": "very_weak",
-      "co_benefit_component_bucket": "strong",
+      "co_benefit_component_bucket": "neutral",
       "timeframe_component_bucket": "very_strong",
-      "matched_preferred_co_benefits_count": 1
+      "matched_preferred_co_benefits_count": 0
     },
     "feasibility_signals": {
       "legal_assessment_present": true,
       "legal_assessment_missing": false,
-      "legal_verdict_category": "conditional",
+      "legal_verdict_category": "enabled",
       "legal_component_source": "verdict_score",
-      "missing_city_indicator_keys_count": 0,
-      "legal_component_bucket": "neutral",
-      "socioeconomic_component_bucket": "very_strong"
+      "legal_component_bucket": "very_strong",
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
-      "Can deliver emissions benefits on a very favorable timeline.",
       "Fits the city's preferred implementation timeframe.",
       "Shows very strong supportive policy context in the current evidence.",
-      "Supports the city's preferred co-benefits well.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very supportive legal feasibility conditions in the current evidence.",
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Does not directly match a subsector with recorded city emissions in the current inventory.",
@@ -550,9 +540,8 @@ Runtime values:
       "legal_assessment_missing": false,
       "legal_verdict_category": "enabled",
       "legal_component_source": "verdict_score",
-      "missing_city_indicator_keys_count": 0,
       "legal_component_bucket": "very_strong",
-      "socioeconomic_component_bucket": "very_strong"
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Can deliver emissions benefits on a very favorable timeline.",
@@ -560,7 +549,7 @@ Runtime values:
       "Shows strong supportive policy context in the current evidence.",
       "Supports the city's preferred co-benefits well.",
       "Shows very supportive legal feasibility conditions in the current evidence.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Does not directly match a subsector with recorded city emissions in the current inventory.",
@@ -603,9 +592,8 @@ Runtime values:
       "legal_assessment_missing": false,
       "legal_verdict_category": "enabled",
       "legal_component_source": "verdict_score",
-      "missing_city_indicator_keys_count": 0,
       "legal_component_bucket": "very_strong",
-      "socioeconomic_component_bucket": "very_strong"
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Can deliver emissions benefits on a very favorable timeline.",
@@ -613,7 +601,7 @@ Runtime values:
       "Shows strong supportive policy context in the current evidence.",
       "Supports the city's preferred co-benefits well.",
       "Shows very supportive legal feasibility conditions in the current evidence.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Does not directly match a subsector with recorded city emissions in the current inventory.",
@@ -656,67 +644,15 @@ Runtime values:
       "legal_assessment_missing": false,
       "legal_verdict_category": "enabled",
       "legal_component_source": "verdict_score",
-      "missing_city_indicator_keys_count": 0,
       "legal_component_bucket": "very_strong",
-      "socioeconomic_component_bucket": "very_strong"
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Can deliver emissions benefits on a very favorable timeline.",
       "Fits the city's preferred implementation timeframe.",
       "Shows strong supportive policy context in the current evidence.",
       "Shows very supportive legal feasibility conditions in the current evidence.",
-      "Fits the current city socioeconomic context very well."
-    ],
-    "main_constraints": [
-      "Does not directly match a subsector with recorded city emissions in the current inventory.",
-      "Does not match the city's preferred sector."
-    ],
-    "known_limitations": []
-  },
-  {
-    "action_id": "icare_0064",
-    "rank": 13,
-    "score_bands": {
-      "final": "low",
-      "impact": "very low",
-      "alignment": "moderate",
-      "feasibility": "high"
-    },
-    "impact_signals": {
-      "impact_band": "low",
-      "timeline_bucket": "5-10 years",
-      "matched_city_subsector_keys_count": 0,
-      "emissions_reduction_component_bucket": "very_weak",
-      "timeline_component_bucket": "neutral"
-    },
-    "alignment_signals": {
-      "sector_match": false,
-      "action_timeline_bucket": "5-10 years",
-      "city_preference_timeframes": [
-        "short",
-        "medium"
-      ],
-      "timeframe_match_label": "exact_match",
-      "policy_component_bucket": "very_strong",
-      "sector_component_bucket": "very_weak",
-      "co_benefit_component_bucket": "neutral",
-      "timeframe_component_bucket": "very_strong",
-      "matched_preferred_co_benefits_count": 0
-    },
-    "feasibility_signals": {
-      "legal_assessment_present": true,
-      "legal_assessment_missing": false,
-      "legal_verdict_category": "enabled",
-      "legal_component_source": "verdict_score",
-      "missing_city_indicator_keys_count": 0,
-      "legal_component_bucket": "very_strong",
-      "socioeconomic_component_bucket": "very_strong"
-    },
-    "main_strengths": [
-      "Fits the city's preferred implementation timeframe.",
-      "Shows very strong supportive policy context in the current evidence.",
-      "Shows very supportive legal feasibility conditions in the current evidence.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Does not directly match a subsector with recorded city emissions in the current inventory.",
@@ -726,12 +662,12 @@ Runtime values:
   },
   {
     "action_id": "icare_0010",
-    "rank": 14,
+    "rank": 13,
     "score_bands": {
       "final": "low",
       "impact": "low",
       "alignment": "moderate",
-      "feasibility": "moderate"
+      "feasibility": "high"
     },
     "impact_signals": {
       "impact_band": "very low",
@@ -759,16 +695,15 @@ Runtime values:
       "legal_assessment_missing": false,
       "legal_verdict_category": "conditional",
       "legal_component_source": "verdict_score",
-      "missing_city_indicator_keys_count": 0,
       "legal_component_bucket": "strong",
-      "socioeconomic_component_bucket": "very_strong"
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Fits the city's preferred implementation timeframe.",
       "Shows strong supportive policy context in the current evidence.",
       "Supports the city's preferred co-benefits well.",
       "Shows supportive legal feasibility conditions in the current evidence.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Its expected emissions reduction is very limited in the current city inventory.",
@@ -778,7 +713,7 @@ Runtime values:
   },
   {
     "action_id": "ipcc_0049",
-    "rank": 15,
+    "rank": 14,
     "score_bands": {
       "final": "low",
       "impact": "very low",
@@ -811,14 +746,13 @@ Runtime values:
       "legal_assessment_missing": true,
       "legal_verdict_category": null,
       "legal_component_source": "neutral_fallback",
-      "missing_city_indicator_keys_count": 0,
       "legal_component_bucket": "neutral",
-      "socioeconomic_component_bucket": "very_strong"
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Fits the city's preferred implementation timeframe.",
       "Shows very strong supportive policy context in the current evidence.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Its expected emissions reduction is very limited in the current city inventory.",
@@ -830,7 +764,7 @@ Runtime values:
   },
   {
     "action_id": "ipcc_0067",
-    "rank": 16,
+    "rank": 15,
     "score_bands": {
       "final": "low",
       "impact": "very low",
@@ -863,15 +797,14 @@ Runtime values:
       "legal_assessment_missing": true,
       "legal_verdict_category": null,
       "legal_component_source": "neutral_fallback",
-      "missing_city_indicator_keys_count": 0,
       "legal_component_bucket": "neutral",
-      "socioeconomic_component_bucket": "very_strong"
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Fits the city's preferred implementation timeframe.",
       "Shows very strong supportive policy context in the current evidence.",
       "Supports the city's preferred co-benefits well.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Its expected emissions reduction is very limited in the current city inventory.",
@@ -883,7 +816,7 @@ Runtime values:
   },
   {
     "action_id": "icare_0045",
-    "rank": 17,
+    "rank": 16,
     "score_bands": {
       "final": "low",
       "impact": "very low",
@@ -916,16 +849,15 @@ Runtime values:
       "legal_assessment_missing": true,
       "legal_verdict_category": null,
       "legal_component_source": "neutral_fallback",
-      "missing_city_indicator_keys_count": 0,
       "legal_component_bucket": "neutral",
-      "socioeconomic_component_bucket": "very_strong"
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Can deliver emissions benefits on a very favorable timeline.",
       "Fits the city's preferred implementation timeframe.",
       "Shows strong supportive policy context in the current evidence.",
       "Supports the city's preferred co-benefits well.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Does not directly match a subsector with recorded city emissions in the current inventory.",
@@ -937,7 +869,7 @@ Runtime values:
   },
   {
     "action_id": "ipcc_0045",
-    "rank": 18,
+    "rank": 17,
     "score_bands": {
       "final": "low",
       "impact": "very low",
@@ -970,16 +902,15 @@ Runtime values:
       "legal_assessment_missing": true,
       "legal_verdict_category": null,
       "legal_component_source": "neutral_fallback",
-      "missing_city_indicator_keys_count": 0,
       "legal_component_bucket": "neutral",
-      "socioeconomic_component_bucket": "very_strong"
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Can deliver emissions benefits on a very favorable timeline.",
       "Fits the city's preferred implementation timeframe.",
       "Shows strong supportive policy context in the current evidence.",
       "Supports the city's preferred co-benefits well.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Its expected emissions reduction is very limited in the current city inventory.",
@@ -990,18 +921,18 @@ Runtime values:
     ]
   },
   {
-    "action_id": "ipcc_0043",
-    "rank": 19,
+    "action_id": "icare_0012",
+    "rank": 18,
     "score_bands": {
       "final": "low",
       "impact": "very low",
       "alignment": "moderate",
-      "feasibility": "moderate"
+      "feasibility": "high"
     },
     "impact_signals": {
-      "impact_band": "medium",
+      "impact_band": "very low",
       "timeline_bucket": "5-10 years",
-      "matched_city_subsector_keys_count": 1,
+      "matched_city_subsector_keys_count": 0,
       "emissions_reduction_component_bucket": "very_weak",
       "timeline_component_bucket": "neutral"
     },
@@ -1013,37 +944,35 @@ Runtime values:
         "medium"
       ],
       "timeframe_match_label": "exact_match",
-      "policy_component_bucket": "very_strong",
+      "policy_component_bucket": "strong",
       "sector_component_bucket": "very_weak",
       "co_benefit_component_bucket": "neutral",
       "timeframe_component_bucket": "very_strong",
       "matched_preferred_co_benefits_count": 0
     },
     "feasibility_signals": {
-      "legal_assessment_present": false,
-      "legal_assessment_missing": true,
-      "legal_verdict_category": null,
-      "legal_component_source": "neutral_fallback",
-      "missing_city_indicator_keys_count": 0,
-      "legal_component_bucket": "neutral",
-      "socioeconomic_component_bucket": "very_strong"
+      "legal_assessment_present": true,
+      "legal_assessment_missing": false,
+      "legal_verdict_category": "enabled",
+      "legal_component_source": "verdict_score",
+      "legal_component_bucket": "very_strong",
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Fits the city's preferred implementation timeframe.",
-      "Shows very strong supportive policy context in the current evidence.",
-      "Fits the current city socioeconomic context very well."
+      "Shows strong supportive policy context in the current evidence.",
+      "Shows very supportive legal feasibility conditions in the current evidence.",
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
-      "Its expected emissions reduction is very limited in the current city inventory.",
+      "Does not directly match a subsector with recorded city emissions in the current inventory.",
       "Does not match the city's preferred sector."
     ],
-    "known_limitations": [
-      "No legal assessment row was available for this action, so the legal component used a neutral fallback."
-    ]
+    "known_limitations": []
   },
   {
     "action_id": "c40_0016",
-    "rank": 20,
+    "rank": 19,
     "score_bands": {
       "final": "low",
       "impact": "very low",
@@ -1076,22 +1005,74 @@ Runtime values:
       "legal_assessment_missing": false,
       "legal_verdict_category": "conditional",
       "legal_component_source": "verdict_score",
-      "missing_city_indicator_keys_count": 0,
       "legal_component_bucket": "neutral",
-      "socioeconomic_component_bucket": "very_strong"
+      "mitigation_feasibility_component_bucket": "very_strong"
     },
     "main_strengths": [
       "Can deliver emissions benefits on a very favorable timeline.",
       "Fits the city's preferred implementation timeframe.",
       "Shows strong supportive policy context in the current evidence.",
       "Supports the city's preferred co-benefits well.",
-      "Fits the current city socioeconomic context very well."
+      "Shows very strong mitigation feasibility for the current city."
     ],
     "main_constraints": [
       "Does not directly match a subsector with recorded city emissions in the current inventory.",
       "Does not match the city's preferred sector."
     ],
     "known_limitations": []
+  },
+  {
+    "action_id": "icare_0132",
+    "rank": 20,
+    "score_bands": {
+      "final": "low",
+      "impact": "very low",
+      "alignment": "moderate",
+      "feasibility": "moderate"
+    },
+    "impact_signals": {
+      "impact_band": "low",
+      "timeline_bucket": "<5 years",
+      "matched_city_subsector_keys_count": 0,
+      "emissions_reduction_component_bucket": "very_weak",
+      "timeline_component_bucket": "very_strong"
+    },
+    "alignment_signals": {
+      "sector_match": false,
+      "action_timeline_bucket": "<5 years",
+      "city_preference_timeframes": [
+        "short",
+        "medium"
+      ],
+      "timeframe_match_label": "exact_match",
+      "policy_component_bucket": "strong",
+      "sector_component_bucket": "very_weak",
+      "co_benefit_component_bucket": "strong",
+      "timeframe_component_bucket": "very_strong",
+      "matched_preferred_co_benefits_count": 1
+    },
+    "feasibility_signals": {
+      "legal_assessment_present": false,
+      "legal_assessment_missing": true,
+      "legal_verdict_category": null,
+      "legal_component_source": "neutral_fallback",
+      "legal_component_bucket": "neutral",
+      "mitigation_feasibility_component_bucket": "very_strong"
+    },
+    "main_strengths": [
+      "Can deliver emissions benefits on a very favorable timeline.",
+      "Fits the city's preferred implementation timeframe.",
+      "Shows strong supportive policy context in the current evidence.",
+      "Supports the city's preferred co-benefits well.",
+      "Shows very strong mitigation feasibility for the current city."
+    ],
+    "main_constraints": [
+      "Does not directly match a subsector with recorded city emissions in the current inventory.",
+      "Does not match the city's preferred sector."
+    ],
+    "known_limitations": [
+      "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+    ]
   }
 ]
 </input>

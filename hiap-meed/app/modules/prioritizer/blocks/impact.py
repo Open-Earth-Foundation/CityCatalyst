@@ -124,17 +124,25 @@ def _has_activity_type(activity_row: CityActivityRow) -> bool:
 
 
 def _resolve_action_text_source(action: Action) -> tuple[str, str | None]:
-    """Choose the future activity-mapping text source for one action."""
-    if action.activity_type_description and action.activity_type_description.strip():
-        return "activity_type_description", action.activity_type_description.strip()
+    """
+    Choose the current placeholder text source for future activity matching.
+
+    This ordering is intentionally provisional. The active ranking path does
+    not use this text today, and a future implementation should revisit which
+    action-pathways fields best represent the matchable action text.
+    """
+    if action.intervention_summary and action.intervention_summary.strip():
+        return "intervention_summary", action.intervention_summary.strip()
+    if action.outcome_summary and action.outcome_summary.strip():
+        return "outcome_summary", action.outcome_summary.strip()
     if action.description and action.description.strip():
         logger.warning(
-            "Missing action activity_type_description action_id=%s; future mapping would fall back to description",
+            "Missing action intervention/outcome summary action_id=%s; future mapping would fall back to description",
             action.action_id,
         )
         return "description", action.description.strip()
     logger.warning(
-        "Missing action activity_type_description and description action_id=%s",
+        "Missing action intervention/outcome summary and description action_id=%s",
         action.action_id,
     )
     return "missing", None
@@ -151,8 +159,11 @@ def _collect_activity_data_level_mapping_stub_metadata(
     Return no-op stub diagnostics without changing subsector matches or ranking.
 
     Future intended logic:
-    - compare each city `activityType` against action `activity_type_description`
-    - if `activity_type_description` is missing, fall back to action `description`
+    - compare each city `activityType` against selected action catalog text
+    - current placeholder order is `intervention_summary`, then
+      `outcome_summary`, then `description`
+    - exact field choice and matching behavior are still a future discussion
+      and should be confirmed before this path affects ranking
     - retain only activity-to-action matches that pass that semantic check
     """
     logger.warning(

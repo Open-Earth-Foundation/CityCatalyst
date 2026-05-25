@@ -399,8 +399,8 @@ def test_impact_block_zero_emissions_subsector_does_not_count_as_match() -> None
 
 
 @pytest.mark.unit
-def test_impact_block_afolu_negative_emissions_do_not_count_as_match() -> None:
-    """Impact should not match AFOLU removals because they are not reducible emissions."""
+def test_impact_block_afolu_negative_emissions_use_absolute_magnitude() -> None:
+    """Impact should score AFOLU removals by absolute magnitude."""
     result = impact.run(
         actions=[
             Action(
@@ -422,15 +422,20 @@ def test_impact_block_afolu_negative_emissions_do_not_count_as_match() -> None:
     )
 
     evidence = result.evidence_by_action_id["A_afolu_negative"]
-    assert evidence["matched_city_subsector_keys_count"] == 0
-    assert evidence["matched_city_subsector_keys"] == []
-    assert evidence["total_reduction_amount"] == 0.0
-    assert evidence["emissions_reduction_component_score"] == 0.0
+    assert evidence["matched_city_subsector_keys_count"] == 1
+    assert evidence["matched_city_subsector_keys"] == ["V.2"]
+    assert evidence["total_city_emissions"] == pytest.approx(50.0)
+    assert evidence["total_reduction_amount"] == pytest.approx(40.0)
+    assert evidence["emissions_reduction_component_score"] == pytest.approx(0.8)
+    assert evidence["impact_block_score"] == pytest.approx(0.84)
+    contributor = evidence["subsector_contributors"][0]
+    assert contributor["city_emissions"] == pytest.approx(-50.0)
+    assert contributor["scoring_city_emissions_magnitude"] == pytest.approx(50.0)
 
 
 @pytest.mark.unit
 def test_impact_block_mixed_sign_inventory_stays_within_zero_to_one() -> None:
-    """Impact should normalize against reducible positive emissions only."""
+    """Impact should include AFOLU absolute magnitude in the scoring denominator."""
     result = impact.run(
         actions=[
             Action(
@@ -454,9 +459,9 @@ def test_impact_block_mixed_sign_inventory_stays_within_zero_to_one() -> None:
     evidence = result.evidence_by_action_id["A_positive_inventory"]
     assert evidence["matched_city_subsector_keys_count"] == 1
     assert evidence["matched_city_subsector_keys"] == ["I.1"]
-    assert evidence["total_city_emissions"] == pytest.approx(100.0)
-    assert evidence["emissions_reduction_component_score"] == pytest.approx(0.8)
-    assert evidence["impact_block_score"] == pytest.approx(0.84)
+    assert evidence["total_city_emissions"] == pytest.approx(150.0)
+    assert evidence["emissions_reduction_component_score"] == pytest.approx(80.0 / 150.0)
+    assert evidence["impact_block_score"] == pytest.approx((0.8 * (80.0 / 150.0)) + 0.2)
 
 
 @pytest.mark.unit

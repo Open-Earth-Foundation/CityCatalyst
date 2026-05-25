@@ -35,6 +35,7 @@ export const appTheme = createSystem(defaultConfig, {
           focusRing: { value: "{colors.brand.500}" },
         },
         content: {
+          // only render map on the client
           alternative: {
             value: {
               base: "{colors.blue_theme.contentAlternative}",
@@ -246,7 +247,7 @@ export const appTheme = createSystem(defaultConfig, {
             alternative: { value: "#001EA7" },
             link: { value: "#2351DC" },
             tertiary: {
-              value: "#7A7B9A",
+              value: "#4B4C63",
             },
             secondary: {
               value: "#232640",

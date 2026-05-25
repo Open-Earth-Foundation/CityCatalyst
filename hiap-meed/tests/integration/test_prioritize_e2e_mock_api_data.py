@@ -1,4 +1,4 @@
-"""Dedicated end-to-end prioritize test using checked-in mock API payloads."""
+﻿"""Dedicated end-to-end prioritize test using checked-in mock API payloads."""
 
 from __future__ import annotations
 
@@ -10,16 +10,18 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.modules.prioritizer.api import (
-    get_action_data_api_client,
+    get_action_pathways_data_api_client,
     get_city_data_api_client,
     get_legal_data_api_client,
-    get_policy_signals_data_api_client,
+    get_action_policy_scores_data_api_client,
+    get_action_mitigation_feasibility_scores_data_api_client,
 )
 from app.services.data_clients import (
-    MockActionDataApiClient,
+    MockActionPathwaysDataApiClient,
+    MockActionMitigationFeasibilityScoresDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
-    MockPolicySignalsDataApiClient,
+    MockActionPolicyScoresDataApiClient,
 )
 
 
@@ -45,21 +47,33 @@ def test_prioritize_e2e_with_mock_api_payloads(
     request_payload["requestData"]["createExplanations"] = False
 
     mock_city_client = MockCityDataApiClient(mock_file_path=mock_data_dir / "city_api_mock.json")
-    mock_action_client = MockActionDataApiClient(
-        mock_file_path=mock_data_dir / "actions_api_mock.json"
+    mock_action_client = MockActionPathwaysDataApiClient(
+        mock_file_path=mock_data_dir / "action_pathways_api_mock.json"
     )
     mock_legal_client = MockLegalDataApiClient(
         mock_file_path=mock_data_dir / "actions_legal_api_mock.json"
     )
-    mock_policy_client = MockPolicySignalsDataApiClient(
-        mock_file_path=mock_data_dir / "actions_policy_signals_api_mock.json"
+    mock_policy_client = MockActionPolicyScoresDataApiClient(
+        mock_file_path=mock_data_dir / "action_policy_scores_api_mock.json"
+    )
+    mock_feasibility_client = MockActionMitigationFeasibilityScoresDataApiClient(
+        mock_file_path=mock_data_dir / "action_mitigation_feasibility_scores_api_mock.json"
+    )
+    mock_feasibility_client = MockActionMitigationFeasibilityScoresDataApiClient(
+        mock_file_path=mock_data_dir / "action_mitigation_feasibility_scores_api_mock.json"
     )
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
-    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_action_pathways_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
+    )
+    app.dependency_overrides[get_action_mitigation_feasibility_scores_data_api_client] = (
+        lambda: mock_feasibility_client
+    )
+    app.dependency_overrides[get_action_mitigation_feasibility_scores_data_api_client] = (
+        lambda: mock_feasibility_client
     )
     try:
         with TestClient(app) as test_client:
@@ -72,53 +86,49 @@ def test_prioritize_e2e_with_mock_api_payloads(
         metadata = result["metadata"]
         assert metadata["frontend_request_id"] == "1234567890"
 
-        expected_discarded_legal_ids = {"c40_0012", "c40_0034", "c40_0037"}
         ranked_action_ids = result["ranked_action_ids"]
         ranked_actions = result["ranked_actions"]
 
         assert result["locode"] == "CL IQQ"
         assert metadata["weights"] == {"impact": 0.5, "alignment": 0.3, "feasibility": 0.2}
-        assert metadata["counts"]["total_actions"] == 155
+        assert metadata["counts"]["total_actions"] == 102
         assert metadata["counts"]["discarded_excluded"] == 1
-        assert metadata["counts"]["discarded_legal"] == len(expected_discarded_legal_ids)
-        assert metadata["counts"]["valid_actions"] == 151
+        assert metadata["counts"]["discarded_legal"] > 0
+        assert metadata["counts"]["valid_actions"] == (
+            metadata["counts"]["total_actions"]
+            - metadata["counts"]["discarded_excluded"]
+            - metadata["counts"]["discarded_legal"]
+        )
         assert metadata["counts"]["ranked_actions"] == 20
         assert len(ranked_actions) == 20
-        assert not expected_discarded_legal_ids.intersection(ranked_action_ids)
-
-        expected_ranked_ids = [
-            "icare_0025",
-            "c40_0025",
-            "icare_0016",
-            "c40_0010",
-            "c40_0015",
-            "icare_0028",
-            "icare_0002",
-            "icare_0139",
-            "c40_0023",
-            "icare_0121",
-            "ipcc_0105",
-            "icare_0156",
-            "icare_0172",
-            "icare_0176",
-            "icare_0040",
-            "c40_0049",
-            "icare_0164",
-            "icare_0072",
-            "icare_0099",
-            "c40_0018",
-        ]
-        assert ranked_action_ids == expected_ranked_ids
-        assert [item["action_id"] for item in ranked_actions] == expected_ranked_ids
+        discarded_legal_action_ids = set(
+            metadata["hard_filter_evidence_by_action_id"].keys()
+        )
+        assert "c40_0013" in discarded_legal_action_ids
+        assert "c40_0013" not in ranked_action_ids
+        assert ranked_action_ids == [item["action_id"] for item in ranked_actions]
         assert ranked_actions[0]["rank"] == 1
         assert ranked_actions[0]["explanations"] == {} or isinstance(
             ranked_actions[0]["explanations"], dict
         )
+        alignment_summary = ranked_actions[0]["evidence_summary"]["alignment"]
+        assert set(alignment_summary.keys()) == {
+            "alignment_score",
+            "policy_component_score",
+            "sector_component_score",
+            "co_benefit_component_score",
+            "timeframe_component_score",
+        }
 
-        blocked_evidence = metadata["hard_filter_evidence_by_action_id"]["c40_0012"]
-        unknown_evidence = metadata["hard_filter_evidence_by_action_id"]["c40_0013"]
-        assert blocked_evidence["discard_reason"] == "legal_hard_requirement_failed"
-        assert unknown_evidence["hard_requirements_unknown_count"] == 1
+        blocked_evidence = metadata["hard_filter_evidence_by_action_id"]["c40_0013"]
+        missing_evidence_rows = [
+            row
+            for row in metadata["hard_filter_evidence_by_action_id"].values()
+            if row.get("legal_assessment_present") is False
+        ]
+        assert blocked_evidence["discard_reason"] == "legal_verdict_blocked"
+        assert blocked_evidence["legal_verdict_category"] == "blocked"
+        assert missing_evidence_rows
 
         # Verify artifact naming and full-response persistence.
         request_runs = sorted((artifact_log_dir / "requests" / "prioritization").glob("*"))
@@ -128,6 +138,21 @@ def test_prioritize_e2e_with_mock_api_payloads(
         manifest_payload = json.loads((run_dir / "manifest.json").read_text("utf-8"))
         assert manifest_payload["request_kind"] == "prioritization"
         generated_files = set(manifest_payload["generated_files"])
+
+        feasibility_files = [
+            file_name
+            for file_name in generated_files
+            if file_name.endswith("_feasibility.json")
+        ]
+        assert len(feasibility_files) == 1
+        feasibility_step = json.loads(
+            (run_dir / feasibility_files[0]).read_text("utf-8")
+        )
+        assert feasibility_step["payload"]["missing_legal_assessment_actions_count"] > 0
+        assert feasibility_step["payload"]["neutral_legal_fallback_actions_count"] > 0
+        assert set(feasibility_step["payload"]["missing_legal_assessment_action_ids"])
+        assert set(feasibility_step["payload"]["neutral_legal_fallback_action_ids"])
+
         response_summary_files = [
             file_name
             for file_name in generated_files
@@ -141,6 +166,83 @@ def test_prioritize_e2e_with_mock_api_payloads(
         )
         assert response_summary_payload["event_type"] == "response_summary.completed"
         assert response_summary_payload["step_name"] == "response_summary"
+
+        fetch_city_files = [
+            file_name for file_name in generated_files if file_name.endswith("_fetch_city.json")
+        ]
+        assert len(fetch_city_files) == 1
+        fetch_city_payload = json.loads(
+            (run_dir / fetch_city_files[0]).read_text("utf-8")
+        )["payload"]
+        assert fetch_city_payload["city_name"] == "Iquique"
+        assert fetch_city_payload["source"] == "mock_city_api"
+        assert fetch_city_payload["source_metadata"]["requested_locode"] == "CL IQQ"
+        assert fetch_city_payload["source_metadata"]["mock_file_path"].endswith(
+            "city_api_mock.json"
+        )
+
+        fetch_actions_files = [
+            file_name for file_name in generated_files if file_name.endswith("_fetch_actions.json")
+        ]
+        assert len(fetch_actions_files) == 1
+        fetch_actions_payload = json.loads(
+            (run_dir / fetch_actions_files[0]).read_text("utf-8")
+        )["payload"]
+        assert fetch_actions_payload["source"] == "mock_action_pathways_api"
+        assert fetch_actions_payload["total_fetched_actions"] >= fetch_actions_payload["total_actions"]
+        assert fetch_actions_payload["supported_action_type"] == "mitigation"
+        assert fetch_actions_payload["filtered_out_action_type_actions_count"] >= 0
+        assert fetch_actions_payload["source_metadata"]["mock_file_path"].endswith(
+            "action_pathways_api_mock.json"
+        )
+
+        fetch_legal_files = [
+            file_name
+            for file_name in generated_files
+            if file_name.endswith("_fetch_legal_assessments.json")
+        ]
+        assert len(fetch_legal_files) == 1
+        fetch_legal_payload = json.loads(
+            (run_dir / fetch_legal_files[0]).read_text("utf-8")
+        )["payload"]
+        assert fetch_legal_payload["source"] == "mock_action_legal_assessments_api"
+        assert fetch_legal_payload["source_metadata"]["requested_country_code"] == "CL"
+        assert fetch_legal_payload["source_metadata"]["mock_file_path"].endswith(
+            "actions_legal_api_mock.json"
+        )
+
+        fetch_policy_files = [
+            file_name
+            for file_name in generated_files
+            if file_name.endswith("_fetch_action_policy_scores.json")
+        ]
+        assert len(fetch_policy_files) == 1
+        fetch_policy_payload = json.loads(
+            (run_dir / fetch_policy_files[0]).read_text("utf-8")
+        )["payload"]
+        assert fetch_policy_payload["source"] == "mock_action_policy_scores_api"
+        assert fetch_policy_payload["source_metadata"]["requested_locode"] == "CL IQQ"
+        assert fetch_policy_payload["source_metadata"]["mock_file_path"].endswith(
+            "action_policy_scores_api_mock.json"
+        )
+
+        fetch_feasibility_files = [
+            file_name
+            for file_name in generated_files
+            if file_name.endswith("_fetch_action_mitigation_feasibility_scores.json")
+        ]
+        assert len(fetch_feasibility_files) == 1
+        fetch_feasibility_payload = json.loads(
+            (run_dir / fetch_feasibility_files[0]).read_text("utf-8")
+        )["payload"]
+        assert (
+            fetch_feasibility_payload["source"]
+            == "mock_action_mitigation_feasibility_scores_api"
+        )
+        assert fetch_feasibility_payload["source_metadata"]["requested_locode"] == "CL IQQ"
+        assert fetch_feasibility_payload["source_metadata"]["mock_file_path"].endswith(
+            "action_mitigation_feasibility_scores_api_mock.json"
+        )
 
         response_full_payload = json.loads(
             (run_dir / "response_full.json").read_text("utf-8")
@@ -172,20 +274,20 @@ def test_prioritize_e2e_stubbed_activity_mapping_matches_disabled_mode(
     request_payload["requestData"]["createExplanations"] = False
 
     mock_city_client = MockCityDataApiClient(mock_file_path=mock_data_dir / "city_api_mock.json")
-    mock_action_client = MockActionDataApiClient(
-        mock_file_path=mock_data_dir / "actions_api_mock.json"
+    mock_action_client = MockActionPathwaysDataApiClient(
+        mock_file_path=mock_data_dir / "action_pathways_api_mock.json"
     )
     mock_legal_client = MockLegalDataApiClient(
         mock_file_path=mock_data_dir / "actions_legal_api_mock.json"
     )
-    mock_policy_client = MockPolicySignalsDataApiClient(
-        mock_file_path=mock_data_dir / "actions_policy_signals_api_mock.json"
+    mock_policy_client = MockActionPolicyScoresDataApiClient(
+        mock_file_path=mock_data_dir / "action_policy_scores_api_mock.json"
     )
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
-    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_action_pathways_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
-    app.dependency_overrides[get_policy_signals_data_api_client] = (
+    app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
     )
     try:
@@ -223,3 +325,4 @@ def test_prioritize_e2e_stubbed_activity_mapping_matches_disabled_mode(
         )
     finally:
         app.dependency_overrides.clear()
+

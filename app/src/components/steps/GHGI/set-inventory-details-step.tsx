@@ -200,6 +200,7 @@ export default function SetInventoryDetailsStep({
               letterSpacing="wide"
               color="content.tertiary"
               fontFamily="body"
+              pr={6}
             >
               {t("inventory-goal-description-ghgi")}
             </Text>
@@ -284,6 +285,7 @@ export default function SetInventoryDetailsStep({
               letterSpacing="wide"
               fontFamily="body"
               color="content.tertiary"
+              pr={6}
             >
               {t("gwp-description-ghgi")}
             </Text>

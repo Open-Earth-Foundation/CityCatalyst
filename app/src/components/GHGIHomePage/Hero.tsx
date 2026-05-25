@@ -1,4 +1,3 @@
-// only render map on the client
 import dynamic from "next/dynamic";
 import type { TFunction } from "i18next";
 import type { PopulationAttributes } from "@/models/Population";
@@ -11,7 +10,6 @@ import { useMemo } from "react";
 import { Box, Heading, Icon, Spinner, Text } from "@chakra-ui/react";
 import { CircleFlag } from "react-circle-flags";
 import {
-  MdArrowOutward,
   MdChevronRight,
   MdGroup,
   MdInfoOutline,
@@ -31,6 +29,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { usePathname } from "next/navigation";
 
+// only render map on the client
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
 interface HeroProps {
@@ -193,8 +192,13 @@ export function Hero({
                 </Box>
               </Box>
               <Box display="flex" gap={8} mt="24px">
-                <Box display="flex" alignItems="baseline" gap={3}>
-                  <Icon as={HeatIcon} boxSize={6} fill="background.overlay" />
+                <Box display="flex" gap={3}>
+                  <Icon
+                    as={HeatIcon}
+                    boxSize={6}
+                    fill="background.overlay"
+                    mt={1}
+                  />
                   <Box>
                     <Box display="flex" gap={1}>
                       <Text
@@ -238,8 +242,13 @@ export function Hero({
                     </Text>
                   </Box>
                 </Box>
-                <Box display="flex" alignItems="baseline" gap={3}>
-                  <Icon as={MdGroup} boxSize={6} fill="background.overlay" />
+                <Box display="flex" gap={3}>
+                  <Icon
+                    as={MdGroup}
+                    boxSize={6}
+                    fill="background.overlay"
+                    mt={1}
+                  />
                   <Box>
                     <Box display="flex" gap={1}>
                       {population?.population ? (
@@ -304,11 +313,12 @@ export function Hero({
                     </Text>
                   </Box>
                 </Box>
-                <Box display="flex" alignItems="baseline" gap={3}>
+                <Box display="flex" gap={3}>
                   <Icon
                     as={MdOutlineAspectRatio}
                     boxSize={6}
                     fill="background.overlay"
+                    mt={1}
                   />
                   <Box>
                     <Box display="flex" gap={1}>

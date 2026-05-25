@@ -1,4 +1,4 @@
-# HIAP-MEED
+﻿# HIAP-MEED
 
 `hiap-meed` is a synchronous FastAPI service that implements the MEED prioritization pipeline. It sits between the CityCatalyst frontend and the upstream Global API, fetching city context and action data before running a configurable scoring pipeline.
 
@@ -36,10 +36,15 @@ API_PORT=8000
 LOG_LEVEL=INFO
 LOG_DIR=logs
 ARTIFACT_LOG_JSONL=true
-HIAP_MEED_CITY_DATA_SOURCE=mock
-HIAP_MEED_LEGAL_DATA_SOURCE=mock
-HIAP_MEED_ACTION_DATA_SOURCE=mock
-HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE=mock
+HIAP_MEED_CITY_DATA_SOURCE=api
+CCGLOBAL_API_BASE_URL=https://ccglobal.openearth.dev
+UPSTREAM_HTTP_TIMEOUT_SECONDS=30
+UPSTREAM_HTTP_MAX_RETRIES=2
+UPSTREAM_HTTP_RETRY_BACKOFF_SECONDS=0.5
+HIAP_MEED_LEGAL_DATA_SOURCE=api
+HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE=api
+HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE=api
+HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE=api
 HIAP_MEED_TOP_N=20
 ACTIVITY_DATA_LEVEL_MAPPING=false
 HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL=
@@ -60,10 +65,15 @@ Variables:
 - `LOG_LEVEL`: Python logging level (for example `DEBUG`, `INFO`)
 - `LOG_DIR`: output folder for file logs and request artifacts
 - `ARTIFACT_LOG_JSONL`: if `true`, writes per-request artifact files
-- `HIAP_MEED_CITY_DATA_SOURCE`: city input source (`mock` or `api`)
-- `HIAP_MEED_LEGAL_DATA_SOURCE`: legal input source (`mock` or `api`)
-- `HIAP_MEED_ACTION_DATA_SOURCE`: action catalog source (`mock` or `api`)
-- `HIAP_MEED_POLICY_SIGNALS_DATA_SOURCE`: policy-signal input source (`mock` or `api`)
+- `HIAP_MEED_CITY_DATA_SOURCE`: city input source (`api` or `mock`)
+- `CCGLOBAL_API_BASE_URL`: shared Global API base host for upstream API-backed clients (default `https://ccglobal.openearth.dev` for local/dev)
+- `UPSTREAM_HTTP_TIMEOUT_SECONDS`: shared timeout in seconds for upstream HTTP API calls (default `30`)
+- `UPSTREAM_HTTP_MAX_RETRIES`: shared retry count for transient upstream HTTP failures (default `2`)
+- `UPSTREAM_HTTP_RETRY_BACKOFF_SECONDS`: fixed sleep between upstream HTTP retry attempts (default `0.5`)
+- `HIAP_MEED_LEGAL_DATA_SOURCE`: legal input source (`api` or `mock`)
+- `HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE`: action catalog source (`api` or `mock`)
+- `HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE`: action policy scores input source (`api` or `mock`)
+- `HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE`: mitigation feasibility scores input source (`api` or `mock`)
 - `HIAP_MEED_TOP_N`: default number of ranked actions to return per city (default `20`)
 - `ACTIVITY_DATA_LEVEL_MAPPING`: guarded future Impact mapping switch; `false` keeps true subsector-only matching, `true` calls the current stub and still returns subsector-only results
 - `HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL`: OpenAI model used only by the deprecated legacy free-text co-benefit mapping helper
@@ -100,7 +110,7 @@ Verify the service:
 - Explanation translation endpoint: `POST /v1/explanations/translate`
 - Exclusion preview endpoint: `POST /v1/prioritize/exclusions/preview`
 
-### External API contracts (modeled, integration pending)
+### External API contracts
 
 The repository now includes explicit Pydantic contracts for upcoming request and
 upstream response integrations in `app/modules/prioritizer/models.py`.
@@ -110,14 +120,24 @@ Key models:
 - Frontend request envelope: `PrioritizerApiRequest`
 - Frontend city input row: `FrontendCityInput`
 - Global city API response: `CityApiResponse`
-- Global actions API response: `ActionsApiResponse`
-- Global legal alignment API response: `ActionsLegalApiResponse`
-- Global policy alignment API response: `ActionsPolicySignalsApiResponse`
+- Global action pathways API response: `ActionPathwaysApiResponse`
+- Global legal assessment API row: `ActionLegalAssessmentApiItem`
+- Global policy alignment API response: `ActionPolicyScoresApiResponse`
 
 Design note:
 
 - For the upcoming frontend contract, single-city and multi-city payloads both
   use `cityDataList`; single-city is represented as a list with one item.
+- Boundary validation note: incoming frontend request contracts and upstream/mock
+  response contracts are handled differently by design. Frontend request DTOs
+  reject unexpected fields, while upstream response DTOs ignore unexpected extra
+  fields and still validate the fields we actually use.
+- Action API note: `ActionPathwaysApiResponse` now matches `GET /api/v1/action-pathways`
+  without query parameters. The action payload includes the fields used by the
+  current prioritization flow and action-pathways client.
+  The action client returns the full upstream catalog; the prioritization
+  pipeline then keeps only mitigation actions and records the filtered count in
+  fetch artifacts.
 - Current implementation note: exclusion preview and prioritization are separate flows. Exclusion preview resolves raw exclusion preferences into proposals for review, while prioritization consumes confirmed `excludedActionIds`. Prioritization uses a dedicated orchestrator for run-level artifact writing, while exclusion preview currently writes its request artifacts directly from the API layer.
 
 ### 4. Call the prioritization endpoint
@@ -165,11 +185,13 @@ Exclusions:
   - `ippu`
   - `afolu`
 
-Hard legal requirements:
+Legal filtering:
 
-- The hard filter now enforces legal requirements with `strength` in `mandatory|required`.
-- Actions with hard `alignment_status="not_aligned"` are discarded before scoring.
-- Actions with hard `alignment_status="no_evidence"` are kept and surfaced in hard-filter evidence.
+- The hard filter now uses `verdictCategory` from `GET /api/v1/action-legal-assessments`.
+- Actions with `verdictCategory="blocked"` are discarded before scoring.
+- Missing `verdictCategory` does not hard-filter the action.
+- The Feasibility legal component uses `verdictScore` directly.
+- Missing `verdictScore` falls back to neutral `0.5`.
 
 Score normalization policy:
 
@@ -195,10 +217,14 @@ Impact block behavior (implemented):
 - `coBenefits[*]` now only carry co-benefit impact metadata (`impact_numeric`, optional relationship/text/methodology). They do not carry sector or GPC targeting fields.
 - `ACTIVITY_DATA_LEVEL_MAPPING=false` keeps the new true subsector matching path.
 - `ACTIVITY_DATA_LEVEL_MAPPING=true` calls the current activity-data stub, logs `not implemented`, and still returns the same subsector-level result.
-- Negative `V.*` AFOLU inventory values remain valid request data, but Impact does not treat them as reducible emissions.
-  - Matching for Impact uses strictly positive city emissions only.
-  - The reduction-share denominator also uses strictly positive city emissions only.
-  - This is an intentional product rule so Impact stays in `0..1` and measures reducible emissions rather than existing removals.
+- Negative `V.*` AFOLU inventory values remain valid request data, and Impact now scores them by absolute magnitude.
+  - Matching for Impact uses `abs(totalEmissions)` for AFOLU `V.*`.
+  - The reduction-share denominator also includes `abs(totalEmissions)` for AFOLU `V.*`.
+  - Non-AFOLU subsectors still contribute only when the city inventory value is strictly positive.
+  - This is intentional so AFOLU removals are not ignored, while non-AFOLU negative values still do not affect Impact scoring.
+  - Net city emissions remain signed and can be negative, but the Impact denominator is a separate ranking-only metric.
+  - In other words, Impact is not asking "what share of the city's net emissions could this action affect?"
+  - It is asking something closer to "what share of the city's total climate-relevant emissions magnitude could this action affect?"
 - Impact computes canonical score as:
   - `0.80 * reduction_share_of_city_emissions + 0.20 * timeline_score`
   - Timeline mapping: `<5 years -> 1.0`, `5-10 years -> 0.5`, `>10 years -> 0.0`, missing or unknown timeline `-> 0.5`
@@ -318,9 +344,7 @@ Example exclusion preview response:
         {
           "actionId": "c40_0029",
           "actionName": "Waste-to-energy plant",
-          "reasons": [
-            "Action belongs to excluded sector(s): waste"
-          ],
+          "reasons": ["Action belongs to excluded sector(s): waste"],
           "matchedBy": ["sector"]
         }
       ],
@@ -441,7 +465,7 @@ Common validation errors:
 - Missing `requestData.cityDataList` or empty `cityDataList` -> HTTP `422`.
 - Missing `locode` or empty `locode` in a city entry -> HTTP `422`.
 
-Note: city, action, legal, and policy-signal clients now resolve to `mock` (file-backed) or `api` (placeholder until real upstream wiring is added). Default source for all four is `mock`, so local and Docker runs use checked-in mock payloads by default. Real upstream HTTP wiring is still pending; when wired, clients should use a synchronous HTTP client (e.g. `httpx.Client`). FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests.
+Note: city, action, legal, policy-score, and mitigation-feasibility clients resolve to `mock` (file-backed) or `api`. The city client uses synchronous HTTP for `GET /api/v0/city_attributes/{locode}`. The action client uses `GET /api/v1/action-pathways` without query parameters and returns the full upstream catalog plus fetch metadata. The prioritization pipeline then keeps only mitigation actions and records fetched-versus-kept counts in the `fetch_actions` artifacts. The legal client uses `GET /api/v1/action-legal-assessments?countryCode=...`. Policy scores use `GET /api/v1/cities/{locode}/action-policy-scores`. Mitigation feasibility uses `GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; 404 or missing rows are treated as neutral `0.5` in scoring. These API-backed clients default to `api`. The shared `CCGLOBAL_API_BASE_URL` defaults to `https://ccglobal.openearth.dev` for local/dev use; the hiap-meed GitHub workflows override it per environment, with dev using `https://ccglobal.openearth.dev` and test/prod using `https://api.citycatalyst.io/`. If that host mapping changes, update both the runtime config and the hiap-meed deploy workflows together. The shared upstream HTTP path also includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. Upstream response DTOs are intentionally additive-tolerant right now: they ignore unexpected extra fields while still validating the fields the pipeline depends on. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests. Legal fetch artifacts intentionally keep `source_metadata.upstream_generated_at_utc = null` because the current legal assessments endpoint does not expose a top-level generated-at field.
 
 ### 5. Logging and artifacts
 
@@ -452,7 +476,9 @@ The service writes:
 - Per-request artifacts at:
   - `LOG_DIR/requests/prioritization/{UTC_TIMESTAMP}Z_{internal_request_id}/`
   - `LOG_DIR/requests/exclusion_preview/{UTC_TIMESTAMP}Z_{internal_request_id}/`
-  when `ARTIFACT_LOG_JSONL=true`
+    when `ARTIFACT_LOG_JSONL=true`
+
+Fetch-step artifacts record the active data source for each upstream/mock dependency. API-backed fetches include upstream request metadata such as endpoint templates, resolved URLs, request keys, HTTP status codes, and upstream timestamps when available. Mock-backed fetches include the resolved `mock_file_path` plus the relevant request key such as `requested_locode` or `requested_country_code`.
 
 To disable `app.log` file writes (for example, during tests), set `LOG_FILE_ENABLED=false`.
 
@@ -521,7 +547,7 @@ Typical per-request artifact events:
 
 - `fetch_city.completed`
 - `fetch_actions.completed`
-- `fetch_policy_signals.completed`
+- `fetch_action_policy_scores.completed`
 - `validate_weights.completed`
 - `hard_filter.completed`
 - `pillar_scores.completed`

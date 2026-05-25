@@ -1,260 +1,271 @@
 """
-Feasibility block that scores how practical each action is for the city context.
+Feasibility block that scores whether each action is practical for the city.
 
-Approach:
-- Legal support component: checks how many soft legal requirements
-  (`recommended`/`optional`) are aligned for the action.
-- Socioeconomic component: evaluates whether city indicator buckets support or
-  constrain the action, based on action-defined indicator rules.
-- Combine both components with fixed weights into one Feasibility score.
+The block combines two fixed-weight components:
+- Legal feasibility from the country-scoped legal assessment verdict score.
+- Mitigation feasibility from the city-scoped action feasibility scores API.
 
 Final score formula per action:
-- `feasibility_score = (legal_weight * soft_legal_component_score)`
-- `+ (socioeconomic_weight * socioeconomic_component_score)`
+- `feasibility_score = (legal_weight * legal_component_score)`
+- `+ (mitigation_feasibility_weight * mitigation_feasibility_component_score)`
+
+Neutral `0.5` fallback rules:
+- Legal component: use `0.5` when the legal row is missing or when the legal
+  row is present but `verdict_score` is missing.
+- Mitigation feasibility component: use `0.5` when the mitigation feasibility
+  row is missing or when the row is present but `action_score` is missing.
+
+This block reads the mitigation feasibility component directly from the
+upstream city-scoped feasibility scores API.
 """
 
 from __future__ import annotations
 
-import logging
-
 from app.modules.prioritizer.config import (
     FEASIBILITY_WEIGHT_LEGAL,
-    FEASIBILITY_WEIGHT_SOCIO,
+    FEASIBILITY_WEIGHT_MITIGATION_FEASIBILITY,
     validate_block_component_weights,
 )
 from app.modules.prioritizer.internal_models import (
     Action,
+    ActionMitigationFeasibilityScoreRecord,
     BlockScoreResult,
-    CityData,
-    LegalRequirementRecord,
+    LegalAssessmentRecord,
 )
 
-logger = logging.getLogger(__name__)
-
-SOCIO_BUCKET_TO_SCORE: dict[str, int] = {
-    "very_low": -2,
-    "low": -1,
-    "medium": 0,
-    "high": 1,
-    "very_high": 2,
-}
-SOFT_REQUIREMENT_STRENGTHS = {"recommended", "optional"}
-INFORMATIONAL_REQUIREMENT_STRENGTH = "informational"
-CANONICAL_CITY_SOCIOECONOMIC_INDICATORS = (
-    "unemployment_rate",
-    "renter_share",
-    "employment_in_transport_and_logistics",
-    "electricity_access_rate",
-    "industry_construction_employment",
-    "median_household_income",
-    "public_transport_share",
-    "poverty_rate",
-    "home_ownership",
-)
-
-
-def _normalize_socioeconomic_bucket_label(value: str | None) -> str | None:
-    """Normalize socioeconomic bucket labels for deterministic score mapping."""
-    if value is None:
-        return None
-    normalized = value.strip().lower().replace("-", "_").replace(" ", "_")
-    if not normalized:
-        return None
-    return normalized
-
-
-def _extract_city_socioeconomic_indicator_buckets(city: CityData) -> dict[str, str]:
-    """Extract city socioeconomic indicator buckets keyed by socioeconomic indicator name."""
-    socioeconomic_indicator_buckets: dict[str, str] = {}
-    for socioeconomic_indicator_key in CANONICAL_CITY_SOCIOECONOMIC_INDICATORS:
-        raw_socioeconomic_indicator = city.raw.get(socioeconomic_indicator_key)
-        if not isinstance(raw_socioeconomic_indicator, dict):
-            continue
-        socioeconomic_bucket_label = _normalize_socioeconomic_bucket_label(
-            raw_socioeconomic_indicator.get("attribute_category")
-        )
-        if socioeconomic_bucket_label is None:
-            continue
-        socioeconomic_indicator_buckets[socioeconomic_indicator_key] = (
-            socioeconomic_bucket_label
-        )
-    return socioeconomic_indicator_buckets
-
-
-def _build_legal_counts(
-    requirements: list[LegalRequirementRecord],
-) -> tuple[dict[str, int], dict[str, int]]:
-    """Build legal requirement counters by strength and alignment status."""
-    strength_counts: dict[str, int] = {}
-    status_counts: dict[str, int] = {}
-    for requirement in requirements:
-        strength_key = requirement.strength.strip().lower()
-        status_key = requirement.alignment_status.strip().lower()
-        strength_counts[strength_key] = strength_counts.get(strength_key, 0) + 1
-        status_counts[status_key] = status_counts.get(status_key, 0) + 1
-    return strength_counts, status_counts
+NEUTRAL_COMPONENT_SCORE = 0.5
 
 
 def run(
     actions: list[Action],
     *,
-    city: CityData,
-    legal_requirements_by_action_id: dict[str, list[LegalRequirementRecord]],
+    legal_assessments_by_action_id: dict[str, LegalAssessmentRecord],
+    mitigation_feasibility_scores_by_action_id: dict[
+        str, ActionMitigationFeasibilityScoreRecord
+    ],
 ) -> BlockScoreResult:
     """
     Compute Feasibility scores and explainability evidence for candidate actions.
 
     Inputs:
     - `actions`: Actions that passed hard filtering.
-    - `city`: CityData for socioeconomic fit lookups.
-    - `legal_requirements_by_action_id`: Legal requirement evidence keyed by action ID.
+    - `legal_assessments_by_action_id`: Legal assessment evidence keyed by action ID.
+    - `mitigation_feasibility_scores_by_action_id`: Upstream mitigation
+      feasibility component rows keyed by action ID. This input does not include
+      the legal component; the Feasibility block combines the two components.
 
-    Output:
+    Outputs:
     - `score_by_action_id`: final Feasibility score per action in `[0,1]`.
-    - `evidence_by_action_id`: legal/socio component values, weighted
-      contributions, and per-indicator diagnostics for explainability.
+    - `evidence_by_action_id`: legal component values, mitigation feasibility
+      component values, weighted contributions, and fallback diagnostics.
     """
-    # Block 1: Validate scoring configuration and pre-compute city lookups.
+    # Block 1: Validate scoring configuration and initialize output containers.
     validate_block_component_weights()
-    city_socioeconomic_indicator_buckets = (
-        _extract_city_socioeconomic_indicator_buckets(city)
-    )
 
     score_by_action_id: dict[str, float] = {}
     evidence_by_action_id: dict[str, dict[str, object]] = {}
+    missing_legal_assessment_action_ids: list[str] = []
+    neutral_legal_fallback_action_ids: list[str] = []
+    neutral_legal_fallback_missing_score_action_ids: list[str] = []
+    missing_mitigation_feasibility_score_action_ids: list[str] = []
+    neutral_mitigation_feasibility_fallback_action_ids: list[str] = []
+    neutral_mitigation_feasibility_missing_score_action_ids: list[str] = []
 
+    # Block 2: Compute per-action legal and mitigation feasibility components.
     for action in actions:
-        # Block 2: Compute soft-legal component from recommended/optional requirements.
-        requirements = legal_requirements_by_action_id.get(action.action_id, [])
-        soft_requirements = [
-            requirement
-            for requirement in requirements
-            if requirement.strength.strip().lower() in SOFT_REQUIREMENT_STRENGTHS
-        ]
-        aligned_soft_count = sum(
-            1
-            for requirement in soft_requirements
-            if requirement.alignment_status.strip().lower() == "aligns"
+        # Block 2a: Resolve legal component from legal assessment payload.
+        assessment = legal_assessments_by_action_id.get(action.action_id)
+        legal_component_score = (
+            assessment.verdict_score
+            if assessment is not None and assessment.verdict_score is not None
+            else NEUTRAL_COMPONENT_SCORE
         )
-        total_soft_count = len(soft_requirements)
-        feasibility_soft_legal_component = (
-            aligned_soft_count / total_soft_count if total_soft_count > 0 else 0.0
+        legal_component_source = (
+            "verdict_score"
+            if assessment is not None and assessment.verdict_score is not None
+            else "neutral_fallback"
         )
+        legal_assessment_present = assessment is not None
+        legal_verdict_score_missing = (
+            assessment is not None and assessment.verdict_score is None
+        )
+        if not legal_assessment_present:
+            missing_legal_assessment_action_ids.append(action.action_id)
+        if legal_component_source == "neutral_fallback":
+            neutral_legal_fallback_action_ids.append(action.action_id)
+        if legal_verdict_score_missing:
+            neutral_legal_fallback_missing_score_action_ids.append(action.action_id)
 
-        # Block 3: Compute socioeconomic component from action rules + city buckets.
-        socioeconomic_indicator_rows: list[dict[str, object]] = []
-        socio_weighted_sum = 0.0
-        total_socioeconomic_indicator_weight = 0.0
-        missing_socioeconomic_indicator_keys: list[str] = []
-        for socioeconomic_indicator in action.socioeconomic_indicators:
-            action_socioeconomic_indicator_key = str(
-                socioeconomic_indicator.get("indicator_key", "")
-            ).strip()
-            direction = (
-                str(socioeconomic_indicator.get("direction", "supportive"))
-                .strip()
-                .lower()
-            )
-            socioeconomic_indicator_weight = float(
-                socioeconomic_indicator.get("weight", 0.0)
-            )
-            city_socioeconomic_bucket_label = city_socioeconomic_indicator_buckets.get(
-                action_socioeconomic_indicator_key
-            )
-            mapped_socioeconomic_bucket_score = (
-                SOCIO_BUCKET_TO_SCORE[city_socioeconomic_bucket_label]
-                if city_socioeconomic_bucket_label in SOCIO_BUCKET_TO_SCORE
-                else 0
-            )
-            adjusted_score = (
-                mapped_socioeconomic_bucket_score
-                if direction == "supportive"
-                else -mapped_socioeconomic_bucket_score
-            )
-            weighted_contribution = socioeconomic_indicator_weight * adjusted_score
-            socio_weighted_sum += weighted_contribution
-            total_socioeconomic_indicator_weight += socioeconomic_indicator_weight
-            if city_socioeconomic_bucket_label is None:
-                missing_socioeconomic_indicator_keys.append(
-                    action_socioeconomic_indicator_key
-                )
-                logger.warning(
-                    "Missing city socioeconomic indicator for key `%s` action_id=%s",
-                    action_socioeconomic_indicator_key,
-                    action.action_id,
-                )
-            socioeconomic_indicator_rows.append(
-                {
-                    "action_socioeconomic_indicator_key": action_socioeconomic_indicator_key,
-                    "city_socioeconomic_bucket_label": city_socioeconomic_bucket_label,
-                    "mapped_socioeconomic_bucket_score": mapped_socioeconomic_bucket_score,
-                    "direction": direction,
-                    "adjusted_score": adjusted_score,
-                    "socioeconomic_indicator_weight": socioeconomic_indicator_weight,
-                    "weighted_contribution": weighted_contribution,
-                    "rationale": socioeconomic_indicator.get("rationale"),
-                }
-            )
-        socio_avg = (
-            socio_weighted_sum / total_socioeconomic_indicator_weight
-            if total_socioeconomic_indicator_weight > 0.0
-            else 0.0
+        # Block 2b: Resolve mitigation feasibility component from city-scoped API scores.
+        feasibility_record = mitigation_feasibility_scores_by_action_id.get(
+            action.action_id
         )
-        feasibility_socio_component = (socio_avg + 2.0) / 4.0
+        mitigation_feasibility_score_present = feasibility_record is not None
+        mitigation_feasibility_action_score_missing = (
+            feasibility_record is not None and feasibility_record.action_score is None
+        )
+        mitigation_feasibility_component_score = (
+            feasibility_record.action_score
+            if feasibility_record is not None
+            and feasibility_record.action_score is not None
+            else NEUTRAL_COMPONENT_SCORE
+        )
+        mitigation_feasibility_component_source = (
+            "action_mitigation_feasibility_score"
+            if feasibility_record is not None
+            and feasibility_record.action_score is not None
+            else "neutral_fallback"
+        )
+        if not mitigation_feasibility_score_present:
+            missing_mitigation_feasibility_score_action_ids.append(action.action_id)
+        if mitigation_feasibility_component_source == "neutral_fallback":
+            neutral_mitigation_feasibility_fallback_action_ids.append(action.action_id)
+        if mitigation_feasibility_action_score_missing:
+            neutral_mitigation_feasibility_missing_score_action_ids.append(
+                action.action_id
+            )
 
-        # Block 4: Combine weighted components into final Feasibility score.
-        soft_legal_contribution = (
-            FEASIBILITY_WEIGHT_LEGAL * feasibility_soft_legal_component
+        # Block 2c: Combine weighted components into one feasibility score.
+        legal_contribution = FEASIBILITY_WEIGHT_LEGAL * legal_component_score
+        mitigation_feasibility_contribution = (
+            FEASIBILITY_WEIGHT_MITIGATION_FEASIBILITY
+            * mitigation_feasibility_component_score
         )
-        socioeconomic_indicators_contribution = (
-            FEASIBILITY_WEIGHT_SOCIO * feasibility_socio_component
-        )
-        feasibility_score = (
-            soft_legal_contribution + socioeconomic_indicators_contribution
-        )
+        feasibility_score = legal_contribution + mitigation_feasibility_contribution
         score_by_action_id[action.action_id] = feasibility_score
 
-        # Block 5: Build legal summary diagnostics for explainability.
-        strength_counts, status_counts = _build_legal_counts(requirements)
-        informational_requirements = [
-            {
-                "signal_code": requirement.signal_code,
-                "signal_name": requirement.signal_name,
-                "alignment_status": requirement.alignment_status,
-                "location_scope": requirement.location_scope,
-                "location_name": requirement.location_name,
-                "evidence_count": requirement.evidence_count,
-            }
-            for requirement in requirements
-            if requirement.strength.strip().lower()
-            == INFORMATIONAL_REQUIREMENT_STRENGTH
-        ]
-
-        # Block 6: Store action-level explainability payload.
+        # Block 2d: Store action-level explainability payload.
         evidence_by_action_id[action.action_id] = {
-            "legal_requirements_by_strength": strength_counts,
-            "legal_requirements_by_alignment_status": status_counts,
-            "soft_legal_component_score": feasibility_soft_legal_component,
-            "soft_legal_weight": FEASIBILITY_WEIGHT_LEGAL,
-            "soft_legal_contribution": soft_legal_contribution,
-            "soft_legal_aligned_count": aligned_soft_count,
-            "soft_legal_total_count": total_soft_count,
-            "socioeconomic_component_score": feasibility_socio_component,
-            "socioeconomic_weight": FEASIBILITY_WEIGHT_SOCIO,
-            "socioeconomic_contribution": socioeconomic_indicators_contribution,
-            "socioeconomic_weighted_sum": socio_weighted_sum,
-            "total_socioeconomic_indicator_weight": total_socioeconomic_indicator_weight,
-            "socioeconomic_average_score_before_normalization": socio_avg,
-            "socioeconomic_indicator_rows": socioeconomic_indicator_rows,
-            "missing_city_socioeconomic_indicator_keys": sorted(
-                set(missing_socioeconomic_indicator_keys)
+            "legal_assessment_present": legal_assessment_present,
+            "legal_assessment_missing": not legal_assessment_present,
+            "legal_verdict_category": (
+                assessment.verdict_category if assessment is not None else None
             ),
-            "informational_requirements": informational_requirements,
-            "informational_requirements_summary_available": False,
+            "legal_component_score": legal_component_score,
+            "legal_component_source": legal_component_source,
+            "legal_weight": FEASIBILITY_WEIGHT_LEGAL,
+            "legal_contribution": legal_contribution,
+            "legal_verdict_score_missing": legal_verdict_score_missing,
+            "ownership_category": (
+                assessment.ownership_category if assessment is not None else None
+            ),
+            "ownership_score": (
+                assessment.ownership_score if assessment is not None else None
+            ),
+            "restrictions_category": (
+                assessment.restrictions_category if assessment is not None else None
+            ),
+            "restrictions_score": (
+                assessment.restrictions_score if assessment is not None else None
+            ),
+            "legal_analysis_date": (
+                assessment.analysis_date if assessment is not None else None
+            ),
+            "legal_generation_method": (
+                assessment.generation_method if assessment is not None else None
+            ),
+            "legal_references": (
+                list(assessment.legal_references) if assessment is not None else []
+            ),
+            "mitigation_feasibility_component_score": (
+                mitigation_feasibility_component_score
+            ),
+            "mitigation_feasibility_component_source": (
+                mitigation_feasibility_component_source
+            ),
+            "mitigation_feasibility_weight": (
+                FEASIBILITY_WEIGHT_MITIGATION_FEASIBILITY
+            ),
+            "mitigation_feasibility_contribution": (
+                mitigation_feasibility_contribution
+            ),
+            "mitigation_feasibility_score_present": (
+                mitigation_feasibility_score_present
+            ),
+            "mitigation_feasibility_score_missing": (
+                not mitigation_feasibility_score_present
+            ),
+            "mitigation_feasibility_action_score_missing": (
+                mitigation_feasibility_action_score_missing
+            ),
+            "global_mitigation_option": (
+                feasibility_record.global_mitigation_option
+                if feasibility_record is not None
+                else None
+            ),
+            "action_mapping_strength": (
+                feasibility_record.action_mapping_strength
+                if feasibility_record is not None
+                else None
+            ),
+            "option_family": (
+                feasibility_record.option_family
+                if feasibility_record is not None
+                else None
+            ),
+            "n_feasibility_dimensions": (
+                feasibility_record.n_feasibility_dimensions
+                if feasibility_record is not None
+                else None
+            ),
+            "dimension_scores": (
+                dict(feasibility_record.dimension_scores)
+                if feasibility_record is not None
+                else {}
+            ),
+            "feasibility_breakdown": (
+                dict(feasibility_record.breakdown)
+                if feasibility_record is not None
+                else {}
+            ),
+            "rank_within_city": (
+                feasibility_record.rank_within_city
+                if feasibility_record is not None
+                else None
+            ),
             "feasibility_score": feasibility_score,
         }
 
+    # Block 3: Return score map, explainability evidence, and fallback diagnostics.
     return BlockScoreResult(
         score_by_action_id=score_by_action_id,
         evidence_by_action_id=evidence_by_action_id,
+        metadata={
+            "missing_legal_assessment_actions_count": len(
+                missing_legal_assessment_action_ids
+            ),
+            "missing_legal_assessment_action_ids": sorted(
+                missing_legal_assessment_action_ids
+            ),
+            "neutral_legal_fallback_actions_count": len(
+                neutral_legal_fallback_action_ids
+            ),
+            "neutral_legal_fallback_action_ids": sorted(
+                neutral_legal_fallback_action_ids
+            ),
+            "neutral_legal_fallback_missing_score_actions_count": len(
+                neutral_legal_fallback_missing_score_action_ids
+            ),
+            "neutral_legal_fallback_missing_score_action_ids": sorted(
+                neutral_legal_fallback_missing_score_action_ids
+            ),
+            "missing_mitigation_feasibility_score_actions_count": len(
+                missing_mitigation_feasibility_score_action_ids
+            ),
+            "missing_mitigation_feasibility_score_action_ids": sorted(
+                missing_mitigation_feasibility_score_action_ids
+            ),
+            "neutral_mitigation_feasibility_fallback_actions_count": len(
+                neutral_mitigation_feasibility_fallback_action_ids
+            ),
+            "neutral_mitigation_feasibility_fallback_action_ids": sorted(
+                neutral_mitigation_feasibility_fallback_action_ids
+            ),
+            "neutral_mitigation_feasibility_missing_score_actions_count": len(
+                neutral_mitigation_feasibility_missing_score_action_ids
+            ),
+            "neutral_mitigation_feasibility_missing_score_action_ids": sorted(
+                neutral_mitigation_feasibility_missing_score_action_ids
+            ),
+        },
     )

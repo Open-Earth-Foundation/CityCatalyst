@@ -39,9 +39,8 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
                 "sector_match": True,
                 "city_preference_sectors": ["stationary_energy"],
                 "sector_component_score": 1.0,
-                "policy_signals_count": 2,
                 "policy_component_score": 0.5,
-                "policy_support_score_present": True,
+                "policy_score_present": True,
                 "matched_preferred_co_benefits_count": 0,
                 "city_selected_co_benefits_present": True,
                 "co_benefit_component_score": 0.5,
@@ -50,14 +49,15 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
                 "timeframe_component_score": 1.0,
             },
             "feasibility": {
-                "soft_legal_aligned_count": 1,
-                "soft_legal_total_count": 2,
-                "soft_legal_component_score": 0.5,
-                "socioeconomic_component_score": 0.5,
-                "socioeconomic_indicator_rows": [],
-                "informational_requirements_summary_available": False,
-                "informational_requirements": [{"signal_code": "PERMIT"}],
-                "missing_city_socioeconomic_indicator_keys": [],
+                "legal_assessment_present": True,
+                "legal_assessment_missing": False,
+                "legal_verdict_category": "conditional",
+                "legal_component_source": "verdict_score",
+                "legal_component_score": 0.5,
+                "mitigation_feasibility_component_score": 0.5,
+                "mitigation_feasibility_score_present": False,
+                "legal_verdict_score_missing": False,
+                "mitigation_feasibility_score_missing": False,
             },
         },
     )
@@ -83,17 +83,18 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
     assert payload["alignment_signals"]["sector_component_bucket"] == "very_strong"
     assert payload["alignment_signals"]["policy_component_bucket"] == "neutral"
     assert payload["alignment_signals"]["co_benefit_component_bucket"] == "neutral"
-    assert payload["feasibility_signals"]["informational_requirements_count"] == 1
-    assert payload["feasibility_signals"]["soft_legal_component_bucket"] == "neutral"
+    assert payload["feasibility_signals"]["legal_component_bucket"] == "neutral"
+    assert (
+        payload["feasibility_signals"]["mitigation_feasibility_component_bucket"]
+        == "neutral"
+    )
     assert payload["main_strengths"] == [
         "Expected to make a very strong emissions reduction in the current city inventory.",
         "Matches the city's preferred sector.",
         "Fits the city's preferred implementation timeframe.",
     ]
     assert payload["main_constraints"] == []
-    assert payload["known_limitations"] == [
-        "Non-blocking legal constraints are included as evidence, but UI-friendly implementation notes are not fully implemented yet.",
-    ]
+    assert payload["known_limitations"] == []
 
 
 def test_build_curated_action_payload_uses_policy_buckets_for_strength() -> None:
@@ -107,16 +108,17 @@ def test_build_curated_action_payload_uses_policy_buckets_for_strength() -> None
             "timeline_component_score": 0.5,
         },
         "alignment": {
-            "policy_signals_count": 2,
             "matched_preferred_co_benefits_count": 0,
-            "policy_support_score_present": True,
+            "policy_score_present": True,
         },
         "feasibility": {
-            "soft_legal_aligned_count": 0,
-            "soft_legal_total_count": 0,
-            "socioeconomic_indicator_rows": [],
-            "informational_requirements": [],
-            "missing_city_socioeconomic_indicator_keys": [],
+            "legal_assessment_present": False,
+            "legal_assessment_missing": True,
+            "legal_component_score": 0.5,
+            "legal_component_source": "neutral_fallback",
+            "legal_verdict_score_missing": False,
+            "mitigation_feasibility_score_present": False,
+            "mitigation_feasibility_score_missing": True,
         },
     }
 
@@ -212,19 +214,20 @@ def test_build_curated_action_payload_uses_component_buckets_for_constraints() -
                     "sector_component_score": 0.0,
                     "city_preference_timeframes": ["short"],
                     "timeframe_component_score": 0.0,
-                    "policy_support_score_present": True,
+                    "policy_score_present": True,
                     "policy_component_score": 0.1,
                     "city_selected_co_benefits_present": True,
                     "co_benefit_component_score": 0.2,
                 },
                 "feasibility": {
-                    "soft_legal_aligned_count": 0,
-                    "soft_legal_total_count": 2,
-                    "soft_legal_component_score": 0.0,
-                    "socioeconomic_component_score": 0.25,
-                    "socioeconomic_indicator_rows": [{"indicator_key": "poverty_rate"}],
-                    "informational_requirements": [],
-                    "missing_city_socioeconomic_indicator_keys": [],
+                    "legal_assessment_present": True,
+                    "legal_assessment_missing": False,
+                    "legal_component_score": 0.0,
+                    "legal_component_source": "verdict_score",
+                    "legal_verdict_score_missing": False,
+                    "mitigation_feasibility_component_score": 0.25,
+                    "mitigation_feasibility_score_present": True,
+                    "mitigation_feasibility_score_missing": False,
                 },
             },
         )
@@ -237,8 +240,8 @@ def test_build_curated_action_payload_uses_component_buckets_for_constraints() -
         "Does not fit the city's preferred implementation timeframe.",
         "Shows very weak supportive policy context in the current evidence.",
         "Offers very weak support for the city's preferred co-benefits.",
-        "Shows very weak supportive soft legal conditions in the current evidence.",
-        "Fits the current city socioeconomic context less well.",
+        "Shows very weak legal feasibility conditions in the current evidence.",
+        "Shows weaker mitigation feasibility for the current city.",
     ]
 
 

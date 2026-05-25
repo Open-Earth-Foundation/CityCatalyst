@@ -1,4 +1,4 @@
-"""
+﻿"""
 This is the main file for the HIAP-MEED API.
 It is responsible for setting up the FastAPI app and basic middleware.
 
@@ -54,14 +54,21 @@ if __name__ == "__main__":
     port = int(os.getenv("API_PORT", "8000"))
     logger.info(
         "Starting server host=%s port=%s LOG_LEVEL=%s LOG_DIR=%s ARTIFACT_LOG_JSONL=%s "
-        "CITY_SOURCE=%s ACTION_SOURCE=%s LEGAL_SOURCE=%s",
+        "CITY_SOURCE=%s ACTION_SOURCE=%s LEGAL_SOURCE=%s POLICY_SOURCE=%s "
+        "MITIGATION_FEASIBILITY_SOURCE=%s",
         host,
         port,
         os.getenv("LOG_LEVEL", "INFO"),
         os.getenv("LOG_DIR", "logs"),
         os.getenv("ARTIFACT_LOG_JSONL", "true"),
-        os.getenv("HIAP_MEED_CITY_DATA_SOURCE", "mock"),
-        os.getenv("HIAP_MEED_ACTION_DATA_SOURCE", "mock"),
-        os.getenv("HIAP_MEED_LEGAL_DATA_SOURCE", "mock"),
+        os.getenv("HIAP_MEED_CITY_DATA_SOURCE", "api"),
+        os.getenv("HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE", "api"),
+        os.getenv("HIAP_MEED_LEGAL_DATA_SOURCE", "api"),
+        os.getenv("HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE", "api"),
+        os.getenv(
+            "HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE",
+            "api",
+        ),
     )
     uvicorn.run(app, host=host, port=port)
+

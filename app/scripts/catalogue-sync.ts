@@ -162,13 +162,15 @@ async function syncDataCatalogue() {
 
     // find and assign (or create) publishers based on name
     let publisher = publishers.find((p) => p.name === source.publisher_id);
-    // TODO update publisher with new URL if found?
     if (!publisher) {
       publisher = await db.models.Publisher.create({
         publisherId: randomUUID(),
         name: source.publisher_id,
         url: source.dataset_url,
       });
+    } else if (publisher.url !== source.dataset_url) {
+      // update publisher with new URL if found
+      publisher.set("url", source.dataset_url);
     }
     source.publisher_id = publisher.publisherId;
   }

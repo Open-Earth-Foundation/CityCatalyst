@@ -418,7 +418,9 @@ export default function OnboardingSetup(props: {
                   h="64px"
                   type="submit"
                   loading={isCreatingCity}
-                  disabled={isCreatingCity}
+                  disabled={
+                    isCreatingCity || (activeStep === 0 && !ocCityData)
+                  }
                 >
                   <Text
                     fontFamily="button.md"

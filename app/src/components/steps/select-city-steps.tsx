@@ -29,6 +29,7 @@ import {
   Input,
   InputAddon,
   Link,
+  Spinner,
   Stack,
   Text,
 } from "@chakra-ui/react";
@@ -292,10 +293,10 @@ export default function SelectCityStep({
   );
 
   // Fetch city area/boundary for the selected city to display "Total land area"
-  const { data: cityBoundary } = api.useGetCityBoundaryQuery(
-    ocCityData?.actor_id!,
-    { skip: !ocCityData?.actor_id },
-  );
+  const { data: cityBoundary, isFetching: isAreaLoading } =
+    api.useGetCityBoundaryQuery(ocCityData?.actor_id!, {
+      skip: !ocCityData?.actor_id,
+    });
   const area = cityBoundary?.area ?? ocCityData?.area ?? 0;
 
   return (
@@ -578,7 +579,9 @@ export default function SelectCityStep({
                           fontFamily="heading"
                           data-testid="selected-city-area"
                         >
-                          {area && area > 0 ? (
+                          {isAreaLoading ? (
+                            <Spinner size="sm" color="content.tertiary" />
+                          ) : area && area > 0 ? (
                             <>
                               {/* eslint-disable-next-line i18next/no-literal-string */}
                               {Math.round(area)}Km<sup>2</sup>

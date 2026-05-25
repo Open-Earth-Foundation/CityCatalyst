@@ -154,6 +154,12 @@ export interface ConnectDataSourceQuery {
   dataSourceIds: string[];
 }
 
+export type {
+  DataSourcePreviewItem,
+  DataSourcePreviewResult,
+  ConnectAllDataSourcesError,
+} from "@/backend/DataSourceConnectService";
+
 export interface ConnectDataSourceResponse {
   successful: string[];
   failed: string[];

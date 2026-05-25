@@ -141,7 +141,7 @@ export default function InventoryDetailsHelpDrawer({ t }: { t: TFunction }) {
       onOpenChange={(e) => (e.open ? onOpen() : onClose())}
     >
       <Drawer.Trigger asChild>
-        <Button variant="outline" onClick={onOpen}>{t("help-section")}</Button>
+        <Button variant="outline" onClick={onOpen}>{t("help-button")}</Button>
       </Drawer.Trigger>
       <Portal>
         <Drawer.Positioner>

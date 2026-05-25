@@ -1,4 +1,4 @@
-"""Legacy LLM-assisted mapping helpers for free-text co-benefit preferences."""
+"""LLM-assisted mapping helpers for optional free-text co-benefit preferences."""
 
 from __future__ import annotations
 
@@ -40,7 +40,7 @@ def resolve_city_preferred_co_benefits(
     city_preference_other_text: str | None,
     available_co_benefit_keys: list[str],
 ) -> dict[str, object]:
-    """Deprecated legacy helper for resolving free text into co-benefit keys."""
+    """Resolve free text into co-benefit keys for the optional helper path."""
     logger.warning(
         "Deprecated free-text co-benefit resolver invoked; active request flow should use direct checkbox values instead"
     )

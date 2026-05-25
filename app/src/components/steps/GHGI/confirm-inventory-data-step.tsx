@@ -31,7 +31,7 @@ export default function ConfirmStep({
           {t("confirm-heading")}
         </Heading>
         <Text fontSize="body.lg" color="content.tertiary">
-          {t("confirm-description")}
+          {t("confirm-inventory-description")}
         </Text>
       </Box>
       <Box w="full">

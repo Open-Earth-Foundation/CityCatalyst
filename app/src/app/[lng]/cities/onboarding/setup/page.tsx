@@ -127,7 +127,8 @@ export default function OnboardingSetup(props: {
     { skip: !ocCityData?.actor_id },
   );
 
-  // Watched form fields for inventory confirm
+  // Watched form fields used for per-step validation and confirm payload
+  const yearValue = watch("year");
   const cityPopulation = watch("cityPopulation");
   const regionPopulation = watch("regionPopulation");
   const countryPopulation = watch("countryPopulation");
@@ -136,6 +137,21 @@ export default function OnboardingSetup(props: {
   const countryPopulationYear = watch("countryPopulationYear");
   const inventoryGoal = watch("inventoryGoal");
   const globalWarmingPotential = watch("globalWarmingPotential");
+
+  // A field is "filled" if it is not undefined/null/empty string
+  const hasValue = (v: unknown) => v !== undefined && v !== null && v !== "";
+  const isInventoryDetailsValid =
+    hasValue(yearValue) &&
+    hasValue(inventoryGoal) &&
+    hasValue(globalWarmingPotential);
+  const isPopulationValid = [
+    cityPopulation,
+    cityPopulationYear,
+    regionPopulation,
+    regionPopulationYear,
+    countryPopulation,
+    countryPopulationYear,
+  ].every(hasValue);
 
   const currentYear = new Date().getFullYear();
   const numberOfYearsDisplayed = 20;
@@ -419,7 +435,10 @@ export default function OnboardingSetup(props: {
                   type="submit"
                   loading={isCreatingCity}
                   disabled={
-                    isCreatingCity || (activeStep === 0 && !ocCityData)
+                    isCreatingCity ||
+                    (activeStep === 0 && !ocCityData) ||
+                    (activeStep === 1 && !isInventoryDetailsValid) ||
+                    (activeStep === 2 && !isPopulationValid)
                   }
                 >
                   <Text

@@ -200,7 +200,8 @@ export function ChatMessageList({
     <Box
       ref={scrollContainerRef}
       overflowY="auto"
-      maxH="35vh"
+      flex="1"
+      minH={0}
       css={{
         scrollBehavior: "smooth",
       }}

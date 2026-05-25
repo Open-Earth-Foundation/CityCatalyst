@@ -18,7 +18,7 @@ export function ChatSuggestions({
   disabled = false,
 }: ChatSuggestionsProps) {
   return (
-    <Box display="flex" flexDir="column" gap={2} whiteSpace="nowrap" pb="3">
+    <Box display="flex" flexDir="row" gap={2} whiteSpace="nowrap" pb="3" overflowX="auto" flexShrink={0}>
       {suggestions.map((suggestion, i) => (
         <Button
           key={i}

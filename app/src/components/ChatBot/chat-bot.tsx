@@ -38,7 +38,7 @@ export default function ChatBot({
   const suggestions = contextSuggestions ?? createSuggestions(t);
 
   return (
-    <Box display="flex" flexDirection="column" w="full" h="stretch">
+    <Box display="flex" flexDirection="column" w="full" flex="1" minH={0}>
       <ChatMessageList 
         messages={messages} 
         isGenerating={isGenerating}

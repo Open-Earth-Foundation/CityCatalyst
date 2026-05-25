@@ -130,6 +130,7 @@ export default function ChatPopover({
         onOpenChange={onOpenChange}
         positioning={{
           placement: "top-end",
+          offset: { mainAxis: -50 },
         }}
       >
         <PopoverTrigger asChild>
@@ -159,6 +160,9 @@ export default function ChatPopover({
           p={0}
           w="533px"
           maxHeight={"76vh"}
+          display="flex"
+          flexDirection="column"
+          overflow="hidden"
           bg="sentiment.backgroundOverlay"
           className="drop-shadow-md"
           pos="relative"
@@ -177,7 +181,15 @@ export default function ChatPopover({
           >
             {t("ask-clima")}
           </PopoverHeader>
-          <PopoverBody w="full" p={6} borderRadius={4}>
+          <PopoverBody
+            w="full"
+            p={6}
+            borderRadius={4}
+            flex="1"
+            overflow="hidden"
+            display="flex"
+            flexDirection="column"
+          >
             <ChatBot
               inputRef={inputRef}
               t={t}

@@ -1,743 +1,434 @@
 # Agentic Module Scope Map
 
-This document maps the current user-facing CityCatalyst modules so the agentic
-expansion can be scoped from the product surface rather than from isolated API
-endpoints.
+This document maps CityCatalyst from the product surface. The goal is to define
+which user-facing workflows should become agentic, and what architecture would
+make that practical without turning the product into one flat tool bag.
 
-The current app is a Next.js application under `app/src/app`. Most user actions
-already flow through `app/src/services/api.ts` into route handlers under
-`app/src/app/api/v1` and service classes under `app/src/backend`. The existing
-MCP layer is in `app/src/app/api/v1/mcp/route.ts` and currently exposes a small,
-mostly read-only set of tools.
+## Scope Boundary
 
-## Current Agentic Surface
+- In scope: human-facing workflows where the agent reads state, explains gaps,
+  prepares drafts or exports, and waits for explicit user decisions before
+  product data changes.
+- Out of scope: auth, OAuth/clients, personal tokens, health/liveness, mock
+  routes, internal CA token plumbing, feature-flag administration, and
+  operational observability/hardening.
+- Experimental work already built as a separate proof of concept should not set
+  the scope for the broader module plan.
 
-Existing MCP tools:
+## MCP Layer
 
-| Tool | Current capability | Module coverage |
+> This section is transport-only. It is not the product module map.
+
+Current MCP tools:
+
+| Tool | Current capability | Coverage |
 | --- | --- | --- |
-| `get_user_cities` | List cities accessible to the user, optionally with inventory counts. | City/project context |
+| `get_user_cities` | List accessible cities, optionally with inventory counts. | City/project context |
 | `get_city_profile` | Read city profile, demographics, inventories, collaborators, and metadata. | City context |
-| `get_user_inventories` | List accessible GHG inventories with filters and optional emissions/details. | GHGI |
-| `get_inventory_emissions` | Read emissions totals and sector/subsector summaries for an inventory. | GHGI results |
+| `get_user_inventories` | List accessible inventories with filters and optional emissions/details. | GHGI |
+| `get_inventory_emissions` | Read totals and sector/subsector summaries for an inventory. | GHGI results |
 | `get_climate_action_plans` | Read ranked HIAP actions for an inventory and action type. | HIAP |
 | `get_climate_risk_assessment` | Registered but not implemented. | CCRA |
 
-Current gaps:
-
-- MCP is not generated from the app's route/service capabilities.
-- Tool handlers are one-off modules, not module-owned capability adapters.
-- Write actions such as creating cities, updating inventory data, generating HIAP,
-  selecting actions, publishing inventories, and managing organizations are not
-  agent-callable.
-- Long-running operations exist, but are not modeled as agent workflows with
-  job status, resumability, user confirmation, and audit output.
-- Some agent-facing operations already exist indirectly through chat, personal
-  access tokens, OAuth metadata, and the Climate Advisor integration, but they
-  are not unified under the module capability model.
+Current MCP surfaces:
+
+- Transport: `app/src/app/api/v1/mcp/route.ts`
+- Discovery: `app/src/app/api/v1/.well-known/mcp-server/route.ts`
+
+Current MCP limits:
+
+- The tool registry is manual and hand-wired.
+- Tools are not generated from module-owned capability definitions.
+- The MCP surface is much smaller than the real product surface.
+- MCP currently exposes a flat list, not workflow-specific scoped tool packs.
+
+## Product Module Map
+
+### Workspace and Navigation
+
+- Current: profile, invites, active cities/projects/inventories, city home,
+  module catalog, and module dashboards.
+- APIs: `user/*`, `city/[city]`, `city/[city]/dashboard`, `modules`,
+  `projects/[project]/modules`, `projects/[project]/modules/[module]/access`,
+  `city/[city]/modules/[module]/access`, and city module dashboards.
+- Agentic direction: explain active workspace, list accessible modules,
+  summarize dashboard state, and route the user into the right flow.
+
+### City Setup and Management
+
+- Current: city onboarding, boundary lookup, population/year state, city
+  dashboard, and city readiness for downstream modules.
+- APIs: `city`, `city/[city]`, `city/[city]/boundary`,
+  `city/[city]/population*`, `city/[city]/years`, `city/[city]/organization`,
+  `bulk-locations`.
+- Agentic direction: search and normalize city candidates, confirm create-city
+  actions, and summarize missing setup.
+
+### GHGI Onboarding
+
+- Current: create inventory, set year/type/GWP/country emissions, set
+  populations, and choose normal vs import path.
+- APIs: `city/[city]/inventory`, `city/[city]/population`,
+  `inventory/[inventory]/country-emissions`,
+  `inventory/[inventory]/populations`.
+- Agentic direction: validate prerequisites, prepare inventory creation, create
+  after confirmation, and recover missing state.
+
+### GHGI Import
+
+- Current: upload file, extract/interpret, inspect mappings, approve import,
+  and poll status.
+- APIs: `city/[city]/inventory/[inventory]/import*`.
+- Agentic direction: treat as a first-class workflow with start, status,
+  mapping review, approval, and final report.
+
+### GHGI Entry and Data Sources
+
+- Current: progress tracking, source search/connect, manual activity values,
+  notation keys, file upload, and support/reference lookups.
+- APIs: `inventory/[inventory]/progress`, `datasource/[inventoryId]*`,
+  `inventory/[inventory]/value*`, `inventory/[inventory]/activity-value*`,
+  `inventory/[inventory]/notation-keys`, `city/[city]/file*`,
+  `sector/[sectorId]/required-scopes`, `subsector/[subsectorId]`,
+  `emissions-factor`, `waste-composition`.
+- Agentic direction: identify missing data, explain candidate sources, confirm
+  source-connect and manual edits, mark scopes not applicable, and preserve
+  version history behavior.
+
+### GHGI Results and Publishing
+
+- Current: results, forecast, downloads, publish/unpublish, CDP submission,
+  restore from version history, and GHGI dashboard widgets.
+- APIs: `inventory/[inventory]/results*`, `inventory/[inventory]/download`,
+  `inventory/[inventory]/cdp`, `inventory/[inventory]/version-history*`,
+  `user/cities/[id]/results`, `city/[city]/modules/ghgi/dashboard`.
+- Agentic direction: summarize emissions and drivers, prepare artifacts, and
+  gate publish, CDP, and restore actions behind explicit confirmation.
+
+### GHGI Preferences
+
+- Current: preference screens exist, but no clear persistence was identified.
+- Surfaces: `app/src/app/[lng]/[inventory]/preferences/*`.
+- Agentic direction: treat as informational until these become real persisted
+  inventory settings.
+
+### HIAP
+
+- Current: dashboard, ranking/status, reprioritization, top picks, action
+  plans, exports, and version history.
+- APIs: `inventory/[inventory]/hiap`, `inventory/[inventory]/hiap/status`,
+  `city/[city]/modules/hiap/dashboard`, `city/[city]/hiap/action-plan*`,
+  `inventory/[inventory]/version-history?module=hiap`,
+  `cron/check-hiap-jobs`.
+- Agentic direction: read actions/status/plans, standardize generation as a
+  workflow, and require confirmation for top-pick changes and plan generation.
+
+### CCRA
+
+- Current: city dashboard risk summary plus external full-app link.
+- APIs: `city/[city]/modules/ccra/dashboard`.
+- Agentic direction: implement `get_climate_risk_assessment`, summarize risks,
+  and link out when the full external UI is needed.
+
+### Organization, Project, and Collaboration
 
-## User-Facing Module Map
+- Current: organization settings/branding, projects, invites, roles,
+  collaborators, city transfer/delete, project module access, and project bulk
+  download.
+- APIs: `organizations*`, `projects/[project]*`, `city/invite*`,
+  `city/transfer`, `city/[city]/user*`, `city/[city]/organization`,
+  `inventory/[inventory]/organization`.
+- Agentic direction: read membership/access, confirm structural changes, preview
+  branding/file flows, and return clear preflight/result summaries.
 
-### 1. Authentication, Authorization, and Account Access
+### Admin
 
-Primary surfaces:
+- Current: organization admin, bulk inventory creation/download/HIAP,
+  module administration, and feature flags.
+- APIs: `admin/*`, `organizations/[organization]/active-status`.
+- Agentic direction: keep outside the first capability pack. If exposed later,
+  start with read/reporting and dry-run previews only.
 
-- `app/src/app/[lng]/auth/*`
-- `app/src/app/[lng]/authorize/page.tsx`
-- `app/src/app/api/auth/[...nextauth]/route.ts`
-- `app/src/app/api/v1/auth/*`
-- `app/src/app/api/v1/oauth/metadata/route.ts`
-- `app/src/app/api/v1/token/route.ts`
+### Public and Reference
 
-What users can do today:
+- Current: public inventory/city/project dashboards, methodology pages, and the
+  OpenAPI docs UI.
+- APIs: `public/*`, `projects/[project]/summary`, `api/openapi/json`.
+- Agentic direction: public tools stay read-only; methodology lookup is a
+  reference tool for explanations.
 
-- Sign up, log in, verify email, request password reset, update password, and
-  delete account.
-- Authorize OAuth clients when OAuth is enabled.
-- Exchange auth codes/tokens for external access.
-- Use session auth or personal access tokens for authenticated API/MCP access.
+### Chat and Assistant Layer
 
-Backing services and APIs:
+- Current: chat threads/messages, assistant threads/files, and CA vs legacy
+  assistant routing.
+- APIs: `chat/*`, `assistants*`.
+- Agentic direction: this is a UI and transport layer, not a separate capability
+  universe. It should call shared module adapters.
 
-- NextAuth route.
-- `auth/*`, `oauth/metadata`, `token`, `user/whoami`.
-- Permission checks are centralized through `app/src/backend/permissions`.
+## Architecture Direction
 
-Agentic scope:
+### Desired End State
 
-- Read user identity, role, permissions, and access status.
-- Create and revoke API tokens only with explicit user confirmation.
-- Never let the agent bypass authorization or mint credentials silently.
-- Add a confirmation gate for any account/security mutation.
+We want agentic features to come from product-owned capabilities, not from a
+growing pile of one-off prompts or route-specific glue.
 
-### 2. User Settings and Personal Workspace
+The desired stack is:
 
-Primary surfaces:
+1. Product modules own capability adapters.
+2. Capabilities are registered with typed metadata.
+3. Each workflow loads only the context and tool scope it actually needs.
+4. Chat, MCP, and future agent UIs consume those same capabilities through
+   different transports.
+5. Long-running work uses a shared workflow/status/result model.
 
-- `app/src/app/[lng]/[inventory]/settings/page.tsx`
-- `app/src/components/Tabs/MyProfileTab`
-- `app/src/components/Tabs/my-inventories-tab`
-- `app/src/components/Tabs/my-tokens-tab.tsx`
-- `app/src/components/Tabs/my-apps-tab.tsx`
-- `app/src/app/[lng]/user/invites/page.tsx`
+### Core Pieces We Need
 
-What users can do today:
+#### 1. Module-Owned Capability Adapters
 
-- Edit profile fields and preferred language.
-- View accessible inventories and switch context.
-- Create, view, and delete personal access tokens.
-- View and revoke authorized OAuth applications.
-- View, accept, reset, and cancel invites depending on role/context.
-
-Backing services and APIs:
-
-- `user`, `user/[userId]`, `user/inventories`, `user/invites`,
-  `user/invites/accept`, `user/clients`, `user/clients/[client]`.
-- `user/tokens` and `user/tokens/[id]`.
-
-Agentic scope:
-
-- Read profile, permissions, inventory access, token metadata, and app grants.
-- Help users create a token through a confirm-before-create workflow.
-- Revoke tokens/apps only after explicit confirmation.
-- Summarize pending invites and guide acceptance.
-
-### 3. Journey Navigator, City Home, and Module Catalog
-
-Primary surfaces:
-
-- `app/src/app/[lng]/page.tsx`
-- `app/src/app/[lng]/cities/page.tsx`
-- `app/src/app/[lng]/cities/[cityId]/page.tsx`
-- `app/src/components/HomePageJN/HomePage.tsx`
-- `app/src/components/HomePageJN/ModuleCard.tsx`
-- `app/src/components/ModuleWidgets/*`
-
-What users can do today:
-
-- Land in the appropriate city or inventory context.
-- See the city hero, population, organization theme, action cards, and modules.
-- Browse modules grouped by journey stage:
-  - Assess and Analyze
-  - Plan
-  - Implement
-  - Monitor, Evaluate and Report
-- Launch internal modules such as GHGI and HIAP or external module URLs.
-- See city dashboard widgets for GHGI, HIAP, and CCRA.
-
-Backing services and APIs:
-
-- `user`, `city/[city]`, `city/[city]/dashboard`, `modules`,
-  `projects/[project]/modules`, `city/[city]/modules/[module]/access`.
-- Module constants in `app/src/util/constants.ts`.
-- Stage config in `app/src/config/stages.tsx`.
-
-Agentic scope:
-
-- Read city context, available modules, module access, dashboard summaries, and
-  recommended next steps.
-- Route users to the right workflow or call module capabilities directly.
-- Expose module metadata as agent-readable capability discovery.
-
-### 4. City Onboarding and City Management
-
-Primary surfaces:
-
-- `app/src/app/[lng]/cities/onboarding/*`
-- `app/src/app/[lng]/cities/[cityId]/dashboard/page.tsx`
-- `app/src/components/CityDashboard/CityDashboard.tsx`
-
-What users can do today:
-
-- Search/select a city, confirm city metadata, and create a city.
-- Attach a new city to a project in enterprise mode.
-- Fetch city boundary and area data.
-- View dashboard summary across modules.
-- Publish city/inventory results publicly when inventory data exists.
-
-Backing services and APIs:
-
-- `city`, `city/[city]`, `city/[city]/boundary`,
-  `city/[city]/dashboard`, `bulk-locations`.
-- `ProjectService`, `CityBoundaryService`, `PopulationService`.
-
-Agentic scope:
-
-- Search city candidates and explain the selected locode, boundary, country, and
-  project context.
-- Create a city only after confirmation with normalized metadata.
-- Read and summarize city dashboard state.
-- Recommend next module/workflow based on missing inventory, missing population,
-  or module access.
-
-### 5. GHGI Inventory Onboarding
-
-Primary surfaces:
-
-- `app/src/app/[lng]/cities/[cityId]/GHGI/onboarding/*`
-- `app/src/app/[lng]/onboarding/*`
-
-What users can do today:
-
-- Create a GHG inventory for a city.
-- Set inventory year, GPC inventory type, global warming potential type, and
-  total country emissions.
-- Add city, region, and country population data.
-- Set the new inventory and city as the user's defaults.
-- Start either normal inventory setup or upload/import mode.
-
-Backing services and APIs:
-
-- `city/[city]/inventory`, `city/[city]/population`, `user`.
-- `InventoryService`, `PopulationService`, `CountryEmissionsService`.
-
-Agentic scope:
-
-- Prepare an inventory creation plan from user intent.
-- Validate year/type/population requirements before mutation.
-- Create inventory and population records after user confirmation.
-- Recover users from missing inventory/city states.
-
-### 6. GHGI Data Import
-
-Primary surfaces:
-
-- `app/src/app/[lng]/cities/[cityId]/GHGI/onboarding/import/page.tsx`
-- `app/src/components/steps/GHGI/import/*`
-
-What users can do today:
-
-- Upload an inventory file.
-- Validate file content and status.
-- Trigger AI extraction for PDF/unstructured documents.
-- Trigger AI interpretation for tabular files.
-- Review detected mappings and override column mappings.
-- Approve import into inventory values.
-- Poll asynchronous status through upload, extraction, interpretation, approval,
-  completion, and failure.
-
-Backing services and APIs:
-
-- `city/[city]/inventory/[inventory]/import`
-- `city/[city]/inventory/[inventory]/import/[importedFileId]`
-- `city/[city]/inventory/[inventory]/import/[importedFileId]/extract`
-- `city/[city]/inventory/[inventory]/import/[importedFileId]/interpret`
-- `city/[city]/inventory/[inventory]/import/approve`
-- `AIInterpretationService`, `InventoryExtractionService`,
-  `InventoryImportService`, `FileParserService`, `FileValidatorService`,
-  `InventoryFileStorageService`, `PdfToTextService`.
-
-Agentic scope:
-
-- This is already an agent-adjacent workflow and should become a first-class
-  workflow capability.
-- Agent tools need job creation, status polling, mapping inspection, mapping
-  override, and approve/reject steps.
-- Approval must stay explicit because it mutates emissions inventory values.
-- The agent should return a structured import report with row counts, warnings,
-  inferred year, mapping confidence, and changed inventory values.
-
-### 7. GHGI Data Entry and Data Source Connection
-
-Primary surfaces:
-
-- `app/src/app/[lng]/[inventory]/data/*`
-- `app/src/app/[lng]/cities/[cityId]/GHGI/[inventory]/data/*`
-- `app/src/components/Tabs/Activity/*`
-- `app/src/components/Modals/activity-modal/*`
-
-What users can do today:
-
-- Browse GPC sectors, subsectors, subcategories, and scopes.
-- See inventory completion progress by sector/subsector.
-- Search available third-party data sources for an inventory/sector.
-- Connect and disconnect third-party data sources.
-- Manually choose methodology or direct measurement.
-- Create, update, and delete activity values.
-- Delete all activities in a scope.
-- Mark a scope as not applicable with notation key/reason/explanation.
-- Upload own data files when the feature flag is enabled.
-
-Backing services and APIs:
-
-- `inventory/[inventory]/progress`
-- `datasource/[inventoryId]`
-- `datasource/[inventoryId]/datasource/[datasourceId]`
-- `inventory/[inventory]/value`
-- `inventory/[inventory]/value/[subcategory]`
-- `inventory/[inventory]/value/subsector/[subsector]`
-- `inventory/[inventory]/activity-value`
-- `inventory/[inventory]/activity-value/[id]`
-- `inventory/[inventory]/notation-keys`
-- `city/[city]/file`
-- `DataSourceService`, `ActivityService`, `CalculationService`,
-  `ManualnputValidationService`, `VersionHistoryService`.
-
-Agentic scope:
-
-- Read GPC structure, required scopes, progress, and missing data.
-- Recommend the most important missing data to complete an inventory.
-- Search and explain data sources before connection.
-- Connect/disconnect external sources only after confirmation.
-- Create/update/delete manual activity values only through validated,
-  typed operations.
-- Mark scopes not applicable through a specific notation-key tool.
-- Every mutation should create version history and return recalculated impact.
-
-### 8. GHGI Results, Reporting, Publishing, and Version History
-
-Primary surfaces:
-
-- `app/src/components/GHGI/ReportResults.tsx`
-- `app/src/app/[lng]/[inventory]/InventoryResultTab/*`
-- `app/src/components/GHGIHomePage/DownloadAndShareModals/*`
-- `app/src/app/[lng]/[inventory]/InventoryVersionsTab/*`
-- `app/src/app/[lng]/[inventory]/cdp/page.tsx`
-
-What users can do today:
-
-- View total emissions, top emissions, emissions per capita, sector totals,
-  subsector/scope breakdowns, year-over-year sector changes, and emissions
-  forecast.
-- Download inventory reports as eCRF and CSV.
-- Publish or unpublish public inventory results and copy the public URL.
-- Submit inventory data to CDP.
-- View version history and restore a previous version.
-
-Backing services and APIs:
-
-- `inventory/[inventory]/results`
-- `inventory/[inventory]/results/[sectorName]`
-- `inventory/[inventory]/results/emissions-forecast`
-- `user/cities/[id]/results`
-- `inventory/[inventory]/download`
-- `inventory/[inventory]/cdp`
-- `inventory/[inventory]`
-- `inventory/[inventory]/version-history`
-- `inventory/[inventory]/version-history/restore/[version]`
-- `ResultsService`, `InventoryDownloadService`, `CSVDownloadService`,
-  `ECRFDownloadService`, `CDPService`, `VersionHistoryService`.
-
-Agentic scope:
-
-- Read and summarize results at city/inventory/sector/subsector level.
-- Explain drivers of emissions and missing-data effects.
-- Generate downloadable exports as agent artifacts.
-- Publish/unpublish only after explicit confirmation.
-- CDP submission and restore-version operations must be confirm-gated.
-
-### 9. GHGI Preferences
-
-Primary surfaces:
-
-- `app/src/app/[lng]/[inventory]/preferences/*`
-
-What users can do today:
-
-- Browse preference screens for activities, transportation, and waste.
-- Current preference cards have empty click handlers and do not appear to
-  persist selected preferences.
-
-Backing services and APIs:
-
-- No persistence was identified in the current preference screens.
-
-Agentic scope:
-
-- Treat as informational for now.
-- If preferences become persisted, model them as inventory-scoped structured
-  settings with read/update tools and version history.
-
-### 10. HIAP Climate Actions and Action Plans
-
-Primary surfaces:
-
-- `app/src/app/[lng]/cities/[cityId]/HIAP/*`
-- `app/src/components/HIAP/*`
-- `app/src/components/ClimateActionCard.tsx`
-- `app/src/components/ActionDrawer.tsx`
-
-What users can do today:
-
-- Select an inventory year for HIAP.
-- Generate mitigation or adaptation ranked climate actions.
-- Poll existing/pending HIAP status.
-- Reprioritize ranked actions.
-- View ranked and unranked actions.
-- Select/deselect ranked and unranked actions as city top picks.
-- View detailed action drawer with sector, cost, timeline, explanation, hazard,
-  adaptation effectiveness, and GHG reduction data.
-- Export actions as PDF or CSV.
-- Generate an implementation/action plan for a ranked action.
-- View a generated action plan and export it as PDF.
-- View HIAP version history.
-
-Backing services and APIs:
-
-- `inventory/[inventory]/hiap`
-- `inventory/[inventory]/hiap/status`
-- `city/[city]/hiap/action-plan`
-- `city/[city]/hiap/action-plan/[id]`
-- `city/[city]/hiap/action-plan/generate/[rankingId]`
-- `inventory/[inventory]/version-history?module=hiap`
-- `HiapService`, `HiapApiService`, `ActionService`,
-  `ActionPlanService`, `BulkHiapPrioritizationService`.
-
-Agentic scope:
-
-- Read actions, status, action details, selected top picks, and generated action
-  plans.
-- Trigger ranking or reprioritization as a long-running workflow.
-- Select top picks through a validated action ID list with confirmation.
-- Generate action plans as long-running jobs with status and email/audit output.
-- Export selected/all actions or plans as artifacts.
-
-### 11. CCRA Climate Risk Assessment
-
-Primary surfaces:
-
-- `app/src/components/ModuleWidgets/CCRAMainWidget.tsx`
-- `app/src/components/ModuleWidgets/CCRAWidget.tsx`
-- External CCRA app link.
-
-What users can do today:
-
-- See top CCRA risks on the city dashboard when data is available.
-- Open the full external CCRA risk results page for the city locode.
-
-Backing services and APIs:
-
-- `city/[city]/modules/ccra/dashboard`
-- `CcraApiService`, `CcraService`.
-- External CCRA service.
-
-Agentic scope:
-
-- Implement the currently stubbed `get_climate_risk_assessment` tool.
-- Read and summarize top risks, hazard/exposure/vulnerability signals, and
-  available indicator details.
-- Link users to the full CCRA surface when an action needs external UI.
-- Only add mutation tools if/when CCRA has CityCatalyst-owned write actions.
-
-### 12. Organization, Project, Team, and Collaboration
-
-Primary surfaces:
-
-- `app/src/app/[lng]/organization/[id]/project/*`
-- `app/src/app/[lng]/organization/[id]/account-settings/*`
-- `app/src/components/Organization/*`
-- `app/src/components/Project/*`
-- `app/src/components/GHGIHomePage/AddCollaboratorModal/*`
-
-What users can do today:
-
-- View organizations, projects, project cards, and cities within projects.
-- Create projects and edit project metadata.
-- Manage organization account details and branding/white-label theme.
-- Upload organization logo.
-- Invite organization/team users and update roles.
-- View project users and city/project membership.
-- Transfer cities and delete cities from project settings.
-- Add city collaborators from GHGI/home flows.
-
-Backing services and APIs:
-
-- `organizations`, `organizations/[organization]`,
-  `organizations/[organization]/branding`,
-  `organizations/[organization]/themes`,
-  `organizations/[organization]/users`,
-  `organizations/[organization]/role`,
-  `organizations/[organization]/invitations`,
-  `organizations/[organization]/invitations/accept`,
-  `organizations/[organization]/projects`,
-  `projects/[project]`, `projects/[project]/users`,
-  `projects/[project]/boundaries`, `city/invite`, `city/transfer`,
-  `city/[city]/user`.
-- `ProjectsService`, `UserService`, `RoleBasedAccessService`,
-  `ModuleAccessService`, `FileUploadService`.
-
-Agentic scope:
-
-- Read organization/project/team/city membership and permissions.
-- Create/update projects, invite users, change roles, transfer cities, or delete
-  cities only through confirmation and role checks.
-- Treat branding/logo updates as file workflows with preview and confirmation.
-- Return clear audit summaries for every membership or city transfer change.
-
-### 13. Admin Console
-
-Primary surfaces:
-
-- `app/src/app/[lng]/admin/*`
-- `app/src/app/[lng]/admin/bulk-inventory-actions/*`
-- `app/src/app/[lng]/admin/ManageModulesList`
-- `app/src/app/[lng]/admin/OAuthClientList`
-
-What admins can do today:
-
-- View and search organizations.
-- Create organizations and organization invites.
-- Resend invites.
-- Freeze and unfreeze organizations.
-- View organization details, profile, team, projects, and modules.
-- Run bulk inventory creation.
-- Run bulk data download.
-- Run bulk HIAP prioritization and inspect HIAP jobs.
-- Manage module records.
-- Manage OAuth clients when the feature flag is enabled.
-
-Backing services and APIs:
-
-- `admin/all-cities`, `admin/bulk`, `admin/bulk-hiap-prioritization`,
-  `admin/connect-sources`, `admin/mark-cities-public`,
-  `admin/update-inventories`, `admin/modules`,
-  `admin/modules/[module]`, `admin/project/[projectId]/hiap-jobs`,
-  `organizations`, `organizations/[organization]/active-status`,
-  `client`, `client/[client]`.
-- `AdminService`, `ModuleService`, `ProjectsService`,
-  `BulkHiapPrioritizationService`.
-
-Agentic scope:
-
-- Admin capabilities should be a separate high-risk capability pack.
-- Read/admin reporting can be lower risk.
-- Bulk creation, bulk publishing, module creation/deletion, OAuth client
-  changes, and organization freeze/unfreeze require confirmation, dry-run
-  preview, and audit logs.
-
-### 14. Public Dashboards and Public Project Pages
-
-Primary surfaces:
-
-- `app/src/app/[lng]/public/[inventory]/page.tsx`
-- `app/src/app/[lng]/public/cities/[cityId]/dashboard/page.tsx`
-- `app/src/app/[lng]/public/project/[project]/*`
-- `app/src/app/[lng]/public/dashboard/[cityId]/[[...params]]/page.tsx`
-
-What public users can do today:
-
-- View public inventory results.
-- View public city dashboards.
-- View public project pages with map, project metrics, partner logos,
-  collaborators, and links to GHGI/HIAP/CCRA results.
-
-Backing services and APIs:
-
-- `public/city/[cityId]`
-- `public/city/[cityId]/dashboard`
-- `public/city/[cityId]/inventories`
-- `public/project/[projectId]/cities`
-- `projects/[project]/summary`
-
-Agentic scope:
-
-- Read-only public tools are safe candidates for unauthenticated or limited
-  agent access.
-- Public tools should expose only data that is already published/public.
-- Avoid cross-linking to private city/inventory IDs unless the same information
-  is public.
-
-### 15. Methodologies and Static Guidance
-
-Primary surfaces:
-
-- `app/src/app/[lng]/methodologies/page.tsx`
-- `app/src/app/[lng]/docs/page.tsx`
-
-What users can do today:
-
-- Read methodology content by sector.
-- Browse OpenAPI/docs UI.
-
-Backing services and APIs:
-
-- Static methodology content in the app.
-- OpenAPI JSON route under `api/openapi/json`.
-
-Agentic scope:
-
-- Expose methodology lookup as a read-only reference tool.
-- Agent can cite methodology guidance when explaining data requirements,
-  scopes, or calculation assumptions.
-
-### 16. Chat, Climate Advisor, and Assistant APIs
-
-Primary surfaces:
-
-- `app/src/components/ChatBot/*`
-- `app/src/hooks/useChat.ts`
-- `app/src/services/chatService.ts`
-- `app/src/app/api/v1/chat/*`
-- `app/src/app/api/v1/assistants/*`
-- `app/src/app/api/v1/internal/ca/user-token/route.ts`
-
-What users can do today:
-
-- Use a chat UI that conditionally routes to the Climate Advisor service or the
-  legacy OpenAI Assistant implementation based on feature flags.
-- Create chat threads and stream messages.
-- Save assistant thread IDs to the CityCatalyst database.
-- Legacy assistant flow has a `requiresAction` callback stub in the frontend.
-
-Backing services and APIs:
-
-- `chat/threads`, `chat/messages`.
-- `assistants`, `assistants/threads/*`, `assistants/files/[fileId]`.
-- `ChatService`, `useSSEStream`, Climate Advisor integration.
-
-Agentic scope:
-
-- This should become the UI layer over the shared agent runtime, not a separate
-  capability universe.
-- Tool calls should route through module capability adapters with consistent
-  permissions, confirmations, audit logging, and progress events.
-- Legacy function-call handling should either be completed or replaced by the
-  unified agent runtime.
-
-## Architecture Scope For Agentic Conversion
-
-The module map points to a modular capability architecture:
-
-1. Module capability manifest
-
-Each user-facing module should own a manifest that describes:
-
-- Module ID and name.
-- Read capabilities.
-- Mutation capabilities.
-- Long-running workflows.
-- Required permissions.
-- Confirmation requirements.
-- Input and output schemas.
-- Audit/version-history behavior.
-- Whether the capability can be public, authenticated user, organization admin,
-  project admin, or platform admin.
-
-2. Query/command/workflow separation
-
-Use three capability types:
-
-- Query: read-only, safe to call automatically.
-- Command: immediate mutation, requires validation and usually confirmation.
-- Workflow: multi-step or async process with job status, polling, cancellation
-  if supported, and final report.
-
-3. Module-owned adapters
-
-Do not put business logic inside MCP handlers. MCP and chat should call module
-adapters that reuse existing services:
+Create stable adapters such as:
 
 - `ghgi.capabilities.ts`
 - `hiap.capabilities.ts`
 - `ccra.capabilities.ts`
 - `city.capabilities.ts`
 - `organization.capabilities.ts`
-- `admin.capabilities.ts`
+- `project.capabilities.ts`
 
-The adapter should be the stable contract. MCP, chat, scheduled jobs, and future
-agent UIs can all use the same adapter.
+These should wrap current backend services and expose three operation types:
 
-4. Central capability registry
+- Query: safe reads
+- Command: immediate writes
+- Workflow: async or multi-step jobs
 
-Replace the manual MCP tool registry with a registry that can expose:
+This keeps business logic inside the app domain layer instead of scattering it
+across MCP handlers, chat proxies, and custom UI action code.
 
-- MCP tools.
-- Internal chat tools.
-- OpenAPI-like capability metadata.
-- UI-readable operation descriptors.
+#### 2. Capability Registry
 
-The existing MCP route can stay as the transport layer.
+We need one registry that describes every capability with:
 
-5. Permission and confirmation middleware
+- capability id and module
+- operation type: query, command, workflow
+- input/output schema
+- required resource scope
+- confirmation behavior
+- artifact/result type if any
+- transport exposure: internal only, chat, MCP, public read-only
 
-Before any adapter runs:
+This registry should become the source of truth for tool generation and scope
+selection.
 
-- Resolve session/token.
-- Check RBAC and resource scope.
-- Classify risk.
-- Require confirmation for write/destructive/bulk/publication/security actions.
-- Log actor, resource, input summary, output summary, and resulting version/job.
+#### 3. Scoped Context Loaders
 
-6. Workflow engine for long-running operations
+This is a missing piece today and it matters.
 
-Standardize import, HIAP generation, action plan generation, bulk HIAP, bulk
-inventory creation, bulk download, and CDP submission as workflows with:
+Each workflow should have a dedicated context loader that decides:
 
-- Start operation.
-- Status operation.
-- Result operation.
-- Recover/resume operation.
-- Structured error model.
-- User-facing progress events.
+- which resource is active: city, inventory, project, organization
+- which records to preload
+- which capabilities are enabled for this step
+- what should be summarized for the model instead of dumping raw objects
 
-7. Artifact model
+Example:
 
-Exports should be first-class agent artifacts:
+- A city onboarding flow should load city search results, current project
+  context, and city-create capability only.
+- A GHGI import review flow should load one import job, its mappings, approval
+  rules, and import-review capabilities only.
+- A HIAP top-pick selection flow should load one inventory, current rankings,
+  selected actions, and top-pick mutation capability only.
 
-- GHGI CSV/eCRF.
-- HIAP CSV/PDF.
-- Action plan PDF.
-- Bulk downloads.
-- Import reports.
+This scope chaining is the main way to reduce context load and lower tool
+misuse.
 
-8. Human-in-the-loop boundaries
+#### 4. Confirmation and Staging Model
 
-Require explicit approval for:
+For human-in-the-loop behavior we need a consistent pending-action model, not
+ad hoc confirm dialogs per route.
 
-- Creating cities/inventories/projects/organizations.
-- Updating or deleting emissions data.
-- Connecting/disconnecting data sources.
-- Approving imports.
-- Publishing/unpublishing.
-- CDP submission.
-- Restoring versions.
-- Invites/role changes/tokens/OAuth clients.
-- Admin bulk operations.
+Useful pieces:
 
-9. Testing and evaluation
+- preflight summary before write
+- proposed change object for risky mutations
+- explicit user confirm/reject step
+- post-action result summary
+- consistent version-history hook where the product already supports it
 
-For each capability add:
+This is especially relevant for publish/unpublish, imports, source connects,
+manual value edits, top-pick changes, role changes, city transfers, and bulk
+operations.
 
-- Schema validation tests.
-- Permission tests.
-- Dry-run/confirmation tests for risky commands.
-- Golden-output tests for summaries.
-- Workflow resume/status tests for async jobs.
+#### 5. Workflow Runtime
 
-## Suggested First Capability Pack
+The repo already has several async patterns: import status polling, HIAP status,
+cron-based HIAP batch processing, and CA streaming. What is missing is one
+shared runtime model.
+
+We need a standard workflow contract with:
+
+- start
+- status
+- result
+- retry or resume where meaningful
+- failure shape
+- user-facing progress summary
+
+This can stay in the main app initially. It does not require a separate public
+service first.
+
+#### 6. Artifact Model
+
+Exports and workflow outputs should be first-class objects, not just incidental
+file downloads.
+
+That includes:
+
+- GHGI CSV/eCRF
+- HIAP CSV/PDF
+- action-plan PDF
+- project bulk downloads
+- import review reports
+
+Having a consistent artifact shape will make chat, MCP, and UI flows much
+easier to unify.
+
+#### 7. Test Surface
+
+We will need:
+
+- schema validation tests
+- access-scope tests
+- confirmation tests
+- workflow status/resume tests
+- golden tests for summaries sent to users or models
+
+### Direct Function Adapters vs Centralized MCP
+
+This is the main design choice.
+
+#### Option A: Direct Function-Based Implementation with Chained Scopes
+
+This means the agent runtime calls module adapters directly inside the app, and
+each workflow step decides what context and tool scope comes next.
+
+Why this is strong:
+
+- It reuses current app services, DB models, and access checks directly.
+- It keeps each step narrow, which reduces context size and tool count.
+- It fits product flows better because the UI already knows the active city,
+  inventory, project, or organization.
+- It avoids turning every internal function into an externally shaped tool too
+  early.
+- It is easier to keep human approval in the loop because the app owns the step
+  transitions.
+
+Main downside:
+
+- Without a registry, it can devolve into many app-specific helper paths.
+- External agent clients do not get a clean protocol automatically.
+
+#### Option B: One Centralized MCP with Everything Exposed
+
+This means we make MCP the main capability surface and let agents call a broad,
+flat tool catalog.
+
+Why it is attractive:
+
+- One protocol
+- external interoperability
+- easier tool discovery for non-UI agents
+- a clean integration story for future clients
+
+Main problems:
+
+- Tool explosion is real. A flat list across GHGI, HIAP, CCRA, org, project,
+  admin, files, and workflows raises context cost fast.
+- The model has to choose from too many tools unless we still add scope gating.
+- MCP schemas alone do not solve product flow design.
+- The current repo shape suggests MCP is transport glue today, not the natural
+  home of business logic.
+
+#### Recommended Approach
+
+Use a hybrid:
+
+- Direct module-owned adapters are the primary implementation model.
+- Scoped capability packs are the primary runtime model.
+- The capability registry is the source of truth.
+- MCP is generated from that registry for the capabilities we actually want to
+  expose through that transport.
+
+So the answer is not "direct functions or MCP". The durable answer is:
+
+- build direct adapters first
+- add scope chaining on top
+- generate scoped MCP exposure from the same registry
+
+That gives us lower context load inside the product and still preserves a clean
+protocol surface where it is useful.
+
+### Are We Missing Anything?
+
+Yes. The main missing pieces are:
+
+- capability registry
+- scoped context loaders
+- pending-action and confirmation model
+- shared workflow runtime
+- artifact model
+- generated transport bindings from the registry
+- stronger summary contracts for what the model sees at each step
+
+The last point matters. We should not pass full raw records when a small,
+structured summary would do.
+
+### Do We Need More Microservices?
+
+Probably not for the next step.
+
+What already exists:
+
+- CityCatalyst app: primary domain logic and access control
+- Climate Advisor FastAPI service: conversational orchestration, tool use,
+  streaming, vector retrieval, and CC API access
+
+What should stay in the main app for now:
+
+- module capability adapters
+- scope loaders
+- capability registry
+- confirmation model
+- workflow state for product-owned actions
+
+Why:
+
+- the product services and access rules already live in the app
+- moving capability execution into a new service would duplicate domain logic
+- cross-service writes would make confirmation, version history, and debugging
+  harder before they make anything simpler
+
+### What Could Make Life Easier Later?
+
+Not a broad new microservice. More likely one of these:
+
+- A lightweight worker or queue-backed runner for long jobs if cron/status
+  patterns keep spreading.
+- Registry-generated tool bindings so chat and MCP do not need separate wiring.
+- A reusable workflow UI/state package for confirmation, pending actions, and
+  status polling.
+
+The first real scaling split should probably be a job runner, not a second
+general capability microservice.
+
+## First Capability Pack
 
 Start with a thin vertical slice that proves the architecture:
 
-1. City context query tools:
-   - get current/default city
-   - list accessible cities
-   - get city dashboard
-   - list modules for city/project
+- City context queries: current city, accessible cities, city dashboard, module
+  list.
+- GHGI reads: inventory summary, progress, missing data, results breakdown.
+- GHGI import workflow: start, status, mapping review, approve.
+- HIAP reads/workflows: status, ranked actions, generation, top-pick selection.
 
-2. GHGI read tools:
-   - get inventory summary
-   - get inventory progress
-   - get missing data by sector/subsector/scope
-   - get emissions results and sector breakdown
-
-3. GHGI guided write workflow:
-   - create activity value
-   - update activity value
-   - mark scope not applicable
-   - all with dry-run and confirm-before-commit
-
-4. HIAP read/generate tools:
-   - get HIAP status
-   - get ranked/unranked actions
-   - start HIAP generation
-   - poll generation
-   - select top actions with confirmation
-
-5. Import workflow:
-   - upload/start import
-   - poll status
-   - inspect mappings
-   - approve with confirmation
-
-This gives coverage across read, command, and long-running workflow patterns
-without opening the full admin/security surface first.
+This covers read, write, and async patterns without opening admin or platform
+plumbing first.

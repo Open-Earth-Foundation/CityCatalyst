@@ -143,22 +143,6 @@ download.
 - Agentic direction: read membership/access, confirm structural changes, preview
 branding/file flows, and return clear preflight/result summaries.
 
-### Admin
-
-- Current: organization admin, bulk inventory creation/download/HIAP,
-module administration, and feature flags.
-- APIs: `admin/*`, `organizations/[organization]/active-status`.
-- Agentic direction: keep outside the first capability pack. If exposed later,
-start with read/reporting and dry-run previews only.
-
-### Public and Reference
-
-- Current: public inventory/city/project dashboards, methodology pages, and the
-OpenAPI docs UI.
-- APIs: `public/*`, `projects/[project]/summary`, `api/openapi/json`.
-- Agentic direction: public tools stay read-only; methodology lookup is a
-reference tool for explanations.
-
 ### Chat and Assistant Layer
 
 - Current: chat threads/messages, assistant threads/files, and CA vs legacy
@@ -293,7 +277,7 @@ We need one registry that describes every capability with:
 - input/output schema
 - required resource scope
 - confirmation behavior
-- artifact/result type if any
+- result shape and file/draft reference shape if any
 - transport exposure: internal only, chat, MCP, public read-only
 
 This registry should become the source of truth for tool generation and scope
@@ -435,27 +419,85 @@ New workflow endpoints should introduce a consistent polling mechanism:
 
 - start endpoint returns a workflow/job id and initial status
 - status endpoint returns progress, current step, blockers, and next action
-- result endpoint returns the final summary or artifact reference
+- result endpoint returns the final summary, file reference, or draft reference
 - failed jobs return a stable failure shape that can be retried or resumed where
   meaningful
 
-#### 7. Artifact Model
+#### 7. Input/Output Pydantic Contract
 
-Exports and workflow outputs should be first-class objects, not just incidental
-file downloads.
+Every capability exposed to CA should have an explicit input/output contract.
+This is clearer than passing raw CC route payloads or inventing ad hoc tool
+responses per workflow.
 
-That includes:
+At the CA-facing boundary, those contracts should be represented as Pydantic
+models. They should define:
 
-- GHGI CSV/eCRF
-- HIAP CSV/PDF
-- action-plan PDF
-- project bulk downloads
-- import review reports
+- required inputs for the capability
+- normalized output shape for the capability
+- stable success and error shapes
+- workflow start/status/result shapes where relevant
+- file or draft references when a capability produces them
 
-Having a consistent artifact shape will make chat, MCP, and UI flows much
-easier to unify.
+The goal is not to model every internal CC object in Pydantic. The goal is to
+give the LLM a smaller, predictable, capability-level contract.
 
-#### 8. Test Surface
+In practice that means:
+
+- query wrappers return summarized read models
+- command wrappers return confirmation-safe result models
+- workflow wrappers return start, status, and result models
+- file-producing workflows return a small file reference model rather than a raw
+  blob payload
+
+This should sit on top of existing CC logic. The wrapper shapes what CA sees;
+the underlying CC route or service can stay as it is.
+
+#### 8. Database Ownership and State
+
+We also need an explicit database ownership split between CA and CC. The current
+documents describe runtime behavior, but the durable state model still needs to
+be made concrete.
+
+The rule should be:
+
+- CA owns conversation and agent-session state
+- CC owns durable product workflow state
+
+CA should keep:
+
+- threads and messages
+- thread context such as the current access token, active resource, and scoped
+  workflow step
+- tool invocation audit for chat history
+- lightweight resume pointers such as the current draft id or active workflow id
+
+CC should keep:
+
+- pending actions waiting for user confirmation
+- started actions that have become product-owned workflow runs
+- workflow polling state, status transitions, and final results
+- saved drafts for product workflows
+- version-history records and restore metadata
+- output file references where product workflows need durable retrieval
+
+This matters because "waiting per user", "started actions", "polling states",
+and "saved drafts" should not live only inside CA thread state. If the state
+affects product data, approval, restore, or cross-session resume, CC should own
+it as the durable source of truth.
+
+In practice that likely means adding product-owned workflow tables in CC for:
+
+- pending actions
+- workflow runs
+- workflow status events
+- drafts
+- output references
+
+CA can still cache references to those objects in thread context so the agent
+can resume the conversation cleanly, but CA should not be the durable owner of
+product mutation state.
+
+#### 9. Test Surface
 
 We will need:
 
@@ -541,7 +583,7 @@ Yes. The main missing pieces are:
 - scoped context loaders
 - pending-action and confirmation model
 - shared workflow runtime
-- artifact model
+- input/output Pydantic contracts
 - generated transport bindings from the registry
 - stronger summary contracts for what the model sees at each step
 

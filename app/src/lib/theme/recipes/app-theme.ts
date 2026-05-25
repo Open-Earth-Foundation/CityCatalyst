@@ -535,6 +535,7 @@ export const appTheme = createSystem(defaultConfig, {
           warningOverlay: { value: "#FEF8E1" }, // stays the same
           negativeDefault: { value: "#F23D33" }, // stays the same
           negativeOverlay: { value: "#FFEAEE" }, // stays the same
+          backgroundOverlay: { value: "#E8FBEC" },
         },
 
         brandScheme: {

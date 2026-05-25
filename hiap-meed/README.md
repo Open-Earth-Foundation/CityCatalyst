@@ -217,10 +217,14 @@ Impact block behavior (implemented):
 - `coBenefits[*]` now only carry co-benefit impact metadata (`impact_numeric`, optional relationship/text/methodology). They do not carry sector or GPC targeting fields.
 - `ACTIVITY_DATA_LEVEL_MAPPING=false` keeps the new true subsector matching path.
 - `ACTIVITY_DATA_LEVEL_MAPPING=true` calls the current activity-data stub, logs `not implemented`, and still returns the same subsector-level result.
-- Negative `V.*` AFOLU inventory values remain valid request data, but Impact does not treat them as reducible emissions.
-  - Matching for Impact uses strictly positive city emissions only.
-  - The reduction-share denominator also uses strictly positive city emissions only.
-  - This is an intentional product rule so Impact stays in `0..1` and measures reducible emissions rather than existing removals.
+- Negative `V.*` AFOLU inventory values remain valid request data, and Impact now scores them by absolute magnitude.
+  - Matching for Impact uses `abs(totalEmissions)` for AFOLU `V.*`.
+  - The reduction-share denominator also includes `abs(totalEmissions)` for AFOLU `V.*`.
+  - Non-AFOLU subsectors still contribute only when the city inventory value is strictly positive.
+  - This is intentional so AFOLU removals are not ignored, while non-AFOLU negative values still do not affect Impact scoring.
+  - Net city emissions remain signed and can be negative, but the Impact denominator is a separate ranking-only metric.
+  - In other words, Impact is not asking "what share of the city's net emissions could this action affect?"
+  - It is asking something closer to "what share of the city's total climate-relevant emissions magnitude could this action affect?"
 - Impact computes canonical score as:
   - `0.80 * reduction_share_of_city_emissions + 0.20 * timeline_score`
   - Timeline mapping: `<5 years -> 1.0`, `5-10 years -> 0.5`, `>10 years -> 0.0`, missing or unknown timeline `-> 0.5`

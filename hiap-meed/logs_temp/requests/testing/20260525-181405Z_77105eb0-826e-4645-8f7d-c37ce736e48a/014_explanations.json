@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-05-25T18:14:15.977832+00:00",
+  "request_id": "77105eb0-826e-4645-8f7d-c37ce736e48a",
+  "request_kind": "prioritization",
+  "event_index": 14,
+  "step_name": "explanations",
+  "event_type": "explanations.completed",
+  "payload": {
+    "requested": 20,
+    "generated": 20,
+    "generated_action_ids": [
+      "c40_0042",
+      "icare_0045",
+      "icare_0050",
+      "icare_0069",
+      "icare_0099",
+      "icare_0122",
+      "icare_0131",
+      "icare_0132",
+      "ipcc_0028",
+      "ipcc_0034",
+      "ipcc_0052",
+      "ipcc_0053",
+      "ipcc_0054",
+      "ipcc_0056",
+      "ipcc_0057",
+      "ipcc_0067",
+      "ipcc_0068",
+      "ipcc_0069",
+      "ipcc_0070",
+      "ipcc_0071"
+    ],
+    "canonical_language": "en",
+    "llm_io_file": "llm/explanations_io.json",
+    "elapsed_seconds": 7.399883500300348
+  }
+}

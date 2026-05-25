@@ -1,0 +1,20 @@
+{
+  "timestamp": "2026-05-25T18:13:43.743150+00:00",
+  "request_id": "9fab9c40-3dd5-4dfa-9c2f-8b5ac43681d7",
+  "request_kind": "prioritization",
+  "event_index": 15,
+  "step_name": "explanation_translations",
+  "event_type": "explanation_translations.completed",
+  "payload": {
+    "requested": 20,
+    "translated": 20,
+    "target_languages": [
+      "es"
+    ],
+    "warning_count": 0,
+    "llm_io_file": "llm/explanation_translations_io.json",
+    "elapsed_seconds": 10.907807459123433,
+    "warning_action_ids": [],
+    "warnings": []
+  }
+}

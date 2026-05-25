@@ -72,6 +72,10 @@ flowchart TD
 
 - `0.5` is not universally neutral across all components.
 - `0.5` is a true neutral midpoint only for components normalized from a signed scale such as `-2..2`.
+- Impact emissions share now uses scoring magnitude rather than raw signed inventory:
+  - AFOLU `V.*` contributes `abs(totalEmissions)` in both the numerator and denominator.
+  - Non-AFOLU subsectors contribute only when `totalEmissions > 0`.
+  - This denominator is not the city's signed net emissions total; it is a ranking-only climate-relevant magnitude.
 - Timeline is scored differently in Impact and Alignment:
   - Impact uses intrinsic speed scoring.
   - Alignment uses match-to-city-preference scoring.
@@ -148,4 +152,4 @@ This means Impact is a bit more than twice as influential as Alignment or Feasib
 - The biggest single driver in the current setup is usually Impact.
 - Inside Alignment, Policy support dominates the other Alignment subcomponents.
 - Alignment timeframe matters, but its effect on the final score is small relative to Impact timeline.
-- Missing Impact timeline is now neutral at `0.5`, so it no longer penalizes actions just because the timeline is unknown.
+- Missing Impact timeline is neutral at `0.5`, so actions are not penalized just because the timeline is unknown.

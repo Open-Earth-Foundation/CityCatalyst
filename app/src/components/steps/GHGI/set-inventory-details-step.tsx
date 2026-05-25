@@ -34,6 +34,7 @@ import CustomSelectableButton from "../../custom-selectable-buttons";
 import { ButtonMedium } from "@/components/package";
 import { BiLink } from "react-icons/bi";
 import InventoryDetailsHelpDrawer from "./InventoryDetailsHelpDrawer";
+import InventoryDetailsHeader from "./inventory-details-header";
 
 export default function SetInventoryDetailsStep({
   t,
@@ -81,31 +82,7 @@ export default function SetInventoryDetailsStep({
 
   return (
     <Box w="full">
-      <Box
-        minW={400}
-        w="full"
-        display="flex"
-        flexDir="column"
-        gap="24px"
-        mb="48px"
-      >
-        <HStack justifyContent="space-between" w="full">
-          <Heading data-testid="inventory-details-heading" size="xl">
-            {t("setup-inventory-details-heading")}
-          </Heading>
-          <InventoryDetailsHelpDrawer t={t} />
-        </HStack>
-        <Text
-          color="content.tertiary"
-          fontSize="body.lg"
-          fontStyle="normal"
-          fontWeight="400"
-          letterSpacing="wide"
-          data-testid="inventory-details-description"
-        >
-          {t("setup-inventory-details-description")}
-        </Text>
-      </Box>
+      <InventoryDetailsHeader t={t} />
       {/* Inventory Year */}
       <Box
         w="full"
@@ -223,6 +200,7 @@ export default function SetInventoryDetailsStep({
               letterSpacing="wide"
               color="content.tertiary"
               fontFamily="body"
+              pr={6}
             >
               {t("inventory-goal-description-ghgi")}
             </Text>
@@ -307,6 +285,7 @@ export default function SetInventoryDetailsStep({
               letterSpacing="wide"
               fontFamily="body"
               color="content.tertiary"
+              pr={6}
             >
               {t("gwp-description-ghgi")}
             </Text>

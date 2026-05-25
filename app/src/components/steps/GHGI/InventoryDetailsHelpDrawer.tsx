@@ -14,6 +14,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
+import { CloseButton } from "@/components/ui/close-button";
 import { BiChevronDown, BiLinkExternal } from "react-icons/bi";
 import { AskAiIconOutline2 } from "@/components/icons";
 
@@ -140,12 +141,17 @@ export default function InventoryDetailsHelpDrawer({ t }: { t: TFunction }) {
       onOpenChange={(e) => (e.open ? onOpen() : onClose())}
     >
       <Drawer.Trigger asChild>
-        <Button variant="outline" onClick={onOpen}>{t("help-section")}</Button>
+        <Button variant="outline" onClick={onOpen}>{t("help-button")}</Button>
       </Drawer.Trigger>
       <Portal>
         <Drawer.Positioner>
           <Drawer.Content>
-            <Drawer.Header>
+            <Drawer.Header
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              gap="16px"
+            >
               <Drawer.Title
                 fontFamily="heading"
                 fontSize="title.lg"
@@ -154,6 +160,9 @@ export default function InventoryDetailsHelpDrawer({ t }: { t: TFunction }) {
               >
                 {t("drawer-help-section-title")}
               </Drawer.Title>
+              <Drawer.CloseTrigger asChild>
+                <CloseButton size="sm" color="content.secondary" />
+              </Drawer.CloseTrigger>
             </Drawer.Header>
             <Drawer.Body spaceY="32px">
               <Text

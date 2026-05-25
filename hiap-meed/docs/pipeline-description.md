@@ -192,52 +192,54 @@ What these are used for:
 
 File:
 
-- `data/mock/actions_api_mock.json`
+- `data/mock/action_pathways_api_mock.json`
 
-Future contract note:
+Contract note:
 
-- This file still represents the current action mock/upstream shape used by this branch.
-- It may include fields such as `biome` that are not expected in the future `GET /api/v1/action-pathways` payload.
-- When that new action API is integrated, the action response DTOs and the mock action file should be updated together in one dedicated contract migration.
+- This file mirrors `GET /api/v1/action-pathways` with no query parameters.
+- The action client returns the full upstream catalog. The prioritization
+  pipeline then keeps only mitigation actions as a fixed runtime filter, not a
+  frontend-request filter.
 
 Fields that affect the result:
 
 - `actions[].actionId`
+- `actions[].actionType`
 - `actions[].actionName`
 - `actions[].description`
-- `actions[].actionCategory`
-- `actions[].actionSubcategory`
+- `actions[].interventionSummary`
+- `actions[].outcomeSummary`
+- `actions[].interventionType`
+- `actions[].actionRole`
 - `actions[].coBenefits`
-- `actions[].activity_type_description`
 - `actions[].timelineForImplementation`
 - `actions[].emissions.sector_number`
 - `actions[].emissions.subsector_number[]`
 - `actions[].emissions.gpc_reference_number[]`
 - `actions[].emissions.impact_text`
-- `actions[].socioeconomicIndicators[].indicator_key`
-- `actions[].socioeconomicIndicators[].direction`
-- `actions[].socioeconomicIndicators[].weight`
 
 What these are used for:
 
 - `actionId` identifies and sorts actions.
-- `actionName`, `description`, `actionCategory`, and `actionSubcategory` are used in exclusion preview free-text matching.
+- `actionType` is filtered to the currently supported value, `mitigation`.
+- `actionName`, `description`, `interventionType`, and `actionRole` are used in exclusion preview free-text matching.
 - For the free-text preview prompt, the service sends all actions but only with:
   - action ID
   - action name
   - action description
-  - action category
-  - action subcategory
+  - intervention type
+  - action role
 - Action descriptions are shortened to about `200` characters for that prompt.
 - `coBenefits` are used by exclusion preview and by the Alignment block's other-preference scoring.
 - `coBenefits[*]` only need co-benefit impact metadata (`impact_numeric`, plus optional relationship/text/methodology); they do not use sector, subsector, or GPC reference fields.
-- `activity_type_description` is stored now for a future guarded activity-data-level mapping step in Impact.
+- `interventionSummary` and `outcomeSummary` are retained for future guarded activity-data-level diagnostics.
+- The exact future use of `interventionSummary`, `outcomeSummary`, and `description` in activity-level matching is still intentionally open and should be confirmed before it affects ranking.
 - `timelineForImplementation` affects the Impact score and also the Alignment timeframe-preference component.
 - `emissions.sector_number` affects exclusion preview and the Alignment score.
 - `emissions.subsector_number[]` defines the active true subsector join used by Impact.
-- `emissions.gpc_reference_number[]` remains reference data and is also used to keep the mock catalog consistent.
+- `emissions.gpc_reference_number[]` is retained as reference data and is also used to keep the mock catalog consistent.
 - `emissions.impact_text` gives the action's expected strength of emissions reduction.
-- `socioeconomicIndicators[]` define how the action should be judged against city conditions in the Feasibility block.
+- Feasibility uses the city-scoped mitigation feasibility scores endpoint.
 
 ### Legal assessments data
 
@@ -524,7 +526,9 @@ From the action catalog:
 - `actions[].emissions.subsector_number[]`
 - `actions[].emissions.gpc_reference_number[]`
 - `actions[].emissions.impact_text`
-- `actions[].activity_type_description`
+- `actions[].interventionSummary`
+- `actions[].outcomeSummary`
+- `actions[].description`
 
 ### 5.2 Logic
 
@@ -542,7 +546,7 @@ Examples:
 - `sector_number="I"` and `subsector_number=[1]` -> `I.1`
 - `sector_number="V"` and `subsector_number=[1, 2]` -> `V.1`, `V.2`
 
-`gpc_reference_number[]` remains in the payload as reference data, but it is no longer the active Impact join key.
+`gpc_reference_number[]` remains in the payload as reference data. The active Impact join key is `subsector_number[]`.
 
 #### Part B: translate impact strength from words into numbers
 
@@ -566,23 +570,24 @@ If the impact label is unknown:
 
 For each action, the pipeline:
 
-- finds which of the action's subsector keys also have strictly positive emissions in the city's emissions data,
-- takes the city total for each matching subsector,
+- finds which of the action's subsector keys have matchable scoring magnitude in the city's emissions data,
+- takes the scoring magnitude for each matching subsector,
 - multiplies those totals by the action's impact multiplier,
 - and adds the results together.
 
 Important product rule:
 
-- Negative `V.*` AFOLU inventory values remain valid request data because they are real city removals.
-- But Impact does not treat those negative values as reducible emissions.
-- So negative or zero-emissions subsectors do not count as Impact matches and do not contribute to the reduction amount.
+- AFOLU `V.*` uses absolute inventory magnitude for Impact scoring.
+  - Example: `V.2 = -50` contributes `50` to matching and to the reduction amount before the action multiplier is applied.
+- Non-AFOLU subsectors still contribute only when the city inventory value is strictly positive.
+- This means AFOLU removals are no longer ignored in Impact. They now contribute by size, even when the raw inventory value is negative.
 
 Plain-language formula:
 
 ```text
 Estimated reduction amount for one action
 = sum of:
-    city emissions in each matched subsector
+    scoring emissions magnitude in each matched subsector
     multiplied by
     the action's impact multiplier
 ```
@@ -595,15 +600,23 @@ Plain-language formula:
 Reduction share of city emissions
 = estimated reduction amount
   divided by
-  total reducible positive city emissions across all subsectors
+  total scoring emissions magnitude across all subsectors
 ```
 
 Important product rule:
 
-- The denominator uses strictly positive city emissions only.
-- Existing negative AFOLU removals are kept in the request data for validation and traceability, but they are excluded from reducible-emissions scoring.
+- The denominator includes absolute AFOLU `V.*` magnitude plus strictly positive non-AFOLU emissions.
+- In plain language:
+  - AFOLU contributes `abs(totalEmissions)`
+  - all other sectors contribute `totalEmissions` only when that value is positive
+- This denominator is a ranking-only metric. It is not the city's signed net emissions total.
+- Net city emissions remain signed and can be negative.
+- So the model is not asking:
+  - "What share of the city's net emissions could this action affect?"
+- It is asking something closer to:
+  - "What share of the city's total climate-relevant emissions magnitude could this action affect?"
 
-If the city has zero reducible emissions in the request:
+If the city has zero scoring emissions magnitude in the request:
 
 - the reduction share is set to `0`.
 
@@ -897,25 +910,16 @@ Fields returned mainly as evidence:
 - `[].analysisDate`
 - `[].generationMethod`
 
-From the action catalog:
+From the mitigation feasibility scores endpoint:
 
-- `actions[].actionId`
-- `actions[].socioeconomicIndicators[].indicator_key`
-- `actions[].socioeconomicIndicators[].direction`
-- `actions[].socioeconomicIndicators[].weight`
-- `actions[].socioeconomicIndicators[].rationale`
-
-From the city context file:
-
-- `city.unemployment_rate.attribute_category`
-- `city.renter_share.attribute_category`
-- `city.employment_in_transport_and_logistics.attribute_category`
-- `city.electricity_access_rate.attribute_category`
-- `city.industry_construction_employment.attribute_category`
-- `city.median_household_income.attribute_category`
-- `city.public_transport_share.attribute_category`
-- `city.poverty_rate.attribute_category`
-- `city.home_ownership.attribute_category`
+- `scores[].src_action_id`
+- `scores[].action_score`
+- `scores[].global_mitigation_option`
+- `scores[].action_mapping_strength`
+- `scores[].option_family`
+- `scores[].dimension_scores`
+- `scores[].breakdown`
+- `scores[].rank_within_city`
 
 ### 7.2 Logic
 
@@ -946,72 +950,32 @@ Important details:
 - `verdictCategory` is not used for the numeric feasibility score.
 - If the legal row is missing entirely, the component also falls back to `0.5`.
 
-#### Part B: socio-economic fit
+#### Part B: mitigation feasibility score
 
-First, each city category is translated into a number:
+Scoring rule:
 
-- `very_low` -> `-2`
-- `low` -> `-1`
-- `medium` -> `0`
-- `high` -> `1`
-- `very_high` -> `2`
+- Use `scores[].action_score` from `GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores`.
+- Match rows to actions by `src_action_id`.
+- If the endpoint returns `404`, if an action has no score row, or if the row is missing `action_score`, use neutral `0.5`.
 
-Then each action rule is processed using:
-
-- `indicator_key`
-- `direction`
-- `weight`
-
-Meaning of `direction`:
-
-- `supportive` means higher city values help the action
-- `constraining` means higher city values make the action harder
-
-Step-by-step:
-
-1. Look up the city's category for the indicator.
-2. Convert that category into a numeric score.
-3. If the rule is `supportive`, keep the score as it is.
-4. If the rule is `constraining`, reverse the sign.
-5. Multiply the result by the rule's weight.
-6. Add all weighted rule results together.
-7. Divide by the total rule weight.
-
-Plain-language formulas:
+Plain-language formula:
 
 ```text
-Adjusted indicator score
-= bucket score              when direction = supportive
-= negative bucket score     when direction = constraining
+Mitigation feasibility component
+= action_score
 ```
 
-```text
-Weighted contribution
-= rule weight * adjusted indicator score
-```
+Fallback rule:
 
 ```text
-Socio-economic average
-= sum of all weighted contributions
-  divided by
-  sum of all indicator weights
-```
-
-That average sits on a scale from `-2` to `2`, so the pipeline rescales it to `0` to `1`:
-
-```text
-Socio-economic component
-= (socio-economic average + 2) / 4
+If action_score is missing, mitigation feasibility component = 0.5
 ```
 
 Important details:
 
-- If the city is missing a needed indicator, that rule contributes `0`.
-- The weight of that missing rule is still included in the denominator.
-- If an action has no socio-economic rules at all, the pipeline sets:
-  - socio-economic average = `0`
-  - socio-economic component = `0.5`
-- So "no socio-economic information" becomes a neutral middle score, not a failure.
+- Only some catalog actions currently have mapped feasibility scores.
+- Missing mapped rows are expected and intentionally neutral, not a penalty.
+- Dimension details are retained in evidence and artifacts but are not recomputed by this service.
 
 #### Final Feasibility formula
 
@@ -1020,7 +984,7 @@ Plain-language formula:
 ```text
 Feasibility score
 = 0.50 * legal component
- + 0.50 * socio-economic component
+ + 0.50 * mitigation feasibility component
 ```
 
 ### 7.3 Weights used
@@ -1028,7 +992,7 @@ Feasibility score
 Internal Feasibility weights:
 
 - Legal verdict score = `0.50`
-- Socio-economic fit = `0.50`
+- Mitigation feasibility score = `0.50`
 
 ### 7.4 Outputs
 
@@ -1044,12 +1008,19 @@ Key evidence fields:
 - `legal_component_score`
 - `legal_component_source`
 - `legal_verdict_score_missing`
-- `socioeconomic_indicators_component_value`
-- `socioeconomic_indicators_weighted_sum`
-- `total_socioeconomic_indicator_weight`
-- `socioeconomic_indicators_avg`
-- `socioeconomic_indicator_rows`
-- `missing_city_socioeconomic_indicator_keys`
+- `mitigation_feasibility_component_score`
+- `mitigation_feasibility_component_source`
+- `mitigation_feasibility_weight`
+- `mitigation_feasibility_contribution`
+- `mitigation_feasibility_score_present`
+- `mitigation_feasibility_score_missing`
+- `mitigation_feasibility_action_score_missing`
+- `global_mitigation_option`
+- `action_mapping_strength`
+- `option_family`
+- `dimension_scores`
+- `feasibility_breakdown`
+- `rank_within_city`
 - `feasibility_score`
 
 ## 8. Final Scoring Block
@@ -1252,6 +1223,7 @@ So the final ranking is not one black-box judgment. It is a step-by-step combina
 - and one final weighted ranking calculation.
 Implementation note:
 
-- The request now preserves `activities[].activityType` rows and action `activity_type_description`.
+- The request now preserves `activities[].activityType` rows and action text candidates from the action catalog.
+- The current stub records a provisional text-source order of `interventionSummary`, then `outcomeSummary`, then `description`, but the exact future field usage is still an open implementation discussion.
 - `ACTIVITY_DATA_LEVEL_MAPPING=false` keeps true subsector-only matching.
 - `ACTIVITY_DATA_LEVEL_MAPPING=true` calls a stub that logs `not implemented` and returns the same subsector-level matches for now.

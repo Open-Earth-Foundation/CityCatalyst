@@ -35,6 +35,7 @@ export const appTheme = createSystem(defaultConfig, {
           focusRing: { value: "{colors.brand.500}" },
         },
         content: {
+          // only render map on the client
           alternative: {
             value: {
               base: "{colors.blue_theme.contentAlternative}",
@@ -184,6 +185,10 @@ export const appTheme = createSystem(defaultConfig, {
               _violet_theme: "{colors.violet_theme.background.overlay}",
             },
           },
+          /** Unselected filled radio control (zinc-200). */
+          radioUnselected: {
+            value: "#E4E4E7",
+          },
         },
         border: {
           neutral: {
@@ -242,7 +247,7 @@ export const appTheme = createSystem(defaultConfig, {
             alternative: { value: "#001EA7" },
             link: { value: "#2351DC" },
             tertiary: {
-              value: "#7A7B9A",
+              value: "#4B4C63",
             },
             secondary: {
               value: "#232640",
@@ -530,6 +535,7 @@ export const appTheme = createSystem(defaultConfig, {
           warningOverlay: { value: "#FEF8E1" }, // stays the same
           negativeDefault: { value: "#F23D33" }, // stays the same
           negativeOverlay: { value: "#FFEAEE" }, // stays the same
+          backgroundOverlay: { value: "#E8FBEC" },
         },
 
         brandScheme: {

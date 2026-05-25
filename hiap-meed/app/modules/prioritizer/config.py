@@ -45,7 +45,7 @@ ALIGNMENT_WEIGHT_TIMEFRAME = 0.05
 
 # Feasibility scoring knobs
 FEASIBILITY_WEIGHT_LEGAL = 0.50
-FEASIBILITY_WEIGHT_SOCIO = 0.50
+FEASIBILITY_WEIGHT_MITIGATION_FEASIBILITY = 0.50
 
 
 def validate_weights(weights: Mapping[str, float] | None) -> dict[str, float]:
@@ -104,7 +104,9 @@ def validate_block_component_weights() -> None:
         },
         "feasibility": {
             "FEASIBILITY_WEIGHT_LEGAL": FEASIBILITY_WEIGHT_LEGAL,
-            "FEASIBILITY_WEIGHT_SOCIO": FEASIBILITY_WEIGHT_SOCIO,
+            "FEASIBILITY_WEIGHT_MITIGATION_FEASIBILITY": (
+                FEASIBILITY_WEIGHT_MITIGATION_FEASIBILITY
+            ),
         },
     }
     for block_name, weights in block_weights.items():

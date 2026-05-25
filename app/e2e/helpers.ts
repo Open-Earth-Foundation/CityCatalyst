@@ -117,6 +117,27 @@ export async function createCityThroughOnboarding(page: Page): Promise<string> {
   return cityId;
 }
 
+/** GHGI setup step: third-party data opt-in (after population, before confirm). */
+export async function completeThirdPartyDataOnboardingStep(
+  page: Page,
+  choice: "yes" | "no" = "no",
+) {
+  const step = page.getByTestId("third-party-data-step");
+  await expect(step).toBeVisible({ timeout: 10000 });
+
+  const choiceTestId =
+    choice === "yes"
+      ? "third-party-data-choice-yes"
+      : "third-party-data-choice-no";
+  await page.getByTestId(choiceTestId).click();
+
+  const continueBtn = page.getByRole("button", { name: /Continue/i });
+  await expect(continueBtn).toBeEnabled({ timeout: 15000 });
+  await continueBtn.click();
+
+  await page.waitForTimeout(1000);
+}
+
 export async function createInventoryThroughOnboarding(
   page: Page,
   cityId?: string,
@@ -229,7 +250,9 @@ export async function createInventoryThroughOnboarding(
 
   await page.waitForTimeout(3000);
 
-  // Step 7: Confirm and Complete
+  await completeThirdPartyDataOnboardingStep(page, "no");
+
+  // Step 8: Confirm and Complete
   const confirmHeading = page.getByTestId("confirm-city-data-heading");
   await expect(confirmHeading).toBeVisible({ timeout: 10000 });
 

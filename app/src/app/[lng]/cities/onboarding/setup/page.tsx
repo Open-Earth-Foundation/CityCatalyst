@@ -17,7 +17,12 @@ import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { use, useEffect, useState } from "react";
-import type { SubmitHandler } from "react-hook-form";
+import type {
+  Control,
+  FieldErrors,
+  SubmitHandler,
+  UseFormRegister,
+} from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SelectCityStep from "@/components/steps/select-city-steps";
 import SetInventoryDetailsStep from "@/components/steps/GHGI/set-inventory-details-step";
@@ -366,9 +371,11 @@ export default function OnboardingSetup(props: {
           {activeStep === 1 && (
             <SetInventoryDetailsStep
               t={t}
-              register={register}
-              errors={errors}
-              control={control}
+              register={
+                register as unknown as UseFormRegister<GHGIFormInputs>
+              }
+              errors={errors as unknown as FieldErrors<GHGIFormInputs>}
+              control={control as unknown as Control<GHGIFormInputs>}
               setValue={setValue}
               years={years}
               selectedYearArray={selectedYearArray}
@@ -386,9 +393,11 @@ export default function OnboardingSetup(props: {
           {activeStep === 2 && (
             <SetPopulationDataStep
               t={t}
-              register={register}
-              control={control}
-              errors={errors}
+              register={
+                register as unknown as UseFormRegister<GHGIFormInputs>
+              }
+              control={control as unknown as Control<GHGIFormInputs>}
+              errors={errors as unknown as FieldErrors<GHGIFormInputs>}
               years={years}
               numberOfYearsDisplayed={numberOfYearsDisplayed}
               setData={setData}

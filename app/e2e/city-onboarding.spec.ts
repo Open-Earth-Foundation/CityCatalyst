@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import {
   completeThirdPartyDataOnboardingStep,
   dismissCookieConsent,
-  E2E_ONBOARDING_INVENTORY_YEAR,
+  pickE2EOnboardingInventoryYear,
 } from "./helpers";
 
 test("City Onboarding", async ({ page }) => {
@@ -73,9 +73,8 @@ test("City Onboarding", async ({ page }) => {
       .first();
     await yearSelectTrigger.click();
     await page.waitForTimeout(500);
-    await page
-      .getByRole("option", { name: E2E_ONBOARDING_INVENTORY_YEAR })
-      .click();
+    const inventoryYear = pickE2EOnboardingInventoryYear();
+    await page.getByRole("option", { name: inventoryYear }).click();
 
     // Goal and global warming potential are pre-selected by the step
     await expect(page.getByTestId("inventory-goal-gpc_basic")).toBeVisible();

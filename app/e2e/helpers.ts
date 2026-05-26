@@ -56,19 +56,27 @@ export async function createInventory(
   return await result.json();
 }
 
-/** Inventory year selected during cities onboarding E2E flows. */
-export const E2E_ONBOARDING_INVENTORY_YEAR = String(new Date().getFullYear());
+/**
+ * Inventory year for cities onboarding E2E. Uses the previous calendar year so
+ * the value stays inside the UI dropdown (current year + 19 prior years) and
+ * matches ghgi-onboarding.spec.ts. Call once per flow and pass the return value
+ * to assertions so setup and expectations never drift apart.
+ */
+export function pickE2EOnboardingInventoryYear(): string {
+  return String(new Date().getFullYear() - 1);
+}
 
 /**
  * Walks the combined cities onboarding wizard (city + inventory + population +
  * third-party data). The flow ends on the newly created inventory page at
  * `/cities/{cityId}/GHGI/{inventoryId}/`.
  *
- * Returns the extracted IDs from the final URL.
+ * Returns the extracted IDs and the inventory year selected in the wizard.
  */
 async function walkCitiesOnboardingWizard(
   page: Page,
-): Promise<{ cityId: string; inventoryId: string }> {
+): Promise<{ cityId: string; inventoryId: string; inventoryYear: string }> {
+  const inventoryYear = pickE2EOnboardingInventoryYear();
   // Step 0: welcome page → click "Get Started"
   await page.goto("/en/cities/onboarding/");
 
@@ -117,9 +125,7 @@ async function walkCitiesOnboardingWizard(
     .first();
   await yearSelectTrigger.click();
   await page.waitForTimeout(500);
-  await page
-    .getByRole("option", { name: E2E_ONBOARDING_INVENTORY_YEAR })
-    .click();
+  await page.getByRole("option", { name: inventoryYear }).click();
 
   {
     const continueButton = page
@@ -144,15 +150,15 @@ async function walkCitiesOnboardingWizard(
     await cityPopulationInput.fill("1000000");
     await page
       .locator('select[name="cityPopulationYear"]')
-      .selectOption(E2E_ONBOARDING_INVENTORY_YEAR);
+      .selectOption(inventoryYear);
     await page.getByPlaceholder("Region population number").fill("5000000");
     await page
       .locator('select[name="regionPopulationYear"]')
-      .selectOption(E2E_ONBOARDING_INVENTORY_YEAR);
+      .selectOption(inventoryYear);
     await page.getByPlaceholder("Country population number").fill("10000000");
     await page
       .locator('select[name="countryPopulationYear"]')
-      .selectOption(E2E_ONBOARDING_INVENTORY_YEAR);
+      .selectOption(inventoryYear);
   }
 
   {
@@ -178,7 +184,7 @@ async function walkCitiesOnboardingWizard(
       "Could not extract cityId and inventoryId from URL after onboarding",
     );
   }
-  return { cityId: match[1], inventoryId: match[2] };
+  return { cityId: match[1], inventoryId: match[2], inventoryYear };
 }
 
 export async function createCityThroughOnboarding(page: Page): Promise<string> {
@@ -367,11 +373,17 @@ export async function createInventoryThroughOnboarding(
 
 export async function createCityAndInventoryThroughOnboarding(
   page: Page,
-): Promise<{ page: Page; cityId: string; inventoryId: string }> {
+): Promise<{
+  page: Page;
+  cityId: string;
+  inventoryId: string;
+  inventoryYear: string;
+}> {
   // Cities onboarding now creates both the city and the first inventory in
   // one combined wizard; no need to run the GHGI onboarding flow afterwards.
-  const { cityId, inventoryId } = await walkCitiesOnboardingWizard(page);
-  return { page, cityId, inventoryId };
+  const { cityId, inventoryId, inventoryYear } =
+    await walkCitiesOnboardingWizard(page);
+  return { page, cityId, inventoryId, inventoryYear };
 }
 
 export async function createProject(

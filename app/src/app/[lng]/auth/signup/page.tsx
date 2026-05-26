@@ -20,8 +20,6 @@ import { LANGUAGES } from "@/util/types";
 import { LanguageSelector } from "./LanguageSelector";
 import i18next from "i18next";
 import { trackEvent, identifyUser } from "@/lib/analytics";
-import { hasFeatureFlag } from "@/util/feature-flags";
-import { FeatureFlags } from "@/util/feature-flags";
 import { getHomePath } from "@/util/routes";
 
 type Inputs = {
@@ -109,12 +107,6 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         setError(message);
         return;
       }
-      // can be re-enabled once the email verification required again
-      // const queryParamsString = new URLSearchParams(queryParams).toString();
-      // const callbackParam = callbackUrl ? "&" : "";
-      // const nextCallbackUrl = `/auth/check-email?email_address=${data.email}${callbackParam}${queryParamsString}`;
-      // router.push(nextCallbackUrl);
-      // automatic login after signup for simplified user flow
       const userData = (await res.json()) as any;
 
       // Track user registration

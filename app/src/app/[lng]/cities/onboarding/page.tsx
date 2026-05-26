@@ -1,5 +1,5 @@
 "use client";
-import { use } from "react";
+import { use, useEffect, useRef } from "react";
 
 import { useTranslation } from "@/i18n/client";
 import { Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
@@ -7,7 +7,8 @@ import Image from "next/image";
 import NextLink from "next/link";
 import { MdArrowForward } from "react-icons/md";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { api } from "@/services/api";
 
 export default function Onboarding(props: {
   params: Promise<{ lng: string }>;
@@ -15,8 +16,25 @@ export default function Onboarding(props: {
   const { lng } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [acceptOrgInvite] = api.useAcceptOrganizationAdminInviteMutation();
+  const acceptedOnce = useRef(false);
 
-  const steps = [1, 2];
+  useEffect(() => {
+    const token = searchParams.get("token");
+    const email = searchParams.get("email");
+    const organizationId = searchParams.get("organizationId");
+
+    if (!token || !email || !organizationId || acceptedOnce.current) return;
+    acceptedOnce.current = true;
+
+    const cleanedEmail = email.replace(/ /g, "+").replace(/%40/g, "@");
+    acceptOrgInvite({ token, email: cleanedEmail, organizationId }).unwrap().catch(() => {
+      // Silently ignore errors (e.g. already accepted) and let onboarding proceed
+    });
+  }, [searchParams, acceptOrgInvite]);
+
+  const steps = [1, 2, 3, 4];
 
   return (
     <>

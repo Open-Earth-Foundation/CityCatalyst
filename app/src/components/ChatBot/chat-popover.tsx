@@ -108,11 +108,8 @@ export default function ChatPopover({
 
   const pathname = usePathname();
 
-  // Hide the ChatPopover on auth and onboarding pages
-  if (
-    pathname.startsWith(`/${lng}/auth`) ||
-    pathname.includes("/cities/onboarding") // only hide on ghgi onboarding page
-  ) {
+  // Hide the ChatPopover on auth pages
+  if (pathname.startsWith(`/${lng}/auth`)) {
     return null;
   }
 

@@ -204,11 +204,11 @@ Implementation-wise, each module file should own a narrow set of wrappers for
 that module's real capabilities:
 
 - `ghgi.capabilities.ts`: inventory reads, import review, source-connect, manual
-  value edit, publish workflows
+value edit, publish workflows
 - `hiap.capabilities.ts`: ranking reads, top-pick selection, action-plan
-  generation
+generation
 - `city.capabilities.ts`: city search, create-city preparation, readiness
-  summaries
+summaries
 
 The important rule is that CA should target these wrappers, not the full CC
 route catalog. A wrapper may internally call one existing service, one existing
@@ -260,13 +260,17 @@ sequenceDiagram
     CCWrapper->>CCLogic: Reuse existing CC product logic
     CCLogic-->>CCWrapper: Raw product data/result
     CCWrapper-->>Agent: Summarized capability payload
-    Agent-->>User: Final answer
+    Agent-->>User: Final answer or decision-ready response
 ```
+
+
 
 This keeps the architecture aligned with the desired runtime model: CA scopes
 tools from the registry, the LLM selects one wrapper-level capability, and that
 wrapper reuses existing CC implementation rather than forcing the agent to
-choose from many raw routes.
+choose from many raw routes. The wrapper result can be incorporated either into
+a normal answer or into a user decision step such as approval, rejection, or
+confirmation.
 
 #### 2. Capability Registry
 
@@ -299,11 +303,11 @@ Each workflow should have a dedicated context loader that decides:
 Example:
 
 - A city onboarding flow should load city search results, current project
-  context, and city-create capability only.
+context, and city-create capability only.
 - A GHGI import review flow should load one import job, its mappings, approval
-  rules, and import-review capabilities only.
+rules, and import-review capabilities only.
 - A HIAP top-pick selection flow should load one inventory, current rankings,
-  selected actions, and top-pick mutation capability only.
+selected actions, and top-pick mutation capability only.
 
 This scope chaining is the main way to reduce context load and lower tool
 misuse.
@@ -421,9 +425,9 @@ New workflow endpoints should introduce a consistent polling mechanism:
 - status endpoint returns progress, current step, blockers, and next action
 - result endpoint returns the final summary, file reference, or draft reference
 - failed jobs return a stable failure shape that can be retried or resumed where
-  meaningful
+meaningful
 
-#### 7. Input/Output Pydantic Contract
+#### 7. Input/Output Pydantic Contract per capability
 
 Every capability exposed to CA should have an explicit input/output contract.
 This is clearer than passing raw CC route payloads or inventing ad hoc tool
@@ -447,7 +451,7 @@ In practice that means:
 - command wrappers return confirmation-safe result models
 - workflow wrappers return start, status, and result models
 - file-producing workflows return a small file reference model rather than a raw
-  blob payload
+blob payload
 
 This should sit on top of existing CC logic. The wrapper shapes what CA sees;
 the underlying CC route or service can stay as it is.
@@ -467,7 +471,7 @@ CA should keep:
 
 - threads and messages
 - thread context such as the current access token, active resource, and scoped
-  workflow step
+workflow step
 - tool invocation audit for chat history
 - lightweight resume pointers such as the current draft id or active workflow id
 
@@ -559,11 +563,11 @@ Use a hybrid:
 
 - Real user-facing capabilities are the starting point.
 - Function-based, module-owned capability wrappers are the primary
-  implementation model.
+implementation model.
 - Scoped capability packs are the primary runtime model.
 - The capability registry is the source of truth for those capabilities.
 - MCP is generated from that registry for the capabilities we actually want to
-  expose through that transport.
+expose through that transport.
 
 So the answer is not "direct functions or MCP". The durable answer is:
 

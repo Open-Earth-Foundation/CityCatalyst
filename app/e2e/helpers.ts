@@ -56,6 +56,9 @@ export async function createInventory(
   return await result.json();
 }
 
+/** Inventory year selected during cities onboarding E2E flows. */
+export const E2E_ONBOARDING_INVENTORY_YEAR = String(new Date().getFullYear());
+
 /**
  * Walks the combined cities onboarding wizard (city + inventory + population +
  * third-party data). The flow ends on the newly created inventory page at
@@ -114,8 +117,9 @@ async function walkCitiesOnboardingWizard(
     .first();
   await yearSelectTrigger.click();
   await page.waitForTimeout(500);
-  const inventoryYear = String(new Date().getFullYear());
-  await page.getByRole("option", { name: inventoryYear }).click();
+  await page
+    .getByRole("option", { name: E2E_ONBOARDING_INVENTORY_YEAR })
+    .click();
 
   {
     const continueButton = page
@@ -140,15 +144,15 @@ async function walkCitiesOnboardingWizard(
     await cityPopulationInput.fill("1000000");
     await page
       .locator('select[name="cityPopulationYear"]')
-      .selectOption(inventoryYear);
+      .selectOption(E2E_ONBOARDING_INVENTORY_YEAR);
     await page.getByPlaceholder("Region population number").fill("5000000");
     await page
       .locator('select[name="regionPopulationYear"]')
-      .selectOption(inventoryYear);
+      .selectOption(E2E_ONBOARDING_INVENTORY_YEAR);
     await page.getByPlaceholder("Country population number").fill("10000000");
     await page
       .locator('select[name="countryPopulationYear"]')
-      .selectOption(inventoryYear);
+      .selectOption(E2E_ONBOARDING_INVENTORY_YEAR);
   }
 
   {

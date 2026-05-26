@@ -1,5 +1,8 @@
 import { test, expect } from "@playwright/test";
-import { createCityAndInventoryThroughOnboarding } from "./helpers";
+import {
+  createCityAndInventoryThroughOnboarding,
+  E2E_ONBOARDING_INVENTORY_YEAR,
+} from "./helpers";
 
 test.describe("Dashboard", () => {
   test.describe("Dashboard with Inventory", () => {
@@ -36,9 +39,9 @@ test.describe("Dashboard", () => {
       // Filter by the expected text to handle multiple elements with the same test ID
       const inventoryYearValue = page
         .getByTestId("inventory-year")
-        .filter({ hasText: "2023" });
+        .filter({ hasText: E2E_ONBOARDING_INVENTORY_YEAR });
       await expect(inventoryYearValue).toBeVisible({ timeout: 10000 });
-      await expect(inventoryYearValue).toHaveText("2023");
+      await expect(inventoryYearValue).toHaveText(E2E_ONBOARDING_INVENTORY_YEAR);
 
       const lastInventoryUpdated = page.getByTestId("inventory-last-updated");
       await expect(lastInventoryUpdated).toBeVisible({ timeout: 10000 });

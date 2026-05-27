@@ -45,7 +45,7 @@ ALIGNMENT_WEIGHT_TIMEFRAME = 0.05
 
 # Feasibility scoring knobs
 FEASIBILITY_WEIGHT_LEGAL = 0.50
-FEASIBILITY_WEIGHT_SOCIO = 0.50
+FEASIBILITY_WEIGHT_MITIGATION_FEASIBILITY = 0.50
 
 
 def validate_weights(weights: Mapping[str, float] | None) -> dict[str, float]:
@@ -104,7 +104,9 @@ def validate_block_component_weights() -> None:
         },
         "feasibility": {
             "FEASIBILITY_WEIGHT_LEGAL": FEASIBILITY_WEIGHT_LEGAL,
-            "FEASIBILITY_WEIGHT_SOCIO": FEASIBILITY_WEIGHT_SOCIO,
+            "FEASIBILITY_WEIGHT_MITIGATION_FEASIBILITY": (
+                FEASIBILITY_WEIGHT_MITIGATION_FEASIBILITY
+            ),
         },
     }
     for block_name, weights in block_weights.items():
@@ -216,6 +218,12 @@ def get_explanation_translations_model() -> str | None:
     if not normalized:
         return None
     return normalized
+
+
+def is_activity_data_level_mapping_enabled() -> bool:
+    """Return feature switch for the future activity-data-level matching stage."""
+    raw_value = os.getenv("ACTIVITY_DATA_LEVEL_MAPPING")
+    return parse_bool_env(raw_value, default=False)
 
 
 def is_free_text_exclusion_resolution_enabled() -> bool:

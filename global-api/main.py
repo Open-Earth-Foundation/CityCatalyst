@@ -24,7 +24,8 @@ from routes.city_attribute import api_router as city_attributes_route
 from routes.get_climate_actions import api_router as climate_actions_route
 from routes.population_endpoint import api_router as population_route
 from routes.projects import api_router as projects_route
-from routes.policy_signals import api_router as policy_signals_route
+from routes.city_action_policy_scores import api_router as city_action_policy_scores_route
+from routes.city_action_mitigation_feasibility_scores import api_router as city_action_mitigation_feasibility_scores_route
 from routes.actions_pathway import api_router as actions_pathway_route
 from routes.action_legal_assessments import api_router as action_legal_assessments_route
 from routes.emissionfactor_publisher_endpoint import api_router as emissionfactor_publisher_route
@@ -254,8 +255,13 @@ app.include_router(
 )
 
 app.include_router(
-    policy_signals_route,
+    city_action_policy_scores_route,
     tags=["Policy Signals"],
+)
+
+app.include_router(
+    city_action_mitigation_feasibility_scores_route,
+    tags=["Action Mitigation Feasibility"],
 )
 
 app.include_router(

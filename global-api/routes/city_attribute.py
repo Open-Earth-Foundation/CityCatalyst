@@ -9,6 +9,35 @@ from db.database import SessionLocal
 api_router = APIRouter(prefix="/api/v0")
 
 
+def _scalar_from_attribute_blob(blob: Optional[dict]) -> Optional[float]:
+    """Return ``attribute_value`` from a city attribute dict, or ``None``."""
+    if not blob:
+        return None
+    val = blob.get("attribute_value")
+    return float(val) if val is not None else None
+
+
+def _population_density_scalar(
+    population_size: Optional[int],
+    area_km2: Optional[int],
+    density_from_attributes: Optional[float],
+) -> Optional[float]:
+    """
+    Persons per km² when ``population_size`` and polygon ``area_km2`` are
+    known; otherwise the ``population density`` attribute value if present.
+    Values are rounded to two decimal places.
+    """
+    if (
+        population_size is not None
+        and area_km2 is not None
+        and area_km2 > 0
+    ):
+        return round(float(population_size) / float(area_km2), 2)
+    if density_from_attributes is not None:
+        return round(float(density_from_attributes), 2)
+    return None
+
+
 def db_city_attributes(locode: str, version_label: Optional[str]):
     """
     Fetch all city_attribute rows for a locode, joined to their respective
@@ -18,9 +47,6 @@ def db_city_attributes(locode: str, version_label: Optional[str]):
     release (is_latest = true).  When a version_label is supplied it filters
     every datasource to that label, returning only attributes that have a
     matching release.
-
-    The release filter is expressed entirely as bind parameters — no
-    string interpolation — so the query is safe from SQL injection.
     """
     with SessionLocal() as session:
         query = text(
@@ -93,9 +119,13 @@ def get_city_attributes(
     - Pass `version_label=2024` (or any label) to pin to a specific version;
       only attributes that have a release with that label are returned.
 
-    Each attribute carries its own `datasource` and `version_label` so
+    Each attribute carries its own datasource and version_label so
     consumers know exactly where each value came from.  All datasources
-    used by the response are summarised in `meta.datasources`.
+    used by the response are summarised in meta.datasources.
+
+    ``populationDensity`` is rounded to two decimal places (derived from
+    ``populationSize`` and ``area_km2`` when possible, else the stored
+    attribute).
     """
     records = db_city_attributes(locode, version_label)
 
@@ -153,6 +183,18 @@ def get_city_attributes(
             }
         )
 
+    pop_n = _scalar_from_attribute_blob(attributes.get("population"))
+    dens_n = _scalar_from_attribute_blob(attributes.get("population density"))
+    population_size = int(round(pop_n)) if pop_n is not None else None
+    area_km2 = (
+        int(first["area_km2"]) if first["area_km2"] is not None else None
+    )
+    population_density = _population_density_scalar(
+        population_size,
+        area_km2,
+        dens_n,
+    )
+
     return {
         "meta": {
             "generated_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -169,9 +211,9 @@ def get_city_attributes(
             "country_code": first["country_code"],
             "region_code": first["region_code"],
             "region_name": first["region_name"],
-            "area_km2": (
-                int(first["area_km2"]) if first["area_km2"] is not None else None
-            ),
+            "area_km2": area_km2,
+            "populationSize": population_size,
+            "populationDensity": population_density,
             **attributes,
         },
     }

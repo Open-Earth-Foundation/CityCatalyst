@@ -187,6 +187,24 @@ test.skip("Inventory Onboarding", async ({ page }) => {
     await continueButton.click();
   }
 
+  /** "Third-party data step displays and user can proceed" */
+  {
+    const thirdPartyStep = page.getByTestId("third-party-data-step");
+    await expect(thirdPartyStep).toBeVisible({ timeout: 10000 });
+
+    await expect(
+      page.getByText(
+        /Would you like to fill your inventory third-party data/i,
+      ),
+    ).toBeVisible();
+
+    await page.getByTestId("third-party-data-choice-no").click();
+
+    const continueButton = page.getByRole("button", { name: /Continue/i });
+    await expect(continueButton).toBeEnabled();
+    await continueButton.click();
+  }
+
   /** "Confirm Step displays all information correctly" */
   {
     // Verify city heading

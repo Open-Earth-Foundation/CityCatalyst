@@ -1,4 +1,4 @@
-"""FastAPI routes for MEED prioritization."""
+﻿"""FastAPI routes for MEED prioritization."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.modules.prioritizer.config import resolve_top_n
+from app.modules.prioritizer.internal_models import CityActivityRow, CityEmissionsContext
 from app.modules.prioritizer.models import (
     ExplanationTranslationApiRequest,
     ExplanationTranslationApiResponse,
@@ -22,24 +23,31 @@ from app.modules.prioritizer.models import (
     PrioritizerApiResponse,
 )
 from app.modules.prioritizer.orchestrator import run_prioritization
+from app.modules.prioritizer.utils.subsector_mapping import (
+    normalize_gpc_reference_to_subsector_key,
+)
 from app.modules.prioritizer.services.exclusion_resolution import (
     resolve_exclusion_preview_with_diagnostics,
 )
 from app.modules.prioritizer.services.translation import translate_explanations
 from app.services.data_clients import (
-    ApiActionDataApiClient,
+    ApiActionPathwaysDataApiClient,
+    ApiActionMitigationFeasibilityScoresDataApiClient,
     ApiCityDataApiClient,
     ApiLegalDataApiClient,
-    ApiPolicySignalsDataApiClient,
-    MockActionDataApiClient,
+    ApiActionPolicyScoresDataApiClient,
+    MockActionPathwaysDataApiClient,
+    MockActionMitigationFeasibilityScoresDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
-    MockPolicySignalsDataApiClient,
-    get_action_data_api_client,
+    MockActionPolicyScoresDataApiClient,
+    get_action_mitigation_feasibility_scores_data_api_client,
+    get_action_pathways_data_api_client,
     get_city_data_api_client,
     get_legal_data_api_client,
-    get_policy_signals_data_api_client,
+    get_action_policy_scores_data_api_client,
 )
+from app.services.http_client import UpstreamApiError
 from app.utils.artifacts import ArtifactWriter
 
 
@@ -53,26 +61,61 @@ def _error_payload(request_id: str, message: str) -> dict[str, str]:
     return {"request_id": request_id, "error": message}
 
 
-def _extract_city_emissions_by_gpc_ref(city_input: FrontendCityInput) -> dict[str, float]:
-    """
-    Build city emissions totals keyed by GPC reference.
+def _upstream_error_payload(
+    request_id: str,
+    error: UpstreamApiError,
+) -> dict[str, str | int]:
+    """Build a consistent JSON error body for upstream dependency failures."""
+    payload: dict[str, str | int] = {
+        "request_id": request_id,
+        "error": error.message,
+    }
+    if error.upstream_status_code is not None:
+        payload["upstream_status_code"] = error.upstream_status_code
+    if error.url is not None:
+        payload["upstream_url"] = error.url
+    return payload
 
-    The frontend request carries emissions per GPC key under
-    `cityEmissionsData.gpcData[*].activities[*].totalEmissions`. This helper
-    sums activity totals per key and ignores missing totals (`None`).
-    """
-    emissions_by_gpc_ref: dict[str, float] = {}
 
-    # Sum activity emissions for each GPC key from frontend request schema.
+def _extract_city_emissions_context(city_input: FrontendCityInput) -> CityEmissionsContext:
+    """Build normalized subsector totals plus preserved activity rows."""
+    emissions_by_subsector_key: dict[str, float] = {}
+    activity_rows: list[CityActivityRow] = []
+
+    # Normalize each GPC bucket to the active `sector.subsector` join key.
     for gpc_ref, gpc_entry in city_input.cityEmissionsData.gpcData.items():
+        sector_subsector_key = normalize_gpc_reference_to_subsector_key(gpc_ref)
         gpc_total = 0.0
         for activity in gpc_entry.activities:
-            if activity.totalEmissions is None:
-                continue
-            gpc_total += activity.totalEmissions
-        emissions_by_gpc_ref[gpc_ref] = gpc_total
+            if activity.activityType is None:
+                logger.warning(
+                    "City activity row missing activityType locode=%s gpc_reference_number=%s",
+                    city_input.locode,
+                    gpc_ref,
+                )
+            if activity.totalEmissions is not None:
+                gpc_total += activity.totalEmissions
+            activity_rows.append(
+                CityActivityRow(
+                    gpc_reference_number=gpc_ref,
+                    sector_subsector_key=sector_subsector_key,
+                    activity_type=activity.activityType,
+                    activity_value=activity.activityValue,
+                    activity_unit=activity.activityUnit,
+                    total_emissions=activity.totalEmissions,
+                    total_emissions_unit=activity.totalEmissionsUnit,
+                    data_source=activity.dataSource,
+                    notation_key=activity.notationKey,
+                )
+            )
+        emissions_by_subsector_key[sector_subsector_key] = (
+            emissions_by_subsector_key.get(sector_subsector_key, 0.0) + gpc_total
+        )
 
-    return emissions_by_gpc_ref
+    return CityEmissionsContext(
+        emissions_by_subsector_key=emissions_by_subsector_key,
+        activity_rows=activity_rows,
+    )
 
 
 def _normalize_requested_languages(requested_languages: list[str]) -> list[str]:
@@ -90,6 +133,14 @@ def _normalize_requested_languages(requested_languages: list[str]) -> list[str]:
 def _safe_artifact_name(value: str) -> str:
     """Convert a free-form identifier like locode into a stable artifact stem."""
     return value.strip().lower().replace(" ", "_").replace("/", "_")
+
+
+def _country_code_from_locode(locode: str) -> str:
+    """Return the first two locode characters as the caller country prefix."""
+    normalized_locode = locode.strip().upper()
+    if len(normalized_locode) < 2:
+        raise ValueError(f"Locode `{locode}` must contain a 2-letter country prefix")
+    return normalized_locode[:2]
 
 
 @router.post(
@@ -112,8 +163,8 @@ def _safe_artifact_name(value: str) -> str:
 )
 def preview_exclusions(
     request: ExclusionPreviewApiRequest,
-    action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient = Depends(
-        get_action_data_api_client
+    action_pathways_data_api_client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient = Depends(
+        get_action_pathways_data_api_client
     ),
 ) -> ExclusionPreviewApiResponse:
     """Preview proposed exclusions from raw exclusion preferences."""
@@ -141,16 +192,23 @@ def preview_exclusions(
                 ],
             },
         )
-        actions = action_data_api_client.list_actions()
+        action_pathways_fetch_result = action_pathways_data_api_client.list_actions()
+        actions = action_pathways_fetch_result.actions
         fetch_actions_event_index = artifact_writer.write_event(
             "fetch_actions.completed",
-            {"total_actions": len(actions)},
+            {
+                "total_actions": len(actions),
+                "source_metadata": action_pathways_fetch_result.source_metadata,
+            },
         )
         artifact_writer.write_step_detail(
             "fetch_actions",
             {
                 "total_actions": len(actions),
                 "action_ids": sorted(action.action_id for action in actions),
+                "source_metadata": action_pathways_fetch_result.source_metadata,
+                "upstream_meta": action_pathways_fetch_result.upstream_meta,
+                "warning": action_pathways_fetch_result.warning,
             },
             event_index=fetch_actions_event_index,
             event_type="fetch_actions.completed",
@@ -233,6 +291,17 @@ def preview_exclusions(
             status_code=422,
             detail=_error_payload(request_trace_id, str(error)),
         ) from error
+    except UpstreamApiError as error:
+        logger.warning(
+            "Exclusion preview upstream dependency failed request_id=%s status_code=%s error=%s",
+            request_trace_id,
+            error.status_code,
+            error,
+        )
+        raise HTTPException(
+            status_code=error.status_code,
+            detail=_upstream_error_payload(request_trace_id, error),
+        ) from error
     except Exception as error:
         logger.exception("Exclusion preview failed request_id=%s", request_trace_id)
         raise HTTPException(
@@ -246,7 +315,7 @@ def preview_exclusions(
     response_model=PrioritizerApiResponse,
     summary="Run action prioritization synchronously",
     description=(
-        "Ranks actions for one or more cities from the frontend request envelope. "
+        "Ranks actions for one or more cities from the caller request envelope. "
         "When `createExplanations=true`, the backend first generates canonical "
         "English explanations and then translates them into any additionally "
         "requested languages."
@@ -264,20 +333,24 @@ def prioritize(
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient = Depends(
         get_city_data_api_client
     ),
-    action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient = Depends(
-        get_action_data_api_client
+    action_pathways_data_api_client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient = Depends(
+        get_action_pathways_data_api_client
     ),
     legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient = Depends(
         get_legal_data_api_client
     ),
-    policy_signals_data_api_client: (
-        MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
+    action_policy_scores_data_api_client: (
+        MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
     ) = Depends(
-        get_policy_signals_data_api_client
+        get_action_policy_scores_data_api_client
     ),
+    action_mitigation_feasibility_scores_data_api_client: (
+        MockActionMitigationFeasibilityScoresDataApiClient
+        | ApiActionMitigationFeasibilityScoresDataApiClient
+    ) = Depends(get_action_mitigation_feasibility_scores_data_api_client),
 ) -> PrioritizerApiResponse:
     """
-    Prioritize actions from the CityCatalyst frontend request envelope.
+    Prioritize actions from the caller request envelope.
 
     This endpoint is synchronous because the orchestrator and data clients
     are synchronous; FastAPI runs sync routes in a threadpool to avoid
@@ -309,9 +382,12 @@ def prioritize(
                 city_input=city_input,
                 requested_top_n=request.requestData.topN,
                 city_data_api_client=city_data_api_client,
-                action_data_api_client=action_data_api_client,
+                action_pathways_data_api_client=action_pathways_data_api_client,
                 legal_data_api_client=legal_data_api_client,
-                policy_signals_data_api_client=policy_signals_data_api_client,
+                action_policy_scores_data_api_client=action_policy_scores_data_api_client,
+                action_mitigation_feasibility_scores_data_api_client=(
+                    action_mitigation_feasibility_scores_data_api_client
+                ),
                 create_explanations=request.requestData.createExplanations,
                 requested_languages=requested_languages,
             )
@@ -342,6 +418,17 @@ def prioritize(
         raise HTTPException(
             status_code=422,
             detail=_error_payload(request_trace_id, str(error)),
+        ) from error
+    except UpstreamApiError as error:
+        logger.warning(
+            "Prioritization upstream dependency failed request_id=%s status_code=%s error=%s",
+            request_trace_id,
+            error.status_code,
+            error,
+        )
+        raise HTTPException(
+            status_code=error.status_code,
+            detail=_upstream_error_payload(request_trace_id, error),
         ) from error
     except Exception as error:
         logger.exception("Prioritization failed request_id=%s", request_trace_id)
@@ -521,10 +608,14 @@ def _run_for_city_input(
     city_input: FrontendCityInput,
     requested_top_n: int | None,
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient,
-    action_data_api_client: MockActionDataApiClient | ApiActionDataApiClient,
+    action_pathways_data_api_client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient,
     legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient,
-    policy_signals_data_api_client: (
-        MockPolicySignalsDataApiClient | ApiPolicySignalsDataApiClient
+    action_policy_scores_data_api_client: (
+        MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
+    ),
+    action_mitigation_feasibility_scores_data_api_client: (
+        MockActionMitigationFeasibilityScoresDataApiClient
+        | ApiActionMitigationFeasibilityScoresDataApiClient
     ),
     create_explanations: bool,
     requested_languages: list[str],
@@ -538,9 +629,16 @@ def _run_for_city_input(
 
     # Create internal request ID used for orchestrator artifacts/tracing.
     internal_request_id = uuid4()
-    city_emissions_by_gpc_ref = _extract_city_emissions_by_gpc_ref(city_input)
+    locode_country_code = _country_code_from_locode(city_input.locode)
+    if locode_country_code != city_input.countryCode.strip().upper():
+        raise ValueError(
+            "Request countryCode does not match the locode country prefix "
+            f"(locode={city_input.locode}, countryCode={city_input.countryCode})"
+        )
+    city_emissions_context = _extract_city_emissions_context(city_input)
     result = run_prioritization(
         locode=city_input.locode,
+        country_code=city_input.countryCode.strip().upper(),
         weights_override=city_input.weightsOverride,
         top_n=resolve_top_n(requested_top_n),
         excluded_action_ids=list(city_input.excludedActionIds),
@@ -549,13 +647,17 @@ def _run_for_city_input(
         city_preference_co_benefit_keys=list(
             city_input.cityStrategicPreferenceCoBenefitKeys
         ),
-        city_emissions_by_gpc_ref=city_emissions_by_gpc_ref,
+        city_emissions_context=city_emissions_context,
         internal_request_id=internal_request_id,
         city_data_api_client=city_data_api_client,
-        action_data_api_client=action_data_api_client,
+        action_pathways_data_api_client=action_pathways_data_api_client,
         legal_data_api_client=legal_data_api_client,
-        policy_signals_data_api_client=policy_signals_data_api_client,
+        action_policy_scores_data_api_client=action_policy_scores_data_api_client,
+        action_mitigation_feasibility_scores_data_api_client=(
+            action_mitigation_feasibility_scores_data_api_client
+        ),
         create_explanations=create_explanations,
         requested_languages=requested_languages,
     )
     return result
+

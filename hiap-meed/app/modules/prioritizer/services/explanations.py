@@ -221,7 +221,6 @@ def _build_curated_action_payload(
 
     payload: dict[str, object] = {
         "action_id": scored_action.action.action_id,
-        "action_name": scored_action.action.action_name,
         "rank": scored_action.rank,
         "score_bands": {
             "final": _score_band(scored_action.final_score),
@@ -232,6 +231,16 @@ def _build_curated_action_payload(
         "impact_signals": _build_impact_signals(impact_evidence),
         "alignment_signals": _build_alignment_signals(alignment_evidence),
         "feasibility_signals": _build_feasibility_signals(feasibility_evidence),
+        "main_strengths": _build_main_strengths(
+            impact_evidence=impact_evidence,
+            alignment_evidence=alignment_evidence,
+            feasibility_evidence=feasibility_evidence,
+        ),
+        "main_constraints": _build_main_constraints(
+            impact_evidence=impact_evidence,
+            alignment_evidence=alignment_evidence,
+            feasibility_evidence=feasibility_evidence,
+        ),
         "known_limitations": _build_known_limitations(
             feasibility_evidence=feasibility_evidence,
         ),
@@ -241,8 +250,7 @@ def _build_curated_action_payload(
 
 def _build_impact_signals(impact_evidence: dict[str, object]) -> dict[str, object]:
     """Build qualitative impact-focused signals from block evidence."""
-    matched_gpc_refs = impact_evidence.get("matched_city_gpc_refs")
-    matched_count_value = impact_evidence.get("matched_city_gpc_refs_count")
+    matched_count_value = impact_evidence.get("matched_city_subsector_keys_count")
     matched_count = int(matched_count_value) if isinstance(matched_count_value, int | float) else 0
     impact_band_value = impact_evidence.get("impact_band")
     impact_band = str(impact_band_value).strip() if impact_band_value is not None else None
@@ -252,83 +260,61 @@ def _build_impact_signals(impact_evidence: dict[str, object]) -> dict[str, objec
         if timeline_bucket_value is not None
         else None
     )
-
-    top_gpc_refs: list[str] = []
-    if isinstance(matched_gpc_refs, list):
-        top_gpc_refs = [
-            str(item).strip() for item in matched_gpc_refs[:3] if str(item).strip()
-        ]
+    emissions_reduction_component_score = impact_evidence.get(
+        "emissions_reduction_component_score"
+    )
+    timeline_component_score = impact_evidence.get("timeline_component_score")
 
     return {
         "impact_band": impact_band,
         "timeline_bucket": timeline_bucket,
-        "matched_city_gpc_refs_count": matched_count,
-        "top_matched_city_gpc_refs": top_gpc_refs,
+        "matched_city_subsector_keys_count": matched_count,
+        "emissions_reduction_component_bucket": _component_score_bucket(
+            emissions_reduction_component_score
+        ),
+        "timeline_component_bucket": _component_score_bucket(timeline_component_score),
     }
 
 
 def _build_alignment_signals(alignment_evidence: dict[str, object]) -> dict[str, object]:
     """Build qualitative alignment signals from block evidence."""
-    policy_signal_summaries = alignment_evidence.get("policy_signal_summaries")
-    top_policy_signals: list[dict[str, object]] = []
-    if isinstance(policy_signal_summaries, list):
-        sorted_rows = sorted(
-            [row for row in policy_signal_summaries if isinstance(row, dict)],
-            key=lambda row: (
-                -int(row.get("evidence_count", 0))
-                if isinstance(row.get("evidence_count"), int | float)
-                else 0,
-                str(row.get("signal_type", "")),
-            ),
-        )
-        for row in sorted_rows[:3]:
-            evidence_count_value = row.get("evidence_count")
-            top_policy_signals.append(
-                {
-                    "signal_type": str(row.get("signal_type")).strip()
-                    if row.get("signal_type") is not None
-                    else None,
-                    "signal_relation": str(row.get("signal_relation")).strip()
-                    if row.get("signal_relation") is not None
-                    else None,
-                    "signal_strength": str(row.get("signal_strength")).strip()
-                    if row.get("signal_strength") is not None
-                    else None,
-                    "location_scope": str(row.get("location_scope")).strip()
-                    if row.get("location_scope") is not None
-                    else None,
-                    "location_name": str(row.get("location_name")).strip()
-                    if row.get("location_name") is not None
-                    else None,
-                    "evidence_count": int(evidence_count_value)
-                    if isinstance(evidence_count_value, int | float)
-                    else 0,
-                }
-            )
-
-    mapped_sector_tag_value = alignment_evidence.get("mapped_sector_tag")
-    mapped_sector_tag = (
-        str(mapped_sector_tag_value).strip()
-        if mapped_sector_tag_value is not None
-        else None
-    )
     action_timeline_bucket_value = alignment_evidence.get("action_timeline_bucket")
     action_timeline_bucket = (
         str(action_timeline_bucket_value).strip()
         if action_timeline_bucket_value is not None
         else None
     )
-    policy_signals_count_value = alignment_evidence.get("policy_signals_count")
+    matched_preferred_co_benefits_count_value = alignment_evidence.get(
+        "matched_preferred_co_benefits_count"
+    )
+    timeframe_match_label_value = alignment_evidence.get("timeframe_match_label")
     city_preference_timeframes = alignment_evidence.get("city_preference_timeframes", [])
+    policy_component_score = alignment_evidence.get("policy_component_score")
+    sector_component_score = alignment_evidence.get("sector_component_score")
+    co_benefit_component_score = alignment_evidence.get("co_benefit_component_score")
+    timeframe_component_score = alignment_evidence.get("timeframe_component_score")
     return {
         "sector_match": bool(alignment_evidence.get("sector_match", False)),
-        "mapped_sector_tag": mapped_sector_tag,
         "action_timeline_bucket": action_timeline_bucket,
         "city_preference_timeframes": city_preference_timeframes,
-        "policy_signals_count": int(policy_signals_count_value)
-        if isinstance(policy_signals_count_value, int | float)
+        "timeframe_match_label": (
+            str(timeframe_match_label_value).strip()
+            if timeframe_match_label_value is not None
+            else None
+        ),
+        "policy_component_bucket": _component_score_bucket(policy_component_score),
+        "sector_component_bucket": _component_score_bucket(sector_component_score),
+        "co_benefit_component_bucket": _component_score_bucket(
+            co_benefit_component_score
+        ),
+        "timeframe_component_bucket": _component_score_bucket(
+            timeframe_component_score
+        ),
+        "matched_preferred_co_benefits_count": int(
+            matched_preferred_co_benefits_count_value
+        )
+        if isinstance(matched_preferred_co_benefits_count_value, int | float)
         else 0,
-        "top_policy_signals": top_policy_signals,
     }
 
 
@@ -336,45 +322,190 @@ def _build_feasibility_signals(
     feasibility_evidence: dict[str, object],
 ) -> dict[str, object]:
     """Build qualitative feasibility signals from block evidence."""
-    rows = feasibility_evidence.get("socioeconomic_indicator_rows")
-    socio_rationales: list[str] = []
-    if isinstance(rows, list):
-        ranked_rows = sorted(
-            [row for row in rows if isinstance(row, dict)],
-            key=lambda row: (
-                -abs(
-                    float(row.get("weighted_contribution"))
-                    if isinstance(row.get("weighted_contribution"), int | float)
-                    else 0.0
-                ),
-                str(row.get("action_socioeconomic_indicator_key", "")),
-            ),
-        )
-        for row in ranked_rows[:3]:
-            rationale_value = row.get("rationale")
-            if rationale_value is not None and str(rationale_value).strip():
-                rationale = str(rationale_value).strip()
-                socio_rationales.append(rationale)
-
-    informational_rows = feasibility_evidence.get("informational_requirements")
-    informational_count = (
-        len(informational_rows) if isinstance(informational_rows, list) else 0
+    legal_component_score = feasibility_evidence.get("legal_component_score")
+    mitigation_feasibility_component_score = feasibility_evidence.get(
+        "mitigation_feasibility_component_score"
     )
-    soft_legal_aligned_count_value = feasibility_evidence.get("soft_legal_aligned_count")
-    soft_legal_total_count_value = feasibility_evidence.get("soft_legal_total_count")
     return {
-        "soft_legal_aligned_count": int(soft_legal_aligned_count_value)
-        if isinstance(soft_legal_aligned_count_value, int | float)
-        else 0,
-        "soft_legal_total_count": int(soft_legal_total_count_value)
-        if isinstance(soft_legal_total_count_value, int | float)
-        else 0,
-        "informational_requirements_count": informational_count,
-        "socioeconomic_rationales": socio_rationales,
-        "missing_city_indicator_keys": feasibility_evidence.get(
-            "missing_city_socioeconomic_indicator_keys", []
+        "legal_assessment_present": bool(
+            feasibility_evidence.get("legal_assessment_present", False)
+        ),
+        "legal_assessment_missing": bool(
+            feasibility_evidence.get("legal_assessment_missing", False)
+        ),
+        "legal_verdict_category": feasibility_evidence.get("legal_verdict_category"),
+        "legal_component_source": feasibility_evidence.get("legal_component_source"),
+        "legal_component_bucket": _component_score_bucket(
+            legal_component_score
+        ),
+        "mitigation_feasibility_component_bucket": _component_score_bucket(
+            mitigation_feasibility_component_score
         ),
     }
+
+
+def _build_main_strengths(
+    *,
+    impact_evidence: dict[str, object],
+    alignment_evidence: dict[str, object],
+    feasibility_evidence: dict[str, object],
+) -> list[str]:
+    """Summarize the biggest ranking strengths for one action."""
+    strengths: list[str] = []
+    matched_count = int(impact_evidence.get("matched_city_subsector_keys_count", 0))
+    if matched_count > 0:
+        _append_strength_message_for_score(
+            strengths,
+            score_value=impact_evidence.get("emissions_reduction_component_score"),
+            strong_message="Expected to make a strong emissions reduction in the current city inventory.",
+            very_strong_message="Expected to make a very strong emissions reduction in the current city inventory.",
+        )
+
+    if bool(impact_evidence.get("timeline_bucket_known", False)):
+        _append_strength_message_for_score(
+            strengths,
+            score_value=impact_evidence.get("timeline_component_score"),
+            strong_message="Can deliver emissions benefits on a relatively favorable timeline.",
+            very_strong_message="Can deliver emissions benefits on a very favorable timeline.",
+        )
+
+    city_preference_sectors = alignment_evidence.get("city_preference_sectors", [])
+    if isinstance(city_preference_sectors, list) and city_preference_sectors:
+        _append_strength_message_for_score(
+            strengths,
+            score_value=alignment_evidence.get("sector_component_score"),
+            strong_message="Matches the city's preferred sector.",
+            very_strong_message="Matches the city's preferred sector.",
+        )
+
+    city_preference_timeframes = alignment_evidence.get("city_preference_timeframes", [])
+    if isinstance(city_preference_timeframes, list) and city_preference_timeframes:
+        _append_strength_message_for_score(
+            strengths,
+            score_value=alignment_evidence.get("timeframe_component_score"),
+            strong_message="Fits the city's preferred implementation timeframe.",
+            very_strong_message="Fits the city's preferred implementation timeframe.",
+        )
+
+    if bool(alignment_evidence.get("policy_score_present", False)):
+        _append_strength_message_for_score(
+            strengths,
+            score_value=alignment_evidence.get("policy_component_score"),
+            strong_message="Shows strong supportive policy context in the current evidence.",
+            very_strong_message="Shows very strong supportive policy context in the current evidence.",
+        )
+
+    if bool(alignment_evidence.get("city_selected_co_benefits_present", False)):
+        _append_strength_message_for_score(
+            strengths,
+            score_value=alignment_evidence.get("co_benefit_component_score"),
+            strong_message="Supports the city's preferred co-benefits well.",
+            very_strong_message="Supports the city's preferred co-benefits very well.",
+        )
+
+    if bool(feasibility_evidence.get("legal_assessment_present", False)):
+        _append_strength_message_for_score(
+            strengths,
+            score_value=feasibility_evidence.get("legal_component_score"),
+            strong_message="Shows supportive legal feasibility conditions in the current evidence.",
+            very_strong_message="Shows very supportive legal feasibility conditions in the current evidence.",
+        )
+
+    if bool(feasibility_evidence.get("mitigation_feasibility_score_present", False)):
+        _append_strength_message_for_score(
+            strengths,
+            score_value=feasibility_evidence.get(
+                "mitigation_feasibility_component_score"
+            ),
+            strong_message="Shows strong mitigation feasibility for the current city.",
+            very_strong_message="Shows very strong mitigation feasibility for the current city.",
+        )
+
+    return strengths
+
+
+def _build_main_constraints(
+    *,
+    impact_evidence: dict[str, object],
+    alignment_evidence: dict[str, object],
+    feasibility_evidence: dict[str, object],
+) -> list[str]:
+    """Summarize the biggest ranking constraints for one action."""
+    constraints: list[str] = []
+    matched_count = int(impact_evidence.get("matched_city_subsector_keys_count", 0))
+    if matched_count == 0:
+        constraints.append(
+            "Does not directly match a subsector with recorded city emissions in the current inventory."
+        )
+    else:
+        _append_constraint_message_for_score(
+            constraints,
+            score_value=impact_evidence.get("emissions_reduction_component_score"),
+            weak_message="Its expected emissions reduction is limited in the current city inventory.",
+            very_weak_message="Its expected emissions reduction is very limited in the current city inventory.",
+        )
+
+    if bool(impact_evidence.get("timeline_bucket_known", False)):
+        _append_constraint_message_for_score(
+            constraints,
+            score_value=impact_evidence.get("timeline_component_score"),
+            weak_message="Its expected emissions benefits arrive on a relatively slow timeline.",
+            very_weak_message="Its expected emissions benefits arrive on a slow timeline.",
+        )
+
+    city_preference_sectors = alignment_evidence.get("city_preference_sectors", [])
+    if isinstance(city_preference_sectors, list) and city_preference_sectors:
+        _append_constraint_message_for_score(
+            constraints,
+            score_value=alignment_evidence.get("sector_component_score"),
+            weak_message="Does not match the city's preferred sector.",
+            very_weak_message="Does not match the city's preferred sector.",
+        )
+
+    city_preference_timeframes = alignment_evidence.get("city_preference_timeframes", [])
+    if isinstance(city_preference_timeframes, list) and city_preference_timeframes:
+        _append_constraint_message_for_score(
+            constraints,
+            score_value=alignment_evidence.get("timeframe_component_score"),
+            weak_message="Does not fit the city's preferred implementation timeframe.",
+            very_weak_message="Does not fit the city's preferred implementation timeframe.",
+        )
+
+    if bool(alignment_evidence.get("policy_score_present", False)):
+        _append_constraint_message_for_score(
+            constraints,
+            score_value=alignment_evidence.get("policy_component_score"),
+            weak_message="Shows weak supportive policy context in the current evidence.",
+            very_weak_message="Shows very weak supportive policy context in the current evidence.",
+        )
+
+    if bool(alignment_evidence.get("city_selected_co_benefits_present", False)):
+        _append_constraint_message_for_score(
+            constraints,
+            score_value=alignment_evidence.get("co_benefit_component_score"),
+            weak_message="Offers weak support for the city's preferred co-benefits.",
+            very_weak_message="Offers very weak support for the city's preferred co-benefits.",
+        )
+
+    if bool(feasibility_evidence.get("legal_assessment_present", False)):
+        _append_constraint_message_for_score(
+            constraints,
+            score_value=feasibility_evidence.get("legal_component_score"),
+            weak_message="Shows weak legal feasibility conditions in the current evidence.",
+            very_weak_message="Shows very weak legal feasibility conditions in the current evidence.",
+        )
+
+    if bool(feasibility_evidence.get("mitigation_feasibility_score_present", False)):
+        _append_constraint_message_for_score(
+            constraints,
+            score_value=feasibility_evidence.get(
+                "mitigation_feasibility_component_score"
+            ),
+            weak_message="Shows weaker mitigation feasibility for the current city.",
+            very_weak_message="Shows very weak mitigation feasibility for the current city.",
+        )
+
+    return constraints
 
 
 def _build_known_limitations(
@@ -384,20 +515,23 @@ def _build_known_limitations(
     """List known limitations that should be acknowledged in explanations."""
     limitations: list[str] = []
 
-    informational_requirements_count_value = feasibility_evidence.get(
-        "informational_requirements"
-    )
-    informational_requirements_count = (
-        len(informational_requirements_count_value)
-        if isinstance(informational_requirements_count_value, list)
-        else 0
-    )
-    informational_summary_available = bool(
-        feasibility_evidence.get("informational_requirements_summary_available")
-    )
-    if informational_requirements_count > 0 and not informational_summary_available:
+    if bool(feasibility_evidence.get("legal_assessment_missing", False)):
         limitations.append(
-            "Non-blocking legal constraints are included as evidence, but UI-friendly implementation notes are not fully implemented yet."
+            "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        )
+    elif bool(feasibility_evidence.get("legal_verdict_score_missing", False)):
+        limitations.append(
+            "The legal assessment was incomplete for this action, so the legal component used a neutral fallback."
+        )
+    if bool(feasibility_evidence.get("mitigation_feasibility_score_missing", False)):
+        limitations.append(
+            "No mitigation feasibility score row was available for this action, so the feasibility component used a neutral fallback."
+        )
+    elif bool(
+        feasibility_evidence.get("mitigation_feasibility_action_score_missing", False)
+    ):
+        limitations.append(
+            "The mitigation feasibility score row was incomplete for this action, so the feasibility component used a neutral fallback."
         )
     return limitations
 
@@ -419,3 +553,60 @@ def _score_band(score: float) -> str:
     if score >= 0.25:
         return "low"
     return "very low"
+
+
+def _coerce_unit_score(score_value: object) -> float | None:
+    """Normalize one component score into the expected 0..1 range."""
+    if not isinstance(score_value, int | float):
+        return None
+    return min(max(float(score_value), 0.0), 1.0)
+
+
+def _append_strength_message_for_score(
+    messages: list[str],
+    *,
+    score_value: object,
+    strong_message: str,
+    very_strong_message: str,
+) -> None:
+    """Append the strength sentence that matches this component score."""
+    score = _coerce_unit_score(score_value)
+    if score is None:
+        return
+    if score > 0.75:
+        messages.append(very_strong_message)
+    elif score > 0.5:
+        messages.append(strong_message)
+
+
+def _append_constraint_message_for_score(
+    messages: list[str],
+    *,
+    score_value: object,
+    weak_message: str,
+    very_weak_message: str,
+) -> None:
+    """Append the constraint sentence that matches this component score."""
+    score = _coerce_unit_score(score_value)
+    if score is None:
+        return
+    if score < 0.25:
+        messages.append(very_weak_message)
+    elif score < 0.5:
+        messages.append(weak_message)
+
+
+def _component_score_bucket(score_value: object) -> str | None:
+    """Map one component score to the explanation bucket used for payload signals."""
+    score = _coerce_unit_score(score_value)
+    if score is None:
+        return None
+    if score > 0.75:
+        return "very_strong"
+    if score > 0.5:
+        return "strong"
+    if score == 0.5:
+        return "neutral"
+    if score >= 0.25:
+        return "weak"
+    return "very_weak"

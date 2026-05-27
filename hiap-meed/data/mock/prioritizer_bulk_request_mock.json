@@ -6,12 +6,17 @@
     "upstreamProvider": "city_catalyst_frontend",
     "apiContext": {
       "endpoint": "POST /v1/prioritize",
-      "locodes": ["CL IQQ", "CL ARI"]
+      "locodes": [
+        "CL IQQ",
+        "CL ARI"
+      ]
     },
     "totalRecords": 2
   },
   "requestData": {
-    "requestedLanguages": ["en"],
+    "requestedLanguages": [
+      "en"
+    ],
     "topN": 20,
     "createExplanations": true,
     "cityDataList": [
@@ -19,15 +24,25 @@
         "locode": "CL IQQ",
         "countryCode": "CL",
         "populationSize": 125000,
-        "excludedActionIds": ["c40_0029"],
+        "excludedActionIds": [
+          "c40_0029"
+        ],
         "weightsOverride": {
           "impact": 0.5,
           "alignment": 0.3,
           "feasibility": 0.2
         },
-        "cityStrategicPreferenceSectors": ["transportation"],
-        "cityStrategicPreferenceTimeframes": ["short", "medium"],
-        "cityStrategicPreferenceCoBenefitKeys": ["air_quality", "mobility"],
+        "cityStrategicPreferenceSectors": [
+          "transportation"
+        ],
+        "cityStrategicPreferenceTimeframes": [
+          "short",
+          "medium"
+        ],
+        "cityStrategicPreferenceCoBenefitKeys": [
+          "air_quality",
+          "mobility"
+        ],
         "cityEmissionsData": {
           "inventoryYear": null,
           "gpcData": {
@@ -62,7 +77,9 @@
         "locode": "CL ARI",
         "countryCode": "CL",
         "populationSize": 250000,
-        "excludedActionIds": ["c40_0010"],
+        "excludedActionIds": [
+          "c40_0010"
+        ],
         "weightsOverride": {
           "impact": 0.6,
           "alignment": 0.2,
@@ -73,8 +90,13 @@
           "transportation",
           "waste"
         ],
-        "cityStrategicPreferenceTimeframes": ["short"],
-        "cityStrategicPreferenceCoBenefitKeys": ["air_quality", "mobility"],
+        "cityStrategicPreferenceTimeframes": [
+          "short"
+        ],
+        "cityStrategicPreferenceCoBenefitKeys": [
+          "air_quality",
+          "mobility"
+        ],
         "cityEmissionsData": {
           "inventoryYear": 2022,
           "gpcData": {
@@ -82,31 +104,31 @@
               "notationKey": null,
               "activities": [
                 {
-                  "activityName": "Kerosene (paraffin)",
                   "totalEmissions": 599.532,
                   "totalEmissionsUnit": "t CO2e",
                   "activityValue": 8352484.555,
                   "activityUnit": "MJ",
                   "dataSource": null,
-                  "notationKey": null
+                  "notationKey": null,
+                  "activityType": "Kerosene (paraffin)"
                 },
                 {
-                  "activityName": "Natural gas",
                   "totalEmissions": 818452.245,
                   "totalEmissionsUnit": "t CO2e",
                   "activityValue": 14280609148.0,
                   "activityUnit": "MJ",
                   "dataSource": null,
-                  "notationKey": null
+                  "notationKey": null,
+                  "activityType": "Natural gas"
                 },
                 {
-                  "activityName": "Wood or wood waste",
                   "totalEmissions": 42200.983,
                   "totalEmissionsUnit": "t CO2e",
                   "activityValue": 360130991.6,
                   "activityUnit": "MJ",
                   "dataSource": null,
-                  "notationKey": null
+                  "notationKey": null,
+                  "activityType": "Wood or wood waste"
                 }
               ]
             },
@@ -114,31 +136,31 @@
               "notationKey": null,
               "activities": [
                 {
-                  "activityName": "Electricity use in single family home",
                   "totalEmissions": 2955600.0,
                   "totalEmissionsUnit": "t CO2e",
                   "activityValue": null,
                   "activityUnit": null,
                   "dataSource": "Mock data",
-                  "notationKey": null
+                  "notationKey": null,
+                  "activityType": "Electricity use in single family home"
                 },
                 {
-                  "activityName": "Heating in multi family home",
                   "totalEmissions": 1438300.0,
                   "totalEmissionsUnit": "t CO2e",
                   "activityValue": null,
                   "activityUnit": null,
                   "dataSource": "Mock data",
-                  "notationKey": null
+                  "notationKey": null,
+                  "activityType": "Heating in multi family home"
                 },
                 {
-                  "activityName": "All energy usage types in informal housing",
                   "totalEmissions": 3524785.0,
                   "totalEmissionsUnit": "t CO2e",
                   "activityValue": null,
                   "activityUnit": null,
                   "dataSource": "Mock data",
-                  "notationKey": null
+                  "notationKey": null,
+                  "activityType": "All energy usage types in informal housing"
                 }
               ]
             },
@@ -150,31 +172,31 @@
               "notationKey": null,
               "activities": [
                 {
-                  "activityName": "Biodiesels (Single unit truck)",
                   "totalEmissions": 1943.87,
                   "totalEmissionsUnit": "t CO2e",
                   "activityValue": 27028397.55,
                   "activityUnit": "MJ",
                   "dataSource": null,
-                  "notationKey": null
+                  "notationKey": null,
+                  "activityType": "Biodiesels (Single unit truck)"
                 },
                 {
-                  "activityName": "Diesel oil (Single unit truck)",
                   "totalEmissions": 24808.289,
                   "totalEmissionsUnit": "t CO2e",
                   "activityValue": 347138314.3,
                   "activityUnit": "MJ",
                   "dataSource": null,
-                  "notationKey": null
+                  "notationKey": null,
+                  "activityType": "Diesel oil (Single unit truck)"
                 },
                 {
-                  "activityName": "Gas oil (Single unit truck)",
                   "totalEmissions": 836.075,
                   "totalEmissionsUnit": "t CO2e",
                   "activityValue": 11395082.09,
                   "activityUnit": "MJ",
                   "dataSource": null,
-                  "notationKey": null
+                  "notationKey": null,
+                  "activityType": "Gas oil (Single unit truck)"
                 }
               ]
             },
@@ -190,22 +212,22 @@
               "notationKey": null,
               "activities": [
                 {
-                  "activityName": "Domestic wastewater",
                   "totalEmissions": 144817.556,
                   "totalEmissionsUnit": "t CO2e",
                   "activityValue": null,
                   "activityUnit": null,
                   "dataSource": null,
-                  "notationKey": null
+                  "notationKey": null,
+                  "activityType": "Domestic wastewater"
                 },
                 {
-                  "activityName": "Industrial wastewater",
                   "totalEmissions": 91786.748,
                   "totalEmissionsUnit": "t CO2e",
                   "activityValue": null,
                   "activityUnit": null,
                   "dataSource": null,
-                  "notationKey": null
+                  "notationKey": null,
+                  "activityType": "Industrial wastewater"
                 }
               ]
             },
@@ -213,22 +235,22 @@
               "notationKey": null,
               "activities": [
                 {
-                  "activityName": "Buffalo",
                   "totalEmissions": 0.489,
                   "totalEmissionsUnit": "t CO2e",
                   "activityValue": null,
                   "activityUnit": null,
                   "dataSource": null,
-                  "notationKey": null
+                  "notationKey": null,
+                  "activityType": "Buffalo"
                 },
                 {
-                  "activityName": "Cattle",
                   "totalEmissions": 129.168,
                   "totalEmissionsUnit": "t CO2e",
                   "activityValue": null,
                   "activityUnit": null,
                   "dataSource": null,
-                  "notationKey": null
+                  "notationKey": null,
+                  "activityType": "Cattle"
                 }
               ]
             },

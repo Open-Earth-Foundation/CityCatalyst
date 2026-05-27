@@ -29,38 +29,35 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
             "impact": {
                 "impact_band": "high",
                 "timeline_bucket": "<5 years",
-                "matched_city_gpc_refs_count": 2,
-                "matched_city_gpc_refs": ["I.1.1", "I.1.2"],
+                "timeline_bucket_known": True,
+                "timeline_component_score": 0.5,
+                "matched_city_subsector_keys_count": 2,
+                "matched_city_subsector_keys": ["I.1", "I.2"],
+                "emissions_reduction_component_score": 0.9,
             },
             "alignment": {
                 "sector_match": True,
-                "mapped_sector_tag": "stationary_energy",
-                "policy_signals_count": 2,
-                "policy_signal_summaries": [
-                    {
-                        "signal_type": "plan",
-                        "signal_relation": "supports",
-                        "signal_strength": "strong",
-                        "location_scope": "city",
-                        "location_name": "Santiago",
-                        "evidence_count": 4,
-                    }
-                ],
-                "co_benefit_component_score": 0.0,
+                "city_preference_sectors": ["stationary_energy"],
+                "sector_component_score": 1.0,
+                "policy_component_score": 0.5,
+                "policy_score_present": True,
+                "matched_preferred_co_benefits_count": 0,
+                "city_selected_co_benefits_present": True,
+                "co_benefit_component_score": 0.5,
+                "timeframe_match_label": "preferred_match",
+                "city_preference_timeframes": ["short"],
+                "timeframe_component_score": 1.0,
             },
             "feasibility": {
-                "soft_legal_aligned_count": 1,
-                "soft_legal_total_count": 2,
-                "informational_requirements_summary_available": False,
-                "informational_requirements": [{"signal_code": "PERMIT"}],
-                "socioeconomic_indicator_rows": [
-                    {
-                        "action_socioeconomic_indicator_key": "unemployment_rate",
-                        "weighted_contribution": 1.2,
-                        "rationale": "Labor market conditions support delivery pace.",
-                    }
-                ],
-                "missing_city_socioeconomic_indicator_keys": [],
+                "legal_assessment_present": True,
+                "legal_assessment_missing": False,
+                "legal_verdict_category": "conditional",
+                "legal_component_source": "verdict_score",
+                "legal_component_score": 0.5,
+                "mitigation_feasibility_component_score": 0.5,
+                "mitigation_feasibility_score_present": False,
+                "legal_verdict_score_missing": False,
+                "mitigation_feasibility_score_missing": False,
             },
         },
     )
@@ -70,6 +67,7 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
     )
 
     assert payload["action_id"] == "A_1"
+    assert "action_name" not in payload
     assert payload["rank"] == 1
     assert payload["score_bands"] == {
         "final": "moderate",
@@ -78,10 +76,172 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
         "feasibility": "moderate",
     }
     assert payload["impact_signals"]["impact_band"] == "high"
+    assert payload["impact_signals"]["matched_city_subsector_keys_count"] == 2
+    assert payload["impact_signals"]["emissions_reduction_component_bucket"] == "very_strong"
+    assert payload["impact_signals"]["timeline_component_bucket"] == "neutral"
     assert payload["alignment_signals"]["sector_match"] is True
-    assert payload["feasibility_signals"]["informational_requirements_count"] == 1
-    assert payload["known_limitations"] == [
-        "Non-blocking legal constraints are included as evidence, but UI-friendly implementation notes are not fully implemented yet.",
+    assert payload["alignment_signals"]["sector_component_bucket"] == "very_strong"
+    assert payload["alignment_signals"]["policy_component_bucket"] == "neutral"
+    assert payload["alignment_signals"]["co_benefit_component_bucket"] == "neutral"
+    assert payload["feasibility_signals"]["legal_component_bucket"] == "neutral"
+    assert (
+        payload["feasibility_signals"]["mitigation_feasibility_component_bucket"]
+        == "neutral"
+    )
+    assert payload["main_strengths"] == [
+        "Expected to make a very strong emissions reduction in the current city inventory.",
+        "Matches the city's preferred sector.",
+        "Fits the city's preferred implementation timeframe.",
+    ]
+    assert payload["main_constraints"] == []
+    assert payload["known_limitations"] == []
+
+
+def test_build_curated_action_payload_uses_policy_buckets_for_strength() -> None:
+    """Policy support wording should distinguish neutral, strong, and very strong scores."""
+    base_evidence = {
+        "impact": {
+            "impact_band": "low",
+            "matched_city_subsector_keys_count": 0,
+            "emissions_reduction_component_score": 0.0,
+            "timeline_bucket_known": False,
+            "timeline_component_score": 0.5,
+        },
+        "alignment": {
+            "matched_preferred_co_benefits_count": 0,
+            "policy_score_present": True,
+        },
+        "feasibility": {
+            "legal_assessment_present": False,
+            "legal_assessment_missing": True,
+            "legal_component_score": 0.5,
+            "legal_component_source": "neutral_fallback",
+            "legal_verdict_score_missing": False,
+            "mitigation_feasibility_score_present": False,
+            "mitigation_feasibility_score_missing": True,
+        },
+    }
+
+    neutral_payload = _build_curated_action_payload(
+        scored_action=ScoredAction(
+            action=Action(action_id="A_2", action_name="Support score neutral"),
+            impact_score=0.2,
+            alignment_score=0.5,
+            feasibility_score=0.1,
+            final_score=0.2,
+            rank=2,
+            evidence={
+                **base_evidence,
+                "alignment": {
+                    **base_evidence["alignment"],
+                    "policy_component_score": 0.5,
+                },
+            },
+        )
+    )
+
+    strong_payload = _build_curated_action_payload(
+        scored_action=ScoredAction(
+            action=Action(action_id="A_3", action_name="Support score strong"),
+            impact_score=0.2,
+            alignment_score=0.6,
+            feasibility_score=0.1,
+            final_score=0.2,
+            rank=3,
+            evidence={
+                **base_evidence,
+                "alignment": {
+                    **base_evidence["alignment"],
+                    "policy_component_score": 0.6,
+                },
+            },
+        )
+    )
+
+    very_strong_payload = _build_curated_action_payload(
+        scored_action=ScoredAction(
+            action=Action(action_id="A_4", action_name="Support score very strong"),
+            impact_score=0.2,
+            alignment_score=0.9,
+            feasibility_score=0.1,
+            final_score=0.3,
+            rank=4,
+            evidence={
+                **base_evidence,
+                "alignment": {
+                    **base_evidence["alignment"],
+                    "policy_component_score": 0.9,
+                },
+            },
+        )
+    )
+
+    assert (
+        "Shows strong supportive policy context in the current evidence."
+        not in neutral_payload["main_strengths"]
+    )
+    assert (
+        "Shows strong supportive policy context in the current evidence."
+        in strong_payload["main_strengths"]
+    )
+    assert (
+        "Shows very strong supportive policy context in the current evidence."
+        in very_strong_payload["main_strengths"]
+    )
+
+
+def test_build_curated_action_payload_uses_component_buckets_for_constraints() -> None:
+    """Constraint text should follow weak component buckets across the blocks."""
+    payload = _build_curated_action_payload(
+        scored_action=ScoredAction(
+            action=Action(action_id="A_5", action_name="Slow, weak fit"),
+            impact_score=0.1,
+            alignment_score=0.1,
+            feasibility_score=0.1,
+            final_score=0.1,
+            rank=5,
+            evidence={
+                "impact": {
+                    "impact_band": "low",
+                    "timeline_bucket": ">10 years",
+                    "timeline_bucket_known": True,
+                    "timeline_component_score": 0.0,
+                    "matched_city_subsector_keys_count": 0,
+                    "emissions_reduction_component_score": 0.0,
+                },
+                "alignment": {
+                    "city_preference_sectors": ["waste"],
+                    "sector_component_score": 0.0,
+                    "city_preference_timeframes": ["short"],
+                    "timeframe_component_score": 0.0,
+                    "policy_score_present": True,
+                    "policy_component_score": 0.1,
+                    "city_selected_co_benefits_present": True,
+                    "co_benefit_component_score": 0.2,
+                },
+                "feasibility": {
+                    "legal_assessment_present": True,
+                    "legal_assessment_missing": False,
+                    "legal_component_score": 0.0,
+                    "legal_component_source": "verdict_score",
+                    "legal_verdict_score_missing": False,
+                    "mitigation_feasibility_component_score": 0.25,
+                    "mitigation_feasibility_score_present": True,
+                    "mitigation_feasibility_score_missing": False,
+                },
+            },
+        )
+    )
+
+    assert payload["main_constraints"] == [
+        "Does not directly match a subsector with recorded city emissions in the current inventory.",
+        "Its expected emissions benefits arrive on a slow timeline.",
+        "Does not match the city's preferred sector.",
+        "Does not fit the city's preferred implementation timeframe.",
+        "Shows very weak supportive policy context in the current evidence.",
+        "Offers very weak support for the city's preferred co-benefits.",
+        "Shows very weak legal feasibility conditions in the current evidence.",
+        "Shows weaker mitigation feasibility for the current city.",
     ]
 
 
@@ -127,4 +287,6 @@ def test_build_prompt_is_canonical_english_only() -> None:
     )
 
     assert "Write every explanation in English." in prompt
+    assert "Focus on the biggest ranking drivers" in prompt
+    assert "Do not infer extra benefits" in prompt
     assert '"air_quality", "mobility"' in prompt

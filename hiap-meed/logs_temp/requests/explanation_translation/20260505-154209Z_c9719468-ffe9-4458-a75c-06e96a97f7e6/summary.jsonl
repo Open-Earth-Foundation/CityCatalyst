@@ -1,1 +1,0 @@
-{"timestamp": "2026-05-05T15:42:11.580613+00:00", "request_id": "c9719468-ffe9-4458-a75c-06e96a97f7e6", "request_kind": "explanation_translation", "event_index": 1, "event_type": "explanation_translation.completed", "payload": {"actions": 2, "target_languages": ["pt"], "warnings_count": 0, "llm_io_file": "llm/explanation_translations_io.json"}}

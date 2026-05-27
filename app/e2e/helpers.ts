@@ -56,64 +56,139 @@ export async function createInventory(
   return await result.json();
 }
 
-export async function createCityThroughOnboarding(page: Page): Promise<string> {
-  // Step 1: Start the city onboarding process
+/**
+ * Inventory year for cities onboarding E2E. Uses the previous calendar year so
+ * the value stays inside the UI dropdown (current year + 19 prior years) and
+ * matches ghgi-onboarding.spec.ts. Call once per flow and pass the return value
+ * to assertions so setup and expectations never drift apart.
+ */
+export function pickE2EOnboardingInventoryYear(): string {
+  return String(new Date().getFullYear() - 1);
+}
+
+/**
+ * Walks the combined cities onboarding wizard (city + inventory + population +
+ * third-party data). The flow ends on the newly created inventory page at
+ * `/cities/{cityId}/GHGI/{inventoryId}/`.
+ *
+ * Returns the extracted IDs and the inventory year selected in the wizard.
+ */
+async function walkCitiesOnboardingWizard(
+  page: Page,
+): Promise<{ cityId: string; inventoryId: string; inventoryYear: string }> {
+  const inventoryYear = pickE2EOnboardingInventoryYear();
+  // Step 0: welcome page → click "Get Started"
   await page.goto("/en/cities/onboarding/");
 
-  // Check if we got redirected to login (authentication failed)
-  const currentUrl = page.url();
-  if (currentUrl.includes("/auth/login")) {
+  if (page.url().includes("/auth/login")) {
     throw new Error("Authentication failed - redirected to login page");
   }
 
-  // Wait a moment for any animations to settle
   await page.waitForTimeout(500);
-
-  // Click analytics decline button if it appears
   await dismissCookieConsent(page);
 
-  // Click "Get Started" button to start city selection
   const getStartedButton = page.getByRole("button", { name: /Get Started/i });
   await expect(getStartedButton).toBeVisible();
   await getStartedButton.click();
 
-  // Step 2: Select City
+  // Step 0: select city
   await page.waitForURL("**/cities/onboarding/setup/");
 
   const cityName = "Chicago";
-  // Fill in the city input
   const cityInput = page.locator('input[name="city"]');
   await cityInput.click();
   await page.keyboard.type(cityName, { delay: 100 });
 
-  // Wait for and click the city suggestion
   const citySearchResults = page.getByText(
     new RegExp(`^${cityName}\\s*United States of America > Illinois$`),
   );
   await citySearchResults.waitFor();
   await citySearchResults.click();
 
-  // Click Continue to complete city selection
+  // Continue (creates the city, advances to inventory details)
   {
-    const continueButton = page.getByRole("button", { name: /Continue/i });
+    const continueButton = page
+      .getByRole("button", { name: /^Continue$/ })
+      .last();
     await expect(continueButton).toBeEnabled({ timeout: 30000 });
     await continueButton.click();
   }
-  // Click Continue to confirm
-  {
-    const continueButton = page.getByRole("button", { name: /Continue/i });
-    await expect(continueButton).toBeEnabled({ timeout: 30000 });
-    await continueButton.click();
-  }
-  // Step 3: Wait for redirect to city page and extract cityId from URL
-  await page.waitForURL("**/cities/*/");
-  const url = page.url();
-  const cityIdMatch = url.match(/\/cities\/([^\/]+)/);
-  if (!cityIdMatch) {
-    throw new Error("Could not extract cityId from URL after city selection");
-  }
-  const cityId = cityIdMatch[1];
 
+  // Step 1: inventory details — goal and GWP are auto-set, only year needed
+  await expect(page.getByTestId("inventory-details-heading")).toBeVisible({
+    timeout: 15000,
+  });
+
+  const yearSelectTrigger = page
+    .locator('[data-testid="inventory-details-year"]')
+    .locator("button")
+    .first();
+  await yearSelectTrigger.click();
+  await page.waitForTimeout(500);
+  await page.getByRole("option", { name: inventoryYear }).click();
+
+  {
+    const continueButton = page
+      .getByRole("button", { name: /^Continue$/ })
+      .last();
+    await expect(continueButton).toBeEnabled({ timeout: 30000 });
+    await continueButton.click();
+  }
+
+  // Step 2: population — pre-filled by OpenClimate query
+  await expect(page.getByTestId("add-population-data-heading")).toBeVisible({
+    timeout: 15000,
+  });
+
+  const cityPopulationInput = page.getByPlaceholder("City population number");
+  try {
+    await expect(cityPopulationInput).toHaveValue(/^\d{1,3}(,\d{3})*$/, {
+      timeout: 10000,
+    });
+  } catch {
+    // OpenClimate pre-fill failed — fill manually
+    await cityPopulationInput.fill("1000000");
+    await page
+      .locator('select[name="cityPopulationYear"]')
+      .selectOption(inventoryYear);
+    await page.getByPlaceholder("Region population number").fill("5000000");
+    await page
+      .locator('select[name="regionPopulationYear"]')
+      .selectOption(inventoryYear);
+    await page.getByPlaceholder("Country population number").fill("10000000");
+    await page
+      .locator('select[name="countryPopulationYear"]')
+      .selectOption(inventoryYear);
+  }
+
+  {
+    const continueButton = page
+      .getByRole("button", { name: /^Continue$/ })
+      .last();
+    await expect(continueButton).toBeEnabled({ timeout: 30000 });
+    await continueButton.click();
+  }
+
+  // Step 3: third-party data — opt out for speed/determinism
+  await completeThirdPartyDataOnboardingStep(page, "no");
+
+  // Wizard exits to `/cities/{cityId}/GHGI/{inventoryId}/`
+  await page.waitForURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/?$/, {
+    timeout: 30000,
+  });
+  const match = page
+    .url()
+    .match(/\/cities\/([^\/]+)\/GHGI\/([^\/]+)/);
+  if (!match) {
+    throw new Error(
+      "Could not extract cityId and inventoryId from URL after onboarding",
+    );
+  }
+  return { cityId: match[1], inventoryId: match[2], inventoryYear };
+}
+
+export async function createCityThroughOnboarding(page: Page): Promise<string> {
+  const { cityId } = await walkCitiesOnboardingWizard(page);
   return cityId;
 }
 
@@ -298,16 +373,17 @@ export async function createInventoryThroughOnboarding(
 
 export async function createCityAndInventoryThroughOnboarding(
   page: Page,
-): Promise<{ page: Page; cityId: string; inventoryId: string }> {
-  // Create the city first
-  const cityId = await createCityThroughOnboarding(page);
-
-  // Then create the inventory
-  const { page: inventoryPage, inventoryId } =
-    await createInventoryThroughOnboarding(page, cityId);
-
-  // Return both IDs and the page
-  return { page: inventoryPage, cityId, inventoryId };
+): Promise<{
+  page: Page;
+  cityId: string;
+  inventoryId: string;
+  inventoryYear: string;
+}> {
+  // Cities onboarding now creates both the city and the first inventory in
+  // one combined wizard; no need to run the GHGI onboarding flow afterwards.
+  const { cityId, inventoryId, inventoryYear } =
+    await walkCitiesOnboardingWizard(page);
+  return { page, cityId, inventoryId, inventoryYear };
 }
 
 export async function createProject(

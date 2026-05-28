@@ -41,5 +41,5 @@ dev = [
     "numpy>=2.4.4",
     "seaborn>=0.13.2",
     "shap>=0.51.0",
-    "pytest>=8.4.2",
+    "pytest>=9.0.3",
 ]

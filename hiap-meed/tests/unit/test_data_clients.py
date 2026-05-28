@@ -279,11 +279,13 @@ def test_mock_city_client_loads_city_from_file() -> None:
 
     assert city.city_name == "Iquique"
     assert city.region_name == "Tarapaca"
-    assert city.city_context
-    assert any(
-        row.get("attribute_name") == "unemployment_rate" for row in city.city_context
-    )
     assert city.source_metadata["mock_file_path"].endswith("city_api_mock.json")
+    assert city.source_metadata["requested_locode"] == "CL IQQ"
+    assert city.source_metadata["requested_version_label"] is None
+    assert city.source_metadata["upstream_api_context"]["endpoint"] == (
+        "GET /api/v0/city_attributes/{locode}"
+    )
+    assert city.source_metadata["upstream_datasources"]
 
 
 @pytest.mark.unit
@@ -398,6 +400,10 @@ def test_city_attributes_service_uses_env_base_url_override(
     assert (
         service._build_city_url("CL IQQ")
         == "https://city-attributes.example.test/root/api/v0/city_attributes/CL%20IQQ"
+    )
+    assert (
+        service._build_city_url("CL IQQ", "2024")
+        == "https://city-attributes.example.test/root/api/v0/city_attributes/CL%20IQQ?version_label=2024"
     )
 
 
@@ -527,9 +533,16 @@ def test_api_city_client_maps_remote_payload_and_metadata(
     )
     assert city.source_metadata["http_status_code"] == 200
     assert city.source_metadata["requested_locode"] == "CL IQQ"
+    assert city.source_metadata["requested_version_label"] is None
     assert city.source_metadata["upstream_generated_at_utc"] == (
         "2026-05-13T09:39:51.706285+00:00"
     )
+    assert city.source_metadata["upstream_api_context"] == {
+        "endpoint": "GET /api/v0/city_attributes/{locode}",
+        "locode": "CL IQQ",
+        "version_label": None,
+    }
+    assert city.source_metadata["upstream_datasources"] == []
 
 
 @pytest.mark.unit

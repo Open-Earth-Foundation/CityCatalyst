@@ -134,5 +134,6 @@ Be explicit when evidence is limited by RBAC, deleted resources, or missing hist
 ## Notes for this repo
 
 - Common readonly contexts are `dev-cluster-readonly` and `prod-cluster-readonly`.
+- Cluster/account reference details are in `references/oef-clusters.md` if needed.
 - Prefer direct targeted `kubectl` checks for single questions.
 - Use `k8s-health-audit` only when the goal is broad health triage.

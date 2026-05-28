@@ -1,4 +1,4 @@
-# OEF Cluster Notes
+# OEF Cluster Notes (Readonly Query Skill)
 
 Known cluster aliases used in this repo context:
 

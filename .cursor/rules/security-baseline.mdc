@@ -1,9 +1,12 @@
 ---
-description: Security baseline — secrets, auth, network, error handling. Always-on guardrails.
+description: Always-on security guardrails for every change in CityCatalyst — secrets, error sanitisation, outbound auth keys, fetch resilience, rate limiting. PRs that violate these are returned regardless of feature merit. For HOW to wire NextAuth (sessions, roles, hooks) see `auth-permissions.mdc`.
 alwaysApply: true
 ---
 
 # Security Baseline
+
+> **When to use this rule:** always. It applies to every change.
+> **For NextAuth wiring recipes** (how to get a session, gate a route, check a role) see `auth-permissions.mdc`. This file defines *what must always be true*; `auth-permissions` defines *how to satisfy it in code*.
 
 These checks apply to **every** change. PRs that violate them are returned regardless of feature merit.
 

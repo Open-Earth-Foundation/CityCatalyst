@@ -17,7 +17,8 @@ In scope:
 
 - GHGI inventories only.
 - Stationary Energy only.
-- One city, one inventory, one sector per run.
+- Multi-city and multi-inventory selection before a run starts.
+- One selected city, one selected inventory, and one sector per draft run.
 - Drafting values from approved, city-scoped source candidates.
 - Showing provenance, conflicts, and gaps before anything is saved.
 - User review before committing values to the inventory.
@@ -39,8 +40,13 @@ of introducing a broad new service boundary.
 - Reuse the existing CityCatalyst to Climate Advisor connection.
 - Reuse the Climate Advisor database to store draft runs, draft proposals, and
   user decisions before final save.
+- Add a city and inventory selection page so the user can choose the target
+  workflow scope.
 - Add an agentic decisions page aligned with the CityCatalyst visual style.
 - Add a draft review page where the user reviews decisions before saving.
+- Add feature flags in both CityCatalyst and Climate Advisor. The workflow
+  should stay hidden and disabled by default so it does not interfere with the
+  current product state while the pilot is being built.
 - Implement the first pieces of the ideal architecture, but limit them to
   Stationary Energy:
   - capability wrappers
@@ -56,24 +62,36 @@ accepted changes through existing inventory write paths.
 
 ### Entry Point
 
-Add a contextual CTA on the Stationary Energy sector page:
+Support two entry paths:
+
+- a multi-city launcher page where the user chooses an accessible city and
+  eligible inventory
+- a contextual CTA on the Stationary Energy sector page when the user is
+  already inside one inventory
+
+Contextual CTA:
 
 - Label: `Let the agent draft this section`
 - Supporting copy: `Review every value before saving`
 
-The entry point should appear inside the existing GHGI inventory experience,
-not in a separate assistant workspace.
+The workflow should still feel like CityCatalyst product navigation, not a
+separate assistant workspace.
 
 ### Pages
 
-Use a scoped route under the current city and inventory:
+Use one selector route plus scoped routes under the selected city and
+inventory:
+
+- City and inventory selection page:
+  `/{lng}/GHGI/draft/stationary-energy`
 
 - Agentic decisions page:
   `/{lng}/cities/{cityId}/GHGI/{inventoryId}/draft/stationary-energy`
 - Draft review page:
   `/{lng}/cities/{cityId}/GHGI/{inventoryId}/draft/stationary-energy/review`
 
-The decisions page is where the user sees source coverage, recommendations,
+The selection page is where the user picks the target city and inventory. The
+decisions page is where the user sees source coverage, recommendations,
 conflicts, and gaps. The review page is where the user accepts, overrides, or
 leaves draft proposals before anything is written to the inventory.
 
@@ -124,7 +142,7 @@ Supported user decisions:
 
 - User-facing GHGI routes and visual style.
 - Auth, permissions, and feature flags.
-- Current city, inventory, and sector state.
+- Accessible cities plus the selected city, inventory, and sector state.
 - Existing inventory write behavior.
 - Version history for committed changes.
 - Final save after explicit user confirmation.
@@ -168,14 +186,14 @@ one CityCatalyst feature while keeping ownership clear between CC and CA.
 
 | Component | What it is | Why it exists |
 | --- | --- | --- |
-| Stationary Energy decisions and review pages | CityCatalyst pages inside the GHGI inventory flow. | Give the user a task-specific UI for draft decisions, provenance, conflicts, gaps, and final review. |
+| Stationary Energy selection, decisions, and review pages | CityCatalyst pages inside the GHGI inventory flow. | Let the user choose the target city/inventory, then move through draft decisions, provenance, conflicts, gaps, and final review. |
 | Stationary Energy draft routes | Climate Advisor HTTP routes for start/resume/review. | Keep draft workflow state in CA and expose a simple API to the CC pages. |
 | Draft workflow service | CA service that coordinates context loading, proposal generation, staging, and review. | Keeps the CA route thin and makes the workflow testable without UI code. |
 | CA draft DB | CA persistence for draft runs, proposals, and review decisions. | Allows drafts to survive refresh, support review before commit, and keep an audit trail of what CA proposed. |
 | CityCatalyst capability client | CA client for executing CC capabilities through the existing CC-CA token pattern. | Stops CA from calling arbitrary CC routes directly and keeps all product access behind typed capabilities. |
 | CA-facing capability endpoint | Internal CityCatalyst endpoint used only by CA. | Authenticates CA, validates user scope, resolves the requested capability, and returns a structured result. |
 | Stationary Energy capability registry | CC registry of which Stationary Energy capabilities exist and which workflow step can use them. | Prevents a flat tool bag; the draft step can inspect and stage, while the review step can commit accepted changes. |
-| Stationary Energy context loader | CC loader that builds the bounded context for one city, one inventory, and sector `I`. | Ensures CA sees only the current workflow state, not unrelated product data or routes. |
+| Stationary Energy context loader | CC loader that builds the bounded context for one selected city, one selected inventory, and sector `I`. | Ensures CA sees only the current workflow state for the chosen draft run, not unrelated product data or routes. |
 | Product-owned capability wrappers | CC functions around existing services such as inventory reads, source lookup, and committed writes. | Reuses existing domain logic while giving CA small, stable, model-safe operations. |
 | OpenAI Agents SDK orchestrator | CA orchestration layer for agent execution, tool use, structured outputs, and model calls. | Keeps agent behavior inside the existing CA runtime instead of inventing a new orchestration service. |
 | Candidate ranking or LLM decision | Agent step that evaluates supplied source candidates. | Chooses among approved candidates, explains conflicts and gaps, and returns structured proposals. |
@@ -188,6 +206,11 @@ one CityCatalyst feature while keeping ownership clear between CC and CA.
 The core boundary is this: CA owns draft orchestration and draft persistence;
 CC owns product capabilities, permissions, committed writes, and version
 history.
+
+The orchestration rule is simple: CA decides what step the workflow is in and
+what it needs next. The registry answers which capabilities are allowed for
+that step. The context loader answers what bounded product context should be
+loaded for that step. The loader does not orchestrate the registry.
 
 MCP is intentionally not a runtime dependency for this slice. It can remain as
 documentation and discovery context for what exists in the repo, but Stationary
@@ -226,7 +249,7 @@ flowchart LR
   Workflow --> CAClient
   CAClient --> CCAPI
   CCAPI --> Registry
-  Registry --> Loader
+  CCAPI --> Loader
   Registry --> Wrappers
   Loader --> CCDB
   Loader --> Sources
@@ -249,6 +272,7 @@ sequenceDiagram
   participant CCUI as CC decisions page
   participant CA as CA draft route
   participant CADB as CA draft DB
+  participant Registry as CC capability registry
   participant CCClient as CA capability client
   participant CCToken as CC internal user-token route
   participant CCCap as CC capability endpoint
@@ -256,9 +280,16 @@ sequenceDiagram
   participant Agent as OpenAI Agents SDK orchestrator
   participant Trace as LangSmith tracing
 
-  User->>CCUI: Open Stationary Energy agentic page
+  User->>CCUI: Select city/inventory and open Stationary Energy agentic page
   CCUI->>CA: POST /v1/stationary-energy-drafts/start
-  CA->>CADB: Create draft_run(status="loading_context")
+  CA->>CADB: Create draft_run(status="resolving_scope")
+  CA->>CA: Resolve workflow_step="draft" and sector scope
+  CA->>CCClient: execute get_allowed_capabilities
+  CCClient->>CCCap: POST /allowed-capabilities
+  CCCap->>Registry: Resolve draft-scoped capability set
+  Registry-->>CCCap: Allowed draft capability ids
+  CCCap-->>CCClient: capability ids
+  CCClient-->>CA: capability ids
   CA->>CCToken: Request user-scoped token if needed
   CCToken-->>CA: Bearer token
   CA->>CCClient: execute load_context
@@ -267,12 +298,64 @@ sequenceDiagram
   Loader-->>CCCap: StationaryEnergyContext
   CCCap-->>CCClient: context payload
   CCClient-->>CA: context payload
-  CA->>Agent: Generate ready/conflict/gap proposals
+  CA->>Agent: Create agent with draft-scoped tools and context
+  Agent->>Agent: Generate ready/conflict/gap proposals
   Agent->>Trace: Record tools, prompts, model output, proposal ids
   Agent-->>CA: Structured proposals
   CA->>CADB: Store proposals
   CA-->>CCUI: Draft run with proposal ids and summary
 ```
+
+For this workflow, token readiness belongs after CA has resolved the workflow
+step and allowed capability set, but before any CC context call or agent
+creation. That keeps permission failure at the boundary where it belongs and
+avoids starting an agent run that cannot execute product calls.
+
+The important ownership point is that CA is still orchestrating this flow. It
+asks CC for allowed capabilities and bounded context as separate operations. The
+CC context loader does not look up the registry on its own or decide what the
+agent may do.
+
+### Observability And Audit Artifacts
+
+This slice should treat observability as required implementation, not optional
+hardening after the pilot. Every draft run should leave behind enough evidence
+to debug the recommendation path and enough product context to review what the
+system actually did.
+
+Required identifiers across the flow:
+
+- `request_id` for each HTTP request
+- `draft_run_id` for the durable CA draft run
+- `thread_id` or equivalent conversation/session id when the run is resumed
+- `city_id`, `inventory_id`, and `sector_code`
+- `workflow_step` such as `draft` or `review`
+
+Required observability outputs:
+
+- LangSmith trace for each proposal-generation run, tagged with the ids above
+- structured CA logs for route entry, token refresh, context load, model run,
+  proposal storage, and review handling
+- structured CC logs for capability execution, permission validation, source
+  selection, commit calls, and version-history writes
+- durable draft artifact in CA persistence that stores:
+  - bounded context summary sent into the model
+  - candidate/source references considered for each proposal
+  - proposal outputs, rationale, and conflict/gap explanations
+  - user review decisions and final commit result
+
+The goal is not to store every raw payload forever. The goal is to preserve the
+decision path. That means support and product engineers should be able to
+reconstruct:
+
+- what the model saw
+- which tools were available
+- what it proposed
+- what the user changed
+- what CC finally committed
+
+Do not persist raw Bearer tokens, service secrets, or unnecessary full product
+payload dumps in traces or audit artifacts.
 
 ### Review-And-Commit Sequence
 
@@ -283,6 +366,7 @@ sequenceDiagram
   participant CA as CA review route
   participant CADB as CA draft DB
   participant CCClient as CA capability client
+  participant CCToken as CC internal user-token route
   participant CCCap as CC capability endpoint
   participant Commit as CC commit wrapper
   participant CCDB as CC inventory DB
@@ -291,6 +375,8 @@ sequenceDiagram
   User->>CCReview: Accept, override, or leave draft
   CCReview->>CA: POST /v1/stationary-energy-drafts/{run_id}/review
   CA->>CADB: Store review decisions
+  CA->>CCToken: Request user-scoped token if needed
+  CCToken-->>CA: Bearer token
   CA->>CCClient: execute commit_accepted with accepted/source-overridden decisions
   CCClient->>CCCap: POST capability=commit_accepted
   CCCap->>Commit: Validate scope, permissions, proposal references
@@ -302,433 +388,56 @@ sequenceDiagram
   CA-->>CCReview: Updated review state
 ```
 
-### CityCatalyst Capability Types
+### Minimal Implementation Snippets
 
-The capability layer should be plain TypeScript around existing services. Zod
-schemas make the boundary explicit and reusable for API validation,
-documentation, and tests.
+The plan should keep only the smallest code anchors for what we actually intend
+to build.
+
+CC registry:
 
 ```ts
-// app/src/backend/agentic/types.ts
-import { AppSession } from "@/lib/auth";
-import { z } from "zod";
-
-export type CapabilityOperation = "query" | "command" | "workflow";
-export type ConfirmationBehavior = "none" | "stage" | "requires_review";
-
-export type CapabilityContext = {
-  session: AppSession;
-  locale: "en" | "es" | "pt";
-};
-
-export type CapabilityDefinition<Input, Output> = {
-  id: string;
-  module: "ghgi";
-  operation: CapabilityOperation;
-  inputSchema: z.ZodType<Input>;
-  outputSchema: z.ZodType<Output>;
-  requiredScope: Array<"city" | "inventory" | "sector">;
-  confirmation: ConfirmationBehavior;
-  execute: (input: Input, context: CapabilityContext) => Promise<Output>;
+export const stationaryEnergyRegistry = {
+  draft: ["ghgi.stationary_energy.load_context"],
+  review: ["ghgi.stationary_energy.commit_accepted"],
 };
 ```
 
-The first version should not try to support every module. It only needs enough
-type shape to make Stationary Energy strict.
+CC context loader:
 
 ```ts
-// app/src/backend/agentic/ghgi/stationary-energy/schemas.ts
-import { z } from "zod";
-
-export const stationaryEnergyScopeSchema = z.object({
-  cityId: z.string().uuid(),
-  inventoryId: z.string().uuid(),
-  sectorCode: z.literal("I"),
-});
-
-export const candidateSchema = z.object({
-  subsectorCode: z.string(),
-  sourceId: z.string(),
-  sourceName: z.string(),
-  value: z.number(),
-  unit: z.string(),
-  year: z.number().optional(),
-  tier: z.number().optional(),
-  method: z.string().optional(),
-  geographyMatch: z.enum([
-    "city_direct",
-    "city_proxy",
-    "regional_proxy",
-    "country_proxy",
-  ]),
-  coverage: z.enum(["complete", "partial", "missing"]),
-  confidence: z.number().min(0).max(1),
-  citation: z.string().optional(),
-});
-
-export const stationaryEnergyContextSchema = z.object({
-  scope: stationaryEnergyScopeSchema,
-  inventory: z.object({
-    year: z.number(),
-    cityName: z.string(),
-    locode: z.string().nullable(),
-    countryCode: z.string().nullable(),
-  }),
-  currentState: z.array(
-    z.object({
-      subsectorCode: z.string(),
-      existingValue: z.number().nullable(),
-      existingUnit: z.string().nullable(),
-      notationKey: z.string().nullable(),
-      isLocked: z.boolean(),
-    }),
-  ),
-  candidates: z.array(
-    z.object({
-      subsectorCode: z.string(),
-      options: z.array(candidateSchema),
-    }),
-  ),
-});
-```
-
-### CityCatalyst Registry Example
-
-The registry controls which capabilities exist and which workflow step can use
-them. This is the piece that prevents CA from seeing one flat tool bag.
-
-```ts
-// app/src/backend/agentic/ghgi/stationary-energy/registry.ts
-import {
-  loadStationaryEnergyContext,
-  commitAcceptedStationaryEnergyDrafts,
-} from "./capabilities";
-
-export const stationaryEnergyCapabilityRegistry = {
-  "ghgi.stationary_energy.load_context": {
-    step: "draft",
-    capability: loadStationaryEnergyContext,
-    exposesTo: ["ca_internal"],
-  },
-  "ghgi.stationary_energy.commit_accepted": {
-    step: "review",
-    capability: commitAcceptedStationaryEnergyDrafts,
-    exposesTo: ["ca_internal"],
-  },
-} as const;
-
-export type StationaryEnergyCapabilityId =
-  keyof typeof stationaryEnergyCapabilityRegistry;
-
-export function getStationaryEnergyCapability(
-  id: StationaryEnergyCapabilityId,
-  step: "draft" | "review",
-) {
-  const entry = stationaryEnergyCapabilityRegistry[id];
-
-  if (!entry || entry.step !== step) {
-    throw new Error(`Capability ${id} is not enabled for ${step}`);
-  }
-
-  return entry.capability;
+export async function loadStationaryEnergyContext(scope, session) {
+  await PermissionService.canEditInventory(session, scope.inventoryId);
+  return { scope, inventory, currentState, candidates };
 }
 ```
 
-For this first slice, keep the registry local to Stationary Energy. Do not
-generate MCP tools from this registry. The registry exists to keep the CC-CA
-workflow scoped and typed; MCP can document what exists later, but should not be
-part of the Stationary Energy runtime.
+CA orchestration:
 
-### CityCatalyst Context Loader Example
+```python
+enabled = await capability_client.get_allowed_capabilities(step="draft", ...)
+token = await token_service.ensure_user_token(user_id)
+context = await capability_client.execute("ghgi.stationary_energy.load_context", ...)
+proposals = await agent_runner.generate_stationary_energy_proposals(context, enabled)
+```
 
-The context loader should assemble the bounded state that CA needs. It should
-also be the place where scope validation happens: the `cityId` from the route
-must match the inventory's city, and the sector must be `I`.
+CC internal execution:
 
 ```ts
-// app/src/backend/agentic/ghgi/stationary-energy/context.ts
-import { db } from "@/models";
-import { DataSourceService } from "@/backend/DataSourceService";
-import { PermissionService } from "@/backend/permissions/PermissionService";
-import { AppSession } from "@/lib/auth";
-
-export async function loadStationaryEnergyContext(input: {
-  cityId: string;
-  inventoryId: string;
-  sectorCode: "I";
-  session: AppSession;
-}) {
-  await PermissionService.canEditInventory(input.session, input.inventoryId);
-
-  const inventory = await db.models.Inventory.findByPk(input.inventoryId, {
-    include: [
-      { model: db.models.City, as: "city" },
-      { model: db.models.InventoryValue, as: "inventoryValues" },
-    ],
-  });
-
-  if (!inventory || inventory.cityId !== input.cityId) {
-    throw new Error("Inventory does not belong to the requested city");
-  }
-
-  const allSources = await DataSourceService.findAllSources(input.inventoryId);
-  const { applicableSources } = DataSourceService.filterSources(
-    inventory,
-    allSources,
-  );
-
-  const stationarySources = applicableSources.filter((source) => {
-    const ref =
-      source.subCategory?.referenceNumber ||
-      source.subSector?.referenceNumber ||
-      "";
-    return ref.startsWith("I.");
-  });
-
-  const candidates = await normalizeStationaryEnergyCandidates(
-    inventory,
-    stationarySources,
-  );
-
-  return {
-    scope: {
-      cityId: input.cityId,
-      inventoryId: input.inventoryId,
-      sectorCode: input.sectorCode,
-    },
-    inventory: toInventoryContext(inventory),
-    currentState: toStationaryEnergyCurrentState(inventory),
-    candidates,
-  };
-}
+const capability = getStationaryEnergyCapability(capabilityId, workflowStep);
+const input = capability.inputSchema.parse(payload);
+return NextResponse.json(await capability.execute(input, { session, locale }));
 ```
 
-This example intentionally delegates to existing services. The wrapper shapes
-what CA sees; it should not duplicate inventory logic.
-
-### CA Capability Client Example
-
-Climate Advisor should call a small CC capability endpoint instead of manually
-choosing arbitrary CC routes. This keeps the existing token exchange, but moves
-tool availability into the registry.
-
-```python
-# climate-advisor/service/app/services/citycatalyst_capability_client.py
-from typing import Any
-
-from .citycatalyst_client import CityCatalystClient
-
-
-class CityCatalystCapabilityClient:
-    def __init__(self, cc_client: CityCatalystClient | None = None) -> None:
-        self.cc_client = cc_client or CityCatalystClient()
-
-    async def execute(
-        self,
-        *,
-        capability_id: str,
-        workflow_step: str,
-        payload: dict[str, Any],
-        token: str,
-        user_id: str,
-    ) -> dict[str, Any]:
-        url = (
-            f"{self.cc_client.base_url}"
-            f"/api/v1/internal/ca/capabilities/ghgi/stationary-energy/"
-            f"{capability_id}"
-        )
-        response = await self.cc_client.post_with_auto_refresh(
-            url=url,
-            token=token,
-            user_id=user_id,
-            thread_id="stationary-energy-draft",
-            json_data={
-                "workflow_step": workflow_step,
-                "payload": payload,
-            },
-        )
-        response.raise_for_status()
-        return response.json()
-```
-
-### CA Draft Models Example
-
-CA owns draft persistence. Pydantic models should match what the UI renders and
-what the database stores.
-
-```python
-# climate-advisor/service/app/models/stationary_energy_draft.py
-from enum import StrEnum
-from pydantic import BaseModel, Field
-
-
-class ProposalStatus(StrEnum):
-    READY = "ready"
-    CONFLICT = "conflict"
-    GAP = "gap"
-
-
-class ReviewAction(StrEnum):
-    ACCEPT = "accept"
-    OVERRIDE_SOURCE = "override_source"
-    OVERRIDE_MANUAL = "override_manual"
-    LEAVE_DRAFT = "leave_draft"
-
-
-class DraftCandidate(BaseModel):
-    source_id: str
-    source_name: str
-    value: float
-    unit: str
-    year: int | None = None
-    method: str | None = None
-    confidence: float = Field(ge=0, le=1)
-    citation: str | None = None
-
-
-class DraftProposal(BaseModel):
-    proposal_id: str
-    subsector_code: str
-    status: ProposalStatus
-    recommended: DraftCandidate | None = None
-    alternatives: list[DraftCandidate] = Field(default_factory=list)
-    rationale: str
-    ui_message: str | None = None
-
-
-class ReviewDecision(BaseModel):
-    proposal_id: str
-    action: ReviewAction
-    selected_source_id: str | None = None
-    manual_value: float | None = None
-    manual_unit: str | None = None
-    note: str | None = None
-```
-
-Validation rules should enforce that `ready` and `conflict` proposals have a
-recommended candidate, `conflict` proposals have alternatives, and `gap`
-proposals do not carry a recommended value.
-
-### CA Workflow Service And Agent Orchestration Example
-
-The CA workflow service should be procedural and explicit for this first slice.
-The OpenAI Agents SDK is the orchestration layer inside CA. It receives only the
-Stationary Energy context returned by CC, calls only the step-scoped tools CA
-registers for this workflow, and returns the structured proposal model. LangSmith
-tracing should wrap each draft run so we can inspect context, tool calls,
-decision rationale, model output, and proposal ids.
-
-```python
-# climate-advisor/service/app/services/stationary_energy_draft_service.py
-class StationaryEnergyDraftService:
-    def __init__(self, capability_client, draft_repository, agent_runner) -> None:
-        self.capability_client = capability_client
-        self.draft_repository = draft_repository
-        self.agent_runner = agent_runner
-
-    async def start_draft(self, request, token: str) -> dict:
-        run = await self.draft_repository.create_run(
-            city_id=request.city_id,
-            inventory_id=request.inventory_id,
-            sector_code="I",
-            user_id=request.user_id,
-        )
-
-        context = await self.capability_client.execute(
-            capability_id="ghgi.stationary_energy.load_context",
-            workflow_step="draft",
-            payload={
-                "cityId": request.city_id,
-                "inventoryId": request.inventory_id,
-                "sectorCode": "I",
-            },
-            token=token,
-            user_id=request.user_id,
-        )
-
-        proposals = await self.agent_runner.generate_stationary_energy_proposals(
-            context=context,
-            trace_metadata={
-                "draft_run_id": str(run.id),
-                "city_id": request.city_id,
-                "inventory_id": request.inventory_id,
-                "sector_code": "I",
-            },
-        )
-        await self.draft_repository.store_proposals(run.id, proposals)
-        return await self.draft_repository.get_run_state(run.id)
-
-    async def review(
-        self,
-        run_id: str,
-        decisions,
-        *,
-        token: str,
-        user_id: str,
-    ) -> dict:
-        await self.draft_repository.store_decisions(run_id, decisions)
-        accepted = [d for d in decisions if d.action in {"accept", "override_source"}]
-
-        if accepted:
-            await self.capability_client.execute(
-                capability_id="ghgi.stationary_energy.commit_accepted",
-                workflow_step="review",
-                payload={"runId": run_id, "decisions": [d.model_dump() for d in accepted]},
-                token=token,
-                user_id=user_id,
-            )
-
-        return await self.draft_repository.get_run_state(run_id)
-```
-
-The service can use deterministic ranking first and swap in an LLM later, as
-long as the same proposal model remains the contract. When the LLM path is
-enabled, the OpenAI Agents SDK should be the only orchestration layer. Do not
-add MCP as an intermediate tool runtime for this workflow.
-
-### CC Capability Endpoint Example
-
-The endpoint should be internal to CA, authenticate the service, validate the
-user-scoped token/session, resolve the capability from the registry, validate
-input, and execute the wrapper.
+Feature flags:
 
 ```ts
-// app/src/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/[capability]/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { apiHandler } from "@/util/api";
-import { getStationaryEnergyCapability } from "@/backend/agentic/ghgi/stationary-energy/registry";
-
-export const POST = apiHandler(
-  async (req: NextRequest, { session, params }) => {
-    const serviceKey = req.headers.get("X-Service-Key");
-    if (serviceKey !== process.env.CC_SERVICE_API_KEY) {
-      return NextResponse.json({ error: "Unauthorized service" }, { status: 401 });
-    }
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "User token required" }, { status: 401 });
-    }
-
-    const { workflow_step, payload } = await req.json();
-    const capability = getStationaryEnergyCapability(
-      params.capability,
-      workflow_step,
-    );
-
-    const input = capability.inputSchema.parse(payload);
-    const output = await capability.execute(input, {
-      session,
-      locale: payload.locale ?? "en",
-    });
-
-    return NextResponse.json(capability.outputSchema.parse(output));
-  },
-);
+if (!isEnabled("stationary_energy_agentic")) return notFound();
 ```
 
-The exact route wrapper may need to follow the repo's current `apiHandler`
-signature, but the important implementation rule is that all execution goes
-through the registry and wrapper, not direct arbitrary route calls.
+```python
+if not settings.stationary_energy_agentic_enabled:
+    raise HTTPException(status_code=404, detail="Feature disabled")
+```
 
 ### Step-Scoped Capability Exposure
 
@@ -899,12 +608,16 @@ Suggested fields:
 
 ```mermaid
 flowchart TD
-  User["User opens Stationary Energy agentic decisions page"] --> CCPage["CityCatalyst page"]
+  User["User opens Stationary Energy launcher or sector CTA"] --> Selector["City and inventory selection"]
+  Selector --> ChosenScope["Selected city, inventory, and sector"]
+  ChosenScope --> CCPage["Agentic decisions page"]
   CCPage --> CAStart["Start or resume CA draft run"]
-  CAStart --> Loader["Stationary Energy context loader"]
-  Loader --> Registry["Stationary Energy capability registry"]
+  CAStart --> CAResolve["CA resolves workflow step and selected scope"]
+  CAResolve --> Registry["Stationary Energy capability registry"]
+  CAResolve --> Loader["Stationary Energy context loader"]
   Registry --> Wrappers["Scoped capability wrappers"]
-  Wrappers --> CCState["CityCatalyst inventory and source state"]
+  Loader --> CCState["CityCatalyst inventory and source state"]
+  Wrappers --> CCState
   CCState --> CADecide["CA ranks approved candidates"]
   CADecide --> CADrafts["CA stores draft proposals"]
   CADrafts --> DecisionsPage["Decision page shows recommendations, conflicts, gaps"]
@@ -942,7 +655,9 @@ CA should return structured proposal states:
 
 ## Guardrails
 
-- The workflow is always scoped to one city, inventory, and sector.
+- The product entry can expose multiple accessible cities and inventories, but
+  each draft run is scoped to one selected city, one selected inventory, and
+  one sector.
 - CA never writes directly to committed inventory tables.
 - CA never sees unrelated product state.
 - CA never receives arbitrary credentials.
@@ -951,64 +666,88 @@ CA should return structured proposal states:
 - Every committed change requires an explicit user decision.
 - Drafts remain visually distinct from saved values.
 - Version history is created only for committed CityCatalyst changes.
+- Feature flags in both CA and CC must default to off. CC should hide the UI
+  entry points and pages, and CA should disable the draft workflow endpoints or
+  return a feature-disabled response until the pilot is intentionally enabled.
 - Every draft run should carry a LangSmith trace reference when tracing is
   enabled.
 
 ## Implementation Plan
 
-### Phase 1: Architecture Skeleton
+### 1. CA Adjustments
+
+- Add a CA feature flag for the Stationary Energy drafting workflow and keep it
+  disabled by default.
+- Add CA draft routes for start, resume/status, and review only behind that
+  feature flag.
+- Add CA database tables or models for draft runs, proposals, review
+  decisions, trace references, and resume state.
+- Implement the CA workflow service so it:
+  - resolves workflow step and selected scope
+  - asks CC for allowed capabilities
+  - ensures user token readiness
+  - loads bounded Stationary Energy context
+  - runs the OpenAI Agents SDK orchestration
+  - stores proposals and review decisions
+- Add LangSmith trace linkage and structured CA workflow logs.
+- Add recovery behavior for interrupted draft runs.
+- Add schema validation tests for CA context, proposals, and review decisions.
+
+Exit condition:
+
+With the CA flag enabled in a non-production environment, CA can stage and
+resume Stationary Energy draft runs without writing committed inventory values.
+With the CA flag disabled, the workflow routes stay unavailable or return a
+feature-disabled response.
+
+### 2. Landing Pages And UX Parts
+
+- Add a CC feature flag for the Stationary Energy agentic workflow and keep it
+  disabled by default.
+- Hide the launcher page, sector CTA, draft pages, and review pages unless the
+  CC flag is enabled.
+- Add the city and inventory selection page.
+- Add the scoped decisions page.
+- Add the review page.
+- Render current Stationary Energy rows, draft states, provenance, conflicts,
+  and gaps in a CC-native layout.
+- Support the user decision controls: accept, source override, manual override,
+  and leave draft.
+- Keep draft values visually distinct from committed values.
+- Add access and UX tests so the new surfaces do not appear or interfere with
+  the existing GHGI flow while the feature flag is off.
+
+Exit condition:
+
+With the CC flag enabled, an internal user can choose a city and inventory,
+inspect draft recommendations, review them, and move through the full UI flow.
+With the CC flag disabled, the current GHGI experience remains unchanged.
+
+### 3. CC Integration
 
 - Add Stationary Energy capability wrappers.
 - Add a Stationary Energy-only capability registry.
-- Add context loaders for city, inventory, sector, existing values, and sources.
-- Add CA database tables or models for draft runs, proposals, and decisions.
-- Wire the flow through the existing CC-CA connection.
-
-Exit condition:
-
-An internal user can start a Stationary Energy draft run and see staged
-proposals in CA without saving them to the inventory.
-
-### Phase 2: Decisions Page
-
-- Add the scoped decisions page.
-- Render current Stationary Energy rows.
-- Render draft states: ready, conflict, and gap.
-- Show source tags and provenance.
-- Show decision rationale in the agentic rail.
-- Allow the user to continue to review.
-
-Exit condition:
-
-An internal user can inspect the draft recommendations and understand why each
-value was suggested before review.
-
-### Phase 3: Review And Commit
-
-- Add the review page.
-- Support accept, source override, manual override, and leave draft.
-- Persist review decisions in CA.
-- Commit accepted source-backed values through CityCatalyst.
+- Add context loaders for city selection, inventory, sector, existing values,
+  and approved source candidates.
+- Add or expose the CC internal endpoints needed by CA:
+  - allowed capabilities lookup
+  - bounded context loading
+  - accepted draft commit
+- Keep all CC integration behind the CC feature flag so the workflow cannot be
+  triggered accidentally from production UI or CA.
+- Validate permissions, scope ownership, and inventory-city consistency inside
+  CC.
+- Commit accepted source-backed values through existing inventory write paths.
 - Record CityCatalyst version history for committed changes.
-- Keep non-accepted drafts pending.
+- Add access-scope tests and confirmation tests for accepted and overridden
+  drafts.
 
 Exit condition:
 
-An internal user can complete the full review loop and commit accepted
-Stationary Energy values end to end.
-
-### Phase 4: Pilot Hardening
-
-- Add feature flagging.
-- Add access-scope tests.
-- Add schema validation tests for context, proposals, and review decisions.
-- Add confirmation tests for accepted and overridden drafts.
-- Add LangSmith trace links for draft runs.
-- Add recovery behavior for interrupted draft runs.
-
-Exit condition:
-
-The workflow is ready for a controlled Stationary Energy pilot.
+With both CC and CA flags enabled for the pilot, the full Stationary Energy
+workflow can run end to end through the existing CC-CA connection. With either
+flag disabled, the agentic path stays hidden or blocked and does not interfere
+with the current app behavior.
 
 ## Open Decisions
 
@@ -1030,12 +769,49 @@ agentic workflow.
 
 | Page | Route | Owner | Purpose |
 | --- | --- | --- | --- |
+| City and inventory selection page | `/{lng}/GHGI/draft/stationary-energy` | CityCatalyst | Lets the user choose among accessible cities and eligible inventories before starting a draft run. |
 | Existing Stationary Energy sector page | `/{lng}/cities/{cityId}/GHGI/{inventoryId}` or the current inventory sector route | CityCatalyst | Entry point. Shows the normal Stationary Energy inventory UI and a CTA to start agentic drafting. |
 | Agentic decisions page | `/{lng}/cities/{cityId}/GHGI/{inventoryId}/draft/stationary-energy` | CityCatalyst UI + Climate Advisor draft state | Shows current rows, source coverage, recommended drafts, conflicts, gaps, provenance, and progress. |
 | Draft review page | `/{lng}/cities/{cityId}/GHGI/{inventoryId}/draft/stationary-energy/review` | CityCatalyst UI + Climate Advisor review state | Lets the user accept, override, manually stage, or leave each draft before save. |
 | Saved inventory page | Existing inventory route after review | CityCatalyst | Shows committed values after accepted drafts are saved through the normal inventory write path. |
 
-### Page 1: Existing Stationary Energy Sector Page
+### Page 1: City And Inventory Selection Page
+
+Route:
+
+`/{lng}/GHGI/draft/stationary-energy`
+
+Primary layout:
+
+- Search and filter bar.
+- List or table of accessible cities.
+- Nested or adjacent eligible inventory selection.
+- Entry action to continue into Stationary Energy drafting.
+
+What appears:
+
+- Accessible cities for the current user.
+- Inventory year, type, and status summary for eligible GHGI inventories.
+- Clear selected state for city and inventory.
+- Disabled continue action until both city and inventory are selected.
+
+What it calls:
+
+- Existing CityCatalyst city and inventory listing APIs.
+- No CA draft run is created from this page until the user confirms the target
+  scope.
+- On continue, navigate to the decisions page with `cityId` and `inventoryId`.
+
+Frontend implementation location:
+
+- `app/src/app/[lng]/GHGI/draft/stationary-energy/page.tsx`
+- Supporting components, for example:
+  - `CityInventorySelector`
+  - `CitySearchInput`
+  - `InventoryPickerTable`
+  - `SelectedScopeSummary`
+
+### Page 2: Existing Stationary Energy Sector Page
 
 Location:
 
@@ -1056,7 +832,7 @@ What it calls:
 - No new draft call until the user clicks the CTA.
 - On click, navigate to the decisions page with `cityId` and `inventoryId`.
 
-### Page 2: Agentic Decisions Page
+### Page 3: Agentic Decisions Page
 
 Route:
 
@@ -1086,7 +862,7 @@ Agent rail areas:
 
 Main behavior:
 
-1. Page loads with city, inventory, and sector scope.
+1. Page loads with the selected city, inventory, and sector scope.
 2. CityCatalyst UI asks CA to start or resume a Stationary Energy draft run.
 3. CA uses the Stationary Energy context loader and capability registry.
 4. CA stores draft proposals in the CA database.
@@ -1113,7 +889,7 @@ Backend calls:
 - CC internal capability used by CA:
   `ghgi.stationary_energy.load_context`
 
-### Page 3: Draft Review Page
+### Page 4: Draft Review Page
 
 Route:
 
@@ -1175,7 +951,7 @@ Backend calls:
 - CC internal capability used by CA:
   `ghgi.stationary_energy.commit_accepted`
 
-### Page 4: Saved Inventory Page
+### Page 5: Saved Inventory Page
 
 Location:
 
@@ -1198,7 +974,7 @@ What it calls:
 
 | Layer | Location | Responsibility |
 | --- | --- | --- |
-| CityCatalyst UI | New Stationary Energy draft and review routes | User workflow, visual style, decision controls, and navigation back to inventory. |
+| CityCatalyst UI | New Stationary Energy selector, draft, and review routes | User workflow, city/inventory selection, visual style, decision controls, and navigation back to inventory. |
 | CityCatalyst capability endpoint | `app/src/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/[capability]/route.ts` | Internal CA-only execution surface for scoped capabilities. |
 | CityCatalyst capability wrappers | `app/src/backend/agentic/ghgi/stationary-energy/capabilities.ts` | Stable wrappers around existing inventory/source/commit logic. |
 | CityCatalyst registry | `app/src/backend/agentic/ghgi/stationary-energy/registry.ts` | Step-scoped list of capabilities available to CA. |
@@ -1216,8 +992,9 @@ What it calls:
 
 ```mermaid
 flowchart TD
+  Launcher["City/inventory selection page"] --> Decisions["Agentic decisions page"]
   Inventory["Existing Stationary Energy page"] --> CTA["Let the agent draft this section"]
-  CTA --> Decisions["Agentic decisions page"]
+  CTA --> Decisions
   Decisions --> Ready["Ready draft values"]
   Decisions --> Conflict["Conflict decisions"]
   Decisions --> Gap["Gap explanations"]

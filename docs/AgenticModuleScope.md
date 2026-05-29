@@ -10,8 +10,9 @@ make that practical without turning the product into one flat tool bag.
 prepares drafts or exports, and waits for explicit user decisions before
 product data changes.
 - Out of scope: auth, OAuth/clients, personal tokens, health/liveness, mock
-routes, internal CA token plumbing, feature-flag administration, and
-operational observability/hardening.
+routes, internal CA token plumbing, feature-flag administration, and broader
+platform operations beyond the trace, audit, and correlation artifacts needed
+for agent workflows.
 - Experimental work already built as a separate proof of concept should not set
 the scope for the broader module plan.
 
@@ -227,39 +228,48 @@ set of module-owned capability wrappers, which then delegate to existing CC
 routes and services while reusing the secure token exchange already in place
 today.
 
-In the desired flow, CA should not decide tool registration manually. The
-scoped context loader should determine the active workflow step, load the
-minimal context needed for that step, resolve the matching capabilities from
-the registry, and build the agent's scoped tool set from that.
+In the desired flow, CA should be the orchestrator. It should resolve the
+active workflow step and resource scope, ask the registry which capabilities
+are allowed for that step, ask the scoped context loader for the bounded
+context that step needs, ensure the current user-scoped token is valid, and
+only then create the agent from that bounded runtime state.
 
 ```mermaid
 sequenceDiagram
     participant User
     participant CAApi as "CA /v1/messages"
     participant ThreadDB as "CA thread context DB"
+    participant Resolver as "CA step/scope resolver"
     participant Scope as "Scoped context loader"
     participant Registry as "Capability registry"
     participant Agent as "CA Agent + tool wrappers"
     participant Token as "CA token handler"
     participant CCAuth as "CC /api/v1/internal/ca/user-token"
     participant CCWrapper as "Module-owned capability wrapper"
+    participant CCRead as "Existing CC reads/services"
     participant CCLogic as "Existing CC routes/services"
 
     User->>CAApi: Send chat message
     CAApi->>ThreadDB: Resolve thread and load stored access_token
-    CAApi->>Scope: Resolve active workflow step and resource scope
-    Scope->>Registry: Resolve active capabilities for this step
-    Registry-->>Scope: Capability definitions and exposure rules
-    Scope-->>CAApi: Scoped tool set and summarized context
-    CAApi->>Agent: Create agent with scoped tool set
-    Agent->>Agent: LLM selects capability tool
-    Agent->>Token: Get token for current thread/user
+    CAApi->>Resolver: Resolve active workflow step and resource scope
+    Resolver-->>CAApi: Step id and resource scope
+    CAApi->>Registry: Resolve active capabilities for this step
+    Registry-->>CAApi: Capability definitions and exposure rules
+    CAApi->>Scope: Load summarized context for step and resource scope
+    Scope->>CCRead: Load bounded product state
+    CCRead-->>Scope: Raw CC data needed for this step
+    Scope-->>CAApi: Summarized context
+    CAApi->>Token: Ensure valid token for current thread/user
 
-    alt token expired or CC returns 401
+    alt token missing or expired
         Token->>CCAuth: POST user_id with X-CA-Service-Key
         CCAuth-->>Token: Fresh access_token
         Token->>ThreadDB: Persist refreshed access_token
     end
+
+    Token-->>CAApi: Valid access_token
+    CAApi->>Agent: Create agent with scoped tool set, context, and token reference
+    Agent->>Agent: LLM selects capability tool
 
     Agent->>CCWrapper: Call wrapper with Bearer access_token
     CCWrapper->>CCLogic: Reuse existing CC product logic
@@ -271,11 +281,13 @@ sequenceDiagram
 
 
 This keeps the architecture aligned with the desired runtime model: CA scopes
-tools from the registry, the LLM selects one wrapper-level capability, and that
-wrapper reuses existing CC implementation rather than forcing the agent to
-choose from many raw routes. The wrapper result can be incorporated either into
-a normal answer or into a user decision step such as approval, rejection, or
-confirmation.
+tools from the registry, validates token readiness before any agent run starts,
+and then lets the LLM select one wrapper-level capability. The scoped context
+loader does not decide tool exposure; it only prepares the bounded state for
+the step CA already selected. That wrapper reuses existing CC implementation
+rather than forcing the agent to choose from many raw routes. The wrapper
+result can be incorporated either into a normal answer or into a user decision
+step such as approval, rejection, or confirmation.
 
 #### 2. Capability Registry
 
@@ -294,17 +306,21 @@ This registry should become the source of truth for tool generation and scope
 selection.
 
 In the desired CA runtime, the registry should be the thing that decides which
-capabilities are available to the agent for a given scoped step. CA should ask
-the scoped context loader for the active step, resolve the matching
-capabilities from the registry, and create the agent from that scoped set.
+capabilities are available to the agent for a given scoped step. CA should
+resolve the active step, ask the registry for the matching scoped capability
+set, ask the context loader for the bounded step context, ensure token
+readiness for the current user, and only then create the agent for that step.
 
 #### 3. Scoped Context Loaders
 
 Each workflow should have a dedicated context loader that decides:
 
-- which resource is active: city, inventory, project, organization
-- which capabilities are enabled for this step
+- which active resource state needs to be loaded for the current step
 - what should be summarized for the model instead of dumping raw objects
+
+The loader should not decide capability exposure on its own. CA should decide
+the active step, the registry should decide which capabilities are allowed, and
+the loader should return the bounded context for that already-scoped step.
 
 Example:
 
@@ -494,6 +510,46 @@ This matters because "waiting per user", "started actions", "polling states",
 and "saved drafts" should not live only inside CA thread state. If the state
 affects product data, approval, restore, or cross-session resume, CC should own
 it as the durable source of truth.
+
+#### 9. Production Observability and Audit Artifacts
+
+Production observability should be part of the architecture contract, not a
+later cleanup step. Agentic workflows are harder to debug than normal CRUD
+requests because the failure surface includes model selection, prompt/context
+shape, tool routing, scoped permissions, and human review decisions.
+
+The minimum requirement should be:
+
+- one correlation id carried across CC request logs, CA workflow logs, and any
+  downstream capability execution
+- one durable workflow id such as `draft_run_id` that ties the user-visible
+  draft state to every trace and log line
+- one LangSmith trace per agent turn or draft-generation run with metadata such
+  as `city_id`, `inventory_id`, `sector_code`, workflow step, capability ids,
+  and outcome status
+- structured CC and CA logs for capability execution, permission failures,
+  context-loading failures, commit failures, and user review actions
+- one durable audit artifact for each draft run containing the bounded context
+  summary, candidate set references, selected recommendation, conflict/gap
+  explanation, user decisions, and final commit result if any
+
+These artifacts should make it possible to answer practical production
+questions:
+
+- what context did the model receive
+- which capabilities were exposed
+- which capability calls were attempted
+- which candidate won and why
+- what the user accepted, overrode, or rejected
+- what was ultimately committed into CC
+
+The artifact does not need to be a heavyweight ML training record. It does need
+to be a stable debugging and review object that survives page refresh, session
+loss, and support escalation.
+
+Sensitive values should be handled conservatively. We should not persist raw
+Bearer tokens, secrets, or unnecessary full product payload dumps inside traces
+or audit artifacts.
 
 In practice that likely means adding product-owned workflow tables in CC for:
 

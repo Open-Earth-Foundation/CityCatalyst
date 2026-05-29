@@ -35,7 +35,10 @@ API_HOST=0.0.0.0
 API_PORT=8000
 LOG_LEVEL=INFO
 LOG_DIR=logs
-ARTIFACT_LOG_JSONL=true
+LOCAL_ARTIFACTS_ENABLED=true
+MLFLOW_ENABLED=true
+MLFLOW_TRACKING_URI=http://mlflow:5000
+MLFLOW_EXPERIMENT_NAME=hiap-meed-dev
 HIAP_MEED_CITY_DATA_SOURCE=api
 CCGLOBAL_API_BASE_URL=https://ccglobal.openearth.dev
 UPSTREAM_HTTP_TIMEOUT_SECONDS=30
@@ -63,8 +66,11 @@ Variables:
 - `API_HOST`: server bind host (default `0.0.0.0`)
 - `API_PORT`: server bind port (default `8000`)
 - `LOG_LEVEL`: Python logging level (for example `DEBUG`, `INFO`)
-- `LOG_DIR`: output folder for file logs and request artifacts
-- `ARTIFACT_LOG_JSONL`: if `true`, writes per-request artifact files
+- `LOG_DIR`: output folder for `app.log` and optional local request artifacts
+- `LOCAL_ARTIFACTS_ENABLED`: if `true`, writes per-request artifact files under `LOG_DIR/requests/...`
+- `MLFLOW_ENABLED`: if `true`, enables best-effort MLflow run, direct artifact, and OpenAI trace logging
+- `MLFLOW_TRACKING_URI`: MLflow tracking server URL. For local Docker Compose development use `http://mlflow:5000`. In Kubernetes, point this to the in-network MLflow service URI.
+- `MLFLOW_EXPERIMENT_NAME`: MLflow experiment name used for all hiap-meed runs
 - `HIAP_MEED_CITY_DATA_SOURCE`: city input source (`api` or `mock`)
 - `CCGLOBAL_API_BASE_URL`: shared Global API base host for upstream API-backed clients (default `https://ccglobal.openearth.dev` for local/dev)
 - `UPSTREAM_HTTP_TIMEOUT_SECONDS`: shared timeout in seconds for upstream HTTP API calls (default `30`)
@@ -86,6 +92,8 @@ Variables:
 - `HIAP_MEED_EXPLANATION_TRANSLATIONS_MODEL`: model name used for explanation translation
 - `OPENAI_MAX_RETRIES`: shared OpenAI client retries (default `3`)
 
+When `MLFLOW_ENABLED=true`, the service best-effort logs request runs, direct request artifacts, and OpenAI traces to the configured MLflow server. If MLflow is down or unreachable, the API still completes normally and only emits warning logs.
+
 ### 2. Install dependencies
 
 From the `hiap-meed` directory:
@@ -96,19 +104,24 @@ uv sync
 
 ### 3. Run the API locally
 
+Local development should use Docker Compose so `hiap-meed` and `mlflow` share the same Docker network and the `mlflow` hostname resolves correctly from the API container.
+
 From the `hiap-meed` directory:
 
-```bash
-uv run python -m app.main
+```text
+docker compose up --build
 ```
 
 Verify the service:
 
 - Health check: `curl http://localhost:8000/health`
 - OpenAPI docs: `http://localhost:8000/docs`
+- MLflow UI: `http://localhost:5000`
 - Prioritization endpoint: `POST /v1/prioritize`
 - Explanation translation endpoint: `POST /v1/explanations/translate`
 - Exclusion preview endpoint: `POST /v1/prioritize/exclusions/preview`
+
+If you later deploy `hiap-meed` and MLflow into the same Kubernetes network, keep `MLFLOW_ENABLED=true` and change only `MLFLOW_TRACKING_URI` to the in-cluster MLflow service URI for that environment.
 
 ### External API contracts
 
@@ -473,10 +486,11 @@ The service writes:
 
 - Console logs (stdout/stderr)
 - File logs at `LOG_DIR/app.log`
-- Per-request artifacts at:
+- Optional local per-request artifacts at:
   - `LOG_DIR/requests/prioritization/{UTC_TIMESTAMP}Z_{internal_request_id}/`
   - `LOG_DIR/requests/exclusion_preview/{UTC_TIMESTAMP}Z_{internal_request_id}/`
-    when `ARTIFACT_LOG_JSONL=true`
+- Direct MLflow artifacts on the active request run when `MLFLOW_ENABLED=true`
+- Local request artifact folders only when `LOCAL_ARTIFACTS_ENABLED=true`
 
 Fetch-step artifacts record the active data source for each upstream/mock dependency. API-backed fetches include upstream request metadata such as endpoint templates, resolved URLs, request keys, HTTP status codes, and upstream timestamps when available. Mock-backed fetches include the resolved `mock_file_path` plus the relevant request key such as `requested_locode` or `requested_country_code`.
 
@@ -490,7 +504,7 @@ What `app.log` contains:
 - High-level pipeline milestone logs (fetch counts, hard-filter counts, completion)
 - Cross-request aggregated logs (all requests in one rolling file path)
 
-What each request run folder contains:
+What each local request run folder contains:
 
 - `summary.jsonl`: one JSON line per high-level pipeline event for that request
 - `NNN_<step>.json`: concise per-step detail files (fetch, filter, score, response summary)
@@ -502,6 +516,7 @@ What each request run folder contains:
 - `request_kind`: included in summary events, detail files, and manifests so artifacts can be filtered by API type
 - `event_index` is shared between a summary event and its matching detail file, so `summary.jsonl` and `NNN_<step>.json` are directly pairable
 - Timing/count summaries plus request-scoped traceability in a single run directory
+- When MLflow is enabled, it uses the same default relative artifact paths as the optional local request folder so both outputs keep one consistent hierarchy
 - Prioritization request folders additionally include:
   - `llm/explanations_io.json`: explanation-stage LLM request/response artifact (only when explanations are generated successfully)
   - `llm/explanations_prompt.txt`: plain-text rendered user prompt with preserved newlines (only when explanations are generated successfully)
@@ -516,9 +531,9 @@ What each request run folder contains:
 - Explanation translation artifacts record the source language contract, requested target languages, and any LLM language-check warnings.
 - For the direct other-preference feature, the `alignment` step detail includes evidence such as `resolved_preferred_co_benefits`, `matched_preferred_co_benefits`, and mapping source fields
 - The active request flow does not emit dedicated LLM prompt/response artifact files for Alignment because direct co-benefit selections are deterministic
-- Exclusion preview request folders additionally include:
-  - `cities/<locode>_preview.json`: per-city exclusion preview diagnostics
-  - `llm/<locode>_free_text_exclusion_io.json`: free-text exclusion LLM input/output and validation diagnostics
+- Exclusion preview step-detail artifacts keep the city-level diagnostics, including:
+  - the selected exclusion inputs for that city
+  - free-text exclusion LLM resolution and validation diagnostics when applicable
   - dropped-row diagnostics for unknown IDs, ambiguous matches, and empty reasons inside the free-text exclusion validation payload
 - Current implementation note:
   - prioritization artifacts are assembled from the orchestrator layer
@@ -557,24 +572,36 @@ Typical per-request artifact events:
 
 ### 6. Docker
 
+For local development, run both `hiap-meed` and MLflow with Docker Compose.
+
 From the `hiap-meed` directory:
 
-```bash
-docker build -t hiap-meed-app .
-docker run -it --rm -p 8000:8000 --env-file .env hiap-meed-app
+```text
+docker compose up --build
 ```
 
-To persist file logs and per-request artifacts on your machine (under `logs/`, including `logs/requests/`), bind-mount the host `logs` directory to `/app/logs` in the container (this matches default `LOG_DIR=logs`):
+This starts:
 
-```bash
-docker run -it --rm -p 8000:8000 --env-file .env -v "%cd%\logs:/app/logs" hiap-meed-app
-```
+- `hiap-meed` on `http://localhost:8000`
+- `mlflow` on `http://localhost:5000`
 
-If you change `LOG_DIR` in `.env`, adjust the container path in `-v` so it matches `/app/<LOG_DIR>`.
+The compose file intentionally runs MLflow with permissive `--allowed-hosts "*"` because this setup is for local development only.
+
+The compose file already bind-mounts `./logs` to `/app/logs`, so `app.log` and optional local request artifacts persist on your machine under `logs/`.
+MLflow keeps its own SQLite metadata store and artifact store in its own named Docker volume. `hiap-meed` does not share that filesystem; it talks to MLflow only through `MLFLOW_TRACKING_URI`, which mirrors the later Kubernetes service-to-service setup.
+
+If you change `LOG_DIR` in `.env`, update the `hiap-meed` volume mount in `compose.yaml` so it still matches `/app/<LOG_DIR>`.
 
 The Docker image includes both `app/` and `data/`, so mock payloads under
 `data/mock` are available in-container at `/app/data/mock`.
 Data folder needs to be removed once real APIs are available.
+
+If you previously ran the older local setup that shared an MLflow data volume with `hiap-meed`, reset the local MLflow state once before retesting:
+
+```text
+docker compose down -v
+docker compose up --build
+```
 
 ## Testing
 

@@ -33,7 +33,7 @@ It is a **pnpm-free monorepo** with five deployable units:
 - **Do not commit secrets.** Anything matching `*key*`, `*token*`, `*secret*`, `*.env`, `credentials.json` is a hard stop.
 - **Do not skip the rules in `.cursor/rules/`** — they are the team's accumulated taste.
 - **Do not introduce new dependencies "just because."** Reuse first; document why if you must add.
-- **Do not modify `AGENTS.md`, `.cursor/rules/`, `.cursor/skills/`, or `docs/agent-runbook.md` without CTO review.** These are the agentic foundation; the CTO is the curator. (Product code merges are unaffected — any tech-team member can merge product code as today.)
+- **Do not modify `AGENTS.md`, `.cursor/rules/`, `.cursor/skills/`, or `docs/agent-runbook.md` without core-team review.** These are the agentic foundation, curated by the core engineering team. (Product code merges are unaffected — any tech-team member can merge product code as today.)
 
 ## What you must always do
 
@@ -67,6 +67,7 @@ It is a **pnpm-free monorepo** with five deployable units:
 | Write a commit message | `.cursor/skills/commit-message-standards/SKILL.md` |
 | Open / draft a PR | `.cursor/skills/pull-request-standards/SKILL.md` |
 | Review a PR | `.cursor/skills/pr-review-gate/SKILL.md` |
+| Pick the next backlog ticket (Linear via MCP, runbook fallback) | `.cursor/skills/triage-backlog-ticket/SKILL.md` |
 
 | You want a rule reminder | Open |
 |--------------------------|------|
@@ -102,7 +103,7 @@ It is a **pnpm-free monorepo** with five deployable units:
 ```bash
 cd app
 npm install
-cp .env.example .env.local        # ask the CTO for dev secrets
+cp .env.example .env.local        # ask the team in #engineering for dev secrets
 npm run db:migrate
 npm run dev                        # http://localhost:3000
 

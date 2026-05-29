@@ -32,7 +32,7 @@ Required:
 When the cron body is a shell script:
 
 - Use `set -euo pipefail` at the top.
-- Test for **missing** env with `[ -z "$VAR" ]`. Test for **present** with `[ -n "$VAR" ]`. Inverting these is the canonical historical bug (see ROADMAP §1.2).
+- Test for **missing** env with `[ -z "$VAR" ]`. Test for **present** with `[ -n "$VAR" ]`. Inverting these is the canonical historical bug — search the cron repo history before changing these checks.
 - Quote variables: `"$VAR"`, never `$VAR`.
 - Reference secrets via `valueFrom.secretKeyRef`, never inline.
 - Auth headers: `"Authorization: Bearer $CC_CRON_JOB_API_KEY"` — never blank.

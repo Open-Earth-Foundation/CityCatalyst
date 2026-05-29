@@ -67,7 +67,7 @@ refactor(api): split services/api.ts (was 2171 lines) (ON-5601)
 ## Merge policy
 
 - **Product code** (`app/`, `global-api/`, `hiap/`, `climate-advisor/`, `k8s/`, etc.) — any tech-team member can merge after standard review (≥ 1 approval, CI green).
-- **Agentic foundation** (`AGENTS.md`, `.cursor/rules/`, `.cursor/skills/`, `docs/agent-runbook.md`) — the **CTO is the single curator**. PRs touching these files need CTO sign-off; after approval, anyone in the tech team merges.
+- **Agentic foundation** (`AGENTS.md`, `.cursor/rules/`, `.cursor/skills/`, `docs/agent-runbook.md`) — curated by the **core engineering team**. PRs touching these files need core-team sign-off; after approval, anyone in the tech team merges.
 - **Agents (Cursor, agentic-coder, Cloud Agents)** push branches and stop. They do **not** open PRs unless explicitly told to in the active task. They never merge their own PRs.
 
 This isn't bureaucracy — the foundation is one coherent system across repos and we don't want it drifting per-author. Once stable (Q3), the curator role expands to a `agent-foundation` reviewer team.

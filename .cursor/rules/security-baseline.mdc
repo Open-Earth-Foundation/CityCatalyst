@@ -51,7 +51,7 @@ These checks apply to **every** change. PRs that violate them are returned regar
 ## Background work
 
 - Async functions started outside a request handler must be wrapped in `try/catch` and end with a `.catch(logger.error)` — no `void`-ed promises.
-- HIAP batch handlers (`HiapService.startBothActionRankingJobs`) — see ROADMAP item 1.3 for the canonical example.
+- HIAP batch handlers (`HiapService.startBothActionRankingJobs`) are the canonical example — read the source before writing similar code.
 
 ## Rate limiting
 

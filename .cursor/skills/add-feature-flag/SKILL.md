@@ -66,4 +66,4 @@ In the PR body, include:
 
 - Flags without removal plans → they become permanent forks.
 - Flags read from `process.env` directly inside components → use `isFeatureEnabled`.
-- Flags that gate **destructive** behaviour (deletes, migrations) — these need a CTO sign-off, not a flag.
+- Flags that gate **destructive** behaviour (deletes, migrations) — these need core-team sign-off, not a flag.

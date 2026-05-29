@@ -59,6 +59,6 @@ When you change the API surface, expect this workflow to run. If it fails, the s
 
 ## Versioning
 
-The current public surface is `/api/v1/`. **Do not** introduce `/api/v2/` without a CTO sign-off — we'd rather extend v1 carefully (additive fields, optional params, deprecation headers) than fork.
+The current public surface is `/api/v1/`. **Do not** introduce `/api/v2/` without core-team sign-off — we'd rather extend v1 carefully (additive fields, optional params, deprecation headers) than fork.
 
 `/api/v0/` exists for k8s probes (`liveness`, `health`) and a few legacy proxies. Don't add new public routes there.

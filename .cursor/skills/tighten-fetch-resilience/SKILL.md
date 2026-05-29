@@ -67,7 +67,7 @@ void doBackgroundWork()
   .catch((err) => logger.error({ err }, "background work failed"));
 ```
 
-For HIAP "start both" pattern (ROADMAP §1.3), explicitly `.catch()` the second job:
+For the HIAP "start both" pattern, explicitly `.catch()` the second job (the canonical example lives in `app/src/backend/hiap/HiapService.ts:startBothActionRankingJobs`):
 
 ```ts
 await startMitigationRanking(input);

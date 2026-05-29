@@ -1,0 +1,93 @@
+---
+description: Windows Command Prompt (cmd.exe) syntax cheatsheet — POSIX → CMD translations. Use when a contributor is working in native Windows CMD (not WSL2, not PowerShell). Pair with `os-shell.mdc` (which is the always-on cross-platform default).
+alwaysApply: false
+---
+
+# Windows CMD — translation cheatsheet
+
+The OEF default shell is POSIX (`bash`/`zsh`) — see `os-shell.mdc`. Most Windows contributors run inside **WSL2**, where POSIX commands work as-is. A minority work in **native Windows CMD (`cmd.exe`)**. This rule exists for them.
+
+> If you're in PowerShell, this rule doesn't apply — translate POSIX → PowerShell on demand instead. Don't reach for CMD syntax just because the OS is Windows.
+
+## When to apply this rule
+
+- The contributor explicitly says they're in CMD.
+- The terminal banner / prompt indicates `cmd.exe`.
+- The user pastes a CMD-style error (e.g. `'<cmd>' is not recognized as an internal or external command`).
+
+If none of those signals are present, default to POSIX (`os-shell.mdc`) — even on Windows.
+
+## 1) Shell and execution
+
+- Assume commands are pasted into **cmd.exe** in Cursor's integrated terminal.
+- Do **not** mix PowerShell syntax (no `Get-ChildItem`, no `$env:`, no `Remove-Item`, no `Set-Location`).
+- If a doc snippet defaults to PowerShell, translate to CMD before running.
+
+## 2) Never use Linux/macOS-only commands
+
+Do not use: `ls`, `cat`, `grep`, `sed`, `awk`, `find` (POSIX), `pwd`, `rm -rf`, `cp`, `mv`, `touch`, `export`, `chmod`, `chown`, `./script.sh`, `curl | bash`.
+
+## 3) CMD equivalents
+
+| POSIX | CMD |
+|-------|-----|
+| `ls` | `dir` |
+| `cd path` | `cd path` (relative: `cd .\folder`) |
+| `pwd` | `cd` |
+| `cat file.txt` | `type file.txt` |
+| `grep -in "pat" file` | `findstr /n /i "pat" file` (`/s` to recurse) |
+| `touch file.txt` | `type nul > file.txt` |
+| `echo line >> file` | `echo line>> file` |
+| `cp src dst` | `copy src dst` (folders: `xcopy /e /i src dst`) |
+| `mv src dst` | `move src dst` or `ren old new` |
+| `rm file` | `del /q file` |
+| `rm -rf dir` | `rmdir /s /q dir` |
+| `export NAME=val` (session) | `set NAME=value` |
+| `export NAME=val` (persistent) | `setx NAME "value"` (applies to new terminals) |
+| `./tool` | `.\tool.exe` or `.\script.bat` |
+| `bash script.sh` | `call script.bat` |
+
+## 4) Paths and quoting
+
+- Use Windows paths with backslashes: `.\path\to\file` or `C:\path\to\file`.
+- Quote paths with spaces: `"C:\Program Files\..."`.
+- All filesystem paths are relative to the current workspace root.
+- Never resolve paths from OS root (e.g. raw `C:\`).
+
+## 5) Command chaining
+
+- Chain on success: `command1 && command2`.
+- Chain always: `command1 & command2`.
+- Multi-line blocks use parentheses: `(command1 && command2 && command3)`.
+- Use `^` for line continuation when needed.
+
+## 6) Python / venv in CMD
+
+```bat
+python -m venv .venv
+.\.venv\Scripts\activate.bat
+pip install -r .\requirements.txt
+pytest
+python -m package.module
+```
+
+## 7) Git in CMD
+
+```bat
+git status
+git checkout -b feature\my-branch
+git add .
+git commit -m "message"
+```
+
+## 8) Output requirements
+
+After running commands:
+
+- Print the exact CMD command you ran.
+- Paste the relevant terminal output or error.
+- Propose the next CMD-valid step.
+
+## 9) If uncertain
+
+If a command might be PowerShell-only, rewrite it in CMD or provide a CMD-safe alternative. Never silently default to PowerShell from this rule.

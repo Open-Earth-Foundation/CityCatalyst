@@ -75,7 +75,8 @@ It is a **pnpm-free monorepo** with five deployable units:
 | Repo architecture & path aliases | `.cursor/rules/project-architecture.mdc` |
 | Branches, commits, PRs | `.cursor/rules/git-conventions.mdc` |
 | Security baseline (auth, secrets, fetch) | `.cursor/rules/security-baseline.mdc` |
-| OS / shell defaults | `.cursor/rules/os-shell.mdc` |
+| OS / shell defaults (POSIX, WSL2, PowerShell) | `.cursor/rules/os-shell.mdc` |
+| Windows CMD (`cmd.exe`) cheatsheet | `.cursor/rules/cmd-windows.mdc` |
 | Next.js App Router | `.cursor/rules/nextjs-frontend.mdc` |
 | Chakra UI v3 | `.cursor/rules/chakra-ui-components.mdc` |
 | RTK Query / Redux | `.cursor/rules/rtk-query.mdc` |

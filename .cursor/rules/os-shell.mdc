@@ -21,11 +21,13 @@ Scripts must work on macOS and Linux. Avoid bashisms that break on plain `sh` if
 
 ## Windows users (the minority case)
 
-Some contributors use Windows. They run inside **WSL2** by default. Native Windows shells (CMD / PowerShell) are not the agent's default. If a contributor is explicitly working in CMD/PowerShell:
+Some contributors use Windows. The expected setups, in order:
 
-- Translate POSIX commands to PowerShell on demand (do not assume CMD).
-- Quote Windows paths: `"C:\Users\...\file"`.
-- Replace `&&` with `;` (PowerShell) or chain with `if ($?) { … }`.
+1. **WSL2 (preferred)** — POSIX commands work as-is, treat as Linux.
+2. **PowerShell** — translate POSIX → PowerShell on demand. Quote Windows paths (`"C:\Users\...\file"`). Replace `&&` with `;` or chain with `if ($?) { … }`.
+3. **Native Windows CMD (`cmd.exe`)** — see `cmd-windows.mdc` for the full POSIX → CMD cheatsheet (apply that rule explicitly when you know the terminal is CMD).
+
+Never silently assume CMD just because the OS is Windows. Most Windows devs run WSL2 or PowerShell.
 
 ## Cursor "agent terminal" sessions
 

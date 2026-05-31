@@ -303,14 +303,15 @@ class Settings(BaseModel):
     port: int = int(os.getenv("CA_PORT", "8080"))
     log_level: str = os.getenv("CA_LOG_LEVEL", "info")
     cors_origins: List[str] = []
+    ca_feature_flags: str = os.getenv("CA_FEATURE_FLAGS", "")
 
     # LLM Configuration (loaded from YAML)
     llm: LLMConfig
 
     # OpenRouter configuration (kept for backward compatibility)
     openrouter_api_key: str | None = os.getenv("OPENROUTER_API_KEY")
-    openrouter_base_url: str | None = None  # Will be overridden by LLM config
-    openrouter_model: str | None = None  # Will be overridden by LLM config
+    openrouter_base_url: str | None = os.getenv("OPENROUTER_BASE_URL")  # Falls back to LLM config
+    openrouter_model: str | None = os.getenv("OPENROUTER_MODEL")  # Falls back to LLM config
 
     # OpenAI configuration for embeddings
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")

@@ -118,11 +118,10 @@ class ThreadService:
             thread: Thread to update
             context_update: Dictionary with new context values
         """
-        if thread.context is None:
-            thread.context = {}
-        
-        # Merge new context into existing
-        thread.context.update(context_update)
+        # Reassign instead of mutating in place so SQLAlchemy tracks JSON updates.
+        merged_context = dict(thread.context or {})
+        merged_context.update(context_update)
+        thread.context = merged_context
         await self.session.flush()
     
     async def update_access_token(

@@ -14,7 +14,7 @@ from typing import Any, Dict, Optional, Union
 from uuid import UUID
 
 import openai
-from agents import Agent
+from agents import Agent, ModelSettings, OpenAIChatCompletionsModel
 from openai import AsyncOpenAI
 
 from ..config import get_settings
@@ -23,6 +23,7 @@ from ..tools import (
     build_cc_inventory_tools,
     climate_vector_search,
 )
+from ..utils.agent_tracing import configure_agents_tracing
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +50,7 @@ class AgentService:
             cc_user_id: User ID (for token refresh and inventory queries)
         """
         self.settings = get_settings()
+        configure_agents_tracing(self.settings)
         
         # Store CC credentials for tools to use
         self.cc_access_token = cc_access_token
@@ -330,7 +332,14 @@ class AgentService:
         agent = Agent(
             name="Climate Advisor",
             instructions=agent_instructions,
-            model=agent_model,
+            model=OpenAIChatCompletionsModel(
+                model=agent_model,
+                openai_client=self.client,
+            ),
+            model_settings=ModelSettings(
+                temperature=self.default_temperature,
+                include_usage=True,
+            ),
             tools=tools,
         )
         

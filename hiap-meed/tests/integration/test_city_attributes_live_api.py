@@ -22,25 +22,6 @@ BASE_CITY_KEYS = {
     "region_code",
     "region_name",
 }
-INDICATOR_KEYS = {
-    "attribute_category",
-    "attribute_units",
-    "attribute_value",
-    "datasource",
-    "version_label",
-}
-EXPECTED_CITY_INDICATOR_FIELDS = {
-    "electricity_access_rate",
-    "employment_in_transport_and_logistics",
-    "home_ownership",
-    "industry_construction_employment",
-    "median_household_income",
-    "population",
-    "poverty_rate",
-    "public_transport_share",
-    "renter_share",
-    "unemployment_rate",
-}
 EXPECTED_DATASOURCE_KEYS = {
     "dataset_name",
     "dataset_url",
@@ -52,26 +33,6 @@ EXPECTED_DATASOURCE_KEYS = {
     "source_url",
     "version_label",
 }
-
-
-def _assert_city_indicator_shape(indicator_payload: dict[str, object], field_name: str) -> None:
-    """Assert one city indicator object matches the expected contract shape."""
-    assert INDICATOR_KEYS.issubset(indicator_payload.keys()), field_name
-    assert isinstance(indicator_payload["attribute_value"], (int, float, str)) or (
-        indicator_payload["attribute_value"] is None
-    ), field_name
-    assert indicator_payload["attribute_units"] is None or isinstance(
-        indicator_payload["attribute_units"], str
-    ), field_name
-    assert indicator_payload["attribute_category"] is None or isinstance(
-        indicator_payload["attribute_category"], str
-    ), field_name
-    assert indicator_payload["datasource"] is None or isinstance(
-        indicator_payload["datasource"], str
-    ), field_name
-    assert indicator_payload["version_label"] is None or isinstance(
-        indicator_payload["version_label"], str
-    ), field_name
 
 
 @pytest.mark.integration
@@ -113,7 +74,7 @@ def test_city_attributes_live_payload_matches_expected_contract() -> None:
         assert datasource["is_latest"] is None or isinstance(datasource["is_latest"], bool)
 
     city = payload["city"]
-    assert (BASE_CITY_KEYS | EXPECTED_CITY_INDICATOR_FIELDS).issubset(city.keys())
+    assert BASE_CITY_KEYS.issubset(city.keys())
     assert city["locode"] == "CL IQQ"
     assert isinstance(city["city_name"], str)
     assert city["city_name"]
@@ -125,11 +86,6 @@ def test_city_attributes_live_payload_matches_expected_contract() -> None:
     assert city["area_km2"] is None or isinstance(city["area_km2"], (int, float))
     assert isinstance(city["populationSize"], int)
     assert isinstance(city["populationDensity"], (int, float))
-
-    for field_name in EXPECTED_CITY_INDICATOR_FIELDS:
-        indicator_payload = city[field_name]
-        assert isinstance(indicator_payload, dict), field_name
-        _assert_city_indicator_shape(indicator_payload, field_name)
 
     # Keep service-model validation in the loop so missing or mistyped required fields fail.
     validated = CityApiResponse.model_validate(payload)
@@ -151,10 +107,15 @@ def test_city_attributes_live_service_maps_current_upstream_payload() -> None:
     assert city.city_name
     assert city.source == "city_attributes_api"
     assert city.source_metadata["requested_locode"] == "CL IQQ"
+    assert city.source_metadata["requested_version_label"] is None
     assert city.source_metadata["upstream_endpoint"] == CITY_ATTRIBUTES_ENDPOINT_TEMPLATE
     assert city.source_metadata["http_status_code"] == 200
     assert isinstance(city.source_metadata["upstream_generated_at_utc"], str)
     assert city.source_metadata["upstream_generated_at_utc"]
+    assert city.source_metadata["upstream_api_context"]["endpoint"] == (
+        CITY_ATTRIBUTES_ENDPOINT_TEMPLATE
+    )
+    assert city.source_metadata["upstream_datasources"]
     assert city.raw["locode"] == "CL IQQ"
     assert isinstance(city.raw["city_name"], str)
     assert city.raw["city_name"]

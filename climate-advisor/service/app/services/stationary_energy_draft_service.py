@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timezone
 from typing import Any
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -198,13 +198,16 @@ class StationaryEnergyDraftService:
                 context_payload = context_payload["data"]
             context = LoadStationaryEnergyContextResponse.model_validate(context_payload)
 
-            source_candidates = await self.repository.replace_source_candidates(
+            source_candidate_records = self._source_candidate_records(
                 draft_run.draft_run_id,
-                self._source_candidate_records(draft_run.draft_run_id, context.source_candidates),
+                context.source_candidates,
             )
             stored_source_candidates = [
-                self._stored_source_candidate_payload(candidate)
-                for candidate in source_candidates
+                self._stored_source_candidate_payload_from_record(
+                    draft_run.draft_run_id,
+                    candidate_record,
+                )
+                for candidate_record in source_candidate_records
             ]
             failed_step = "generating"
             await self.repository.update_draft_run(draft_run, status="generating")
@@ -215,20 +218,37 @@ class StationaryEnergyDraftService:
                 allowed_capabilities=allowed_capabilities,
                 trace_id=trace_id,
             )
-            proposals = await self.repository.replace_proposals(
-                draft_run.draft_run_id,
-                llm_result.proposals,
-            )
             context_summary = self._context_summary(context, allowed_capabilities)
             context_summary["llm_trace"] = llm_result.trace
-            await self.repository.update_draft_run(
-                draft_run,
-                status="ready",
-                workflow_step="draft",
-                context_summary=context_summary,
-                permission_summary=context.permission_summary,
-                trace_id=trace_id,
-            )
+            async with self.session.begin_nested():
+                source_candidates = await self.repository.replace_source_candidates(
+                    draft_run.draft_run_id,
+                    source_candidate_records,
+                )
+                proposals = await self.repository.replace_proposals(
+                    draft_run.draft_run_id,
+                    llm_result.proposals,
+                )
+                await self.repository.update_draft_run(
+                    draft_run,
+                    status="ready",
+                    workflow_step="draft",
+                    context_summary=context_summary,
+                    permission_summary=context.permission_summary,
+                    trace_id=trace_id,
+                )
+            try:
+                await self._persist_thread_draft_run_id(
+                    thread_id=thread_id,
+                    user_id=user_id,
+                    draft_run_id=draft_run.draft_run_id,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "Failed to persist Stationary Energy draft context on thread_id=%s: %s",
+                    thread_id,
+                    exc,
+                )
 
             logger.info(
                 "Stationary Energy draft ready run=%s user_id=%s city_id=%s inventory_id=%s candidates=%s proposals=%s",
@@ -351,9 +371,14 @@ class StationaryEnergyDraftService:
                 action=decision_input.action,
                 selected_source_id=self._selected_source_id_for_storage(
                     decision_input,
+                    proposal,
                     selected_candidate,
                 ),
-                selected_candidate_id=selected_candidate.candidate_id if selected_candidate else None,
+                selected_candidate_id=self._selected_candidate_id_for_storage(
+                    decision_input,
+                    proposal,
+                    selected_candidate,
+                ),
                 manual_value=decision_input.manual_value,
                 manual_unit=decision_input.manual_unit,
                 note=decision_input.note,
@@ -521,12 +546,42 @@ class StationaryEnergyDraftService:
         token: str,
         expires_in: int,
     ) -> None:
+        await self._persist_thread_context_update(
+            thread_id=thread_id,
+            user_id=user_id,
+            context_update=create_token_context(token, expires_in),
+        )
+
+    async def _persist_thread_draft_run_id(
+        self,
+        *,
+        thread_id: UUID | None,
+        user_id: str,
+        draft_run_id: UUID,
+    ) -> None:
+        if thread_id is None:
+            return
+        await self._persist_thread_context_update(
+            thread_id=thread_id,
+            user_id=user_id,
+            context_update={
+                "stationary_energy_draft_run_id": str(draft_run_id),
+            },
+        )
+
+    async def _persist_thread_context_update(
+        self,
+        *,
+        thread_id: UUID,
+        user_id: str,
+        context_update: dict[str, Any],
+    ) -> None:
         thread = await self.thread_service.get_thread(thread_id)
         if thread is None or thread.user_id != user_id:
             return
         await self.thread_service.update_context(
             thread=thread,
-            context_update=create_token_context(token, expires_in),
+            context_update=context_update,
         )
 
     async def _mark_failed(
@@ -580,6 +635,7 @@ class StationaryEnergyDraftService:
             candidate_json = candidate.model_dump(mode="json", exclude={"quality_score"})
             records.append(
                 {
+                    "candidate_id": uuid4(),
                     "datasource_id": candidate.datasource_id,
                     "name": candidate.name,
                     "publisher_name": candidate.publisher_name,
@@ -604,6 +660,18 @@ class StationaryEnergyDraftService:
         if not records:
             logger.info("No Stationary Energy source candidates received for draft=%s", draft_run_id)
         return records
+
+    @staticmethod
+    def _stored_source_candidate_payload_from_record(
+        draft_run_id: UUID,
+        candidate: dict[str, Any],
+    ) -> dict[str, Any]:
+        return StoredSourceCandidate.model_validate(
+            {
+                "draft_run_id": draft_run_id,
+                **candidate,
+            }
+        ).model_dump(mode="json", exclude_none=True)
 
     @staticmethod
     def _stored_source_candidate_payload(
@@ -681,6 +749,11 @@ class StationaryEnergyDraftService:
             raise HTTPException(
                 status_code=400,
                 detail="Cannot accept a proposal without a recommended source candidate",
+            )
+        if decision_input.action == "accept" and proposal.recommended_datasource_id is None:
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot accept a proposal without a recommended datasource",
             )
         if decision_input.action == "override_source" and selected_candidate is None:
             raise HTTPException(
@@ -940,11 +1013,24 @@ class StationaryEnergyDraftService:
     @staticmethod
     def _selected_source_id_for_storage(
         decision_input: ReviewDecisionInput,
+        proposal: StationaryEnergyDraftProposal,
         selected_candidate: StationaryEnergyDraftSourceCandidate | None,
     ) -> str | None:
+        if decision_input.action == "accept":
+            return proposal.recommended_datasource_id
         if decision_input.action != "override_source" or selected_candidate is None:
             return decision_input.selected_source_id
         return selected_candidate.datasource_id
+
+    @staticmethod
+    def _selected_candidate_id_for_storage(
+        decision_input: ReviewDecisionInput,
+        proposal: StationaryEnergyDraftProposal,
+        selected_candidate: StationaryEnergyDraftSourceCandidate | None,
+    ) -> UUID | None:
+        if decision_input.action == "accept":
+            return proposal.recommended_candidate_id
+        return selected_candidate.candidate_id if selected_candidate else None
 
     @staticmethod
     def _review_decision_sort_key(

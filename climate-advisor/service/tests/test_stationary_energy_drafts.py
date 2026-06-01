@@ -473,6 +473,73 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(retry_data["error_summary"])
         self.assertEqual(len(retry_data["proposals"]), 2)
 
+    def test_retry_failure_keeps_previous_snapshot_atomic(self) -> None:
+        draft_run_id, _proposal_id, _candidate_id = self._start_draft()
+        initial_status = self._get_status(draft_run_id)
+
+        retry_context = _context_payload()
+        retry_context["source_candidates"] = [
+            {
+                "datasource_id": "ds-retry-only",
+                "name": "Retry-only source",
+                "geography_match": "city",
+                "source_scope": {
+                    "sector_id": "I",
+                    "subsector_id": "I.1",
+                    "scope_id": "1",
+                },
+                "normalized_rows": [{"value": 999, "unit": "MWh"}],
+                "applicability_status": "applicable",
+                "applicability_issues": [],
+            }
+        ]
+
+        retry_client = self._mock_cc_client()
+        retry_client.load_stationary_energy_context = AsyncMock(return_value=retry_context)
+        failing_llm = Mock()
+        failing_llm.generate_proposals = AsyncMock(
+            side_effect=StationaryEnergyLLMServiceError("Stationary Energy LLM request failed")
+        )
+
+        with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
+            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            return_value=retry_client,
+        ), patch(
+            "app.services.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
+            return_value=failing_llm,
+        ):
+            retry_response = self.client.post(
+                f"/v1/stationary-energy-drafts/{draft_run_id}/retry",
+                json={"user_id": "user-1"},
+                headers=_auth_headers(),
+            )
+            failed_status = self.client.get(
+                f"/v1/stationary-energy-drafts/{draft_run_id}",
+                params={"user_id": "user-1"},
+                headers=_auth_headers(),
+            )
+
+        self.assertEqual(retry_response.status_code, 502, retry_response.text)
+        self.assertEqual(failed_status.status_code, 200, failed_status.text)
+        failed_status_data = failed_status.json()
+        self.assertEqual(failed_status_data["status"], "failed")
+        self.assertEqual(
+            failed_status_data["error_summary"]["failed_step"],
+            "generating",
+        )
+        self.assertEqual(
+            [candidate["candidate_id"] for candidate in failed_status_data["source_candidates"]],
+            [candidate["candidate_id"] for candidate in initial_status["source_candidates"]],
+        )
+        self.assertEqual(
+            [candidate["datasource_id"] for candidate in failed_status_data["source_candidates"]],
+            [candidate["datasource_id"] for candidate in initial_status["source_candidates"]],
+        )
+        self.assertEqual(
+            [proposal["proposal_id"] for proposal in failed_status_data["proposals"]],
+            [proposal["proposal_id"] for proposal in initial_status["proposals"]],
+        )
+
     def test_review_requires_override_source_to_match_stored_candidate(self) -> None:
         draft_run_id, proposal_id, _candidate_id = self._start_draft()
         decisions = self._complete_review_decisions(
@@ -623,6 +690,61 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         status_data = status_response.json()
         self.assertEqual(len(status_data["review_decisions"]), len(decisions))
         self.assertEqual(status_data["review_decisions"][0]["user_id"], "user-1")
+
+    def test_review_accept_persists_recommended_source_and_candidate(self) -> None:
+        draft_run_id, _proposal_id, _candidate_id = self._start_draft()
+        status_before_review = self._get_status(draft_run_id)
+        accepted_proposal = next(
+            proposal
+            for proposal in status_before_review["proposals"]
+            if proposal.get("recommended_candidate_id")
+        )
+        decisions = self._complete_review_decisions(draft_run_id)
+
+        with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}):
+            review_response = self.client.post(
+                f"/v1/stationary-energy-drafts/{draft_run_id}/review",
+                json={"user_id": "user-1", "decisions": decisions},
+                headers=_auth_headers(),
+            )
+            status_after_review = self.client.get(
+                f"/v1/stationary-energy-drafts/{draft_run_id}",
+                params={"user_id": "user-1"},
+                headers=_auth_headers(),
+            )
+
+        self.assertEqual(review_response.status_code, 200, review_response.text)
+        self.assertEqual(status_after_review.status_code, 200, status_after_review.text)
+
+        review_decision = next(
+            decision
+            for decision in review_response.json()["decisions"]
+            if decision["proposal_id"] == accepted_proposal["proposal_id"]
+        )
+        persisted_decision = next(
+            decision
+            for decision in status_after_review.json()["review_decisions"]
+            if decision["proposal_id"] == accepted_proposal["proposal_id"]
+            and decision["decision_version"] == review_decision["decision_version"]
+        )
+
+        self.assertEqual(review_decision["action"], "accept")
+        self.assertEqual(
+            review_decision["selected_source_id"],
+            accepted_proposal["recommended_datasource_id"],
+        )
+        self.assertEqual(
+            review_decision["selected_candidate_id"],
+            accepted_proposal["recommended_candidate_id"],
+        )
+        self.assertEqual(
+            persisted_decision["selected_source_id"],
+            accepted_proposal["recommended_datasource_id"],
+        )
+        self.assertEqual(
+            persisted_decision["selected_candidate_id"],
+            accepted_proposal["recommended_candidate_id"],
+        )
 
     def test_review_persists_version_history_when_decisions_change(self) -> None:
         draft_run_id, proposal_id, candidate_id = self._start_draft()

@@ -233,22 +233,21 @@ export function NavigationBar({
           {showNav && !isPublic && (
             <>
               {" "}
-              <Link href={dashboardPath}>
-                <Heading color="base.light" size="md" opacity={0.75} ml={6}>
+              <Link href={dashboardPath} variant={"nav" as "plain"}>
+                <Heading size="md" ml={6}>
                   {t("dashboard")}
                 </Heading>
               </Link>
               <Link
+                variant={"nav" as "plain"}
                 rel="help noopener"
                 target="_blank"
                 href="https://citycatalyst.openearth.org/learning-hub"
               >
-                <HStack color="base.light" opacity={0.75}>
-                  <Heading size="md" whiteSpace="nowrap">
-                    {t("learning-hub")}
-                  </Heading>
-                  <Icon as={MdOpenInNew} boxSize={4} />
-                </HStack>
+                <Heading size="md" whiteSpace="nowrap">
+                  {t("learning-hub")}
+                </Heading>
+                <Icon as={MdOpenInNew} boxSize={4} />
               </Link>
               <Separator
                 orientation="vertical"

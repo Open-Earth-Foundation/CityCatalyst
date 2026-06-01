@@ -1,0 +1,63 @@
+"use client";
+/* eslint-disable i18next/no-literal-string */
+
+import ProgressLoader from "@/components/ProgressLoader";
+import Wrapper from "@/components/wrapper";
+import { api } from "@/services/api";
+import { getParamValueRequired } from "@/util/helpers";
+import { Box, Heading, Text } from "@chakra-ui/react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
+
+export default function LegacyStationaryEnergyDraftRoute() {
+  const router = useRouter();
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+  const inventoryId = getParamValueRequired(params.inventory);
+
+  const {
+    data: inventory,
+    isLoading,
+    error,
+  } = api.useGetInventoryQuery(inventoryId, {
+    skip: !inventoryId,
+  });
+
+  useEffect(() => {
+    const cityId = inventory?.cityId ?? inventory?.city?.cityId;
+    if (!cityId) {
+      return;
+    }
+
+    router.replace(
+      `/${lng}/cities/${cityId}/GHGI/${inventoryId}/draft/stationary-energy`,
+    );
+  }, [inventory, inventoryId, lng, router]);
+
+  if (isLoading) {
+    return <ProgressLoader />;
+  }
+
+  if (error || !inventory) {
+    return (
+      <Wrapper>
+        <Box
+          borderWidth="1px"
+          borderColor="border.neutral"
+          borderRadius="rounded"
+          p={5}
+        >
+          <Heading fontSize="title.md" fontWeight="semibold">
+            Stationary Energy draft unavailable
+          </Heading>
+          <Text color="content.tertiary" mt={2}>
+            The inventory could not be loaded for the documented city-scoped
+            draft route.
+          </Text>
+        </Box>
+      </Wrapper>
+    );
+  }
+
+  return <ProgressLoader />;
+}

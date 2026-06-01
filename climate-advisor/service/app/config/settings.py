@@ -133,9 +133,34 @@ class GenerationLimits(BaseModel):
     presence_penalty: Optional[Dict[str, float]] = None
 
 
+class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
+    max_prompt_tokens: Optional[int] = 150000
+    max_normalized_rows_per_candidate: Optional[int] = 5
+    include_source_data: Optional[bool] = False
+
+
+class StationaryEnergyPromptBudgetConfig(BaseModel):
+    draft_generation: StationaryEnergyPromptBudgetFlowConfig = Field(
+        default_factory=StationaryEnergyPromptBudgetFlowConfig,
+    )
+    chat_context: StationaryEnergyPromptBudgetFlowConfig = Field(
+        default_factory=StationaryEnergyPromptBudgetFlowConfig,
+    )
+
+
+class PromptBudgetConfig(BaseModel):
+    tokenizer_encoding: str = "o200k_base"
+    stationary_energy: StationaryEnergyPromptBudgetConfig = Field(
+        default_factory=StationaryEnergyPromptBudgetConfig,
+    )
+
+
 class GenerationConfig(BaseModel):
     defaults: GenerationDefaults
     limits: Optional[GenerationLimits] = None
+    prompt_budget: Optional[PromptBudgetConfig] = Field(
+        default_factory=PromptBudgetConfig,
+    )
 
 
 class PromptsConfig(BaseModel):

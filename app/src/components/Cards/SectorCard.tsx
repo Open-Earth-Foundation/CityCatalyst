@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable i18next/no-literal-string */
 import SubSectorCard from "@/components/Cards/SubSectorCard";
 import { InventoryResponse, SectorProgress } from "@/util/types";
 import { Box, Heading, Icon, Text, SimpleGrid } from "@chakra-ui/react";
@@ -17,7 +18,9 @@ import { Trans } from "react-i18next/TransWithoutContext";
 // import { AddIcon } from "@chakra-ui/icons";
 import { InventoryType, InventoryTypeEnum, ISector } from "@/util/constants";
 import { BsPlus } from "react-icons/bs";
+import { MdAutoAwesome } from "react-icons/md";
 import { usePathname } from "next/navigation";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 
 import {
   AccordionItem,
@@ -40,6 +43,10 @@ export function SectorCard({
   const pathname = usePathname();
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const toggleAccordion = () => setAccordionOpen(!isAccordionOpen);
+  const showStationaryEnergyAgenticCta =
+    sector.name === "stationary-energy" &&
+    hasFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION) &&
+    hasFeatureFlag(FeatureFlags.STATIONARY_ENERGY_AGENTIC);
 
   let totalProgress = 0,
     thirdPartyProgress = 0,
@@ -53,7 +60,12 @@ export function SectorCard({
     uploadedProgress = clamp(sectorProgress.uploaded / sectorProgress.total);
     reasonNEProgress = clamp(sectorProgress.reasonNE / sectorProgress.total);
     reasonNOProgress = clamp(sectorProgress.reasonNO / sectorProgress.total);
-    totalProgress = clamp(thirdPartyProgress + uploadedProgress + reasonNEProgress + reasonNOProgress);
+    totalProgress = clamp(
+      thirdPartyProgress +
+        uploadedProgress +
+        reasonNEProgress +
+        reasonNOProgress,
+    );
   }
   /*** Data ***/
   const {
@@ -120,7 +132,7 @@ export function SectorCard({
                 {(sectorScopes || [])?.join(", ") || t("none")}
               </Heading>
             </Box>
-            <Box>
+            <Box display="flex" flexDirection="column" gap={3}>
               <NextLink href={`${pathname}/data/${sector.number}`}>
                 <Button
                   variant="outline"
@@ -137,6 +149,32 @@ export function SectorCard({
                   </Text>
                 </Button>
               </NextLink>
+              {showStationaryEnergyAgenticCta && (
+                <NextLink href={`${pathname}/draft/stationary-energy`}>
+                  <Button
+                    data-testid="stationary-energy-agentic-cta"
+                    variant="ghost"
+                    color="content.link"
+                    justifyContent="flex-start"
+                    w="256px"
+                    h="auto"
+                    minH="48px"
+                    py="10px"
+                    gap={2}
+                    ml={2}
+                  >
+                    <MdAutoAwesome />
+                    <Box textAlign="left">
+                      <Text fontFamily="heading" fontSize="button.md">
+                        Let the agent draft this section
+                      </Text>
+                      <Text color="content.tertiary" fontSize="label.sm">
+                        Review every value before saving
+                      </Text>
+                    </Box>
+                  </Button>
+                </NextLink>
+              )}
             </Box>
           </Box>
           <Box
@@ -147,8 +185,18 @@ export function SectorCard({
             gap={6}
           >
             <SegmentedProgress
-              values={[thirdPartyProgress, uploadedProgress, reasonNEProgress, reasonNOProgress]}
-              colors={["interactive.connected", "interactive.tertiary", "interactive.control", "striped"]}
+              values={[
+                thirdPartyProgress,
+                uploadedProgress,
+                reasonNEProgress,
+                reasonNOProgress,
+              ]}
+              colors={[
+                "interactive.connected",
+                "interactive.tertiary",
+                "interactive.control",
+                "striped",
+              ]}
               height={2}
             />
             <Text

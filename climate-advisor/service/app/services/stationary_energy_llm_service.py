@@ -24,6 +24,12 @@ from pydantic import BaseModel, Field, ValidationError
 from ..config import get_settings
 from ..models.stationary_energy_drafts import LoadStationaryEnergyContextResponse
 from ..utils.agent_tracing import configure_agents_tracing
+from ..utils.prompt_budget import (
+    StationaryEnergyPromptBudget,
+    compact_stationary_energy_prompt_payload,
+    count_prompt_tokens,
+    get_stationary_energy_prompt_budget,
+)
 from ..utils.stationary_energy_context import (
     stationary_energy_scope_identity,
     stationary_energy_scope_label,
@@ -113,12 +119,16 @@ class StationaryEnergyProposalLLMService:
             stored_source_candidates=stored_source_candidates,
             allowed_capabilities=allowed_capabilities,
         )
+        llm_input, prompt_budget_trace = self._enforce_prompt_budget(llm_input)
         logger.info(
-            "Stationary Energy LLM proposal request trace_id=%s model=%s taxonomy=%s candidates=%s",
+            "Stationary Energy LLM proposal request trace_id=%s model=%s taxonomy=%s candidates=%s prompt_tokens=%s max_prompt_tokens=%s compacted=%s",
             trace_id,
             self.model,
             len(context.taxonomy),
             len(stored_source_candidates),
+            prompt_budget_trace["tokens"],
+            prompt_budget_trace["max_prompt_tokens"],
+            prompt_budget_trace["compacted"],
         )
         if self.settings.llm.logging.log_requests:
             logger.debug(
@@ -200,6 +210,7 @@ class StationaryEnergyProposalLLMService:
             {
                 "model": self.model,
                 "temperature": self.temperature,
+                "prompt_budget": prompt_budget_trace,
                 "input": llm_input,
                 "raw_output": raw_output,
                 "parsed_output": {
@@ -216,6 +227,85 @@ class StationaryEnergyProposalLLMService:
             }
         )
         return StationaryEnergyLLMProposalResult(proposals=proposals, trace=trace)
+
+    def _enforce_prompt_budget(
+        self,
+        llm_input: dict[str, Any],
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        budget = get_stationary_energy_prompt_budget(
+            self.settings,
+            "draft_generation",
+        )
+        initial_count = self._count_prompt_tokens(llm_input, budget)
+        trace = {
+            "flow": "stationary_energy.draft_generation",
+            "tokens": initial_count.tokens,
+            "initial_tokens": initial_count.tokens,
+            "max_prompt_tokens": budget.max_prompt_tokens,
+            "tokenizer": initial_count.tokenizer,
+            "compacted": False,
+            "source_data_included": True,
+            "max_normalized_rows_per_candidate": None,
+        }
+        if initial_count.tokens <= budget.max_prompt_tokens:
+            return llm_input, trace
+
+        compacted_input = compact_stationary_energy_prompt_payload(
+            llm_input,
+            budget=budget,
+            drop_source_data=False,
+        )
+        compacted_count = self._count_prompt_tokens(compacted_input, budget)
+        compaction_stage = "normalized_rows"
+        source_data_included = True
+        if compacted_count.tokens > budget.max_prompt_tokens and not budget.include_source_data:
+            compacted_input = compact_stationary_energy_prompt_payload(
+                compacted_input,
+                budget=budget,
+                drop_source_data=True,
+            )
+            compacted_count = self._count_prompt_tokens(compacted_input, budget)
+            compaction_stage = "source_data"
+            source_data_included = False
+
+        trace.update(
+            {
+                "tokens": compacted_count.tokens,
+                "compacted_tokens": compacted_count.tokens,
+                "tokenizer": compacted_count.tokenizer,
+                "compacted": True,
+                "compaction_stage": compaction_stage,
+                "source_data_included": source_data_included,
+                "max_normalized_rows_per_candidate": (
+                    budget.max_normalized_rows_per_candidate
+                ),
+            },
+        )
+
+        if compacted_count.tokens > budget.max_prompt_tokens:
+            raise StationaryEnergyLLMServiceError(
+                "Stationary Energy prompt exceeds configured token budget after compaction "
+                f"({compacted_count.tokens} > {budget.max_prompt_tokens})",
+            )
+
+        logger.info(
+            "Compacted Stationary Energy draft prompt from %s to %s tokens using tokenizer=%s",
+            initial_count.tokens,
+            compacted_count.tokens,
+            compacted_count.tokenizer,
+        )
+        return compacted_input, trace
+
+    def _count_prompt_tokens(
+        self,
+        llm_input: dict[str, Any],
+        budget: StationaryEnergyPromptBudget,
+    ):
+        return count_prompt_tokens(
+            [self._system_prompt(), json.dumps(llm_input, ensure_ascii=True)],
+            model=self.model,
+            fallback_encoding=budget.tokenizer_encoding,
+        )
 
     @staticmethod
     def _trace_metadata(
@@ -237,6 +327,7 @@ class StationaryEnergyProposalLLMService:
             "sector_code": "stationary_energy",
             "taxonomy_count": len(context.taxonomy),
             "source_candidate_count": len(stored_source_candidates),
+            "guidance_context_keys": sorted(context.guidance_context.keys()),
         }
 
     @staticmethod
@@ -245,6 +336,7 @@ class StationaryEnergyProposalLLMService:
             "You are a greenhouse-gas inventory drafting assistant for the GPC Stationary Energy sector. "
             "Return JSON only. Generate draft proposals from the provided bounded context and stored source candidate snapshots. "
             "Never invent source candidates, datasource IDs, city data, inventory data, or permissions. "
+            "Use guidance_context to explain methodology, scope meanings, unit conventions, source selection rules, and known limits, but do not treat guidance as additional source data. "
             "Recommendations and alternatives must reference only candidate_id values present in source_candidates, and only candidates with applicability_status='applicable'. "
             "Use removed and failed candidates only for rationale or gap explanation. "
             "Return exactly one proposal for every taxonomy row in the input. "
@@ -272,6 +364,7 @@ class StationaryEnergyProposalLLMService:
                 "Copy the full taxonomy row into target_ref for each proposal.",
                 "Do not re-fetch or mutate source candidates.",
                 "Do not invent values, source candidates, datasource IDs, city data, inventory data, or permissions.",
+                "Use guidance_context for methodology explanations and terminology only; do not treat it as observed activity data.",
                 "Do not commit inventory values; this is a draft proposal step.",
             ],
             "allowed_capabilities": allowed_capabilities,
@@ -286,6 +379,7 @@ class StationaryEnergyProposalLLMService:
                 for row in context.current_values
             ],
             "source_candidates": stored_source_candidates,
+            "guidance_context": context.guidance_context,
             "expected_output_shape": {
                 "proposals": [
                     {

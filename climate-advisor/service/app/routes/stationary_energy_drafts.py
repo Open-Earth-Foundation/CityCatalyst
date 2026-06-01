@@ -11,6 +11,8 @@ from ..models.stationary_energy_drafts import (
     RetryStationaryEnergyDraftRequest,
     ReviewStationaryEnergyDraftRequest,
     ReviewStationaryEnergyDraftResponse,
+    SaveStationaryEnergyDraftRequest,
+    SaveStationaryEnergyDraftResponse,
     StartStationaryEnergyDraftRequest,
     StartStationaryEnergyDraftResponse,
     StationaryEnergyDraftStatusResponse,
@@ -111,6 +113,31 @@ async def review_stationary_energy_draft(
     service = StationaryEnergyDraftService(session)
     try:
         response = await service.review_draft(
+            draft_run_id=draft_run_id,
+            payload=payload,
+            authorization=authorization,
+        )
+        await session.commit()
+        return response
+    except Exception:
+        await session.rollback()
+        raise
+
+
+@router.post(
+    "/stationary-energy-drafts/{draft_run_id}/save",
+    response_model=SaveStationaryEnergyDraftResponse,
+    dependencies=[Depends(require_stationary_energy_agentic_enabled)],
+)
+async def save_stationary_energy_draft(
+    draft_run_id: UUID,
+    payload: SaveStationaryEnergyDraftRequest,
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> SaveStationaryEnergyDraftResponse:
+    service = StationaryEnergyDraftService(session)
+    try:
+        response = await service.save_draft(
             draft_run_id=draft_run_id,
             payload=payload,
             authorization=authorization,

@@ -8,9 +8,13 @@ from typing import Any
 
 
 LOAD_CONTEXT_CAPABILITY = "ghgi.stationary_energy.load_context"
+COMMIT_ACCEPTED_CAPABILITY = "ghgi.stationary_energy.commit_accepted"
 ALLOWED_CAPABILITIES_PATH = "/api/v1/internal/ca/capabilities/allowed-capabilities"
 LOAD_CONTEXT_PATH = (
     "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context"
+)
+COMMIT_ACCEPTED_PATH = (
+    "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted"
 )
 
 
@@ -34,11 +38,36 @@ class MockStationaryEnergyCCHandler(BaseHTTPRequestHandler):
         )
 
         if self.path == ALLOWED_CAPABILITIES_PATH:
-            self._send_json({"capabilities": [LOAD_CONTEXT_CAPABILITY]})
+            workflow_step = body.get("workflow_step")
+            capabilities = (
+                [LOAD_CONTEXT_CAPABILITY]
+                if workflow_step == "draft"
+                else [COMMIT_ACCEPTED_CAPABILITY]
+            )
+            self._send_json({"capabilities": capabilities})
             return
 
         if self.path == LOAD_CONTEXT_PATH:
             self._send_json(self.server.fixture_payload)
+            return
+
+        if self.path == COMMIT_ACCEPTED_PATH:
+            rows = body.get("rows") or []
+            self._send_json(
+                {
+                    "draft_run_id": body.get("draft_run_id"),
+                    "inventory_id": body.get("inventory_id"),
+                    "results": [
+                        {
+                            "proposal_id": row.get("proposal_id"),
+                            "decision_version": row.get("decision_version"),
+                            "selected_source_id": row.get("selected_source_id"),
+                            "status": "committed",
+                        }
+                        for row in rows
+                    ],
+                }
+            )
             return
 
         self._send_json({"error": "not found", "path": self.path}, status=404)

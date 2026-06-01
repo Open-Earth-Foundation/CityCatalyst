@@ -23,6 +23,12 @@ from .stationary_energy_context import extract_stationary_energy_draft_run_id
 from .tool_handler import persist_assistant_message
 from .token_handler import TokenHandler
 from .history_manager import load_conversation_history
+from .prompt_budget import (
+    compact_stationary_energy_prompt_payload,
+    count_prompt_tokens,
+    get_stationary_energy_prompt_budget,
+    trim_messages_to_budget,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +55,7 @@ class StreamingHandler:
         self.request_options = request_options
         self.thread_identifier = str(thread_id)
         self.stationary_energy_draft_run_id: Optional[str] = None
+        self.agent_model: Optional[str] = None
 
         # Response state
         self.assistant_tokens: List[str] = []
@@ -103,6 +110,7 @@ class StreamingHandler:
             # Get model override from options
             options = payload.options or {}
             model_override = options.get("model")
+            self.agent_model = model_override or self.agent_service.default_model
 
             agent = await self.agent_service.create_agent(model=model_override)
 
@@ -247,17 +255,7 @@ class StreamingHandler:
             }
 
         context_payload = self._stationary_energy_context_payload(draft_run)
-        return {
-            "role": "system",
-            "content": (
-                "STATIONARY_ENERGY_DRAFT_CONTEXT_JSON\n"
-                f"{json.dumps(context_payload, ensure_ascii=False, default=str)}\n"
-                "Use this authoritative persisted CA draft snapshot to explain the Stationary Energy "
-                "screen the user is viewing. Do not re-fetch data. Do not invent missing values. "
-                "Treat source_candidates, proposals, review_decisions, and llm_generation as the "
-                "ground truth for this draft."
-            ),
-        }
+        return self._stationary_energy_context_message(context_payload)
 
     async def _load_thread_stationary_energy_draft_run_id(self) -> Optional[str]:
         if not self.session_factory:
@@ -328,6 +326,11 @@ class StreamingHandler:
                 else None,
             },
             "permission_summary": draft_run.permission_summary,
+            "guidance_context": (
+                context_summary.get("guidance_context")
+                if isinstance(context_summary, dict)
+                else None
+            ),
             "llm_generation": llm_generation,
             "source_candidates": [
                 {
@@ -396,6 +399,181 @@ class StreamingHandler:
             ],
         }
 
+    def _stationary_energy_context_message(
+        self,
+        context_payload: Dict[str, Any],
+    ) -> Dict[str, str]:
+        budget = get_stationary_energy_prompt_budget(get_settings(), "chat_context")
+        initial_message = self._format_stationary_energy_context_message(
+            context_payload,
+        )
+        instruction_text = self._agent_instruction_text()
+        initial_count = count_prompt_tokens(
+            [instruction_text, initial_message],
+            model=self.agent_model,
+            fallback_encoding=budget.tokenizer_encoding,
+        )
+        if initial_count.tokens <= budget.max_prompt_tokens:
+            logger.info(
+                "Stationary Energy chat context tokens=%s max_prompt_tokens=%s tokenizer=%s compacted=%s",
+                initial_count.tokens,
+                budget.max_prompt_tokens,
+                initial_count.tokenizer,
+                False,
+            )
+            return initial_message
+
+        compacted_payload = compact_stationary_energy_prompt_payload(
+            context_payload,
+            budget=budget,
+            drop_source_data=False,
+        )
+        compacted_payload["prompt_budget_compaction"].update(
+            {
+                "initial_tokens": initial_count.tokens,
+                "max_prompt_tokens": budget.max_prompt_tokens,
+                "compaction_stage": "normalized_rows",
+            },
+        )
+        compacted_message = self._format_stationary_energy_context_message(
+            compacted_payload,
+        )
+        compacted_count = count_prompt_tokens(
+            [instruction_text, compacted_message],
+            model=self.agent_model,
+            fallback_encoding=budget.tokenizer_encoding,
+        )
+
+        if compacted_count.tokens > budget.max_prompt_tokens and not budget.include_source_data:
+            compacted_payload = compact_stationary_energy_prompt_payload(
+                compacted_payload,
+                budget=budget,
+                drop_source_data=True,
+            )
+            compacted_payload["prompt_budget_compaction"].update(
+                {
+                    "initial_tokens": initial_count.tokens,
+                    "max_prompt_tokens": budget.max_prompt_tokens,
+                    "compaction_stage": "source_data",
+                },
+            )
+            compacted_message = self._format_stationary_energy_context_message(
+                compacted_payload,
+            )
+            compacted_count = count_prompt_tokens(
+                [instruction_text, compacted_message],
+                model=self.agent_model,
+                fallback_encoding=budget.tokenizer_encoding,
+            )
+
+        if compacted_count.tokens > budget.max_prompt_tokens:
+            compacted_message = self._format_stationary_energy_context_message(
+                self._minimal_stationary_energy_context_payload(
+                    context_payload,
+                    initial_tokens=initial_count.tokens,
+                    compacted_tokens=compacted_count.tokens,
+                    max_prompt_tokens=budget.max_prompt_tokens,
+                ),
+            )
+            compacted_count = count_prompt_tokens(
+                [instruction_text, compacted_message],
+                model=self.agent_model,
+                fallback_encoding=budget.tokenizer_encoding,
+            )
+
+        logger.info(
+            "Stationary Energy chat context tokens=%s initial_tokens=%s max_prompt_tokens=%s tokenizer=%s compacted=%s",
+            compacted_count.tokens,
+            initial_count.tokens,
+            budget.max_prompt_tokens,
+            compacted_count.tokenizer,
+            True,
+        )
+        return compacted_message
+
+    def _enforce_chat_prompt_budget(
+        self,
+        agent,
+        runner_input: List[Dict[str, str]],
+    ) -> List[Dict[str, str]]:
+        budget = get_stationary_energy_prompt_budget(get_settings(), "chat_context")
+        trimmed_input, token_count, removed_messages = trim_messages_to_budget(
+            runner_input,
+            instruction_text=self._agent_instruction_text(agent),
+            model=self.agent_model,
+            budget=budget,
+        )
+        if removed_messages:
+            logger.info(
+                "Trimmed %s conversation messages from Stationary Energy chat prompt to fit token budget",
+                removed_messages,
+            )
+        if token_count.tokens > budget.max_prompt_tokens:
+            raise ValueError(
+                "Stationary Energy chat prompt exceeds configured token budget "
+                f"({token_count.tokens} > {budget.max_prompt_tokens})",
+            )
+        logger.info(
+            "Stationary Energy chat prompt tokens=%s max_prompt_tokens=%s tokenizer=%s",
+            token_count.tokens,
+            budget.max_prompt_tokens,
+            token_count.tokenizer,
+        )
+        return trimmed_input
+
+    @staticmethod
+    def _format_stationary_energy_context_message(
+        context_payload: Dict[str, Any],
+    ) -> Dict[str, str]:
+        return {
+            "role": "system",
+            "content": (
+                "STATIONARY_ENERGY_DRAFT_CONTEXT_JSON\n"
+                f"{json.dumps(context_payload, ensure_ascii=False, default=str)}\n"
+                "Use this authoritative persisted CA draft snapshot to explain the Stationary Energy "
+                "screen the user is viewing. Do not re-fetch data. Do not invent missing values. "
+                "Treat source_candidates, proposals, review_decisions, llm_generation, and guidance_context "
+                "as the ground truth for this draft."
+            ),
+        }
+
+    def _agent_instruction_text(self, agent: Any | None = None) -> str:
+        instructions = getattr(agent, "instructions", None)
+        if instructions:
+            return str(instructions)
+        if self.agent_service:
+            return str(getattr(self.agent_service, "system_prompt", "") or "")
+        return ""
+
+    @staticmethod
+    def _minimal_stationary_energy_context_payload(
+        context_payload: Dict[str, Any],
+        *,
+        initial_tokens: int,
+        compacted_tokens: int,
+        max_prompt_tokens: int,
+    ) -> Dict[str, Any]:
+        return {
+            "draft_run": context_payload.get("draft_run"),
+            "city": context_payload.get("city"),
+            "inventory": context_payload.get("inventory"),
+            "context_counts": context_payload.get("context_counts"),
+            "permission_summary": context_payload.get("permission_summary"),
+            "guidance_context": context_payload.get("guidance_context"),
+            "prompt_budget_compaction": {
+                "minimal_snapshot": True,
+                "initial_tokens": initial_tokens,
+                "compacted_tokens": compacted_tokens,
+                "max_prompt_tokens": max_prompt_tokens,
+                "omitted_fields": [
+                    "source_candidates",
+                    "proposals",
+                    "review_decisions",
+                    "llm_generation",
+                ],
+            },
+        }
+
     async def _stream_agent_events(
         self,
         agent,
@@ -406,6 +584,8 @@ class StreamingHandler:
         runner_input: Any = (
             conversation_history if conversation_history else payload.content
         )
+        if self.stationary_energy_draft_run_id and isinstance(runner_input, list):
+            runner_input = self._enforce_chat_prompt_budget(agent, runner_input)
 
         try:
             result = Runner.run_streamed(

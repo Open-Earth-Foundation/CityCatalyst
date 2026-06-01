@@ -421,6 +421,18 @@ class CityCatalystClient:
             json_data=request_payload,
             token=token,
         )
+
+    async def commit_stationary_energy_accepted(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted",
+            json_data=request_payload,
+            token=token,
+        )
     
     # Convenience methods for common CC API operations
     

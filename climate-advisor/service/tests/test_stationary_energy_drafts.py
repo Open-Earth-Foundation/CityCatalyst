@@ -12,6 +12,7 @@ from typing import Any, AsyncIterator
 from unittest.mock import AsyncMock, Mock, patch
 from uuid import UUID, uuid4
 
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -23,6 +24,8 @@ for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
     if path_str not in sys.path:
         sys.path.insert(0, path_str)
 
+pytest.importorskip("pgvector.sqlalchemy")
+
 from app.db import Base
 from app.db.session import get_session
 from app.main import get_app
@@ -32,7 +35,10 @@ from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftSourceCandidate,
 )
 from app.models.requests import MessageCreateRequest
-from app.services.stationary_energy_draft_service import LOAD_CONTEXT_CAPABILITY
+from app.services.stationary_energy_draft_service import (
+    COMMIT_ACCEPTED_CAPABILITY,
+    LOAD_CONTEXT_CAPABILITY,
+)
 from app.services.stationary_energy_llm_service import (
     StationaryEnergyLLMProposal,
     StationaryEnergyLLMProposalResult,
@@ -175,6 +181,19 @@ def _context_payload() -> dict[str, Any]:
             },
         ],
         "permission_summary": {"can_review": True, "can_commit": False},
+        "guidance_context": {
+            "sector_overview": "Stationary Energy covers building and facility energy use.",
+            "scope_rules": ["Use the GPC stationary energy scope mapping provided by CC."],
+            "taxonomy_labels": {"I.1": "Residential buildings", "I.2": "Commercial buildings"},
+            "methodology_summaries": [
+                "Prefer subsector- and scope-matched energy datasets before broader proxies."
+            ],
+            "unit_conventions": ["Keep activity units aligned with the source dataset."],
+            "source_selection_rules": [
+                "Choose applicable city-level sources before broader regional or country sources."
+            ],
+            "known_limits_or_gaps": ["Commercial coverage can be incomplete for some cities."],
+        },
     }
 
 
@@ -270,8 +289,18 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(datasource_by_subsector["I.1"], "ds-applicable")
         self.assertEqual(datasource_by_subsector["I.2"], "ds-commercial")
         mock_client.get_stationary_energy_allowed_capabilities.assert_awaited_once()
+        self.assertEqual(
+            mock_client.get_stationary_energy_allowed_capabilities.await_args.kwargs["workflow_step"],
+            "draft",
+        )
         mock_client.load_stationary_energy_context.assert_awaited_once()
         mock_llm.generate_proposals.assert_awaited_once()
+        context_summary = self._draft_context_summary(draft_run_id)
+        self.assertIn("guidance_context", context_summary)
+        self.assertEqual(
+            context_summary["guidance_context"]["sector_overview"],
+            _context_payload()["guidance_context"]["sector_overview"],
+        )
 
     def test_start_creates_a_new_draft_run_each_time(self) -> None:
         first_draft_run_id, _proposal_id, _candidate_id = self._start_draft()
@@ -790,6 +819,78 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(version_history)
         self.assertTrue(all(versions == [1, 2] for versions in version_history.values()))
 
+    def test_save_commits_latest_pending_review_decisions(self) -> None:
+        mock_client = self._mock_cc_client()
+        mock_llm = self._mock_llm_generator()
+
+        with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
+            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            return_value=mock_client,
+        ), patch(
+            "app.services.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
+            return_value=mock_llm,
+        ):
+            start_response = self.client.post(
+                "/v1/stationary-energy-drafts/start",
+                json={
+                    "user_id": "user-1",
+                    "city_id": "city-1",
+                    "inventory_id": "inventory-1",
+                    "context": {"access_token": _active_jwt()},
+                },
+            )
+            self.assertEqual(start_response.status_code, 201, start_response.text)
+            draft_run_id = start_response.json()["draft_run_id"]
+
+            decisions = self._complete_review_decisions(draft_run_id)
+            review_response = self.client.post(
+                f"/v1/stationary-energy-drafts/{draft_run_id}/review",
+                json={"user_id": "user-1", "decisions": decisions},
+                headers=_auth_headers(),
+            )
+            self.assertEqual(review_response.status_code, 200, review_response.text)
+            self.assertTrue(
+                all(
+                    decision["selected_source_id"]
+                    for decision in review_response.json()["decisions"]
+                    if decision["action"] == "accept"
+                )
+            )
+
+            save_response = self.client.post(
+                f"/v1/stationary-energy-drafts/{draft_run_id}/save",
+                json={"user_id": "user-1"},
+                headers=_auth_headers(),
+            )
+            status_response = self.client.get(
+                f"/v1/stationary-energy-drafts/{draft_run_id}",
+                params={"user_id": "user-1"},
+                headers=_auth_headers(),
+            )
+
+        self.assertEqual(save_response.status_code, 200, save_response.text)
+        save_data = save_response.json()
+        self.assertEqual(save_data["status"], "saved")
+        self.assertTrue(
+            all(
+                decision["commit_status"] == "committed"
+                for decision in save_data["decisions"]
+                if decision["action"] == "accept"
+            )
+        )
+        self.assertEqual(status_response.status_code, 200, status_response.text)
+        self.assertEqual(status_response.json()["workflow_step"], "review")
+        self.assertEqual(status_response.json()["status"], "saved")
+        self.assertEqual(mock_client.get_stationary_energy_allowed_capabilities.await_count, 2)
+        self.assertEqual(
+            mock_client.get_stationary_energy_allowed_capabilities.await_args_list[1].kwargs["workflow_step"],
+            "review",
+        )
+        mock_client.commit_stationary_energy_accepted.assert_awaited_once()
+        commit_rows = mock_client.commit_stationary_energy_accepted.await_args.kwargs["request_payload"]["rows"]
+        self.assertTrue(commit_rows)
+        self.assertTrue(all(row["selected_source_id"] for row in commit_rows))
+
     def test_status_rejects_wrong_user(self) -> None:
         draft_run_id, _proposal_id, _candidate_id = self._start_draft()
 
@@ -823,6 +924,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("Testopolis", history[0]["content"])
         self.assertIn("ds-chat", history[0]["content"])
         self.assertIn("openai/gpt-5.4", history[0]["content"])
+        self.assertIn("guidance_context", history[0]["content"])
+        self.assertIn("Use subsector-specific energy activity data first.", history[0]["content"])
         self.assertNotIn("raw-output-should-not-be-in-chat-context", history[0]["content"])
         self.assertEqual(history[-1]["role"], "user")
         self.assertEqual(history[-1]["content"], payload.content)
@@ -831,9 +934,16 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         mock_client = AsyncMock()
         mock_client.refresh_token = AsyncMock(return_value=("fresh-token", 3600))
         mock_client.get_stationary_energy_allowed_capabilities = AsyncMock(
-            return_value=[LOAD_CONTEXT_CAPABILITY]
+            side_effect=lambda **kwargs: (
+                [LOAD_CONTEXT_CAPABILITY]
+                if kwargs.get("workflow_step") == "draft"
+                else [COMMIT_ACCEPTED_CAPABILITY]
+            )
         )
         mock_client.load_stationary_energy_context = AsyncMock(return_value=_context_payload())
+        mock_client.commit_stationary_energy_accepted = AsyncMock(
+            side_effect=self._mock_commit_response
+        )
         return mock_client
 
     def _mock_llm_generator(self) -> Mock:
@@ -962,6 +1072,41 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.status_code, 200, response.text)
         return response.json()
 
+    def _draft_context_summary(self, draft_run_id: str) -> dict[str, Any]:
+        async def load_summary() -> dict[str, Any]:
+            async with self.session_factory() as session:
+                result = await session.execute(
+                    select(StationaryEnergyDraftRun).where(
+                        StationaryEnergyDraftRun.draft_run_id == UUID(draft_run_id)
+                    )
+                )
+                draft_run = result.scalar_one()
+                return draft_run.context_summary or {}
+
+        return asyncio.run(load_summary())
+
+    @staticmethod
+    async def _mock_commit_response(
+        *,
+        request_payload: dict[str, Any],
+        token: str | None = None,
+    ) -> dict[str, Any]:
+        rows = request_payload.get("rows") or []
+        return {
+            "draft_run_id": request_payload.get("draft_run_id"),
+            "inventory_id": request_payload.get("inventory_id"),
+            "results": [
+                {
+                    "proposal_id": row["proposal_id"],
+                    "decision_version": row["decision_version"],
+                    "selected_source_id": row["selected_source_id"],
+                    "status": "committed",
+                    "token_present": bool(token),
+                }
+                for row in rows
+            ],
+        }
+
     def _complete_review_decisions(
         self,
         draft_run_id: str,
@@ -1017,6 +1162,12 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                     "taxonomy_count": 1,
                     "current_values_count": 1,
                     "source_candidates_count": 1,
+                    "guidance_context": {
+                        "sector_overview": "Stationary Energy guidance snapshot.",
+                        "methodology_summaries": [
+                            "Use subsector-specific energy activity data first."
+                        ],
+                    },
                     "llm_trace": {
                         "model": "openai/gpt-5.4",
                         "raw_output": "raw-output-should-not-be-in-chat-context",

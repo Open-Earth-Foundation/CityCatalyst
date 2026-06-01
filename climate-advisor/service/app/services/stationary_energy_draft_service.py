@@ -24,6 +24,8 @@ from ..models.stationary_energy_drafts import (
     ReviewDecisionResponse,
     ReviewStationaryEnergyDraftRequest,
     ReviewStationaryEnergyDraftResponse,
+    SaveStationaryEnergyDraftRequest,
+    SaveStationaryEnergyDraftResponse,
     StartStationaryEnergyDraftRequest,
     StartStationaryEnergyDraftResponse,
     StationaryEnergyDraftStatusResponse,
@@ -53,6 +55,7 @@ from ..utils.token_manager import (
 logger = logging.getLogger(__name__)
 
 LOAD_CONTEXT_CAPABILITY = "ghgi.stationary_energy.load_context"
+COMMIT_ACCEPTED_CAPABILITY = "ghgi.stationary_energy.commit_accepted"
 
 
 class StationaryEnergyDraftService:
@@ -124,7 +127,7 @@ class StationaryEnergyDraftService:
         if draft_run.user_id != user_id:
             raise HTTPException(status_code=403, detail="Draft run does not belong to user")
 
-        if draft_run.status in {"reviewed", "partially_committed"}:
+        if draft_run.status in {"reviewed", "saved", "partially_saved"}:
             raise HTTPException(
                 status_code=409,
                 detail="Reviewed Stationary Energy drafts cannot be retried",
@@ -400,6 +403,168 @@ class StationaryEnergyDraftService:
             user_id=user_id,
             status="reviewed",
             decisions=[self._to_review_decision_response(decision) for decision in decisions],
+        )
+
+    async def save_draft(
+        self,
+        *,
+        draft_run_id: UUID,
+        payload: SaveStationaryEnergyDraftRequest,
+        authorization: str | None = None,
+    ) -> SaveStationaryEnergyDraftResponse:
+        draft_run = await self._get_draft_run_or_404(draft_run_id)
+        token = self._extract_bearer_token(authorization)
+        if token is None and draft_run.thread_id:
+            thread = await self.thread_service.get_thread(draft_run.thread_id)
+            if thread is not None:
+                token = self._extract_token(thread.context)
+
+        user_id = self._resolve_authenticated_user_id(
+            token=token,
+            requested_user_id=payload.user_id,
+        )
+        if draft_run.user_id != user_id:
+            raise HTTPException(status_code=403, detail="Draft run does not belong to user")
+
+        if not draft_run.review_decisions:
+            raise HTTPException(
+                status_code=409,
+                detail="Draft has no review decisions to save",
+            )
+
+        token = await self._ensure_user_token(
+            user_id=user_id,
+            thread_id=draft_run.thread_id,
+            token=token,
+        )
+        allowed_capabilities = await self.cc_client.get_stationary_energy_allowed_capabilities(
+            user_id=user_id,
+            city_id=draft_run.city_id,
+            inventory_id=draft_run.inventory_id,
+            workflow_step="review",
+            token=token,
+        )
+        if COMMIT_ACCEPTED_CAPABILITY not in allowed_capabilities:
+            raise HTTPException(
+                status_code=403,
+                detail="Stationary Energy save is not allowed for this draft",
+            )
+
+        latest_decisions = self._latest_review_decisions(draft_run.review_decisions)
+        pending_decisions = [
+            decision
+            for decision in latest_decisions.values()
+            if decision.commit_status == "pending_cc_commit"
+        ]
+        if not pending_decisions:
+            await self.repository.update_draft_run(
+                draft_run,
+                status="no_changes",
+                workflow_step="review",
+            )
+            return self._to_save_response(
+                draft_run,
+                status_override="no_changes",
+            )
+
+        proposal_by_id = {
+            proposal.proposal_id: proposal
+            for proposal in draft_run.proposals
+        }
+        rows: list[dict[str, Any]] = []
+        local_results: list[dict[str, Any]] = []
+        for decision in pending_decisions:
+            proposal = proposal_by_id.get(decision.proposal_id)
+            if proposal is None:
+                local_results.append(
+                    self._local_failed_commit_result(
+                        decision=decision,
+                        reason="Proposal snapshot is missing from this draft run.",
+                    )
+                )
+                continue
+
+            selected_source_id = (
+                decision.selected_source_id
+                or proposal.recommended_datasource_id
+            )
+            if not selected_source_id:
+                local_results.append(
+                    self._local_failed_commit_result(
+                        decision=decision,
+                        reason="No selected source is available for this reviewed proposal.",
+                    )
+                )
+                continue
+
+            rows.append(
+                {
+                    "proposal_id": str(decision.proposal_id),
+                    "decision_version": decision.decision_version,
+                    "target_ref": proposal.target_ref or {},
+                    "selected_source_id": selected_source_id,
+                }
+            )
+
+        cc_results: list[dict[str, Any]] = []
+        if rows:
+            commit_payload = {
+                "draft_run_id": str(draft_run.draft_run_id),
+                "user_id": user_id,
+                "city_id": draft_run.city_id,
+                "inventory_id": draft_run.inventory_id,
+                "rows": rows,
+            }
+            commit_response = await self.cc_client.commit_stationary_energy_accepted(
+                request_payload=commit_payload,
+                token=token,
+            )
+            raw_results = commit_response.get("results") if isinstance(commit_response, dict) else None
+            if not isinstance(raw_results, list):
+                raise HTTPException(
+                    status_code=502,
+                    detail="CityCatalyst save response did not include commit results",
+                )
+            cc_results = [
+                result
+                for result in raw_results
+                if isinstance(result, dict)
+            ]
+
+        results_by_key = {
+            self._commit_result_key(result): result
+            for result in [*cc_results, *local_results]
+            if self._commit_result_key(result) is not None
+        }
+        for decision in pending_decisions:
+            result = results_by_key.get(
+                (
+                    str(decision.proposal_id),
+                    decision.decision_version,
+                )
+            )
+            if result is None:
+                result = self._local_failed_commit_result(
+                    decision=decision,
+                    reason="CityCatalyst did not return a result for this reviewed proposal.",
+                )
+            decision.commit_status = str(result.get("status") or "failed")
+            decision.commit_response = result
+            decision.updated_at = datetime.now(timezone.utc)
+
+        save_status = self._save_status_after_commit(
+            latest_decisions=latest_decisions,
+            attempted=pending_decisions,
+        )
+        await self.repository.update_draft_run(
+            draft_run,
+            status=save_status,
+            workflow_step="review",
+        )
+
+        return self._to_save_response(
+            draft_run,
+            status_override=save_status,
         )
 
     async def _resolve_user_and_token(
@@ -712,6 +877,7 @@ class StationaryEnergyDraftService:
             "current_values_count": len(context.current_values),
             "source_candidates_count": len(context.source_candidates),
             "allowed_capabilities": allowed_capabilities,
+            "guidance_context": context.guidance_context,
         }
 
     @staticmethod
@@ -846,7 +1012,7 @@ class StationaryEnergyDraftService:
         if action in {"accept", "override_source"}:
             return {
                 "state": "pending",
-                "reason": "CC commit capability is outside the CA-side draft persistence implementation.",
+                "reason": "Awaiting the CC save step for final inventory commit.",
             }
         return None
 
@@ -926,6 +1092,95 @@ class StationaryEnergyDraftService:
             created_at=draft_run.created_at,
             updated_at=draft_run.updated_at,
         )
+
+    def _to_save_response(
+        self,
+        draft_run: StationaryEnergyDraftRun,
+        *,
+        status_override: str | None = None,
+    ) -> SaveStationaryEnergyDraftResponse:
+        status = status_override or draft_run.status
+        if status not in {"saved", "partially_saved", "failed", "no_changes"}:
+            status = "failed"
+        return SaveStationaryEnergyDraftResponse(
+            draft_run_id=draft_run.draft_run_id,
+            user_id=draft_run.user_id,
+            status=status,  # type: ignore[arg-type]
+            decisions=[
+                self._to_review_decision_response(decision)
+                for decision in sorted(
+                    draft_run.review_decisions,
+                    key=self._review_decision_sort_key,
+                )
+            ],
+        )
+
+    @staticmethod
+    def _latest_review_decisions(
+        decisions: list[StationaryEnergyReviewDecision],
+    ) -> dict[UUID, StationaryEnergyReviewDecision]:
+        latest: dict[UUID, StationaryEnergyReviewDecision] = {}
+        for decision in sorted(
+            decisions,
+            key=lambda item: (
+                str(item.proposal_id),
+                item.decision_version,
+                str(item.decision_id),
+            ),
+        ):
+            latest[decision.proposal_id] = decision
+        return latest
+
+    @staticmethod
+    def _commit_result_key(
+        result: dict[str, Any],
+    ) -> tuple[str, int] | None:
+        proposal_id = result.get("proposal_id")
+        decision_version = result.get("decision_version")
+        if proposal_id is None or decision_version is None:
+            return None
+        try:
+            return str(proposal_id), int(decision_version)
+        except (TypeError, ValueError):
+            return None
+
+    @staticmethod
+    def _local_failed_commit_result(
+        *,
+        decision: StationaryEnergyReviewDecision,
+        reason: str,
+    ) -> dict[str, Any]:
+        return {
+            "proposal_id": str(decision.proposal_id),
+            "decision_version": decision.decision_version,
+            "selected_source_id": decision.selected_source_id,
+            "status": "failed",
+            "error": reason,
+        }
+
+    @staticmethod
+    def _save_status_after_commit(
+        *,
+        latest_decisions: dict[UUID, StationaryEnergyReviewDecision],
+        attempted: list[StationaryEnergyReviewDecision],
+    ) -> str:
+        if not attempted:
+            return "no_changes"
+
+        latest_statuses = {
+            decision.commit_status
+            for decision in latest_decisions.values()
+        }
+        committed_statuses = {"committed", "skipped_duplicate_source"}
+        if latest_statuses and latest_statuses.issubset(
+            committed_statuses | {"not_applicable"}
+        ):
+            return "saved"
+        if latest_statuses & committed_statuses:
+            return "partially_saved"
+        if "failed" in latest_statuses:
+            return "failed"
+        return "no_changes"
 
     @staticmethod
     def _llm_trace(draft_run: StationaryEnergyDraftRun) -> dict[str, Any] | None:

@@ -1,13 +1,19 @@
 from __future__ import annotations
 
 import logging
+from uuid import UUID
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..db.session import get_session
 from ..models.requests import ThreadCreateRequest
-from ..models.responses import ThreadCreateResponse
+from ..models.responses import (
+    ThreadCreateResponse,
+    ThreadMessageResponse,
+    ThreadMessagesResponse,
+)
+from ..services.message_service import MessageService
 from ..services.thread_service import ThreadService
 
 
@@ -79,4 +85,36 @@ async def create_thread(
 @router.options("/threads", include_in_schema=False)
 async def options_threads() -> Response:
     return Response(status_code=status.HTTP_200_OK)
+
+
+@router.get(
+    "/threads/{thread_id}/messages",
+    response_model=ThreadMessagesResponse,
+)
+async def get_thread_messages(
+    thread_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    limit: int | None = Query(default=None, ge=1, le=100),
+    session: AsyncSession = Depends(get_session),
+) -> ThreadMessagesResponse:
+    thread_service = ThreadService(session)
+    message_service = MessageService(session)
+    thread = await thread_service.get_thread_for_user(thread_id, user_id)
+    messages = await message_service.get_thread_messages(
+        thread_id=thread.thread_id,
+        limit=limit,
+    )
+
+    return ThreadMessagesResponse(
+        thread_id=thread.thread_id,
+        messages=[
+            ThreadMessageResponse(
+                message_id=message.message_id,
+                role=message.role.value,
+                text=message.text,
+                created_at=message.created_at,
+            )
+            for message in messages
+        ],
+    )
 

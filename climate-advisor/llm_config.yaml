@@ -25,6 +25,20 @@ generation:
   defaults:
     temperature: 0.1
 
+  # Prompt-size guardrails. The OpenRouter GPT-5.4-family route used here is
+  # counted with o200k_base unless tiktoken can resolve the concrete model.
+  prompt_budget:
+    tokenizer_encoding: "o200k_base"
+    stationary_energy:
+      draft_generation:
+        max_prompt_tokens: 150000
+        max_normalized_rows_per_candidate: 5
+        include_source_data: false
+      chat_context:
+        max_prompt_tokens: 150000
+        max_normalized_rows_per_candidate: 3
+        include_source_data: false
+
 # System Prompts
 prompts:
   # Default system prompt for general climate advice

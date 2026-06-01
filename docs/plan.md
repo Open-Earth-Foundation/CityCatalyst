@@ -190,6 +190,13 @@ explains draft decisions; CityCatalyst commits accepted changes.
 The model should choose among approved options. It should not discover sources
 freely.
 
+For this pilot, `approved` and `allow-listed` mean source candidates already
+present in the CityCatalyst datasource catalog and returned by the existing
+CityCatalyst source/applicability pipeline for the selected city, inventory,
+year, and Stationary Energy scope. CA should not maintain a separate pilot
+source allow-list or rank sources that were not returned by the scoped CC
+capabilities.
+
 ## Implementation Architecture Details
 
 The Stationary Energy slice should make the ideal architecture concrete without
@@ -679,7 +686,9 @@ For each Stationary Energy subsector, CA should:
 
 1. Ignore rows that are locked or intentionally completed by the user.
 2. Only consider candidates supplied by scoped capabilities.
-3. Only consider allow-listed sources.
+3. Only consider allow-listed sources, where the allow-list is the existing
+   CityCatalyst datasource catalog after CC applicability filtering for the
+   selected city, inventory, year, and Stationary Energy scope.
 4. Prefer exact city and inventory-year matches.
 5. Prefer city-level data over regional or country proxies.
 6. Prefer complete subsector coverage over broad approximations.
@@ -706,7 +715,8 @@ CA should return structured proposal states:
 - CA never sees unrelated product state.
 - CA never receives arbitrary credentials.
 - MCP is not used as a runtime transport for this Stationary Energy workflow.
-- Source candidates are allow-listed and normalized before ranking.
+- Source candidates are allow-listed by CityCatalyst's existing datasource
+  catalog and applicability filtering, then normalized before ranking.
 - Every committed change requires an explicit user decision.
 - Drafts remain visually distinct from saved values.
 - Version history is created only for committed CityCatalyst changes.
@@ -802,7 +812,9 @@ blocked and does not interfere with the current app behavior.
   in one route.
 - Whether manual override commits in the first release or stays staged for a
   later explicit save path.
-- Which approved sources are in the first pilot source allow-list.
+- Whether a later pilot needs a narrower source allow-list on top of the
+  existing CityCatalyst datasource catalog. The first pilot uses the existing CC
+  catalog plus applicability filtering as the allow-list.
 - Which conflict variance threshold is acceptable for Stationary Energy.
 - How much of the CA draft/audit trail should be mirrored into CityCatalyst
   version history.

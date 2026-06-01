@@ -148,6 +148,7 @@ class LoadStationaryEnergyContextResponse(FlexibleContract):
     current_values: list[StationaryEnergyCurrentValue] = Field(default_factory=list)
     source_candidates: list[StationaryEnergySourceCandidate] = Field(default_factory=list)
     permission_summary: dict[str, Any] = Field(default_factory=dict)
+    guidance_context: dict[str, Any] = Field(default_factory=dict)
 
 
 class DraftProposal(FlexibleContract):
@@ -279,4 +280,15 @@ class ReviewStationaryEnergyDraftResponse(BaseModel):
     draft_run_id: UUID
     user_id: str
     status: Literal["reviewed", "partially_committed", "failed"]
+    decisions: list[ReviewDecisionResponse]
+
+
+class SaveStationaryEnergyDraftRequest(BaseModel):
+    user_id: str
+
+
+class SaveStationaryEnergyDraftResponse(BaseModel):
+    draft_run_id: UUID
+    user_id: str
+    status: Literal["saved", "partially_saved", "failed", "no_changes"]
     decisions: list[ReviewDecisionResponse]

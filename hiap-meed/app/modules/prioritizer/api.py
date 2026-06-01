@@ -167,6 +167,11 @@ def _mlflow_source_params() -> dict[str, str]:
     }
 
 
+def _mlflow_environment_tag() -> str:
+    """Return the environment tag used on MLflow runs."""
+    return os.getenv("MLFLOW_ENVIRONMENT", "dev").strip() or "dev"
+
+
 @router.post(
     "/v1/prioritize/exclusions/preview",
     response_model=ExclusionPreviewApiResponse,
@@ -203,7 +208,7 @@ def preview_exclusions(
         run_name="exclusion_preview_request",
         tags={
             "service": "hiap-meed",
-            "environment": "dev",
+            "environment": _mlflow_environment_tag(),
             "request_kind": "exclusion_preview",
             "endpoint": "/v1/prioritize/exclusions/preview",
             "frontend_request_id": request_trace_id,
@@ -401,7 +406,7 @@ def prioritize(
         run_name="prioritization_request",
         tags={
             "service": "hiap-meed",
-            "environment": "dev",
+            "environment": _mlflow_environment_tag(),
             "request_kind": "prioritization",
             "endpoint": "/v1/prioritize",
             "frontend_request_id": request_trace_id,
@@ -537,7 +542,7 @@ def translate_ranked_action_explanations(
         run_name="explanation_translation_request",
         tags={
             "service": "hiap-meed",
-            "environment": "dev",
+            "environment": _mlflow_environment_tag(),
             "request_kind": "explanation_translation",
             "endpoint": "/v1/explanations/translate",
             "frontend_request_id": request_trace_id,
@@ -734,7 +739,7 @@ def _run_for_city_input(
         run_name=f"prioritization_city_{_safe_artifact_name(city_input.locode)}",
         tags={
             "service": "hiap-meed",
-            "environment": "dev",
+            "environment": _mlflow_environment_tag(),
             "request_kind": "prioritization",
             "scope": "city",
             "frontend_request_id": frontend_request_id,

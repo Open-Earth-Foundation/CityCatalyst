@@ -28,7 +28,7 @@ Create `.env` from `.env.example` and set values:
 cp .env.example .env
 ```
 
-Recommended values:
+Recommended values for the standard hosted dev setup:
 
 ```env
 API_HOST=0.0.0.0
@@ -37,8 +37,9 @@ LOG_LEVEL=INFO
 LOG_DIR=logs
 LOCAL_ARTIFACTS_ENABLED=true
 MLFLOW_ENABLED=true
-MLFLOW_TRACKING_URI=http://mlflow:5000
-MLFLOW_EXPERIMENT_NAME=hiap-meed-dev
+MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev
+MLFLOW_EXPERIMENT_NAME=hiap-meed
+MLFLOW_ENVIRONMENT=dev
 HIAP_MEED_CITY_DATA_SOURCE=api
 CCGLOBAL_API_BASE_URL=https://ccglobal.openearth.dev
 UPSTREAM_HTTP_TIMEOUT_SECONDS=30
@@ -69,8 +70,9 @@ Variables:
 - `LOG_DIR`: output folder for `app.log` and optional local request artifacts
 - `LOCAL_ARTIFACTS_ENABLED`: if `true`, writes per-request artifact files under `LOG_DIR/requests/...`
 - `MLFLOW_ENABLED`: if `true`, enables best-effort MLflow run, direct artifact, and OpenAI trace logging
-- `MLFLOW_TRACKING_URI`: MLflow tracking server URL. For local Docker Compose development use `http://mlflow:5000`. In Kubernetes, point this to the in-network MLflow service URI.
+- `MLFLOW_TRACKING_URI`: MLflow tracking server URL. The standard default is the hosted dev MLflow at `https://mlflow-dev.openearth.dev`. Override it to `http://mlflow:5000` only when running the fully local Docker Compose stack, or to `http://localhost:5000` when using `kubectl port-forward`.
 - `MLFLOW_EXPERIMENT_NAME`: MLflow experiment name used for all hiap-meed runs
+- `MLFLOW_ENVIRONMENT`: environment tag attached to MLflow runs (use `dev`, `test`, or `prod`)
 - `HIAP_MEED_CITY_DATA_SOURCE`: city input source (`api` or `mock`)
 - `CCGLOBAL_API_BASE_URL`: shared Global API base host for upstream API-backed clients (default `https://ccglobal.openearth.dev` for local/dev)
 - `UPSTREAM_HTTP_TIMEOUT_SECONDS`: shared timeout in seconds for upstream HTTP API calls (default `30`)
@@ -94,6 +96,18 @@ Variables:
 
 When `MLFLOW_ENABLED=true`, the service best-effort logs request runs, direct request artifacts, and OpenAI traces to the configured MLflow server. If MLflow is down or unreachable, the API still completes normally and only emits warning logs.
 
+MLflow tagging notes:
+
+- `MLFLOW_EXPERIMENT_NAME` groups runs by service, for example `hiap-meed`
+- `MLFLOW_ENVIRONMENT` controls the run tag used to distinguish `dev`, `test`, and `prod` while all three write to the same hosted MLflow instance
+- if `MLFLOW_ENVIRONMENT` is unset, the current implementation defaults it to `dev`
+
+MLflow usage modes:
+
+- Standard default: keep `MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev` and write traces/artifacts to the shared hosted MLflow for all environments.
+- Fully local fallback: run `docker compose up --build` and override `MLFLOW_TRACKING_URI=http://mlflow:5000`.
+- Laptop + Kubernetes fallback: port-forward MLflow locally and override `MLFLOW_TRACKING_URI=http://localhost:5000`.
+
 ### 2. Install dependencies
 
 From the `hiap-meed` directory:
@@ -104,24 +118,83 @@ uv sync
 
 ### 3. Run the API locally
 
-Local development should use Docker Compose so `hiap-meed` and `mlflow` share the same Docker network and the `mlflow` hostname resolves correctly from the API container.
+You have two local options:
 
-From the `hiap-meed` directory:
+- Standard path: run `hiap-meed` while keeping `.env` pointed at the hosted dev MLflow
+- Fully local path: use Docker Compose to run both `hiap-meed` and MLflow together on the same Docker network
+
+Standard path:
+
+- Keep the `.env` default `MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev`
+- Start the app with your preferred local workflow, for example `uv run fastapi dev app/main.py` or plain Docker
+- Use the hosted MLflow UI at `https://mlflow-dev.openearth.dev`
+
+Fully local Docker Compose path:
 
 ```text
 docker compose up --build
 ```
 
+This local-only mode requires overriding `MLFLOW_TRACKING_URI=http://mlflow:5000` because `hiap-meed` and MLflow talk over the compose network.
+
+Plain Docker:
+
+```text
+docker build -t hiap-meed-app .
+docker run -it --rm -p 8000:8000 --env-file .env hiap-meed-app
+```
+
+To persist file logs and per-request artifacts on your machine under `logs/`
+including `logs/requests/`, bind-mount the host logs directory to
+`/app/logs` in the container. This matches the default `LOG_DIR=logs`.
+
+`cmd.exe`:
+
+```text
+docker run -it --rm -p 8000:8000 --env-file .env -v "%cd%\logs:/app/logs" hiap-meed-app
+```
+
+If you change `LOG_DIR` in `.env`, adjust the container target path so it
+still matches `/app/<LOG_DIR>`.
+
+Plain Docker without a bind mount is still valid, but then logs stay only
+inside the container and disappear when the container exits.
+
+```text
+docker run -it --rm -p 8000:8000 --env-file .env hiap-meed-app
+```
+
+For plain Docker, keep the hosted default `https://mlflow-dev.openearth.dev` unless you intentionally want one of these overrides:
+
+- fully local Compose-style MLflow: `MLFLOW_TRACKING_URI=http://mlflow:5000`
+- port-forwarded Kubernetes MLflow: `MLFLOW_TRACKING_URI=http://localhost:5000`
+
 Verify the service:
 
 - Health check: `curl http://localhost:8000/health`
 - OpenAPI docs: `http://localhost:8000/docs`
-- MLflow UI: `http://localhost:5000`
+- Standard MLflow UI: `https://mlflow-dev.openearth.dev`
+- Local Compose MLflow UI: `http://localhost:5000`
 - Prioritization endpoint: `POST /v1/prioritize`
 - Explanation translation endpoint: `POST /v1/explanations/translate`
 - Exclusion preview endpoint: `POST /v1/prioritize/exclusions/preview`
 
-If you later deploy `hiap-meed` and MLflow into the same Kubernetes network, keep `MLFLOW_ENABLED=true` and change only `MLFLOW_TRACKING_URI` to the in-cluster MLflow service URI for that environment.
+For deployed workloads, use the hosted MLflow URLs directly.
+
+Example Kubernetes values:
+
+- dev cluster service:
+  - `MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev`
+  - `MLFLOW_EXPERIMENT_NAME=hiap-meed`
+  - `MLFLOW_ENVIRONMENT=dev`
+- test workload on the same dev cluster:
+  - `MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev`
+  - `MLFLOW_EXPERIMENT_NAME=hiap-meed`
+  - `MLFLOW_ENVIRONMENT=test`
+- prod workload:
+  - `MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev`
+  - `MLFLOW_EXPERIMENT_NAME=hiap-meed`
+  - `MLFLOW_ENVIRONMENT=prod`
 
 ### External API contracts
 
@@ -572,7 +645,9 @@ Typical per-request artifact events:
 
 ### 6. Docker
 
-For local development, run both `hiap-meed` and MLflow with Docker Compose.
+For local development, the normal path is to keep `hiap-meed` pointed at the hosted dev MLflow. Docker Compose remains available when you want the whole stack, including MLflow, fully local.
+
+Docker Compose:
 
 From the `hiap-meed` directory:
 
@@ -585,12 +660,28 @@ This starts:
 - `hiap-meed` on `http://localhost:8000`
 - `mlflow` on `http://localhost:5000`
 
+Before using this path, override `MLFLOW_TRACKING_URI=http://mlflow:5000` in `.env` or the container environment.
+
 The compose file intentionally runs MLflow with permissive `--allowed-hosts "*"` because this setup is for local development only.
 
 The compose file already bind-mounts `./logs` to `/app/logs`, so `app.log` and optional local request artifacts persist on your machine under `logs/`.
-MLflow keeps its own SQLite metadata store and artifact store in its own named Docker volume. `hiap-meed` does not share that filesystem; it talks to MLflow only through `MLFLOW_TRACKING_URI`, which mirrors the later Kubernetes service-to-service setup.
+MLflow keeps its own SQLite metadata store and artifact store in its own named Docker volume. `hiap-meed` does not share that filesystem; it talks to MLflow only through `MLFLOW_TRACKING_URI`, which is the same tracking API contract used by the hosted MLflow deployment.
 
 If you change `LOG_DIR` in `.env`, update the `hiap-meed` volume mount in `compose.yaml` so it still matches `/app/<LOG_DIR>`.
+
+Plain Docker:
+
+```text
+docker build -t hiap-meed .
+docker run --rm -p 8000:8000 --env-file .env -v ./logs:/app/logs hiap-meed
+```
+
+Notes for plain Docker:
+
+- keep `LOG_DIR=logs` so the bind mount writes `app.log` and optional local request artifacts into the local `logs/` folder
+- if you are writing to the Kubernetes-hosted MLflow from your laptop, use `kubectl port-forward -n default svc/mlflow-service-dev 5000:5000` and set `MLFLOW_TRACKING_URI=http://localhost:5000`
+- otherwise, keep the standard hosted value `MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev`
+- if you change `LOG_DIR`, update the bind mount so it still maps your host log folder to `/app/<LOG_DIR>`
 
 The Docker image includes both `app/` and `data/`, so mock payloads under
 `data/mock` are available in-container at `/app/data/mock`.

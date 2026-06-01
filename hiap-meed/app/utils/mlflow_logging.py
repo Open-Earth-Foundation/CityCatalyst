@@ -15,8 +15,8 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MLFLOW_TRACKING_URI = "http://localhost:5000"
-DEFAULT_MLFLOW_EXPERIMENT_NAME = "hiap-meed-dev"
+DEFAULT_MLFLOW_TRACKING_URI = "https://mlflow-dev.openearth.dev"
+DEFAULT_MLFLOW_EXPERIMENT_NAME = "hiap-meed"
 
 _INITIALIZED = False
 _INITIALIZATION_ATTEMPTED = False

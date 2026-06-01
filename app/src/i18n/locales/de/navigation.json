@@ -5,7 +5,7 @@
   "settings": "Einstellungen",
   "account-settings": "Kontoeinstellungen",
   "account-frozen-warning-text": "Ihr Konto ist eingefroren. Bitte wenden Sie sich an einen Administrator oder an <bold>{{ email }}</bold>, um es zu reaktivieren",
-  "page-title-ghg-inventories": "GHG Inventories",
-  "page-title-hiap": "High Impact Action Plan",
-  "page-title-dashboard": "Dashboard"
+  "page-title-ghg-inventories": "Inventários de GEI",
+  "page-title-hiap": "Aktionen & Pläne",
+  "page-title-dashboard": "Dashboard der Stadt"
 }

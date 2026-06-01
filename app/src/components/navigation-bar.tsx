@@ -83,8 +83,9 @@ export function NavigationBar({
     inventoryId: inventoryIdFromRoute,
     pathname,
   } = useRouteParams();
-  const { data: inventory, isLoading: isInventoryLoading } =
-    api.useGetInventoryQuery(inventoryIdFromRoute ?? "default");
+  const { data: inventory } = api.useGetInventoryQuery(
+    inventoryIdFromRoute ?? "default",
+  );
 
   const { data: userAccessStatus } = useGetUserAccessStatusQuery(
     {},
@@ -107,8 +108,7 @@ export function NavigationBar({
   };
 
   const { data: session, status } = useSession();
-  const { data: userInfo, isLoading: isUserInfoLoading } =
-    api.useGetUserInfoQuery();
+  const { data: userInfo } = api.useGetUserInfoQuery();
   const router = useRouter();
 
   // Derive the active module name from the current pathname

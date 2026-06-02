@@ -208,7 +208,7 @@ export function SourceDrawer({
                           </Tooltip>
                         </HStack>
                         <HStack align="baseline" gap={2}>
-                          <DisplayMedium color="content.link">
+                          <DisplayMedium color="content.secondary">
                             {emissionsToBeIncluded().number}
                           </DisplayMedium>
                           <Text

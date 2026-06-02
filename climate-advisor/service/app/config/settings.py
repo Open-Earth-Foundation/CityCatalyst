@@ -142,6 +142,7 @@ class PromptsConfig(BaseModel):
     default: str
     inventory_context: Optional[str] = None
     data_analysis: Optional[str] = None
+    stationary_energy_draft: Optional[str] = None
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""
@@ -307,10 +308,8 @@ class Settings(BaseModel):
     # LLM Configuration (loaded from YAML)
     llm: LLMConfig
 
-    # OpenRouter configuration (kept for backward compatibility)
+    # OpenRouter credentials
     openrouter_api_key: str | None = os.getenv("OPENROUTER_API_KEY")
-    openrouter_base_url: str | None = None  # Will be overridden by LLM config
-    openrouter_model: str | None = None  # Will be overridden by LLM config
 
     # OpenAI configuration for embeddings
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
@@ -348,14 +347,7 @@ class Settings(BaseModel):
     cc_oauth_token_url: str | None = os.getenv("CC_OAUTH_TOKEN_URL")
 
     def model_post_init(self, __context: Any) -> None:
-        """Override OpenRouter settings with LLM config values."""
-        # Override with LLM config values, allowing env vars to take precedence
-        if self.openrouter_base_url is None:
-            self.openrouter_base_url = self.llm.api.openrouter.base_url
-
-        if self.openrouter_model is None:
-            self.openrouter_model = self.llm.models.get("default", "openrouter/auto")
-
+        """Apply post-load configuration derived from llm_config.yaml."""
         # LangSmith configuration: ONLY API key from .env, everything else from llm_config.yaml
         # No silent fallbacks - configuration must be explicit
         langsmith_cfg = None

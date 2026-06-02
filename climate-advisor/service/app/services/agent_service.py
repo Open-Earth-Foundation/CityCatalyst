@@ -72,7 +72,7 @@ class AgentService:
         self.system_prompt = self.settings.llm.prompts.get_prompt("default")
 
         # Get default model and temperature from settings
-        self.default_model = self.settings.llm.models.get("default", "openai/gpt-4o")
+        self.default_model = self.settings.llm.models["default"]
         self.default_temperature = self.settings.llm.generation.defaults.temperature
 
         logger.info(
@@ -92,7 +92,7 @@ class AgentService:
         if not api_key:
             raise ValueError("OpenRouter API key (OPENROUTER_API_KEY) must be set")
         
-        base_url = self.settings.openrouter_base_url or "https://openrouter.ai/api/v1"
+        base_url = self.settings.llm.api.openrouter.base_url
         
         # Get OpenRouter metadata from environment or settings
         referer = os.getenv("OPENROUTER_REFERER") or "https://citycatalyst.ai"

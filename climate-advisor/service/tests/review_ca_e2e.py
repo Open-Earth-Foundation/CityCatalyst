@@ -47,7 +47,7 @@ def _configure_openrouter() -> str:
     if not api_key:
         raise RuntimeError("OPENROUTER_API_KEY must be set.")
 
-    base_url = settings.openrouter_base_url or "https://openrouter.ai/api/v1"
+    base_url = settings.llm.api.openrouter.base_url
     referer = os.getenv("OPENROUTER_REFERER") or "https://citycatalyst.ai"
     title = os.getenv("OPENROUTER_TITLE") or "CityCatalyst Climate Advisor"
     timeout_ms = settings.llm.api.openrouter.timeout_ms or 30000
@@ -63,7 +63,7 @@ def _configure_openrouter() -> str:
     openai.timeout = timeout_ms / 1000
     openai.max_retries = retries
 
-    return settings.llm.models.get("default", "openai/gpt-4o")
+    return settings.llm.models["default"]
 
 
 @function_tool

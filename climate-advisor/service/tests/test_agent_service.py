@@ -60,7 +60,6 @@ def build_mock_settings(
 
     return SimpleNamespace(
         openrouter_api_key=api_key,
-        openrouter_base_url=base_url,
         llm=llm_settings,
         app_name="climate-advisor",
     )
@@ -157,10 +156,9 @@ class OpenRouterClientConfigurationTests(unittest.TestCase):
             )
 
     @patch("app.services.agent_service.get_settings")
-    def test_openrouter_client_uses_fallback_base_url(self, mock_get_settings) -> None:
-        """Test OpenRouter client falls back to default URL if not configured."""
-        mock_settings = build_mock_settings()
-        mock_settings.openrouter_base_url = None
+    def test_openrouter_client_uses_llm_config_base_url(self, mock_get_settings) -> None:
+        """Test OpenRouter client reads the base URL from llm_config.yaml settings."""
+        mock_settings = build_mock_settings(base_url="https://custom-openrouter.example/v1")
         mock_get_settings.return_value = mock_settings
 
         with patch("app.services.agent_service.AsyncOpenAI") as mock_client_class:
@@ -169,7 +167,7 @@ class OpenRouterClientConfigurationTests(unittest.TestCase):
             call_kwargs = mock_client_class.call_args[1]
             self.assertEqual(
                 call_kwargs["base_url"],
-                "https://openrouter.ai/api/v1"
+                "https://custom-openrouter.example/v1"
             )
 
 

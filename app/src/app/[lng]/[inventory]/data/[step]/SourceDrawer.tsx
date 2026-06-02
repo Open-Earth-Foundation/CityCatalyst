@@ -124,6 +124,15 @@ export function SourceDrawer({
                   <Stack gap={3} mb={6}>
                     <Icon as={MdHomeWork} boxSize={9} />
                     <Heading
+                      color="content.link"
+                      textTransform="uppercase"
+                      letterSpacing="2.25px"
+                      fontSize="title.sm"
+                      lineHeight="16px"
+                    >
+                      {t("scope-data")}
+                    </Heading>
+                    <Heading
                       color="content.tertiary"
                       textTransform="uppercase"
                       letterSpacing="1.25px"

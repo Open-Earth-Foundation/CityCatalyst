@@ -221,7 +221,11 @@ class StationaryEnergyDraftService:
                 allowed_capabilities=allowed_capabilities,
                 trace_id=trace_id,
             )
-            context_summary = self._context_summary(context, allowed_capabilities)
+            context_summary = self._context_summary(
+                context,
+                allowed_capabilities,
+                source_candidates_count=len(source_candidate_records),
+            )
             context_summary["llm_trace"] = llm_result.trace
             async with self.session.begin_nested():
                 source_candidates = await self.repository.replace_source_candidates(
@@ -797,6 +801,9 @@ class StationaryEnergyDraftService:
     ) -> list[dict[str, Any]]:
         records: list[dict[str, Any]] = []
         for candidate in candidates:
+            if candidate.applicability_status != "applicable":
+                continue
+
             candidate_json = candidate.model_dump(mode="json", exclude={"quality_score"})
             records.append(
                 {
@@ -869,13 +876,14 @@ class StationaryEnergyDraftService:
     def _context_summary(
         context: LoadStationaryEnergyContextResponse,
         allowed_capabilities: list[str],
+        source_candidates_count: int,
     ) -> dict[str, Any]:
         return {
             "city": context.city.model_dump(mode="json", exclude_none=True),
             "inventory": context.inventory.model_dump(mode="json", exclude_none=True),
             "taxonomy_count": len(context.taxonomy),
             "current_values_count": len(context.current_values),
-            "source_candidates_count": len(context.source_candidates),
+            "source_candidates_count": source_candidates_count,
             "allowed_capabilities": allowed_capabilities,
             "guidance_context": context.guidance_context,
         }

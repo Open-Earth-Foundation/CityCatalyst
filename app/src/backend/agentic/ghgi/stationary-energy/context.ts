@@ -286,7 +286,7 @@ async function buildSourceCandidates(
       source.subSector?.sectorId ?? source.subCategory?.subsector?.sectorId;
     return sectorId === stationarySector.sectorId;
   });
-  const { applicableSources, removedSources } = DataSourceService.filterSources(
+  const { applicableSources } = DataSourceService.filterSources(
     inventory,
     stationarySources,
   );
@@ -308,21 +308,14 @@ async function buildSourceCandidates(
 
   const candidates: Array<Record<string, unknown>> = [];
   for (const item of applicableWithData) {
+    if (item.error) {
+      continue;
+    }
+
     candidates.push(
       buildSourceCandidate({
         inventory,
         item,
-        status: item.error ? "failed" : "applicable",
-      }),
-    );
-  }
-
-  for (const removed of removedSources) {
-    candidates.push(
-      buildSourceCandidate({
-        inventory,
-        item: { source: removed.source, error: removed.reason },
-        status: "removed",
       }),
     );
   }
@@ -333,7 +326,6 @@ async function buildSourceCandidates(
 function buildSourceCandidate(params: {
   inventory: Inventory;
   item: Record<string, any>;
-  status: "applicable" | "removed" | "failed";
 }): Record<string, unknown> {
   const source = params.item.source ?? params.item;
   const data = params.item.data;
@@ -358,18 +350,15 @@ function buildSourceCandidate(params: {
     geography_match: geographyMatch,
     source_scope: sourceScope,
     source_data: data ?? null,
-    normalized_rows:
-      params.status === "applicable" ? normalizeSourceRows(data) : [],
-    applicability_status: params.status,
-    applicability_issues: buildApplicabilityIssues(params.status, params.item.error),
-    failure_reason:
-      params.status === "failed" ? String(params.item.error ?? "Failed to load source") : null,
+    normalized_rows: normalizeSourceRows(data),
+    applicability_status: "applicable",
+    applicability_issues: [],
+    failure_reason: null,
     quality_score: source.startYear === params.inventory.year ? "1" : null,
     confidence_notes: buildConfidenceNotes({
       geographyMatch,
       source,
       inventory: params.inventory,
-      status: params.status,
     }),
   };
 }
@@ -456,11 +445,6 @@ function buildGuidanceContext(params: {
       }));
   });
 
-  const removedOrFailed = params.sourceCandidates.filter((candidate) => {
-    const status = String(candidate.applicability_status ?? "");
-    return status === "removed" || status === "failed";
-  });
-
   return {
     sector_overview: {
       sector: translation?.sector ?? "Stationary Energy",
@@ -480,17 +464,11 @@ function buildGuidanceContext(params: {
     source_selection_rules: [
       "Use only stored Stationary Energy source candidates returned by CityCatalyst for this inventory.",
       "Prefer sources that match the city and inventory year exactly before broader geographic matches.",
-      "Use removed or failed candidates only as explanations for gaps or rejected options.",
       "Do not invent missing activity values, emission factors, or new sources outside the bounded context.",
     ],
     known_limits_or_gaps: [
       "The draft flow is limited to the Stationary Energy taxonomy rows loaded for the selected inventory.",
       "Only current CityCatalyst datasource candidates are eligible for source-backed recommendations.",
-      ...(removedOrFailed.length > 0
-        ? [
-            `${removedOrFailed.length} candidate(s) were removed or failed during context loading and should be treated as unavailable options.`,
-          ]
-        : []),
     ],
   };
 }
@@ -612,31 +590,11 @@ function resolveGeographyMatch(
   return "unknown";
 }
 
-function buildApplicabilityIssues(
-  status: "applicable" | "removed" | "failed",
-  error: unknown,
-): string[] {
-  if (status === "applicable") {
-    return [];
-  }
-
-  if (error == null || error === "") {
-    return [status];
-  }
-
-  return [String(error)];
-}
-
 function buildConfidenceNotes(params: {
   geographyMatch: string;
   source: Record<string, any>;
   inventory: Inventory;
-  status: "applicable" | "removed" | "failed";
 }): string {
-  if (params.status !== "applicable") {
-    return "Candidate retained for audit context only.";
-  }
-
   const notes = [];
   if (params.geographyMatch === "city") {
     notes.push("City-level source");

@@ -274,10 +274,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(status_response.status_code, 200, status_response.text)
         status_data = status_response.json()
         self.assertEqual(status_data["status"], "ready")
-        self.assertEqual(len(status_data["source_candidates"]), 4)
+        self.assertEqual(len(status_data["source_candidates"]), 2)
         self.assertEqual(
             sorted(candidate["applicability_status"] for candidate in status_data["source_candidates"]),
-            ["applicable", "applicable", "failed", "removed"],
+            ["applicable", "applicable"],
         )
         self.assertEqual(len(status_data["proposals"]), 2)
         self.assertEqual(status_data["llm_trace"]["model"], "mock-llm")
@@ -295,7 +295,15 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         )
         mock_client.load_stationary_energy_context.assert_awaited_once()
         mock_llm.generate_proposals.assert_awaited_once()
+        llm_candidates = mock_llm.generate_proposals.await_args.kwargs[
+            "stored_source_candidates"
+        ]
+        self.assertEqual(
+            sorted(candidate["datasource_id"] for candidate in llm_candidates),
+            ["ds-applicable", "ds-commercial"],
+        )
         context_summary = self._draft_context_summary(draft_run_id)
+        self.assertEqual(context_summary["source_candidates_count"], 2)
         self.assertIn("guidance_context", context_summary)
         self.assertEqual(
             context_summary["guidance_context"]["sector_overview"],

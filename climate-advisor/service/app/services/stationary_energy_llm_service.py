@@ -337,8 +337,8 @@ class StationaryEnergyProposalLLMService:
             "Return JSON only. Generate draft proposals from the provided bounded context and stored source candidate snapshots. "
             "Never invent source candidates, datasource IDs, city data, inventory data, or permissions. "
             "Use guidance_context to explain methodology, scope meanings, unit conventions, source selection rules, and known limits, but do not treat guidance as additional source data. "
-            "Recommendations and alternatives must reference only candidate_id values present in source_candidates, and only candidates with applicability_status='applicable'. "
-            "Use removed and failed candidates only for rationale or gap explanation. "
+            "source_candidates contains only usable candidates with applicability_status='applicable'. "
+            "Recommendations and alternatives must reference only candidate_id values present in source_candidates. "
             "Return exactly one proposal for every taxonomy row in the input. "
             "Copy each taxonomy row into target_ref so every proposal can be matched back to a unique row. "
             "For each taxonomy row, return a proposal with target_ref, current_value, recommended_candidate_id, recommended_datasource_id, alternative_candidate_ids, proposed_value, rationale, status, and confidence_score. "
@@ -356,7 +356,7 @@ class StationaryEnergyProposalLLMService:
             "task": "generate_stationary_energy_draft_proposals",
             "rules": [
                 "Use only this bounded context.",
-                "Recommend only stored source candidates with applicability_status='applicable'.",
+                "Recommend only stored source candidates provided in source_candidates.",
                 "Every recommendation must include candidate_id and datasource_id.",
                 "recommended_datasource_id must exactly match the datasource_id for recommended_candidate_id.",
                 "alternative_candidate_ids must be stored applicable candidate_id values.",

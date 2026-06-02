@@ -19,6 +19,8 @@ depends_on = None
 
 
 def upgrade() -> None:
+    """Create Stationary Energy draft run, candidate, proposal, and review tables."""
+
     op.create_table(
         "stationary_energy_draft_runs",
         sa.Column("draft_run_id", postgresql.UUID(as_uuid=True), nullable=False),
@@ -209,6 +211,8 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    """Drop Stationary Energy draft persistence tables and indexes."""
+
     op.drop_index(
         "ix_stationary_energy_review_decisions_run_proposal",
         table_name="stationary_energy_review_decisions",

@@ -62,6 +62,8 @@ LOAD_CONTEXT_CAPABILITY = "ghgi.stationary_energy.load_context"
 
 
 class StationaryEnergyDraftService:
+    """Coordinate Stationary Energy draft generation, status, and review."""
+
     def __init__(
         self,
         session: AsyncSession,
@@ -69,6 +71,8 @@ class StationaryEnergyDraftService:
         cc_client: CityCatalystClient | None = None,
         proposal_generator: StationaryEnergyProposalLLMService | None = None,
     ) -> None:
+        """Initialize draft orchestration services for one database session."""
+
         self.session = session
         self.repository = StationaryEnergyDraftRepository(session)
         self.thread_service = ThreadService(session)
@@ -81,6 +85,8 @@ class StationaryEnergyDraftService:
         *,
         authorization: str | None = None,
     ) -> StartStationaryEnergyDraftResponse:
+        """Start a new Stationary Energy draft run."""
+
         trace_id = get_request_id()
         canonical_user_id, token = await self._resolve_user_and_token(
             payload,
@@ -113,6 +119,8 @@ class StationaryEnergyDraftService:
         payload: RetryStationaryEnergyDraftRequest,
         authorization: str | None = None,
     ) -> StartStationaryEnergyDraftResponse:
+        """Retry an existing Stationary Energy draft run."""
+
         trace_id = get_request_id()
         draft_run = await self._get_draft_run_or_404(draft_run_id)
         token = self._extract_bearer_token(authorization) or self._extract_token(
@@ -123,7 +131,7 @@ class StationaryEnergyDraftService:
             if thread is not None:
                 token = self._extract_token(thread.context)
 
-        user_id = self._resolve_authenticated_user_id(
+        user_id = await self._resolve_authenticated_user_id(
             token=token,
             requested_user_id=payload.user_id,
         )
@@ -159,6 +167,8 @@ class StationaryEnergyDraftService:
         token: str | None,
         trace_id: str | None,
     ) -> StartStationaryEnergyDraftResponse:
+        """Run the Stationary Energy context load and proposal generation flow."""
+
         failed_step = "resolving_scope"
         try:
             await self.repository.update_draft_run(
@@ -297,7 +307,9 @@ class StationaryEnergyDraftService:
         requested_user_id: str,
         authorization: str | None = None,
     ) -> StationaryEnergyDraftStatusResponse:
-        user_id = self._resolve_authenticated_user_id(
+        """Return an owned Stationary Energy draft status snapshot."""
+
+        user_id = await self._resolve_authenticated_user_id(
             token=self._extract_bearer_token(authorization),
             requested_user_id=requested_user_id,
         )
@@ -311,7 +323,9 @@ class StationaryEnergyDraftService:
         payload: ReviewStationaryEnergyDraftRequest,
         authorization: str | None = None,
     ) -> ReviewStationaryEnergyDraftResponse:
-        user_id = self._resolve_authenticated_user_id(
+        """Validate and persist user review decisions for a draft run."""
+
+        user_id = await self._resolve_authenticated_user_id(
             token=self._extract_bearer_token(authorization),
             requested_user_id=payload.user_id,
         )
@@ -389,12 +403,14 @@ class StationaryEnergyDraftService:
         *,
         authorization: str | None,
     ) -> tuple[str, str | None]:
+        """Resolve the verified user ID and bearer token for a start request."""
+
         request_token = self._extract_bearer_token(authorization) or self._extract_token(
             payload.context
         )
 
         if payload.thread_id is None:
-            user_id = self._resolve_authenticated_user_id(
+            user_id = await self._resolve_authenticated_user_id(
                 token=request_token,
                 requested_user_id=payload.user_id,
             )
@@ -406,7 +422,7 @@ class StationaryEnergyDraftService:
 
         thread_token = self._extract_token(thread.context)
         token = request_token or thread_token
-        user_id = self._resolve_authenticated_user_id(
+        user_id = await self._resolve_authenticated_user_id(
             token=token,
             requested_user_id=payload.user_id,
         )
@@ -418,6 +434,8 @@ class StationaryEnergyDraftService:
         self,
         draft_run_id: UUID,
     ) -> StationaryEnergyDraftRun:
+        """Load a draft run or raise a 404 HTTP error."""
+
         draft_run = await self.repository.get_draft_run(draft_run_id)
         if draft_run is None:
             raise HTTPException(status_code=404, detail=f"Draft run {draft_run_id} not found")
@@ -428,6 +446,8 @@ class StationaryEnergyDraftService:
         draft_run_id: UUID,
         user_id: str,
     ) -> StationaryEnergyDraftRun:
+        """Load a draft run and verify it belongs to the user."""
+
         draft_run = await self.repository.get_draft_run(draft_run_id)
         if draft_run is None:
             raise HTTPException(status_code=404, detail=f"Draft run {draft_run_id} not found")
@@ -437,12 +457,16 @@ class StationaryEnergyDraftService:
 
     @staticmethod
     def _extract_token(context: Any) -> str | None:
+        """Extract a CityCatalyst token from a context payload."""
+
         if not isinstance(context, dict):
             return None
         return context.get("cc_access_token") or context.get("access_token")
 
     @staticmethod
     def _extract_bearer_token(authorization: str | None) -> str | None:
+        """Extract a bearer token from an Authorization header."""
+
         if authorization is None:
             return None
         scheme, separator, token = authorization.partition(" ")
@@ -453,32 +477,26 @@ class StationaryEnergyDraftService:
             )
         return token.strip()
 
-    @staticmethod
-    def _token_user_id(token: str) -> str | None:
-        claims = parse_jwt_claims(token)
-        if not isinstance(claims, dict):
-            return None
-        value = claims.get("sub") or claims.get("user_id") or claims.get("userId")
-        return str(value) if value else None
-
-    def _resolve_authenticated_user_id(
+    async def _resolve_authenticated_user_id(
         self,
         *,
         token: str | None,
         requested_user_id: str,
     ) -> str:
+        """Return the verified CityCatalyst user ID for the supplied token."""
         if not token:
             raise HTTPException(
                 status_code=401,
                 detail="CityCatalyst access token is required",
             )
 
-        token_user_id = self._token_user_id(token)
-        if not token_user_id:
+        try:
+            token_user_id = await self.cc_client.get_authenticated_user_id(token)
+        except CityCatalystClientError as exc:
             raise HTTPException(
                 status_code=401,
-                detail="CityCatalyst access token must include a user subject",
-            )
+                detail="CityCatalyst access token is invalid or expired",
+            ) from exc
         if token_user_id != requested_user_id:
             raise HTTPException(
                 status_code=403,
@@ -493,6 +511,8 @@ class StationaryEnergyDraftService:
         thread_id: UUID | None,
         token: str | None,
     ) -> str | None:
+        """Ensure a usable CityCatalyst token exists for draft generation."""
+
         if not token:
             raise HTTPException(
                 status_code=401,
@@ -511,6 +531,8 @@ class StationaryEnergyDraftService:
 
     @staticmethod
     def _needs_token_refresh(token: str) -> bool:
+        """Return whether a token should be refreshed before CC calls."""
+
         if "." not in token:
             return False
         claims = parse_jwt_claims(token)
@@ -527,6 +549,8 @@ class StationaryEnergyDraftService:
         token: str,
         expires_in: int,
     ) -> None:
+        """Persist a refreshed token into the owning thread context."""
+
         thread = await self.thread_service.get_thread(thread_id)
         if thread is None or thread.user_id != user_id:
             return
@@ -543,6 +567,8 @@ class StationaryEnergyDraftService:
         exc: Exception,
         trace_id: str | None,
     ) -> None:
+        """Mark a draft run failed with traceable error summary metadata."""
+
         await self.repository.update_draft_run(
             draft_run,
             status="failed",
@@ -564,6 +590,8 @@ class StationaryEnergyDraftService:
         exc: Exception,
         trace_id: str | None,
     ) -> dict[str, Any]:
+        """Merge an error summary into existing draft context metadata."""
+
         context_summary = dict(existing or {})
         safe_message = LogSafeFormatter.redact_tokens(str(exc))[:500]
         context_summary["error_summary"] = {
@@ -581,6 +609,8 @@ class StationaryEnergyDraftService:
         draft_run_id: UUID,
         candidates: list[StationaryEnergySourceCandidate],
     ) -> list[dict[str, Any]]:
+        """Convert context candidates into repository source-candidate records."""
+
         records: list[dict[str, Any]] = []
         for candidate in candidates:
             candidate_json = candidate.model_dump(mode="json", exclude={"quality_score"})
@@ -615,6 +645,8 @@ class StationaryEnergyDraftService:
     def _stored_source_candidate_payload(
         candidate: StationaryEnergyDraftSourceCandidate,
     ) -> dict[str, Any]:
+        """Serialize a source-candidate ORM model for LLM input."""
+
         return StoredSourceCandidate(
             candidate_id=candidate.candidate_id,
             draft_run_id=candidate.draft_run_id,
@@ -643,6 +675,8 @@ class StationaryEnergyDraftService:
         context: LoadStationaryEnergyContextResponse,
         allowed_capabilities: list[str],
     ) -> dict[str, Any]:
+        """Summarize loaded Stationary Energy context for persistence."""
+
         return {
             "city": context.city.model_dump(mode="json", exclude_none=True),
             "inventory": context.inventory.model_dump(mode="json", exclude_none=True),
@@ -658,6 +692,8 @@ class StationaryEnergyDraftService:
         candidate_by_id: dict[str, StationaryEnergyDraftSourceCandidate],
         candidate_by_datasource: dict[str, StationaryEnergyDraftSourceCandidate],
     ) -> StationaryEnergyDraftSourceCandidate | None:
+        """Resolve the selected override source candidate."""
+
         if decision_input.action != "override_source":
             return None
         if not decision_input.selected_source_id:
@@ -683,6 +719,8 @@ class StationaryEnergyDraftService:
         proposal: StationaryEnergyDraftProposal,
         selected_candidate: StationaryEnergyDraftSourceCandidate | None,
     ) -> None:
+        """Validate action-specific review decision requirements."""
+
         if decision_input.action == "accept" and proposal.recommended_candidate_id is None:
             raise HTTPException(
                 status_code=400,
@@ -728,6 +766,8 @@ class StationaryEnergyDraftService:
         decisions: list[ReviewDecisionInput],
         proposal_by_id: dict[UUID, StationaryEnergyDraftProposal],
     ) -> None:
+        """Validate that review decisions cover each draft proposal exactly once."""
+
         if not proposal_by_id:
             raise HTTPException(
                 status_code=400,
@@ -768,6 +808,8 @@ class StationaryEnergyDraftService:
 
     @staticmethod
     def _commit_status_for_action(action: str) -> str:
+        """Return the commit status implied by a review action."""
+
         if action in {"accept", "override_source"}:
             return "pending_cc_commit"
         if action == "override_manual":
@@ -776,6 +818,8 @@ class StationaryEnergyDraftService:
 
     @staticmethod
     def _commit_response_for_action(action: str) -> dict[str, Any] | None:
+        """Return placeholder commit response metadata for commit-capable actions."""
+
         if action in {"accept", "override_source"}:
             return {
                 "state": "pending",
@@ -788,6 +832,8 @@ class StationaryEnergyDraftService:
         proposal: StationaryEnergyDraftProposal,
         action: str,
     ) -> None:
+        """Apply a review action to the proposal status."""
+
         status_by_action = {
             "accept": "accepted",
             "override_source": "overridden",
@@ -804,6 +850,8 @@ class StationaryEnergyDraftService:
         status_override: str | None = None,
         proposals_override: list[StationaryEnergyDraftProposal] | None = None,
     ) -> StartStationaryEnergyDraftResponse:
+        """Convert a draft run into a start/retry API response."""
+
         status = status_override or draft_run.status
         if status not in {"resolving_scope", "loading_context", "generating", "ready", "failed"}:
             status = "ready"
@@ -829,6 +877,8 @@ class StationaryEnergyDraftService:
         self,
         draft_run: StationaryEnergyDraftRun,
     ) -> StationaryEnergyDraftStatusResponse:
+        """Convert a draft run into a status API response."""
+
         return StationaryEnergyDraftStatusResponse(
             draft_run_id=draft_run.draft_run_id,
             thread_id=draft_run.thread_id,
@@ -862,6 +912,8 @@ class StationaryEnergyDraftService:
 
     @staticmethod
     def _llm_trace(draft_run: StationaryEnergyDraftRun) -> dict[str, Any] | None:
+        """Extract persisted LLM trace metadata from a draft run."""
+
         if not isinstance(draft_run.context_summary, dict):
             return None
         trace = draft_run.context_summary.get("llm_trace")
@@ -869,6 +921,8 @@ class StationaryEnergyDraftService:
 
     @staticmethod
     def _error_summary(draft_run: StationaryEnergyDraftRun) -> dict[str, Any] | None:
+        """Extract persisted error summary metadata from a draft run."""
+
         if not isinstance(draft_run.context_summary, dict):
             return None
         error_summary = draft_run.context_summary.get("error_summary")
@@ -878,6 +932,8 @@ class StationaryEnergyDraftService:
     def _to_draft_proposal(
         proposal: StationaryEnergyDraftProposal,
     ) -> DraftProposal:
+        """Convert a proposal ORM model into an API schema."""
+
         return DraftProposal(
             proposal_id=proposal.proposal_id,
             draft_run_id=proposal.draft_run_id,
@@ -898,6 +954,8 @@ class StationaryEnergyDraftService:
     def _to_stored_source_candidate(
         candidate: StationaryEnergyDraftSourceCandidate,
     ) -> StoredSourceCandidate:
+        """Convert a source-candidate ORM model into an API schema."""
+
         return StoredSourceCandidate(
             candidate_id=candidate.candidate_id,
             draft_run_id=candidate.draft_run_id,
@@ -925,6 +983,8 @@ class StationaryEnergyDraftService:
     def _to_review_decision_response(
         decision: StationaryEnergyReviewDecision,
     ) -> ReviewDecisionResponse:
+        """Convert a review decision ORM model into an API schema."""
+
         return ReviewDecisionResponse(
             decision_id=decision.decision_id,
             draft_run_id=decision.draft_run_id,
@@ -948,6 +1008,8 @@ class StationaryEnergyDraftService:
         decision_input: ReviewDecisionInput,
         selected_candidate: StationaryEnergyDraftSourceCandidate | None,
     ) -> str | None:
+        """Return the source ID value persisted for a review decision."""
+
         if decision_input.action != "override_source" or selected_candidate is None:
             return decision_input.selected_source_id
         return selected_candidate.datasource_id
@@ -956,6 +1018,8 @@ class StationaryEnergyDraftService:
     def _review_decision_sort_key(
         decision: StationaryEnergyReviewDecision,
     ) -> tuple[str, int, str]:
+        """Return a stable sort key for review decision responses."""
+
         return (
             str(decision.proposal_id),
             decision.decision_version,

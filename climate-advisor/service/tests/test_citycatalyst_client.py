@@ -25,6 +25,8 @@ class _StubAsyncClient:
     """Minimal stub of httpx.AsyncClient returning canned responses."""
 
     def __init__(self, responses: List[httpx.Response]) -> None:
+        """Initialize the stub with a queue of responses."""
+
         self._responses = responses
         self.requests: List[Dict[str, Any]] = []
 
@@ -35,6 +37,8 @@ class _StubAsyncClient:
         headers: Optional[Dict[str, str]] = None,
         **kwargs: Any,
     ) -> httpx.Response:  # type: ignore[override]
+        """Record a GET request and return the next canned response."""
+
         self.requests.append(
             {"method": "GET", "url": url, "headers": headers, "extra": kwargs}
         )
@@ -48,6 +52,8 @@ class _StubAsyncClient:
         json: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> httpx.Response:  # type: ignore[override]
+        """Record a POST request and return the next canned response."""
+
         self.requests.append(
             {
                 "method": "POST",
@@ -60,6 +66,8 @@ class _StubAsyncClient:
         return self._responses.pop(0)
 
     async def aclose(self) -> None:  # pragma: no cover - part of httpx interface
+        """Provide the AsyncClient close interface for tests."""
+
         return None
 
 
@@ -68,6 +76,8 @@ def _response(
     *,
     json_data: Optional[Dict[str, Any]] = None,
 ) -> httpx.Response:
+    """Build a test httpx response with a request object."""
+
     request = httpx.Request("GET", "https://cc.example/api")
     return httpx.Response(status_code, json=json_data, request=request)
 
@@ -76,6 +86,8 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
     """Unit tests for the CityCatalystClient helper methods."""
 
     async def test_get_inventory_success(self) -> None:
+        """Verify inventory fetches include bearer authorization."""
+
         with patch(
             "app.services.citycatalyst_client.get_settings",
             return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
@@ -105,6 +117,8 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
 
     async def test_get_inventory_not_found_raises(self) -> None:
+        """Verify inventory lookup errors raise the client error wrapper."""
+
         with patch(
             "app.services.citycatalyst_client.get_settings",
             return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
@@ -125,6 +139,8 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
                     )
 
     async def test_refresh_token_success(self) -> None:
+        """Verify refresh token calls the internal CA user-token endpoint."""
+
         with patch(
             "app.services.citycatalyst_client.get_settings",
             return_value=SimpleNamespace(
@@ -151,3 +167,28 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
             )
             self.assertEqual(recorded["headers"]["X-CA-Service-Key"], "test-api-key")
             self.assertEqual(recorded["json"]["user_id"], "user-123")
+
+    async def test_get_authenticated_user_id_validates_with_citycatalyst(self) -> None:
+        """Verify token validation delegates to CityCatalyst whoami."""
+
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key="test-api-key"),
+        ):
+            client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
+            stub = _StubAsyncClient(
+                [
+                    _response(200, json_data={"data": {"id": "user-123"}}),
+                ]
+            )
+
+            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+                user_id = await client.get_authenticated_user_id("jwt-token")
+
+        self.assertEqual(user_id, "user-123")
+        recorded = stub.requests[0]
+        self.assertEqual(recorded["method"], "GET")
+        self.assertEqual(recorded["url"], "https://cc.example/api/v1/user/whoami")
+        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
+        self.assertEqual(recorded["headers"]["X-Service-Name"], "climate-advisor")
+        self.assertEqual(recorded["headers"]["X-Service-Key"], "test-api-key")

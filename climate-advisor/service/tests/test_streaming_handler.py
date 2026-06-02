@@ -11,6 +11,8 @@ from app.utils.streaming_handler import StreamingHandler
 
 
 def _parse_sse_payload(chunk: bytes) -> dict:
+    """Parse an SSE chunk into event type and JSON data."""
+
     event_type = None
     data_lines: list[str] = []
 
@@ -27,7 +29,11 @@ def _parse_sse_payload(chunk: bytes) -> dict:
 
 
 class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
+    """Tests for StreamingHandler completion and trace behavior."""
+
     async def test_done_event_reflects_persisted_history(self) -> None:
+        """Verify done events report successful assistant-message persistence."""
+
         payload = MessageCreateRequest(user_id="user-1", content="hello")
         handler = StreamingHandler(
             thread_id="thread-1",
@@ -40,6 +46,8 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         fake_agent_service.close = AsyncMock()
 
         async def fake_stream_events(self, agent, request_payload, conversation_history):
+            """Yield one fake assistant message event."""
+
             self.assistant_tokens.append("Persisted answer")
             yield format_sse(
                 {"index": 0, "content": "Persisted answer"},
@@ -74,6 +82,8 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         fake_agent_service.close.assert_awaited_once()
 
     async def test_run_config_uses_persisted_stationary_energy_context_marker(self) -> None:
+        """Verify Stationary Energy chat context changes trace metadata."""
+
         draft_run_id = str(uuid4())
         payload = MessageCreateRequest(user_id="user-1", content="hello")
         handler = StreamingHandler(

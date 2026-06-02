@@ -4,6 +4,7 @@ import base64
 import asyncio
 import json
 import os
+import time
 import unittest
 from decimal import Decimal
 from types import SimpleNamespace
@@ -26,6 +27,7 @@ from app.models.db.stationary_energy_draft import (
 )
 from app.models.requests import MessageCreateRequest
 from app.services.stationary_energy_draft_service import LOAD_CONTEXT_CAPABILITY
+from app.services.citycatalyst_client import CityCatalystClientError
 from app.services.stationary_energy_llm_service import (
     StationaryEnergyLLMProposal,
     StationaryEnergyLLMProposalResult,
@@ -39,7 +41,11 @@ TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
 
 def _unsigned_jwt(claims: dict[str, Any]) -> str:
+    """Build an unsigned JWT for route tests."""
+
     def encode_json(payload: dict[str, Any]) -> str:
+        """Base64url-encode one JWT segment."""
+
         raw = json.dumps(payload, separators=(",", ":")).encode("utf-8")
         return base64.urlsafe_b64encode(raw).decode("ascii").rstrip("=")
 
@@ -47,18 +53,46 @@ def _unsigned_jwt(claims: dict[str, Any]) -> str:
 
 
 def _expired_jwt() -> str:
+    """Return an expired test JWT for the default user."""
+
     return _unsigned_jwt({"sub": "user-1", "exp": 1})
 
 
 def _active_jwt(user_id: str = "user-1") -> str:
+    """Return a non-expired test JWT for a user."""
+
     return _unsigned_jwt({"sub": user_id, "exp": 4102444800})
 
 
 def _auth_headers(user_id: str = "user-1") -> dict[str, str]:
+    """Return Authorization headers for a test user."""
+
     return {"Authorization": f"Bearer {_active_jwt(user_id)}"}
 
 
+def _validated_user_id_from_test_token(token: str) -> str:
+    """Return the test token subject or raise like the CC validation endpoint."""
+    try:
+        payload = token.split(".")[1]
+        padding = 4 - (len(payload) % 4)
+        if padding != 4:
+            payload += "=" * padding
+        claims = json.loads(base64.urlsafe_b64decode(payload))
+    except Exception as exc:
+        raise CityCatalystClientError("Invalid test token") from exc
+
+    exp = claims.get("exp")
+    if isinstance(exp, (int, float)) and exp <= time.time():
+        raise CityCatalystClientError("Expired test token")
+    subject = claims.get("sub")
+    if not subject:
+        raise CityCatalystClientError("Missing test token subject")
+    return str(subject)
+
+
 def _context_payload() -> dict[str, Any]:
+    """Return a representative Stationary Energy context payload."""
+
     return {
         "city": {
             "city_id": "city-1",
@@ -172,7 +206,11 @@ def _context_payload() -> dict[str, Any]:
 
 
 class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
+    """Route and service tests for Stationary Energy draft workflows."""
+
     async def asyncSetUp(self) -> None:
+        """Create an in-memory app and database for each test."""
+
         self.engine = create_async_engine(
             TEST_DATABASE_URL,
             echo=False,
@@ -190,19 +228,32 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.app = get_app()
 
         async def get_test_session() -> AsyncIterator[AsyncSession]:
+            """Yield the in-memory async database session."""
+
             async with self.session_factory() as session:
                 yield session
 
         self.app.dependency_overrides[get_session] = get_test_session
         self.client = TestClient(self.app)
+        self.default_cc_client = self._mock_cc_client()
+        self.cc_client_patch = patch(
+            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            return_value=self.default_cc_client,
+        )
+        self.cc_client_patch.start()
 
     async def asyncTearDown(self) -> None:
+        """Dispose of the test app overrides and database."""
+
+        self.cc_client_patch.stop()
         self.app.dependency_overrides.clear()
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.drop_all)
         await self.engine.dispose()
 
     def test_routes_return_404_when_feature_flag_is_off(self) -> None:
+        """Verify Stationary Energy routes are hidden when the flag is off."""
+
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": ""}):
             response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
@@ -216,6 +267,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_start_persists_source_candidates_and_status_returns_snapshot(self) -> None:
+        """Verify start persists candidates and status returns a full snapshot."""
+
         mock_client = self._mock_cc_client()
         mock_llm = self._mock_llm_generator()
 
@@ -267,12 +320,16 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         mock_llm.generate_proposals.assert_awaited_once()
 
     def test_start_creates_a_new_draft_run_each_time(self) -> None:
+        """Verify each start request creates a distinct draft run."""
+
         first_draft_run_id, _proposal_id, _candidate_id = self._start_draft()
         second_draft_run_id, _proposal_id_2, _candidate_id_2 = self._start_draft()
 
         self.assertNotEqual(first_draft_run_id, second_draft_run_id)
 
-    def test_start_refreshes_expired_thread_token(self) -> None:
+    def test_start_rejects_expired_thread_token_before_calling_cc(self) -> None:
+        """Verify expired thread tokens fail before CC capability calls."""
+
         thread_id = self._create_thread("user-1", context={"access_token": _expired_jwt()})
         mock_client = self._mock_cc_client()
         mock_llm = self._mock_llm_generator()
@@ -294,14 +351,14 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                 },
             )
 
-        self.assertEqual(response.status_code, 201, response.text)
-        mock_client.refresh_token.assert_awaited_once_with("user-1")
-        self.assertEqual(
-            mock_client.get_stationary_energy_allowed_capabilities.await_args.kwargs["token"],
-            "fresh-token",
-        )
+        self.assertEqual(response.status_code, 401, response.text)
+        mock_client.refresh_token.assert_not_awaited()
+        mock_client.get_stationary_energy_allowed_capabilities.assert_not_awaited()
+        mock_llm.generate_proposals.assert_not_awaited()
 
     def test_start_rejects_thread_user_mismatch_before_calling_cc(self) -> None:
+        """Verify thread ownership is checked before CC capability calls."""
+
         thread_id = self._create_thread("thread-owner")
         mock_client = self._mock_cc_client()
         mock_llm = self._mock_llm_generator()
@@ -328,6 +385,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         mock_llm.generate_proposals.assert_not_awaited()
 
     def test_start_requires_access_token_before_calling_cc(self) -> None:
+        """Verify draft start requires a CityCatalyst access token."""
+
         mock_client = self._mock_cc_client()
         mock_llm = self._mock_llm_generator()
 
@@ -353,6 +412,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         mock_llm.generate_proposals.assert_not_awaited()
 
     def test_start_rejects_user_id_that_does_not_match_token(self) -> None:
+        """Verify draft start rejects mismatched token and request users."""
+
         mock_client = self._mock_cc_client()
         mock_llm = self._mock_llm_generator()
 
@@ -378,6 +439,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         mock_llm.generate_proposals.assert_not_awaited()
 
     def test_start_returns_502_when_llm_generation_fails(self) -> None:
+        """Verify LLM generation failures produce a failed draft and 502."""
+
         mock_client = self._mock_cc_client()
         mock_llm = Mock()
         mock_llm.generate_proposals = AsyncMock(
@@ -407,6 +470,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         mock_llm.generate_proposals.assert_awaited_once()
 
     def test_retry_failed_draft_regenerates_snapshot(self) -> None:
+        """Verify retry regenerates proposals for a failed draft run."""
+
         mock_client = self._mock_cc_client()
         failing_llm = Mock()
         failing_llm.generate_proposals = AsyncMock(
@@ -467,6 +532,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(retry_data["proposals"]), 2)
 
     def test_review_requires_override_source_to_match_stored_candidate(self) -> None:
+        """Verify source overrides must reference a stored candidate."""
+
         draft_run_id, proposal_id, _candidate_id = self._start_draft()
         decisions = self._complete_review_decisions(
             draft_run_id,
@@ -493,6 +560,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("stored candidate", response.text)
 
     def test_review_rejects_override_source_for_a_different_target_scope(self) -> None:
+        """Verify source overrides must match the proposal target scope."""
+
         draft_run_id, _proposal_id, _candidate_id = self._start_draft()
         status_data = self._get_status(draft_run_id)
         residential_proposal = next(
@@ -527,6 +596,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("target scope", response.text)
 
     def test_review_rejects_empty_decision_list(self) -> None:
+        """Verify review requires at least one decision."""
+
         draft_run_id, _proposal_id, _candidate_id = self._start_draft()
 
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}):
@@ -539,6 +610,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.status_code, 422)
 
     def test_review_requires_decision_for_every_proposal(self) -> None:
+        """Verify review decisions must cover every proposal."""
+
         draft_run_id, proposal_id, _candidate_id = self._start_draft()
 
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}):
@@ -555,6 +628,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("cover every proposal", response.text)
 
     def test_review_rejects_duplicate_proposal_decisions(self) -> None:
+        """Verify review rejects duplicate decisions for a proposal."""
+
         draft_run_id, _proposal_id, _candidate_id = self._start_draft()
         decisions = self._complete_review_decisions(draft_run_id)
         decisions.append(dict(decisions[0]))
@@ -570,6 +645,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("at most one entry per proposal_id", response.text)
 
     def test_review_persists_decisions_for_owner(self) -> None:
+        """Verify review decisions are persisted for the owning user."""
+
         draft_run_id, proposal_id, candidate_id = self._start_draft()
         initial_status = self._get_status(draft_run_id)
         expected_selected_source_id = next(
@@ -618,6 +695,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(status_data["review_decisions"][0]["user_id"], "user-1")
 
     def test_review_persists_version_history_when_decisions_change(self) -> None:
+        """Verify subsequent reviews increment decision versions."""
+
         draft_run_id, proposal_id, candidate_id = self._start_draft()
         first_decisions = self._complete_review_decisions(draft_run_id)
 
@@ -662,6 +741,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(all(versions == [1, 2] for versions in version_history.values()))
 
     def test_status_rejects_wrong_user(self) -> None:
+        """Verify draft status rejects a non-owner user."""
+
         draft_run_id, _proposal_id, _candidate_id = self._start_draft()
 
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}):
@@ -674,6 +755,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.status_code, 403)
 
     async def test_streaming_chat_loads_stationary_energy_draft_context(self) -> None:
+        """Verify chat streaming injects persisted draft context."""
+
         draft_run_id = await self._create_persisted_draft_snapshot()
         handler = StreamingHandler(
             thread_id=uuid4(),
@@ -699,8 +782,13 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(history[-1]["content"], payload.content)
 
     def _mock_cc_client(self) -> AsyncMock:
+        """Build a mocked CityCatalyst client for draft route tests."""
+
         mock_client = AsyncMock()
         mock_client.refresh_token = AsyncMock(return_value=("fresh-token", 3600))
+        mock_client.get_authenticated_user_id = AsyncMock(
+            side_effect=_validated_user_id_from_test_token
+        )
         mock_client.get_stationary_energy_allowed_capabilities = AsyncMock(
             return_value=[LOAD_CONTEXT_CAPABILITY]
         )
@@ -708,6 +796,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         return mock_client
 
     def _mock_llm_generator(self) -> Mock:
+        """Build a mocked proposal generator returning deterministic proposals."""
+
         async def generate_proposals(
             *,
             context: Any,
@@ -715,6 +805,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             allowed_capabilities: list[str],
             trace_id: str | None,
         ) -> StationaryEnergyLLMProposalResult:
+            """Generate deterministic proposals from stored source candidates."""
+
             candidate_by_datasource = {
                 candidate["datasource_id"]: candidate
                 for candidate in stored_source_candidates
@@ -770,6 +862,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         return mock_generator
 
     def _start_draft(self) -> tuple[str, str, str]:
+        """Start a draft and return IDs used by review tests."""
+
         mock_client = self._mock_cc_client()
         mock_llm = self._mock_llm_generator()
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
@@ -824,6 +918,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         )
 
     def _get_status(self, draft_run_id: str, user_id: str = "user-1") -> dict[str, Any]:
+        """Fetch a draft status payload for a user."""
+
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}):
             response = self.client.get(
                 f"/v1/stationary-energy-drafts/{draft_run_id}",
@@ -838,6 +934,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         draft_run_id: str,
         overrides: dict[str, dict[str, Any]] | None = None,
     ) -> list[dict[str, Any]]:
+        """Build review decisions that cover all proposals."""
+
         overrides = overrides or {}
         status_data = self._get_status(draft_run_id)
         decisions: list[dict[str, Any]] = []
@@ -852,6 +950,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         return decisions
 
     def _create_thread(self, user_id: str, context: dict[str, Any] | None = None) -> UUID:
+        """Create a test thread and return its UUID."""
+
         response = self.client.post(
             "/v1/threads",
             json={"user_id": user_id, "context": context or {"access_token": _active_jwt(user_id)}},
@@ -860,7 +960,11 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         return UUID(response.json()["thread_id"])
 
     def _latest_draft_run_id(self, user_id: str) -> str:
+        """Return the most recently updated draft run ID for a user."""
+
         async def load_id() -> str:
+            """Load the latest draft run ID from the in-memory database."""
+
             async with self.session_factory() as session:
                 result = await session.execute(
                     select(StationaryEnergyDraftRun)
@@ -874,6 +978,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         return asyncio.run(load_id())
 
     async def _create_persisted_draft_snapshot(self) -> UUID:
+        """Create a persisted draft snapshot for streaming-context tests."""
+
         async with self.session_factory() as session:
             draft_run = StationaryEnergyDraftRun(
                 user_id="user-1",
@@ -933,7 +1039,11 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
 
 
 class StationaryEnergyMigrationTests(unittest.TestCase):
+    """Tests for Stationary Energy draft schema metadata."""
+
     def test_migration_contains_required_tables_and_indexes(self) -> None:
+        """Verify required tables and indexes exist in metadata."""
+
         table_names = {
             StationaryEnergyDraftRun.__tablename__,
             "stationary_energy_draft_source_candidates",
@@ -955,7 +1065,11 @@ class StationaryEnergyMigrationTests(unittest.TestCase):
 
 
 class StationaryEnergyLLMValidationTests(unittest.TestCase):
+    """Tests for Stationary Energy LLM configuration and validation."""
+
     def _mock_llm_settings(self) -> SimpleNamespace:
+        """Build minimal LLM settings for proposal service tests."""
+
         prompts = Mock()
         prompts.get_prompt = Mock(return_value="Stationary Energy prompt")
         return SimpleNamespace(
@@ -985,6 +1099,8 @@ class StationaryEnergyLLMValidationTests(unittest.TestCase):
         )
 
     def test_service_uses_stationary_energy_prompt_from_config(self) -> None:
+        """Verify the service loads the Stationary Energy prompt."""
+
         mock_settings = self._mock_llm_settings()
         with patch(
             "app.services.stationary_energy_llm_service.get_settings",
@@ -1000,6 +1116,8 @@ class StationaryEnergyLLMValidationTests(unittest.TestCase):
         )
 
     def test_service_uses_agentic_flow_model_from_llm_config(self) -> None:
+        """Verify the service prefers the agentic-flow model."""
+
         mock_settings = self._mock_llm_settings()
         with patch(
             "app.services.stationary_energy_llm_service.get_settings",
@@ -1012,6 +1130,8 @@ class StationaryEnergyLLMValidationTests(unittest.TestCase):
         self.assertEqual(service.model, "openai/gpt-5.4")
 
     def test_service_uses_openrouter_base_url_from_llm_config(self) -> None:
+        """Verify OpenRouter client configuration uses llm_config.yaml."""
+
         mock_settings = self._mock_llm_settings()
         with patch(
             "app.services.stationary_energy_llm_service.get_settings",
@@ -1030,6 +1150,8 @@ class StationaryEnergyLLMValidationTests(unittest.TestCase):
         )
 
     def test_rejects_candidate_datasource_mismatch(self) -> None:
+        """Verify candidate and datasource IDs must match."""
+
         target_ref = _context_payload()["taxonomy"][0]
         candidate_id = uuid4()
         proposal = StationaryEnergyLLMProposal(
@@ -1056,6 +1178,8 @@ class StationaryEnergyLLMValidationTests(unittest.TestCase):
             )
 
     def test_rejects_missing_taxonomy_row(self) -> None:
+        """Verify the LLM must return one proposal per taxonomy row."""
+
         taxonomy = _context_payload()["taxonomy"]
         proposal = StationaryEnergyLLMProposal(
             target_ref=taxonomy[0],
@@ -1074,6 +1198,8 @@ class StationaryEnergyLLMValidationTests(unittest.TestCase):
             )
 
     def test_rejects_candidate_outside_target_scope(self) -> None:
+        """Verify recommended candidates must match the target scope."""
+
         taxonomy = _context_payload()["taxonomy"]
         candidate_id = uuid4()
         proposal = StationaryEnergyLLMProposal(

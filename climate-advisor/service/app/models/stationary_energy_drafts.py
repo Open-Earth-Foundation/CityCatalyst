@@ -9,10 +9,14 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class FlexibleContract(BaseModel):
+    """Base schema that preserves extra fields from CityCatalyst payloads."""
+
     model_config = ConfigDict(extra="allow")
 
 
 class StoredSourceScope(FlexibleContract):
+    """Stored source scope identifiers and labels."""
+
     sector_id: str | None = None
     sector_name: str | None = None
     sector_reference_number: str | None = None
@@ -27,6 +31,8 @@ class StoredSourceScope(FlexibleContract):
 
 
 class StoredSourceCandidate(FlexibleContract):
+    """Stored source candidate returned in draft status responses."""
+
     candidate_id: UUID | None = None
     draft_run_id: UUID
     datasource_id: str
@@ -57,6 +63,8 @@ class StoredSourceCandidate(FlexibleContract):
 
 
 class StationaryEnergyCityContext(FlexibleContract):
+    """City metadata used when generating Stationary Energy drafts."""
+
     city_id: str
     name: str | None = None
     locode: str | None = None
@@ -69,6 +77,8 @@ class StationaryEnergyCityContext(FlexibleContract):
 
 
 class StationaryEnergyInventoryContext(FlexibleContract):
+    """Inventory metadata used when generating Stationary Energy drafts."""
+
     inventory_id: str
     year: int | None = None
     inventory_type: str | None = None
@@ -77,6 +87,8 @@ class StationaryEnergyInventoryContext(FlexibleContract):
 
 
 class StationaryEnergyTaxonomyRow(FlexibleContract):
+    """Stationary Energy taxonomy row for sector targeting."""
+
     sector_id: str | None = None
     sector_name: str | None = None
     sector_reference_number: str | None = None
@@ -91,6 +103,8 @@ class StationaryEnergyTaxonomyRow(FlexibleContract):
 
 
 class StationaryEnergyCurrentValue(FlexibleContract):
+    """Current inventory value for a Stationary Energy target."""
+
     inventory_value_id: str | None = None
     activity_value_id: str | None = None
     gas_value_id: str | None = None
@@ -108,6 +122,8 @@ class StationaryEnergyCurrentValue(FlexibleContract):
 
 
 class StationaryEnergySourceCandidate(FlexibleContract):
+    """Candidate external source considered by the draft generator."""
+
     datasource_id: str
     name: str | None = None
     publisher_name: str | None = None
@@ -134,6 +150,8 @@ class StationaryEnergySourceCandidate(FlexibleContract):
 
 
 class LoadStationaryEnergyContextRequest(BaseModel):
+    """Request sent to CityCatalyst to load Stationary Energy context."""
+
     user_id: str
     city_id: str
     inventory_id: str
@@ -142,6 +160,8 @@ class LoadStationaryEnergyContextRequest(BaseModel):
 
 
 class LoadStationaryEnergyContextResponse(FlexibleContract):
+    """CityCatalyst Stationary Energy context response."""
+
     city: StationaryEnergyCityContext
     inventory: StationaryEnergyInventoryContext
     taxonomy: list[StationaryEnergyTaxonomyRow] = Field(default_factory=list)
@@ -151,6 +171,8 @@ class LoadStationaryEnergyContextResponse(FlexibleContract):
 
 
 class DraftProposal(FlexibleContract):
+    """Draft proposal returned to the user for review."""
+
     proposal_id: UUID
     draft_run_id: UUID
     target_ref: dict[str, Any] = Field(default_factory=dict)
@@ -176,6 +198,8 @@ class DraftProposal(FlexibleContract):
 
 
 class ReviewDecisionInput(BaseModel):
+    """User decision for one Stationary Energy draft proposal."""
+
     proposal_id: UUID
     action: Literal["accept", "override_source", "override_manual", "leave_draft"]
     selected_source_id: str | None = None
@@ -185,6 +209,8 @@ class ReviewDecisionInput(BaseModel):
 
 
 class ReviewDecisionResponse(FlexibleContract):
+    """Persisted review decision returned in API responses."""
+
     decision_id: UUID
     draft_run_id: UUID
     proposal_id: UUID
@@ -203,6 +229,8 @@ class ReviewDecisionResponse(FlexibleContract):
 
 
 class StartStationaryEnergyDraftRequest(BaseModel):
+    """Request to start a Stationary Energy draft run."""
+
     user_id: str
     city_id: str
     inventory_id: str
@@ -212,6 +240,8 @@ class StartStationaryEnergyDraftRequest(BaseModel):
 
 
 class StartStationaryEnergyDraftResponse(BaseModel):
+    """Response returned after starting or retrying a draft run."""
+
     draft_run_id: UUID
     thread_id: UUID | None = None
     user_id: str
@@ -226,16 +256,22 @@ class StartStationaryEnergyDraftResponse(BaseModel):
 
 
 class RetryStationaryEnergyDraftRequest(BaseModel):
+    """Request to retry an existing Stationary Energy draft run."""
+
     user_id: str
     locale: str | None = None
     context: dict[str, Any] | None = None
 
 
 class GetStationaryEnergyDraftQuery(BaseModel):
+    """Query parameters for fetching a Stationary Energy draft."""
+
     user_id: str
 
 
 class StationaryEnergyDraftStatusResponse(BaseModel):
+    """Full status snapshot for a Stationary Energy draft run."""
+
     draft_run_id: UUID
     thread_id: UUID | None = None
     user_id: str
@@ -255,11 +291,15 @@ class StationaryEnergyDraftStatusResponse(BaseModel):
 
 
 class ReviewStationaryEnergyDraftRequest(BaseModel):
+    """Request to review proposals in a Stationary Energy draft run."""
+
     user_id: str
     decisions: list[ReviewDecisionInput] = Field(min_length=1)
 
     @model_validator(mode="after")
     def validate_unique_proposals(self) -> "ReviewStationaryEnergyDraftRequest":
+        """Ensure each proposal has at most one review decision."""
+
         seen: set[UUID] = set()
         duplicates: set[str] = set()
         for decision in self.decisions:
@@ -276,6 +316,8 @@ class ReviewStationaryEnergyDraftRequest(BaseModel):
 
 
 class ReviewStationaryEnergyDraftResponse(BaseModel):
+    """Response returned after Stationary Energy draft review."""
+
     draft_run_id: UUID
     user_id: str
     status: Literal["reviewed", "partially_committed", "failed"]

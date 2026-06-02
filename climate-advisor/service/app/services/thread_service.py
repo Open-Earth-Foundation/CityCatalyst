@@ -18,12 +18,18 @@ logger = logging.getLogger(__name__)
 
 
 class ThreadService:
+    """Database service for thread lifecycle and context updates."""
+
     def __init__(self, session: AsyncSession):
+        """Initialize the service with an async database session."""
+
         self.session = session
 
     async def create_thread(
         self, payload: ThreadCreateRequest, *, thread_id: Optional[Union[str, UUID]] = None
     ) -> Thread:
+        """Create and flush a thread from a request payload."""
+
         if thread_id is None:
             thread_uuid = uuid4()
         elif isinstance(thread_id, UUID):
@@ -46,6 +52,8 @@ class ThreadService:
         return thread
 
     async def get_thread(self, thread_id: Union[str, UUID]) -> Thread | None:
+        """Return a thread by UUID, raising for malformed string IDs."""
+
         # Validate UUID format before querying
         original_thread_id = thread_id
         if isinstance(thread_id, str):
@@ -67,6 +75,8 @@ class ThreadService:
         return result.scalar_one_or_none()
 
     async def touch_thread(self, thread: Thread) -> None:
+        """Update a thread's last-updated timestamp."""
+
         thread.last_updated = datetime.now(timezone.utc)
         await self.session.flush()
 

@@ -42,6 +42,8 @@ class StreamingHandler:
         request_context: Optional[Any] = None,
         request_options: Optional[dict] = None,
     ):
+        """Initialize per-request streaming state."""
+
         self.thread_id = thread_id
         self.user_id = user_id
         self.session_factory = session_factory
@@ -195,6 +197,8 @@ class StreamingHandler:
         self,
         payload: MessageCreateRequest,
     ) -> Optional[Dict[str, str]]:
+        """Load a persisted Stationary Energy draft snapshot as a system message."""
+
         draft_run_id_text = extract_stationary_energy_draft_run_id(
             payload.context,
             payload.options,
@@ -262,6 +266,8 @@ class StreamingHandler:
         }
 
     async def _load_thread_stationary_energy_draft_run_id(self) -> Optional[str]:
+        """Load a Stationary Energy draft run ID from the thread context."""
+
         if not self.session_factory:
             return None
 
@@ -285,6 +291,8 @@ class StreamingHandler:
         conversation_history: List[Dict[str, str]],
         content: str,
     ) -> bool:
+        """Return whether recent history already includes the current user message."""
+
         return any(
             message.get("role") == "user" and message.get("content") == content
             for message in conversation_history[-3:]
@@ -292,6 +300,8 @@ class StreamingHandler:
 
     @staticmethod
     def _stationary_energy_context_payload(draft_run) -> Dict[str, Any]:
+        """Build a serializable Stationary Energy draft context payload."""
+
         context_summary = draft_run.context_summary or {}
         llm_trace = context_summary.get("llm_trace") if isinstance(context_summary, dict) else None
         llm_generation = None
@@ -429,6 +439,8 @@ class StreamingHandler:
                 yield event_bytes
 
     def _run_config(self, payload: MessageCreateRequest) -> RunConfig:
+        """Build Agents SDK run configuration for streaming responses."""
+
         settings = get_settings()
         req_id = get_request_id()
         draft_run_id = extract_stationary_energy_draft_run_id(

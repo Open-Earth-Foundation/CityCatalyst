@@ -39,6 +39,8 @@ class StationaryEnergyLLMServiceError(RuntimeError):
 
 
 class StationaryEnergyLLMProposal(BaseModel):
+    """Structured proposal item returned by the Stationary Energy LLM."""
+
     target_ref: dict[str, Any] = Field(default_factory=dict)
     current_value: dict[str, Any] | None = None
     recommended_candidate_id: UUID | None = None
@@ -51,11 +53,15 @@ class StationaryEnergyLLMProposal(BaseModel):
 
 
 class StationaryEnergyLLMResponse(BaseModel):
+    """Structured LLM response containing draft proposals."""
+
     proposals: list[StationaryEnergyLLMProposal] = Field(default_factory=list)
 
 
 @dataclass
 class StationaryEnergyLLMProposalResult:
+    """Validated proposal payload and trace metadata from the LLM call."""
+
     proposals: list[dict[str, Any]]
     trace: dict[str, Any]
 
@@ -64,6 +70,8 @@ class StationaryEnergyProposalLLMService:
     """Generate Stationary Energy draft proposals using a real LLM call."""
 
     def __init__(self, *, client: AsyncOpenAI | None = None) -> None:
+        """Initialize model settings, prompt instructions, and OpenRouter client."""
+
         self.settings = get_settings()
         configure_agents_tracing(self.settings)
         self.model = (
@@ -77,6 +85,8 @@ class StationaryEnergyProposalLLMService:
         self.client = client or self._create_openrouter_client()
 
     def _create_openrouter_client(self) -> AsyncOpenAI:
+        """Create the OpenRouter-compatible async OpenAI client."""
+
         api_key = self.settings.openrouter_api_key
         if not api_key:
             raise StationaryEnergyLLMServiceError(
@@ -108,6 +118,8 @@ class StationaryEnergyProposalLLMService:
         allowed_capabilities: list[str],
         trace_id: str | None,
     ) -> StationaryEnergyLLMProposalResult:
+        """Generate and validate Stationary Energy draft proposals."""
+
         llm_input = self._build_llm_input(
             context=context,
             stored_source_candidates=stored_source_candidates,
@@ -224,6 +236,8 @@ class StationaryEnergyProposalLLMService:
         stored_source_candidates: list[dict[str, Any]],
         trace_id: str | None,
     ) -> dict[str, Any]:
+        """Build trace metadata for Stationary Energy draft generation."""
+
         return {
             "service": "climate-advisor",
             "workflow": "stationary_energy_draft_generation",
@@ -246,6 +260,8 @@ class StationaryEnergyProposalLLMService:
         stored_source_candidates: list[dict[str, Any]],
         allowed_capabilities: list[str],
     ) -> dict[str, Any]:
+        """Build the bounded JSON input sent to the LLM."""
+
         return {
             "task": "generate_stationary_energy_draft_proposals",
             "rules": [
@@ -290,6 +306,8 @@ class StationaryEnergyProposalLLMService:
         }
 
     def _parse_llm_output(self, raw_output: str) -> StationaryEnergyLLMResponse:
+        """Parse raw LLM text into the structured response schema."""
+
         payload_text = self._extract_json_text(raw_output)
         try:
             payload = json.loads(payload_text)
@@ -303,6 +321,8 @@ class StationaryEnergyProposalLLMService:
 
     @staticmethod
     def _extract_json_text(raw_output: str) -> str:
+        """Extract a JSON object from raw or fenced LLM output."""
+
         raw_output = raw_output.strip()
         fenced = re.search(r"```(?:json)?\s*(.*?)```", raw_output, flags=re.DOTALL)
         if fenced:
@@ -314,6 +334,8 @@ class StationaryEnergyProposalLLMService:
         result: Any,
         raw_output: str,
     ) -> StationaryEnergyLLMResponse:
+        """Return structured output from an Agents SDK result."""
+
         try:
             final_output = result.final_output_as(
                 StationaryEnergyLLMResponse,
@@ -325,6 +347,8 @@ class StationaryEnergyProposalLLMService:
 
     @staticmethod
     def _raw_output_from_result(result: Any) -> str:
+        """Return a serializable raw-output string from an Agents SDK result."""
+
         final_output = getattr(result, "final_output", None)
         if hasattr(final_output, "model_dump_json"):
             return final_output.model_dump_json()
@@ -333,6 +357,8 @@ class StationaryEnergyProposalLLMService:
         return json.dumps(final_output, default=str, ensure_ascii=True)
 
     def _usage_from_result(self, result: Any) -> dict[str, Any] | None:
+        """Aggregate usage metadata from raw model responses."""
+
         usage: dict[str, Any] = {}
         for response in getattr(result, "raw_responses", []) or []:
             response_usage = self._serializable_model(getattr(response, "usage", None))
@@ -351,6 +377,8 @@ class StationaryEnergyProposalLLMService:
         stored_source_candidates: list[dict[str, Any]],
         taxonomy_rows: list[Any],
     ) -> list[dict[str, Any]]:
+        """Validate LLM proposals against taxonomy and stored candidates."""
+
         taxonomy_by_identity = StationaryEnergyProposalLLMService._taxonomy_by_identity(taxonomy_rows)
         candidate_by_id = {
             str(candidate["candidate_id"]): candidate
@@ -480,6 +508,8 @@ class StationaryEnergyProposalLLMService:
     def _taxonomy_by_identity(
         taxonomy_rows: list[Any],
     ) -> dict[tuple[str | None, ...], dict[str, Any]]:
+        """Index taxonomy rows by scope identity."""
+
         taxonomy_by_identity: dict[tuple[str | None, ...], dict[str, Any]] = {}
         for row in taxonomy_rows:
             row_payload = (
@@ -498,6 +528,8 @@ class StationaryEnergyProposalLLMService:
 
     @staticmethod
     def _serializable_model(value: Any) -> dict[str, Any] | None:
+        """Convert SDK model-like objects into serializable dictionaries."""
+
         if value is None:
             return None
         if hasattr(value, "model_dump"):
@@ -510,4 +542,6 @@ class StationaryEnergyProposalLLMService:
 
     @staticmethod
     def _json_safe(value: Any) -> Any:
+        """Round-trip a value through JSON to coerce non-serializable objects."""
+
         return json.loads(json.dumps(value, default=str, ensure_ascii=True))

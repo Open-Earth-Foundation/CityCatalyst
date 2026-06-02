@@ -14,6 +14,8 @@ from app.models.db.types import JSONBCompat
 
 
 class StationaryEnergyDraftRun(Base):
+    """Database record for a Stationary Energy draft generation run."""
+
     __tablename__ = "stationary_energy_draft_runs"
 
     draft_run_id: Mapped[UUID] = mapped_column(
@@ -85,6 +87,8 @@ class StationaryEnergyDraftRun(Base):
 
 
 class StationaryEnergyDraftSourceCandidate(Base):
+    """Database record for a candidate source in a draft run."""
+
     __tablename__ = "stationary_energy_draft_source_candidates"
 
     candidate_id: Mapped[UUID] = mapped_column(
@@ -156,6 +160,8 @@ class StationaryEnergyDraftSourceCandidate(Base):
 
 
 class StationaryEnergyDraftProposal(Base):
+    """Database record for a generated Stationary Energy draft proposal."""
+
     __tablename__ = "stationary_energy_draft_proposals"
 
     proposal_id: Mapped[UUID] = mapped_column(
@@ -227,6 +233,8 @@ class StationaryEnergyDraftProposal(Base):
 
 
 class StationaryEnergyReviewDecision(Base):
+    """Database record for a user's review decision on a proposal."""
+
     __tablename__ = "stationary_energy_review_decisions"
 
     decision_id: Mapped[UUID] = mapped_column(

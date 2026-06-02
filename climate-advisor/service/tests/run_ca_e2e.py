@@ -1,36 +1,21 @@
 """
-Run Climate Advisor E2E prompt flow without pytest and save results to disk.
+Brief: Run the Climate Advisor E2E prompt flow without pytest and save responses.
 
-Usage (from climate-advisor/):
-  uv run python service/tests/run_ca_e2e.py
+Inputs:
+- CLI args: `--prompts` is the JSON prompt file path; defaults to `tests/fixtures/ca_e2e_prompts.json`.
+- CLI args: `--output` is the response JSON path; defaults to `tests/output/ca_e2e_responses.json`.
+- CLI args: `--retries` is the retry count per prompt for transient provider errors.
+- CLI args: `--retry-delay` is the delay between retries in seconds.
+- CLI args: `--include-events` includes raw SSE events in the output JSON when set.
+- Files/paths: prompt JSON must be an object with `defaults` and a non-empty `cases` list.
+- Env vars: `CA_DATABASE_URL`, `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `CC_BASE_URL`, and `CA_E2E_CC_TOKEN` are required.
 
-Optional flags:
-  --prompts     Path to the JSON prompt file (default: service/tests/fixtures/ca_e2e_prompts.json)
-  --output      Path to the output JSON (default: service/tests/output/ca_e2e_responses.json)
-  --retries     Retries per prompt for transient provider errors (default: 2)
-  --retry-delay Delay between retries in seconds (default: 1.5)
-  --include-events Include raw SSE events in the output JSON (default: false)
+Outputs:
+- Writes a JSON list of responses, tool usage, errors, attempts, and optional SSE events.
+- Prints the output path to stdout.
 
-Required environment:
-  CA_DATABASE_URL, OPENROUTER_API_KEY, OPENAI_API_KEY, CC_BASE_URL, CA_E2E_CC_TOKEN
-
-Getting a user_id and JWT token for CA_E2E_CC_TOKEN:
-  1) Find the user_id (pick one option):
-     - From CC DB (local Docker Postgres):
-       psql -h localhost -U citycatalyst -d citycatalyst \
-         -c "SELECT user_id, email, name FROM \"User\" ORDER BY created DESC LIMIT 20;"
-       OR using docker exec:
-       docker exec citycatalyst-postgres psql -U citycatalyst -d citycatalyst \
-         -c "SELECT user_id, email, name FROM \"User\" ORDER BY created DESC LIMIT 20;"
-     - From the app helper script (requires node):
-       npx tsx app/scripts/print-user-id.ts --email <email>
-  2) Mint a non-expired JWT token and save it to climate-advisor/.env:
-       uv run --directory service python -m scripts.mint_ca_e2e_token --user-id <user_id>
-     This requires CC_BASE_URL and CC_API_KEY in climate-advisor/.env.
-  3) Confirm CA_E2E_CC_TOKEN is set before running this script.
-  4) (Optional) Run automatic verification on the output:
-       uv run python service/tests/review_ca_e2e.py --input service/tests/output/ca_e2e_responses.json
-     This writes service/tests/output/responses_eval.json by default.
+Usage (from project root):
+- uv run --directory climate-advisor/service python -m tests.run_ca_e2e
 """
 
 from __future__ import annotations
@@ -45,12 +30,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from fastapi.testclient import TestClient
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
 
 try:
     from pgvector import sqlalchemy as _pgvector_sqlalchemy  # noqa: F401
@@ -69,6 +48,8 @@ VAR_PATTERN = re.compile(r"\{\{([a-zA-Z0-9_]+)\}\}")
 
 
 def _load_prompt_data(path: Path) -> Dict[str, Any]:
+    """Load and validate the prompt fixture payload."""
+
     with path.open("r", encoding="utf-8") as handle:
         payload = json.load(handle)
     if not isinstance(payload, dict):
@@ -77,7 +58,11 @@ def _load_prompt_data(path: Path) -> Dict[str, Any]:
 
 
 def _resolve_string(value: str, variables: Dict[str, Any]) -> str:
+    """Resolve environment and runtime placeholders in a string."""
+
     def env_replace(match: re.Match[str]) -> str:
+        """Resolve an environment-variable placeholder."""
+
         key = match.group(1)
         env_value = os.getenv(key)
         if not env_value:
@@ -85,6 +70,8 @@ def _resolve_string(value: str, variables: Dict[str, Any]) -> str:
         return env_value
 
     def var_replace(match: re.Match[str]) -> str:
+        """Resolve a runtime-variable placeholder."""
+
         key = match.group(1)
         if key not in variables or variables[key] in {None, ""}:
             raise RuntimeError(f"Missing runtime variable for placeholder: {key}")
@@ -95,6 +82,8 @@ def _resolve_string(value: str, variables: Dict[str, Any]) -> str:
 
 
 def _render_payload(value: Any, variables: Dict[str, Any]) -> Any:
+    """Recursively render placeholders in a payload."""
+
     if isinstance(value, dict):
         return {key: _render_payload(val, variables) for key, val in value.items()}
     if isinstance(value, list):
@@ -105,12 +94,16 @@ def _render_payload(value: Any, variables: Dict[str, Any]) -> Any:
 
 
 def _parse_sse_events(raw_text: str) -> List[Dict[str, Any]]:
+    """Parse raw SSE text into event dictionaries."""
+
     events: List[Dict[str, Any]] = []
     event_type: Optional[str] = None
     event_id: Optional[str] = None
     data_lines: List[str] = []
 
     def flush_event() -> None:
+        """Append the current buffered SSE event."""
+
         nonlocal event_type, event_id, data_lines
         if event_type is None and not data_lines:
             return
@@ -142,6 +135,8 @@ def _parse_sse_events(raw_text: str) -> List[Dict[str, Any]]:
 
 
 def _collect_assistant_text(events: List[Dict[str, Any]]) -> str:
+    """Collect assistant message text from parsed SSE events."""
+
     parts: List[str] = []
     for event in events:
         if event.get("event") != "message":
@@ -155,6 +150,8 @@ def _collect_assistant_text(events: List[Dict[str, Any]]) -> str:
 
 
 def _get_done_payload(events: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+    """Return the terminal done-event payload when present."""
+
     for event in events:
         if event.get("event") == "done" and isinstance(event.get("data"), dict):
             return event["data"]
@@ -162,6 +159,8 @@ def _get_done_payload(events: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
 
 
 def _collect_error_messages(events: List[Dict[str, Any]]) -> List[str]:
+    """Collect error messages from parsed SSE events."""
+
     messages: List[str] = []
     for event in events:
         if event.get("event") != "error":
@@ -177,6 +176,8 @@ def _collect_error_messages(events: List[Dict[str, Any]]) -> List[str]:
 
 
 def _is_retryable_error(messages: List[str]) -> bool:
+    """Return whether error messages indicate a retryable failure."""
+
     retry_markers = (
         "Internal server error",
         "server error",
@@ -194,6 +195,8 @@ def _is_retryable_error(messages: List[str]) -> bool:
 
 
 def _find_tool_invocation(tools_used: List[Dict[str, Any]], name: str) -> Optional[Dict[str, Any]]:
+    """Find a tool invocation by name."""
+
     for tool in tools_used:
         if tool.get("name") == name:
             return tool
@@ -201,6 +204,8 @@ def _find_tool_invocation(tools_used: List[Dict[str, Any]], name: str) -> Option
 
 
 def _extract_inventory_meta(tools_used: List[Dict[str, Any]]) -> Dict[str, str]:
+    """Extract reusable inventory metadata from tool results."""
+
     for tool_name in ("city_inventory_search", "get_user_inventories"):
         tool = _find_tool_invocation(tools_used, tool_name)
         if not tool:
@@ -238,6 +243,8 @@ def _extract_inventory_meta(tools_used: List[Dict[str, Any]]) -> Dict[str, str]:
 
 
 def _redact_payload(value: Any) -> Any:
+    """Redact tokens from a payload before writing output."""
+
     if isinstance(value, dict):
         redacted: Dict[str, Any] = {}
         for key, val in value.items():
@@ -252,6 +259,8 @@ def _redact_payload(value: Any) -> Any:
 
 
 def _env_override(name: str) -> Optional[str]:
+    """Return a usable environment override, ignoring placeholder values."""
+
     value = os.getenv(name)
     if not value:
         return None
@@ -260,7 +269,8 @@ def _env_override(name: str) -> Optional[str]:
     return value
 
 
-def main() -> int:
+def parse_args() -> argparse.Namespace:
+    """Parse CLI arguments for the CA E2E runner."""
     parser = argparse.ArgumentParser(
         description="Run CA E2E prompts and save responses.",
     )
@@ -291,8 +301,12 @@ def main() -> int:
         action="store_true",
         help="Include raw SSE events in the output JSON.",
     )
-    args = parser.parse_args()
+    return parser.parse_args()
 
+
+def main() -> int:
+    """Execute the CA E2E prompt suite and write the captured responses."""
+    args = parse_args()
     required_env = [
         "CA_DATABASE_URL",
         "OPENROUTER_API_KEY",

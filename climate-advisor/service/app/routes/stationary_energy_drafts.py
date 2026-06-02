@@ -22,6 +22,8 @@ router = APIRouter()
 
 
 def require_stationary_energy_agentic_enabled() -> None:
+    """Reject Stationary Energy draft routes when the feature flag is disabled."""
+
     if not has_feature_flag(FeatureFlags.STATIONARY_ENERGY_AGENTIC):
         raise HTTPException(status_code=404, detail="Not found")
 
@@ -37,6 +39,8 @@ async def start_stationary_energy_draft(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> StartStationaryEnergyDraftResponse:
+    """Start a Stationary Energy draft run for the authenticated user."""
+
     service = StationaryEnergyDraftService(session)
     try:
         response = await service.start_draft(payload, authorization=authorization)
@@ -61,6 +65,8 @@ async def get_stationary_energy_draft(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> StationaryEnergyDraftStatusResponse:
+    """Return the current status and snapshot for a Stationary Energy draft."""
+
     service = StationaryEnergyDraftService(session)
     return await service.get_draft_status(
         draft_run_id=draft_run_id,
@@ -80,6 +86,8 @@ async def retry_stationary_energy_draft(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> StartStationaryEnergyDraftResponse:
+    """Retry a failed Stationary Energy draft run."""
+
     service = StationaryEnergyDraftService(session)
     try:
         response = await service.retry_draft(
@@ -108,6 +116,8 @@ async def review_stationary_energy_draft(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> ReviewStationaryEnergyDraftResponse:
+    """Persist review decisions for a Stationary Energy draft run."""
+
     service = StationaryEnergyDraftService(session)
     try:
         response = await service.review_draft(

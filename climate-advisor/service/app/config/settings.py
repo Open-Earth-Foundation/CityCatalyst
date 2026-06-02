@@ -50,6 +50,8 @@ def _load_environment() -> None:
     service_root = Path(__file__).resolve().parents[3]  # climate-advisor/
 
     def _within_service(path: Path) -> bool:
+        """Return whether a dotenv path is inside the CA service root."""
+
         try:
             path.relative_to(service_root)
         except ValueError:
@@ -98,12 +100,16 @@ _load_environment()
 
 
 def _parse_bool(value: Optional[str], default: bool = False) -> bool:
+    """Parse common truthy strings into a boolean setting."""
+
     if value is None:
         return default
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _parse_int(value: Optional[str], default: Optional[int]) -> Optional[int]:
+    """Parse an integer environment value with a fallback."""
+
     if value is None:
         return default
     try:
@@ -113,6 +119,8 @@ def _parse_int(value: Optional[str], default: Optional[int]) -> Optional[int]:
 
 
 class ModelConfig(BaseModel):
+    """LLM model metadata loaded from llm_config.yaml."""
+
     name: str
     description: Optional[str] = None
     supports_streaming: Optional[bool] = None
@@ -120,6 +128,8 @@ class ModelConfig(BaseModel):
 
 
 class GenerationDefaults(BaseModel):
+    """Default generation parameters for LLM calls."""
+
     temperature: float
     top_p: Optional[float] = None
     frequency_penalty: Optional[float] = None
@@ -127,6 +137,8 @@ class GenerationDefaults(BaseModel):
 
 
 class GenerationLimits(BaseModel):
+    """Allowed bounds for generation parameters."""
+
     temperature: Optional[Dict[str, float]] = None
     top_p: Optional[Dict[str, float]] = None
     frequency_penalty: Optional[Dict[str, float]] = None
@@ -134,11 +146,15 @@ class GenerationLimits(BaseModel):
 
 
 class GenerationConfig(BaseModel):
+    """Generation defaults and optional limits."""
+
     defaults: GenerationDefaults
     limits: Optional[GenerationLimits] = None
 
 
 class PromptsConfig(BaseModel):
+    """Prompt file paths used by Climate Advisor workflows."""
+
     default: str
     inventory_context: Optional[str] = None
     data_analysis: Optional[str] = None
@@ -186,6 +202,8 @@ class PromptsConfig(BaseModel):
 
 
 class OpenRouterConfig(BaseModel):
+    """OpenRouter API configuration."""
+
     base_url: str
     timeout_ms: Optional[int] = None
     retry_attempts: Optional[int] = None
@@ -193,18 +211,24 @@ class OpenRouterConfig(BaseModel):
 
 
 class OpenAIConfig(BaseModel):
+    """OpenAI API configuration for embeddings."""
+
     base_url: str
     timeout_ms: Optional[int] = None
     embedding_model: str
 
 
 class APIConfig(BaseModel):
+    """External API configuration grouped by provider."""
+
     openrouter: OpenRouterConfig
     openai: OpenAIConfig
     requests: Optional[Dict[str, Any]] = None
 
 
 class ToolConfig(BaseModel):
+    """Tool configuration loaded from llm_config.yaml."""
+
     climate_vector_search: Dict[str, Any] = Field(
         default={"top_k": 3, "min_score": 0.6},
         description="Climate vector search tool configuration (loaded from llm_config.yaml if present, otherwise uses this fallback default)",
@@ -233,12 +257,16 @@ class RetentionConfig(BaseModel):
 
 
 class ConversationConfig(BaseModel):
+    """Conversation history and retention configuration."""
+
     history_limit: Optional[int] = 5
     include_history: Optional[bool] = True
     retention: Optional[RetentionConfig] = RetentionConfig()
 
 
 class FeaturesConfig(BaseModel):
+    """Feature toggles loaded from LLM configuration."""
+
     streaming_enabled: Optional[bool] = None
     dynamic_model_selection: Optional[bool] = None
     dynamic_parameters: Optional[bool] = None
@@ -246,6 +274,8 @@ class FeaturesConfig(BaseModel):
 
 
 class LoggingConfig(BaseModel):
+    """Logging behavior switches loaded from LLM configuration."""
+
     log_requests: Optional[bool] = None
     log_responses: Optional[bool] = None
     log_performance: Optional[bool] = None
@@ -253,22 +283,30 @@ class LoggingConfig(BaseModel):
 
 
 class LangSmithConfig(BaseModel):
+    """LangSmith tracing configuration."""
+
     project: Optional[str] = None
     endpoint: Optional[str] = None
     tracing_enabled: Optional[bool] = None
 
 
 class ObservabilityConfig(BaseModel):
+    """Observability provider configuration."""
+
     langsmith: Optional[LangSmithConfig] = None
 
 
 class CacheConfig(BaseModel):
+    """Cache behavior configuration."""
+
     enabled: Optional[bool] = None
     ttl_seconds: Optional[int] = None
     max_size_mb: Optional[int] = None
 
 
 class LLMConfig(BaseModel):
+    """Complete LLM configuration loaded from llm_config.yaml."""
+
     models: Dict[str, Any]
     generation: GenerationConfig
     prompts: PromptsConfig
@@ -300,6 +338,8 @@ def _load_llm_config() -> LLMConfig:
 
 
 class Settings(BaseModel):
+    """Runtime settings composed from environment variables and LLM config."""
+
     app_name: str = "Climate Advisor Service"
     port: int = int(os.getenv("CA_PORT", "8080"))
     log_level: str = os.getenv("CA_LOG_LEVEL", "info")
@@ -405,6 +445,8 @@ _settings: Settings | None = None
 
 
 def _parse_cors_origins(env_value: str | None) -> List[str]:
+    """Parse CORS origins from a comma-separated environment value."""
+
     if not env_value:
         return [
             "http://localhost:8000",
@@ -414,6 +456,8 @@ def _parse_cors_origins(env_value: str | None) -> List[str]:
 
 
 def get_settings() -> Settings:
+    """Return the cached application settings instance."""
+
     global _settings
     if _settings is None:
         _load_environment()

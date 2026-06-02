@@ -334,6 +334,8 @@ class CityCatalystClient:
         }
 
     def _internal_headers(self, token: Optional[str] = None) -> Dict[str, str]:
+        """Build service-to-service headers for internal CityCatalyst calls."""
+
         headers = {
             "Content-Type": "application/json",
             "X-Service-Name": "climate-advisor",
@@ -351,6 +353,8 @@ class CityCatalystClient:
         token: Optional[str] = None,
         request_timeout: Optional[float] = None,
     ) -> Dict[str, Any]:
+        """POST an internal CityCatalyst capability request."""
+
         if not self.base_url:
             raise CityCatalystClientError("CC_BASE_URL not configured")
 
@@ -386,6 +390,8 @@ class CityCatalystClient:
         workflow_step: str,
         token: Optional[str] = None,
     ) -> list[str]:
+        """Return Stationary Energy capability IDs allowed for a user workflow."""
+
         payload = {
             "user_id": user_id,
             "city_id": city_id,
@@ -416,11 +422,53 @@ class CityCatalystClient:
         request_payload: Dict[str, Any],
         token: Optional[str] = None,
     ) -> Dict[str, Any]:
+        """Load Stationary Energy draft context from CityCatalyst."""
+
         return await self.post_internal_capability(
             "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context",
             json_data=request_payload,
             token=token,
         )
+
+    async def get_authenticated_user_id(self, token: str) -> str:
+        """Validate a CityCatalyst bearer token and return its session user ID.
+
+        Validation is delegated to CityCatalyst's API middleware with
+        service-to-service headers, so Climate Advisor does not trust locally
+        decoded JWT claims for authorization decisions.
+        """
+        if not self.base_url:
+            raise CityCatalystClientError("CC_BASE_URL not configured")
+
+        url = f"{self.base_url.rstrip('/')}/api/v1/user/whoami"
+        client = await self._get_client()
+        response = await client.get(
+            url,
+            headers=self._internal_headers(token),
+            follow_redirects=True,
+            timeout=self.timeout,
+        )
+
+        if not response.is_success:
+            error_text = response.text[:500] if response.text else "Unknown error"
+            raise CityCatalystClientError(
+                f"CityCatalyst token validation failed: {response.status_code} - {error_text}"
+            )
+
+        try:
+            payload = response.json()
+        except Exception as exc:
+            raise CityCatalystClientError(
+                f"Failed to parse CityCatalyst token validation response: {exc}"
+            ) from exc
+
+        data = payload.get("data") if isinstance(payload, dict) else None
+        user_id = data.get("id") if isinstance(data, dict) else None
+        if not user_id:
+            raise CityCatalystClientError(
+                "CityCatalyst token validation response did not include a user ID"
+            )
+        return str(user_id)
     
     # Convenience methods for common CC API operations
     

@@ -32,6 +32,8 @@ configure_agents_tracing(settings)
 
 @router.options("/messages", include_in_schema=False)
 async def options_messages() -> Response:
+    """Handle CORS preflight requests for the messages endpoint."""
+
     return Response(status_code=200)
 
 

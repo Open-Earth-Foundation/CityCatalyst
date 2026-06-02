@@ -17,7 +17,11 @@ from app.models.db.stationary_energy_draft import (
 
 
 class StationaryEnergyDraftRepository:
+    """Persistence layer for Stationary Energy draft runs."""
+
     def __init__(self, session: AsyncSession):
+        """Initialize the repository with an async database session."""
+
         self.session = session
 
     async def create_draft_run(
@@ -29,6 +33,8 @@ class StationaryEnergyDraftRepository:
         thread_id: UUID | None,
         trace_id: str | None,
     ) -> StationaryEnergyDraftRun:
+        """Create and flush a new Stationary Energy draft run."""
+
         draft_run = StationaryEnergyDraftRun(
             user_id=user_id,
             city_id=city_id,
@@ -47,6 +53,8 @@ class StationaryEnergyDraftRepository:
         self,
         draft_run_id: UUID,
     ) -> StationaryEnergyDraftRun | None:
+        """Load a draft run with candidates, proposals, and review decisions."""
+
         result = await self.session.execute(
             select(StationaryEnergyDraftRun)
             .options(
@@ -63,6 +71,8 @@ class StationaryEnergyDraftRepository:
         draft_run_id: UUID,
         user_id: str,
     ) -> StationaryEnergyDraftRun | None:
+        """Load a draft run only when it belongs to the requested user."""
+
         draft_run = await self.get_draft_run(draft_run_id)
         if draft_run is None or draft_run.user_id != user_id:
             return None
@@ -78,6 +88,8 @@ class StationaryEnergyDraftRepository:
         permission_summary: dict[str, Any] | None = None,
         trace_id: str | None = None,
     ) -> StationaryEnergyDraftRun:
+        """Update mutable draft-run fields and flush the session."""
+
         if status is not None:
             draft_run.status = status
         if workflow_step is not None:
@@ -97,6 +109,8 @@ class StationaryEnergyDraftRepository:
         draft_run_id: UUID,
         candidates: list[dict[str, Any]],
     ) -> list[StationaryEnergyDraftSourceCandidate]:
+        """Replace all stored source candidates for a draft run."""
+
         await self.session.execute(
             delete(StationaryEnergyDraftSourceCandidate).where(
                 StationaryEnergyDraftSourceCandidate.draft_run_id == draft_run_id
@@ -120,6 +134,8 @@ class StationaryEnergyDraftRepository:
         draft_run_id: UUID,
         proposals: list[dict[str, Any]],
     ) -> list[StationaryEnergyDraftProposal]:
+        """Replace all stored proposals for a draft run."""
+
         await self.session.execute(
             delete(StationaryEnergyDraftProposal).where(
                 StationaryEnergyDraftProposal.draft_run_id == draft_run_id
@@ -142,6 +158,8 @@ class StationaryEnergyDraftRepository:
         self,
         decisions: list[StationaryEnergyReviewDecision],
     ) -> list[StationaryEnergyReviewDecision]:
+        """Persist review decision records."""
+
         self.session.add_all(decisions)
         await self.session.flush()
         return decisions
@@ -152,6 +170,8 @@ class StationaryEnergyDraftRepository:
         draft_run_id: UUID,
         proposal_ids: list[UUID],
     ) -> dict[UUID, int]:
+        """Return next review-decision version numbers by proposal ID."""
+
         if not proposal_ids:
             return {}
 

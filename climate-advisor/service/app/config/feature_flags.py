@@ -12,10 +12,14 @@ from enum import Enum
 
 
 class FeatureFlags(str, Enum):
+    """Feature flag names supported by the Climate Advisor service."""
+
     STATIONARY_ENERGY_AGENTIC = "STATIONARY_ENERGY_AGENTIC"
 
 
 def parse_feature_flags(raw_flags: str | None) -> list[str]:
+    """Parse a comma-separated feature flag string into normalized names."""
+
     if not raw_flags:
         return []
 
@@ -28,10 +32,14 @@ def parse_feature_flags(raw_flags: str | None) -> list[str]:
 
 
 def get_feature_flags(raw_flags: str | None = None) -> list[str]:
+    """Return configured feature flags from an override or the environment."""
+
     if raw_flags is None:
         raw_flags = os.getenv("CA_FEATURE_FLAGS", "")
     return parse_feature_flags(raw_flags)
 
 
 def has_feature_flag(flag: FeatureFlags, raw_flags: str | None = None) -> bool:
+    """Return whether a feature flag is enabled."""
+
     return flag.value in get_feature_flags(raw_flags)

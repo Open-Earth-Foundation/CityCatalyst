@@ -1,16 +1,20 @@
 """
-Run the Stationary Energy draft flow against CA using a mock CC capability server.
+Brief: Run the Stationary Energy draft flow against CA with a mock CC server.
 
-Usage (from climate-advisor/):
-  uv run --directory service python -m tests.run_stationary_energy_mock_flow
+Inputs:
+- CLI args: `--fixture` is the mock CC load-context JSON path; defaults to `tests/fixtures/stationary_energy_load_context_mock.json`.
+- CLI args: `--output` is the execution summary JSON path; defaults to `tests/output/stationary_energy_mock_flow.json`.
+- CLI args: `--user-id` is encoded into the mock JWT passed to CA.
+- CLI args: `--locale` is forwarded to the draft start request.
+- Files/paths: fixture JSON must match the CA Stationary Energy load-context shape.
+- Env vars: temporarily sets `CA_FEATURE_FLAGS`, `CC_BASE_URL`, and `CC_API_KEY` for the mock flow.
 
-This starts a local mock CC server that serves:
-  POST /api/v1/internal/ca/capabilities/allowed-capabilities
-  POST /api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context
+Outputs:
+- Writes a JSON summary containing start, status, review, and mock CC request payloads.
+- Prints response status and draft counts to stdout.
 
-Then it calls CA's real FastAPI route handlers with an in-memory SQLite database.
-The output JSON contains the start/status/review responses and the requests that
-CA sent to the mock CC server.
+Usage (from project root):
+- uv run --directory climate-advisor/service python -m tests.run_stationary_energy_mock_flow
 """
 
 from __future__ import annotations
@@ -35,7 +39,11 @@ DEFAULT_OUTPUT = Path(__file__).parent / "output" / "stationary_energy_mock_flow
 
 
 def _unsigned_jwt(user_id: str) -> str:
+    """Build an unsigned test JWT for the supplied user ID."""
+
     def encode_json(payload: dict) -> str:
+        """Base64url-encode a JWT segment payload."""
+
         raw = json.dumps(payload, separators=(",", ":")).encode("utf-8")
         return base64.urlsafe_b64encode(raw).decode("ascii").rstrip("=")
 
@@ -47,6 +55,8 @@ def _unsigned_jwt(user_id: str) -> str:
 
 
 def _load_fixture(path: Path) -> dict:
+    """Load and validate a mock load-context fixture."""
+
     with path.open("r", encoding="utf-8") as handle:
         payload = json.load(handle)
     if not isinstance(payload, dict):
@@ -55,6 +65,8 @@ def _load_fixture(path: Path) -> dict:
 
 
 async def _create_session_factory() -> tuple:
+    """Create an in-memory SQLite engine and async session factory."""
+
     from app.db import Base
     import app.models.db  # noqa: F401
 
@@ -74,6 +86,8 @@ async def _create_session_factory() -> tuple:
 
 
 async def _dispose_engine(engine) -> None:
+    """Drop in-memory tables and dispose the engine."""
+
     from app.db import Base
 
     async with engine.begin() as conn:
@@ -82,6 +96,8 @@ async def _dispose_engine(engine) -> None:
 
 
 def _build_review_decisions(status_payload: dict) -> list[dict]:
+    """Build default review decisions from a draft status payload."""
+
     decisions: list[dict] = []
     for proposal in status_payload.get("proposals") or []:
         proposal_id = proposal.get("proposal_id")
@@ -108,9 +124,6 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     """Run the mock Stationary Energy flow and persist a JSON summary."""
-    parser = argparse.ArgumentParser(
-        description="Run CA Stationary Energy endpoints with mock CC load_context data.",
-    )
     args = parse_args()
 
     fixture_path = Path(args.fixture)
@@ -138,6 +151,8 @@ def main() -> int:
         app = get_app()
 
         async def get_test_session() -> AsyncIterator[AsyncSession]:
+            """Yield the in-memory test database session."""
+
             async with session_factory() as session:
                 yield session
 

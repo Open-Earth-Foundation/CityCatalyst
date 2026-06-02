@@ -1,20 +1,19 @@
 """
-Review CA E2E output with the same LLM and print pass/fail summary.
+Brief: Review CA E2E output with the configured LLM and print pass/fail summary.
 
-Usage (from climate-advisor/):
-  uv run --directory service python -m tests.review_ca_e2e
+Inputs:
+- CLI args: `--input` is the CA E2E response JSON path; defaults to `tests/output/ca_e2e_responses.json`.
+- CLI args: `--model` overrides the LLM model; defaults to the llm_config.yaml default model.
+- CLI args: `--output` is the evaluation JSON path; defaults to `<input_dir>/responses_eval.json`.
+- Files/paths: reads a JSON list produced by `tests.run_ca_e2e`.
+- Env vars: `OPENROUTER_API_KEY` is required for the review LLM.
 
-Optional flags:
-  --input  Path to the CA E2E response JSON (default: service/tests/output/ca_e2e_responses.json)
-  --model  Model override (default: llm_config.yaml default model)
-  --output Path to save the evaluation JSON (default: <input_dir>/responses_eval.json)
+Outputs:
+- Writes a JSON summary containing pass rate and failed cases.
+- Prints pass rate and failed case names to stdout.
 
-Required environment:
-  OPENROUTER_API_KEY
-
-Output:
-  Writes a JSON summary with pass rate and failed cases to responses_eval.json
-  in the same folder as the input file (unless --output is provided).
+Usage (from project root):
+- uv run --directory climate-advisor/service python -m tests.review_ca_e2e
 """
 
 from __future__ import annotations
@@ -36,6 +35,8 @@ DEFAULT_INPUT_PATH = Path(__file__).parent / "output" / "ca_e2e_responses.json"
 
 
 def _configure_openrouter() -> str:
+    """Configure OpenRouter globals and return the default model name."""
+
     settings = get_settings()
     api_key = settings.openrouter_api_key
     if not api_key:
@@ -70,6 +71,8 @@ def grade_response(decision: Literal["Yes", "No"]) -> str:
 
 
 def _load_cases(path: Path) -> List[Dict[str, Any]]:
+    """Load E2E response cases from disk."""
+
     with path.open("r", encoding="utf-8") as handle:
         payload = json.load(handle)
     if not isinstance(payload, list):
@@ -78,6 +81,8 @@ def _load_cases(path: Path) -> List[Dict[str, Any]]:
 
 
 def _build_review_prompt(case: Dict[str, Any]) -> str:
+    """Build the LLM grading prompt for one E2E case."""
+
     request = case.get("request") or {}
     if not isinstance(request, dict):
         request = {}
@@ -111,6 +116,8 @@ def _build_review_prompt(case: Dict[str, Any]) -> str:
 
 
 def _extract_decision(result) -> Optional[str]:
+    """Extract the Yes/No tool decision from an Agents SDK result."""
+
     for item in result.new_items:
         if isinstance(item, ToolCallOutputItem):
             output = item.output

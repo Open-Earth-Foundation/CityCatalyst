@@ -37,6 +37,8 @@ def create_problem_details(
     detail: str = "",
     type_: str = "about:blank",
 ) -> Dict[str, Any]:
+    """Build an RFC 7807 problem-details response body."""
+
     instance = str(request.url)
     return {
         "type": type_,
@@ -49,6 +51,8 @@ def create_problem_details(
 
 
 def get_app() -> FastAPI:
+    """Create and configure the Climate Advisor FastAPI application."""
+
     settings = get_settings()
 
     middleware = [
@@ -72,10 +76,14 @@ def get_app() -> FastAPI:
     # Lifespan: log service lifecycle
     @app.on_event("startup")
     async def _startup() -> None:
+        """Log service startup."""
+
         logger.info("Service started", extra={"service": "climate-advisor"})
 
     @app.on_event("shutdown")
     async def _shutdown() -> None:
+        """Log service shutdown."""
+
         logger.info("Service stopping", extra={"service": "climate-advisor"})
 
     # Routers
@@ -92,6 +100,8 @@ def get_app() -> FastAPI:
     # Exception handlers -> Problem Details
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(request: Request, exc: RequestValidationError):
+        """Return problem details for request validation errors."""
+
         problem = create_problem_details(
             request,
             status=422,
@@ -103,6 +113,8 @@ def get_app() -> FastAPI:
 
     @app.exception_handler(StarletteHTTPException)
     async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+        """Return problem details for FastAPI and Starlette HTTP errors."""
+
         # Covers 404/400/etc raised via HTTPException
         problem = create_problem_details(
             request,
@@ -114,6 +126,8 @@ def get_app() -> FastAPI:
 
     @app.exception_handler(ValueError)
     async def value_error_handler(request: Request, exc: ValueError):
+        """Return problem details for value errors."""
+
         problem = create_problem_details(
             request,
             status=400,
@@ -124,6 +138,8 @@ def get_app() -> FastAPI:
 
     @app.exception_handler(Exception)
     async def generic_exception_handler(request: Request, exc: Exception):
+        """Return problem details for unexpected exceptions."""
+
         logger.exception("Unhandled exception occurred", exc_info=exc)
         problem = create_problem_details(
             request,

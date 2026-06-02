@@ -8,7 +8,7 @@ Climate Advisor (CA) is a standalone FastAPI microservice that powers the conver
 - **Tool Integration**:
   - Climate knowledge base search (vector RAG)
   - CityCatalyst inventory API queries
-- **Token Management**: JWT token refresh and caching for CityCatalyst API access
+- **Token Management**: JWT token validation, refresh, and caching for CityCatalyst API access
 - **Streaming Responses**: Server-Sent Events (SSE) for real-time message delivery
 - **Observable**: Optional LangSmith integration for tracing and monitoring
 
@@ -225,6 +225,7 @@ LANGSMITH_API_KEY=your-langsmith-key  # If tracing enabled
 
 # Optional - CityCatalyst Integration
 CC_BASE_URL=http://localhost:3000
+CC_API_KEY=your-cc-service-api-key-here
 ```
 
 ### 3. Start PostgreSQL
@@ -299,7 +300,8 @@ All LLM-related settings are centralized in (`llm_config.yaml`)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: \*)
 - `OPENAI_API_KEY` - OpenAI API key (for embeddings & traces)
 - `LANGSMITH_API_KEY` - LangSmith API key (if tracing enabled)
-- `CC_BASE_URL` - CityCatalyst base URL (for inventory API & token refresh)
+- `CC_BASE_URL` - CityCatalyst base URL (for inventory API, token refresh, and draft token validation)
+- `CC_API_KEY` - CityCatalyst service API key for service-to-service token validation and refresh calls when CityCatalyst integration is enabled
 
 ## Database Schema
 
@@ -505,8 +507,18 @@ data: {}
 
 1. **Token from Request**: Client includes JWT in payload context
 2. **Token from Thread**: Service loads token from existing thread context
-3. **Token Refresh**: If token expires, service calls CityCatalyst token endpoint
+3. **Chat/Inventory Token Refresh**: If a chat or inventory token expires, service calls the CityCatalyst token endpoint
 4. **Token Persistence**: Valid tokens stored in thread context JSONB
+
+### Stationary Energy Draft Authorization
+
+Stationary Energy draft endpoints authorize ownership from a bearer token
+verified by CityCatalyst, not from locally decoded JWT claims. Before creating,
+retrying, reading, or reviewing a draft, Climate Advisor calls
+`GET /api/v1/user/whoami` with `Authorization`, `X-Service-Name`, and
+`X-Service-Key` headers. Missing, invalid, or expired tokens are rejected with
+`401`; tokens whose authenticated user does not match the requested `user_id`
+are rejected with `403`.
 
 ### Inventory API Access
 

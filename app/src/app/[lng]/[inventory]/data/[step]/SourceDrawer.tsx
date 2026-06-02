@@ -97,6 +97,7 @@ export function SourceDrawer({
       open={isOpen}
       placement="end"
       onExitComplete={onClose}
+      onInteractOutside={onClose}
       size="xl"
     >
       <DrawerBackdrop />

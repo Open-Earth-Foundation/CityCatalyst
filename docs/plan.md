@@ -1081,3 +1081,108 @@ The important boundary is that the user experiences this as one Stationary
 Energy workflow in CityCatalyst, while the implementation remains split by
 ownership: CA stages and explains draft decisions; CC owns scoped capabilities,
 permissions, committed writes, and version history.
+
+## Issues
+
+### CA-persisted draft runs are not discoverable by the frontend
+
+The Stationary Energy draft state is correctly persisted in the Climate Advisor
+database, but the CityCatalyst frontend can currently resume a draft only when
+the browser still has the exact `draft_run_id` cached in local storage. If that
+local pointer is missing, stale, cleared, or from a different browser, the
+decisions page has no CA-backed way to discover the latest draft run for the
+selected user, city, inventory, and sector. The UI can therefore appear as if no
+draft exists even though CA still owns a durable run and all associated source
+candidates, proposals, review decisions, and thread context.
+
+Current behavior:
+
+1. The decisions page checks local storage for
+   `stationary-energy-draft:{inventory_id}`.
+2. If a cached `draftRunId` exists, the page calls
+   `GET /v1/stationary-energy-drafts/{draft_run_id}` through the CC bridge.
+3. If no cached id exists, the page does not ask CA to find an existing run for
+   the selected inventory.
+4. Starting a draft calls `POST /v1/stationary-energy-drafts/start`, which
+   creates a new CA run instead of resuming the latest persisted run.
+
+Why this is a problem:
+
+- CA is intended to be the durable owner of pre-commit draft state, but the
+  frontend currently treats browser local storage as the only way to discover
+  that state.
+- Refresh in the same browser can work, but cross-browser, cleared-storage, or
+  stale-storage cases can lose the resume path.
+- Re-running a demo or user flow can create another draft run for the same
+  inventory, which makes the UI harder to reason about and can mix a new draft
+  with already committed inventory values.
+- The existing CA database index on `user_id`, `city_id`, `inventory_id`, and
+  `sector_code` suggests this lookup was anticipated, but no resume/list route
+  currently exposes it to the CC bridge.
+
+Implementation deep dive:
+
+- CA stores `stationary_energy_draft_runs` with `user_id`, `city_id`,
+  `inventory_id`, `sector_code`, `status`, `workflow_step`, `thread_id`, and
+  timestamps.
+- CA also stores child records for source-candidate snapshots, proposals, and
+  review decisions.
+- The current CA route contract supports:
+  - `POST /v1/stationary-energy-drafts/start`
+  - `GET /v1/stationary-energy-drafts/{draft_run_id}`
+  - `POST /v1/stationary-energy-drafts/{draft_run_id}/retry`
+  - `POST /v1/stationary-energy-drafts/{draft_run_id}/review`
+  - `POST /v1/stationary-energy-drafts/{draft_run_id}/save`
+- There is no route that answers: "for this authenticated user, city, inventory,
+  and Stationary Energy sector, what is the latest draft run I should resume?"
+- The CC frontend therefore cannot reconstruct the durable CA run id from the
+  selected city and inventory alone.
+
+Possible solutions:
+
+1. Add a CA-backed resume endpoint.
+   - Add `GET /v1/stationary-energy-drafts/resume`.
+   - Query by authenticated `user_id`, `city_id`, `inventory_id`, and
+     `sector_code="stationary_energy"`.
+   - Return the latest owned draft run with source candidates, proposals, and
+     review decisions.
+   - Return `404` when no run exists.
+
+2. Add a CC bridge route for that resume endpoint.
+   - Add `GET /api/v1/stationary-energy-drafts/resume`.
+   - Pass the current CC session user id and token to CA.
+   - Accept `city_id` and `inventory_id` as query params.
+   - Keep the browser talking only to CC-origin routes, matching the existing
+     bridge pattern.
+
+3. Change frontend resume order.
+   - Treat local storage as a cache, not the source of truth.
+   - First try the cached `draftRunId` if present.
+   - If it is missing or fails, call the CA-backed resume bridge endpoint.
+   - If CA returns a draft, write the returned `draft_run_id` back into local
+     storage and render it.
+   - Only show "No draft" when CA returns `404`.
+
+4. Define resume status semantics.
+   - Decide whether resume should return only active pre-commit states, such as
+     `ready`, `reviewed`, or `pending_cc_commit`, or also return `saved` runs.
+   - A practical UX is to resume active unsaved runs automatically and expose
+     saved runs through history or a "view previous draft" affordance.
+   - If saved runs are returned, the primary action should read `Start new
+     draft` rather than `Start draft`, because the existing run is no longer an
+     editable in-progress draft.
+
+5. Add tests around the missing-storage case.
+   - CA service test: create multiple runs for the same user/city/inventory and
+     verify resume returns the latest allowed run.
+   - CC bridge test: verify the route forwards the authenticated user and
+     inventory scope correctly.
+   - Frontend test: clear local storage, open the decisions page, and verify the
+     persisted CA draft is loaded instead of starting a fresh run.
+
+Preferred patch:
+
+Implement solutions 1, 2, and 3 first, with explicit status semantics from
+solution 4. This keeps CA as the durable source of truth while preserving local
+storage as a fast client-side hint. It also prevents accidental duplicate draft
+runs when the browser cache is missing.

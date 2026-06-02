@@ -63,7 +63,7 @@ def _configure_openrouter() -> str:
     openai.timeout = timeout_ms / 1000
     openai.max_retries = retries
 
-    return settings.llm.models.get("default", "openai/gpt-4o")
+    return settings.llm.models.orchestrator.name
 
 
 @function_tool
@@ -169,7 +169,7 @@ def main() -> int:
         return 1
 
     settings = get_settings()
-    temperature = settings.llm.generation.defaults.temperature
+    temperature = settings.llm.models.orchestrator.temperature
     run_config = RunConfig(
         model_settings=ModelSettings(
             tool_choice="required",

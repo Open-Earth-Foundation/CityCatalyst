@@ -15,6 +15,7 @@ from uuid import UUID
 
 import openai
 from agents import Agent
+from agents.model_settings import ModelSettings
 from openai import AsyncOpenAI
 
 from ..config import get_settings
@@ -71,9 +72,9 @@ class AgentService:
         # Load system prompt
         self.system_prompt = self.settings.llm.prompts.get_prompt("default")
 
-        # Get default model and temperature from settings
-        self.default_model = self.settings.llm.models.get("default", "openai/gpt-4o")
-        self.default_temperature = self.settings.llm.generation.defaults.temperature
+        # Get orchestrator model and temperature from settings.
+        self.default_model = self.settings.llm.models.orchestrator.name
+        self.default_temperature = self.settings.llm.models.orchestrator.temperature
 
         logger.info(
             "AgentService initialized with model=%s, temperature=%s, cc_token=%s",
@@ -280,7 +281,7 @@ class AgentService:
     ) -> Agent:
         """Create an AI agent with climate tools.
         
-        Temperature is configured globally in llm_config.yaml and applies to all requests.
+        Temperature is configured per model in llm_config.yaml.
         The Agents SDK uses the OpenAI client configuration set during initialization.
         
         Args:
@@ -291,6 +292,7 @@ class AgentService:
             Configured Agent instance
         """
         agent_model = model or self.default_model
+        agent_temperature = self.default_temperature
         agent_instructions = instructions or self.system_prompt
         inventory_prompt: Optional[str] = None
         tools = []
@@ -331,13 +333,14 @@ class AgentService:
             name="Climate Advisor",
             instructions=agent_instructions,
             model=agent_model,
+            model_settings=ModelSettings(temperature=agent_temperature),
             tools=tools,
         )
         
         logger.info(
             "Created agent with model=%s, temperature=%s (from config), tools=%s",
             agent_model,
-            self.default_temperature,
+            agent_temperature,
             [tool.name for tool in agent.tools] if hasattr(agent, 'tools') else []
         )
         

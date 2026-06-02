@@ -1,9 +1,7 @@
-import type { SectorAttributes } from "@/models/Sector";
 import {
   Heading,
   HStack,
   Icon,
-  Link,
   Separator,
   Stack,
   Text,
@@ -107,7 +105,7 @@ export function SourceDrawer({
           <ProgressLoader />
         ) : (
           <DrawerBody>
-            <Stack h="full" px={[4, 4, 16]} pt={12}>
+            <Stack h="full" px={[4, 4, 12]} pt={12}>
               <Button
                 variant="ghost"
                 color="content.link"
@@ -121,7 +119,7 @@ export function SourceDrawer({
                 {t("go-back")}
               </Button>
               {source && (
-                <DrawerBody className="overflow-auto" px={0}>
+                <DrawerBody overflowY="auto" px={0}>
                   {/* Header Section */}
                   <Stack gap={3} mb={6}>
                     <Icon as={MdHomeWork} boxSize={9} />
@@ -270,7 +268,10 @@ export function SourceDrawer({
               ) : (
                 <Stack
                   w="full"
-                  className="drop-shadow-top border-t-2 justify-center items-center"
+                  borderTop={2}
+                  justify="center"
+                  alignItems="center"
+                  dropShadow="md"
                 >
                   <Button
                     onClick={onConnectClick}

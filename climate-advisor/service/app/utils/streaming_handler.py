@@ -8,7 +8,7 @@ import logging
 from typing import Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID
 
-from agents import Runner
+from agents import RunConfig, Runner, gen_trace_id
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from ..config import get_settings
@@ -16,8 +16,10 @@ from ..middleware import get_request_id
 from ..models.requests import MessageCreateRequest
 from ..services.agent_service import AgentService
 from ..services.message_service import MessageService
+from ..services.stationary_energy_draft_repository import StationaryEnergyDraftRepository
 from ..services.thread_service import ThreadService
 from .sse import format_sse
+from .stationary_energy_context import extract_stationary_energy_draft_run_id
 from .tool_handler import persist_assistant_message
 from .token_handler import TokenHandler
 from .history_manager import load_conversation_history
@@ -35,13 +37,18 @@ class StreamingHandler:
         session_factory: Optional[async_sessionmaker[AsyncSession]],
         cc_access_token: Optional[str] = None,
         inventory_id: Optional[str] = None,
+        request_context: Optional[Any] = None,
+        request_options: Optional[dict] = None,
     ):
         self.thread_id = thread_id
         self.user_id = user_id
         self.session_factory = session_factory
         self.cc_access_token = cc_access_token
         self.inventory_id = inventory_id
+        self.request_context = request_context
+        self.request_options = request_options
         self.thread_identifier = str(thread_id)
+        self.stationary_energy_draft_run_id: Optional[str] = None
 
         # Response state
         self.assistant_tokens: List[str] = []
@@ -100,7 +107,7 @@ class StreamingHandler:
             agent = await self.agent_service.create_agent(model=model_override)
 
             # Load conversation history
-            conversation_history = await self._load_conversation_history(settings)
+            conversation_history = await self._load_conversation_history(settings, payload)
 
             logger.info(
                 "Starting Agents SDK streaming - thread_id=%s, user_id=%s, request_id=%s",
@@ -134,7 +141,11 @@ class StreamingHandler:
             if self.agent_service:
                 await self.agent_service.close()
 
-    async def _load_conversation_history(self, settings) -> List[Dict[str, str]]:
+    async def _load_conversation_history(
+        self,
+        settings,
+        payload: MessageCreateRequest,
+    ) -> List[Dict[str, str]]:
         """Load conversation history from database with pruning applied.
 
         This method:
@@ -153,6 +164,16 @@ class StreamingHandler:
             user_id=self.user_id,
             session_factory=self.session_factory,
         )
+        stationary_energy_context = await self._load_stationary_energy_context_message(payload)
+        if stationary_energy_context:
+            conversation_history = [stationary_energy_context, *conversation_history]
+            if not self._history_contains_current_user_message(
+                conversation_history,
+                payload.content,
+            ):
+                conversation_history.append(
+                    {"role": "user", "content": payload.content}
+                )
 
         if conversation_history:
             logger.info(
@@ -168,6 +189,213 @@ class StreamingHandler:
 
         return conversation_history
 
+    async def _load_stationary_energy_context_message(
+        self,
+        payload: MessageCreateRequest,
+    ) -> Optional[Dict[str, str]]:
+        draft_run_id_text = extract_stationary_energy_draft_run_id(
+            payload.context,
+            payload.options,
+            self.request_context,
+            self.request_options,
+        )
+        if not draft_run_id_text:
+            draft_run_id_text = await self._load_thread_stationary_energy_draft_run_id()
+
+        if not draft_run_id_text:
+            return None
+
+        try:
+            draft_run_id = UUID(str(draft_run_id_text))
+        except ValueError:
+            logger.warning(
+                "Ignoring invalid Stationary Energy draft_run_id in chat context: %s",
+                draft_run_id_text,
+            )
+            return None
+
+        self.stationary_energy_draft_run_id = str(draft_run_id)
+
+        if not self.session_factory:
+            logger.debug("Session factory unavailable; Stationary Energy draft context skipped")
+            return None
+
+        try:
+            async with self.session_factory() as session:
+                repository = StationaryEnergyDraftRepository(session)
+                draft_run = await repository.get_draft_run(draft_run_id)
+        except Exception as exc:
+            logger.warning(
+                "Failed to load Stationary Energy draft context draft_run_id=%s: %s",
+                draft_run_id,
+                exc,
+            )
+            return None
+
+        if draft_run is None or draft_run.user_id != self.user_id:
+            logger.warning(
+                "Stationary Energy draft context unavailable draft_run_id=%s user_id=%s",
+                draft_run_id,
+                self.user_id,
+            )
+            return {
+                "role": "system",
+                "content": (
+                    "STATIONARY_ENERGY_DRAFT_CONTEXT_UNAVAILABLE\n"
+                    "The requested Stationary Energy draft context is not available for this user."
+                ),
+            }
+
+        context_payload = self._stationary_energy_context_payload(draft_run)
+        return {
+            "role": "system",
+            "content": (
+                "STATIONARY_ENERGY_DRAFT_CONTEXT_JSON\n"
+                f"{json.dumps(context_payload, ensure_ascii=False, default=str)}\n"
+                "Use this authoritative persisted CA draft snapshot to explain the Stationary Energy "
+                "screen the user is viewing. Do not re-fetch data. Do not invent missing values. "
+                "Treat source_candidates, proposals, review_decisions, and llm_generation as the "
+                "ground truth for this draft."
+            ),
+        }
+
+    async def _load_thread_stationary_energy_draft_run_id(self) -> Optional[str]:
+        if not self.session_factory:
+            return None
+
+        try:
+            async with self.session_factory() as session:
+                thread_service = ThreadService(session)
+                thread = await thread_service.get_thread(self.thread_id)
+                if thread is None or thread.user_id != self.user_id:
+                    return None
+                return extract_stationary_energy_draft_run_id(thread.context)
+        except Exception as exc:
+            logger.warning(
+                "Failed to load thread Stationary Energy context thread_id=%s: %s",
+                self.thread_id,
+                exc,
+            )
+            return None
+
+    @staticmethod
+    def _history_contains_current_user_message(
+        conversation_history: List[Dict[str, str]],
+        content: str,
+    ) -> bool:
+        return any(
+            message.get("role") == "user" and message.get("content") == content
+            for message in conversation_history[-3:]
+        )
+
+    @staticmethod
+    def _stationary_energy_context_payload(draft_run) -> Dict[str, Any]:
+        context_summary = draft_run.context_summary or {}
+        llm_trace = context_summary.get("llm_trace") if isinstance(context_summary, dict) else None
+        llm_generation = None
+        if isinstance(llm_trace, dict):
+            llm_generation = {
+                "model": llm_trace.get("model"),
+                "temperature": llm_trace.get("temperature"),
+                "usage": llm_trace.get("usage"),
+                "parsed_output": llm_trace.get("parsed_output"),
+            }
+
+        return {
+            "draft_run": {
+                "draft_run_id": str(draft_run.draft_run_id),
+                "thread_id": str(draft_run.thread_id) if draft_run.thread_id else None,
+                "city_id": draft_run.city_id,
+                "inventory_id": draft_run.inventory_id,
+                "sector_code": draft_run.sector_code,
+                "status": draft_run.status,
+                "workflow_step": draft_run.workflow_step,
+                "trace_id": draft_run.trace_id,
+                "created_at": draft_run.created_at,
+                "updated_at": draft_run.updated_at,
+            },
+            "city": context_summary.get("city") if isinstance(context_summary, dict) else None,
+            "inventory": context_summary.get("inventory") if isinstance(context_summary, dict) else None,
+            "context_counts": {
+                "taxonomy_count": context_summary.get("taxonomy_count")
+                if isinstance(context_summary, dict)
+                else None,
+                "current_values_count": context_summary.get("current_values_count")
+                if isinstance(context_summary, dict)
+                else None,
+                "source_candidates_count": context_summary.get("source_candidates_count")
+                if isinstance(context_summary, dict)
+                else None,
+            },
+            "permission_summary": draft_run.permission_summary,
+            "llm_generation": llm_generation,
+            "source_candidates": [
+                {
+                    "candidate_id": str(candidate.candidate_id),
+                    "datasource_id": candidate.datasource_id,
+                    "name": candidate.name,
+                    "publisher_name": candidate.publisher_name,
+                    "retrieval_method": candidate.retrieval_method,
+                    "dataset_name": candidate.dataset_name,
+                    "dataset_year": candidate.dataset_year,
+                    "url": candidate.url,
+                    "geography_match": candidate.geography_match,
+                    "source_scope": candidate.source_scope,
+                    "source_data": candidate.source_data,
+                    "normalized_rows": candidate.normalized_rows,
+                    "applicability_status": candidate.applicability_status,
+                    "applicability_issues": candidate.applicability_issues,
+                    "failure_reason": candidate.failure_reason,
+                    "quality_score": candidate.quality_score,
+                    "confidence_notes": candidate.confidence_notes,
+                }
+                for candidate in draft_run.source_candidates
+            ],
+            "proposals": [
+                {
+                    "proposal_id": str(proposal.proposal_id),
+                    "target_ref": proposal.target_ref,
+                    "current_value": proposal.current_value,
+                    "recommended_candidate_id": str(proposal.recommended_candidate_id)
+                    if proposal.recommended_candidate_id
+                    else None,
+                    "recommended_datasource_id": proposal.recommended_datasource_id,
+                    "alternative_candidate_ids": proposal.alternative_candidate_ids,
+                    "proposed_value": proposal.proposed_value,
+                    "rationale": proposal.rationale,
+                    "status": proposal.status,
+                    "confidence_score": proposal.confidence_score,
+                }
+                for proposal in draft_run.proposals
+            ],
+            "review_decisions": [
+                {
+                    "decision_id": str(decision.decision_id),
+                    "proposal_id": str(decision.proposal_id),
+                    "decision_version": decision.decision_version,
+                    "action": decision.action,
+                    "selected_source_id": decision.selected_source_id,
+                    "selected_candidate_id": str(decision.selected_candidate_id)
+                    if decision.selected_candidate_id
+                    else None,
+                    "manual_value": decision.manual_value,
+                    "manual_unit": decision.manual_unit,
+                    "note": decision.note,
+                    "commit_status": decision.commit_status,
+                    "commit_response": decision.commit_response,
+                    "created_at": decision.created_at,
+                }
+                for decision in sorted(
+                    draft_run.review_decisions,
+                    key=lambda item: (
+                        str(item.proposal_id),
+                        item.decision_version,
+                        str(item.decision_id),
+                    ),
+                )
+            ],
+        }
+
     async def _stream_agent_events(
         self,
         agent,
@@ -180,7 +408,11 @@ class StreamingHandler:
         )
 
         try:
-            result = Runner.run_streamed(agent, runner_input)
+            result = Runner.run_streamed(
+                agent,
+                runner_input,
+                run_config=self._run_config(payload),
+            )
         except Exception as runner_exc:
             logger.warning(
                 "Agents Runner streaming failed (%s); falling back to agent.messages.run_stream",
@@ -193,6 +425,55 @@ class StreamingHandler:
         async for chunk in result.stream_events():
             async for event_bytes in self._process_chunk(chunk):
                 yield event_bytes
+
+    def _run_config(self, payload: MessageCreateRequest) -> RunConfig:
+        settings = get_settings()
+        req_id = get_request_id()
+        draft_run_id = extract_stationary_energy_draft_run_id(
+            payload.context,
+            payload.options,
+            self.request_context,
+            self.request_options,
+        ) or self.stationary_energy_draft_run_id
+        has_stationary_energy_context = bool(draft_run_id)
+        workflow_name = (
+            "Climate Advisor Stationary Energy Context Chat"
+            if has_stationary_energy_context
+            else "Climate Advisor Conversation"
+        )
+        trace_metadata: dict[str, Any] = {
+            "service": "climate-advisor",
+            "workflow": (
+                "stationary_energy_context_chat"
+                if has_stationary_energy_context
+                else "climate_advisor_conversation"
+            ),
+            "trace_category": (
+                "ca_agentic_context_chat"
+                if has_stationary_energy_context
+                else "normal_conversation"
+            ),
+            "ca_agentic_flow": has_stationary_energy_context,
+            "context_mode": (
+                "stationary_energy_draft"
+                if has_stationary_energy_context
+                else "general"
+            ),
+            "request_id": req_id,
+            "thread_id": self.thread_identifier,
+            "inventory_id": self.inventory_id,
+        }
+        if has_stationary_energy_context:
+            trace_metadata["feature_flag"] = "STATIONARY_ENERGY_AGENTIC"
+            trace_metadata["stationary_energy_draft_run_id"] = str(draft_run_id)
+
+        return RunConfig(
+            workflow_name=workflow_name,
+            trace_id=gen_trace_id(),
+            group_id=self.thread_identifier,
+            trace_metadata=trace_metadata,
+            tracing_disabled=not settings.langsmith_tracing_enabled,
+        )
 
     async def _fallback_stream(
         self, agent, payload: MessageCreateRequest

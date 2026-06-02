@@ -332,6 +332,95 @@ class CityCatalystClient:
             "X-Service-Name": "climate-advisor",
             "X-Service-Key": settings.cc_api_key or "",
         }
+
+    def _internal_headers(self, token: Optional[str] = None) -> Dict[str, str]:
+        headers = {
+            "Content-Type": "application/json",
+            "X-Service-Name": "climate-advisor",
+            "X-Service-Key": self.api_key or "",
+        }
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+        return headers
+
+    async def post_internal_capability(
+        self,
+        path: str,
+        *,
+        json_data: Dict[str, Any],
+        token: Optional[str] = None,
+        request_timeout: Optional[float] = None,
+    ) -> Dict[str, Any]:
+        if not self.base_url:
+            raise CityCatalystClientError("CC_BASE_URL not configured")
+
+        url = f"{self.base_url.rstrip('/')}{path}"
+        client = await self._get_client()
+        response = await client.post(
+            url,
+            headers=self._internal_headers(token),
+            json=json_data,
+            follow_redirects=True,
+            timeout=request_timeout or self.datasource_timeout,
+        )
+
+        if not response.is_success:
+            error_text = response.text[:500] if response.text else "Unknown error"
+            raise CityCatalystClientError(
+                f"CC capability request failed: {response.status_code} - {error_text}"
+            )
+
+        try:
+            return response.json()
+        except Exception as e:
+            raise CityCatalystClientError(
+                f"Failed to parse CC capability response: {e}"
+            ) from e
+
+    async def get_stationary_energy_allowed_capabilities(
+        self,
+        *,
+        user_id: str,
+        city_id: str,
+        inventory_id: str,
+        workflow_step: str,
+        token: Optional[str] = None,
+    ) -> list[str]:
+        payload = {
+            "user_id": user_id,
+            "city_id": city_id,
+            "inventory_id": inventory_id,
+            "sector_code": "stationary_energy",
+            "workflow_step": workflow_step,
+        }
+        data = await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/allowed-capabilities",
+            json_data=payload,
+            token=token,
+        )
+
+        if isinstance(data, list):
+            capabilities = data
+        else:
+            capabilities = data.get("capabilities") or data.get("allowed_capabilities") or data
+        if isinstance(capabilities, dict):
+            capabilities = capabilities.get("capabilities") or capabilities.get("ids") or []
+        if not isinstance(capabilities, list):
+            raise CityCatalystClientError("Invalid allowed capabilities response")
+
+        return [str(capability) for capability in capabilities]
+
+    async def load_stationary_energy_context(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context",
+            json_data=request_payload,
+            token=token,
+        )
     
     # Convenience methods for common CC API operations
     

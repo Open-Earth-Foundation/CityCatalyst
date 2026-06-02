@@ -195,16 +195,20 @@ They expose three operation types:
 
 - Query: safe reads
 - Command: immediate writes
-- Workflow: async or multi-step jobs
+- Workflow: async or multi-step product jobs
 
-Each wrapper should represent a real user-facing capability or workflow step,
-not a random low-level route. In practice that means:
+Each wrapper should represent a real user-facing product capability or
+product-owned workflow step, not a random low-level route. In practice that
+means:
 
 - reuses current routes and services instead of rebuilding them
 - hides low-level or very UI-specific calls that would confuse the agent
 - combines multiple raw calls into one real user-facing operation where needed
 - returns summarized capability payloads instead of large raw route objects
 - gives confirmation, version-history, and workflow semantics one stable place
+- does not expose CA-local orchestration or persistence such as draft creation,
+proposal storage, review-decision storage, or other bookkeeping that belongs
+inside CA services and the CA database
 
 Implementation-wise, each module file should own a narrow set of wrappers for
 that module's real capabilities:
@@ -471,7 +475,8 @@ In practice that means:
 
 - query wrappers return summarized read models
 - command wrappers return confirmation-safe result models
-- workflow wrappers return start, status, and result models
+- workflow wrappers return start, status, and result models for product-owned
+  CC workflows that the agent should actually invoke
 - file-producing workflows return a small file reference model rather than a raw
 blob payload
 
@@ -484,10 +489,11 @@ We also need an explicit database ownership split between CA and CC. The current
 documents describe runtime behavior, but the durable state model still needs to
 be made concrete.
 
-The rule should be:
+The rule for the current CC-CA split should be:
 
-- CA owns conversation and agent-session state
-- CC owns durable product workflow state
+- CA owns conversation state and pre-commit agentic workflow state.
+- CC owns committed product data, permissions, version history, and any
+  post-commit product records.
 
 CA should keep:
 
@@ -495,21 +501,22 @@ CA should keep:
 - thread context such as the current access token, active resource, and scoped
 workflow step
 - tool invocation audit for chat history
-- lightweight resume pointers such as the current draft id or active workflow id
+- draft runs, stored source-candidate snapshots, staged proposals, and review
+decisions for CA-mediated draft workflows
+- commit-state markers such as `pending_cc_commit`, `staged_manual`, or resume
+pointers that exist before CC has applied a product write
 
 CC should keep:
 
-- pending actions waiting for user confirmation
-- started actions that have become product-owned workflow runs
-- workflow polling state, status transitions, and final results
-- saved drafts for product workflows
-- version-history records and restore metadata
-- output file references where product workflows need durable retrieval
+- inventory and module data plus the normal product write paths
+- version-history records and restore metadata for committed changes
+- output file references where committed product workflows need durable retrieval
+- any workflow rows that only exist after a CityCatalyst-owned commit or job has
+started
 
-This matters because "waiting per user", "started actions", "polling states",
-and "saved drafts" should not live only inside CA thread state. If the state
-affects product data, approval, restore, or cross-session resume, CC should own
-it as the durable source of truth.
+For the first Stationary Energy implementation, this means the durable draft
+state lives in the CA database. CC remains the source of truth for committed
+inventory values, access checks, and version history.
 
 #### 9. Production Observability and Audit Artifacts
 
@@ -551,17 +558,18 @@ Sensitive values should be handled conservatively. We should not persist raw
 Bearer tokens, secrets, or unnecessary full product payload dumps inside traces
 or audit artifacts.
 
-In practice that likely means adding product-owned workflow tables in CC for:
+In practice for the first Stationary Energy slice, CC likely only needs
+product-owned workflow tables when a committed CC job actually starts, for
+example:
 
-- pending actions
 - workflow runs
 - workflow status events
-- drafts
 - output references
 
-CA can still cache references to those objects in thread context so the agent
-can resume the conversation cleanly, but CA should not be the durable owner of
-product mutation state.
+Draft runs, staged proposals, review decisions, and pre-commit markers should
+stay in the CA database until CC has actually applied a product write. CA can
+still cache references to those objects in thread context so the agent can
+resume the conversation cleanly.
 
 #### 9. Test Surface
 

@@ -304,6 +304,7 @@ class Settings(BaseModel):
     port: int = int(os.getenv("CA_PORT", "8080"))
     log_level: str = os.getenv("CA_LOG_LEVEL", "info")
     cors_origins: List[str] = []
+    ca_feature_flags: str = os.getenv("CA_FEATURE_FLAGS", "")
 
     # LLM Configuration (loaded from YAML)
     llm: LLMConfig

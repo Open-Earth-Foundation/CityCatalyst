@@ -187,7 +187,8 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
                     # Verify agent was created
                     mock_agent_class.assert_called_once()
                     call_kwargs = mock_agent_class.call_args[1]
-                    self.assertEqual(call_kwargs["model"], "openai/gpt-4o")
+                    self.assertEqual(call_kwargs["model"].model, "openai/gpt-4o")
+                    self.assertEqual(call_kwargs["model_settings"].temperature, 0.1)
 
     async def test_create_agent_with_model_override(self) -> None:
         """Test agent creation with model override."""
@@ -200,7 +201,7 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
                     agent = await service.create_agent(model="openai/gpt-4-turbo")
                     
                     call_kwargs = mock_agent_class.call_args[1]
-                    self.assertEqual(call_kwargs["model"], "openai/gpt-4-turbo")
+                    self.assertEqual(call_kwargs["model"].model, "openai/gpt-4-turbo")
 
     async def test_create_agent_includes_system_prompt(self) -> None:
         """Test agent creation includes system prompt."""

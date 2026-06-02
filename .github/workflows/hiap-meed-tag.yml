@@ -45,10 +45,10 @@ jobs:
         working-directory: hiap-meed
         run: uv sync --frozen
 
-      - name: Run all tests
+      - name: Run non-external tests
         working-directory: hiap-meed
         run: |
-          uv run pytest -c pytest.ini
+          uv run pytest -c pytest.ini -m "not external"
 
   build:
     needs: test

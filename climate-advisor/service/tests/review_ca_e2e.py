@@ -2,7 +2,7 @@
 Review CA E2E output with the same LLM and print pass/fail summary.
 
 Usage (from climate-advisor/):
-  uv run python service/tests/review_ca_e2e.py
+  uv run --directory service python -m tests.review_ca_e2e
 
 Optional flags:
   --input  Path to the CA E2E response JSON (default: service/tests/output/ca_e2e_responses.json)
@@ -29,12 +29,6 @@ from typing import Any, Dict, List, Literal, Optional
 import openai
 from agents import Agent, RunConfig, Runner, ToolCallOutputItem, function_tool
 from agents.model_settings import ModelSettings
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
 
 from app.config import get_settings
 
@@ -125,7 +119,8 @@ def _extract_decision(result) -> Optional[str]:
     return None
 
 
-def main() -> int:
+def parse_args() -> argparse.Namespace:
+    """Parse CLI arguments for the CA E2E reviewer."""
     parser = argparse.ArgumentParser(
         description="Review CA E2E responses with the LLM and print pass rate.",
     )
@@ -144,8 +139,12 @@ def main() -> int:
         default=None,
         help="Path to save the evaluation JSON.",
     )
-    args = parser.parse_args()
+    return parser.parse_args()
 
+
+def main() -> int:
+    """Review saved CA E2E responses and write a structured evaluation file."""
+    args = parse_args()
     try:
         default_model = _configure_openrouter()
     except RuntimeError as exc:

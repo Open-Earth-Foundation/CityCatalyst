@@ -21,10 +21,10 @@ from agents import (
 from openai import AsyncOpenAI
 from pydantic import BaseModel, Field, ValidationError
 
-from ..config import get_settings
-from ..models.stationary_energy_drafts import LoadStationaryEnergyContextResponse
-from ..utils.agent_tracing import configure_agents_tracing
-from ..utils.stationary_energy_context import (
+from app.config import get_settings
+from app.models.stationary_energy_drafts import LoadStationaryEnergyContextResponse
+from app.utils.agent_tracing import configure_agents_tracing
+from app.utils.stationary_energy_context import (
     stationary_energy_scope_identity,
     stationary_energy_scope_label,
     stationary_energy_scope_matches_target,
@@ -67,13 +67,13 @@ class StationaryEnergyProposalLLMService:
         self.settings = get_settings()
         configure_agents_tracing(self.settings)
         self.model = (
-            os.getenv("OPENROUTER_AGENTIC_FLOW_MODEL")
-            or os.getenv("OPENROUTER_MODEL")
-            or self.settings.llm.models.get("agentic_flow")
-            or self.settings.openrouter_model
-            or self.settings.llm.models.get("default", "openai/gpt-4.1")
+            self.settings.llm.models.get("agentic_flow")
+            or self.settings.llm.models["default"]
         )
         self.temperature = self.settings.llm.generation.defaults.temperature
+        self.instructions = self.settings.llm.prompts.get_prompt(
+            "stationary_energy_draft"
+        )
         self.client = client or self._create_openrouter_client()
 
     def _create_openrouter_client(self) -> AsyncOpenAI:
@@ -83,7 +83,7 @@ class StationaryEnergyProposalLLMService:
                 "OPENROUTER_API_KEY must be set for Stationary Energy LLM proposals"
             )
 
-        base_url = self.settings.openrouter_base_url or "https://openrouter.ai/api/v1"
+        base_url = self.settings.llm.api.openrouter.base_url
         timeout_ms = self.settings.llm.api.openrouter.timeout_ms or 30000
         referer = os.getenv("OPENROUTER_REFERER") or "https://citycatalyst.ai"
         title = os.getenv("OPENROUTER_TITLE") or "CityCatalyst Climate Advisor"
@@ -135,7 +135,7 @@ class StationaryEnergyProposalLLMService:
         )
         agent = Agent(
             name="Stationary Energy Draft Agent",
-            instructions=self._system_prompt(),
+            instructions=self.instructions,
             model=OpenAIChatCompletionsModel(
                 model=self.model,
                 openai_client=self.client,
@@ -238,20 +238,6 @@ class StationaryEnergyProposalLLMService:
             "taxonomy_count": len(context.taxonomy),
             "source_candidate_count": len(stored_source_candidates),
         }
-
-    @staticmethod
-    def _system_prompt() -> str:
-        return (
-            "You are a greenhouse-gas inventory drafting assistant for the GPC Stationary Energy sector. "
-            "Return JSON only. Generate draft proposals from the provided bounded context and stored source candidate snapshots. "
-            "Never invent source candidates, datasource IDs, city data, inventory data, or permissions. "
-            "Recommendations and alternatives must reference only candidate_id values present in source_candidates, and only candidates with applicability_status='applicable'. "
-            "Use removed and failed candidates only for rationale or gap explanation. "
-            "Return exactly one proposal for every taxonomy row in the input. "
-            "Copy each taxonomy row into target_ref so every proposal can be matched back to a unique row. "
-            "For each taxonomy row, return a proposal with target_ref, current_value, recommended_candidate_id, recommended_datasource_id, alternative_candidate_ids, proposed_value, rationale, status, and confidence_score. "
-            "Use status 'ready' when one clear applicable source is recommended, 'conflict' when several applicable sources compete, 'gap' when no applicable source exists, and 'needs_review' when the evidence is ambiguous."
-        )
 
     @staticmethod
     def _build_llm_input(

@@ -8,14 +8,14 @@ from uuid import UUID
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..middleware import get_request_id
-from ..models.db.stationary_energy_draft import (
+from app.middleware import get_request_id
+from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftProposal,
     StationaryEnergyDraftRun,
     StationaryEnergyDraftSourceCandidate,
     StationaryEnergyReviewDecision,
 )
-from ..models.stationary_energy_drafts import (
+from app.models.stationary_energy_drafts import (
     DraftProposal,
     LoadStationaryEnergyContextRequest,
     LoadStationaryEnergyContextResponse,
@@ -31,18 +31,24 @@ from ..models.stationary_energy_drafts import (
     StoredSourceCandidate,
     StoredSourceScope,
 )
-from .citycatalyst_client import CityCatalystClient, CityCatalystClientError, TokenRefreshError
-from .stationary_energy_draft_repository import StationaryEnergyDraftRepository
-from .stationary_energy_llm_service import (
+from app.services.citycatalyst_client import (
+    CityCatalystClient,
+    CityCatalystClientError,
+    TokenRefreshError,
+)
+from app.services.stationary_energy_draft_repository import (
+    StationaryEnergyDraftRepository,
+)
+from app.services.stationary_energy_llm_service import (
     StationaryEnergyLLMServiceError,
     StationaryEnergyProposalLLMService,
 )
-from .thread_service import ThreadService
-from ..utils.stationary_energy_context import (
+from app.services.thread_service import ThreadService
+from app.utils.stationary_energy_context import (
     stationary_energy_scope_label,
     stationary_energy_scope_matches_target,
 )
-from ..utils.token_manager import (
+from app.utils.token_manager import (
     LogSafeFormatter,
     create_token_context,
     is_token_expired,

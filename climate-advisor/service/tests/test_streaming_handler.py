@@ -1,17 +1,9 @@
 from __future__ import annotations
 
 import json
-import sys
 import unittest
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
 
 from app.models.requests import MessageCreateRequest
 from app.utils.sse import format_sse

@@ -1,14 +1,6 @@
 from __future__ import annotations
 
 import unittest
-import sys
-from pathlib import Path
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
 
 from app.config.feature_flags import FeatureFlags, has_feature_flag, parse_feature_flags
 

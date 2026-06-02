@@ -4,10 +4,9 @@ import base64
 import asyncio
 import json
 import os
-import sys
 import unittest
 from decimal import Decimal
-from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, AsyncIterator
 from unittest.mock import AsyncMock, Mock, patch
 from uuid import UUID, uuid4
@@ -16,12 +15,6 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
 
 from app.db import Base
 from app.db.session import get_session
@@ -962,6 +955,80 @@ class StationaryEnergyMigrationTests(unittest.TestCase):
 
 
 class StationaryEnergyLLMValidationTests(unittest.TestCase):
+    def _mock_llm_settings(self) -> SimpleNamespace:
+        prompts = Mock()
+        prompts.get_prompt = Mock(return_value="Stationary Energy prompt")
+        return SimpleNamespace(
+            openrouter_api_key="test-key",
+            llm=SimpleNamespace(
+                models={
+                    "default": "openai/gpt-4.1",
+                    "agentic_flow": "openai/gpt-5.4",
+                },
+                generation=SimpleNamespace(
+                    defaults=SimpleNamespace(temperature=0.1)
+                ),
+                prompts=prompts,
+                api=SimpleNamespace(
+                    openrouter=SimpleNamespace(
+                        base_url="https://custom-openrouter.example/v1",
+                        timeout_ms=30000,
+                        retry_attempts=2,
+                    )
+                ),
+                logging=SimpleNamespace(
+                    log_requests=False,
+                    log_responses=False,
+                ),
+            ),
+            langsmith_tracing_enabled=False,
+        )
+
+    def test_service_uses_stationary_energy_prompt_from_config(self) -> None:
+        mock_settings = self._mock_llm_settings()
+        with patch(
+            "app.services.stationary_energy_llm_service.get_settings",
+            return_value=mock_settings,
+        ), patch(
+            "app.services.stationary_energy_llm_service.configure_agents_tracing"
+        ):
+            service = StationaryEnergyProposalLLMService(client=Mock())
+
+        self.assertEqual(service.instructions, "Stationary Energy prompt")
+        mock_settings.llm.prompts.get_prompt.assert_called_once_with(
+            "stationary_energy_draft"
+        )
+
+    def test_service_uses_agentic_flow_model_from_llm_config(self) -> None:
+        mock_settings = self._mock_llm_settings()
+        with patch(
+            "app.services.stationary_energy_llm_service.get_settings",
+            return_value=mock_settings,
+        ), patch(
+            "app.services.stationary_energy_llm_service.configure_agents_tracing"
+        ):
+            service = StationaryEnergyProposalLLMService(client=Mock())
+
+        self.assertEqual(service.model, "openai/gpt-5.4")
+
+    def test_service_uses_openrouter_base_url_from_llm_config(self) -> None:
+        mock_settings = self._mock_llm_settings()
+        with patch(
+            "app.services.stationary_energy_llm_service.get_settings",
+            return_value=mock_settings,
+        ), patch(
+            "app.services.stationary_energy_llm_service.configure_agents_tracing"
+        ), patch(
+            "app.services.stationary_energy_llm_service.AsyncOpenAI"
+        ) as mock_client_class:
+            StationaryEnergyProposalLLMService()
+
+        call_kwargs = mock_client_class.call_args[1]
+        self.assertEqual(
+            call_kwargs["base_url"],
+            "https://custom-openrouter.example/v1",
+        )
+
     def test_rejects_candidate_datasource_mismatch(self) -> None:
         target_ref = _context_payload()["taxonomy"][0]
         candidate_id = uuid4()

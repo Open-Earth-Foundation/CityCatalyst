@@ -1,8 +1,8 @@
 """
 Run the Stationary Energy draft flow against CA using a mock CC capability server.
 
-Usage from climate-advisor/:
-  uv run python service/tests/run_stationary_energy_mock_flow.py
+Usage (from climate-advisor/):
+  uv run --directory service python -m tests.run_stationary_energy_mock_flow
 
 This starts a local mock CC server that serves:
   POST /api/v1/internal/ca/capabilities/allowed-capabilities
@@ -20,7 +20,6 @@ import asyncio
 import base64
 import json
 import os
-import sys
 from pathlib import Path
 from typing import AsyncIterator
 
@@ -28,16 +27,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
-tests_path = str(Path(__file__).parent)
-if tests_path not in sys.path:
-    sys.path.insert(0, tests_path)
-
-from mock_cc_stationary_energy_server import start_mock_cc_server
+from tests.mock_cc_stationary_energy_server import start_mock_cc_server
 
 
 DEFAULT_FIXTURE = Path(__file__).parent / "fixtures" / "stationary_energy_load_context_mock.json"
@@ -104,7 +94,8 @@ def _build_review_decisions(status_payload: dict) -> list[dict]:
     return decisions
 
 
-def main() -> int:
+def parse_args() -> argparse.Namespace:
+    """Parse CLI arguments for the mock Stationary Energy flow runner."""
     parser = argparse.ArgumentParser(
         description="Run CA Stationary Energy endpoints with mock CC load_context data.",
     )
@@ -112,7 +103,15 @@ def main() -> int:
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
     parser.add_argument("--user-id", default="mock-user")
     parser.add_argument("--locale", default="en")
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+def main() -> int:
+    """Run the mock Stationary Energy flow and persist a JSON summary."""
+    parser = argparse.ArgumentParser(
+        description="Run CA Stationary Energy endpoints with mock CC load_context data.",
+    )
+    args = parse_args()
 
     fixture_path = Path(args.fixture)
     output_path = Path(args.output)

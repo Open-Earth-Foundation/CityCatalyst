@@ -8,7 +8,7 @@ from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from ..models.db.stationary_energy_draft import (
+from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftProposal,
     StationaryEnergyDraftRun,
     StationaryEnergyDraftSourceCandidate,

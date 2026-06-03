@@ -45,6 +45,7 @@ import {
   Text,
   useDisclosure,
   useSteps,
+  VStack,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { useRouter, useParams, usePathname } from "next/navigation";
@@ -989,7 +990,7 @@ export default function AddDataSteps() {
                 year={year}
               />
             ) : (
-              <SimpleGrid columns={3} gap={4}>
+              <SimpleGrid templateColumns="repeat(3, 1fr)" gap="16px">
                 {dataSources
                   .slice(0, isDataSectionExpanded ? dataSources.length : 6)
                   .map(({ source, data }) => {
@@ -998,24 +999,26 @@ export default function AddDataSteps() {
                       source,
                       isHovered,
                     );
-
                     return (
                       <Card.Root
                         key={source.datasourceId}
                         data-testid="source-card"
                         variant="outline"
+                        borderWidth="1px"
                         borderColor={
                           isSourceConnected(source) &&
                           source.inventoryValues?.length
                             ? "interactive.tertiary"
-                            : ""
+                            : "border.overlay"
                         }
-                        borderWidth={2}
                         shadow="none"
                         _hover={{ shadow: "xl" }}
                         transition="all 300ms"
+                        height="420px"
+                        w="337px"
+                        p="24px"
                       >
-                        <Card.Header>
+                        <Card.Header p="0">
                           {/* TODO add icon to DataSource */}
                           <Icon
                             as={MdOutlineHomeWork}
@@ -1027,9 +1030,13 @@ export default function AddDataSteps() {
                             {getTranslationFromDict(source.datasetName)}
                           </Heading>
                         </Card.Header>
-                        <Card.Body>
+                        <Card.Body justifyContent="space-between" p="0">
                           <Flex direction="row" mb={4} wrap="wrap" gap={2}>
-                            <Badge fontSize={11}>
+                            <Badge
+                              fontSize={11}
+                              fontWeight="semibold"
+                              borderColor="border.overlay"
+                            >
                               <Icon
                                 as={DataCheckIcon}
                                 boxSize={5}
@@ -1039,7 +1046,11 @@ export default function AddDataSteps() {
                               {t("quality-" + source.dataQuality)}
                             </Badge>
                             {source.subCategory?.scope && (
-                              <Badge fontSize={11}>
+                              <Badge
+                                fontSize={11}
+                                fontWeight="semibold"
+                                borderColor="border.overlay"
+                              >
                                 <Icon
                                   as={FiTarget}
                                   boxSize={4}
@@ -1051,9 +1062,16 @@ export default function AddDataSteps() {
                             )}
                           </Flex>
                           <Text
+                            textOverflow="ellipsis"
+                            whiteSpace="nowrap"
+                            overflow="hidden"
                             color="content.tertiary"
-                            lineClamp={5}
-                            minHeight={120}
+                            lineClamp="5"
+                            maxHeight="100px"
+                            fontFamily="body"
+                            fontSize="body.md"
+                            lineHeight="20px"
+                            fontWeight="regular"
                           >
                             {getTranslationFromDict(
                               source.datasetDescription,
@@ -1062,49 +1080,57 @@ export default function AddDataSteps() {
                                 source.methodologyDescription,
                               )}
                           </Text>
-                          <Link
-                            textDecoration="underline"
-                            mt={4}
-                            mb={6}
-                            onClick={() => onSourceClick(source, data)}
-                          >
-                            {t("see-more-details")}
-                          </Link>
-                          {isSourceConnected(source) &&
-                          source.inventoryValues?.length ? (
-                            <Button
-                              variant="solid"
-                              px={6}
-                              py={4}
-                              onClick={() =>
-                                isFrozenCheck()
-                                  ? null
-                                  : onDisconnectThirdPartyData(source)
-                              }
-                              loading={
-                                isDisconnectLoading &&
-                                source.datasourceId ===
-                                  disconnectingDataSourceId
-                              }
-                              onMouseEnter={() => onButtonHover(source)}
-                              onMouseLeave={() => onMouseLeave(source)}
+                          <VStack w="full">
+                            <Link
+                              textDecoration="underline"
+                              mt={4}
+                              mb={6}
+                              onClick={() => onSourceClick(source, data)}
+                              alignSelf="flex-start"
+                              fontSize="label.lg"
+                              fontWeight="semibold"
                             >
-                              <Icon as={MdCheckCircle} />
-                              {text}
-                            </Button>
-                          ) : (
-                            <Button
-                              variant="outline"
-                              bgColor="background.neutral"
-                              onClick={() => onConnectClick(source)}
-                              loading={
-                                isConnectDataSourceLoading &&
-                                source.datasourceId === connectingDataSourceId
-                              }
-                            >
-                              {t("connect-data")}
-                            </Button>
-                          )}
+                              {t("see-more-details")}
+                            </Link>
+                            {isSourceConnected(source) &&
+                            source.inventoryValues?.length ? (
+                              <Button
+                                variant="solid"
+                                w="full"
+                                onClick={() =>
+                                  isFrozenCheck()
+                                    ? null
+                                    : onDisconnectThirdPartyData(source)
+                                }
+                                loading={
+                                  isDisconnectLoading &&
+                                  source.datasourceId ===
+                                    disconnectingDataSourceId
+                                }
+                                onMouseEnter={() => onButtonHover(source)}
+                                onMouseLeave={() => onMouseLeave(source)}
+                              >
+                                <Icon as={MdCheckCircle} />
+                                {text}
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                w="full"
+                                borderWidth="1px"
+                                py="16px"
+                                bgColor="background.neutral"
+                                onClick={() => onConnectClick(source)}
+                                loading={
+                                  isConnectDataSourceLoading &&
+                                  source.datasourceId === connectingDataSourceId
+                                }
+                                fontSize="14px"
+                              >
+                                {t("connect-data")}
+                              </Button>
+                            )}
+                          </VStack>
                         </Card.Body>
                       </Card.Root>
                     );

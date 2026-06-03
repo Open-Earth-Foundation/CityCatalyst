@@ -173,6 +173,7 @@
   "modeled-data-desc": "Emissionen, die aus Vorhersagemodellen geschätzt wurden",
   "modeled-fuel": "Modellierte Kraftstoffintensitätsverbrauch",
   "built-area": "Bebaute Fläche",
+  "by-data-source": "Von",
   "building-type": "Gebäudetyp",
   "select-type-of-building": "Wählen Sie den Gebäudetyp aus",
   "direct-measure-desc": "Direkte Emissionsmessungen von Verbrennungsquellen in gewerblichen Gebäuden.",

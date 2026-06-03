@@ -1015,21 +1015,33 @@ export default function AddDataSteps() {
                         shadow="none"
                         _hover={{ shadow: "xl" }}
                         transition="all 300ms"
-                        height="420px"
+                        height="488px"
                         w="337px"
                         p="24px"
+                        spaceY="16px"
                       >
-                        <Card.Header p="0">
+                        <Card.Header p="0" spaceY="8px">
                           {/* TODO add icon to DataSource */}
                           <Icon
                             as={MdOutlineHomeWork}
                             boxSize={9}
-                            mb={6}
                             color="content.tertiary-light"
                           />
                           <Heading size="sm" lineClamp={2} minHeight={10}>
                             {getTranslationFromDict(source.datasetName)}
                           </Heading>
+                          <Text fontSize="label.md" fontWeight="semibold">
+                            {t("by-data-source")}:{" "}
+                            <Link
+                              href={source.publisher?.url}
+                              target="_blank"
+                              textDecoration="underline"
+                              color="content.link"
+                              rel="noreferrer noopener"
+                            >
+                              {source.publisher?.name}
+                            </Link>
+                          </Text>
                         </Card.Header>
                         <Card.Body justifyContent="space-between" p="0">
                           <Flex direction="row" mb={4} wrap="wrap" gap={2}>

@@ -61,6 +61,7 @@ import {
   MdHomeWork,
   MdOutlineCheckCircle,
   MdOutlineEdit,
+  MdOutlineHomeWork,
   MdRefresh,
   MdSearch,
   MdWarning,
@@ -1016,7 +1017,12 @@ export default function AddDataSteps() {
                       >
                         <Card.Header>
                           {/* TODO add icon to DataSource */}
-                          <Icon as={MdHomeWork} boxSize={9} mb={6} />
+                          <Icon
+                            as={MdOutlineHomeWork}
+                            boxSize={9}
+                            mb={6}
+                            color="content.tertiary-light"
+                          />
                           <Heading size="sm" lineClamp={2} minHeight={10}>
                             {getTranslationFromDict(source.datasetName)}
                           </Heading>

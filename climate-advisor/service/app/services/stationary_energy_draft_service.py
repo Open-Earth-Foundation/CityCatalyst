@@ -16,7 +16,9 @@ from ..models.db.stationary_energy_draft import (
     StationaryEnergyReviewDecision,
 )
 from ..models.stationary_energy_drafts import (
+    DraftStalenessResponse,
     DraftProposal,
+    ListStationaryEnergyDraftsResponse,
     LoadStationaryEnergyContextRequest,
     LoadStationaryEnergyContextResponse,
     RetryStationaryEnergyDraftRequest,
@@ -28,6 +30,7 @@ from ..models.stationary_energy_drafts import (
     SaveStationaryEnergyDraftResponse,
     StartStationaryEnergyDraftRequest,
     StartStationaryEnergyDraftResponse,
+    StationaryEnergyDraftListItemResponse,
     StationaryEnergyDraftStatusResponse,
     StationaryEnergySourceCandidate,
     StoredSourceCandidate,
@@ -56,6 +59,7 @@ logger = logging.getLogger(__name__)
 
 LOAD_CONTEXT_CAPABILITY = "ghgi.stationary_energy.load_context"
 COMMIT_ACCEPTED_CAPABILITY = "ghgi.stationary_energy.commit_accepted"
+RESUME_EXCLUDED_STATUSES = {"saved", "partially_saved", "no_changes", "failed"}
 
 
 class StationaryEnergyDraftService:
@@ -318,12 +322,74 @@ class StationaryEnergyDraftService:
         requested_user_id: str,
         authorization: str | None = None,
     ) -> StationaryEnergyDraftStatusResponse:
+        """Return the persisted draft snapshot plus connected-source staleness metadata."""
         user_id = self._resolve_authenticated_user_id(
             token=self._extract_bearer_token(authorization),
             requested_user_id=requested_user_id,
         )
         draft_run = await self._get_owned_draft_run(draft_run_id, user_id)
-        return self._to_status_response(draft_run)
+        staleness = await self._build_draft_staleness(
+            draft_run,
+            authorization=authorization,
+        )
+        return self._to_status_response(draft_run, staleness=staleness)
+
+    async def resume_latest_draft(
+        self,
+        *,
+        requested_user_id: str,
+        city_id: str,
+        inventory_id: str,
+        sector_code: str = "stationary_energy",
+        authorization: str | None = None,
+    ) -> StationaryEnergyDraftStatusResponse:
+        """Return the latest active draft for a user and Stationary Energy scope."""
+        user_id = self._resolve_authenticated_user_id(
+            token=self._extract_bearer_token(authorization),
+            requested_user_id=requested_user_id,
+        )
+        draft_run = await self.repository.get_latest_draft_run_for_scope(
+            user_id=user_id,
+            city_id=city_id,
+            inventory_id=inventory_id,
+            sector_code=sector_code,
+            excluded_statuses=RESUME_EXCLUDED_STATUSES,
+        )
+        if draft_run is None:
+            raise HTTPException(
+                status_code=404,
+                detail="No active Stationary Energy draft run found",
+            )
+        staleness = await self._build_draft_staleness(
+            draft_run,
+            authorization=authorization,
+        )
+        return self._to_status_response(draft_run, staleness=staleness)
+
+    async def list_drafts_for_scope(
+        self,
+        *,
+        requested_user_id: str,
+        city_id: str,
+        inventory_id: str,
+        sector_code: str = "stationary_energy",
+        authorization: str | None = None,
+    ) -> ListStationaryEnergyDraftsResponse:
+        """Return every active draft for a user and Stationary Energy scope."""
+        user_id = self._resolve_authenticated_user_id(
+            token=self._extract_bearer_token(authorization),
+            requested_user_id=requested_user_id,
+        )
+        draft_runs = await self.repository.list_draft_runs_for_scope(
+            user_id=user_id,
+            city_id=city_id,
+            inventory_id=inventory_id,
+            sector_code=sector_code,
+            excluded_statuses=RESUME_EXCLUDED_STATUSES,
+        )
+        return ListStationaryEnergyDraftsResponse(
+            drafts=[self._to_list_item_response(draft_run) for draft_run in draft_runs]
+        )
 
     async def review_draft(
         self,
@@ -1069,7 +1135,10 @@ class StationaryEnergyDraftService:
     def _to_status_response(
         self,
         draft_run: StationaryEnergyDraftRun,
+        *,
+        staleness: DraftStalenessResponse | None = None,
     ) -> StationaryEnergyDraftStatusResponse:
+        """Serialize a draft run into the API status contract."""
         return StationaryEnergyDraftStatusResponse(
             draft_run_id=draft_run.draft_run_id,
             thread_id=draft_run.thread_id,
@@ -1097,8 +1166,118 @@ class StationaryEnergyDraftService:
             trace_id=draft_run.trace_id,
             llm_trace=self._llm_trace(draft_run),
             error_summary=self._error_summary(draft_run),
+            staleness=staleness,
             created_at=draft_run.created_at,
             updated_at=draft_run.updated_at,
+        )
+
+    def _to_list_item_response(
+        self,
+        draft_run: StationaryEnergyDraftRun,
+    ) -> StationaryEnergyDraftListItemResponse:
+        """Serialize a draft run for the scoped draft picker list."""
+        reviewable_proposal_ids = {
+            proposal.proposal_id
+            for proposal in draft_run.proposals
+            if proposal.recommended_candidate_id is not None
+            or bool(proposal.alternative_candidate_ids)
+        }
+        latest_decisions = self._latest_review_decisions(draft_run.review_decisions)
+        resolved_review_count = sum(
+            1
+            for proposal_id in reviewable_proposal_ids
+            if proposal_id in latest_decisions
+        )
+        staged_commit_count = sum(
+            1
+            for proposal_id, decision in latest_decisions.items()
+            if proposal_id in reviewable_proposal_ids
+            and decision.commit_status == "pending_cc_commit"
+        )
+        return StationaryEnergyDraftListItemResponse(
+            draft_run_id=draft_run.draft_run_id,
+            thread_id=draft_run.thread_id,
+            status=draft_run.status,
+            workflow_step=draft_run.workflow_step,
+            reviewable_proposal_count=len(reviewable_proposal_ids),
+            resolved_review_count=resolved_review_count,
+            staged_commit_count=staged_commit_count,
+            created_at=draft_run.created_at,
+            updated_at=draft_run.updated_at,
+        )
+
+    async def _build_draft_staleness(
+        self,
+        draft_run: StationaryEnergyDraftRun,
+        *,
+        authorization: str | None,
+    ) -> DraftStalenessResponse:
+        """Compare the stored draft snapshot to the current connected source set."""
+
+        if draft_run.status in {"resolving_scope", "loading_context", "generating"}:
+            return DraftStalenessResponse()
+
+        stored_source_ids = sorted(
+            {
+                candidate.datasource_id
+                for candidate in draft_run.source_candidates
+                if candidate.datasource_id
+            }
+        )
+
+        try:
+            token = await self._ensure_user_token(
+                user_id=draft_run.user_id,
+                thread_id=draft_run.thread_id,
+                token=self._extract_bearer_token(authorization),
+            )
+            context_request = LoadStationaryEnergyContextRequest(
+                user_id=draft_run.user_id,
+                city_id=draft_run.city_id,
+                inventory_id=draft_run.inventory_id,
+            )
+            context_payload = await self.cc_client.load_stationary_energy_context(
+                request_payload=context_request.model_dump(
+                    mode="json",
+                    exclude_none=True,
+                ),
+                token=token,
+            )
+            if (
+                isinstance(context_payload, dict)
+                and "data" in context_payload
+                and "city" not in context_payload
+            ):
+                context_payload = context_payload["data"]
+            context = LoadStationaryEnergyContextResponse.model_validate(
+                context_payload
+            )
+            current_source_ids = sorted(
+                {
+                    candidate.datasource_id
+                    for candidate in context.source_candidates
+                    if candidate.datasource_id
+                    and candidate.applicability_status == "applicable"
+                }
+            )
+        except Exception as exc:
+            logger.warning(
+                "Failed to compute draft staleness for run=%s: %s",
+                draft_run.draft_run_id,
+                exc,
+            )
+            return DraftStalenessResponse(
+                is_stale=False,
+                stored_source_ids=stored_source_ids,
+                current_source_ids=stored_source_ids,
+            )
+
+        is_stale = set(stored_source_ids) != set(current_source_ids)
+        return DraftStalenessResponse(
+            is_stale=is_stale,
+            reason="connected_sources_changed" if is_stale else None,
+            stored_source_ids=stored_source_ids,
+            current_source_ids=current_source_ids,
         )
 
     def _to_save_response(

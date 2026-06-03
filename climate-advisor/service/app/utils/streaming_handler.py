@@ -110,9 +110,28 @@ class StreamingHandler:
             # Get model override from options
             options = payload.options or {}
             model_override = options.get("model")
-            self.agent_model = model_override or self.agent_service.default_model
+            if not self.stationary_energy_draft_run_id:
+                self.stationary_energy_draft_run_id = (
+                    extract_stationary_energy_draft_run_id(
+                        payload.context,
+                        payload.options,
+                        self.request_context,
+                        self.request_options,
+                    )
+                    or await self._load_thread_stationary_energy_draft_run_id()
+                )
 
-            agent = await self.agent_service.create_agent(model=model_override)
+            self.agent_model = model_override or self.agent_service.preferred_model_for_context(
+                stationary_energy_draft_run_id=self.stationary_energy_draft_run_id,
+            )
+            logger.info(
+                "Selected chat model=%s stationary_energy_context=%s thread_id=%s",
+                self.agent_model,
+                bool(self.stationary_energy_draft_run_id),
+                self.thread_id,
+            )
+
+            agent = await self.agent_service.create_agent(model=self.agent_model)
 
             # Load conversation history
             conversation_history = await self._load_conversation_history(settings, payload)
@@ -201,12 +220,15 @@ class StreamingHandler:
         self,
         payload: MessageCreateRequest,
     ) -> Optional[Dict[str, str]]:
+        """Load the persisted Stationary Energy draft snapshot for chat grounding."""
         draft_run_id_text = extract_stationary_energy_draft_run_id(
             payload.context,
             payload.options,
             self.request_context,
             self.request_options,
         )
+        if not draft_run_id_text:
+            draft_run_id_text = self.stationary_energy_draft_run_id
         if not draft_run_id_text:
             draft_run_id_text = await self._load_thread_stationary_energy_draft_run_id()
 
@@ -288,15 +310,22 @@ class StreamingHandler:
 
     @staticmethod
     def _stationary_energy_context_payload(draft_run) -> Dict[str, Any]:
+        """Build the persisted draft snapshot used to ground Stationary Energy chat."""
         context_summary = draft_run.context_summary or {}
         llm_trace = context_summary.get("llm_trace") if isinstance(context_summary, dict) else None
         llm_generation = None
         if isinstance(llm_trace, dict):
+            parsed_output = llm_trace.get("parsed_output")
             llm_generation = {
                 "model": llm_trace.get("model"),
                 "temperature": llm_trace.get("temperature"),
                 "usage": llm_trace.get("usage"),
-                "parsed_output": llm_trace.get("parsed_output"),
+                "proposal_count": (
+                    len(parsed_output.get("proposals"))
+                    if isinstance(parsed_output, dict)
+                    and isinstance(parsed_output.get("proposals"), list)
+                    else None
+                ),
             }
 
         return {
@@ -403,9 +432,21 @@ class StreamingHandler:
         self,
         context_payload: Dict[str, Any],
     ) -> Dict[str, str]:
+        """Format a compact Stationary Energy draft snapshot as a system message."""
         budget = get_stationary_energy_prompt_budget(get_settings(), "chat_context")
-        initial_message = self._format_stationary_energy_context_message(
+        baseline_payload = compact_stationary_energy_prompt_payload(
             context_payload,
+            budget=budget,
+            drop_source_data=True,
+        )
+        baseline_payload["prompt_budget_compaction"].update(
+            {
+                "chat_baseline": True,
+                "source_data_included": False,
+            },
+        )
+        initial_message = self._format_stationary_energy_context_message(
+            baseline_payload,
         )
         instruction_text = self._agent_instruction_text()
         initial_count = count_prompt_tokens(
@@ -419,21 +460,15 @@ class StreamingHandler:
                 initial_count.tokens,
                 budget.max_prompt_tokens,
                 initial_count.tokenizer,
-                False,
+                True,
             )
             return initial_message
 
-        compacted_payload = compact_stationary_energy_prompt_payload(
-            context_payload,
-            budget=budget,
-            drop_source_data=False,
-        )
-        compacted_payload["prompt_budget_compaction"].update(
-            {
-                "initial_tokens": initial_count.tokens,
-                "max_prompt_tokens": budget.max_prompt_tokens,
-                "compaction_stage": "normalized_rows",
-            },
+        compacted_payload = self._minimal_stationary_energy_context_payload(
+            baseline_payload,
+            initial_tokens=initial_count.tokens,
+            compacted_tokens=initial_count.tokens,
+            max_prompt_tokens=budget.max_prompt_tokens,
         )
         compacted_message = self._format_stationary_energy_context_message(
             compacted_payload,
@@ -444,32 +479,10 @@ class StreamingHandler:
             fallback_encoding=budget.tokenizer_encoding,
         )
 
-        if compacted_count.tokens > budget.max_prompt_tokens and not budget.include_source_data:
-            compacted_payload = compact_stationary_energy_prompt_payload(
-                compacted_payload,
-                budget=budget,
-                drop_source_data=True,
-            )
-            compacted_payload["prompt_budget_compaction"].update(
-                {
-                    "initial_tokens": initial_count.tokens,
-                    "max_prompt_tokens": budget.max_prompt_tokens,
-                    "compaction_stage": "source_data",
-                },
-            )
-            compacted_message = self._format_stationary_energy_context_message(
-                compacted_payload,
-            )
-            compacted_count = count_prompt_tokens(
-                [instruction_text, compacted_message],
-                model=self.agent_model,
-                fallback_encoding=budget.tokenizer_encoding,
-            )
-
         if compacted_count.tokens > budget.max_prompt_tokens:
             compacted_message = self._format_stationary_energy_context_message(
                 self._minimal_stationary_energy_context_payload(
-                    context_payload,
+                    baseline_payload,
                     initial_tokens=initial_count.tokens,
                     compacted_tokens=compacted_count.tokens,
                     max_prompt_tokens=budget.max_prompt_tokens,

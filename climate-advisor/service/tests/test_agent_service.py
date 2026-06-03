@@ -33,6 +33,8 @@ def build_mock_settings(
     base_url: str = "https://openrouter.ai/api/v1",
     prompt: str = "You are helpful",
     temperature: float = 0.1,
+    default_model: str = "openai/gpt-4o",
+    agentic_flow_model: str | None = None,
 ):
     """Create a reusable SimpleNamespace matching AgentService expectations."""
     prompts = MagicMock()
@@ -50,7 +52,14 @@ def build_mock_settings(
     )
 
     llm_settings = SimpleNamespace(
-        models={"default": "openai/gpt-4o"},
+        models={
+            "default": default_model,
+            **(
+                {"agentic_flow": agentic_flow_model}
+                if agentic_flow_model is not None
+                else {}
+            ),
+        },
         generation=SimpleNamespace(
             defaults=SimpleNamespace(temperature=temperature)
         ),
@@ -61,6 +70,7 @@ def build_mock_settings(
     return SimpleNamespace(
         openrouter_api_key=api_key,
         openrouter_base_url=base_url,
+        openrouter_model=default_model,
         llm=llm_settings,
         app_name="climate-advisor",
     )
@@ -80,6 +90,61 @@ class AgentServiceInitializationTests(unittest.TestCase):
             self.assertIsNotNone(service)
             self.assertEqual(service.default_model, "openai/gpt-4o")
             self.assertEqual(service.default_temperature, 0.1)
+
+    @patch("app.services.agent_service.get_settings")
+    def test_agent_service_normalizes_openai_model_ids_for_openai_base_url(
+        self,
+        mock_get_settings,
+    ) -> None:
+        """Test provider-prefixed model IDs are normalized for direct OpenAI calls."""
+        mock_settings = build_mock_settings(
+            base_url="https://api.openai.com/v1",
+            default_model="openai/gpt-4.1",
+            agentic_flow_model="openai/gpt-5.4",
+        )
+        mock_get_settings.return_value = mock_settings
+
+        with patch("app.services.agent_service.AsyncOpenAI"):
+            service = AgentService()
+
+        self.assertEqual(service.default_model, "gpt-4.1")
+        self.assertEqual(service.agentic_flow_model, "gpt-5.4")
+
+    @patch("app.services.agent_service.get_settings")
+    def test_agent_service_keeps_provider_prefix_for_openrouter_base_url(
+        self,
+        mock_get_settings,
+    ) -> None:
+        """Test provider-prefixed model IDs remain unchanged for OpenRouter routing."""
+        mock_settings = build_mock_settings(
+            base_url="https://openrouter.ai/api/v1",
+            default_model="openai/gpt-4.1",
+        )
+        mock_get_settings.return_value = mock_settings
+
+        with patch("app.services.agent_service.AsyncOpenAI"):
+            service = AgentService()
+
+        self.assertEqual(service.default_model, "openai/gpt-4.1")
+
+    @patch.dict("os.environ", {"OPENROUTER_AGENTIC_FLOW_MODEL": "openai/gpt-4.1-mini"})
+    @patch("app.services.agent_service.get_settings")
+    def test_agent_service_uses_agentic_flow_env_override(
+        self,
+        mock_get_settings,
+    ) -> None:
+        """Test the agentic-flow model can be overridden independently by env."""
+        mock_settings = build_mock_settings(
+            base_url="https://api.openai.com/v1",
+            default_model="openai/gpt-4.1",
+            agentic_flow_model="openai/gpt-5.4",
+        )
+        mock_get_settings.return_value = mock_settings
+
+        with patch("app.services.agent_service.AsyncOpenAI"):
+            service = AgentService()
+
+        self.assertEqual(service.agentic_flow_model, "gpt-4.1-mini")
 
     @patch("app.services.agent_service.get_settings")
     def test_agent_service_raises_without_api_key(self, mock_get_settings) -> None:
@@ -204,6 +269,19 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
                     
                     call_kwargs = mock_agent_class.call_args[1]
                     self.assertEqual(call_kwargs["model"].model, "openai/gpt-4-turbo")
+
+    async def test_create_agent_strips_provider_prefix_for_openai_base_url(self) -> None:
+        """Test agent creation strips provider prefixes for direct OpenAI calls."""
+        mock_settings = build_mock_settings(base_url="https://api.openai.com/v1")
+
+        with patch("app.services.agent_service.get_settings", return_value=mock_settings):
+            with patch("app.services.agent_service.AsyncOpenAI"):
+                with patch("app.services.agent_service.Agent") as mock_agent_class:
+                    service = AgentService()
+                    await service.create_agent(model="openai/gpt-4.1")
+
+                    call_kwargs = mock_agent_class.call_args[1]
+                    self.assertEqual(call_kwargs["model"].model, "gpt-4.1")
 
     async def test_create_agent_includes_system_prompt(self) -> None:
         """Test agent creation includes system prompt."""

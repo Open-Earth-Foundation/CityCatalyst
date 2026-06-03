@@ -11,6 +11,7 @@ from __future__ import annotations
 import logging
 import os
 from typing import Any, Dict, Optional, Union
+from urllib.parse import urlparse
 from uuid import UUID
 
 import openai
@@ -74,15 +75,57 @@ class AgentService:
         self.system_prompt = self.settings.llm.prompts.get_prompt("default")
 
         # Get default model and temperature from settings
-        self.default_model = self.settings.llm.models.get("default", "openai/gpt-4o")
+        self.raw_default_model = (
+            self.settings.openrouter_model
+            or self.settings.llm.models.get("default", "openai/gpt-4o")
+        )
+        self.raw_agentic_flow_model = (
+            os.getenv("OPENROUTER_AGENTIC_FLOW_MODEL")
+            or self.settings.llm.models.get("agentic_flow")
+            or self.raw_default_model
+        )
+        self.default_model = self._resolve_chat_model_name(self.raw_default_model)
+        self.agentic_flow_model = self._resolve_chat_model_name(
+            self.raw_agentic_flow_model
+        )
         self.default_temperature = self.settings.llm.generation.defaults.temperature
 
         logger.info(
-            "AgentService initialized with model=%s, temperature=%s, cc_token=%s",
+            "AgentService initialized with raw_default_model=%s, default_model=%s, raw_agentic_flow_model=%s, agentic_flow_model=%s, base_url=%s, temperature=%s, cc_token=%s",
+            self.raw_default_model,
             self.default_model,
+            self.raw_agentic_flow_model,
+            self.agentic_flow_model,
+            self._chat_base_url,
             self.default_temperature,
             "present" if cc_access_token else "absent",
         )
+
+    def preferred_model_for_context(
+        self,
+        *,
+        stationary_energy_draft_run_id: Optional[str] = None,
+    ) -> str:
+        """Choose the default chat model for the current workflow context."""
+        if stationary_energy_draft_run_id:
+            return self.agentic_flow_model
+        return self.default_model
+
+    def _chat_base_hostname(self) -> str:
+        """Return the hostname for the active chat-completions base URL."""
+        if not self._chat_base_url:
+            return ""
+        return (urlparse(self._chat_base_url).hostname or "").lower()
+
+    def _uses_openai_model_names(self) -> bool:
+        """Return whether the active chat provider expects raw OpenAI model IDs."""
+        return self._chat_base_hostname() == "api.openai.com"
+
+    def _resolve_chat_model_name(self, model: str) -> str:
+        """Normalize provider-prefixed model IDs for the active chat provider."""
+        if self._uses_openai_model_names() and model.startswith("openai/"):
+            return model.split("/", 1)[1]
+        return model
     
     def _create_openrouter_client(self) -> AsyncOpenAI:
         """Create an AsyncOpenAI client configured for OpenRouter.
@@ -95,6 +138,7 @@ class AgentService:
             raise ValueError("OpenRouter API key (OPENROUTER_API_KEY) must be set")
         
         base_url = self.settings.openrouter_base_url or "https://openrouter.ai/api/v1"
+        self._chat_base_url = base_url.rstrip("/")
         
         # Get OpenRouter metadata from environment or settings
         referer = os.getenv("OPENROUTER_REFERER") or "https://citycatalyst.ai"
@@ -113,13 +157,13 @@ class AgentService:
         
         client = AsyncOpenAI(
             api_key=api_key,
-            base_url=base_url.rstrip("/"),
+            base_url=self._chat_base_url,
             timeout=timeout_seconds,
             default_headers=default_headers,
             max_retries=2,
         )
         
-        logger.info("OpenRouter client created with base_url=%s", base_url)
+        logger.info("OpenRouter client created with base_url=%s", self._chat_base_url)
         return client
 
     async def _build_inventory_prompt(self, *, thread_identifier: str) -> Optional[str]:
@@ -292,7 +336,8 @@ class AgentService:
         Returns:
             Configured Agent instance
         """
-        agent_model = model or self.default_model
+        raw_agent_model = model or self.raw_default_model
+        agent_model = self._resolve_chat_model_name(raw_agent_model)
         agent_instructions = instructions or self.system_prompt
         inventory_prompt: Optional[str] = None
         tools = []
@@ -344,7 +389,8 @@ class AgentService:
         )
         
         logger.info(
-            "Created agent with model=%s, temperature=%s (from config), tools=%s",
+            "Created agent with raw_model=%s, resolved_model=%s, temperature=%s (from config), tools=%s",
+            raw_agent_model,
             agent_model,
             self.default_temperature,
             [tool.name for tool in agent.tools] if hasattr(agent, 'tools') else []

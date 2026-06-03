@@ -55,11 +55,12 @@ const createThreadRequest = z.object({
 });
 
 async function issueCaUserToken(params: {
+  origin: string;
   user_id: string;
   inventory_id?: string;
 }): Promise<TokenResponse> {
   const response = await fetch(
-    `${process.env.HOST}/api/v1/internal/ca/user-token`,
+    `${params.origin}/api/v1/internal/ca/user-token`,
     {
       method: "POST",
       headers: {
@@ -99,6 +100,7 @@ export const POST = apiHandler(async (req, { session }) => {
 
     // Auto-issue token for CA (seamless)
     const tokenData = await issueCaUserToken({
+      origin: req.nextUrl.origin,
       user_id: session.user.id,
       inventory_id,
     });

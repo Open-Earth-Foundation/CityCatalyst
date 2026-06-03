@@ -68,6 +68,78 @@ class StationaryEnergyDraftRepository:
             return None
         return draft_run
 
+    async def get_latest_draft_run_for_scope(
+        self,
+        *,
+        user_id: str,
+        city_id: str,
+        inventory_id: str,
+        sector_code: str,
+        excluded_statuses: set[str] | None = None,
+    ) -> StationaryEnergyDraftRun | None:
+        """Load the newest draft matching the durable user/city/inventory scope."""
+        query = (
+            select(StationaryEnergyDraftRun)
+            .options(
+                selectinload(StationaryEnergyDraftRun.source_candidates),
+                selectinload(StationaryEnergyDraftRun.proposals),
+                selectinload(StationaryEnergyDraftRun.review_decisions),
+            )
+            .where(
+                StationaryEnergyDraftRun.user_id == user_id,
+                StationaryEnergyDraftRun.city_id == city_id,
+                StationaryEnergyDraftRun.inventory_id == inventory_id,
+                StationaryEnergyDraftRun.sector_code == sector_code,
+            )
+            .order_by(
+                StationaryEnergyDraftRun.updated_at.desc(),
+                StationaryEnergyDraftRun.created_at.desc(),
+            )
+        )
+        if excluded_statuses:
+            query = query.where(
+                StationaryEnergyDraftRun.status.notin_(excluded_statuses)
+            )
+
+        result = await self.session.execute(query)
+        return result.scalars().first()
+
+    async def list_draft_runs_for_scope(
+        self,
+        *,
+        user_id: str,
+        city_id: str,
+        inventory_id: str,
+        sector_code: str,
+        excluded_statuses: set[str] | None = None,
+    ) -> list[StationaryEnergyDraftRun]:
+        """Load every draft matching the durable user/city/inventory scope."""
+        query = (
+            select(StationaryEnergyDraftRun)
+            .options(
+                selectinload(StationaryEnergyDraftRun.source_candidates),
+                selectinload(StationaryEnergyDraftRun.proposals),
+                selectinload(StationaryEnergyDraftRun.review_decisions),
+            )
+            .where(
+                StationaryEnergyDraftRun.user_id == user_id,
+                StationaryEnergyDraftRun.city_id == city_id,
+                StationaryEnergyDraftRun.inventory_id == inventory_id,
+                StationaryEnergyDraftRun.sector_code == sector_code,
+            )
+            .order_by(
+                StationaryEnergyDraftRun.updated_at.desc(),
+                StationaryEnergyDraftRun.created_at.desc(),
+            )
+        )
+        if excluded_statuses:
+            query = query.where(
+                StationaryEnergyDraftRun.status.notin_(excluded_statuses)
+            )
+
+        result = await self.session.execute(query)
+        return list(result.scalars().all())
+
     async def update_draft_run(
         self,
         draft_run: StationaryEnergyDraftRun,

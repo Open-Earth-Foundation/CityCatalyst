@@ -2,7 +2,7 @@
 
 Climate Advisor (CA) is a standalone FastAPI microservice that powers the conversational experience for CityCatalyst (CC). The service lives under `climate-advisor/service` and exposes versioned APIs under `/v1/*`.
 
-- **Agentic AI**: Uses OpenAI's Agents SDK with OpenRouter for flexible LLM routing
+- **Agentic AI**: Uses OpenAI's Agents SDK with an OpenAI-compatible chat client; OpenRouter is the default router and direct OpenAI chat endpoints are also supported
 - **Persistent Threads & Messages**: PostgreSQL-backed conversation history
 - **Vector Search**: Semantic search over climate knowledge base using pgvector
 - **Tool Integration**:
@@ -54,7 +54,7 @@ Climate Advisor (CA) is a standalone FastAPI microservice that powers the conver
                     ┌─────────────┼──────────────┐
                     │             │              │
                     ▼             ▼              ▼
-              PostgreSQL    OpenRouter API  CityCatalyst
+              PostgreSQL    Chat Provider   CityCatalyst
               (History)     (LLM Routing)   (Inventory)
 ```
 
@@ -112,7 +112,7 @@ Content-Type: application/json
     "cc_access_token": "jwt_token_from_citycatalyst"
   },
   "options": {
-    "model": "openai/gpt-4o"  # Optional model override
+    "model": "openai/gpt-4o"  # Optional model override; normalized automatically for direct OpenAI routing
   }
 }
 ```
@@ -220,6 +220,8 @@ CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5433/climat
 CA_PORT=8080
 CA_LOG_LEVEL=info
 CA_CORS_ORIGINS=*
+OPENROUTER_TIMEOUT_MS=30000  # LLM request timeout override
+OPENROUTER_MAX_RETRIES=3  # LLM provider retry override
 OPENAI_API_KEY=your-openai-api-key  # For embeddings
 LANGSMITH_API_KEY=your-langsmith-key  # If tracing enabled
 
@@ -297,6 +299,8 @@ All LLM-related settings are centralized in (`llm_config.yaml`)
 - `CA_PORT` - Server port (default: 8080) - note - there is issue when running any app inside of the docker container the localhost is within the container network be aware of that and adjust this same as CA_DATBASE_URL
 - `CA_LOG_LEVEL` - Logging level: info|debug (default: info)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: \*)
+- `OPENROUTER_TIMEOUT_MS` - Optional LLM request timeout override in milliseconds
+- `OPENROUTER_MAX_RETRIES` - Optional LLM provider retry override
 - `OPENAI_API_KEY` - OpenAI API key (for embeddings & traces)
 - `LANGSMITH_API_KEY` - LangSmith API key (if tracing enabled)
 - `CC_BASE_URL` - CityCatalyst base URL (for inventory API & token refresh)

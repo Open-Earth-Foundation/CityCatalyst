@@ -1,10 +1,13 @@
 "use client";
 
+import { convertKgToTonnes } from "@/util/helpers";
 import type {
   DraftDecisionState,
   DraftProposal,
   SourceCandidate,
 } from "./types";
+
+const RAW_KG_EMISSIONS_UNITS = new Set(["", "kgco2e", "tco2e"]);
 
 export function extractErrorMessage(
   payload: unknown,
@@ -145,6 +148,94 @@ export function proposalLabel(proposal: DraftProposal): string {
   return [subsector, subcategory, scope].filter(Boolean).join(" / ");
 }
 
+function parseEmissionsKgValue(value: unknown): bigint | number | null {
+  if (typeof value === "bigint") {
+    return value;
+  }
+
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : null;
+  }
+
+  const text = String(value ?? "").trim();
+  if (!text) {
+    return null;
+  }
+
+  if (/^-?\d+$/.test(text)) {
+    try {
+      return BigInt(text);
+    } catch {
+      return null;
+    }
+  }
+
+  const numeric = Number(text);
+  return Number.isFinite(numeric) ? numeric : null;
+}
+
+function normalizeEmissionsUnitLabel(unit: unknown): string | null {
+  const text = String(unit ?? "").trim();
+  if (!text) {
+    return null;
+  }
+
+  const normalized = text.replace(/\s+/g, "").toLowerCase();
+  if (normalized === "kgco2e") {
+    return "kg CO2e";
+  }
+  if (normalized === "tco2e") {
+    return "t CO2e";
+  }
+  if (normalized === "ktco2e") {
+    return "kt CO2e";
+  }
+  if (normalized === "mtco2e") {
+    return "Mt CO2e";
+  }
+  if (normalized === "gtco2e") {
+    return "Gt CO2e";
+  }
+
+  return text;
+}
+
+export function formatDraftEmissionsLabel(
+  value: unknown,
+  unit: unknown,
+): string | null {
+  const text = String(value ?? "").trim();
+  if (!text) {
+    return null;
+  }
+
+  const normalizedUnit = String(unit ?? "")
+    .replace(/\s+/g, "")
+    .toLowerCase();
+  if (RAW_KG_EMISSIONS_UNITS.has(normalizedUnit)) {
+    const kgValue = parseEmissionsKgValue(value);
+    return kgValue == null ? text : convertKgToTonnes(kgValue, null);
+  }
+
+  const displayUnit = normalizeEmissionsUnitLabel(unit);
+  return [text, displayUnit].filter(Boolean).join(" ");
+}
+
+export function sourceGeographyLabel(
+  geographyMatch: string | null | undefined,
+): string | null {
+  const text = String(geographyMatch ?? "")
+    .trim()
+    .toLowerCase();
+  if (!text || text === "unknown" || text === "global") {
+    return null;
+  }
+  if (text === "locode") {
+    return "city";
+  }
+  return text;
+}
+
 export function currentValueLabel(proposal: DraftProposal): string {
   if (!proposal.current_value) {
     return "No current inventory value";
@@ -154,12 +245,12 @@ export function currentValueLabel(proposal: DraftProposal): string {
   const unit = proposal.current_value["unit"];
   const emissionsValue = proposal.current_value["emissions_value"];
   const emissionsUnit = proposal.current_value["emissions_unit"];
+  const emissionsLabel = formatDraftEmissionsLabel(
+    emissionsValue,
+    emissionsUnit,
+  );
 
-  return [
-    value,
-    unit,
-    emissionsValue ? `(${emissionsValue} ${emissionsUnit ?? ""})` : null,
-  ]
+  return [value, unit, emissionsLabel ? `(${emissionsLabel})` : null]
     .filter(Boolean)
     .join(" ");
 }
@@ -173,12 +264,12 @@ export function proposedValueLabel(proposal: DraftProposal): string {
   const unit = proposal.proposed_value["unit"];
   const emissionsValue = proposal.proposed_value["emissions_value"];
   const emissionsUnit = proposal.proposed_value["emissions_unit"];
+  const emissionsLabel = formatDraftEmissionsLabel(
+    emissionsValue,
+    emissionsUnit,
+  );
 
-  return [
-    value,
-    unit,
-    emissionsValue ? `(${emissionsValue} ${emissionsUnit ?? ""})` : null,
-  ]
+  return [value, unit, emissionsLabel ? `(${emissionsLabel})` : null]
     .filter(Boolean)
     .join(" ");
 }
@@ -191,7 +282,7 @@ export function sourceLabel(candidate: SourceCandidate | undefined): string {
   return [
     candidate.name ?? candidate.datasource_id,
     candidate.dataset_year ? String(candidate.dataset_year) : null,
-    candidate.geography_match ? candidate.geography_match : null,
+    sourceGeographyLabel(candidate.geography_match),
   ]
     .filter(Boolean)
     .join(" / ");

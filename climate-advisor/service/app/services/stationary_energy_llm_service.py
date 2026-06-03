@@ -90,7 +90,14 @@ class StationaryEnergyProposalLLMService:
             )
 
         base_url = self.settings.openrouter_base_url or "https://openrouter.ai/api/v1"
-        timeout_ms = self.settings.llm.api.openrouter.timeout_ms or 30000
+        timeout_ms = self._env_int(
+            "OPENROUTER_TIMEOUT_MS",
+            self.settings.llm.api.openrouter.timeout_ms or 30000,
+        )
+        max_retries = self._env_int(
+            "OPENROUTER_MAX_RETRIES",
+            self.settings.llm.api.openrouter.retry_attempts or 2,
+        )
         referer = os.getenv("OPENROUTER_REFERER") or "https://citycatalyst.ai"
         title = os.getenv("OPENROUTER_TITLE") or "CityCatalyst Climate Advisor"
 
@@ -98,7 +105,7 @@ class StationaryEnergyProposalLLMService:
             api_key=api_key,
             base_url=base_url.rstrip("/"),
             timeout=timeout_ms / 1000,
-            max_retries=self.settings.llm.api.openrouter.retry_attempts or 2,
+            max_retries=max_retries,
             default_headers={
                 "HTTP-Referer": referer,
                 "X-Title": title,
@@ -174,6 +181,7 @@ class StationaryEnergyProposalLLMService:
                 ),
             )
         except Exception as exc:
+            failure_message = self._generation_failure_message(exc)
             logger.warning(
                 "Stationary Energy agent run failed trace_id=%s agents_trace_id=%s model=%s error_type=%s error=%s",
                 trace_id,
@@ -183,7 +191,7 @@ class StationaryEnergyProposalLLMService:
                 exc,
             )
             raise StationaryEnergyLLMServiceError(
-                "Stationary Energy agent run failed"
+                failure_message
             ) from exc
 
         raw_output = self._raw_output_from_result(result)
@@ -452,6 +460,36 @@ class StationaryEnergyProposalLLMService:
                 elif key not in usage:
                     usage[key] = value
         return usage or None
+
+    @staticmethod
+    def _generation_failure_message(exc: Exception) -> str:
+        status_code = getattr(exc, "status_code", None) or getattr(exc, "status", None)
+        error_type = type(exc).__name__
+        if status_code in {401, 403} or error_type in {
+            "AuthenticationError",
+            "PermissionDeniedError",
+        }:
+            return (
+                "Stationary Energy agent run failed: LLM provider authentication "
+                "failed. Check OPENROUTER_API_KEY or the configured LLM base URL."
+            )
+        if error_type == "APITimeoutError":
+            return (
+                "Stationary Energy agent run failed: LLM provider request timed "
+                "out. Increase OPENROUTER_TIMEOUT_MS or use a faster model."
+            )
+
+        return "Stationary Energy agent run failed"
+
+    @staticmethod
+    def _env_int(name: str, default: int) -> int:
+        value = os.getenv(name)
+        if value is None:
+            return default
+        try:
+            return int(value)
+        except ValueError:
+            return default
 
     @staticmethod
     def _validate_and_normalize_proposals(

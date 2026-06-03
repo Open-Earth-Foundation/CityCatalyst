@@ -1,7 +1,7 @@
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { callClimateAdvisorJson } from "@/backend/agentic/ghgi/stationary-energy/ca";
+import { callClimateAdvisor } from "@/backend/agentic/ghgi/stationary-energy/ca";
 import { requireStationaryEnergyAgenticEnabled } from "@/backend/agentic/ghgi/stationary-energy/auth";
 
 const requestSchema = z.object({
@@ -22,7 +22,7 @@ export const POST = apiHandler(async (req, { session }) => {
   }
 
   const body = requestSchema.parse(await req.json());
-  const data = await callClimateAdvisorJson({
+  const response = await callClimateAdvisor({
     origin: req.nextUrl.origin,
     path: "/v1/stationary-energy-drafts/start",
     method: "POST",
@@ -36,6 +36,20 @@ export const POST = apiHandler(async (req, { session }) => {
       locale: body.locale,
     },
   });
+
+  const responseText = await response.text();
+  let data: unknown = {};
+  if (responseText) {
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      data = { error: { message: responseText } };
+    }
+  }
+
+  if (!response.ok) {
+    return NextResponse.json(data, { status: response.status });
+  }
 
   return NextResponse.json(data, { status: 201 });
 });

@@ -52,6 +52,7 @@
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import { logger } from "@/services/logger";
+import { buildClimateAdvisorMessagePayload } from "@/backend/chat/message-payload";
 
 export const POST = apiHandler(async (req, { session }) => {
   try {
@@ -60,7 +61,9 @@ export const POST = apiHandler(async (req, { session }) => {
       throw new Error("User authentication required");
     }
 
-    const { threadId, content, options } = await req.json();
+    const body = await req.json();
+    const { threadId, content, options, context, inventory_id, inventoryId } =
+      body;
 
     if (!threadId || !content) {
       return NextResponse.json(
@@ -74,6 +77,8 @@ export const POST = apiHandler(async (req, { session }) => {
         user_id: session.user.id,
         thread_id: threadId,
         content_length: content.length,
+        inventory_id: inventory_id ?? inventoryId,
+        has_context: !!context,
         has_options: !!options,
       },
       "Sending message to CA thread",
@@ -86,12 +91,12 @@ export const POST = apiHandler(async (req, { session }) => {
         "Content-Type": "application/json",
         "X-Request-ID": `cc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       },
-      body: JSON.stringify({
-        thread_id: threadId,
-        user_id: session.user.id,
-        content,
-        options: options || {},
-      }),
+      body: JSON.stringify(
+        buildClimateAdvisorMessagePayload({
+          userId: session.user.id,
+          body,
+        }),
+      ),
     });
 
     if (!caResponse.ok) {

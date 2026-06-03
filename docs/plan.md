@@ -42,8 +42,11 @@ of introducing a broad new service boundary.
   user decisions before final save.
 - Add a city and inventory selection page so the user can choose the target
   workflow scope.
-- Add an agentic decisions page aligned with the CityCatalyst visual style.
-- Add a draft review page where the user reviews decisions before saving.
+- Add one staged Stationary Energy chat/artifact page aligned with the HTML
+  reference: Clima chat/action panel on the left, inventory draft artifact on
+  the right.
+- Keep the draft review route as a deep link into the final review stage of the
+  same interaction model.
 - Add feature flags in both CityCatalyst and Climate Advisor. The workflow
   should stay hidden and disabled by default so it does not interfere with the
   current product state while the pilot is being built.
@@ -67,10 +70,13 @@ The repository is currently CA-heavy.
   CA database models and migration, the Stationary Energy LLM proposal service,
   thread-context integration, and the CityCatalyst client methods for token
   refresh, allowed-capabilities lookup, and bounded context loading.
-- Not yet implemented in CityCatalyst: the Stationary Energy UI pages, the CC
-  capability registry/context-loader files, the CC capability routes under
-  `/api/v1/internal/ca/capabilities/*`, and the final CC-side commit path for
-  accepted rows.
+- Implemented now in CityCatalyst: the scoped Stationary Energy draft/review UI
+  routes render the same staged chat/artifact surface, the CC draft bridge has
+  start/status/review/save/resume coverage, and the chat message bridge forwards
+  inventory scope, context, and options to CA.
+- Not yet implemented in CityCatalyst: the CC capability registry/context-loader
+  files, the CC capability routes under `/api/v1/internal/ca/capabilities/*`,
+  and the final CC-side commit path for accepted rows.
 - Because of that split, the current code can persist and review Stationary
   Energy drafts in CA, but the full CC-side commit flow is still the next
   addition.
@@ -102,36 +108,49 @@ inventory:
 - City and inventory selection page:
   `/{lng}/GHGI/draft/stationary-energy`
 
-- Agentic decisions page:
+- Agentic Stationary Energy page:
   `/{lng}/cities/{cityId}/GHGI/{inventoryId}/draft/stationary-energy`
-- Draft review page:
+- Draft review deep link:
   `/{lng}/cities/{cityId}/GHGI/{inventoryId}/draft/stationary-energy/review`
 
 The selection page is where the user picks the target city and inventory. The
-decisions page is where the user sees source coverage, recommendations,
-conflicts, and gaps. The review page is where the user accepts, overrides, or
-leaves draft proposals before anything is written to the inventory.
+scoped Stationary Energy page is where the user moves through source coverage,
+drafting, conflict decisions, and final review. The review URL renders the same
+chat/artifact component with the final review stage selected.
 
-### Decisions Page
+### Staged Chat/Artifact Page
 
 The page should show:
 
-- The current Stationary Energy subsectors.
-- Existing committed values, if any.
-- Draftable rows.
-- Source candidates and provenance.
-- Recommendation rationale.
-- Conflicts where sources disagree.
-- Gaps where no approved source clears the minimum bar.
-- A clear transition into review.
+- On the left: the Clima chat/action panel with stage-specific messages, quick
+  replies, free-text input, and in-chat decision cards.
+- On the right: the Stationary Energy working draft artifact with current rows,
+  draftable rows, source-backed values, provenance labels, conflicts, and
+  gaps.
+- Stage sequence: `start`, `drafting`, `decision`, and `review`.
+- Every source-backed proposal as a typed in-chat decision-review card. Rows
+  with one real source use a single-source card, rows with multiple real
+  sources use a multi-source card, and gap rows stay summary-only. Multiple
+  unresolved cards can stack in chat history, and users can interrupt the
+  review with a free-text question, then scroll back to the earlier cards
+  without losing the staged choices.
+- Free-text LLM responses remain normal chat bubbles. The UI only renders a
+  decision-review card from structured draft proposal state, while the chat
+  request context forwards pending decision-review metadata so CA can explain
+  those cards distinctly to the user.
+- Ready proposals defaulted to accept and gap proposals defaulted to leave
+  draft.
+- A final save bar and matching chat action in the review stage.
 
-The page should feel like a CityCatalyst workflow page, not like a generic chat
-panel. The agentic layer is a task-specific decision rail beside the inventory
-canvas.
+The page should feel like a CityCatalyst workflow page, not a generic assistant
+workspace. The chat guides and explains, but committed inventory changes remain
+behind explicit user decisions and final save.
 
 ### Review Page
 
-The review page should show a durable summary of the staged draft:
+The review URL should show the final stage of the same staged chat/artifact
+surface. It should keep the left-side Clima panel and right-side working draft,
+then expose a durable summary of the staged draft:
 
 - recommended value
 - unit
@@ -146,12 +165,12 @@ The review page should show a durable summary of the staged draft:
 
 Supported user decisions:
 
-| Decision | Meaning | Commit behavior |
-| --- | --- | --- |
-| `accept` | Use the recommended draft. | Mark `pending_cc_commit`; the future CC commit step writes through existing CityCatalyst paths. |
+| Decision          | Meaning                                            | Commit behavior                                                                                 |
+| ----------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `accept`          | Use the recommended draft.                         | Mark `pending_cc_commit`; the future CC commit step writes through existing CityCatalyst paths. |
 | `override_source` | Use another approved source from the alternatives. | Mark `pending_cc_commit`; the future CC commit step writes through existing CityCatalyst paths. |
-| `override_manual` | User enters a manual value and unit. | Stage for explicit save; do not let CA write directly. |
-| `leave_draft` | Keep the proposal for later. | No inventory write. |
+| `override_manual` | User enters a manual value and unit.               | Stage for explicit save; do not let CA write directly.                                          |
+| `leave_draft`     | Keep the proposal for later.                       | No inventory write.                                                                             |
 
 ## System Ownership
 
@@ -209,25 +228,25 @@ workflow.
 Each component has one narrow job. The goal is to make the workflow feel like
 one CityCatalyst feature while keeping ownership clear between CC and CA.
 
-| Component | What it is | Why it exists |
-| --- | --- | --- |
-| Stationary Energy selection, decisions, and review pages | CityCatalyst pages inside the GHGI inventory flow. | Let the user choose the target city/inventory, then move through draft decisions, provenance, conflicts, gaps, and final review. |
-| Stationary Energy CA bridge routes | Planned CityCatalyst server routes or server actions, following the current `app/src/app/api/v1/chat/*` proxy pattern. | Keep browser auth and session handling on the CC side, then forward server-side requests into CA without making the browser call CA directly. |
-| Stationary Energy draft routes | Climate Advisor HTTP routes for start/resume/review. | Keep draft workflow state in CA and give the CC bridge a narrow server-to-server API. |
-| Draft workflow service | CA service that coordinates context loading, proposal generation, staging, and review. | Keeps the CA route thin and makes the workflow testable without UI code. |
-| CA draft DB | CA persistence for draft runs, source-candidate snapshots, proposals, review decisions, and commit statuses. | Allows drafts to survive refresh, support review before commit, and keep an audit trail of what CA proposed and what still needs a CC commit. |
-| CityCatalyst capability client | CA client for executing CC capabilities through the existing CC-CA token pattern. | Stops CA from calling arbitrary CC routes directly and keeps all product access behind typed capabilities. |
-| CA-facing capability endpoint | Internal CityCatalyst endpoint used only by CA. | Authenticates CA, validates user scope, resolves the requested capability, and returns a structured result. |
-| Stationary Energy capability registry | CC registry of which Stationary Energy capabilities exist and which workflow step can use them. | Prevents a flat tool bag; the draft step can inspect CC state while CA stages draft data internally, and the review step can later expose only the final commit capability. |
-| Stationary Energy context loader | CC loader that builds the bounded context for one selected city, one selected inventory, and sector `I`. | Ensures CA sees only the current workflow state for the chosen draft run, not unrelated product data or routes. |
-| Product-owned capability wrappers | CC functions around existing services such as inventory reads, source lookup, and committed writes. | Reuses existing domain logic while giving CA small, stable, model-safe operations. |
-| OpenAI Agents SDK orchestrator | CA orchestration layer for agent execution, tool use, structured outputs, and model calls. | Keeps agent behavior inside the existing CA runtime instead of inventing a new orchestration service. |
-| Candidate ranking or LLM decision | Agent step that evaluates supplied source candidates. | Chooses among approved candidates, explains conflicts and gaps, and returns structured proposals. |
-| LangSmith tracing | Trace layer around draft runs, tool calls, model decisions, and proposal outputs. | Makes each recommendation reviewable during pilot debugging and later trust/audit work. |
-| MCP documentation surface | Existing MCP docs/discovery context only, not part of this implementation. | Avoids adding protocol overhead and another tool surface to an already complex Stationary Energy slice. |
-| DataSourceService and Global API | Existing CC source discovery, filtering, retrieval, and source-apply machinery. | Supplies approved source candidates and applies accepted source-backed values through existing paths. |
-| Committed inventory DB | CityCatalyst inventory tables. | Remains the source of truth for saved inventory values. CA never writes here directly. |
-| VersionHistoryService | Existing CC version history mechanism. | Records committed changes after the user approves accepted/source-overridden drafts. |
+| Component                                                 | What it is                                                                                                             | Why it exists                                                                                                                                                               |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stationary Energy selection and staged chat/artifact page | CityCatalyst pages inside the GHGI inventory flow.                                                                     | Let the user choose the target city/inventory, then move through draft start, drafting, in-chat decisions, provenance, gaps, and final review in one interaction model.     |
+| Stationary Energy CA bridge routes                        | Planned CityCatalyst server routes or server actions, following the current `app/src/app/api/v1/chat/*` proxy pattern. | Keep browser auth and session handling on the CC side, then forward server-side requests into CA without making the browser call CA directly.                               |
+| Stationary Energy draft routes                            | Climate Advisor HTTP routes for start/resume/review.                                                                   | Keep draft workflow state in CA and give the CC bridge a narrow server-to-server API.                                                                                       |
+| Draft workflow service                                    | CA service that coordinates context loading, proposal generation, staging, and review.                                 | Keeps the CA route thin and makes the workflow testable without UI code.                                                                                                    |
+| CA draft DB                                               | CA persistence for draft runs, source-candidate snapshots, proposals, review decisions, and commit statuses.           | Allows drafts to survive refresh, support review before commit, and keep an audit trail of what CA proposed and what still needs a CC commit.                               |
+| CityCatalyst capability client                            | CA client for executing CC capabilities through the existing CC-CA token pattern.                                      | Stops CA from calling arbitrary CC routes directly and keeps all product access behind typed capabilities.                                                                  |
+| CA-facing capability endpoint                             | Internal CityCatalyst endpoint used only by CA.                                                                        | Authenticates CA, validates user scope, resolves the requested capability, and returns a structured result.                                                                 |
+| Stationary Energy capability registry                     | CC registry of which Stationary Energy capabilities exist and which workflow step can use them.                        | Prevents a flat tool bag; the draft step can inspect CC state while CA stages draft data internally, and the review step can later expose only the final commit capability. |
+| Stationary Energy context loader                          | CC loader that builds the bounded context for one selected city, one selected inventory, and sector `I`.               | Ensures CA sees only the current workflow state for the chosen draft run, not unrelated product data or routes.                                                             |
+| Product-owned capability wrappers                         | CC functions around existing services such as inventory reads, source lookup, and committed writes.                    | Reuses existing domain logic while giving CA small, stable, model-safe operations.                                                                                          |
+| OpenAI Agents SDK orchestrator                            | CA orchestration layer for agent execution, tool use, structured outputs, and model calls.                             | Keeps agent behavior inside the existing CA runtime instead of inventing a new orchestration service.                                                                       |
+| Candidate ranking or LLM decision                         | Agent step that evaluates supplied source candidates.                                                                  | Chooses among approved candidates, explains conflicts and gaps, and returns structured proposals.                                                                           |
+| LangSmith tracing                                         | Trace layer around draft runs, tool calls, model decisions, and proposal outputs.                                      | Makes each recommendation reviewable during pilot debugging and later trust/audit work.                                                                                     |
+| MCP documentation surface                                 | Existing MCP docs/discovery context only, not part of this implementation.                                             | Avoids adding protocol overhead and another tool surface to an already complex Stationary Energy slice.                                                                     |
+| DataSourceService and Global API                          | Existing CC source discovery, filtering, retrieval, and source-apply machinery.                                        | Supplies approved source candidates and applies accepted source-backed values through existing paths.                                                                       |
+| Committed inventory DB                                    | CityCatalyst inventory tables.                                                                                         | Remains the source of truth for saved inventory values. CA never writes here directly.                                                                                      |
+| VersionHistoryService                                     | Existing CC version history mechanism.                                                                                 | Records committed changes after the user approves accepted/source-overridden drafts.                                                                                        |
 
 The core boundary is this: CA owns draft orchestration and all pre-commit draft
 persistence; CC owns product capabilities, permissions, committed writes, and
@@ -250,7 +269,7 @@ the core workflow complexity.
 ```mermaid
 flowchart LR
   subgraph CC["CityCatalyst"]
-    UI["Stationary Energy decisions and review pages"]
+    UI["Stationary Energy staged chat/artifact page"]
     CCBRIDGE["CC server bridge routes/actions"]
     CCAPI["CA-facing capability endpoint"]
     Registry["Stationary Energy capability registry"]
@@ -298,7 +317,7 @@ flowchart LR
 ```mermaid
 sequenceDiagram
   participant User
-  participant CCUI as CC decisions page
+  participant CCUI as CC chat/artifact page
   participant CCRoute as CC server bridge route
   participant CA as CA draft route
   participant CADB as CA draft DB
@@ -399,19 +418,19 @@ payload dumps in traces or audit artifacts.
 ```mermaid
 sequenceDiagram
   participant User
-  participant CCReview as CC review page
+  participant CCReview as CC review stage
   participant CCRoute as CC server bridge route
   participant CA as CA review route
   participant CADB as CA draft DB
 
-  User->>CCReview: Accept, override, or leave draft
+  User->>CCReview: Resolve in-chat decisions and save
   CCReview->>CCRoute: Submit review request on CC origin
   CCRoute->>CA: POST /v1/stationary-energy-drafts/{run_id}/review
   CA->>CADB: Store review decisions
   CA->>CADB: Mark accept/source-override rows pending_cc_commit
   CA->>CADB: Mark manual overrides staged_manual
   CA-->>CCRoute: Updated review state
-  CCRoute-->>CCReview: Updated review state
+  CCRoute-->>CCReview: Updated review-stage state
 ```
 
 This is the current implemented behavior in CA. The next CC-side addition is a
@@ -502,10 +521,10 @@ connection.
 
 Current and next CC-facing wrappers:
 
-| Capability | Type | Purpose |
-| --- | --- | --- |
-| `ghgi.stationary_energy.load_context` | query | Load the bounded city, inventory, permissions, taxonomy, current values, and source-candidate context in one CC payload. |
-| `ghgi.stationary_energy.commit_accepted` | command | Planned next CC addition to commit accepted or source-overridden rows through existing inventory write paths. |
+| Capability                               | Type    | Purpose                                                                                                                  |
+| ---------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `ghgi.stationary_energy.load_context`    | query   | Load the bounded city, inventory, permissions, taxonomy, current values, and source-candidate context in one CC payload. |
+| `ghgi.stationary_energy.commit_accepted` | command | Planned next CC addition to commit accepted or source-overridden rows through existing inventory write paths.            |
 
 These wrappers should return small, structured payloads. They should not expose
 raw product internals or unrelated APIs to the model.
@@ -661,7 +680,7 @@ Suggested fields:
 flowchart TD
   User["User opens Stationary Energy launcher or sector CTA"] --> Selector["City and inventory selection"]
   Selector --> ChosenScope["Selected city, inventory, and sector"]
-  ChosenScope --> CCPage["Agentic decisions page"]
+  ChosenScope --> CCPage["Agentic chat/artifact page"]
   CCPage --> CAStart["Start or resume CA draft run"]
   CAStart --> CAResolve["CA resolves workflow step and selected scope"]
   CAResolve --> Registry["Stationary Energy capability registry"]
@@ -671,9 +690,9 @@ flowchart TD
   Wrappers --> CCState
   CCState --> CADecide["CA ranks approved candidates"]
   CADecide --> CADrafts["CA stores draft proposals"]
-  CADrafts --> DecisionsPage["Decision page shows recommendations, conflicts, gaps"]
-  DecisionsPage --> ReviewPage["Review page"]
-  ReviewPage --> UserDecision{"User decision"}
+  CADrafts --> FlowPage["Chat/artifact page shows recommendations, conflicts, gaps"]
+  FlowPage --> ReviewStage["Review stage"]
+  ReviewStage --> UserDecision{"User decision"}
   UserDecision -->|accept or source override| CCCommit["CityCatalyst commits through existing write path"]
   UserDecision -->|manual override| ManualStage["Stage manual value for explicit save"]
   UserDecision -->|leave draft| KeepDraft["Keep CA draft pending"]
@@ -700,11 +719,11 @@ For each Stationary Energy subsector, CA should:
 
 CA should return structured proposal states:
 
-| State | Meaning | UI behavior |
-| --- | --- | --- |
-| `ready` | One candidate is clearly best. | Show inline draft and provenance. |
+| State      | Meaning                                      | UI behavior                            |
+| ---------- | -------------------------------------------- | -------------------------------------- |
+| `ready`    | One candidate is clearly best.               | Show inline draft and provenance.      |
 | `conflict` | Multiple usable candidates need user choice. | Show recommendation plus alternatives. |
-| `gap` | No usable candidate exists. | Show gap reason and manual next steps. |
+| `gap`      | No usable candidate exists.                  | Show gap reason and manual next steps. |
 
 ## Guardrails
 
@@ -761,11 +780,11 @@ unavailable or return a feature-disabled response.
 
 - Add a CC feature flag for the Stationary Energy agentic workflow and keep it
   disabled by default.
-- Hide the launcher page, sector CTA, draft pages, and review pages unless the
+- Hide the launcher page, sector CTA, and staged draft/review routes unless the
   CC flag is enabled.
 - Add the city and inventory selection page.
-- Add the scoped decisions page.
-- Add the review page.
+- Add the scoped staged chat/artifact page.
+- Keep the review route as a deep link into the final review stage.
 - Render current Stationary Energy rows, draft states, provenance, conflicts,
   and gaps in a CC-native layout.
 - Support the user decision controls: accept, source override, manual override,
@@ -808,8 +827,8 @@ blocked and does not interfere with the current app behavior.
 
 ## Open Decisions
 
-- Whether the decisions and review pages should be separate routes or two steps
-  in one route.
+- Resolved: the decisions and review URLs render one staged chat/artifact
+  component. The review route is a deep link into the final review stage.
 - Whether manual override commits in the first release or stays staged for a
   later explicit save path.
 - Whether a later pilot needs a narrower source allow-list on top of the
@@ -826,13 +845,13 @@ agentic workflow.
 
 ### User-Facing Pages
 
-| Page | Route | Owner | Purpose |
-| --- | --- | --- | --- |
-| City and inventory selection page | `/{lng}/GHGI/draft/stationary-energy` | CityCatalyst | Lets the user choose among accessible cities and eligible inventories before starting a draft run. |
-| Existing Stationary Energy sector page | `/{lng}/cities/{cityId}/GHGI/{inventoryId}` or the current inventory sector route | CityCatalyst | Entry point. Shows the normal Stationary Energy inventory UI and a CTA to start agentic drafting. |
-| Agentic decisions page | `/{lng}/cities/{cityId}/GHGI/{inventoryId}/draft/stationary-energy` | CityCatalyst UI + Climate Advisor draft state | Shows current rows, source coverage, recommended drafts, conflicts, gaps, provenance, and progress. |
-| Draft review page | `/{lng}/cities/{cityId}/GHGI/{inventoryId}/draft/stationary-energy/review` | CityCatalyst UI + Climate Advisor review state | Lets the user accept, override, manually stage, or leave each draft before save. |
-| Saved inventory page | Existing inventory route after review | CityCatalyst | Shows committed values after accepted drafts are saved through the normal inventory write path. |
+| Page                                   | Route                                                                             | Owner                                          | Purpose                                                                                                                                                       |
+| -------------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| City and inventory selection page      | `/{lng}/GHGI/draft/stationary-energy`                                             | CityCatalyst                                   | Lets the user choose among accessible cities and eligible inventories before starting a draft run.                                                            |
+| Existing Stationary Energy sector page | `/{lng}/cities/{cityId}/GHGI/{inventoryId}` or the current inventory sector route | CityCatalyst                                   | Entry point. Shows the normal Stationary Energy inventory UI and a CTA to start agentic drafting.                                                             |
+| Agentic Stationary Energy page         | `/{lng}/cities/{cityId}/GHGI/{inventoryId}/draft/stationary-energy`               | CityCatalyst UI + Climate Advisor draft state  | Shows the staged chat/artifact flow with working draft rows, source coverage, recommended drafts, in-chat conflict decisions, gaps, provenance, and progress. |
+| Draft review deep link                 | `/{lng}/cities/{cityId}/GHGI/{inventoryId}/draft/stationary-energy/review`        | CityCatalyst UI + Climate Advisor review state | Opens the same staged chat/artifact surface in the final review state before save.                                                                            |
+| Saved inventory page                   | Existing inventory route after review                                             | CityCatalyst                                   | Shows committed values after accepted drafts are saved through the normal inventory write path.                                                               |
 
 ### Page 1: City And Inventory Selection Page
 
@@ -859,7 +878,8 @@ What it calls:
 - Existing CityCatalyst city and inventory listing APIs.
 - No CA draft run is created from this page until the user confirms the target
   scope.
-- On continue, navigate to the decisions page with `cityId` and `inventoryId`.
+- On continue, navigate to the staged chat/artifact page with `cityId` and
+  `inventoryId`.
 
 Frontend implementation location:
 
@@ -889,9 +909,10 @@ What appears:
 What it calls:
 
 - No new draft call until the user clicks the CTA.
-- On click, navigate to the decisions page with `cityId` and `inventoryId`.
+- On click, navigate to the staged chat/artifact page with `cityId` and
+  `inventoryId`.
 
-### Page 3: Agentic Decisions Page
+### Page 3: Agentic Stationary Energy Chat/Artifact Page
 
 Route:
 
@@ -899,60 +920,80 @@ Route:
 
 Primary layout:
 
-- Left: Stationary Energy inventory canvas.
-- Right: agentic decision rail.
+- Left: Stationary Energy working draft artifact.
+- Right: Clima chat/action panel.
+- On mobile: stack the artifact first and the chat second, with the chat input
+  sticky inside the chat panel.
 
-Canvas areas:
+Artifact areas:
 
-- Existing committed rows.
+- Existing committed rows where available.
 - Draftable subsector rows.
-- Draft value cells with clear draft styling.
-- Source tags attached to each draft value.
-- Inline provenance drawer or expandable provenance row.
+- Draft progress by row.
+- Source-backed draft values with source labels.
+- Conflict and gap row states.
 
-Agent rail areas:
+Chat/action areas:
 
-- Draft run status.
-- Source coverage summary.
-- Recommendation rationale.
-- Conflict cards.
-- Gap cards.
-- Link or button to continue to review.
+- `start`: Clima offers to draft and shows source coverage.
+- `drafting`: Clima accepts steering text and quick replies while the artifact
+  shows draft progress.
+- `decision`: every source-backed row renders an in-chat decision card; the UI
+  uses a single-source card or a multi-source card depending on the available
+  real datasets.
+- `review`: final working draft summary and a save action only when at least
+  one source-backed row remains staged for commit.
+- Free-text input for explanation and steering, backed by the existing CA
+  messages stream.
 
 Main behavior:
 
 1. Page loads with the selected city, inventory, and sector scope.
-2. CityCatalyst UI calls a CC server route or server action that starts or
-   resumes the CA draft run.
+2. CityCatalyst first tries the query `draftRunId`, then local storage as a
+   cache, then the CA-backed resume bridge for the selected city and inventory.
 3. CA uses the Stationary Energy context loader and capability registry.
 4. CA stores draft proposals in the CA database.
-5. The page renders proposals as ready, conflict, or gap states.
-6. Nothing is committed to CityCatalyst inventory tables from this page.
+5. The page derives artifact rows from `proposals`, `source_candidates`, and
+   `review_decisions`.
+6. Every source-backed proposal gets an explicit review widget. Single-source
+   rows offer accept or leave-empty; multi-source rows offer the recommended
+   source, alternative sources, or leave-empty.
+7. Gap proposals do not create widgets and do not enable save.
+8. `Save draft` appears after every source-backed proposal has an explicit user
+   choice and persists that reviewed run in the CA database without committing
+   inventory values.
+9. `Save to inventory` appears only when at least one source-backed row remains
+   staged for commit.
+10. Nothing is committed to CityCatalyst inventory tables until final save.
 
 Frontend implementation location:
 
 - `app/src/app/[lng]/cities/[cityId]/GHGI/[inventory]/draft/stationary-energy/page.tsx`
 - Supporting components under the same route folder or a nearby feature folder,
   for example:
-  - `StationaryEnergyDraftCanvas`
-  - `DraftValueCell`
-  - `SourceProvenanceTag`
-  - `ProvenanceDrawer`
-  - `AgentDecisionRail`
-  - `ConflictCard`
-  - `GapCard`
+  - `StationaryEnergyChatArtifactPage`
+  - `ArtifactPanel`
+  - `ClimaChatPanel`
+  - `SingleSourceProposalCard`
+  - `MultiSourceProposalCard`
+  - `RunSummary`
 
 Backend calls:
 
 - Planned CC browser-facing bridge route or server action, following the
   existing `app/src/app/api/v1/chat/*` pattern.
 - Underlying CA routes:
+  - `GET /v1/stationary-energy-drafts`
   - `POST /v1/stationary-energy-drafts/start`
+  - `GET /v1/stationary-energy-drafts/resume`
   - `GET /v1/stationary-energy-drafts/{run_id}`
+  - `POST /v1/stationary-energy-drafts/{run_id}/review`
+- Existing CA chat route:
+  - `POST /v1/messages`
 - CC internal capability used by CA:
   `ghgi.stationary_energy.load_context`
 
-### Page 4: Draft Review Page
+### Page 4: Draft Review Deep Link
 
 Route:
 
@@ -960,12 +1001,11 @@ Route:
 
 Primary layout:
 
-- Review summary header.
-- Table or grouped list of draft proposals.
-- Per-row decision controls.
-- Final save action.
+- Same staged chat/artifact layout as the Agentic Stationary Energy page.
+- Left: final working draft artifact and save bar.
+- Right: Clima review messages, run summary, save action, and free-text input.
 
-Each row shows:
+The review stage shows:
 
 - subsector code and name
 - current committed value, if any
@@ -986,33 +1026,37 @@ Allowed actions:
 
 Main behavior:
 
-1. Page loads the CA draft run and proposal state.
-2. User chooses decisions for proposals.
-3. User submits those decisions through a CC server route or server action.
-4. CA records decisions in the CA database.
-5. Accepted and source-overridden proposals are marked `pending_cc_commit`.
-6. Manual overrides are staged and left-draft rows remain uncommitted.
-7. The future CC `commit_accepted` step can later consume the
+1. Page loads the same CA draft run and proposal state as the main route.
+2. In-chat decision cards remain available for unresolved conflict and
+   needs-review proposals.
+3. Save is disabled until blocking proposals are resolved.
+4. User submits the complete review decision set through the CC bridge.
+5. CA records decisions in the CA database.
+6. Accepted and source-overridden proposals are marked `pending_cc_commit`.
+7. Manual overrides are staged and left-draft rows remain uncommitted.
+8. The future CC `commit_accepted` step can later consume the
    `pending_cc_commit` rows and perform the actual CityCatalyst write.
 
 Frontend implementation location:
 
 - `app/src/app/[lng]/cities/[cityId]/GHGI/[inventory]/draft/stationary-energy/review/page.tsx`
 - Supporting components:
-  - `DraftReviewSummary`
-  - `DraftReviewTable`
-  - `ReviewDecisionControl`
-  - `ConflictSourcePicker`
-  - `ManualOverrideFields`
-  - `FinalSaveBar`
+  - `StationaryEnergyChatArtifactPage`
+  - `RunSummary`
+  - `SingleSourceProposalCard`
+  - `MultiSourceProposalCard`
+  - `FinalSaveBar` or equivalent save section
 
 Backend calls:
 
-- Planned CC browser-facing bridge route or server action, following the
-  existing `app/src/app/api/v1/chat/*` pattern.
+- CC browser-facing bridge routes following the existing
+  `app/src/app/api/v1/chat/*` pattern.
 - Underlying CA routes:
+  - `GET /v1/stationary-energy-drafts`
   - `GET /v1/stationary-energy-drafts/{run_id}`
+  - `GET /v1/stationary-energy-drafts/resume`
   - `POST /v1/stationary-energy-drafts/{run_id}/review`
+  - `POST /v1/stationary-energy-drafts/{run_id}/save`
 - Planned next CC internal capability for final save:
   `ghgi.stationary_energy.commit_accepted`
 
@@ -1037,37 +1081,36 @@ What it calls:
 
 ### Functionality Placement By Layer
 
-| Layer | Location | Responsibility |
-| --- | --- | --- |
-| CityCatalyst UI | Planned new Stationary Energy selector, draft, and review routes | User workflow, city/inventory selection, visual style, decision controls, and navigation back to inventory. |
-| CityCatalyst CA bridge route | Planned CC server route or server action, mirroring `app/src/app/api/v1/chat/threads/route.ts` and `app/src/app/api/v1/chat/messages/route.ts` | Authenticated browser-facing entrypoint that proxies draft workflow requests to CA. |
-| CityCatalyst capability endpoint | Planned: `app/src/app/api/v1/internal/ca/capabilities/...` | Internal CA-only execution surface for scoped capabilities. |
-| CityCatalyst capability wrappers | Planned: `app/src/backend/agentic/ghgi/stationary-energy/capabilities.ts` | Stable wrappers around existing inventory/source/commit logic. |
-| CityCatalyst registry | Planned: `app/src/backend/agentic/ghgi/stationary-energy/registry.ts` | Step-scoped list of capabilities available to CA. |
-| CityCatalyst context loader | Planned: `app/src/backend/agentic/ghgi/stationary-energy/context.ts` | Loads bounded city, inventory, sector, current value, and source context. |
-| CityCatalyst existing services | `DataSourceService`, `PermissionService`, `VersionHistoryService`, inventory models | Domain logic, permissions, source retrieval, committed writes, and version history. |
-| Climate Advisor routes | `climate-advisor/service/app/routes/stationary_energy_drafts.py` | Start/resume draft runs, return review state, and record review decisions. |
-| Climate Advisor workflow service | `climate-advisor/service/app/services/stationary_energy_draft_service.py` | Orchestrates context loading, proposal generation, staging, and review. |
-| Climate Advisor draft repository | `climate-advisor/service/app/services/stationary_energy_draft_repository.py` | Persists draft runs, source-candidate snapshots, proposals, and review decisions in the CA database. |
-| Climate Advisor CC client | `climate-advisor/service/app/services/citycatalyst_client.py` | Calls CC token and capability endpoints using the existing token/client pattern. |
-| Climate Advisor LLM runner | `climate-advisor/service/app/services/stationary_energy_llm_service.py` | Runs structured Stationary Energy proposal generation. |
-| LangSmith tracing | CA tracing configuration and draft-run trace references | Captures context, tool calls, model output, and proposal ids for debugging and audit review. |
-| Climate Advisor database models | `climate-advisor/service/app/models/db/stationary_energy_draft.py` | Defines CA-owned tables for draft runs, source candidates, proposals, and review decisions. |
-| MCP | Documentation/discovery context only | Not used for runtime calls in this Stationary Energy workflow. |
+| Layer                            | Location                                                                                                                                       | Responsibility                                                                                              |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| CityCatalyst UI                  | Planned new Stationary Energy selector, draft, and review routes                                                                               | User workflow, city/inventory selection, visual style, decision controls, and navigation back to inventory. |
+| CityCatalyst CA bridge route     | Planned CC server route or server action, mirroring `app/src/app/api/v1/chat/threads/route.ts` and `app/src/app/api/v1/chat/messages/route.ts` | Authenticated browser-facing entrypoint that proxies draft workflow requests to CA.                         |
+| CityCatalyst capability endpoint | Planned: `app/src/app/api/v1/internal/ca/capabilities/...`                                                                                     | Internal CA-only execution surface for scoped capabilities.                                                 |
+| CityCatalyst capability wrappers | Planned: `app/src/backend/agentic/ghgi/stationary-energy/capabilities.ts`                                                                      | Stable wrappers around existing inventory/source/commit logic.                                              |
+| CityCatalyst registry            | Planned: `app/src/backend/agentic/ghgi/stationary-energy/registry.ts`                                                                          | Step-scoped list of capabilities available to CA.                                                           |
+| CityCatalyst context loader      | Planned: `app/src/backend/agentic/ghgi/stationary-energy/context.ts`                                                                           | Loads bounded city, inventory, sector, current value, and source context.                                   |
+| CityCatalyst existing services   | `DataSourceService`, `PermissionService`, `VersionHistoryService`, inventory models                                                            | Domain logic, permissions, source retrieval, committed writes, and version history.                         |
+| Climate Advisor routes           | `climate-advisor/service/app/routes/stationary_energy_drafts.py`                                                                               | Start/resume draft runs, return review state, and record review decisions.                                  |
+| Climate Advisor workflow service | `climate-advisor/service/app/services/stationary_energy_draft_service.py`                                                                      | Orchestrates context loading, proposal generation, staging, and review.                                     |
+| Climate Advisor draft repository | `climate-advisor/service/app/services/stationary_energy_draft_repository.py`                                                                   | Persists draft runs, source-candidate snapshots, proposals, and review decisions in the CA database.        |
+| Climate Advisor CC client        | `climate-advisor/service/app/services/citycatalyst_client.py`                                                                                  | Calls CC token and capability endpoints using the existing token/client pattern.                            |
+| Climate Advisor LLM runner       | `climate-advisor/service/app/services/stationary_energy_llm_service.py`                                                                        | Runs structured Stationary Energy proposal generation.                                                      |
+| LangSmith tracing                | CA tracing configuration and draft-run trace references                                                                                        | Captures context, tool calls, model output, and proposal ids for debugging and audit review.                |
+| Climate Advisor database models  | `climate-advisor/service/app/models/db/stationary_energy_draft.py`                                                                             | Defines CA-owned tables for draft runs, source candidates, proposals, and review decisions.                 |
+| MCP                              | Documentation/discovery context only                                                                                                           | Not used for runtime calls in this Stationary Energy workflow.                                              |
 
 ### End-State User Journey
 
 ```mermaid
 flowchart TD
-  Launcher["City/inventory selection page"] --> Decisions["Agentic decisions page"]
+  Launcher["City/inventory selection page"] --> Flow["Agentic chat/artifact page"]
   Inventory["Existing Stationary Energy page"] --> CTA["Let the agent draft this section"]
-  CTA --> Decisions
-  Decisions --> Ready["Ready draft values"]
-  Decisions --> Conflict["Conflict decisions"]
-  Decisions --> Gap["Gap explanations"]
-  Ready --> Review["Draft review page"]
-  Conflict --> Review
-  Gap --> Review
+  CTA --> Flow
+  Flow --> Start["Start and source coverage"]
+  Flow --> Drafting["Drafting with chat steering"]
+  Flow --> Decision["In-chat decision cards"]
+  Flow --> Review["Review stage and save bar"]
+  Decision --> Review
   Review --> Accept["Accept or source override"]
   Review --> Manual["Manual override staged"]
   Review --> Leave["Leave as draft"]
@@ -1084,105 +1127,34 @@ permissions, committed writes, and version history.
 
 ## Issues
 
-### CA-persisted draft runs are not discoverable by the frontend
+### Resolved: CA-persisted draft runs are discoverable by the frontend
 
-The Stationary Energy draft state is correctly persisted in the Climate Advisor
-database, but the CityCatalyst frontend can currently resume a draft only when
-the browser still has the exact `draft_run_id` cached in local storage. If that
-local pointer is missing, stale, cleared, or from a different browser, the
-decisions page has no CA-backed way to discover the latest draft run for the
-selected user, city, inventory, and sector. The UI can therefore appear as if no
-draft exists even though CA still owns a durable run and all associated source
-candidates, proposals, review decisions, and thread context.
+The Stationary Energy frontend now treats browser local storage as a cache, not
+as the durable source of truth.
 
-Current behavior:
+Implemented behavior:
 
-1. The decisions page checks local storage for
-   `stationary-energy-draft:{inventory_id}`.
-2. If a cached `draftRunId` exists, the page calls
-   `GET /v1/stationary-energy-drafts/{draft_run_id}` through the CC bridge.
-3. If no cached id exists, the page does not ask CA to find an existing run for
-   the selected inventory.
-4. Starting a draft calls `POST /v1/stationary-energy-drafts/start`, which
-   creates a new CA run instead of resuming the latest persisted run.
+1. The page first loads a query `draftRunId` when present.
+2. If absent, it tries `stationary-energy-draft:{inventory_id}` from local
+   storage.
+3. If that cache is missing, points to a terminal draft, or fails to refresh,
+   it calls the CC resume bridge:
+   `GET /api/v1/stationary-energy-drafts/resume`.
+4. The bridge calls CA:
+   `GET /v1/stationary-energy-drafts/resume`.
+5. CA queries by authenticated user, `city_id`, `inventory_id`, and
+   `sector_code="stationary_energy"`, then returns the latest active unsaved
+   draft run with source candidates, proposals, review decisions, thread
+   context, and connected-source staleness metadata.
+6. In parallel, the CC draft list bridge calls
+   `GET /api/v1/stationary-energy-drafts`, which forwards to
+   `GET /v1/stationary-energy-drafts` so the user can reopen a different
+   active CA draft from the scoped picker.
+7. Saved, partially saved, and no-change runs are excluded from automatic
+   resume and from the active picker list.
+8. If the resumed draft is stale because connected sources changed, the UI
+   warns first and offers `Continue existing draft` or `Start over`.
 
-Why this is a problem:
-
-- CA is intended to be the durable owner of pre-commit draft state, but the
-  frontend currently treats browser local storage as the only way to discover
-  that state.
-- Refresh in the same browser can work, but cross-browser, cleared-storage, or
-  stale-storage cases can lose the resume path.
-- Re-running a demo or user flow can create another draft run for the same
-  inventory, which makes the UI harder to reason about and can mix a new draft
-  with already committed inventory values.
-- The existing CA database index on `user_id`, `city_id`, `inventory_id`, and
-  `sector_code` suggests this lookup was anticipated, but no resume/list route
-  currently exposes it to the CC bridge.
-
-Implementation deep dive:
-
-- CA stores `stationary_energy_draft_runs` with `user_id`, `city_id`,
-  `inventory_id`, `sector_code`, `status`, `workflow_step`, `thread_id`, and
-  timestamps.
-- CA also stores child records for source-candidate snapshots, proposals, and
-  review decisions.
-- The current CA route contract supports:
-  - `POST /v1/stationary-energy-drafts/start`
-  - `GET /v1/stationary-energy-drafts/{draft_run_id}`
-  - `POST /v1/stationary-energy-drafts/{draft_run_id}/retry`
-  - `POST /v1/stationary-energy-drafts/{draft_run_id}/review`
-  - `POST /v1/stationary-energy-drafts/{draft_run_id}/save`
-- There is no route that answers: "for this authenticated user, city, inventory,
-  and Stationary Energy sector, what is the latest draft run I should resume?"
-- The CC frontend therefore cannot reconstruct the durable CA run id from the
-  selected city and inventory alone.
-
-Possible solutions:
-
-1. Add a CA-backed resume endpoint.
-   - Add `GET /v1/stationary-energy-drafts/resume`.
-   - Query by authenticated `user_id`, `city_id`, `inventory_id`, and
-     `sector_code="stationary_energy"`.
-   - Return the latest owned draft run with source candidates, proposals, and
-     review decisions.
-   - Return `404` when no run exists.
-
-2. Add a CC bridge route for that resume endpoint.
-   - Add `GET /api/v1/stationary-energy-drafts/resume`.
-   - Pass the current CC session user id and token to CA.
-   - Accept `city_id` and `inventory_id` as query params.
-   - Keep the browser talking only to CC-origin routes, matching the existing
-     bridge pattern.
-
-3. Change frontend resume order.
-   - Treat local storage as a cache, not the source of truth.
-   - First try the cached `draftRunId` if present.
-   - If it is missing or fails, call the CA-backed resume bridge endpoint.
-   - If CA returns a draft, write the returned `draft_run_id` back into local
-     storage and render it.
-   - Only show "No draft" when CA returns `404`.
-
-4. Define resume status semantics.
-   - Decide whether resume should return only active pre-commit states, such as
-     `ready`, `reviewed`, or `pending_cc_commit`, or also return `saved` runs.
-   - A practical UX is to resume active unsaved runs automatically and expose
-     saved runs through history or a "view previous draft" affordance.
-   - If saved runs are returned, the primary action should read `Start new
-     draft` rather than `Start draft`, because the existing run is no longer an
-     editable in-progress draft.
-
-5. Add tests around the missing-storage case.
-   - CA service test: create multiple runs for the same user/city/inventory and
-     verify resume returns the latest allowed run.
-   - CC bridge test: verify the route forwards the authenticated user and
-     inventory scope correctly.
-   - Frontend test: clear local storage, open the decisions page, and verify the
-     persisted CA draft is loaded instead of starting a fresh run.
-
-Preferred patch:
-
-Implement solutions 1, 2, and 3 first, with explicit status semantics from
-solution 4. This keeps CA as the durable source of truth while preserving local
-storage as a fast client-side hint. It also prevents accidental duplicate draft
-runs when the browser cache is missing.
+This preserves CA as the durable owner of pre-commit draft state and prevents a
+missing browser cache from creating duplicate draft runs for the same scoped
+inventory.

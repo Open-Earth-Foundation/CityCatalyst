@@ -27,7 +27,7 @@ flowchart TB
     end
 
     DB[("PostgreSQL<br/>Threads | Messages<br/>Embeddings")]
-    LLM["OpenRouter<br/>(LLM Provider)"]
+    LLM["Chat Provider<br/>(OpenRouter / OpenAI)"]
     CC["CityCatalyst API<br/>Token & Inventory"]
 
     UI -->|"HTTP/REST<br/>(JWT Token)"| API
@@ -266,7 +266,7 @@ WITH (lists = 100);
 **AgentService** (`services/agent_service.py`)
 
 - `create_agent()` - Initialize Agents SDK with tools
-- `_create_openrouter_client()` - Configure OpenRouter endpoint
+- `_create_openrouter_client()` - Configure the default OpenRouter endpoint or another OpenAI-compatible chat base URL
 - `_setup_tools()` - Build tool definitions for agent
 
 **EmbeddingService** (`services/embedding_service.py`)

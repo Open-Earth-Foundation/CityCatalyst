@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..config.feature_flags import FeatureFlags, has_feature_flag
 from ..db.session import get_session
 from ..models.stationary_energy_drafts import (
+    ListStationaryEnergyDraftsResponse,
     RetryStationaryEnergyDraftRequest,
     ReviewStationaryEnergyDraftRequest,
     ReviewStationaryEnergyDraftResponse,
@@ -50,6 +51,58 @@ async def start_stationary_energy_draft(
     except Exception:
         await session.rollback()
         raise
+
+
+@router.get(
+    "/stationary-energy-drafts",
+    response_model=ListStationaryEnergyDraftsResponse,
+    dependencies=[Depends(require_stationary_energy_agentic_enabled)],
+)
+async def list_stationary_energy_drafts(
+    user_id: str = Query(..., min_length=1),
+    city_id: str = Query(..., min_length=1),
+    inventory_id: str = Query(..., min_length=1),
+    sector_code: str = Query(default="stationary_energy"),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ListStationaryEnergyDraftsResponse:
+    """Return all active Stationary Energy drafts for this scoped user."""
+    service = StationaryEnergyDraftService(session)
+    if sector_code != "stationary_energy":
+        raise HTTPException(status_code=400, detail="Unsupported sector_code")
+    return await service.list_drafts_for_scope(
+        requested_user_id=user_id,
+        city_id=city_id,
+        inventory_id=inventory_id,
+        sector_code=sector_code,
+        authorization=authorization,
+    )
+
+
+@router.get(
+    "/stationary-energy-drafts/resume",
+    response_model=StationaryEnergyDraftStatusResponse,
+    dependencies=[Depends(require_stationary_energy_agentic_enabled)],
+)
+async def resume_stationary_energy_draft(
+    user_id: str = Query(..., min_length=1),
+    city_id: str = Query(..., min_length=1),
+    inventory_id: str = Query(..., min_length=1),
+    sector_code: str = Query(default="stationary_energy"),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> StationaryEnergyDraftStatusResponse:
+    """Return the latest active Stationary Energy draft for this scoped user."""
+    service = StationaryEnergyDraftService(session)
+    if sector_code != "stationary_energy":
+        raise HTTPException(status_code=400, detail="Unsupported sector_code")
+    return await service.resume_latest_draft(
+        requested_user_id=user_id,
+        city_id=city_id,
+        inventory_id=inventory_id,
+        sector_code=sector_code,
+        authorization=authorization,
+    )
 
 
 @router.get(

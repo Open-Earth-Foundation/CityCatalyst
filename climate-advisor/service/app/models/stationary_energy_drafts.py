@@ -203,6 +203,13 @@ class ReviewDecisionResponse(FlexibleContract):
     updated_at: datetime | None = None
 
 
+class DraftStalenessResponse(FlexibleContract):
+    is_stale: bool = False
+    reason: str | None = None
+    stored_source_ids: list[str] = Field(default_factory=list)
+    current_source_ids: list[str] = Field(default_factory=list)
+
+
 class StartStationaryEnergyDraftRequest(BaseModel):
     user_id: str
     city_id: str
@@ -251,8 +258,25 @@ class StationaryEnergyDraftStatusResponse(BaseModel):
     trace_id: str | None = None
     llm_trace: dict[str, Any] | None = None
     error_summary: dict[str, Any] | None = None
+    staleness: DraftStalenessResponse | None = None
     created_at: datetime
     updated_at: datetime
+
+
+class StationaryEnergyDraftListItemResponse(BaseModel):
+    draft_run_id: UUID
+    thread_id: UUID | None = None
+    status: str
+    workflow_step: str | None = None
+    reviewable_proposal_count: int = 0
+    resolved_review_count: int = 0
+    staged_commit_count: int = 0
+    created_at: datetime
+    updated_at: datetime
+
+
+class ListStationaryEnergyDraftsResponse(BaseModel):
+    drafts: list[StationaryEnergyDraftListItemResponse] = Field(default_factory=list)
 
 
 class ReviewStationaryEnergyDraftRequest(BaseModel):

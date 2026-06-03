@@ -18,11 +18,15 @@ export type SourceCandidate = {
   datasource_id: string;
   name?: string | null;
   publisher_name?: string | null;
+  dataset_name?: string | null;
   dataset_year?: string | number | null;
   geography_match?: string | null;
   applicability_status: string;
   source_scope: Record<string, string | null | undefined>;
   confidence_notes?: string | null;
+  normalized_rows?: Array<Record<string, unknown>>;
+  source_data?: Record<string, unknown> | null;
+  quality_score?: string | number | null;
 };
 
 export type ReviewDecision = {
@@ -36,6 +40,13 @@ export type ReviewDecision = {
   decision_version?: number;
 };
 
+export type DraftStaleness = {
+  is_stale: boolean;
+  reason?: string | null;
+  stored_source_ids: string[];
+  current_source_ids: string[];
+};
+
 export type DraftStatusResponse = {
   draft_run_id: string;
   thread_id?: string | null;
@@ -46,6 +57,23 @@ export type DraftStatusResponse = {
   review_decisions: ReviewDecision[];
   llm_trace?: Record<string, unknown> | null;
   error_summary?: Record<string, unknown> | null;
+  staleness?: DraftStaleness | null;
+};
+
+export type DraftListItem = {
+  draft_run_id: string;
+  thread_id?: string | null;
+  status: string;
+  workflow_step?: string | null;
+  reviewable_proposal_count: number;
+  resolved_review_count: number;
+  staged_commit_count: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type DraftListResponse = {
+  drafts: DraftListItem[];
 };
 
 export type ReviewResponse = {

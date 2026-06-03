@@ -21,6 +21,11 @@ DEFAULT_MLFLOW_EXPERIMENT_NAME = "hiap-meed"
 _INITIALIZED = False
 _INITIALIZATION_ATTEMPTED = False
 
+
+def is_async_logging_enabled() -> bool:
+    """Return whether async logging is enabled for supported MLflow fluent APIs."""
+    return os.getenv("MLFLOW_ASYNC_LOGGING_ENABLED", "true").strip().lower() == "true"
+
 def is_mlflow_enabled() -> bool:
     """Return whether MLflow logging is enabled by env var."""
     return os.getenv("MLFLOW_ENABLED", "false").strip().lower() == "true"
@@ -53,6 +58,7 @@ def initialize_mlflow() -> bool:
     try:
         mlflow.set_tracking_uri(tracking_uri)
         mlflow.set_experiment(experiment_name)
+        mlflow.config.enable_async_logging(is_async_logging_enabled())
         mlflow.openai.autolog()
     except Exception as error:
         logger.warning(
@@ -142,7 +148,8 @@ def log_tags(tags: Mapping[str, object]) -> None:
                 key: str(value)
                 for key, value in tags.items()
                 if value is not None and str(value).strip()
-            }
+            },
+            synchronous=not is_async_logging_enabled(),
         )
     except Exception as error:
         logger.warning("MLflow tag logging failed error=%s", error)
@@ -158,7 +165,8 @@ def log_params(params: Mapping[str, object]) -> None:
                 key: value
                 for key, value in params.items()
                 if value is not None and str(value).strip()
-            }
+            },
+            synchronous=not is_async_logging_enabled(),
         )
     except Exception as error:
         logger.warning("MLflow param logging failed error=%s", error)
@@ -174,7 +182,8 @@ def log_metrics(metrics: Mapping[str, float | int]) -> None:
                 key: float(value)
                 for key, value in metrics.items()
                 if isinstance(value, int | float)
-            }
+            },
+            synchronous=not is_async_logging_enabled(),
         )
     except Exception as error:
         logger.warning("MLflow metric logging failed error=%s", error)

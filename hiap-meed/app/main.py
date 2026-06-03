@@ -16,6 +16,7 @@ import os
 import uvicorn
 from fastapi import FastAPI
 
+from app.modules.mlflow_trace_test.api import router as mlflow_trace_test_router
 from app.modules.prioritizer.api import router as prioritization_router
 from app.utils.logging_config import setup_logger
 from app.utils.mlflow_logging import initialize_mlflow
@@ -49,6 +50,7 @@ async def health() -> dict[str, str]:
 
 
 app.include_router(prioritization_router)
+app.include_router(mlflow_trace_test_router)
 
 
 if __name__ == "__main__":

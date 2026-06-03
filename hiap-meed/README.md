@@ -40,6 +40,10 @@ MLFLOW_ENABLED=true
 MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev
 MLFLOW_EXPERIMENT_NAME=hiap-meed
 MLFLOW_ENVIRONMENT=dev
+GIT_PYTHON_REFRESH=quiet
+MLFLOW_ASYNC_LOGGING_ENABLED=true
+HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_ENABLED=false
+HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_MODEL=gpt-5.4-mini
 HIAP_MEED_CITY_DATA_SOURCE=api
 CCGLOBAL_API_BASE_URL=https://ccglobal.openearth.dev
 UPSTREAM_HTTP_TIMEOUT_SECONDS=30
@@ -73,6 +77,10 @@ Variables:
 - `MLFLOW_TRACKING_URI`: MLflow tracking server URL. The standard default is the hosted dev MLflow at `https://mlflow-dev.openearth.dev`. Override it to `http://mlflow:5000` only when running the fully local Docker Compose stack, or to `http://localhost:5000` when using `kubectl port-forward`.
 - `MLFLOW_EXPERIMENT_NAME`: MLflow experiment name used for all hiap-meed runs
 - `MLFLOW_ENVIRONMENT`: environment tag attached to MLflow runs (use `dev`, `test`, or `prod`)
+- `GIT_PYTHON_REFRESH`: set to `quiet` to suppress mlflow related GitPython warnings when the `hiap-meed` process or `hiap-meed` container does not have a `git` executable; this only silences the warning and does not restore Git SHA capture
+- `MLFLOW_ASYNC_LOGGING_ENABLED`: if `true`, MLflow tags, params, and metrics use async fluent logging; run open/close and artifact uploads remain synchronous
+- `HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_ENABLED`: if `true`, exposes one test-only endpoint that forces a simple OpenAI tool-calling flow for MLflow tracing checks
+- `HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_MODEL`: model used only by the removable MLflow tool-call trace endpoint
 - `HIAP_MEED_CITY_DATA_SOURCE`: city input source (`api` or `mock`)
 - `CCGLOBAL_API_BASE_URL`: shared Global API base host for upstream API-backed clients (default `https://ccglobal.openearth.dev` for local/dev)
 - `UPSTREAM_HTTP_TIMEOUT_SECONDS`: shared timeout in seconds for upstream HTTP API calls (default `30`)
@@ -95,6 +103,30 @@ Variables:
 - `OPENAI_MAX_RETRIES`: shared OpenAI client retries (default `3`)
 
 When `MLFLOW_ENABLED=true`, the service best-effort logs request runs, direct request artifacts, and OpenAI traces to the configured MLflow server. If MLflow is down or unreachable, the API still completes normally and only emits warning logs.
+
+If the `hiap-meed` process or `hiap-meed` container that writes to MLflow does not have `git` installed, MLflow's GitPython integration may warn that Git SHA metadata is unavailable. This warning is about the MLflow client side in `hiap-meed`, not the MLflow server container. Setting `GIT_PYTHON_REFRESH=quiet` suppresses that warning. It does not install `git` or restore Git SHA capture; it only keeps logs quieter.
+
+Current MLflow sync vs async behavior:
+
+- request run lifecycle stays synchronous so runs still open and close deterministically
+- tags, params, and metrics use MLflow async fluent logging when `MLFLOW_ASYNC_LOGGING_ENABLED=true`
+- JSON and text artifact uploads stay synchronous because this helper path does not yet use a separate background queue
+
+Test-only MLflow tool trace endpoint:
+
+- `POST /v1/mlflow/trace-test/tool-calls` is intentionally isolated from the prioritization flow and exists only to inspect MLflow traces for OpenAI tool use
+- it is disabled by default and returns `404` unless `HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_ENABLED=true`
+- the endpoint exposes exactly two local tools to the LLM: `add_numbers` and `reverse_text`
+- the endpoint logs one dedicated MLflow run named `mlflow_tool_trace_test_request` plus one MLflow JSON artifact containing the response payload
+- the endpoint is designed to be easy to remove later because all code lives under `app/modules/mlflow_trace_test/`
+
+Example test request:
+
+```bash
+curl -X POST http://localhost:8000/v1/mlflow/trace-test/tool-calls \
+  -H "Content-Type: application/json" \
+  -d "{\"left_number\": 2, \"right_number\": 3, \"text_to_reverse\": \"climate\"}"
+```
 
 MLflow tagging notes:
 
@@ -140,18 +172,24 @@ This local-only mode requires overriding `MLFLOW_TRACKING_URI=http://mlflow:5000
 Plain Docker:
 
 ```text
-docker build -t hiap-meed-app .
-docker run -it --rm -p 8000:8000 --env-file .env hiap-meed-app
+docker build -t hiap-meed .
+docker run -it --rm -p 8000:8000 --env-file .env hiap-meed
 ```
 
 To persist file logs and per-request artifacts on your machine under `logs/`
 including `logs/requests/`, bind-mount the host logs directory to
 `/app/logs` in the container. This matches the default `LOG_DIR=logs`.
 
+Bash / Git Bash:
+
+```text
+docker run -it --rm -p 8000:8000 --env-file .env -v "$(pwd)/logs:/app/logs" hiap-meed
+```
+
 `cmd.exe`:
 
 ```text
-docker run -it --rm -p 8000:8000 --env-file .env -v "%cd%\logs:/app/logs" hiap-meed-app
+docker run -it --rm -p 8000:8000 --env-file .env -v "%cd%\logs:/app/logs" hiap-meed
 ```
 
 If you change `LOG_DIR` in `.env`, adjust the container target path so it
@@ -161,7 +199,7 @@ Plain Docker without a bind mount is still valid, but then logs stay only
 inside the container and disappear when the container exits.
 
 ```text
-docker run -it --rm -p 8000:8000 --env-file .env hiap-meed-app
+docker run -it --rm -p 8000:8000 --env-file .env hiap-meed
 ```
 
 For plain Docker, keep the hosted default `https://mlflow-dev.openearth.dev` unless you intentionally want one of these overrides:
@@ -673,7 +711,7 @@ Plain Docker:
 
 ```text
 docker build -t hiap-meed .
-docker run --rm -p 8000:8000 --env-file .env -v ./logs:/app/logs hiap-meed
+docker run --rm -p 8000:8000 --env-file .env -v "$(pwd)/logs:/app/logs" hiap-meed
 ```
 
 Notes for plain Docker:

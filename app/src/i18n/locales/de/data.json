@@ -25,6 +25,7 @@
   "scope": "Umfang",
   "see-more-details": "Mehr Details anzeigen",
   "connect-data": "Daten verbinden",
+  "connect-data-gpc-exists": "Daten bereits hinzugefügt",
   "data-connected": "Daten verbunden",
   "edit-subsector": "Teilsektor bearbeiten",
   "more-datasets": "Mehr Datensätze anzeigen",
@@ -1294,5 +1295,6 @@
   "not-occurring": "Nicht auftretend",
   "not-estimated-progress": "Nicht Geschätzt",
   "uncategorized": "Unkategorisiert",
-  "legend": "Legende"
+  "legend": "Legende",
+  "data-already-added-connected": "Dieser Datensatz ist nicht verfügbar, weil Sie bereits einen verbundenen Datensatz für diesen Teilsektor haben."
 }

@@ -109,6 +109,7 @@
   "scope": "Portée",
   "see-more-details": "Voir plus de détails",
   "connect-data": "Connecter les données",
+  "connect-data-gpc-exists": "Données déjà ajoutées",
   "data-source-connect-failed": "Échec de la connexion à la source de données",
   "data-source-connect-load-error": "Une erreur s'est produite lors du chargement des données",
   "data-source-connect-invalid-error": "La source de données ne s'applique pas à votre année d'inventaire ou à votre ville",
@@ -1269,5 +1270,6 @@
   "not-occurring": "Non survenant",
   "not-estimated-progress": "Non Estimé",
   "uncategorized": "Non classé",
-  "legend": "Légende"
+  "legend": "Légende",
+  "data-already-added-connected": "Ce jeu de données n'est pas disponible, car vous disposez déjà d'un jeu de données connecté pour ce sous-secteur."
 }

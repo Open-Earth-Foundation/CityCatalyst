@@ -106,6 +106,7 @@
   "scope": "Alcance",
   "see-more-details": "Ver más detalles",
   "connect-data": "Conectar datos",
+  "connect-data-gpc-exists": "Datos ya añadidos",
   "data-source-connect-failed": "Falló al conectar la fuente de datos",
   "data-source-connect-load-error": "Hubo un error al cargar los datos",
   "data-source-connect-invalid-error": "La fuente de datos no se aplica a tu año de inventario o ciudad",
@@ -1279,5 +1280,6 @@
   "not-occurring": "No Ocurre",
   "not-estimated-progress": "No Estimado",
   "uncategorized": "Sin categorizar",
-  "legend": "Leyenda"
+  "legend": "Leyenda",
+  "data-already-added-connected": "Este conjunto de datos no está disponible porque ya tiene uno conectado para este subsector."
 }

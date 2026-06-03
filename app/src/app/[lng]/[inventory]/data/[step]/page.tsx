@@ -64,6 +64,7 @@ import {
   MdCheckCircleOutline,
   MdChevronRight,
   MdHomeWork,
+  MdInfoOutline,
   MdOutlineCheckCircle,
   MdOutlineEdit,
   MdOutlineHomeWork,
@@ -100,6 +101,7 @@ import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { getParamValueRequired } from "@/util/helpers";
+import { Tooltip } from "@/components/ui/tooltip";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -366,6 +368,9 @@ export default function AddDataSteps() {
   const [newlyConnectedDataSourceIds, setNewlyConnectedDataSourceIds] =
     useState<string[]>([]);
   const onConnectClick = async (source: DataSourceWithRelations) => {
+    if (isSourceGpcBlocked(source)) {
+      return;
+    }
     if (!inventoryProgress) {
       logger.error(
         "Tried to assign data source while inventory progress was not yet loaded!",
@@ -416,6 +421,30 @@ export default function AddDataSteps() {
     return (
       (source.inventoryValues && source.inventoryValues.length > 0) ||
       newlyConnectedDataSourceIds.indexOf(source.datasourceId) > -1
+    );
+  }
+
+  function getSourceGpcReferenceNumber(
+    source: DataSourceWithRelations,
+  ): string | undefined {
+    return (
+      source.subCategory?.referenceNumber ?? source.subSector?.referenceNumber
+    );
+  }
+
+  /** Third-party source cannot connect when this inventory already has data for the same GPC ref. */
+  function isSourceGpcBlocked(source: DataSourceWithRelations): boolean {
+    if (isSourceConnected(source)) {
+      return false;
+    }
+    const gpcReferenceNumber = getSourceGpcReferenceNumber(source);
+    if (!gpcReferenceNumber) {
+      return false;
+    }
+    return (
+      inventoryProgress?.inventory.inventoryValues?.some(
+        (value) => value.gpcReferenceNumber === gpcReferenceNumber,
+      ) ?? false
     );
   }
 
@@ -595,13 +624,18 @@ export default function AddDataSteps() {
           : DEFAULT_CONNECTED_BUTTON_PROPS.text,
         icon: <Icon as={MdCheckCircle} />,
       };
-    } else {
+    }
+    if (isSourceGpcBlocked(source)) {
       return {
         variant: DEFAULT_DISCONNECTED_BUTTON_PROPS.variant,
-        text: DEFAULT_DISCONNECTED_BUTTON_PROPS.text,
-        // Add more properties as needed
+        text: t("connect-data-gpc-exists"),
+        icon: undefined,
       };
     }
+    return {
+      variant: DEFAULT_DISCONNECTED_BUTTON_PROPS.variant,
+      text: DEFAULT_DISCONNECTED_BUTTON_PROPS.text,
+    };
   };
 
   const [scrollPosition, setScrollPosition] = useState<number>(0);
@@ -1005,7 +1039,6 @@ export default function AddDataSteps() {
                       source,
                       isHovered,
                     );
-                    console.log("source", source);
                     return (
                       <Card.Root
                         key={source.datasourceId}
@@ -1061,7 +1094,8 @@ export default function AddDataSteps() {
                                 >
                                   {convertKgToTonnes(
                                     bigIntToDecimal(
-                                      data?.totals?.emissions?.co2_co2eq ?? 0n,
+                                      data?.totals?.emissions?.co2eq_100yr ??
+                                        0n,
                                     ).toNumber(),
                                   )}
                                 </Text>
@@ -1102,8 +1136,18 @@ export default function AddDataSteps() {
                             whiteSpace="nowrap"
                             overflow="hidden"
                             color="content.tertiary"
-                            lineClamp="5"
-                            maxHeight="100px"
+                            lineClamp={
+                              isSourceConnected(source) &&
+                              source.inventoryValues?.length
+                                ? 0
+                                : 4
+                            }
+                            maxHeight={
+                              isSourceConnected(source) &&
+                              source.inventoryValues?.length
+                                ? "100px"
+                                : "184px"
+                            }
                             fontFamily="body"
                             fontSize="body.md"
                             lineHeight="20px"
@@ -1151,6 +1195,26 @@ export default function AddDataSteps() {
                                 <Icon as={MdCheckCircleOutline} />
                                 {text}
                               </Button>
+                            ) : isSourceGpcBlocked(source) ? (
+                              <Tooltip
+                                showArrow
+                                content={t("data-already-added-connected")}
+                              >
+                                <Button
+                                  variant="outline"
+                                  w="full"
+                                  borderWidth="1px"
+                                  py="16px"
+                                  bgColor="background.backgroundDisabled"
+                                  border="none"
+                                  disabled
+                                  color="interactive.control"
+                                  fontSize="14px"
+                                >
+                                  {t("connect-data")}
+                                  <Icon as={MdInfoOutline} boxSize={4} />
+                                </Button>
+                              </Tooltip>
                             ) : (
                               <Button
                                 variant="outline"

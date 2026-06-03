@@ -58,6 +58,7 @@ import {
   MdArrowDropDown,
   MdArrowDropUp,
   MdCheckCircle,
+  MdCheckCircleOutline,
   MdChevronRight,
   MdHomeWork,
   MdOutlineCheckCircle,
@@ -1097,6 +1098,8 @@ export default function AddDataSteps() {
                               <Button
                                 variant="solid"
                                 w="full"
+                                bg="content.alternative"
+                                fontWeight="normal"
                                 onClick={() =>
                                   isFrozenCheck()
                                     ? null
@@ -1110,7 +1113,7 @@ export default function AddDataSteps() {
                                 onMouseEnter={() => onButtonHover(source)}
                                 onMouseLeave={() => onMouseLeave(source)}
                               >
-                                <Icon as={MdCheckCircle} />
+                                <Icon as={MdCheckCircleOutline} />
                                 {text}
                               </Button>
                             ) : (

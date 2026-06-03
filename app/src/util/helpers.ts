@@ -402,11 +402,17 @@ export const clamp = (num: number, min: number = 0, max: number = 1) =>
 // Helper function to get top picks - reused from ActionPlanSection
 export const getTopPickActions = (actions: HIAction[]): HIAction[] => {
   const selectedActions = actions.filter((action) => action.isSelected);
-  const usedActions = selectedActions.length > 0 ? selectedActions : actions;
+  const unselectedActions = actions.filter((action) => !action.isSelected);
 
-  return [...usedActions]
-    .sort((a, b) => (a.rank ?? 100000) - (b.rank ?? 100000))
-    .slice(0, 3);
+  const sortedSelectedActions = selectedActions.sort(
+    (a, b) => (a.rank ?? 100000) - (b.rank ?? 100000),
+  );
+  const sortedUnselectedActions = unselectedActions.sort(
+    (a, b) => (a.rank ?? 100000) - (b.rank ?? 100000),
+  );
+
+  // make sure selected actions always come first, but fall back to unselected highest-ranked actions
+  return sortedSelectedActions.concat(sortedUnselectedActions).slice(0, 3);
 };
 
 /**

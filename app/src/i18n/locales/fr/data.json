@@ -40,6 +40,7 @@
   "modeled-data-desc": "Émissions estimées à partir de modèles prédictifs",
   "modeled-fuel": "Consommation modélisée d'intensité de carburant",
   "built-area": "Zone Construite",
+  "by-data-source": "Par",
   "building-type": "Type de bâtiment",
   "select-type-of-building": "Sélectionnez le type de bâtiment",
   "direct-measure-desc": "Mesures directes des émissions provenant des sources de combustion des bâtiments commerciaux.",

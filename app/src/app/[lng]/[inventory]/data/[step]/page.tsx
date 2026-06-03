@@ -21,9 +21,12 @@ import { logger } from "@/services/logger";
 import {
   bytesToMB,
   clamp,
+  convertKgToTonnes,
   convertSectorReferenceNumberToNumber,
+  formatEmissions,
   nameToI18NKey,
 } from "@/util/helpers";
+import { bigIntToDecimal } from "@/util/big_int";
 import type { DataSourceResponse, SectorProgress } from "@/util/types";
 
 import {
@@ -629,6 +632,8 @@ export default function AddDataSteps() {
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
   const { organization, isFrozenCheck } = useOrganizationContext();
 
+  console.log("dataSources", dataSources);
+
   return (
     <>
       <Box id="top" />
@@ -1000,6 +1005,7 @@ export default function AddDataSteps() {
                       source,
                       isHovered,
                     );
+                    console.log("source", source);
                     return (
                       <Card.Root
                         key={source.datasourceId}
@@ -1045,34 +1051,51 @@ export default function AddDataSteps() {
                         </Card.Header>
                         <Card.Body justifyContent="space-between" p="0">
                           <Flex direction="row" mb={4} wrap="wrap" gap={2}>
-                            <Badge
-                              fontSize={11}
-                              fontWeight="semibold"
-                              borderColor="border.overlay"
-                            >
-                              <Icon
-                                as={DataCheckIcon}
-                                boxSize={5}
-                                color="content.tertiary"
-                              />
-                              {t("data-quality")}:{" "}
-                              {t("quality-" + source.dataQuality)}
-                            </Badge>
-                            {source.subCategory?.scope && (
+                            {/* show converted to CO2eq total emissions for the data source */}
+                            {/* Only show emissions if data is connected */}
+                            {!isSourceConnected(source) &&
+                              !source.inventoryValues?.length && (
+                                <Text
+                                  fontSize="headline.md"
+                                  fontWeight="semibold"
+                                >
+                                  {convertKgToTonnes(
+                                    bigIntToDecimal(
+                                      data?.totals?.emissions?.co2_co2eq ?? 0n,
+                                    ).toNumber(),
+                                  )}
+                                </Text>
+                              )}
+                            <Box>
                               <Badge
                                 fontSize={11}
                                 fontWeight="semibold"
                                 borderColor="border.overlay"
                               >
                                 <Icon
-                                  as={FiTarget}
-                                  boxSize={4}
+                                  as={DataCheckIcon}
+                                  boxSize={5}
                                   color="content.tertiary"
                                 />
-                                {t("scope")}:{" "}
-                                {source.subCategory.scope.scopeName}
+                                {t("data-quality")}:{" "}
+                                {t("quality-" + source.dataQuality)}
                               </Badge>
-                            )}
+                              {source.subCategory?.scope && (
+                                <Badge
+                                  fontSize={11}
+                                  fontWeight="semibold"
+                                  borderColor="border.overlay"
+                                >
+                                  <Icon
+                                    as={FiTarget}
+                                    boxSize={4}
+                                    color="content.tertiary"
+                                  />
+                                  {t("scope")}:{" "}
+                                  {source.subCategory.scope.scopeName}
+                                </Badge>
+                              )}
+                            </Box>
                           </Flex>
                           <Text
                             textOverflow="ellipsis"

@@ -38,6 +38,7 @@
   "modeled-data-desc": "Emissões estimadas a partir de modelos preditivos",
   "modeled-fuel": "Consumo de intensidade de combustível modelado",
   "built-area": "Área Construída",
+  "by-data-source": "Por",
   "building-type": "Tipo de edifício",
   "select-type-of-building": "Selecione o tipo de edifício",
   "direct-measure-desc": "Medições diretas de emissões de fontes de combustão em edifícios comerciais.",

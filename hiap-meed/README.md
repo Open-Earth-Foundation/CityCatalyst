@@ -47,15 +47,7 @@ HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE=api
 HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE=api
 HIAP_MEED_TOP_N=20
 ACTIVITY_DATA_LEVEL_MAPPING=false
-HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL=
-HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED=false
-HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL=
-HIAP_MEED_EXPLANATIONS_ENABLED=true
-HIAP_MEED_EXPLANATIONS_MODEL=
-HIAP_MEED_EXPLANATION_TRANSLATIONS_MODEL=
 OPENAI_API_KEY=
-OPENAI_TIMEOUT_SECONDS=30
-OPENAI_MAX_RETRIES=3
 ```
 
 Variables:
@@ -76,15 +68,18 @@ Variables:
 - `HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE`: mitigation feasibility scores input source (`api` or `mock`)
 - `HIAP_MEED_TOP_N`: default number of ranked actions to return per city (default `20`)
 - `ACTIVITY_DATA_LEVEL_MAPPING`: guarded future Impact mapping switch; `false` keeps true subsector-only matching, `true` calls the current stub and still returns subsector-only results
-- `HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL`: OpenAI model used only by the deprecated legacy free-text co-benefit mapping helper
-- `HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED`: if `true`, the exclusion preview endpoint calls OpenAI to resolve clear free-text action exclusions
-- `HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL`: OpenAI model used for preview free-text action exclusion matching
 - `OPENAI_API_KEY`: API key used by OpenAI-backed features
-- `OPENAI_TIMEOUT_SECONDS`: shared OpenAI client timeout in seconds (default `30`)
-- `HIAP_MEED_EXPLANATIONS_ENABLED`: global switch for post-ranking explanation calls
-- `HIAP_MEED_EXPLANATIONS_MODEL`: model name used for canonical explanation generation when `createExplanations=true`
-- `HIAP_MEED_EXPLANATION_TRANSLATIONS_MODEL`: model name used for explanation translation
-- `OPENAI_MAX_RETRIES`: shared OpenAI client retries (default `3`)
+
+LLM-specific non-secret settings now live in `llm_config.yaml`, including:
+
+- `models.alignment_other_preference`
+- `models.free_text_exclusions`
+- `models.explanations`
+- `models.explanation_translations`
+- `features.free_text_exclusions_enabled`
+- `features.explanations_enabled`
+- `openai.timeout_seconds`
+- `openai.max_retries`
 
 ### 2. Install dependencies
 
@@ -175,7 +170,7 @@ Exclusions:
   - `water_quality`
 - Sector exclusions are deterministic from action sector metadata.
 - Co-benefit exclusions are deterministic and propose actions where a selected co-benefit has negative `impact_numeric`.
-- Free-text exclusions run only in the preview endpoint and only when `HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED=true` and `HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL` is set. The resolver keeps exact catalog action IDs only for clear matches and returns warnings for disabled, unmatched, or ambiguous input.
+- Free-text exclusions run only in the preview endpoint and only when `features.free_text_exclusions_enabled=true` and `models.free_text_exclusions.name` is configured in `llm_config.yaml`. The resolver keeps exact catalog action IDs only for clear matches and returns warnings for disabled, unmatched, or ambiguous input.
 - When the free-text resolver returns unknown IDs, ambiguous matches, or blank reasons, the backend drops those rows, logs aggregate drop counts, stores dropped-row diagnostics in preview artifacts, and returns compact warnings to the frontend.
 - Ranking accepts `excludedActionIds` per city. These confirmed IDs are authoritative; `/v1/prioritize` does not reinterpret raw exclusion preferences.
 - `cityStrategicPreferenceSectors` on the ranking request must also use only:

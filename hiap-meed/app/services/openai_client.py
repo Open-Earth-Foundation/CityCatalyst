@@ -5,35 +5,22 @@ from __future__ import annotations
 import os
 from openai import OpenAI
 
-DEFAULT_OPENAI_TIMEOUT_SECONDS = 30.0
-DEFAULT_OPENAI_MAX_RETRIES = 3
+from app.config.llm_settings import get_llm_settings
 
 
 def _get_openai_timeout_seconds() -> float:
-    """Return OpenAI client timeout in seconds from shared environment config."""
-    raw_value = os.getenv("OPENAI_TIMEOUT_SECONDS")
-    if raw_value is None or not raw_value.strip():
-        return DEFAULT_OPENAI_TIMEOUT_SECONDS
-    try:
-        parsed = float(raw_value.strip())
-    except ValueError as error:
-        raise ValueError("OPENAI_TIMEOUT_SECONDS must be a number") from error
+    """Return OpenAI client timeout in seconds from shared YAML config."""
+    parsed = get_llm_settings().openai.timeout_seconds
     if parsed <= 0:
-        raise ValueError("OPENAI_TIMEOUT_SECONDS must be > 0")
+        raise ValueError("openai.timeout_seconds in llm_config.yaml must be > 0")
     return parsed
 
 
 def _get_openai_max_retries() -> int:
-    """Return OpenAI client max retries from shared environment config."""
-    raw_value = os.getenv("OPENAI_MAX_RETRIES")
-    if raw_value is None or not raw_value.strip():
-        return DEFAULT_OPENAI_MAX_RETRIES
-    try:
-        parsed = int(raw_value.strip())
-    except ValueError as error:
-        raise ValueError("OPENAI_MAX_RETRIES must be an integer") from error
+    """Return OpenAI client max retries from shared YAML config."""
+    parsed = get_llm_settings().openai.max_retries
     if parsed < 0:
-        raise ValueError("OPENAI_MAX_RETRIES must be >= 0")
+        raise ValueError("openai.max_retries in llm_config.yaml must be >= 0")
     return parsed
 
 

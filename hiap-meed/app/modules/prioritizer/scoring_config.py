@@ -18,6 +18,7 @@ DEFAULT_WEIGHTS: dict[str, float] = {
 
 REQUIRED_WEIGHT_KEYS: set[str] = set(DEFAULT_WEIGHTS.keys())
 DEFAULT_TOP_N = 20
+
 # Impact scoring knobs
 IMPACT_TEXT_TO_MULTIPLIER: dict[str, float] = {
     "very low": 0.2,
@@ -49,19 +50,7 @@ FEASIBILITY_WEIGHT_MITIGATION_FEASIBILITY = 0.50
 
 
 def validate_weights(weights: Mapping[str, float] | None) -> dict[str, float]:
-    """
-    Validate scoring weights.
-
-    Inputs:
-    - `weights`: Optional override map for impact/alignment/feasibility.
-
-    Returns:
-    - Validated weights keyed by required dimensions.
-
-    Raises:
-    - ValueError when keys are missing/unknown, values are negative, or sum is not 1.0.
-    """
-
+    """Validate scoring weights."""
     resolved: dict[str, float] = dict(DEFAULT_WEIGHTS)
     if weights:
         resolved.update(weights)
@@ -134,11 +123,7 @@ def _parse_top_n(value: str, *, source_label: str) -> int:
 
 
 def get_default_top_n() -> int:
-    """
-    Return configured default top_n for prioritization output size.
-
-    Reads `HIAP_MEED_TOP_N` from environment and defaults to 20 when unset.
-    """
+    """Return configured default top_n for prioritization output size."""
     raw_value = os.getenv("HIAP_MEED_TOP_N")
     if raw_value is None or not raw_value.strip():
         return DEFAULT_TOP_N
@@ -170,14 +155,6 @@ def resolve_impact_text_multiplier(impact_text: str) -> float:
     return IMPACT_TEXT_TO_MULTIPLIER[normalized]
 
 
-def get_alignment_other_preference_mapping_model() -> str | None:
-    """Return configured model name for alignment other-preference mapping."""
-    raw_value = os.getenv("HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL")
-    if raw_value is None or not raw_value.strip():
-        return None
-    return raw_value.strip()
-
-
 def parse_bool_env(value: str | None, *, default: bool) -> bool:
     """Parse common env-var boolean encodings with a fallback default."""
     if value is None:
@@ -192,52 +169,7 @@ def parse_bool_env(value: str | None, *, default: bool) -> bool:
     return default
 
 
-def is_explanations_enabled() -> bool:
-    """Return global feature switch for LLM explanation generation."""
-    raw_value = os.getenv("HIAP_MEED_EXPLANATIONS_ENABLED")
-    return parse_bool_env(raw_value, default=True)
-
-
-def get_explanations_model() -> str | None:
-    """Return configured explanation model name, if set."""
-    value = os.getenv("HIAP_MEED_EXPLANATIONS_MODEL")
-    if value is None:
-        return None
-    normalized = value.strip()
-    if not normalized:
-        return None
-    return normalized
-
-
-def get_explanation_translations_model() -> str | None:
-    """Return configured translation model name, if set."""
-    value = os.getenv("HIAP_MEED_EXPLANATION_TRANSLATIONS_MODEL")
-    if value is None:
-        return None
-    normalized = value.strip()
-    if not normalized:
-        return None
-    return normalized
-
-
 def is_activity_data_level_mapping_enabled() -> bool:
     """Return feature switch for the future activity-data-level matching stage."""
     raw_value = os.getenv("ACTIVITY_DATA_LEVEL_MAPPING")
     return parse_bool_env(raw_value, default=False)
-
-
-def is_free_text_exclusion_resolution_enabled() -> bool:
-    """Return feature switch for preview-time LLM exclusion resolution."""
-    raw_value = os.getenv("HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED")
-    return parse_bool_env(raw_value, default=False)
-
-
-def get_free_text_exclusion_model() -> str | None:
-    """Return configured model name for free-text exclusion resolution."""
-    value = os.getenv("HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL")
-    if value is None:
-        return None
-    normalized = value.strip()
-    if not normalized:
-        return None
-    return normalized

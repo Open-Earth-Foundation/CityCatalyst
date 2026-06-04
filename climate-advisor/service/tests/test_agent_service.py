@@ -32,7 +32,8 @@ def build_mock_settings(
     api_key: str | None = "test-key",
     base_url: str = "https://openrouter.ai/api/v1",
     prompt: str = "You are helpful",
-    temperature: float = 0.1,
+    temperature: float = 0.0,
+    default_model: str = "openai/gpt-5.4-mini",
 ):
     """Create a reusable SimpleNamespace matching AgentService expectations."""
     prompts = MagicMock()
@@ -49,11 +50,15 @@ def build_mock_settings(
         ),
     )
 
-    llm_settings = SimpleNamespace(
-        models={"default": "openai/gpt-4o"},
-        generation=SimpleNamespace(
-            defaults=SimpleNamespace(temperature=temperature)
+    models = SimpleNamespace(
+        orchestrator=SimpleNamespace(
+            name=default_model,
+            temperature=temperature,
         ),
+    )
+
+    llm_settings = SimpleNamespace(
+        models=models,
         prompts=prompts,
         api=llm_api,
     )
@@ -78,8 +83,8 @@ class AgentServiceInitializationTests(unittest.TestCase):
         with patch("app.services.agent_service.AsyncOpenAI"):
             service = AgentService()
             self.assertIsNotNone(service)
-            self.assertEqual(service.default_model, "openai/gpt-4o")
-            self.assertEqual(service.default_temperature, 0.1)
+            self.assertEqual(service.default_model, "openai/gpt-5.4-mini")
+            self.assertEqual(service.default_temperature, 0.0)
 
     @patch("app.services.agent_service.get_settings")
     def test_agent_service_raises_without_api_key(self, mock_get_settings) -> None:
@@ -189,7 +194,8 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
                     # Verify agent was created
                     mock_agent_class.assert_called_once()
                     call_kwargs = mock_agent_class.call_args[1]
-                    self.assertEqual(call_kwargs["model"], "openai/gpt-4o")
+                    self.assertEqual(call_kwargs["model"], "openai/gpt-5.4-mini")
+                    self.assertEqual(call_kwargs["model_settings"].temperature, 0.0)
 
     async def test_create_agent_with_model_override(self) -> None:
         """Test agent creation with model override."""
@@ -203,6 +209,22 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
                     
                     call_kwargs = mock_agent_class.call_args[1]
                     self.assertEqual(call_kwargs["model"], "openai/gpt-4-turbo")
+                    self.assertEqual(call_kwargs["model_settings"].temperature, 0.0)
+
+    async def test_create_agent_uses_override_model_temperature(self) -> None:
+        """Test agent creation uses orchestrator temperature for model overrides."""
+        mock_settings = build_mock_settings()
+        mock_settings.llm.models.orchestrator.temperature = 0.3
+
+        with patch("app.services.agent_service.get_settings", return_value=mock_settings):
+            with patch("app.services.agent_service.AsyncOpenAI"):
+                with patch("app.services.agent_service.Agent") as mock_agent_class:
+                    service = AgentService()
+                    await service.create_agent(model="openai/gpt-5.4")
+
+                    call_kwargs = mock_agent_class.call_args[1]
+                    self.assertEqual(call_kwargs["model"], "openai/gpt-5.4")
+                    self.assertEqual(call_kwargs["model_settings"].temperature, 0.3)
 
     async def test_create_agent_includes_system_prompt(self) -> None:
         """Test agent creation includes system prompt."""
@@ -255,7 +277,7 @@ class SystemPromptLoadingTests(unittest.TestCase):
 
     @patch("app.services.agent_service.get_settings")
     def test_temperature_from_config(self, mock_get_settings) -> None:
-        """Test temperature is loaded from LLM config."""
+        """Test orchestrator temperature is loaded from LLM config."""
         mock_settings = build_mock_settings(
             temperature=0.5,
             prompt="Prompt",

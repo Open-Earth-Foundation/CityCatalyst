@@ -8,7 +8,7 @@ import httpx
 import pytest
 from pydantic import ValidationError
 
-from app.modules.prioritizer.config import is_activity_data_level_mapping_enabled
+from app.modules.prioritizer.scoring_config import is_activity_data_level_mapping_enabled
 from app.modules.prioritizer.models import (
     ActionPathwayApiItem,
     ActionPolicyScoreApiItem,

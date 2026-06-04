@@ -8,7 +8,7 @@ from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.modules.prioritizer.config import resolve_top_n
+from app.modules.prioritizer.scoring_config import resolve_top_n
 from app.modules.prioritizer.internal_models import CityActivityRow, CityEmissionsContext
 from app.modules.prioritizer.models import (
     ExplanationTranslationApiRequest,

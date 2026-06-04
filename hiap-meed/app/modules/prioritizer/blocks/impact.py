@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import logging
 
-from app.modules.prioritizer.config import (
+from app.modules.prioritizer.scoring_config import (
     IMPACT_DEFAULT_TIMELINE_SCORE,
     IMPACT_TIMELINE_TO_SCORE,
     IMPACT_WEIGHT_REDUCTION_SHARE,

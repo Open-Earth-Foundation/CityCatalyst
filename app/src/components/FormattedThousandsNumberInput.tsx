@@ -66,7 +66,7 @@ interface FormattedNumberInputProps<TFieldValues extends FieldValues>
   >;
 }
 
-function FormattedNumberInput<TFieldValues extends FieldValues>({
+function FormattedThousandsNumberInput<TFieldValues extends FieldValues>({
   control,
   name,
   rules,
@@ -108,4 +108,4 @@ function FormattedNumberInput<TFieldValues extends FieldValues>({
   );
 }
 
-export default FormattedNumberInput;
+export default FormattedThousandsNumberInput;

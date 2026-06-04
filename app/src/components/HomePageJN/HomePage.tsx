@@ -175,6 +175,7 @@ export default function HomePage({
             isLoading={isOrgDataLoading || isCityLoading}
             t={t}
             population={population}
+            numberFormat={userInfo?.numberFormat}
           />
 
           <Box display="flex" mx="auto" w="full" maxW="1090px">

@@ -8,7 +8,7 @@ import { Box, Icon, Spinner, HStack, VStack } from "@chakra-ui/react";
 import { CircleFlag } from "react-circle-flags";
 import { MdInfoOutline, MdOutlineAspectRatio } from "react-icons/md";
 import { Tooltip } from "@/components/ui/tooltip";
-import { formatEmissions } from "@/util/helpers";
+import { formatEmissions, formatNumber } from "@/util/helpers";
 import Link from "next/link";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { CityWithProjectDataResponse, InventoryResponse } from "@/util/types";
@@ -28,6 +28,7 @@ interface HeroProps {
   t: TFunction;
   population?: PopulationAttributes;
   hideMap?: boolean;
+  numberFormat?: string;
 }
 
 export function Hero({
@@ -38,13 +39,14 @@ export function Hero({
   population,
   t,
   hideMap = false,
+  numberFormat,
 }: HeroProps) {
   const { data: cityData } = useGetOCCityDataQuery(city?.locode!, {
     skip: !city?.locode,
   });
 
   const formattedEmissions = ghgiCityData?.totalEmissions
-    ? formatEmissions(ghgiCityData.totalEmissions)
+    ? formatEmissions(ghgiCityData.totalEmissions, numberFormat)
     : { value: t("n-a"), unit: "" };
 
   const popWithDS = useMemo(
@@ -165,7 +167,7 @@ export function Hero({
                   >
                     {city.area && city.area > 0 ? (
                       <>
-                        {Math.round(city.area).toLocaleString()}
+                        {formatNumber(Math.round(city.area), numberFormat)}
                         <HeadlineSmall
                           as="span"
                           fontSize="lg"

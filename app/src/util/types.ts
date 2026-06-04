@@ -123,6 +123,7 @@ export interface UserInfoResponse {
   role: Roles;
   email?: string;
   preferredLanguage?: string;
+  numberFormat?: string;
 }
 
 export type DataSource = DataSourceAttributes & {

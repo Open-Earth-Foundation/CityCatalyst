@@ -49,6 +49,16 @@ const updateUserRequest = z.object({
 
 export const PATCH = apiHandler(async (_req, { params, session }) => {
   const body = updateUserRequest.parse(await _req.json());
+
+  if (
+    session?.user.id !== params.userId &&
+    session?.user.role !== Roles.Admin
+  ) {
+    throw new createHttpError.Unauthorized(
+      "Not editing the active user, access denied",
+    );
+  }
+
   let user = await db.models.User.findOne({ where: { userId: params.userId } });
 
   if (!user) {

@@ -84,10 +84,12 @@ const TopEmissionsWidget = ({
   t,
   inventory,
   isPublic,
+  numberFormat,
 }: {
   t: Function & TFunction<"translation", undefined>;
   inventory?: InventoryResponse;
   isPublic: boolean;
+  numberFormat?: string;
 }) => {
   const { data: results, isLoading: isTopEmissionsResponseLoading } =
     api.useGetResultsQuery(inventory!.inventoryId!);
@@ -122,7 +124,15 @@ const TopEmissionsWidget = ({
         </Card.Body>
       </Card.Root>
     );
-  } else if (!results || !results.totalEmissions || results.totalEmissions.total === null || results.totalEmissions.total === undefined || !results.totalEmissions.bySector || !Array.isArray(results.totalEmissions.bySector) || results.totalEmissions.bySector.length === 0) {
+  } else if (
+    !results ||
+    !results.totalEmissions ||
+    results.totalEmissions.total === null ||
+    results.totalEmissions.total === undefined ||
+    !results.totalEmissions.bySector ||
+    !Array.isArray(results.totalEmissions.bySector) ||
+    results.totalEmissions.bySector.length === 0
+  ) {
     return (
       <Card.Root width={"713px"} height={"448px"}>
         <Card.Header>
@@ -155,6 +165,7 @@ const TopEmissionsWidget = ({
             colors={allSectorColors}
             showLabels
             showHover
+            numberFormat={numberFormat}
           />
           <Box>
             <Heading size="sm" marginTop={10} marginBottom={4}>

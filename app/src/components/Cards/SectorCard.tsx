@@ -14,7 +14,6 @@ import {
 } from "@/util/helpers";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
-// import { AddIcon } from "@chakra-ui/icons";
 import { InventoryType, InventoryTypeEnum, ISector } from "@/util/constants";
 import { BsPlus } from "react-icons/bs";
 import { usePathname } from "next/navigation";
@@ -31,11 +30,13 @@ export function SectorCard({
   sector,
   t,
   inventory,
+  numberFormat,
 }: {
   sectorProgress?: SectorProgress;
   sector: ISector;
   t: TFunction;
   inventory: InventoryResponse;
+  numberFormat?: string;
 }) {
   const pathname = usePathname();
   const [isAccordionOpen, setAccordionOpen] = useState(false);
@@ -53,7 +54,12 @@ export function SectorCard({
     uploadedProgress = clamp(sectorProgress.uploaded / sectorProgress.total);
     reasonNEProgress = clamp(sectorProgress.reasonNE / sectorProgress.total);
     reasonNOProgress = clamp(sectorProgress.reasonNO / sectorProgress.total);
-    totalProgress = clamp(thirdPartyProgress + uploadedProgress + reasonNEProgress + reasonNOProgress);
+    totalProgress = clamp(
+      thirdPartyProgress +
+        uploadedProgress +
+        reasonNEProgress +
+        reasonNOProgress,
+    );
   }
   /*** Data ***/
   const {
@@ -147,9 +153,20 @@ export function SectorCard({
             gap={6}
           >
             <SegmentedProgress
-              values={[thirdPartyProgress, uploadedProgress, reasonNEProgress, reasonNOProgress]}
-              colors={["interactive.connected", "interactive.tertiary", "interactive.control", "striped"]}
+              values={[
+                thirdPartyProgress,
+                uploadedProgress,
+                reasonNEProgress,
+                reasonNOProgress,
+              ]}
+              colors={[
+                "interactive.connected",
+                "interactive.tertiary",
+                "interactive.control",
+                "striped",
+              ]}
               height={2}
+              numberFormat={numberFormat}
             />
             <Text
               fontFamily="heading"

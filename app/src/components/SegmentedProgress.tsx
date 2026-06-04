@@ -21,6 +21,7 @@ export function SegmentedProgress({
   showHover = false,
   t = (str: string) => str,
   total,
+  numberFormat,
 }: {
   values: SegmentedProgressValues[];
   colors?: string[];
@@ -30,6 +31,7 @@ export function SegmentedProgress({
   showHover?: boolean;
   t?: (str: string) => string;
   total?: bigint;
+  numberFormat?: string;
 }) {
   const colorValues = useToken("colors", colors);
   const tooltipRef = useRef(null);
@@ -62,7 +64,9 @@ export function SegmentedProgress({
               </Text>
             </Table.Cell>
             <Table.Cell>
-              <Text color="gray.600">{convertKgToTonnes(value.value)}</Text>
+              <Text color="gray.600">
+                {convertKgToTonnes(value.value, numberFormat)}
+              </Text>
             </Table.Cell>
           </Table.Row>
         ))}
@@ -75,7 +79,7 @@ export function SegmentedProgress({
           <Table.Cell></Table.Cell>
           <Table.ColumnHeader>
             <Text color="black" fontWeight="bold" fontSize="md">
-              {convertKgToTonnes(total!)}
+              {convertKgToTonnes(total!, numberFormat)}
             </Text>
           </Table.ColumnHeader>
         </Table.Row>
@@ -101,17 +105,15 @@ export function SegmentedProgress({
         borderLeftRadius="10px"
       >
         {shownValues.length === 0 ? (
-          <Box
-            h={height}
-            w="full"
-            borderRadius="10px"
-          />
+          <Box h={height} w="full" borderRadius="10px" />
         ) : (
           shownValues.map((value, i) => (
             <Box
               key={i}
               backgroundColor={
-                colors[value.originalIndex] === "striped" ? "transparent" : value.color
+                colors[value.originalIndex] === "striped"
+                  ? "transparent"
+                  : value.color
               }
               backgroundImage={
                 colors[value.originalIndex] === "striped"
@@ -121,7 +123,9 @@ export function SegmentedProgress({
               h={height}
               w={`${(100 * value.percentage) / max}%`}
               borderStartRadius={i === 0 ? "10px" : undefined}
-              borderEndRadius={i === shownValues.length - 1 ? "10px" : undefined}
+              borderEndRadius={
+                i === shownValues.length - 1 ? "10px" : undefined
+              }
             />
           ))
         )}

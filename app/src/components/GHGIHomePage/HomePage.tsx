@@ -358,6 +358,7 @@ export default function HomePage({
                         inventory={inventory}
                         inventoryProgress={inventoryProgress}
                         isInventoryProgressLoading={isInventoryProgressLoading}
+                        numberFormat={userInfo?.numberFormat}
                       />
                     </Tabs.Content>
                     <Tabs.Content value="tab-emission-inventory-results-title">

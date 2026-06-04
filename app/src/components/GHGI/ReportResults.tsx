@@ -516,6 +516,10 @@ export default function ReportResults({
   const showManageMissingSectors = context === "inventory" && !isPublic;
   const showOpenCCInventories = context === "dashboard" && !isPublic;
 
+  const { data: userInfo } = api.useGetUserInfoQuery(undefined, {
+    skip: isPublic,
+  });
+
   return (
     <Box display="flex" flexDirection="column" gap={8} w="full">
       {showTabHeader && (
@@ -563,7 +567,12 @@ export default function ReportResults({
       </Text>
       <HStack my={4} alignItems={"start"}>
         <EmissionsWidget t={t} inventory={inventory} population={population} />
-        <TopEmissionsWidget t={t} inventory={inventory} isPublic={isPublic} />
+        <TopEmissionsWidget
+          t={t}
+          inventory={inventory}
+          isPublic={isPublic}
+          numberFormat={userInfo?.numberFormat}
+        />
       </HStack>
       <EmissionsForecastSection
         inventoryId={inventory.inventoryId}

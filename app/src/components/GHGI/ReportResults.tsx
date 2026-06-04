@@ -63,11 +63,13 @@ function SectorTabs({
   inventory,
   lng,
   isPublic,
+  numberFormat,
 }: {
   t: TFunction;
   inventory: InventoryResponse;
   lng: string;
   isPublic: boolean;
+  numberFormat?: string;
 }) {
   const { t: tData } = useTranslation(lng, "data");
   const [selectedTab, setSelectedTab] = useState(SECTORS[0].name);
@@ -244,6 +246,7 @@ function SectorTabs({
                       tData={tData}
                       tDashboard={t}
                       sectorName={name}
+                      numberFormat={numberFormat}
                     />
                   )}
                 </Card.Body>
@@ -261,11 +264,13 @@ function EmissionsBreakdown({
   inventory,
   lng,
   isPublic,
+  numberFormat,
 }: {
   t: TFunction;
   inventory: InventoryResponse;
   lng: string;
   isPublic: boolean;
+  numberFormat?: string;
 }) {
   return (
     <>
@@ -595,6 +600,7 @@ export default function ReportResults({
         inventory={inventory}
         lng={lng}
         isPublic={isPublic}
+        numberFormat={userInfo?.numberFormat}
       />
     </Box>
   );

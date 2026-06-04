@@ -193,8 +193,8 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                     activity?.activityData?.co2_unit === "units-tonnes"
                       ? activity?.activityData?.co2_amount * 1000
                       : activity?.activityData?.co2_amount,
-                    "CO2e",
                     numberFormat,
+                    "CO2e",
                   )}
                 </Table.Cell>
                 <Table.Cell textAlign="end" truncate>
@@ -202,8 +202,8 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                     activity?.activityData?.n2o_unit === "units-tonnes"
                       ? activity?.activityData?.n2o_amount * 1000
                       : activity?.activityData?.n2o_amount,
-                    "N2O",
                     numberFormat,
+                    "N2O",
                   )}
                 </Table.Cell>
                 <Table.Cell textAlign="end" truncate>
@@ -211,8 +211,8 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                     activity?.activityData?.ch4_unit === "units-tonnes"
                       ? activity?.activityData?.ch4_amount * 1000
                       : activity?.activityData?.ch4_amount,
-                    "CH4",
                     numberFormat,
+                    "CH4",
                   )}
                 </Table.Cell>
                 <Table.Cell>
@@ -357,7 +357,6 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                               (acc, curr) => acc + BigInt(curr.co2eq as bigint),
                               0n,
                             ),
-                            null,
                             numberFormat,
                           )}{" "}
                         </Text>

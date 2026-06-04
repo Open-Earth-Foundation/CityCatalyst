@@ -359,8 +359,8 @@ export function convertTonnesToKgNumeric(
 
 export function convertKgToTonnes(
   valueInKg: number | Decimal | bigint,
-  gas?: string | null,
   numberFormat?: string,
+  gas?: string | null,
 ): string {
   const gasSuffix = gas ? ` ${gas}` : " CO2e";
 

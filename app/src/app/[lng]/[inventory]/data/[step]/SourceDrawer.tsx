@@ -43,6 +43,7 @@ export function SourceDrawer({
   hideActions,
   totalEmissionsData,
   inventoryId,
+  numberFormat,
 }: {
   hideActions?: boolean;
   source?: DataSourceWithRelations;
@@ -57,6 +58,7 @@ export function SourceDrawer({
   totalEmissionsData?: string;
   t: TFunction;
   inventoryId: string;
+  numberFormat?: string;
 }) {
   function ensureProtocol(url: string) {
     if (!/^https?:\/\//i.test(url)) {
@@ -71,7 +73,10 @@ export function SourceDrawer({
   const emissionsToBeIncluded = () => {
     let converted;
     if (!!totalEmissionsData && totalEmissionsData !== "?") {
-      converted = convertKgToTonnes(parseFloat(totalEmissionsData));
+      converted = convertKgToTonnes(
+        parseFloat(totalEmissionsData),
+        numberFormat,
+      );
     }
     const emissionsData = sourceData?.totals?.emissions?.co2eq_100yr;
     let totalEmissions = emissionsData
@@ -81,7 +86,10 @@ export function SourceDrawer({
       totalEmissions = "?";
     }
     if (!!totalEmissions && totalEmissions !== "?") {
-      converted = convertKgToTonnes(parseFloat(totalEmissions) * 1000);
+      converted = convertKgToTonnes(
+        parseFloat(totalEmissions) * 1000,
+        numberFormat,
+      );
     }
     if (!converted) {
       return { number: totalEmissionsData ?? totalEmissions, unit: "" };
@@ -242,6 +250,7 @@ export function SourceDrawer({
                       <SourceDrawerActivityTable
                         activities={sourceData.records}
                         t={t}
+                        numberFormat={numberFormat}
                       />
                     )}
                     <VStack

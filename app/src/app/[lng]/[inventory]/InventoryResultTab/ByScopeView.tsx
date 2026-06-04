@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Table, useDisclosure, Text, Flex, Icon } from "@chakra-ui/react";
+import { Box, Table, useDisclosure, Icon } from "@chakra-ui/react";
 import { ActivityDataByScope } from "@/util/types";
 import type { TFunction } from "i18next";
 import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
@@ -16,6 +16,7 @@ interface ByScopeViewProps {
   sectorName: string;
   inventoryType: InventoryTypeEnum;
   inventoryId: string;
+  numberFormat?: string;
 }
 
 const ByScopeView: React.FC<ByScopeViewProps> = ({
@@ -25,6 +26,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
   sectorName,
   inventoryType,
   inventoryId,
+  numberFormat,
 }) => {
   const scopes = SECTORS.find((s) => sectorName === s.name)!.inventoryTypes[
     inventoryType
@@ -238,6 +240,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
         onClose={onSourceDrawerClose}
         t={tData}
         inventoryId={inventoryId}
+        numberFormat={numberFormat}
       />
     </Box>
   );

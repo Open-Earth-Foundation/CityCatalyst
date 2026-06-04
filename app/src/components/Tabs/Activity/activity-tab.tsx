@@ -339,6 +339,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
           <ExternalDataSection
             t={t}
             inventoryValue={externalInventoryValue as unknown as InventoryValue}
+            numberFormat={userInfo?.numberFormat}
           />
         </Box>
       )}

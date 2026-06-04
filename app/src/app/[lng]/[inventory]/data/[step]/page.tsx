@@ -84,10 +84,6 @@ import {
   BreadcrumbRoot,
 } from "@/components/ui/breadcrumb";
 import { Tag } from "@/components/ui/tag";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
 import { TbWorldSearch } from "react-icons/tb";
 import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
@@ -1275,6 +1271,7 @@ export default function AddDataSteps() {
           isConnectLoading={isConnectDataSourceLoading}
           t={t}
           inventoryId={inventory}
+          numberFormat={userInfo?.numberFormat}
         />
       </Box>
     </>

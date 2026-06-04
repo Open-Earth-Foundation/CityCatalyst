@@ -5,11 +5,13 @@ description: Answer a single Kubernetes question using readonly investigation an
 
 # k8s-readonly-query
 
-Use this skill when the user asks a specific Kubernetes question about one resource, namespace, or hosting concern and wants a fast, targeted answer.
+Use this skill when the user asks a specific Kubernetes question about one resource, namespace, or hosting concern and wants a fast, targeted answer from an explicit readonly cluster context.
 
 ## Primary objective
 
 Answer one concrete question with the minimum readonly evidence needed, while keeping strict Kubernetes safety guardrails.
+
+Readonly access is mandatory for this workflow. Do not use it with writable or admin contexts.
 
 Examples:
 
@@ -53,7 +55,7 @@ If the user asks for write actions, stop and request a separate workflow.
 ## Preferred workflow
 
 1. Confirm inputs (ask only if missing):
-   - context (readonly)
+   - context (must be readonly)
    - namespace (optional; discover first when missing)
    - exact question
    - optional resource kind/name
@@ -135,5 +137,5 @@ Be explicit when evidence is limited by RBAC, deleted resources, or missing hist
 
 - Common readonly contexts are `dev-cluster-readonly` and `prod-cluster-readonly`.
 - Cluster/account reference details are in `references/oef-clusters.md` if needed.
-- Prefer direct targeted `kubectl` checks for single questions.
+- Use direct targeted `kubectl` checks only against readonly contexts for single questions.
 - Use `k8s-health-audit` only when the goal is broad health triage.

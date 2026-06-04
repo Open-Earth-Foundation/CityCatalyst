@@ -11,7 +11,7 @@ Use this skill when the user wants a Kubernetes health inspection or incident-st
 
 Inspect cluster and workload health, follow as many readonly evidence trails as possible, and return a guided report with issue-by-issue chapters, likely causes, automated findings, and concrete next steps only where the agent cannot continue safely on its own.
 
-This skill is read-only.
+Readonly access is mandatory for this skill. Do not run it with writable or admin contexts.
 
 ## Investigation contract
 
@@ -50,7 +50,7 @@ If the user asks for a write action, stop and ask for a separate workflow.
 
 ## Preferred workflow
 
-1. Confirm the target context from the user request or ask for it if missing.
+1. Confirm the target context from the user request or ask for it if missing. The context must be a readonly alias.
 2. Run the bundled script:
 
 ```bash
@@ -104,5 +104,5 @@ Be explicit about uncertainty. If logs are unavailable, pods are already gone, o
 ## Notes for this repo
 
 - The common readonly contexts here should be `dev-cluster-readonly` and `prod-cluster-readonly`.
-- Prefer passing `--context` instead of changing the active kubeconfig context.
+- Passing `--context` is required; do not change the active kubeconfig context.
 - Cluster/account reference details are in `references/oef-clusters.md` if needed.

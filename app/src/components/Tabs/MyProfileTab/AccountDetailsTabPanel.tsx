@@ -29,7 +29,6 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
     title: t("user-details-updated"),
     duration: 5000,
   });
-  const [inputValue, setInputValue] = useState<string>("");
   const {
     handleSubmit,
     register,
@@ -58,10 +57,6 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
       payload.title = data.title;
     }
     await setCurrentUserData(payload).then(() => showSuccessToast());
-  };
-
-  const onInputChange = (e: any) => {
-    setInputValue(e.target.value);
   };
 
   return (

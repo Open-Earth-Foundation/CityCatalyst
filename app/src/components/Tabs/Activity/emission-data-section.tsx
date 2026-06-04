@@ -42,6 +42,7 @@ interface EmissionDataSectionProps {
   totalEmissions: number;
   changeMethodology: () => void;
   inventoryValue: InventoryValue | null;
+  numberFormat?: string;
 }
 
 const EmissionDataSection = ({
@@ -55,6 +56,7 @@ const EmissionDataSection = ({
   totalEmissions,
   changeMethodology,
   inventoryValue,
+  numberFormat,
 }: EmissionDataSectionProps) => {
   const [selectedActivityValue, setSelectedActivityValue] = useState<
     ActivityValue | undefined
@@ -341,6 +343,7 @@ const EmissionDataSection = ({
                     onDeleteActivity={handleDeleteActivityDataDialog}
                     onEditActivity={onEditActivity}
                     showActivityModal={handleActivityAdded}
+                    numberFormat={numberFormat}
                   />
                 ) : (
                   <ActivityAccordion
@@ -351,6 +354,7 @@ const EmissionDataSection = ({
                     methodologyId={methodology?.id}
                     onDeleteActivity={handleDeleteActivityDataDialog}
                     onEditActivity={onEditActivity}
+                    numberFormat={numberFormat}
                   />
                 )}
                 {/* Total Emissions Section */}

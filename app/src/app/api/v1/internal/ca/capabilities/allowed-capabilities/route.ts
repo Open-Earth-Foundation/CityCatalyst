@@ -1,7 +1,6 @@
-import { apiHandler } from "@/util/api";
-import { NextResponse } from "next/server";
-import { PermissionService } from "@/backend/permissions/PermissionService";
 import createHttpError from "http-errors";
+import { NextResponse } from "next/server";
+
 import {
   allowedStationaryEnergyCapabilitiesInputSchema,
   getStationaryEnergyAllowedCapabilities,
@@ -11,6 +10,8 @@ import {
   requireRequestUser,
   requireStationaryEnergyAgenticEnabled,
 } from "@/backend/agentic/ghgi/stationary-energy/auth";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+import { apiHandler } from "@/util/api";
 
 export const POST = apiHandler(async (req, { session }) => {
   requireStationaryEnergyAgenticEnabled();

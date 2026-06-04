@@ -2,7 +2,7 @@
 Review CA E2E output with the same LLM and print pass/fail summary.
 
 Usage (from climate-advisor/):
-  uv run --directory service python -m tests.review_ca_e2e
+  uv run --directory service python -m scripts.review_ca_e2e
 
 Optional flags:
   --input  Path to the CA E2E response JSON (default: tests/output/ca_e2e_responses.json)
@@ -29,10 +29,17 @@ import openai
 from agents import Agent, RunConfig, Runner, ToolCallOutputItem, function_tool
 from agents.model_settings import ModelSettings
 
+SERVICE_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = SERVICE_ROOT.parent
+for import_root in (str(SERVICE_ROOT), str(REPO_ROOT)):
+    if import_root not in sys.path:
+        sys.path.insert(0, import_root)
+
 from app.config import get_settings
 from app.services.openrouter_client import build_openrouter_client_options
 
-DEFAULT_INPUT_PATH = Path(__file__).parent / "output" / "ca_e2e_responses.json"
+TEST_ROOT = SERVICE_ROOT / "tests"
+DEFAULT_INPUT_PATH = TEST_ROOT / "output" / "ca_e2e_responses.json"
 
 
 def _configure_openrouter() -> str:
@@ -63,6 +70,7 @@ def grade_response(decision: Literal["Yes", "No"]) -> str:
 
 
 def _load_cases(path: Path) -> List[Dict[str, Any]]:
+    """Load the saved CA E2E response list from disk."""
     with path.open("r", encoding="utf-8") as handle:
         payload = json.load(handle)
     if not isinstance(payload, list):
@@ -71,6 +79,7 @@ def _load_cases(path: Path) -> List[Dict[str, Any]]:
 
 
 def _build_review_prompt(case: Dict[str, Any]) -> str:
+    """Build the bounded grading prompt for one recorded CA E2E case."""
     request = case.get("request") or {}
     if not isinstance(request, dict):
         request = {}
@@ -104,6 +113,7 @@ def _build_review_prompt(case: Dict[str, Any]) -> str:
 
 
 def _extract_decision(result) -> Optional[str]:
+    """Extract the Yes/No grading tool output from an agent run result."""
     for item in result.new_items:
         if isinstance(item, ToolCallOutputItem):
             output = item.output
@@ -113,6 +123,7 @@ def _extract_decision(result) -> Optional[str]:
 
 
 def main() -> int:
+    """Review saved CA E2E cases with the LLM and write a summary report."""
     parser = argparse.ArgumentParser(
         description="Review CA E2E responses with the LLM and print pass rate.",
     )

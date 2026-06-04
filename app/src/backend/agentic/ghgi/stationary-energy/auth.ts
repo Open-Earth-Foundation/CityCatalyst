@@ -1,7 +1,8 @@
-import type { AppSession } from "@/lib/auth";
-import { FeatureFlags, hasServerFeatureFlag } from "@/util/feature-flags";
 import createHttpError from "http-errors";
 import type { NextRequest } from "next/server";
+
+import type { AppSession } from "@/lib/auth";
+import { FeatureFlags, hasServerFeatureFlag } from "@/util/feature-flags";
 
 export function requireStationaryEnergyAgenticEnabled(): void {
   if (

@@ -1,8 +1,9 @@
-import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
 import { callClimateAdvisorJson } from "@/backend/agentic/ghgi/stationary-energy/ca";
 import { requireStationaryEnergyAgenticEnabled } from "@/backend/agentic/ghgi/stationary-energy/auth";
+import { apiHandler } from "@/util/api";
 
 const decisionSchema = z.object({
   proposal_id: z.string().uuid(),

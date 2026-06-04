@@ -1,0 +1,497 @@
+"use client";
+/* eslint-disable i18next/no-literal-string */
+
+import {
+  Badge,
+  Box,
+  Flex,
+  Heading,
+  HStack,
+  Spinner,
+  Text,
+  VStack,
+  chakra,
+} from "@chakra-ui/react";
+import { MdRefresh, MdSave } from "react-icons/md";
+
+import { FLOW_BUTTON_RADIUS } from "@/components/StationaryEnergyDraft/stationary-energy-chat-constants";
+import type {
+  ArtifactRow,
+  DraftCounts,
+  DraftStage,
+} from "@/components/StationaryEnergyDraft/flow";
+import type { DraftListItem } from "@/components/StationaryEnergyDraft/types";
+import type { LoadingAction } from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
+import { Button } from "@/components/ui/button";
+
+export type ArtifactPanelProps = {
+  cityName: string;
+  inventoryYear: string | number;
+  stage: DraftStage;
+  rows: ArtifactRow[];
+  counts: DraftCounts;
+  activeProposalId: string | null;
+  loadingAction: LoadingAction;
+  draftStatus: string;
+  hasSourceBackedProposals: boolean;
+  hasDraft: boolean;
+  draftRuns: DraftListItem[];
+  draftListLoading: boolean;
+  activeDraftRunId: string | null;
+  canPersistDraftReview: boolean;
+  canSaveToInventory: boolean;
+  unresolvedCount: number;
+  onStartDraft: () => void;
+  onRefresh: () => void;
+  onSelectDraft: (draftRunId: string) => void;
+  onSaveDraft: () => void;
+  onSaveToInventory: () => void;
+};
+
+function draftRunStatusLabel(status: string): string {
+  if (status === "reviewed") {
+    return "Draft saved";
+  }
+  if (status === "ready") {
+    return "Working draft";
+  }
+  if (status === "failed") {
+    return "Failed draft";
+  }
+  return status.replaceAll("_", " ");
+}
+
+function formatDraftRunUpdatedAt(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  return new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date);
+}
+
+function draftRunOptionLabel(draftRun: DraftListItem): string {
+  const reviewLabel =
+    draftRun.reviewable_proposal_count > 0
+      ? `${draftRun.resolved_review_count}/${draftRun.reviewable_proposal_count} reviewed`
+      : "no source-backed rows";
+  return `${draftRunStatusLabel(draftRun.status)} | ${reviewLabel} | ${formatDraftRunUpdatedAt(draftRun.updated_at)}`;
+}
+
+function stageChip(stage: DraftStage, status: string): {
+  bg: string;
+  color: string;
+  label: string;
+} {
+  if (status === "saved") {
+    return {
+      bg: "sentiment.positiveOverlay",
+      color: "interactive.primary",
+      label: "Saved to inventory",
+    };
+  }
+  if (status === "partially_saved") {
+    return {
+      bg: "sentiment.warningOverlay",
+      color: "interactive.quaternary",
+      label: "Partially saved",
+    };
+  }
+  if (status === "no_changes") {
+    return {
+      bg: "background.backgroundGreyFlat",
+      color: "content.secondary",
+      label: "No changes to save",
+    };
+  }
+  if (stage === "start") {
+    return {
+      bg: "background.backgroundGreyFlat",
+      color: "content.secondary",
+      label: "Ready to draft",
+    };
+  }
+  if (stage === "drafting") {
+    return {
+      bg: "background.alternative",
+      color: "interactive.primary",
+      label: "Drafting",
+    };
+  }
+  if (stage === "decision") {
+    return {
+      bg: "sentiment.warningOverlay",
+      color: "interactive.quaternary",
+      label: "Needs review",
+    };
+  }
+  return {
+    bg: "sentiment.positiveOverlay",
+    color: "interactive.primary",
+    label: "Review complete",
+  };
+}
+
+function overviewTitle(stage: DraftStage): string {
+  if (stage === "start") {
+    return "Stationary Energy rows waiting for a working draft";
+  }
+  if (stage === "drafting") {
+    return "Building a source-backed working draft";
+  }
+  if (stage === "decision") {
+    return "Rows waiting for your decision";
+  }
+  return "Ready to review";
+}
+
+function RowMarker({ state }: { state: ArtifactRow["state"] }) {
+  if (state === "active") {
+    return <Spinner size="sm" color="brand.primary" />;
+  }
+  const color =
+    state === "done"
+      ? "interactive.tertiary"
+      : state === "manual" || state === "warning"
+        ? "interactive.quaternary"
+        : "border.neutral";
+  return (
+    <Box
+      w="12px"
+      h="12px"
+      borderWidth="2px"
+      borderColor={color}
+      bg={state === "queued" || state === "empty" ? "transparent" : color}
+      borderRadius="full"
+    />
+  );
+}
+
+function ArtifactRowView(props: {
+  row: ArtifactRow;
+  active: boolean;
+  drafting: boolean;
+}) {
+  const isActive =
+    props.active || (props.drafting && props.row.id === "placeholder-0");
+  const bg =
+    props.row.state === "warning"
+      ? "sentiment.warningOverlay"
+      : isActive
+        ? "background.neutral"
+        : "base.light";
+
+  return (
+    <Flex
+      align="center"
+      gap={4}
+      minH="66px"
+      px={4}
+      py={3}
+      bg={bg}
+      borderBottomWidth="1px"
+      borderColor="border.neutral"
+      _last={{ borderBottomWidth: 0 }}
+    >
+      <RowMarker state={isActive ? "active" : props.row.state} />
+      <Box minW={0} flex="1">
+        <Text color="content.primary" fontSize="body.md" truncate>
+          {props.row.label}
+        </Text>
+        <Text color="content.tertiary" fontSize="label.md" truncate>
+          {props.row.scope || "Stationary Energy"}
+        </Text>
+      </Box>
+      <Box minW="150px" textAlign="right">
+        {props.row.value &&
+        props.row.value !== "No source-backed draft value" ? (
+          <>
+            <Text fontFamily="heading" fontSize="body.md" fontWeight="semibold">
+              {props.row.value}
+            </Text>
+            <Text color="content.secondary" fontSize="label.sm" truncate>
+              {props.row.source}
+            </Text>
+          </>
+        ) : (
+          <Text color="content.tertiary" fontSize="label.md">
+            {props.row.status}
+          </Text>
+        )}
+      </Box>
+    </Flex>
+  );
+}
+
+export function ArtifactPanel(props: ArtifactPanelProps) {
+  const draftedCount = props.rows.filter((row) =>
+    ["done", "manual"].includes(row.state),
+  ).length;
+  const progress =
+    props.rows.length > 0
+      ? Math.round((draftedCount / props.rows.length) * 100)
+      : 0;
+  const chip = stageChip(props.stage, props.draftStatus);
+
+  return (
+    <Box
+      minW={0}
+      h={{ base: "auto", xl: "full" }}
+      minH={0}
+      display="flex"
+      flexDir="column"
+      overflow="hidden"
+    >
+      <Box
+        bg="background.backgroundLight"
+        borderColor="border.neutral"
+        borderWidth="1px"
+        borderRadius="rounded"
+        overflow="hidden"
+      >
+        <Flex
+          align={{ base: "flex-start", md: "center" }}
+          justify="space-between"
+          gap={4}
+          px={5}
+          py={4}
+          bg="base.light"
+          borderBottomWidth="1px"
+          borderColor="border.neutral"
+          flexDir={{ base: "column", md: "row" }}
+        >
+          <HStack gap={3}>
+            <Box
+              w="34px"
+              h="34px"
+              display="grid"
+              placeItems="center"
+              borderRadius="rounded"
+              bg="brand.primary"
+              color="base.light"
+              fontFamily="heading"
+              fontWeight="semibold"
+            >
+              I
+            </Box>
+            <Box>
+              <Heading fontSize="title.md" fontWeight="semibold">
+                Stationary energy - working draft
+              </Heading>
+              <Text color="content.tertiary" fontSize="label.md">
+                {props.cityName} / {props.inventoryYear} / GPC BASIC
+              </Text>
+            </Box>
+          </HStack>
+          <VStack
+            align={{ base: "stretch", md: "end" }}
+            gap={2}
+            w={{ base: "full", md: "auto" }}
+          >
+            {props.draftRuns.length > 0 ? (
+              <Box minW={{ base: "full", md: "320px" }}>
+                <Flex
+                  align={{ base: "flex-start", sm: "center" }}
+                  justify="space-between"
+                  gap={2}
+                  mb={1}
+                  flexDir={{ base: "column", sm: "row" }}
+                >
+                  <Text
+                    color="content.tertiary"
+                    fontSize="label.sm"
+                    fontWeight="semibold"
+                  >
+                    Drafts saved in Clima
+                  </Text>
+                  <Button
+                    variant="outline"
+                    borderRadius={FLOW_BUTTON_RADIUS}
+                    loading={props.loadingAction === "start"}
+                    onClick={props.onStartDraft}
+                  >
+                    New draft
+                  </Button>
+                </Flex>
+                <chakra.select
+                  value={props.activeDraftRunId ?? ""}
+                  onChange={(event) => {
+                    if (event.target.value) {
+                      props.onSelectDraft(event.target.value);
+                    }
+                  }}
+                  disabled={props.draftListLoading}
+                  w="full"
+                  minH="40px"
+                  px={3}
+                  borderWidth="1px"
+                  borderColor="border.overlay"
+                  borderRadius="rounded"
+                  bg="base.light"
+                  color="content.primary"
+                >
+                  {!props.activeDraftRunId ? (
+                    <option value="">Select a saved draft</option>
+                  ) : null}
+                  {props.draftRuns.map((draftRun) => (
+                    <option
+                      key={draftRun.draft_run_id}
+                      value={draftRun.draft_run_id}
+                    >
+                      {draftRunOptionLabel(draftRun)}
+                    </option>
+                  ))}
+                </chakra.select>
+              </Box>
+            ) : null}
+            <Badge
+              bg={chip.bg}
+              color={chip.color}
+              borderRadius="rounded"
+              px={3}
+              alignSelf={{ base: "flex-start", md: "auto" }}
+            >
+              {chip.label}
+            </Badge>
+          </VStack>
+        </Flex>
+      </Box>
+
+      <Box
+        mt={4}
+        p={4}
+        bg="base.light"
+        borderColor="border.neutral"
+        borderWidth="1px"
+        borderRadius="rounded"
+      >
+        <Flex justify="space-between" align="center" gap={4}>
+          <Text fontFamily="heading" fontSize="body.md" fontWeight="semibold">
+            {overviewTitle(props.stage)}
+          </Text>
+          <Text color="content.secondary" fontSize="label.md">
+            {draftedCount} of {props.rows.length} drafted
+          </Text>
+        </Flex>
+        <Box mt={3} h="8px" bg="background.neutral" borderRadius="full">
+          <Box
+            h="full"
+            w={`${progress}%`}
+            bg="interactive.tertiary"
+            borderRadius="full"
+            transition="width 180ms ease"
+          />
+        </Box>
+      </Box>
+
+      <Box
+        mt={4}
+        flex={{ base: "initial", xl: 1 }}
+        minH={0}
+        bg="base.light"
+        borderColor="border.neutral"
+        borderWidth="1px"
+        borderRadius="rounded"
+        overflow="hidden"
+      >
+        <VStack
+          align="stretch"
+          gap={0}
+          h="full"
+          minH={0}
+          overflowY={{ base: "visible", xl: "auto" }}
+          data-testid="artifact-rows-scroll-region"
+        >
+          {props.rows.map((row) => (
+            <ArtifactRowView
+              key={row.id}
+              row={row}
+              active={row.id === props.activeProposalId}
+              drafting={
+                props.stage === "drafting" && props.loadingAction === "start"
+              }
+            />
+          ))}
+        </VStack>
+      </Box>
+
+      <Flex
+        mt={4}
+        align={{ base: "stretch", md: "center" }}
+        justify="space-between"
+        gap={3}
+        flexDir={{ base: "column", md: "row" }}
+        bg="base.light"
+        borderColor="border.neutral"
+        borderWidth="1px"
+        borderRadius="rounded"
+        px={5}
+        py={4}
+      >
+        <Text color="content.secondary" fontSize="body.md">
+          {props.stage === "review"
+            ? props.canSaveToInventory
+              ? `${props.counts.ready + props.counts.accepted} rows ready / ${props.counts.gap} gaps`
+              : props.canPersistDraftReview
+                ? "Draft review is ready to save in Clima"
+                : props.hasSourceBackedProposals
+                  ? "No source-backed rows are staged to save"
+                  : "No source-backed rows are ready to save"
+            : props.unresolvedCount > 0
+              ? `${props.unresolvedCount} decisions needed before save`
+              : "Nothing is written until you save"}
+        </Text>
+        <HStack gap={2} justify={{ base: "flex-end", md: "initial" }}>
+          <Button
+            variant="outline"
+            borderRadius={FLOW_BUTTON_RADIUS}
+            disabled={!props.hasDraft}
+            loading={props.loadingAction === "refresh"}
+            onClick={props.onRefresh}
+          >
+            <MdRefresh />
+            Refresh
+          </Button>
+          {props.stage === "start" ? (
+            <Button
+              data-testid="start-draft-button"
+              borderRadius={FLOW_BUTTON_RADIUS}
+              loading={props.loadingAction === "start"}
+              onClick={props.onStartDraft}
+            >
+              Start draft
+            </Button>
+          ) : null}
+          {props.stage !== "start" && props.canPersistDraftReview ? (
+            <Button
+              data-testid="save-review-draft-button"
+              variant="outline"
+              borderRadius={FLOW_BUTTON_RADIUS}
+              loading={props.loadingAction === "save_draft"}
+              onClick={props.onSaveDraft}
+            >
+              <MdSave />
+              Save draft
+            </Button>
+          ) : null}
+          {props.stage !== "start" && props.canSaveToInventory ? (
+            <Button
+              data-testid="save-inventory-button"
+              borderRadius={FLOW_BUTTON_RADIUS}
+              disabled={!props.canSaveToInventory}
+              loading={props.loadingAction === "save_inventory"}
+              onClick={props.onSaveToInventory}
+            >
+              <MdSave />
+              Save to inventory
+            </Button>
+          ) : null}
+        </HStack>
+      </Flex>
+    </Box>
+  );
+}

@@ -5,7 +5,7 @@ import type {
   DraftDecisionState,
   DraftProposal,
   SourceCandidate,
-} from "./types";
+} from "@/components/StationaryEnergyDraft/types";
 
 const RAW_KG_EMISSIONS_UNITS = new Set(["", "kgco2e", "tco2e"]);
 

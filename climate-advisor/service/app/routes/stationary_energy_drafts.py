@@ -25,6 +25,7 @@ router = APIRouter()
 
 
 def require_stationary_energy_agentic_enabled() -> None:
+    """Raise 404 when the Stationary Energy agentic workflow is disabled."""
     if not has_feature_flag(FeatureFlags.STATIONARY_ENERGY_AGENTIC):
         raise HTTPException(status_code=404, detail="Not found")
 
@@ -40,6 +41,7 @@ async def start_stationary_energy_draft(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> StartStationaryEnergyDraftResponse:
+    """Start a new Stationary Energy draft generation run."""
     service = StationaryEnergyDraftService(session)
     try:
         response = await service.start_draft(payload, authorization=authorization)
@@ -116,6 +118,7 @@ async def get_stationary_energy_draft(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> StationaryEnergyDraftStatusResponse:
+    """Return the latest stored snapshot for a specific draft run."""
     service = StationaryEnergyDraftService(session)
     return await service.get_draft_status(
         draft_run_id=draft_run_id,
@@ -135,6 +138,7 @@ async def retry_stationary_energy_draft(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> StartStationaryEnergyDraftResponse:
+    """Retry draft generation for an existing non-terminal draft run."""
     service = StationaryEnergyDraftService(session)
     try:
         response = await service.retry_draft(
@@ -163,6 +167,7 @@ async def review_stationary_energy_draft(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> ReviewStationaryEnergyDraftResponse:
+    """Persist the user's complete review decision set for a draft run."""
     service = StationaryEnergyDraftService(session)
     try:
         response = await service.review_draft(
@@ -188,6 +193,7 @@ async def save_stationary_energy_draft(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> SaveStationaryEnergyDraftResponse:
+    """Commit accepted reviewed rows from a draft into CityCatalyst."""
     service = StationaryEnergyDraftService(session)
     try:
         response = await service.save_draft(

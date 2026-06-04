@@ -1,7 +1,8 @@
-import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
+
 import { callClimateAdvisorJson } from "@/backend/agentic/ghgi/stationary-energy/ca";
 import { requireStationaryEnergyAgenticEnabled } from "@/backend/agentic/ghgi/stationary-energy/auth";
+import { apiHandler } from "@/util/api";
 
 export const GET = apiHandler(async (req, { session, params }) => {
   requireStationaryEnergyAgenticEnabled();

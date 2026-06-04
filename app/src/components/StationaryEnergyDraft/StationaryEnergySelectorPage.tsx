@@ -1,12 +1,6 @@
 "use client";
 /* eslint-disable i18next/no-literal-string */
 
-import ProgressLoader from "@/components/ProgressLoader";
-import { Button } from "@/components/ui/button";
-import Wrapper from "@/components/wrapper";
-import { api } from "@/services/api";
-import type { CityYearData } from "@/util/types";
-import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import {
   Badge,
   Box,
@@ -22,11 +16,18 @@ import { useParams, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { MdArrowForward, MdSearch } from "react-icons/md";
 
+import ProgressLoader from "@/components/ProgressLoader";
+import { Button } from "@/components/ui/button";
+import Wrapper from "@/components/wrapper";
+import { api } from "@/services/api";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
+import type { CityYearData } from "@/util/types";
+
 function yearLabel(year: CityYearData): string {
   return String(year.year ?? "Unknown year");
 }
 
-export default function StationaryEnergySelectorPage() {
+export function StationaryEnergySelectorPage() {
   const router = useRouter();
   const params = useParams();
   const lng = Array.isArray(params.lng) ? params.lng[0] : params.lng;

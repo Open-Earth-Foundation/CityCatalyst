@@ -334,6 +334,7 @@ class CityCatalystClient:
         }
 
     def _internal_headers(self, token: Optional[str] = None) -> Dict[str, str]:
+        """Build internal service-to-service headers for CityCatalyst capability calls."""
         headers = {
             "Content-Type": "application/json",
             "X-Service-Name": "climate-advisor",
@@ -351,6 +352,7 @@ class CityCatalystClient:
         token: Optional[str] = None,
         request_timeout: Optional[float] = None,
     ) -> Dict[str, Any]:
+        """POST to an internal CityCatalyst capability endpoint and parse the JSON response."""
         if not self.base_url:
             raise CityCatalystClientError("CC_BASE_URL not configured")
 
@@ -386,6 +388,7 @@ class CityCatalystClient:
         workflow_step: str,
         token: Optional[str] = None,
     ) -> list[str]:
+        """Return the allowed Stationary Energy internal capabilities for a workflow step."""
         payload = {
             "user_id": user_id,
             "city_id": city_id,
@@ -416,6 +419,7 @@ class CityCatalystClient:
         request_payload: Dict[str, Any],
         token: Optional[str] = None,
     ) -> Dict[str, Any]:
+        """Load the bounded Stationary Energy context through the CC internal capability route."""
         return await self.post_internal_capability(
             "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context",
             json_data=request_payload,
@@ -428,6 +432,7 @@ class CityCatalystClient:
         request_payload: Dict[str, Any],
         token: Optional[str] = None,
     ) -> Dict[str, Any]:
+        """Commit accepted Stationary Energy review rows through the CC internal capability route."""
         return await self.post_internal_capability(
             "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted",
             json_data=request_payload,

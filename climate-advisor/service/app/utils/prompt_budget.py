@@ -31,6 +31,7 @@ def get_stationary_energy_prompt_budget(
     settings: Any,
     flow: StationaryEnergyBudgetFlow,
 ) -> StationaryEnergyPromptBudget:
+    """Read the Stationary Energy prompt budget config for a specific workflow."""
     default_rows = 5 if flow == "draft_generation" else 3
     generation = getattr(getattr(settings, "llm", None), "generation", None)
     prompt_budget = getattr(generation, "prompt_budget", None)
@@ -62,6 +63,7 @@ def count_prompt_tokens(
     model: str | None,
     fallback_encoding: str,
 ) -> TokenCount:
+    """Count prompt tokens for a sequence of serializable prompt parts."""
     encoder = _tokenizer_for_model(model, fallback_encoding)
     text = "\n".join(_prompt_part_to_text(part) for part in parts if part is not None)
     return TokenCount(tokens=len(encoder.encode(text)), tokenizer=encoder.name)
@@ -73,6 +75,7 @@ def compact_stationary_energy_prompt_payload(
     budget: StationaryEnergyPromptBudget,
     drop_source_data: bool = False,
 ) -> dict[str, Any]:
+    """Trim source-candidate payload detail to fit a configured prompt budget."""
     compacted = deepcopy(payload)
     candidates = compacted.get("source_candidates")
     if isinstance(candidates, list):
@@ -98,6 +101,7 @@ def compact_stationary_energy_source_candidate(
     budget: StationaryEnergyPromptBudget,
     drop_source_data: bool = False,
 ) -> Any:
+    """Trim a single source-candidate payload according to prompt-budget limits."""
     if not isinstance(candidate, dict):
         return candidate
 
@@ -131,6 +135,7 @@ def trim_messages_to_budget(
     model: str | None,
     budget: StationaryEnergyPromptBudget,
 ) -> tuple[list[dict[str, Any]], TokenCount, int]:
+    """Drop oldest non-stationary chat messages until the prompt fits the budget."""
     trimmed = list(messages)
     token_count = count_prompt_tokens(
         [instruction_text, trimmed],
@@ -155,6 +160,7 @@ def trim_messages_to_budget(
 
 
 def _oldest_non_stationary_context_index(messages: list[dict[str, Any]]) -> int | None:
+    """Find the oldest removable message that is not draft-context metadata."""
     for index, message in enumerate(messages[:-1]):
         content = str(message.get("content") or "")
         if content.startswith("STATIONARY_ENERGY_DRAFT_CONTEXT_JSON"):
@@ -164,6 +170,7 @@ def _oldest_non_stationary_context_index(messages: list[dict[str, Any]]) -> int 
 
 
 def _tokenizer_for_model(model: str | None, fallback_encoding: str):
+    """Resolve the best available tokenizer for a model name with fallback."""
     candidates = []
     if model:
         candidates.append(model)
@@ -187,6 +194,7 @@ def _tokenizer_for_model(model: str | None, fallback_encoding: str):
 
 
 def _prompt_part_to_text(part: Any) -> str:
+    """Serialize one prompt part into text for token counting."""
     if isinstance(part, str):
         return part
     return json.dumps(part, ensure_ascii=True, default=str)

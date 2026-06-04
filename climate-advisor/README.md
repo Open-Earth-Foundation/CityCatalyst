@@ -556,7 +556,7 @@ uv run --directory service pytest tests/test_e2e_conversation.py -v
 ### Prompt Flow Smoke Test
 
 ```bash
-uv run --directory service python -m tests.run_ca_e2e
+uv run --directory service python -m scripts.run_ca_e2e
 ```
 
 ## Docker Deployment (Local Testing)

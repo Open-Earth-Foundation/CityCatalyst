@@ -1,7 +1,10 @@
 "use client";
 
-import { clearStoredDraftContext, readStoredDraftContext } from "./storage";
-import type { DraftStatusResponse } from "./types";
+import {
+  clearStoredDraftContext,
+  readStoredDraftContext,
+} from "@/components/StationaryEnergyDraft/storage";
+import type { DraftStatusResponse } from "@/components/StationaryEnergyDraft/types";
 
 const TERMINAL_DRAFT_STATUSES = new Set([
   "saved",

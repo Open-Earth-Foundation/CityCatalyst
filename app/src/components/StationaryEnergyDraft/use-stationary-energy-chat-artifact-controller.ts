@@ -3,27 +3,32 @@
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { useSSEStream } from "@/hooks/useSSEStream";
-
 import {
-  clearStoredDraftContext,
-  writeStoredDraftContext,
-} from "./storage";
-import type {
-  DraftDecisionAction,
-  DraftDecisionState,
-  DraftListItem,
-  DraftListResponse,
-  DraftProposal,
-  DraftStatusResponse,
-  SaveResponse,
-} from "./types";
-import { readJson } from "./utils";
+  createChatThread,
+  fetchDraftRuns,
+  fetchDraftStatus,
+  fetchResumedDraft,
+  persistReviewDecisionPayload,
+  saveAcceptedDraftRows,
+  startDraftRun,
+} from "@/components/StationaryEnergyDraft/stationary-energy-draft-api";
 import {
-  type ArtifactRow,
-  type DecisionReviewContext,
-  type DraftCounts,
-  type DraftStage,
+  addResolvedProposalId,
+  buildSourcePreferenceReply,
+  buildStationaryEnergyChatRequest,
+  hasTerminalDraftStatus,
+  mergeDecisionReviewMessages,
+  nextDecisionState,
+  removeResolvedProposalId,
+} from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-helpers";
+import {
+  appendAssistantDeltaToMessages,
+  createTextMessage,
+  removeEmptyAssistantTailFromMessages,
+  type ChatMessage,
+  type ChatTextMessage,
+} from "@/components/StationaryEnergyDraft/stationary-energy-chat-messages";
+import {
   buildArtifactRows,
   buildDecisionReviewContext,
   buildInitialDecisionState,
@@ -36,9 +41,26 @@ import {
   hasDraftReviewChanges,
   pendingDecisionReviewProposals,
   resolvedProposalIdsFromReview,
+  type ArtifactRow,
+  type DecisionReviewContext,
+  type DraftCounts,
+  type DraftStage,
   unresolvedBlockingProposalIds,
-} from "./flow";
-import { resolveStationaryEnergyDraftResume } from "./resume";
+} from "@/components/StationaryEnergyDraft/flow";
+import { resolveStationaryEnergyDraftResume } from "@/components/StationaryEnergyDraft/resume";
+import {
+  clearStoredDraftContext,
+  writeStoredDraftContext,
+} from "@/components/StationaryEnergyDraft/storage";
+import type {
+  DraftDecisionAction,
+  DraftDecisionState,
+  DraftListItem,
+  DraftProposal,
+  DraftStatusResponse,
+  SaveResponse,
+} from "@/components/StationaryEnergyDraft/types";
+import { useSSEStream } from "@/hooks/useSSEStream";
 
 export type LoadingAction =
   | "start"
@@ -47,21 +69,6 @@ export type LoadingAction =
   | "save_inventory"
   | "chat"
   | null;
-
-type ChatTextMessage = {
-  id: string;
-  kind: "text";
-  role: "user" | "assistant";
-  text: string;
-};
-
-type ChatDecisionReviewMessage = {
-  id: string;
-  kind: "decision_review";
-  proposalId: string;
-};
-
-export type ChatMessage = ChatTextMessage | ChatDecisionReviewMessage;
 
 type UseStationaryEnergyChatArtifactControllerParams = {
   cityId: string;
@@ -128,39 +135,7 @@ export type StationaryEnergyChatArtifactController = {
   state: StationaryEnergyChatArtifactControllerState;
 };
 
-const TERMINAL_DRAFT_STATUSES = new Set([
-  "saved",
-  "partially_saved",
-  "no_changes",
-  "failed",
-]);
 const EMPTY_RESOLVED_PROPOSALS = new Set<string>();
-
-function createChatMessageId(prefix: string): string {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-}
-
-function createTextMessage(
-  role: ChatTextMessage["role"],
-  text: string,
-): ChatTextMessage {
-  return {
-    id: createChatMessageId(role),
-    kind: "text",
-    role,
-    text,
-  };
-}
-
-function createDecisionReviewMessage(
-  proposalId: string,
-): ChatDecisionReviewMessage {
-  return {
-    id: `decision-review-${proposalId}`,
-    kind: "decision_review",
-    proposalId,
-  };
-}
 
 export function useStationaryEnergyChatArtifactController(
   params: UseStationaryEnergyChatArtifactControllerParams,
@@ -204,7 +179,7 @@ export function useStationaryEnergyChatArtifactController(
       if (!payload.staleness?.is_stale) {
         setAcknowledgedStaleDraftRunId(null);
       }
-      if (TERMINAL_DRAFT_STATUSES.has(payload.status)) {
+      if (hasTerminalDraftStatus(payload.status)) {
         clearStoredDraftContext(inventoryId);
       } else {
         writeStoredDraftContext(inventoryId, {
@@ -219,19 +194,10 @@ export function useStationaryEnergyChatArtifactController(
   const loadDraftRuns = useCallback(async (): Promise<DraftListItem[]> => {
     setDraftListLoading(true);
     try {
-      const query = new URLSearchParams({
-        city_id: cityId,
-        inventory_id: inventoryId,
-      });
-      const response = await fetch(
-        `/api/v1/stationary-energy-drafts?${query.toString()}`,
-      );
-      const payload = await readJson<DraftListResponse>(
-        response,
-        "Failed to load Stationary Energy drafts",
-      );
-      setDraftRuns(payload.drafts ?? []);
-      return payload.drafts ?? [];
+      const payload = await fetchDraftRuns({ cityId, inventoryId });
+      const nextDrafts = payload.drafts ?? [];
+      setDraftRuns(nextDrafts);
+      return nextDrafts;
     } finally {
       setDraftListLoading(false);
     }
@@ -241,13 +207,7 @@ export function useStationaryEnergyChatArtifactController(
     async (draftRunId: string): Promise<DraftStatusResponse> => {
       setLoadingAction("refresh");
       try {
-        const response = await fetch(
-          `/api/v1/stationary-energy-drafts/${draftRunId}?inventory_id=${encodeURIComponent(inventoryId)}`,
-        );
-        const payload = await readJson<DraftStatusResponse>(
-          response,
-          "Failed to load Stationary Energy draft status",
-        );
+        const payload = await fetchDraftStatus({ draftRunId, inventoryId });
         applyDraftState(payload);
         await loadDraftRuns();
         return payload;
@@ -260,20 +220,10 @@ export function useStationaryEnergyChatArtifactController(
 
   const resumeDraftFromServer = useCallback(
     async (): Promise<DraftStatusResponse | null> => {
-      const query = new URLSearchParams({
-        city_id: cityId,
-        inventory_id: inventoryId,
-      });
-      const response = await fetch(
-        `/api/v1/stationary-energy-drafts/resume?${query.toString()}`,
-      );
-      if (response.status === 404) {
+      const payload = await fetchResumedDraft({ cityId, inventoryId });
+      if (!payload) {
         return null;
       }
-      const payload = await readJson<DraftStatusResponse>(
-        response,
-        "Failed to resume Stationary Energy draft",
-      );
       applyDraftState(payload);
       await loadDraftRuns();
       return payload;
@@ -382,26 +332,9 @@ export function useStationaryEnergyChatArtifactController(
   );
 
   useEffect(() => {
-    if (decisionReviewContext.length === 0) {
-      return;
-    }
-    setChatMessages((current) => {
-      const existingProposalIds = new Set(
-        current
-          .filter((message): message is ChatDecisionReviewMessage => {
-            return message.kind === "decision_review";
-          })
-          .map((message) => message.proposalId),
-      );
-      const additions = decisionReviewContext
-        .filter((context) => !existingProposalIds.has(context.proposal_id))
-        .map((context) => createDecisionReviewMessage(context.proposal_id));
-
-      if (additions.length === 0) {
-        return current;
-      }
-      return [...current, ...additions];
-    });
+    setChatMessages((current) =>
+      mergeDecisionReviewMessages(current, decisionReviewContext),
+    );
   }, [decisionReviewContext]);
 
   const appendChatMessage = useCallback((message: ChatTextMessage): void => {
@@ -416,30 +349,11 @@ export function useStationaryEnergyChatArtifactController(
   );
 
   const appendAssistantDelta = useCallback((delta: string): void => {
-    setChatMessages((current) => {
-      const next = [...current];
-      const last = next[next.length - 1];
-      if (!last || last.kind !== "text" || last.role !== "assistant") {
-        next.push(createTextMessage("assistant", delta));
-      } else {
-        next[next.length - 1] = { ...last, text: `${last.text}${delta}` };
-      }
-      return next;
-    });
+    setChatMessages((current) => appendAssistantDeltaToMessages(current, delta));
   }, []);
 
   const removeEmptyAssistantTail = useCallback((): void => {
-    setChatMessages((current) => {
-      const last = current[current.length - 1];
-      if (
-        last?.kind === "text" &&
-        last.role === "assistant" &&
-        !last.text.trim()
-      ) {
-        return current.slice(0, -1);
-      }
-      return current;
-    });
+    setChatMessages((current) => removeEmptyAssistantTailFromMessages(current));
   }, []);
 
   const { startStream, stopStream } = useSSEStream({
@@ -472,19 +386,10 @@ export function useStationaryEnergyChatArtifactController(
         : window.setTimeout(() => controller.abort(), 4500);
 
       try {
-        const response = await fetch("/api/v1/chat/threads", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const payload = await createChatThread({
+          inventoryId,
           signal: controller.signal,
-          body: JSON.stringify({
-            inventory_id: inventoryId,
-            title: "Stationary Energy draft",
-          }),
         });
-        const payload = await readJson<{ threadId: string }>(
-          response,
-          "Failed to create Clima chat thread",
-        );
         setThreadId(payload.threadId);
         return payload.threadId;
       } catch (error) {
@@ -509,20 +414,12 @@ export function useStationaryEnergyChatArtifactController(
     setLoadingAction("start");
     try {
       const nextThreadId = await ensureThreadId(false);
-      const response = await fetch("/api/v1/stationary-energy-drafts/start/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          city_id: cityId,
-          inventory_id: inventoryId,
-          thread_id: nextThreadId ?? undefined,
-          locale: lng,
-        }),
+      const payload = await startDraftRun({
+        cityId,
+        inventoryId,
+        threadId: nextThreadId,
+        locale: lng,
       });
-      const payload = await readJson<{ draft_run_id?: string }>(
-        response,
-        "Failed to start Stationary Energy draft",
-      );
       const draftRunId = String(payload.draft_run_id ?? "");
       if (!draftRunId) {
         throw new Error("Draft start response did not include draft_run_id.");
@@ -541,12 +438,7 @@ export function useStationaryEnergyChatArtifactController(
     (preference: string): void => {
       setSourcePreference(preference);
       appendTextMessage("user", preference);
-      appendTextMessage(
-        "assistant",
-        preference === "No preference"
-          ? "Got it. I will keep the current source ranking."
-          : `Got it. I will use ${preference.replace("Prefer ", "")} where it fits the reviewed source options.`,
-      );
+      appendTextMessage("assistant", buildSourcePreferenceReply(preference));
     },
     [appendTextMessage],
   );
@@ -581,54 +473,37 @@ export function useStationaryEnergyChatArtifactController(
       selectedSourceId = "",
       _label = "Selected",
     ): void => {
-      setDecisionState((current) => ({
-        ...current,
-        [proposal.proposal_id]: {
+      setDecisionState((current) =>
+        nextDecisionState(
+          current,
+          proposal.proposal_id,
           action,
           selectedSourceId,
-          manualValue: current[proposal.proposal_id]?.manualValue ?? "",
-          manualUnit: current[proposal.proposal_id]?.manualUnit ?? "",
-          note: current[proposal.proposal_id]?.note ?? "",
-        },
-      }));
-      setResolvedProposalIds((current) => {
-        const next = new Set(current);
-        next.add(proposal.proposal_id);
-        return next;
-      });
+        ),
+      );
+      setResolvedProposalIds((current) =>
+        addResolvedProposalId(current, proposal.proposal_id),
+      );
     },
     [],
   );
 
   const editDecision = useCallback((proposalId: string): void => {
-    setResolvedProposalIds((current) => {
-      const next = new Set(current);
-      next.delete(proposalId);
-      return next;
-    });
+    setResolvedProposalIds((current) =>
+      removeResolvedProposalId(current, proposalId),
+    );
   }, []);
 
   const persistReviewDecisions = useCallback(
     async (targetDraftState: DraftStatusResponse): Promise<unknown> => {
-      const decisions = buildReviewDecisionPayload({
-        draftState: targetDraftState,
-        decisionState,
+      return persistReviewDecisionPayload({
+        draftRunId: targetDraftState.draft_run_id,
+        inventoryId,
+        decisions: buildReviewDecisionPayload({
+          draftState: targetDraftState,
+          decisionState,
+        }),
       });
-      const reviewResponse = await fetch(
-        `/api/v1/stationary-energy-drafts/${targetDraftState.draft_run_id}/review`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            inventory_id: inventoryId,
-            decisions,
-          }),
-        },
-      );
-      return readJson(
-        reviewResponse,
-        "Failed to save Stationary Energy draft decisions",
-      );
     },
     [decisionState, inventoryId],
   );
@@ -681,20 +556,10 @@ export function useStationaryEnergyChatArtifactController(
         await persistReviewDecisions(draftState);
       }
 
-      const saveResponse = await fetch(
-        `/api/v1/stationary-energy-drafts/${draftState.draft_run_id}/save`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            inventory_id: inventoryId,
-          }),
-        },
-      );
-      const payload = await readJson<SaveResponse>(
-        saveResponse,
-        "Failed to save accepted Stationary Energy rows",
-      );
+      const payload: SaveResponse = await saveAcceptedDraftRows({
+        draftRunId: draftState.draft_run_id,
+        inventoryId,
+      });
       appendTextMessage(
         "assistant",
         payload.status === "saved"
@@ -737,33 +602,16 @@ export function useStationaryEnergyChatArtifactController(
         await startStream("/api/v1/chat/messages", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            threadId: nextThreadId,
-            content,
-            inventory_id: inventoryId,
-            context: draftState
-              ? {
-                  stationary_energy_draft_run_id: draftState.draft_run_id,
-                  draft_run_id: draftState.draft_run_id,
-                  city_id: cityId,
-                  inventory_id: inventoryId,
-                  stationary_energy_interaction_mode: "free_text",
-                  stationary_energy_pending_decision_reviews:
-                    decisionReviewContext,
-                }
-              : undefined,
-            options: draftState
-              ? {
-                  stationary_energy_draft_run_id: draftState.draft_run_id,
-                  stationary_energy_pending_decision_review_count:
-                    decisionReviewContext.length,
-                  stationary_energy_ui_surfaces: [
-                    "chat_text",
-                    "decision_review_card",
-                  ],
-                }
-              : {},
-          }),
+          body: JSON.stringify(
+            buildStationaryEnergyChatRequest({
+              cityId,
+              content,
+              decisionReviewContext,
+              draftState,
+              inventoryId,
+              threadId: nextThreadId,
+            }),
+          ),
         });
       } catch (error) {
         if ((error as Error).name !== "AbortError") {

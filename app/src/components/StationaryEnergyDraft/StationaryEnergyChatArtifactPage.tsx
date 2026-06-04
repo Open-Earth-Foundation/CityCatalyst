@@ -5,17 +5,15 @@ import { Box, Grid, Text } from "@chakra-ui/react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import { ArtifactPanel } from "@/components/StationaryEnergyDraft/stationary-energy-artifact-panel";
+import { ClimaChatPanel } from "@/components/StationaryEnergyDraft/stationary-energy-chat-artifact-panels";
 import ProgressLoader from "@/components/ProgressLoader";
 import { api } from "@/services/api";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { getParamValueRequired } from "@/util/helpers";
 
-import type { DraftStage } from "./flow";
-import {
-  ArtifactPanel,
-  ClimaChatPanel,
-} from "./stationary-energy-chat-artifact-panels";
-import { useStationaryEnergyChatArtifactController } from "./use-stationary-energy-chat-artifact-controller";
+import type { DraftStage } from "@/components/StationaryEnergyDraft/flow";
+import { useStationaryEnergyChatArtifactController } from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
 
 interface StationaryEnergyChatArtifactPageProps {
   initialStage?: DraftStage;
@@ -203,5 +201,3 @@ export function StationaryEnergyChatArtifactPage({
     </Box>
   );
 }
-
-export default StationaryEnergyChatArtifactPage;

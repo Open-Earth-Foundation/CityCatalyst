@@ -1,9 +1,9 @@
+import DataSourceService from "@/backend/DataSourceService";
 import { db } from "@/models";
 import { Inventory } from "@/models/Inventory";
-import DataSourceService from "@/backend/DataSourceService";
-import { STATIONARY_ENERGY } from "@/app/[lng]/methodologies/methodologies-stationary-energy";
 import inventoryStructure from "@/data/inventory-structure.json";
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
+import { STATIONARY_ENERGY } from "@/util/methodologies/stationary-energy";
 import { LANGUAGES } from "@/util/types";
 
 type StationaryEnergyLocale = `${LANGUAGES}`;

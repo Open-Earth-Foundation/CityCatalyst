@@ -16,6 +16,7 @@ class FeatureFlags(str, Enum):
 
 
 def parse_feature_flags(raw_flags: str | None) -> list[str]:
+    """Parse the comma-separated feature flag environment variable into names."""
     if not raw_flags:
         return []
 
@@ -28,10 +29,12 @@ def parse_feature_flags(raw_flags: str | None) -> list[str]:
 
 
 def get_feature_flags(raw_flags: str | None = None) -> list[str]:
+    """Return the current enabled Climate Advisor feature flag names."""
     if raw_flags is None:
         raw_flags = os.getenv("CA_FEATURE_FLAGS", "")
     return parse_feature_flags(raw_flags)
 
 
 def has_feature_flag(flag: FeatureFlags, raw_flags: str | None = None) -> bool:
+    """Return whether the requested feature flag is enabled."""
     return flag.value in get_feature_flags(raw_flags)

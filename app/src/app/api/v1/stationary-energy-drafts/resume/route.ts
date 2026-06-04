@@ -8,12 +8,13 @@
  *     summary: Resume the latest active Stationary Energy draft for the current user.
  */
 
-import { callClimateAdvisor } from "@/backend/agentic/ghgi/stationary-energy/ca";
-import { requireStationaryEnergyAgenticEnabled } from "@/backend/agentic/ghgi/stationary-energy/auth";
-import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
+import { callClimateAdvisor } from "@/backend/agentic/ghgi/stationary-energy/ca";
+import { requireStationaryEnergyAgenticEnabled } from "@/backend/agentic/ghgi/stationary-energy/auth";
+import { apiHandler } from "@/util/api";
 
 const querySchema = z.object({
   city_id: z.string().min(1),

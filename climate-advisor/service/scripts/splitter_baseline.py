@@ -12,7 +12,7 @@ Outputs:
 - Writes or prints a JSON artifact with chunk sizes, overlap, and boundary metrics.
 
 Usage (from climate-advisor/):
-- uv run python -m service.tests.splitter_baseline
+- uv run --directory service python -m scripts.splitter_baseline
 """
 
 from __future__ import annotations
@@ -21,10 +21,17 @@ import argparse
 import hashlib
 import json
 import statistics
+import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
 import tiktoken
+
+SERVICE_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = SERVICE_ROOT.parent
+for import_root in (str(SERVICE_ROOT), str(REPO_ROOT)):
+    if import_root not in sys.path:
+        sys.path.insert(0, import_root)
 
 from vector_db.config_loader import get_embedding_config
 from vector_db.utils.text_processing import TextSplitter
@@ -32,9 +39,11 @@ from vector_db.utils.text_processing import TextSplitter
 
 EMBEDDING_MODEL = "text-embedding-3-large"
 FALLBACK_ENCODING = "cl100k_base"
+TEST_ROOT = SERVICE_ROOT / "tests"
 
 
 def _percentile(values: List[int], percentile: int) -> float:
+    """Compute a percentile over integer values using linear interpolation."""
     if not values:
         return 0.0
     ordered = sorted(values)
@@ -48,10 +57,12 @@ def _percentile(values: List[int], percentile: int) -> float:
 
 
 def _mean(values: List[int]) -> float:
+    """Compute the mean of integer values with an empty-list fallback."""
     return float(statistics.fmean(values)) if values else 0.0
 
 
 def _load_tokenizer(model: str):
+    """Load the tokenizer for a model with a stable fallback encoding."""
     try:
         return tiktoken.encoding_for_model(model)
     except KeyError:
@@ -59,6 +70,7 @@ def _load_tokenizer(model: str):
 
 
 def _longest_shared_suffix_prefix(left: str, right: str) -> int:
+    """Measure overlap where one chunk ends with the prefix of the next chunk."""
     max_len = min(len(left), len(right))
     for size in range(max_len, 0, -1):
         if left[-size:] == right[:size]:
@@ -67,6 +79,7 @@ def _longest_shared_suffix_prefix(left: str, right: str) -> int:
 
 
 def _sequential_positions(chunks: List[str], cleaned_text: str) -> List[int]:
+    """Find the best-effort sequential positions of chunks within the cleaned text."""
     positions: List[int] = []
     search_start = 0
     for chunk in chunks:
@@ -81,6 +94,7 @@ def _sequential_positions(chunks: List[str], cleaned_text: str) -> List[int]:
 
 
 def _classify_chunk_start(cleaned_text: str, start_index: int) -> Dict[str, bool]:
+    """Classify whether a chunk starts on clean text boundaries or mid-content."""
     if start_index <= 0:
         return {
             "starts_at_paragraph_boundary": True,
@@ -113,6 +127,7 @@ def _classify_chunk_start(cleaned_text: str, start_index: int) -> Dict[str, bool
 
 
 def build_baseline(text_path: Path) -> Dict[str, Any]:
+    """Build chunking and boundary metrics for one text fixture."""
     raw_text = text_path.read_text(encoding="utf-8")
     config = get_embedding_config()
     splitter = TextSplitter()
@@ -203,10 +218,11 @@ def build_baseline(text_path: Path) -> Dict[str, Any]:
 
 
 def main() -> int:
+    """Generate a splitter baseline artifact and print or write the JSON output."""
     parser = argparse.ArgumentParser(description="Generate a splitter baseline artifact for a text fixture.")
     parser.add_argument(
         "--fixture",
-        default=str(Path(__file__).parent / "fixtures" / "splitter_baseline" / "gpc_excerpt_multi_paragraph.txt"),
+        default=str(TEST_ROOT / "fixtures" / "splitter_baseline" / "gpc_excerpt_multi_paragraph.txt"),
         help="Path to the input text fixture.",
     )
     parser.add_argument(

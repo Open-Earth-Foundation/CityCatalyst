@@ -1,7 +1,7 @@
 "use client";
 
-import StationaryEnergyChatArtifactPage from "./StationaryEnergyChatArtifactPage";
+import { StationaryEnergyChatArtifactPage } from "@/components/StationaryEnergyDraft/StationaryEnergyChatArtifactPage";
 
-export default function StationaryEnergyDecisionPage() {
+export function StationaryEnergyDecisionPage() {
   return <StationaryEnergyChatArtifactPage initialStage="start" />;
 }

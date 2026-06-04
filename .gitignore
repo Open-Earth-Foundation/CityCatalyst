@@ -171,3 +171,4 @@ app/demo-recording/
 docs/design-references/
 tmp-pgvector/
 app/playwright-output/
+demo-recording/

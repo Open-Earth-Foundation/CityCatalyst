@@ -7,7 +7,7 @@ import unittest
 
 TEST_ROOT = Path(__file__).resolve().parent
 
-from .splitter_baseline import build_baseline
+from scripts.splitter_baseline import build_baseline
 from vector_db.utils.text_processing import TextSplitter
 
 

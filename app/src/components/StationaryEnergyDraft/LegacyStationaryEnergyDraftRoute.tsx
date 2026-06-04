@@ -1,15 +1,16 @@
 "use client";
 /* eslint-disable i18next/no-literal-string */
 
-import ProgressLoader from "@/components/ProgressLoader";
-import Wrapper from "@/components/wrapper";
-import { api } from "@/services/api";
-import { getParamValueRequired } from "@/util/helpers";
 import { Box, Heading, Text } from "@chakra-ui/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export default function LegacyStationaryEnergyDraftRoute() {
+import ProgressLoader from "@/components/ProgressLoader";
+import Wrapper from "@/components/wrapper";
+import { api } from "@/services/api";
+import { getParamValueRequired } from "@/util/helpers";
+
+export function LegacyStationaryEnergyDraftRoute() {
   const router = useRouter();
   const params = useParams();
   const lng = getParamValueRequired(params.lng);

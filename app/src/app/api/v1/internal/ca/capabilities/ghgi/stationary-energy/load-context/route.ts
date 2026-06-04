@@ -1,15 +1,18 @@
-import { apiHandler } from "@/util/api";
-import { NextResponse } from "next/server";
-import { PermissionService } from "@/backend/permissions/PermissionService";
 import createHttpError from "http-errors";
-import { Inventory } from "@/models/Inventory";
+import { NextResponse } from "next/server";
+
 import { buildStationaryEnergyContext } from "@/backend/agentic/ghgi/stationary-energy/context";
-import { loadStationaryEnergyContextInputSchema } from "@/backend/agentic/ghgi/stationary-energy/registry";
+import {
+  loadStationaryEnergyContextInputSchema,
+} from "@/backend/agentic/ghgi/stationary-energy/registry";
 import {
   requireClimateAdvisorServiceRequest,
   requireRequestUser,
   requireStationaryEnergyAgenticEnabled,
 } from "@/backend/agentic/ghgi/stationary-energy/auth";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+import { Inventory } from "@/models/Inventory";
+import { apiHandler } from "@/util/api";
 
 export const POST = apiHandler(async (req, { session }) => {
   requireStationaryEnergyAgenticEnabled();

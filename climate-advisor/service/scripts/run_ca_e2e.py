@@ -2,7 +2,7 @@
 Run Climate Advisor E2E prompt flow without pytest and save results to disk.
 
 Usage (from climate-advisor/):
-  uv run --directory service python -m tests.run_ca_e2e
+  uv run --directory service python -m scripts.run_ca_e2e
 
 Optional flags:
   --prompts     Path to the JSON prompt file (default: tests/fixtures/ca_e2e_prompts.json)
@@ -29,7 +29,7 @@ Getting a user_id and JWT token for CA_E2E_CC_TOKEN:
      This requires CC_BASE_URL and CC_API_KEY in climate-advisor/.env.
   3) Confirm CA_E2E_CC_TOKEN is set before running this script.
   4) (Optional) Run automatic verification on the output:
-       uv run --directory service python -m tests.review_ca_e2e --input tests/output/ca_e2e_responses.json
+       uv run --directory service python -m scripts.review_ca_e2e --input tests/output/ca_e2e_responses.json
      This writes tests/output/responses_eval.json by default.
 """
 
@@ -39,6 +39,7 @@ import argparse
 import json
 import os
 import re
+import sys
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -51,17 +52,25 @@ except ModuleNotFoundError:
     print("pgvector is required for CA E2E runs.", file=sys.stderr)
     sys.exit(1)
 
+SERVICE_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = SERVICE_ROOT.parent
+for import_root in (str(SERVICE_ROOT), str(REPO_ROOT)):
+    if import_root not in sys.path:
+        sys.path.insert(0, import_root)
+
 from app.main import get_app
 from app.utils.token_manager import is_token_expired, redact_token
 
-FIXTURE_PATH = Path(__file__).parent / "fixtures" / "ca_e2e_prompts.json"
-DEFAULT_OUTPUT_PATH = Path(__file__).parent / "output" / "ca_e2e_responses.json"
+TEST_ROOT = SERVICE_ROOT / "tests"
+FIXTURE_PATH = TEST_ROOT / "fixtures" / "ca_e2e_prompts.json"
+DEFAULT_OUTPUT_PATH = TEST_ROOT / "output" / "ca_e2e_responses.json"
 
 ENV_PATTERN = re.compile(r"\$\{([A-Z0-9_]+)\}")
 VAR_PATTERN = re.compile(r"\{\{([a-zA-Z0-9_]+)\}\}")
 
 
 def _load_prompt_data(path: Path) -> Dict[str, Any]:
+    """Load the E2E prompt configuration and require an object root payload."""
     with path.open("r", encoding="utf-8") as handle:
         payload = json.load(handle)
     if not isinstance(payload, dict):
@@ -70,7 +79,9 @@ def _load_prompt_data(path: Path) -> Dict[str, Any]:
 
 
 def _resolve_string(value: str, variables: Dict[str, Any]) -> str:
+    """Resolve environment and runtime placeholders inside a prompt string."""
     def env_replace(match: re.Match[str]) -> str:
+        """Replace an environment placeholder with its configured runtime value."""
         key = match.group(1)
         env_value = os.getenv(key)
         if not env_value:
@@ -78,6 +89,7 @@ def _resolve_string(value: str, variables: Dict[str, Any]) -> str:
         return env_value
 
     def var_replace(match: re.Match[str]) -> str:
+        """Replace a runtime variable placeholder using resolved case metadata."""
         key = match.group(1)
         if key not in variables or variables[key] in {None, ""}:
             raise RuntimeError(f"Missing runtime variable for placeholder: {key}")
@@ -88,6 +100,7 @@ def _resolve_string(value: str, variables: Dict[str, Any]) -> str:
 
 
 def _render_payload(value: Any, variables: Dict[str, Any]) -> Any:
+    """Recursively render placeholders across an arbitrary JSON-like payload."""
     if isinstance(value, dict):
         return {key: _render_payload(val, variables) for key, val in value.items()}
     if isinstance(value, list):
@@ -98,12 +111,14 @@ def _render_payload(value: Any, variables: Dict[str, Any]) -> Any:
 
 
 def _parse_sse_events(raw_text: str) -> List[Dict[str, Any]]:
+    """Parse an SSE response body into structured event dictionaries."""
     events: List[Dict[str, Any]] = []
     event_type: Optional[str] = None
     event_id: Optional[str] = None
     data_lines: List[str] = []
 
     def flush_event() -> None:
+        """Finalize the current SSE event buffer into the parsed event list."""
         nonlocal event_type, event_id, data_lines
         if event_type is None and not data_lines:
             return
@@ -135,6 +150,7 @@ def _parse_sse_events(raw_text: str) -> List[Dict[str, Any]]:
 
 
 def _collect_assistant_text(events: List[Dict[str, Any]]) -> str:
+    """Concatenate assistant message chunks from parsed SSE events."""
     parts: List[str] = []
     for event in events:
         if event.get("event") != "message":
@@ -148,6 +164,7 @@ def _collect_assistant_text(events: List[Dict[str, Any]]) -> str:
 
 
 def _get_done_payload(events: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+    """Return the final `done` event payload when present."""
     for event in events:
         if event.get("event") == "done" and isinstance(event.get("data"), dict):
             return event["data"]
@@ -155,6 +172,7 @@ def _get_done_payload(events: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
 
 
 def _collect_error_messages(events: List[Dict[str, Any]]) -> List[str]:
+    """Extract readable error messages from parsed SSE error events."""
     messages: List[str] = []
     for event in events:
         if event.get("event") != "error":
@@ -170,6 +188,7 @@ def _collect_error_messages(events: List[Dict[str, Any]]) -> List[str]:
 
 
 def _is_retryable_error(messages: List[str]) -> bool:
+    """Return whether the captured error messages look transient and retryable."""
     retry_markers = (
         "Internal server error",
         "server error",
@@ -187,6 +206,7 @@ def _is_retryable_error(messages: List[str]) -> bool:
 
 
 def _find_tool_invocation(tools_used: List[Dict[str, Any]], name: str) -> Optional[Dict[str, Any]]:
+    """Return the first tool invocation entry matching the requested tool name."""
     for tool in tools_used:
         if tool.get("name") == name:
             return tool
@@ -194,6 +214,7 @@ def _find_tool_invocation(tools_used: List[Dict[str, Any]], name: str) -> Option
 
 
 def _extract_inventory_meta(tools_used: List[Dict[str, Any]]) -> Dict[str, str]:
+    """Extract inventory id and city name hints from tool outputs for later prompts."""
     for tool_name in ("city_inventory_search", "get_user_inventories"):
         tool = _find_tool_invocation(tools_used, tool_name)
         if not tool:
@@ -231,6 +252,7 @@ def _extract_inventory_meta(tools_used: List[Dict[str, Any]]) -> Dict[str, str]:
 
 
 def _redact_payload(value: Any) -> Any:
+    """Recursively redact access tokens from saved request and response payloads."""
     if isinstance(value, dict):
         redacted: Dict[str, Any] = {}
         for key, val in value.items():
@@ -245,6 +267,7 @@ def _redact_payload(value: Any) -> Any:
 
 
 def _env_override(name: str) -> Optional[str]:
+    """Read an environment override unless it still contains a placeholder value."""
     value = os.getenv(name)
     if not value:
         return None
@@ -254,6 +277,7 @@ def _env_override(name: str) -> Optional[str]:
 
 
 def main() -> int:
+    """Run the configured CA prompt cases and persist their responses to disk."""
     parser = argparse.ArgumentParser(
         description="Run CA E2E prompts and save responses.",
     )

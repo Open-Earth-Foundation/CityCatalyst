@@ -11,7 +11,7 @@ Usage from climate-advisor/:
 If --city-id and --inventory-id are omitted, the script tries to pick the first
 inventory from /api/v1/user/inventories. The fixture output matches CA's
 LoadStationaryEnergyContextResponse shape and can be served by
-service/tests/run_stationary_energy_mock_flow.py.
+service/scripts/run_stationary_energy_mock_flow.py.
 """
 
 from __future__ import annotations
@@ -26,15 +26,20 @@ from typing import Any
 
 import requests
 
+SERVICE_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = SERVICE_ROOT.parent
+for import_root in (str(SERVICE_ROOT), str(REPO_ROOT)):
+    if import_root not in sys.path:
+        sys.path.insert(0, import_root)
 
 DEFAULT_OUTPUT = (
-    Path(__file__).resolve().parents[1]
+    SERVICE_ROOT
     / "tests"
     / "fixtures"
     / "stationary_energy_load_context_extracted.json"
 )
 GPC_REFERENCE_PATH = (
-    Path(__file__).resolve().parents[3]
+    REPO_ROOT
     / "app"
     / "src"
     / "util"
@@ -51,6 +56,7 @@ def _fetch_json(
     token: str | None,
     timeout: int,
 ) -> dict[str, Any]:
+    """Fetch and validate a JSON object response from a CityCatalyst endpoint."""
     url = f"{base_url.rstrip('/')}{path}"
     headers = {"Accept": "application/json"}
     if token:
@@ -65,10 +71,12 @@ def _fetch_json(
 
 
 def _unwrap_data(payload: dict[str, Any]) -> Any:
+    """Return a nested `data` field when present, otherwise the original payload."""
     return payload.get("data", payload)
 
 
 def _first(obj: dict[str, Any] | None, *keys: str) -> Any:
+    """Return the first populated key from an object-like payload."""
     if not isinstance(obj, dict):
         return None
     for key in keys:
@@ -78,6 +86,7 @@ def _first(obj: dict[str, Any] | None, *keys: str) -> Any:
 
 
 def _friendly_name(value: str | None) -> str | None:
+    """Normalize slug-like labels into simple human-readable names."""
     if not value:
         return value
     value = value.replace("-", " ").replace("_", " ")
@@ -86,6 +95,7 @@ def _friendly_name(value: str | None) -> str | None:
 
 
 def _latest_population(city: dict[str, Any]) -> int | None:
+    """Extract the newest available city population value from mixed payload shapes."""
     population = city.get("population") or city.get("populations")
     if isinstance(population, list):
         rows = [row for row in population if isinstance(row, dict)]
@@ -102,6 +112,7 @@ def _latest_population(city: dict[str, Any]) -> int | None:
 
 
 def _build_city_context(city: dict[str, Any], city_id: str) -> dict[str, Any]:
+    """Map a CityCatalyst city payload into the CA city context shape."""
     return {
         "city_id": _first(city, "cityId", "city_id", "id") or city_id,
         "name": _first(city, "name", "cityName"),
@@ -119,6 +130,7 @@ def _build_inventory_context(
     inventory: dict[str, Any],
     inventory_id: str,
 ) -> dict[str, Any]:
+    """Map a CityCatalyst inventory payload into the CA inventory context shape."""
     return {
         "inventory_id": _first(inventory, "inventoryId", "inventory_id", "id") or inventory_id,
         "year": _first(inventory, "year"),
@@ -134,6 +146,7 @@ def _build_inventory_context(
 
 
 def _build_taxonomy() -> list[dict[str, Any]]:
+    """Build the Stationary Energy taxonomy list from the shared GPC reference table."""
     if not GPC_REFERENCE_PATH.exists():
         return []
 
@@ -170,6 +183,7 @@ def _build_taxonomy() -> list[dict[str, Any]]:
 
 
 def _build_current_values(results: dict[str, Any]) -> list[dict[str, Any]]:
+    """Extract current inventory values from Stationary Energy results payloads."""
     data = _unwrap_data(results)
     if not isinstance(data, dict):
         return []
@@ -195,6 +209,7 @@ def _build_current_values(results: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _source_scope(source: dict[str, Any]) -> dict[str, Any]:
+    """Project a datasource payload into the CA source-scope shape."""
     subcategory = _first(source, "subCategory", "subcategory")
     subsector = _first(source, "subSector", "subsector")
     if isinstance(subcategory, dict):
@@ -223,6 +238,7 @@ def _source_scope(source: dict[str, Any]) -> dict[str, Any]:
 
 
 def _coerce_rows(data: Any) -> list[dict[str, Any]]:
+    """Normalize mixed datasource row containers into a list of dictionaries."""
     if isinstance(data, list):
         return [row for row in data if isinstance(row, dict)]
     if isinstance(data, dict):
@@ -239,6 +255,7 @@ def _build_source_candidate(
     *,
     status: str,
 ) -> dict[str, Any]:
+    """Map one datasource entry into the CA source-candidate fixture shape."""
     source = item.get("source") if isinstance(item.get("source"), dict) else item
     publisher = _first(source, "publisher")
     publisher = publisher if isinstance(publisher, dict) else {}
@@ -266,6 +283,7 @@ def _build_source_candidate(
 
 
 def _build_source_candidates(datasource_payload: dict[str, Any]) -> list[dict[str, Any]]:
+    """Collect applicable, removed, and failed datasource entries into one list."""
     candidates: list[dict[str, Any]] = []
     for status, key in (
         ("applicable", "data"),
@@ -284,6 +302,7 @@ def _build_source_candidates(datasource_payload: dict[str, Any]) -> list[dict[st
 def _choose_inventory(
     user_inventories: dict[str, Any],
 ) -> tuple[str | None, str | None]:
+    """Choose a default city/inventory pair from the user's available inventories."""
     data = _unwrap_data(user_inventories)
     if not isinstance(data, list) or not data:
         return None, None
@@ -298,6 +317,7 @@ def _choose_inventory(
 
 
 def main() -> int:
+    """Extract a Stationary Energy context fixture from live CityCatalyst endpoints."""
     parser = argparse.ArgumentParser(
         description="Extract CC city/inventory data into a CA Stationary Energy mock fixture.",
     )

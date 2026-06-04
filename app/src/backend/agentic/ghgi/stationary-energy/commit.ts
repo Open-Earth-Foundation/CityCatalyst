@@ -1,6 +1,6 @@
 import DataSourceService from "@/backend/DataSourceService";
+import { stationaryEnergyScopeMatchesTarget } from "@/backend/agentic/ghgi/stationary-energy/scope";
 import { Inventory } from "@/models/Inventory";
-import { stationaryEnergyScopeMatchesTarget } from "./scope";
 
 export type CommitAcceptedRow = {
   proposal_id: string;

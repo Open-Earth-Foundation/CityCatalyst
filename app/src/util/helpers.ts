@@ -357,13 +357,12 @@ export function convertTonnesToKgNumeric(
 export function convertKgToTonnes(
   valueInKg: number | Decimal | bigint,
   gas?: string | null,
-  locale = "en-US",
+  numberFormat?: string,
 ): string {
   const gasSuffix = gas ? ` ${gas}` : " CO2e";
 
   const kg = toDecimal(valueInKg);
   if (!kg) return `0 t${gasSuffix}`;
-  const formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
 
   const gigaTonne = new Decimal("1e12");
   const megaTonne = new Decimal("1e9");
@@ -373,23 +372,28 @@ export function convertKgToTonnes(
   if (kg.gte(gigaTonne)) {
     // Convert to gigatonnes if the value is 1,000,000,000,000 kg or more
     const gigatonnes = kg.div(gigaTonne);
-    return `${formatter.format(gigatonnes.toNumber())} Gt${gasSuffix}`;
+    const number = formatNumber(gigatonnes.toNumber(), numberFormat, 2);
+    return `${number} Gt${gasSuffix}`;
   } else if (kg.gte(megaTonne)) {
     // Convert to megatonnes if the value is 1,000,000,000 kg or more but less than 1,000,000,000,000 kg
     const megatonnes = kg.div(megaTonne);
-    return `${formatter.format(megatonnes.toNumber())} Mt${gasSuffix}`;
+    const number = formatNumber(megatonnes.toNumber(), numberFormat, 2);
+    return `${number} Mt${gasSuffix}`;
   } else if (kg.gte(kiloTonne)) {
     // Convert to kilotonnes if the value is 1,000,000 kg or more but less than 1,000,000,000 kg
     const kilotonnes = kg.div(kiloTonne);
-    return `${formatter.format(kilotonnes.toNumber())} kt${gasSuffix}`;
+    const number = formatNumber(kilotonnes.toNumber(), numberFormat, 2);
+    return `${number} kt${gasSuffix}`;
   } else if (kg.gte(tonne)) {
     // Convert to tonnes if the value is 1,000 kg or more but less than 1,000,000 kg
     const tonnes = kg.div(tonne);
-    return `${formatter.format(tonnes.toNumber())} t${gasSuffix}`;
+    const number = formatNumber(tonnes.toNumber(), numberFormat, 2);
+    return `${number} t${gasSuffix}`;
   } else {
-    // Return as kg if the value is less than 1,000 kg
+    // Return as tonnes even if the value is less than 1,000 kg
     const tonnes = kg.div(tonne);
-    return `${formatter.format(tonnes.toNumber())} t${gasSuffix}`;
+    const number = formatNumber(tonnes.toNumber(), numberFormat, 2);
+    return `${number} t${gasSuffix}`;
   }
 }
 

@@ -299,7 +299,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                   {t(activity?.activityData[title + "-unit"])}
                 </Table.Cell>
                 <Table.Cell>
-                  {convertKgToTonnes(activity?.co2eq, null, numberFormat)}
+                  {convertKgToTonnes(activity?.co2eq, numberFormat)}
                 </Table.Cell>
                 <Table.Cell>
                   <MenuRoot>
@@ -465,7 +465,6 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                               (acc, curr) => acc + BigInt(curr.co2eq as bigint),
                               0n,
                             ),
-                            null,
                             numberFormat,
                           )}{" "}
                         </Text>

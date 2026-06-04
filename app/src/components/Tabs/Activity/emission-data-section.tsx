@@ -21,7 +21,6 @@ import HeadingText from "@/components/heading-text";
 import { MdAdd, MdMoreVert } from "react-icons/md";
 import { FaNetworkWired } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
-import { REGIONALLOCALES } from "@/util/constants";
 import { useParams } from "next/navigation";
 import {
   MenuContent,
@@ -380,8 +379,7 @@ const EmissionDataSection = ({
                     >
                       {convertKgToTonnes(
                         inventoryValue?.co2eq as bigint,
-                        null,
-                        REGIONALLOCALES[lng as string],
+                        numberFormat,
                       )}
                     </Text>
                   </Box>

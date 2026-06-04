@@ -16,6 +16,7 @@ interface EmissionsBreakdownByActivityProps {
   tDashboard: TFunction;
   sectorName: string;
   sectorBreakdown: SectorBreakdownResponse;
+  numberFormat?: string;
 }
 
 export const ByActivityView: React.FC<EmissionsBreakdownByActivityProps> = ({
@@ -23,6 +24,7 @@ export const ByActivityView: React.FC<EmissionsBreakdownByActivityProps> = ({
   tDashboard,
   sectorName,
   sectorBreakdown,
+  numberFormat,
 }) => {
   return (
     <AccordionRoot>
@@ -92,6 +94,7 @@ export const ByActivityView: React.FC<EmissionsBreakdownByActivityProps> = ({
                   tData={tData}
                   tDashboard={tDashboard}
                   sectorName={sectorName}
+                  numberFormat={numberFormat}
                 />
               </AccordionItemContent>
             </AccordionItem>

@@ -234,6 +234,7 @@ function SectorTabs({
                       tData={tData}
                       tDashboard={t}
                       sectorName={name}
+                      numberFormat={numberFormat}
                     />
                   )}
                   {shouldShowTableByScope && (

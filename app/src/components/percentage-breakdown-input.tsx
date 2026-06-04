@@ -1,16 +1,8 @@
 "use client";
 
-import {
-  Box,
-  HStack,
-  Icon,
-  Stack,
-  Text,
-  Input,
-  ColorPalette,
-} from "@chakra-ui/react";
+import { Box, HStack, Icon, Text } from "@chakra-ui/react";
 import { Radio, RadioGroup } from "@/components/ui/radio";
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { FC, useEffect, useMemo } from "react";
 import { Control, FieldError, useWatch } from "react-hook-form";
 import {
   ClinicalWasteIcon,
@@ -34,13 +26,10 @@ import {
 import type { TFunction } from "i18next";
 import { Field } from "./ui/field";
 import { InputGroup } from "@/components/ui/input-group";
-import { ValueChangeDetails } from "@zag-js/radio-group";
-import FormattedNumberInput from "@/components/formatted-number-input";
 import {
   NumberInputField,
   NumberInputRoot,
 } from "@/components/ui/number-input";
-import { MdInfoOutline } from "react-icons/md";
 import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import Callout from "@/components/ui/callout";
@@ -83,10 +72,6 @@ interface FormInputProps {
   inventoryId?: string;
   methodologyName?: string;
   defaultMode?: boolean;
-}
-
-interface CustomValueDetail extends ValueChangeDetails {
-  value: "custom" | "default";
 }
 
 const PercentageBreakdownInput: FC<FormInputProps> = ({

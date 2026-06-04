@@ -781,9 +781,8 @@ export default function AddDataSteps() {
                         boxSize={6}
                         color="interactive.tertiary"
                       />
-                      {t("data-added-percent", {
-                        progress: formatPercentage(currentStep.addedProgress),
-                      })}
+                      {formatPercentage(currentStep.addedProgress)}%{" "}
+                      {t("manually-added")}
                     </Badge>
                     <Badge w="auto">
                       <Icon

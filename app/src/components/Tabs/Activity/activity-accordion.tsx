@@ -433,7 +433,11 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                         color="content.tertiary"
                         letterSpacing="wide"
                         fontSize="body.md"
+                        fontWeight="semibold"
                       >
+                        <Text as="span" color="sentiment.positiveDefault">
+                          {t("manually-added")}
+                        </Text>{" "}
                         {activityGroups[key]?.activityData.length}{" "}
                         {t("activities-added")}
                       </Text>

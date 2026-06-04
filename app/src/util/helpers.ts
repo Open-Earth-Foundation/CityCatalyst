@@ -197,11 +197,13 @@ export function formatEmissions(
 
 const thousandsSeparators: { [key: string]: string } = {
   [NumberFormatEnum.COMMA_AND_DOT]: ",",
+  [NumberFormatEnum.DEFAULT]: ",",
   [NumberFormatEnum.DOT_AND_COMMA]: ".",
   [NumberFormatEnum.SPACE_AND_COMMA]: " ",
   [NumberFormatEnum.APOSTROPHE_AND_DOT]: "’",
 };
-const decimalSeparators: { [key: string]: string } = {
+export const decimalSeparators: { [key: string]: string } = {
+  [NumberFormatEnum.DEFAULT]: ".",
   [NumberFormatEnum.COMMA_AND_DOT]: ".",
   [NumberFormatEnum.DOT_AND_COMMA]: ",",
   [NumberFormatEnum.SPACE_AND_COMMA]: ",",
@@ -213,7 +215,7 @@ export function formatNumber(
   format?: NumberFormatEnum | string,
   maxDecimals?: number,
 ) {
-  if (format === undefined || format === NumberFormatEnum.DEFAULT) {
+  if (format === undefined) {
     format = NumberFormatEnum.COMMA_AND_DOT;
   }
 

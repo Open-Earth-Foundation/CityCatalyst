@@ -61,6 +61,9 @@ export default function HomePage({
     ? cityIdParam[0]
     : cityIdParam;
 
+  const { data: userInfo, isLoading: isUserInfoLoading } =
+    api.useGetUserInfoQuery();
+
   function redirectToOnboarding() {
     setTimeout(() => {
       if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
@@ -80,9 +83,6 @@ export default function HomePage({
       }
     }, 0);
   }
-
-  const { data: userInfo, isLoading: isUserInfoLoading } =
-    api.useGetUserInfoQuery();
 
   // make sure that the inventory ID is using valid values
   let inventoryIdFromParam: string | undefined;
@@ -198,7 +198,7 @@ export default function HomePage({
   );
 
   const formattedEmissions = inventory?.totalEmissions
-    ? formatEmissions(inventory.totalEmissions)
+    ? formatEmissions(inventory.totalEmissions, userInfo?.numberFormat)
     : { value: t("N/A"), unit: "" };
 
   const inventoriesForCurrentCity = useMemo(() => {
@@ -252,6 +252,7 @@ export default function HomePage({
             formattedEmissions={formattedEmissions}
             lng={lng}
             population={population}
+            numberFormat={userInfo?.numberFormat}
           />
 
           <Box display="flex" mx="auto" mt="80px" w="full" maxW="1090px">

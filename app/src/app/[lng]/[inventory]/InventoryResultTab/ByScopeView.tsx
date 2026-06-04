@@ -83,7 +83,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
       </Table.Cell>
       <Table.Cell>
         <BodyMedium color="content.secondary">
-          {convertKgToTonnes(item.totalEmissions)}
+          {convertKgToTonnes(item.totalEmissions, numberFormat)}
         </BodyMedium>
       </Table.Cell>
       <Table.Cell>
@@ -92,7 +92,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
       {scopes.map((s) => (
         <Table.Cell key={s}>
           <BodyMedium color="content.secondary">
-            {convertKgToTonnes(item.scopes[s] || 0)}
+            {convertKgToTonnes(item.scopes[s] || 0, numberFormat)}
           </BodyMedium>
         </Table.Cell>
       ))}
@@ -159,7 +159,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
           </Table.Cell>
           <Table.Cell>
             <BodyMedium color="content.secondary">
-              {convertKgToTonnes(totalEmissions)}
+              {convertKgToTonnes(totalEmissions, numberFormat)}
             </BodyMedium>
           </Table.Cell>
           <Table.Cell>
@@ -175,6 +175,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
                     (sum, item) => sum + Number(item.scopes[s] || 0),
                     0,
                   ),
+                  numberFormat,
                 )}
               </BodyMedium>
             </Table.Cell>

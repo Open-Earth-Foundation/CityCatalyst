@@ -192,6 +192,7 @@ function SectorTabs({
                       sectorName={t(name)}
                       dataForSector={getDataForSector(name)}
                       t={t}
+                      numberFormat={numberFormat}
                     />
                     <Box flex={1} />
                     {(isResultsLoading || isLoadingNewData) && (

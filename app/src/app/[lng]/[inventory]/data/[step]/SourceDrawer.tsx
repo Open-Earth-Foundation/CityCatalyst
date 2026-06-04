@@ -1,9 +1,7 @@
-import type { SectorAttributes } from "@/models/Sector";
 import {
   Heading,
   HStack,
   Icon,
-  Link,
   Separator,
   Stack,
   Text,
@@ -99,6 +97,7 @@ export function SourceDrawer({
       open={isOpen}
       placement="end"
       onExitComplete={onClose}
+      onInteractOutside={onClose}
       size="xl"
     >
       <DrawerBackdrop />
@@ -107,7 +106,7 @@ export function SourceDrawer({
           <ProgressLoader />
         ) : (
           <DrawerBody>
-            <Stack h="full" px={[4, 4, 16]} pt={12}>
+            <Stack h="full" px={[4, 4, 12]} pt={12}>
               <Button
                 variant="ghost"
                 color="content.link"
@@ -121,10 +120,19 @@ export function SourceDrawer({
                 {t("go-back")}
               </Button>
               {source && (
-                <DrawerBody className="overflow-auto" px={0}>
+                <DrawerBody overflowY="auto" px={0}>
                   {/* Header Section */}
                   <Stack gap={3} mb={6}>
                     <Icon as={MdHomeWork} boxSize={9} />
+                    <Heading
+                      color="content.link"
+                      textTransform="uppercase"
+                      letterSpacing="2.25px"
+                      fontSize="title.sm"
+                      lineHeight="16px"
+                    >
+                      {t("scope-data")}
+                    </Heading>
                     <Heading
                       color="content.tertiary"
                       textTransform="uppercase"
@@ -200,7 +208,7 @@ export function SourceDrawer({
                           </Tooltip>
                         </HStack>
                         <HStack align="baseline" gap={2}>
-                          <DisplayMedium color="content.link">
+                          <DisplayMedium color="content.secondary">
                             {emissionsToBeIncluded().number}
                           </DisplayMedium>
                           <Text
@@ -270,7 +278,10 @@ export function SourceDrawer({
               ) : (
                 <Stack
                   w="full"
-                  className="drop-shadow-top border-t-2 justify-center items-center"
+                  borderTop={2}
+                  justify="center"
+                  alignItems="center"
+                  dropShadow="md"
                 >
                   <Button
                     onClick={onConnectClick}

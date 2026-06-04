@@ -82,6 +82,7 @@ export const ByActivityView: React.FC<EmissionsBreakdownByActivityProps> = ({
                       <Text>
                         {convertKgToTonnes(
                           BigInt(values.totals?.totalActivityEmissions),
+                          numberFormat,
                         )}
                       </Text>
                     </HStack>

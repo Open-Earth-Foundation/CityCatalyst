@@ -12,17 +12,9 @@ Tests cover:
 
 from __future__ import annotations
 
-import sys
-from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 import unittest
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
 
 from app.services.agent_service import AgentService
 
@@ -44,6 +36,7 @@ def build_mock_settings(
         openrouter=SimpleNamespace(
             base_url=base_url,
             timeout_ms=30000,
+            retry_attempts=3,
         ),
         openai=SimpleNamespace(
             base_url="https://api.openai.com/v1",
@@ -236,6 +229,45 @@ class OpenRouterClientConfigurationTests(unittest.TestCase):
                 call_kwargs["base_url"],
                 "https://openrouter.ai/api/v1"
             )
+
+    @patch("app.services.agent_service.get_settings")
+    def test_agent_service_uses_shared_openrouter_options_helper(
+        self,
+        mock_get_settings,
+    ) -> None:
+        """Test AgentService delegates OpenRouter settings resolution to the shared helper."""
+
+        mock_settings = build_mock_settings()
+        mock_get_settings.return_value = mock_settings
+        client_kwargs = {
+            "api_key": "test-key",
+            "base_url": "https://custom-openrouter.example/v1",
+            "timeout": 30.0,
+            "max_retries": 3,
+            "default_headers": {
+                "HTTP-Referer": "https://citycatalyst.ai",
+                "X-Title": "CityCatalyst Climate Advisor",
+                "Accept": "application/json",
+            },
+        }
+
+        with patch(
+            "app.services.agent_service.build_openrouter_client_options",
+            return_value=SimpleNamespace(
+                base_url="https://custom-openrouter.example/v1",
+                kwargs=client_kwargs,
+            ),
+        ) as mock_builder, patch(
+            "app.services.agent_service.AsyncOpenAI"
+        ) as mock_client_class:
+            service = AgentService()
+
+        mock_builder.assert_called_once_with(
+            mock_settings,
+            missing_api_key_message="OpenRouter API key (OPENROUTER_API_KEY) must be set",
+        )
+        mock_client_class.assert_called_once_with(**client_kwargs)
+        self.assertEqual(service._chat_base_url, "https://custom-openrouter.example/v1")
 
 
 class AgentCreationTests(unittest.IsolatedAsyncioTestCase):

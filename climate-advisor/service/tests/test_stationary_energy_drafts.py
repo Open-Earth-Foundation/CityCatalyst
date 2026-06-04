@@ -4,10 +4,9 @@ import base64
 import asyncio
 import json
 import os
-import sys
 import unittest
 from decimal import Decimal
-from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, AsyncIterator
 from unittest.mock import AsyncMock, Mock, patch
 from uuid import UUID, uuid4
@@ -17,12 +16,6 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
 
 pytest.importorskip("pgvector.sqlalchemy")
 
@@ -1438,6 +1431,77 @@ class StationaryEnergyMigrationTests(unittest.TestCase):
 
 
 class StationaryEnergyLLMValidationTests(unittest.TestCase):
+    @patch("app.services.stationary_energy_llm_service.configure_agents_tracing")
+    @patch("app.services.stationary_energy_llm_service.get_settings")
+    def test_service_uses_shared_openrouter_options_and_prompt_config(
+        self,
+        mock_get_settings,
+        _mock_tracing,
+    ) -> None:
+        """Verify prompt loading and OpenRouter client setup are centralized."""
+
+        prompts = Mock()
+        prompts.get_prompt = Mock(return_value="Stationary Energy prompt")
+        mock_settings = SimpleNamespace(
+            openrouter_api_key="test-key",
+            openrouter_base_url="https://custom-openrouter.example/v1",
+            openrouter_model="openai/gpt-4.1",
+            llm=SimpleNamespace(
+                models={
+                    "default": "openai/gpt-4.1",
+                    "agentic_flow": "openai/gpt-5.4",
+                },
+                generation=SimpleNamespace(
+                    defaults=SimpleNamespace(temperature=0.1)
+                ),
+                prompts=prompts,
+                api=SimpleNamespace(
+                    openrouter=SimpleNamespace(
+                        base_url="https://custom-openrouter.example/v1",
+                        timeout_ms=30000,
+                        retry_attempts=3,
+                    )
+                ),
+            ),
+            langsmith_tracing_enabled=False,
+        )
+        mock_get_settings.return_value = mock_settings
+        client_kwargs = {
+            "api_key": "test-key",
+            "base_url": "https://custom-openrouter.example/v1",
+            "timeout": 30.0,
+            "max_retries": 3,
+            "default_headers": {
+                "HTTP-Referer": "https://citycatalyst.ai",
+                "X-Title": "CityCatalyst Climate Advisor",
+                "Accept": "application/json",
+            },
+        }
+
+        with patch(
+            "app.services.stationary_energy_llm_service.build_openrouter_client_options",
+            return_value=SimpleNamespace(
+                base_url="https://custom-openrouter.example/v1",
+                kwargs=client_kwargs,
+            ),
+        ) as mock_builder, patch(
+            "app.services.stationary_energy_llm_service.AsyncOpenAI"
+        ) as mock_client_class:
+            service = StationaryEnergyProposalLLMService()
+
+        prompts.get_prompt.assert_called_once_with(
+            "stationary_energy_draft_generation"
+        )
+        mock_builder.assert_called_once_with(
+            mock_settings,
+            missing_api_key_message=(
+                "OPENROUTER_API_KEY must be set for Stationary Energy LLM proposals"
+            ),
+            error_cls=StationaryEnergyLLMServiceError,
+        )
+        mock_client_class.assert_called_once_with(**client_kwargs)
+        self.assertEqual(service.system_prompt, "Stationary Energy prompt")
+
     def test_rejects_candidate_datasource_mismatch(self) -> None:
         target_ref = _context_payload()["taxonomy"][0]
         candidate_id = uuid4()

@@ -49,10 +49,11 @@
  *         description: Unauthorized
  */
 
-import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
-import { logger } from "@/services/logger";
+import { callClimateAdvisorChat } from "@/backend/chat/climate-advisor";
 import { buildClimateAdvisorMessagePayload } from "@/backend/chat/message-payload";
+import { logger } from "@/services/logger";
+import { apiHandler } from "@/util/api";
 
 export const POST = apiHandler(async (req, { session }) => {
   try {
@@ -84,19 +85,16 @@ export const POST = apiHandler(async (req, { session }) => {
       "Sending message to CA thread",
     );
 
-    // Call CA messages endpoint
-    const caResponse = await fetch(`${process.env.CA_BASE_URL}/v1/messages`, {
+    const caResponse = await callClimateAdvisorChat({
+      path: "/v1/messages",
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         "X-Request-ID": `cc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       },
-      body: JSON.stringify(
-        buildClimateAdvisorMessagePayload({
-          userId: session.user.id,
-          body,
-        }),
-      ),
+      body: buildClimateAdvisorMessagePayload({
+        userId: session.user.id,
+        body,
+      }),
     });
 
     if (!caResponse.ok) {

@@ -2,11 +2,11 @@
 Run Climate Advisor E2E prompt flow without pytest and save results to disk.
 
 Usage (from climate-advisor/):
-  uv run python service/tests/run_ca_e2e.py
+  uv run --directory service python -m tests.run_ca_e2e
 
 Optional flags:
-  --prompts     Path to the JSON prompt file (default: service/tests/fixtures/ca_e2e_prompts.json)
-  --output      Path to the output JSON (default: service/tests/output/ca_e2e_responses.json)
+  --prompts     Path to the JSON prompt file (default: tests/fixtures/ca_e2e_prompts.json)
+  --output      Path to the output JSON (default: tests/output/ca_e2e_responses.json)
   --retries     Retries per prompt for transient provider errors (default: 2)
   --retry-delay Delay between retries in seconds (default: 1.5)
   --include-events Include raw SSE events in the output JSON (default: false)
@@ -29,8 +29,8 @@ Getting a user_id and JWT token for CA_E2E_CC_TOKEN:
      This requires CC_BASE_URL and CC_API_KEY in climate-advisor/.env.
   3) Confirm CA_E2E_CC_TOKEN is set before running this script.
   4) (Optional) Run automatic verification on the output:
-       uv run python service/tests/review_ca_e2e.py --input service/tests/output/ca_e2e_responses.json
-     This writes service/tests/output/responses_eval.json by default.
+       uv run --directory service python -m tests.review_ca_e2e --input tests/output/ca_e2e_responses.json
+     This writes tests/output/responses_eval.json by default.
 """
 
 from __future__ import annotations
@@ -39,18 +39,11 @@ import argparse
 import json
 import os
 import re
-import sys
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from fastapi.testclient import TestClient
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
 
 try:
     from pgvector import sqlalchemy as _pgvector_sqlalchemy  # noqa: F401

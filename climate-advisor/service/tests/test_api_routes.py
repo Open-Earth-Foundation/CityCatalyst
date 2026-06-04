@@ -11,10 +11,8 @@ Tests cover:
 
 from __future__ import annotations
 
-import sys
 import json
 import unittest
-from pathlib import Path
 from typing import AsyncIterator
 from unittest.mock import AsyncMock, patch, MagicMock
 from uuid import uuid4
@@ -23,12 +21,6 @@ import httpx
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
 
 from app.main import get_app
 from app.db import Base

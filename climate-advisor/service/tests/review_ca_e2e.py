@@ -2,10 +2,10 @@
 Review CA E2E output with the same LLM and print pass/fail summary.
 
 Usage (from climate-advisor/):
-  uv run python service/tests/review_ca_e2e.py
+  uv run --directory service python -m tests.review_ca_e2e
 
 Optional flags:
-  --input  Path to the CA E2E response JSON (default: service/tests/output/ca_e2e_responses.json)
+  --input  Path to the CA E2E response JSON (default: tests/output/ca_e2e_responses.json)
   --model  Model override (default: llm_config.yaml default model)
   --output Path to save the evaluation JSON (default: <input_dir>/responses_eval.json)
 
@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional
@@ -30,38 +29,26 @@ import openai
 from agents import Agent, RunConfig, Runner, ToolCallOutputItem, function_tool
 from agents.model_settings import ModelSettings
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
-
 from app.config import get_settings
+from app.services.openrouter_client import build_openrouter_client_options
 
 DEFAULT_INPUT_PATH = Path(__file__).parent / "output" / "ca_e2e_responses.json"
 
 
 def _configure_openrouter() -> str:
+    """Apply shared OpenRouter settings to the global OpenAI client used by this script."""
+
     settings = get_settings()
-    api_key = settings.openrouter_api_key
-    if not api_key:
-        raise RuntimeError("OPENROUTER_API_KEY must be set.")
-
-    base_url = settings.openrouter_base_url or "https://openrouter.ai/api/v1"
-    referer = os.getenv("OPENROUTER_REFERER") or "https://citycatalyst.ai"
-    title = os.getenv("OPENROUTER_TITLE") or "CityCatalyst Climate Advisor"
-    timeout_ms = settings.llm.api.openrouter.timeout_ms or 30000
-    retries = settings.llm.api.openrouter.retry_attempts or 2
-
-    openai.api_key = api_key
-    openai.base_url = base_url.rstrip("/")
-    openai.default_headers = {
-        "HTTP-Referer": referer,
-        "X-Title": title,
-        "Accept": "application/json",
-    }
-    openai.timeout = timeout_ms / 1000
-    openai.max_retries = retries
+    client_options = build_openrouter_client_options(
+        settings,
+        missing_api_key_message="OPENROUTER_API_KEY must be set.",
+        error_cls=RuntimeError,
+    )
+    openai.api_key = client_options.kwargs["api_key"]
+    openai.base_url = client_options.base_url
+    openai.default_headers = client_options.kwargs["default_headers"]
+    openai.timeout = client_options.kwargs["timeout"]
+    openai.max_retries = client_options.kwargs["max_retries"]
 
     return settings.llm.models.get("default", "openai/gpt-4o")
 

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import sys
-from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Dict, List, Optional
 import unittest
@@ -9,12 +7,6 @@ from unittest.mock import AsyncMock, patch
 
 import httpx
 import pytest
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
 
 pytest.importorskip("pgvector.sqlalchemy")
 

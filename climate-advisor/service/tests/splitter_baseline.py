@@ -1,24 +1,33 @@
+"""
+Generate a baseline JSON artifact for the configured text splitter.
+
+Inputs:
+- CLI args:
+  - `--fixture`: UTF-8 text fixture to analyze.
+  - `--output`: Optional destination for the generated JSON. If omitted, prints to stdout.
+- Files/paths:
+  - Reads the selected text fixture and the repo-level `vector_db` chunking configuration.
+
+Outputs:
+- Writes or prints a JSON artifact with chunk sizes, overlap, and boundary metrics.
+
+Usage (from climate-advisor/):
+- uv run python -m service.tests.splitter_baseline
+"""
+
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
 import statistics
-import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
 import tiktoken
 
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
-
-from vector_db.config_loader import get_embedding_config  # noqa: E402
-from vector_db.utils.text_processing import TextSplitter  # noqa: E402
+from vector_db.config_loader import get_embedding_config
+from vector_db.utils.text_processing import TextSplitter
 
 
 EMBEDDING_MODEL = "text-embedding-3-large"

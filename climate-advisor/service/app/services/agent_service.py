@@ -19,6 +19,7 @@ from agents import Agent, ModelSettings, OpenAIChatCompletionsModel
 from openai import AsyncOpenAI
 
 from ..config import get_settings
+from .openrouter_client import build_openrouter_client_options
 from ..tools import (
     CCInventoryTool,
     build_cc_inventory_tools,
@@ -128,41 +129,14 @@ class AgentService:
         return model
     
     def _create_openrouter_client(self) -> AsyncOpenAI:
-        """Create an AsyncOpenAI client configured for OpenRouter.
-        
-        Returns:
-            Configured AsyncOpenAI client
-        """
-        api_key = self.settings.openrouter_api_key
-        if not api_key:
-            raise ValueError("OpenRouter API key (OPENROUTER_API_KEY) must be set")
-        
-        base_url = self.settings.openrouter_base_url or "https://openrouter.ai/api/v1"
-        self._chat_base_url = base_url.rstrip("/")
-        
-        # Get OpenRouter metadata from environment or settings
-        referer = os.getenv("OPENROUTER_REFERER") or "https://citycatalyst.ai"
-        title = os.getenv("OPENROUTER_TITLE") or "CityCatalyst Climate Advisor"
-        
-        # Configure headers for OpenRouter
-        default_headers = {
-            "HTTP-Referer": referer,
-            "X-Title": title,
-            "Accept": "application/json",
-        }
-        
-        # Get timeout from settings
-        timeout_ms = self.settings.llm.api.openrouter.timeout_ms or 30000
-        timeout_seconds = timeout_ms / 1000
-        
-        client = AsyncOpenAI(
-            api_key=api_key,
-            base_url=self._chat_base_url,
-            timeout=timeout_seconds,
-            default_headers=default_headers,
-            max_retries=2,
+        """Create an AsyncOpenAI client configured from the shared OpenRouter helper."""
+
+        client_options = build_openrouter_client_options(
+            self.settings,
+            missing_api_key_message="OpenRouter API key (OPENROUTER_API_KEY) must be set",
         )
-        
+        self._chat_base_url = client_options.base_url
+        client = AsyncOpenAI(**client_options.kwargs)
         logger.info("OpenRouter client created with base_url=%s", self._chat_base_url)
         return client
 

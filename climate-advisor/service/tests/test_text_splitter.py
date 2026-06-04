@@ -1,20 +1,14 @@
 from __future__ import annotations
 
 import json
-import sys
 from pathlib import Path
 import unittest
 
 
 TEST_ROOT = Path(__file__).resolve().parent
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (TEST_ROOT, PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
 
-from splitter_baseline import build_baseline  # noqa: E402
-from vector_db.utils.text_processing import TextSplitter  # noqa: E402
+from .splitter_baseline import build_baseline
+from vector_db.utils.text_processing import TextSplitter
 
 
 FIXTURE_DIR = TEST_ROOT / "fixtures" / "splitter_baseline"

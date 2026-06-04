@@ -50,6 +50,9 @@ prompts:
   # Prompt for data analysis tasks
   data_analysis: "prompts/data_analysis.md"
 
+  # Prompt for Stationary Energy draft proposal generation
+  stationary_energy_draft_generation: "prompts/stationary_energy_draft_generation.md"
+
 # API Configuration
 api:
   # OpenRouter configuration

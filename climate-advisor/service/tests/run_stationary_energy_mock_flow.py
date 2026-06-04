@@ -2,7 +2,7 @@
 Run the Stationary Energy draft flow against CA using a mock CC capability server.
 
 Usage from climate-advisor/:
-  uv run python service/tests/run_stationary_energy_mock_flow.py
+  uv run --directory service python -m tests.run_stationary_energy_mock_flow
 
 This starts a local mock CC server that serves:
   POST /api/v1/internal/ca/capabilities/allowed-capabilities
@@ -20,7 +20,6 @@ import asyncio
 import base64
 import json
 import os
-import sys
 from pathlib import Path
 from typing import AsyncIterator
 
@@ -28,16 +27,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
-tests_path = str(Path(__file__).parent)
-if tests_path not in sys.path:
-    sys.path.insert(0, tests_path)
-
-from mock_cc_stationary_energy_server import start_mock_cc_server
+from .mock_cc_stationary_energy_server import start_mock_cc_server
 
 
 DEFAULT_FIXTURE = Path(__file__).parent / "fixtures" / "stationary_energy_load_context_mock.json"

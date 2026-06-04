@@ -35,6 +35,7 @@ from ..utils.stationary_energy_context import (
     stationary_energy_scope_label,
     stationary_energy_scope_matches_target,
 )
+from .openrouter_client import build_openrouter_client_options
 
 
 logger = logging.getLogger(__name__)
@@ -70,6 +71,8 @@ class StationaryEnergyProposalLLMService:
     """Generate Stationary Energy draft proposals using a real LLM call."""
 
     def __init__(self, *, client: AsyncOpenAI | None = None) -> None:
+        """Initialize the proposal service with shared prompt and OpenRouter config."""
+
         self.settings = get_settings()
         configure_agents_tracing(self.settings)
         self.model = (
@@ -80,38 +83,22 @@ class StationaryEnergyProposalLLMService:
             or self.settings.llm.models.get("default", "openai/gpt-4.1")
         )
         self.temperature = self.settings.llm.generation.defaults.temperature
+        self.system_prompt = self.settings.llm.prompts.get_prompt(
+            "stationary_energy_draft_generation"
+        )
         self.client = client or self._create_openrouter_client()
 
     def _create_openrouter_client(self) -> AsyncOpenAI:
-        api_key = self.settings.openrouter_api_key
-        if not api_key:
-            raise StationaryEnergyLLMServiceError(
+        """Create an AsyncOpenAI client using the shared OpenRouter settings helper."""
+
+        client_options = build_openrouter_client_options(
+            self.settings,
+            missing_api_key_message=(
                 "OPENROUTER_API_KEY must be set for Stationary Energy LLM proposals"
-            )
-
-        base_url = self.settings.openrouter_base_url or "https://openrouter.ai/api/v1"
-        timeout_ms = self._env_int(
-            "OPENROUTER_TIMEOUT_MS",
-            self.settings.llm.api.openrouter.timeout_ms or 30000,
+            ),
+            error_cls=StationaryEnergyLLMServiceError,
         )
-        max_retries = self._env_int(
-            "OPENROUTER_MAX_RETRIES",
-            self.settings.llm.api.openrouter.retry_attempts or 2,
-        )
-        referer = os.getenv("OPENROUTER_REFERER") or "https://citycatalyst.ai"
-        title = os.getenv("OPENROUTER_TITLE") or "CityCatalyst Climate Advisor"
-
-        return AsyncOpenAI(
-            api_key=api_key,
-            base_url=base_url.rstrip("/"),
-            timeout=timeout_ms / 1000,
-            max_retries=max_retries,
-            default_headers={
-                "HTTP-Referer": referer,
-                "X-Title": title,
-                "Accept": "application/json",
-            },
-        )
+        return AsyncOpenAI(**client_options.kwargs)
 
     async def generate_proposals(
         self,
@@ -121,6 +108,8 @@ class StationaryEnergyProposalLLMService:
         allowed_capabilities: list[str],
         trace_id: str | None,
     ) -> StationaryEnergyLLMProposalResult:
+        """Generate one normalized proposal per taxonomy row for review-ready drafts."""
+
         llm_input = self._build_llm_input(
             context=context,
             stored_source_candidates=stored_source_candidates,
@@ -152,7 +141,7 @@ class StationaryEnergyProposalLLMService:
         )
         agent = Agent(
             name="Stationary Energy Draft Agent",
-            instructions=self._system_prompt(),
+            instructions=self.system_prompt,
             model=OpenAIChatCompletionsModel(
                 model=self.model,
                 openai_client=self.client,
@@ -309,8 +298,10 @@ class StationaryEnergyProposalLLMService:
         llm_input: dict[str, Any],
         budget: StationaryEnergyPromptBudget,
     ):
+        """Count prompt tokens for the shared system prompt plus serialized input."""
+
         return count_prompt_tokens(
-            [self._system_prompt(), json.dumps(llm_input, ensure_ascii=True)],
+            [self.system_prompt, json.dumps(llm_input, ensure_ascii=True)],
             model=self.model,
             fallback_encoding=budget.tokenizer_encoding,
         )
@@ -337,21 +328,6 @@ class StationaryEnergyProposalLLMService:
             "source_candidate_count": len(stored_source_candidates),
             "guidance_context_keys": sorted(context.guidance_context.keys()),
         }
-
-    @staticmethod
-    def _system_prompt() -> str:
-        return (
-            "You are a greenhouse-gas inventory drafting assistant for the GPC Stationary Energy sector. "
-            "Return JSON only. Generate draft proposals from the provided bounded context and stored source candidate snapshots. "
-            "Never invent source candidates, datasource IDs, city data, inventory data, or permissions. "
-            "Use guidance_context to explain methodology, scope meanings, unit conventions, source selection rules, and known limits, but do not treat guidance as additional source data. "
-            "source_candidates contains only usable candidates with applicability_status='applicable'. "
-            "Recommendations and alternatives must reference only candidate_id values present in source_candidates. "
-            "Return exactly one proposal for every taxonomy row in the input. "
-            "Copy each taxonomy row into target_ref so every proposal can be matched back to a unique row. "
-            "For each taxonomy row, return a proposal with target_ref, current_value, recommended_candidate_id, recommended_datasource_id, alternative_candidate_ids, proposed_value, rationale, status, and confidence_score. "
-            "Use status 'ready' when one clear applicable source is recommended, 'conflict' when several applicable sources compete, 'gap' when no applicable source exists, and 'needs_review' when the evidence is ambiguous."
-        )
 
     @staticmethod
     def _build_llm_input(
@@ -480,16 +456,6 @@ class StationaryEnergyProposalLLMService:
             )
 
         return "Stationary Energy agent run failed"
-
-    @staticmethod
-    def _env_int(name: str, default: int) -> int:
-        value = os.getenv(name)
-        if value is None:
-            return default
-        try:
-            return int(value)
-        except ValueError:
-            return default
 
     @staticmethod
     def _validate_and_normalize_proposals(

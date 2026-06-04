@@ -167,6 +167,7 @@ class PromptsConfig(BaseModel):
     default: str
     inventory_context: Optional[str] = None
     data_analysis: Optional[str] = None
+    stationary_energy_draft_generation: Optional[str] = None
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""

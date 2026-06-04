@@ -266,8 +266,12 @@ WITH (lists = 100);
 **AgentService** (`services/agent_service.py`)
 
 - `create_agent()` - Initialize Agents SDK with tools
-- `_create_openrouter_client()` - Configure the default OpenRouter endpoint or another OpenAI-compatible chat base URL
+- `_create_openrouter_client()` - Build the chat client from shared OpenRouter settings
 - `_setup_tools()` - Build tool definitions for agent
+
+**OpenRouter Client Helper** (`services/openrouter_client.py`)
+
+- `build_openrouter_client_options()` - Resolve shared OpenRouter base URL, headers, timeout, and retry settings for chat clients
 
 **EmbeddingService** (`services/embedding_service.py`)
 
@@ -387,12 +391,13 @@ CityCatalyst Next.js App
 ### 2. Climate Advisor ↔ OpenRouter (LLM)
 
 ```
-AgentService
-  └─ AsyncOpenAI(base_url="https://openrouter.ai/api/v1")
-      └─ headers: {"Authorization": "Bearer $OPENROUTER_API_KEY"}
-          ├─ LLM Provider: OpenRouter
-          ├─ Tools: [climate_vector_search, cc_inventory_query]
-          └─ Stream: true (token-by-token)
+AgentService / StationaryEnergyProposalLLMService
+  └─ build_openrouter_client_options()
+      └─ AsyncOpenAI(base_url="https://openrouter.ai/api/v1")
+          └─ headers: {"Authorization": "Bearer $OPENROUTER_API_KEY"}
+              ├─ LLM Provider: OpenRouter
+              ├─ Tools: [climate_vector_search, cc_inventory_query]
+              └─ Stream: true (token-by-token)
 ```
 
 ### 3. Climate Advisor ↔ OpenAI (Embeddings)

@@ -39,45 +39,15 @@
  */
 
 import { z } from "zod";
-import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
+import { createClimateAdvisorThread } from "@/backend/chat/climate-advisor";
 import { logger } from "@/services/logger";
-
-interface TokenResponse {
-  access_token: string;
-  expires_in: number;
-  token_type: string;
-}
+import { apiHandler } from "@/util/api";
 
 const createThreadRequest = z.object({
   title: z.string().optional(),
   inventory_id: z.string().optional(),
 });
-
-async function issueCaUserToken(params: {
-  origin: string;
-  user_id: string;
-  inventory_id?: string;
-}): Promise<TokenResponse> {
-  const response = await fetch(
-    `${params.origin}/api/v1/internal/ca/user-token`,
-    {
-      method: "POST",
-      headers: {
-        "X-CA-Service-Key": process.env.CC_SERVICE_API_KEY!,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(params),
-    },
-  );
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Token issuance failed: ${response.status} - ${errorText}`);
-  }
-
-  return response.json();
-}
 
 export const POST = apiHandler(async (req, { session }) => {
   try {
@@ -98,61 +68,19 @@ export const POST = apiHandler(async (req, { session }) => {
       "Creating CA chat thread",
     );
 
-    // Auto-issue token for CA (seamless)
-    const tokenData = await issueCaUserToken({
+    const caData = await createClimateAdvisorThread({
       origin: req.nextUrl.origin,
-      user_id: session.user.id,
-      inventory_id,
+      userId: session.user.id,
+      inventoryId: inventory_id,
     });
 
     logger.debug(
       {
         user_id: session.user.id,
-        token_expires_in: tokenData.expires_in,
+        thread_id: caData.thread_id,
       },
-      "CA user token issued successfully",
+      "CA chat thread created via shared proxy",
     );
-
-    // Create CA thread with token and context
-    logger.info(
-      {
-        user_id: session.user.id,
-        inventory_id,
-        ca_base_url: process.env.CA_BASE_URL,
-      },
-      "Creating CA chat thread via CA service",
-    );
-    const caResponse = await fetch(`${process.env.CA_BASE_URL}/v1/threads`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user_id: session.user.id,
-        inventory_id,
-        context: {
-          access_token: tokenData.access_token,
-          expires_in: tokenData.expires_in,
-          token_type: tokenData.token_type,
-          issued_at: new Date().toISOString(),
-        },
-      }),
-    });
-
-    if (!caResponse.ok) {
-      const errorText = await caResponse.text();
-      logger.error(
-        {
-          status: caResponse.status,
-          error: errorText,
-          user_id: session.user.id,
-        },
-        "CA thread creation failed",
-      );
-      throw new Error(`CA service error: ${caResponse.status} - ${errorText}`);
-    }
-
-    const caData = await caResponse.json();
 
     logger.info(
       {

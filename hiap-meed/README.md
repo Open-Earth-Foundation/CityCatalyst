@@ -4,6 +4,7 @@
 
 See [`docs/service-architecture.md`](docs/service-architecture.md) for the full system diagram.
 See [`docs/prioritization-accuracy-initial-benchmark.md`](docs/prioritization-accuracy-initial-benchmark.md) for the planned validation mechanism of ranking quality.
+See [`docs/mlflow-backend-logging-guide.md`](docs/mlflow-backend-logging-guide.md) for the current CityCatalyst pattern for backend MLflow runs, traces, and artifact logging.
 
 ## Repository layout
 

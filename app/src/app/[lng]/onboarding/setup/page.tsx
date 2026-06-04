@@ -2,13 +2,7 @@
 
 import { useTranslation } from "@/i18n/client";
 import type { CityAttributes } from "@/models/City";
-import {
-  api,
-  useAddCityMutation,
-  useAddCityPopulationMutation,
-  useAddInventoryMutation,
-  useSetUserInfoMutation,
-} from "@/services/api";
+import { api } from "@/services/api";
 
 import { OCCityAttributes } from "@/util/types";
 import { MdArrowBack, MdArrowForward } from "react-icons/md";
@@ -74,7 +68,6 @@ export default function OnboardingSetup(props: {
     watch,
     control,
     formState: { errors },
-    setError,
   } = useForm<Inputs>();
 
   const params = useSearchParams();
@@ -88,6 +81,8 @@ export default function OnboardingSetup(props: {
       skip: !EnterpriseMode,
     },
   );
+
+  const { data: userInfo } = api.useGetUserInfoQuery();
 
   useEffect(() => {
     if (projectsList && projectsList.length > 0) {
@@ -111,10 +106,10 @@ export default function OnboardingSetup(props: {
     count: steps.length,
   });
 
-  const [addCity] = useAddCityMutation();
-  const [addCityPopulation] = useAddCityPopulationMutation();
-  const [addInventory] = useAddInventoryMutation();
-  const [setUserInfo] = useSetUserInfoMutation();
+  const [addCity] = api.useAddCityMutation();
+  const [addCityPopulation] = api.useAddCityPopulationMutation();
+  const [addInventory] = api.useAddInventoryMutation();
+  const [setUserInfo] = api.useSetUserInfoMutation();
 
   const [data, setData] = useState<OnboardingData>({
     name: "",
@@ -136,7 +131,6 @@ export default function OnboardingSetup(props: {
   };
 
   // Population data
-
   const cityPopulation = watch("cityPopulation");
   const regionPopulation = watch("regionPopulation");
   const countryPopulation = watch("countryPopulation");
@@ -388,6 +382,7 @@ export default function OnboardingSetup(props: {
               population={cityPopulation}
               inventoryGoal={inventoryGoal}
               year={getValues("year")}
+              numberFormat={userInfo?.numberFormat}
             />
           )}
         </Box>

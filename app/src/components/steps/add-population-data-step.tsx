@@ -17,7 +17,7 @@ import {
   Icon,
   Text,
 } from "@chakra-ui/react";
-import FormattedThousandsNumberInput from "@/app/[lng]/onboarding/setup/FormattedThousandsNumberInput";
+import FormattedThousandsNumberInput from "@/components/FormattedThousandsNumberInput";
 import { MdCheck, MdErrorOutline, MdInfoOutline } from "react-icons/md";
 import { Field } from "@/components/ui/field";
 import { BodyMedium } from "@/components/package/Texts/Body";
@@ -88,7 +88,6 @@ export default function SetPopulationDataStep({
       setValue("cityPopulation", population.population);
       setValue("cityPopulationYear", population.year);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cityData, year, numberOfYearsDisplayed, setValue]);
 
   useEffect(() => {

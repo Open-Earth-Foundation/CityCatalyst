@@ -11,7 +11,7 @@ import type {
 } from "@/util/GHGI/types";
 import { OCCityAttributes } from "@/util/types";
 import { useGetOCCityDataQuery } from "@/services/api";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { findClosestYear } from "@/util/helpers";
 import {
   Box,
@@ -21,38 +21,15 @@ import {
   Icon,
   Text,
 } from "@chakra-ui/react";
-import FormattedThousandsNumber from "../../../app/[lng]/cities/[cityId]/GHGI/onboarding/FormattedThousandsNumberInput";
+import FormattedThousandsNumber from "@/components/FormattedThousandsNumberInput";
 import { MdCheck, MdErrorOutline, MdInfoOutline } from "react-icons/md";
 import { Field } from "@/components/ui/field";
-import {
-  SelectContent,
-  SelectItem,
-  SelectLabel,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from "@/components/ui/select";
 import { InputGroup } from "../../ui/input-group";
 import { logger } from "@/services/logger";
 import {
   NativeSelectField,
   NativeSelectRoot,
 } from "@/components/ui/native-select";
-
-// Type for general onboarding inputs
-type GeneralInputs = {
-  city: string;
-  year: number;
-  inventoryGoal: string;
-  globalWarmingPotential: string;
-  cityPopulation: number;
-  cityPopulationYear: number;
-  regionPopulation: number;
-  regionPopulationYear: number;
-  countryPopulation: number;
-  countryPopulationYear: number;
-  totalCountryEmissions: number;
-};
 
 // Type for general onboarding data
 type GeneralOnboardingData = {
@@ -130,7 +107,6 @@ export default function SetPopulationDataStep({
       setValue("cityPopulation", population.population);
       setValue("cityPopulationYear", population.year);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cityData, year, numberOfYearsDisplayed, setValue]);
 
   useEffect(() => {

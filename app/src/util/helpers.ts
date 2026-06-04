@@ -225,10 +225,13 @@ export function formatNumber(
   const [integerPart, decimalPart] = numberString.split(".");
 
   // process integer - reverse, add separators, reverse back (since groups start at last digit)
-  const reversedInteger = integerPart.split("").reverse().join("") ?? "";
-  const groupedReversed =
-    reversedInteger?.match(/.{1,3}/g)?.join(thousandsSeparator) ?? "";
-  const groupedInteger = groupedReversed.split("").reverse().join("");
+  let groupedInteger = integerPart;
+  if (integerPart.length > 3) {
+    const reversedInteger = integerPart.split("").reverse().join("") ?? "";
+    const groupedReversed =
+      reversedInteger?.match(/.{1,3}/g)?.join(thousandsSeparator) ?? "";
+    groupedInteger = groupedReversed.split("").reverse().join("");
+  }
 
   // trim decimals if necessary
   let trimmedDecimals = decimalPart;

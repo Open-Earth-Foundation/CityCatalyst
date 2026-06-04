@@ -566,7 +566,12 @@ export default function ReportResults({
         {t("see-your-citys-emissions")}
       </Text>
       <HStack my={4} alignItems={"start"}>
-        <EmissionsWidget t={t} inventory={inventory} population={population} />
+        <EmissionsWidget
+          t={t}
+          inventory={inventory}
+          population={population}
+          numberFormat={userInfo?.numberFormat}
+        />
         <TopEmissionsWidget
           t={t}
           inventory={inventory}

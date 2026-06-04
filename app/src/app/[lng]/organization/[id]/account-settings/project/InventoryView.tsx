@@ -142,6 +142,7 @@ const InventoryView = ({
             progressDetails.uploadedProgress,
           ]}
           colors={["interactive.connected", "interactive.tertiary"]}
+          numberFormat={userInfo?.numberFormat}
         />
         <Heading fontWeight="semibold" fontSize="body.md" whiteSpace="nowrap">
           {formatPercent(progressDetails.totalProgress)}%{" "}

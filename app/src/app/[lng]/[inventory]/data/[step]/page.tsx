@@ -754,6 +754,7 @@ export default function AddDataSteps() {
                       "striped",
                     ]}
                     height={4}
+                    numberFormat={userInfo?.numberFormat}
                   />
                   <Heading size="sm" ml={6} mt={-1} whiteSpace="nowrap">
                     {t("completion-percent", {

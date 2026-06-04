@@ -3,6 +3,7 @@ import { Badge, Box, Table, Text, useToken, VStack } from "@chakra-ui/react";
 import {
   capitalizeFirstLetter,
   convertKgToTonnes,
+  formatNumber,
   toKebabCase,
 } from "@/util/helpers";
 
@@ -60,7 +61,7 @@ export function SegmentedProgress({
             </Table.Cell>
             <Table.Cell>
               <Text color="gray.600" mr={2}>
-                {value.percentage.toFixed(1)}%
+                {formatNumber(value.percentage, numberFormat, 1)}%
               </Text>
             </Table.Cell>
             <Table.Cell>

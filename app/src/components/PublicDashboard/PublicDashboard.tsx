@@ -2,7 +2,7 @@
 
 import { useTranslation } from "@/i18n/client";
 import { api, useGetMostRecentCityPopulationQuery } from "@/services/api";
-import { Box, HStack, Separator } from "@chakra-ui/react";
+import { Box, HStack } from "@chakra-ui/react";
 import { use } from "react";
 import ProgressLoader from "../ProgressLoader";
 import { Hero } from "../HomePageJN/Hero";

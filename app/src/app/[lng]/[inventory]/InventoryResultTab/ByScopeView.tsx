@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Table, useDisclosure, Icon } from "@chakra-ui/react";
 import { ActivityDataByScope } from "@/util/types";
 import type { TFunction } from "i18next";
-import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
+import { convertKgToTonnes, formatNumber, toKebabCase } from "@/util/helpers";
 import { InventoryTypeEnum, SECTORS } from "@/util/constants";
 import { ButtonSmall } from "@/components/package/Texts/Button";
 import { BodyMedium } from "@/components/package/Texts/Body";
@@ -164,7 +164,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
           </Table.Cell>
           <Table.Cell>
             <BodyMedium color="content.secondary">
-              {totalPercentage.toFixed(1)}%
+              {formatNumber(totalPercentage, numberFormat, 1)}%
             </BodyMedium>
           </Table.Cell>
           {scopes.map((s) => (

@@ -12,7 +12,7 @@ import { RefObject } from "react";
 import { MdArrowBack, MdHomeWork, MdInfoOutline } from "react-icons/md";
 import type { DataSourceData, DataSourceWithRelations } from "./types";
 import { getTranslationFromDict } from "@/i18n";
-import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
+import { convertKgToTonnes, formatNumber, toKebabCase } from "@/util/helpers";
 import {
   DrawerBackdrop,
   DrawerBody,
@@ -80,7 +80,11 @@ export function SourceDrawer({
     }
     const emissionsData = sourceData?.totals?.emissions?.co2eq_100yr;
     let totalEmissions = emissionsData
-      ? ((Number(emissionsData) * sourceData?.scaleFactor) / 1000).toFixed(2)
+      ? formatNumber(
+          (Number(emissionsData) * sourceData?.scaleFactor) / 1000,
+          numberFormat,
+          2,
+        )
       : "?";
     if (sourceData?.issue) {
       totalEmissions = "?";

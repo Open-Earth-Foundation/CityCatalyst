@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Text } from "@chakra-ui/react";
-import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
+import { convertKgToTonnes, formatNumber, toKebabCase } from "@/util/helpers";
 import {
   getReferenceNumberByName,
   getSubSectorByName,
@@ -76,7 +76,7 @@ const TooltipCard = ({
             .map((series) => {
               const yearData = series.data.find(({ x }) => x === year);
               const percentage = yearData
-                ? ((yearData.y / sumOfYs) * 100).toFixed(2)
+                ? formatNumber((yearData.y / sumOfYs) * 100, numberFormat, 2)
                 : 0;
               const sectorRefNo =
                 getReferenceNumberByName(

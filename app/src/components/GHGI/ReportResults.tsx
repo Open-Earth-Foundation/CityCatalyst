@@ -52,6 +52,7 @@ import { TooltipProvider } from "@nivo/tooltip";
 import { UseErrorToast } from "@/hooks/Toasts";
 import Decimal from "decimal.js";
 import { logger } from "@/services/logger";
+import ProgressLoader from "../ProgressLoader";
 
 enum TableView {
   BY_ACTIVITY = "by-activity",
@@ -194,11 +195,7 @@ function SectorTabs({
                     />
                     <Box flex={1} />
                     {(isResultsLoading || isLoadingNewData) && (
-                      <Center>
-                        <ProgressCircleRoot value={null}>
-                          <ProgressCircleRing cap="round" />
-                        </ProgressCircleRoot>
-                      </Center>
+                      <ProgressLoader />
                     )}
                   </HStack>
                 </Card.Header>

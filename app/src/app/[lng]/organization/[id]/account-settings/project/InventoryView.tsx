@@ -17,6 +17,7 @@ import {
 import { SegmentedProgress } from "@/components/SegmentedProgress";
 import {
   clamp,
+  formatNumber,
   formatPercent,
   getShortenNumberUnit,
   shortenNumber,
@@ -287,7 +288,10 @@ const InventoryView = ({
                     fontWeight="semibold"
                     lineHeight="32"
                   >
-                    {Math.round(inventory?.city.area!).toLocaleString()}
+                    {formatNumber(
+                      Math.round(inventory?.city.area!),
+                      userInfo?.numberFormat,
+                    )}
                     {/* eslint-disable-next-line i18next/no-literal-string */}
                     <Text as="span" fontSize="body.md">
                       km<sup>2</sup>

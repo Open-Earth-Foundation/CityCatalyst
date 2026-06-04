@@ -78,7 +78,6 @@ export default function PublicDashboard({
         <>
           <Hero
             city={publicCity}
-            year={targetInventory.year}
             isPublic={true}
             ghgiCityData={targetInventory as InventoryResponse}
             isLoading={isPublicCityLoading}

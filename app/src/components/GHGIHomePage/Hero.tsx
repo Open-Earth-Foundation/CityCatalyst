@@ -45,7 +45,7 @@ interface HeroProps {
   population?: PopulationAttributes | null;
   lng: string;
   city?: CityWithProjectDataResponse | undefined;
-  numberFormat?: NumberFormatEnum;
+  numberFormat?: string;
 }
 
 export function Hero({

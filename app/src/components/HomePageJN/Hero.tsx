@@ -4,23 +4,11 @@ import type { TFunction } from "i18next";
 import type { PopulationAttributes } from "@/models/Population";
 import { useGetOCCityDataQuery } from "@/services/api";
 import { useMemo } from "react";
-import {
-  Box,
-  Heading,
-  Icon,
-  Spinner,
-  Text,
-  HStack,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Icon, Spinner, HStack, VStack } from "@chakra-ui/react";
 import { CircleFlag } from "react-circle-flags";
-import { MdGroup, MdInfoOutline, MdOutlineAspectRatio } from "react-icons/md";
+import { MdInfoOutline, MdOutlineAspectRatio } from "react-icons/md";
 import { Tooltip } from "@/components/ui/tooltip";
-import {
-  formatEmissions,
-  getShortenNumberUnit,
-  shortenNumber,
-} from "@/util/helpers";
+import { formatEmissions } from "@/util/helpers";
 import Link from "next/link";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { CityWithProjectDataResponse, InventoryResponse } from "@/util/types";
@@ -28,7 +16,6 @@ import { TitleMedium } from "@/components/package/Texts/Title";
 import { DisplayMedium } from "@/components/package/Texts/Display";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { BodyMedium } from "@/components/package/Texts/Body";
-import { FiArrowUpRight } from "react-icons/fi";
 import { HeatIcon } from "../icons";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });

@@ -129,6 +129,7 @@ export default function OnboardingSetup(props: {
   const { data: CCCityData } = useGetCityQuery(cityId, {
     skip: !cityId,
   });
+  const { data: userInfo } = api.useGetUserInfoQuery();
 
   useEffect(() => {
     if (CCCityData) {
@@ -374,6 +375,7 @@ export default function OnboardingSetup(props: {
               inventoryGoal={inventoryGoal}
               year={data.year}
               setStep={setStep}
+              numberFormat={userInfo?.numberFormat}
             />
           )}
         </Box>

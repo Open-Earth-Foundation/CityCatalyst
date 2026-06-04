@@ -55,10 +55,7 @@ export function getCurrentVersion(): string {
   return version;
 }
 
-export function shortenNumber(
-  number: number,
-  format?: NumberFormatEnum,
-): string {
+export function shortenNumber(number: number, format?: string): string {
   let result = number;
   if (number >= 1e9) {
     result = number / 1e9; // Billion

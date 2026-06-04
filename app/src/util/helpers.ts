@@ -232,7 +232,7 @@ export function formatNumber(
 
   // trim decimals if necessary
   let trimmedDecimals = decimalPart;
-  if (maxDecimals !== undefined) {
+  if (maxDecimals !== undefined && decimalPart !== undefined) {
     trimmedDecimals = decimalPart.slice(0, maxDecimals);
   }
 

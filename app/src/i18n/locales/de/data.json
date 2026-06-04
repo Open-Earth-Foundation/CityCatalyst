@@ -15,7 +15,7 @@
   "add-data-to-inventory": "Daten zur Inventur hinzufügen",
   "completion-percent": "{{progress}}% abgeschlossen",
   "data-connected-percent": "{{progress}}% Drittanbieterdaten verbunden",
-  "data-added-percent": "{{progress}}% Daten hinzugefügt",
+  "manually-added": "Manuell hinzugefügte Daten",
   "check-data-heading": "Überprüfen und verbinden Sie die von uns gefundenen Drittanbieterdaten",
   "check-data-details": "Überprüfen und integrieren Sie automatisch bezogene Daten, die für die THG-Inventur Ihrer Stadt relevant sind.",
   "data-quality": "Datenqualität",

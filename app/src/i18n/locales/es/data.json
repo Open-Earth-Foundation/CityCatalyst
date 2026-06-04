@@ -93,7 +93,7 @@
   "add-data-to-inventory": "Añade datos al inventario",
   "completion-percent": "{{progress}}% completado",
   "data-connected-percent": "{{progress}}% Datos de terceros conectados",
-  "data-added-percent": "{{progress}}% Datos añadidos",
+  "manually-added": "Datos añadidos manualmente",
   "check-data-heading": "Explora Conjuntos de Datos Relevantes para Conectar a tu Inventario",
   "check-data-details": "Revisa e integra datos automáticamente obtenidos relevantes para el inventario de GEI de tu ciudad.",
   "no-data-sources": "No hay Fuentes de Datos Externas Disponibles",

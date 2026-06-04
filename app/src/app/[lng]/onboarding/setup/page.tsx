@@ -371,6 +371,7 @@ export default function OnboardingSetup(props: {
               watch={watch}
               ocCityData={ocCityData}
               populationErrorMessage={populationErrorMessage}
+              numberFormat={userInfo?.numberFormat}
             />
           )}
           {activeStep === 3 && (

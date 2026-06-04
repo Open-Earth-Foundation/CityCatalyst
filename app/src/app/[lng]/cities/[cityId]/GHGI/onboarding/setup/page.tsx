@@ -346,6 +346,7 @@ export default function OnboardingSetup(props: {
               setValue={setValue}
               watch={watch}
               ocCityData={ocCityData}
+              numberFormat={userInfo?.numberFormat}
             />
           )}
           {activeStep === 2 && (

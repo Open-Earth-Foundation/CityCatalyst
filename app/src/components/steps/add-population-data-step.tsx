@@ -43,6 +43,7 @@ export default function SetPopulationDataStep({
   setValue,
   numberOfYearsDisplayed,
   populationErrorMessage,
+  numberFormat,
 }: {
   t: TFunction;
   register: UseFormRegister<Inputs>;
@@ -55,6 +56,7 @@ export default function SetPopulationDataStep({
   setValue: any;
   numberOfYearsDisplayed: number;
   populationErrorMessage?: string;
+  numberFormat?: string;
 }) {
   const yearInput = watch("year");
   const year: number | null = yearInput ? parseInt(yearInput) : null;
@@ -232,6 +234,7 @@ export default function SetPopulationDataStep({
                   w="400px"
                   fontSize="body.lg"
                   letterSpacing="wide"
+                  numberFormat={numberFormat}
                 />
                 <Box display="flex" gap="6px" alignItems="center" py="8px">
                   <Icon as={MdInfoOutline} color="interactive.control" />
@@ -347,6 +350,7 @@ export default function SetPopulationDataStep({
                   w="400px"
                   fontSize="body.lg"
                   letterSpacing="wide"
+                  numberFormat={numberFormat}
                 />
               </Field>
             </HStack>
@@ -453,6 +457,7 @@ export default function SetPopulationDataStep({
                   w="400px"
                   fontSize="body.lg"
                   letterSpacing="wide"
+                  numberFormat={numberFormat}
                 />
               </Field>
             </HStack>

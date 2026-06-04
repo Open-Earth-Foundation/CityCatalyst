@@ -10,6 +10,7 @@ import {
 import { Field } from "@/components/ui/field";
 import { MdError } from "react-icons/md";
 import { BodyMedium } from "@/components/package/Texts/Body";
+import { formatNumber } from "@/util/helpers";
 
 function useFormattedNumber<TFieldValues extends FieldValues>(
   name: Path<TFieldValues>,
@@ -18,6 +19,7 @@ function useFormattedNumber<TFieldValues extends FieldValues>(
     RegisterOptions<TFieldValues, Path<TFieldValues>>,
     "valueAsNumber" | "setValueAs"
   >,
+  numberFormat?: string,
 ) {
   const {
     field: { onChange, value, ref },
@@ -28,10 +30,6 @@ function useFormattedNumber<TFieldValues extends FieldValues>(
     rules,
     defaultValue: "" as any,
   });
-
-  const formatNumber = (num: number): string => {
-    return num.toLocaleString(undefined, { maximumFractionDigits: 0 });
-  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = event.target.value.replace(/[^\d]/g, "");
@@ -44,7 +42,8 @@ function useFormattedNumber<TFieldValues extends FieldValues>(
     }
   };
 
-  const displayValue = typeof value === "number" ? formatNumber(value) : "";
+  const displayValue =
+    typeof value === "number" ? formatNumber(value, numberFormat, 0) : "";
 
   return {
     onChange: handleChange,
@@ -64,18 +63,21 @@ interface FormattedNumberInputProps<TFieldValues extends FieldValues>
     RegisterOptions<TFieldValues, Path<TFieldValues>>,
     "valueAsNumber" | "setValueAs"
   >;
+  numberFormat?: string;
 }
 
 function FormattedThousandsNumberInput<TFieldValues extends FieldValues>({
   control,
   name,
   rules,
+  numberFormat,
   ...rest
 }: FormattedNumberInputProps<TFieldValues>) {
   const { onChange, value, ref, error } = useFormattedNumber(
     name,
     control,
     rules,
+    numberFormat,
   );
   const errorBgStyle = error ? "sentiment.negativeOverlay" : "inherit";
   return (

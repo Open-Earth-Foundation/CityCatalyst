@@ -369,32 +369,32 @@ export function convertKgToTonnes(
   const kiloTonne = new Decimal("1e6");
   const tonne = new Decimal("1e3");
 
+  let num;
+  let unitPrefix;
   if (kg.gte(gigaTonne)) {
     // Convert to gigatonnes if the value is 1,000,000,000,000 kg or more
-    const gigatonnes = kg.div(gigaTonne);
-    const number = formatNumber(gigatonnes.toNumber(), numberFormat, 2);
-    return `${number} Gt${gasSuffix}`;
+    num = kg.div(gigaTonne);
+    unitPrefix = "Gt";
   } else if (kg.gte(megaTonne)) {
     // Convert to megatonnes if the value is 1,000,000,000 kg or more but less than 1,000,000,000,000 kg
-    const megatonnes = kg.div(megaTonne);
-    const number = formatNumber(megatonnes.toNumber(), numberFormat, 2);
-    return `${number} Mt${gasSuffix}`;
+    num = kg.div(megaTonne);
+    unitPrefix = "Mt";
   } else if (kg.gte(kiloTonne)) {
     // Convert to kilotonnes if the value is 1,000,000 kg or more but less than 1,000,000,000 kg
-    const kilotonnes = kg.div(kiloTonne);
-    const number = formatNumber(kilotonnes.toNumber(), numberFormat, 2);
-    return `${number} kt${gasSuffix}`;
+    num = kg.div(kiloTonne);
+    unitPrefix = "kt";
   } else if (kg.gte(tonne)) {
     // Convert to tonnes if the value is 1,000 kg or more but less than 1,000,000 kg
-    const tonnes = kg.div(tonne);
-    const number = formatNumber(tonnes.toNumber(), numberFormat, 2);
-    return `${number} t${gasSuffix}`;
+    num = kg.div(tonne);
+    unitPrefix = "t";
   } else {
     // Return as tonnes even if the value is less than 1,000 kg
-    const tonnes = kg.div(tonne);
-    const number = formatNumber(tonnes.toNumber(), numberFormat, 2);
-    return `${number} t${gasSuffix}`;
+    num = kg.div(tonne);
+    unitPrefix = "t";
   }
+
+  const formattedNumber = formatNumber(num.toNumber(), numberFormat, 2);
+  return `${formattedNumber} ${unitPrefix}${gasSuffix}`;
 }
 
 export const toKebabCase = (input: string | undefined): string => {

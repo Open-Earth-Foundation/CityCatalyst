@@ -22,6 +22,7 @@ export type ProfileInputs = {
   userId: string;
   title?: string | null;
   preferredLanguage?: string;
+  numberFormat?: string;
 };
 
 export type UserDetails = {

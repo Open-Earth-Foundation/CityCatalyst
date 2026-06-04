@@ -556,6 +556,7 @@ export interface UpdateUserPayload {
   userId: string;
   title?: string;
   preferredLanguage?: string;
+  numberFormat?: string;
 }
 
 export interface FormulaInputValuesResponse {

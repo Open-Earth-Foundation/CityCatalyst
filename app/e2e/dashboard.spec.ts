@@ -34,10 +34,11 @@ test.describe("Dashboard", () => {
       );
       await expect(addNewInventoryButton).toBeVisible({ timeout: 10000 });
 
-      // Filter by the expected text to handle multiple elements with the same test ID
+      // Multiple inventories can share the same year; assert the year is shown.
       const inventoryYearValue = page
         .getByTestId("inventory-year")
-        .filter({ hasText: inventoryYear });
+        .filter({ hasText: inventoryYear })
+        .first();
       await expect(inventoryYearValue).toBeVisible({ timeout: 10000 });
       await expect(inventoryYearValue).toHaveText(inventoryYear);
 

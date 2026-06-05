@@ -115,6 +115,8 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
         },
         defaults: {
           cityUserId: randomUUID(),
+          cityId: invite.cityId!,
+          userId: session.user.id,
         },
       });
       logger.info(

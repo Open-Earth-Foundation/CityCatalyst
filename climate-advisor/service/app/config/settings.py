@@ -4,7 +4,7 @@ Climate Advisor Configuration Module
 This module is responsible for loading and orchestrating all configuration for the Climate Advisor service.
 It serves as the integration layer between multiple configuration sources:
 
-1. LLM Configuration (llm_config.yaml): Models, prompts, generation parameters, API settings
+1. LLM Configuration (llm_config.yaml): Models, prompts, and API settings
 2. Environment Variables (.env): Sensitive data, deployment-specific overrides
 3. Application Defaults: Fallback values for optional settings
 
@@ -19,7 +19,7 @@ Key Components:
 Usage:
     from app.config import get_settings
     settings = get_settings()
-    # Access LLM config: settings.llm.models.default
+    # Access LLM config: settings.llm.models.orchestrator.name
     # Access app config: settings.port, settings.database_url
 """
 
@@ -112,25 +112,16 @@ def _parse_int(value: Optional[str], default: Optional[int]) -> Optional[int]:
         return default
 
 
-class ModelConfig(BaseModel):
+class RoleModelConfig(BaseModel):
     name: str
     description: Optional[str] = None
     supports_streaming: Optional[bool] = None
-    default_temperature: float
-
-
-class GenerationDefaults(BaseModel):
     temperature: float
-    top_p: Optional[float] = None
-    frequency_penalty: Optional[float] = None
-    presence_penalty: Optional[float] = None
 
 
-class GenerationLimits(BaseModel):
-    temperature: Optional[Dict[str, float]] = None
-    top_p: Optional[Dict[str, float]] = None
-    frequency_penalty: Optional[Dict[str, float]] = None
-    presence_penalty: Optional[Dict[str, float]] = None
+class ModelsConfig(BaseModel):
+    orchestrator: RoleModelConfig
+    agentic_flow: Optional[RoleModelConfig] = None
 
 
 class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
@@ -156,9 +147,7 @@ class PromptBudgetConfig(BaseModel):
 
 
 class GenerationConfig(BaseModel):
-    defaults: GenerationDefaults
-    limits: Optional[GenerationLimits] = None
-    prompt_budget: Optional[PromptBudgetConfig] = Field(
+    prompt_budget: PromptBudgetConfig = Field(
         default_factory=PromptBudgetConfig,
     )
 
@@ -294,8 +283,8 @@ class CacheConfig(BaseModel):
 
 
 class LLMConfig(BaseModel):
-    models: Dict[str, Any]
-    generation: GenerationConfig
+    models: ModelsConfig
+    generation: GenerationConfig = Field(default_factory=GenerationConfig)
     prompts: PromptsConfig
     api: APIConfig
     conversation: Optional[ConversationConfig] = ConversationConfig()
@@ -381,7 +370,7 @@ class Settings(BaseModel):
             self.openrouter_base_url = self.llm.api.openrouter.base_url
 
         if self.openrouter_model is None:
-            self.openrouter_model = self.llm.models.get("default", "openrouter/auto")
+            self.openrouter_model = self.llm.models.orchestrator.name
 
         # LangSmith configuration: ONLY API key from .env, everything else from llm_config.yaml
         # No silent fallbacks - configuration must be explicit

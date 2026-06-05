@@ -1447,12 +1447,15 @@ class StationaryEnergyLLMValidationTests(unittest.TestCase):
             openrouter_base_url="https://custom-openrouter.example/v1",
             openrouter_model="openai/gpt-4.1",
             llm=SimpleNamespace(
-                models={
-                    "default": "openai/gpt-4.1",
-                    "agentic_flow": "openai/gpt-5.4",
-                },
-                generation=SimpleNamespace(
-                    defaults=SimpleNamespace(temperature=0.1)
+                models=SimpleNamespace(
+                    orchestrator=SimpleNamespace(
+                        name="openai/gpt-4.1",
+                        temperature=0.0,
+                    ),
+                    agentic_flow=SimpleNamespace(
+                        name="openai/gpt-5.4",
+                        temperature=0.1,
+                    ),
                 ),
                 prompts=prompts,
                 api=SimpleNamespace(
@@ -1500,6 +1503,8 @@ class StationaryEnergyLLMValidationTests(unittest.TestCase):
             error_cls=StationaryEnergyLLMServiceError,
         )
         mock_client_class.assert_called_once_with(**client_kwargs)
+        self.assertEqual(service.model, "openai/gpt-5.4")
+        self.assertEqual(service.temperature, 0.1)
         self.assertEqual(service.system_prompt, "Stationary Energy prompt")
 
     def test_rejects_candidate_datasource_mismatch(self) -> None:

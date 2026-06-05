@@ -44,7 +44,7 @@ class CityData(BaseModel):
             "renter_share",
             "employment_in_transport_and_logistics",
             "electricity_access_rate",
-            "industry_construction_employment",
+            "employment_construction",
             "median_household_income",
             "public_transport_share",
             "poverty_rate",

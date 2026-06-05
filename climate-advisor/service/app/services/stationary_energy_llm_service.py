@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+from urllib.parse import urlparse
 
 from agents import (
     Agent,
@@ -53,18 +54,23 @@ class StationaryEnergyProposalLLMService:
         """Initialize the proposal service with shared prompt and OpenRouter config."""
         self.settings = get_settings()
         configure_agents_tracing(self.settings)
-        self.model = (
+        self._chat_base_url = ""
+        self.client = client or self._create_openrouter_client()
+        if client is not None:
+            self._chat_base_url = str(getattr(client, "base_url", "") or "")
+
+        orchestrator_model = self.settings.llm.models.orchestrator
+        agentic_flow_model = self.settings.llm.models.agentic_flow or orchestrator_model
+        raw_model = (
             os.getenv("OPENROUTER_AGENTIC_FLOW_MODEL")
             or os.getenv("OPENROUTER_MODEL")
-            or self.settings.llm.models.get("agentic_flow")
-            or self.settings.openrouter_model
-            or self.settings.llm.models.get("default", "openai/gpt-4.1")
+            or agentic_flow_model.name
         )
-        self.temperature = self.settings.llm.generation.defaults.temperature
+        self.model = self._resolve_model_name(raw_model)
+        self.temperature = agentic_flow_model.temperature
         self.system_prompt = self.settings.llm.prompts.get_prompt(
             "stationary_energy_draft_generation"
         )
-        self.client = client or self._create_openrouter_client()
 
     def _create_openrouter_client(self) -> AsyncOpenAI:
         """Create an AsyncOpenAI client using the shared OpenRouter settings helper."""
@@ -75,7 +81,22 @@ class StationaryEnergyProposalLLMService:
             ),
             error_cls=StationaryEnergyLLMServiceError,
         )
+        self._chat_base_url = client_options.base_url
         return AsyncOpenAI(**client_options.kwargs)
+
+    def _chat_base_hostname(self) -> str:
+        """Return the hostname for the active chat-completions base URL."""
+        return (urlparse(self._chat_base_url).hostname or "").lower()
+
+    def _uses_openai_model_names(self) -> bool:
+        """Return whether the active chat provider expects raw OpenAI model IDs."""
+        return self._chat_base_hostname() == "api.openai.com"
+
+    def _resolve_model_name(self, model: str) -> str:
+        """Normalize provider-prefixed model IDs for the active chat provider."""
+        if self._uses_openai_model_names() and model.startswith("openai/"):
+            return model.split("/", 1)[1]
+        return model
 
     @staticmethod
     def _validate_and_normalize_proposals(

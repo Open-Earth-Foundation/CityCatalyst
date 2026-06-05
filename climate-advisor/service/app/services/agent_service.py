@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Any, Dict, Optional, Union
 from urllib.parse import urlparse
+from typing import Any, Dict, Optional, Union
 from uuid import UUID
 
 import openai
@@ -75,30 +75,29 @@ class AgentService:
         # Load system prompt
         self.system_prompt = self.settings.llm.prompts.get_prompt("default")
 
-        # Get default model and temperature from settings
-        self.raw_default_model = (
-            self.settings.openrouter_model
-            or self.settings.llm.models.get("default", "openai/gpt-4o")
-        )
+        orchestrator_model = self.settings.llm.models.orchestrator
+        agentic_flow_model = self.settings.llm.models.agentic_flow or orchestrator_model
+        self.raw_default_model = self.settings.openrouter_model or orchestrator_model.name
         self.raw_agentic_flow_model = (
             os.getenv("OPENROUTER_AGENTIC_FLOW_MODEL")
-            or self.settings.llm.models.get("agentic_flow")
-            or self.raw_default_model
+            or agentic_flow_model.name
         )
         self.default_model = self._resolve_chat_model_name(self.raw_default_model)
         self.agentic_flow_model = self._resolve_chat_model_name(
             self.raw_agentic_flow_model
         )
-        self.default_temperature = self.settings.llm.generation.defaults.temperature
+        self.default_temperature = orchestrator_model.temperature
+        self.agentic_flow_temperature = agentic_flow_model.temperature
 
         logger.info(
-            "AgentService initialized with raw_default_model=%s, default_model=%s, raw_agentic_flow_model=%s, agentic_flow_model=%s, base_url=%s, temperature=%s, cc_token=%s",
+            "AgentService initialized with raw_default_model=%s, default_model=%s, raw_agentic_flow_model=%s, agentic_flow_model=%s, base_url=%s, temperature=%s, agentic_flow_temperature=%s, cc_token=%s",
             self.raw_default_model,
             self.default_model,
             self.raw_agentic_flow_model,
             self.agentic_flow_model,
             self._chat_base_url,
             self.default_temperature,
+            self.agentic_flow_temperature,
             "present" if cc_access_token else "absent",
         )
 
@@ -127,6 +126,15 @@ class AgentService:
         if self._uses_openai_model_names() and model.startswith("openai/"):
             return model.split("/", 1)[1]
         return model
+
+    def _temperature_for_model(self, *, raw_model: str, resolved_model: str) -> float:
+        """Return the configured temperature for the selected chat model."""
+        if (
+            raw_model == self.raw_agentic_flow_model
+            or resolved_model == self.agentic_flow_model
+        ):
+            return self.agentic_flow_temperature
+        return self.default_temperature
     
     def _create_openrouter_client(self) -> AsyncOpenAI:
         """Create an AsyncOpenAI client configured from the shared OpenRouter helper."""
@@ -300,7 +308,7 @@ class AgentService:
     ) -> Agent:
         """Create an AI agent with climate tools.
         
-        Temperature is configured globally in llm_config.yaml and applies to all requests.
+        Temperature is selected from the configured orchestrator or agentic-flow role.
         The Agents SDK uses the OpenAI client configuration set during initialization.
         
         Args:
@@ -312,6 +320,10 @@ class AgentService:
         """
         raw_agent_model = model or self.raw_default_model
         agent_model = self._resolve_chat_model_name(raw_agent_model)
+        agent_temperature = self._temperature_for_model(
+            raw_model=raw_agent_model,
+            resolved_model=agent_model,
+        )
         agent_instructions = instructions or self.system_prompt
         inventory_prompt: Optional[str] = None
         tools = []
@@ -356,7 +368,7 @@ class AgentService:
                 openai_client=self.client,
             ),
             model_settings=ModelSettings(
-                temperature=self.default_temperature,
+                temperature=agent_temperature,
                 include_usage=True,
             ),
             tools=tools,
@@ -366,7 +378,7 @@ class AgentService:
             "Created agent with raw_model=%s, resolved_model=%s, temperature=%s (from config), tools=%s",
             raw_agent_model,
             agent_model,
-            self.default_temperature,
+            agent_temperature,
             [tool.name for tool in agent.tools] if hasattr(agent, 'tools') else []
         )
         

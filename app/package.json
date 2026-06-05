@@ -1,6 +1,6 @@
 {
   "name": "city-catalyst",
-  "version": "1.17.0-dev.0",
+  "version": "1.18.0-dev.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -95,7 +95,7 @@
     "pg": "^8.16.0",
     "pigeon-maps": "^0.22.1",
     "pino": "^9.6.0",
-    "posthog-js": "^1.259.0",
+    "posthog-js": "^1.378.1",
     "react": "18.3.1",
     "react-circle-flags": "^0.0.24",
     "react-dom": "18.3.1",

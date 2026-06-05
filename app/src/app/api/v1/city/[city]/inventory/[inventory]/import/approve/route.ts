@@ -60,7 +60,10 @@ import ECRFImportService, {
 } from "@/backend/ECRFImportService";
 import InventoryImportService from "@/backend/InventoryImportService";
 import FormatAdapterService from "@/backend/FormatAdapterService";
-import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
+import {
+  resolveGpcRefNo,
+  splitSectorSubsectorLabels,
+} from "@/util/GHGI/gpc-ref-resolver";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { ImportStatusEnum } from "@/util/enums";
@@ -295,11 +298,17 @@ async function runApproveImportInBackground(args: {
           ? applyPdfFieldOverrides(baseRow, rowOverrides, allowedPdfOverrideKeys)
           : baseRow;
 
-        const sector = row.sector?.trim() ?? "";
-        const subsector = row.subsector?.trim() ?? "";
+        const { sector, subsector } = splitSectorSubsectorLabels(
+          row.sector?.trim() ?? "",
+          row.subsector?.trim() ?? "",
+        );
+        const activityHint =
+          row.activityType?.trim() ||
+          row.category?.trim() ||
+          undefined;
         const gpcRefNo =
           row.gpcRefNo?.trim() ||
-          resolveGpcRefNo(sector, subsector, row.category?.trim()) ||
+          resolveGpcRefNo(sector, subsector, activityHint) ||
           null;
 
         if (!gpcRefNo) {
@@ -379,6 +388,32 @@ async function runApproveImportInBackground(args: {
         validRowCount: rows.filter((r) => !r.errors?.length).length,
         inferredYearFromFile: inferredYear,
       };
+
+      // Near-eCRF uploads stored before sector-column extraction was fixed may have
+      // no resolvable rows; re-parse from S3/BYTEA using the full eCRF pipeline.
+      if (
+        adapterType === "near-ecrf" &&
+        importResult.validRowCount === 0 &&
+        importResult.rowCount > 0
+      ) {
+        const fileBuffer =
+          await InventoryFileStorageService.resolveImportedFileBuffer(
+            importedFile,
+          );
+        if (fileBuffer) {
+          const parsedData = await FileParserService.parseFile(
+            fileBuffer,
+            importedFile.fileType,
+          );
+          const detectedColumns: Record<string, number> = {
+            ...(validationResults?.detectedColumns || {}),
+          };
+          importResult = await ECRFImportService.processECRFFile(
+            parsedData,
+            detectedColumns,
+          );
+        }
+      }
     } else {
       // xlsx/csv (column-mapped, not key-value shaped): parse file and process with ECRF pipeline
       const fileBuffer =

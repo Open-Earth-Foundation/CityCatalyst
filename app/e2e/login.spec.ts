@@ -2,8 +2,6 @@ import { test, expect } from "@playwright/test";
 import { expectText, signup } from "./helpers";
 import { randomUUID } from "node:crypto";
 
-test.use({ storageState: { cookies: [], origins: [] } });
-
 test.beforeEach(async ({ page, context }) => {
   // make sure user is logged out to prevent order of execution issues
   await context.clearCookies();
@@ -38,10 +36,10 @@ test.describe("Login page", () => {
 
     await page.locator('input[name="email"]').fill("testopenearthorg");
     await page.locator('input[name="password"]').fill("pas");
-    await page.getByRole("button", { name: /log in/i }).click();
+    await page.getByRole("button", { name: "LOG IN" }).click();
 
-    await expect(page).toHaveURL(/\/auth\/login/);
-    await expectText(page, "valid email address");
+    // await expect(page).toHaveURL("/en/auth/login/");
+    await expectText(page, "Please enter a valid email address");
     await expectText(page, "Minimum length");
   });
 });

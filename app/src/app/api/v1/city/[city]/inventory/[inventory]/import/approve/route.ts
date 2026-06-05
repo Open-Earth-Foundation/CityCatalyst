@@ -52,6 +52,7 @@
  */
 
 import UserService from "@/backend/UserService";
+import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
 import ECRFImportService, {
   type ECRFImportResult,
@@ -233,16 +234,19 @@ async function runApproveImportInBackground(args: {
     const mappingOverrides = mappingConfiguration.overrides;
 
     const validationResults = (importedFile.validationResults as any) || {};
+    const adapterType = validationResults?.adapterType as string | undefined;
     let importResult: ECRFImportResult;
 
-    // Path C (PDF) or Path B key-value: AI-shaped rows – convert ExtractedRow[] to ECRF format (no file parse).
+    // Pre-extracted rows: PDF, Path B key-value, or Adapter D (near-ecrf) — no file re-parse.
     // mappingOverrides: per-row field overrides keyed by row index (e.g. { "0": { sector: "X", subsector: "Y" } }).
     const extractedRows = mappingConfiguration.rows as ExtractedRow[] | undefined;
     const keyValueShaped = mappingConfiguration.keyValueShaped === true;
     const useExtractedRows =
-      (importedFile.fileType === "pdf" || keyValueShaped) &&
       Array.isArray(extractedRows) &&
-      extractedRows.length > 0;
+      extractedRows.length > 0 &&
+      (importedFile.fileType === "pdf" ||
+        keyValueShaped ||
+        adapterType === "near-ecrf");
 
     if (useExtractedRows) {
       const errors: string[] = [];
@@ -377,13 +381,14 @@ async function runApproveImportInBackground(args: {
       };
     } else {
       // xlsx/csv (column-mapped, not key-value shaped): parse file and process with ECRF pipeline
-      if (!importedFile.data) {
+      const fileBuffer =
+        await InventoryFileStorageService.resolveImportedFileBuffer(importedFile);
+      if (!fileBuffer) {
         throw new Error("File data not found");
       }
 
-      const buffer = Buffer.from(importedFile.data as any);
       const parsedData = await FileParserService.parseFile(
-        buffer,
+        fileBuffer,
         importedFile.fileType,
       );
 
@@ -442,11 +447,15 @@ async function runApproveImportInBackground(args: {
       const vr = (importedFile.validationResults as any) ?? {};
       const headerKey = vr.headerKey as string | undefined;
       if (headerKey) {
-        const buffer = importedFile.data
-          ? Buffer.from(importedFile.data as any)
-          : null;
-        const rawHeaders: string[] = buffer
-          ? await FileParserService.parseFile(buffer, importedFile.fileType)
+        const feedbackBuffer =
+          await InventoryFileStorageService.resolveImportedFileBuffer(
+            importedFile,
+          );
+        const rawHeaders: string[] = feedbackBuffer
+          ? await FileParserService.parseFile(
+              feedbackBuffer,
+              importedFile.fileType,
+            )
               .then((p) => p.primarySheet?.headers ?? [])
               .catch(() => [])
           : [];

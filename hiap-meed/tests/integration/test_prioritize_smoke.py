@@ -683,7 +683,7 @@ def test_exclusion_preview_returns_deterministic_proposals(
     """Preview endpoint returns proposed exclusions with grouped reasons."""
     artifact_log_dir = tmp_path / "logs"
     monkeypatch.setenv("LOG_DIR", str(artifact_log_dir))
-    monkeypatch.setenv("ARTIFACT_LOG_JSONL", "true")
+    monkeypatch.setenv("LOCAL_ARTIFACTS_ENABLED", "true")
 
     actions = [
         Action(
@@ -748,8 +748,9 @@ def test_exclusion_preview_returns_deterministic_proposals(
         manifest_payload = json.loads((run_dir / "manifest.json").read_text("utf-8"))
         assert manifest_payload["request_kind"] == "exclusion_preview"
         assert (run_dir / "response_full.json").exists()
-        assert (run_dir / "cities" / "cl-scl_preview.json").exists()
-        assert (run_dir / "llm" / "cl-scl_free_text_exclusion_io.json").exists()
+        assert (run_dir / "002_exclusion_preview_cl-scl.json").exists()
+        assert (run_dir / "cities").exists() is False
+        assert (run_dir / "llm" / "cl-scl_free_text_exclusion_io.json").exists() is False
         assert (artifact_log_dir / "requests" / "prioritization").exists() is False
     finally:
         app.dependency_overrides.clear()

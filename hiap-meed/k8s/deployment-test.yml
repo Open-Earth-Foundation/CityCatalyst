@@ -32,6 +32,16 @@ spec:
               value: "0.0.0.0"
             - name: API_PORT
               value: "8000"
+            - name: MLFLOW_ENABLED
+              value: "true"
+            - name: MLFLOW_TRACKING_URI
+              value: "https://mlflow-dev.openearth.dev"
+            - name: MLFLOW_EXPERIMENT_NAME
+              value: "hiap-meed"
+            - name: MLFLOW_ENVIRONMENT
+              value: "test"
+            - name: LOCAL_ARTIFACTS_ENABLED
+              value: "false"
           resources:
             requests:
               cpu: "50m"

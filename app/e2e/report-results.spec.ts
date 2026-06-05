@@ -6,7 +6,6 @@ import {
   navigateToGHGIModule,
 } from "./helpers";
 
-// Skipped temporarily — flaky in CI (onboarding/data-page timing, dashboard assertions).
 test.describe("Report Results", () => {
   test.setTimeout(120000);
   // before each test, create a city and inventory

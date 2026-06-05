@@ -41,6 +41,10 @@ MLFLOW_ENABLED=true
 MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev
 MLFLOW_EXPERIMENT_NAME=hiap-meed
 MLFLOW_ENVIRONMENT=dev
+MLFLOW_HTTP_REQUEST_TIMEOUT=3
+MLFLOW_HTTP_REQUEST_MAX_RETRIES=1
+MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR=1
+MLFLOW_HTTP_REQUEST_BACKOFF_JITTER=0
 GIT_PYTHON_REFRESH=quiet
 MLFLOW_ASYNC_LOGGING_ENABLED=true
 HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_ENABLED=false
@@ -70,6 +74,10 @@ Variables:
 - `MLFLOW_TRACKING_URI`: MLflow tracking server URL. The standard default is the hosted dev MLflow at `https://mlflow-dev.openearth.dev`. Override it to `http://mlflow:5000` only when running the fully local Docker Compose stack, or to `http://localhost:5000` when using `kubectl port-forward`.
 - `MLFLOW_EXPERIMENT_NAME`: MLflow experiment name used for all hiap-meed runs
 - `MLFLOW_ENVIRONMENT`: environment tag attached to MLflow runs (use `dev`, `test`, or `prod`)
+- `MLFLOW_HTTP_REQUEST_TIMEOUT`: MLflow client HTTP timeout in seconds. Keep this low, for example `3`, so bad or unreachable tracking URLs fail fast instead of blocking startup or the first traced request for minutes.
+- `MLFLOW_HTTP_REQUEST_MAX_RETRIES`: number of extra MLflow HTTP retry attempts after the initial failure. Keep this low, for example `1`, so unreachable tracking URLs do not delay startup or requests for several minutes.
+- `MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR`: MLflow retry backoff multiplier. A value like `1` keeps the delay between retry attempts short and predictable.
+- `MLFLOW_HTTP_REQUEST_BACKOFF_JITTER`: extra random delay added between MLflow retry attempts. Set this to `0` when you want deterministic fail-fast behavior during local testing.
 - `GIT_PYTHON_REFRESH`: set to `quiet` to suppress mlflow related GitPython warnings when the `hiap-meed` process or `hiap-meed` container does not have a `git` executable; this only silences the warning and does not restore Git SHA capture
 - `MLFLOW_ASYNC_LOGGING_ENABLED`: if `true`, MLflow tags, params, and metrics use async fluent logging; run open/close and artifact uploads remain synchronous
 - `HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_ENABLED`: if `true`, exposes one test-only endpoint that forces a simple OpenAI tool-calling flow for MLflow tracing checks
@@ -98,7 +106,7 @@ LLM-specific non-secret settings now live in `llm_config.yaml`, including:
 - `openai.timeout_seconds`
 - `openai.max_retries`
 
-When `MLFLOW_ENABLED=true`, the service best-effort logs request runs, direct request artifacts, and OpenAI traces to the configured MLflow server. If MLflow is down or unreachable, the API still completes normally and only emits warning logs. The MLflow client retries initialization on later requests after a fixed 60-second cooldown so transient startup failures do not disable logging for the lifetime of the worker.
+When `MLFLOW_ENABLED=true`, the service best-effort logs request runs, direct request artifacts, and OpenAI traces to the configured MLflow server. MLflow initialization is lazy and happens only when a request enters an MLflow-backed run. If MLflow is down or unreachable, the API still completes normally and only emits warning logs. The MLflow client retries initialization on later requests after a fixed 60-second cooldown so transient failures do not disable logging for the lifetime of the worker.
 
 If the `hiap-meed` process or `hiap-meed` container that writes to MLflow does not have `git` installed, MLflow's GitPython integration may warn that Git SHA metadata is unavailable. This warning is about the MLflow client side in `hiap-meed`, not the MLflow server container. Setting `GIT_PYTHON_REFRESH=quiet` suppresses that warning. It does not install `git` or restore Git SHA capture; it only keeps logs quieter.
 

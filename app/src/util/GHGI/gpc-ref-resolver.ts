@@ -53,6 +53,35 @@ export function normalizeSectorAndSubsector(
 }
 
 /**
+ * Split combined "Sector > Sub-sector" labels from eCRF-style files into separate values.
+ */
+export function splitSectorSubsectorLabels(
+  sector: string,
+  subsector: string,
+): { sector: string; subsector: string } {
+  let parsedSector = sector.trim();
+  let parsedSubsector = subsector.trim();
+
+  if (parsedSector.includes(" > ")) {
+    const [left, right] = parsedSector.split(" > ").map((s) => s.trim());
+    if (left && right) {
+      parsedSector = left;
+      if (!parsedSubsector) parsedSubsector = right;
+    }
+  }
+
+  if (parsedSubsector.includes(" > ")) {
+    const [left, right] = parsedSubsector.split(" > ").map((s) => s.trim());
+    if (left && right) {
+      if (!parsedSector) parsedSector = left;
+      parsedSubsector = right;
+    }
+  }
+
+  return { sector: parsedSector, subsector: parsedSubsector };
+}
+
+/**
  * Resolve GPC reference number from sector + subsector + optional fuel/activity.
  * Use when the eCRF file has no GPC ref no column or a row has an empty ref.
  *

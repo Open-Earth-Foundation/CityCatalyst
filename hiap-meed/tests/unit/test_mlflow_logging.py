@@ -11,7 +11,7 @@ def test_initialize_mlflow_returns_false_when_disabled(monkeypatch) -> None:
     """Disabled MLflow should no-op without trying to import MLflow."""
     monkeypatch.setenv("MLFLOW_ENABLED", "false")
     monkeypatch.setattr(mlflow_logging, "_INITIALIZED", False)
-    monkeypatch.setattr(mlflow_logging, "_INITIALIZATION_ATTEMPTED", False)
+    monkeypatch.setattr(mlflow_logging, "_LAST_INITIALIZATION_FAILURE_AT", None)
 
     assert mlflow_logging.initialize_mlflow() is False
 
@@ -20,10 +20,53 @@ def test_initialize_mlflow_fails_open_when_import_errors(monkeypatch) -> None:
     """Missing MLflow dependency should not raise during initialization."""
     monkeypatch.setenv("MLFLOW_ENABLED", "true")
     monkeypatch.setattr(mlflow_logging, "_INITIALIZED", False)
-    monkeypatch.setattr(mlflow_logging, "_INITIALIZATION_ATTEMPTED", False)
+    monkeypatch.setattr(mlflow_logging, "_LAST_INITIALIZATION_FAILURE_AT", None)
     monkeypatch.setattr(mlflow_logging, "mlflow", None)
 
     assert mlflow_logging.initialize_mlflow() is False
+
+
+def test_initialize_mlflow_retries_after_cooldown_and_logs_error(
+    monkeypatch,
+) -> None:
+    """Initialization should retry after the cooldown and log the MLflow error."""
+
+    attempts = {"count": 0}
+    warnings: list[str] = []
+    times = iter([0.0, 10.0, 61.0])
+
+    class FlakyMlflow:
+        config = SimpleNamespace(enable_async_logging=lambda enabled: None)
+        openai = SimpleNamespace(autolog=lambda: None)
+
+        @staticmethod
+        def set_tracking_uri(uri: str) -> None:
+            return None
+
+        @staticmethod
+        def set_experiment(name: str) -> None:
+            attempts["count"] += 1
+            if attempts["count"] == 1:
+                raise RuntimeError(f"mlflow offline {attempts['count']}")
+
+    monkeypatch.setenv("MLFLOW_ENABLED", "true")
+    monkeypatch.setattr(mlflow_logging, "_INITIALIZED", False)
+    monkeypatch.setattr(mlflow_logging, "_LAST_INITIALIZATION_FAILURE_AT", None)
+    monkeypatch.setattr(mlflow_logging, "mlflow", FlakyMlflow)
+    monkeypatch.setattr(mlflow_logging.time, "monotonic", lambda: next(times))
+    monkeypatch.setattr(
+        mlflow_logging.logger,
+        "warning",
+        lambda message, *args: warnings.append(message % args),
+    )
+
+    assert mlflow_logging.initialize_mlflow() is False
+    assert mlflow_logging.initialize_mlflow() is False
+    assert mlflow_logging.initialize_mlflow() is True
+
+    assert attempts["count"] == 2
+    assert any("mlflow offline 1" in warning for warning in warnings)
+    assert not any("mlflow offline 2" in warning for warning in warnings)
 
 
 def test_start_run_fails_open_when_run_creation_errors(monkeypatch) -> None:
@@ -46,7 +89,7 @@ def test_start_run_fails_open_when_run_creation_errors(monkeypatch) -> None:
 
     monkeypatch.setenv("MLFLOW_ENABLED", "true")
     monkeypatch.setattr(mlflow_logging, "_INITIALIZED", False)
-    monkeypatch.setattr(mlflow_logging, "_INITIALIZATION_ATTEMPTED", False)
+    monkeypatch.setattr(mlflow_logging, "_LAST_INITIALIZATION_FAILURE_AT", None)
     monkeypatch.setattr(mlflow_logging, "mlflow", BrokenMlflow)
 
     with mlflow_logging.start_run(run_name="test-run") as run:
@@ -106,7 +149,7 @@ def test_start_run_fails_open_when_run_close_errors(monkeypatch) -> None:
 
     monkeypatch.setenv("MLFLOW_ENABLED", "true")
     monkeypatch.setattr(mlflow_logging, "_INITIALIZED", False)
-    monkeypatch.setattr(mlflow_logging, "_INITIALIZATION_ATTEMPTED", False)
+    monkeypatch.setattr(mlflow_logging, "_LAST_INITIALIZATION_FAILURE_AT", None)
     monkeypatch.setattr(mlflow_logging, "mlflow", BrokenMlflow)
 
     with mlflow_logging.start_run(run_name="test-run") as run:
@@ -146,7 +189,7 @@ def test_start_run_closes_run_with_exception_details(monkeypatch) -> None:
 
     monkeypatch.setenv("MLFLOW_ENABLED", "true")
     monkeypatch.setattr(mlflow_logging, "_INITIALIZED", False)
-    monkeypatch.setattr(mlflow_logging, "_INITIALIZATION_ATTEMPTED", False)
+    monkeypatch.setattr(mlflow_logging, "_LAST_INITIALIZATION_FAILURE_AT", None)
     monkeypatch.setattr(mlflow_logging, "mlflow", RecordingMlflow)
 
     try:
@@ -168,6 +211,10 @@ def test_log_helpers_use_async_flag(monkeypatch) -> None:
     recorded: dict[str, object] = {}
 
     class RecordingMlflow:
+        @staticmethod
+        def active_run() -> object:
+            return object()
+
         @staticmethod
         def set_tags(tags: dict[str, str], synchronous: bool) -> None:
             recorded["tags_sync"] = synchronous
@@ -193,4 +240,46 @@ def test_log_helpers_use_async_flag(monkeypatch) -> None:
         "params_sync": False,
         "metrics_sync": False,
     }
+
+
+def test_log_helpers_skip_without_active_run(monkeypatch) -> None:
+    """MLflow helper calls should no-op when no run is active."""
+
+    recorded: dict[str, object] = {}
+
+    class RecordingMlflow:
+        @staticmethod
+        def active_run() -> None:
+            return None
+
+        @staticmethod
+        def set_tags(tags: dict[str, str], synchronous: bool) -> None:
+            recorded["tags"] = tags
+
+        @staticmethod
+        def log_params(params: dict[str, object], synchronous: bool) -> None:
+            recorded["params"] = params
+
+        @staticmethod
+        def log_metrics(metrics: dict[str, float], synchronous: bool) -> None:
+            recorded["metrics"] = metrics
+
+        @staticmethod
+        def log_dict(payload: dict[str, object], artifact_file: str) -> None:
+            recorded["dict"] = (payload, artifact_file)
+
+        @staticmethod
+        def log_text(content: str, artifact_file: str) -> None:
+            recorded["text"] = (content, artifact_file)
+
+    monkeypatch.setattr(mlflow_logging, "_INITIALIZED", True)
+    monkeypatch.setattr(mlflow_logging, "mlflow", RecordingMlflow)
+
+    mlflow_logging.log_tags({"a": "b"})
+    mlflow_logging.log_params({"p": 1})
+    mlflow_logging.log_metrics({"m": 1.0})
+    mlflow_logging.log_json_artifact("response_full.json", {"ok": True})
+    mlflow_logging.log_text_artifact("llm/prompt.txt", "hello")
+
+    assert recorded == {}
 

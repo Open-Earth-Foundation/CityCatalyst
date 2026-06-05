@@ -98,7 +98,7 @@ LLM-specific non-secret settings now live in `llm_config.yaml`, including:
 - `openai.timeout_seconds`
 - `openai.max_retries`
 
-When `MLFLOW_ENABLED=true`, the service best-effort logs request runs, direct request artifacts, and OpenAI traces to the configured MLflow server. If MLflow is down or unreachable, the API still completes normally and only emits warning logs.
+When `MLFLOW_ENABLED=true`, the service best-effort logs request runs, direct request artifacts, and OpenAI traces to the configured MLflow server. If MLflow is down or unreachable, the API still completes normally and only emits warning logs. The MLflow client retries initialization on later requests after a fixed 60-second cooldown so transient startup failures do not disable logging for the lifetime of the worker.
 
 If the `hiap-meed` process or `hiap-meed` container that writes to MLflow does not have `git` installed, MLflow's GitPython integration may warn that Git SHA metadata is unavailable. This warning is about the MLflow client side in `hiap-meed`, not the MLflow server container. Setting `GIT_PYTHON_REFRESH=quiet` suppresses that warning. It does not install `git` or restore Git SHA capture; it only keeps logs quieter.
 

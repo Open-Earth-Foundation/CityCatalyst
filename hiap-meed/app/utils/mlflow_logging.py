@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import time
 from contextlib import contextmanager
 from typing import Any, Iterator, Mapping
 
@@ -17,9 +18,10 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_MLFLOW_TRACKING_URI = "https://mlflow-dev.openearth.dev"
 DEFAULT_MLFLOW_EXPERIMENT_NAME = "hiap-meed"
+MLFLOW_INIT_RETRY_COOLDOWN_SECONDS = 60.0
 
 _INITIALIZED = False
-_INITIALIZATION_ATTEMPTED = False
+_LAST_INITIALIZATION_FAILURE_AT: float | None = None
 
 
 def is_async_logging_enabled() -> bool:
@@ -31,30 +33,46 @@ def is_mlflow_enabled() -> bool:
     return os.getenv("MLFLOW_ENABLED", "false").strip().lower() == "true"
 
 
+def _has_active_run() -> bool:
+    """Return whether MLflow currently has one explicit active run."""
+    if not _INITIALIZED or mlflow is None:
+        return False
+    try:
+        return mlflow.active_run() is not None
+    except Exception:
+        return False
+
+
 def initialize_mlflow() -> bool:
-    """Initialize MLflow tracking and OpenAI autologging once per process."""
-    global _INITIALIZED, _INITIALIZATION_ATTEMPTED
+    """Initialize MLflow tracking and OpenAI autologging with retry cooldown."""
+    global _INITIALIZED, _LAST_INITIALIZATION_FAILURE_AT
 
     if not is_mlflow_enabled():
-        _INITIALIZATION_ATTEMPTED = True
         _INITIALIZED = False
+        _LAST_INITIALIZATION_FAILURE_AT = None
         return False
     if _INITIALIZED:
         return True
-    if _INITIALIZATION_ATTEMPTED:
+    if mlflow is None:
+        logger.warning("MLflow is not installed; skipping MLflow initialization")
+        _INITIALIZED = False
         return False
 
-    _INITIALIZATION_ATTEMPTED = True
+    # Avoid spamming retries and warnings while MLflow is temporarily unavailable.
+    now = time.monotonic()
+    if (
+        _LAST_INITIALIZATION_FAILURE_AT is not None
+        and now - _LAST_INITIALIZATION_FAILURE_AT
+        < MLFLOW_INIT_RETRY_COOLDOWN_SECONDS
+    ):
+        return False
+
     tracking_uri = os.getenv(
         "MLFLOW_TRACKING_URI", DEFAULT_MLFLOW_TRACKING_URI
     ).strip()
     experiment_name = os.getenv(
         "MLFLOW_EXPERIMENT_NAME", DEFAULT_MLFLOW_EXPERIMENT_NAME
     ).strip()
-    if mlflow is None:
-        logger.warning("MLflow is not installed; skipping MLflow initialization")
-        _INITIALIZED = False
-        return False
     try:
         mlflow.set_tracking_uri(tracking_uri)
         mlflow.set_experiment(experiment_name)
@@ -68,9 +86,11 @@ def initialize_mlflow() -> bool:
             error,
         )
         _INITIALIZED = False
+        _LAST_INITIALIZATION_FAILURE_AT = now
         return False
 
     _INITIALIZED = True
+    _LAST_INITIALIZATION_FAILURE_AT = None
     logger.info(
         "MLflow initialized tracking_uri=%s experiment=%s",
         tracking_uri,
@@ -140,7 +160,7 @@ def start_run(
 
 def log_tags(tags: Mapping[str, object]) -> None:
     """Best-effort log run tags for the active MLflow run."""
-    if not _INITIALIZED or mlflow is None or not tags:
+    if not _has_active_run() or not tags:
         return
     try:
         mlflow.set_tags(
@@ -157,7 +177,7 @@ def log_tags(tags: Mapping[str, object]) -> None:
 
 def log_params(params: Mapping[str, object]) -> None:
     """Best-effort log MLflow params for the active run."""
-    if not _INITIALIZED or mlflow is None or not params:
+    if not _has_active_run() or not params:
         return
     try:
         mlflow.log_params(
@@ -174,7 +194,7 @@ def log_params(params: Mapping[str, object]) -> None:
 
 def log_metrics(metrics: Mapping[str, float | int]) -> None:
     """Best-effort log numeric metrics for the active MLflow run."""
-    if not _INITIALIZED or mlflow is None or not metrics:
+    if not _has_active_run() or not metrics:
         return
     try:
         mlflow.log_metrics(
@@ -191,7 +211,7 @@ def log_metrics(metrics: Mapping[str, float | int]) -> None:
 
 def log_json_artifact(artifact_file: str, payload: Mapping[str, object]) -> None:
     """Best-effort log one JSON artifact to the active MLflow run."""
-    if not _INITIALIZED or mlflow is None:
+    if not _has_active_run():
         return
     try:
         mlflow.log_dict(dict(payload), artifact_file)
@@ -205,7 +225,7 @@ def log_json_artifact(artifact_file: str, payload: Mapping[str, object]) -> None
 
 def log_text_artifact(artifact_file: str, content: str) -> None:
     """Best-effort log one text artifact to the active MLflow run."""
-    if not _INITIALIZED or mlflow is None:
+    if not _has_active_run():
         return
     try:
         mlflow.log_text(content, artifact_file)

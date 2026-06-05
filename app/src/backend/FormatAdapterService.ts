@@ -16,6 +16,10 @@ import FileParserService, {
   type ParsedSheet,
 } from "./FileParserService";
 import type { ExtractedRow } from "./InventoryExtractionService";
+import {
+  resolveGpcRefNo,
+  splitSectorSubsectorLabels,
+} from "@/util/GHGI/gpc-ref-resolver";
 
 // ─── Public types ────────────────────────────────────────────────────────────
 
@@ -138,7 +142,7 @@ export default class FormatAdapterService {
 
   /**
    * Directly map near-ecrf rows to ExtractedRow[] without LLM involvement.
-   * Works for files that already have GPC Reference Number, Total Emissions, Notation Key columns.
+   * Works for files with GPC Reference Number and/or CRF Sector + Sub-sector columns.
    */
   public static toExtractedRows(
     parsedData: ParsedFileData,
@@ -164,10 +168,18 @@ export default class FormatAdapterService {
       "co2e",
     ]);
     const notationIdx = this.col(h, ["notation key", "notation"]);
+    const sectorIdx = this.col(h, [
+      "crf - sector",
+      "sector name",
+      "sector",
+      "crf sector",
+    ]);
     const subsectorIdx = this.col(h, [
+      "crf - sub-sector",
       "subsector name",
       "subsector",
       "sub-sector",
+      "crf sub-sector",
       "category",
     ]);
     const actTypeIdx = this.col(h, ["activity type", "activity_type"]);
@@ -221,15 +233,26 @@ export default class FormatAdapterService {
       // Skip rows that have no emissions and no meaningful notation key
       if (totalCO2e === null && !notation) continue;
 
-      const gpcRefNo = this.strVal(get(gpcRefIdx));
-      const sector = gpcRefNo ? this.sectorFromGpcRef(gpcRefNo) : null;
+      let gpcRefNo = this.strVal(get(gpcRefIdx));
+      const activityType = this.strVal(get(actTypeIdx));
+      const { sector, subsector } = splitSectorSubsectorLabels(
+        this.strVal(get(sectorIdx)) ?? "",
+        this.strVal(get(subsectorIdx)) ?? "",
+      );
+
+      if (!gpcRefNo && sector && subsector) {
+        gpcRefNo = resolveGpcRefNo(sector, subsector, activityType ?? undefined);
+      }
+
+      const resolvedSector =
+        sector || (gpcRefNo ? this.sectorFromGpcRef(gpcRefNo) : null);
 
       rows.push({
         year: targetYear ?? null,
-        sector,
-        subsector: this.strVal(get(subsectorIdx)),
+        sector: resolvedSector,
+        subsector: subsector || null,
         scope: this.strVal(get(scopeIdx)),
-        category: this.strVal(get(subsectorIdx)),
+        category: subsector || null,
         totalCO2e,
         co2: this.numVal(get(co2Idx)),
         ch4: this.numVal(get(ch4Idx)),

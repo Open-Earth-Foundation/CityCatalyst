@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+from copy import deepcopy
 from typing import Any
 
 from app.models.stationary_energy_drafts import LoadStationaryEnergyContextResponse
@@ -43,9 +44,18 @@ def enforce_prompt_budget(
         settings,
         "draft_generation",
     )
+    prepared_input = llm_input
+    if not budget.include_source_data:
+        prepared_input = deepcopy(llm_input)
+        candidates = prepared_input.get("source_candidates")
+        if isinstance(candidates, list):
+            for candidate in candidates:
+                if isinstance(candidate, dict):
+                    candidate.pop("source_data", None)
+
     initial_count = count_prompt_tokens_for_input(
         system_prompt=system_prompt,
-        llm_input=llm_input,
+        llm_input=prepared_input,
         model=model,
         budget=budget,
     )
@@ -56,16 +66,16 @@ def enforce_prompt_budget(
         "max_prompt_tokens": budget.max_prompt_tokens,
         "tokenizer": initial_count.tokenizer,
         "compacted": False,
-        "source_data_included": True,
+        "source_data_included": budget.include_source_data,
         "max_normalized_rows_per_candidate": None,
     }
     if initial_count.tokens <= budget.max_prompt_tokens:
-        return llm_input, trace
+        return prepared_input, trace
 
     compacted_input = compact_stationary_energy_prompt_payload(
-        llm_input,
+        prepared_input,
         budget=budget,
-        drop_source_data=False,
+        drop_source_data=not budget.include_source_data,
     )
     compacted_count = count_prompt_tokens_for_input(
         system_prompt=system_prompt,
@@ -74,8 +84,8 @@ def enforce_prompt_budget(
         budget=budget,
     )
     compaction_stage = "normalized_rows"
-    source_data_included = True
-    if compacted_count.tokens > budget.max_prompt_tokens and not budget.include_source_data:
+    source_data_included = budget.include_source_data
+    if compacted_count.tokens > budget.max_prompt_tokens and budget.include_source_data:
         compacted_input = compact_stationary_energy_prompt_payload(
             compacted_input,
             budget=budget,

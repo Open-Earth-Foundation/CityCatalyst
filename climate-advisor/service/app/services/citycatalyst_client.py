@@ -37,7 +37,16 @@ class TokenRefreshError(Exception):
 
 class CityCatalystClientError(Exception):
     """Base exception for CityCatalyst client errors."""
-    pass
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        status_code: int | None = None,
+    ) -> None:
+        """Initialize a client error with an optional upstream HTTP status."""
+        super().__init__(message)
+        self.status_code = status_code
 
 
 class CityCatalystClient:
@@ -369,7 +378,8 @@ class CityCatalystClient:
         if not response.is_success:
             error_text = response.text[:500] if response.text else "Unknown error"
             raise CityCatalystClientError(
-                f"CC capability request failed: {response.status_code} - {error_text}"
+                f"CC capability request failed: {response.status_code} - {error_text}",
+                status_code=response.status_code,
             )
 
         try:

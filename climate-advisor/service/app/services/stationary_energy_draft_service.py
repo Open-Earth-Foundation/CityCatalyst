@@ -33,13 +33,10 @@ from app.services.citycatalyst_client import (
 )
 from app.services.stationary_energy_draft_auth import (
     extract_bearer_token,
-    extract_token,
-    load_thread_token,
     needs_token_refresh,
     persist_thread_draft_run_id,
     persist_thread_token,
-    resolve_authenticated_user_id,
-    resolve_user_and_token,
+    require_bearer_token,
 )
 from app.services.stationary_energy_draft_context import (
     context_summary,
@@ -103,11 +100,27 @@ class StationaryEnergyDraftService:
     ) -> StartStationaryEnergyDraftResponse:
         """Create and start a new Stationary Energy draft run."""
         trace_id = get_request_id()
-        canonical_user_id, token = await resolve_user_and_token(
-            payload=payload,
+        if payload.thread_id is not None:
+            thread = await self.thread_service.get_thread(payload.thread_id)
+            if thread is None:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Thread {payload.thread_id} not found",
+                )
+            if thread.user_id != payload.user_id:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Thread does not belong to user",
+                )
+
+        token, allowed_capabilities = await self._require_scope_token_and_capabilities(
+            requested_user_id=payload.user_id,
+            city_id=payload.city_id,
+            inventory_id=payload.inventory_id,
+            workflow_step="draft",
             authorization=authorization,
-            thread_service=self.thread_service,
         )
+        canonical_user_id = payload.user_id
 
         draft_run = await self.repository.create_draft_run(
             user_id=canonical_user_id,
@@ -126,6 +139,7 @@ class StationaryEnergyDraftService:
             locale=payload.locale,
             token=token,
             trace_id=trace_id,
+            allowed_capabilities=allowed_capabilities,
         )
 
     async def retry_draft(
@@ -138,18 +152,14 @@ class StationaryEnergyDraftService:
         """Retry a non-terminal draft run using the latest available token context."""
         trace_id = get_request_id()
         draft_run = await self._get_draft_run_or_404(draft_run_id)
-        token = extract_bearer_token(authorization) or extract_token(payload.context)
-        if token is None:
-            token = await load_thread_token(
-                thread_service=self.thread_service,
-                thread_id=draft_run.thread_id,
-            )
-
-        user_id = resolve_authenticated_user_id(
-            token=token,
+        token, allowed_capabilities = await self._require_scope_token_and_capabilities(
             requested_user_id=payload.user_id,
+            city_id=draft_run.city_id,
+            inventory_id=draft_run.inventory_id,
+            workflow_step="draft",
+            authorization=authorization,
         )
-        if draft_run.user_id != user_id:
+        if draft_run.user_id != payload.user_id:
             raise HTTPException(status_code=403, detail="Draft run does not belong to user")
         if draft_run.status in {"reviewed", "saved", "partially_saved"}:
             raise HTTPException(
@@ -166,6 +176,7 @@ class StationaryEnergyDraftService:
             locale=payload.locale,
             token=token,
             trace_id=trace_id,
+            allowed_capabilities=allowed_capabilities,
         )
 
     async def _run_draft_generation(
@@ -179,6 +190,7 @@ class StationaryEnergyDraftService:
         locale: str | None,
         token: str | None,
         trace_id: str | None,
+        allowed_capabilities: list[str] | None = None,
     ) -> StartStationaryEnergyDraftResponse:
         """Load draft context, call the LLM, persist the snapshot, and return status."""
         failed_step = "resolving_scope"
@@ -195,15 +207,14 @@ class StationaryEnergyDraftService:
                 thread_id=thread_id,
                 token=token,
             )
-            allowed_capabilities = (
-                await self.cc_client.get_stationary_energy_allowed_capabilities(
+            if allowed_capabilities is None:
+                allowed_capabilities = await self._get_scope_capabilities(
                     user_id=user_id,
                     city_id=city_id,
                     inventory_id=inventory_id,
                     workflow_step="draft",
                     token=token,
                 )
-            )
             if LOAD_CONTEXT_CAPABILITY not in allowed_capabilities:
                 raise HTTPException(
                     status_code=403,
@@ -344,11 +355,16 @@ class StationaryEnergyDraftService:
         authorization: str | None = None,
     ) -> StationaryEnergyDraftStatusResponse:
         """Return the persisted draft snapshot plus connected-source staleness metadata."""
-        user_id = resolve_authenticated_user_id(
-            token=extract_bearer_token(authorization),
+        draft_run = await self._get_draft_run_or_404(draft_run_id)
+        await self._require_scope_token_and_capabilities(
             requested_user_id=requested_user_id,
+            city_id=draft_run.city_id,
+            inventory_id=draft_run.inventory_id,
+            workflow_step=self._draft_workflow_step(draft_run),
+            authorization=authorization,
         )
-        draft_run = await self._get_owned_draft_run(draft_run_id, user_id)
+        if draft_run.user_id != requested_user_id:
+            raise HTTPException(status_code=403, detail="Draft run does not belong to user")
         staleness = await self._build_draft_staleness(
             draft_run,
             authorization=authorization,
@@ -365,12 +381,15 @@ class StationaryEnergyDraftService:
         authorization: str | None = None,
     ) -> StationaryEnergyDraftStatusResponse:
         """Return the latest active draft for a user and Stationary Energy scope."""
-        user_id = resolve_authenticated_user_id(
-            token=extract_bearer_token(authorization),
+        await self._require_scope_token_and_capabilities(
             requested_user_id=requested_user_id,
+            city_id=city_id,
+            inventory_id=inventory_id,
+            workflow_step="draft",
+            authorization=authorization,
         )
         draft_run = await self.repository.get_latest_draft_run_for_scope(
-            user_id=user_id,
+            user_id=requested_user_id,
             city_id=city_id,
             inventory_id=inventory_id,
             sector_code=sector_code,
@@ -397,12 +416,15 @@ class StationaryEnergyDraftService:
         authorization: str | None = None,
     ) -> ListStationaryEnergyDraftsResponse:
         """Return every active draft for a user and Stationary Energy scope."""
-        user_id = resolve_authenticated_user_id(
-            token=extract_bearer_token(authorization),
+        await self._require_scope_token_and_capabilities(
             requested_user_id=requested_user_id,
+            city_id=city_id,
+            inventory_id=inventory_id,
+            workflow_step="draft",
+            authorization=authorization,
         )
         draft_runs = await self.repository.list_draft_runs_for_scope(
-            user_id=user_id,
+            user_id=requested_user_id,
             city_id=city_id,
             inventory_id=inventory_id,
             sector_code=sector_code,
@@ -420,11 +442,16 @@ class StationaryEnergyDraftService:
         authorization: str | None = None,
     ) -> ReviewStationaryEnergyDraftResponse:
         """Persist a complete review decision set for a draft run."""
-        user_id = resolve_authenticated_user_id(
-            token=extract_bearer_token(authorization),
+        draft_run = await self._get_draft_run_or_404(draft_run_id)
+        await self._require_scope_token_and_capabilities(
             requested_user_id=payload.user_id,
+            city_id=draft_run.city_id,
+            inventory_id=draft_run.inventory_id,
+            workflow_step="review",
+            authorization=authorization,
         )
-        draft_run = await self._get_owned_draft_run(draft_run_id, user_id)
+        if draft_run.user_id != payload.user_id:
+            raise HTTPException(status_code=403, detail="Draft run does not belong to user")
 
         proposal_by_id = {
             proposal.proposal_id: proposal for proposal in draft_run.proposals
@@ -445,7 +472,7 @@ class StationaryEnergyDraftService:
 
         decisions = build_review_decisions(
             draft_run_id=draft_run.draft_run_id,
-            user_id=user_id,
+            user_id=payload.user_id,
             decisions=payload.decisions,
             proposal_by_id=proposal_by_id,
             candidate_by_id=candidate_by_id,
@@ -462,7 +489,7 @@ class StationaryEnergyDraftService:
 
         return ReviewStationaryEnergyDraftResponse(
             draft_run_id=draft_run.draft_run_id,
-            user_id=user_id,
+            user_id=payload.user_id,
             status="reviewed",
             decisions=[
                 to_review_decision_response(decision) for decision in decisions
@@ -478,18 +505,14 @@ class StationaryEnergyDraftService:
     ) -> SaveStationaryEnergyDraftResponse:
         """Commit accepted reviewed rows into CityCatalyst and persist the outcome."""
         draft_run = await self._get_draft_run_or_404(draft_run_id)
-        token = extract_bearer_token(authorization)
-        if token is None:
-            token = await load_thread_token(
-                thread_service=self.thread_service,
-                thread_id=draft_run.thread_id,
-            )
-
-        user_id = resolve_authenticated_user_id(
-            token=token,
+        token, _allowed_capabilities = await self._require_scope_token_and_capabilities(
             requested_user_id=payload.user_id,
+            city_id=draft_run.city_id,
+            inventory_id=draft_run.inventory_id,
+            workflow_step="review",
+            authorization=authorization,
         )
-        if draft_run.user_id != user_id:
+        if draft_run.user_id != payload.user_id:
             raise HTTPException(status_code=403, detail="Draft run does not belong to user")
         if not draft_run.review_decisions:
             raise HTTPException(
@@ -498,18 +521,16 @@ class StationaryEnergyDraftService:
             )
 
         token = await self._ensure_user_token(
-            user_id=user_id,
+            user_id=payload.user_id,
             thread_id=draft_run.thread_id,
             token=token,
         )
-        allowed_capabilities = (
-            await self.cc_client.get_stationary_energy_allowed_capabilities(
-                user_id=user_id,
-                city_id=draft_run.city_id,
-                inventory_id=draft_run.inventory_id,
-                workflow_step="review",
-                token=token,
-            )
+        allowed_capabilities = await self._get_scope_capabilities(
+            user_id=payload.user_id,
+            city_id=draft_run.city_id,
+            inventory_id=draft_run.inventory_id,
+            workflow_step="review",
+            token=token,
         )
         if COMMIT_ACCEPTED_CAPABILITY not in allowed_capabilities:
             raise HTTPException(
@@ -521,7 +542,7 @@ class StationaryEnergyDraftService:
         pending_decisions = [
             decision
             for decision in latest_decisions.values()
-            if decision.commit_status == "pending_cc_commit"
+            if decision.commit_status in {"pending_cc_commit", "staged_manual"}
         ]
         if not pending_decisions:
             await self.repository.update_draft_run(
@@ -543,7 +564,7 @@ class StationaryEnergyDraftService:
         if rows:
             commit_payload = {
                 "draft_run_id": str(draft_run.draft_run_id),
-                "user_id": user_id,
+                "user_id": payload.user_id,
                 "city_id": draft_run.city_id,
                 "inventory_id": draft_run.inventory_id,
                 "rows": rows,
@@ -598,21 +619,56 @@ class StationaryEnergyDraftService:
             )
         return draft_run
 
-    async def _get_owned_draft_run(
+    async def _require_scope_token_and_capabilities(
         self,
-        draft_run_id: UUID,
+        *,
+        requested_user_id: str,
+        city_id: str,
+        inventory_id: str,
+        workflow_step: str,
+        authorization: str | None,
+    ) -> tuple[str, list[str]]:
+        """Require a bearer token and validate it through CC scope checks."""
+        token = require_bearer_token(extract_bearer_token(authorization))
+        capabilities = await self._get_scope_capabilities(
+            user_id=requested_user_id,
+            city_id=city_id,
+            inventory_id=inventory_id,
+            workflow_step=workflow_step,
+            token=token,
+        )
+        return token, capabilities
+
+    async def _get_scope_capabilities(
+        self,
+        *,
         user_id: str,
-    ) -> StationaryEnergyDraftRun:
-        """Load a draft run and confirm it belongs to the authenticated user."""
-        draft_run = await self.repository.get_draft_run(draft_run_id)
-        if draft_run is None:
-            raise HTTPException(
-                status_code=404,
-                detail=f"Draft run {draft_run_id} not found",
+        city_id: str,
+        inventory_id: str,
+        workflow_step: str,
+        token: str,
+    ) -> list[str]:
+        """Load allowed capabilities while mapping CC auth failures to local HTTP errors."""
+        try:
+            return await self.cc_client.get_stationary_energy_allowed_capabilities(
+                user_id=user_id,
+                city_id=city_id,
+                inventory_id=inventory_id,
+                workflow_step=workflow_step,
+                token=token,
             )
-        if draft_run.user_id != user_id:
-            raise HTTPException(status_code=403, detail="Draft run does not belong to user")
-        return draft_run
+        except CityCatalystClientError as exc:
+            if exc.status_code == 401:
+                raise HTTPException(
+                    status_code=401,
+                    detail="CityCatalyst access token is invalid or expired",
+                ) from exc
+            if exc.status_code == 403:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Stationary Energy draft access is not allowed for this inventory",
+                ) from exc
+            raise
 
     async def _ensure_user_token(
         self,
@@ -644,6 +700,13 @@ class StationaryEnergyDraftService:
                 expires_in=expires_in,
             )
         return fresh_token
+
+    @staticmethod
+    def _draft_workflow_step(draft_run: StationaryEnergyDraftRun) -> str:
+        """Normalize persisted draft workflow state into the CC capability workflow step."""
+        if draft_run.workflow_step == "review":
+            return "review"
+        return "draft"
 
     async def _load_context_response(
         self,

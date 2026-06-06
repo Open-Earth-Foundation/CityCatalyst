@@ -207,6 +207,40 @@ describe("Stationary Energy draft flow", () => {
     ).toBe(false);
   });
 
+  it("allows save when a manual override is the only committable decision", () => {
+    const draft = draftFixture();
+    const decisionState = buildInitialDecisionState(draft);
+    decisionState["proposal-ready"] = {
+      action: "leave_draft",
+      selectedSourceId: "",
+      manualValue: "",
+      manualUnit: "",
+      note: "",
+    };
+    decisionState["proposal-conflict"] = {
+      action: "leave_draft",
+      selectedSourceId: "",
+      manualValue: "",
+      manualUnit: "",
+      note: "",
+    };
+    decisionState["proposal-gap"] = {
+      action: "override_manual",
+      selectedSourceId: "",
+      manualValue: "12.5",
+      manualUnit: "tCO2e",
+      note: "Manual reviewer correction",
+    };
+
+    expect(
+      canSaveDraft({
+        draftState: draft,
+        resolvedProposalIds: new Set(["proposal-ready", "proposal-conflict"]),
+        decisionState,
+      }),
+    ).toBe(true);
+  });
+
   it("allows saving a reviewed draft after the user changes a persisted choice", () => {
     const draft = draftFixture();
     draft.status = "reviewed";

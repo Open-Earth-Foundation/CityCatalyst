@@ -88,12 +88,27 @@ export const loadStationaryEnergyContextOutputSchema = z
   })
   .passthrough();
 
-export const commitAcceptedStationaryEnergyRowSchema = z.object({
+const commitAcceptedStationaryEnergyBaseRowSchema = z.object({
   proposal_id: z.string().min(1),
   decision_version: z.number().int().positive(),
   target_ref: recordSchema,
-  selected_source_id: z.string().min(1),
 });
+
+export const commitAcceptedStationaryEnergyRowSchema = z.discriminatedUnion(
+  "row_type",
+  [
+    commitAcceptedStationaryEnergyBaseRowSchema.extend({
+      row_type: z.literal("selected_source"),
+      selected_source_id: z.string().min(1),
+    }),
+    commitAcceptedStationaryEnergyBaseRowSchema.extend({
+      row_type: z.literal("manual_override"),
+      manual_value: z.number().positive(),
+      manual_unit: z.string().min(1),
+      note: z.string().optional(),
+    }),
+  ],
+);
 
 export const commitAcceptedStationaryEnergyInputSchema = z.object({
   draft_run_id: z.string().min(1),

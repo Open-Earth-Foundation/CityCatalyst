@@ -98,6 +98,7 @@ class StationaryEnergyDraftRepository:
             .order_by(
                 StationaryEnergyDraftRun.updated_at.desc(),
                 StationaryEnergyDraftRun.created_at.desc(),
+                StationaryEnergyDraftRun.draft_run_id.desc(),
             )
         )
         if excluded_statuses:
@@ -134,6 +135,7 @@ class StationaryEnergyDraftRepository:
             .order_by(
                 StationaryEnergyDraftRun.updated_at.desc(),
                 StationaryEnergyDraftRun.created_at.desc(),
+                StationaryEnergyDraftRun.draft_run_id.desc(),
             )
         )
         if excluded_statuses:

@@ -215,9 +215,8 @@ def to_list_item_response(
     )
     staged_commit_count = sum(
         1
-        for proposal_id, decision in decisions.items()
-        if proposal_id in reviewable_proposal_ids
-        and decision.commit_status == "pending_cc_commit"
+        for decision in decisions.values()
+        if decision.commit_status in {"pending_cc_commit", "staged_manual"}
     )
     return StationaryEnergyDraftListItemResponse(
         draft_run_id=draft_run.draft_run_id,

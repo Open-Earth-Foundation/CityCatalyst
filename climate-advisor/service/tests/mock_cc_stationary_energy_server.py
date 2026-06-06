@@ -61,7 +61,10 @@ class MockStationaryEnergyCCHandler(BaseHTTPRequestHandler):
                         {
                             "proposal_id": row.get("proposal_id"),
                             "decision_version": row.get("decision_version"),
+                            "row_type": row.get("row_type"),
                             "selected_source_id": row.get("selected_source_id"),
+                            "manual_value": row.get("manual_value"),
+                            "manual_unit": row.get("manual_unit"),
                             "status": "committed",
                         }
                         for row in rows

@@ -130,14 +130,10 @@ export function canSaveDraft(params: {
   if (TERMINAL_DRAFT_STATUSES.has(params.draftState.status)) {
     return false;
   }
-  const reviewableProposals = reviewableDraftProposals(params.draftState);
-  if (
-    reviewableProposals.length === 0 ||
-    pendingDecisionReviewProposals(params).length > 0
-  ) {
+  if (pendingDecisionReviewProposals(params).length > 0) {
     return false;
   }
-  return reviewableProposals.some((proposal) => {
+  return params.draftState.proposals.some((proposal) => {
     const decision =
       params.decisionState[proposal.proposal_id] ??
       initialDecisionForProposal(
@@ -145,7 +141,9 @@ export function canSaveDraft(params: {
         params.draftState!.source_candidates,
       );
     return (
-      decision.action === "accept" || decision.action === "override_source"
+      decision.action === "accept" ||
+      decision.action === "override_source" ||
+      decision.action === "override_manual"
     );
   });
 }

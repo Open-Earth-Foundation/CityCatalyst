@@ -174,6 +174,7 @@ def test_stationary_energy_cc_manual_llm_e2e() -> None:
                 "locale": locale,
                 "context": {"access_token": token},
             },
+            headers={"Authorization": f"Bearer {token}"},
         )
         assert start_response.status_code == 201, start_response.text
         start_data = start_response.json()

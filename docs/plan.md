@@ -167,9 +167,9 @@ Supported user decisions:
 
 | Decision          | Meaning                                            | Commit behavior                                                                                 |
 | ----------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `accept`          | Use the recommended draft.                         | Mark `pending_cc_commit`; the future CC commit step writes through existing CityCatalyst paths. |
-| `override_source` | Use another approved source from the alternatives. | Mark `pending_cc_commit`; the future CC commit step writes through existing CityCatalyst paths. |
-| `override_manual` | User enters a manual value and unit.               | Stage for explicit save; do not let CA write directly.                                          |
+| `accept`          | Use the recommended draft.                         | Mark `pending_cc_commit`; the explicit save step writes through existing CityCatalyst paths.    |
+| `override_source` | Use another approved source from the alternatives. | Mark `pending_cc_commit`; the explicit save step writes through existing CityCatalyst paths.    |
+| `override_manual` | User enters a manual value and unit.               | Mark `pending_cc_commit`; the explicit save step writes the manual override through CC.         |
 | `leave_draft`     | Keep the proposal for later.                       | No inventory write.                                                                             |
 
 ## System Ownership
@@ -427,15 +427,14 @@ sequenceDiagram
   CCReview->>CCRoute: Submit review request on CC origin
   CCRoute->>CA: POST /v1/stationary-energy-drafts/{run_id}/review
   CA->>CADB: Store review decisions
-  CA->>CADB: Mark accept/source-override rows pending_cc_commit
-  CA->>CADB: Mark manual overrides staged_manual
+  CA->>CADB: Mark accept/source/manual rows pending_cc_commit
   CA-->>CCRoute: Updated review state
   CCRoute-->>CCReview: Updated review-stage state
 ```
 
-This is the current implemented behavior in CA. The next CC-side addition is a
-`commit_accepted` capability that CA can call for rows already marked
-`pending_cc_commit`.
+This is the current implemented behavior in CA. CA now calls the CC-side
+`commit_accepted` capability for rows already marked `pending_cc_commit`,
+including manual overrides.
 
 ### Minimal Implementation Snippets
 
@@ -766,8 +765,8 @@ Remaining CA-side work:
 
 - Expand LangSmith trace linkage and structured CA workflow logs as needed for
   pilot observability.
-- Add the final handoff from `pending_cc_commit` review decisions into the
-  future CC `commit_accepted` capability.
+- Extend the current `pending_cc_commit` handoff with broader CC-side commit
+  coverage and any follow-up manual review UX work.
 
 Exit condition:
 
@@ -1021,7 +1020,7 @@ Allowed actions:
 
 - `accept`: mark the recommended source-backed value `pending_cc_commit`.
 - `override_source`: mark another approved source-backed value `pending_cc_commit`.
-- `override_manual`: stage a manual value for explicit save.
+- `override_manual`: mark a manual value `pending_cc_commit` for explicit save.
 - `leave_draft`: keep the proposal without committing.
 
 Main behavior:
@@ -1032,10 +1031,11 @@ Main behavior:
 3. Save is disabled until blocking proposals are resolved.
 4. User submits the complete review decision set through the CC bridge.
 5. CA records decisions in the CA database.
-6. Accepted and source-overridden proposals are marked `pending_cc_commit`.
-7. Manual overrides are staged and left-draft rows remain uncommitted.
-8. The future CC `commit_accepted` step can later consume the
-   `pending_cc_commit` rows and perform the actual CityCatalyst write.
+6. Accepted, source-overridden, and manual-override proposals are marked
+   `pending_cc_commit`.
+7. Left-draft rows remain uncommitted.
+8. The explicit CC `commit_accepted` step consumes the `pending_cc_commit`
+   rows and performs the actual CityCatalyst write.
 
 Frontend implementation location:
 

@@ -503,7 +503,8 @@ workflow step
 - tool invocation audit for chat history
 - draft runs, stored source-candidate snapshots, staged proposals, and review
 decisions for CA-mediated draft workflows
-- commit-state markers such as `pending_cc_commit`, `staged_manual`, or resume
+- commit-state markers such as `pending_cc_commit` for source-backed and manual
+  review decisions, or resume
 pointers that exist before CC has applied a product write
 
 CC should keep:

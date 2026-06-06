@@ -41,7 +41,7 @@ async def start_stationary_energy_draft(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> StartStationaryEnergyDraftResponse:
-    """Start a new Stationary Energy draft generation run."""
+    """Start a draft run after validating the bearer token through CC scope access."""
     service = StationaryEnergyDraftService(session)
     try:
         response = await service.start_draft(payload, authorization=authorization)
@@ -68,7 +68,7 @@ async def list_stationary_energy_drafts(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> ListStationaryEnergyDraftsResponse:
-    """Return all active Stationary Energy drafts for this scoped user."""
+    """Return active drafts for a scope authorized by the request bearer token."""
     service = StationaryEnergyDraftService(session)
     if sector_code != "stationary_energy":
         raise HTTPException(status_code=400, detail="Unsupported sector_code")
@@ -94,7 +94,7 @@ async def resume_stationary_energy_draft(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> StationaryEnergyDraftStatusResponse:
-    """Return the latest active Stationary Energy draft for this scoped user."""
+    """Return the latest active draft for a scope authorized by the request bearer token."""
     service = StationaryEnergyDraftService(session)
     if sector_code != "stationary_energy":
         raise HTTPException(status_code=400, detail="Unsupported sector_code")
@@ -118,7 +118,7 @@ async def get_stationary_energy_draft(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> StationaryEnergyDraftStatusResponse:
-    """Return the latest stored snapshot for a specific draft run."""
+    """Return a draft snapshot after validating the request bearer token with CC."""
     service = StationaryEnergyDraftService(session)
     return await service.get_draft_status(
         draft_run_id=draft_run_id,
@@ -138,7 +138,7 @@ async def retry_stationary_energy_draft(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> StartStationaryEnergyDraftResponse:
-    """Retry draft generation for an existing non-terminal draft run."""
+    """Retry a draft run after revalidating the request bearer token with CC."""
     service = StationaryEnergyDraftService(session)
     try:
         response = await service.retry_draft(
@@ -167,7 +167,7 @@ async def review_stationary_energy_draft(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> ReviewStationaryEnergyDraftResponse:
-    """Persist the user's complete review decision set for a draft run."""
+    """Persist review decisions for a draft authorized by the request bearer token."""
     service = StationaryEnergyDraftService(session)
     try:
         response = await service.review_draft(
@@ -193,7 +193,7 @@ async def save_stationary_energy_draft(
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> SaveStationaryEnergyDraftResponse:
-    """Commit accepted reviewed rows from a draft into CityCatalyst."""
+    """Commit reviewed rows from a draft authorized by the request bearer token."""
     service = StationaryEnergyDraftService(session)
     try:
         response = await service.save_draft(

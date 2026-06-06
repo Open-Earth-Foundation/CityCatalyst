@@ -117,6 +117,14 @@ def validate_review_action(
             status_code=400,
             detail="manual_value is required for override_manual",
         )
+    if (
+        decision_input.action == "override_manual"
+        and not decision_input.manual_unit
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="manual_unit is required for override_manual",
+        )
 
 
 def validate_complete_review_decisions(
@@ -223,16 +231,14 @@ def build_review_decisions(
 
 def commit_status_for_action(action: str) -> str:
     """Map a review action to its initial save/commit status."""
-    if action in {"accept", "override_source"}:
+    if action in {"accept", "override_source", "override_manual"}:
         return "pending_cc_commit"
-    if action == "override_manual":
-        return "staged_manual"
     return "not_applicable"
 
 
 def commit_response_for_action(action: str) -> dict[str, Any] | None:
     """Build the initial commit response placeholder for review actions."""
-    if action in {"accept", "override_source"}:
+    if action in {"accept", "override_source", "override_manual"}:
         return {
             "state": "pending",
             "reason": "Awaiting the CC save step for final inventory commit.",
@@ -298,6 +304,37 @@ def build_commit_rows(
             )
             continue
 
+        if decision.action == "override_manual":
+            if decision.manual_value is None:
+                local_results.append(
+                    local_failed_commit_result(
+                        decision=decision,
+                        reason="Manual override is missing manual_value.",
+                    )
+                )
+                continue
+            if not decision.manual_unit:
+                local_results.append(
+                    local_failed_commit_result(
+                        decision=decision,
+                        reason="Manual override is missing manual_unit.",
+                    )
+                )
+                continue
+
+            rows.append(
+                {
+                    "row_type": "manual_override",
+                    "proposal_id": str(decision.proposal_id),
+                    "decision_version": decision.decision_version,
+                    "target_ref": proposal.target_ref or {},
+                    "manual_value": float(decision.manual_value),
+                    "manual_unit": decision.manual_unit,
+                    "note": decision.note,
+                }
+            )
+            continue
+
         selected_source_id = (
             decision.selected_source_id or proposal.recommended_datasource_id
         )
@@ -314,6 +351,7 @@ def build_commit_rows(
 
         rows.append(
             {
+                "row_type": "selected_source",
                 "proposal_id": str(decision.proposal_id),
                 "decision_version": decision.decision_version,
                 "target_ref": proposal.target_ref or {},

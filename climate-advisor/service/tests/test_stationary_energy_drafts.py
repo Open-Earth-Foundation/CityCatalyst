@@ -28,6 +28,7 @@ from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftSourceCandidate,
 )
 from app.models.requests import MessageCreateRequest
+from app.services.citycatalyst_client import CityCatalystClientError
 from app.services.stationary_energy_draft_service import (
     COMMIT_ACCEPTED_CAPABILITY,
     LOAD_CONTEXT_CAPABILITY,
@@ -214,8 +215,15 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
 
         self.app.dependency_overrides[get_session] = get_test_session
         self.client = TestClient(self.app)
+        self.default_cc_client = self._mock_cc_client()
+        self.cc_client_patcher = patch(
+            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            return_value=self.default_cc_client,
+        )
+        self.cc_client_patcher.start()
 
     async def asyncTearDown(self) -> None:
+        self.cc_client_patcher.stop()
         self.app.dependency_overrides.clear()
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.drop_all)
@@ -230,6 +238,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                     "city_id": "city-1",
                     "inventory_id": "inventory-1",
                 },
+                headers=_auth_headers(),
             )
 
         self.assertEqual(response.status_code, 404)
@@ -253,6 +262,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                     "inventory_id": "inventory-1",
                     "context": {"access_token": _active_jwt()},
                 },
+                headers=_auth_headers(),
             )
             self.assertEqual(start_response.status_code, 201, start_response.text)
             start_data = start_response.json()
@@ -290,10 +300,16 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         }
         self.assertEqual(datasource_by_subsector["I.1"], "ds-applicable")
         self.assertEqual(datasource_by_subsector["I.2"], "ds-commercial")
-        mock_client.get_stationary_energy_allowed_capabilities.assert_awaited_once()
         self.assertEqual(
-            mock_client.get_stationary_energy_allowed_capabilities.await_args.kwargs["workflow_step"],
-            "draft",
+            mock_client.get_stationary_energy_allowed_capabilities.await_count,
+            2,
+        )
+        self.assertEqual(
+            [
+                call.kwargs["workflow_step"]
+                for call in mock_client.get_stationary_energy_allowed_capabilities.await_args_list
+            ],
+            ["draft", "draft"],
         )
         self.assertEqual(mock_client.load_stationary_energy_context.await_count, 2)
         mock_llm.generate_proposals.assert_awaited_once()
@@ -466,6 +482,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                     "inventory_id": "inventory-1",
                     "context": {"access_token": _active_jwt()},
                 },
+                headers=_auth_headers(),
             )
             self.assertEqual(start_response.status_code, 201, start_response.text)
 
@@ -490,7 +507,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             },
         )
 
-    def test_start_refreshes_expired_thread_token(self) -> None:
+    def test_start_uses_request_bearer_token_when_thread_token_is_expired(self) -> None:
         thread_id = self._create_thread("user-1", context={"access_token": _expired_jwt()})
         mock_client = self._mock_cc_client()
         mock_llm = self._mock_llm_generator()
@@ -510,13 +527,14 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                     "inventory_id": "inventory-1",
                     "thread_id": str(thread_id),
                 },
+                headers=_auth_headers(),
             )
 
         self.assertEqual(response.status_code, 201, response.text)
-        mock_client.refresh_token.assert_awaited_once_with("user-1")
+        mock_client.refresh_token.assert_not_awaited()
         self.assertEqual(
             mock_client.get_stationary_energy_allowed_capabilities.await_args.kwargs["token"],
-            "fresh-token",
+            _active_jwt(),
         )
 
     def test_start_rejects_thread_user_mismatch_before_calling_cc(self) -> None:
@@ -570,8 +588,11 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         mock_client.get_stationary_energy_allowed_capabilities.assert_not_awaited()
         mock_llm.generate_proposals.assert_not_awaited()
 
-    def test_start_rejects_user_id_that_does_not_match_token(self) -> None:
+    def test_start_rejects_token_that_cc_does_not_authorize(self) -> None:
         mock_client = self._mock_cc_client()
+        mock_client.get_stationary_energy_allowed_capabilities = AsyncMock(
+            side_effect=CityCatalystClientError("token rejected", status_code=401)
+        )
         mock_llm = self._mock_llm_generator()
 
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
@@ -587,12 +608,12 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                     "user_id": "user-1",
                     "city_id": "city-1",
                     "inventory_id": "inventory-1",
-                    "context": {"access_token": _active_jwt("other-user")},
                 },
+                headers=_auth_headers("other-user"),
             )
 
-        self.assertEqual(response.status_code, 403)
-        mock_client.get_stationary_energy_allowed_capabilities.assert_not_awaited()
+        self.assertEqual(response.status_code, 401)
+        mock_client.get_stationary_energy_allowed_capabilities.assert_awaited_once()
         mock_llm.generate_proposals.assert_not_awaited()
 
     def test_start_returns_502_when_llm_generation_fails(self) -> None:
@@ -617,6 +638,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                     "inventory_id": "inventory-1",
                     "context": {"access_token": _active_jwt()},
                 },
+                headers=_auth_headers(),
             )
 
         self.assertEqual(response.status_code, 502)
@@ -646,6 +668,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                     "inventory_id": "inventory-1",
                     "context": {"access_token": _active_jwt()},
                 },
+                headers=_auth_headers(),
             )
 
         self.assertEqual(failed_response.status_code, 502)
@@ -854,6 +877,29 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.status_code, 422)
         self.assertIn("at most one entry per proposal_id", response.text)
 
+    def test_review_requires_manual_unit_for_override_manual(self) -> None:
+        draft_run_id, proposal_id, _candidate_id = self._start_draft()
+        decisions = self._complete_review_decisions(
+            draft_run_id,
+            overrides={
+                proposal_id: {
+                    "proposal_id": proposal_id,
+                    "action": "override_manual",
+                    "manual_value": 12.5,
+                }
+            },
+        )
+
+        with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}):
+            response = self.client.post(
+                f"/v1/stationary-energy-drafts/{draft_run_id}/review",
+                json={"user_id": "user-1", "decisions": decisions},
+                headers=_auth_headers(),
+            )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("manual_unit", response.text)
+
     def test_review_persists_decisions_for_owner(self) -> None:
         draft_run_id, proposal_id, candidate_id = self._start_draft()
         initial_status = self._get_status(draft_run_id)
@@ -1020,6 +1066,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                     "inventory_id": "inventory-1",
                     "context": {"access_token": _active_jwt()},
                 },
+                headers=_auth_headers(),
             )
             self.assertEqual(start_response.status_code, 201, start_response.text)
             draft_run_id = start_response.json()["draft_run_id"]
@@ -1063,15 +1110,99 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(status_response.status_code, 200, status_response.text)
         self.assertEqual(status_response.json()["workflow_step"], "review")
         self.assertEqual(status_response.json()["status"], "saved")
-        self.assertEqual(mock_client.get_stationary_energy_allowed_capabilities.await_count, 2)
+        workflow_steps = [
+            call.kwargs["workflow_step"]
+            for call in mock_client.get_stationary_energy_allowed_capabilities.await_args_list
+        ]
         self.assertEqual(
-            mock_client.get_stationary_energy_allowed_capabilities.await_args_list[1].kwargs["workflow_step"],
-            "review",
+            workflow_steps,
+            ["draft", "draft", "review", "review", "review", "review"],
         )
         mock_client.commit_stationary_energy_accepted.assert_awaited_once()
         commit_rows = mock_client.commit_stationary_energy_accepted.await_args.kwargs["request_payload"]["rows"]
         self.assertTrue(commit_rows)
         self.assertTrue(all(row["selected_source_id"] for row in commit_rows))
+
+    def test_save_commits_manual_review_decisions(self) -> None:
+        mock_client = self._mock_cc_client()
+        mock_llm = self._mock_llm_generator()
+
+        with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
+            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            return_value=mock_client,
+        ), patch(
+            "app.services.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
+            return_value=mock_llm,
+        ):
+            start_response = self.client.post(
+                "/v1/stationary-energy-drafts/start",
+                json={
+                    "user_id": "user-1",
+                    "city_id": "city-1",
+                    "inventory_id": "inventory-1",
+                    "context": {"access_token": _active_jwt()},
+                },
+                headers=_auth_headers(),
+            )
+            self.assertEqual(start_response.status_code, 201, start_response.text)
+            draft_run_id = start_response.json()["draft_run_id"]
+            status_before_review = self._get_status(draft_run_id)
+            manual_proposal = status_before_review["proposals"][0]
+            other_proposal = status_before_review["proposals"][1]
+
+            decisions = self._complete_review_decisions(
+                draft_run_id,
+                overrides={
+                    manual_proposal["proposal_id"]: {
+                        "proposal_id": manual_proposal["proposal_id"],
+                        "action": "override_manual",
+                        "manual_value": 12.5,
+                        "manual_unit": "tCO2e",
+                        "note": "Manual reviewer correction.",
+                    },
+                    other_proposal["proposal_id"]: {
+                        "proposal_id": other_proposal["proposal_id"],
+                        "action": "leave_draft",
+                    },
+                },
+            )
+            review_response = self.client.post(
+                f"/v1/stationary-energy-drafts/{draft_run_id}/review",
+                json={"user_id": "user-1", "decisions": decisions},
+                headers=_auth_headers(),
+            )
+            self.assertEqual(review_response.status_code, 200, review_response.text)
+            review_decision = next(
+                decision
+                for decision in review_response.json()["decisions"]
+                if decision["proposal_id"] == manual_proposal["proposal_id"]
+            )
+            self.assertEqual(review_decision["commit_status"], "pending_cc_commit")
+
+            save_response = self.client.post(
+                f"/v1/stationary-energy-drafts/{draft_run_id}/save",
+                json={"user_id": "user-1"},
+                headers=_auth_headers(),
+            )
+
+        self.assertEqual(save_response.status_code, 200, save_response.text)
+        save_data = save_response.json()
+        self.assertEqual(save_data["status"], "saved")
+        saved_manual_decision = next(
+            decision
+            for decision in save_data["decisions"]
+            if decision["proposal_id"] == manual_proposal["proposal_id"]
+        )
+        self.assertEqual(saved_manual_decision["commit_status"], "committed")
+
+        mock_client.commit_stationary_energy_accepted.assert_awaited_once()
+        commit_rows = mock_client.commit_stationary_energy_accepted.await_args.kwargs[
+            "request_payload"
+        ]["rows"]
+        self.assertEqual(len(commit_rows), 1)
+        self.assertEqual(commit_rows[0]["row_type"], "manual_override")
+        self.assertEqual(commit_rows[0]["manual_value"], 12.5)
+        self.assertEqual(commit_rows[0]["manual_unit"], "tCO2e")
 
     def test_status_rejects_wrong_user(self) -> None:
         draft_run_id, _proposal_id, _candidate_id = self._start_draft()
@@ -1208,6 +1339,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                     "inventory_id": "inventory-1",
                     "context": {"access_token": _active_jwt()},
                 },
+                headers=_auth_headers(),
             )
             self.assertEqual(response.status_code, 201, response.text)
 
@@ -1281,7 +1413,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                 {
                     "proposal_id": row["proposal_id"],
                     "decision_version": row["decision_version"],
-                    "selected_source_id": row["selected_source_id"],
+                    "row_type": row.get("row_type"),
+                    "selected_source_id": row.get("selected_source_id"),
+                    "manual_value": row.get("manual_value"),
+                    "manual_unit": row.get("manual_unit"),
                     "status": "committed",
                     "token_present": bool(token),
                 }

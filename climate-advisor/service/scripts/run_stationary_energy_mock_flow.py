@@ -67,7 +67,10 @@ def _load_fixture(path: Path) -> dict:
 async def _create_session_factory() -> tuple:
     """Create an in-memory SQLite engine and session factory for the mock flow."""
     from app.db import Base
-    import app.models.db  # noqa: F401
+    from app.models.db import document_embedding as _document_embedding  # noqa: F401
+    from app.models.db import message as _message  # noqa: F401
+    from app.models.db import stationary_energy_draft as _stationary_energy_draft  # noqa: F401
+    from app.models.db import thread as _thread  # noqa: F401
 
     engine = create_async_engine(
         "sqlite+aiosqlite:///:memory:",

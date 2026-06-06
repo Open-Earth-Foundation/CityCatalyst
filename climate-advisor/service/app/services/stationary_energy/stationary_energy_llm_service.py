@@ -20,12 +20,12 @@ from app.config import get_settings
 from app.models.stationary_energy_drafts import LoadStationaryEnergyContextResponse
 from app.utils.agent_tracing import configure_agents_tracing
 from app.services.openrouter_client import build_openrouter_client_options
-from app.services.stationary_energy_llm_models import (
+from app.services.stationary_energy.stationary_energy_llm_models import (
     StationaryEnergyLLMProposal,
     StationaryEnergyLLMProposalResult,
     StationaryEnergyLLMResponse,
 )
-from app.services.stationary_energy_llm_output import (
+from app.services.stationary_energy.stationary_energy_llm_output import (
     generation_failure_message,
     json_safe,
     parsed_output_from_result,
@@ -33,7 +33,7 @@ from app.services.stationary_energy_llm_output import (
     usage_from_result,
     validate_and_normalize_proposals,
 )
-from app.services.stationary_energy_llm_prompt import (
+from app.services.stationary_energy.stationary_energy_llm_prompt import (
     build_llm_input,
     enforce_prompt_budget,
     trace_metadata,
@@ -116,14 +116,12 @@ class StationaryEnergyProposalLLMService:
         *,
         context: LoadStationaryEnergyContextResponse,
         stored_source_candidates: list[dict[str, object]],
-        allowed_capabilities: list[str],
         trace_id: str | None,
     ) -> StationaryEnergyLLMProposalResult:
         """Generate one normalized proposal per taxonomy row for review-ready drafts."""
         llm_input = build_llm_input(
             context=context,
             stored_source_candidates=stored_source_candidates,
-            allowed_capabilities=allowed_capabilities,
         )
         try:
             llm_input, prompt_budget_trace = enforce_prompt_budget(

@@ -157,25 +157,9 @@ def build_llm_input(
     *,
     context: LoadStationaryEnergyContextResponse,
     stored_source_candidates: list[dict[str, Any]],
-    allowed_capabilities: list[str],
 ) -> dict[str, Any]:
     """Build the bounded Stationary Energy prompt payload passed to the LLM."""
     return {
-        "task": "generate_stationary_energy_draft_proposals",
-        "rules": [
-            "Use only this bounded context.",
-            "Recommend only stored source candidates provided in source_candidates.",
-            "Every recommendation must include candidate_id and datasource_id.",
-            "recommended_datasource_id must exactly match the datasource_id for recommended_candidate_id.",
-            "alternative_candidate_ids must be stored applicable candidate_id values.",
-            "Return exactly one proposal per taxonomy row.",
-            "Copy the full taxonomy row into target_ref for each proposal.",
-            "Do not re-fetch or mutate source candidates.",
-            "Do not invent values, source candidates, datasource IDs, city data, inventory data, or permissions.",
-            "Use guidance_context for methodology explanations and terminology only; do not treat it as observed activity data.",
-            "Do not commit inventory values; this is a draft proposal step.",
-        ],
-        "allowed_capabilities": allowed_capabilities,
         "city": context.city.model_dump(mode="json", exclude_none=True),
         "inventory": context.inventory.model_dump(mode="json", exclude_none=True),
         "taxonomy": [
@@ -187,19 +171,4 @@ def build_llm_input(
         ],
         "source_candidates": stored_source_candidates,
         "guidance_context": context.guidance_context,
-        "expected_output_shape": {
-            "proposals": [
-                {
-                    "target_ref": "object copied or narrowed from taxonomy row",
-                    "current_value": "matching current value object or null",
-                    "recommended_candidate_id": "stored candidate_id or null",
-                    "recommended_datasource_id": "stored datasource_id or null",
-                    "alternative_candidate_ids": ["stored candidate_id"],
-                    "proposed_value": "object with draft value evidence or null",
-                    "rationale": "short human-readable explanation",
-                    "status": "ready | conflict | gap | needs_review",
-                    "confidence_score": "number between 0 and 1 or null",
-                }
-            ]
-        },
     }

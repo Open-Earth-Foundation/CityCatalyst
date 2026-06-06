@@ -323,10 +323,10 @@ class Settings(BaseModel):
     # LLM Configuration (loaded from YAML)
     llm: LLMConfig
 
-    # OpenRouter configuration (kept for backward compatibility)
+    # OpenRouter credentials come from env; non-secret routing/model config lives in llm_config.yaml.
     openrouter_api_key: str | None = os.getenv("OPENROUTER_API_KEY")
-    openrouter_base_url: str | None = os.getenv("OPENROUTER_BASE_URL")  # Falls back to LLM config
-    openrouter_model: str | None = os.getenv("OPENROUTER_MODEL")  # Falls back to LLM config
+    openrouter_base_url: str | None = None
+    openrouter_model: str | None = None
 
     # OpenAI configuration for embeddings
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
@@ -364,13 +364,9 @@ class Settings(BaseModel):
     cc_oauth_token_url: str | None = os.getenv("CC_OAUTH_TOKEN_URL")
 
     def model_post_init(self, __context: Any) -> None:
-        """Override OpenRouter settings with LLM config values."""
-        # Override with LLM config values, allowing env vars to take precedence
-        if self.openrouter_base_url is None:
-            self.openrouter_base_url = self.llm.api.openrouter.base_url
-
-        if self.openrouter_model is None:
-            self.openrouter_model = self.llm.models.orchestrator.name
+        """Load non-secret OpenRouter and observability settings from llm_config.yaml."""
+        self.openrouter_base_url = self.llm.api.openrouter.base_url
+        self.openrouter_model = self.llm.models.orchestrator.name
 
         # LangSmith configuration: ONLY API key from .env, everything else from llm_config.yaml
         # No silent fallbacks - configuration must be explicit

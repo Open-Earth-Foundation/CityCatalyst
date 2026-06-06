@@ -31,21 +31,23 @@ from app.services.citycatalyst_client import (
     CityCatalystClientError,
     TokenRefreshError,
 )
-from app.services.stationary_energy_draft_auth import (
+from app.services.stationary_energy.stationary_energy_draft_auth import (
     extract_bearer_token,
     needs_token_refresh,
     persist_thread_draft_run_id,
     persist_thread_token,
     require_bearer_token,
 )
-from app.services.stationary_energy_draft_context import (
+from app.services.stationary_energy.stationary_energy_draft_context import (
     context_summary,
     context_summary_with_error,
     source_candidate_records,
     stored_source_candidate_payload_from_record,
 )
-from app.services.stationary_energy_draft_repository import StationaryEnergyDraftRepository
-from app.services.stationary_energy_draft_review import (
+from app.services.stationary_energy.stationary_energy_draft_repository import (
+    StationaryEnergyDraftRepository,
+)
+from app.services.stationary_energy.stationary_energy_draft_review import (
     apply_commit_results_to_decisions,
     build_review_decisions,
     build_commit_rows,
@@ -54,14 +56,14 @@ from app.services.stationary_energy_draft_review import (
     save_status_after_commit,
     validate_complete_review_decisions,
 )
-from app.services.stationary_energy_draft_serializers import (
+from app.services.stationary_energy.stationary_energy_draft_serializers import (
     to_list_item_response,
     to_review_decision_response,
     to_save_response,
     to_start_response,
     to_status_response,
 )
-from app.services.stationary_energy_llm_service import (
+from app.services.stationary_energy.stationary_energy_llm_service import (
     StationaryEnergyLLMServiceError,
     StationaryEnergyProposalLLMService,
 )
@@ -251,7 +253,6 @@ class StationaryEnergyDraftService:
             llm_result = await proposal_generator.generate_proposals(
                 context=context,
                 stored_source_candidates=stored_source_candidates,
-                allowed_capabilities=allowed_capabilities,
                 trace_id=trace_id,
             )
             summary = context_summary(

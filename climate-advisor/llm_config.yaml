@@ -10,7 +10,7 @@ models:
   agentic_flow:
     name: "openai/gpt-5.4"
     description: "Agentic flow model for high-context drafting and source selection workflows."
-    temperature: 0.1
+    temperature: 0.0
 
 # Generation Parameters
 generation:

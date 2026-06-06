@@ -56,6 +56,26 @@ class StoredSourceCandidate(FlexibleContract):
     updated_at: datetime | None = None
 
 
+class DraftStatusSourceCandidate(FlexibleContract):
+    candidate_id: UUID | None = None
+    datasource_id: str
+    name: str | None = None
+    publisher_name: str | None = None
+    dataset_name: str | None = None
+    dataset_year: int | None = None
+    geography_match: Literal[
+        "city",
+        "locode",
+        "region",
+        "country",
+        "global",
+        "unknown",
+    ] = "unknown"
+    source_scope: StoredSourceScope = Field(default_factory=StoredSourceScope)
+    normalized_rows: list[dict[str, Any]] = Field(default_factory=list)
+    applicability_status: Literal["applicable", "removed", "failed"]
+
+
 class StationaryEnergyCityContext(FlexibleContract):
     city_id: str
     name: str | None = None
@@ -229,7 +249,6 @@ class StartStationaryEnergyDraftResponse(BaseModel):
     status: Literal["resolving_scope", "loading_context", "generating", "ready", "failed"]
     proposals: list[DraftProposal] = Field(default_factory=list)
     trace_id: str | None = None
-    llm_trace: dict[str, Any] | None = None
     error_summary: dict[str, Any] | None = None
 
 
@@ -254,9 +273,8 @@ class StationaryEnergyDraftStatusResponse(BaseModel):
     workflow_step: str | None = None
     proposals: list[DraftProposal] = Field(default_factory=list)
     review_decisions: list[ReviewDecisionResponse] = Field(default_factory=list)
-    source_candidates: list[StoredSourceCandidate] = Field(default_factory=list)
+    source_candidates: list[DraftStatusSourceCandidate] = Field(default_factory=list)
     trace_id: str | None = None
-    llm_trace: dict[str, Any] | None = None
     error_summary: dict[str, Any] | None = None
     staleness: DraftStalenessResponse | None = None
     created_at: datetime

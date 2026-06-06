@@ -9,7 +9,6 @@ management.
 from __future__ import annotations
 
 import logging
-import os
 from urllib.parse import urlparse
 from typing import Any, Dict, Optional, Union
 from uuid import UUID
@@ -77,11 +76,8 @@ class AgentService:
 
         orchestrator_model = self.settings.llm.models.orchestrator
         agentic_flow_model = self.settings.llm.models.agentic_flow or orchestrator_model
-        self.raw_default_model = self.settings.openrouter_model or orchestrator_model.name
-        self.raw_agentic_flow_model = (
-            os.getenv("OPENROUTER_AGENTIC_FLOW_MODEL")
-            or agentic_flow_model.name
-        )
+        self.raw_default_model = orchestrator_model.name
+        self.raw_agentic_flow_model = agentic_flow_model.name
         self.default_model = self._resolve_chat_model_name(self.raw_default_model)
         self.agentic_flow_model = self._resolve_chat_model_name(
             self.raw_agentic_flow_model

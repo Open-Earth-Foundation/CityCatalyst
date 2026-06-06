@@ -16,7 +16,9 @@ from app.middleware import get_request_id
 from app.models.requests import MessageCreateRequest
 from app.services.agent_service import AgentService
 from app.services.message_service import MessageService
-from app.services.stationary_energy_draft_repository import StationaryEnergyDraftRepository
+from app.services.stationary_energy.stationary_energy_draft_repository import (
+    StationaryEnergyDraftRepository,
+)
 from app.services.thread_service import ThreadService
 from app.utils.sse import format_sse
 from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id

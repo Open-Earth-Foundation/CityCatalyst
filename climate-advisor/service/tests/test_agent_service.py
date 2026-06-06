@@ -131,13 +131,12 @@ class AgentServiceInitializationTests(unittest.TestCase):
 
         self.assertEqual(service.default_model, "openai/gpt-4.1")
 
-    @patch.dict("os.environ", {"OPENROUTER_AGENTIC_FLOW_MODEL": "openai/gpt-4.1-mini"})
     @patch("app.services.agent_service.get_settings")
-    def test_agent_service_uses_agentic_flow_env_override(
+    def test_agent_service_ignores_agentic_flow_env_override(
         self,
         mock_get_settings,
     ) -> None:
-        """Test the agentic-flow model can be overridden independently by env."""
+        """Test the agentic-flow model comes from llm_config even if an env override is set."""
         mock_settings = build_mock_settings(
             base_url="https://api.openai.com/v1",
             default_model="openai/gpt-4.1",
@@ -145,10 +144,11 @@ class AgentServiceInitializationTests(unittest.TestCase):
         )
         mock_get_settings.return_value = mock_settings
 
-        with patch("app.services.agent_service.AsyncOpenAI"):
-            service = AgentService()
+        with patch.dict("os.environ", {"OPENROUTER_AGENTIC_FLOW_MODEL": "openai/gpt-4.1-mini"}):
+            with patch("app.services.agent_service.AsyncOpenAI"):
+                service = AgentService()
 
-        self.assertEqual(service.agentic_flow_model, "gpt-4.1-mini")
+        self.assertEqual(service.agentic_flow_model, "gpt-5.4")
 
     @patch("app.services.agent_service.get_settings")
     def test_agent_service_raises_without_api_key(self, mock_get_settings) -> None:
@@ -226,8 +226,8 @@ class OpenRouterClientConfigurationTests(unittest.TestCase):
             )
 
     @patch("app.services.agent_service.get_settings")
-    def test_openrouter_client_uses_fallback_base_url(self, mock_get_settings) -> None:
-        """Test OpenRouter client falls back to default URL if not configured."""
+    def test_openrouter_client_uses_llm_config_base_url(self, mock_get_settings) -> None:
+        """Test OpenRouter client still uses llm_config when the copied settings field is empty."""
         mock_settings = build_mock_settings()
         mock_settings.openrouter_base_url = None
         mock_get_settings.return_value = mock_settings
@@ -240,6 +240,26 @@ class OpenRouterClientConfigurationTests(unittest.TestCase):
                 call_kwargs["base_url"],
                 "https://openrouter.ai/api/v1"
             )
+
+    @patch.dict(
+        "os.environ",
+        {"OPENROUTER_TIMEOUT_MS": "120000", "OPENROUTER_MAX_RETRIES": "9"},
+    )
+    @patch("app.services.agent_service.get_settings")
+    def test_openrouter_client_ignores_timeout_and_retry_env_overrides(
+        self,
+        mock_get_settings,
+    ) -> None:
+        """Test OpenRouter timeout and retry settings come from llm_config, not env."""
+        mock_settings = build_mock_settings()
+        mock_get_settings.return_value = mock_settings
+
+        with patch("app.services.agent_service.AsyncOpenAI") as mock_client_class:
+            AgentService()
+
+            call_kwargs = mock_client_class.call_args[1]
+            self.assertEqual(call_kwargs["timeout"], 30.0)
+            self.assertEqual(call_kwargs["max_retries"], 3)
 
     @patch("app.services.agent_service.get_settings")
     def test_agent_service_uses_shared_openrouter_options_helper(

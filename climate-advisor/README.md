@@ -220,9 +220,6 @@ CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5433/climat
 CA_PORT=8080
 CA_LOG_LEVEL=info
 CA_CORS_ORIGINS=*
-OPENROUTER_AGENTIC_FLOW_MODEL=openai/gpt-5.4  # Optional Stationary Energy flow override
-OPENROUTER_TIMEOUT_MS=30000  # LLM request timeout override
-OPENROUTER_MAX_RETRIES=3  # LLM provider retry override
 OPENAI_API_KEY=your-openai-api-key  # For embeddings
 LANGSMITH_API_KEY=your-langsmith-key  # If tracing enabled
 
@@ -292,7 +289,9 @@ uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --rel
 ### LLM Configuration
 
 All non-secret LLM settings are centralized in (`llm_config.yaml`), including the
-orchestrator and agentic-flow model settings plus Stationary Energy prompt budgets.
+orchestrator and agentic-flow model settings, provider base URLs, retry/timeouts,
+and Stationary Energy prompt budgets. The environment is only for secrets such as
+`OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`.
 
 ### Environment Variables
 
@@ -301,9 +300,6 @@ orchestrator and agentic-flow model settings plus Stationary Energy prompt budge
 - `CA_PORT` - Server port (default: 8080) - note - there is issue when running any app inside of the docker container the localhost is within the container network be aware of that and adjust this same as CA_DATBASE_URL
 - `CA_LOG_LEVEL` - Logging level: info|debug (default: info)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: \*)
-- `OPENROUTER_AGENTIC_FLOW_MODEL` - Optional model override for Stationary Energy draft chat and proposal flows
-- `OPENROUTER_TIMEOUT_MS` - Optional LLM request timeout override in milliseconds
-- `OPENROUTER_MAX_RETRIES` - Optional LLM provider retry override
 - `OPENAI_API_KEY` - OpenAI API key (for embeddings & traces)
 - `LANGSMITH_API_KEY` - LangSmith API key (if tracing enabled)
 - `CC_BASE_URL` - CityCatalyst base URL (for inventory API & token refresh)

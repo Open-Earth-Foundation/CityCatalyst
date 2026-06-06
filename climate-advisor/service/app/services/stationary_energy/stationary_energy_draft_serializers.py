@@ -10,6 +10,7 @@ from app.models.db.stationary_energy_draft import (
     StationaryEnergyReviewDecision,
 )
 from app.models.stationary_energy_drafts import (
+    DraftStatusSourceCandidate,
     DraftProposal,
     DraftStalenessResponse,
     ReviewDecisionResponse,
@@ -17,10 +18,11 @@ from app.models.stationary_energy_drafts import (
     StartStationaryEnergyDraftResponse,
     StationaryEnergyDraftListItemResponse,
     StationaryEnergyDraftStatusResponse,
-    StoredSourceCandidate,
     StoredSourceScope,
 )
-from app.services.stationary_energy_draft_review import latest_review_decisions
+from app.services.stationary_energy.stationary_energy_draft_review import (
+    latest_review_decisions,
+)
 
 
 def review_decision_sort_key(
@@ -32,15 +34,6 @@ def review_decision_sort_key(
         decision.decision_version,
         str(decision.decision_id),
     )
-
-
-def llm_trace(draft_run: StationaryEnergyDraftRun) -> dict[str, Any] | None:
-    """Return the stored LLM trace fragment from a draft context summary."""
-    if not isinstance(draft_run.context_summary, dict):
-        return None
-
-    trace = draft_run.context_summary.get("llm_trace")
-    return trace if isinstance(trace, dict) else None
 
 
 def error_summary(draft_run: StationaryEnergyDraftRun) -> dict[str, Any] | None:
@@ -71,31 +64,21 @@ def to_draft_proposal(proposal: StationaryEnergyDraftProposal) -> DraftProposal:
     )
 
 
-def to_stored_source_candidate(
+def to_status_source_candidate(
     candidate: StationaryEnergyDraftSourceCandidate,
-) -> StoredSourceCandidate:
-    """Serialize a persisted draft source candidate into the API response contract."""
-    return StoredSourceCandidate(
+) -> DraftStatusSourceCandidate:
+    """Serialize only the source-candidate fields used by the review frontend."""
+    return DraftStatusSourceCandidate(
         candidate_id=candidate.candidate_id,
-        draft_run_id=candidate.draft_run_id,
         datasource_id=candidate.datasource_id,
         name=candidate.name,
         publisher_name=candidate.publisher_name,
-        retrieval_method=candidate.retrieval_method,
         dataset_name=candidate.dataset_name,
         dataset_year=candidate.dataset_year,
-        url=candidate.url,
         geography_match=candidate.geography_match,  # type: ignore[arg-type]
         source_scope=StoredSourceScope.model_validate(candidate.source_scope or {}),
-        source_data=candidate.source_data,
         normalized_rows=candidate.normalized_rows or [],
         applicability_status=candidate.applicability_status,  # type: ignore[arg-type]
-        applicability_issues=candidate.applicability_issues or [],
-        failure_reason=candidate.failure_reason,
-        quality_score=candidate.quality_score,
-        confidence_notes=candidate.confidence_notes,
-        created_at=candidate.created_at,
-        updated_at=candidate.updated_at,
     )
 
 
@@ -149,7 +132,6 @@ def to_start_response(
             for proposal in sorted(proposals, key=lambda item: str(item.proposal_id))
         ],
         trace_id=draft_run.trace_id,
-        llm_trace=llm_trace(draft_run),
         error_summary=error_summary(draft_run),
     )
 
@@ -184,14 +166,13 @@ def to_status_response(
             )
         ],
         source_candidates=[
-            to_stored_source_candidate(candidate)
+            to_status_source_candidate(candidate)
             for candidate in sorted(
                 draft_run.source_candidates,
                 key=lambda item: str(item.candidate_id),
             )
         ],
         trace_id=draft_run.trace_id,
-        llm_trace=llm_trace(draft_run),
         error_summary=error_summary(draft_run),
         staleness=staleness,
         created_at=draft_run.created_at,

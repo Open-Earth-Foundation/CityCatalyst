@@ -13,7 +13,7 @@ from app.utils.stationary_energy_context import (
     stationary_energy_scope_label,
     stationary_energy_scope_matches_target,
 )
-from app.services.stationary_energy_llm_models import (
+from app.services.stationary_energy.stationary_energy_llm_models import (
     StationaryEnergyLLMProposal,
     StationaryEnergyLLMResponse,
 )

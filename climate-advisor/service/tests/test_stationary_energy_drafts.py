@@ -29,11 +29,9 @@ from app.models.db.stationary_energy_draft import (
 )
 from app.models.requests import MessageCreateRequest
 from app.services.citycatalyst_client import CityCatalystClientError
-from app.services.stationary_energy_draft_service import (
+from app.services.stationary_energy import (
     COMMIT_ACCEPTED_CAPABILITY,
     LOAD_CONTEXT_CAPABILITY,
-)
-from app.services.stationary_energy_llm_service import (
     StationaryEnergyLLMProposal,
     StationaryEnergyLLMProposalResult,
     StationaryEnergyLLMServiceError,
@@ -217,7 +215,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.client = TestClient(self.app)
         self.default_cc_client = self._mock_cc_client()
         self.cc_client_patcher = patch(
-            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=self.default_cc_client,
         )
         self.cc_client_patcher.start()
@@ -248,10 +246,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         mock_llm = self._mock_llm_generator()
 
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
-            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
         ), patch(
-            "app.services.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
+            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
             return_value=mock_llm,
         ):
             start_response = self.client.post(
@@ -282,9 +280,12 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             sorted(candidate["applicability_status"] for candidate in status_data["source_candidates"]),
             ["applicable", "applicable"],
         )
+        self.assertTrue(
+            all("source_data" not in candidate for candidate in status_data["source_candidates"])
+        )
         self.assertEqual(len(status_data["proposals"]), 2)
-        self.assertEqual(status_data["llm_trace"]["model"], "mock-llm")
-        self.assertEqual(start_data["llm_trace"]["model"], "mock-llm")
+        self.assertNotIn("llm_trace", status_data)
+        self.assertNotIn("llm_trace", start_data)
         self.assertEqual(status_data["staleness"]["is_stale"], False)
         self.assertEqual(
             status_data["staleness"]["stored_source_ids"],
@@ -323,6 +324,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         context_summary = self._draft_context_summary(draft_run_id)
         self.assertEqual(context_summary["source_candidates_count"], 2)
         self.assertIn("guidance_context", context_summary)
+        self.assertEqual(context_summary["llm_trace"]["model"], "mock-llm")
         self.assertEqual(
             context_summary["guidance_context"]["sector_overview"],
             _context_payload()["guidance_context"]["sector_overview"],
@@ -468,10 +470,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         )
 
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
-            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
         ), patch(
-            "app.services.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
+            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
             return_value=mock_llm,
         ):
             start_response = self.client.post(
@@ -513,10 +515,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         mock_llm = self._mock_llm_generator()
 
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
-            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
         ), patch(
-            "app.services.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
+            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
             return_value=mock_llm,
         ):
             response = self.client.post(
@@ -543,10 +545,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         mock_llm = self._mock_llm_generator()
 
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
-            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
         ), patch(
-            "app.services.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
+            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
             return_value=mock_llm,
         ):
             response = self.client.post(
@@ -568,10 +570,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         mock_llm = self._mock_llm_generator()
 
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
-            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
         ), patch(
-            "app.services.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
+            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
             return_value=mock_llm,
         ):
             response = self.client.post(
@@ -596,10 +598,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         mock_llm = self._mock_llm_generator()
 
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
-            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
         ), patch(
-            "app.services.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
+            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
             return_value=mock_llm,
         ):
             response = self.client.post(
@@ -624,10 +626,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         )
 
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
-            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
         ), patch(
-            "app.services.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
+            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
             return_value=mock_llm,
         ):
             response = self.client.post(
@@ -654,10 +656,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         )
 
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
-            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
         ), patch(
-            "app.services.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
+            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
             return_value=failing_llm,
         ):
             failed_response = self.client.post(
@@ -689,10 +691,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         retry_client = self._mock_cc_client()
         success_llm = self._mock_llm_generator()
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
-            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=retry_client,
         ), patch(
-            "app.services.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
+            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
             return_value=success_llm,
         ):
             retry_response = self.client.post(
@@ -736,10 +738,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         )
 
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
-            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=retry_client,
         ), patch(
-            "app.services.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
+            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
             return_value=failing_llm,
         ):
             retry_response = self.client.post(
@@ -1052,10 +1054,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         mock_llm = self._mock_llm_generator()
 
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
-            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
         ), patch(
-            "app.services.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
+            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
             return_value=mock_llm,
         ):
             start_response = self.client.post(
@@ -1128,10 +1130,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         mock_llm = self._mock_llm_generator()
 
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
-            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
         ), patch(
-            "app.services.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
+            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
             return_value=mock_llm,
         ):
             start_response = self.client.post(
@@ -1264,7 +1266,6 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             *,
             context: Any,
             stored_source_candidates: list[dict[str, Any]],
-            allowed_capabilities: list[str],
             trace_id: str | None,
         ) -> StationaryEnergyLLMProposalResult:
             candidate_by_datasource = {
@@ -1308,7 +1309,6 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                 trace={
                     "model": "mock-llm",
                     "input": {
-                        "allowed_capabilities": allowed_capabilities,
                         "source_candidates": stored_source_candidates,
                     },
                     "raw_output": "{\"proposals\": []}",
@@ -1325,10 +1325,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         mock_client = self._mock_cc_client()
         mock_llm = self._mock_llm_generator()
         with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}), patch(
-            "app.services.stationary_energy_draft_service.CityCatalystClient",
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
         ), patch(
-            "app.services.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
+            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
             return_value=mock_llm,
         ):
             response = self.client.post(
@@ -1566,8 +1566,8 @@ class StationaryEnergyMigrationTests(unittest.TestCase):
 
 
 class StationaryEnergyLLMValidationTests(unittest.TestCase):
-    @patch("app.services.stationary_energy_llm_service.configure_agents_tracing")
-    @patch("app.services.stationary_energy_llm_service.get_settings")
+    @patch("app.services.stationary_energy.stationary_energy_llm_service.configure_agents_tracing")
+    @patch("app.services.stationary_energy.stationary_energy_llm_service.get_settings")
     def test_service_uses_shared_openrouter_options_and_prompt_config(
         self,
         mock_get_settings,
@@ -1589,7 +1589,7 @@ class StationaryEnergyLLMValidationTests(unittest.TestCase):
                     ),
                     agentic_flow=SimpleNamespace(
                         name="openai/gpt-5.4",
-                        temperature=0.1,
+                        temperature=0.0,
                     ),
                 ),
                 prompts=prompts,
@@ -1617,13 +1617,13 @@ class StationaryEnergyLLMValidationTests(unittest.TestCase):
         }
 
         with patch(
-            "app.services.stationary_energy_llm_service.build_openrouter_client_options",
+            "app.services.stationary_energy.stationary_energy_llm_service.build_openrouter_client_options",
             return_value=SimpleNamespace(
                 base_url="https://custom-openrouter.example/v1",
                 kwargs=client_kwargs,
             ),
         ) as mock_builder, patch(
-            "app.services.stationary_energy_llm_service.AsyncOpenAI"
+            "app.services.stationary_energy.stationary_energy_llm_service.AsyncOpenAI"
         ) as mock_client_class:
             service = StationaryEnergyProposalLLMService()
 
@@ -1639,7 +1639,7 @@ class StationaryEnergyLLMValidationTests(unittest.TestCase):
         )
         mock_client_class.assert_called_once_with(**client_kwargs)
         self.assertEqual(service.model, "openai/gpt-5.4")
-        self.assertEqual(service.temperature, 0.1)
+        self.assertEqual(service.temperature, 0.0)
         self.assertEqual(service.system_prompt, "Stationary Energy prompt")
 
     def test_rejects_candidate_datasource_mismatch(self) -> None:

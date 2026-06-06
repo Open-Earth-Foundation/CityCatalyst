@@ -23,10 +23,7 @@ export type SourceCandidate = {
   geography_match?: string | null;
   applicability_status: string;
   source_scope: Record<string, string | null | undefined>;
-  confidence_notes?: string | null;
   normalized_rows?: Array<Record<string, unknown>>;
-  source_data?: Record<string, unknown> | null;
-  quality_score?: string | number | null;
 };
 
 export type ReviewDecision = {
@@ -55,7 +52,6 @@ export type DraftStatusResponse = {
   proposals: DraftProposal[];
   source_candidates: SourceCandidate[];
   review_decisions: ReviewDecision[];
-  llm_trace?: Record<string, unknown> | null;
   error_summary?: Record<string, unknown> | null;
   staleness?: DraftStaleness | null;
 };

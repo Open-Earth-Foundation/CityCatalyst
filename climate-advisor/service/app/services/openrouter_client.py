@@ -27,24 +27,19 @@ def build_openrouter_client_options(
     error_cls: type[Exception] = ValueError,
     default_retries: int = 2,
 ) -> OpenRouterClientOptions:
-    """Resolve shared OpenRouter AsyncOpenAI settings for Climate Advisor."""
+    """Resolve shared OpenRouter AsyncOpenAI settings from Climate Advisor config."""
 
     api_key = getattr(settings, "openrouter_api_key", None)
     if not api_key:
         raise error_cls(missing_api_key_message)
 
     openrouter_settings = getattr(settings.llm.api, "openrouter", None)
-    timeout_ms = _env_int(
-        "OPENROUTER_TIMEOUT_MS",
-        getattr(openrouter_settings, "timeout_ms", None) or 30000,
-    )
-    max_retries = _env_int(
-        "OPENROUTER_MAX_RETRIES",
-        getattr(openrouter_settings, "retry_attempts", None) or default_retries,
-    )
-
+    timeout_ms = getattr(openrouter_settings, "timeout_ms", None) or 30000
+    max_retries = getattr(openrouter_settings, "retry_attempts", None) or default_retries
     base_url = (
-        getattr(settings, "openrouter_base_url", None) or DEFAULT_OPENROUTER_BASE_URL
+        getattr(settings, "openrouter_base_url", None)
+        or getattr(openrouter_settings, "base_url", None)
+        or DEFAULT_OPENROUTER_BASE_URL
     ).rstrip("/")
     referer = os.getenv("OPENROUTER_REFERER") or DEFAULT_OPENROUTER_REFERER
     title = os.getenv("OPENROUTER_TITLE") or DEFAULT_OPENROUTER_TITLE
@@ -63,15 +58,3 @@ def build_openrouter_client_options(
             },
         },
     )
-
-
-def _env_int(name: str, default: int) -> int:
-    """Read an integer environment override and fall back to the provided default."""
-
-    value = os.getenv(name)
-    if value is None:
-        return default
-    try:
-        return int(value)
-    except ValueError:
-        return default

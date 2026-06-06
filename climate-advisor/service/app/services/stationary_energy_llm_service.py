@@ -16,16 +16,16 @@ from agents import (
 )
 from openai import AsyncOpenAI
 
-from ..config import get_settings
-from ..models.stationary_energy_drafts import LoadStationaryEnergyContextResponse
-from ..utils.agent_tracing import configure_agents_tracing
-from .openrouter_client import build_openrouter_client_options
-from .stationary_energy_llm_models import (
+from app.config import get_settings
+from app.models.stationary_energy_drafts import LoadStationaryEnergyContextResponse
+from app.utils.agent_tracing import configure_agents_tracing
+from app.services.openrouter_client import build_openrouter_client_options
+from app.services.stationary_energy_llm_models import (
     StationaryEnergyLLMProposal,
     StationaryEnergyLLMProposalResult,
     StationaryEnergyLLMResponse,
 )
-from .stationary_energy_llm_output import (
+from app.services.stationary_energy_llm_output import (
     generation_failure_message,
     json_safe,
     parsed_output_from_result,
@@ -33,7 +33,7 @@ from .stationary_energy_llm_output import (
     usage_from_result,
     validate_and_normalize_proposals,
 )
-from .stationary_energy_llm_prompt import (
+from app.services.stationary_energy_llm_prompt import (
     build_llm_input,
     enforce_prompt_budget,
     trace_metadata,

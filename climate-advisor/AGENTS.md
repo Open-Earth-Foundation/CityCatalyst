@@ -169,11 +169,10 @@ Use `script-quality-gate` when you add or change one.
 
 - Use `pathlib.Path` instead of `os.path` or string-built paths.
 
-### Imports
+### Module imports
 
-- Keep imports consistent with the surrounding package.
-- In `service/app/`, relative imports are already used in many modules; do not churn import style without a clear reason.
-- For new modules, prefer the style already used in the nearest package.
+- Strictly use **absolute imports**, for example `from app.utils.foo import bar`. Do not use relative imports.
+- Always run scripts as modules using `python -m ...` from the project root.
 
 ### Prefer clarity over cleverness
 

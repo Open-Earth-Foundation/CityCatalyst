@@ -18,14 +18,14 @@ import openai
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel
 from openai import AsyncOpenAI
 
-from ..config import get_settings
-from .openrouter_client import build_openrouter_client_options
-from ..tools import (
+from app.config import get_settings
+from app.services.openrouter_client import build_openrouter_client_options
+from app.tools import (
     CCInventoryTool,
     build_cc_inventory_tools,
     climate_vector_search,
 )
-from ..utils.agent_tracing import configure_agents_tracing
+from app.utils.agent_tracing import configure_agents_tracing
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,5 @@
-from .feature_flags import FeatureFlags, get_feature_flags, has_feature_flag
-from .settings import get_settings, Settings
+from app.config.feature_flags import FeatureFlags, get_feature_flags, has_feature_flag
+from app.config.settings import get_settings, Settings
 
 __all__ = [
     "FeatureFlags",

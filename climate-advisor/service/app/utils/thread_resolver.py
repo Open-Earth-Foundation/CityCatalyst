@@ -9,10 +9,10 @@ from uuid import UUID, uuid4
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from ..exceptions import ThreadNotFoundException
-from ..models.db.thread import Thread
-from ..models.requests import MessageCreateRequest, ThreadCreateRequest
-from ..services.thread_service import ThreadService
+from app.exceptions import ThreadNotFoundException
+from app.models.db.thread import Thread
+from app.models.requests import MessageCreateRequest, ThreadCreateRequest
+from app.services.thread_service import ThreadService
 
 logger = logging.getLogger(__name__)
 
@@ -142,7 +142,7 @@ class ThreadResolver:
             )
             # Create the thread with the provided ID using the helper method
             # Pass None for payload if not provided (will use empty context)
-            from ..models.requests import MessageCreateRequest as MsgReq
+            from app.models.requests import MessageCreateRequest as MsgReq
             create_payload = payload or MsgReq(user_id=user_id, content="")
             return await ThreadResolver._create_thread_with_id(
                 thread_id=thread_id,

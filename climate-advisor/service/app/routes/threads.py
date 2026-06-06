@@ -6,15 +6,15 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..db.session import get_session
-from ..models.requests import ThreadCreateRequest
-from ..models.responses import (
+from app.db.session import get_session
+from app.models.requests import ThreadCreateRequest
+from app.models.responses import (
     ThreadCreateResponse,
     ThreadMessageResponse,
     ThreadMessagesResponse,
 )
-from ..services.message_service import MessageService
-from ..services.thread_service import ThreadService
+from app.services.message_service import MessageService
+from app.services.thread_service import ThreadService
 
 
 logger = logging.getLogger(__name__)

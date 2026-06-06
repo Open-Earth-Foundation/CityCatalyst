@@ -8,12 +8,12 @@ from uuid import UUID
 
 from pydantic import ValidationError
 
-from ..utils.stationary_energy_context import (
+from app.utils.stationary_energy_context import (
     stationary_energy_scope_identity,
     stationary_energy_scope_label,
     stationary_energy_scope_matches_target,
 )
-from .stationary_energy_llm_models import (
+from app.services.stationary_energy_llm_models import (
     StationaryEnergyLLMProposal,
     StationaryEnergyLLMResponse,
 )

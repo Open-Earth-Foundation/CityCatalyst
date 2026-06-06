@@ -5,9 +5,9 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..config.feature_flags import FeatureFlags, has_feature_flag
-from ..db.session import get_session
-from ..models.stationary_energy_drafts import (
+from app.config.feature_flags import FeatureFlags, has_feature_flag
+from app.db.session import get_session
+from app.models.stationary_energy_drafts import (
     ListStationaryEnergyDraftsResponse,
     RetryStationaryEnergyDraftRequest,
     ReviewStationaryEnergyDraftRequest,
@@ -18,7 +18,7 @@ from ..models.stationary_energy_drafts import (
     StartStationaryEnergyDraftResponse,
     StationaryEnergyDraftStatusResponse,
 )
-from ..services.stationary_energy_draft_service import StationaryEnergyDraftService
+from app.services.stationary_energy_draft_service import StationaryEnergyDraftService
 
 
 router = APIRouter()

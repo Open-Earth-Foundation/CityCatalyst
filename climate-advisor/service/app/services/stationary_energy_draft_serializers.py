@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import Any
 from uuid import UUID
 
-from ..models.db.stationary_energy_draft import (
+from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftProposal,
     StationaryEnergyDraftRun,
     StationaryEnergyDraftSourceCandidate,
     StationaryEnergyReviewDecision,
 )
-from ..models.stationary_energy_drafts import (
+from app.models.stationary_energy_drafts import (
     DraftProposal,
     DraftStalenessResponse,
     ReviewDecisionResponse,
@@ -20,7 +20,7 @@ from ..models.stationary_energy_drafts import (
     StoredSourceCandidate,
     StoredSourceScope,
 )
-from .stationary_energy_draft_review import latest_review_decisions
+from app.services.stationary_energy_draft_review import latest_review_decisions
 
 
 def review_decision_sort_key(

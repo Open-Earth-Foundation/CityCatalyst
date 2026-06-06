@@ -6,13 +6,13 @@ from uuid import UUID
 
 from fastapi import HTTPException
 
-from ..models.db.stationary_energy_draft import (
+from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftProposal,
     StationaryEnergyDraftSourceCandidate,
     StationaryEnergyReviewDecision,
 )
-from ..models.stationary_energy_drafts import ReviewDecisionInput
-from ..utils.stationary_energy_context import (
+from app.models.stationary_energy_drafts import ReviewDecisionInput
+from app.utils.stationary_energy_context import (
     stationary_energy_scope_label,
     stationary_energy_scope_matches_target,
 )

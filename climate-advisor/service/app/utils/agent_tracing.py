@@ -6,7 +6,7 @@ from typing import Any
 from agents import set_trace_processors
 from langsmith.wrappers import OpenAIAgentsTracingProcessor
 
-from ..config import get_settings
+from app.config import get_settings
 
 
 logger = logging.getLogger(__name__)

@@ -8,10 +8,10 @@ from uuid import uuid4, UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..exceptions import ThreadNotFoundException, ThreadAccessDeniedException
-from ..models.db.thread import Thread
-from ..models.requests import ThreadCreateRequest
-from ..utils.token_manager import create_token_context
+from app.exceptions import ThreadNotFoundException, ThreadAccessDeniedException
+from app.models.db.thread import Thread
+from app.models.requests import ThreadCreateRequest
+from app.utils.token_manager import create_token_context
 
 
 logger = logging.getLogger(__name__)

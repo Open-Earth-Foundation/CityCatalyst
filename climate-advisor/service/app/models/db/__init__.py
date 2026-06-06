@@ -1,7 +1,7 @@
-from .thread import Thread
-from .message import Message, MessageRole
-from .document_embedding import DocumentEmbedding
-from .stationary_energy_draft import (
+from app.models.db.thread import Thread
+from app.models.db.message import Message, MessageRole
+from app.models.db.document_embedding import DocumentEmbedding
+from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftProposal,
     StationaryEnergyDraftRun,
     StationaryEnergyDraftSourceCandidate,

@@ -10,13 +10,13 @@ from typing import Any, Dict
 from pathlib import Path
 import time
 
-from .config.settings import get_settings
-from .routes.health import router as health_router
-from .routes.threads import router as threads_router
-from .routes.messages import router as messages_router
-from .routes.dev_inventory import router as dev_inventory_router
-from .routes.stationary_energy_drafts import router as stationary_energy_drafts_router
-from .middleware.request_context import RequestContextMiddleware, get_request_id
+from app.config.settings import get_settings
+from app.routes.health import router as health_router
+from app.routes.threads import router as threads_router
+from app.routes.messages import router as messages_router
+from app.routes.dev_inventory import router as dev_inventory_router
+from app.routes.stationary_energy_drafts import router as stationary_energy_drafts_router
+from app.middleware.request_context import RequestContextMiddleware, get_request_id
 import logging
 
 # Configure basic logging

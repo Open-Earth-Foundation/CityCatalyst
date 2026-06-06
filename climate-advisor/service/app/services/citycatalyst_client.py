@@ -18,8 +18,8 @@ from typing import Any, Dict, Optional, Tuple
 
 import httpx
 
-from ..config import get_settings
-from ..utils.token_manager import (
+from app.config import get_settings
+from app.utils.token_manager import (
     is_token_expired,
     redact_token,
     get_token_expiry,

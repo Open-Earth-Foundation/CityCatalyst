@@ -5,13 +5,13 @@ from uuid import UUID
 
 from fastapi import HTTPException
 
-from ..models.stationary_energy_drafts import StartStationaryEnergyDraftRequest
-from ..utils.token_manager import (
+from app.models.stationary_energy_drafts import StartStationaryEnergyDraftRequest
+from app.utils.token_manager import (
     create_token_context,
     is_token_expired,
     parse_jwt_claims,
 )
-from .thread_service import ThreadService
+from app.services.thread_service import ThreadService
 
 
 def extract_token(context: Any) -> str | None:

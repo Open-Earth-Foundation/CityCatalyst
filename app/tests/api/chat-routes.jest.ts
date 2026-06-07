@@ -14,6 +14,7 @@ import { GET as getThreadMessages } from "@/app/api/v1/chat/threads/[threadId]/m
 import { POST as postChatThread } from "@/app/api/v1/chat/threads/route";
 import { Auth, type AppSession } from "@/lib/auth";
 import { db } from "@/models";
+import { Roles } from "@/util/types";
 
 const testUserID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
 
@@ -58,7 +59,7 @@ describe("Chat routes", () => {
         name: "Test User",
         email: "test@example.com",
         image: null,
-        role: "USER",
+        role: Roles.User,
       },
       expires: expires.toISOString(),
     } as AppSession);

@@ -242,6 +242,25 @@ def validate_and_normalize_proposals(
 
 _GEOGRAPHY_RANK = {"city": 0, "locode": 0, "region": 1, "country": 2, "global": 3}
 
+# IPCC/GPC notation keys and their plain-language meaning. Used to describe any
+# notation-key answer a source reports (not just "NO").
+_NOTATION_KEY_LABELS = {
+    "NO": "not occurring",
+    "NE": "not estimated",
+    "IE": "included elsewhere",
+    "C": "confidential",
+    "NA": "not applicable",
+}
+
+
+def _notation_key_label(notation_key: str | None, notation_key_name: Any = None) -> str:
+    """Plain-language label for a notation key, with sensible fallbacks."""
+    if notation_key and notation_key.upper() in _NOTATION_KEY_LABELS:
+        return _NOTATION_KEY_LABELS[notation_key.upper()]
+    if isinstance(notation_key_name, str) and notation_key_name.strip():
+        return notation_key_name.replace("-", " ").replace("_", " ").strip()
+    return "reported notation"
+
 
 def _candidate_has_usable_emissions(candidate: dict[str, Any]) -> bool:
     """Return whether a candidate actually carries an emissions value to draft.
@@ -296,6 +315,7 @@ def build_deterministic_proposals(
     ]
     deterministic: list[dict[str, Any]] = []
     llm_rows: list[Any] = []
+    llm_fallback: list[dict[str, Any]] = []
     for row in taxonomy_rows:
         row_payload = (
             row.model_dump(mode="json", exclude_none=True)
@@ -350,12 +370,16 @@ def build_deterministic_proposals(
             else:
                 deterministic.append(_deterministic_gap_proposal(row_payload))
             continue
-        deterministic.append(
+        # >= 2 sources with real emissions compete -> hybrid: hand the row to the
+        # agent so it can reason about and explain the trade-offs. Keep a
+        # deterministic ranked proposal as a fallback if the agent is unavailable.
+        llm_rows.append(row)
+        llm_fallback.append(
             _deterministic_multi_source_proposal(
                 row_payload, matching, inventory_year
             )
         )
-    return deterministic, llm_rows
+    return deterministic, llm_rows, llm_fallback
 
 
 def _candidate_rank_key(
@@ -469,8 +493,9 @@ def _deterministic_notation_proposal(
             "datasource_id": candidate.get("datasource_id"),
         },
         "rationale": (
-            f"Source reports notation key '{notation_key}' (not occurring): "
-            f"{explanation_text or 'the activity does not occur within the city'}."
+            f"Source reports notation key '{notation_key}' "
+            f"({_notation_key_label(notation_key, source_data.get('notation_key_name'))})"
+            f": {explanation_text or 'see source notation.'}"
         ),
         # No emissions value to draft, but this is a confirmed "not occurring"
         # answer rather than a blind gap; the UI distinguishes it via the

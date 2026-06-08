@@ -19,6 +19,14 @@ import {
   proposedValueLabel,
   sourceGeographyLabel,
 } from "@/components/StationaryEnergyDraft/utils";
+import type { TFunction } from "i18next";
+
+const REVIEW_FALLBACKS = {
+  "review-option-leave-empty": "Leave empty",
+  "review-option-set-notation": "Set a notation key later",
+  "review-fallback-row-label": "Stationary Energy row",
+  "review-option-alternative-source": "Alternative source",
+} as const;
 
 export function latestDecisionByProposal(
   decisions: ReviewDecision[],
@@ -107,12 +115,14 @@ export function pendingDecisionReviewProposals(params: {
 export function buildDecisionReviewContext(params: {
   draftState: DraftStatusResponse | null;
   resolvedProposalIds: Set<string>;
+  t?: TFunction;
 }): DecisionReviewContext[] {
   return pendingDecisionReviewProposals(params)
     .map((proposal) =>
       decisionReviewContextForProposal(
         proposal,
         params.draftState?.source_candidates ?? [],
+        params.t,
       ),
     )
     .filter((context): context is DecisionReviewContext => context != null);
@@ -295,6 +305,7 @@ export function reviewableDraftProposals(
 function buildDecisionOptionGroups(
   proposal: DraftProposal,
   candidates: SourceCandidate[],
+  t?: TFunction,
 ): {
   realOptions: DecisionOption[];
   recommendedOption: DecisionOption | null;
@@ -332,7 +343,7 @@ function buildDecisionOptionGroups(
       action: "override_source" as const,
       label: sourceDisplayName(candidate),
       meta: sourceMetaLabel(candidate),
-      value: sourceCandidateValueLabel(candidate),
+      value: sourceCandidateValueLabel(candidate, t),
       recommended: false,
     };
     alternativeOptions.push(option);
@@ -346,9 +357,9 @@ function buildDecisionOptionGroups(
     leaveDraftOption: {
       id: "leave_draft",
       action: "leave_draft",
-      label: "Leave empty",
-      meta: "Set a notation key later",
-      value: "Set a notation key later",
+      label: translateReviewText(t, "review-option-leave-empty"),
+      meta: translateReviewText(t, "review-option-set-notation"),
+      value: translateReviewText(t, "review-option-set-notation"),
       recommended: false,
     },
   };
@@ -357,13 +368,14 @@ function buildDecisionOptionGroups(
 function decisionReviewContextForProposal(
   proposal: DraftProposal,
   candidates: SourceCandidate[],
+  t?: TFunction,
 ): DecisionReviewContext | null {
   const {
     realOptions,
     recommendedOption,
     alternativeOptions,
     leaveDraftOption,
-  } = buildDecisionOptionGroups(proposal, candidates);
+  } = buildDecisionOptionGroups(proposal, candidates, t);
   if (realOptions.length === 0) {
     return null;
   }
@@ -371,7 +383,9 @@ function decisionReviewContextForProposal(
   const baseContext = {
     proposal_id: proposal.proposal_id,
     proposal,
-    label: proposalLabel(proposal) || "Stationary Energy row",
+    label:
+      proposalLabel(proposal) ||
+      translateReviewText(t, "review-fallback-row-label"),
     status: proposal.status,
     recommendedOption,
     alternativeOptions,
@@ -406,11 +420,14 @@ function sourceMetaLabel(candidate: SourceCandidate): string {
     .join(" / ");
 }
 
-function sourceCandidateValueLabel(candidate: SourceCandidate): string {
+function sourceCandidateValueLabel(
+  candidate: SourceCandidate,
+  t?: TFunction,
+): string {
   const rows = candidate.normalized_rows ?? [];
   const firstRow = rows[0] as Record<string, unknown> | undefined;
   if (!firstRow) {
-    return "Alternative source";
+    return translateReviewText(t, "review-option-alternative-source");
   }
   const value =
     firstRow.emissions_value ??
@@ -425,6 +442,14 @@ function sourceCandidateValueLabel(candidate: SourceCandidate): string {
     firstRow["activity-unit"];
   return (
     formatDraftEmissionsLabel(value, unit) ??
-    ([value, unit].filter(Boolean).join(" ") || "Alternative source")
+    ([value, unit].filter(Boolean).join(" ") ||
+      translateReviewText(t, "review-option-alternative-source"))
   );
+}
+
+function translateReviewText(
+  t: TFunction | undefined,
+  key: keyof typeof REVIEW_FALLBACKS,
+): string {
+  return t?.(key) ?? REVIEW_FALLBACKS[key];
 }

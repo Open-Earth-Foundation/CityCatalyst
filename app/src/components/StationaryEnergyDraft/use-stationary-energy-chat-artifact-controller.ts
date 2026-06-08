@@ -315,7 +315,7 @@ export function useStationaryEnergyChatArtifactController(
     baseStage === "decision" && unresolvedBlockingIds.length === 0
       ? "review"
       : baseStage;
-  const rows = useMemo(() => buildArtifactRows(draftState), [draftState]);
+  const rows = useMemo(() => buildArtifactRows(draftState, t), [draftState, t]);
   const pendingDecisionProposals = useMemo(
     () =>
       pendingDecisionReviewProposals({
@@ -329,8 +329,9 @@ export function useStationaryEnergyChatArtifactController(
       buildDecisionReviewContext({
         draftState,
         resolvedProposalIds: EMPTY_RESOLVED_PROPOSALS,
+        t,
       }),
-    [draftState],
+    [draftState, t],
   );
   const hasSourceBackedProposals = useMemo(
     () => decisionReviewContext.length > 0,

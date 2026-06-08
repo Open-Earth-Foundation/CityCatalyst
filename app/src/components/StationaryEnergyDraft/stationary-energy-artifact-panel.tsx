@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable i18next/no-literal-string */
 
 import {
   Badge,
@@ -12,8 +11,11 @@ import {
   VStack,
   chakra,
 } from "@chakra-ui/react";
+import type { TFunction } from "i18next";
+import { useParams } from "next/navigation";
 import { MdRefresh, MdSave } from "react-icons/md";
 
+import { useTranslation } from "@/i18n/client";
 import { FLOW_BUTTON_RADIUS } from "@/components/StationaryEnergyDraft/stationary-energy-chat-constants";
 import type {
   ArtifactRow,
@@ -23,6 +25,7 @@ import type {
 import type { DraftListItem } from "@/components/StationaryEnergyDraft/types";
 import type { LoadingAction } from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
 import { Button } from "@/components/ui/button";
+import { getParamValueRequired } from "@/util/helpers";
 
 export type ArtifactPanelProps = {
   cityName: string;
@@ -48,15 +51,15 @@ export type ArtifactPanelProps = {
   onSaveToInventory: () => void;
 };
 
-function draftRunStatusLabel(status: string): string {
+function draftRunStatusLabel(t: TFunction, status: string): string {
   if (status === "reviewed") {
-    return "Draft saved";
+    return t("artifact-draft-status-reviewed");
   }
   if (status === "ready") {
-    return "Working draft";
+    return t("artifact-draft-status-ready");
   }
   if (status === "failed") {
-    return "Failed draft";
+    return t("artifact-draft-status-failed");
   }
   return status.replaceAll("_", " ");
 }
@@ -74,15 +77,22 @@ function formatDraftRunUpdatedAt(value: string): string {
   }).format(date);
 }
 
-function draftRunOptionLabel(draftRun: DraftListItem): string {
+function draftRunOptionLabel(t: TFunction, draftRun: DraftListItem): string {
   const reviewLabel =
     draftRun.reviewable_proposal_count > 0
-      ? `${draftRun.resolved_review_count}/${draftRun.reviewable_proposal_count} reviewed`
-      : "no source-backed rows";
-  return `${draftRunStatusLabel(draftRun.status)} | ${reviewLabel} | ${formatDraftRunUpdatedAt(draftRun.updated_at)}`;
+      ? t("artifact-draft-review-label", {
+          resolved: draftRun.resolved_review_count,
+          total: draftRun.reviewable_proposal_count,
+        })
+      : t("artifact-draft-review-empty");
+  return `${draftRunStatusLabel(t, draftRun.status)} | ${reviewLabel} | ${formatDraftRunUpdatedAt(draftRun.updated_at)}`;
 }
 
-function stageChip(stage: DraftStage, status: string): {
+function stageChip(
+  t: TFunction,
+  stage: DraftStage,
+  status: string,
+): {
   bg: string;
   color: string;
   label: string;
@@ -91,62 +101,62 @@ function stageChip(stage: DraftStage, status: string): {
     return {
       bg: "sentiment.positiveOverlay",
       color: "interactive.primary",
-      label: "Saved to inventory",
+      label: t("artifact-stage-saved"),
     };
   }
   if (status === "partially_saved") {
     return {
       bg: "sentiment.warningOverlay",
       color: "interactive.quaternary",
-      label: "Partially saved",
+      label: t("artifact-stage-partially-saved"),
     };
   }
   if (status === "no_changes") {
     return {
       bg: "background.backgroundGreyFlat",
       color: "content.secondary",
-      label: "No changes to save",
+      label: t("artifact-stage-no-changes"),
     };
   }
   if (stage === "start") {
     return {
       bg: "background.backgroundGreyFlat",
       color: "content.secondary",
-      label: "Ready to draft",
+      label: t("artifact-stage-ready-to-draft"),
     };
   }
   if (stage === "drafting") {
     return {
       bg: "background.alternative",
       color: "interactive.primary",
-      label: "Drafting",
+      label: t("artifact-stage-drafting"),
     };
   }
   if (stage === "decision") {
     return {
       bg: "sentiment.warningOverlay",
       color: "interactive.quaternary",
-      label: "Needs review",
+      label: t("artifact-stage-needs-review"),
     };
   }
   return {
     bg: "sentiment.positiveOverlay",
     color: "interactive.primary",
-    label: "Review complete",
+    label: t("artifact-stage-review-complete"),
   };
 }
 
-function overviewTitle(stage: DraftStage): string {
+function overviewTitle(t: TFunction, stage: DraftStage): string {
   if (stage === "start") {
-    return "Stationary Energy rows waiting for a working draft";
+    return t("artifact-overview-start");
   }
   if (stage === "drafting") {
-    return "Building a source-backed working draft";
+    return t("artifact-overview-drafting");
   }
   if (stage === "decision") {
-    return "Rows waiting for your decision";
+    return t("artifact-overview-decision");
   }
-  return "Ready to review";
+  return t("artifact-overview-review");
 }
 
 function RowMarker({ state }: { state: ArtifactRow["state"] }) {
@@ -175,6 +185,7 @@ function ArtifactRowView(props: {
   row: ArtifactRow;
   active: boolean;
   drafting: boolean;
+  t: TFunction;
 }) {
   const isActive =
     props.active || (props.drafting && props.row.id === "placeholder-0");
@@ -203,12 +214,11 @@ function ArtifactRowView(props: {
           {props.row.label}
         </Text>
         <Text color="content.tertiary" fontSize="label.md" truncate>
-          {props.row.scope || "Stationary Energy"}
+          {props.row.scope || props.t("artifact-scope-fallback")}
         </Text>
       </Box>
       <Box minW="150px" textAlign="right">
-        {props.row.value &&
-        props.row.value !== "No source-backed draft value" ? (
+        {props.row.value ? (
           <>
             <Text fontFamily="heading" fontSize="body.md" fontWeight="semibold">
               {props.row.value}
@@ -228,6 +238,9 @@ function ArtifactRowView(props: {
 }
 
 export function ArtifactPanel(props: ArtifactPanelProps) {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+  const { t } = useTranslation(lng, "stationary-energy-agentic");
   const draftedCount = props.rows.filter((row) =>
     ["done", "manual"].includes(row.state),
   ).length;
@@ -235,7 +248,7 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
     props.rows.length > 0
       ? Math.round((draftedCount / props.rows.length) * 100)
       : 0;
-  const chip = stageChip(props.stage, props.draftStatus);
+  const chip = stageChip(t, props.stage, props.draftStatus);
 
   return (
     <Box
@@ -280,10 +293,11 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
             </Box>
             <Box>
               <Heading fontSize="title.md" fontWeight="semibold">
-                Stationary energy - working draft
+                {t("artifact-header-title")}
               </Heading>
               <Text color="content.tertiary" fontSize="label.md">
-                {props.cityName} / {props.inventoryYear} / GPC BASIC
+                {props.cityName} / {props.inventoryYear} /{" "}
+                {t("artifact-header-framework")}
               </Text>
             </Box>
           </HStack>
@@ -306,7 +320,7 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
                     fontSize="label.sm"
                     fontWeight="semibold"
                   >
-                    Drafts saved in Clima
+                    {t("artifact-drafts-saved")}
                   </Text>
                   <Button
                     variant="outline"
@@ -314,7 +328,7 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
                     loading={props.loadingAction === "start"}
                     onClick={props.onStartDraft}
                   >
-                    New draft
+                    {t("artifact-new-draft")}
                   </Button>
                 </Flex>
                 <chakra.select
@@ -335,14 +349,14 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
                   color="content.primary"
                 >
                   {!props.activeDraftRunId ? (
-                    <option value="">Select a saved draft</option>
+                    <option value="">{t("artifact-select-saved-draft")}</option>
                   ) : null}
                   {props.draftRuns.map((draftRun) => (
                     <option
                       key={draftRun.draft_run_id}
                       value={draftRun.draft_run_id}
                     >
-                      {draftRunOptionLabel(draftRun)}
+                      {draftRunOptionLabel(t, draftRun)}
                     </option>
                   ))}
                 </chakra.select>
@@ -371,10 +385,13 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
       >
         <Flex justify="space-between" align="center" gap={4}>
           <Text fontFamily="heading" fontSize="body.md" fontWeight="semibold">
-            {overviewTitle(props.stage)}
+            {overviewTitle(t, props.stage)}
           </Text>
           <Text color="content.secondary" fontSize="label.md">
-            {draftedCount} of {props.rows.length} drafted
+            {t("artifact-progress-drafted", {
+              drafted: draftedCount,
+              total: props.rows.length,
+            })}
           </Text>
         </Flex>
         <Box mt={3} h="8px" bg="background.neutral" borderRadius="full">
@@ -414,6 +431,7 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
               drafting={
                 props.stage === "drafting" && props.loadingAction === "start"
               }
+              t={t}
             />
           ))}
         </VStack>
@@ -435,15 +453,20 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
         <Text color="content.secondary" fontSize="body.md">
           {props.stage === "review"
             ? props.canSaveToInventory
-              ? `${props.counts.ready + props.counts.accepted} rows ready / ${props.counts.gap} gaps`
+              ? t("artifact-footer-ready", {
+                  ready: props.counts.ready + props.counts.accepted,
+                  gaps: props.counts.gap,
+                })
               : props.canPersistDraftReview
-                ? "Draft review is ready to save in Clima"
+                ? t("artifact-footer-save-draft-ready")
                 : props.hasSourceBackedProposals
-                  ? "No source-backed rows are staged to save"
-                  : "No source-backed rows are ready to save"
+                  ? t("artifact-footer-no-staged")
+                  : t("artifact-footer-no-ready")
             : props.unresolvedCount > 0
-              ? `${props.unresolvedCount} decisions needed before save`
-              : "Nothing is written until you save"}
+              ? t("artifact-footer-decisions-needed", {
+                  count: props.unresolvedCount,
+                })
+              : t("artifact-footer-nothing-written")}
         </Text>
         <HStack gap={2} justify={{ base: "flex-end", md: "initial" }}>
           <Button
@@ -454,7 +477,7 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
             onClick={props.onRefresh}
           >
             <MdRefresh />
-            Refresh
+            {t("artifact-refresh")}
           </Button>
           {props.stage === "start" ? (
             <Button
@@ -463,7 +486,7 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
               loading={props.loadingAction === "start"}
               onClick={props.onStartDraft}
             >
-              Start draft
+              {t("artifact-start-draft")}
             </Button>
           ) : null}
           {props.stage !== "start" && props.canPersistDraftReview ? (
@@ -475,7 +498,7 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
               onClick={props.onSaveDraft}
             >
               <MdSave />
-              Save draft
+              {t("chat-quick-reply-save-draft")}
             </Button>
           ) : null}
           {props.stage !== "start" && props.canSaveToInventory ? (
@@ -487,7 +510,7 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
               onClick={props.onSaveToInventory}
             >
               <MdSave />
-              Save to inventory
+              {t("chat-quick-reply-save-to-inventory")}
             </Button>
           ) : null}
         </HStack>

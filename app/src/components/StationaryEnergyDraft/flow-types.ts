@@ -77,22 +77,3 @@ export const TERMINAL_DRAFT_STATUSES = new Set([
   "no_changes",
   "failed",
 ]);
-
-export const START_ROWS: ArtifactRow[] = [
-  ["I.1 Residential buildings", "Scope 1 / 2"],
-  ["I.2 Commercial & institutional", "Scope 1 / 2"],
-  ["I.3 Manufacturing & construction", "Scope 1 / 2"],
-  ["I.4 Energy industries", "Scope 1 / 2"],
-  ["I.5 Agriculture, forestry & fishing", "Scope 1"],
-  ["I.6 Non-specified sources", "Scope 1"],
-  ["I.7 Fugitive - mining & coal", "Scope 1"],
-  ["I.8 Fugitive - oil & natural gas", "Scope 1"],
-].map(([label, scope], index) => ({
-  id: `placeholder-${index}`,
-  label,
-  scope,
-  state: "queued",
-  value: null,
-  source: null,
-  status: "queued",
-}));

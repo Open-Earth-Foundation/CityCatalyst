@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable i18next/no-literal-string */
 
 import {
   Box,
@@ -11,7 +10,9 @@ import {
   chakra,
 } from "@chakra-ui/react";
 import { MdCheckCircle, MdErrorOutline } from "react-icons/md";
+import { useParams } from "next/navigation";
 
+import { useTranslation } from "@/i18n/client";
 import {
   AGENT_BUBBLE_MAX_W,
   CHAT_SURFACE_MAX_W,
@@ -20,6 +21,7 @@ import {
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-constants";
 import type { DraftCounts } from "@/components/StationaryEnergyDraft/flow";
 import type { DraftStatusResponse } from "@/components/StationaryEnergyDraft/types";
+import { getParamValueRequired } from "@/util/helpers";
 
 export type QuickReplyButton = {
   label: string;
@@ -27,6 +29,12 @@ export type QuickReplyButton = {
   disabled?: boolean;
   onClick: () => void;
 };
+
+function useStationaryEnergyAgenticTranslation() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+  return useTranslation(lng, "stationary-energy-agentic");
+}
 
 export function AgentBubble({ text }: { text: string }) {
   return (
@@ -107,6 +115,8 @@ export function CoveragePanel(props: {
   sourceCount: number | null;
   currentCount: number;
 }) {
+  const { t } = useStationaryEnergyAgenticTranslation();
+
   return (
     <Box
       w="full"
@@ -121,7 +131,7 @@ export function CoveragePanel(props: {
       <HStack gap={2} mb={3}>
         <MdCheckCircle />
         <Text fontFamily="heading" fontSize="body.md" fontWeight="semibold">
-          Coverage check
+          {t("primitives-coverage-title")}
         </Text>
       </HStack>
       <VStack
@@ -134,15 +144,20 @@ export function CoveragePanel(props: {
           <MdCheckCircle />
           <Text>
             {props.sourceCount == null
-              ? "Sources will be loaded from the bounded CityCatalyst context"
-              : `${props.sourceCount} integrated source candidates loaded`}
+              ? t("primitives-coverage-sources-loading")
+              : t("primitives-coverage-sources-loaded", {
+                  count: props.sourceCount,
+                })}
           </Text>
         </HStack>
         <HStack align="flex-start">
           <Text color="content.tertiary">-</Text>
           <Text>
-            {props.currentCount || "Existing"} Stationary Energy rows stay in
-            review until you save
+            {props.currentCount > 0
+              ? t("primitives-coverage-current-rows", {
+                  count: props.currentCount,
+                })
+              : t("primitives-coverage-existing-rows")}
           </Text>
         </HStack>
       </VStack>
@@ -233,6 +248,8 @@ export function StaleDraftPanel(props: {
   onContinue: () => void;
   onStartOver: () => void;
 }) {
+  const { t } = useStationaryEnergyAgenticTranslation();
+
   return (
     <Box
       w="full"
@@ -247,26 +264,26 @@ export function StaleDraftPanel(props: {
       <HStack gap={2} mb={3} color="interactive.quaternary">
         <MdErrorOutline />
         <Text fontFamily="heading" fontWeight="semibold">
-          Connected sources changed
+          {t("primitives-stale-title")}
         </Text>
       </HStack>
       <Text color="content.primary" fontSize="body.md" mb={3}>
-        This draft snapshot no longer matches the currently connected Stationary
-        Energy sources. You can continue reviewing the older draft or start over
-        from the current source set.
+        {t("primitives-stale-description")}
       </Text>
       <Text color="content.tertiary" fontSize="label.md" mb={4}>
-        Stored sources: {props.staleDraft?.stored_source_ids.length ?? 0} /
-        Current sources: {props.staleDraft?.current_source_ids.length ?? 0}
+        {t("primitives-stale-counts", {
+          storedCount: props.staleDraft?.stored_source_ids.length ?? 0,
+          currentCount: props.staleDraft?.current_source_ids.length ?? 0,
+        })}
       </Text>
       <QuickReplies
         buttons={[
           {
-            label: "Continue existing draft",
+            label: t("primitives-stale-continue"),
             onClick: props.onContinue,
           },
           {
-            label: "Start over",
+            label: t("primitives-stale-start-over"),
             primary: true,
             onClick: props.onStartOver,
           },
@@ -281,10 +298,13 @@ export function PendingDecisionNudge(props: {
   onAskQuestion: () => void;
   onJumpToReview: () => void;
 }) {
+  const { t } = useStationaryEnergyAgenticTranslation();
   const label =
     props.pendingDecisionCount === 1
-      ? "1 pending review is off-screen."
-      : `${props.pendingDecisionCount} pending reviews are off-screen.`;
+      ? t("primitives-pending-one")
+      : t("primitives-pending-many", {
+          count: props.pendingDecisionCount,
+        });
 
   return (
     <Box
@@ -319,7 +339,7 @@ export function PendingDecisionNudge(props: {
             {label}
           </Text>
           <Text color="content.secondary" fontSize="label.md">
-            You can ask a question without choosing a source yet.
+            {t("primitives-pending-description")}
           </Text>
         </Box>
         <HStack gap={2} flexWrap="wrap">
@@ -337,7 +357,7 @@ export function PendingDecisionNudge(props: {
             fontWeight="semibold"
             onClick={props.onAskQuestion}
           >
-            Ask a question
+            {t("primitives-pending-ask")}
           </chakra.button>
           <chakra.button
             type="button"
@@ -353,7 +373,7 @@ export function PendingDecisionNudge(props: {
             fontWeight="semibold"
             onClick={props.onJumpToReview}
           >
-            Jump to review
+            {t("primitives-pending-jump")}
           </chakra.button>
         </HStack>
       </Flex>
@@ -386,6 +406,8 @@ export function RunSummary(props: {
   counts: DraftCounts;
   pendingDecisionCount: number;
 }) {
+  const { t } = useStationaryEnergyAgenticTranslation();
+
   return (
     <Box
       w="full"
@@ -397,19 +419,27 @@ export function RunSummary(props: {
       borderRadius="rounded-xl"
       p={4}
     >
-      <Text fontFamily="heading" fontSize="body.md" fontWeight="semibold" mb={3}>
-        Draft snapshot
+      <Text
+        fontFamily="heading"
+        fontSize="body.md"
+        fontWeight="semibold"
+        mb={3}
+      >
+        {t("primitives-summary-title")}
       </Text>
       <Flex gap={2} flexWrap="wrap">
         <SummaryTile
-          label="Drafted"
+          label={t("primitives-summary-drafted")}
           value={String(props.counts.ready + props.counts.accepted)}
         />
         <SummaryTile
-          label="Needs review"
+          label={t("primitives-summary-needs-review")}
           value={String(props.pendingDecisionCount)}
         />
-        <SummaryTile label="Gaps" value={String(props.counts.gap)} />
+        <SummaryTile
+          label={t("primitives-summary-gaps")}
+          value={String(props.counts.gap)}
+        />
       </Flex>
     </Box>
   );

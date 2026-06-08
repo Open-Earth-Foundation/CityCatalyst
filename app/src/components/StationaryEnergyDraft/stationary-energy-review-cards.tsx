@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable i18next/no-literal-string */
 
 import {
   Badge,
@@ -10,8 +9,11 @@ import {
   VStack,
   chakra,
 } from "@chakra-ui/react";
+import type { TFunction } from "i18next";
 import { MdCheckCircle, MdErrorOutline } from "react-icons/md";
+import { useParams } from "next/navigation";
 
+import { useTranslation } from "@/i18n/client";
 import { CHAT_SURFACE_MAX_W } from "@/components/StationaryEnergyDraft/stationary-energy-chat-constants";
 import type { DecisionReviewContext } from "@/components/StationaryEnergyDraft/flow";
 import type {
@@ -19,6 +21,13 @@ import type {
   DraftDecisionState,
   DraftProposal,
 } from "@/components/StationaryEnergyDraft/types";
+import { getParamValueRequired } from "@/util/helpers";
+
+function useStationaryEnergyAgenticTranslation() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+  return useTranslation(lng, "stationary-energy-agentic");
+}
 
 function selectedDecisionOption(
   context: DecisionReviewContext,
@@ -52,18 +61,19 @@ function selectedDecisionOption(
 }
 
 function resolvedDecisionBadgeLabel(
+  t: TFunction,
   action: DraftDecisionAction | undefined,
 ): string {
   if (action === "leave_draft") {
-    return "Left empty";
+    return t("review-badge-left-empty");
   }
   if (action === "override_source") {
-    return "Alternative source";
+    return t("review-badge-alternative-source");
   }
   if (action === "override_manual") {
-    return "Manual";
+    return t("review-badge-manual");
   }
-  return "Accepted";
+  return t("review-badge-accepted");
 }
 
 function DecisionReviewBaseCard(props: {
@@ -82,14 +92,16 @@ function DecisionReviewBaseCard(props: {
   ) => void;
   onAskAboutProposal: (label: string) => void;
 }) {
+  const { t } = useStationaryEnergyAgenticTranslation();
+
   return (
     <Box
       w="full"
       maxW={CHAT_SURFACE_MAX_W}
       alignSelf="flex-start"
-      data-message-kind={props.title}
+      data-message-kind="decision-review"
       data-proposal-id={props.proposal.proposal_id}
-      aria-label="Stationary Energy decision review"
+      aria-label={t("review-card-aria-label")}
       bg="sentiment.positiveOverlay"
       borderColor="sentiment.positiveDefault"
       borderWidth="1px"
@@ -126,7 +138,7 @@ function DecisionReviewBaseCard(props: {
             borderRadius="full"
             fontSize="label.sm"
           >
-            Staged
+            {t("review-card-staged")}
           </Badge>
         ) : null}
       </HStack>
@@ -186,7 +198,7 @@ function DecisionReviewBaseCard(props: {
                       fontWeight="semibold"
                       whiteSpace="nowrap"
                     >
-                      Recommended
+                      {t("review-card-recommended")}
                     </Text>
                   ) : null}
                 </HStack>
@@ -201,7 +213,7 @@ function DecisionReviewBaseCard(props: {
                   fontWeight="semibold"
                   whiteSpace="nowrap"
                 >
-                  {selected ? "Selected" : ""}
+                  {selected ? t("review-card-selected") : ""}
                 </Text>
               ) : (
                 <Text
@@ -226,8 +238,7 @@ function DecisionReviewBaseCard(props: {
         flexDir={{ base: "column", sm: "row" }}
       >
         <Text color="content.tertiary" fontSize="label.md">
-          Pick one here, or ask me a question first and come back to this
-          review.
+          {t("review-card-helper")}
         </Text>
         <chakra.button
           type="button"
@@ -244,7 +255,7 @@ function DecisionReviewBaseCard(props: {
           fontWeight="semibold"
           onClick={() => props.onAskAboutProposal(props.reviewLabel)}
         >
-          Ask about this row
+          {t("review-card-ask")}
         </chakra.button>
       </Flex>
     </Box>
@@ -256,15 +267,16 @@ export function ResolvedDecisionSummaryCard(props: {
   decision?: DraftDecisionState;
   onEditDecision: (proposalId: string) => void;
 }) {
+  const { t } = useStationaryEnergyAgenticTranslation();
   const selectedOption = selectedDecisionOption(props.context, props.decision);
-  const badgeLabel = resolvedDecisionBadgeLabel(props.decision?.action);
+  const badgeLabel = resolvedDecisionBadgeLabel(t, props.decision?.action);
   const summaryLabel =
     selectedOption?.action === "leave_draft"
-      ? "Leave empty"
-      : (selectedOption?.label ?? "Choice staged");
+      ? t("review-summary-leave-empty")
+      : (selectedOption?.label ?? t("review-summary-choice-staged"));
   const summaryMeta =
     selectedOption?.action === "leave_draft"
-      ? "Set a notation key later"
+      ? t("review-summary-set-notation")
       : [selectedOption?.meta, selectedOption?.value]
           .filter(Boolean)
           .join(" | ");
@@ -294,7 +306,7 @@ export function ResolvedDecisionSummaryCard(props: {
           >
             <MdCheckCircle />
             <Text textTransform="uppercase" letterSpacing="0">
-              Decision staged
+              {t("review-summary-title")}
             </Text>
           </HStack>
           <Text
@@ -337,7 +349,7 @@ export function ResolvedDecisionSummaryCard(props: {
             fontWeight="semibold"
             onClick={() => props.onEditDecision(props.context.proposal_id)}
           >
-            Change
+            {t("review-summary-change")}
           </chakra.button>
         </VStack>
       </Flex>
@@ -357,10 +369,14 @@ export function SingleSourceProposalCard(props: {
   ) => void;
   onAskAboutProposal: (label: string) => void;
 }) {
+  const { t } = useStationaryEnergyAgenticTranslation();
+
   return (
     <DecisionReviewBaseCard
-      title="Single source review"
-      description={`${props.context.label} has one connected source proposal to confirm.`}
+      title={t("review-single-source-title")}
+      description={t("review-single-source-description", {
+        label: props.context.label,
+      })}
       reviewLabel={props.context.label}
       proposal={props.context.proposal}
       options={[
@@ -387,6 +403,7 @@ export function MultiSourceProposalCard(props: {
   ) => void;
   onAskAboutProposal: (label: string) => void;
 }) {
+  const { t } = useStationaryEnergyAgenticTranslation();
   const options = [
     ...(props.context.recommendedOption
       ? [props.context.recommendedOption]
@@ -397,8 +414,10 @@ export function MultiSourceProposalCard(props: {
 
   return (
     <DecisionReviewBaseCard
-      title="Multi-source review"
-      description={`${props.context.label} has multiple connected source proposals to compare. Which should I use?`}
+      title={t("review-multi-source-title")}
+      description={t("review-multi-source-description", {
+        label: props.context.label,
+      })}
       reviewLabel={props.context.label}
       proposal={props.context.proposal}
       options={options}

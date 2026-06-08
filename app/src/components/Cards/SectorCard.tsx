@@ -11,13 +11,17 @@ import {
   clamp,
   convertSectorReferenceNumberToNumber,
   formatPercent,
+  getParamValueRequired,
 } from "@/util/helpers";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
 // import { AddIcon } from "@chakra-ui/icons";
 import { InventoryType, InventoryTypeEnum, ISector } from "@/util/constants";
 import { BsPlus } from "react-icons/bs";
-import { usePathname } from "next/navigation";
+import { MdAutoAwesome } from "react-icons/md";
+import { useParams, usePathname } from "next/navigation";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
+import { useTranslation } from "@/i18n/client";
 
 import {
   AccordionItem,
@@ -37,9 +41,16 @@ export function SectorCard({
   t: TFunction;
   inventory: InventoryResponse;
 }) {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
   const pathname = usePathname();
+  const { t: tAgentic } = useTranslation(lng, "stationary-energy-agentic");
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const toggleAccordion = () => setAccordionOpen(!isAccordionOpen);
+  const showStationaryEnergyAgenticCta =
+    sector.name === "stationary-energy" &&
+    hasFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION) &&
+    hasFeatureFlag(FeatureFlags.STATIONARY_ENERGY_AGENTIC);
 
   let totalProgress = 0,
     thirdPartyProgress = 0,
@@ -53,7 +64,12 @@ export function SectorCard({
     uploadedProgress = clamp(sectorProgress.uploaded / sectorProgress.total);
     reasonNEProgress = clamp(sectorProgress.reasonNE / sectorProgress.total);
     reasonNOProgress = clamp(sectorProgress.reasonNO / sectorProgress.total);
-    totalProgress = clamp(thirdPartyProgress + uploadedProgress + reasonNEProgress + reasonNOProgress);
+    totalProgress = clamp(
+      thirdPartyProgress +
+        uploadedProgress +
+        reasonNEProgress +
+        reasonNOProgress,
+    );
   }
   /*** Data ***/
   const {
@@ -120,7 +136,7 @@ export function SectorCard({
                 {(sectorScopes || [])?.join(", ") || t("none")}
               </Heading>
             </Box>
-            <Box>
+            <Box display="flex" flexDirection="column" gap={3}>
               <NextLink href={`${pathname}/data/${sector.number}`}>
                 <Button
                   variant="outline"
@@ -137,6 +153,32 @@ export function SectorCard({
                   </Text>
                 </Button>
               </NextLink>
+              {showStationaryEnergyAgenticCta && (
+                <NextLink href={`${pathname}/draft/stationary-energy`}>
+                  <Button
+                    data-testid="stationary-energy-agentic-cta"
+                    variant="ghost"
+                    color="content.link"
+                    justifyContent="flex-start"
+                    w="256px"
+                    h="auto"
+                    minH="48px"
+                    py="10px"
+                    gap={2}
+                    ml={2}
+                  >
+                    <MdAutoAwesome />
+                    <Box textAlign="left">
+                      <Text fontFamily="heading" fontSize="button.md">
+                        {tAgentic("sector-card-let-agent-draft")}
+                      </Text>
+                      <Text color="content.tertiary" fontSize="label.sm">
+                        {tAgentic("sector-card-review-before-saving")}
+                      </Text>
+                    </Box>
+                  </Button>
+                </NextLink>
+              )}
             </Box>
           </Box>
           <Box
@@ -147,8 +189,18 @@ export function SectorCard({
             gap={6}
           >
             <SegmentedProgress
-              values={[thirdPartyProgress, uploadedProgress, reasonNEProgress, reasonNOProgress]}
-              colors={["interactive.connected", "interactive.tertiary", "interactive.control", "striped"]}
+              values={[
+                thirdPartyProgress,
+                uploadedProgress,
+                reasonNEProgress,
+                reasonNOProgress,
+              ]}
+              colors={[
+                "interactive.connected",
+                "interactive.tertiary",
+                "interactive.control",
+                "striped",
+              ]}
               height={2}
             />
             <Text

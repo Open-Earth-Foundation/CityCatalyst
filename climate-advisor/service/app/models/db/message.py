@@ -9,8 +9,8 @@ from sqlalchemy import DateTime, Enum, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 
-from ...db import Base
-from .types import JSONBCompat
+from app.db import Base
+from app.models.db.types import JSONBCompat
 
 
 class MessageRole(str, PyEnum):
@@ -41,4 +41,4 @@ class Message(Base):
     thread: Mapped["Thread"] = relationship("Thread", back_populates="messages")
 
 
-from .thread import Thread  # noqa: E402
+from app.models.db.thread import Thread  # noqa: E402

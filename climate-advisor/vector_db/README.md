@@ -166,8 +166,8 @@ kubectl create -f climate-advisor/k8s/climate-advisor-migrate.yml
 ### Basic PDF Processing
 
 ```python
-from utils.text_processing import DocumentProcessor
-from services.embedding_service import EmbeddingService
+from vector_db.utils.text_processing import DocumentProcessor
+from vector_db.services.embedding_service import EmbeddingService
 
 # Process a PDF file
 processor = DocumentProcessor(chunk_size=2000, chunk_overlap=200)
@@ -182,7 +182,7 @@ embedding_results = await embedding_service.generate_embeddings_batch(text_chunk
 ### Database Operations
 
 ```python
-from models.document import Document, DocumentChunk, DocumentEmbedding
+from vector_db.models.document import Document, DocumentChunk, DocumentEmbedding
 from sqlalchemy.ext.asyncio import AsyncSession
 
 async def store_document(session: AsyncSession, doc_data, embedding_results):

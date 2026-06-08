@@ -6,7 +6,7 @@ from uuid import uuid4, UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..models.db.message import Message, MessageRole
+from app.models.db.message import Message, MessageRole
 
 
 class MessageService:

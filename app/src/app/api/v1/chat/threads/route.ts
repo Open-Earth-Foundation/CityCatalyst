@@ -38,149 +38,59 @@
  *         description: Failed to create chat thread
  */
 
+import createHttpError from "http-errors";
 import { z } from "zod";
-import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
+import { createClimateAdvisorThread } from "@/backend/chat/climate-advisor";
 import { logger } from "@/services/logger";
-
-interface TokenResponse {
-  access_token: string;
-  expires_in: number;
-  token_type: string;
-}
+import { apiHandler } from "@/util/api";
 
 const createThreadRequest = z.object({
   title: z.string().optional(),
-  inventory_id: z.string().optional(),
+  inventory_id: z.string().uuid().optional(),
 });
 
-async function issueCaUserToken(params: {
-  user_id: string;
-  inventory_id?: string;
-}): Promise<TokenResponse> {
-  const response = await fetch(
-    `${process.env.HOST}/api/v1/internal/ca/user-token`,
-    {
-      method: "POST",
-      headers: {
-        "X-CA-Service-Key": process.env.CC_SERVICE_API_KEY!,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(params),
-    },
-  );
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Token issuance failed: ${response.status} - ${errorText}`);
+export const POST = apiHandler(async (req, { session }) => {
+  if (!session?.user?.id) {
+    throw new createHttpError.Unauthorized("User authentication required");
   }
 
-  return response.json();
-}
+  const requestBody = await req.json().catch(() => ({}));
+  const { title, inventory_id } = createThreadRequest.parse(requestBody);
 
-export const POST = apiHandler(async (req, { session }) => {
-  try {
-    // Session validation (seamless for user)
-    if (!session?.user?.id) {
-      throw new Error("User authentication required");
-    }
-
-    const requestBody = await req.json().catch(() => ({}));
-    const { title, inventory_id } = createThreadRequest.parse(requestBody);
-
-    logger.info(
-      {
-        user_id: session.user.id,
-        inventory_id,
-        has_title: !!title,
-      },
-      "Creating CA chat thread",
-    );
-
-    // Auto-issue token for CA (seamless)
-    const tokenData = await issueCaUserToken({
+  logger.info(
+    {
       user_id: session.user.id,
       inventory_id,
-    });
+      has_title: !!title,
+    },
+    "Creating CA chat thread",
+  );
 
-    logger.debug(
-      {
-        user_id: session.user.id,
-        token_expires_in: tokenData.expires_in,
-      },
-      "CA user token issued successfully",
-    );
+  const caData = await createClimateAdvisorThread({
+    origin: req.nextUrl.origin,
+    userId: session.user.id,
+    inventoryId: inventory_id,
+  });
 
-    // Create CA thread with token and context
-    logger.info(
-      {
-        user_id: session.user.id,
-        inventory_id,
-        ca_base_url: process.env.CA_BASE_URL,
-      },
-      "Creating CA chat thread via CA service",
-    );
-    const caResponse = await fetch(`${process.env.CA_BASE_URL}/v1/threads`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user_id: session.user.id,
-        inventory_id,
-        context: {
-          access_token: tokenData.access_token,
-          expires_in: tokenData.expires_in,
-          token_type: tokenData.token_type,
-          issued_at: new Date().toISOString(),
-        },
-      }),
-    });
+  logger.debug(
+    {
+      user_id: session.user.id,
+      thread_id: caData.thread_id,
+    },
+    "CA chat thread created via shared proxy",
+  );
 
-    if (!caResponse.ok) {
-      const errorText = await caResponse.text();
-      logger.error(
-        {
-          status: caResponse.status,
-          error: errorText,
-          user_id: session.user.id,
-        },
-        "CA thread creation failed",
-      );
-      throw new Error(`CA service error: ${caResponse.status} - ${errorText}`);
-    }
+  logger.info(
+    {
+      user_id: session.user.id,
+      thread_id: caData.thread_id,
+      inventory_id,
+    },
+    "CA chat thread created successfully",
+  );
 
-    const caData = await caResponse.json();
-
-    logger.info(
-      {
-        user_id: session.user.id,
-        thread_id: caData.thread_id,
-        inventory_id,
-      },
-      "CA chat thread created successfully",
-    );
-
-    return NextResponse.json({
-      threadId: caData.thread_id,
-    });
-  } catch (error: any) {
-    logger.error(
-      {
-        error: error.message,
-        stack: error.stack,
-        user_id: session?.user?.id,
-      },
-      "Failed to create chat thread",
-    );
-
-    // Bubble up errors to chat interface
-    return NextResponse.json(
-      {
-        error: error.message || "Failed to create chat thread",
-        details: "Please try again or contact support if the issue persists",
-      },
-      { status: 500 },
-    );
-  }
+  return NextResponse.json({
+    threadId: caData.thread_id,
+  });
 });

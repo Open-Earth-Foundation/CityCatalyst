@@ -221,6 +221,42 @@ export function formatDraftEmissionsLabel(
   return [text, displayUnit].filter(Boolean).join(" ");
 }
 
+/**
+ * Sum total CO2e emissions from a draft data row. Emissions live nested under
+ * `row.gases[].emissions_value_100yr` (falling back to `emissions_value`), not at
+ * the row's top level, so a flat lookup always misses them. Values are in kg.
+ */
+export function totalEmissionsFromGases(row: unknown): number | null {
+  if (!row || typeof row !== "object") {
+    return null;
+  }
+  const gases = (row as { gases?: unknown }).gases;
+  if (!Array.isArray(gases)) {
+    return null;
+  }
+  let total = 0;
+  let found = false;
+  for (const gas of gases) {
+    if (!gas || typeof gas !== "object") {
+      continue;
+    }
+    const raw =
+      (gas as Record<string, unknown>)["emissions_value_100yr"] ??
+      (gas as Record<string, unknown>)["emissions_value"];
+    const num =
+      typeof raw === "number"
+        ? raw
+        : raw != null && raw !== "" && !Number.isNaN(Number(raw))
+          ? Number(raw)
+          : null;
+    if (num != null) {
+      total += num;
+      found = true;
+    }
+  }
+  return found ? total : null;
+}
+
 export function sourceGeographyLabel(
   geographyMatch: string | null | undefined,
 ): string | null {
@@ -260,18 +296,15 @@ export function proposedValueLabel(proposal: DraftProposal): string {
     return "No source-backed draft value";
   }
 
-  const value = proposal.proposed_value["value"];
-  const unit = proposal.proposed_value["unit"];
-  const emissionsValue = proposal.proposed_value["emissions_value"];
-  const emissionsUnit = proposal.proposed_value["emissions_unit"];
+  // proposed_value is { row: { gases: [...], activity_units, ... }, datasource_id }.
+  const proposedValue = proposal.proposed_value as Record<string, unknown>;
+  const row = (proposedValue["row"] ?? proposedValue) as Record<string, unknown>;
   const emissionsLabel = formatDraftEmissionsLabel(
-    emissionsValue,
-    emissionsUnit,
+    totalEmissionsFromGases(row),
+    "kgco2e",
   );
 
-  return [value, unit, emissionsLabel ? `(${emissionsLabel})` : null]
-    .filter(Boolean)
-    .join(" ");
+  return emissionsLabel ?? "No source-backed draft value";
 }
 
 export function sourceLabel(candidate: SourceCandidate | undefined): string {

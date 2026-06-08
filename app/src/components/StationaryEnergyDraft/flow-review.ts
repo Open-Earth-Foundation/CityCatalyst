@@ -13,6 +13,7 @@ import type {
 import {
   compatibleSources,
   formatDraftEmissionsLabel,
+  totalEmissionsFromGases,
   findRecommendedSource,
   initialDecisionForProposal,
   proposalLabel,
@@ -425,25 +426,14 @@ function sourceCandidateValueLabel(
   t?: TFunction,
 ): string {
   const rows = candidate.normalized_rows ?? [];
-  const firstRow = rows[0] as Record<string, unknown> | undefined;
-  if (!firstRow) {
-    return translateReviewText(t, "review-option-alternative-source");
-  }
-  const value =
-    firstRow.emissions_value ??
-    firstRow.co2eq ??
-    firstRow.value ??
-    firstRow.activity_value ??
-    firstRow["activity-value"];
-  const unit =
-    firstRow.emissions_unit ??
-    firstRow.unit ??
-    firstRow.activity_unit ??
-    firstRow["activity-unit"];
+  const firstRow = rows[0];
+  // Emissions are nested under row.gases[].emissions_value(_100yr), in kg.
+  const emissionsLabel = formatDraftEmissionsLabel(
+    totalEmissionsFromGases(firstRow),
+    "kgco2e",
+  );
   return (
-    formatDraftEmissionsLabel(value, unit) ??
-    ([value, unit].filter(Boolean).join(" ") ||
-      translateReviewText(t, "review-option-alternative-source"))
+    emissionsLabel ?? translateReviewText(t, "review-option-alternative-source")
   );
 }
 

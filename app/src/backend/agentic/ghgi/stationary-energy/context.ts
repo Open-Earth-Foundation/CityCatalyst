@@ -3,6 +3,7 @@ import { db } from "@/models";
 import { Inventory } from "@/models/Inventory";
 import inventoryStructure from "@/data/inventory-structure.json";
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
+import { findClosestYearToInventory, type PopulationEntry } from "@/util/helpers";
 import { STATIONARY_ENERGY } from "@/util/methodologies/stationary-energy";
 import { LANGUAGES } from "@/util/types";
 
@@ -84,7 +85,17 @@ type CurrentValueRecord = {
   } | null;
   activityValues?: Array<{
     id: string;
+    datasourceId?: string | null;
     activityData?: Record<string, unknown> | null;
+    dataSource?: {
+      datasourceId?: string | null;
+      datasourceName?: string | null;
+    } | null;
+    gasValues?: Array<{
+      id: string;
+      gas?: string | null;
+      gasAmount?: bigint | null;
+    }>;
   }>;
 };
 
@@ -117,7 +128,7 @@ export async function buildStationaryEnergyContext(params: {
       region: city.region,
       region_locode: city.region ?? null,
       area: city.area,
-      population: await latestPopulation(city.cityId),
+      population: await populationForInventoryYear(city.cityId, inventory.year),
     },
     inventory: {
       inventory_id: inventory.inventoryId,
@@ -141,19 +152,37 @@ export async function buildStationaryEnergyContext(params: {
   };
 }
 
-async function latestPopulation(cityId: string): Promise<number | null> {
+/**
+ * Pick the population record closest to the inventory year and fall back to the latest.
+ */
+async function populationForInventoryYear(
+  cityId: string,
+  inventoryYear: number | null | undefined,
+): Promise<number | null> {
   const populations = await db.models.Population.findAll({
     where: { cityId },
     order: [["year", "DESC"]],
   });
 
+  const entries: PopulationEntry[] = [];
   for (const row of populations) {
-    if (row.population != null) {
-      return Number(row.population);
+    if (row.population == null || row.year == null) {
+      continue;
+    }
+    entries.push({
+      year: row.year,
+      population: Number(row.population),
+    });
+  }
+
+  if (inventoryYear != null) {
+    const closest = findClosestYearToInventory(entries, inventoryYear);
+    if (closest) {
+      return closest.population;
     }
   }
 
-  return null;
+  return entries[0]?.population ?? null;
 }
 
 function buildTaxonomy(): TaxonomyRow[] {
@@ -225,7 +254,15 @@ async function buildCurrentValues(
       },
       { model: db.models.SubSector, as: "subSector" },
       { model: db.models.Sector, as: "sector" },
-      { model: db.models.ActivityValue, as: "activityValues", required: false },
+      {
+        model: db.models.ActivityValue,
+        as: "activityValues",
+        required: false,
+        include: [
+          { model: db.models.GasValue, as: "gasValues", required: false },
+          { model: db.models.DataSource, as: "dataSource", required: false },
+        ],
+      },
     ],
   })) as CurrentValueRecord[];
 
@@ -247,10 +284,17 @@ async function buildCurrentValues(
       activityData["activity-total-fuel-consumption-unit"],
       activityData["activity-total-energy-consumption-unit"],
     );
+    const gasValues = (activityValue?.gasValues ?? []).map((gasValue) => ({
+      gas_value_id: gasValue.id,
+      gas: gasValue.gas ?? null,
+      gas_amount: bigintToString(gasValue.gasAmount),
+    }));
+    const primaryGasValue = gasValues[0] ?? null;
 
     return {
       inventory_value_id: value.id,
       activity_value_id: activityValue?.id ?? null,
+      gas_value_id: primaryGasValue?.gas_value_id ?? null,
       datasource_id: value.datasourceId,
       sector_id:
         value.sector?.referenceNumber ?? value.sectorId ?? stationarySector.referenceNumber,
@@ -259,10 +303,17 @@ async function buildCurrentValues(
       subcategory_id:
         value.subCategory?.referenceNumber ?? value.subCategoryId ?? null,
       scope_id: value.subCategory?.scope?.scopeId ?? null,
+      gas: primaryGasValue?.gas ?? null,
       value: activityValueAmount,
       unit: activityUnit ?? "tCO2e",
       emissions_value: bigintToString(value.co2eq),
       emissions_unit: "tCO2e",
+      activity_data: activityData,
+      activity_data_source: {
+        datasource_id: activityValue?.dataSource?.datasourceId ?? null,
+        name: activityValue?.dataSource?.datasourceName ?? null,
+      },
+      gas_values: gasValues,
       data_source: {
         name: value.dataSource?.datasourceName ?? null,
       },

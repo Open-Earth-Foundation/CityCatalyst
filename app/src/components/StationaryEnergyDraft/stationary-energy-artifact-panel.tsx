@@ -6,7 +6,6 @@ import {
   Flex,
   Heading,
   HStack,
-  Spinner,
   Text,
   VStack,
   chakra,
@@ -16,6 +15,7 @@ import { useParams } from "next/navigation";
 import { MdRefresh, MdSave } from "react-icons/md";
 
 import { useTranslation } from "@/i18n/client";
+import ProgressLoader from "@/components/ProgressLoader";
 import { FLOW_BUTTON_RADIUS } from "@/components/StationaryEnergyDraft/stationary-energy-chat-constants";
 import type {
   ArtifactRow,
@@ -23,32 +23,41 @@ import type {
   DraftStage,
 } from "@/components/StationaryEnergyDraft/flow";
 import type { DraftListItem } from "@/components/StationaryEnergyDraft/types";
-import type { LoadingAction } from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
+import type {
+  StationaryEnergyChatArtifactControllerActions,
+  StationaryEnergyChatArtifactControllerState,
+} from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
 import { Button } from "@/components/ui/button";
 import { getParamValueRequired } from "@/util/helpers";
 
 export type ArtifactPanelProps = {
+  actions: Pick<
+    StationaryEnergyChatArtifactControllerActions,
+    | "refreshActiveDraft"
+    | "saveDraft"
+    | "saveToInventory"
+    | "selectDraft"
+    | "startDraftFromArtifact"
+  >;
   cityName: string;
   inventoryYear: string | number;
-  stage: DraftStage;
-  rows: ArtifactRow[];
-  counts: DraftCounts;
-  activeProposalId: string | null;
-  loadingAction: LoadingAction;
-  draftStatus: string;
-  hasSourceBackedProposals: boolean;
-  hasDraft: boolean;
-  draftRuns: DraftListItem[];
-  draftListLoading: boolean;
-  activeDraftRunId: string | null;
-  canPersistDraftReview: boolean;
-  canSaveToInventory: boolean;
-  unresolvedCount: number;
-  onStartDraft: () => void;
-  onRefresh: () => void;
-  onSelectDraft: (draftRunId: string) => void;
-  onSaveDraft: () => void;
-  onSaveToInventory: () => void;
+  state: Pick<
+    StationaryEnergyChatArtifactControllerState,
+    | "activeDraftRunId"
+    | "activeProposalId"
+    | "canPersistDraftReview"
+    | "canSaveToInventory"
+    | "counts"
+    | "draftListLoading"
+    | "draftRuns"
+    | "draftStatus"
+    | "hasDraft"
+    | "hasSourceBackedProposals"
+    | "loadingAction"
+    | "rows"
+    | "stage"
+    | "unresolvedCount"
+  >;
 };
 
 function draftRunStatusLabel(t: TFunction, status: string): string {
@@ -161,7 +170,7 @@ function overviewTitle(t: TFunction, stage: DraftStage): string {
 
 function RowMarker({ state }: { state: ArtifactRow["state"] }) {
   if (state === "active") {
-    return <Spinner size="sm" color="brand.primary" />;
+    return <ProgressLoader boxHeight="12px" boxWidth="12px" size="sm" />;
   }
   const color =
     state === "done"
@@ -237,18 +246,23 @@ function ArtifactRowView(props: {
   );
 }
 
-export function ArtifactPanel(props: ArtifactPanelProps) {
+export function ArtifactPanel({
+  actions,
+  cityName,
+  inventoryYear,
+  state,
+}: ArtifactPanelProps) {
   const params = useParams();
   const lng = getParamValueRequired(params.lng);
   const { t } = useTranslation(lng, "stationary-energy-agentic");
-  const draftedCount = props.rows.filter((row) =>
+  const draftedCount = state.rows.filter((row) =>
     ["done", "manual"].includes(row.state),
   ).length;
   const progress =
-    props.rows.length > 0
-      ? Math.round((draftedCount / props.rows.length) * 100)
+    state.rows.length > 0
+      ? Math.round((draftedCount / state.rows.length) * 100)
       : 0;
-  const chip = stageChip(t, props.stage, props.draftStatus);
+  const chip = stageChip(t, state.stage, state.draftStatus);
 
   return (
     <Box
@@ -296,7 +310,7 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
                 {t("artifact-header-title")}
               </Heading>
               <Text color="content.tertiary" fontSize="label.md">
-                {props.cityName} / {props.inventoryYear} /{" "}
+                {cityName} / {inventoryYear} /{" "}
                 {t("artifact-header-framework")}
               </Text>
             </Box>
@@ -306,7 +320,7 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
             gap={2}
             w={{ base: "full", md: "auto" }}
           >
-            {props.draftRuns.length > 0 ? (
+            {state.draftRuns.length > 0 ? (
               <Box minW={{ base: "full", md: "320px" }}>
                 <Flex
                   align={{ base: "flex-start", sm: "center" }}
@@ -325,20 +339,20 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
                   <Button
                     variant="outline"
                     borderRadius={FLOW_BUTTON_RADIUS}
-                    loading={props.loadingAction === "start"}
-                    onClick={props.onStartDraft}
+                    loading={state.loadingAction === "start"}
+                    onClick={actions.startDraftFromArtifact}
                   >
                     {t("artifact-new-draft")}
                   </Button>
                 </Flex>
                 <chakra.select
-                  value={props.activeDraftRunId ?? ""}
+                  value={state.activeDraftRunId ?? ""}
                   onChange={(event) => {
                     if (event.target.value) {
-                      props.onSelectDraft(event.target.value);
+                      actions.selectDraft(event.target.value);
                     }
                   }}
-                  disabled={props.draftListLoading}
+                  disabled={state.draftListLoading}
                   w="full"
                   minH="40px"
                   px={3}
@@ -348,10 +362,10 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
                   bg="base.light"
                   color="content.primary"
                 >
-                  {!props.activeDraftRunId ? (
+                  {!state.activeDraftRunId ? (
                     <option value="">{t("artifact-select-saved-draft")}</option>
                   ) : null}
-                  {props.draftRuns.map((draftRun) => (
+                  {state.draftRuns.map((draftRun) => (
                     <option
                       key={draftRun.draft_run_id}
                       value={draftRun.draft_run_id}
@@ -385,12 +399,12 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
       >
         <Flex justify="space-between" align="center" gap={4}>
           <Text fontFamily="heading" fontSize="body.md" fontWeight="semibold">
-            {overviewTitle(t, props.stage)}
+            {overviewTitle(t, state.stage)}
           </Text>
           <Text color="content.secondary" fontSize="label.md">
             {t("artifact-progress-drafted", {
               drafted: draftedCount,
-              total: props.rows.length,
+              total: state.rows.length,
             })}
           </Text>
         </Flex>
@@ -423,13 +437,13 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
           overflowY={{ base: "visible", xl: "auto" }}
           data-testid="artifact-rows-scroll-region"
         >
-          {props.rows.map((row) => (
+          {state.rows.map((row) => (
             <ArtifactRowView
               key={row.id}
               row={row}
-              active={row.id === props.activeProposalId}
+              active={row.id === state.activeProposalId}
               drafting={
-                props.stage === "drafting" && props.loadingAction === "start"
+                state.stage === "drafting" && state.loadingAction === "start"
               }
               t={t}
             />
@@ -451,20 +465,20 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
         py={4}
       >
         <Text color="content.secondary" fontSize="body.md">
-          {props.stage === "review"
-            ? props.canSaveToInventory
+          {state.stage === "review"
+            ? state.canSaveToInventory
               ? t("artifact-footer-ready", {
-                  ready: props.counts.ready + props.counts.accepted,
-                  gaps: props.counts.gap,
+                  ready: state.counts.ready + state.counts.accepted,
+                  gaps: state.counts.gap,
                 })
-              : props.canPersistDraftReview
+              : state.canPersistDraftReview
                 ? t("artifact-footer-save-draft-ready")
-                : props.hasSourceBackedProposals
+                : state.hasSourceBackedProposals
                   ? t("artifact-footer-no-staged")
                   : t("artifact-footer-no-ready")
-            : props.unresolvedCount > 0
+            : state.unresolvedCount > 0
               ? t("artifact-footer-decisions-needed", {
-                  count: props.unresolvedCount,
+                  count: state.unresolvedCount,
                 })
               : t("artifact-footer-nothing-written")}
         </Text>
@@ -472,42 +486,42 @@ export function ArtifactPanel(props: ArtifactPanelProps) {
           <Button
             variant="outline"
             borderRadius={FLOW_BUTTON_RADIUS}
-            disabled={!props.hasDraft}
-            loading={props.loadingAction === "refresh"}
-            onClick={props.onRefresh}
+            disabled={!state.hasDraft}
+            loading={state.loadingAction === "refresh"}
+            onClick={actions.refreshActiveDraft}
           >
             <MdRefresh />
             {t("artifact-refresh")}
           </Button>
-          {props.stage === "start" ? (
+          {state.stage === "start" ? (
             <Button
               data-testid="start-draft-button"
               borderRadius={FLOW_BUTTON_RADIUS}
-              loading={props.loadingAction === "start"}
-              onClick={props.onStartDraft}
+              loading={state.loadingAction === "start"}
+              onClick={actions.startDraftFromArtifact}
             >
               {t("artifact-start-draft")}
             </Button>
           ) : null}
-          {props.stage !== "start" && props.canPersistDraftReview ? (
+          {state.stage !== "start" && state.canPersistDraftReview ? (
             <Button
               data-testid="save-review-draft-button"
               variant="outline"
               borderRadius={FLOW_BUTTON_RADIUS}
-              loading={props.loadingAction === "save_draft"}
-              onClick={props.onSaveDraft}
+              loading={state.loadingAction === "save_draft"}
+              onClick={actions.saveDraft}
             >
               <MdSave />
               {t("chat-quick-reply-save-draft")}
             </Button>
           ) : null}
-          {props.stage !== "start" && props.canSaveToInventory ? (
+          {state.stage !== "start" && state.canSaveToInventory ? (
             <Button
               data-testid="save-inventory-button"
               borderRadius={FLOW_BUTTON_RADIUS}
-              disabled={!props.canSaveToInventory}
-              loading={props.loadingAction === "save_inventory"}
-              onClick={props.onSaveToInventory}
+              disabled={!state.canSaveToInventory}
+              loading={state.loadingAction === "save_inventory"}
+              onClick={actions.saveToInventory}
             >
               <MdSave />
               {t("chat-quick-reply-save-to-inventory")}

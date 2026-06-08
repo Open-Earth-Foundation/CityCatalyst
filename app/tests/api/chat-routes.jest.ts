@@ -17,6 +17,7 @@ import { db } from "@/models";
 import { Roles } from "@/util/types";
 
 const testUserID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
+const testInventoryId = "22222222-2222-4222-8222-222222222222";
 
 /**
  * Create a route request with an optional mocked JSON body.
@@ -106,7 +107,7 @@ describe("Chat routes", () => {
     const response = await postChatThread(
       makeRequest("http://localhost:3000/api/v1/chat/threads", "POST", {
         title: "Stationary energy",
-        inventory_id: "inventory-1",
+        inventory_id: testInventoryId,
       }),
       { params: Promise.resolve({}) },
     );
@@ -121,7 +122,7 @@ describe("Chat routes", () => {
         method: "POST",
         body: JSON.stringify({
           user_id: testUserID,
-          inventory_id: "inventory-1",
+          inventory_id: testInventoryId,
         }),
       }),
     );
@@ -133,7 +134,7 @@ describe("Chat routes", () => {
     expect(createThreadRequest?.method).toBe("POST");
     expect(createThreadBody).toEqual({
       user_id: testUserID,
-      inventory_id: "inventory-1",
+      inventory_id: testInventoryId,
       context: expect.objectContaining({
         access_token: "token-123",
         expires_in: 3600,
@@ -163,7 +164,7 @@ describe("Chat routes", () => {
       makeRequest("http://localhost:3000/api/v1/chat/messages", "POST", {
         threadId: "thread-1",
         content: "Hello",
-        inventory_id: "inventory-1",
+        inventory_id: testInventoryId,
         context: {
           stationary_energy_draft_run_id: "draft-1",
         },
@@ -187,7 +188,7 @@ describe("Chat routes", () => {
           thread_id: "thread-1",
           user_id: testUserID,
           content: "Hello",
-          inventory_id: "inventory-1",
+          inventory_id: testInventoryId,
           context: {
             stationary_energy_draft_run_id: "draft-1",
           },

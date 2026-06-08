@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
-import { callClimateAdvisorJson } from "@/backend/agentic/ghgi/stationary-energy/ca";
+import { callClimateAdvisor } from "@/backend/agentic/ghgi/stationary-energy/ca";
 import { requireStationaryEnergyAgenticEnabled } from "@/backend/agentic/ghgi/stationary-energy/auth";
 import { apiHandler } from "@/util/api";
+
+const querySchema = z.object({
+  inventory_id: z.string().uuid().optional(),
+});
 
 export const GET = apiHandler(async (req, { session, params }) => {
   requireStationaryEnergyAgenticEnabled();
@@ -15,15 +20,16 @@ export const GET = apiHandler(async (req, { session, params }) => {
   }
 
   const searchParams = new URL(req.url).searchParams;
-  const inventoryId = searchParams.get("inventory_id") ?? undefined;
+  const query = querySchema.parse(Object.fromEntries(searchParams.entries()));
   const draftRunId = params.draftRunId;
-  const data = await callClimateAdvisorJson({
+  const response = await callClimateAdvisor({
     origin: req.nextUrl.origin,
     path: `/v1/stationary-energy-drafts/${draftRunId}?user_id=${encodeURIComponent(session.user.id)}`,
     method: "GET",
-    userId: session.user.id,
-    inventoryId,
+    tokenUserID: session.user.id,
+    inventoryId: query.inventory_id,
   });
+  const payload = await response.json();
 
-  return NextResponse.json(data);
+  return NextResponse.json(payload, { status: response.status });
 });

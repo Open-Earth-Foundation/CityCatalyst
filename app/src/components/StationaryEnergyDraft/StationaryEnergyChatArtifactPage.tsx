@@ -134,37 +134,7 @@ export function StationaryEnergyChatArtifactPage({
               order={{ base: 2, xl: 1 }}
               overflow={{ base: "visible", xl: "hidden" }}
             >
-              <ClimaChatPanel
-                stage={state.stage}
-                draftState={state.draftState}
-                counts={state.counts}
-                pendingDecisionCount={state.pendingDecisionCount}
-                decisionReviewContext={state.decisionReviewContext}
-                decisionState={state.decisionState}
-                resolvedProposalIds={state.resolvedProposalIds}
-                sourcePreference={state.sourcePreference}
-                sourcePreferenceOptions={state.sourcePreferenceOptions}
-                chatMessages={state.chatMessages}
-                chatInput={state.chatInput}
-                loadingAction={state.loadingAction}
-                canPersistDraftReview={state.canPersistDraftReview}
-                canSaveToInventory={state.canSaveToInventory}
-                hasSourceBackedProposals={state.hasSourceBackedProposals}
-                errorMessage={state.errorMessage}
-                showStaleWarning={state.showStaleWarning}
-                staleDraft={state.staleDraft}
-                onChatInputChange={actions.setChatInput}
-                onChatSubmit={actions.submitChat}
-                onStopChat={actions.stopChat}
-                onStartDraft={actions.startDraftFromChat}
-                onPreference={actions.choosePreference}
-                onDecisionChoice={actions.chooseDecision}
-                onEditDecision={actions.editDecision}
-                onContinueStaleDraft={actions.continueStaleDraft}
-                onStartOver={actions.startOver}
-                onSaveDraft={actions.saveDraft}
-                onSaveToInventory={actions.saveToInventory}
-              />
+              <ClimaChatPanel actions={actions} state={state} />
             </Box>
 
             <Box
@@ -174,27 +144,10 @@ export function StationaryEnergyChatArtifactPage({
               overflow={{ base: "visible", xl: "hidden" }}
             >
               <ArtifactPanel
+                actions={actions}
                 cityName={cityName}
                 inventoryYear={inventoryYear}
-                stage={state.stage}
-                rows={state.rows}
-                counts={state.counts}
-                activeProposalId={state.activeProposalId}
-                loadingAction={state.loadingAction}
-                draftStatus={state.draftStatus}
-                hasSourceBackedProposals={state.hasSourceBackedProposals}
-                hasDraft={state.hasDraft}
-                draftRuns={state.draftRuns}
-                draftListLoading={state.draftListLoading}
-                activeDraftRunId={state.activeDraftRunId}
-                canPersistDraftReview={state.canPersistDraftReview}
-                canSaveToInventory={state.canSaveToInventory}
-                unresolvedCount={state.unresolvedCount}
-                onStartDraft={actions.startDraftFromArtifact}
-                onRefresh={actions.refreshActiveDraft}
-                onSelectDraft={actions.selectDraft}
-                onSaveDraft={actions.saveDraft}
-                onSaveToInventory={actions.saveToInventory}
+                state={state}
               />
             </Box>
           </Grid>

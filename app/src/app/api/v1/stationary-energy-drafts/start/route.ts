@@ -6,8 +6,8 @@ import { requireStationaryEnergyAgenticEnabled } from "@/backend/agentic/ghgi/st
 import { apiHandler } from "@/util/api";
 
 const requestSchema = z.object({
-  city_id: z.string().min(1),
-  inventory_id: z.string().min(1),
+  city_id: z.string().uuid(),
+  inventory_id: z.string().uuid(),
   thread_id: z.string().uuid().optional(),
   locale: z.string().min(1).optional(),
 });
@@ -27,7 +27,7 @@ export const POST = apiHandler(async (req, { session }) => {
     origin: req.nextUrl.origin,
     path: "/v1/stationary-energy-drafts/start",
     method: "POST",
-    userId: session.user.id,
+    tokenUserID: session.user.id,
     inventoryId: body.inventory_id,
     body: {
       user_id: session.user.id,
@@ -38,15 +38,7 @@ export const POST = apiHandler(async (req, { session }) => {
     },
   });
 
-  const responseText = await response.text();
-  let data: unknown = {};
-  if (responseText) {
-    try {
-      data = JSON.parse(responseText);
-    } catch {
-      data = { error: { message: responseText } };
-    }
-  }
+  const data = await response.json();
 
   if (!response.ok) {
     return NextResponse.json(data, { status: response.status });

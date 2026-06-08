@@ -25,8 +25,8 @@ import { requireStationaryEnergyAgenticEnabled } from "@/backend/agentic/ghgi/st
 import { apiHandler } from "@/util/api";
 
 const querySchema = z.object({
-  city_id: z.string().min(1),
-  inventory_id: z.string().min(1),
+  city_id: z.string().uuid(),
+  inventory_id: z.string().uuid(),
 });
 
 export const GET = apiHandler(async (req, { session, searchParams }) => {
@@ -47,11 +47,10 @@ export const GET = apiHandler(async (req, { session, searchParams }) => {
     origin: req.nextUrl.origin,
     path: `/v1/stationary-energy-drafts/resume?${params.toString()}`,
     method: "GET",
-    userId: session.user.id,
+    tokenUserID: session.user.id,
     inventoryId: query.inventory_id,
   });
 
-  const text = await response.text();
-  const payload = text ? JSON.parse(text) : {};
+  const payload = await response.json();
   return NextResponse.json(payload, { status: response.status });
 });

@@ -31,49 +31,53 @@ import type {
   DraftProposal,
   DraftStatusResponse,
 } from "@/components/StationaryEnergyDraft/types";
-import type { LoadingAction } from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
+import type {
+  StationaryEnergyChatArtifactControllerActions,
+  StationaryEnergyChatArtifactControllerState,
+} from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
 import { Button } from "@/components/ui/button";
 import { getParamValueRequired } from "@/util/helpers";
 import { useParams } from "next/navigation";
 
 type ClimaChatPanelProps = {
-  stage: DraftStage;
-  draftState: DraftStatusResponse | null;
-  counts: DraftCounts;
-  pendingDecisionCount: number;
-  decisionReviewContext: DecisionReviewContext[];
-  decisionState: Record<string, DraftDecisionState>;
-  resolvedProposalIds: Set<string>;
-  sourcePreference: string | null;
-  sourcePreferenceOptions: string[];
-  chatMessages: ChatMessage[];
-  chatInput: string;
-  loadingAction: LoadingAction;
-  canPersistDraftReview: boolean;
-  canSaveToInventory: boolean;
-  hasSourceBackedProposals: boolean;
-  errorMessage: string | null;
-  showStaleWarning: boolean;
-  staleDraft: DraftStatusResponse["staleness"];
-  onChatInputChange: (value: string) => void;
-  onChatSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  onStopChat: () => void;
-  onStartDraft: () => void;
-  onPreference: (preference: string) => void;
-  onDecisionChoice: (
-    proposal: DraftProposal,
-    action: DraftDecisionAction,
-    selectedSourceId?: string,
-    label?: string,
-  ) => void;
-  onEditDecision: (proposalId: string) => void;
-  onContinueStaleDraft: () => void;
-  onStartOver: () => void;
-  onSaveDraft: () => void;
-  onSaveToInventory: () => void;
+  actions: Pick<
+    StationaryEnergyChatArtifactControllerActions,
+    | "chooseDecision"
+    | "choosePreference"
+    | "continueStaleDraft"
+    | "editDecision"
+    | "saveDraft"
+    | "saveToInventory"
+    | "setChatInput"
+    | "startDraftFromChat"
+    | "startOver"
+    | "stopChat"
+    | "submitChat"
+  >;
+  state: Pick<
+    StationaryEnergyChatArtifactControllerState,
+    | "canPersistDraftReview"
+    | "canSaveToInventory"
+    | "chatInput"
+    | "chatMessages"
+    | "counts"
+    | "decisionReviewContext"
+    | "decisionState"
+    | "draftState"
+    | "errorMessage"
+    | "hasSourceBackedProposals"
+    | "loadingAction"
+    | "pendingDecisionCount"
+    | "resolvedProposalIds"
+    | "showStaleWarning"
+    | "sourcePreference"
+    | "sourcePreferenceOptions"
+    | "stage"
+    | "staleDraft"
+  >;
 };
 
-export function ClimaChatPanel(props: ClimaChatPanelProps) {
+export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
   const params = useParams();
   const lng = getParamValueRequired(params.lng);
   const { t } = useTranslation(lng, "stationary-energy-agentic");
@@ -83,15 +87,15 @@ export function ClimaChatPanel(props: ClimaChatPanelProps) {
   const [showPendingDecisionNudge, setShowPendingDecisionNudge] =
     useState(false);
   const firstPendingDecision =
-    props.decisionReviewContext.find(
-      (context) => !props.resolvedProposalIds.has(context.proposal_id),
+    state.decisionReviewContext.find(
+      (context) => !state.resolvedProposalIds.has(context.proposal_id),
     ) ?? null;
-  const { chatInput, onChatInputChange } = props;
+  const { chatInput } = state;
 
   const focusChatComposer = useCallback(
     (draftQuestion?: string) => {
       if (draftQuestion && !chatInput.trim()) {
-        onChatInputChange(draftQuestion);
+        actions.setChatInput(draftQuestion);
       }
 
       window.requestAnimationFrame(() => {
@@ -104,7 +108,7 @@ export function ClimaChatPanel(props: ClimaChatPanelProps) {
         input.setSelectionRange(cursorPosition, cursorPosition);
       });
     },
-    [chatInput, onChatInputChange],
+    [actions, chatInput],
   );
 
   const handleAskAboutProposal = useCallback(
@@ -122,7 +126,7 @@ export function ClimaChatPanel(props: ClimaChatPanelProps) {
   }, []);
 
   useEffect(() => {
-    if (props.showStaleWarning || !firstPendingDecision) {
+    if (state.showStaleWarning || !firstPendingDecision) {
       setShowPendingDecisionNudge(false);
       return;
     }
@@ -146,7 +150,7 @@ export function ClimaChatPanel(props: ClimaChatPanelProps) {
 
     observer.observe(pendingDecisionAnchor);
     return () => observer.disconnect();
-  }, [firstPendingDecision, props.chatMessages.length, props.showStaleWarning]);
+  }, [firstPendingDecision, state.chatMessages.length, state.showStaleWarning]);
 
   return (
     <Box
@@ -203,23 +207,38 @@ export function ClimaChatPanel(props: ClimaChatPanelProps) {
       >
         {showPendingDecisionNudge && firstPendingDecision ? (
           <PendingDecisionNudge
-            pendingDecisionCount={props.pendingDecisionCount}
+            pendingDecisionCount={state.pendingDecisionCount}
             onAskQuestion={() =>
               handleAskAboutProposal(firstPendingDecision.label)
             }
             onJumpToReview={handleJumpToPendingDecision}
           />
         ) : null}
-        {props.showStaleWarning ? (
+        {state.showStaleWarning ? (
           <StaleDraftPanel
-            staleDraft={props.staleDraft ?? null}
-            onContinue={props.onContinueStaleDraft}
-            onStartOver={props.onStartOver}
+            staleDraft={state.staleDraft ?? null}
+            onContinue={actions.continueStaleDraft}
+            onStartOver={actions.startOver}
           />
         ) : (
           <>
-            <StageMessages {...props} />
-            {props.errorMessage ? (
+            <StageMessages
+              canPersistDraftReview={state.canPersistDraftReview}
+              canSaveToInventory={state.canSaveToInventory}
+              counts={state.counts}
+              decisionReviewContext={state.decisionReviewContext}
+              draftState={state.draftState}
+              hasSourceBackedProposals={state.hasSourceBackedProposals}
+              onPreference={actions.choosePreference}
+              onSaveDraft={actions.saveDraft}
+              onSaveToInventory={actions.saveToInventory}
+              onStartDraft={actions.startDraftFromChat}
+              pendingDecisionCount={state.pendingDecisionCount}
+              sourcePreference={state.sourcePreference}
+              sourcePreferenceOptions={state.sourcePreferenceOptions}
+              stage={state.stage}
+            />
+            {state.errorMessage ? (
               <Box
                 color="sentiment.negativeDefault"
                 bg="sentiment.negativeOverlay"
@@ -228,40 +247,40 @@ export function ClimaChatPanel(props: ClimaChatPanelProps) {
                 py={2}
                 fontSize="label.md"
               >
-                {props.errorMessage}
+                {state.errorMessage}
               </Box>
             ) : null}
-            {props.chatMessages.map((message) => {
+            {state.chatMessages.map((message) => {
               if (message.kind === "decision_review") {
-                const context = props.decisionReviewContext.find(
+                const context = state.decisionReviewContext.find(
                   (candidate) => candidate.proposal_id === message.proposalId,
                 );
                 if (!context) {
                   return null;
                 }
 
-                const content = props.resolvedProposalIds.has(
+                const content = state.resolvedProposalIds.has(
                   context.proposal_id,
                 ) ? (
                   <ResolvedDecisionSummaryCard
                     context={context}
-                    decision={props.decisionState[context.proposal_id]}
-                    onEditDecision={props.onEditDecision}
+                    decision={state.decisionState[context.proposal_id]}
+                    onEditDecision={actions.editDecision}
                   />
                 ) : context.kind === "single_source" ? (
                   <SingleSourceProposalCard
                     context={context}
-                    decision={props.decisionState[context.proposal_id]}
+                    decision={state.decisionState[context.proposal_id]}
                     resolved={false}
-                    onDecisionChoice={props.onDecisionChoice}
+                    onDecisionChoice={actions.chooseDecision}
                     onAskAboutProposal={handleAskAboutProposal}
                   />
                 ) : (
                   <MultiSourceProposalCard
                     context={context}
-                    decision={props.decisionState[context.proposal_id]}
+                    decision={state.decisionState[context.proposal_id]}
                     resolved={false}
-                    onDecisionChoice={props.onDecisionChoice}
+                    onDecisionChoice={actions.chooseDecision}
                     onAskAboutProposal={handleAskAboutProposal}
                   />
                 );
@@ -301,27 +320,27 @@ export function ClimaChatPanel(props: ClimaChatPanelProps) {
         borderTopWidth="1px"
         borderColor="border.neutral"
       >
-        <form onSubmit={props.onChatSubmit}>
+        <form onSubmit={actions.submitChat}>
           <HStack gap={2}>
             <Input
               ref={chatInputRef}
-              value={props.chatInput}
-              onChange={(event) => props.onChatInputChange(event.target.value)}
+              value={state.chatInput}
+              onChange={(event) => actions.setChatInput(event.target.value)}
               placeholder={
-                props.pendingDecisionCount > 0
+                state.pendingDecisionCount > 0
                   ? t("chat-panel-placeholder-review")
                   : t("chat-panel-placeholder-default")
               }
               borderRadius="rounded"
               bg="background.backgroundGreyFlat"
               borderColor="border.overlay"
-              disabled={props.loadingAction === "chat"}
+              disabled={state.loadingAction === "chat"}
             />
-            {props.loadingAction === "chat" ? (
+            {state.loadingAction === "chat" ? (
               <Button
                 variant="outline"
                 borderRadius={FLOW_BUTTON_RADIUS}
-                onClick={props.onStopChat}
+                onClick={actions.stopChat}
               >
                 {t("chat-panel-stop")}
               </Button>

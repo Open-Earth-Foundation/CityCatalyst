@@ -50,7 +50,11 @@
  */
 
 import { NextResponse } from "next/server";
-import { callClimateAdvisorChat } from "@/backend/chat/climate-advisor";
+import {
+  callClimateAdvisorChat,
+  extractClimateAdvisorErrorMessage,
+  readClimateAdvisorResponsePayload,
+} from "@/backend/chat/climate-advisor";
 import { buildClimateAdvisorMessagePayload } from "@/backend/chat/message-payload";
 import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
@@ -98,18 +102,22 @@ export const POST = apiHandler(async (req, { session }) => {
     });
 
     if (!caResponse.ok) {
-      const errorText = await caResponse.text();
+      const payload = await readClimateAdvisorResponsePayload(caResponse);
+      const errorMessage = extractClimateAdvisorErrorMessage(
+        payload,
+        `CA service error (${caResponse.status})`,
+      );
       logger.error(
         {
           status: caResponse.status,
-          error: errorText,
+          error: payload,
           user_id: session.user.id,
           thread_id: threadId,
         },
         "CA message request failed",
       );
 
-      throw new Error(`CA service error: ${caResponse.status} - ${errorText}`);
+      throw new Error(errorMessage);
     }
 
     logger.info(

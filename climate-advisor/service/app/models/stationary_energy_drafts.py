@@ -124,6 +124,9 @@ class StationaryEnergyCurrentValue(FlexibleContract):
     unit: str | None = None
     emissions_value: Decimal | None = None
     emissions_unit: str | None = None
+    activity_data: dict[str, Any] | None = None
+    activity_data_source: dict[str, Any] | None = None
+    gas_values: list[dict[str, Any]] = Field(default_factory=list)
     data_source: dict[str, Any] | None = None
 
 

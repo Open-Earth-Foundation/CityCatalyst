@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { callClimateAdvisorJson } from "@/backend/agentic/ghgi/stationary-energy/ca";
+import { callClimateAdvisor } from "@/backend/agentic/ghgi/stationary-energy/ca";
 import { requireStationaryEnergyAgenticEnabled } from "@/backend/agentic/ghgi/stationary-energy/auth";
 import { apiHandler } from "@/util/api";
 
 const requestSchema = z.object({
-  inventory_id: z.string().min(1).optional(),
+  inventory_id: z.string().uuid().optional(),
 });
 
 export const POST = apiHandler(async (req, { session, params }) => {
@@ -19,18 +19,19 @@ export const POST = apiHandler(async (req, { session, params }) => {
     );
   }
 
-  const body = requestSchema.parse(await req.json().catch(() => ({})));
+  const body = requestSchema.parse(await req.json());
   const draftRunId = params.draftRunId;
-  const data = await callClimateAdvisorJson({
+  const response = await callClimateAdvisor({
     origin: req.nextUrl.origin,
     path: `/v1/stationary-energy-drafts/${draftRunId}/save`,
     method: "POST",
-    userId: session.user.id,
+    tokenUserID: session.user.id,
     inventoryId: body.inventory_id,
     body: {
       user_id: session.user.id,
     },
   });
+  const payload = await response.json();
 
-  return NextResponse.json(data);
+  return NextResponse.json(payload, { status: response.status });
 });

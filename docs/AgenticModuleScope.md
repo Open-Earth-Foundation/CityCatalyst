@@ -326,6 +326,11 @@ The loader should not decide capability exposure on its own. CA should decide
 the active step, the registry should decide which capabilities are allowed, and
 the loader should return the bounded context for that already-scoped step.
 
+For the first Stationary Energy slice, keeping the context loader sector-specific
+is still the right tradeoff. A good next step after additional GHGI sectors need
+the same pattern is to factor that builder into a generic sector-context
+pipeline, but that should stay future work rather than expand the current slice.
+
 Example:
 
 - A city onboarding flow should load city search results, current project

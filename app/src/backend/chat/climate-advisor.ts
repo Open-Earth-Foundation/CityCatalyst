@@ -1,3 +1,5 @@
+import createHttpError from "http-errors";
+
 type TokenResponse = {
   access_token: string;
   expires_in: number;
@@ -26,9 +28,38 @@ type ThreadCreateResponse = {
 function requireEnv(name: string): string {
   const value = process.env[name];
   if (!value) {
-    throw new Error(`${name} is not configured`);
+    throw new createHttpError.InternalServerError(
+      `${name} is not configured`,
+    );
   }
   return value;
+}
+
+/**
+ * Extract the most useful CA error message from a JSON problem payload.
+ */
+export function extractClimateAdvisorErrorMessage(
+  payload: unknown,
+  fallback: string,
+): string {
+  if (payload && typeof payload === "object") {
+    const problem = payload as Record<string, unknown>;
+    if (typeof problem.detail === "string" && problem.detail.trim()) {
+      return problem.detail;
+    }
+    if (typeof problem.title === "string" && problem.title.trim()) {
+      return problem.title;
+    }
+    const error = problem.error;
+    if (error && typeof error === "object") {
+      const message = (error as Record<string, unknown>).message;
+      if (typeof message === "string" && message.trim()) {
+        return message;
+      }
+    }
+  }
+
+  return fallback;
 }
 
 /**
@@ -59,9 +90,9 @@ export async function issueClimateAdvisorUserToken(params: {
   inventoryId?: string;
 }): Promise<TokenResponse> {
   const serviceKey = requireEnv("CC_SERVICE_API_KEY");
-  const response = await fetch(
-    `${params.origin}/api/v1/internal/ca/user-token`,
-    {
+  let response: Response;
+  try {
+    response = await fetch(`${params.origin}/api/v1/internal/ca/user-token`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -71,13 +102,21 @@ export async function issueClimateAdvisorUserToken(params: {
         user_id: params.userId,
         inventory_id: params.inventoryId,
       }),
-    },
-  );
+    });
+  } catch (error) {
+    throw new createHttpError.BadGateway(
+      error instanceof Error
+        ? error.message
+        : "CA token issuance request failed",
+    );
+  }
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `CA token issuance failed: ${response.status} - ${errorText}`,
+    const payload = await readClimateAdvisorResponsePayload(response);
+    throw createHttpError(
+      response.status,
+      extractClimateAdvisorErrorMessage(payload, "CA token issuance failed"),
+      payload && typeof payload === "object" ? { data: payload } : undefined,
     );
   }
 
@@ -95,11 +134,17 @@ export async function callClimateAdvisorChat(
     headers.set("Content-Type", "application/json");
   }
 
-  return fetch(buildClimateAdvisorUrl(params.path, params.searchParams), {
-    method: params.method ?? "GET",
-    headers,
-    body: params.body ? JSON.stringify(params.body) : undefined,
-  });
+  try {
+    return await fetch(buildClimateAdvisorUrl(params.path, params.searchParams), {
+      method: params.method ?? "GET",
+      headers,
+      body: params.body ? JSON.stringify(params.body) : undefined,
+    });
+  } catch (error) {
+    throw new createHttpError.BadGateway(
+      error instanceof Error ? error.message : "Climate Advisor request failed",
+    );
+  }
 }
 
 /**
@@ -108,15 +153,10 @@ export async function callClimateAdvisorChat(
 export async function readClimateAdvisorResponsePayload(
   response: Response,
 ): Promise<unknown> {
-  const text = await response.text();
-  if (!text) {
-    return {};
-  }
-
   try {
-    return JSON.parse(text);
+    return await response.json();
   } catch {
-    return { detail: text };
+    return {};
   }
 }
 
@@ -150,8 +190,12 @@ export async function createClimateAdvisorThread(params: {
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`CA service error: ${response.status} - ${errorText}`);
+    const payload = await readClimateAdvisorResponsePayload(response);
+    throw createHttpError(
+      response.status,
+      extractClimateAdvisorErrorMessage(payload, "CA service error"),
+      payload && typeof payload === "object" ? { data: payload } : undefined,
+    );
   }
 
   return response.json() as Promise<ThreadCreateResponse>;

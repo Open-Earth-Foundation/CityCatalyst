@@ -61,17 +61,17 @@ export type StationaryEnergyCapabilityDefinition = {
 const recordSchema = z.record(z.string(), z.unknown());
 
 export const allowedStationaryEnergyCapabilitiesInputSchema = z.object({
-  user_id: z.string().min(1),
-  city_id: z.string().min(1),
-  inventory_id: z.string().min(1),
+  user_id: z.string().uuid(),
+  city_id: z.string().uuid(),
+  inventory_id: z.string().uuid(),
   sector_code: z.literal("stationary_energy"),
   workflow_step: stationaryEnergyWorkflowStepSchema,
 });
 
 export const loadStationaryEnergyContextInputSchema = z.object({
-  user_id: z.string().min(1),
-  city_id: z.string().min(1),
-  inventory_id: z.string().min(1),
+  user_id: z.string().uuid(),
+  city_id: z.string().uuid(),
+  inventory_id: z.string().uuid(),
   sector_code: z.literal("stationary_energy").default("stationary_energy"),
   locale: z.string().min(1).optional(),
 });
@@ -89,7 +89,7 @@ export const loadStationaryEnergyContextOutputSchema = z
   .passthrough();
 
 const commitAcceptedStationaryEnergyBaseRowSchema = z.object({
-  proposal_id: z.string().min(1),
+  proposal_id: z.string().uuid(),
   decision_version: z.number().int().positive(),
   target_ref: recordSchema,
 });
@@ -99,7 +99,7 @@ export const commitAcceptedStationaryEnergyRowSchema = z.discriminatedUnion(
   [
     commitAcceptedStationaryEnergyBaseRowSchema.extend({
       row_type: z.literal("selected_source"),
-      selected_source_id: z.string().min(1),
+      selected_source_id: z.string().uuid(),
     }),
     commitAcceptedStationaryEnergyBaseRowSchema.extend({
       row_type: z.literal("manual_override"),
@@ -111,17 +111,17 @@ export const commitAcceptedStationaryEnergyRowSchema = z.discriminatedUnion(
 );
 
 export const commitAcceptedStationaryEnergyInputSchema = z.object({
-  draft_run_id: z.string().min(1),
-  user_id: z.string().min(1),
-  city_id: z.string().min(1),
-  inventory_id: z.string().min(1),
+  draft_run_id: z.string().uuid(),
+  user_id: z.string().uuid(),
+  city_id: z.string().uuid(),
+  inventory_id: z.string().uuid(),
   rows: z.array(commitAcceptedStationaryEnergyRowSchema).min(1),
 });
 
 export const commitAcceptedStationaryEnergyOutputSchema = z
   .object({
-    draft_run_id: z.string().min(1),
-    inventory_id: z.string().min(1),
+    draft_run_id: z.string().uuid(),
+    inventory_id: z.string().uuid(),
     results: z.array(recordSchema),
   })
   .passthrough();

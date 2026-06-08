@@ -383,16 +383,14 @@ class StationaryEnergyDraftService:
                     )
                     return
 
-                generator = (
-                    service.proposal_generator or StationaryEnergyProposalLLMService()
-                )
                 total = 0
-                # Phase 2: resolve no-source (gap) and single-source rows
-                # deterministically (no LLM) and persist them immediately. Only
-                # ambiguous multi-source rows are sent to the model.
+                # Phase 2 + 3: resolve no-source (gap), single-source (ready), and
+                # multi-source (conflict, ranked recommendation + alternatives)
+                # rows deterministically -- no LLM. Persist immediately.
                 deterministic, llm_rows = build_deterministic_proposals(
                     taxonomy_rows=rows,
                     stored_source_candidates=stored_source_candidates,
+                    inventory_year=getattr(context.inventory, "year", None),
                 )
                 if deterministic:
                     await service.repository.add_proposals(
@@ -408,26 +406,33 @@ class StationaryEnergyDraftService:
                         len(llm_rows),
                     )
 
-                for start in range(0, len(llm_rows), STAGGER_BATCH_SIZE):
-                    batch = llm_rows[start : start + STAGGER_BATCH_SIZE]
-                    result = await generator.generate_proposals_for_rows(
-                        context=context,
-                        stored_source_candidates=stored_source_candidates,
-                        rows=batch,
-                        trace_id=trace_id,
+                # llm_rows is normally empty now; the LLM (and thus the OpenRouter
+                # dependency) is only invoked as a fallback for unforeseen rows.
+                if llm_rows:
+                    generator = (
+                        service.proposal_generator
+                        or StationaryEnergyProposalLLMService()
                     )
-                    await service.repository.add_proposals(
-                        draft_run_id, result.proposals
-                    )
-                    await session.commit()
-                    total += len(result.proposals)
-                    logger.info(
-                        "Stationary Energy staggered batch run=%s persisted=%s total=%s/%s",
-                        draft_run_id,
-                        len(result.proposals),
-                        total,
-                        len(rows),
-                    )
+                    for start in range(0, len(llm_rows), STAGGER_BATCH_SIZE):
+                        batch = llm_rows[start : start + STAGGER_BATCH_SIZE]
+                        result = await generator.generate_proposals_for_rows(
+                            context=context,
+                            stored_source_candidates=stored_source_candidates,
+                            rows=batch,
+                            trace_id=trace_id,
+                        )
+                        await service.repository.add_proposals(
+                            draft_run_id, result.proposals
+                        )
+                        await session.commit()
+                        total += len(result.proposals)
+                        logger.info(
+                            "Stationary Energy staggered batch run=%s persisted=%s total=%s/%s",
+                            draft_run_id,
+                            len(result.proposals),
+                            total,
+                            len(rows),
+                        )
 
                 summary = context_summary(
                     context,

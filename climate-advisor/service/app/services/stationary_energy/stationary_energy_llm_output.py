@@ -240,25 +240,32 @@ def validate_and_normalize_proposals(
     return normalized
 
 
+_GEOGRAPHY_RANK = {"city": 0, "locode": 0, "region": 1, "country": 2, "global": 3}
+
+
 def build_deterministic_proposals(
     *,
     taxonomy_rows: list[Any],
     stored_source_candidates: list[dict[str, Any]],
+    inventory_year: int | None = None,
 ) -> tuple[list[dict[str, Any]], list[Any]]:
-    """Resolve no-source and single-source rows deterministically (Phase 2).
+    """Resolve every taxonomy row deterministically, without the LLM (Phase 2+3).
 
-    For each taxonomy row, find the applicable candidates whose scope matches the
-    row (using the SAME matcher as proposal validation):
+    For each row, find the applicable candidates whose scope matches the row
+    (using the SAME matcher as proposal validation), then:
 
-    - 0 matching candidates -> a "gap" proposal (no source available).
-    - exactly 1 matching candidate carrying exactly 1 normalized data row -> a
-      "ready" proposal whose proposed_value copies that data row verbatim. The
-      LLM produces an identical copy for single-source rows, so this is exact,
-      not inferred.
-    - anything ambiguous (>= 2 matching candidates, or a single candidate with
-      != 1 normalized rows) -> deferred to the LLM.
+    - 0 matching candidates -> "gap" proposal (no source available).
+    - 1 matching candidate -> "ready" proposal whose proposed_value copies the
+      candidate's data row verbatim (the LLM produces an identical copy, so this
+      is exact, not inferred). No data rows -> "gap".
+    - >= 2 matching candidates -> "conflict" proposal. Candidates are ranked by
+      geographic specificity (city > region > country > global) then closeness to
+      the inventory year -- the documented source-selection rule the LLM was
+      instructed to follow. The top candidate is the recommendation, the rest are
+      alternatives, and the user still picks/overrides.
 
-    Returns (deterministic_proposals, rows_requiring_llm).
+    Returns (deterministic_proposals, rows_requiring_llm). The second list is
+    normally empty; it exists only as a safety hatch for unforeseen row shapes.
     """
     applicable = [
         candidate
@@ -288,7 +295,7 @@ def build_deterministic_proposals(
             candidate = matching[0]
             normalized_rows = candidate.get("normalized_rows") or []
             if (
-                len(normalized_rows) == 1
+                normalized_rows
                 and candidate.get("candidate_id")
                 and candidate.get("datasource_id")
             ):
@@ -297,9 +304,83 @@ def build_deterministic_proposals(
                         row_payload, candidate, normalized_rows[0]
                     )
                 )
-                continue
-        llm_rows.append(row)
+            else:
+                deterministic.append(_deterministic_gap_proposal(row_payload))
+            continue
+        deterministic.append(
+            _deterministic_multi_source_proposal(
+                row_payload, matching, inventory_year
+            )
+        )
     return deterministic, llm_rows
+
+
+def _candidate_rank_key(
+    candidate: dict[str, Any], inventory_year: int | None
+) -> tuple[int, int, str, str]:
+    """Rank a candidate by geography, then closeness to the inventory year."""
+    geography = str(candidate.get("geography_match") or "unknown").lower()
+    geography_rank = _GEOGRAPHY_RANK.get(geography, 4)
+    year = candidate.get("dataset_year")
+    if inventory_year is not None and year is not None:
+        try:
+            year_distance = abs(int(year) - int(inventory_year))
+        except (TypeError, ValueError):
+            year_distance = 9999
+    else:
+        year_distance = 9999
+    # Stable tiebreakers so the recommendation is deterministic across runs.
+    return (
+        geography_rank,
+        year_distance,
+        str(candidate.get("datasource_id") or ""),
+        str(candidate.get("candidate_id") or ""),
+    )
+
+
+def _deterministic_multi_source_proposal(
+    row_payload: dict[str, Any],
+    candidates: list[dict[str, Any]],
+    inventory_year: int | None,
+) -> dict[str, Any]:
+    """Build a "conflict" proposal with a ranked recommendation + alternatives."""
+    ranked = sorted(
+        candidates, key=lambda candidate: _candidate_rank_key(candidate, inventory_year)
+    )
+    recommended = ranked[0]
+    alternatives = ranked[1:]
+    recommended_rows = recommended.get("normalized_rows") or []
+    proposed_value = (
+        {"row": recommended_rows[0], "datasource_id": recommended.get("datasource_id")}
+        if recommended_rows
+        else None
+    )
+    geography = str(recommended.get("geography_match") or "unknown")
+    year = recommended.get("dataset_year")
+    publisher = (
+        recommended.get("publisher_name")
+        or recommended.get("dataset_name")
+        or "the top-ranked source"
+    )
+    return {
+        "target_ref": row_payload,
+        "current_value": None,
+        "recommended_candidate_id": UUID(str(recommended["candidate_id"])),
+        "recommended_datasource_id": recommended.get("datasource_id"),
+        "alternative_candidate_ids": [
+            str(candidate["candidate_id"])
+            for candidate in alternatives
+            if candidate.get("candidate_id")
+        ],
+        "proposed_value": proposed_value,
+        "rationale": (
+            f"{len(candidates)} applicable sources compete for this row. "
+            f"Recommended {publisher} ({year}, {geography}-level) as the closest "
+            "geographic and temporal match; review the alternatives before saving."
+        ),
+        "status": "conflict",
+        "confidence_score": None,
+    }
 
 
 def _deterministic_gap_proposal(row_payload: dict[str, Any]) -> dict[str, Any]:

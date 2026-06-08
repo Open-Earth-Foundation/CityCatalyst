@@ -298,11 +298,16 @@ export function useStationaryEnergyChatArtifactController(
 
   // Staggered generation: while a draft is still being generated, poll its
   // status so proposals appear incrementally (the backend commits each batch
-  // as it completes). Stops automatically once the draft reaches a terminal
-  // status (ready/failed/saved/...).
+  // as it completes). IMPORTANT: only poll during the active generation
+  // statuses. Once the run reaches "ready" the user is in the decision/review
+  // stage (which stays "ready" until saved), and re-applying state on a timer
+  // would reset their in-progress selections and bounce them back to row 1.
   const draftRunId = draftState?.draft_run_id;
   const isGenerating = Boolean(
-    draftState && !hasTerminalDraftStatus(draftState.status),
+    draftState &&
+      ["resolving_scope", "loading_context", "generating"].includes(
+        draftState.status,
+      ),
   );
   useEffect(() => {
     if (!featureEnabled || !draftRunId || !isGenerating) {

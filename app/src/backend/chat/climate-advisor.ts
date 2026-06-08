@@ -28,9 +28,7 @@ type ThreadCreateResponse = {
 function requireEnv(name: string): string {
   const value = process.env[name];
   if (!value) {
-    throw new createHttpError.InternalServerError(
-      `${name} is not configured`,
-    );
+    throw new createHttpError.InternalServerError(`${name} is not configured`);
   }
   return value;
 }
@@ -60,6 +58,21 @@ export function extractClimateAdvisorErrorMessage(
   }
 
   return fallback;
+}
+
+/**
+ * Build an HTTP error that preserves an upstream JSON payload when present.
+ */
+function createClimateAdvisorHttpError(
+  status: number,
+  payload: unknown,
+  fallback: string,
+) {
+  const message = extractClimateAdvisorErrorMessage(payload, fallback);
+  if (payload && typeof payload === "object") {
+    return createHttpError(status, message, { data: payload });
+  }
+  return createHttpError(status, message);
 }
 
 /**
@@ -113,10 +126,10 @@ export async function issueClimateAdvisorUserToken(params: {
 
   if (!response.ok) {
     const payload = await readClimateAdvisorResponsePayload(response);
-    throw createHttpError(
+    throw createClimateAdvisorHttpError(
       response.status,
-      extractClimateAdvisorErrorMessage(payload, "CA token issuance failed"),
-      payload && typeof payload === "object" ? { data: payload } : undefined,
+      payload,
+      "CA token issuance failed",
     );
   }
 
@@ -135,11 +148,14 @@ export async function callClimateAdvisorChat(
   }
 
   try {
-    return await fetch(buildClimateAdvisorUrl(params.path, params.searchParams), {
-      method: params.method ?? "GET",
-      headers,
-      body: params.body ? JSON.stringify(params.body) : undefined,
-    });
+    return await fetch(
+      buildClimateAdvisorUrl(params.path, params.searchParams),
+      {
+        method: params.method ?? "GET",
+        headers,
+        body: params.body ? JSON.stringify(params.body) : undefined,
+      },
+    );
   } catch (error) {
     throw new createHttpError.BadGateway(
       error instanceof Error ? error.message : "Climate Advisor request failed",
@@ -191,10 +207,10 @@ export async function createClimateAdvisorThread(params: {
 
   if (!response.ok) {
     const payload = await readClimateAdvisorResponsePayload(response);
-    throw createHttpError(
+    throw createClimateAdvisorHttpError(
       response.status,
-      extractClimateAdvisorErrorMessage(payload, "CA service error"),
-      payload && typeof payload === "object" ? { data: payload } : undefined,
+      payload,
+      "CA service error",
     );
   }
 

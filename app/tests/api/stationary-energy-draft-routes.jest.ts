@@ -161,10 +161,14 @@ describe("Stationary Energy draft routes", () => {
       );
 
     const response = await startDraft(
-      makeRequest("http://localhost:3000/api/v1/stationary-energy-drafts/start", "POST", {
-        city_id: TEST_CITY_ID,
-        inventory_id: TEST_INVENTORY_ID,
-      }),
+      makeRequest(
+        "http://localhost:3000/api/v1/stationary-energy-drafts/start",
+        "POST",
+        {
+          city_id: TEST_CITY_ID,
+          inventory_id: TEST_INVENTORY_ID,
+        },
+      ),
       { params: Promise.resolve({}) },
     );
 
@@ -172,6 +176,42 @@ describe("Stationary Energy draft routes", () => {
     await expect(response.json()).resolves.toEqual({
       detail: "bad draft context",
     });
+  });
+
+  it("preserves JSON token-issuance errors from the shared CA helper", async () => {
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse(
+        {
+          detail: "service token rejected",
+        },
+        { status: 403 },
+      ),
+    );
+
+    const response = await startDraft(
+      makeRequest(
+        "http://localhost:3000/api/v1/stationary-energy-drafts/start",
+        "POST",
+        {
+          city_id: TEST_CITY_ID,
+          inventory_id: TEST_INVENTORY_ID,
+        },
+      ),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(403);
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        message: "service token rejected",
+        code: undefined,
+        data: {
+          detail: "service token rejected",
+        },
+      },
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it("preserves upstream save-route error statuses instead of converting them to 500s", async () => {

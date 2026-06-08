@@ -46,6 +46,14 @@ export function SourceDetailPane({ actions, state }: SourceDetailPaneProps) {
     ? state.resolvedProposalIds.has(context.proposal_id)
     : false;
 
+  // Running list of decisions the user has already staged (excluding the one
+  // currently in focus), so choices stay visible as they move through rows.
+  const stagedContexts = state.decisionReviewContext.filter(
+    (candidate) =>
+      state.resolvedProposalIds.has(candidate.proposal_id) &&
+      candidate.proposal_id !== state.focusedProposalId,
+  );
+
   return (
     <Box
       bg="base.light"
@@ -116,6 +124,31 @@ export function SourceDetailPane({ actions, state }: SourceDetailPaneProps) {
             Select a row on the left to review its data sources and emissions.
           </Box>
         )}
+
+        {stagedContexts.length > 0 ? (
+          <Box pt={2}>
+            <Text
+              color="content.tertiary"
+              fontSize="label.sm"
+              fontWeight="semibold"
+              textTransform="uppercase"
+              letterSpacing="wide"
+              mb={2}
+            >
+              Staged decisions ({stagedContexts.length})
+            </Text>
+            <VStack align="stretch" gap={2}>
+              {stagedContexts.map((staged) => (
+                <ResolvedDecisionSummaryCard
+                  key={staged.proposal_id}
+                  context={staged}
+                  decision={state.decisionState[staged.proposal_id]}
+                  onEditDecision={actions.editDecision}
+                />
+              ))}
+            </VStack>
+          </Box>
+        ) : null}
       </VStack>
     </Box>
   );

@@ -230,19 +230,14 @@ function DecisionReviewBaseCard(props: {
           );
         })}
       </VStack>
-      <Flex
-        mt={3}
-        align={{ base: "flex-start", sm: "center" }}
-        justify="space-between"
-        gap={3}
-        flexDir={{ base: "column", sm: "row" }}
-      >
+      <Flex mt={3} align="stretch" gap={2} flexDir="column">
         <Text color="content.tertiary" fontSize="label.md">
           {t("review-card-helper")}
         </Text>
         <chakra.button
           type="button"
-          alignSelf={{ base: "stretch", sm: "auto" }}
+          alignSelf="stretch"
+          textAlign="center"
           px={3}
           py={2}
           borderWidth="1px"

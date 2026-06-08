@@ -9,6 +9,16 @@ import type {
 
 const RAW_KG_EMISSIONS_UNITS = new Set(["", "kgco2e", "tco2e"]);
 
+// IPCC/GPC notation keys -> plain-language labels (the source can report any of
+// these to mean "no emissions value, and here's why").
+const NOTATION_KEY_LABELS: Record<string, string> = {
+  NO: "Not occurring",
+  NE: "Not estimated",
+  IE: "Included elsewhere",
+  C: "Confidential",
+  NA: "Not applicable",
+};
+
 export function extractErrorMessage(
   payload: unknown,
   fallback: string,
@@ -301,7 +311,9 @@ export function proposedValueLabel(proposal: DraftProposal): string {
   const proposedValue = proposal.proposed_value as Record<string, unknown>;
   const notationKey = proposedValue["notation_key"];
   if (typeof notationKey === "string" && notationKey.trim()) {
-    return `Not occurring (${notationKey.trim()})`;
+    const key = notationKey.trim().toUpperCase();
+    const label = NOTATION_KEY_LABELS[key] ?? "Reported notation";
+    return `${label} (${key})`;
   }
   const row = (proposedValue["row"] ?? proposedValue) as Record<string, unknown>;
   const emissionsLabel = formatDraftEmissionsLabel(

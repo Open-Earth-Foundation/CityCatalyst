@@ -13,7 +13,7 @@ import {
 import type { TFunction } from "i18next";
 import { useParams } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { MdRefresh, MdSave } from "react-icons/md";
+import { MdAdd, MdRefresh, MdSave } from "react-icons/md";
 
 import { useTranslation } from "@/i18n/client";
 import ProgressLoader from "@/components/ProgressLoader";
@@ -339,8 +339,12 @@ export function ArtifactPanel({
               I
             </Box>
             <Box>
-              <Heading fontSize="title.md" fontWeight="semibold">
-                {t("artifact-header-title")}
+              <Heading
+                fontSize="title.md"
+                fontWeight="semibold"
+                whiteSpace="nowrap"
+              >
+                Stationary Energy
               </Heading>
               <Text color="content.tertiary" fontSize="label.md">
                 {cityName} / {inventoryYear} /{" "}
@@ -370,11 +374,12 @@ export function ArtifactPanel({
                     {t("artifact-drafts-saved")}
                   </Text>
                   <Button
-                    variant="outline"
                     borderRadius={FLOW_BUTTON_RADIUS}
                     loading={state.loadingAction === "start"}
                     onClick={actions.startDraftFromArtifact}
+                    gap={1.5}
                   >
+                    <MdAdd />
                     {t("artifact-new-draft")}
                   </Button>
                 </Flex>

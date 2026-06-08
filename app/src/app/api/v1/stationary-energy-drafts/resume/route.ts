@@ -6,6 +6,14 @@
  *       - stationary-energy-drafts
  *     operationId: resumeStationaryEnergyDraft
  *     summary: Resume the latest active Stationary Energy draft for the current user.
+ *     description: Returns the latest resumable Stationary Energy draft for the authenticated user in the provided city and inventory scope.
+ *     responses:
+ *       200:
+ *         description: Latest resumable draft retrieved successfully.
+ *       400:
+ *         description: Invalid query parameters.
+ *       401:
+ *         description: User authentication required.
  */
 
 import createHttpError from "http-errors";

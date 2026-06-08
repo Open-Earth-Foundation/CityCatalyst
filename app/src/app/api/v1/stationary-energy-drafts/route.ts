@@ -6,6 +6,14 @@
  *       - stationary-energy-drafts
  *     operationId: listStationaryEnergyDrafts
  *     summary: List active Stationary Energy drafts for the current user and inventory scope.
+ *     description: Returns the active Stationary Energy draft runs available for the authenticated user in the provided city and inventory scope.
+ *     responses:
+ *       200:
+ *         description: Draft runs retrieved successfully.
+ *       400:
+ *         description: Invalid query parameters.
+ *       401:
+ *         description: User authentication required.
  */
 
 import createHttpError from "http-errors";

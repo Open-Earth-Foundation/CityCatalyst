@@ -302,17 +302,37 @@ def build_deterministic_proposals(
             if hasattr(row, "model_dump")
             else dict(row)
         )
-        matching = [
+        scope_matched = [
             candidate
             for candidate in applicable
             if stationary_energy_scope_matches_target(
                 target_ref=row_payload,
                 source_scope=candidate.get("source_scope"),
             )
-            and _candidate_has_usable_emissions(candidate)
+        ]
+        matching = [
+            candidate
+            for candidate in scope_matched
+            if _candidate_has_usable_emissions(candidate)
         ]
         if not matching:
-            deterministic.append(_deterministic_gap_proposal(row_payload))
+            # No source with an emissions value. If a matching source instead
+            # reports a notation key (e.g. "NO" = not occurring), surface that
+            # distinctly from a blind data gap.
+            notation_candidate = next(
+                (
+                    candidate
+                    for candidate in scope_matched
+                    if _candidate_notation_key(candidate)
+                ),
+                None,
+            )
+            if notation_candidate is not None:
+                deterministic.append(
+                    _deterministic_notation_proposal(row_payload, notation_candidate)
+                )
+            else:
+                deterministic.append(_deterministic_gap_proposal(row_payload))
             continue
         if len(matching) == 1:
             candidate = matching[0]
@@ -402,6 +422,60 @@ def _deterministic_multi_source_proposal(
             "geographic and temporal match; review the alternatives before saving."
         ),
         "status": "conflict",
+        "confidence_score": None,
+    }
+
+
+def _candidate_notation_key(candidate: dict[str, Any]) -> str | None:
+    """Return a candidate's notation key (e.g. "NO" = not occurring), if any.
+
+    Notation keys come from the global API (source_data.notation_key) and mean
+    the activity is confirmed absent/not occurring -- a complete inventory
+    answer, distinct from a data gap.
+    """
+    source_data = candidate.get("source_data")
+    if isinstance(source_data, dict):
+        key = source_data.get("notation_key")
+        if isinstance(key, str) and key.strip():
+            return key.strip()
+    return None
+
+
+def _deterministic_notation_proposal(
+    row_payload: dict[str, Any], candidate: dict[str, Any]
+) -> dict[str, Any]:
+    """Build a "not occurring" proposal from a source that reports a notation key."""
+    source_data = candidate.get("source_data") or {}
+    notation_key = _candidate_notation_key(candidate)
+    explanation = source_data.get("unavailable_explanation")
+    explanation_text = (
+        explanation.get("en")
+        if isinstance(explanation, dict)
+        else (explanation if isinstance(explanation, str) else None)
+    )
+    candidate_id = candidate.get("candidate_id")
+    return {
+        "target_ref": row_payload,
+        "current_value": None,
+        "recommended_candidate_id": (
+            UUID(str(candidate_id)) if candidate_id else None
+        ),
+        "recommended_datasource_id": candidate.get("datasource_id"),
+        "alternative_candidate_ids": [],
+        "proposed_value": {
+            "notation_key": notation_key,
+            "notation_key_name": source_data.get("notation_key_name"),
+            "explanation": explanation_text,
+            "datasource_id": candidate.get("datasource_id"),
+        },
+        "rationale": (
+            f"Source reports notation key '{notation_key}' (not occurring): "
+            f"{explanation_text or 'the activity does not occur within the city'}."
+        ),
+        # No emissions value to draft, but this is a confirmed "not occurring"
+        # answer rather than a blind gap; the UI distinguishes it via the
+        # proposed_value notation key.
+        "status": "gap",
         "confidence_score": None,
     }
 

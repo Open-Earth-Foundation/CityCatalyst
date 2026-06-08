@@ -187,8 +187,8 @@ function DecisionReviewBaseCard(props: {
               }
             >
               <Box minW={0}>
-                <HStack gap={2} minW={0} align="baseline">
-                  <Text fontFamily="heading" fontWeight="semibold" truncate>
+                <HStack gap={2} minW={0} align="start" flexWrap="wrap">
+                  <Text fontFamily="heading" fontWeight="semibold" lineClamp={2}>
                     {option.label}
                   </Text>
                   {option.recommended ? (

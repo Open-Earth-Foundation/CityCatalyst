@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { useParams } from "next/navigation";
+import { useEffect, useRef } from "react";
 import { MdRefresh, MdSave } from "react-icons/md";
 
 import { useTranslation } from "@/i18n/client";
@@ -222,6 +223,7 @@ function ArtifactRowView(props: {
       borderColor="border.neutral"
       borderLeftWidth="3px"
       borderLeftColor={props.selected ? "interactive.primary" : "transparent"}
+      data-row-id={props.row.id}
       _last={{ borderBottomWidth: 0 }}
       onClick={props.onSelect}
       cursor={props.onSelect ? "pointer" : "default"}
@@ -274,6 +276,18 @@ export function ArtifactPanel({
   const params = useParams();
   const lng = getParamValueRequired(params.lng);
   const { t } = useTranslation(lng, "stationary-energy-agentic");
+  const rowsScrollRef = useRef<HTMLDivElement | null>(null);
+  const focusedProposalId = state.focusedProposalId;
+  // Keep the focused row visible as the user steps through reviews.
+  useEffect(() => {
+    if (!focusedProposalId) {
+      return;
+    }
+    const target = rowsScrollRef.current?.querySelector<HTMLElement>(
+      `[data-row-id="${CSS.escape(focusedProposalId)}"]`,
+    );
+    target?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [focusedProposalId]);
   const draftedCount = state.rows.filter((row) =>
     ["done", "manual"].includes(row.state),
   ).length;
@@ -454,6 +468,7 @@ export function ArtifactPanel({
           h="full"
           minH={0}
           overflowY={{ base: "visible", xl: "auto" }}
+          ref={rowsScrollRef}
           data-testid="artifact-rows-scroll-region"
         >
           {state.rows.map((row) => (

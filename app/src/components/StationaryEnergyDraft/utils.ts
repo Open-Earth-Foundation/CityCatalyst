@@ -296,8 +296,13 @@ export function proposedValueLabel(proposal: DraftProposal): string {
     return "No source-backed draft value";
   }
 
-  // proposed_value is { row: { gases: [...], activity_units, ... }, datasource_id }.
+  // proposed_value is { row: { gases: [...] }, datasource_id } for a value, or
+  // { notation_key: "NO", ... } when the source reports "not occurring".
   const proposedValue = proposal.proposed_value as Record<string, unknown>;
+  const notationKey = proposedValue["notation_key"];
+  if (typeof notationKey === "string" && notationKey.trim()) {
+    return `Not occurring (${notationKey.trim()})`;
+  }
   const row = (proposedValue["row"] ?? proposedValue) as Record<string, unknown>;
   const emissionsLabel = formatDraftEmissionsLabel(
     totalEmissionsFromGases(row),

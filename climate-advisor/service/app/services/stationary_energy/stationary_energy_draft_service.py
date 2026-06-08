@@ -65,6 +65,9 @@ from app.services.stationary_energy.stationary_energy_draft_serializers import (
     to_start_response,
     to_status_response,
 )
+from app.services.stationary_energy.stationary_energy_llm_output import (
+    build_deterministic_proposals,
+)
 from app.services.stationary_energy.stationary_energy_llm_service import (
     StationaryEnergyLLMServiceError,
     StationaryEnergyProposalLLMService,
@@ -384,8 +387,29 @@ class StationaryEnergyDraftService:
                     service.proposal_generator or StationaryEnergyProposalLLMService()
                 )
                 total = 0
-                for start in range(0, len(rows), STAGGER_BATCH_SIZE):
-                    batch = rows[start : start + STAGGER_BATCH_SIZE]
+                # Phase 2: resolve no-source (gap) and single-source rows
+                # deterministically (no LLM) and persist them immediately. Only
+                # ambiguous multi-source rows are sent to the model.
+                deterministic, llm_rows = build_deterministic_proposals(
+                    taxonomy_rows=rows,
+                    stored_source_candidates=stored_source_candidates,
+                )
+                if deterministic:
+                    await service.repository.add_proposals(
+                        draft_run_id, deterministic
+                    )
+                    await session.commit()
+                    total += len(deterministic)
+                    logger.info(
+                        "Stationary Energy deterministic run=%s resolved=%s/%s without LLM; %s rows need the model",
+                        draft_run_id,
+                        len(deterministic),
+                        len(rows),
+                        len(llm_rows),
+                    )
+
+                for start in range(0, len(llm_rows), STAGGER_BATCH_SIZE):
+                    batch = llm_rows[start : start + STAGGER_BATCH_SIZE]
                     result = await generator.generate_proposals_for_rows(
                         context=context,
                         stored_source_candidates=stored_source_candidates,

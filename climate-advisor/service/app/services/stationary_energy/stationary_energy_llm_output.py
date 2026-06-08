@@ -240,6 +240,108 @@ def validate_and_normalize_proposals(
     return normalized
 
 
+def build_deterministic_proposals(
+    *,
+    taxonomy_rows: list[Any],
+    stored_source_candidates: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[Any]]:
+    """Resolve no-source and single-source rows deterministically (Phase 2).
+
+    For each taxonomy row, find the applicable candidates whose scope matches the
+    row (using the SAME matcher as proposal validation):
+
+    - 0 matching candidates -> a "gap" proposal (no source available).
+    - exactly 1 matching candidate carrying exactly 1 normalized data row -> a
+      "ready" proposal whose proposed_value copies that data row verbatim. The
+      LLM produces an identical copy for single-source rows, so this is exact,
+      not inferred.
+    - anything ambiguous (>= 2 matching candidates, or a single candidate with
+      != 1 normalized rows) -> deferred to the LLM.
+
+    Returns (deterministic_proposals, rows_requiring_llm).
+    """
+    applicable = [
+        candidate
+        for candidate in stored_source_candidates
+        if candidate.get("applicability_status") == "applicable"
+    ]
+    deterministic: list[dict[str, Any]] = []
+    llm_rows: list[Any] = []
+    for row in taxonomy_rows:
+        row_payload = (
+            row.model_dump(mode="json", exclude_none=True)
+            if hasattr(row, "model_dump")
+            else dict(row)
+        )
+        matching = [
+            candidate
+            for candidate in applicable
+            if stationary_energy_scope_matches_target(
+                target_ref=row_payload,
+                source_scope=candidate.get("source_scope"),
+            )
+        ]
+        if not matching:
+            deterministic.append(_deterministic_gap_proposal(row_payload))
+            continue
+        if len(matching) == 1:
+            candidate = matching[0]
+            normalized_rows = candidate.get("normalized_rows") or []
+            if (
+                len(normalized_rows) == 1
+                and candidate.get("candidate_id")
+                and candidate.get("datasource_id")
+            ):
+                deterministic.append(
+                    _deterministic_single_source_proposal(
+                        row_payload, candidate, normalized_rows[0]
+                    )
+                )
+                continue
+        llm_rows.append(row)
+    return deterministic, llm_rows
+
+
+def _deterministic_gap_proposal(row_payload: dict[str, Any]) -> dict[str, Any]:
+    """Build a no-source ("gap") proposal for a row with no matching candidate."""
+    return {
+        "target_ref": row_payload,
+        "current_value": None,
+        "recommended_candidate_id": None,
+        "recommended_datasource_id": None,
+        "alternative_candidate_ids": [],
+        "proposed_value": None,
+        "rationale": "No applicable source candidate is available for this row.",
+        "status": "gap",
+        "confidence_score": None,
+    }
+
+
+def _deterministic_single_source_proposal(
+    row_payload: dict[str, Any],
+    candidate: dict[str, Any],
+    data_row: Any,
+) -> dict[str, Any]:
+    """Build a "ready" proposal copying a single source's data row verbatim."""
+    return {
+        "target_ref": row_payload,
+        "current_value": None,
+        "recommended_candidate_id": UUID(str(candidate["candidate_id"])),
+        "recommended_datasource_id": candidate.get("datasource_id"),
+        "alternative_candidate_ids": [],
+        "proposed_value": {
+            "row": data_row,
+            "datasource_id": candidate.get("datasource_id"),
+        },
+        "rationale": (
+            "Single applicable source; value taken directly from the connected "
+            "dataset (no model inference)."
+        ),
+        "status": "ready",
+        "confidence_score": None,
+    }
+
+
 def _taxonomy_by_identity(
     taxonomy_rows: list[Any],
 ) -> dict[tuple[str | None, ...], dict[str, Any]]:

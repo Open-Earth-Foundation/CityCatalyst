@@ -173,6 +173,36 @@ The desired stack is:
   but is not part of the first Stationary Energy runtime.
 5. Long-running work uses a shared workflow/status/result model.
 
+### What Is Already Implemented
+
+Current implementation is partial and concentrated in the Stationary Energy
+vertical slice rather than generalized across all modules.
+
+- Climate Advisor already provides persistent threads/messages, SSE chat
+streaming, token persistence, and token refresh for CityCatalyst access.
+- The MCP transport already exists with discovery/auth flow plus a manual tool
+registry for a small read-only subset of CityCatalyst.
+- A first capability registry already exists for GHGI Stationary Energy. It
+defines capability ids, workflow-step scoping, operation type, required
+resource scope, confirmation behavior, transport exposure, and typed schemas.
+- Internal CityCatalyst capability routes already exist for Stationary Energy
+context loading and accepted-row commit, protected by service-to-service auth
+and normal inventory permission checks.
+- A scoped context loader already exists for Stationary Energy and returns a
+bounded context payload for city, inventory, taxonomy, current values, source
+candidates, permissions, and guidance.
+- A human-in-the-loop Stationary Energy draft workflow already exists in CA:
+`start`, `status`, `list`, `resume`, `retry`, `review`, and `save`, with
+persisted workflow step/status, stored source candidates, proposals, review
+decisions, and commit only after explicit review/save.
+- Typed CA-facing contracts already exist for this slice: Zod schemas on the
+CC side and Pydantic request/response models on the CA side.
+- The CA/CC data split is partly implemented already: CA stores conversation
+state and pre-commit Stationary Energy draft state, while committed inventory
+writes still go through CityCatalyst.
+- Observability is partly in place through request ids, persisted draft
+`trace_id`, and optional LangSmith tracing.
+
 ### Core Pieces We Need
 
 #### 1. Module-Owned Capability Wrappers

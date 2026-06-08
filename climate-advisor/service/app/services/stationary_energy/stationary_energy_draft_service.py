@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import asyncio
+import copy
 import logging
+import os
 from typing import Any
 from uuid import UUID
 
@@ -88,6 +90,52 @@ STAGGER_BATCH_SIZE = 4
 # Keep strong references to in-flight background generation tasks so the event
 # loop does not garbage-collect them before they finish.
 _BACKGROUND_TASKS: set[asyncio.Task[Any]] = set()
+
+
+def _inject_synthetic_conflict(source_candidates: list[Any]) -> list[Any]:
+    """Demo only (SE_DEMO_SYNTHETIC_CONFLICT=true): clone the first
+    emissions-bearing candidate into a competing source so one row becomes a
+    genuine multi-source conflict the hybrid agent must resolve and explain.
+    """
+    for candidate in source_candidates:
+        rows = candidate.normalized_rows or []
+        first = rows[0] if rows else None
+        gases = first.get("gases") if isinstance(first, dict) else None
+        has_emissions = isinstance(gases, list) and any(
+            isinstance(gas, dict)
+            and (gas.get("emissions_value_100yr") or gas.get("emissions_value"))
+            for gas in gases
+        )
+        if not has_emissions:
+            continue
+        clone_rows = copy.deepcopy(rows)
+        for gas in clone_rows[0].get("gases", []):
+            if not isinstance(gas, dict):
+                continue
+            for key in ("emissions_value", "emissions_value_100yr"):
+                value = gas.get(key)
+                if isinstance(value, (int, float)):
+                    gas[key] = round(value * 1.18)
+        clone = candidate.model_copy(
+            update={
+                "candidate_id": None,
+                "datasource_id": f"{candidate.datasource_id}-demo-alt",
+                "publisher_name": "Synthetic Demo Source (alternative)",
+                "dataset_year": (candidate.dataset_year or 2020) - 2,
+                "normalized_rows": clone_rows,
+                "source_data": (
+                    copy.deepcopy(candidate.source_data)
+                    if candidate.source_data
+                    else None
+                ),
+            }
+        )
+        logger.info(
+            "SE demo: injected synthetic competing source for datasource_id=%s",
+            candidate.datasource_id,
+        )
+        return list(source_candidates) + [clone]
+    return source_candidates
 
 
 class StationaryEnergyDraftService:
@@ -901,7 +949,12 @@ class StationaryEnergyDraftService:
             and "city" not in context_payload
         ):
             context_payload = context_payload["data"]
-        return LoadStationaryEnergyContextResponse.model_validate(context_payload)
+        response = LoadStationaryEnergyContextResponse.model_validate(context_payload)
+        if os.getenv("SE_DEMO_SYNTHETIC_CONFLICT", "").lower() == "true":
+            response.source_candidates = _inject_synthetic_conflict(
+                response.source_candidates
+            )
+        return response
 
     async def _mark_failed(
         self,

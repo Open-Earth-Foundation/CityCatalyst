@@ -11,6 +11,7 @@ import type {
   SourceCandidate,
 } from "@/components/StationaryEnergyDraft/types";
 import {
+  compareProposalsByGpcReference,
   compatibleSources,
   formatDraftEmissionsLabel,
   totalEmissionsFromGases,
@@ -18,6 +19,7 @@ import {
   initialDecisionForProposal,
   proposalLabel,
   proposedValueLabel,
+  shortSourceName,
   sourceGeographyLabel,
 } from "@/components/StationaryEnergyDraft/utils";
 import type { TFunction } from "i18next";
@@ -295,12 +297,14 @@ export function reviewableDraftProposals(
   if (!draftState) {
     return [];
   }
-  return draftState.proposals.filter((proposal) =>
-    decisionOptionsForProposal({
-      proposal,
-      candidates: draftState.source_candidates,
-    }).some((option) => option.action !== "leave_draft"),
-  );
+  return draftState.proposals
+    .filter((proposal) =>
+      decisionOptionsForProposal({
+        proposal,
+        candidates: draftState.source_candidates,
+      }).some((option) => option.action !== "leave_draft"),
+    )
+    .sort(compareProposalsByGpcReference);
 }
 
 function buildDecisionOptionGroups(
@@ -323,9 +327,11 @@ function buildDecisionOptionGroups(
       id: recommended.candidate_id ?? recommended.datasource_id,
       action: "accept",
       label: sourceDisplayName(recommended),
+      shortLabel: shortSourceName(recommended) ?? sourceDisplayName(recommended),
       meta: sourceMetaLabel(recommended),
       value: proposedValueLabel(proposal),
       recommended: true,
+      datasourceId: recommended.datasource_id,
     };
     realOptions.push(recommendedOption);
   }
@@ -343,9 +349,11 @@ function buildDecisionOptionGroups(
       id,
       action: "override_source" as const,
       label: sourceDisplayName(candidate),
+      shortLabel: shortSourceName(candidate) ?? sourceDisplayName(candidate),
       meta: sourceMetaLabel(candidate),
       value: sourceCandidateValueLabel(candidate, t),
       recommended: false,
+      datasourceId: candidate.datasource_id,
     };
     alternativeOptions.push(option);
     realOptions.push(option);
@@ -359,6 +367,7 @@ function buildDecisionOptionGroups(
       id: "leave_draft",
       action: "leave_draft",
       label: translateReviewText(t, "review-option-leave-empty"),
+      shortLabel: translateReviewText(t, "review-option-leave-empty"),
       meta: translateReviewText(t, "review-option-set-notation"),
       value: translateReviewText(t, "review-option-set-notation"),
       recommended: false,

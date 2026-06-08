@@ -5,12 +5,13 @@ import {
   Box,
   Flex,
   HStack,
+  Icon,
   Text,
   VStack,
   chakra,
 } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
-import { MdCheckCircle, MdErrorOutline } from "react-icons/md";
+import { MdCheckCircle, MdErrorOutline, MdInfoOutline } from "react-icons/md";
 import { useParams } from "next/navigation";
 
 import { useTranslation } from "@/i18n/client";
@@ -76,6 +77,33 @@ function resolvedDecisionBadgeLabel(
   return t("review-badge-accepted");
 }
 
+function RadioDot({ selected }: { selected: boolean }) {
+  return (
+    <Box
+      w="20px"
+      h="20px"
+      flexShrink={0}
+      mt="2px"
+      borderRadius="full"
+      borderWidth="2px"
+      borderColor={selected ? "interactive.tertiary" : "border.overlay"}
+      bg="base.light"
+      display="grid"
+      placeItems="center"
+      transition="border-color 140ms ease"
+    >
+      {selected ? (
+        <Box
+          w="10px"
+          h="10px"
+          borderRadius="full"
+          bg="interactive.tertiary"
+        />
+      ) : null}
+    </Box>
+  );
+}
+
 function DecisionReviewBaseCard(props: {
   title: string;
   description: string;
@@ -91,8 +119,10 @@ function DecisionReviewBaseCard(props: {
     label?: string,
   ) => void;
   onAskAboutProposal: (label: string) => void;
+  onViewSource?: (datasourceId: string) => void;
 }) {
   const { t } = useStationaryEnergyAgenticTranslation();
+  const rationale = props.proposal.rationale?.trim();
 
   return (
     <Box
@@ -106,16 +136,16 @@ function DecisionReviewBaseCard(props: {
       borderColor="sentiment.positiveDefault"
       borderWidth="1px"
       borderRadius="rounded-xl"
-      p={4}
+      p="m"
     >
       <HStack
         justify="space-between"
         color="interactive.primary"
         fontSize="overline"
         fontWeight="semibold"
-        mb={3}
+        mb="s"
       >
-        <HStack gap={2}>
+        <HStack gap="s">
           <Box
             w="28px"
             h="28px"
@@ -135,43 +165,72 @@ function DecisionReviewBaseCard(props: {
           <Badge
             bg="base.light"
             color="interactive.primary"
-            borderRadius="full"
+            borderRadius="rounded"
             fontSize="label.sm"
           >
             {t("review-card-staged")}
           </Badge>
         ) : null}
       </HStack>
-      <Text color="content.primary" fontSize="body.md" mb={3}>
+      <Text color="content.primary" fontSize="body.md" mb="m">
         {props.description}
       </Text>
-      <VStack align="stretch" gap={2}>
+
+      {rationale ? (
+        <Box
+          bg="base.light"
+          borderWidth="1px"
+          borderColor="border.overlay"
+          borderRadius="rounded"
+          px="m"
+          py="s"
+          mb="m"
+        >
+          <HStack gap="xs" mb="2px" color="content.secondary">
+            <Icon as={MdInfoOutline} boxSize="14px" />
+            <Text
+              fontSize="label.sm"
+              fontWeight="bold"
+              textTransform="uppercase"
+              letterSpacing="wide"
+            >
+              {t("review-card-why-recommended")}
+            </Text>
+          </HStack>
+          <Text color="content.secondary" fontSize="label.md">
+            {rationale}
+          </Text>
+        </Box>
+      ) : null}
+
+      <VStack
+        align="stretch"
+        gap="s"
+        role="radiogroup"
+        aria-label={t("review-card-aria-label")}
+      >
         {props.options.map((option) => {
           const selected =
             props.decision?.action === option.action &&
             (option.action !== "override_source" ||
               props.decision.selectedSourceId === option.id);
+          const isLeaveDraft = option.action === "leave_draft";
 
           return (
-            <chakra.button
-              type="button"
+            <Box
               key={option.id}
-              aria-pressed={selected}
+              role="radio"
+              tabIndex={0}
+              aria-checked={selected}
               w="full"
-              display="grid"
-              gridTemplateColumns="minmax(0, 1fr) auto"
-              alignItems="center"
-              gap={3}
               textAlign="left"
-              px={3}
-              py="10px"
-              minH="54px"
+              px="m"
+              py="s"
               borderWidth="1px"
               borderRadius="rounded"
               borderColor={selected ? "interactive.tertiary" : "border.overlay"}
               bg={selected ? "background.alternative" : "base.light"}
               color="content.primary"
-              appearance="none"
               cursor="pointer"
               transition="background 140ms ease, border-color 140ms ease"
               _hover={{
@@ -185,52 +244,102 @@ function DecisionReviewBaseCard(props: {
                   option.label,
                 )
               }
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  props.onDecisionChoice(
+                    props.proposal,
+                    option.action,
+                    option.action === "override_source" ? option.id : "",
+                    option.label,
+                  );
+                }
+              }}
             >
-              <Box minW={0}>
-                <HStack gap={2} minW={0} align="start" flexWrap="wrap">
-                  <Text fontFamily="heading" fontWeight="semibold" lineClamp={2}>
-                    {option.label}
-                  </Text>
+              <HStack align="flex-start" gap="s">
+                <RadioDot selected={selected} />
+                <Box flex="1 1 auto" minW={0}>
                   {option.recommended ? (
-                    <Text
-                      color="content.tertiary"
-                      fontSize="label.md"
-                      fontWeight="semibold"
-                      whiteSpace="nowrap"
+                    <Badge
+                      bg="sentiment.positiveOverlay"
+                      color="interactive.primary"
+                      borderRadius="rounded"
+                      fontSize="label.sm"
+                      mb="xs"
                     >
                       {t("review-card-recommended")}
+                    </Badge>
+                  ) : null}
+
+                  <Flex justify="space-between" align="baseline" gap="s">
+                    <Text
+                      fontFamily="heading"
+                      fontWeight="semibold"
+                      truncate
+                      minW={0}
+                    >
+                      {option.shortLabel}
+                    </Text>
+                    {!isLeaveDraft ? (
+                      <Text
+                        fontFamily="heading"
+                        fontSize="body.md"
+                        fontWeight="semibold"
+                        whiteSpace="nowrap"
+                        flexShrink={0}
+                      >
+                        {option.value}
+                      </Text>
+                    ) : null}
+                  </Flex>
+
+                  {!isLeaveDraft && option.label !== option.shortLabel ? (
+                    <Text
+                      color="content.secondary"
+                      fontSize="label.md"
+                      lineClamp={2}
+                      mt="2px"
+                    >
+                      {option.label}
                     </Text>
                   ) : null}
-                </HStack>
-                <Text color="content.tertiary" fontSize="label.md" truncate>
-                  {option.meta || option.value}
-                </Text>
-              </Box>
-              {option.action === "leave_draft" ? (
-                <Text
-                  color={selected ? "interactive.primary" : "content.tertiary"}
-                  fontSize="label.md"
-                  fontWeight="semibold"
-                  whiteSpace="nowrap"
-                >
-                  {selected ? t("review-card-selected") : ""}
-                </Text>
-              ) : (
-                <Text
-                  color={selected ? "content.primary" : "content.secondary"}
-                  fontFamily="heading"
-                  fontSize="body.md"
-                  fontWeight="semibold"
-                  whiteSpace="nowrap"
-                >
-                  {option.value}
-                </Text>
-              )}
-            </chakra.button>
+                  {option.meta && option.meta !== option.value ? (
+                    <Text color="content.tertiary" fontSize="label.sm" mt="2px">
+                      {option.meta}
+                    </Text>
+                  ) : null}
+
+                  {!isLeaveDraft &&
+                  option.datasourceId &&
+                  props.onViewSource ? (
+                    <chakra.button
+                      type="button"
+                      mt="s"
+                      display="inline-flex"
+                      alignItems="center"
+                      gap="xs"
+                      color="interactive.secondary"
+                      fontFamily="heading"
+                      fontSize="label.sm"
+                      fontWeight="bold"
+                      _hover={{ color: "interactive.primary" }}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        props.onViewSource?.(option.datasourceId as string);
+                      }}
+                    >
+                      <Icon as={MdInfoOutline} boxSize="16px" />
+                      {t("review-card-see-details")}
+                    </chakra.button>
+                  ) : null}
+                </Box>
+              </HStack>
+            </Box>
           );
         })}
       </VStack>
-      <Flex mt={3} align="stretch" gap={2} flexDir="column">
+
+      <Flex mt="m" align="stretch" gap="s" flexDir="column">
         <Text color="content.tertiary" fontSize="label.md">
           {t("review-card-helper")}
         </Text>
@@ -238,8 +347,8 @@ function DecisionReviewBaseCard(props: {
           type="button"
           alignSelf="stretch"
           textAlign="center"
-          px={3}
-          py={2}
+          px="m"
+          py="s"
           borderWidth="1px"
           borderColor="interactive.primary"
           borderRadius="rounded"
@@ -248,6 +357,7 @@ function DecisionReviewBaseCard(props: {
           fontFamily="heading"
           fontSize="label.md"
           fontWeight="semibold"
+          _hover={{ bg: "background.neutral" }}
           onClick={() => props.onAskAboutProposal(props.reviewLabel)}
         >
           {t("review-card-ask")}
@@ -363,6 +473,7 @@ export function SingleSourceProposalCard(props: {
     label?: string,
   ) => void;
   onAskAboutProposal: (label: string) => void;
+  onViewSource?: (datasourceId: string) => void;
 }) {
   const { t } = useStationaryEnergyAgenticTranslation();
 
@@ -382,6 +493,7 @@ export function SingleSourceProposalCard(props: {
       resolved={props.resolved}
       onDecisionChoice={props.onDecisionChoice}
       onAskAboutProposal={props.onAskAboutProposal}
+      onViewSource={props.onViewSource}
     />
   );
 }
@@ -397,6 +509,7 @@ export function MultiSourceProposalCard(props: {
     label?: string,
   ) => void;
   onAskAboutProposal: (label: string) => void;
+  onViewSource?: (datasourceId: string) => void;
 }) {
   const { t } = useStationaryEnergyAgenticTranslation();
   const options = [
@@ -420,6 +533,7 @@ export function MultiSourceProposalCard(props: {
       resolved={props.resolved}
       onDecisionChoice={props.onDecisionChoice}
       onAskAboutProposal={props.onAskAboutProposal}
+      onViewSource={props.onViewSource}
     />
   );
 }

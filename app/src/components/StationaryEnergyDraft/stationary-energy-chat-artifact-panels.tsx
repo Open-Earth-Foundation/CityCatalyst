@@ -1,9 +1,11 @@
 "use client";
 
-import { Box, Flex, HStack, Input, Text, VStack } from "@chakra-ui/react";
+import { Box, Flex, HStack, Input, Text, VStack, chakra } from "@chakra-ui/react";
+import type { TFunction } from "i18next";
+import { AskAiIcon } from "@/components/icons";
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { MdSend } from "react-icons/md";
+import { MdSend, MdOutlineTipsAndUpdates } from "react-icons/md";
 
 import { useTranslation } from "@/i18n/client";
 import { FLOW_BUTTON_RADIUS } from "@/components/StationaryEnergyDraft/stationary-energy-chat-constants";
@@ -48,6 +50,7 @@ type ClimaChatPanelProps = {
     | "editDecision"
     | "saveDraft"
     | "saveToInventory"
+    | "sendChatMessage"
     | "setChatInput"
     | "startDraftFromChat"
     | "startOver"
@@ -65,6 +68,7 @@ type ClimaChatPanelProps = {
     | "decisionState"
     | "draftState"
     | "errorMessage"
+    | "focusedProposalId"
     | "hasSourceBackedProposals"
     | "loadingAction"
     | "pendingDecisionCount"
@@ -76,6 +80,132 @@ type ClimaChatPanelProps = {
     | "staleDraft"
   >;
 };
+
+type SuggestedQuestion = { id: string; label: string; message: string };
+
+function buildSuggestedQuestions(
+  t: TFunction,
+  stage: DraftStage,
+  focused: DecisionReviewContext | null,
+): SuggestedQuestion[] {
+  const plain = (key: string): SuggestedQuestion => ({
+    id: key,
+    label: t(key),
+    message: t(key),
+  });
+
+  if (stage === "start") {
+    return [
+      plain("chat-suggestion-start-sources"),
+      plain("chat-suggestion-start-missing"),
+      plain("chat-suggestion-start-method"),
+    ];
+  }
+
+  if (stage === "drafting") {
+    return [
+      plain("chat-suggestion-drafting-progress"),
+      plain("chat-suggestion-drafting-sources"),
+    ];
+  }
+
+  if (stage === "decision") {
+    if (focused) {
+      const label = focused.label;
+      const questions: SuggestedQuestion[] = [
+        {
+          id: "focused-why",
+          label: t("chat-suggestion-decision-focused-why-short"),
+          message: t("chat-suggestion-decision-focused-why", { label }),
+        },
+      ];
+      if (focused.kind === "multi_source") {
+        questions.push({
+          id: "focused-diff",
+          label: t("chat-suggestion-decision-focused-diff-short"),
+          message: t("chat-suggestion-decision-focused-diff", { label }),
+        });
+      }
+      questions.push({
+        id: "focused-empty",
+        label: t("chat-suggestion-decision-focused-empty-short"),
+        message: t("chat-suggestion-decision-focused-empty", { label }),
+      });
+      return questions;
+    }
+    return [
+      plain("chat-suggestion-decision-remaining"),
+      plain("chat-suggestion-decision-gaps"),
+      plain("chat-suggestion-decision-notation"),
+    ];
+  }
+
+  return [
+    plain("chat-suggestion-review-check"),
+    plain("chat-suggestion-review-gaps"),
+    plain("chat-suggestion-review-notation"),
+  ];
+}
+
+function SuggestedQuestions(props: {
+  title: string;
+  questions: SuggestedQuestion[];
+  onAsk: (message: string) => void;
+}) {
+  if (props.questions.length === 0) {
+    return null;
+  }
+  return (
+    <Box
+      px={3}
+      pt={3}
+      pb={1}
+      borderTopWidth="1px"
+      borderColor="border.neutral"
+      bg="base.light"
+    >
+      <HStack gap={1.5} mb={2} color="content.tertiary">
+        <MdOutlineTipsAndUpdates size={16} />
+        <Text fontSize="label.sm" fontWeight="semibold">
+          {props.title}
+        </Text>
+      </HStack>
+      <Flex gap={2} flexWrap="wrap">
+        {props.questions.map((question) => (
+          <chakra.button
+            type="button"
+            key={question.id}
+            onClick={() => props.onAsk(question.message)}
+            textAlign="left"
+            maxW="100%"
+            px={3}
+            py="6px"
+            borderWidth="1px"
+            borderColor="border.overlay"
+            borderRadius="rounded"
+            bg="background.backgroundGreyFlat"
+            color="content.secondary"
+            fontSize="label.md"
+            lineHeight="18px"
+            lineClamp={2}
+            whiteSpace="normal"
+            wordBreak="break-word"
+            appearance="none"
+            cursor="pointer"
+            transition="background 140ms ease, border-color 140ms ease"
+            _hover={{
+              bg: "background.neutral",
+              borderColor: "interactive.primary",
+              color: "interactive.primary",
+            }}
+          >
+            {question.label}
+          </chakra.button>
+        ))}
+      </Flex>
+    </Box>
+  );
+}
 
 export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
   const params = useParams();
@@ -90,6 +220,21 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
     state.decisionReviewContext.find(
       (context) => !state.resolvedProposalIds.has(context.proposal_id),
     ) ?? null;
+  const focusedContext =
+    state.decisionReviewContext.find(
+      (context) =>
+        context.proposal_id === state.focusedProposalId &&
+        !state.resolvedProposalIds.has(context.proposal_id),
+    ) ?? firstPendingDecision;
+  const suggestedQuestions = buildSuggestedQuestions(
+    t,
+    state.stage,
+    focusedContext,
+  );
+  const showSuggestedQuestions =
+    !state.showStaleWarning &&
+    state.loadingAction !== "chat" &&
+    suggestedQuestions.length > 0;
   const { chatInput } = state;
 
   const focusChatComposer = useCallback(
@@ -179,10 +324,9 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
           placeItems="center"
           borderRadius="rounded"
           bg="interactive.primary"
-          fontFamily="heading"
-          fontWeight="semibold"
+          color="base.light"
         >
-          *
+          <AskAiIcon />
         </Box>
         <Box>
           <Text fontFamily="heading" fontWeight="semibold">
@@ -270,6 +414,14 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
           </>
         )}
       </VStack>
+
+      {showSuggestedQuestions ? (
+        <SuggestedQuestions
+          title={t("chat-suggestions-title")}
+          questions={suggestedQuestions}
+          onAsk={actions.sendChatMessage}
+        />
+      ) : null}
 
       <Box
         data-testid="clima-chat-composer"

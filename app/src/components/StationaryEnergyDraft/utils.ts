@@ -144,18 +144,110 @@ export function scopeMatches(
   return true;
 }
 
-export function proposalLabel(proposal: DraftProposal): string {
-  const subsector =
+// Order rows by GPC reference number (e.g. I.1.1 < I.1.2 < I.2.1 < I.10.1),
+// comparing each dotted segment numerically when both sides are numbers so
+// "I.10.1" sorts after "I.2.1" instead of lexicographically before it.
+export function compareGpcReference(a: string, b: string): number {
+  const partsA = a.split(".");
+  const partsB = b.split(".");
+  const length = Math.max(partsA.length, partsB.length);
+  for (let index = 0; index < length; index += 1) {
+    const segmentA = partsA[index] ?? "";
+    const segmentB = partsB[index] ?? "";
+    const numberA = Number.parseInt(segmentA, 10);
+    const numberB = Number.parseInt(segmentB, 10);
+    if (!Number.isNaN(numberA) && !Number.isNaN(numberB)) {
+      if (numberA !== numberB) {
+        return numberA - numberB;
+      }
+    } else if (segmentA !== segmentB) {
+      return segmentA < segmentB ? -1 : 1;
+    }
+  }
+  return 0;
+}
+
+export function compareProposalsByGpcReference(
+  a: DraftProposal,
+  b: DraftProposal,
+): number {
+  return compareGpcReference(
+    a.target_ref.subcategory_reference_number ?? "",
+    b.target_ref.subcategory_reference_number ?? "",
+  );
+}
+
+export function proposalSubsectorLabel(proposal: DraftProposal): string {
+  return (
     proposal.target_ref.subsector_name ??
     proposal.target_ref.subsector_reference_number ??
-    proposal.target_ref.subsector_id;
-  const subcategory =
+    proposal.target_ref.subsector_id ??
+    ""
+  );
+}
+
+export function proposalSubsectorRef(proposal: DraftProposal): string {
+  return proposal.target_ref.subsector_reference_number ?? "";
+}
+
+export function proposalSubcategoryLabel(proposal: DraftProposal): string {
+  return (
     proposal.target_ref.subcategory_name ??
     proposal.target_ref.subcategory_reference_number ??
-    proposal.target_ref.subcategory_id;
+    proposal.target_ref.subcategory_id ??
+    ""
+  );
+}
+
+export function proposalLabel(proposal: DraftProposal): string {
   const scope = proposal.target_ref.scope_name ?? proposal.target_ref.scope_id;
 
-  return [subsector, subcategory, scope].filter(Boolean).join(" / ");
+  return [
+    proposalSubsectorLabel(proposal),
+    proposalSubcategoryLabel(proposal),
+    scope,
+  ]
+    .filter(Boolean)
+    .join(" / ");
+}
+
+export function sourceNameLabel(
+  candidate: SourceCandidate | undefined,
+): string | null {
+  if (!candidate) {
+    return null;
+  }
+  return candidate.name ?? candidate.datasource_id ?? null;
+}
+
+// A short, recognisable label for a source. Publishers are often a clean
+// acronym/brand (EPE, SEEG, OGIM) — prefer those; otherwise fall back to the
+// full dataset name (already short for the likes of "Global Energy Monitor",
+// and better than a lowercase slug like "globalenergymonitor").
+export function shortSourceName(
+  candidate: SourceCandidate | undefined,
+): string | null {
+  if (!candidate) {
+    return null;
+  }
+  const publisher = candidate.publisher_name?.trim();
+  if (publisher && /^[A-Z][A-Z0-9]{1,7}$/.test(publisher)) {
+    return publisher;
+  }
+  return candidate.name ?? candidate.datasource_id ?? null;
+}
+
+export function sourceMetaLabel(
+  candidate: SourceCandidate | undefined,
+): string | null {
+  if (!candidate) {
+    return null;
+  }
+  const meta = [
+    candidate.dataset_year ? String(candidate.dataset_year) : null,
+    sourceGeographyLabel(candidate.geography_match),
+  ].filter(Boolean);
+  return meta.length > 0 ? meta.join(" · ") : null;
 }
 
 function parseEmissionsKgValue(value: unknown): bigint | number | null {

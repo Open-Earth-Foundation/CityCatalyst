@@ -97,6 +97,7 @@ export type StationaryEnergyChatArtifactControllerState = {
   draftState: DraftStatusResponse | null;
   draftStatus: string;
   errorMessage: string | null;
+  focusedProposalId: string | null;
   hasDraft: boolean;
   hasSourceBackedProposals: boolean;
   loadingAction: LoadingAction;
@@ -125,7 +126,9 @@ export type StationaryEnergyChatArtifactControllerActions = {
   saveDraft: () => void;
   saveToInventory: () => void;
   selectDraft: (draftRunId: string) => void;
+  sendChatMessage: (content: string) => void;
   setChatInput: (value: string) => void;
+  setFocusedProposal: (proposalId: string | null) => void;
   startDraftFromArtifact: () => void;
   startDraftFromChat: () => void;
   startOver: () => void;
@@ -682,10 +685,9 @@ export function useStationaryEnergyChatArtifactController(
     t,
   ]);
 
-  const submitChat = useCallback(
-    async (event: FormEvent<HTMLFormElement>): Promise<void> => {
-      event.preventDefault();
-      const content = chatInput.trim();
+  const sendChatMessage = useCallback(
+    async (rawContent: string): Promise<void> => {
+      const content = rawContent.trim();
       if (!content || loadingAction === "chat") {
         return;
       }
@@ -723,7 +725,6 @@ export function useStationaryEnergyChatArtifactController(
     },
     [
       appendTextMessage,
-      chatInput,
       cityId,
       decisionReviewContext,
       draftState,
@@ -734,6 +735,14 @@ export function useStationaryEnergyChatArtifactController(
       startStream,
       t,
     ],
+  );
+
+  const submitChat = useCallback(
+    async (event: FormEvent<HTMLFormElement>): Promise<void> => {
+      event.preventDefault();
+      await sendChatMessage(chatInput);
+    },
+    [chatInput, sendChatMessage],
   );
 
   const startDraftFromChat = useCallback((): void => {
@@ -776,6 +785,7 @@ export function useStationaryEnergyChatArtifactController(
       saveDraft: () => void saveDraft(),
       saveToInventory: () => void saveToInventory(),
       selectDraft,
+      sendChatMessage: (content: string) => void sendChatMessage(content),
       setChatInput,
       setFocusedProposal,
       startDraftFromArtifact,

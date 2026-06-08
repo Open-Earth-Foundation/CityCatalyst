@@ -13,8 +13,6 @@ Tests cover:
 from __future__ import annotations
 
 import json
-from typing import AsyncIterator
-from unittest.mock import AsyncMock, patch, MagicMock
 import unittest
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -99,20 +97,19 @@ class ErrorHandlingInConversationTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn(response.status_code, [400, 404, 422])
 
     def test_conversation_with_missing_thread_id(self) -> None:
-        """Test message creation with non-existent thread_id."""
-        from uuid import uuid4
-        
+        """Test message creation rejects a non-existent thread_id."""
+        thread_id = str(uuid4())
         response = self.client.post(
             "/v1/messages",
             json={
                 "user_id": "user-1",
-                "thread_id": str(uuid4()),
+                "thread_id": thread_id,
                 "content": "Test"
             }
         )
-        
-        # May fail if thread doesn't exist
-        self.assertIn(response.status_code, [200, 404])
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()["detail"], f"Thread {thread_id} not found")
 
     def test_message_without_thread_id_creates_thread_auto(self) -> None:
         """Test message creation without thread_id automatically creates a thread."""

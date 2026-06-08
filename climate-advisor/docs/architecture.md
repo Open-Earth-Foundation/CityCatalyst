@@ -132,12 +132,13 @@ sequenceDiagram
     Client->>API: {user_id, content, thread_id?, context}
 
     API->>Resolver: resolve_thread()
-    alt thread_id exists
+    alt thread_id provided
         Resolver->>DB: Fetch thread
-    else create new
+        Resolver-->>API: existing owned thread
+    else no thread_id provided
         Resolver->>DB: Create thread
+        Resolver-->>API: new thread
     end
-    Resolver-->>API: thread
 
     API->>Token: load_token()
     alt token expired
@@ -327,8 +328,8 @@ async def cc_inventory_query(inventory_id: str, data_type: str) -> Dict:
 
 **ThreadResolver** (`utils/thread_resolver.py`)
 
-- Resolves thread_id (existing or create new)
-- Handles thread creation with context
+- Validates that provided thread_ids already exist and belong to the user
+- Creates a new thread only when the request omits thread_id
 
 **TokenHandler** (`utils/token_handler.py`)
 

@@ -13,18 +13,15 @@ from __future__ import annotations
 
 import json
 import unittest
-from typing import AsyncIterator
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 
-import httpx
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
 from app.main import get_app
 from app.db import Base
-from app.models.requests import ThreadCreateRequest, MessageCreateRequest
 
 
 class HealthRouteTests(unittest.TestCase):
@@ -195,6 +192,12 @@ class MessageCreationRouteTests(unittest.IsolatedAsyncioTestCase):
             await conn.run_sync(Base.metadata.drop_all)
         await self.engine.dispose()
 
+    def _create_thread(self, user_id: str = "user-1") -> str:
+        """Create a persisted thread for message route tests."""
+        response = self.client.post("/v1/threads", json={"user_id": user_id})
+        self.assertEqual(response.status_code, 201)
+        return response.json()["thread_id"]
+
     def test_message_requires_user_id(self) -> None:
         """Test message creation requires user_id."""
         response = self.client.post(
@@ -214,21 +217,21 @@ class MessageCreationRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.status_code, 422)
 
     def test_message_with_thread_id(self) -> None:
-        """Test message creation with explicit thread_id."""
-        thread_id = str(uuid4())
-        
+        """Test message creation with an existing thread_id."""
+        thread_id = self._create_thread()
+
         with patch("app.services.agent_service.AgentService") as mock_agent_service:
             mock_agent = AsyncMock()
             mock_agent_service.return_value.create_agent = AsyncMock(
                 return_value=mock_agent
             )
-            
+
             async def mock_stream():
                 yield b"data: {\"type\": \"message\", \"content\": \"Hello\"}\n\n"
                 yield b"data: {\"type\": \"done\"}\n\n"
-            
+
             mock_agent.messages.run_stream = AsyncMock(return_value=mock_stream())
-            
+
             response = self.client.post(
                 "/v1/messages",
                 json={
@@ -237,10 +240,25 @@ class MessageCreationRouteTests(unittest.IsolatedAsyncioTestCase):
                     "thread_id": thread_id
                 }
             )
-            
+
             # Should return streaming response
             self.assertEqual(response.status_code, 200)
             self.assertIn("text/event-stream", response.headers.get("content-type", ""))
+
+    def test_message_with_missing_thread_id_returns_404(self) -> None:
+        """Test message creation rejects a client-provided thread_id that is not persisted."""
+        thread_id = str(uuid4())
+        response = self.client.post(
+            "/v1/messages",
+            json={
+                "user_id": "user-1",
+                "content": "Hello assistant",
+                "thread_id": thread_id,
+            }
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()["detail"], f"Thread {thread_id} not found")
 
     def test_message_returns_streaming_response(self) -> None:
         """Test message endpoint returns streaming response."""
@@ -269,19 +287,19 @@ class MessageCreationRouteTests(unittest.IsolatedAsyncioTestCase):
 
     def test_message_with_options(self) -> None:
         """Test message creation with model and temperature options."""
-        thread_id = str(uuid4())
-        
+        thread_id = self._create_thread()
+
         with patch("app.services.agent_service.AgentService") as mock_agent_service:
             mock_agent = AsyncMock()
             mock_agent_service.return_value.create_agent = AsyncMock(
                 return_value=mock_agent
             )
-            
+
             async def mock_stream():
                 yield b"data: {\"type\": \"done\"}\n\n"
-            
+
             mock_agent.messages.run_stream = AsyncMock(return_value=mock_stream())
-            
+
             response = self.client.post(
                 "/v1/messages",
                 json={

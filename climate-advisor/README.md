@@ -93,7 +93,7 @@ Content-Type: application/json
 
 - ThreadService creates a UUID-based thread
 - Stores thread with user_id, inventory_id, and context (JSONB)
-- Returns thread_id for client use
+- Returns thread_id for client use on later `/v1/messages` calls
 
 ### 2. Send Message & Stream Response
 
@@ -117,6 +117,8 @@ Content-Type: application/json
 }
 ```
 
+If `thread_id` is omitted, Climate Advisor creates a new thread. If `thread_id` is supplied, it must already exist and belong to the requesting user.
+
 **Server Response (SSE Stream):**
 
 ```
@@ -135,7 +137,7 @@ data: {}
 
 **Processing Pipeline:**
 
-1. **Thread Resolution**: If no thread_id provided, creates new thread with context
+1. **Thread Resolution**: If no thread_id is provided, creates a new thread with context. If thread_id is provided, validates that the thread already exists and belongs to the user.
 2. **Token Management**: Loads CC access token from payload context or thread context
 3. **Message Persistence**: Stores user message to database
 4. **Agent Execution**:
@@ -488,6 +490,8 @@ Content-Type: application/json
   "options": { "model": "openai/gpt-5.4-mini" }
 }
 ```
+
+When calling `/v1/messages` directly, create the thread first via `/v1/threads` or omit `thread_id` and let the service start a new conversation.
 
 **Response (200, text/event-stream):**
 

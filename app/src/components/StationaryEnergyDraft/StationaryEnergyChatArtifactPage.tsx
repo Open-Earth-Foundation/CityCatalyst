@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import { ArtifactPanel } from "@/components/StationaryEnergyDraft/stationary-energy-artifact-panel";
 import { ClimaChatPanel } from "@/components/StationaryEnergyDraft/stationary-energy-chat-artifact-panels";
+import { SourceDetailPane } from "@/components/StationaryEnergyDraft/stationary-energy-source-detail-pane";
 import ProgressLoader from "@/components/ProgressLoader";
 import { api } from "@/services/api";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
@@ -137,19 +138,26 @@ export function StationaryEnergyChatArtifactPage({
               <ClimaChatPanel actions={actions} state={state} />
             </Box>
 
-            <Box
+            <Grid
               minW={0}
               minH={0}
               order={{ base: 1, xl: 2 }}
               overflow={{ base: "visible", xl: "hidden" }}
+              templateColumns={{ base: "1fr", "2xl": "minmax(0, 1fr) 380px" }}
+              gap={{ base: 4, "2xl": 4 }}
             >
-              <ArtifactPanel
-                actions={actions}
-                cityName={cityName}
-                inventoryYear={inventoryYear}
-                state={state}
-              />
-            </Box>
+              <Box minW={0} minH={0} overflow={{ base: "visible", xl: "hidden" }}>
+                <ArtifactPanel
+                  actions={actions}
+                  cityName={cityName}
+                  inventoryYear={inventoryYear}
+                  state={state}
+                />
+              </Box>
+              <Box minW={0} minH={0} overflow={{ base: "visible", xl: "hidden" }}>
+                <SourceDetailPane actions={actions} state={state} />
+              </Box>
+            </Grid>
           </Grid>
         )}
       </Box>

@@ -37,6 +37,7 @@ export type ArtifactPanelProps = {
     | "saveDraft"
     | "saveToInventory"
     | "selectDraft"
+    | "setFocusedProposal"
     | "startDraftFromArtifact"
   >;
   cityName: string;
@@ -45,6 +46,7 @@ export type ArtifactPanelProps = {
     StationaryEnergyChatArtifactControllerState,
     | "activeDraftRunId"
     | "activeProposalId"
+    | "focusedProposalId"
     | "canPersistDraftReview"
     | "canSaveToInventory"
     | "counts"
@@ -193,13 +195,16 @@ function RowMarker({ state }: { state: ArtifactRow["state"] }) {
 function ArtifactRowView(props: {
   row: ArtifactRow;
   active: boolean;
+  selected?: boolean;
+  onSelect?: () => void;
   drafting: boolean;
   t: TFunction;
 }) {
   const isActive =
     props.active || (props.drafting && props.row.id === "placeholder-0");
-  const bg =
-    props.row.state === "warning"
+  const bg = props.selected
+    ? "background.alternative"
+    : props.row.state === "warning"
       ? "sentiment.warningOverlay"
       : isActive
         ? "background.neutral"
@@ -215,7 +220,21 @@ function ArtifactRowView(props: {
       bg={bg}
       borderBottomWidth="1px"
       borderColor="border.neutral"
+      borderLeftWidth="3px"
+      borderLeftColor={props.selected ? "interactive.primary" : "transparent"}
       _last={{ borderBottomWidth: 0 }}
+      onClick={props.onSelect}
+      cursor={props.onSelect ? "pointer" : "default"}
+      role={props.onSelect ? "button" : undefined}
+      _hover={
+        props.onSelect
+          ? {
+              bg: props.selected
+                ? "background.alternative"
+                : "background.neutral",
+            }
+          : undefined
+      }
     >
       <RowMarker state={isActive ? "active" : props.row.state} />
       <Box minW={0} flex="1">
@@ -442,6 +461,12 @@ export function ArtifactPanel({
               key={row.id}
               row={row}
               active={row.id === state.activeProposalId}
+              selected={row.id === state.focusedProposalId}
+              onSelect={
+                row.id.startsWith("placeholder-")
+                  ? undefined
+                  : () => actions.setFocusedProposal(row.id)
+              }
               drafting={
                 state.stage === "drafting" && state.loadingAction === "start"
               }

@@ -252,52 +252,10 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
             ) : null}
             {state.chatMessages.map((message) => {
               if (message.kind === "decision_review") {
-                const context = state.decisionReviewContext.find(
-                  (candidate) => candidate.proposal_id === message.proposalId,
-                );
-                if (!context) {
-                  return null;
-                }
-
-                const content = state.resolvedProposalIds.has(
-                  context.proposal_id,
-                ) ? (
-                  <ResolvedDecisionSummaryCard
-                    context={context}
-                    decision={state.decisionState[context.proposal_id]}
-                    onEditDecision={actions.editDecision}
-                  />
-                ) : context.kind === "single_source" ? (
-                  <SingleSourceProposalCard
-                    context={context}
-                    decision={state.decisionState[context.proposal_id]}
-                    resolved={false}
-                    onDecisionChoice={actions.chooseDecision}
-                    onAskAboutProposal={handleAskAboutProposal}
-                  />
-                ) : (
-                  <MultiSourceProposalCard
-                    context={context}
-                    decision={state.decisionState[context.proposal_id]}
-                    resolved={false}
-                    onDecisionChoice={actions.chooseDecision}
-                    onAskAboutProposal={handleAskAboutProposal}
-                  />
-                );
-
-                return (
-                  <Box
-                    key={message.id}
-                    ref={
-                      context.proposal_id === firstPendingDecision?.proposal_id
-                        ? pendingDecisionAnchorRef
-                        : undefined
-                    }
-                    scrollMarginTop="72px"
-                  >
-                    {content}
-                  </Box>
-                );
+                // Decision/source-review cards now live in the right-side
+                // "Source review" focus pane, so they no longer flood the chat.
+                // The chat stays for conversation only.
+                return null;
               }
 
               return message.role === "user" ? (

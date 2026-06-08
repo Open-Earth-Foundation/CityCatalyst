@@ -189,6 +189,9 @@ export function useStationaryEnergyChatArtifactController(
   const [draftListLoading, setDraftListLoading] = useState(false);
   const [resumeAttempted, setResumeAttempted] = useState(false);
   const [sourcePreference, setSourcePreference] = useState<string | null>(null);
+  const [focusedProposalId, setFocusedProposalId] = useState<string | null>(
+    null,
+  );
   const [acknowledgedStaleDraftRunId, setAcknowledgedStaleDraftRunId] =
     useState<string | null>(null);
 
@@ -373,6 +376,27 @@ export function useStationaryEnergyChatArtifactController(
     [decisionReviewContext],
   );
   const activeDecision = pendingDecisionProposals[0] ?? null;
+  const setFocusedProposal = useCallback((proposalId: string | null) => {
+    setFocusedProposalId(proposalId);
+  }, []);
+  // The row whose decision detail is shown in the right-side focus pane.
+  // Uses the user's explicit selection when valid, else the first pending
+  // decision, else the first reviewable row.
+  const effectiveFocusedProposalId = useMemo(() => {
+    if (
+      focusedProposalId &&
+      decisionReviewContext.some(
+        (context) => context.proposal_id === focusedProposalId,
+      )
+    ) {
+      return focusedProposalId;
+    }
+    return (
+      activeDecision?.proposal_id ??
+      decisionReviewContext[0]?.proposal_id ??
+      null
+    );
+  }, [focusedProposalId, decisionReviewContext, activeDecision]);
   const canSaveToInventory = canSaveDraft({
     draftState,
     resolvedProposalIds,
@@ -753,6 +777,7 @@ export function useStationaryEnergyChatArtifactController(
       saveToInventory: () => void saveToInventory(),
       selectDraft,
       setChatInput,
+      setFocusedProposal,
       startDraftFromArtifact,
       startDraftFromChat,
       startOver,
@@ -774,6 +799,7 @@ export function useStationaryEnergyChatArtifactController(
       draftState,
       draftStatus: draftState?.status ?? "not_started",
       errorMessage,
+      focusedProposalId: effectiveFocusedProposalId,
       hasDraft: Boolean(draftState),
       hasSourceBackedProposals,
       loadingAction,

@@ -243,6 +243,28 @@ def validate_and_normalize_proposals(
 _GEOGRAPHY_RANK = {"city": 0, "locode": 0, "region": 1, "country": 2, "global": 3}
 
 
+def _candidate_has_usable_emissions(candidate: dict[str, Any]) -> bool:
+    """Return whether a candidate actually carries an emissions value to draft.
+
+    Some sources (e.g. infrastructure-mapping datasets) match a row's scope but
+    return rows with empty ``gases`` / no emissions. Those can't back a draft
+    value, so they should not count as a usable source -- otherwise the row shows
+    a confusing "no source-backed draft value" instead of a clean gap.
+    """
+    for row in candidate.get("normalized_rows") or []:
+        if not isinstance(row, dict):
+            continue
+        gases = row.get("gases")
+        if not isinstance(gases, list):
+            continue
+        for gas in gases:
+            if isinstance(gas, dict) and (
+                gas.get("emissions_value_100yr") or gas.get("emissions_value")
+            ):
+                return True
+    return False
+
+
 def build_deterministic_proposals(
     *,
     taxonomy_rows: list[Any],
@@ -287,6 +309,7 @@ def build_deterministic_proposals(
                 target_ref=row_payload,
                 source_scope=candidate.get("source_scope"),
             )
+            and _candidate_has_usable_emissions(candidate)
         ]
         if not matching:
             deterministic.append(_deterministic_gap_proposal(row_payload))

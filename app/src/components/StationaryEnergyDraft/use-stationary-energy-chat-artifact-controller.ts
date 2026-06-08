@@ -296,6 +296,36 @@ export function useStationaryEnergyChatArtifactController(
     });
   }, [featureEnabled, loadDraftRuns, t]);
 
+  // Staggered generation: while a draft is still being generated, poll its
+  // status so proposals appear incrementally (the backend commits each batch
+  // as it completes). Stops automatically once the draft reaches a terminal
+  // status (ready/failed/saved/...).
+  const draftRunId = draftState?.draft_run_id;
+  const isGenerating = Boolean(
+    draftState && !hasTerminalDraftStatus(draftState.status),
+  );
+  useEffect(() => {
+    if (!featureEnabled || !draftRunId || !isGenerating) {
+      return;
+    }
+    let cancelled = false;
+    const interval = setInterval(() => {
+      void fetchDraftStatus({ draftRunId, inventoryId })
+        .then((payload) => {
+          if (!cancelled) {
+            applyDraftState(payload);
+          }
+        })
+        .catch(() => {
+          // Transient poll failure: keep the last state and retry next tick.
+        });
+    }, 2000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [featureEnabled, draftRunId, isGenerating, inventoryId, applyDraftState]);
+
   const counts = useMemo(() => countDraftProposals(draftState), [draftState]);
   const unresolvedBlockingIds = useMemo(
     () =>

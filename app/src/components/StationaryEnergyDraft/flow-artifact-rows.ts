@@ -82,6 +82,19 @@ export function buildArtifactRows(
     return buildStartRows(t);
   }
 
+  // Staggered generation: while a draft is still generating and no proposals
+  // have landed yet, show the queued placeholder rows so the panel reads as
+  // "working" instead of empty. As batches arrive (via status polling) the real
+  // proposal rows replace them and the list fills in incrementally.
+  if (
+    draftState.proposals.length === 0 &&
+    ["resolving_scope", "loading_context", "generating"].includes(
+      draftState.status,
+    )
+  ) {
+    return buildStartRows(t);
+  }
+
   return draftState.proposals.map((proposal) => {
     const recommendedSource = findRecommendedSource(
       proposal,

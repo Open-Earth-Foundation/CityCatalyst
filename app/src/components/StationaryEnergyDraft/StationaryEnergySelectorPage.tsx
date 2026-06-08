@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable i18next/no-literal-string */
 
 import {
   Badge,
@@ -16,21 +15,24 @@ import { useParams, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { MdArrowForward, MdSearch } from "react-icons/md";
 
+import { useTranslation } from "@/i18n/client";
 import ProgressLoader from "@/components/ProgressLoader";
 import { Button } from "@/components/ui/button";
 import Wrapper from "@/components/wrapper";
 import { api } from "@/services/api";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
+import { getParamValueRequired } from "@/util/helpers";
 import type { CityYearData } from "@/util/types";
 
-function yearLabel(year: CityYearData): string {
-  return String(year.year ?? "Unknown year");
+function yearLabel(year: CityYearData, fallbackLabel: string): string {
+  return String(year.year ?? fallbackLabel);
 }
 
 export function StationaryEnergySelectorPage() {
   const router = useRouter();
   const params = useParams();
-  const lng = Array.isArray(params.lng) ? params.lng[0] : params.lng;
+  const lng = getParamValueRequired(params.lng);
+  const { t } = useTranslation(lng, "stationary-energy-agentic");
   const featureEnabled =
     hasFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION) &&
     hasFeatureFlag(FeatureFlags.STATIONARY_ENERGY_AGENTIC);
@@ -109,14 +111,17 @@ export function StationaryEnergySelectorPage() {
               fontSize="headline.lg"
               fontWeight="bold"
             >
-              Stationary Energy Draft
+              {t("selector-title")}
             </Heading>
             <Text color="content.tertiary" fontSize="body.lg" mt={2}>
-              Choose one city and one GHGI inventory before starting the bounded
-              Stationary Energy workflow.
+              {t("selector-description")}
             </Text>
           </Box>
-          <Badge>{featureEnabled ? "Pilot enabled" : "Pilot disabled"}</Badge>
+          <Badge>
+            {featureEnabled
+              ? t("selector-badge-enabled")
+              : t("selector-badge-disabled")}
+          </Badge>
         </Flex>
 
         {!featureEnabled && (
@@ -127,12 +132,10 @@ export function StationaryEnergySelectorPage() {
             p={5}
           >
             <Text color="content.primary" fontWeight="semibold">
-              Enable `CA_SERVICE_INTEGRATION` and `STATIONARY_ENERGY_AGENTIC` to
-              use this workflow.
+              {t("selector-flags-title")}
             </Text>
             <Text color="content.tertiary" mt={2}>
-              This page does not create a draft until both flags are enabled and
-              a target inventory is selected.
+              {t("selector-flags-description")}
             </Text>
           </Box>
         )}
@@ -157,7 +160,7 @@ export function StationaryEnergySelectorPage() {
                 <Input
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Search cities, countries, regions, or years"
+                  placeholder={t("selector-search-placeholder")}
                   pl={10}
                 />
               </Box>
@@ -199,7 +202,7 @@ export function StationaryEnergySelectorPage() {
                         <HStack gap={2} flexWrap="wrap">
                           {entry.years.slice(0, 4).map((year) => (
                             <Badge key={year.inventoryId}>
-                              {yearLabel(year)}
+                              {yearLabel(year, t("selector-unknown-year"))}
                             </Badge>
                           ))}
                         </HStack>
@@ -223,9 +226,13 @@ export function StationaryEnergySelectorPage() {
                                   setSelectedInventoryId(year.inventoryId);
                                 }}
                               >
-                                <span>{yearLabel(year)}</span>
                                 <span>
-                                  {inventorySelected ? "Selected" : "Choose"}
+                                  {yearLabel(year, t("selector-unknown-year"))}
+                                </span>
+                                <span>
+                                  {inventorySelected
+                                    ? t("selector-inventory-selected")
+                                    : t("selector-inventory-choose")}
                                 </span>
                               </Button>
                             );
@@ -248,38 +255,41 @@ export function StationaryEnergySelectorPage() {
               top={6}
             >
               <Heading fontSize="title.lg" fontWeight="semibold">
-                Selected Scope
+                {t("selector-summary-title")}
               </Heading>
               <VStack align="stretch" gap={4} mt={5}>
                 <Box>
                   <Text color="content.tertiary" fontSize="label.md">
-                    City
+                    {t("selector-summary-city-label")}
                   </Text>
                   <Text fontWeight="semibold">
-                    {selectedCity?.city.name ?? "Select a city"}
+                    {selectedCity?.city.name ??
+                      t("selector-summary-city-placeholder")}
                   </Text>
                 </Box>
                 <Box>
                   <Text color="content.tertiary" fontSize="label.md">
-                    Inventory
+                    {t("selector-summary-inventory-label")}
                   </Text>
                   <Text fontWeight="semibold">
                     {selectedInventory
-                      ? yearLabel(selectedInventory)
-                      : "Select an inventory"}
+                      ? yearLabel(selectedInventory, t("selector-unknown-year"))
+                      : t("selector-summary-inventory-placeholder")}
                   </Text>
                 </Box>
                 <Box>
                   <Text color="content.tertiary" fontSize="label.md">
-                    Sector
+                    {t("selector-summary-sector-label")}
                   </Text>
-                  <Text fontWeight="semibold">Stationary Energy</Text>
+                  <Text fontWeight="semibold">
+                    {t("selector-summary-sector-value")}
+                  </Text>
                 </Box>
                 <Button
                   disabled={!selectedCityId || !selectedInventoryId}
                   onClick={continueToDraft}
                 >
-                  Continue to decisions
+                  {t("selector-continue")}
                   <MdArrowForward />
                 </Button>
               </VStack>

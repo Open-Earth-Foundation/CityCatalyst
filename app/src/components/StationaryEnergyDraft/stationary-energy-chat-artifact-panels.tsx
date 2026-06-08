@@ -1,14 +1,12 @@
 "use client";
-/* eslint-disable i18next/no-literal-string */
 
 import { Box, Flex, HStack, Input, Text, VStack } from "@chakra-ui/react";
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MdSend } from "react-icons/md";
 
-import {
-  FLOW_BUTTON_RADIUS,
-} from "@/components/StationaryEnergyDraft/stationary-energy-chat-constants";
+import { useTranslation } from "@/i18n/client";
+import { FLOW_BUTTON_RADIUS } from "@/components/StationaryEnergyDraft/stationary-energy-chat-constants";
 import { StageMessages } from "@/components/StationaryEnergyDraft/stationary-energy-chat-stage-messages";
 import {
   AgentBubble,
@@ -33,10 +31,10 @@ import type {
   DraftProposal,
   DraftStatusResponse,
 } from "@/components/StationaryEnergyDraft/types";
-import type {
-  LoadingAction,
-} from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
+import type { LoadingAction } from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
 import { Button } from "@/components/ui/button";
+import { getParamValueRequired } from "@/util/helpers";
+import { useParams } from "next/navigation";
 
 type ClimaChatPanelProps = {
   stage: DraftStage;
@@ -76,6 +74,9 @@ type ClimaChatPanelProps = {
 };
 
 export function ClimaChatPanel(props: ClimaChatPanelProps) {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+  const { t } = useTranslation(lng, "stationary-energy-agentic");
   const scrollRegionRef = useRef<HTMLDivElement | null>(null);
   const chatInputRef = useRef<HTMLInputElement | null>(null);
   const pendingDecisionAnchorRef = useRef<HTMLDivElement | null>(null);
@@ -108,11 +109,9 @@ export function ClimaChatPanel(props: ClimaChatPanelProps) {
 
   const handleAskAboutProposal = useCallback(
     (label: string) => {
-      focusChatComposer(
-        `Can you explain the connected source proposal for ${label}?`,
-      );
+      focusChatComposer(t("chat-panel-ask-about-proposal", { label }));
     },
-    [focusChatComposer],
+    [focusChatComposer, t],
   );
 
   const handleJumpToPendingDecision = useCallback(() => {
@@ -183,10 +182,10 @@ export function ClimaChatPanel(props: ClimaChatPanelProps) {
         </Box>
         <Box>
           <Text fontFamily="heading" fontWeight="semibold">
-            Clima
+            {t("chat-panel-title")}
           </Text>
           <Text fontSize="label.md" opacity={0.9}>
-            Climate Advisor
+            {t("chat-panel-subtitle")}
           </Text>
         </Box>
       </Flex>
@@ -287,7 +286,7 @@ export function ClimaChatPanel(props: ClimaChatPanelProps) {
               ) : (
                 <AgentBubble
                   key={message.id}
-                  text={message.text || "Thinking..."}
+                  text={message.text || t("chat-panel-thinking")}
                 />
               );
             })}
@@ -310,8 +309,8 @@ export function ClimaChatPanel(props: ClimaChatPanelProps) {
               onChange={(event) => props.onChatInputChange(event.target.value)}
               placeholder={
                 props.pendingDecisionCount > 0
-                  ? "Ask about a source or row before deciding..."
-                  : "Message Clima..."
+                  ? t("chat-panel-placeholder-review")
+                  : t("chat-panel-placeholder-default")
               }
               borderRadius="rounded"
               bg="background.backgroundGreyFlat"
@@ -324,7 +323,7 @@ export function ClimaChatPanel(props: ClimaChatPanelProps) {
                 borderRadius={FLOW_BUTTON_RADIUS}
                 onClick={props.onStopChat}
               >
-                Stop
+                {t("chat-panel-stop")}
               </Button>
             ) : (
               <Button type="submit" borderRadius={FLOW_BUTTON_RADIUS} px={4}>

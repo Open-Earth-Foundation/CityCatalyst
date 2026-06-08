@@ -8,12 +8,23 @@ import {
   StatusLine,
   UserBubble,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-primitives";
+import {
+  buildSourcePreferenceLabel,
+  NO_SOURCE_PREFERENCE,
+  SET_EMPTY_NOTATION_PREFERENCE,
+  sourcePreferenceCommand,
+  START_CHOOSE_SOURCES,
+} from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-helpers";
 import type {
   DecisionReviewContext,
   DraftCounts,
   DraftStage,
 } from "@/components/StationaryEnergyDraft/flow";
+import { useTranslation } from "@/i18n/client";
 import type { DraftStatusResponse } from "@/components/StationaryEnergyDraft/types";
+import { getParamValueRequired } from "@/util/helpers";
+import type { TFunction } from "i18next";
+import { useParams } from "next/navigation";
 
 type StageMessagesProps = {
   stage: DraftStage;
@@ -32,34 +43,43 @@ type StageMessagesProps = {
   onStartDraft: () => void;
 };
 
-function decisionStageLabel(pendingDecisionCount: number): string {
+function decisionStageLabel(
+  t: TFunction,
+  pendingDecisionCount: number,
+): string {
   return pendingDecisionCount === 1
-    ? "1 row needs decision review"
-    : `${pendingDecisionCount} rows need decision review`;
+    ? t("chat-decision-stage-label-one")
+    : t("chat-decision-stage-label-many", { count: pendingDecisionCount });
 }
 
-function reviewCompletionMessage(props: StageMessagesProps): string {
+function reviewCompletionMessage(
+  t: TFunction,
+  props: StageMessagesProps,
+): string {
   if (props.canSaveToInventory) {
-    return "Done. Review the working draft on the left, save it in Clima, or commit it to the inventory when you are ready.";
+    return t("chat-review-completion-can-save-inventory");
   }
   if (props.canPersistDraftReview) {
-    return "Review complete. Save this draft in Clima now if you want to come back later.";
+    return t("chat-review-completion-can-save-draft");
   }
-  return "Review complete. Nothing is ready to save yet.";
+  return t("chat-review-completion-nothing-ready");
 }
 
-function reviewEmptyStateMessage(props: StageMessagesProps): string {
+function reviewEmptyStateMessage(
+  t: TFunction,
+  props: StageMessagesProps,
+): string {
   return props.hasSourceBackedProposals
-    ? "Review complete. No source-backed rows are staged to save."
-    : "No source-backed proposals are available to save from the current connected datasets.";
+    ? t("chat-review-empty-state-has-proposals")
+    : t("chat-review-empty-state-no-proposals");
 }
 
-function reviewQuickReplies(props: StageMessagesProps) {
+function reviewQuickReplies(t: TFunction, props: StageMessagesProps) {
   return [
     ...(props.canPersistDraftReview
       ? [
           {
-            label: "Save draft",
+            label: t("chat-quick-reply-save-draft"),
             onClick: props.onSaveDraft,
           },
         ]
@@ -67,52 +87,56 @@ function reviewQuickReplies(props: StageMessagesProps) {
     ...(props.canSaveToInventory
       ? [
           {
-            label: "Save to inventory",
+            label: t("chat-quick-reply-save-to-inventory"),
             primary: true,
             onClick: props.onSaveToInventory,
           },
         ]
       : []),
     {
-      label: "Set notation for empty ones",
-      onClick: () => props.onPreference("Set notation for empty ones"),
+      label: t("chat-quick-reply-set-notation"),
+      onClick: () => props.onPreference(SET_EMPTY_NOTATION_PREFERENCE),
     },
   ];
 }
 
-function draftingPreferenceButtons(props: StageMessagesProps) {
+function draftingPreferenceButtons(t: TFunction, props: StageMessagesProps) {
   return [
     ...props.sourcePreferenceOptions.map((sourceName) => ({
-      label: `Prefer ${sourceName}`,
-      onClick: () => props.onPreference(`Prefer ${sourceName}`),
+      label: t("chat-source-preference-prefer", { sourceName }),
+      onClick: () => props.onPreference(sourcePreferenceCommand(sourceName)),
     })),
     {
-      label: "No preference",
-      onClick: () => props.onPreference("No preference"),
+      label: t("chat-source-preference-no-preference"),
+      onClick: () => props.onPreference(NO_SOURCE_PREFERENCE),
     },
   ];
 }
 
 export function StageMessages(props: StageMessagesProps) {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+  const { t } = useTranslation(lng, "stationary-energy-agentic");
+
   if (props.stage === "start") {
     return (
       <>
-        <AgentBubble text="I can help complete the Stationary Energy sector using third-party data already integrated with this inventory." />
+        <AgentBubble text={t("chat-start-intro")} />
         <CoveragePanel
           sourceCount={props.draftState?.source_candidates.length ?? null}
           currentCount={props.counts.total}
         />
-        <AgentBubble text="Want me to draft the empty rows? You can review every value before saving." />
+        <AgentBubble text={t("chat-start-review-prompt")} />
         <QuickReplies
           buttons={[
             {
-              label: "Yes, draft them",
+              label: t("chat-start-yes-draft"),
               primary: true,
               onClick: props.onStartDraft,
             },
             {
-              label: "Let me choose sources",
-              onClick: () => props.onPreference("Let me choose sources"),
+              label: t("chat-start-choose-sources"),
+              onClick: () => props.onPreference(START_CHOOSE_SOURCES),
             },
           ]}
         />
@@ -123,12 +147,14 @@ export function StageMessages(props: StageMessagesProps) {
   if (props.stage === "drafting") {
     return (
       <>
-        <AgentBubble text="Starting now. I will draft each empty Stationary Energy row from the integrated sources." />
-        <QuickReplies buttons={draftingPreferenceButtons(props)} />
+        <AgentBubble text={t("chat-drafting-started")} />
+        <QuickReplies buttons={draftingPreferenceButtons(t, props)} />
         {props.sourcePreference ? (
-          <UserBubble text={props.sourcePreference} />
+          <UserBubble
+            text={buildSourcePreferenceLabel(t, props.sourcePreference)}
+          />
         ) : null}
-        <StatusLine text="Drafting rows and comparing source coverage..." />
+        <StatusLine text={t("chat-drafting-status")} />
       </>
     );
   }
@@ -136,7 +162,12 @@ export function StageMessages(props: StageMessagesProps) {
   if (props.stage === "decision" && props.pendingDecisionCount > 0) {
     return (
       <AgentBubble
-        text={`Most rows are drafted. ${decisionStageLabel(props.pendingDecisionCount)}; I marked those reviews below and will keep them in this chat history while we discuss anything else.`}
+        text={t("chat-decision-summary", {
+          pendingDecisionLabel: decisionStageLabel(
+            t,
+            props.pendingDecisionCount,
+          ),
+        })}
       />
     );
   }
@@ -144,7 +175,7 @@ export function StageMessages(props: StageMessagesProps) {
   if (props.draftState?.status === "saved") {
     return (
       <>
-        <AgentBubble text="Saved. The reviewed source-backed rows are already committed to the inventory." />
+        <AgentBubble text={t("chat-saved-summary")} />
         <RunSummary
           counts={props.counts}
           pendingDecisionCount={props.pendingDecisionCount}
@@ -160,26 +191,26 @@ export function StageMessages(props: StageMessagesProps) {
   ) {
     return (
       <>
-        <AgentBubble text={reviewEmptyStateMessage(props)} />
+        <AgentBubble text={reviewEmptyStateMessage(t, props)} />
         <RunSummary
           counts={props.counts}
           pendingDecisionCount={props.pendingDecisionCount}
         />
-        <AgentBubble text="Rows without a usable source can stay empty or be handled later with a notation key." />
+        <AgentBubble text={t("chat-review-later-notation")} />
       </>
     );
   }
 
   return (
     <>
-      <AgentBubble text={reviewCompletionMessage(props)} />
+      <AgentBubble text={reviewCompletionMessage(t, props)} />
       <RunSummary
         counts={props.counts}
         pendingDecisionCount={props.pendingDecisionCount}
       />
-      <AgentBubble text="Rows without a usable source can stay empty or be handled later with a notation key." />
+      <AgentBubble text={t("chat-review-later-notation")} />
       {props.canPersistDraftReview || props.canSaveToInventory ? (
-        <QuickReplies buttons={reviewQuickReplies(props)} />
+        <QuickReplies buttons={reviewQuickReplies(t, props)} />
       ) : null}
     </>
   );

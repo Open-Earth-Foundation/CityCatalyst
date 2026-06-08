@@ -104,15 +104,18 @@ async function commitSelectedSourceRow(params: {
   }
 
   const sourceScope = {
-    sector_id: source.subSector?.sectorId ?? source.subCategory?.subsector?.sectorId,
+    sector_id:
+      source.subSector?.sectorId ?? source.subCategory?.subsector?.sectorId,
     subsector_id:
-      source.subSector?.subsectorId ?? source.subCategory?.subsector?.subsectorId,
+      source.subSector?.subsectorId ??
+      source.subCategory?.subsector?.subsectorId,
     subsector_reference_number:
       source.subSector?.referenceNumber ??
       source.subCategory?.subsector?.referenceNumber,
     subcategory_id: source.subCategory?.subcategoryId ?? null,
     subcategory_reference_number: source.subCategory?.referenceNumber ?? null,
-    scope_id: source.subCategory?.scopeId ?? source.subCategory?.scope?.scopeId ?? null,
+    scope_id:
+      source.subCategory?.scopeId ?? source.subCategory?.scope?.scopeId ?? null,
   };
 
   if (!stationaryEnergyScopeMatchesTarget(row.target_ref, sourceScope)) {
@@ -121,14 +124,12 @@ async function commitSelectedSourceRow(params: {
       decision_version: row.decision_version,
       selected_source_id: row.selected_source_id,
       status: "failed",
-      issue: "Selected source does not match the reviewed Stationary Energy target",
+      issue: "source-does-not-match-stationary-energy-target",
     };
   }
 
-  const populationScaleFactors = await DataSourceService.findPopulationScaleFactors(
-    inventory,
-    [source],
-  );
+  const populationScaleFactors =
+    await DataSourceService.findPopulationScaleFactors(inventory, [source]);
   const applyResult = await DataSourceService.applySource(
     source,
     inventory,
@@ -250,7 +251,9 @@ async function commitManualOverrideRow(params: {
   };
 }
 
-function targetReferenceNumber(targetRef: Record<string, unknown>): string | null {
+function targetReferenceNumber(
+  targetRef: Record<string, unknown>,
+): string | null {
   const subcategoryReference = asString(
     targetRef["subcategory_reference_number"],
   );

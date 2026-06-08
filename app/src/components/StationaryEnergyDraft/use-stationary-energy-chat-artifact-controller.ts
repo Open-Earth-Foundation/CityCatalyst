@@ -14,6 +14,7 @@ import {
 } from "@/components/StationaryEnergyDraft/stationary-energy-draft-api";
 import {
   addResolvedProposalId,
+  buildSourcePreferenceLabel,
   buildSourcePreferenceReply,
   buildStationaryEnergyChatRequest,
   hasTerminalDraftStatus,
@@ -61,6 +62,7 @@ import type {
   SaveResponse,
 } from "@/components/StationaryEnergyDraft/types";
 import { useSSEStream } from "@/hooks/useSSEStream";
+import type { TFunction } from "i18next";
 
 export type LoadingAction =
   | "start"
@@ -77,6 +79,7 @@ type UseStationaryEnergyChatArtifactControllerParams = {
   inventoryId: string;
   lng: string;
   queryDraftRunId: string | null;
+  t: TFunction;
 };
 
 export type StationaryEnergyChatArtifactControllerState = {
@@ -137,6 +140,24 @@ export type StationaryEnergyChatArtifactController = {
 
 const EMPTY_RESOLVED_PROPOSALS = new Set<string>();
 
+function translateMessage(t: TFunction, message?: string | null): string {
+  if (!message) {
+    return "";
+  }
+
+  const translated = t(message);
+  return translated === message ? message : translated;
+}
+
+function resolveErrorMessage(
+  t: TFunction,
+  error: unknown,
+  fallbackKey: string,
+): string {
+  const message = error instanceof Error ? error.message : null;
+  return translateMessage(t, message) || t(fallbackKey);
+}
+
 export function useStationaryEnergyChatArtifactController(
   params: UseStationaryEnergyChatArtifactControllerParams,
 ): StationaryEnergyChatArtifactController {
@@ -147,6 +168,7 @@ export function useStationaryEnergyChatArtifactController(
     inventoryId,
     lng,
     queryDraftRunId,
+    t,
   } = params;
 
   const [draftState, setDraftState] = useState<DraftStatusResponse | null>(
@@ -218,8 +240,8 @@ export function useStationaryEnergyChatArtifactController(
     [applyDraftState, inventoryId, loadDraftRuns],
   );
 
-  const resumeDraftFromServer = useCallback(
-    async (): Promise<DraftStatusResponse | null> => {
+  const resumeDraftFromServer =
+    useCallback(async (): Promise<DraftStatusResponse | null> => {
       const payload = await fetchResumedDraft({ cityId, inventoryId });
       if (!payload) {
         return null;
@@ -227,9 +249,7 @@ export function useStationaryEnergyChatArtifactController(
       applyDraftState(payload);
       await loadDraftRuns();
       return payload;
-    },
-    [applyDraftState, cityId, inventoryId, loadDraftRuns],
-  );
+    }, [applyDraftState, cityId, inventoryId, loadDraftRuns]);
 
   useEffect(() => {
     if (!featureEnabled || resumeAttempted) {
@@ -244,7 +264,11 @@ export function useStationaryEnergyChatArtifactController(
       resumeDraftFromServer,
     }).catch((error) => {
       setErrorMessage(
-        error instanceof Error ? error.message : "Failed to resume draft",
+        resolveErrorMessage(
+          t,
+          error,
+          "error-failed-to-resume-stationary-energy-draft",
+        ),
       );
     });
   }, [
@@ -254,6 +278,7 @@ export function useStationaryEnergyChatArtifactController(
     refreshDraftStatus,
     resumeAttempted,
     resumeDraftFromServer,
+    t,
   ]);
 
   useEffect(() => {
@@ -262,12 +287,14 @@ export function useStationaryEnergyChatArtifactController(
     }
     void loadDraftRuns().catch((error) => {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Failed to load Stationary Energy drafts",
+        resolveErrorMessage(
+          t,
+          error,
+          "error-failed-to-load-stationary-energy-drafts",
+        ),
       );
     });
-  }, [featureEnabled, loadDraftRuns]);
+  }, [featureEnabled, loadDraftRuns, t]);
 
   const counts = useMemo(() => countDraftProposals(draftState), [draftState]);
   const unresolvedBlockingIds = useMemo(
@@ -349,7 +376,9 @@ export function useStationaryEnergyChatArtifactController(
   );
 
   const appendAssistantDelta = useCallback((delta: string): void => {
-    setChatMessages((current) => appendAssistantDeltaToMessages(current, delta));
+    setChatMessages((current) =>
+      appendAssistantDeltaToMessages(current, delta),
+    );
   }, []);
 
   const removeEmptyAssistantTail = useCallback((): void => {
@@ -365,7 +394,9 @@ export function useStationaryEnergyChatArtifactController(
     },
     onError: (error) => {
       removeEmptyAssistantTail();
-      setErrorMessage(error);
+      setErrorMessage(
+        translateMessage(t, error) || t("error-failed-to-send-message"),
+      );
       setLoadingAction(null);
     },
   });
@@ -396,9 +427,7 @@ export function useStationaryEnergyChatArtifactController(
         if (required) {
           throw error;
         }
-        setErrorMessage(
-          "Clima chat history is unavailable, but the draft can still run.",
-        );
+        setErrorMessage(t("error-chat-history-unavailable"));
         return null;
       } finally {
         if (timeoutId != null) {
@@ -406,7 +435,7 @@ export function useStationaryEnergyChatArtifactController(
         }
       }
     },
-    [draftState?.thread_id, inventoryId, threadId],
+    [draftState?.thread_id, inventoryId, t, threadId],
   );
 
   const startDraft = useCallback(async (): Promise<void> => {
@@ -422,25 +451,29 @@ export function useStationaryEnergyChatArtifactController(
       });
       const draftRunId = String(payload.draft_run_id ?? "");
       if (!draftRunId) {
-        throw new Error("Draft start response did not include draft_run_id.");
+        throw new Error(t("error-draft-start-response-missing-run-id"));
       }
       await refreshDraftStatus(draftRunId);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Failed to start draft",
+        resolveErrorMessage(
+          t,
+          error,
+          "error-failed-to-start-stationary-energy-draft",
+        ),
       );
     } finally {
       setLoadingAction(null);
     }
-  }, [cityId, ensureThreadId, inventoryId, lng, refreshDraftStatus]);
+  }, [cityId, ensureThreadId, inventoryId, lng, refreshDraftStatus, t]);
 
   const choosePreference = useCallback(
     (preference: string): void => {
       setSourcePreference(preference);
-      appendTextMessage("user", preference);
-      appendTextMessage("assistant", buildSourcePreferenceReply(preference));
+      appendTextMessage("user", buildSourcePreferenceLabel(t, preference));
+      appendTextMessage("assistant", buildSourcePreferenceReply(t, preference));
     },
-    [appendTextMessage],
+    [appendTextMessage, t],
   );
 
   const continueStaleDraft = useCallback((): void => {
@@ -517,16 +550,15 @@ export function useStationaryEnergyChatArtifactController(
     setLoadingAction("save_draft");
     try {
       await persistReviewDecisions(draftState);
-      appendTextMessage(
-        "assistant",
-        "Draft saved in Clima. You can reopen it later from the draft list.",
-      );
+      appendTextMessage("assistant", t("chat-save-draft-success"));
       await refreshDraftStatus(draftState.draft_run_id);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Failed to save Stationary Energy draft",
+        resolveErrorMessage(
+          t,
+          error,
+          "error-failed-to-save-stationary-energy-draft-decisions",
+        ),
       );
     } finally {
       setLoadingAction(null);
@@ -537,6 +569,7 @@ export function useStationaryEnergyChatArtifactController(
     draftState,
     persistReviewDecisions,
     refreshDraftStatus,
+    t,
   ]);
 
   const saveToInventory = useCallback(async (): Promise<void> => {
@@ -563,13 +596,17 @@ export function useStationaryEnergyChatArtifactController(
       appendTextMessage(
         "assistant",
         payload.status === "saved"
-          ? "Saved. Accepted rows are now committed to the inventory."
-          : `Save finished with status: ${payload.status}.`,
+          ? t("chat-save-inventory-success")
+          : t("chat-save-inventory-status", { status: payload.status }),
       );
       await refreshDraftStatus(draftState.draft_run_id);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Failed to save accepted rows",
+        resolveErrorMessage(
+          t,
+          error,
+          "error-failed-to-save-accepted-stationary-energy-rows",
+        ),
       );
     } finally {
       setLoadingAction(null);
@@ -582,6 +619,7 @@ export function useStationaryEnergyChatArtifactController(
     inventoryId,
     persistReviewDecisions,
     refreshDraftStatus,
+    t,
   ]);
 
   const submitChat = useCallback(
@@ -617,7 +655,7 @@ export function useStationaryEnergyChatArtifactController(
         if ((error as Error).name !== "AbortError") {
           removeEmptyAssistantTail();
           setErrorMessage(
-            error instanceof Error ? error.message : "Failed to send message",
+            resolveErrorMessage(t, error, "error-failed-to-send-message"),
           );
         }
         setLoadingAction(null);
@@ -634,13 +672,14 @@ export function useStationaryEnergyChatArtifactController(
       loadingAction,
       removeEmptyAssistantTail,
       startStream,
+      t,
     ],
   );
 
   const startDraftFromChat = useCallback((): void => {
-    appendTextMessage("user", "Yes, draft them");
+    appendTextMessage("user", t("chat-start-yes-draft"));
     void startDraft();
-  }, [appendTextMessage, startDraft]);
+  }, [appendTextMessage, startDraft, t]);
 
   const startDraftFromArtifact = useCallback((): void => {
     if (draftState) {

@@ -18,7 +18,7 @@ export async function fetchDraftRuns(params: {
   );
   return readJson<DraftListResponse>(
     response,
-    "Failed to load Stationary Energy drafts",
+    "error-failed-to-load-stationary-energy-drafts",
   );
 }
 
@@ -31,7 +31,7 @@ export async function fetchDraftStatus(params: {
   );
   return readJson<DraftStatusResponse>(
     response,
-    "Failed to load Stationary Energy draft status",
+    "error-failed-to-load-stationary-energy-draft-status",
   );
 }
 
@@ -51,7 +51,7 @@ export async function fetchResumedDraft(params: {
   }
   return readJson<DraftStatusResponse>(
     response,
-    "Failed to resume Stationary Energy draft",
+    "error-failed-to-resume-stationary-energy-draft",
   );
 }
 
@@ -70,7 +70,7 @@ export async function createChatThread(params: {
   });
   return readJson<{ threadId: string }>(
     response,
-    "Failed to create Clima chat thread",
+    "error-failed-to-create-clima-chat-thread",
   );
 }
 
@@ -92,7 +92,7 @@ export async function startDraftRun(params: {
   });
   return readJson<{ draft_run_id?: string }>(
     response,
-    "Failed to start Stationary Energy draft",
+    "error-failed-to-start-stationary-energy-draft",
   );
 }
 
@@ -114,7 +114,7 @@ export async function persistReviewDecisionPayload(params: {
   );
   return readJson(
     response,
-    "Failed to save Stationary Energy draft decisions",
+    "error-failed-to-save-stationary-energy-draft-decisions",
   );
 }
 
@@ -134,6 +134,6 @@ export async function saveAcceptedDraftRows(params: {
   );
   return readJson<SaveResponse>(
     response,
-    "Failed to save accepted Stationary Energy rows",
+    "error-failed-to-save-accepted-stationary-energy-rows",
   );
 }

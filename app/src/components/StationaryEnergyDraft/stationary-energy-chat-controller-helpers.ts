@@ -2,9 +2,8 @@ import {
   createDecisionReviewMessage,
   type ChatMessage,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-messages";
-import type {
-  DecisionReviewContext,
-} from "@/components/StationaryEnergyDraft/flow";
+import type { TFunction } from "i18next";
+import type { DecisionReviewContext } from "@/components/StationaryEnergyDraft/flow";
 import type {
   DraftDecisionAction,
   DraftDecisionState,
@@ -17,6 +16,11 @@ const TERMINAL_DRAFT_STATUSES = new Set([
   "no_changes",
   "failed",
 ]);
+const SOURCE_PREFERENCE_PREFIX = "source:";
+
+export const NO_SOURCE_PREFERENCE = "__source_preference_none__";
+export const START_CHOOSE_SOURCES = "__start_choose_sources__";
+export const SET_EMPTY_NOTATION_PREFERENCE = "__set_empty_notation__";
 
 export function hasTerminalDraftStatus(status: string): boolean {
   return TERMINAL_DRAFT_STATUSES.has(status);
@@ -42,12 +46,62 @@ export function mergeDecisionReviewMessages(
   return additions.length === 0 ? current : [...current, ...additions];
 }
 
-export function buildSourcePreferenceReply(preference: string): string {
-  if (preference === "No preference") {
-    return "Got it. I will keep the current source ranking.";
+export function sourcePreferenceCommand(sourceName: string): string {
+  return `${SOURCE_PREFERENCE_PREFIX}${sourceName}`;
+}
+
+function sourceNameFromPreference(preference: string): string | null {
+  return preference.startsWith(SOURCE_PREFERENCE_PREFIX)
+    ? preference.slice(SOURCE_PREFERENCE_PREFIX.length)
+    : null;
+}
+
+export function buildSourcePreferenceLabel(
+  t: TFunction,
+  preference: string,
+): string {
+  if (preference === NO_SOURCE_PREFERENCE) {
+    return t("chat-source-preference-no-preference");
+  }
+  if (preference === START_CHOOSE_SOURCES) {
+    return t("chat-start-choose-sources");
+  }
+  if (preference === SET_EMPTY_NOTATION_PREFERENCE) {
+    return t("chat-quick-reply-set-notation");
   }
 
-  return `Got it. I will use ${preference.replace("Prefer ", "")} where it fits the reviewed source options.`;
+  const sourceName = sourceNameFromPreference(preference);
+  if (sourceName) {
+    return t("chat-source-preference-prefer", {
+      sourceName,
+    });
+  }
+
+  return preference;
+}
+
+export function buildSourcePreferenceReply(
+  t: TFunction,
+  preference: string,
+): string {
+  if (preference === NO_SOURCE_PREFERENCE) {
+    return t("chat-source-preference-reply-no-preference");
+  }
+  if (preference === START_CHOOSE_SOURCES) {
+    return t("chat-start-choose-sources-reply");
+  }
+  if (preference === SET_EMPTY_NOTATION_PREFERENCE) {
+    return t("chat-quick-reply-set-notation-reply");
+  }
+
+  const sourceName = sourceNameFromPreference(preference);
+  if (sourceName) {
+    return t("chat-source-preference-reply-prefer", {
+      sourceName,
+    });
+  }
+
+  return preference;
 }
 
 export function nextDecisionState(
@@ -94,8 +148,14 @@ export function buildStationaryEnergyChatRequest(params: {
   inventoryId: string;
   threadId: string | null;
 }): Record<string, unknown> {
-  const { cityId, content, decisionReviewContext, draftState, inventoryId, threadId } =
-    params;
+  const {
+    cityId,
+    content,
+    decisionReviewContext,
+    draftState,
+    inventoryId,
+    threadId,
+  } = params;
 
   return {
     threadId,
@@ -116,10 +176,7 @@ export function buildStationaryEnergyChatRequest(params: {
           stationary_energy_draft_run_id: draftState.draft_run_id,
           stationary_energy_pending_decision_review_count:
             decisionReviewContext.length,
-          stationary_energy_ui_surfaces: [
-            "chat_text",
-            "decision_review_card",
-          ],
+          stationary_energy_ui_surfaces: ["chat_text", "decision_review_card"],
         }
       : {},
   };

@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable i18next/no-literal-string */
 import SubSectorCard from "@/components/Cards/SubSectorCard";
 import { InventoryResponse, SectorProgress } from "@/util/types";
 import { Box, Heading, Icon, Text, SimpleGrid } from "@chakra-ui/react";
@@ -12,6 +11,7 @@ import {
   clamp,
   convertSectorReferenceNumberToNumber,
   formatPercent,
+  getParamValueRequired,
 } from "@/util/helpers";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
@@ -19,8 +19,9 @@ import { Trans } from "react-i18next/TransWithoutContext";
 import { InventoryType, InventoryTypeEnum, ISector } from "@/util/constants";
 import { BsPlus } from "react-icons/bs";
 import { MdAutoAwesome } from "react-icons/md";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
+import { useTranslation } from "@/i18n/client";
 
 import {
   AccordionItem,
@@ -40,7 +41,10 @@ export function SectorCard({
   t: TFunction;
   inventory: InventoryResponse;
 }) {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
   const pathname = usePathname();
+  const { t: tAgentic } = useTranslation(lng, "stationary-energy-agentic");
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const toggleAccordion = () => setAccordionOpen(!isAccordionOpen);
   const showStationaryEnergyAgenticCta =
@@ -166,10 +170,10 @@ export function SectorCard({
                     <MdAutoAwesome />
                     <Box textAlign="left">
                       <Text fontFamily="heading" fontSize="button.md">
-                        Let the agent draft this section
+                        {tAgentic("sector-card-let-agent-draft")}
                       </Text>
                       <Text color="content.tertiary" fontSize="label.sm">
-                        Review every value before saving
+                        {tAgentic("sector-card-review-before-saving")}
                       </Text>
                     </Box>
                   </Button>

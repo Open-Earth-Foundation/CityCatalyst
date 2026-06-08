@@ -1,10 +1,10 @@
 "use client";
-/* eslint-disable i18next/no-literal-string */
 
 import { Box, Heading, Text } from "@chakra-ui/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+import { useTranslation } from "@/i18n/client";
 import ProgressLoader from "@/components/ProgressLoader";
 import Wrapper from "@/components/wrapper";
 import { api } from "@/services/api";
@@ -15,6 +15,7 @@ export function LegacyStationaryEnergyDraftRoute() {
   const params = useParams();
   const lng = getParamValueRequired(params.lng);
   const inventoryId = getParamValueRequired(params.inventory);
+  const { t } = useTranslation(lng, "stationary-energy-agentic");
 
   const {
     data: inventory,
@@ -49,11 +50,10 @@ export function LegacyStationaryEnergyDraftRoute() {
           p={5}
         >
           <Heading fontSize="title.md" fontWeight="semibold">
-            Stationary Energy draft unavailable
+            {t("legacy-route-unavailable-title")}
           </Heading>
           <Text color="content.tertiary" mt={2}>
-            The inventory could not be loaded for the documented city-scoped
-            draft route.
+            {t("legacy-route-unavailable-description")}
           </Text>
         </Box>
       </Wrapper>

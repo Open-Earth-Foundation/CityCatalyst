@@ -1,10 +1,10 @@
 "use client";
-/* eslint-disable i18next/no-literal-string */
 
 import { Box, Grid, Text } from "@chakra-ui/react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import { useTranslation } from "@/i18n/client";
 import { ArtifactPanel } from "@/components/StationaryEnergyDraft/stationary-energy-artifact-panel";
 import { ClimaChatPanel } from "@/components/StationaryEnergyDraft/stationary-energy-chat-artifact-panels";
 import ProgressLoader from "@/components/ProgressLoader";
@@ -26,6 +26,7 @@ export function StationaryEnergyChatArtifactPage({
   const params = useParams();
   const searchParams = useSearchParams();
   const lng = getParamValueRequired(params.lng);
+  const { t } = useTranslation(lng, "stationary-energy-agentic");
   const cityId = getParamValueRequired(params.cityId);
   const inventoryId = getParamValueRequired(params.inventory);
   const queryDraftRunId = searchParams.get("draftRunId");
@@ -47,6 +48,7 @@ export function StationaryEnergyChatArtifactPage({
     inventoryId,
     lng,
     queryDraftRunId,
+    t,
   });
 
   useEffect(() => {
@@ -77,8 +79,9 @@ export function StationaryEnergyChatArtifactPage({
     return <ProgressLoader />;
   }
 
-  const cityName = inventory?.city?.name ?? "Selected city";
-  const inventoryYear = inventory?.year ?? "Inventory year unavailable";
+  const cityName = inventory?.city?.name ?? t("chat-page-selected-city");
+  const inventoryYear =
+    inventory?.year ?? t("chat-page-inventory-year-unavailable");
   const { actions, state } = controller;
 
   return (
@@ -113,8 +116,7 @@ export function StationaryEnergyChatArtifactPage({
         {!featureEnabled ? (
           <Box bg="base.light" borderRadius="rounded" p={5}>
             <Text color="content.primary" fontWeight="semibold">
-              Enable CA_SERVICE_INTEGRATION and STATIONARY_ENERGY_AGENTIC to use
-              this workflow.
+              {t("chat-page-feature-disabled")}
             </Text>
           </Box>
         ) : (

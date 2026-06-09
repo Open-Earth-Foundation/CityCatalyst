@@ -98,14 +98,14 @@ function buildClimateAdvisorUrl(
  * Issue a short-lived CA user token through the internal service endpoint.
  */
 export async function issueClimateAdvisorUserToken(params: {
-  origin: string;
   userId: string;
   inventoryId?: string;
 }): Promise<TokenResponse> {
   const serviceKey = requireEnv("CC_SERVICE_API_KEY");
+  const host = requireEnv("HOST");
   let response: Response;
   try {
-    response = await fetch(`${params.origin}/api/v1/internal/ca/user-token`, {
+    response = await fetch(`${host}/api/v1/internal/ca/user-token/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -180,12 +180,10 @@ export async function readClimateAdvisorResponsePayload(
  * Create a CA thread after issuing a user-scoped access token.
  */
 export async function createClimateAdvisorThread(params: {
-  origin: string;
   userId: string;
   inventoryId?: string;
 }): Promise<ThreadCreateResponse> {
   const token = await issueClimateAdvisorUserToken({
-    origin: params.origin,
     userId: params.userId,
     inventoryId: params.inventoryId,
   });

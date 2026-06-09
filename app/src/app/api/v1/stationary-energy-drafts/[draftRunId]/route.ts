@@ -23,7 +23,6 @@ export const GET = apiHandler(async (req, { session, params }) => {
   const query = querySchema.parse(Object.fromEntries(searchParams.entries()));
   const draftRunId = params.draftRunId;
   const response = await callClimateAdvisor({
-    origin: req.nextUrl.origin,
     path: `/v1/stationary-energy-drafts/${draftRunId}?user_id=${encodeURIComponent(session.user.id)}`,
     method: "GET",
     tokenUserID: session.user.id,

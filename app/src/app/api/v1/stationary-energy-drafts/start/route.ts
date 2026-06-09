@@ -24,7 +24,6 @@ export const POST = apiHandler(async (req, { session }) => {
 
   const body = requestSchema.parse(await req.json());
   const response = await callClimateAdvisor({
-    origin: req.nextUrl.origin,
     path: "/v1/stationary-energy-drafts/start",
     method: "POST",
     tokenUserID: session.user.id,

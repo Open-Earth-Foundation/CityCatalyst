@@ -84,14 +84,14 @@ async function throwClimateAdvisorProxyError(
 }
 
 export async function issueCaUserToken(params: {
-  origin: string;
   tokenUserID: string;
   inventoryId?: string;
 }): Promise<TokenResponse> {
   const serviceKey = requireEnv("CC_SERVICE_API_KEY");
+  const host = requireEnv("HOST");
   let response: Response;
   try {
-    response = await fetch(`${params.origin}/api/v1/internal/ca/user-token`, {
+    response = await fetch(`${host}/api/v1/internal/ca/user-token/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -118,7 +118,6 @@ export async function issueCaUserToken(params: {
 }
 
 export async function callClimateAdvisor(params: {
-  origin: string;
   path: string;
   tokenUserID: string;
   inventoryId?: string;
@@ -126,7 +125,6 @@ export async function callClimateAdvisor(params: {
   body?: Record<string, unknown>;
 }): Promise<Response> {
   const token = await issueCaUserToken({
-    origin: params.origin,
     tokenUserID: params.tokenUserID,
     inventoryId: params.inventoryId,
   });

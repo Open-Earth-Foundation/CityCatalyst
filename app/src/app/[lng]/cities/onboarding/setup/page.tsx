@@ -68,6 +68,8 @@ export default function OnboardingSetup(props: {
     { skip: !EnterpriseMode },
   );
 
+  const { data: userInfo } = api.useGetUserInfoQuery();
+
   useEffect(() => {
     if (projectsList && projectsList.length > 0) {
       setSelectedProject([projectsList[0].projectId]);
@@ -371,9 +373,7 @@ export default function OnboardingSetup(props: {
           {activeStep === 1 && (
             <SetInventoryDetailsStep
               t={t}
-              register={
-                register as unknown as UseFormRegister<GHGIFormInputs>
-              }
+              register={register as unknown as UseFormRegister<GHGIFormInputs>}
               errors={errors as unknown as FieldErrors<GHGIFormInputs>}
               control={control as unknown as Control<GHGIFormInputs>}
               setValue={setValue}
@@ -393,9 +393,7 @@ export default function OnboardingSetup(props: {
           {activeStep === 2 && (
             <SetPopulationDataStep
               t={t}
-              register={
-                register as unknown as UseFormRegister<GHGIFormInputs>
-              }
+              register={register as unknown as UseFormRegister<GHGIFormInputs>}
               control={control as unknown as Control<GHGIFormInputs>}
               errors={errors as unknown as FieldErrors<GHGIFormInputs>}
               years={years}
@@ -404,6 +402,7 @@ export default function OnboardingSetup(props: {
               setValue={setValue}
               watch={watch}
               ocCityData={ocCityData}
+              numberFormat={userInfo?.numberFormat}
             />
           )}
           {activeStep === 3 && (

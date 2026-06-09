@@ -91,10 +91,6 @@ import {
   BreadcrumbRoot,
 } from "@/components/ui/breadcrumb";
 import { Tag } from "@/components/ui/tag";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
 import { TbWorldSearch } from "react-icons/tb";
 import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
@@ -796,6 +792,7 @@ export default function AddDataSteps() {
                       "striped",
                     ]}
                     height={4}
+                    numberFormat={userInfo?.numberFormat}
                   />
                   <Heading size="sm" ml={6} mt={-1} whiteSpace="nowrap">
                     {t("completion-percent", {
@@ -1407,6 +1404,7 @@ export default function AddDataSteps() {
           isConnectLoading={isConnectDataSourceLoading}
           t={t}
           inventoryId={inventory}
+          numberFormat={userInfo?.numberFormat}
         />
       </Box>
     </>

@@ -1,6 +1,7 @@
 import Decimal from "decimal.js";
 import { HIAction } from "./types";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { NumberFormatEnum } from "./enums";
 
 export function isFetchBaseQueryError(
   error: unknown,
@@ -54,16 +55,17 @@ export function getCurrentVersion(): string {
   return version;
 }
 
-export function shortenNumber(number: number): string {
+export function shortenNumber(number: number, format?: string): string {
+  let result = number;
   if (number >= 1e9) {
-    return (number / 1e9).toFixed(1); // Billion
+    result = number / 1e9; // Billion
   } else if (number >= 1e6) {
-    return (number / 1e6).toFixed(1); // Million
+    result = number / 1e6; // Million
   } else if (number >= 1e3) {
-    return (number / 1e3).toFixed(1); // Thousand
-  } else {
-    return number.toString();
+    result = number / 1e3; // Thousand
   }
+
+  return formatNumber(result, format, 1);
 }
 
 export function getShortenNumberUnit(number: number): string {
@@ -163,7 +165,10 @@ export function keyBy<T>(
  * @param totalEmissions total amount of emissions in kg
  * @return formatted string with the amount of emissions in kg, t, kt, Mt or Gt (gas name needs to be appanded by the caller)
  */
-export function formatEmissions(totalEmissions: number): {
+export function formatEmissions(
+  totalEmissions: number,
+  format?: NumberFormatEnum | string,
+): {
   value: string;
   unit: string;
 } {
@@ -186,8 +191,62 @@ export function formatEmissions(totalEmissions: number): {
     unit = "kg ";
     scale = 1;
   }
-  const value = (totalEmissions / scale).toFixed(1);
+  const value = formatNumber(totalEmissions / scale, format, 1);
   return { value, unit };
+}
+
+const thousandsSeparators: { [key: string]: string } = {
+  [NumberFormatEnum.COMMA_AND_DOT]: ",",
+  [NumberFormatEnum.DEFAULT]: ",",
+  [NumberFormatEnum.DOT_AND_COMMA]: ".",
+  [NumberFormatEnum.SPACE_AND_COMMA]: " ",
+  [NumberFormatEnum.APOSTROPHE_AND_DOT]: "’",
+};
+export const decimalSeparators: { [key: string]: string } = {
+  [NumberFormatEnum.DEFAULT]: ".",
+  [NumberFormatEnum.COMMA_AND_DOT]: ".",
+  [NumberFormatEnum.DOT_AND_COMMA]: ",",
+  [NumberFormatEnum.SPACE_AND_COMMA]: ",",
+  [NumberFormatEnum.APOSTROPHE_AND_DOT]: ".",
+};
+
+export function formatNumber(
+  num: number,
+  format?: NumberFormatEnum | string,
+  maxDecimals?: number,
+) {
+  if (format === undefined) {
+    format = NumberFormatEnum.COMMA_AND_DOT;
+  }
+
+  const thousandsSeparator = thousandsSeparators[format as string] ?? ",";
+  const decimalSeparator = decimalSeparators[format as string] ?? ".";
+
+  // temporarily remove negative sign
+  const numberString = num.toString().replace(/^-/, "");
+  const [integerPart, decimalPart] = numberString.split(".");
+
+  // process integer - reverse, add separators, reverse back (since groups start at last digit)
+  let groupedInteger = integerPart;
+  if (integerPart.length > 3) {
+    const reversedInteger = integerPart.split("").reverse().join("") ?? "";
+    const groupedReversed =
+      reversedInteger?.match(/.{1,3}/g)?.join(thousandsSeparator) ?? "";
+    groupedInteger = groupedReversed.split("").reverse().join("");
+  }
+
+  // trim decimals if necessary
+  let trimmedDecimals = decimalPart;
+  if (maxDecimals !== undefined && decimalPart !== undefined) {
+    trimmedDecimals = decimalPart.slice(0, maxDecimals);
+  }
+
+  // combine integer and decimal parts
+  const result = trimmedDecimals
+    ? `${groupedInteger}${decimalSeparator}${trimmedDecimals}`
+    : groupedInteger;
+
+  return num < 0 ? `-${result}` : result;
 }
 
 export interface PopulationEntry {
@@ -276,67 +335,47 @@ export function toDecimal(
   return new Decimal(value);
 }
 
-export function convertKgToKiloTonnes(
-  valueInKg: number | Decimal | bigint,
-): number {
-  const kg = toDecimal(valueInKg);
-  if (!kg) return 0;
-  return Number(kg.div(1e6).toNumber().toFixed(2));
-}
-
-export function convertKgToTonnesNumeric(
-  valueInKg: number | Decimal | bigint,
-): number {
-  const kg = toDecimal(valueInKg);
-  if (!kg) return 0;
-  return Number(kg.div(1e3).toNumber());
-}
-
-export function convertTonnesToKgNumeric(
-  valueInTonnes: number | Decimal | bigint,
-): number {
-  const tonnes = toDecimal(valueInTonnes);
-  if (!tonnes) return 0;
-  return Number(tonnes.mul(1e3).toNumber());
-}
-
 export function convertKgToTonnes(
   valueInKg: number | Decimal | bigint,
+  numberFormat?: string,
   gas?: string | null,
-  locale = "en-US",
 ): string {
   const gasSuffix = gas ? ` ${gas}` : " CO2e";
 
   const kg = toDecimal(valueInKg);
   if (!kg) return `0 t${gasSuffix}`;
-  const formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
 
   const gigaTonne = new Decimal("1e12");
   const megaTonne = new Decimal("1e9");
   const kiloTonne = new Decimal("1e6");
   const tonne = new Decimal("1e3");
 
+  let num;
+  let unitPrefix;
   if (kg.gte(gigaTonne)) {
     // Convert to gigatonnes if the value is 1,000,000,000,000 kg or more
-    const gigatonnes = kg.div(gigaTonne);
-    return `${formatter.format(gigatonnes.toNumber())} Gt${gasSuffix}`;
+    num = kg.div(gigaTonne);
+    unitPrefix = "Gt";
   } else if (kg.gte(megaTonne)) {
     // Convert to megatonnes if the value is 1,000,000,000 kg or more but less than 1,000,000,000,000 kg
-    const megatonnes = kg.div(megaTonne);
-    return `${formatter.format(megatonnes.toNumber())} Mt${gasSuffix}`;
+    num = kg.div(megaTonne);
+    unitPrefix = "Mt";
   } else if (kg.gte(kiloTonne)) {
     // Convert to kilotonnes if the value is 1,000,000 kg or more but less than 1,000,000,000 kg
-    const kilotonnes = kg.div(kiloTonne);
-    return `${formatter.format(kilotonnes.toNumber())} kt${gasSuffix}`;
+    num = kg.div(kiloTonne);
+    unitPrefix = "kt";
   } else if (kg.gte(tonne)) {
     // Convert to tonnes if the value is 1,000 kg or more but less than 1,000,000 kg
-    const tonnes = kg.div(tonne);
-    return `${formatter.format(tonnes.toNumber())} t${gasSuffix}`;
+    num = kg.div(tonne);
+    unitPrefix = "t";
   } else {
-    // Return as kg if the value is less than 1,000 kg
-    const tonnes = kg.div(tonne);
-    return `${formatter.format(tonnes.toNumber())} t${gasSuffix}`;
+    // Return as tonnes even if the value is less than 1,000 kg
+    num = kg.div(tonne);
+    unitPrefix = "t";
   }
+
+  const formattedNumber = formatNumber(num.toNumber(), numberFormat, 2);
+  return `${formattedNumber} ${unitPrefix}${gasSuffix}`;
 }
 
 export const toKebabCase = (input: string | undefined): string => {

@@ -12,7 +12,7 @@ import { RefObject } from "react";
 import { MdArrowBack, MdHomeWork, MdInfoOutline } from "react-icons/md";
 import type { DataSourceData, DataSourceWithRelations } from "./types";
 import { getTranslationFromDict } from "@/i18n";
-import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
+import { convertKgToTonnes, formatNumber, toKebabCase } from "@/util/helpers";
 import {
   DrawerBackdrop,
   DrawerBody,
@@ -43,6 +43,7 @@ export function SourceDrawer({
   hideActions,
   totalEmissionsData,
   inventoryId,
+  numberFormat,
 }: {
   hideActions?: boolean;
   source?: DataSourceWithRelations;
@@ -57,6 +58,7 @@ export function SourceDrawer({
   totalEmissionsData?: string;
   t: TFunction;
   inventoryId: string;
+  numberFormat?: string;
 }) {
   function ensureProtocol(url: string) {
     if (!/^https?:\/\//i.test(url)) {
@@ -71,17 +73,27 @@ export function SourceDrawer({
   const emissionsToBeIncluded = () => {
     let converted;
     if (!!totalEmissionsData && totalEmissionsData !== "?") {
-      converted = convertKgToTonnes(parseFloat(totalEmissionsData));
+      converted = convertKgToTonnes(
+        parseFloat(totalEmissionsData),
+        numberFormat,
+      );
     }
     const emissionsData = sourceData?.totals?.emissions?.co2eq_100yr;
     let totalEmissions = emissionsData
-      ? ((Number(emissionsData) * sourceData?.scaleFactor) / 1000).toFixed(2)
+      ? formatNumber(
+          (Number(emissionsData) * sourceData?.scaleFactor) / 1000,
+          numberFormat,
+          2,
+        )
       : "?";
     if (sourceData?.issue) {
       totalEmissions = "?";
     }
     if (!!totalEmissions && totalEmissions !== "?") {
-      converted = convertKgToTonnes(parseFloat(totalEmissions) * 1000);
+      converted = convertKgToTonnes(
+        parseFloat(totalEmissions) * 1000,
+        numberFormat,
+      );
     }
     if (!converted) {
       return { number: totalEmissionsData ?? totalEmissions, unit: "" };
@@ -242,6 +254,7 @@ export function SourceDrawer({
                       <SourceDrawerActivityTable
                         activities={sourceData.records}
                         t={t}
+                        numberFormat={numberFormat}
                       />
                     )}
                     <VStack

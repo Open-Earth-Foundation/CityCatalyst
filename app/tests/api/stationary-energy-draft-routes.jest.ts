@@ -181,6 +181,41 @@ describe("Stationary Energy draft routes", () => {
     });
   });
 
+  it("uses configured HOST instead of request origin for CA token issuance", async () => {
+    process.env.HOST = "https://configured.example";
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: "token-123",
+          expires_in: 3600,
+          token_type: "Bearer",
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({
+          draft_run_id: TEST_DRAFT_RUN_ID,
+        }),
+      );
+
+    const response = await startDraft(
+      makeRequest(
+        "https://request-origin.example/api/v1/stationary-energy-drafts/start",
+        "POST",
+        {
+          city_id: TEST_CITY_ID,
+          inventory_id: TEST_INVENTORY_ID,
+        },
+      ),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(201);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://configured.example/api/v1/internal/ca/user-token/",
+    );
+  });
+
   it("preserves JSON token-issuance errors from the shared CA helper", async () => {
     const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
     fetchMock.mockResolvedValueOnce(

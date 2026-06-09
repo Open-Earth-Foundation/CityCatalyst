@@ -148,6 +148,39 @@ describe("Chat routes", () => {
     expect(createThreadHeaders.get("Content-Type")).toBe("application/json");
   });
 
+  it("uses configured HOST instead of request origin for CA token issuance", async () => {
+    process.env.HOST = "https://configured.example";
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: "token-123",
+          expires_in: 3600,
+          token_type: "Bearer",
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse(
+          {
+            thread_id: "thread-1",
+          },
+          { status: 201 },
+        ),
+      );
+
+    const response = await postChatThread(
+      makeRequest("https://request-origin.example/api/v1/chat/threads", "POST", {
+        inventory_id: testInventoryId,
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(200);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://configured.example/api/v1/internal/ca/user-token/",
+    );
+  });
+
   it("preserves JSON token-issuance errors when creating a CA thread", async () => {
     const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
     fetchMock.mockResolvedValueOnce(

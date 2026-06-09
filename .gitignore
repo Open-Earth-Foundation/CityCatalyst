@@ -166,9 +166,13 @@ climate-advisor/service/tests/output/
 
 # Cursor plans
 .cursor/plans/
+
 .playwright-mcp/
 app/demo-recording/
 docs/design-references/
 tmp-pgvector/
 app/playwright-output/
 demo-recording/
+
+# Codex
+.codex/

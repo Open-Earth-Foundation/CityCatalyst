@@ -44,7 +44,6 @@ export const GET = apiHandler(async (req, { session, searchParams }) => {
     sector_code: "stationary_energy",
   });
   const response = await callClimateAdvisor({
-    origin: req.nextUrl.origin,
     path: `/v1/stationary-energy-drafts/resume?${params.toString()}`,
     method: "GET",
     tokenUserID: session.user.id,

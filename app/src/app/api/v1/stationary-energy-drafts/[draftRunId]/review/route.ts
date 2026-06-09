@@ -37,7 +37,6 @@ export const POST = apiHandler(async (req, { session, params }) => {
   const body = requestSchema.parse(await req.json());
   const draftRunId = params.draftRunId;
   const response = await callClimateAdvisor({
-    origin: req.nextUrl.origin,
     path: `/v1/stationary-energy-drafts/${draftRunId}/review`,
     method: "POST",
     tokenUserID: session.user.id,

@@ -68,7 +68,6 @@ export const POST = apiHandler(async (req, { session }) => {
   );
 
   const caData = await createClimateAdvisorThread({
-    origin: req.nextUrl.origin,
     userId: session.user.id,
     inventoryId: inventory_id,
   });

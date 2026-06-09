@@ -47,6 +47,7 @@ describe("Chat routes", () => {
   const originalFetch = global.fetch;
   const originalCaBaseUrl = process.env.CA_BASE_URL;
   const originalServiceKey = process.env.CC_SERVICE_API_KEY;
+  const originalHost = process.env.HOST;
   const originalDbInitialized = db.initialized;
   let sessionSpy: ReturnType<typeof jest.spyOn>;
 
@@ -67,6 +68,7 @@ describe("Chat routes", () => {
   });
 
   beforeEach(() => {
+    process.env.HOST = "http://localhost:3000";
     process.env.CA_BASE_URL = "http://ca.example";
     process.env.CC_SERVICE_API_KEY = "cc-service-key";
     db.initialized = true;
@@ -80,6 +82,7 @@ describe("Chat routes", () => {
 
   afterAll(() => {
     db.initialized = originalDbInitialized;
+    process.env.HOST = originalHost;
     process.env.CA_BASE_URL = originalCaBaseUrl;
     process.env.CC_SERVICE_API_KEY = originalServiceKey;
     sessionSpy.mockRestore();
@@ -117,7 +120,7 @@ describe("Chat routes", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
-      "http://localhost:3000/api/v1/internal/ca/user-token",
+      "http://localhost:3000/api/v1/internal/ca/user-token/",
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify({
@@ -143,6 +146,39 @@ describe("Chat routes", () => {
       }),
     });
     expect(createThreadHeaders.get("Content-Type")).toBe("application/json");
+  });
+
+  it("uses configured HOST instead of request origin for CA token issuance", async () => {
+    process.env.HOST = "https://configured.example";
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: "token-123",
+          expires_in: 3600,
+          token_type: "Bearer",
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse(
+          {
+            thread_id: "thread-1",
+          },
+          { status: 201 },
+        ),
+      );
+
+    const response = await postChatThread(
+      makeRequest("https://request-origin.example/api/v1/chat/threads", "POST", {
+        inventory_id: testInventoryId,
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(200);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://configured.example/api/v1/internal/ca/user-token/",
+    );
   });
 
   it("preserves JSON token-issuance errors when creating a CA thread", async () => {

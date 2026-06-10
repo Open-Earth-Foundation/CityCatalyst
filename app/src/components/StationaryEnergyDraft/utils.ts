@@ -214,7 +214,7 @@ export function formatDraftEmissionsLabel(
     .toLowerCase();
   if (RAW_KG_EMISSIONS_UNITS.has(normalizedUnit)) {
     const kgValue = parseEmissionsKgValue(value);
-    return kgValue == null ? text : convertKgToTonnes(kgValue, null);
+    return kgValue == null ? text : convertKgToTonnes(kgValue, undefined);
   }
 
   const displayUnit = normalizeEmissionsUnitLabel(unit);

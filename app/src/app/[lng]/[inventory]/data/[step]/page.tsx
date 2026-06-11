@@ -555,42 +555,6 @@ export default function AddDataSteps() {
     setHoverStates((prev) => ({ ...prev, [source.datasourceId]: false }));
   };
 
-  const DEFAULT_CONNECTED_BUTTON_PROPS = {
-    variant: "solidPrimary",
-    text: t("data-connected"),
-  };
-
-  const DEFAULT_DISCONNECTED_BUTTON_PROPS = {
-    variant: "outline",
-    text: t("connect-data"),
-  };
-
-  const getButtonProps = (
-    source: DataSourceWithRelations,
-    isHovered: boolean,
-  ) => {
-    if (isSourceConnected(source)) {
-      return {
-        variant: isHovered ? "danger" : DEFAULT_CONNECTED_BUTTON_PROPS.variant,
-        text: isHovered
-          ? t("disconnect-data")
-          : DEFAULT_CONNECTED_BUTTON_PROPS.text,
-        icon: <Icon as={MdCheckCircle} />,
-      };
-    }
-    if (isSourceGpcBlocked(source)) {
-      return {
-        variant: DEFAULT_DISCONNECTED_BUTTON_PROPS.variant,
-        text: t("connect-data-gpc-exists"),
-        icon: undefined,
-      };
-    }
-    return {
-      variant: DEFAULT_DISCONNECTED_BUTTON_PROPS.variant,
-      text: DEFAULT_DISCONNECTED_BUTTON_PROPS.text,
-    };
-  };
-
   const [scrollPosition, setScrollPosition] = useState<number>(0);
 
   const handleScroll = () => {
@@ -617,7 +581,7 @@ export default function AddDataSteps() {
 
   const scrollResizeHeaderThreshold = 50;
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
-  const { organization, isFrozenCheck } = useOrganizationContext();
+  const { isFrozenCheck } = useOrganizationContext();
 
   console.log("dataSources", dataSources);
 
@@ -988,10 +952,6 @@ export default function AddDataSteps() {
                   .slice(0, isDataSectionExpanded ? dataSources.length : 6)
                   .map(({ source, data }) => {
                     const isHovered = hoverStates[source.datasourceId];
-                    const { variant, text, icon } = getButtonProps(
-                      source,
-                      isHovered,
-                    );
                     return (
                       <Card.Root
                         key={source.datasourceId}
@@ -1146,7 +1106,9 @@ export default function AddDataSteps() {
                                 onMouseLeave={() => onMouseLeave(source)}
                               >
                                 <Icon as={MdCheckCircleOutline} />
-                                {text}
+                                {isHovered
+                                  ? t("disconnect-data")
+                                  : t("data-connected")}
                               </Button>
                             ) : isSourceGpcBlocked(source) ? (
                               <Tooltip

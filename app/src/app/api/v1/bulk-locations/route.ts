@@ -1,6 +1,7 @@
 import CityBoundaryService, {
   CityBoundary,
 } from "@/backend/CityBoundaryService";
+import { resolveDemoBoundaryLocode } from "@/backend/DemoInventoryService";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { db } from "@/models";
 import { City } from "@/models/City";
@@ -170,8 +171,11 @@ export const GET = apiHandler(async (_req, { session, searchParams }) => {
       }
 
       let boundaryData: CityBoundary | null = null;
+      const lookupLocode =
+        resolveDemoBoundaryLocode(city.locode) ?? city.locode;
       try {
-        boundaryData = await CityBoundaryService.getCityBoundary(city.locode);
+        boundaryData =
+          await CityBoundaryService.getCityBoundary(lookupLocode);
       } catch (err) {
         logger.error(
           { cityId: city.cityId, err },

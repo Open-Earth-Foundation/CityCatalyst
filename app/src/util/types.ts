@@ -458,6 +458,17 @@ export type ProjectResponse = {
   projectId: string;
 };
 
+export type ProvisionDemoInventoryResponse = {
+  templateId: string;
+  cityId: string;
+  inventoryId: string;
+  createdCity: boolean;
+  createdInventory: boolean;
+  importedRows: number;
+  skippedRows: number;
+  warnings: string[];
+};
+
 export type ListOrganizationsResponse = {
   contactEmail: string;
   created: string;

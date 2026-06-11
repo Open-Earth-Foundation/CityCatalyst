@@ -83,6 +83,8 @@ flowchart TD
 
 This keeps the demo isolated from real city records and makes provisioning repeatable across many free trial projects.
 
+Because the demo city uses a synthetic LOCODE (`DEMO-<templateId>-<projectId>`), any feature that resolves geographic context from an external service by LOCODE (city boundary lookup, eCRF download geometry, bulk locations) maps the synthetic LOCODE back to the template's real UN/LOCODE (`BR POA` for Porto Alegre 2022). This is centralized in a small helper exported from the demo inventory service so each template only declares its `boundaryLocode` once.
+
 ## Technical Approach
 
 - Add a server-side demo inventory provisioning service.

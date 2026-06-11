@@ -10,7 +10,6 @@ import {
   NoDatasourcesIcon,
 } from "@/components/icons";
 import {
-  clear,
   InventoryUserFileAttributes,
   removeFile,
 } from "@/features/city/inventoryDataSlice";
@@ -23,7 +22,6 @@ import {
   clamp,
   convertKgToTonnes,
   convertSectorReferenceNumberToNumber,
-  formatEmissions,
   nameToI18NKey,
 } from "@/util/helpers";
 import { bigIntToDecimal } from "@/util/big_int";
@@ -63,7 +61,6 @@ import {
   MdCheckCircle,
   MdCheckCircleOutline,
   MdChevronRight,
-  MdHomeWork,
   MdInfoOutline,
   MdOutlineCheckCircle,
   MdOutlineEdit,
@@ -461,49 +458,12 @@ export default function AddDataSteps() {
     }
   }
 
-  const [selectedSubsector, setSelectedSubsector] =
-    useState<SubSectorWithRelations>();
-  const {
-    open: isSubsectorDrawerOpen,
-    onClose: onSubsectorDrawerClose,
-    onOpen: onSubsectorDrawerOpen,
-  } = useDisclosure();
-  const onSubsectorClick = (subsector: SubSectorWithRelations) => {
-    logger.debug({ subsector });
-    setSelectedSubsector(subsector);
-    onSubsectorDrawerOpen();
-  };
-  const onSubsectorSave = (subsector: SubSectorWithRelations) => {
-    logger.debug({ subsector }, "Save subsector");
-  };
-
-  const [isConfirming, setConfirming] = useState(false);
-  const onConfirm = async () => {
-    setConfirming(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setConfirming(false);
-    if (activeStep >= steps.length - 1) {
-      router.push(`/${inventory}`);
-      dispatch(clear());
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      goToNext();
-    }
-  };
-
   const [isDataSectionExpanded, setDataSectionExpanded] = useState(false);
 
   const getInventoryData = useSelector(
     (state: RootState) => state.inventoryData,
   );
   const dispatch = useDispatch();
-
-  // Add file data to rudux state object
-  const {
-    open: isfileDataModalOpen,
-    onOpen: onFileDataModalOpen,
-    onClose: onfileDataModalClose,
-  } = useDisclosure();
 
   const { showSuccessToast } = UseSuccessToast({
     title: t("file-deletion-success"),
@@ -549,7 +509,6 @@ export default function AddDataSteps() {
     });
   }
 
-  const [buttonText, setButtonText] = useState<string>(t("data-connected"));
   const [hoverStates, setHoverStates] = useState<{ [key: string]: boolean }>(
     {},
   );
@@ -590,12 +549,10 @@ export default function AddDataSteps() {
 
   const onButtonHover = (source: DataSourceWithRelations) => {
     setHoverStates((prev) => ({ ...prev, [source.datasourceId]: true }));
-    setButtonText(t("disconnect-data"));
   };
 
   const onMouseLeave = (source: DataSourceWithRelations) => {
     setHoverStates((prev) => ({ ...prev, [source.datasourceId]: false }));
-    setButtonText(t("data-connected"));
   };
 
   const DEFAULT_CONNECTED_BUTTON_PROPS = {

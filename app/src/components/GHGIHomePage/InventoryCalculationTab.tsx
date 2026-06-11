@@ -34,11 +34,13 @@ export default function InventoryCalculationTab({
   inventory,
   isInventoryProgressLoading,
   inventoryProgress,
+  numberFormat,
 }: {
   lng: string;
   inventory?: InventoryResponse;
   isInventoryProgressLoading?: boolean;
   inventoryProgress?: InventoryProgressResponse;
+  numberFormat?: string;
 }) {
   const { t } = useTranslation(lng, "dashboard");
   let totalProgress = 0,
@@ -91,6 +93,7 @@ export default function InventoryCalculationTab({
                 "interactive.control",
                 "striped",
               ]}
+              numberFormat={numberFormat}
             />
             <Heading
               fontWeight="semibold"
@@ -113,7 +116,8 @@ export default function InventoryCalculationTab({
             </Badge>
             <Badge>
               <Icon as={CircleIcon} boxSize={6} color="interactive.control" />
-              {formatPercent(reasonNEProgress)}% <Trans t={t}>not-estimated</Trans>
+              {formatPercent(reasonNEProgress)}%{" "}
+              <Trans t={t}>not-estimated</Trans>
             </Badge>
             <Badge>
               <Box
@@ -121,7 +125,8 @@ export default function InventoryCalculationTab({
                 borderRadius="full"
                 backgroundImage="repeating-linear-gradient(45deg, #C5CBF5, #C5CBF5 2px, transparent 2px, transparent 4px)"
               />
-              {formatPercent(reasonNOProgress)}% <Trans t={t}>not-occurring</Trans>
+              {formatPercent(reasonNOProgress)}%{" "}
+              <Trans t={t}>not-occurring</Trans>
             </Badge>
           </Box>
           <Box display="flex" flexDirection="column" gap={8} py={8}>
@@ -154,6 +159,7 @@ export default function InventoryCalculationTab({
                   sector={SECTORS[i]}
                   t={t}
                   inventory={inventory}
+                  numberFormat={numberFormat}
                 />
               ))
             )}

@@ -15,7 +15,7 @@
   "add-data-to-inventory": "Daten zur Inventur hinzufügen",
   "completion-percent": "{{progress}}% abgeschlossen",
   "data-connected-percent": "{{progress}}% Drittanbieterdaten verbunden",
-  "data-added-percent": "{{progress}}% Daten hinzugefügt",
+  "manually-added": "Manuell hinzugefügte Daten",
   "check-data-heading": "Überprüfen und verbinden Sie die von uns gefundenen Drittanbieterdaten",
   "check-data-details": "Überprüfen und integrieren Sie automatisch bezogene Daten, die für die THG-Inventur Ihrer Stadt relevant sind.",
   "data-quality": "Datenqualität",
@@ -25,6 +25,7 @@
   "scope": "Umfang",
   "see-more-details": "Mehr Details anzeigen",
   "connect-data": "Daten verbinden",
+  "connect-data-gpc-exists": "Daten bereits hinzugefügt",
   "data-connected": "Daten verbunden",
   "edit-subsector": "Teilsektor bearbeiten",
   "more-datasets": "Mehr Datensätze anzeigen",
@@ -173,6 +174,7 @@
   "modeled-data-desc": "Emissionen, die aus Vorhersagemodellen geschätzt wurden",
   "modeled-fuel": "Modellierte Kraftstoffintensitätsverbrauch",
   "built-area": "Bebaute Fläche",
+  "by-data-source": "Von",
   "building-type": "Gebäudetyp",
   "select-type-of-building": "Wählen Sie den Gebäudetyp aus",
   "direct-measure-desc": "Direkte Emissionsmessungen von Verbrennungsquellen in gewerblichen Gebäuden.",
@@ -1293,5 +1295,6 @@
   "not-occurring": "Nicht auftretend",
   "not-estimated-progress": "Nicht Geschätzt",
   "uncategorized": "Unkategorisiert",
-  "legend": "Legende"
+  "legend": "Legende",
+  "data-already-added-connected": "Dieser Datensatz ist nicht verfügbar, weil Sie bereits einen verbundenen Datensatz für diesen Teilsektor haben."
 }

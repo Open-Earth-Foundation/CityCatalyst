@@ -13,8 +13,8 @@ from typing import Optional
 
 from agents import function_tool
 
-from .climate_vector_tool import ClimateVectorSearchTool, ClimateToolResult
-from ..config import get_settings
+from app.tools.climate_vector_tool import ClimateVectorSearchTool, ClimateToolResult
+from app.config import get_settings
 
 logger = logging.getLogger(__name__)
 

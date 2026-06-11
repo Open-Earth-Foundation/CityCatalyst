@@ -21,9 +21,12 @@ import { logger } from "@/services/logger";
 import {
   bytesToMB,
   clamp,
+  convertKgToTonnes,
   convertSectorReferenceNumberToNumber,
+  formatEmissions,
   nameToI18NKey,
 } from "@/util/helpers";
+import { bigIntToDecimal } from "@/util/big_int";
 import type { DataSourceResponse, SectorProgress } from "@/util/types";
 
 import {
@@ -45,6 +48,7 @@ import {
   Text,
   useDisclosure,
   useSteps,
+  VStack,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { useRouter, useParams, usePathname } from "next/navigation";
@@ -57,10 +61,13 @@ import {
   MdArrowDropDown,
   MdArrowDropUp,
   MdCheckCircle,
+  MdCheckCircleOutline,
   MdChevronRight,
   MdHomeWork,
+  MdInfoOutline,
   MdOutlineCheckCircle,
   MdOutlineEdit,
+  MdOutlineHomeWork,
   MdRefresh,
   MdSearch,
   MdWarning,
@@ -84,16 +91,13 @@ import {
   BreadcrumbRoot,
 } from "@/components/ui/breadcrumb";
 import { Tag } from "@/components/ui/tag";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
 import { TbWorldSearch } from "react-icons/tb";
 import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { getParamValueRequired } from "@/util/helpers";
+import { Tooltip } from "@/components/ui/tooltip";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -360,6 +364,9 @@ export default function AddDataSteps() {
   const [newlyConnectedDataSourceIds, setNewlyConnectedDataSourceIds] =
     useState<string[]>([]);
   const onConnectClick = async (source: DataSourceWithRelations) => {
+    if (isSourceGpcBlocked(source)) {
+      return;
+    }
     if (!inventoryProgress) {
       logger.error(
         "Tried to assign data source while inventory progress was not yet loaded!",
@@ -410,6 +417,30 @@ export default function AddDataSteps() {
     return (
       (source.inventoryValues && source.inventoryValues.length > 0) ||
       newlyConnectedDataSourceIds.indexOf(source.datasourceId) > -1
+    );
+  }
+
+  function getSourceGpcReferenceNumber(
+    source: DataSourceWithRelations,
+  ): string | undefined {
+    return (
+      source.subCategory?.referenceNumber ?? source.subSector?.referenceNumber
+    );
+  }
+
+  /** Third-party source cannot connect when this inventory already has data for the same GPC ref. */
+  function isSourceGpcBlocked(source: DataSourceWithRelations): boolean {
+    if (isSourceConnected(source)) {
+      return false;
+    }
+    const gpcReferenceNumber = getSourceGpcReferenceNumber(source);
+    if (!gpcReferenceNumber) {
+      return false;
+    }
+    return (
+      inventoryProgress?.inventory.inventoryValues?.some(
+        (value) => value.gpcReferenceNumber === gpcReferenceNumber,
+      ) ?? false
     );
   }
 
@@ -589,13 +620,18 @@ export default function AddDataSteps() {
           : DEFAULT_CONNECTED_BUTTON_PROPS.text,
         icon: <Icon as={MdCheckCircle} />,
       };
-    } else {
+    }
+    if (isSourceGpcBlocked(source)) {
       return {
         variant: DEFAULT_DISCONNECTED_BUTTON_PROPS.variant,
-        text: DEFAULT_DISCONNECTED_BUTTON_PROPS.text,
-        // Add more properties as needed
+        text: t("connect-data-gpc-exists"),
+        icon: undefined,
       };
     }
+    return {
+      variant: DEFAULT_DISCONNECTED_BUTTON_PROPS.variant,
+      text: DEFAULT_DISCONNECTED_BUTTON_PROPS.text,
+    };
   };
 
   const [scrollPosition, setScrollPosition] = useState<number>(0);
@@ -625,6 +661,8 @@ export default function AddDataSteps() {
   const scrollResizeHeaderThreshold = 50;
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
   const { organization, isFrozenCheck } = useOrganizationContext();
+
+  console.log("dataSources", dataSources);
 
   return (
     <>
@@ -754,6 +792,7 @@ export default function AddDataSteps() {
                       "striped",
                     ]}
                     height={4}
+                    numberFormat={userInfo?.numberFormat}
                   />
                   <Heading size="sm" ml={6} mt={-1} whiteSpace="nowrap">
                     {t("completion-percent", {
@@ -781,9 +820,8 @@ export default function AddDataSteps() {
                         boxSize={6}
                         color="interactive.tertiary"
                       />
-                      {t("data-added-percent", {
-                        progress: formatPercentage(currentStep.addedProgress),
-                      })}
+                      {formatPercentage(currentStep.addedProgress)}%{" "}
+                      {t("manually-added")}
                     </Badge>
                     <Badge w="auto">
                       <Icon
@@ -988,7 +1026,7 @@ export default function AddDataSteps() {
                 year={year}
               />
             ) : (
-              <SimpleGrid columns={3} gap={4}>
+              <SimpleGrid templateColumns="repeat(3, 1fr)" gap="16px">
                 {dataSources
                   .slice(0, isDataSectionExpanded ? dataSources.length : 6)
                   .map(({ source, data }) => {
@@ -997,57 +1035,119 @@ export default function AddDataSteps() {
                       source,
                       isHovered,
                     );
-
                     return (
                       <Card.Root
                         key={source.datasourceId}
                         data-testid="source-card"
                         variant="outline"
+                        borderWidth="1px"
                         borderColor={
                           isSourceConnected(source) &&
                           source.inventoryValues?.length
                             ? "interactive.tertiary"
-                            : ""
+                            : "border.overlay"
                         }
-                        borderWidth={2}
                         shadow="none"
                         _hover={{ shadow: "xl" }}
                         transition="all 300ms"
+                        height="488px"
+                        w="337px"
+                        p="24px"
+                        spaceY="16px"
                       >
-                        <Card.Header>
+                        <Card.Header p="0" spaceY="8px">
                           {/* TODO add icon to DataSource */}
-                          <Icon as={MdHomeWork} boxSize={9} mb={6} />
+                          <Icon
+                            as={MdOutlineHomeWork}
+                            boxSize={9}
+                            color="content.tertiary-light"
+                          />
                           <Heading size="sm" lineClamp={2} minHeight={10}>
                             {getTranslationFromDict(source.datasetName)}
                           </Heading>
+                          <Text fontSize="label.md" fontWeight="semibold">
+                            {t("by-data-source")}:{" "}
+                            <Link
+                              href={source.publisher?.url}
+                              target="_blank"
+                              textDecoration="underline"
+                              color="content.link"
+                              rel="noreferrer noopener"
+                            >
+                              {source.publisher?.name}
+                            </Link>
+                          </Text>
                         </Card.Header>
-                        <Card.Body>
+                        <Card.Body justifyContent="space-between" p="0">
                           <Flex direction="row" mb={4} wrap="wrap" gap={2}>
-                            <Badge fontSize={11}>
-                              <Icon
-                                as={DataCheckIcon}
-                                boxSize={5}
-                                color="content.tertiary"
-                              />
-                              {t("data-quality")}:{" "}
-                              {t("quality-" + source.dataQuality)}
-                            </Badge>
-                            {source.subCategory?.scope && (
-                              <Badge fontSize={11}>
+                            {/* show converted to CO2eq total emissions for the data source */}
+                            {/* Only show emissions if data is connected */}
+                            {!isSourceConnected(source) &&
+                              !source.inventoryValues?.length && (
+                                <Text
+                                  fontSize="headline.md"
+                                  fontWeight="semibold"
+                                >
+                                  {convertKgToTonnes(
+                                    bigIntToDecimal(
+                                      data?.totals?.emissions?.co2eq_100yr ??
+                                        0n,
+                                    ).toNumber(),
+                                  )}
+                                </Text>
+                              )}
+                            <Box>
+                              <Badge
+                                fontSize={11}
+                                fontWeight="semibold"
+                                borderColor="border.overlay"
+                              >
                                 <Icon
-                                  as={FiTarget}
-                                  boxSize={4}
+                                  as={DataCheckIcon}
+                                  boxSize={5}
                                   color="content.tertiary"
                                 />
-                                {t("scope")}:{" "}
-                                {source.subCategory.scope.scopeName}
+                                {t("data-quality")}:{" "}
+                                {t("quality-" + source.dataQuality)}
                               </Badge>
-                            )}
+                              {source.subCategory?.scope && (
+                                <Badge
+                                  fontSize={11}
+                                  fontWeight="semibold"
+                                  borderColor="border.overlay"
+                                >
+                                  <Icon
+                                    as={FiTarget}
+                                    boxSize={4}
+                                    color="content.tertiary"
+                                  />
+                                  {t("scope")}:{" "}
+                                  {source.subCategory.scope.scopeName}
+                                </Badge>
+                              )}
+                            </Box>
                           </Flex>
                           <Text
+                            textOverflow="ellipsis"
+                            whiteSpace="nowrap"
+                            overflow="hidden"
                             color="content.tertiary"
-                            lineClamp={5}
-                            minHeight={120}
+                            lineClamp={
+                              isSourceConnected(source) &&
+                              source.inventoryValues?.length
+                                ? 0
+                                : 4
+                            }
+                            maxHeight={
+                              isSourceConnected(source) &&
+                              source.inventoryValues?.length
+                                ? "100px"
+                                : "184px"
+                            }
+                            fontFamily="body"
+                            fontSize="body.md"
+                            lineHeight="20px"
+                            fontWeight="regular"
                           >
                             {getTranslationFromDict(
                               source.datasetDescription,
@@ -1056,49 +1156,79 @@ export default function AddDataSteps() {
                                 source.methodologyDescription,
                               )}
                           </Text>
-                          <Link
-                            textDecoration="underline"
-                            mt={4}
-                            mb={6}
-                            onClick={() => onSourceClick(source, data)}
-                          >
-                            {t("see-more-details")}
-                          </Link>
-                          {isSourceConnected(source) &&
-                          source.inventoryValues?.length ? (
-                            <Button
-                              variant="solid"
-                              px={6}
-                              py={4}
-                              onClick={() =>
-                                isFrozenCheck()
-                                  ? null
-                                  : onDisconnectThirdPartyData(source)
-                              }
-                              loading={
-                                isDisconnectLoading &&
-                                source.datasourceId ===
-                                  disconnectingDataSourceId
-                              }
-                              onMouseEnter={() => onButtonHover(source)}
-                              onMouseLeave={() => onMouseLeave(source)}
+                          <VStack w="full">
+                            <Link
+                              textDecoration="underline"
+                              mt={4}
+                              mb={6}
+                              onClick={() => onSourceClick(source, data)}
+                              alignSelf="flex-start"
+                              fontSize="label.lg"
+                              fontWeight="semibold"
                             >
-                              <Icon as={MdCheckCircle} />
-                              {text}
-                            </Button>
-                          ) : (
-                            <Button
-                              variant="outline"
-                              bgColor="background.neutral"
-                              onClick={() => onConnectClick(source)}
-                              loading={
-                                isConnectDataSourceLoading &&
-                                source.datasourceId === connectingDataSourceId
-                              }
-                            >
-                              {t("connect-data")}
-                            </Button>
-                          )}
+                              {t("see-more-details")}
+                            </Link>
+                            {isSourceConnected(source) &&
+                            source.inventoryValues?.length ? (
+                              <Button
+                                variant="solid"
+                                w="full"
+                                bg="content.alternative"
+                                fontWeight="normal"
+                                onClick={() =>
+                                  isFrozenCheck()
+                                    ? null
+                                    : onDisconnectThirdPartyData(source)
+                                }
+                                loading={
+                                  isDisconnectLoading &&
+                                  source.datasourceId ===
+                                    disconnectingDataSourceId
+                                }
+                                onMouseEnter={() => onButtonHover(source)}
+                                onMouseLeave={() => onMouseLeave(source)}
+                              >
+                                <Icon as={MdCheckCircleOutline} />
+                                {text}
+                              </Button>
+                            ) : isSourceGpcBlocked(source) ? (
+                              <Tooltip
+                                showArrow
+                                content={t("data-already-added-connected")}
+                              >
+                                <Button
+                                  variant="outline"
+                                  w="full"
+                                  borderWidth="1px"
+                                  py="16px"
+                                  bgColor="background.backgroundDisabled"
+                                  border="none"
+                                  disabled
+                                  color="interactive.control"
+                                  fontSize="14px"
+                                >
+                                  {t("connect-data")}
+                                  <Icon as={MdInfoOutline} boxSize={4} />
+                                </Button>
+                              </Tooltip>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                w="full"
+                                borderWidth="1px"
+                                py="16px"
+                                bgColor="background.neutral"
+                                onClick={() => onConnectClick(source)}
+                                loading={
+                                  isConnectDataSourceLoading &&
+                                  source.datasourceId === connectingDataSourceId
+                                }
+                                fontSize="14px"
+                              >
+                                {t("connect-data")}
+                              </Button>
+                            )}
+                          </VStack>
                         </Card.Body>
                       </Card.Root>
                     );
@@ -1274,6 +1404,7 @@ export default function AddDataSteps() {
           isConnectLoading={isConnectDataSourceLoading}
           t={t}
           inventoryId={inventory}
+          numberFormat={userInfo?.numberFormat}
         />
       </Box>
     </>

@@ -213,5 +213,11 @@
   "token-deleted-success": "Token deleted successfully",
   "token-delete-error": "Failed to delete token",
   "copied-to-clipboard": "Copied to clipboard",
-  "select-theme": "Select theme..."
+  "select-theme": "Select theme...",
+  "numerical-formats": "Numerical formats",
+  "numerical-formats-required": "Numerical formats is required",
+  "comma-and-dot": "Comma and dot (e.g.: 1,000,000.50)",
+  "dot-and-comma": "Dot and comma (e.g.: 1.000.000,50)",
+  "space-and-comma": "Space and comma (e.g.: 1 000 000,50)",
+  "apostrophe-and-dot": "Apostrophe and dot (e.g.: 1’000’000.50)"
 }

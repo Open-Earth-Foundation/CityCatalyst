@@ -37,6 +37,7 @@ export const GET = apiHandler(async (_req: Request, context) => {
       "email",
       "title",
       "preferredLanguage",
+      "numberFormat",
     ],
     where: {
       userId: context.session.user.id,

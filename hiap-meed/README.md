@@ -4,6 +4,7 @@
 
 See [`docs/service-architecture.md`](docs/service-architecture.md) for the full system diagram.
 See [`docs/prioritization-accuracy-initial-benchmark.md`](docs/prioritization-accuracy-initial-benchmark.md) for the planned validation mechanism of ranking quality.
+See [`docs/mlflow-backend-logging-guide.md`](docs/mlflow-backend-logging-guide.md) for the current CityCatalyst pattern for backend MLflow runs, traces, and artifact logging.
 
 ## Repository layout
 
@@ -28,14 +29,26 @@ Create `.env` from `.env.example` and set values:
 cp .env.example .env
 ```
 
-Recommended values:
+Recommended values for the standard hosted dev setup:
 
 ```env
 API_HOST=0.0.0.0
 API_PORT=8000
 LOG_LEVEL=INFO
 LOG_DIR=logs
-ARTIFACT_LOG_JSONL=true
+LOCAL_ARTIFACTS_ENABLED=true
+MLFLOW_ENABLED=true
+MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev
+MLFLOW_EXPERIMENT_NAME=hiap-meed
+MLFLOW_ENVIRONMENT=dev
+MLFLOW_HTTP_REQUEST_TIMEOUT=3
+MLFLOW_HTTP_REQUEST_MAX_RETRIES=1
+MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR=1
+MLFLOW_HTTP_REQUEST_BACKOFF_JITTER=0
+GIT_PYTHON_REFRESH=quiet
+MLFLOW_ASYNC_LOGGING_ENABLED=true
+HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_ENABLED=false
+HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_MODEL=gpt-5.4-mini
 HIAP_MEED_CITY_DATA_SOURCE=api
 CCGLOBAL_API_BASE_URL=https://ccglobal.openearth.dev
 UPSTREAM_HTTP_TIMEOUT_SECONDS=30
@@ -47,15 +60,7 @@ HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE=api
 HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE=api
 HIAP_MEED_TOP_N=20
 ACTIVITY_DATA_LEVEL_MAPPING=false
-HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL=
-HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED=false
-HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL=
-HIAP_MEED_EXPLANATIONS_ENABLED=true
-HIAP_MEED_EXPLANATIONS_MODEL=
-HIAP_MEED_EXPLANATION_TRANSLATIONS_MODEL=
 OPENAI_API_KEY=
-OPENAI_TIMEOUT_SECONDS=30
-OPENAI_MAX_RETRIES=3
 ```
 
 Variables:
@@ -63,8 +68,20 @@ Variables:
 - `API_HOST`: server bind host (default `0.0.0.0`)
 - `API_PORT`: server bind port (default `8000`)
 - `LOG_LEVEL`: Python logging level (for example `DEBUG`, `INFO`)
-- `LOG_DIR`: output folder for file logs and request artifacts
-- `ARTIFACT_LOG_JSONL`: if `true`, writes per-request artifact files
+- `LOG_DIR`: output folder for `app.log` and optional local request artifacts
+- `LOCAL_ARTIFACTS_ENABLED`: if `true`, writes per-request artifact files under `LOG_DIR/requests/...`
+- `MLFLOW_ENABLED`: if `true`, enables best-effort MLflow run, direct artifact, and OpenAI trace logging
+- `MLFLOW_TRACKING_URI`: MLflow tracking server URL. The standard default is the hosted dev MLflow at `https://mlflow-dev.openearth.dev`. Override it to `http://mlflow:5000` only when running the fully local Docker Compose stack, or to `http://localhost:5000` when using `kubectl port-forward`.
+- `MLFLOW_EXPERIMENT_NAME`: MLflow experiment name used for all hiap-meed runs
+- `MLFLOW_ENVIRONMENT`: environment tag attached to MLflow runs (use `dev`, `test`, or `prod`)
+- `MLFLOW_HTTP_REQUEST_TIMEOUT`: MLflow client HTTP timeout in seconds. Keep this low, for example `3`, so bad or unreachable tracking URLs fail fast instead of blocking startup or the first traced request for minutes.
+- `MLFLOW_HTTP_REQUEST_MAX_RETRIES`: number of extra MLflow HTTP retry attempts after the initial failure. Keep this low, for example `1`, so unreachable tracking URLs do not delay startup or requests for several minutes.
+- `MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR`: MLflow retry backoff multiplier. A value like `1` keeps the delay between retry attempts short and predictable.
+- `MLFLOW_HTTP_REQUEST_BACKOFF_JITTER`: extra random delay added between MLflow retry attempts. Set this to `0` when you want deterministic fail-fast behavior during local testing.
+- `GIT_PYTHON_REFRESH`: set to `quiet` to suppress mlflow related GitPython warnings when the `hiap-meed` process or `hiap-meed` container does not have a `git` executable; this only silences the warning and does not restore Git SHA capture
+- `MLFLOW_ASYNC_LOGGING_ENABLED`: if `true`, MLflow tags, params, and metrics use async fluent logging; run open/close and artifact uploads remain synchronous
+- `HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_ENABLED`: if `true`, exposes one test-only endpoint that forces a simple OpenAI tool-calling flow for MLflow tracing checks
+- `HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_MODEL`: model used only by the removable MLflow tool-call trace endpoint
 - `HIAP_MEED_CITY_DATA_SOURCE`: city input source (`api` or `mock`)
 - `CCGLOBAL_API_BASE_URL`: shared Global API base host for upstream API-backed clients (default `https://ccglobal.openearth.dev` for local/dev)
 - `UPSTREAM_HTTP_TIMEOUT_SECONDS`: shared timeout in seconds for upstream HTTP API calls (default `30`)
@@ -76,15 +93,56 @@ Variables:
 - `HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE`: mitigation feasibility scores input source (`api` or `mock`)
 - `HIAP_MEED_TOP_N`: default number of ranked actions to return per city (default `20`)
 - `ACTIVITY_DATA_LEVEL_MAPPING`: guarded future Impact mapping switch; `false` keeps true subsector-only matching, `true` calls the current stub and still returns subsector-only results
-- `HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL`: OpenAI model used only by the deprecated legacy free-text co-benefit mapping helper
-- `HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED`: if `true`, the exclusion preview endpoint calls OpenAI to resolve clear free-text action exclusions
-- `HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL`: OpenAI model used for preview free-text action exclusion matching
 - `OPENAI_API_KEY`: API key used by OpenAI-backed features
-- `OPENAI_TIMEOUT_SECONDS`: shared OpenAI client timeout in seconds (default `30`)
-- `HIAP_MEED_EXPLANATIONS_ENABLED`: global switch for post-ranking explanation calls
-- `HIAP_MEED_EXPLANATIONS_MODEL`: model name used for canonical explanation generation when `createExplanations=true`
-- `HIAP_MEED_EXPLANATION_TRANSLATIONS_MODEL`: model name used for explanation translation
-- `OPENAI_MAX_RETRIES`: shared OpenAI client retries (default `3`)
+
+LLM-specific non-secret settings now live in `llm_config.yaml`, including:
+
+- `models.alignment_other_preference`
+- `models.free_text_exclusions`
+- `models.explanations`
+- `models.explanation_translations`
+- `features.free_text_exclusions_enabled`
+- `features.explanations_enabled`
+- `openai.timeout_seconds`
+- `openai.max_retries`
+
+When `MLFLOW_ENABLED=true`, the service best-effort logs request runs, direct request artifacts, and OpenAI traces to the configured MLflow server. MLflow initialization is lazy and happens only when a request enters an MLflow-backed run. If MLflow is down or unreachable, the API still completes normally and only emits warning logs. The MLflow client retries initialization on later requests after a fixed 60-second cooldown so transient failures do not disable logging for the lifetime of the worker.
+
+If the `hiap-meed` process or `hiap-meed` container that writes to MLflow does not have `git` installed, MLflow's GitPython integration may warn that Git SHA metadata is unavailable. This warning is about the MLflow client side in `hiap-meed`, not the MLflow server container. Setting `GIT_PYTHON_REFRESH=quiet` suppresses that warning. It does not install `git` or restore Git SHA capture; it only keeps logs quieter.
+
+Current MLflow sync vs async behavior:
+
+- request run lifecycle stays synchronous so runs still open and close deterministically
+- tags, params, and metrics use MLflow async fluent logging when `MLFLOW_ASYNC_LOGGING_ENABLED=true`
+- JSON and text artifact uploads stay synchronous because this helper path does not yet use a separate background queue
+
+Test-only MLflow tool trace endpoint:
+
+- `POST /v1/mlflow/trace-test/tool-calls` is intentionally isolated from the prioritization flow and exists only to inspect MLflow traces for OpenAI tool use
+- it is disabled by default and returns `404` unless `HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_ENABLED=true`
+- the endpoint exposes exactly two local tools to the LLM: `add_numbers` and `reverse_text`
+- the endpoint logs one dedicated MLflow run named `mlflow_tool_trace_test_request` plus one MLflow JSON artifact containing the response payload
+- the endpoint is designed to be easy to remove later because all code lives under `app/modules/mlflow_trace_test/`
+
+Example test request:
+
+```bash
+curl -X POST http://localhost:8000/v1/mlflow/trace-test/tool-calls \
+  -H "Content-Type: application/json" \
+  -d "{\"left_number\": 2, \"right_number\": 3, \"text_to_reverse\": \"climate\"}"
+```
+
+MLflow tagging notes:
+
+- `MLFLOW_EXPERIMENT_NAME` groups runs by service, for example `hiap-meed`
+- `MLFLOW_ENVIRONMENT` controls the run tag used to distinguish `dev`, `test`, and `prod` while all three write to the same hosted MLflow instance
+- if `MLFLOW_ENVIRONMENT` is unset, the current implementation defaults it to `dev`
+
+MLflow usage modes:
+
+- Standard default: keep `MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev` and write traces/artifacts to the shared hosted MLflow for all environments.
+- Fully local fallback: run `docker compose up --build` and override `MLFLOW_TRACKING_URI=http://mlflow:5000`.
+- Laptop + Kubernetes fallback: port-forward MLflow locally and override `MLFLOW_TRACKING_URI=http://localhost:5000`.
 
 ### 2. Install dependencies
 
@@ -96,19 +154,89 @@ uv sync
 
 ### 3. Run the API locally
 
-From the `hiap-meed` directory:
+You have two local options:
 
-```bash
-uv run python -m app.main
+- Standard path: run `hiap-meed` while keeping `.env` pointed at the hosted dev MLflow
+- Fully local path: use Docker Compose to run both `hiap-meed` and MLflow together on the same Docker network
+
+Standard path:
+
+- Keep the `.env` default `MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev`
+- Start the app with your preferred local workflow, for example `uv run fastapi dev app/main.py` or plain Docker
+- Use the hosted MLflow UI at `https://mlflow-dev.openearth.dev`
+
+Fully local Docker Compose path:
+
+```text
+docker compose up --build
 ```
+
+This local-only mode requires overriding `MLFLOW_TRACKING_URI=http://mlflow:5000` because `hiap-meed` and MLflow talk over the compose network.
+
+Plain Docker:
+
+```text
+docker build -t hiap-meed .
+docker run -it --rm -p 8000:8000 --env-file .env hiap-meed
+```
+
+To persist file logs and per-request artifacts on your machine under `logs/`
+including `logs/requests/`, bind-mount the host logs directory to
+`/app/logs` in the container. This matches the default `LOG_DIR=logs`.
+
+Bash / Git Bash:
+
+```text
+docker run -it --rm -p 8000:8000 --env-file .env -v "$(pwd)/logs:/app/logs" hiap-meed
+```
+
+`cmd.exe`:
+
+```text
+docker run -it --rm -p 8000:8000 --env-file .env -v "%cd%\logs:/app/logs" hiap-meed
+```
+
+If you change `LOG_DIR` in `.env`, adjust the container target path so it
+still matches `/app/<LOG_DIR>`.
+
+Plain Docker without a bind mount is still valid, but then logs stay only
+inside the container and disappear when the container exits.
+
+```text
+docker run -it --rm -p 8000:8000 --env-file .env hiap-meed
+```
+
+For plain Docker, keep the hosted default `https://mlflow-dev.openearth.dev` unless you intentionally want one of these overrides:
+
+- fully local Compose-style MLflow: `MLFLOW_TRACKING_URI=http://mlflow:5000`
+- port-forwarded Kubernetes MLflow: `MLFLOW_TRACKING_URI=http://localhost:5000`
 
 Verify the service:
 
 - Health check: `curl http://localhost:8000/health`
 - OpenAPI docs: `http://localhost:8000/docs`
+- Standard MLflow UI: `https://mlflow-dev.openearth.dev`
+- Local Compose MLflow UI: `http://localhost:5000`
 - Prioritization endpoint: `POST /v1/prioritize`
 - Explanation translation endpoint: `POST /v1/explanations/translate`
 - Exclusion preview endpoint: `POST /v1/prioritize/exclusions/preview`
+
+For deployed workloads, use the hosted MLflow URLs directly.
+
+Example Kubernetes values:
+
+- dev cluster service:
+  - `MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev`
+  - `MLFLOW_EXPERIMENT_NAME=hiap-meed`
+  - `MLFLOW_ENVIRONMENT=dev`
+- test workload on the same dev cluster:
+  - `MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev`
+  - `MLFLOW_EXPERIMENT_NAME=hiap-meed`
+  - `MLFLOW_ENVIRONMENT=test`
+- prod workload:
+  - `MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev`
+  - `MLFLOW_EXPERIMENT_NAME=hiap-meed`
+  - `MLFLOW_ENVIRONMENT=prod`
 
 ### External API contracts
 
@@ -175,7 +303,7 @@ Exclusions:
   - `water_quality`
 - Sector exclusions are deterministic from action sector metadata.
 - Co-benefit exclusions are deterministic and propose actions where a selected co-benefit has negative `impact_numeric`.
-- Free-text exclusions run only in the preview endpoint and only when `HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED=true` and `HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL` is set. The resolver keeps exact catalog action IDs only for clear matches and returns warnings for disabled, unmatched, or ambiguous input.
+- Free-text exclusions run only in the preview endpoint and only when `features.free_text_exclusions_enabled=true` and `models.free_text_exclusions.name` is configured in `llm_config.yaml`. The resolver keeps exact catalog action IDs only for clear matches and returns warnings for disabled, unmatched, or ambiguous input.
 - When the free-text resolver returns unknown IDs, ambiguous matches, or blank reasons, the backend drops those rows, logs aggregate drop counts, stores dropped-row diagnostics in preview artifacts, and returns compact warnings to the frontend.
 - Ranking accepts `excludedActionIds` per city. These confirmed IDs are authoritative; `/v1/prioritize` does not reinterpret raw exclusion preferences.
 - `cityStrategicPreferenceSectors` on the ranking request must also use only:
@@ -473,10 +601,11 @@ The service writes:
 
 - Console logs (stdout/stderr)
 - File logs at `LOG_DIR/app.log`
-- Per-request artifacts at:
+- Optional local per-request artifacts at:
   - `LOG_DIR/requests/prioritization/{UTC_TIMESTAMP}Z_{internal_request_id}/`
   - `LOG_DIR/requests/exclusion_preview/{UTC_TIMESTAMP}Z_{internal_request_id}/`
-    when `ARTIFACT_LOG_JSONL=true`
+- Direct MLflow artifacts on the active request run when `MLFLOW_ENABLED=true`
+- Local request artifact folders only when `LOCAL_ARTIFACTS_ENABLED=true`
 
 Fetch-step artifacts record the active data source for each upstream/mock dependency. API-backed fetches include upstream request metadata such as endpoint templates, resolved URLs, request keys, HTTP status codes, and upstream timestamps when available. Mock-backed fetches include the resolved `mock_file_path` plus the relevant request key such as `requested_locode` or `requested_country_code`.
 
@@ -490,7 +619,7 @@ What `app.log` contains:
 - High-level pipeline milestone logs (fetch counts, hard-filter counts, completion)
 - Cross-request aggregated logs (all requests in one rolling file path)
 
-What each request run folder contains:
+What each local request run folder contains:
 
 - `summary.jsonl`: one JSON line per high-level pipeline event for that request
 - `NNN_<step>.json`: concise per-step detail files (fetch, filter, score, response summary)
@@ -502,6 +631,7 @@ What each request run folder contains:
 - `request_kind`: included in summary events, detail files, and manifests so artifacts can be filtered by API type
 - `event_index` is shared between a summary event and its matching detail file, so `summary.jsonl` and `NNN_<step>.json` are directly pairable
 - Timing/count summaries plus request-scoped traceability in a single run directory
+- When MLflow is enabled, it uses the same default relative artifact paths as the optional local request folder so both outputs keep one consistent hierarchy
 - Prioritization request folders additionally include:
   - `llm/explanations_io.json`: explanation-stage LLM request/response artifact (only when explanations are generated successfully)
   - `llm/explanations_prompt.txt`: plain-text rendered user prompt with preserved newlines (only when explanations are generated successfully)
@@ -516,9 +646,9 @@ What each request run folder contains:
 - Explanation translation artifacts record the source language contract, requested target languages, and any LLM language-check warnings.
 - For the direct other-preference feature, the `alignment` step detail includes evidence such as `resolved_preferred_co_benefits`, `matched_preferred_co_benefits`, and mapping source fields
 - The active request flow does not emit dedicated LLM prompt/response artifact files for Alignment because direct co-benefit selections are deterministic
-- Exclusion preview request folders additionally include:
-  - `cities/<locode>_preview.json`: per-city exclusion preview diagnostics
-  - `llm/<locode>_free_text_exclusion_io.json`: free-text exclusion LLM input/output and validation diagnostics
+- Exclusion preview step-detail artifacts keep the city-level diagnostics, including:
+  - the selected exclusion inputs for that city
+  - free-text exclusion LLM resolution and validation diagnostics when applicable
   - dropped-row diagnostics for unknown IDs, ambiguous matches, and empty reasons inside the free-text exclusion validation payload
 - Current implementation note:
   - prioritization artifacts are assembled from the orchestrator layer
@@ -557,24 +687,54 @@ Typical per-request artifact events:
 
 ### 6. Docker
 
+For local development, the normal path is to keep `hiap-meed` pointed at the hosted dev MLflow. Docker Compose remains available when you want the whole stack, including MLflow, fully local.
+
+Docker Compose:
+
 From the `hiap-meed` directory:
 
-```bash
-docker build -t hiap-meed-app .
-docker run -it --rm -p 8000:8000 --env-file .env hiap-meed-app
+```text
+docker compose up --build
 ```
 
-To persist file logs and per-request artifacts on your machine (under `logs/`, including `logs/requests/`), bind-mount the host `logs` directory to `/app/logs` in the container (this matches default `LOG_DIR=logs`):
+This starts:
 
-```bash
-docker run -it --rm -p 8000:8000 --env-file .env -v "%cd%\logs:/app/logs" hiap-meed-app
+- `hiap-meed` on `http://localhost:8000`
+- `mlflow` on `http://localhost:5000`
+
+Before using this path, override `MLFLOW_TRACKING_URI=http://mlflow:5000` in `.env` or the container environment.
+
+The compose file intentionally runs MLflow with permissive `--allowed-hosts "*"` because this setup is for local development only.
+
+The compose file already bind-mounts `./logs` to `/app/logs`, so `app.log` and optional local request artifacts persist on your machine under `logs/`.
+MLflow keeps its own SQLite metadata store and artifact store in its own named Docker volume. `hiap-meed` does not share that filesystem; it talks to MLflow only through `MLFLOW_TRACKING_URI`, which is the same tracking API contract used by the hosted MLflow deployment.
+
+If you change `LOG_DIR` in `.env`, update the `hiap-meed` volume mount in `compose.yaml` so it still matches `/app/<LOG_DIR>`.
+
+Plain Docker:
+
+```text
+docker build -t hiap-meed .
+docker run --rm -p 8000:8000 --env-file .env -v "$(pwd)/logs:/app/logs" hiap-meed
 ```
 
-If you change `LOG_DIR` in `.env`, adjust the container path in `-v` so it matches `/app/<LOG_DIR>`.
+Notes for plain Docker:
+
+- keep `LOG_DIR=logs` so the bind mount writes `app.log` and optional local request artifacts into the local `logs/` folder
+- if you are writing to the Kubernetes-hosted MLflow from your laptop, use `kubectl port-forward -n default svc/mlflow-service-dev 5000:5000` and set `MLFLOW_TRACKING_URI=http://localhost:5000`
+- otherwise, keep the standard hosted value `MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev`
+- if you change `LOG_DIR`, update the bind mount so it still maps your host log folder to `/app/<LOG_DIR>`
 
 The Docker image includes both `app/` and `data/`, so mock payloads under
 `data/mock` are available in-container at `/app/data/mock`.
 Data folder needs to be removed once real APIs are available.
+
+If you previously ran the older local setup that shared an MLflow data volume with `hiap-meed`, reset the local MLflow state once before retesting:
+
+```text
+docker compose down -v
+docker compose up --build
+```
 
 ## Testing
 

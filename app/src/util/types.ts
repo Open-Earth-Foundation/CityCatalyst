@@ -123,6 +123,7 @@ export interface UserInfoResponse {
   role: Roles;
   email?: string;
   preferredLanguage?: string;
+  numberFormat?: string;
 }
 
 export type DataSource = DataSourceAttributes & {
@@ -556,6 +557,7 @@ export interface UpdateUserPayload {
   userId: string;
   title?: string;
   preferredLanguage?: string;
+  numberFormat?: string;
 }
 
 export interface FormulaInputValuesResponse {

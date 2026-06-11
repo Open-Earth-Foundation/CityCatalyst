@@ -120,7 +120,7 @@
   "add-data-to-inventory": "Daten zum Inventar hinzufügen",
   "completion-percent": "{{progress}}% abgeschlossen",
   "data-connected-percent": "{{progress}}% Verbundene Drittanbieter-Daten",
-  "data-added-percent": "{{progress}}% hinzugefügte Daten",
+  "manually-added": "Manuell hinzugefügte Daten",
   "check-data-heading": "Erkunden Sie relevante Datensätze zur Integration in Ihr Inventar",
   "check-data-details": "Überprüfen und integrieren Sie automatisch bezogene Daten, die für das GHG-Inventar Ihrer Stadt relevant sind.",
   "no-data-sources": "Keine externen Datenquellen verfügbar",

@@ -243,7 +243,7 @@ export function SourceDrawer({
                   )}
 
                   <SourceDrawerTags t={t} source={source} />
-                  <Separator my={4} />
+                  <Separator my={4} borderColor="border.neutral" />
                   <Stack gap={4} mt={2}>
                     <TitleLarge>{t("inside-dataset")}</TitleLarge>
                     <BodyLarge color="content.tertiary">
@@ -275,7 +275,7 @@ export function SourceDrawer({
                         {t("about-data-availability-description")}
                       </BodyLarge>
                     </VStack>
-                    <Separator />
+                    <Separator borderColor="border.neutral" />
                     <ScalingSection
                       source={source}
                       t={t}

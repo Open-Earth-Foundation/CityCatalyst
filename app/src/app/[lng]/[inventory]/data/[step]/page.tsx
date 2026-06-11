@@ -410,7 +410,10 @@ export default function AddDataSteps() {
     }
   };
 
-  function isSourceConnected(source: DataSourceWithRelations): boolean {
+  function isSourceConnected(source?: DataSourceWithRelations): boolean {
+    if (!source) {
+      return false;
+    }
     return (
       (source.inventoryValues && source.inventoryValues.length > 0) ||
       newlyConnectedDataSourceIds.indexOf(source.datasourceId) > -1
@@ -1315,6 +1318,7 @@ export default function AddDataSteps() {
         {/*** Drawers ***/}
         <SourceDrawer
           source={selectedSource}
+          isConnected={isSourceConnected(selectedSource)}
           sourceData={selectedSourceData}
           sector={{ sectorName: currentStep.sector?.sectorName ?? "" }}
           isOpen={isSourceDrawerOpen}

@@ -12,9 +12,7 @@ type TokenResponse = {
 function requireEnv(name: string): string {
   const value = process.env[name];
   if (!value) {
-    throw new createHttpError.InternalServerError(
-      `${name} is not configured`,
-    );
+    throw new createHttpError.InternalServerError(`${name} is not configured`);
   }
   return value;
 }
@@ -60,6 +58,21 @@ async function readClimateAdvisorErrorPayload(
 }
 
 /**
+ * Build an HTTP error that preserves an upstream JSON payload when present.
+ */
+function createClimateAdvisorHttpError(
+  status: number,
+  payload: unknown,
+  fallback: string,
+) {
+  const message = climateAdvisorErrorMessage(payload, fallback);
+  if (payload && typeof payload === "object") {
+    return createHttpError(status, message, { data: payload });
+  }
+  return createHttpError(status, message);
+}
+
+/**
  * Re-throw a CA proxy failure with the upstream HTTP status and payload.
  */
 async function throwClimateAdvisorProxyError(
@@ -67,22 +80,18 @@ async function throwClimateAdvisorProxyError(
   fallback: string,
 ): Promise<never> {
   const payload = await readClimateAdvisorErrorPayload(response);
-  throw createHttpError(
-    response.status,
-    climateAdvisorErrorMessage(payload, fallback),
-    payload ? { data: payload } : undefined,
-  );
+  throw createClimateAdvisorHttpError(response.status, payload, fallback);
 }
 
 export async function issueCaUserToken(params: {
-  origin: string;
   tokenUserID: string;
   inventoryId?: string;
 }): Promise<TokenResponse> {
   const serviceKey = requireEnv("CC_SERVICE_API_KEY");
+  const host = requireEnv("HOST");
   let response: Response;
   try {
-    response = await fetch(`${params.origin}/api/v1/internal/ca/user-token`, {
+    response = await fetch(`${host}/api/v1/internal/ca/user-token/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -109,7 +118,6 @@ export async function issueCaUserToken(params: {
 }
 
 export async function callClimateAdvisor(params: {
-  origin: string;
   path: string;
   tokenUserID: string;
   inventoryId?: string;
@@ -117,7 +125,6 @@ export async function callClimateAdvisor(params: {
   body?: Record<string, unknown>;
 }): Promise<Response> {
   const token = await issueCaUserToken({
-    origin: params.origin,
     tokenUserID: params.tokenUserID,
     inventoryId: params.inventoryId,
   });

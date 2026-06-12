@@ -11,7 +11,7 @@ import type {
 } from "@/util/GHGI/types";
 import { OCCityAttributes } from "@/util/types";
 import { useGetOCCityDataQuery } from "@/services/api";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { findClosestYear } from "@/util/helpers";
 import {
   Box,
@@ -21,38 +21,15 @@ import {
   Icon,
   Text,
 } from "@chakra-ui/react";
-import FormattedThousandsNumber from "../../../app/[lng]/cities/[cityId]/GHGI/onboarding/FormattedThousandsNumberInput";
+import FormattedThousandsNumber from "@/components/formatted-thousands-number-input";
 import { MdCheck, MdErrorOutline, MdInfoOutline } from "react-icons/md";
 import { Field } from "@/components/ui/field";
-import {
-  SelectContent,
-  SelectItem,
-  SelectLabel,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from "@/components/ui/select";
 import { InputGroup } from "../../ui/input-group";
 import { logger } from "@/services/logger";
 import {
   NativeSelectField,
   NativeSelectRoot,
 } from "@/components/ui/native-select";
-
-// Type for general onboarding inputs
-type GeneralInputs = {
-  city: string;
-  year: number;
-  inventoryGoal: string;
-  globalWarmingPotential: string;
-  cityPopulation: number;
-  cityPopulationYear: number;
-  regionPopulation: number;
-  regionPopulationYear: number;
-  countryPopulation: number;
-  countryPopulationYear: number;
-  totalCountryEmissions: number;
-};
 
 // Type for general onboarding data
 type GeneralOnboardingData = {
@@ -74,6 +51,7 @@ export default function SetPopulationDataStep({
   setValue,
   numberOfYearsDisplayed,
   setData,
+  numberFormat,
 }: {
   t: TFunction;
   register: UseFormRegister<GHGIFormInputs>;
@@ -85,6 +63,7 @@ export default function SetPopulationDataStep({
   setData: (data: GeneralOnboardingData) => void;
   setValue: any;
   numberOfYearsDisplayed: number;
+  numberFormat?: string;
 }) {
   const yearInput = watch("year");
   const year: number | null = yearInput ? parseInt(yearInput) : null;
@@ -130,7 +109,6 @@ export default function SetPopulationDataStep({
       setValue("cityPopulation", population.population);
       setValue("cityPopulationYear", population.year);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cityData, year, numberOfYearsDisplayed, setValue]);
 
   useEffect(() => {
@@ -269,6 +247,7 @@ export default function SetPopulationDataStep({
                       );
                     },
                   }}
+                  numberFormat={numberFormat}
                 />
                 <Box display="flex" gap="6px" alignItems="center" py="8px">
                   <Icon as={MdInfoOutline} color="interactive.control" />
@@ -402,6 +381,7 @@ export default function SetPopulationDataStep({
                       );
                     },
                   }}
+                  numberFormat={numberFormat}
                 />
               </Field>
             </HStack>
@@ -524,6 +504,7 @@ export default function SetPopulationDataStep({
                       );
                     },
                   }}
+                  numberFormat={numberFormat}
                 />
               </Field>
             </HStack>

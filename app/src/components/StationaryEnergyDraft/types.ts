@@ -20,6 +20,7 @@ export type SourceCandidate = {
   publisher_name?: string | null;
   dataset_name?: string | null;
   dataset_year?: string | number | null;
+  details_datasource_id?: string | null;
   geography_match?: string | null;
   applicability_status: string;
   source_scope: Record<string, string | null | undefined>;

@@ -266,11 +266,15 @@ def selected_source_id_for_storage(
     proposal: StationaryEnergyDraftProposal,
     selected_candidate: StationaryEnergyDraftSourceCandidate | None,
 ) -> str | None:
-    """Resolve which source id should be stored for a saved review decision."""
+    """Resolve the committable datasource id for a saved review decision."""
     if decision_input.action == "accept":
         return proposal.recommended_datasource_id
     if decision_input.action != "override_source" or selected_candidate is None:
         return decision_input.selected_source_id
+    source_data = selected_candidate.source_data or {}
+    details_datasource_id = source_data.get("details_datasource_id")
+    if isinstance(details_datasource_id, str) and details_datasource_id.strip():
+        return details_datasource_id
     return selected_candidate.datasource_id
 
 

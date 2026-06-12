@@ -4,7 +4,6 @@ import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import { useInventoryOrganization } from "@/hooks/use-inventory-organization";
 import { Box, HStack, useDisclosure, Image } from "@chakra-ui/react";
-import { useParams } from "next/navigation";
 import { use } from "react";
 import ProgressLoader from "../ProgressLoader";
 import { Hero } from "../HomePageJN/Hero";
@@ -27,14 +26,12 @@ export default function CitiesDashboardPage({
 }) {
   const { lng, cityId } = use(params);
   const { t } = useTranslation(lng, "dashboard");
-  const { year } = useParams();
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
   // Get the city ID from params or user's default
   const cityIdFromParam = (cityId as string) ?? userInfo?.defaultCityId;
-  const parsedYear = parseInt(year as string);
 
   const {
     open: isPublishOpen,
@@ -95,12 +92,12 @@ export default function CitiesDashboardPage({
         <>
           <Hero
             city={city as CityWithProjectDataResponse}
-            year={parsedYear}
             ghgiCityData={latestInventory as InventoryResponse}
             isPublic={isPublic}
             isLoading={isInventoryOrgDataLoading}
             t={t}
             population={population ?? undefined}
+            numberFormat={userInfo?.numberFormat}
           />
           <Box maxW="1090px" mx="auto">
             <HStack justifyContent="space-between" w="full">

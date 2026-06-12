@@ -68,9 +68,11 @@ def to_status_source_candidate(
     candidate: StationaryEnergyDraftSourceCandidate,
 ) -> DraftStatusSourceCandidate:
     """Serialize only the source-candidate fields used by the review frontend."""
+    source_data = candidate.source_data or {}
     return DraftStatusSourceCandidate(
         candidate_id=candidate.candidate_id,
         datasource_id=candidate.datasource_id,
+        details_datasource_id=source_data.get("details_datasource_id"),
         name=candidate.name,
         publisher_name=candidate.publisher_name,
         dataset_name=candidate.dataset_name,

@@ -54,6 +54,7 @@ describe("Stationary Energy draft routes", () => {
   const originalFeatureFlags = process.env.NEXT_PUBLIC_FEATURE_FLAGS;
   const originalCaBaseUrl = process.env.CA_BASE_URL;
   const originalServiceKey = process.env.CC_SERVICE_API_KEY;
+  const originalHost = process.env.HOST;
   const originalDbInitialized = db.initialized;
   let sessionSpy: ReturnType<typeof jest.spyOn>;
 
@@ -78,6 +79,7 @@ describe("Stationary Energy draft routes", () => {
       "CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC";
     process.env.CA_BASE_URL = "http://ca.example";
     process.env.CC_SERVICE_API_KEY = "cc-service-key";
+    process.env.HOST = "http://cc.example";
     db.initialized = true;
     global.fetch = jest.fn() as unknown as typeof fetch;
   });
@@ -92,6 +94,7 @@ describe("Stationary Energy draft routes", () => {
     process.env.NEXT_PUBLIC_FEATURE_FLAGS = originalFeatureFlags;
     process.env.CA_BASE_URL = originalCaBaseUrl;
     process.env.CC_SERVICE_API_KEY = originalServiceKey;
+    process.env.HOST = originalHost;
     sessionSpy.mockRestore();
   });
 

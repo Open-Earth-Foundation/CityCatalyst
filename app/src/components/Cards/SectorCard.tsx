@@ -15,7 +15,6 @@ import {
 } from "@/util/helpers";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
-// import { AddIcon } from "@chakra-ui/icons";
 import { InventoryType, InventoryTypeEnum, ISector } from "@/util/constants";
 import { BsPlus } from "react-icons/bs";
 import { MdAutoAwesome } from "react-icons/md";
@@ -35,11 +34,13 @@ export function SectorCard({
   sector,
   t,
   inventory,
+  numberFormat,
 }: {
   sectorProgress?: SectorProgress;
   sector: ISector;
   t: TFunction;
   inventory: InventoryResponse;
+  numberFormat?: string;
 }) {
   const params = useParams();
   const lng = getParamValueRequired(params.lng);
@@ -202,6 +203,7 @@ export function SectorCard({
                 "striped",
               ]}
               height={2}
+              numberFormat={numberFormat}
             />
             <Text
               fontFamily="heading"

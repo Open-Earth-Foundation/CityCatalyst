@@ -17,7 +17,7 @@ import {
   Icon,
   Text,
 } from "@chakra-ui/react";
-import FormattedThousandsNumberInput from "@/app/[lng]/onboarding/setup/FormattedThousandsNumberInput";
+import FormattedThousandsNumberInput from "@/components/formatted-thousands-number-input";
 import { MdCheck, MdErrorOutline, MdInfoOutline } from "react-icons/md";
 import { Field } from "@/components/ui/field";
 import { BodyMedium } from "@/components/package/Texts/Body";
@@ -43,6 +43,7 @@ export default function SetPopulationDataStep({
   setValue,
   numberOfYearsDisplayed,
   populationErrorMessage,
+  numberFormat,
 }: {
   t: TFunction;
   register: UseFormRegister<Inputs>;
@@ -55,6 +56,7 @@ export default function SetPopulationDataStep({
   setValue: any;
   numberOfYearsDisplayed: number;
   populationErrorMessage?: string;
+  numberFormat?: string;
 }) {
   const yearInput = watch("year");
   const year: number | null = yearInput ? parseInt(yearInput) : null;
@@ -88,7 +90,6 @@ export default function SetPopulationDataStep({
       setValue("cityPopulation", population.population);
       setValue("cityPopulationYear", population.year);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cityData, year, numberOfYearsDisplayed, setValue]);
 
   useEffect(() => {
@@ -233,6 +234,7 @@ export default function SetPopulationDataStep({
                   w="400px"
                   fontSize="body.lg"
                   letterSpacing="wide"
+                  numberFormat={numberFormat}
                 />
                 <Box display="flex" gap="6px" alignItems="center" py="8px">
                   <Icon as={MdInfoOutline} color="interactive.control" />
@@ -348,6 +350,7 @@ export default function SetPopulationDataStep({
                   w="400px"
                   fontSize="body.lg"
                   letterSpacing="wide"
+                  numberFormat={numberFormat}
                 />
               </Field>
             </HStack>
@@ -454,6 +457,7 @@ export default function SetPopulationDataStep({
                   w="400px"
                   fontSize="body.lg"
                   letterSpacing="wide"
+                  numberFormat={numberFormat}
                 />
               </Field>
             </HStack>

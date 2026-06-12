@@ -316,7 +316,7 @@ export function formatDraftEmissionsLabel(
     .toLowerCase();
   if (RAW_KG_EMISSIONS_UNITS.has(normalizedUnit)) {
     const kgValue = parseEmissionsKgValue(value);
-    return kgValue == null ? text : convertKgToTonnes(kgValue, null);
+    return kgValue == null ? text : convertKgToTonnes(kgValue, undefined);
   }
 
   const displayUnit = normalizeEmissionsUnitLabel(unit);
@@ -324,15 +324,25 @@ export function formatDraftEmissionsLabel(
 }
 
 /**
- * Sum total CO2e emissions from a draft data row. Emissions live nested under
- * `row.gases[].emissions_value_100yr` (falling back to `emissions_value`), not at
- * the row's top level, so a flat lookup always misses them. Values are in kg.
+ * Return total CO2e emissions from a draft data row. The CC context can emit
+ * either top-level emissions_value fields or nested gases[].emissions_value
+ * fields, so support both shapes. Values are treated as raw kg for display.
  */
-export function totalEmissionsFromGases(row: unknown): number | null {
+export function totalEmissionsFromGases(
+  row: unknown,
+): bigint | number | null {
   if (!row || typeof row !== "object") {
     return null;
   }
-  const gases = (row as { gases?: unknown }).gases;
+  const rowRecord = row as Record<string, unknown>;
+  const direct = parseEmissionsKgValue(
+    rowRecord["emissions_value_100yr"] ?? rowRecord["emissions_value"],
+  );
+  if (direct != null) {
+    return direct;
+  }
+
+  const gases = rowRecord.gases;
   if (!Array.isArray(gases)) {
     return null;
   }

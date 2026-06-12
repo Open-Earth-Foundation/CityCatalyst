@@ -253,6 +253,11 @@ _NOTATION_KEY_LABELS = {
 }
 
 
+def _has_emissions_value(value: Any) -> bool:
+    """Return whether an emissions field is present, including zero values."""
+    return value is not None and value != ""
+
+
 def _notation_key_label(notation_key: str | None, notation_key_name: Any = None) -> str:
     """Plain-language label for a notation key, with sensible fallbacks."""
     if notation_key and notation_key.upper() in _NOTATION_KEY_LABELS:
@@ -260,6 +265,26 @@ def _notation_key_label(notation_key: str | None, notation_key_name: Any = None)
     if isinstance(notation_key_name, str) and notation_key_name.strip():
         return notation_key_name.replace("-", " ").replace("_", " ").strip()
     return "reported notation"
+
+
+def _row_has_usable_emissions(row: dict[str, Any]) -> bool:
+    """Return whether a normalized row carries an emissions value."""
+    if _has_emissions_value(row.get("emissions_value_100yr")) or _has_emissions_value(
+        row.get("emissions_value")
+    ):
+        return True
+
+    gases = row.get("gases")
+    if not isinstance(gases, list):
+        return False
+    return any(
+        isinstance(gas, dict)
+        and (
+            _has_emissions_value(gas.get("emissions_value_100yr"))
+            or _has_emissions_value(gas.get("emissions_value"))
+        )
+        for gas in gases
+    )
 
 
 def _candidate_has_usable_emissions(candidate: dict[str, Any]) -> bool:
@@ -273,14 +298,8 @@ def _candidate_has_usable_emissions(candidate: dict[str, Any]) -> bool:
     for row in candidate.get("normalized_rows") or []:
         if not isinstance(row, dict):
             continue
-        gases = row.get("gases")
-        if not isinstance(gases, list):
-            continue
-        for gas in gases:
-            if isinstance(gas, dict) and (
-                gas.get("emissions_value_100yr") or gas.get("emissions_value")
-            ):
-                return True
+        if _row_has_usable_emissions(row):
+            return True
     return False
 
 
@@ -289,7 +308,7 @@ def build_deterministic_proposals(
     taxonomy_rows: list[Any],
     stored_source_candidates: list[dict[str, Any]],
     inventory_year: int | None = None,
-) -> tuple[list[dict[str, Any]], list[Any]]:
+) -> tuple[list[dict[str, Any]], list[Any], list[dict[str, Any]]]:
     """Resolve every taxonomy row deterministically, without the LLM (Phase 2+3).
 
     For each row, find the applicable candidates whose scope matches the row
@@ -305,8 +324,8 @@ def build_deterministic_proposals(
       instructed to follow. The top candidate is the recommendation, the rest are
       alternatives, and the user still picks/overrides.
 
-    Returns (deterministic_proposals, rows_requiring_llm). The second list is
-    normally empty; it exists only as a safety hatch for unforeseen row shapes.
+    Returns (deterministic_proposals, rows_requiring_llm, deterministic_llm_fallback).
+    The fallback list is aligned by index with rows_requiring_llm.
     """
     applicable = [
         candidate

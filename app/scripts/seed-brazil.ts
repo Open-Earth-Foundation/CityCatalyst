@@ -1,5 +1,6 @@
 // Local dev helper: seed a demo project + a few Brazilian cities with inventories,
-// linked to the default admin user. Idempotent. Run: npm run seed-brazil
+// linked to the default admin user. Idempotent.
+// Run from app/: npx tsx scripts/seed-brazil.ts
 import { db } from "@/models";
 import env from "@next/env";
 import { randomUUID } from "node:crypto";

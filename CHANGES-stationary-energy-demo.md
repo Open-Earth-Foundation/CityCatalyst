@@ -17,10 +17,11 @@ genuine multi-source conflicts, correct notation-key handling, and a clearer UI.
 - **Hybrid agent:** rows where **>=2 real-emissions sources compete** are routed to
   the agent to reason about and explain the trade-offs, with a **per-batch
   deterministic fallback** if the LLM is unavailable.
-- **Demo synthetic conflict** (`SE_DEMO_SYNTHETIC_CONFLICT=true`): clones one
-  emissions source into a competitor so a row becomes a real conflict the agent
-  resolves (the seeded cities otherwise have no genuine conflicts). Injected in
-  `_load_context_response` so the staleness check stays consistent.
+- **Demo synthetic conflict** (`SE_DEMO_SYNTHETIC_CONFLICT=true`): local-testing
+  only. It clones one emissions source into a competitor so a row becomes a real
+  conflict the agent resolves (the seeded cities otherwise have no genuine
+  conflicts). The clone uses a fake display datasource id, but review/save maps
+  it back to the original real datasource id before commit.
 
 ### Front-end
 - **Live polling** while generating (stops at `ready` — fixes a bug where it kept
@@ -38,11 +39,11 @@ genuine multi-source conflicts, correct notation-key handling, and a clearer UI.
 
 ### Demo helper
 - `app/scripts/seed-brazil.ts` — seeds a Brazil Demo project + cities/inventories
-  (idempotent, localhost-guarded). Run: `npx tsx scripts/seed-brazil.ts`.
+  (idempotent, localhost-guarded). Run from `app/`: `npx tsx scripts/seed-brazil.ts`.
 
 ## Local config (NOT committed — `.env` is gitignored)
 - `climate-advisor/.env`: a valid `OPENROUTER_API_KEY`, `CA_FEATURE_FLAGS=STATIONARY_ENERGY_AGENTIC`,
-  and `SE_DEMO_SYNTHETIC_CONFLICT=true` for the demo conflict.
+  and `SE_DEMO_SYNTHETIC_CONFLICT=true` only for local demo conflict testing.
 - `app/.env`: `STATIONARY_ENERGY_AGENTIC` + `CA_SERVICE_INTEGRATION` feature flags,
   matching `CC_SERVICE_API_KEY`/`CC_API_KEY`, `CA_BASE_URL=http://localhost:8080`.
 - CA runs the pristine `llm_config.yaml` (gpt-5.4 via OpenRouter).
@@ -52,8 +53,8 @@ genuine multi-source conflicts, correct notation-key handling, and a clearer UI.
   draft id from localStorage, and existing drafts are frozen snapshots.
 - **Rebuild CA after backend changes** with
   `docker compose up -d --build --force-recreate climate-advisor`.
-- Set `SE_DEMO_SYNTHETIC_CONFLICT=false` + rebuild CA to run on real
-  (conflict-free) data.
+- Leave `SE_DEMO_SYNTHETIC_CONFLICT` unset/false + rebuild CA to run on real
+  (conflict-free) data; never enable it in shared or production environments.
 
 ## Notable behavior of the seeded data
 The seeded Brazil cities (Curitiba / São Paulo / Rio) have no genuine multi-source

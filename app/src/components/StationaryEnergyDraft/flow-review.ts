@@ -31,6 +31,12 @@ const REVIEW_FALLBACKS = {
   "review-option-alternative-source": "Alternative source",
 } as const;
 
+const REVIEW_READY_DRAFT_STATUSES = new Set(["ready", "reviewed"]);
+
+function canReviewDraftStatus(status: string): boolean {
+  return REVIEW_READY_DRAFT_STATUSES.has(status);
+}
+
 export function latestDecisionByProposal(
   decisions: ReviewDecision[],
 ): Map<string, ReviewDecision> {
@@ -143,6 +149,9 @@ export function canSaveDraft(params: {
   if (TERMINAL_DRAFT_STATUSES.has(params.draftState.status)) {
     return false;
   }
+  if (!canReviewDraftStatus(params.draftState.status)) {
+    return false;
+  }
   if (pendingDecisionReviewProposals(params).length > 0) {
     return false;
   }
@@ -171,6 +180,9 @@ export function canPersistDraftReview(params: {
     return false;
   }
   if (TERMINAL_DRAFT_STATUSES.has(params.draftState.status)) {
+    return false;
+  }
+  if (!canReviewDraftStatus(params.draftState.status)) {
     return false;
   }
   const reviewableProposals = reviewableDraftProposals(params.draftState);
@@ -294,7 +306,7 @@ export function buildSourcePreferenceOptions(
 export function reviewableDraftProposals(
   draftState: DraftStatusResponse | null,
 ): DraftProposal[] {
-  if (!draftState) {
+  if (!draftState || !canReviewDraftStatus(draftState.status)) {
     return [];
   }
   return draftState.proposals
@@ -331,7 +343,7 @@ function buildDecisionOptionGroups(
       meta: sourceMetaLabel(recommended),
       value: proposedValueLabel(proposal),
       recommended: true,
-      datasourceId: recommended.datasource_id,
+      datasourceId: recommended.details_datasource_id ?? recommended.datasource_id,
     };
     realOptions.push(recommendedOption);
   }
@@ -353,7 +365,7 @@ function buildDecisionOptionGroups(
       meta: sourceMetaLabel(candidate),
       value: sourceCandidateValueLabel(candidate, t),
       recommended: false,
-      datasourceId: candidate.datasource_id,
+      datasourceId: candidate.details_datasource_id ?? candidate.datasource_id,
     };
     alternativeOptions.push(option);
     realOptions.push(option);
@@ -436,7 +448,7 @@ function sourceCandidateValueLabel(
 ): string {
   const rows = candidate.normalized_rows ?? [];
   const firstRow = rows[0];
-  // Emissions are nested under row.gases[].emissions_value(_100yr), in kg.
+  // Source rows can expose emissions directly or under gases[].
   const emissionsLabel = formatDraftEmissionsLabel(
     totalEmissionsFromGases(firstRow),
     "kgco2e",

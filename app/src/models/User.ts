@@ -23,6 +23,7 @@ export interface UserAttributes {
   // User's preferred language for emails and UI
   preferredLanguage?: string;
   defaultCityId?: string | null;
+  numberFormat?: string;
 }
 
 export type UserPk = "userId";
@@ -38,7 +39,8 @@ export type UserOptionalAttributes =
   | "defaultInventoryId"
   | "title"
   | "preferredLanguage"
-  | "defaultCityId";
+  | "defaultCityId"
+  | "numberFormat";
 export type UserCreationAttributes = Optional<
   UserAttributes,
   UserOptionalAttributes
@@ -60,6 +62,7 @@ export class User
   declare title?: string;
   declare preferredLanguage?: LANGUAGES;
   declare defaultCityId?: string | null;
+  declare numberFormat?: string;
 
   // User belongsTo Inventory via defaultInventoryId
   declare defaultInventory: Inventory;
@@ -105,9 +108,18 @@ export class User
   // User hasMany CityUser via userId
   declare cityUsers: CityUser[];
   declare getCityUsers: Sequelize.HasManyGetAssociationsMixin<CityUser>;
-  declare setCityUsers: Sequelize.HasManySetAssociationsMixin<CityUser, CityUserId>;
-  declare addCityUser: Sequelize.HasManyAddAssociationMixin<CityUser, CityUserId>;
-  declare addCityUsers: Sequelize.HasManyAddAssociationsMixin<CityUser, CityUserId>;
+  declare setCityUsers: Sequelize.HasManySetAssociationsMixin<
+    CityUser,
+    CityUserId
+  >;
+  declare addCityUser: Sequelize.HasManyAddAssociationMixin<
+    CityUser,
+    CityUserId
+  >;
+  declare addCityUsers: Sequelize.HasManyAddAssociationsMixin<
+    CityUser,
+    CityUserId
+  >;
   declare createCityUser: Sequelize.HasManyCreateAssociationMixin<CityUser>;
   declare removeCityUser: Sequelize.HasManyRemoveAssociationMixin<
     CityUser,
@@ -117,15 +129,30 @@ export class User
     CityUser,
     CityUserId
   >;
-  declare hasCityUser: Sequelize.HasManyHasAssociationMixin<CityUser, CityUserId>;
-  declare hasCityUsers: Sequelize.HasManyHasAssociationsMixin<CityUser, CityUserId>;
+  declare hasCityUser: Sequelize.HasManyHasAssociationMixin<
+    CityUser,
+    CityUserId
+  >;
+  declare hasCityUsers: Sequelize.HasManyHasAssociationsMixin<
+    CityUser,
+    CityUserId
+  >;
   declare countCityUsers: Sequelize.HasManyCountAssociationsMixin;
   // User hasMany UserFile via userId
   declare userFiles: UserFile[];
   declare getUserFiles: Sequelize.HasManyGetAssociationsMixin<UserFile>;
-  declare setUserFiles: Sequelize.HasManySetAssociationsMixin<UserFile, UserFileId>;
-  declare addUserFile: Sequelize.HasManyAddAssociationMixin<UserFile, UserFileId>;
-  declare addUserFiles: Sequelize.HasManyAddAssociationsMixin<UserFile, UserFileId>;
+  declare setUserFiles: Sequelize.HasManySetAssociationsMixin<
+    UserFile,
+    UserFileId
+  >;
+  declare addUserFile: Sequelize.HasManyAddAssociationMixin<
+    UserFile,
+    UserFileId
+  >;
+  declare addUserFiles: Sequelize.HasManyAddAssociationsMixin<
+    UserFile,
+    UserFileId
+  >;
   declare createUserFile: Sequelize.HasManyCreateAssociationMixin<UserFile>;
   declare removeUserFile: Sequelize.HasManyRemoveAssociationMixin<
     UserFile,
@@ -135,8 +162,14 @@ export class User
     UserFile,
     UserFileId
   >;
-  declare hasUserFile: Sequelize.HasManyHasAssociationMixin<UserFile, UserFileId>;
-  declare hasUserFiles: Sequelize.HasManyHasAssociationsMixin<UserFile, UserFileId>;
+  declare hasUserFile: Sequelize.HasManyHasAssociationMixin<
+    UserFile,
+    UserFileId
+  >;
+  declare hasUserFiles: Sequelize.HasManyHasAssociationsMixin<
+    UserFile,
+    UserFileId
+  >;
   declare countUserFiles: Sequelize.HasManyCountAssociationsMixin;
   // User hasMany City via userId
   declare cities: City[];
@@ -211,6 +244,11 @@ export class User
           onDelete: "SET NULL",
           onUpdate: "CASCADE",
           field: "default_city_id",
+        },
+        numberFormat: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: "number_format",
         },
       },
       {

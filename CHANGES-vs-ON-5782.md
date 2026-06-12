@@ -2,7 +2,7 @@
 
 **Baseline:** `ON-5782-CC-AF-adjustments` (the branch we cloned this morning)
 **Branch:** `carlos/stationary-energy-demo`
-**Footprint:** 19 files, +2,078 / −421 lines — all inside the Stationary Energy agentic flow plus a demo seeder. Nothing in `develop`, no shared/production code, no real data touched.
+**Footprint:** 20 files, +2,207 / −424 lines — all inside the Stationary Energy agentic flow plus a demo seeder and branch notes. Nothing in `develop`, no real data touched.
 
 This is written to be read top-to-bottom: each section explains the problem we hit, what we changed, and where it lives.
 
@@ -12,7 +12,7 @@ This is written to be read top-to-bottom: each section explains the problem we h
 
 A user opens the Stationary Energy sector and Clima (the AI advisor) offers to fill it in from third-party data already integrated into CityCatalyst. The screen is split: **Clima chat on the left, a live "working draft" of the inventory on the right.** The agent drafts each empty row, the user reviews the values and the data sources behind them, and saves.
 
-Two layers of work went into this branch: the **backend that generates the draft** (Climate Advisor, Python), and the **front-end the user actually clicks** (React/TypeScript). The backend is committed; the front-end is partly committed (the first working version) and partly still in the working tree (today's UX pass).
+Two layers of work went into this branch: the **backend that generates the draft** (Climate Advisor, Python), and the **front-end the user actually clicks** (React/TypeScript). Both the backend and the latest UI/UX pass are committed on `carlos/stationary-energy-demo`; check `git status` separately for any local follow-up edits in the checkout.
 
 ---
 
@@ -28,15 +28,15 @@ Two layers of work went into this branch: the **backend that generates the draft
 
 **Why it matters for the demo.** Drafting went from ~70–90 seconds (one model call for everything) to a couple of seconds, and the AI is now visibly reserved for the interesting decisions.
 
-**One demo-only addition:** because the seeded Brazilian cities don't actually have any conflicting sources, a flag (`SE_DEMO_SYNTHETIC_CONFLICT`) clones one source into a fake competitor so the agent's conflict-resolution path can be shown live. It's off by default.
+**One demo-only addition:** because the seeded Brazilian cities don't actually have any conflicting sources, a local-testing flag (`SE_DEMO_SYNTHETIC_CONFLICT`) clones one source into a fake competitor so the agent's conflict-resolution path can be shown live. It's off by default; the fake id is for the review display only and maps back to the original real datasource id before save.
 
 ---
 
 ## 2. The front-end: from "it works" to "it's usable"
 
-The committed first version made the flow functional — it polls for progress while the draft generates, shows the emissions numbers (which were buried in the data and never displayed), and moved the decision cards out of the chat (where they piled up) into a side panel.
+The committed version made the flow functional — it polls for progress while the draft generates, shows the emissions numbers (which were buried in the data and never displayed), and moved the decision cards out of the chat (where they piled up) into a side panel.
 
-Today's pass — still in the working tree — is where most of the UX work happened. The story of it:
+The latest committed UI/UX pass is where most of the usability work happened. The story of it:
 
 **The layout kept collapsing on laptops.** The three panels (chat · working draft · source review) only sat side-by-side on very wide monitors; on a normal laptop the middle panel silently collapsed to nothing. We fixed the layout so the three columns hold from `xl` width up, each scrolling on its own, and stack cleanly on smaller screens. We also merged what used to be four separate boxes (header, progress, rows, footer) into **one tidy card**, so everything lines up to the same edge.
 
@@ -67,13 +67,13 @@ Files, if a dev wants to dig in: everything under `app/src/components/Stationary
 
 ## What's committed vs. what isn't (so nobody is surprised)
 
-- **Committed:** the whole backend (Climate Advisor) and the first working version of the front-end flow, plus the seeder.
-- **Working tree (not yet committed):** today's UI/UX pass — the layout fix, row grouping + source chips, the redesigned source-review cards + radios + drawer, the back button, dropdown, icon, and spacing work.
+- **Committed:** the backend (Climate Advisor), the UI/UX pass, the demo seeder, and these branch notes.
+- **Working tree:** this document describes the committed branch range. Any additional local edits in the checkout are outside this summary and should be reviewed with `git status`.
 
 ---
 
 ## Things to keep in mind for the demo
 
 - Always **start a new draft** to see the latest behaviour — the browser resumes the last draft id from local storage, and old drafts are frozen snapshots.
-- The seeded cities have **no genuine source conflicts**, so the agent's conflict path only fires with `SE_DEMO_SYNTHETIC_CONFLICT` on (or on data that really competes). Everything else resolves deterministically and instantly.
+- The seeded cities have **no genuine source conflicts**, so the agent's conflict path only fires locally with `SE_DEMO_SYNTHETIC_CONFLICT` on (or on data that really competes). Everything else resolves deterministically and instantly.
 - After any backend change, **rebuild Climate Advisor** with `docker compose up -d --build --force-recreate climate-advisor`.

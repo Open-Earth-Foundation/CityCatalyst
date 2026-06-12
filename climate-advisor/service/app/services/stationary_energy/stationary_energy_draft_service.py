@@ -4,6 +4,7 @@ import asyncio
 import copy
 import logging
 import os
+from decimal import Decimal, InvalidOperation
 from typing import Any
 from uuid import UUID
 
@@ -82,40 +83,103 @@ logger = logging.getLogger(__name__)
 LOAD_CONTEXT_CAPABILITY = "ghgi.stationary_energy.load_context"
 COMMIT_ACCEPTED_CAPABILITY = "ghgi.stationary_energy.commit_accepted"
 RESUME_EXCLUDED_STATUSES = {"saved", "partially_saved", "no_changes", "failed"}
+GENERATION_IN_PROGRESS_STATUSES = {"resolving_scope", "loading_context", "generating"}
 
 # Staggered (per-row) generation: number of taxonomy rows per LLM call. Smaller
 # batches surface proposals to pollers sooner; larger batches reduce total calls.
 STAGGER_BATCH_SIZE = 4
+
+# Local testing only: this env flag injects a synthetic competing source for
+# Stationary Energy demos. Do not enable it in shared or production environments.
+SE_DEMO_SYNTHETIC_CONFLICT_ENV = "SE_DEMO_SYNTHETIC_CONFLICT"
 
 # Keep strong references to in-flight background generation tasks so the event
 # loop does not garbage-collect them before they finish.
 _BACKGROUND_TASKS: set[asyncio.Task[Any]] = set()
 
 
+def _schedule_background_task(coro: Any) -> asyncio.Task[Any]:
+    """Schedule a generation coroutine and retain it until completion."""
+    task = asyncio.create_task(coro)
+    _BACKGROUND_TASKS.add(task)
+    task.add_done_callback(_BACKGROUND_TASKS.discard)
+    return task
+
+
+def _has_emissions_value(value: Any) -> bool:
+    """Return whether an emissions field is present, including zero values."""
+    return value is not None and value != ""
+
+
+def _row_has_emissions(row: Any) -> bool:
+    """Return whether a row exposes top-level or nested emissions values."""
+    if not isinstance(row, dict):
+        return False
+    if _has_emissions_value(row.get("emissions_value_100yr")) or _has_emissions_value(
+        row.get("emissions_value")
+    ):
+        return True
+    gases = row.get("gases")
+    if not isinstance(gases, list):
+        return False
+    return any(
+        isinstance(gas, dict)
+        and (
+            _has_emissions_value(gas.get("emissions_value_100yr"))
+            or _has_emissions_value(gas.get("emissions_value"))
+        )
+        for gas in gases
+    )
+
+
+def _scaled_demo_emissions(value: Any) -> Any:
+    """Scale demo emissions while preserving blank or non-numeric values."""
+    if isinstance(value, bool) or not _has_emissions_value(value):
+        return value
+    if isinstance(value, (int, float, Decimal)):
+        return round(float(value) * 1.18)
+    if isinstance(value, str):
+        try:
+            scaled = Decimal(value.strip()) * Decimal("1.18")
+        except InvalidOperation:
+            return value
+        return format(scaled.normalize(), "f")
+    return value
+
+
+def _scale_row_emissions(row: dict[str, Any]) -> None:
+    """Scale every supported emissions field on a cloned normalized row."""
+    for key in ("emissions_value", "emissions_value_100yr"):
+        if key in row:
+            row[key] = _scaled_demo_emissions(row[key])
+
+    gases = row.get("gases")
+    if not isinstance(gases, list):
+        return
+    for gas in gases:
+        if not isinstance(gas, dict):
+            continue
+        for key in ("emissions_value", "emissions_value_100yr"):
+            if key in gas:
+                gas[key] = _scaled_demo_emissions(gas[key])
+
+
 def _inject_synthetic_conflict(source_candidates: list[Any]) -> list[Any]:
-    """Demo only (SE_DEMO_SYNTHETIC_CONFLICT=true): clone the first
-    emissions-bearing candidate into a competing source so one row becomes a
-    genuine multi-source conflict the hybrid agent must resolve and explain.
-    """
+    """Clone one candidate into a local-only synthetic competing source."""
     for candidate in source_candidates:
         rows = candidate.normalized_rows or []
-        first = rows[0] if rows else None
-        gases = first.get("gases") if isinstance(first, dict) else None
-        has_emissions = isinstance(gases, list) and any(
-            isinstance(gas, dict)
-            and (gas.get("emissions_value_100yr") or gas.get("emissions_value"))
-            for gas in gases
-        )
-        if not has_emissions:
+        if not any(_row_has_emissions(row) for row in rows):
             continue
         clone_rows = copy.deepcopy(rows)
-        for gas in clone_rows[0].get("gases", []):
-            if not isinstance(gas, dict):
-                continue
-            for key in ("emissions_value", "emissions_value_100yr"):
-                value = gas.get(key)
-                if isinstance(value, (int, float)):
-                    gas[key] = round(value * 1.18)
+        for row in clone_rows:
+            if isinstance(row, dict):
+                _scale_row_emissions(row)
+        clone_source_data = (
+            copy.deepcopy(candidate.source_data)
+            if candidate.source_data
+            else {}
+        )
+        clone_source_data["details_datasource_id"] = candidate.datasource_id
         clone = candidate.model_copy(
             update={
                 "candidate_id": None,
@@ -123,11 +187,7 @@ def _inject_synthetic_conflict(source_candidates: list[Any]) -> list[Any]:
                 "publisher_name": "Synthetic Demo Source (alternative)",
                 "dataset_year": (candidate.dataset_year or 2020) - 2,
                 "normalized_rows": clone_rows,
-                "source_data": (
-                    copy.deepcopy(candidate.source_data)
-                    if candidate.source_data
-                    else None
-                ),
+                "source_data": clone_source_data,
             }
         )
         logger.info(
@@ -325,7 +385,7 @@ class StationaryEnergyDraftService:
             )
             await self.session.commit()
 
-            task = asyncio.create_task(
+            _schedule_background_task(
                 self._generate_rows_background(
                     draft_run_id=draft_run.draft_run_id,
                     context=context,
@@ -337,8 +397,6 @@ class StationaryEnergyDraftService:
                     trace_id=trace_id,
                 )
             )
-            _BACKGROUND_TASKS.add(task)
-            task.add_done_callback(_BACKGROUND_TASKS.discard)
 
             logger.info(
                 "Stationary Energy staggered generation scheduled run=%s user_id=%s city_id=%s inventory_id=%s candidates=%s rows=%s batch=%s",
@@ -667,6 +725,7 @@ class StationaryEnergyDraftService:
         )
         if draft_run.user_id != payload.user_id:
             raise HTTPException(status_code=403, detail="Draft run does not belong to user")
+        self._require_generation_complete(draft_run)
 
         proposal_by_id = {
             proposal.proposal_id: proposal for proposal in draft_run.proposals
@@ -729,6 +788,7 @@ class StationaryEnergyDraftService:
         )
         if draft_run.user_id != payload.user_id:
             raise HTTPException(status_code=403, detail="Draft run does not belong to user")
+        self._require_generation_complete(draft_run)
         if not draft_run.review_decisions:
             raise HTTPException(
                 status_code=409,
@@ -917,6 +977,15 @@ class StationaryEnergyDraftService:
         return fresh_token
 
     @staticmethod
+    def _require_generation_complete(draft_run: StationaryEnergyDraftRun) -> None:
+        """Reject review/save calls while async draft generation is still running."""
+        if draft_run.status in GENERATION_IN_PROGRESS_STATUSES:
+            raise HTTPException(
+                status_code=409,
+                detail="Stationary Energy draft generation is still in progress",
+            )
+
+    @staticmethod
     def _draft_workflow_step(draft_run: StationaryEnergyDraftRun) -> str:
         """Normalize persisted draft workflow state into the CC capability workflow step."""
         if draft_run.workflow_step == "review":
@@ -950,7 +1019,7 @@ class StationaryEnergyDraftService:
         ):
             context_payload = context_payload["data"]
         response = LoadStationaryEnergyContextResponse.model_validate(context_payload)
-        if os.getenv("SE_DEMO_SYNTHETIC_CONFLICT", "").lower() == "true":
+        if os.getenv(SE_DEMO_SYNTHETIC_CONFLICT_ENV, "").lower() == "true":
             response.source_candidates = _inject_synthetic_conflict(
                 response.source_candidates
             )
@@ -985,7 +1054,7 @@ class StationaryEnergyDraftService:
         authorization: str | None,
     ) -> DraftStalenessResponse:
         """Compare the stored draft snapshot to the current connected source set."""
-        if draft_run.status in {"resolving_scope", "loading_context", "generating"}:
+        if draft_run.status in GENERATION_IN_PROGRESS_STATUSES:
             return DraftStalenessResponse()
 
         stored_source_ids = sorted(

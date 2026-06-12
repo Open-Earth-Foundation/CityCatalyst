@@ -59,6 +59,7 @@ class StoredSourceCandidate(FlexibleContract):
 class DraftStatusSourceCandidate(FlexibleContract):
     candidate_id: UUID | None = None
     datasource_id: str
+    details_datasource_id: str | None = None
     name: str | None = None
     publisher_name: str | None = None
     dataset_name: str | None = None

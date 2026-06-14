@@ -358,6 +358,14 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         }
         self.assertEqual(datasource_by_subsector["I.1"], "ds-applicable")
         self.assertEqual(datasource_by_subsector["I.2"], "ds-commercial")
+        current_value_by_subsector = {
+            proposal["target_ref"]["subsector_id"]: proposal["current_value"]
+            for proposal in status_data["proposals"]
+        }
+        self.assertEqual(
+            current_value_by_subsector["I.1"]["inventory_value_id"], "value-1"
+        )
+        self.assertIsNone(current_value_by_subsector["I.2"])
         self.assertEqual(
             mock_client.get_stationary_energy_allowed_capabilities.await_count,
             2,

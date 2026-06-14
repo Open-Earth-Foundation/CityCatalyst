@@ -307,6 +307,7 @@ def build_deterministic_proposals(
     *,
     taxonomy_rows: list[Any],
     stored_source_candidates: list[dict[str, Any]],
+    current_values: list[Any] | None = None,
     inventory_year: int | None = None,
 ) -> tuple[list[dict[str, Any]], list[Any], list[dict[str, Any]]]:
     """Resolve every taxonomy row deterministically, without the LLM (Phase 2+3).
@@ -335,12 +336,14 @@ def build_deterministic_proposals(
     deterministic: list[dict[str, Any]] = []
     llm_rows: list[Any] = []
     llm_fallback: list[dict[str, Any]] = []
+    current_value_payloads = _current_value_payloads(current_values or [])
     for row in taxonomy_rows:
         row_payload = (
             row.model_dump(mode="json", exclude_none=True)
             if hasattr(row, "model_dump")
             else dict(row)
         )
+        current_value = _current_value_for_row(row_payload, current_value_payloads)
         scope_matched = [
             candidate
             for candidate in applicable
@@ -368,10 +371,14 @@ def build_deterministic_proposals(
             )
             if notation_candidate is not None:
                 deterministic.append(
-                    _deterministic_notation_proposal(row_payload, notation_candidate)
+                    _deterministic_notation_proposal(
+                        row_payload, notation_candidate, current_value
+                    )
                 )
             else:
-                deterministic.append(_deterministic_gap_proposal(row_payload))
+                deterministic.append(
+                    _deterministic_gap_proposal(row_payload, current_value)
+                )
             continue
         if len(matching) == 1:
             candidate = matching[0]
@@ -383,11 +390,13 @@ def build_deterministic_proposals(
             ):
                 deterministic.append(
                     _deterministic_single_source_proposal(
-                        row_payload, candidate, normalized_rows[0]
+                        row_payload, candidate, normalized_rows[0], current_value
                     )
                 )
             else:
-                deterministic.append(_deterministic_gap_proposal(row_payload))
+                deterministic.append(
+                    _deterministic_gap_proposal(row_payload, current_value)
+                )
             continue
         # >= 2 sources with real emissions compete -> hybrid: hand the row to the
         # agent so it can reason about and explain the trade-offs. Keep a
@@ -395,10 +404,41 @@ def build_deterministic_proposals(
         llm_rows.append(row)
         llm_fallback.append(
             _deterministic_multi_source_proposal(
-                row_payload, matching, inventory_year
+                row_payload, matching, inventory_year, current_value
             )
         )
     return deterministic, llm_rows, llm_fallback
+
+
+def _current_value_payloads(current_values: list[Any]) -> list[dict[str, Any]]:
+    """Return scoped current inventory values as serializable dictionaries."""
+    payloads: list[dict[str, Any]] = []
+    for value in current_values:
+        payload = serializable_model(value)
+        if not payload:
+            continue
+        identity = stationary_energy_scope_identity(payload)
+        if any(part is not None for part in identity):
+            payloads.append(payload)
+    return payloads
+
+
+def _current_value_for_row(
+    row_payload: dict[str, Any],
+    current_values: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    """Find the current inventory value for a taxonomy row."""
+    row_identity = stationary_energy_scope_identity(row_payload)
+    for current_value in current_values:
+        if stationary_energy_scope_identity(current_value) == row_identity:
+            return current_value
+    for current_value in current_values:
+        if stationary_energy_scope_matches_target(
+            target_ref=row_payload,
+            source_scope=current_value,
+        ):
+            return current_value
+    return None
 
 
 def _candidate_rank_key(
@@ -428,6 +468,7 @@ def _deterministic_multi_source_proposal(
     row_payload: dict[str, Any],
     candidates: list[dict[str, Any]],
     inventory_year: int | None,
+    current_value: dict[str, Any] | None,
 ) -> dict[str, Any]:
     """Build a "conflict" proposal with a ranked recommendation + alternatives."""
     ranked = sorted(
@@ -450,7 +491,7 @@ def _deterministic_multi_source_proposal(
     )
     return {
         "target_ref": row_payload,
-        "current_value": None,
+        "current_value": current_value,
         "recommended_candidate_id": UUID(str(recommended["candidate_id"])),
         "recommended_datasource_id": recommended.get("datasource_id"),
         "alternative_candidate_ids": [
@@ -485,7 +526,9 @@ def _candidate_notation_key(candidate: dict[str, Any]) -> str | None:
 
 
 def _deterministic_notation_proposal(
-    row_payload: dict[str, Any], candidate: dict[str, Any]
+    row_payload: dict[str, Any],
+    candidate: dict[str, Any],
+    current_value: dict[str, Any] | None,
 ) -> dict[str, Any]:
     """Build a "not occurring" proposal from a source that reports a notation key."""
     source_data = candidate.get("source_data") or {}
@@ -499,7 +542,7 @@ def _deterministic_notation_proposal(
     candidate_id = candidate.get("candidate_id")
     return {
         "target_ref": row_payload,
-        "current_value": None,
+        "current_value": current_value,
         "recommended_candidate_id": (
             UUID(str(candidate_id)) if candidate_id else None
         ),
@@ -524,11 +567,14 @@ def _deterministic_notation_proposal(
     }
 
 
-def _deterministic_gap_proposal(row_payload: dict[str, Any]) -> dict[str, Any]:
+def _deterministic_gap_proposal(
+    row_payload: dict[str, Any],
+    current_value: dict[str, Any] | None,
+) -> dict[str, Any]:
     """Build a no-source ("gap") proposal for a row with no matching candidate."""
     return {
         "target_ref": row_payload,
-        "current_value": None,
+        "current_value": current_value,
         "recommended_candidate_id": None,
         "recommended_datasource_id": None,
         "alternative_candidate_ids": [],
@@ -543,11 +589,12 @@ def _deterministic_single_source_proposal(
     row_payload: dict[str, Any],
     candidate: dict[str, Any],
     data_row: Any,
+    current_value: dict[str, Any] | None,
 ) -> dict[str, Any]:
     """Build a "ready" proposal copying a single source's data row verbatim."""
     return {
         "target_ref": row_payload,
-        "current_value": None,
+        "current_value": current_value,
         "recommended_candidate_id": UUID(str(candidate["candidate_id"])),
         "recommended_datasource_id": candidate.get("datasource_id"),
         "alternative_candidate_ids": [],

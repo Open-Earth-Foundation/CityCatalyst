@@ -1,5 +1,5 @@
 // Local dev helper: seed a demo project + a few Brazilian cities with inventories,
-// linked to the default admin user. Idempotent.
+// linked to the default admin user and the GHGI module. Idempotent.
 // Run from app/: npx tsx scripts/seed-brazil.ts
 import { db } from "@/models";
 import env from "@next/env";
@@ -59,7 +59,9 @@ async function seed() {
   ).toLowerCase();
   const user = await db.models.User.findOne({ where: { email: adminEmail } });
   if (!user) {
-    logger.error(`seed-brazil: admin user ${adminEmail} not found. Run create-admin first.`);
+    logger.error(
+      `seed-brazil: admin user ${adminEmail} not found. Run create-admin first.`,
+    );
     await db.sequelize?.close();
     return;
   }
@@ -73,7 +75,9 @@ async function seed() {
   }
 
   // Find or create the demo project
-  let project = await db.models.Project.findOne({ where: { name: PROJECT_NAME } });
+  let project = await db.models.Project.findOne({
+    where: { name: PROJECT_NAME },
+  });
   if (!project) {
     project = await db.models.Project.create({
       projectId: randomUUID(),
@@ -84,7 +88,32 @@ async function seed() {
     });
     logger.info(`Created project "${PROJECT_NAME}" (${project.projectId})`);
   } else {
-    logger.info(`Project "${PROJECT_NAME}" already exists (${project.projectId})`);
+    logger.info(
+      `Project "${PROJECT_NAME}" already exists (${project.projectId})`,
+    );
+  }
+
+  const ghgiModule = await db.models.Module.findOne({
+    where: { url: "/GHGI", type: "OEF", status: "active" },
+  });
+  if (!ghgiModule) {
+    logger.error(
+      "seed-brazil: active GHGI module not found. Run db:seed first.",
+    );
+    await db.sequelize?.close();
+    return;
+  }
+
+  const moduleLink = await db.models.ProjectModules.findOne({
+    where: { projectId: project.projectId, moduleId: ghgiModule.id },
+  });
+  if (!moduleLink) {
+    await db.models.ProjectModules.create({
+      id: randomUUID(),
+      projectId: project.projectId,
+      moduleId: ghgiModule.id,
+    });
+    logger.info(`Linked project "${PROJECT_NAME}" to GHGI module`);
   }
 
   let defaultInventoryId: string | null = null;

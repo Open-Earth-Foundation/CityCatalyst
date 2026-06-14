@@ -496,6 +496,7 @@ class StationaryEnergyDraftService:
                 deterministic, llm_rows, llm_fallback = build_deterministic_proposals(
                     taxonomy_rows=rows,
                     stored_source_candidates=stored_source_candidates,
+                    current_values=list(context.current_values),
                     inventory_year=getattr(context.inventory, "year", None),
                 )
                 if deterministic:

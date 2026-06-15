@@ -17,7 +17,7 @@ import {
   Icon,
   Text,
 } from "@chakra-ui/react";
-import FormattedThousandsNumberInput from "@/components/formatted-thousands-number-input";
+import FormattedThousandsNumberInput from "@/components/FormattedThousandsNumberInput";
 import { MdCheck, MdErrorOutline, MdInfoOutline } from "react-icons/md";
 import { Field } from "@/components/ui/field";
 import { BodyMedium } from "@/components/package/Texts/Body";

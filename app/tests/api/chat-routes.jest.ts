@@ -68,6 +68,7 @@ describe("Chat routes", () => {
   });
 
   beforeEach(() => {
+    process.env.HOST = "http://localhost:3000";
     process.env.CA_BASE_URL = "http://ca.example";
     process.env.CC_SERVICE_API_KEY = "cc-service-key";
     process.env.HOST = "http://cc.example";
@@ -82,6 +83,7 @@ describe("Chat routes", () => {
 
   afterAll(() => {
     db.initialized = originalDbInitialized;
+    process.env.HOST = originalHost;
     process.env.CA_BASE_URL = originalCaBaseUrl;
     process.env.CC_SERVICE_API_KEY = originalServiceKey;
     process.env.HOST = originalHost;
@@ -120,7 +122,7 @@ describe("Chat routes", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
-      "http://cc.example/api/v1/internal/ca/user-token/",
+      "http://localhost:3000/api/v1/internal/ca/user-token/",
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify({
@@ -146,6 +148,111 @@ describe("Chat routes", () => {
       }),
     });
     expect(createThreadHeaders.get("Content-Type")).toBe("application/json");
+  });
+
+  it("uses configured HOST instead of request origin for CA token issuance", async () => {
+    process.env.HOST = "https://configured.example";
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: "token-123",
+          expires_in: 3600,
+          token_type: "Bearer",
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse(
+          {
+            thread_id: "thread-1",
+          },
+          { status: 201 },
+        ),
+      );
+
+    const response = await postChatThread(
+      makeRequest("https://request-origin.example/api/v1/chat/threads", "POST", {
+        inventory_id: testInventoryId,
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(200);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://configured.example/api/v1/internal/ca/user-token/",
+    );
+  });
+
+  it("preserves JSON token-issuance errors when creating a CA thread", async () => {
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse(
+        {
+          detail: "service token rejected",
+        },
+        { status: 403 },
+      ),
+    );
+
+    const response = await postChatThread(
+      makeRequest("http://localhost:3000/api/v1/chat/threads", "POST", {
+        title: "Stationary energy",
+        inventory_id: testInventoryId,
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(403);
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        message: "service token rejected",
+        code: undefined,
+        data: {
+          detail: "service token rejected",
+        },
+      },
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("preserves JSON CA thread creation errors from the shared backend helper", async () => {
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: "token-123",
+          expires_in: 3600,
+          token_type: "Bearer",
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse(
+          {
+            detail: "thread limit reached",
+          },
+          { status: 429 },
+        ),
+      );
+
+    const response = await postChatThread(
+      makeRequest("http://localhost:3000/api/v1/chat/threads", "POST", {
+        title: "Stationary energy",
+        inventory_id: testInventoryId,
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(429);
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        message: "thread limit reached",
+        code: undefined,
+        data: {
+          detail: "thread limit reached",
+        },
+      },
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it("streams chat messages through the shared CA proxy helper", async () => {

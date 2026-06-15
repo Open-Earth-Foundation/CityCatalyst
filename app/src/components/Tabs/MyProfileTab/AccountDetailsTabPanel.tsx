@@ -18,6 +18,7 @@ import {
   NativeSelectField,
   NativeSelectRoot,
 } from "@/components/ui/native-select";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 interface AccountDetailsFormProps {
   t: TFunction;
@@ -137,35 +138,38 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
               t={t}
             />
           </Field>
-          <Field
-            label={t("numerical-formats")}
-            invalid={!!errors.numberFormat}
-            errorText={errors.numberFormat?.message}
-          >
-            <NativeSelectRoot
-              shadow="2dp"
-              borderRadius="4px"
-              border="inputBox"
-              background={
-                errors.numberFormat
-                  ? "sentiment.negativeOverlay"
-                  : "background.default"
-              }
+
+          {hasFeatureFlag(FeatureFlags.NUMERICAL_FORMATS) && (
+            <Field
+              label={t("numerical-formats")}
+              invalid={!!errors.numberFormat}
+              errorText={errors.numberFormat?.message}
             >
-              <NativeSelectField
-                {...register("numberFormat", {
-                  required: t("numerical-formats-required"),
-                })}
-                defaultValue={NumberFormatEnum.COMMA_AND_DOT}
+              <NativeSelectRoot
+                shadow="2dp"
+                borderRadius="4px"
+                border="inputBox"
+                background={
+                  errors.numberFormat
+                    ? "sentiment.negativeOverlay"
+                    : "background.default"
+                }
               >
-                {numberFormatOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {t(option.label)}
-                  </option>
-                ))}
-              </NativeSelectField>
-            </NativeSelectRoot>
-          </Field>
+                <NativeSelectField
+                  {...register("numberFormat", {
+                    required: t("numerical-formats-required"),
+                  })}
+                  defaultValue={NumberFormatEnum.COMMA_AND_DOT}
+                >
+                  {numberFormatOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {t(option.label)}
+                    </option>
+                  ))}
+                </NativeSelectField>
+              </NativeSelectRoot>
+            </Field>
+          )}
           <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
             <Button
               type="submit"

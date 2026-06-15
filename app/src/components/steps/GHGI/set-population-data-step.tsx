@@ -21,7 +21,7 @@ import {
   Icon,
   Text,
 } from "@chakra-ui/react";
-import FormattedThousandsNumber from "@/components/formatted-thousands-number-input";
+import FormattedThousandsNumber from "@/components/FormattedThousandsNumberInput";
 import { MdCheck, MdErrorOutline, MdInfoOutline } from "react-icons/md";
 import { Field } from "@/components/ui/field";
 import { InputGroup } from "../../ui/input-group";

@@ -639,8 +639,11 @@ Suggested fields:
 
 ### Stored Source Candidate Snapshot
 
-The current CA implementation also persists the source candidate set used for a
-draft run so review and retry can operate on the same bounded snapshot.
+The current CA implementation also persists the source candidate set loaded for
+a draft run so review, retry, and debugging can operate on the same bounded
+snapshot. Applicable candidates are eligible for deterministic ranking and LLM
+selection; removed or failed candidates are kept as audit context only and are
+not offered as saveable recommendations.
 
 Suggested fields:
 

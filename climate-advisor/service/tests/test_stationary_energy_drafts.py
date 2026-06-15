@@ -332,10 +332,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(status_response.status_code, 200, status_response.text)
         status_data = status_response.json()
         self.assertEqual(status_data["status"], "ready")
-        self.assertEqual(len(status_data["source_candidates"]), 2)
+        self.assertEqual(len(status_data["source_candidates"]), 4)
         self.assertEqual(
             sorted(candidate["applicability_status"] for candidate in status_data["source_candidates"]),
-            ["applicable", "applicable"],
+            ["applicable", "applicable", "failed", "removed"],
         )
         self.assertTrue(
             all("source_data" not in candidate for candidate in status_data["source_candidates"])
@@ -381,7 +381,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         mock_llm.generate_proposals.assert_not_awaited()
         mock_llm.generate_proposals_for_rows.assert_not_awaited()
         context_summary = self._draft_context_summary(draft_run_id)
-        self.assertEqual(context_summary["source_candidates_count"], 2)
+        self.assertEqual(context_summary["source_candidates_count"], 4)
+        self.assertEqual(context_summary["applicable_source_candidates_count"], 2)
         self.assertIn("guidance_context", context_summary)
         self.assertNotIn("llm_trace", context_summary)
         self.assertEqual(
@@ -842,6 +843,39 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
     def test_review_and_save_reject_generating_draft(self) -> None:
         mock_client = self._mock_cc_client()
         mock_llm = self._mock_llm_generator()
+        conflict_context = _context_payload()
+        conflict_context["source_candidates"].append(
+            {
+                "datasource_id": "ds-residential-alt",
+                "name": "Residential alternative source",
+                "publisher_name": "Alternative Publisher",
+                "dataset_name": "Residential building energy",
+                "dataset_year": 2023,
+                "url": "https://example.test/residential-alt",
+                "geography_match": "city",
+                "source_scope": {
+                    "sector_id": "I",
+                    "sector_name": "Stationary Energy",
+                    "subsector_id": "I.1",
+                    "subsector_name": "Residential buildings",
+                    "scope_id": "1",
+                    "scope_name": "Scope 1",
+                },
+                "normalized_rows": [
+                    {
+                        "value": 120,
+                        "unit": "MWh",
+                        "emissions_value_100yr": "1200000",
+                        "emissions_unit": "kgCO2e",
+                    }
+                ],
+                "applicability_status": "applicable",
+                "applicability_issues": [],
+            }
+        )
+        mock_client.load_stationary_energy_context = AsyncMock(
+            return_value=conflict_context
+        )
 
         async def slow_conflict_resolution(**kwargs: Any) -> StationaryEnergyLLMProposalResult:
             await asyncio.sleep(0.3)
@@ -853,10 +887,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
 
         with patch.dict(
             os.environ,
-            {
-                "CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC",
-                "SE_DEMO_SYNTHETIC_CONFLICT": "true",
-            },
+            {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"},
         ), patch(
             "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
@@ -898,140 +929,6 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("still in progress", review_response.text)
         self.assertEqual(save_response.status_code, 409, save_response.text)
         self.assertIn("still in progress", save_response.text)
-
-    def test_synthetic_conflict_clones_top_level_emissions(self) -> None:
-        mock_client = self._mock_cc_client()
-        mock_llm = self._mock_llm_generator()
-
-        with patch.dict(
-            os.environ,
-            {
-                "CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC",
-                "SE_DEMO_SYNTHETIC_CONFLICT": "true",
-            },
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
-            return_value=mock_client,
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
-            return_value=mock_llm,
-        ):
-            start_response = self.client.post(
-                "/v1/stationary-energy-drafts/start",
-                json={
-                    "user_id": "user-1",
-                    "city_id": "city-1",
-                    "inventory_id": "inventory-1",
-                    "context": {"access_token": _active_jwt()},
-                },
-                headers=_auth_headers(),
-            )
-            self.assertEqual(start_response.status_code, 201, start_response.text)
-            draft_run_id = start_response.json()["draft_run_id"]
-            self._wait_for_draft_status(draft_run_id, "ready")
-            status_data = self._get_status(draft_run_id)
-
-        alt_candidate = next(
-            candidate
-            for candidate in status_data["source_candidates"]
-            if candidate["datasource_id"] == "ds-applicable-demo-alt"
-        )
-        self.assertEqual(
-            alt_candidate["normalized_rows"][0]["emissions_value_100yr"],
-            "1180000",
-        )
-        self.assertEqual(
-            alt_candidate["details_datasource_id"],
-            "ds-applicable",
-        )
-
-    def test_synthetic_conflict_override_saves_real_datasource_id(self) -> None:
-        mock_client = self._mock_cc_client()
-        mock_llm = self._mock_llm_generator()
-
-        with patch.dict(
-            os.environ,
-            {
-                "CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC",
-                "SE_DEMO_SYNTHETIC_CONFLICT": "true",
-            },
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
-            return_value=mock_client,
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
-            return_value=mock_llm,
-        ):
-            start_response = self.client.post(
-                "/v1/stationary-energy-drafts/start",
-                json={
-                    "user_id": "user-1",
-                    "city_id": "city-1",
-                    "inventory_id": "inventory-1",
-                    "context": {"access_token": _active_jwt()},
-                },
-                headers=_auth_headers(),
-            )
-            self.assertEqual(start_response.status_code, 201, start_response.text)
-            draft_run_id = start_response.json()["draft_run_id"]
-            self._wait_for_draft_status(draft_run_id, "ready")
-            status_data = self._get_status(draft_run_id)
-
-            alt_candidate = next(
-                candidate
-                for candidate in status_data["source_candidates"]
-                if candidate["datasource_id"] == "ds-applicable-demo-alt"
-            )
-            proposal = next(
-                proposal
-                for proposal in status_data["proposals"]
-                if proposal["recommended_datasource_id"] == "ds-applicable"
-            )
-            decisions = self._complete_review_decisions(
-                draft_run_id,
-                overrides={
-                    proposal["proposal_id"]: {
-                        "proposal_id": proposal["proposal_id"],
-                        "action": "override_source",
-                        "selected_source_id": alt_candidate["candidate_id"],
-                    }
-                },
-            )
-
-            review_response = self.client.post(
-                f"/v1/stationary-energy-drafts/{draft_run_id}/review",
-                json={"user_id": "user-1", "decisions": decisions},
-                headers=_auth_headers(),
-            )
-            self.assertEqual(review_response.status_code, 200, review_response.text)
-
-            save_response = self.client.post(
-                f"/v1/stationary-energy-drafts/{draft_run_id}/save",
-                json={"user_id": "user-1"},
-                headers=_auth_headers(),
-            )
-
-        self.assertEqual(save_response.status_code, 200, save_response.text)
-        saved_decision = next(
-            decision
-            for decision in review_response.json()["decisions"]
-            if decision["proposal_id"] == proposal["proposal_id"]
-        )
-        self.assertEqual(
-            saved_decision["selected_candidate_id"],
-            alt_candidate["candidate_id"],
-        )
-        self.assertEqual(saved_decision["selected_source_id"], "ds-applicable")
-
-        commit_rows = mock_client.commit_stationary_energy_accepted.await_args.kwargs[
-            "request_payload"
-        ]["rows"]
-        selected_row = next(
-            row
-            for row in commit_rows
-            if row["proposal_id"] == proposal["proposal_id"]
-        )
-        self.assertEqual(selected_row["selected_source_id"], "ds-applicable")
 
     def test_review_requires_override_source_to_match_stored_candidate(self) -> None:
         draft_run_id, proposal_id, _candidate_id = self._start_draft()

@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-import copy
 import logging
-import os
-from decimal import Decimal, InvalidOperation
 from typing import Any
 from uuid import UUID
 
@@ -89,10 +86,6 @@ GENERATION_IN_PROGRESS_STATUSES = {"resolving_scope", "loading_context", "genera
 # batches surface proposals to pollers sooner; larger batches reduce total calls.
 STAGGER_BATCH_SIZE = 4
 
-# Local testing only: this env flag injects a synthetic competing source for
-# Stationary Energy demos. Do not enable it in shared or production environments.
-SE_DEMO_SYNTHETIC_CONFLICT_ENV = "SE_DEMO_SYNTHETIC_CONFLICT"
-
 # Keep strong references to in-flight background generation tasks so the event
 # loop does not garbage-collect them before they finish.
 _BACKGROUND_TASKS: set[asyncio.Task[Any]] = set()
@@ -104,98 +97,6 @@ def _schedule_background_task(coro: Any) -> asyncio.Task[Any]:
     _BACKGROUND_TASKS.add(task)
     task.add_done_callback(_BACKGROUND_TASKS.discard)
     return task
-
-
-def _has_emissions_value(value: Any) -> bool:
-    """Return whether an emissions field is present, including zero values."""
-    return value is not None and value != ""
-
-
-def _row_has_emissions(row: Any) -> bool:
-    """Return whether a row exposes top-level or nested emissions values."""
-    if not isinstance(row, dict):
-        return False
-    if _has_emissions_value(row.get("emissions_value_100yr")) or _has_emissions_value(
-        row.get("emissions_value")
-    ):
-        return True
-    gases = row.get("gases")
-    if not isinstance(gases, list):
-        return False
-    return any(
-        isinstance(gas, dict)
-        and (
-            _has_emissions_value(gas.get("emissions_value_100yr"))
-            or _has_emissions_value(gas.get("emissions_value"))
-        )
-        for gas in gases
-    )
-
-
-def _scaled_demo_emissions(value: Any) -> Any:
-    """Scale demo emissions while preserving blank or non-numeric values."""
-    if isinstance(value, bool) or not _has_emissions_value(value):
-        return value
-    if isinstance(value, (int, float, Decimal)):
-        return round(float(value) * 1.18)
-    if isinstance(value, str):
-        try:
-            scaled = Decimal(value.strip()) * Decimal("1.18")
-        except InvalidOperation:
-            return value
-        return format(scaled.normalize(), "f")
-    return value
-
-
-def _scale_row_emissions(row: dict[str, Any]) -> None:
-    """Scale every supported emissions field on a cloned normalized row."""
-    for key in ("emissions_value", "emissions_value_100yr"):
-        if key in row:
-            row[key] = _scaled_demo_emissions(row[key])
-
-    gases = row.get("gases")
-    if not isinstance(gases, list):
-        return
-    for gas in gases:
-        if not isinstance(gas, dict):
-            continue
-        for key in ("emissions_value", "emissions_value_100yr"):
-            if key in gas:
-                gas[key] = _scaled_demo_emissions(gas[key])
-
-
-def _inject_synthetic_conflict(source_candidates: list[Any]) -> list[Any]:
-    """Clone one candidate into a local-only synthetic competing source."""
-    for candidate in source_candidates:
-        rows = candidate.normalized_rows or []
-        if not any(_row_has_emissions(row) for row in rows):
-            continue
-        clone_rows = copy.deepcopy(rows)
-        for row in clone_rows:
-            if isinstance(row, dict):
-                _scale_row_emissions(row)
-        clone_source_data = (
-            copy.deepcopy(candidate.source_data)
-            if candidate.source_data
-            else {}
-        )
-        clone_source_data["details_datasource_id"] = candidate.datasource_id
-        clone = candidate.model_copy(
-            update={
-                "candidate_id": None,
-                "datasource_id": f"{candidate.datasource_id}-demo-alt",
-                "publisher_name": "Synthetic Demo Source (alternative)",
-                "dataset_year": (candidate.dataset_year or 2020) - 2,
-                "normalized_rows": clone_rows,
-                "source_data": clone_source_data,
-            }
-        )
-        logger.info(
-            "SE demo: injected synthetic competing source for datasource_id=%s",
-            candidate.datasource_id,
-        )
-        return list(source_candidates) + [clone]
-    return source_candidates
 
 
 class StationaryEnergyDraftService:
@@ -365,6 +266,11 @@ class StationaryEnergyDraftService:
                 )
                 for candidate_record in candidate_records
             ]
+            applicable_source_candidates = [
+                candidate
+                for candidate in stored_source_candidates
+                if candidate.get("applicability_status") == "applicable"
+            ]
 
             failed_step = "generating"
             # Staggered generation: persist candidates, clear any prior proposals
@@ -390,8 +296,10 @@ class StationaryEnergyDraftService:
                     draft_run_id=draft_run.draft_run_id,
                     context=context,
                     stored_source_candidates=stored_source_candidates,
+                    applicable_source_candidates=applicable_source_candidates,
                     allowed_capabilities=allowed_capabilities,
-                    source_candidates_count=len(candidate_records),
+                    source_candidates_count=len(stored_source_candidates),
+                    applicable_source_candidates_count=len(applicable_source_candidates),
                     thread_id=thread_id,
                     user_id=user_id,
                     trace_id=trace_id,
@@ -463,8 +371,10 @@ class StationaryEnergyDraftService:
         draft_run_id: UUID,
         context: Any,
         stored_source_candidates: list[dict[str, Any]],
+        applicable_source_candidates: list[dict[str, Any]],
         allowed_capabilities: list[str],
         source_candidates_count: int,
+        applicable_source_candidates_count: int,
         thread_id: UUID | None,
         user_id: str,
         trace_id: str | None,
@@ -495,7 +405,7 @@ class StationaryEnergyDraftService:
                 # rows deterministically -- no LLM. Persist immediately.
                 deterministic, llm_rows, llm_fallback = build_deterministic_proposals(
                     taxonomy_rows=rows,
-                    stored_source_candidates=stored_source_candidates,
+                    stored_source_candidates=applicable_source_candidates,
                     current_values=list(context.current_values),
                     inventory_year=getattr(context.inventory, "year", None),
                 )
@@ -530,7 +440,7 @@ class StationaryEnergyDraftService:
                                 )
                             result = await generator.generate_proposals_for_rows(
                                 context=context,
-                                stored_source_candidates=stored_source_candidates,
+                                stored_source_candidates=applicable_source_candidates,
                                 rows=batch,
                                 trace_id=trace_id,
                             )
@@ -561,6 +471,7 @@ class StationaryEnergyDraftService:
                     context,
                     allowed_capabilities,
                     source_candidates_count=source_candidates_count,
+                    applicable_source_candidates_count=applicable_source_candidates_count,
                 )
                 await service.repository.update_draft_run(
                     draft_run,
@@ -1019,12 +930,7 @@ class StationaryEnergyDraftService:
             and "city" not in context_payload
         ):
             context_payload = context_payload["data"]
-        response = LoadStationaryEnergyContextResponse.model_validate(context_payload)
-        if os.getenv(SE_DEMO_SYNTHETIC_CONFLICT_ENV, "").lower() == "true":
-            response.source_candidates = _inject_synthetic_conflict(
-                response.source_candidates
-            )
-        return response
+        return LoadStationaryEnergyContextResponse.model_validate(context_payload)
 
     async def _mark_failed(
         self,
@@ -1063,6 +969,7 @@ class StationaryEnergyDraftService:
                 candidate.datasource_id
                 for candidate in draft_run.source_candidates
                 if candidate.datasource_id
+                and candidate.applicability_status == "applicable"
             }
         )
 

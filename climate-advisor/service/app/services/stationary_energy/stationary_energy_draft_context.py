@@ -45,12 +45,14 @@ def source_candidate_records(
     draft_run_id: UUID,
     candidates: list[StationaryEnergySourceCandidate],
 ) -> list[dict[str, Any]]:
-    """Convert applicable context candidates into persisted draft candidate payloads."""
+    """Convert context candidates into persisted draft candidate payloads.
+
+    Applicable candidates can back proposals. Removed and failed candidates are
+    persisted for audit/debug visibility, but proposal generation filters them
+    out before deterministic or LLM selection.
+    """
     records: list[dict[str, Any]] = []
     for candidate in candidates:
-        if candidate.applicability_status != "applicable":
-            continue
-
         candidate_json = candidate.model_dump(mode="json", exclude={"quality_score"})
         records.append(
             {
@@ -77,9 +79,9 @@ def source_candidate_records(
             }
         )
 
-    if not records:
+    if not any(record["applicability_status"] == "applicable" for record in records):
         logger.info(
-            "No Stationary Energy source candidates received for draft=%s",
+            "No applicable Stationary Energy source candidates received for draft=%s",
             draft_run_id,
         )
     return records
@@ -130,6 +132,7 @@ def context_summary(
     context: LoadStationaryEnergyContextResponse,
     allowed_capabilities: list[str],
     source_candidates_count: int,
+    applicable_source_candidates_count: int | None = None,
 ) -> dict[str, Any]:
     """Build the stored draft context summary from the loaded Stationary Energy scope."""
     return {
@@ -138,6 +141,11 @@ def context_summary(
         "taxonomy_count": len(context.taxonomy),
         "current_values_count": len(context.current_values),
         "source_candidates_count": source_candidates_count,
+        "applicable_source_candidates_count": (
+            source_candidates_count
+            if applicable_source_candidates_count is None
+            else applicable_source_candidates_count
+        ),
         "allowed_capabilities": allowed_capabilities,
         "guidance_context": context.guidance_context,
     }

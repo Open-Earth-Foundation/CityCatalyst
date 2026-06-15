@@ -23,6 +23,8 @@ export type SourceCandidate = {
   details_datasource_id?: string | null;
   geography_match?: string | null;
   applicability_status: string;
+  applicability_issues?: string[];
+  failure_reason?: string | null;
   source_scope: Record<string, string | null | undefined>;
   normalized_rows?: Array<Record<string, unknown>>;
 };

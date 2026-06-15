@@ -75,6 +75,8 @@ class DraftStatusSourceCandidate(FlexibleContract):
     source_scope: StoredSourceScope = Field(default_factory=StoredSourceScope)
     normalized_rows: list[dict[str, Any]] = Field(default_factory=list)
     applicability_status: Literal["applicable", "removed", "failed"]
+    applicability_issues: list[str] = Field(default_factory=list)
+    failure_reason: str | None = None
 
 
 class StationaryEnergyCityContext(FlexibleContract):

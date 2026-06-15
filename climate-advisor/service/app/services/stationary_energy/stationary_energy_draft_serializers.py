@@ -81,6 +81,8 @@ def to_status_source_candidate(
         source_scope=StoredSourceScope.model_validate(candidate.source_scope or {}),
         normalized_rows=candidate.normalized_rows or [],
         applicability_status=candidate.applicability_status,  # type: ignore[arg-type]
+        applicability_issues=candidate.applicability_issues or [],
+        failure_reason=candidate.failure_reason,
     )
 
 

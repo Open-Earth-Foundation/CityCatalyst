@@ -5,6 +5,8 @@ COPY package*.json ./
 
 # Full build stage
 FROM base AS full-build
+ARG NEXT_PUBLIC_FEATURE_FLAGS=""
+ENV NEXT_PUBLIC_FEATURE_FLAGS=$NEXT_PUBLIC_FEATURE_FLAGS
 RUN npm install
 COPY . .
 RUN npm run build

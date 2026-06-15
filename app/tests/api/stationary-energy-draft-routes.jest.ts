@@ -77,7 +77,6 @@ describe("Stationary Energy draft routes", () => {
   beforeEach(() => {
     process.env.NEXT_PUBLIC_FEATURE_FLAGS =
       "CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC";
-    process.env.HOST = "http://localhost:3000";
     process.env.CA_BASE_URL = "http://ca.example";
     process.env.CC_SERVICE_API_KEY = "cc-service-key";
     process.env.HOST = "http://cc.example";
@@ -93,7 +92,6 @@ describe("Stationary Energy draft routes", () => {
   afterAll(() => {
     db.initialized = originalDbInitialized;
     process.env.NEXT_PUBLIC_FEATURE_FLAGS = originalFeatureFlags;
-    process.env.HOST = originalHost;
     process.env.CA_BASE_URL = originalCaBaseUrl;
     process.env.CC_SERVICE_API_KEY = originalServiceKey;
     process.env.HOST = originalHost;

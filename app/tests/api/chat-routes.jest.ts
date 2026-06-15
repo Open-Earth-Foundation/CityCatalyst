@@ -68,7 +68,6 @@ describe("Chat routes", () => {
   });
 
   beforeEach(() => {
-    process.env.HOST = "http://localhost:3000";
     process.env.CA_BASE_URL = "http://ca.example";
     process.env.CC_SERVICE_API_KEY = "cc-service-key";
     process.env.HOST = "http://cc.example";
@@ -83,7 +82,6 @@ describe("Chat routes", () => {
 
   afterAll(() => {
     db.initialized = originalDbInitialized;
-    process.env.HOST = originalHost;
     process.env.CA_BASE_URL = originalCaBaseUrl;
     process.env.CC_SERVICE_API_KEY = originalServiceKey;
     process.env.HOST = originalHost;
@@ -122,7 +120,7 @@ describe("Chat routes", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
-      "http://localhost:3000/api/v1/internal/ca/user-token/",
+      "http://cc.example/api/v1/internal/ca/user-token/",
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify({

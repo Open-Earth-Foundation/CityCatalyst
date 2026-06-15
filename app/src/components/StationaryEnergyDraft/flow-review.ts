@@ -13,8 +13,7 @@ import type {
 import {
   compareProposalsByGpcReference,
   compatibleSources,
-  formatDraftEmissionsLabel,
-  totalEmissionsFromGases,
+  draftRowEmissionsLabel,
   findRecommendedSource,
   initialDecisionForProposal,
   proposalLabel,
@@ -339,11 +338,13 @@ function buildDecisionOptionGroups(
       id: recommended.candidate_id ?? recommended.datasource_id,
       action: "accept",
       label: sourceDisplayName(recommended),
-      shortLabel: shortSourceName(recommended) ?? sourceDisplayName(recommended),
+      shortLabel:
+        shortSourceName(recommended) ?? sourceDisplayName(recommended),
       meta: sourceMetaLabel(recommended),
-      value: proposedValueLabel(proposal),
+      value: proposedValueLabel(proposal, t),
       recommended: true,
-      datasourceId: recommended.details_datasource_id ?? recommended.datasource_id,
+      datasourceId:
+        recommended.details_datasource_id ?? recommended.datasource_id,
     };
     realOptions.push(recommendedOption);
   }
@@ -448,11 +449,7 @@ function sourceCandidateValueLabel(
 ): string {
   const rows = candidate.normalized_rows ?? [];
   const firstRow = rows[0];
-  // Source rows can expose emissions directly or under gases[].
-  const emissionsLabel = formatDraftEmissionsLabel(
-    totalEmissionsFromGases(firstRow),
-    "kgco2e",
-  );
+  const emissionsLabel = draftRowEmissionsLabel(firstRow);
   return (
     emissionsLabel ?? translateReviewText(t, "review-option-alternative-source")
   );

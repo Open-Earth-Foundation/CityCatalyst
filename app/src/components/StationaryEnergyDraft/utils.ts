@@ -1,22 +1,35 @@
 "use client";
 
-import { convertKgToTonnes } from "@/util/helpers";
+import { compareGpcRefNumbers, convertKgToTonnes } from "@/util/helpers";
 import type {
   DraftDecisionState,
   DraftProposal,
   SourceCandidate,
 } from "@/components/StationaryEnergyDraft/types";
+import type { TFunction } from "i18next";
 
 const RAW_KG_EMISSIONS_UNITS = new Set(["", "kgco2e", "tco2e"]);
 
-// IPCC/GPC notation keys -> plain-language labels (the source can report any of
-// these to mean "no emissions value, and here's why").
-const NOTATION_KEY_LABELS: Record<string, string> = {
-  NO: "Not occurring",
-  NE: "Not estimated",
-  IE: "Included elsewhere",
-  C: "Confidential",
-  NA: "Not applicable",
+const DRAFT_LABEL_FALLBACKS = {
+  "draft-value-no-current": "No current inventory value",
+  "draft-value-no-source": "No source-backed draft value",
+  "draft-value-reported-notation": "Reported notation",
+  "draft-notation-key-NO": "Not occurring",
+  "draft-notation-key-NE": "Not estimated",
+  "draft-notation-key-IE": "Included elsewhere",
+  "draft-notation-key-C": "Confidential",
+  "draft-notation-key-NA": "Not applicable",
+} as const;
+
+const NOTATION_KEY_LABEL_KEYS: Record<
+  string,
+  keyof typeof DRAFT_LABEL_FALLBACKS
+> = {
+  NO: "draft-notation-key-NO",
+  NE: "draft-notation-key-NE",
+  IE: "draft-notation-key-IE",
+  C: "draft-notation-key-C",
+  NA: "draft-notation-key-NA",
 };
 
 export function extractErrorMessage(
@@ -144,34 +157,11 @@ export function scopeMatches(
   return true;
 }
 
-// Order rows by GPC reference number (e.g. I.1.1 < I.1.2 < I.2.1 < I.10.1),
-// comparing each dotted segment numerically when both sides are numbers so
-// "I.10.1" sorts after "I.2.1" instead of lexicographically before it.
-export function compareGpcReference(a: string, b: string): number {
-  const partsA = a.split(".");
-  const partsB = b.split(".");
-  const length = Math.max(partsA.length, partsB.length);
-  for (let index = 0; index < length; index += 1) {
-    const segmentA = partsA[index] ?? "";
-    const segmentB = partsB[index] ?? "";
-    const numberA = Number.parseInt(segmentA, 10);
-    const numberB = Number.parseInt(segmentB, 10);
-    if (!Number.isNaN(numberA) && !Number.isNaN(numberB)) {
-      if (numberA !== numberB) {
-        return numberA - numberB;
-      }
-    } else if (segmentA !== segmentB) {
-      return segmentA < segmentB ? -1 : 1;
-    }
-  }
-  return 0;
-}
-
 export function compareProposalsByGpcReference(
   a: DraftProposal,
   b: DraftProposal,
 ): number {
-  return compareGpcReference(
+  return compareGpcRefNumbers(
     a.target_ref.subcategory_reference_number ?? "",
     b.target_ref.subcategory_reference_number ?? "",
   );
@@ -323,50 +313,53 @@ export function formatDraftEmissionsLabel(
   return [text, displayUnit].filter(Boolean).join(" ");
 }
 
-/**
- * Return total CO2e emissions from a draft data row. The CC context can emit
- * either top-level emissions_value fields or nested gases[].emissions_value
- * fields, so support both shapes. Values are treated as raw kg for display.
- */
-export function totalEmissionsFromGases(
-  row: unknown,
-): bigint | number | null {
+export function draftRowEmissionsLabel(row: unknown): string | null {
   if (!row || typeof row !== "object") {
     return null;
   }
   const rowRecord = row as Record<string, unknown>;
-  const direct = parseEmissionsKgValue(
-    rowRecord["emissions_value_100yr"] ?? rowRecord["emissions_value"],
-  );
-  if (direct != null) {
-    return direct;
+  const value =
+    rowRecord["emissions_value_100yr"] ??
+    rowRecord["co2eq_100yr"] ??
+    rowRecord["co2eq"] ??
+    rowRecord["emissions_value"];
+  const unit =
+    rowRecord["emissions_unit"] ??
+    (value === rowRecord["emissions_value_100yr"] ||
+    value === rowRecord["co2eq_100yr"] ||
+    value === rowRecord["co2eq"]
+      ? "kgco2e"
+      : undefined);
+  return formatDraftEmissionsLabel(value, unit);
+}
+
+function translateDraftLabel(
+  t: TFunction | undefined,
+  key: keyof typeof DRAFT_LABEL_FALLBACKS,
+): string {
+  return t?.(key) ?? DRAFT_LABEL_FALLBACKS[key];
+}
+
+export function currentValueLabel(
+  proposal: DraftProposal,
+  t?: TFunction,
+): string {
+  if (!proposal.current_value) {
+    return translateDraftLabel(t, "draft-value-no-current");
   }
 
-  const gases = rowRecord.gases;
-  if (!Array.isArray(gases)) {
-    return null;
-  }
-  let total = 0;
-  let found = false;
-  for (const gas of gases) {
-    if (!gas || typeof gas !== "object") {
-      continue;
-    }
-    const raw =
-      (gas as Record<string, unknown>)["emissions_value_100yr"] ??
-      (gas as Record<string, unknown>)["emissions_value"];
-    const num =
-      typeof raw === "number"
-        ? raw
-        : raw != null && raw !== "" && !Number.isNaN(Number(raw))
-          ? Number(raw)
-          : null;
-    if (num != null) {
-      total += num;
-      found = true;
-    }
-  }
-  return found ? total : null;
+  const value = proposal.current_value["value"];
+  const unit = proposal.current_value["unit"];
+  const emissionsValue = proposal.current_value["emissions_value"];
+  const emissionsUnit = proposal.current_value["emissions_unit"];
+  const emissionsLabel = formatDraftEmissionsLabel(
+    emissionsValue,
+    emissionsUnit,
+  );
+
+  return [value, unit, emissionsLabel ? `(${emissionsLabel})` : null]
+    .filter(Boolean)
+    .join(" ");
 }
 
 export function sourceGeographyLabel(
@@ -384,28 +377,12 @@ export function sourceGeographyLabel(
   return text;
 }
 
-export function currentValueLabel(proposal: DraftProposal): string {
-  if (!proposal.current_value) {
-    return "No current inventory value";
-  }
-
-  const value = proposal.current_value["value"];
-  const unit = proposal.current_value["unit"];
-  const emissionsValue = proposal.current_value["emissions_value"];
-  const emissionsUnit = proposal.current_value["emissions_unit"];
-  const emissionsLabel = formatDraftEmissionsLabel(
-    emissionsValue,
-    emissionsUnit,
-  );
-
-  return [value, unit, emissionsLabel ? `(${emissionsLabel})` : null]
-    .filter(Boolean)
-    .join(" ");
-}
-
-export function proposedValueLabel(proposal: DraftProposal): string {
+export function proposedValueLabel(
+  proposal: DraftProposal,
+  t?: TFunction,
+): string {
   if (!proposal.proposed_value) {
-    return "No source-backed draft value";
+    return translateDraftLabel(t, "draft-value-no-source");
   }
 
   // proposed_value is { row: { gases: [...] }, datasource_id } for a value, or
@@ -414,16 +391,19 @@ export function proposedValueLabel(proposal: DraftProposal): string {
   const notationKey = proposedValue["notation_key"];
   if (typeof notationKey === "string" && notationKey.trim()) {
     const key = notationKey.trim().toUpperCase();
-    const label = NOTATION_KEY_LABELS[key] ?? "Reported notation";
+    const label = translateDraftLabel(
+      t,
+      NOTATION_KEY_LABEL_KEYS[key] ?? "draft-value-reported-notation",
+    );
     return `${label} (${key})`;
   }
-  const row = (proposedValue["row"] ?? proposedValue) as Record<string, unknown>;
-  const emissionsLabel = formatDraftEmissionsLabel(
-    totalEmissionsFromGases(row),
-    "kgco2e",
-  );
+  const row = (proposedValue["row"] ?? proposedValue) as Record<
+    string,
+    unknown
+  >;
+  const emissionsLabel = draftRowEmissionsLabel(row);
 
-  return emissionsLabel ?? "No source-backed draft value";
+  return emissionsLabel ?? translateDraftLabel(t, "draft-value-no-source");
 }
 
 export function sourceLabel(candidate: SourceCandidate | undefined): string {

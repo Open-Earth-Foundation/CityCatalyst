@@ -116,7 +116,7 @@ export function buildArtifactRows(
           translateArtifactText(t, "artifact-row-fallback"),
         scope: rowScopeLabel(proposal),
         state: artifactStateForProposal(proposal),
-        value: proposal.proposed_value ? proposedValueLabel(proposal) : null,
+        value: proposal.proposed_value ? proposedValueLabel(proposal, t) : null,
         sourceName: shortSourceName(recommendedSource),
         sourceFullName: sourceNameLabel(recommendedSource),
         sourceMeta: sourceMetaLabel(recommendedSource),
@@ -186,7 +186,7 @@ function artifactStatusLabel(proposal: DraftProposal, t?: TFunction): string {
   if (!proposal.current_value) {
     return translateArtifactText(t, "artifact-status-no-current-value");
   }
-  return currentValueLabel(proposal);
+  return currentValueLabel(proposal, t);
 }
 
 function rowScopeLabel(proposal: DraftProposal): string {

@@ -409,7 +409,7 @@ export const convertSectorReferenceNumberToNumber = (
   }
 };
 
-const compareGpcRefNumbers = (a: string, b: string) => {
+export const compareGpcRefNumbers = (a: string, b: string) => {
   const aSplit = a.split(".");
   const bSplit = b.split(".");
 

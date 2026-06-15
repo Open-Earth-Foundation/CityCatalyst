@@ -224,7 +224,13 @@ function groupArtifactRows(rows: ArtifactRow[]): RowGroup[] {
   return groups;
 }
 
-function RowGroupHeading({ refLabel, name }: { refLabel: string; name: string }) {
+function RowGroupHeading({
+  refLabel,
+  name,
+}: {
+  refLabel: string;
+  name: string;
+}) {
   return (
     <HStack
       gap="s"
@@ -314,10 +320,6 @@ function ArtifactRowView(props: {
   drafting: boolean;
   t: TFunction;
 }) {
-  // The spinner means "this row is being generated right now". It must only
-  // show while drafting is actively in progress — never on the row the user
-  // has focused for review, which would imply background work that isn't
-  // happening (the agent is simply waiting for the user's decision).
   const isGenerating = props.drafting && props.row.id === "placeholder-0";
   const bg = props.selected
     ? "background.alternative"
@@ -449,12 +451,7 @@ export function ArtifactPanel({
       borderWidth="1px"
       borderRadius="rounded-xl"
     >
-      <Box
-        borderBottomWidth="1px"
-        borderColor="border.neutral"
-        px="m"
-        py="m"
-      >
+      <Box borderBottomWidth="1px" borderColor="border.neutral" px="m" py="m">
         <VStack align="stretch" gap="m">
           <HStack gap="s" minW={0}>
             <Box
@@ -519,9 +516,7 @@ export function ArtifactPanel({
                   cursor="pointer"
                 >
                   {!state.activeDraftRunId ? (
-                    <option value="">
-                      {t("artifact-select-saved-draft")}
-                    </option>
+                    <option value="">{t("artifact-select-saved-draft")}</option>
                   ) : null}
                   {state.draftRuns.map((draftRun) => (
                     <option

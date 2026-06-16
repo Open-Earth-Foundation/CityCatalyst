@@ -8,6 +8,7 @@ from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftRun,
     StationaryEnergyDraftSourceCandidate,
     StationaryEnergyReviewDecision,
+    StationaryEnergyStagedReviewSelection,
 )
 from app.models.stationary_energy_drafts import (
     DraftStatusSourceCandidate,
@@ -16,6 +17,7 @@ from app.models.stationary_energy_drafts import (
     ReviewDecisionResponse,
     SaveStationaryEnergyDraftResponse,
     StartStationaryEnergyDraftResponse,
+    StagedReviewSelectionResponse,
     StationaryEnergyDraftListItemResponse,
     StationaryEnergyDraftStatusResponse,
     StoredSourceScope,
@@ -109,6 +111,33 @@ def to_review_decision_response(
     )
 
 
+def staged_selection_sort_key(
+    selection: StationaryEnergyStagedReviewSelection,
+) -> tuple[str, str]:
+    """Return a stable sort key for staged selections."""
+    return (str(selection.proposal_id), str(selection.selection_id))
+
+
+def to_staged_review_selection_response(
+    selection: StationaryEnergyStagedReviewSelection,
+) -> StagedReviewSelectionResponse:
+    """Serialize a staged tool selection into the API response contract."""
+    return StagedReviewSelectionResponse(
+        selection_id=selection.selection_id,
+        draft_run_id=selection.draft_run_id,
+        proposal_id=selection.proposal_id,
+        user_id=selection.user_id,
+        action=selection.action,
+        selected_source_id=selection.selected_source_id,
+        selected_candidate_id=selection.selected_candidate_id,
+        rationale=selection.rationale,
+        tool_call_id=selection.tool_call_id,
+        status=selection.status,
+        created_at=selection.created_at,
+        updated_at=selection.updated_at,
+    )
+
+
 def to_start_response(
     draft_run: StationaryEnergyDraftRun,
     *,
@@ -169,6 +198,14 @@ def to_status_response(
                 key=review_decision_sort_key,
             )
         ],
+        staged_review_selections=[
+            to_staged_review_selection_response(selection)
+            for selection in sorted(
+                draft_run.staged_review_selections,
+                key=staged_selection_sort_key,
+            )
+            if selection.status == "active"
+        ],
         source_candidates=[
             to_status_source_candidate(candidate)
             for candidate in sorted(
@@ -195,8 +232,15 @@ def to_list_item_response(
         or bool(proposal.alternative_candidate_ids)
     }
     decisions = latest_review_decisions(draft_run.review_decisions)
+    staged_selection_ids = {
+        selection.proposal_id
+        for selection in draft_run.staged_review_selections
+        if selection.status == "active"
+    }
     resolved_review_count = sum(
-        1 for proposal_id in reviewable_proposal_ids if proposal_id in decisions
+        1
+        for proposal_id in reviewable_proposal_ids
+        if proposal_id in decisions or proposal_id in staged_selection_ids
     )
     staged_commit_count = sum(
         1

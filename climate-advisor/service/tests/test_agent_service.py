@@ -12,9 +12,11 @@ Tests cover:
 
 from __future__ import annotations
 
+import asyncio
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 import unittest
+from uuid import uuid4
 
 from app.services.agent_service import AgentService
 
@@ -59,8 +61,7 @@ def build_mock_settings(
                     else temperature
                 ),
             )
-            if agentic_flow_model is not None
-            or agentic_flow_temperature is not None
+            if agentic_flow_model is not None or agentic_flow_temperature is not None
             else None
         ),
     )
@@ -144,7 +145,9 @@ class AgentServiceInitializationTests(unittest.TestCase):
         )
         mock_get_settings.return_value = mock_settings
 
-        with patch.dict("os.environ", {"OPENROUTER_AGENTIC_FLOW_MODEL": "openai/gpt-4.1-mini"}):
+        with patch.dict(
+            "os.environ", {"OPENROUTER_AGENTIC_FLOW_MODEL": "openai/gpt-4.1-mini"}
+        ):
             with patch("app.services.agent_service.AsyncOpenAI"):
                 service = AgentService()
 
@@ -171,7 +174,7 @@ class AgentServiceInitializationTests(unittest.TestCase):
             service = AgentService(
                 cc_access_token="jwt-token",
                 cc_thread_id="thread-123",
-                cc_user_id="user-456"
+                cc_user_id="user-456",
             )
 
             self.assertEqual(service.cc_access_token, "jwt-token")
@@ -202,7 +205,7 @@ class OpenRouterClientConfigurationTests(unittest.TestCase):
 
         with patch("app.services.agent_service.AsyncOpenAI") as mock_client_class:
             service = AgentService()
-            
+
             # Verify AsyncOpenAI was initialized with headers
             mock_client_class.assert_called_once()
             call_kwargs = mock_client_class.call_args[1]
@@ -218,15 +221,14 @@ class OpenRouterClientConfigurationTests(unittest.TestCase):
 
         with patch("app.services.agent_service.AsyncOpenAI") as mock_client_class:
             service = AgentService()
-            
+
             call_kwargs = mock_client_class.call_args[1]
-            self.assertEqual(
-                call_kwargs["base_url"],
-                "https://openrouter.ai/api/v1"
-            )
+            self.assertEqual(call_kwargs["base_url"], "https://openrouter.ai/api/v1")
 
     @patch("app.services.agent_service.get_settings")
-    def test_openrouter_client_uses_llm_config_base_url(self, mock_get_settings) -> None:
+    def test_openrouter_client_uses_llm_config_base_url(
+        self, mock_get_settings
+    ) -> None:
         """Test OpenRouter client still uses llm_config when the copied settings field is empty."""
         mock_settings = build_mock_settings()
         mock_settings.openrouter_base_url = None
@@ -234,12 +236,9 @@ class OpenRouterClientConfigurationTests(unittest.TestCase):
 
         with patch("app.services.agent_service.AsyncOpenAI") as mock_client_class:
             service = AgentService()
-            
+
             call_kwargs = mock_client_class.call_args[1]
-            self.assertEqual(
-                call_kwargs["base_url"],
-                "https://openrouter.ai/api/v1"
-            )
+            self.assertEqual(call_kwargs["base_url"], "https://openrouter.ai/api/v1")
 
     @patch.dict(
         "os.environ",
@@ -308,12 +307,14 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
         """Test agent creation uses default model from settings."""
         mock_settings = build_mock_settings()
 
-        with patch("app.services.agent_service.get_settings", return_value=mock_settings):
+        with patch(
+            "app.services.agent_service.get_settings", return_value=mock_settings
+        ):
             with patch("app.services.agent_service.AsyncOpenAI"):
                 with patch("app.services.agent_service.Agent") as mock_agent_class:
                     service = AgentService()
                     agent = await service.create_agent()
-                    
+
                     # Verify agent was created
                     mock_agent_class.assert_called_once()
                     call_kwargs = mock_agent_class.call_args[1]
@@ -324,21 +325,27 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
         """Test agent creation with model override."""
         mock_settings = build_mock_settings()
 
-        with patch("app.services.agent_service.get_settings", return_value=mock_settings):
+        with patch(
+            "app.services.agent_service.get_settings", return_value=mock_settings
+        ):
             with patch("app.services.agent_service.AsyncOpenAI"):
                 with patch("app.services.agent_service.Agent") as mock_agent_class:
                     service = AgentService()
                     agent = await service.create_agent(model="openai/gpt-4-turbo")
-                    
+
                     call_kwargs = mock_agent_class.call_args[1]
                     self.assertEqual(call_kwargs["model"].model, "openai/gpt-4-turbo")
                     self.assertEqual(call_kwargs["model_settings"].temperature, 0.0)
 
-    async def test_create_agent_strips_provider_prefix_for_openai_base_url(self) -> None:
+    async def test_create_agent_strips_provider_prefix_for_openai_base_url(
+        self,
+    ) -> None:
         """Test agent creation strips provider prefixes for direct OpenAI calls."""
         mock_settings = build_mock_settings(base_url="https://api.openai.com/v1")
 
-        with patch("app.services.agent_service.get_settings", return_value=mock_settings):
+        with patch(
+            "app.services.agent_service.get_settings", return_value=mock_settings
+        ):
             with patch("app.services.agent_service.AsyncOpenAI"):
                 with patch("app.services.agent_service.Agent") as mock_agent_class:
                     service = AgentService()
@@ -355,7 +362,9 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
             agentic_flow_temperature=0.3,
         )
 
-        with patch("app.services.agent_service.get_settings", return_value=mock_settings):
+        with patch(
+            "app.services.agent_service.get_settings", return_value=mock_settings
+        ):
             with patch("app.services.agent_service.AsyncOpenAI"):
                 with patch("app.services.agent_service.Agent") as mock_agent_class:
                     service = AgentService()
@@ -367,16 +376,16 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_create_agent_includes_system_prompt(self) -> None:
         """Test agent creation includes system prompt."""
-        mock_settings = build_mock_settings(
-            prompt="You are a helpful climate advisor."
-        )
+        mock_settings = build_mock_settings(prompt="You are a helpful climate advisor.")
 
-        with patch("app.services.agent_service.get_settings", return_value=mock_settings):
+        with patch(
+            "app.services.agent_service.get_settings", return_value=mock_settings
+        ):
             with patch("app.services.agent_service.AsyncOpenAI"):
                 with patch("app.services.agent_service.Agent") as mock_agent_class:
                     service = AgentService()
                     agent = await service.create_agent()
-                    
+
                     call_kwargs = mock_agent_class.call_args[1]
                     # System prompt should be included
                     self.assertIsNotNone(call_kwargs.get("instructions"))
@@ -385,12 +394,14 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
         """Test agent creation includes configured tools."""
         mock_settings = build_mock_settings()
 
-        with patch("app.services.agent_service.get_settings", return_value=mock_settings):
+        with patch(
+            "app.services.agent_service.get_settings", return_value=mock_settings
+        ):
             with patch("app.services.agent_service.AsyncOpenAI"):
                 with patch("app.services.agent_service.Agent") as mock_agent_class:
                     service = AgentService()
                     agent = await service.create_agent()
-                    
+
                     call_kwargs = mock_agent_class.call_args[1]
                     # Tools should be included
                     self.assertIn("tools", call_kwargs)
@@ -402,16 +413,13 @@ class SystemPromptLoadingTests(unittest.TestCase):
     @patch("app.services.agent_service.get_settings")
     def test_system_prompt_loaded_from_config(self, mock_get_settings) -> None:
         """Test system prompt is loaded from LLM config."""
-        mock_settings = build_mock_settings(
-            prompt="You are a helpful climate advisor."
-        )
+        mock_settings = build_mock_settings(prompt="You are a helpful climate advisor.")
         mock_get_settings.return_value = mock_settings
 
         with patch("app.services.agent_service.AsyncOpenAI"):
             service = AgentService()
             self.assertEqual(
-                service.system_prompt,
-                "You are a helpful climate advisor."
+                service.system_prompt, "You are a helpful climate advisor."
             )
 
     @patch("app.services.agent_service.get_settings")
@@ -440,8 +448,7 @@ class InventoryToolIntegrationTests(unittest.TestCase):
         with patch("app.services.agent_service.AsyncOpenAI"):
             with patch("app.services.agent_service.CCInventoryTool"):
                 service = AgentService(
-                    cc_access_token="jwt-token",
-                    cc_user_id="user-123"
+                    cc_access_token="jwt-token", cc_user_id="user-123"
                 )
                 self.assertIsNotNone(service._token_ref)
                 self.assertEqual(service._token_ref["value"], "jwt-token")
@@ -455,10 +462,114 @@ class InventoryToolIntegrationTests(unittest.TestCase):
         with patch("app.services.agent_service.AsyncOpenAI"):
             service = AgentService(cc_access_token="initial-token")
             self.assertEqual(service._token_ref["value"], "initial-token")
-            
+
             # Simulate token refresh
             service._token_ref["value"] = "refreshed-token"
             self.assertEqual(service._token_ref["value"], "refreshed-token")
+
+    @patch("app.services.agent_service.get_settings")
+    def test_stationary_energy_tools_registered_only_with_draft_context(
+        self,
+        mock_get_settings,
+    ) -> None:
+        mock_settings = build_mock_settings()
+        mock_get_settings.return_value = mock_settings
+
+        with patch("app.services.agent_service.AsyncOpenAI"), patch(
+            "app.services.agent_service.Agent"
+        ) as mock_agent_class:
+            service = AgentService(
+                cc_access_token="jwt-token",
+                cc_thread_id=uuid4(),
+                cc_user_id="user-123",
+                session_factory=MagicMock(),
+                stationary_energy_draft_run_id=uuid4(),
+            )
+
+            asyncio.run(service.create_agent())
+
+            tool_names = [
+                getattr(tool, "name", "")
+                for tool in mock_agent_class.call_args.kwargs["tools"]
+            ]
+            self.assertIn("stationary_energy_accept_one", tool_names)
+            self.assertIn("stationary_energy_accept_multiple", tool_names)
+            self.assertIn("stationary_energy_accept_all_recommended", tool_names)
+            self.assertIn(
+                "stationary_energy_request_bulk_review_confirmation",
+                tool_names,
+            )
+            self.assertIn(
+                "stationary_energy_request_all_recommended_confirmation",
+                tool_names,
+            )
+            self.assertIn(
+                "stationary_energy_request_staged_source_change_confirmation",
+                tool_names,
+            )
+            self.assertIn(
+                "stationary_energy_request_staged_sources_rollback_confirmation",
+                tool_names,
+            )
+            self.assertIn("stationary_energy_rollback_staged_sources", tool_names)
+            self.assertIn("stationary_energy_save_review_draft", tool_names)
+            self.assertIn(
+                "stationary_energy_request_inventory_save_confirmation",
+                tool_names,
+            )
+
+        with patch("app.services.agent_service.AsyncOpenAI"), patch(
+            "app.services.agent_service.Agent"
+        ) as mock_agent_class:
+            service = AgentService(
+                cc_access_token="jwt-token",
+                cc_thread_id=uuid4(),
+                cc_user_id="user-123",
+                session_factory=MagicMock(),
+            )
+
+            asyncio.run(service.create_agent())
+
+            tool_names = [
+                getattr(tool, "name", "")
+                for tool in mock_agent_class.call_args.kwargs["tools"]
+            ]
+            self.assertNotIn("stationary_energy_accept_one", tool_names)
+
+    @patch("app.services.agent_service.get_settings")
+    def test_stationary_energy_review_prompt_loaded_from_prompt_config(
+        self,
+        mock_get_settings,
+    ) -> None:
+        mock_settings = build_mock_settings(prompt="Base prompt")
+        mock_settings.llm.prompts.get_prompt.side_effect = lambda prompt_type: {
+            "default": "Base prompt",
+            "stationary_energy_review": "Stationary Energy review prompt with tools section",
+        }[prompt_type]
+        mock_get_settings.return_value = mock_settings
+
+        with patch("app.services.agent_service.AsyncOpenAI"), patch(
+            "app.services.agent_service.Agent"
+        ) as mock_agent_class:
+            service = AgentService(
+                cc_access_token="jwt-token",
+                cc_thread_id=uuid4(),
+                cc_user_id="user-123",
+                session_factory=MagicMock(),
+                stationary_energy_draft_run_id=uuid4(),
+            )
+
+            asyncio.run(service.create_agent())
+
+            mock_settings.llm.prompts.get_prompt.assert_any_call(
+                "stationary_energy_review"
+            )
+            instructions = mock_agent_class.call_args.kwargs["instructions"]
+            self.assertIn("Base prompt", instructions)
+            self.assertIn(
+                "Stationary Energy review prompt with tools section",
+                instructions,
+            )
 
 
 if __name__ == "__main__":

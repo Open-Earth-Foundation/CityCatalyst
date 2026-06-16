@@ -2,7 +2,7 @@
 
 import { Box, Flex, Text, VStack } from "@chakra-ui/react";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useTranslation } from "@/i18n/client";
 import ByScopeViewSourceDrawer from "@/app/[lng]/[inventory]/InventoryResultTab/ByScopeViewSourceDrawer";
@@ -40,6 +40,8 @@ export function SourceDetailPane({ actions, state }: SourceDetailPaneProps) {
   // namespace, so it needs a t bound to that namespace (not the SE one).
   const { t: tDrawer } = useTranslation(lng, "data");
   const [viewSourceId, setViewSourceId] = useState<string | null>(null);
+  const activeDecisionRef = useRef<HTMLDivElement | null>(null);
+  const lastAutoScrolledProposalRef = useRef<string | null>(null);
 
   const context = state.decisionReviewContext.find(
     (candidate) => candidate.proposal_id === state.focusedProposalId,
@@ -52,6 +54,33 @@ export function SourceDetailPane({ actions, state }: SourceDetailPaneProps) {
   const resolved = context
     ? state.resolvedProposalIds.has(context.proposal_id)
     : false;
+
+  useEffect(() => {
+    if (!context || resolved) {
+      lastAutoScrolledProposalRef.current = null;
+      return;
+    }
+
+    if (lastAutoScrolledProposalRef.current === context.proposal_id) {
+      return;
+    }
+
+    lastAutoScrolledProposalRef.current = context.proposal_id;
+
+    const behavior =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth";
+
+    window.requestAnimationFrame(() => {
+      activeDecisionRef.current?.scrollIntoView({
+        behavior,
+        block: "start",
+        inline: "nearest",
+      });
+    });
+  }, [context, resolved]);
 
   // Running list of decisions the user has already staged (excluding the one
   // currently in focus), so choices stay visible as they move through rows.
@@ -98,31 +127,33 @@ export function SourceDetailPane({ actions, state }: SourceDetailPaneProps) {
         data-testid="source-detail-pane"
       >
         {context ? (
-          resolved ? (
-            <ResolvedDecisionSummaryCard
-              context={context}
-              decision={state.decisionState[context.proposal_id]}
-              onEditDecision={actions.editDecision}
-            />
-          ) : context.kind === "single_source" ? (
-            <SingleSourceProposalCard
-              context={context}
-              decision={state.decisionState[context.proposal_id]}
-              resolved={false}
-              onDecisionChoice={actions.chooseDecision}
-              onAskAboutProposal={handleAskAboutProposal}
-              onViewSource={setViewSourceId}
-            />
-          ) : (
-            <MultiSourceProposalCard
-              context={context}
-              decision={state.decisionState[context.proposal_id]}
-              resolved={false}
-              onDecisionChoice={actions.chooseDecision}
-              onAskAboutProposal={handleAskAboutProposal}
-              onViewSource={setViewSourceId}
-            />
-          )
+          <Box ref={activeDecisionRef}>
+            {resolved ? (
+              <ResolvedDecisionSummaryCard
+                context={context}
+                decision={state.decisionState[context.proposal_id]}
+                onEditDecision={actions.editDecision}
+              />
+            ) : context.kind === "single_source" ? (
+              <SingleSourceProposalCard
+                context={context}
+                decision={state.decisionState[context.proposal_id]}
+                resolved={false}
+                onDecisionChoice={actions.chooseDecision}
+                onAskAboutProposal={handleAskAboutProposal}
+                onViewSource={setViewSourceId}
+              />
+            ) : (
+              <MultiSourceProposalCard
+                context={context}
+                decision={state.decisionState[context.proposal_id]}
+                resolved={false}
+                onDecisionChoice={actions.chooseDecision}
+                onAskAboutProposal={handleAskAboutProposal}
+                onViewSource={setViewSourceId}
+              />
+            )}
+          </Box>
         ) : (
           <Box
             color="content.tertiary"

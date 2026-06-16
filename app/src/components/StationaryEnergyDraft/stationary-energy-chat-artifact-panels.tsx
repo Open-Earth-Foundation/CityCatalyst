@@ -1,6 +1,14 @@
 "use client";
 
-import { Box, Flex, HStack, Input, Text, VStack, chakra } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  HStack,
+  Input,
+  Text,
+  VStack,
+  chakra,
+} from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { AskAiIcon } from "@/components/icons";
 import type { FormEvent } from "react";
@@ -12,8 +20,12 @@ import { FLOW_BUTTON_RADIUS } from "@/components/StationaryEnergyDraft/stationar
 import { StageMessages } from "@/components/StationaryEnergyDraft/stationary-energy-chat-stage-messages";
 import {
   AgentBubble,
+  BulkReviewConfirmationCard,
+  InventorySaveConfirmationCard,
   PendingDecisionNudge,
   StaleDraftPanel,
+  StagedReviewUpdateConfirmationCard,
+  StationaryEnergyToolSummaryCard,
   UserBubble,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-primitives";
 import {
@@ -47,6 +59,13 @@ type ClimaChatPanelProps = {
     | "chooseDecision"
     | "choosePreference"
     | "continueStaleDraft"
+    | "confirmBulkReviewChanges"
+    | "cancelBulkReviewChanges"
+    | "confirmStagedReviewRollback"
+    | "cancelStagedReviewUpdate"
+    | "confirmSaveToInventory"
+    | "requestSaveToInventoryConfirmation"
+    | "cancelSaveToInventoryConfirmation"
     | "editDecision"
     | "saveDraft"
     | "saveToInventory"
@@ -375,7 +394,7 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
               hasSourceBackedProposals={state.hasSourceBackedProposals}
               onPreference={actions.choosePreference}
               onSaveDraft={actions.saveDraft}
-              onSaveToInventory={actions.saveToInventory}
+              onSaveToInventory={actions.requestSaveToInventoryConfirmation}
               onStartDraft={actions.startDraftFromChat}
               pendingDecisionCount={state.pendingDecisionCount}
               sourcePreference={state.sourcePreference}
@@ -400,6 +419,72 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
                 // "Source review" focus pane, so they no longer flood the chat.
                 // The chat stays for conversation only.
                 return null;
+              }
+
+              if (message.kind === "inventory_save_confirmation") {
+                return (
+                  <InventorySaveConfirmationCard
+                    key={message.id}
+                    disabled={!state.canSaveToInventory}
+                    loading={state.loadingAction === "save_inventory"}
+                    onCancel={actions.cancelSaveToInventoryConfirmation}
+                    onConfirm={actions.confirmSaveToInventory}
+                  />
+                );
+              }
+
+              if (
+                message.kind === "stationary_energy_bulk_review_confirmation"
+              ) {
+                return (
+                  <BulkReviewConfirmationCard
+                    key={message.id}
+                    choices={message.choices}
+                    blockedChoices={message.blockedChoices}
+                    disabled={message.choices.length === 0}
+                    loading={state.loadingAction === "chat"}
+                    message={message.message}
+                    onCancel={actions.cancelBulkReviewChanges}
+                    onConfirm={() =>
+                      actions.confirmBulkReviewChanges(message.choices)
+                    }
+                  />
+                );
+              }
+
+              if (
+                message.kind ===
+                "stationary_energy_staged_review_update_confirmation"
+              ) {
+                return (
+                  <StagedReviewUpdateConfirmationCard
+                    key={message.id}
+                    mode={message.mode}
+                    choices={message.choices}
+                    blockedChoices={message.blockedChoices}
+                    disabled={message.choices.length === 0}
+                    loading={state.loadingAction === "chat"}
+                    message={message.message}
+                    onCancel={actions.cancelStagedReviewUpdate}
+                    onConfirm={() =>
+                      message.mode === "rollback"
+                        ? actions.confirmStagedReviewRollback(message.choices)
+                        : actions.confirmBulkReviewChanges(message.choices)
+                    }
+                  />
+                );
+              }
+
+              if (message.kind === "stationary_energy_tool_summary") {
+                return (
+                  <StationaryEnergyToolSummaryCard
+                    key={message.id}
+                    action={message.action}
+                    message={message.message}
+                    selectedChoices={message.selectedChoices}
+                    blockedChoices={message.blockedChoices}
+                  />
+                );
               }
 
               return message.role === "user" ? (

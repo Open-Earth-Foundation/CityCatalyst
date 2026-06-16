@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Badge,
   Box,
   Flex,
   HStack,
@@ -21,6 +22,7 @@ import {
   USER_BUBBLE_MAX_W,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-constants";
 import type { DraftCounts } from "@/components/StationaryEnergyDraft/flow";
+import type { StationaryEnergyToolChoiceSummary } from "@/components/StationaryEnergyDraft/stationary-energy-chat-messages";
 import type { DraftStatusResponse } from "@/components/StationaryEnergyDraft/types";
 import { getParamValueRequired } from "@/util/helpers";
 
@@ -380,6 +382,452 @@ export function PendingDecisionNudge(props: {
           </chakra.button>
         </HStack>
       </Flex>
+    </Box>
+  );
+}
+
+export function InventorySaveConfirmationCard(props: {
+  disabled?: boolean;
+  loading?: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  const { t } = useStationaryEnergyAgenticTranslation();
+
+  return (
+    <Box
+      w="full"
+      maxW={CHAT_SURFACE_MAX_W}
+      alignSelf="flex-start"
+      bg="sentiment.warningOverlay"
+      borderColor="interactive.quaternary"
+      borderWidth="1px"
+      borderRadius="rounded-xl"
+      p={4}
+      data-message-kind="inventory-save-confirmation"
+    >
+      <HStack gap={2} mb={3} color="interactive.quaternary">
+        <MdErrorOutline />
+        <Text fontFamily="heading" fontWeight="semibold">
+          {t("primitives-inventory-save-confirm-title")}
+        </Text>
+      </HStack>
+      <Text color="content.primary" fontSize="body.md" mb={4}>
+        {t("primitives-inventory-save-confirm-description")}
+      </Text>
+      <QuickReplies
+        buttons={[
+          {
+            label: t("primitives-inventory-save-confirm-cancel"),
+            disabled: props.loading,
+            onClick: props.onCancel,
+          },
+          {
+            label: props.loading
+              ? t("primitives-inventory-save-confirm-saving")
+              : t("primitives-inventory-save-confirm-approve"),
+            primary: true,
+            disabled: props.disabled || props.loading,
+            onClick: props.onConfirm,
+          },
+        ]}
+      />
+    </Box>
+  );
+}
+
+function ToolChoiceSummaryCard(props: {
+  choice: StationaryEnergyToolChoiceSummary;
+  fallbackTitle: string;
+  fallbackSource: string;
+}) {
+  const { t } = useStationaryEnergyAgenticTranslation();
+  const isLeaveDraft = props.choice.action === "leave_draft";
+  const sourceTitle =
+    props.choice.source_short_label ||
+    props.choice.source_label ||
+    props.choice.action ||
+    props.fallbackSource;
+  const sourceLabel = props.choice.source_label;
+  const showSourceLabel =
+    Boolean(sourceLabel) && sourceLabel !== props.choice.source_short_label;
+  const sourceMeta =
+    props.choice.source_meta && props.choice.source_meta !== props.choice.value
+      ? props.choice.source_meta
+      : null;
+
+  if (isLeaveDraft) {
+    return (
+      <Box
+        bg="base.light"
+        borderColor="interactive.quaternary"
+        borderWidth="1px"
+        borderRadius="rounded"
+        px={3}
+        py={2}
+      >
+        <Text fontSize="label.md" fontWeight="semibold" color="content.primary">
+          {props.choice.target_label || props.fallbackTitle}
+        </Text>
+        <Badge
+          mt={2}
+          display="inline-flex"
+          alignItems="center"
+          gap={1}
+          px="s"
+          py="2px"
+          borderWidth="1px"
+          borderColor="interactive.quaternary"
+          borderRadius="rounded"
+          bg="sentiment.warningOverlay"
+          color="interactive.quaternary"
+        >
+          <MdErrorOutline />
+          <Text
+            fontFamily="heading"
+            fontSize="label.sm"
+            fontWeight="semibold"
+            lineHeight="16px"
+          >
+            {t("review-summary-leave-empty")}
+          </Text>
+        </Badge>
+        <Text color="content.secondary" fontSize="label.md" mt={2}>
+          {t("review-summary-set-notation")}
+        </Text>
+      </Box>
+    );
+  }
+
+  return (
+    <Box
+      bg="base.light"
+      borderColor="border.overlay"
+      borderWidth="1px"
+      borderRadius="rounded"
+      px={3}
+      py={2}
+    >
+      <Text fontSize="label.md" fontWeight="semibold" color="content.primary">
+        {props.choice.target_label || props.fallbackTitle}
+      </Text>
+      <Flex justify="space-between" align="baseline" gap={3} mt={1}>
+        <Text
+          fontFamily="heading"
+          fontSize="label.md"
+          fontWeight="semibold"
+          color="content.primary"
+          truncate
+          minW={0}
+        >
+          {sourceTitle}
+        </Text>
+        {props.choice.value ? (
+          <Text
+            fontFamily="heading"
+            fontSize="label.md"
+            fontWeight="semibold"
+            color="content.primary"
+            whiteSpace="nowrap"
+            flexShrink={0}
+          >
+            {props.choice.value}
+          </Text>
+        ) : null}
+      </Flex>
+      {showSourceLabel ? (
+        <Text fontSize="label.md" color="content.secondary" mt="2px">
+          {sourceLabel}
+        </Text>
+      ) : null}
+      {sourceMeta ? (
+        <Text fontSize="label.sm" color="content.tertiary" mt="2px">
+          {sourceMeta}
+        </Text>
+      ) : null}
+    </Box>
+  );
+}
+
+export function BulkReviewConfirmationCard(props: {
+  choices: StationaryEnergyToolChoiceSummary[];
+  blockedChoices: StationaryEnergyToolChoiceSummary[];
+  disabled?: boolean;
+  loading?: boolean;
+  message?: string | null;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  const { t } = useStationaryEnergyAgenticTranslation();
+  const visibleChoices = props.choices.slice(0, 6);
+  const extraChoiceCount = Math.max(
+    0,
+    props.choices.length - visibleChoices.length,
+  );
+
+  return (
+    <Box
+      w="full"
+      maxW={CHAT_SURFACE_MAX_W}
+      alignSelf="flex-start"
+      bg="sentiment.warningOverlay"
+      borderColor="interactive.quaternary"
+      borderWidth="1px"
+      borderRadius="rounded-xl"
+      p={4}
+      data-message-kind="stationary-energy-bulk-review-confirmation"
+    >
+      <HStack gap={2} mb={3} color="interactive.quaternary">
+        <MdErrorOutline />
+        <Text fontFamily="heading" fontWeight="semibold">
+          {t("primitives-bulk-review-confirm-title", {
+            count: props.choices.length,
+          })}
+        </Text>
+      </HStack>
+      <Text color="content.primary" fontSize="body.md" mb={3}>
+        {props.message || t("primitives-bulk-review-confirm-description")}
+      </Text>
+      <VStack align="stretch" gap={2} mb={4}>
+        {visibleChoices.map((choice, index) => (
+          <ToolChoiceSummaryCard
+            key={`${choice.proposal_id ?? index}-${choice.selected_candidate_id ?? choice.selected_source_id ?? choice.action}`}
+            choice={choice}
+            fallbackTitle={t("review-fallback-row-label")}
+            fallbackSource={t("review-summary-choice-staged")}
+          />
+        ))}
+        {extraChoiceCount > 0 ? (
+          <Text color="content.tertiary" fontSize="label.md">
+            {t("primitives-bulk-review-confirm-more", {
+              count: extraChoiceCount,
+            })}
+          </Text>
+        ) : null}
+        {props.blockedChoices.length > 0 ? (
+          <Text
+            color="interactive.quaternary"
+            fontSize="label.md"
+            fontWeight="semibold"
+          >
+            {t("primitives-bulk-review-confirm-blocked", {
+              count: props.blockedChoices.length,
+            })}
+          </Text>
+        ) : null}
+      </VStack>
+      <QuickReplies
+        buttons={[
+          {
+            label: t("primitives-bulk-review-confirm-cancel"),
+            disabled: props.loading,
+            onClick: props.onCancel,
+          },
+          {
+            label: props.loading
+              ? t("primitives-bulk-review-confirm-applying")
+              : t("primitives-bulk-review-confirm-approve"),
+            primary: true,
+            disabled:
+              props.disabled || props.loading || props.choices.length === 0,
+            onClick: props.onConfirm,
+          },
+        ]}
+      />
+    </Box>
+  );
+}
+
+export function StagedReviewUpdateConfirmationCard(props: {
+  mode: "change" | "rollback";
+  choices: StationaryEnergyToolChoiceSummary[];
+  blockedChoices: StationaryEnergyToolChoiceSummary[];
+  disabled?: boolean;
+  loading?: boolean;
+  message?: string | null;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  const { t } = useStationaryEnergyAgenticTranslation();
+  const visibleChoices = props.choices.slice(0, 6);
+  const extraChoiceCount = Math.max(
+    0,
+    props.choices.length - visibleChoices.length,
+  );
+  const isRollback = props.mode === "rollback";
+
+  return (
+    <Box
+      w="full"
+      maxW={CHAT_SURFACE_MAX_W}
+      alignSelf="flex-start"
+      bg="sentiment.warningOverlay"
+      borderColor="interactive.quaternary"
+      borderWidth="1px"
+      borderRadius="rounded-xl"
+      p={4}
+      data-message-kind={`stationary-energy-staged-review-${props.mode}-confirmation`}
+    >
+      <HStack gap={2} mb={3} color="interactive.quaternary">
+        <MdErrorOutline />
+        <Text fontFamily="heading" fontWeight="semibold">
+          {t(
+            isRollback
+              ? "primitives-staged-review-rollback-confirm-title"
+              : "primitives-staged-review-change-confirm-title",
+            { count: props.choices.length },
+          )}
+        </Text>
+      </HStack>
+      <Text color="content.primary" fontSize="body.md" mb={3}>
+        {props.message ||
+          t(
+            isRollback
+              ? "primitives-staged-review-rollback-confirm-description"
+              : "primitives-staged-review-change-confirm-description",
+          )}
+      </Text>
+      <VStack align="stretch" gap={2} mb={4}>
+        {visibleChoices.map((choice, index) => (
+          <ToolChoiceSummaryCard
+            key={`${props.mode}-${choice.proposal_id ?? index}-${choice.selected_candidate_id ?? choice.selected_source_id ?? choice.action}`}
+            choice={{
+              ...choice,
+              source_label:
+                choice.source_label ||
+                t(
+                  isRollback
+                    ? "primitives-staged-review-rollback-choice"
+                    : "primitives-staged-review-change-choice",
+                  {
+                    source:
+                      choice.source_label ||
+                      choice.action ||
+                      t("review-summary-choice-staged"),
+                  },
+                ),
+            }}
+            fallbackTitle={t("review-fallback-row-label")}
+            fallbackSource={t("review-summary-choice-staged")}
+          />
+        ))}
+        {extraChoiceCount > 0 ? (
+          <Text color="content.tertiary" fontSize="label.md">
+            {t("primitives-bulk-review-confirm-more", {
+              count: extraChoiceCount,
+            })}
+          </Text>
+        ) : null}
+        {props.blockedChoices.length > 0 ? (
+          <Text
+            color="interactive.quaternary"
+            fontSize="label.md"
+            fontWeight="semibold"
+          >
+            {t("primitives-bulk-review-confirm-blocked", {
+              count: props.blockedChoices.length,
+            })}
+          </Text>
+        ) : null}
+      </VStack>
+      <QuickReplies
+        buttons={[
+          {
+            label: t("primitives-staged-review-update-confirm-cancel"),
+            disabled: props.loading,
+            onClick: props.onCancel,
+          },
+          {
+            label: props.loading
+              ? t("primitives-staged-review-update-confirm-applying")
+              : t(
+                  isRollback
+                    ? "primitives-staged-review-rollback-confirm-approve"
+                    : "primitives-staged-review-change-confirm-approve",
+                ),
+            primary: true,
+            disabled:
+              props.disabled || props.loading || props.choices.length === 0,
+            onClick: props.onConfirm,
+          },
+        ]}
+      />
+    </Box>
+  );
+}
+
+export function StationaryEnergyToolSummaryCard(props: {
+  action: string;
+  message?: string | null;
+  selectedChoices: StationaryEnergyToolChoiceSummary[];
+  blockedChoices: StationaryEnergyToolChoiceSummary[];
+}) {
+  const { t } = useStationaryEnergyAgenticTranslation();
+  const hasSelected = props.selectedChoices.length > 0;
+  const hasBlocked = props.blockedChoices.length > 0;
+
+  return (
+    <Box
+      w="full"
+      maxW={CHAT_SURFACE_MAX_W}
+      alignSelf="flex-start"
+      bg="base.light"
+      borderColor="border.overlay"
+      borderWidth="1px"
+      borderRadius="rounded-xl"
+      p={4}
+      data-message-kind="stationary-energy-tool-summary"
+    >
+      <HStack gap={2} mb={2} color="interactive.tertiary">
+        <MdCheckCircle />
+        <Text fontFamily="heading" fontWeight="semibold">
+          {t("primitives-tool-summary-title")}
+        </Text>
+      </HStack>
+      {props.message ? (
+        <Text color="content.secondary" fontSize="body.md" mb={3}>
+          {props.message}
+        </Text>
+      ) : null}
+      {hasSelected ? (
+        <VStack align="stretch" gap={2} mb={hasBlocked ? 3 : 0}>
+          {props.selectedChoices.slice(0, 6).map((choice, index) => (
+            <ToolChoiceSummaryCard
+              key={`${choice.proposal_id ?? index}-${choice.source_label ?? choice.action}`}
+              choice={choice}
+              fallbackTitle={t("review-fallback-row-label")}
+              fallbackSource={t("review-summary-choice-staged")}
+            />
+          ))}
+          {props.selectedChoices.length > 6 ? (
+            <Text color="content.tertiary" fontSize="label.md">
+              {t("primitives-tool-summary-more", {
+                count: props.selectedChoices.length - 6,
+              })}
+            </Text>
+          ) : null}
+        </VStack>
+      ) : null}
+      {hasBlocked ? (
+        <Box
+          bg="sentiment.warningOverlay"
+          borderColor="interactive.quaternary"
+          borderWidth="1px"
+          borderRadius="rounded"
+          px={3}
+          py={2}
+        >
+          <Text
+            color="interactive.quaternary"
+            fontSize="label.md"
+            fontWeight="semibold"
+          >
+            {t("primitives-tool-summary-blocked", {
+              count: props.blockedChoices.length,
+            })}
+          </Text>
+        </Box>
+      ) : null}
     </Box>
   );
 }

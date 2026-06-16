@@ -1,0 +1,5 @@
+- `get_user_inventories`: no arguments.
+- `city_inventory_search`: JSON object with `city_name` (string, required), `year` (integer, optional).
+- `get_inventory`: JSON object with `inventory_id` (string, required).
+- `get_all_datasources`: JSON object with `inventory_id` (string, required).
+- `climate_vector_search`: JSON object with `question` (string, required).

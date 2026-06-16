@@ -2,13 +2,42 @@ import {
   createDecisionReviewMessage,
   type ChatMessage,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-messages";
-import type { TFunction } from "i18next";
-import type { DecisionReviewContext } from "@/components/StationaryEnergyDraft/flow";
+import type {
+  DecisionOption,
+  DecisionReviewContext,
+} from "@/components/StationaryEnergyDraft/flow";
 import type {
   DraftDecisionAction,
   DraftDecisionState,
   DraftStatusResponse,
 } from "@/components/StationaryEnergyDraft/types";
+import type { TFunction } from "i18next";
+
+export type ConfirmedBulkReviewChoicePayload = {
+  proposal_id: string;
+  candidate_id?: string;
+  selected_source_id?: string;
+  action?: string;
+  rationale?: string;
+};
+
+export type ConfirmedRollbackReviewChoicePayload = {
+  proposal_id: string;
+};
+
+export type FocusedDecisionOptionPayload = {
+  id: string;
+  action: DraftDecisionAction;
+  label: string;
+  short_label: string;
+  selected_source_id?: string | null;
+  recommended: boolean;
+};
+
+export type FocusedDecisionStatePayload = {
+  action: DraftDecisionAction;
+  selected_option: FocusedDecisionOptionPayload | null;
+};
 
 const TERMINAL_DRAFT_STATUSES = new Set([
   "saved",
@@ -140,19 +169,101 @@ export function removeResolvedProposalId(
   return next;
 }
 
+function decisionOptionsForContext(
+  context: DecisionReviewContext,
+): DecisionOption[] {
+  return [
+    ...(context.recommendedOption ? [context.recommendedOption] : []),
+    ...context.alternativeOptions,
+    context.leaveDraftOption,
+  ];
+}
+
+function selectedDecisionOption(
+  context: DecisionReviewContext,
+  decision?: DraftDecisionState,
+): DecisionOption | null {
+  if (!decision) {
+    return null;
+  }
+  if (decision.action === "leave_draft") {
+    return context.leaveDraftOption;
+  }
+  if (decision.action === "accept") {
+    return context.recommendedOption;
+  }
+  if (decision.action !== "override_source") {
+    return null;
+  }
+  return (
+    decisionOptionsForContext(context).find(
+      (option) =>
+        option.action === "override_source" &&
+        (option.id === decision.selectedSourceId ||
+          option.datasourceId === decision.selectedSourceId),
+    ) ?? null
+  );
+}
+
+export function buildFocusedDecisionStatePayload(params: {
+  decisionReviewContext: DecisionReviewContext[];
+  decisionState: Record<string, DraftDecisionState>;
+  focusedProposalId?: string | null;
+}): FocusedDecisionStatePayload | undefined {
+  const { decisionReviewContext, decisionState, focusedProposalId } = params;
+  if (!focusedProposalId) {
+    return undefined;
+  }
+
+  const context = decisionReviewContext.find(
+    (review) => review.proposal_id === focusedProposalId,
+  );
+  if (!context) {
+    return undefined;
+  }
+
+  const decision = decisionState[focusedProposalId];
+  if (!decision) {
+    return undefined;
+  }
+
+  const selectedOption = selectedDecisionOption(context, decision);
+  return {
+    action: decision.action,
+    selected_option: selectedOption
+      ? {
+          id: selectedOption.id,
+          action: selectedOption.action,
+          label: selectedOption.label,
+          short_label: selectedOption.shortLabel,
+          selected_source_id: selectedOption.datasourceId ?? null,
+          recommended: selectedOption.recommended,
+        }
+      : null,
+  };
+}
+
 export function buildStationaryEnergyChatRequest(params: {
   cityId: string;
   content: string;
+  confirmedBulkReviewChoices?: ConfirmedBulkReviewChoicePayload[];
+  confirmedRollbackReviewChoices?: ConfirmedRollbackReviewChoicePayload[];
   decisionReviewContext: DecisionReviewContext[];
   draftState: DraftStatusResponse | null;
+  focusedDecisionState?: FocusedDecisionStatePayload;
+  focusedProposalId?: string | null;
   inventoryId: string;
   threadId: string | null;
 }): Record<string, unknown> {
   const {
     cityId,
     content,
+    confirmedBulkReviewChoices,
+    confirmedRollbackReviewChoices,
     decisionReviewContext,
     draftState,
+    focusedDecisionState,
+    focusedProposalId,
     inventoryId,
     threadId,
   } = params;
@@ -169,6 +280,17 @@ export function buildStationaryEnergyChatRequest(params: {
           inventory_id: inventoryId,
           stationary_energy_interaction_mode: "free_text",
           stationary_energy_pending_decision_reviews: decisionReviewContext,
+          stationary_energy_focused_decision_state: focusedDecisionState,
+          stationary_energy_focused_proposal_id: focusedProposalId,
+          stationary_energy_confirmed_bulk_review_choices:
+            confirmedBulkReviewChoices && confirmedBulkReviewChoices.length > 0
+              ? confirmedBulkReviewChoices
+              : undefined,
+          stationary_energy_confirmed_staged_review_rollback_choices:
+            confirmedRollbackReviewChoices &&
+            confirmedRollbackReviewChoices.length > 0
+              ? confirmedRollbackReviewChoices
+              : undefined,
         }
       : undefined,
     options: draftState
@@ -179,5 +301,32 @@ export function buildStationaryEnergyChatRequest(params: {
           stationary_energy_ui_surfaces: ["chat_text", "decision_review_card"],
         }
       : {},
+  };
+}
+
+export function resolveInventorySaveConfirmationRequest(params: {
+  canSaveToInventory: boolean;
+  toolSuccess: boolean;
+  toolMessage?: string | null;
+  blockedMessage: string;
+}): {
+  message: string | null;
+  showConfirmation: boolean;
+} {
+  const { canSaveToInventory, toolSuccess, toolMessage, blockedMessage } =
+    params;
+
+  if (toolSuccess && canSaveToInventory) {
+    return {
+      message: toolMessage ?? null,
+      showConfirmation: true,
+    };
+  }
+
+  return {
+    message: canSaveToInventory
+      ? (toolMessage ?? blockedMessage)
+      : blockedMessage,
+    showConfirmation: false,
   };
 }

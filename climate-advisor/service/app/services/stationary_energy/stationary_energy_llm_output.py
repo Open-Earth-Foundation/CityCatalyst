@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import asdict, is_dataclass
+from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
@@ -398,13 +399,30 @@ def build_deterministic_proposals(
                     _deterministic_gap_proposal(row_payload, current_value)
                 )
             continue
-        # >= 2 sources with real emissions compete -> hybrid: hand the row to the
-        # agent so it can reason about and explain the trade-offs. Keep a
-        # deterministic ranked proposal as a fallback if the agent is unavailable.
+        # >= 2 sources with real emissions. If the values agree, no model
+        # reasoning is needed; still ask the user which source to attach. If the
+        # values disagree, hand the row to the agent so it can reason about and
+        # explain the trade-offs. Keep a deterministic ranked proposal as a
+        # fallback if the agent is unavailable.
+        if _matching_candidates_have_same_emissions_value(matching):
+            deterministic.append(
+                _deterministic_multi_source_proposal(
+                    row_payload,
+                    matching,
+                    inventory_year,
+                    current_value,
+                    status="needs_review",
+                )
+            )
+            continue
         llm_rows.append(row)
         llm_fallback.append(
             _deterministic_multi_source_proposal(
-                row_payload, matching, inventory_year, current_value
+                row_payload,
+                matching,
+                inventory_year,
+                current_value,
+                status="conflict",
             )
         )
     return deterministic, llm_rows, llm_fallback
@@ -464,13 +482,98 @@ def _candidate_rank_key(
     )
 
 
+def _matching_candidates_have_same_emissions_value(
+    candidates: list[dict[str, Any]],
+) -> bool:
+    """Return whether all candidates expose the same normalized emissions value."""
+    signatures = [_candidate_emissions_signature(candidate) for candidate in candidates]
+    if not signatures or any(signature is None for signature in signatures):
+        return False
+    return len(set(signatures)) == 1
+
+
+def _candidate_emissions_signature(candidate: dict[str, Any]) -> tuple[Any, ...] | None:
+    """Build a comparable emissions signature from a candidate's first usable row."""
+    for row in candidate.get("normalized_rows") or []:
+        if not isinstance(row, dict) or not _row_has_usable_emissions(row):
+            continue
+        total_signature = _row_total_emissions_signature(row)
+        if total_signature is not None:
+            return total_signature
+        gas_signature = _row_gas_emissions_signature(row)
+        if gas_signature is not None:
+            return gas_signature
+    return None
+
+
+def _row_total_emissions_signature(row: dict[str, Any]) -> tuple[Any, ...] | None:
+    """Return a comparable total-emissions signature for one normalized row."""
+    value = row.get("emissions_value_100yr")
+    unit = row.get("emissions_unit_100yr") or row.get("emissions_unit")
+    if _has_emissions_value(value):
+        return ("total_100yr", _normalize_emissions_value(value), _normalize_unit(unit))
+
+    value = row.get("emissions_value")
+    unit = row.get("emissions_unit")
+    if _has_emissions_value(value):
+        return ("total", _normalize_emissions_value(value), _normalize_unit(unit))
+    return None
+
+
+def _row_gas_emissions_signature(row: dict[str, Any]) -> tuple[Any, ...] | None:
+    """Return a comparable gas-level emissions signature for one row."""
+    gases = row.get("gases")
+    if not isinstance(gases, list):
+        return None
+
+    signatures: list[tuple[str, str, str]] = []
+    for gas in gases:
+        if not isinstance(gas, dict):
+            continue
+        value = gas.get("emissions_value_100yr")
+        unit = gas.get("emissions_unit_100yr") or gas.get("emissions_unit")
+        value_kind = "100yr"
+        if not _has_emissions_value(value):
+            value = gas.get("emissions_value")
+            unit = gas.get("emissions_unit")
+            value_kind = "value"
+        if not _has_emissions_value(value):
+            continue
+        signatures.append(
+            (
+                str(gas.get("gas") or "").strip().lower(),
+                value_kind,
+                f"{_normalize_emissions_value(value)}:{_normalize_unit(unit)}",
+            )
+        )
+    if not signatures:
+        return None
+    return ("gases", *sorted(signatures))
+
+
+def _normalize_emissions_value(value: Any) -> str:
+    """Normalize numeric-looking emissions values for equality checks."""
+    text = str(value).strip()
+    try:
+        return str(Decimal(text).normalize())
+    except Exception:
+        return text
+
+
+def _normalize_unit(value: Any) -> str:
+    """Normalize emissions units for equality checks."""
+    return str(value or "").strip().lower().replace(" ", "")
+
+
 def _deterministic_multi_source_proposal(
     row_payload: dict[str, Any],
     candidates: list[dict[str, Any]],
     inventory_year: int | None,
     current_value: dict[str, Any] | None,
+    *,
+    status: str = "conflict",
 ) -> dict[str, Any]:
-    """Build a "conflict" proposal with a ranked recommendation + alternatives."""
+    """Build a multi-source proposal with a ranked recommendation + alternatives."""
     ranked = sorted(
         candidates, key=lambda candidate: _candidate_rank_key(candidate, inventory_year)
     )
@@ -489,6 +592,19 @@ def _deterministic_multi_source_proposal(
         or recommended.get("dataset_name")
         or "the top-ranked source"
     )
+    if status == "needs_review":
+        rationale = (
+            f"{len(candidates)} applicable sources report the same emissions value. "
+            f"Recommended {publisher} ({year}, {geography}-level) as the closest "
+            "geographic and temporal match; review which source should be attached."
+        )
+    else:
+        rationale = (
+            f"{len(candidates)} applicable sources compete for this row. "
+            f"Recommended {publisher} ({year}, {geography}-level) as the closest "
+            "geographic and temporal match; review the alternatives before saving."
+        )
+
     return {
         "target_ref": row_payload,
         "current_value": current_value,
@@ -500,12 +616,8 @@ def _deterministic_multi_source_proposal(
             if candidate.get("candidate_id")
         ],
         "proposed_value": proposed_value,
-        "rationale": (
-            f"{len(candidates)} applicable sources compete for this row. "
-            f"Recommended {publisher} ({year}, {geography}-level) as the closest "
-            "geographic and temporal match; review the alternatives before saving."
-        ),
-        "status": "conflict",
+        "rationale": rationale,
+        "status": status,
         "confidence_score": None,
     }
 

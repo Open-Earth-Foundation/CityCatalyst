@@ -161,14 +161,19 @@ export function StageMessages(props: StageMessagesProps) {
 
   if (props.stage === "decision" && props.pendingDecisionCount > 0) {
     return (
-      <AgentBubble
-        text={t("chat-decision-summary", {
-          pendingDecisionLabel: decisionStageLabel(
-            t,
-            props.pendingDecisionCount,
-          ),
-        })}
-      />
+      <>
+        <AgentBubble
+          text={t("chat-decision-summary", {
+            pendingDecisionLabel: decisionStageLabel(
+              t,
+              props.pendingDecisionCount,
+            ),
+          })}
+        />
+        {props.canSaveToInventory ? (
+          <QuickReplies buttons={reviewQuickReplies(t, props)} />
+        ) : null}
+      </>
     );
   }
 

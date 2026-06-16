@@ -13,7 +13,59 @@ export type ChatDecisionReviewMessage = {
   proposalId: string;
 };
 
-export type ChatMessage = ChatTextMessage | ChatDecisionReviewMessage;
+export type ChatInventorySaveConfirmationMessage = {
+  id: string;
+  kind: "inventory_save_confirmation";
+};
+
+export type StationaryEnergyToolChoiceSummary = {
+  proposal_id?: string | null;
+  candidate_id?: string | null;
+  selected_candidate_id?: string | null;
+  selected_source_id?: string | null;
+  target_label?: string | null;
+  source_label?: string | null;
+  source_short_label?: string | null;
+  source_meta?: string | null;
+  value?: string | null;
+  action?: string | null;
+  rationale?: string | null;
+  reason?: string | null;
+};
+
+export type ChatBulkReviewConfirmationMessage = {
+  id: string;
+  kind: "stationary_energy_bulk_review_confirmation";
+  message?: string | null;
+  choices: StationaryEnergyToolChoiceSummary[];
+  blockedChoices: StationaryEnergyToolChoiceSummary[];
+};
+
+export type ChatStagedReviewUpdateConfirmationMessage = {
+  id: string;
+  kind: "stationary_energy_staged_review_update_confirmation";
+  mode: "change" | "rollback";
+  message?: string | null;
+  choices: StationaryEnergyToolChoiceSummary[];
+  blockedChoices: StationaryEnergyToolChoiceSummary[];
+};
+
+export type ChatStationaryEnergyToolSummaryMessage = {
+  id: string;
+  kind: "stationary_energy_tool_summary";
+  action: string;
+  message?: string | null;
+  selectedChoices: StationaryEnergyToolChoiceSummary[];
+  blockedChoices: StationaryEnergyToolChoiceSummary[];
+};
+
+export type ChatMessage =
+  | ChatTextMessage
+  | ChatDecisionReviewMessage
+  | ChatInventorySaveConfirmationMessage
+  | ChatBulkReviewConfirmationMessage
+  | ChatStagedReviewUpdateConfirmationMessage
+  | ChatStationaryEnergyToolSummaryMessage;
 
 export function createChatMessageId(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -38,6 +90,61 @@ export function createDecisionReviewMessage(
     id: `decision-review-${proposalId}`,
     kind: "decision_review",
     proposalId,
+  };
+}
+
+export function createInventorySaveConfirmationMessage(): ChatInventorySaveConfirmationMessage {
+  return {
+    id: createChatMessageId("inventory-save-confirmation"),
+    kind: "inventory_save_confirmation",
+  };
+}
+
+export function createBulkReviewConfirmationMessage(params: {
+  message?: string | null;
+  choices: StationaryEnergyToolChoiceSummary[];
+  blockedChoices?: StationaryEnergyToolChoiceSummary[];
+}): ChatBulkReviewConfirmationMessage {
+  return {
+    id: createChatMessageId("stationary-energy-bulk-review-confirmation"),
+    kind: "stationary_energy_bulk_review_confirmation",
+    message: params.message,
+    choices: params.choices,
+    blockedChoices: params.blockedChoices ?? [],
+  };
+}
+
+export function createStagedReviewUpdateConfirmationMessage(params: {
+  mode: ChatStagedReviewUpdateConfirmationMessage["mode"];
+  message?: string | null;
+  choices: StationaryEnergyToolChoiceSummary[];
+  blockedChoices?: StationaryEnergyToolChoiceSummary[];
+}): ChatStagedReviewUpdateConfirmationMessage {
+  return {
+    id: createChatMessageId(
+      "stationary-energy-staged-review-update-confirmation",
+    ),
+    kind: "stationary_energy_staged_review_update_confirmation",
+    mode: params.mode,
+    message: params.message,
+    choices: params.choices,
+    blockedChoices: params.blockedChoices ?? [],
+  };
+}
+
+export function createStationaryEnergyToolSummaryMessage(params: {
+  action: string;
+  message?: string | null;
+  selectedChoices?: StationaryEnergyToolChoiceSummary[];
+  blockedChoices?: StationaryEnergyToolChoiceSummary[];
+}): ChatStationaryEnergyToolSummaryMessage {
+  return {
+    id: createChatMessageId("stationary-energy-tool-summary"),
+    kind: "stationary_energy_tool_summary",
+    action: params.action,
+    message: params.message,
+    selectedChoices: params.selectedChoices ?? [],
+    blockedChoices: params.blockedChoices ?? [],
   };
 }
 

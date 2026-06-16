@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import get_settings
 from app.middleware import get_request_id
+from app.models.db.stationary_energy_draft import StationaryEnergyDraftRun
 from app.models.requests import MessageCreateRequest
 from app.services.agent_service import AgentService
 from app.services.message_service import MessageService
@@ -47,7 +48,8 @@ class StreamingHandler:
         inventory_id: Optional[str] = None,
         request_context: Optional[Any] = None,
         request_options: Optional[dict] = None,
-    ):
+    ) -> None:
+        """Initialize per-request state for streaming one agent response."""
         self.thread_id = thread_id
         self.user_id = user_id
         self.session_factory = session_factory
@@ -101,17 +103,8 @@ class StreamingHandler:
         )
 
         try:
-            # Create agent service
-            self.agent_service = AgentService(
-                cc_access_token=self.cc_access_token,
-                cc_thread_id=self.thread_id,
-                cc_user_id=self.user_id,
-                inventory_id=self.inventory_id,
-            )
-
-            # Get model override from options
-            options = payload.options or {}
-            model_override = options.get("model")
+            # Resolve scoped workflow context before creating the agent so
+            # AgentService can attach the correct tool pack.
             if not self.stationary_energy_draft_run_id:
                 self.stationary_energy_draft_run_id = (
                     extract_stationary_energy_draft_run_id(
@@ -123,8 +116,25 @@ class StreamingHandler:
                     or await self._load_thread_stationary_energy_draft_run_id()
                 )
 
-            self.agent_model = model_override or self.agent_service.preferred_model_for_context(
+            # Create agent service
+            self.agent_service = AgentService(
+                cc_access_token=self.cc_access_token,
+                cc_thread_id=self.thread_id,
+                cc_user_id=self.user_id,
+                inventory_id=self.inventory_id,
+                session_factory=self.session_factory,
                 stationary_energy_draft_run_id=self.stationary_energy_draft_run_id,
+            )
+
+            # Get model override from options
+            options = payload.options or {}
+            model_override = options.get("model")
+
+            self.agent_model = (
+                model_override
+                or self.agent_service.preferred_model_for_context(
+                    stationary_energy_draft_run_id=self.stationary_energy_draft_run_id,
+                )
             )
             logger.info(
                 "Selected chat model=%s stationary_energy_context=%s thread_id=%s",
@@ -136,7 +146,9 @@ class StreamingHandler:
             agent = await self.agent_service.create_agent(model=self.agent_model)
 
             # Load conversation history
-            conversation_history = await self._load_conversation_history(settings, payload)
+            conversation_history = await self._load_conversation_history(
+                settings, payload
+            )
 
             logger.info(
                 "Starting Agents SDK streaming - thread_id=%s, user_id=%s, request_id=%s",
@@ -193,7 +205,9 @@ class StreamingHandler:
             user_id=self.user_id,
             session_factory=self.session_factory,
         )
-        stationary_energy_context = await self._load_stationary_energy_context_message(payload)
+        stationary_energy_context = await self._load_stationary_energy_context_message(
+            payload
+        )
         if stationary_energy_context:
             conversation_history = [stationary_energy_context, *conversation_history]
             if not self._history_contains_current_user_message(
@@ -249,7 +263,9 @@ class StreamingHandler:
         self.stationary_energy_draft_run_id = str(draft_run_id)
 
         if not self.session_factory:
-            logger.debug("Session factory unavailable; Stationary Energy draft context skipped")
+            logger.debug(
+                "Session factory unavailable; Stationary Energy draft context skipped"
+            )
             return None
 
         try:
@@ -279,9 +295,13 @@ class StreamingHandler:
             }
 
         context_payload = self._stationary_energy_context_payload(draft_run)
+        ui_context = self._stationary_energy_ui_context(payload)
+        if ui_context:
+            context_payload["ui_context"] = ui_context
         return self._stationary_energy_context_message(context_payload)
 
     async def _load_thread_stationary_energy_draft_run_id(self) -> Optional[str]:
+        """Load the draft run id persisted on the current chat thread."""
         if not self.session_factory:
             return None
 
@@ -305,16 +325,23 @@ class StreamingHandler:
         conversation_history: List[Dict[str, str]],
         content: str,
     ) -> bool:
+        """Return whether recent history already contains the current user message."""
         return any(
             message.get("role") == "user" and message.get("content") == content
             for message in conversation_history[-3:]
         )
 
     @staticmethod
-    def _stationary_energy_context_payload(draft_run) -> Dict[str, Any]:
+    def _stationary_energy_context_payload(
+        draft_run: StationaryEnergyDraftRun,
+    ) -> Dict[str, Any]:
         """Build the persisted draft snapshot used to ground Stationary Energy chat."""
         context_summary = draft_run.context_summary or {}
-        llm_trace = context_summary.get("llm_trace") if isinstance(context_summary, dict) else None
+        llm_trace = (
+            context_summary.get("llm_trace")
+            if isinstance(context_summary, dict)
+            else None
+        )
         llm_generation = None
         if isinstance(llm_trace, dict):
             parsed_output = llm_trace.get("parsed_output")
@@ -343,18 +370,32 @@ class StreamingHandler:
                 "created_at": draft_run.created_at,
                 "updated_at": draft_run.updated_at,
             },
-            "city": context_summary.get("city") if isinstance(context_summary, dict) else None,
-            "inventory": context_summary.get("inventory") if isinstance(context_summary, dict) else None,
+            "city": (
+                context_summary.get("city")
+                if isinstance(context_summary, dict)
+                else None
+            ),
+            "inventory": (
+                context_summary.get("inventory")
+                if isinstance(context_summary, dict)
+                else None
+            ),
             "context_counts": {
-                "taxonomy_count": context_summary.get("taxonomy_count")
-                if isinstance(context_summary, dict)
-                else None,
-                "current_values_count": context_summary.get("current_values_count")
-                if isinstance(context_summary, dict)
-                else None,
-                "source_candidates_count": context_summary.get("source_candidates_count")
-                if isinstance(context_summary, dict)
-                else None,
+                "taxonomy_count": (
+                    context_summary.get("taxonomy_count")
+                    if isinstance(context_summary, dict)
+                    else None
+                ),
+                "current_values_count": (
+                    context_summary.get("current_values_count")
+                    if isinstance(context_summary, dict)
+                    else None
+                ),
+                "source_candidates_count": (
+                    context_summary.get("source_candidates_count")
+                    if isinstance(context_summary, dict)
+                    else None
+                ),
             },
             "permission_summary": draft_run.permission_summary,
             "guidance_context": (
@@ -390,9 +431,11 @@ class StreamingHandler:
                     "proposal_id": str(proposal.proposal_id),
                     "target_ref": proposal.target_ref,
                     "current_value": proposal.current_value,
-                    "recommended_candidate_id": str(proposal.recommended_candidate_id)
-                    if proposal.recommended_candidate_id
-                    else None,
+                    "recommended_candidate_id": (
+                        str(proposal.recommended_candidate_id)
+                        if proposal.recommended_candidate_id
+                        else None
+                    ),
                     "recommended_datasource_id": proposal.recommended_datasource_id,
                     "alternative_candidate_ids": proposal.alternative_candidate_ids,
                     "proposed_value": proposal.proposed_value,
@@ -409,9 +452,11 @@ class StreamingHandler:
                     "decision_version": decision.decision_version,
                     "action": decision.action,
                     "selected_source_id": decision.selected_source_id,
-                    "selected_candidate_id": str(decision.selected_candidate_id)
-                    if decision.selected_candidate_id
-                    else None,
+                    "selected_candidate_id": (
+                        str(decision.selected_candidate_id)
+                        if decision.selected_candidate_id
+                        else None
+                    ),
                     "manual_value": decision.manual_value,
                     "manual_unit": decision.manual_unit,
                     "note": decision.note,
@@ -428,7 +473,96 @@ class StreamingHandler:
                     ),
                 )
             ],
+            "staged_review_selections": [
+                {
+                    "selection_id": str(selection.selection_id),
+                    "proposal_id": str(selection.proposal_id),
+                    "action": selection.action,
+                    "selected_source_id": selection.selected_source_id,
+                    "selected_candidate_id": (
+                        str(selection.selected_candidate_id)
+                        if selection.selected_candidate_id
+                        else None
+                    ),
+                    "rationale": selection.rationale,
+                    "tool_call_id": selection.tool_call_id,
+                    "status": selection.status,
+                    "created_at": selection.created_at,
+                }
+                for selection in sorted(
+                    draft_run.staged_review_selections,
+                    key=lambda item: (
+                        str(item.proposal_id),
+                        str(item.selection_id),
+                    ),
+                )
+                if selection.status == "active"
+            ],
         }
+
+    @staticmethod
+    def _stationary_energy_ui_context(
+        payload: MessageCreateRequest,
+    ) -> Optional[Dict[str, Any]]:
+        """Extract UI focus and confirmation context from the request payload."""
+        request_context = payload.context if isinstance(payload.context, dict) else {}
+        request_options = payload.options if isinstance(payload.options, dict) else {}
+        focused_proposal_id = request_context.get(
+            "stationary_energy_focused_proposal_id"
+        ) or request_options.get("stationary_energy_focused_proposal_id")
+        focused_decision_state = request_context.get(
+            "stationary_energy_focused_decision_state"
+        )
+        if not isinstance(focused_decision_state, dict):
+            focused_decision_state = None
+        pending_reviews = request_context.get(
+            "stationary_energy_pending_decision_reviews"
+        )
+        if not isinstance(pending_reviews, list):
+            pending_reviews = []
+
+        focused_review = None
+        if focused_proposal_id:
+            focused_review = next(
+                (
+                    review
+                    for review in pending_reviews
+                    if isinstance(review, dict)
+                    and str(review.get("proposal_id")) == str(focused_proposal_id)
+                ),
+                None,
+            )
+
+        confirmed_bulk_choices = request_context.get(
+            "stationary_energy_confirmed_bulk_review_choices"
+        )
+        if not isinstance(confirmed_bulk_choices, list):
+            confirmed_bulk_choices = []
+        confirmed_rollback_choices = request_context.get(
+            "stationary_energy_confirmed_staged_review_rollback_choices"
+        )
+        if not isinstance(confirmed_rollback_choices, list):
+            confirmed_rollback_choices = []
+
+        pending_count = request_options.get(
+            "stationary_energy_pending_decision_review_count"
+        )
+        if pending_count is None:
+            pending_count = len(pending_reviews)
+
+        ui_context = {
+            "focused_proposal_id": (
+                str(focused_proposal_id) if focused_proposal_id else None
+            ),
+            "focused_decision_review": focused_review,
+            "focused_decision_state": focused_decision_state,
+            "pending_decision_review_count": pending_count,
+            "confirmed_bulk_review_choices": confirmed_bulk_choices,
+            "confirmed_staged_review_rollback_choices": confirmed_rollback_choices,
+        }
+        if any(value for value in ui_context.values()):
+            return ui_context
+        return None
 
     def _stationary_energy_context_message(
         self,
@@ -548,7 +682,12 @@ class StreamingHandler:
                 "Use this authoritative persisted CA draft snapshot to explain the Stationary Energy "
                 "screen the user is viewing. Do not re-fetch data. Do not invent missing values. "
                 "Treat source_candidates, proposals, review_decisions, llm_generation, and guidance_context "
-                "as the ground truth for this draft."
+                "as the ground truth for this draft. If ui_context.focused_proposal_id is present, "
+                "it is the current right-side Source review decision visible to the user. "
+                "If ui_context.focused_decision_state is present, it is the action currently "
+                "selected in that right-side pane. "
+                "If ui_context.confirmed_staged_review_rollback_choices is present, "
+                "it is the exact set of staged source choices the user approved for rollback."
             ),
         }
 
@@ -575,6 +714,7 @@ class StreamingHandler:
             "context_counts": context_payload.get("context_counts"),
             "permission_summary": context_payload.get("permission_summary"),
             "guidance_context": context_payload.get("guidance_context"),
+            "ui_context": context_payload.get("ui_context"),
             "prompt_budget_compaction": {
                 "minimal_snapshot": True,
                 "initial_tokens": initial_tokens,
@@ -624,12 +764,15 @@ class StreamingHandler:
     def _run_config(self, payload: MessageCreateRequest) -> RunConfig:
         settings = get_settings()
         req_id = get_request_id()
-        draft_run_id = extract_stationary_energy_draft_run_id(
-            payload.context,
-            payload.options,
-            self.request_context,
-            self.request_options,
-        ) or self.stationary_energy_draft_run_id
+        draft_run_id = (
+            extract_stationary_energy_draft_run_id(
+                payload.context,
+                payload.options,
+                self.request_context,
+                self.request_options,
+            )
+            or self.stationary_energy_draft_run_id
+        )
         has_stationary_energy_context = bool(draft_run_id)
         workflow_name = (
             "Climate Advisor Stationary Energy Context Chat"
@@ -859,6 +1002,21 @@ class StreamingHandler:
         if parsed_output is not None:
             async for event_bytes in self._handle_tool_result_metadata(parsed_output):
                 yield event_bytes
+            if parsed_output.get("ui_event") in {
+                "stationary_energy_review_state_changed",
+                "stationary_energy_review_bulk_confirmation_requested",
+                "stationary_energy_review_change_confirmation_requested",
+                "stationary_energy_review_rollback_confirmation_requested",
+                "stationary_energy_inventory_save_confirmation_requested",
+            }:
+                yield format_sse(
+                    {
+                        "name": invocation.get("name", "unknown_tool"),
+                        "status": invocation.get("status"),
+                        **parsed_output,
+                    },
+                    event="tool_result",
+                ).encode("utf-8")
 
         yield format_sse(
             {

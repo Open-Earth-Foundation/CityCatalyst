@@ -1,0 +1,11 @@
+- `stationary_energy_list_review_options`: no arguments.
+- `stationary_energy_accept_one`: JSON object with `proposal_id` (string UUID, required), `candidate_id` (string UUID, optional), `selected_source_id` (string, optional), `action` (`accept`, `override_source`, or `leave_draft`, optional), and `rationale` (string, optional).
+- `stationary_energy_accept_multiple`: JSON object with `choices` (array, required). Each choice includes `proposal_id` (string UUID, required), and should include `candidate_id` (string UUID) or `selected_source_id` (string) unless accepting the recommended source.
+- `stationary_energy_accept_all_recommended`: JSON object with `rationale` (string, optional).
+- `stationary_energy_request_bulk_review_confirmation`: JSON object with `choices` (array, required). Each choice includes `proposal_id` (string UUID, required), and should include `candidate_id` (string UUID) or `selected_source_id` (string) unless accepting the recommended source.
+- `stationary_energy_request_all_recommended_confirmation`: JSON object with `rationale` (string, optional).
+- `stationary_energy_request_staged_source_change_confirmation`: JSON object with `proposal_ids` (array of string UUIDs, optional). Omit to preview changes for every active staged source choice.
+- `stationary_energy_request_staged_sources_rollback_confirmation`: JSON object with `proposal_ids` (array of string UUIDs, optional). Omit to preview rolling back every active staged source choice.
+- `stationary_energy_rollback_staged_sources`: JSON object with `proposal_ids` (array of string UUIDs, optional). Use only after rollback confirmation; pass exactly the confirmed proposal ids when provided by runtime context.
+- `stationary_energy_save_review_draft`: no arguments.
+- `stationary_energy_request_inventory_save_confirmation`: no arguments.

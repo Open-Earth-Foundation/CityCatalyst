@@ -93,12 +93,7 @@ function RadioDot({ selected }: { selected: boolean }) {
       transition="border-color 140ms ease"
     >
       {selected ? (
-        <Box
-          w="10px"
-          h="10px"
-          borderRadius="full"
-          bg="interactive.tertiary"
-        />
+        <Box w="10px" h="10px" borderRadius="full" bg="interactive.tertiary" />
       ) : null}
     </Box>
   );
@@ -519,13 +514,23 @@ export function MultiSourceProposalCard(props: {
     ...props.context.alternativeOptions,
     props.context.leaveDraftOption,
   ];
+  const sourcesAgree = props.context.status === "needs_review";
 
   return (
     <DecisionReviewBaseCard
-      title={t("review-multi-source-title")}
-      description={t("review-multi-source-description", {
-        label: props.context.label,
-      })}
+      title={
+        sourcesAgree
+          ? t("review-agreement-source-title")
+          : t("review-multi-source-title")
+      }
+      description={t(
+        sourcesAgree
+          ? "review-agreement-source-description"
+          : "review-multi-source-description",
+        {
+          label: props.context.label,
+        },
+      )}
       reviewLabel={props.context.label}
       proposal={props.context.proposal}
       options={options}

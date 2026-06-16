@@ -1,0 +1,319 @@
+{
+  "draft_run": {
+    "draft_run_id": "2a8848b0-d674-4258-8e3d-e4bc6c3bc999",
+    "thread_id": "2eaa06d9-7ed4-4ea1-9a10-acde93267dc1",
+    "city_id": "344da906-0fb3-461f-92ce-9d351abe6a79",
+    "inventory_id": "de3196fb-cb2c-44a2-b844-438d762e39e3",
+    "sector_code": "stationary_energy",
+    "status": "ready",
+    "workflow_step": "review",
+    "trace_id": "manual-stationary-energy-review-fixture",
+    "created_at": "2026-06-16T08:00:00+00:00",
+    "updated_at": "2026-06-16T08:00:00+00:00"
+  },
+  "city": {
+    "city_id": "344da906-0fb3-461f-92ce-9d351abe6a79",
+    "name": "Belo Horizonte",
+    "locode": "BR BHO",
+    "country": "Brazil",
+    "country_locode": "BR",
+    "region": "Minas Gerais",
+    "region_locode": "BR-MG",
+    "area": 331.4,
+    "population": 2315560
+  },
+  "inventory": {
+    "inventory_id": "de3196fb-cb2c-44a2-b844-438d762e39e3",
+    "year": 2023,
+    "inventory_type": "gpc_basic_plus",
+    "gwp": "ar6",
+    "total_emissions": 12873452.2
+  },
+  "context_counts": {
+    "taxonomy_count": 4,
+    "current_values_count": 0,
+    "source_candidates_count": 4
+  },
+  "permission_summary": {
+    "can_review": true,
+    "can_commit": true,
+    "fixture": true,
+    "note": "Manual review-chat fixture for an empty Stationary Energy draft."
+  },
+  "guidance_context": {
+    "sector_overview": "The draft is empty, so every Stationary Energy row still needs a source choice before anything can be saved.",
+    "source_selection_rules": [
+      "Prefer city-level sources that match the inventory year and exact subsector.",
+      "Treat EPE-labelled sources as distinct source options when the row explicitly references EPE."
+    ],
+    "methodology_summaries": [
+      "Choose one source per unresolved row and keep the row in draft only when no acceptable source exists."
+    ],
+    "taxonomy_labels": {
+      "I.1.2": "Residential grid electricity",
+      "I.2.2": "Commercial grid electricity",
+      "I.3.1": "Manufacturing fuel combustion",
+      "I.4.2": "Municipal facilities grid electricity"
+    }
+  },
+  "llm_generation": {
+    "model": "openai/gpt-5.4",
+    "temperature": 0.0,
+    "usage": {
+      "input_tokens": 11240,
+      "output_tokens": 844,
+      "total_tokens": 12084
+    },
+    "proposal_count": 4
+  },
+  "source_candidates": [
+    {
+      "candidate_id": "8a7d1046-8333-46ce-92e8-4f66250d0f11",
+      "datasource_id": "epe-residential-grid-2023",
+      "name": "EPE residential grid electricity 2023",
+      "publisher_name": "EPE",
+      "retrieval_method": "api",
+      "dataset_name": "Residential electricity balance",
+      "dataset_year": 2023,
+      "url": "https://example.test/epe/residential-grid-2023",
+      "geography_match": "city",
+      "source_scope": {
+        "sector_id": "I",
+        "sector_name": "Stationary Energy",
+        "subsector_id": "I.1",
+        "subsector_name": "Residential buildings",
+        "subcategory_id": "I.1.2",
+        "subcategory_name": "Grid-supplied electricity",
+        "scope_id": "2",
+        "scope_name": "Scope 2"
+      },
+      "source_data": {
+        "details_datasource_id": "source:epe-residential-grid-2023",
+        "activity": "grid_electricity"
+      },
+      "normalized_rows": [
+        {
+          "activity_value": 1823500,
+          "activity_unit": "MWh",
+          "emissions_value": 118527.5,
+          "emissions_unit": "tCO2e"
+        }
+      ],
+      "applicability_status": "applicable",
+      "applicability_issues": [],
+      "quality_score": 0.96,
+      "confidence_notes": "Exact inventory year and city-level coverage."
+    },
+    {
+      "candidate_id": "f2af87cc-36c9-4d9e-b7d5-8a04ec4647d2",
+      "datasource_id": "epe-commercial-grid-2023",
+      "name": "EPE commercial grid electricity 2023",
+      "publisher_name": "EPE",
+      "retrieval_method": "api",
+      "dataset_name": "Commercial electricity balance",
+      "dataset_year": 2023,
+      "url": "https://example.test/epe/commercial-grid-2023",
+      "geography_match": "city",
+      "source_scope": {
+        "sector_id": "I",
+        "sector_name": "Stationary Energy",
+        "subsector_id": "I.2",
+        "subsector_name": "Commercial buildings and facilities",
+        "subcategory_id": "I.2.2",
+        "subcategory_name": "Grid-supplied electricity",
+        "scope_id": "2",
+        "scope_name": "Scope 2"
+      },
+      "source_data": {
+        "details_datasource_id": "source:epe-commercial-grid-2023",
+        "activity": "grid_electricity"
+      },
+      "normalized_rows": [
+        {
+          "activity_value": 2148200,
+          "activity_unit": "MWh",
+          "emissions_value": 139633.0,
+          "emissions_unit": "tCO2e"
+        }
+      ],
+      "applicability_status": "applicable",
+      "applicability_issues": [],
+      "quality_score": 0.95,
+      "confidence_notes": "Exact inventory year and city-level coverage."
+    },
+    {
+      "candidate_id": "3ebc1f4f-9dc6-4d2b-b0c1-6270bb8de96b",
+      "datasource_id": "copasa-industrial-fuels-2023",
+      "name": "Industrial stationary fuel use 2023",
+      "publisher_name": "COPASA Utilities",
+      "retrieval_method": "api",
+      "dataset_name": "Industrial fuels register",
+      "dataset_year": 2023,
+      "url": "https://example.test/copasa/industrial-fuels-2023",
+      "geography_match": "city",
+      "source_scope": {
+        "sector_id": "I",
+        "sector_name": "Stationary Energy",
+        "subsector_id": "I.3",
+        "subsector_name": "Manufacturing industries and construction",
+        "subcategory_id": "I.3.1",
+        "subcategory_name": "Fuel combustion",
+        "scope_id": "1",
+        "scope_name": "Scope 1"
+      },
+      "source_data": {
+        "details_datasource_id": "source:copasa-industrial-fuels-2023",
+        "activity": "fuel_combustion"
+      },
+      "normalized_rows": [
+        {
+          "activity_value": 96200,
+          "activity_unit": "MWh",
+          "emissions_value": 231884.0,
+          "emissions_unit": "tCO2e"
+        }
+      ],
+      "applicability_status": "applicable",
+      "applicability_issues": [],
+      "quality_score": 0.91,
+      "confidence_notes": "Exact subsector match with city-level industrial fuel records."
+    },
+    {
+      "candidate_id": "977ff42a-3b2c-4a0c-8e33-a6d11cc18fa4",
+      "datasource_id": "municipal-facilities-grid-2023",
+      "name": "Municipal facilities grid electricity 2023",
+      "publisher_name": "Municipal Energy Secretariat",
+      "retrieval_method": "portal",
+      "dataset_name": "Municipal facilities electricity",
+      "dataset_year": 2023,
+      "url": "https://example.test/municipal/facilities-grid-2023",
+      "geography_match": "city",
+      "source_scope": {
+        "sector_id": "I",
+        "sector_name": "Stationary Energy",
+        "subsector_id": "I.4",
+        "subsector_name": "Municipal buildings and facilities",
+        "subcategory_id": "I.4.2",
+        "subcategory_name": "Grid-supplied electricity",
+        "scope_id": "2",
+        "scope_name": "Scope 2"
+      },
+      "source_data": {
+        "details_datasource_id": "source:municipal-facilities-grid-2023",
+        "activity": "grid_electricity"
+      },
+      "normalized_rows": [
+        {
+          "activity_value": 451200,
+          "activity_unit": "MWh",
+          "emissions_value": 29328.0,
+          "emissions_unit": "tCO2e"
+        }
+      ],
+      "applicability_status": "applicable",
+      "applicability_issues": [],
+      "quality_score": 0.89,
+      "confidence_notes": "Municipal facilities coverage for the inventory year."
+    }
+  ],
+  "proposals": [
+    {
+      "proposal_id": "5c8ad08b-8d56-4c49-92a9-69c27c62e6b5",
+      "target_ref": {
+        "sector_id": "I",
+        "sector_name": "Stationary Energy",
+        "subsector_id": "I.1",
+        "subsector_name": "Residential buildings",
+        "subcategory_id": "I.1.2",
+        "subcategory_name": "Grid-supplied electricity",
+        "scope_id": "2",
+        "scope_name": "Scope 2"
+      },
+      "current_value": null,
+      "recommended_candidate_id": "8a7d1046-8333-46ce-92e8-4f66250d0f11",
+      "recommended_datasource_id": "epe-residential-grid-2023",
+      "alternative_candidate_ids": [],
+      "proposed_value": {
+        "activity_value": 1823500,
+        "activity_unit": "MWh"
+      },
+      "rationale": "EPE provides the exact city-level residential electricity dataset for the selected inventory year.",
+      "status": "needs_review",
+      "confidence_score": 0.96
+    },
+    {
+      "proposal_id": "0f8fb2e1-1e13-4dc0-b870-bf0f93d92e9e",
+      "target_ref": {
+        "sector_id": "I",
+        "sector_name": "Stationary Energy",
+        "subsector_id": "I.2",
+        "subsector_name": "Commercial buildings and facilities",
+        "subcategory_id": "I.2.2",
+        "subcategory_name": "Grid-supplied electricity",
+        "scope_id": "2",
+        "scope_name": "Scope 2"
+      },
+      "current_value": null,
+      "recommended_candidate_id": "f2af87cc-36c9-4d9e-b7d5-8a04ec4647d2",
+      "recommended_datasource_id": "epe-commercial-grid-2023",
+      "alternative_candidate_ids": [],
+      "proposed_value": {
+        "activity_value": 2148200,
+        "activity_unit": "MWh"
+      },
+      "rationale": "EPE provides the exact city-level commercial electricity dataset for the selected inventory year.",
+      "status": "needs_review",
+      "confidence_score": 0.95
+    },
+    {
+      "proposal_id": "fb197644-3c78-4a08-b95f-1ddff9d7ee88",
+      "target_ref": {
+        "sector_id": "I",
+        "sector_name": "Stationary Energy",
+        "subsector_id": "I.3",
+        "subsector_name": "Manufacturing industries and construction",
+        "subcategory_id": "I.3.1",
+        "subcategory_name": "Fuel combustion",
+        "scope_id": "1",
+        "scope_name": "Scope 1"
+      },
+      "current_value": null,
+      "recommended_candidate_id": "3ebc1f4f-9dc6-4d2b-b0c1-6270bb8de96b",
+      "recommended_datasource_id": "copasa-industrial-fuels-2023",
+      "alternative_candidate_ids": [],
+      "proposed_value": {
+        "activity_value": 96200,
+        "activity_unit": "MWh"
+      },
+      "rationale": "The industrial fuel register is the most specific city-level source for this Scope 1 row.",
+      "status": "needs_review",
+      "confidence_score": 0.91
+    },
+    {
+      "proposal_id": "c2481970-3b0d-4093-8d24-0a128d40d870",
+      "target_ref": {
+        "sector_id": "I",
+        "sector_name": "Stationary Energy",
+        "subsector_id": "I.4",
+        "subsector_name": "Municipal buildings and facilities",
+        "subcategory_id": "I.4.2",
+        "subcategory_name": "Grid-supplied electricity",
+        "scope_id": "2",
+        "scope_name": "Scope 2"
+      },
+      "current_value": null,
+      "recommended_candidate_id": "977ff42a-3b2c-4a0c-8e33-a6d11cc18fa4",
+      "recommended_datasource_id": "municipal-facilities-grid-2023",
+      "alternative_candidate_ids": [],
+      "proposed_value": {
+        "activity_value": 451200,
+        "activity_unit": "MWh"
+      },
+      "rationale": "The municipal energy secretariat dataset directly covers this facilities electricity row.",
+      "status": "needs_review",
+      "confidence_score": 0.89
+    }
+  ],
+  "review_decisions": [],
+  "staged_review_selections": []
+}

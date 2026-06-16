@@ -36,6 +36,7 @@ export type ArtifactPanelProps = {
   actions: Pick<
     StationaryEnergyChatArtifactControllerActions,
     | "refreshActiveDraft"
+    | "requestSaveToInventoryConfirmation"
     | "saveDraft"
     | "saveToInventory"
     | "selectDraft"
@@ -650,22 +651,22 @@ export function ArtifactPanel({
         py="m"
       >
         <Text color="content.secondary" fontSize="body.md">
-          {state.stage === "review"
-            ? state.canSaveToInventory
-              ? t("artifact-footer-ready", {
-                  ready: state.counts.ready + state.counts.accepted,
-                  gaps: state.counts.gap,
-                })
-              : state.canPersistDraftReview
+          {state.canSaveToInventory
+            ? t("artifact-footer-ready", {
+                ready: state.counts.ready + state.counts.accepted,
+                gaps: state.counts.gap,
+              })
+            : state.stage === "review"
+              ? state.canPersistDraftReview
                 ? t("artifact-footer-save-draft-ready")
                 : state.hasSourceBackedProposals
                   ? t("artifact-footer-no-staged")
                   : t("artifact-footer-no-ready")
-            : state.unresolvedCount > 0
-              ? t("artifact-footer-decisions-needed", {
-                  count: state.unresolvedCount,
-                })
-              : t("artifact-footer-nothing-written")}
+              : state.unresolvedCount > 0
+                ? t("artifact-footer-decisions-needed", {
+                    count: state.unresolvedCount,
+                  })
+                : t("artifact-footer-nothing-written")}
         </Text>
         <HStack gap="s" justify={{ base: "flex-end", md: "initial" }}>
           <Button
@@ -706,7 +707,7 @@ export function ArtifactPanel({
               borderRadius={FLOW_BUTTON_RADIUS}
               disabled={!state.canSaveToInventory}
               loading={state.loadingAction === "save_inventory"}
-              onClick={actions.saveToInventory}
+              onClick={actions.requestSaveToInventoryConfirmation}
             >
               <MdSave />
               {t("chat-quick-reply-save-to-inventory")}

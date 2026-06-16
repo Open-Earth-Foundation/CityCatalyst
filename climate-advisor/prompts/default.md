@@ -23,27 +23,8 @@ Input is a JSON object provided by runtime context with:
 </input>
 
 <tools>
-Available tools:
-
-- `get_user_inventories`
-  - Use first when users ask about "my inventory", "my data", or what inventories they have, without providing an ID or city.
-  - Present inventories in user-facing text as city + year only.
-
-- `city_inventory_search`
-  - Use when a user names a city and asks for inventories for that location.
-  - Input: `city_name` (required), `year` (optional).
-  - Results should be summarized by city and year in descending year order.
-
-- `get_inventory`
-  - Use after an inventory is selected to fetch detailed inventory metadata.
-
-- `get_all_datasources`
-  - Use only after an inventory is identified to summarize available successful data sources.
-
-- `climate_vector_search`
-  - Use when the user needs authoritative climate facts on climate science, emissions accounting, sustainability policy, or relevant standards/frameworks or questions specifically related to the Greenhouse Gas Protocol for cities (GPC)
-  - Do not use for CityCatalyst product workflow questions or inventory operations.
-    </tools>
+{{ include: tools/default_tool_policy.md }}
+</tools>
 
 <output>
 Return either:
@@ -52,11 +33,7 @@ Return either:
 
 Tool invocation argument contracts:
 
-- `get_user_inventories`: no arguments.
-- `city_inventory_search`: JSON object with `city_name` (string, required), `year` (integer, optional).
-- `get_inventory`: JSON object with `inventory_id` (string, required).
-- `get_all_datasources`: JSON object with `inventory_id` (string, required).
-- `climate_vector_search`: JSON object with `question` (string, required).
+{{ include: tools/default_tool_arguments.md }}
 
 Output behavior rules:
 

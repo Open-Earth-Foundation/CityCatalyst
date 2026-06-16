@@ -1,9 +1,14 @@
-import DataSourceService from "@/backend/DataSourceService";
+import DataSourceService, {
+  type RemovedSourceResult,
+} from "@/backend/DataSourceService";
 import { db } from "@/models";
 import { Inventory } from "@/models/Inventory";
 import inventoryStructure from "@/data/inventory-structure.json";
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
-import { findClosestYearToInventory, type PopulationEntry } from "@/util/helpers";
+import {
+  findClosestYearToInventory,
+  type PopulationEntry,
+} from "@/util/helpers";
 import { STATIONARY_ENERGY } from "@/util/methodologies/stationary-energy";
 import { LANGUAGES } from "@/util/types";
 
@@ -64,8 +69,11 @@ type ContextPayload = {
 
 type CurrentValueRecord = {
   id: string;
+  gpcReferenceNumber?: string | null;
   datasourceId: string | null;
   co2eq: bigint | null;
+  unavailableReason?: string | null;
+  unavailableExplanation?: string | null;
   subCategoryId: string | null;
   subSectorId: string | null;
   sectorId: string | null;
@@ -101,6 +109,7 @@ type CurrentValueRecord = {
 
 const INVENTORY_STRUCTURE = inventoryStructure as Array<Record<string, any>>;
 const GPC_REFERENCE_TABLE = gpcReferenceTable as Array<Record<string, any>>;
+type CandidateApplicabilityStatus = "applicable" | "removed" | "failed";
 
 export async function buildStationaryEnergyContext(params: {
   inventory: Inventory;
@@ -109,9 +118,17 @@ export async function buildStationaryEnergyContext(params: {
   const locale = resolveLocale(params.locale);
   const inventory = params.inventory;
   const city = inventory.city;
-  const taxonomy = buildTaxonomy();
   const currentValues = await buildCurrentValues(inventory.inventoryId);
-  const sourceCandidates = await buildSourceCandidates(inventory);
+  const filledReferenceNumbers =
+    filledReferenceNumbersFromCurrentValues(currentValues);
+  const taxonomy = filterDraftableTaxonomyRows(
+    buildTaxonomy(),
+    filledReferenceNumbers,
+  );
+  const sourceCandidates = await buildSourceCandidates(
+    inventory,
+    filledReferenceNumbers,
+  );
   const guidanceContext = buildGuidanceContext({
     locale,
     taxonomy,
@@ -209,7 +226,9 @@ function buildTaxonomy(): TaxonomyRow[] {
         sector_reference_number: stationarySector.referenceNumber,
         subsector_id: subsector.subsectorId,
         subsector_name: friendlyLabel(
-          gpcRow.subsector ?? subsector.subsectorName ?? subsector.referenceNumber,
+          gpcRow.subsector ??
+            subsector.subsectorName ??
+            subsector.referenceNumber,
         ),
         subsector_reference_number: subsector.referenceNumber,
         subcategory_id: subcategory.subcategoryId,
@@ -228,6 +247,21 @@ function buildTaxonomy(): TaxonomyRow[] {
   }
 
   return rows;
+}
+
+export function filterDraftableTaxonomyRows(
+  rows: TaxonomyRow[],
+  filledReferenceNumbers: Set<string>,
+): TaxonomyRow[] {
+  if (filledReferenceNumbers.size === 0) {
+    return rows;
+  }
+
+  return rows.filter((row) => {
+    const referenceNumber =
+      row.subcategory_reference_number || row.subsector_reference_number;
+    return !referenceNumber || !filledReferenceNumbers.has(referenceNumber);
+  });
 }
 
 async function buildCurrentValues(
@@ -290,14 +324,22 @@ async function buildCurrentValues(
       gas_amount: bigintToString(gasValue.gasAmount),
     }));
     const primaryGasValue = gasValues[0] ?? null;
+    const gpcReferenceNumber =
+      value.gpcReferenceNumber ??
+      value.subCategory?.referenceNumber ??
+      value.subSector?.referenceNumber ??
+      null;
 
     return {
       inventory_value_id: value.id,
       activity_value_id: activityValue?.id ?? null,
       gas_value_id: primaryGasValue?.gas_value_id ?? null,
+      gpc_reference_number: gpcReferenceNumber,
       datasource_id: value.datasourceId,
       sector_id:
-        value.sector?.referenceNumber ?? value.sectorId ?? stationarySector.referenceNumber,
+        value.sector?.referenceNumber ??
+        value.sectorId ??
+        stationarySector.referenceNumber,
       subsector_id:
         value.subSector?.referenceNumber ?? value.subSectorId ?? null,
       subcategory_id:
@@ -308,6 +350,8 @@ async function buildCurrentValues(
       unit: activityUnit ?? "tCO2e",
       emissions_value: bigintToString(value.co2eq),
       emissions_unit: "tCO2e",
+      unavailable_reason: value.unavailableReason ?? null,
+      unavailable_explanation: value.unavailableExplanation ?? null,
       activity_data: activityData,
       activity_data_source: {
         datasource_id: activityValue?.dataSource?.datasourceId ?? null,
@@ -321,8 +365,42 @@ async function buildCurrentValues(
   });
 }
 
+export function filledReferenceNumbersFromCurrentValues(
+  currentValues: Array<Record<string, unknown>>,
+): Set<string> {
+  const filled = new Set<string>();
+  for (const currentValue of currentValues) {
+    if (!hasCommittedCurrentValue(currentValue)) {
+      continue;
+    }
+
+    const referenceNumber = stringField(
+      currentValue["gpc_reference_number"],
+      currentValue["subcategory_id"],
+      currentValue["subsector_id"],
+    );
+    if (referenceNumber) {
+      filled.add(referenceNumber);
+    }
+  }
+  return filled;
+}
+
+function hasCommittedCurrentValue(value: Record<string, unknown>): boolean {
+  if (stringField(value["datasource_id"])) {
+    return true;
+  }
+  if (numericField(value["emissions_value"], value["value"]) != null) {
+    return true;
+  }
+
+  const unavailableReason = stringField(value["unavailable_reason"]);
+  return Boolean(unavailableReason && unavailableReason !== "reason-NE");
+}
+
 async function buildSourceCandidates(
   inventory: Inventory,
+  filledReferenceNumbers: Set<string> = new Set(),
 ): Promise<Array<Record<string, unknown>>> {
   const stationarySector = INVENTORY_STRUCTURE.find(
     (sector) => sector.sectorName === "stationary-energy",
@@ -331,18 +409,26 @@ async function buildSourceCandidates(
     return [];
   }
 
-  const allSources = await DataSourceService.findAllSources(inventory.inventoryId);
+  const allSources = await DataSourceService.findAllSources(
+    inventory.inventoryId,
+  );
   const stationarySources = allSources.filter((source: any) => {
     const sectorId =
       source.subSector?.sectorId ?? source.subCategory?.subsector?.sectorId;
-    return sectorId === stationarySector.sectorId;
+    return (
+      sectorId === stationarySector.sectorId &&
+      !sourceMatchesFilledReference(source, filledReferenceNumbers)
+    );
   });
-  const { applicableSources } = DataSourceService.filterSources(
+  const { applicableSources, removedSources } = DataSourceService.filterSources(
     inventory,
     stationarySources,
   );
   const populationScaleFactors =
-    await DataSourceService.findPopulationScaleFactors(inventory, applicableSources);
+    await DataSourceService.findPopulationScaleFactors(
+      inventory,
+      applicableSources,
+    );
 
   const applicableWithData = await Promise.all(
     applicableSources.map(async (source: any) => {
@@ -358,8 +444,26 @@ async function buildSourceCandidates(
   );
 
   const candidates: Array<Record<string, unknown>> = [];
+  for (const removedSource of removedSources) {
+    candidates.push(
+      buildRemovedSourceCandidate({
+        inventory,
+        removedSource,
+      }),
+    );
+  }
+
   for (const item of applicableWithData) {
     if (item.error) {
+      candidates.push(
+        buildSourceCandidate({
+          inventory,
+          item,
+          applicabilityStatus: "failed",
+          applicabilityIssues: [item.error],
+          failureReason: item.error,
+        }),
+      );
       continue;
     }
 
@@ -367,6 +471,7 @@ async function buildSourceCandidates(
       buildSourceCandidate({
         inventory,
         item,
+        applicabilityStatus: "applicable",
       }),
     );
   }
@@ -377,6 +482,9 @@ async function buildSourceCandidates(
 function buildSourceCandidate(params: {
   inventory: Inventory;
   item: Record<string, any>;
+  applicabilityStatus: CandidateApplicabilityStatus;
+  applicabilityIssues?: string[];
+  failureReason?: string | null;
 }): Record<string, unknown> {
   const source = params.item.source ?? params.item;
   const data = params.item.data;
@@ -393,28 +501,45 @@ function buildSourceCandidate(params: {
     retrieval_method: source.retrievalMethod ?? null,
     dataset_name: source.datasourceName ?? null,
     dataset_year: source.startYear ?? null,
-    url:
-      source.url ??
-      source.datasetUrl ??
-      source.publisher?.url ??
-      null,
+    url: source.url ?? source.datasetUrl ?? source.publisher?.url ?? null,
     geography_match: geographyMatch,
     source_scope: sourceScope,
     source_data: data ?? null,
     normalized_rows: normalizeSourceRows(data),
-    applicability_status: "applicable",
-    applicability_issues: [],
-    failure_reason: null,
-    quality_score: source.startYear === params.inventory.year ? "1" : null,
-    confidence_notes: buildConfidenceNotes({
-      geographyMatch,
-      source,
-      inventory: params.inventory,
-    }),
+    applicability_status: params.applicabilityStatus,
+    applicability_issues: params.applicabilityIssues ?? [],
+    failure_reason: params.failureReason ?? null,
+    quality_score:
+      params.applicabilityStatus === "applicable" &&
+      source.startYear === params.inventory.year
+        ? "1"
+        : null,
+    confidence_notes:
+      params.failureReason ??
+      buildConfidenceNotes({
+        geographyMatch,
+        source,
+        inventory: params.inventory,
+      }),
   };
 }
 
-function buildSourceScope(source: Record<string, any>): Record<string, unknown> {
+function buildRemovedSourceCandidate(params: {
+  inventory: Inventory;
+  removedSource: RemovedSourceResult;
+}): Record<string, unknown> {
+  return buildSourceCandidate({
+    inventory: params.inventory,
+    item: { source: params.removedSource.source },
+    applicabilityStatus: "removed",
+    applicabilityIssues: [params.removedSource.reason],
+    failureReason: params.removedSource.reason,
+  });
+}
+
+function buildSourceScope(
+  source: Record<string, any>,
+): Record<string, unknown> {
   const subCategory = source.subCategory ?? null;
   const subSector = subCategory?.subsector ?? source.subSector ?? null;
 
@@ -435,6 +560,21 @@ function buildSourceScope(source: Record<string, any>): Record<string, unknown> 
     scope_id: subCategory?.scope?.scopeId ?? subCategory?.scopeId ?? null,
     scope_name: scopeName(subCategory?.scope?.scopeName ?? null),
   };
+}
+
+function sourceMatchesFilledReference(
+  source: Record<string, any>,
+  filledReferenceNumbers: Set<string>,
+): boolean {
+  if (filledReferenceNumbers.size === 0) {
+    return false;
+  }
+
+  const referenceNumber =
+    source.subCategory?.referenceNumber ?? source.subSector?.referenceNumber;
+  return Boolean(
+    referenceNumber && filledReferenceNumbers.has(referenceNumber),
+  );
 }
 
 function buildGuidanceContext(params: {
@@ -467,34 +607,41 @@ function buildGuidanceContext(params: {
     subsectors: Array.from(value.subsectors).sort(),
   }));
 
-  const methodologySummaries = STATIONARY_ENERGY.methodologies.map((methodology) => {
-    const localeTranslation =
-      methodology.translations[params.locale] ?? methodology.translations.en;
-    return {
-      methodology_id: methodology.id,
-      methodology: localeTranslation.methodology,
-      overview: localeTranslation.overview,
-      scope: localeTranslation.scope ?? null,
-      approach: localeTranslation.approach ?? null,
-      data_requirements: (localeTranslation.data_requirements ?? []).slice(0, 4),
-      assumptions: (localeTranslation.assumptions ?? []).slice(0, 4),
-      limitations: (localeTranslation.limitations ?? []).slice(0, 3),
-    };
-  });
-
-  const unitConventions = STATIONARY_ENERGY.methodologies.flatMap((methodology) => {
-    const localeTranslation =
-      methodology.translations[params.locale] ?? methodology.translations.en;
-    return (localeTranslation.parameters ?? [])
-      .filter((parameter) => parameter.units)
-      .map((parameter) => ({
+  const methodologySummaries = STATIONARY_ENERGY.methodologies.map(
+    (methodology) => {
+      const localeTranslation =
+        methodology.translations[params.locale] ?? methodology.translations.en;
+      return {
         methodology_id: methodology.id,
-        parameter: parameter.description,
-        units: Array.isArray(parameter.units)
-          ? parameter.units
-          : [parameter.units],
-      }));
-  });
+        methodology: localeTranslation.methodology,
+        overview: localeTranslation.overview,
+        scope: localeTranslation.scope ?? null,
+        approach: localeTranslation.approach ?? null,
+        data_requirements: (localeTranslation.data_requirements ?? []).slice(
+          0,
+          4,
+        ),
+        assumptions: (localeTranslation.assumptions ?? []).slice(0, 4),
+        limitations: (localeTranslation.limitations ?? []).slice(0, 3),
+      };
+    },
+  );
+
+  const unitConventions = STATIONARY_ENERGY.methodologies.flatMap(
+    (methodology) => {
+      const localeTranslation =
+        methodology.translations[params.locale] ?? methodology.translations.en;
+      return (localeTranslation.parameters ?? [])
+        .filter((parameter) => parameter.units)
+        .map((parameter) => ({
+          methodology_id: methodology.id,
+          parameter: parameter.description,
+          units: Array.isArray(parameter.units)
+            ? parameter.units
+            : [parameter.units],
+        }));
+    },
+  );
 
   return {
     sector_overview: {
@@ -552,7 +699,9 @@ function normalizeSourceRows(data: any): Array<Record<string, unknown>> {
 }
 
 function resolveLocale(locale?: string | null): StationaryEnergyLocale {
-  const normalized = String(locale ?? "").trim().toLowerCase();
+  const normalized = String(locale ?? "")
+    .trim()
+    .toLowerCase();
   const candidates = Object.values(LANGUAGES);
   const match = candidates.find(
     (candidate) =>
@@ -655,7 +804,10 @@ function buildConfidenceNotes(params: {
     notes.push("Region-level source");
   }
 
-  if (params.source.startYear && params.source.startYear === params.inventory.year) {
+  if (
+    params.source.startYear &&
+    params.source.startYear === params.inventory.year
+  ) {
     notes.push("matches the inventory year");
   }
 

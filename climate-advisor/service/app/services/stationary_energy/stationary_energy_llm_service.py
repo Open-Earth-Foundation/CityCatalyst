@@ -111,6 +111,27 @@ class StationaryEnergyProposalLLMService:
             taxonomy_rows,
         )
 
+    async def generate_proposals_for_rows(
+        self,
+        *,
+        context: LoadStationaryEnergyContextResponse,
+        stored_source_candidates: list[dict[str, object]],
+        rows: list[object],
+        trace_id: str | None,
+    ) -> StationaryEnergyLLMProposalResult:
+        """Generate proposals for a subset of taxonomy rows (staggered generation).
+
+        Reuses the full single-call pipeline (prompt build, budget, validation)
+        but scopes ``context.taxonomy`` to ``rows`` so each call returns only the
+        proposals for those rows. Enables incremental, per-batch generation.
+        """
+        subset_context = context.model_copy(update={"taxonomy": list(rows)})
+        return await self.generate_proposals(
+            context=subset_context,
+            stored_source_candidates=stored_source_candidates,
+            trace_id=trace_id,
+        )
+
     async def generate_proposals(
         self,
         *,

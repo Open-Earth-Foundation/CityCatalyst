@@ -8,11 +8,16 @@ import type {
   SourceCandidate,
 } from "@/components/StationaryEnergyDraft/types";
 import {
+  compareProposalsByGpcReference,
   currentValueLabel,
   findRecommendedSource,
-  proposalLabel,
+  proposalSubcategoryLabel,
+  proposalSubsectorLabel,
+  proposalSubsectorRef,
   proposedValueLabel,
-  sourceLabel,
+  shortSourceName,
+  sourceMetaLabel,
+  sourceNameLabel,
 } from "@/components/StationaryEnergyDraft/utils";
 import type { TFunction } from "i18next";
 
@@ -82,33 +87,56 @@ export function buildArtifactRows(
     return buildStartRows(t);
   }
 
-  return draftState.proposals.map((proposal) => {
-    const recommendedSource = findRecommendedSource(
-      proposal,
-      draftState.source_candidates,
-    );
-    return {
-      id: proposal.proposal_id,
-      label:
-        proposalLabel(proposal) ||
-        translateArtifactText(t, "artifact-row-fallback"),
-      scope: rowScopeLabel(proposal),
-      state: artifactStateForProposal(proposal),
-      value: proposal.proposed_value ? proposedValueLabel(proposal) : null,
-      source: recommendedSource ? sourceLabel(recommendedSource) : null,
-      status: artifactStatusLabel(proposal, t),
-    };
-  });
+  // Staggered generation: while a draft is still generating and no proposals
+  // have landed yet, show the queued placeholder rows so the panel reads as
+  // "working" instead of empty. As batches arrive (via status polling) the real
+  // proposal rows replace them and the list fills in incrementally.
+  if (
+    draftState.proposals.length === 0 &&
+    ["resolving_scope", "loading_context", "generating"].includes(
+      draftState.status,
+    )
+  ) {
+    return buildStartRows(t);
+  }
+
+  return [...draftState.proposals]
+    .sort(compareProposalsByGpcReference)
+    .map((proposal) => {
+      const recommendedSource = findRecommendedSource(
+        proposal,
+        draftState.source_candidates,
+      );
+      return {
+        id: proposal.proposal_id,
+        subsectorRef: proposalSubsectorRef(proposal),
+        subsectorLabel: proposalSubsectorLabel(proposal),
+        subcategoryLabel:
+          proposalSubcategoryLabel(proposal) ||
+          translateArtifactText(t, "artifact-row-fallback"),
+        scope: rowScopeLabel(proposal),
+        state: artifactStateForProposal(proposal),
+        value: proposal.proposed_value ? proposedValueLabel(proposal, t) : null,
+        sourceName: shortSourceName(recommendedSource),
+        sourceFullName: sourceNameLabel(recommendedSource),
+        sourceMeta: sourceMetaLabel(recommendedSource),
+        status: artifactStatusLabel(proposal, t),
+      };
+    });
 }
 
 function buildStartRows(t?: TFunction): ArtifactRow[] {
   return START_ROW_DEFINITIONS.map(({ labelKey, scopeKey }, index) => ({
     id: `placeholder-${index}`,
-    label: translateArtifactText(t, labelKey),
+    subsectorRef: "",
+    subsectorLabel: "",
+    subcategoryLabel: translateArtifactText(t, labelKey),
     scope: translateArtifactText(t, scopeKey),
     state: "queued",
     value: null,
-    source: null,
+    sourceName: null,
+    sourceFullName: null,
+    sourceMeta: null,
     status: translateArtifactText(t, "artifact-status-queued"),
   }));
 }
@@ -158,7 +186,7 @@ function artifactStatusLabel(proposal: DraftProposal, t?: TFunction): string {
   if (!proposal.current_value) {
     return translateArtifactText(t, "artifact-status-no-current-value");
   }
-  return currentValueLabel(proposal);
+  return currentValueLabel(proposal, t);
 }
 
 function rowScopeLabel(proposal: DraftProposal): string {
@@ -167,5 +195,5 @@ function rowScopeLabel(proposal: DraftProposal): string {
     proposal.target_ref.subcategory_reference_number,
   ]
     .filter(Boolean)
-    .join(" / ");
+    .join(" · ");
 }

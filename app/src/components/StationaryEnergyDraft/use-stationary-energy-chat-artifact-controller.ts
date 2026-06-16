@@ -97,6 +97,7 @@ export type StationaryEnergyChatArtifactControllerState = {
   draftState: DraftStatusResponse | null;
   draftStatus: string;
   errorMessage: string | null;
+  focusedProposalId: string | null;
   hasDraft: boolean;
   hasSourceBackedProposals: boolean;
   loadingAction: LoadingAction;
@@ -125,7 +126,9 @@ export type StationaryEnergyChatArtifactControllerActions = {
   saveDraft: () => void;
   saveToInventory: () => void;
   selectDraft: (draftRunId: string) => void;
+  sendChatMessage: (content: string) => void;
   setChatInput: (value: string) => void;
+  setFocusedProposal: (proposalId: string | null) => void;
   startDraftFromArtifact: () => void;
   startDraftFromChat: () => void;
   startOver: () => void;
@@ -189,6 +192,9 @@ export function useStationaryEnergyChatArtifactController(
   const [draftListLoading, setDraftListLoading] = useState(false);
   const [resumeAttempted, setResumeAttempted] = useState(false);
   const [sourcePreference, setSourcePreference] = useState<string | null>(null);
+  const [focusedProposalId, setFocusedProposalId] = useState<string | null>(
+    null,
+  );
   const [acknowledgedStaleDraftRunId, setAcknowledgedStaleDraftRunId] =
     useState<string | null>(null);
 
@@ -296,6 +302,41 @@ export function useStationaryEnergyChatArtifactController(
     });
   }, [featureEnabled, loadDraftRuns, t]);
 
+  // Staggered generation: while a draft is still being generated, poll its
+  // status so proposals appear incrementally (the backend commits each batch
+  // as it completes). IMPORTANT: only poll during the active generation
+  // statuses. Once the run reaches "ready" the user is in the decision/review
+  // stage (which stays "ready" until saved), and re-applying state on a timer
+  // would reset their in-progress selections and bounce them back to row 1.
+  const draftRunId = draftState?.draft_run_id;
+  const isGenerating = Boolean(
+    draftState &&
+      ["resolving_scope", "loading_context", "generating"].includes(
+        draftState.status,
+      ),
+  );
+  useEffect(() => {
+    if (!featureEnabled || !draftRunId || !isGenerating) {
+      return;
+    }
+    let cancelled = false;
+    const interval = setInterval(() => {
+      void fetchDraftStatus({ draftRunId, inventoryId })
+        .then((payload) => {
+          if (!cancelled) {
+            applyDraftState(payload);
+          }
+        })
+        .catch(() => {
+          // Transient poll failure: keep the last state and retry next tick.
+        });
+    }, 2000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [featureEnabled, draftRunId, isGenerating, inventoryId, applyDraftState]);
+
   const counts = useMemo(() => countDraftProposals(draftState), [draftState]);
   const unresolvedBlockingIds = useMemo(
     () =>
@@ -338,6 +379,27 @@ export function useStationaryEnergyChatArtifactController(
     [decisionReviewContext],
   );
   const activeDecision = pendingDecisionProposals[0] ?? null;
+  const setFocusedProposal = useCallback((proposalId: string | null) => {
+    setFocusedProposalId(proposalId);
+  }, []);
+  // The row whose decision detail is shown in the right-side focus pane.
+  // Uses the user's explicit selection when valid, else the first pending
+  // decision, else the first reviewable row.
+  const effectiveFocusedProposalId = useMemo(() => {
+    if (
+      focusedProposalId &&
+      decisionReviewContext.some(
+        (context) => context.proposal_id === focusedProposalId,
+      )
+    ) {
+      return focusedProposalId;
+    }
+    return (
+      activeDecision?.proposal_id ??
+      decisionReviewContext[0]?.proposal_id ??
+      null
+    );
+  }, [focusedProposalId, decisionReviewContext, activeDecision]);
   const canSaveToInventory = canSaveDraft({
     draftState,
     resolvedProposalIds,
@@ -623,10 +685,9 @@ export function useStationaryEnergyChatArtifactController(
     t,
   ]);
 
-  const submitChat = useCallback(
-    async (event: FormEvent<HTMLFormElement>): Promise<void> => {
-      event.preventDefault();
-      const content = chatInput.trim();
+  const sendChatMessage = useCallback(
+    async (rawContent: string): Promise<void> => {
+      const content = rawContent.trim();
       if (!content || loadingAction === "chat") {
         return;
       }
@@ -664,7 +725,6 @@ export function useStationaryEnergyChatArtifactController(
     },
     [
       appendTextMessage,
-      chatInput,
       cityId,
       decisionReviewContext,
       draftState,
@@ -675,6 +735,14 @@ export function useStationaryEnergyChatArtifactController(
       startStream,
       t,
     ],
+  );
+
+  const submitChat = useCallback(
+    async (event: FormEvent<HTMLFormElement>): Promise<void> => {
+      event.preventDefault();
+      await sendChatMessage(chatInput);
+    },
+    [chatInput, sendChatMessage],
   );
 
   const startDraftFromChat = useCallback((): void => {
@@ -717,7 +785,9 @@ export function useStationaryEnergyChatArtifactController(
       saveDraft: () => void saveDraft(),
       saveToInventory: () => void saveToInventory(),
       selectDraft,
+      sendChatMessage: (content: string) => void sendChatMessage(content),
       setChatInput,
+      setFocusedProposal,
       startDraftFromArtifact,
       startDraftFromChat,
       startOver,
@@ -739,6 +809,7 @@ export function useStationaryEnergyChatArtifactController(
       draftState,
       draftStatus: draftState?.status ?? "not_started",
       errorMessage,
+      focusedProposalId: effectiveFocusedProposalId,
       hasDraft: Boolean(draftState),
       hasSourceBackedProposals,
       loadingAction,

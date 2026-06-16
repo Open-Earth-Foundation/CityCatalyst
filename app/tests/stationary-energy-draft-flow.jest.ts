@@ -180,6 +180,42 @@ describe("Stationary Energy draft flow", () => {
     ).toBe(true);
   });
 
+  it("blocks save actions while async generation is still running", () => {
+    const draft: DraftStatusResponse = {
+      ...draftFixture(),
+      status: "generating",
+    };
+    const decisionState = buildInitialDecisionState(draft);
+    const resolvedProposalIds = new Set(["proposal-ready", "proposal-conflict"]);
+
+    expect(
+      canSaveDraft({
+        draftState: draft,
+        resolvedProposalIds,
+        decisionState,
+      }),
+    ).toBe(false);
+    expect(
+      canPersistDraftReview({
+        draftState: draft,
+        resolvedProposalIds,
+        decisionState,
+      }),
+    ).toBe(false);
+    expect(
+      pendingDecisionReviewProposals({
+        draftState: draft,
+        resolvedProposalIds,
+      }),
+    ).toEqual([]);
+    expect(
+      buildDecisionReviewContext({
+        draftState: draft,
+        resolvedProposalIds,
+      }),
+    ).toEqual([]);
+  });
+
   it("hides save when nothing committable remains after review", () => {
     const draft = draftFixture();
     const decisionState = buildInitialDecisionState(draft);
@@ -453,6 +489,7 @@ describe("Stationary Energy draft flow", () => {
 
   it("classifies single-source and multi-source widgets and skips gaps", () => {
     const draft = draftFixture();
+    draft.source_candidates[1].details_datasource_id = "source-2-real";
     const pending = pendingDecisionReviewProposals({
       draftState: draft,
       resolvedProposalIds: new Set(),
@@ -493,6 +530,7 @@ describe("Stationary Energy draft flow", () => {
         alternativeOptions: expect.arrayContaining([
           expect.objectContaining({
             action: "override_source",
+            datasourceId: "source-2-real",
             label: "ClimateTRACE",
           }),
         ]),
@@ -537,16 +575,19 @@ describe("Stationary Energy draft flow", () => {
     });
 
     expect(rows.find((row) => row.id === "proposal-conflict")?.value).toBe(
-      "(6.82 Mt CO2e)",
+      "6.82 Mt CO2e",
     );
-    expect(rows.find((row) => row.id === "proposal-conflict")?.source).toBe(
-      "SEEG / 2024",
+    expect(rows.find((row) => row.id === "proposal-conflict")?.sourceName).toBe(
+      "SEEG",
+    );
+    expect(rows.find((row) => row.id === "proposal-conflict")?.sourceMeta).toBe(
+      "2024",
     );
     expect(context[1]).toEqual(
       expect.objectContaining({
         recommendedOption: expect.objectContaining({
           meta: "2024",
-          value: "(6.82 Mt CO2e)",
+          value: "6.82 Mt CO2e",
         }),
       }),
     );

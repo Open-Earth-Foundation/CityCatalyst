@@ -12,6 +12,7 @@ import {
 import { MdCheckCircle, MdErrorOutline } from "react-icons/md";
 import { useParams } from "next/navigation";
 
+import { AskAiIcon } from "@/components/icons";
 import { useTranslation } from "@/i18n/client";
 import {
   AGENT_BUBBLE_MAX_W,
@@ -54,9 +55,8 @@ export function AgentBubble({ text }: { text: string }) {
         borderRadius="full"
         bg="interactive.tertiary"
         color="base.light"
-        fontFamily="heading"
       >
-        *
+        <AskAiIcon />
       </Box>
       <Box
         flex="1"
@@ -180,12 +180,14 @@ export function QuickReplies(props: { buttons: QuickReplyButton[] }) {
           key={button.label}
           disabled={button.disabled}
           aria-disabled={button.disabled}
-          h="38px"
+          minH="38px"
           maxW="100%"
           display="inline-flex"
           alignItems="center"
           justifyContent="center"
+          textAlign="center"
           px="14px"
+          py="8px"
           borderWidth="1px"
           borderColor={
             button.primary ? "interactive.tertiary" : "interactive.primary"
@@ -196,9 +198,10 @@ export function QuickReplies(props: { buttons: QuickReplyButton[] }) {
           fontFamily="heading"
           fontSize="label.md"
           fontWeight="semibold"
-          lineHeight="20px"
+          lineHeight="18px"
           letterSpacing="0"
-          whiteSpace="nowrap"
+          whiteSpace="normal"
+          wordBreak="break-word"
           appearance="none"
           cursor={button.disabled ? "not-allowed" : "pointer"}
           opacity={button.disabled ? 0.46 : 1}

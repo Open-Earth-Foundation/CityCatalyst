@@ -51,6 +51,8 @@ export type ArtifactPanelProps = {
   >;
   cityName: string;
   inventoryYear: string | number;
+  flush?: boolean;
+  squared?: boolean;
   state: Pick<
     StationaryEnergyChatArtifactControllerState,
     | "activeDraftRunId"
@@ -243,12 +245,9 @@ function RowGroupHeading({
       gap="s"
       px="m"
       py="s"
-      bg="background.backgroundGreyFlat"
+      bg="base.light"
       borderBottomWidth="1px"
       borderColor="border.neutral"
-      position="sticky"
-      top={0}
-      zIndex={1}
     >
       <Text
         fontFamily="heading"
@@ -479,7 +478,9 @@ function CurrentActionCard({
 export function ArtifactPanel({
   actions,
   cityName,
+  flush = false,
   inventoryYear,
+  squared = false,
   state,
 }: ArtifactPanelProps) {
   const params = useParams();
@@ -527,8 +528,8 @@ export function ArtifactPanel({
       overflow={{ base: "visible", xl: "hidden" }}
       bg="base.light"
       borderColor="border.neutral"
-      borderWidth="1px"
-      borderRadius="rounded-xl"
+      borderWidth={flush ? 0 : "1px"}
+      borderRadius={squared ? "none" : "rounded-xl"}
     >
       <Box borderBottomWidth="1px" borderColor="border.neutral" px="m" py="m">
         <VStack align="stretch" gap="m">

@@ -232,7 +232,7 @@ export function StationaryEnergyChatArtifactPage({
               minH={0}
               pr={{
                 base: 0,
-                xl: progressPanelOpen ? "520px" : "64px",
+                xl: progressPanelOpen ? "520px" : 0,
               }}
               transition="padding-right 220ms ease"
               overflow={{ base: "visible", xl: "hidden" }}
@@ -247,13 +247,13 @@ export function StationaryEnergyChatArtifactPage({
               right={0}
               bottom={0}
               w="520px"
-              pt={3}
-              pb={3}
-              pr={3}
+              pt={0}
+              pb={0}
+              pr={0}
               transform={
                 progressPanelOpen
                   ? "translateX(0)"
-                  : "translateX(calc(100% - 16px))"
+                  : "translateX(100%)"
               }
               transition="transform 220ms ease"
               zIndex={4}
@@ -286,7 +286,6 @@ export function StationaryEnergyChatArtifactPage({
                   borderLeftRadius="rounded-xl"
                   bg="base.light"
                   color="content.primary"
-                  boxShadow="sm"
                   onClick={() => setProgressPanelOpen((open) => !open)}
                 >
                   <Icon
@@ -295,11 +294,18 @@ export function StationaryEnergyChatArtifactPage({
                   />
                 </chakra.button>
               </Flex>
-              <Box h="full" minH={0} boxShadow="lg">
+              <Box
+                h="full"
+                minH={0}
+                pointerEvents={progressPanelOpen ? "auto" : "none"}
+                aria-hidden={!progressPanelOpen}
+              >
                 <ArtifactPanel
                   actions={actions}
                   cityName={cityName}
+                  flush
                   inventoryYear={inventoryYear}
+                  squared
                   state={state}
                 />
               </Box>

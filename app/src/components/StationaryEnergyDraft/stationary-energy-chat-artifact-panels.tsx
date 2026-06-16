@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { MdSend, MdOutlineTipsAndUpdates } from "react-icons/md";
+import { MdSend } from "react-icons/md";
 
 import ByScopeViewSourceDrawer from "@/app/[lng]/[inventory]/InventoryResultTab/ByScopeViewSourceDrawer";
 import { useTranslation } from "@/i18n/client";
@@ -25,7 +25,6 @@ import {
   AgentBubble,
   BulkReviewConfirmationCard,
   InventorySaveConfirmationCard,
-  PendingDecisionNudge,
   StaleDraftPanel,
   StagedReviewUpdateConfirmationCard,
   StationaryEnergyToolSummaryCard,
@@ -165,7 +164,6 @@ function buildSuggestedQuestions(
 }
 
 function SuggestedQuestions(props: {
-  title: string;
   questions: SuggestedQuestion[];
   onAsk: (message: string) => void;
 }) {
@@ -174,52 +172,51 @@ function SuggestedQuestions(props: {
   }
   return (
     <Box
-      px={3}
-      pt={3}
-      pb={1}
-      borderTopWidth="1px"
-      borderColor="border.neutral"
-      bg="base.light"
+      position="absolute"
+      left={0}
+      right={0}
+      bottom="52px"
+      zIndex={2}
+      px={{ base: 3, md: 6 }}
+      py={2}
+      bg="transparent"
+      pointerEvents="none"
     >
-      <HStack gap={1.5} mb={2} color="content.tertiary">
-        <MdOutlineTipsAndUpdates size={16} />
-        <Text fontSize="label.sm" fontWeight="semibold">
-          {props.title}
-        </Text>
-      </HStack>
-      <Flex gap={2} flexWrap="wrap">
-        {props.questions.map((question) => (
-          <chakra.button
-            type="button"
-            key={question.id}
-            onClick={() => props.onAsk(question.message)}
-            textAlign="left"
-            maxW="100%"
-            px={3}
-            py="6px"
-            borderWidth="1px"
-            borderColor="border.overlay"
-            borderRadius="rounded"
-            bg="background.backgroundGreyFlat"
-            color="content.secondary"
-            fontSize="label.md"
-            lineHeight="18px"
-            lineClamp={2}
-            whiteSpace="normal"
-            wordBreak="break-word"
-            appearance="none"
-            cursor="pointer"
-            transition="background 140ms ease, border-color 140ms ease"
-            _hover={{
-              bg: "background.neutral",
-              borderColor: "interactive.primary",
-              color: "interactive.primary",
-            }}
-          >
-            {question.label}
-          </chakra.button>
-        ))}
-      </Flex>
+      <Box w="full" maxW="900px" mx="auto" pointerEvents="auto">
+        <Flex gap={2} flexWrap="wrap">
+          {props.questions.map((question) => (
+            <chakra.button
+              type="button"
+              key={question.id}
+              onClick={() => props.onAsk(question.message)}
+              textAlign="left"
+              maxW="100%"
+              px={3}
+              py="6px"
+              borderWidth="1px"
+              borderColor="border.overlay"
+              borderRadius="rounded"
+              bg="rgba(255, 255, 255, 0.72)"
+              color="content.secondary"
+              fontSize="label.md"
+              lineHeight="18px"
+              lineClamp={2}
+              whiteSpace="normal"
+              wordBreak="break-word"
+              appearance="none"
+              cursor="pointer"
+              transition="background 140ms ease, border-color 140ms ease"
+              _hover={{
+                bg: "background.neutral",
+                borderColor: "interactive.primary",
+                color: "interactive.primary",
+              }}
+            >
+              {question.label}
+            </chakra.button>
+          ))}
+        </Flex>
+      </Box>
     </Box>
   );
 }
@@ -233,9 +230,6 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
   const scrollRegionRef = useRef<HTMLDivElement | null>(null);
   const shouldFollowChatRef = useRef(true);
   const chatInputRef = useRef<HTMLInputElement | null>(null);
-  const pendingDecisionAnchorRef = useRef<HTMLDivElement | null>(null);
-  const [showPendingDecisionNudge, setShowPendingDecisionNudge] =
-    useState(false);
   const [viewSourceId, setViewSourceId] = useState<string | null>(null);
   const firstPendingDecision =
     state.decisionReviewContext.find(
@@ -300,40 +294,6 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
     [focusChatComposer, t],
   );
 
-  const handleJumpToPendingDecision = useCallback(() => {
-    pendingDecisionAnchorRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-    });
-  }, []);
-
-  useEffect(() => {
-    if (state.showStaleWarning || !firstPendingDecision) {
-      setShowPendingDecisionNudge(false);
-      return;
-    }
-
-    const scrollRegion = scrollRegionRef.current;
-    const pendingDecisionAnchor = pendingDecisionAnchorRef.current;
-    if (!scrollRegion || !pendingDecisionAnchor) {
-      setShowPendingDecisionNudge(false);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShowPendingDecisionNudge(!entry.isIntersecting);
-      },
-      {
-        root: scrollRegion,
-        threshold: 0.45,
-      },
-    );
-
-    observer.observe(pendingDecisionAnchor);
-    return () => observer.disconnect();
-  }, [firstPendingDecision, state.chatMessages.length, state.showStaleWarning]);
-
   useEffect(() => {
     const scrollRegion = scrollRegionRef.current;
     if (!scrollRegion) {
@@ -372,6 +332,7 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
 
   return (
     <Box
+      position="relative"
       bg="transparent"
       overflow="hidden"
       h={{ base: "min(78dvh, 820px)", xl: "full" }}
@@ -393,15 +354,6 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
         data-testid="clima-chat-scroll-region"
         onScroll={handleChatScroll}
       >
-        {showPendingDecisionNudge && firstPendingDecision ? (
-          <PendingDecisionNudge
-            pendingDecisionCount={state.pendingDecisionCount}
-            onAskQuestion={() =>
-              handleAskAboutProposal(firstPendingDecision.label)
-            }
-            onJumpToReview={handleJumpToPendingDecision}
-          />
-        ) : null}
         {state.showStaleWarning ? (
           <StaleDraftPanel
             staleDraft={state.staleDraft ?? null}
@@ -450,17 +402,12 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
                 const resolved = state.resolvedProposalIds.has(
                   context.proposal_id,
                 );
-                const anchorRef =
-                  firstPendingDecision?.proposal_id === context.proposal_id
-                    ? pendingDecisionAnchorRef
-                    : undefined;
                 const focusRow = () =>
                   actions.setFocusedProposal(context.proposal_id);
 
                 return (
                   <Box
                     key={message.id}
-                    ref={anchorRef}
                     w="full"
                     maxW={CHAT_SURFACE_MAX_W}
                     alignSelf="center"
@@ -562,12 +509,24 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
                 );
               }
 
-              return message.role === "user" ? (
-                <UserBubble key={message.id} text={message.text} />
-              ) : (
+              if (message.role === "user") {
+                return <UserBubble key={message.id} text={message.text} />;
+              }
+
+              const isActiveThinkingMessage =
+                state.loadingAction === "chat" &&
+                message.id === lastChatMessage?.id;
+              if (!message.text.trim() && !isActiveThinkingMessage) {
+                return null;
+              }
+
+              return (
                 <AgentBubble
                   key={message.id}
-                  text={message.text || t("chat-panel-thinking")}
+                  text={
+                    message.text ||
+                    (isActiveThinkingMessage ? t("chat-panel-thinking") : "")
+                  }
                 />
               );
             })}
@@ -577,7 +536,6 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
 
       {showSuggestedQuestions ? (
         <SuggestedQuestions
-          title={t("chat-suggestions-title")}
           questions={suggestedQuestions}
           onAsk={actions.sendChatMessage}
         />

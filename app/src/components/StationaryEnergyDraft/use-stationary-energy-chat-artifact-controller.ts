@@ -847,6 +847,7 @@ export function useStationaryEnergyChatArtifactController(
   const handleToolResult = useCallback(
     (tool: unknown): void => {
       const signature = stationaryEnergyToolResultSignature(tool);
+      removeEmptyAssistantTail();
       if (signature) {
         if (handledToolResultSignaturesRef.current.has(signature)) {
           return;
@@ -986,6 +987,7 @@ export function useStationaryEnergyChatArtifactController(
       decisionReviewContext,
       draftState?.draft_run_id,
       refreshDraftStatusSilently,
+      removeEmptyAssistantTail,
       removeInventorySaveConfirmationMessages,
       t,
     ],
@@ -998,6 +1000,7 @@ export function useStationaryEnergyChatArtifactController(
     },
     onToolResult: handleToolResult,
     onComplete: () => {
+      removeEmptyAssistantTail();
       setLoadingAction(null);
     },
     onError: (error) => {

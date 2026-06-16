@@ -14,7 +14,13 @@ import {
 import type { TFunction } from "i18next";
 import { useParams } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { MdAdd, MdExpandMore, MdRefresh, MdSave } from "react-icons/md";
+import {
+  MdAdd,
+  MdCheckCircle,
+  MdExpandMore,
+  MdRefresh,
+  MdSave,
+} from "react-icons/md";
 
 import { useTranslation } from "@/i18n/client";
 import ProgressLoader from "@/components/ProgressLoader";
@@ -406,6 +412,70 @@ function ArtifactRowView(props: {
   );
 }
 
+function CurrentActionCard({
+  row,
+  t,
+}: {
+  row: ArtifactRow;
+  t: TFunction;
+}) {
+  return (
+    <Box
+      mt="m"
+      bg="sentiment.positiveOverlay"
+      borderColor="sentiment.positiveDefault"
+      borderWidth="1px"
+      borderRadius="rounded"
+      px="m"
+      py="s"
+    >
+      <HStack align="flex-start" gap="s">
+        <Box
+          w="22px"
+          h="22px"
+          flexShrink={0}
+          display="grid"
+          placeItems="center"
+          borderRadius="full"
+          bg="interactive.primary"
+          color="base.light"
+          mt="1px"
+        >
+          <Icon as={MdCheckCircle} boxSize="14px" />
+        </Box>
+        <Box minW={0}>
+          <Text
+            color="content.primary"
+            fontFamily="heading"
+            fontSize="label.md"
+            fontWeight="semibold"
+          >
+            {t("artifact-current-action-title")}
+          </Text>
+          <Text
+            color="content.primary"
+            fontSize="label.md"
+            fontWeight="semibold"
+            mt="2px"
+            lineClamp={1}
+          >
+            {t("artifact-current-action-accepted", {
+              label: row.subcategoryLabel,
+            })}
+          </Text>
+          {row.sourceName ? (
+            <Text color="content.secondary" fontSize="label.sm" mt="2px">
+              {t("artifact-current-action-source", {
+                source: row.sourceName,
+              })}
+            </Text>
+          ) : null}
+        </Box>
+      </HStack>
+    </Box>
+  );
+}
+
 export function ArtifactPanel({
   actions,
   cityName,
@@ -438,6 +508,14 @@ export function ArtifactPanel({
   const activeDraftRun = state.draftRuns.find(
     (draftRun) => draftRun.draft_run_id === state.activeDraftRunId,
   );
+  const currentActionRow =
+    state.rows.find(
+      (row) =>
+        row.id === state.focusedProposalId &&
+        ["done", "manual"].includes(row.state),
+    ) ??
+    state.rows.find((row) => ["done", "manual"].includes(row.state)) ??
+    null;
 
   return (
     <Box
@@ -602,6 +680,9 @@ export function ArtifactPanel({
                 transition="width 220ms ease"
               />
             </Box>
+            {currentActionRow ? (
+              <CurrentActionCard row={currentActionRow} t={t} />
+            ) : null}
           </Box>
         </VStack>
       </Box>
@@ -641,10 +722,10 @@ export function ArtifactPanel({
       </VStack>
 
       <Flex
-        align={{ base: "stretch", md: "center" }}
+        align="stretch"
         justify="space-between"
         gap="m"
-        flexDir={{ base: "column", md: "row" }}
+        flexDir="column"
         borderTopWidth="1px"
         borderColor="border.neutral"
         px="m"
@@ -668,7 +749,7 @@ export function ArtifactPanel({
                   })
                 : t("artifact-footer-nothing-written")}
         </Text>
-        <HStack gap="s" justify={{ base: "flex-end", md: "initial" }}>
+        <HStack gap="s" justify="flex-end" flexWrap="wrap" w="full">
           <Button
             variant="outline"
             borderRadius={FLOW_BUTTON_RADIUS}

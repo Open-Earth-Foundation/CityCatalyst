@@ -18,6 +18,7 @@ import { useTranslation } from "@/i18n/client";
 import {
   AGENT_BUBBLE_MAX_W,
   CHAT_SURFACE_MAX_W,
+  CHAT_WIDGET_TRANSFORM,
   FLOW_BUTTON_RADIUS,
   USER_BUBBLE_MAX_W,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-constants";
@@ -46,7 +47,8 @@ export function AgentBubble({ text }: { text: string }) {
       gap={2}
       w="full"
       maxW={CHAT_SURFACE_MAX_W}
-      alignSelf="flex-start"
+      alignSelf="center"
+      transform={CHAT_WIDGET_TRANSFORM}
     >
       <Box
         flex="0 0 30px"
@@ -90,7 +92,7 @@ export function UserBubble({ text }: { text: string }) {
       justify="flex-end"
       w="full"
       maxW={CHAT_SURFACE_MAX_W}
-      alignSelf="flex-start"
+      alignSelf="center"
     >
       <Box
         maxW={USER_BUBBLE_MAX_W}
@@ -123,7 +125,8 @@ export function CoveragePanel(props: {
     <Box
       w="full"
       maxW={CHAT_SURFACE_MAX_W}
-      alignSelf="flex-start"
+      alignSelf="center"
+      transform={CHAT_WIDGET_TRANSFORM}
       bg="base.light"
       borderWidth="1px"
       borderColor="border.overlay"
@@ -167,14 +170,18 @@ export function CoveragePanel(props: {
   );
 }
 
-export function QuickReplies(props: { buttons: QuickReplyButton[] }) {
+export function QuickReplies(props: {
+  buttons: QuickReplyButton[];
+  standalone?: boolean;
+}) {
   return (
     <Flex
       gap={2}
       flexWrap="wrap"
       w="full"
       maxW={CHAT_SURFACE_MAX_W}
-      alignSelf="flex-start"
+      alignSelf={props.standalone ? "center" : undefined}
+      transform={props.standalone ? CHAT_WIDGET_TRANSFORM : undefined}
     >
       {props.buttons.map((button) => (
         <chakra.button
@@ -232,7 +239,8 @@ export function StatusLine({ text }: { text: string }) {
       gap={2}
       w="full"
       maxW={CHAT_SURFACE_MAX_W}
-      alignSelf="flex-start"
+      alignSelf="center"
+      transform={CHAT_WIDGET_TRANSFORM}
       bg="base.light"
       borderWidth="1px"
       borderColor="border.overlay"
@@ -259,7 +267,8 @@ export function StaleDraftPanel(props: {
     <Box
       w="full"
       maxW={CHAT_SURFACE_MAX_W}
-      alignSelf="flex-start"
+      alignSelf="center"
+      transform={CHAT_WIDGET_TRANSFORM}
       bg="sentiment.warningOverlay"
       borderColor="interactive.quaternary"
       borderWidth="1px"
@@ -316,66 +325,79 @@ export function PendingDecisionNudge(props: {
       position="sticky"
       top={0}
       zIndex={1}
-      w="full"
-      maxW={CHAT_SURFACE_MAX_W}
-      alignSelf="flex-start"
+      w={{ base: "full", md: "fit-content" }}
+      maxW={{ base: "100%", md: "620px" }}
+      alignSelf="center"
+      transform={CHAT_WIDGET_TRANSFORM}
       bg="background.backgroundGreyFlat"
       pt={1}
+      data-message-kind="pending-decision-nudge"
     >
       <Flex
         align={{ base: "flex-start", sm: "center" }}
-        justify="space-between"
-        gap={3}
+        justify="flex-start"
+        gap={2}
         flexDir={{ base: "column", sm: "row" }}
         bg="sentiment.warningOverlay"
         borderColor="interactive.quaternary"
         borderWidth="1px"
         borderRadius="rounded"
-        px={3}
-        py={2}
+        px={2.5}
+        py={1.5}
       >
         <Box minW={0}>
           <Text
             color="interactive.quaternary"
             fontFamily="heading"
-            fontSize="label.md"
+            fontSize="label.sm"
             fontWeight="semibold"
+            lineHeight="16px"
+            lineClamp={1}
           >
             {label}
           </Text>
-          <Text color="content.secondary" fontSize="label.md">
+          <Text
+            color="content.secondary"
+            fontSize="label.sm"
+            lineHeight="16px"
+            lineClamp={1}
+          >
             {t("primitives-pending-description")}
           </Text>
         </Box>
-        <HStack gap={2} flexWrap="wrap">
+        <HStack gap={1.5} flexWrap="wrap" flexShrink={0}>
           <chakra.button
             type="button"
-            px={3}
-            py={2}
+            minH="28px"
+            px={2.5}
+            py="4px"
             borderWidth="1px"
             borderColor="interactive.primary"
             borderRadius="rounded"
             bg="base.light"
             color="interactive.primary"
             fontFamily="heading"
-            fontSize="label.md"
+            fontSize="label.sm"
             fontWeight="semibold"
+            lineHeight="16px"
             onClick={props.onAskQuestion}
           >
             {t("primitives-pending-ask")}
           </chakra.button>
           <chakra.button
             type="button"
-            px={3}
-            py={2}
+            minH="28px"
+            px={2.5}
+            py="4px"
             borderWidth="1px"
             borderColor="interactive.quaternary"
             borderRadius="rounded"
             bg="base.light"
             color="interactive.quaternary"
             fontFamily="heading"
-            fontSize="label.md"
+            fontSize="label.sm"
             fontWeight="semibold"
+            lineHeight="16px"
             onClick={props.onJumpToReview}
           >
             {t("primitives-pending-jump")}
@@ -398,7 +420,8 @@ export function InventorySaveConfirmationCard(props: {
     <Box
       w="full"
       maxW={CHAT_SURFACE_MAX_W}
-      alignSelf="flex-start"
+      alignSelf="center"
+      transform={CHAT_WIDGET_TRANSFORM}
       bg="sentiment.warningOverlay"
       borderColor="interactive.quaternary"
       borderWidth="1px"
@@ -569,7 +592,8 @@ export function BulkReviewConfirmationCard(props: {
     <Box
       w="full"
       maxW={CHAT_SURFACE_MAX_W}
-      alignSelf="flex-start"
+      alignSelf="center"
+      transform={CHAT_WIDGET_TRANSFORM}
       bg="sentiment.warningOverlay"
       borderColor="interactive.quaternary"
       borderWidth="1px"
@@ -660,7 +684,8 @@ export function StagedReviewUpdateConfirmationCard(props: {
     <Box
       w="full"
       maxW={CHAT_SURFACE_MAX_W}
-      alignSelf="flex-start"
+      alignSelf="center"
+      transform={CHAT_WIDGET_TRANSFORM}
       bg="sentiment.warningOverlay"
       borderColor="interactive.quaternary"
       borderWidth="1px"
@@ -770,7 +795,8 @@ export function StationaryEnergyToolSummaryCard(props: {
     <Box
       w="full"
       maxW={CHAT_SURFACE_MAX_W}
-      alignSelf="flex-start"
+      alignSelf="center"
+      transform={CHAT_WIDGET_TRANSFORM}
       bg="base.light"
       borderColor="border.overlay"
       borderWidth="1px"
@@ -863,7 +889,8 @@ export function RunSummary(props: {
     <Box
       w="full"
       maxW={CHAT_SURFACE_MAX_W}
-      alignSelf="flex-start"
+      alignSelf="center"
+      transform={CHAT_WIDGET_TRANSFORM}
       bg="base.light"
       borderColor="border.overlay"
       borderWidth="1px"

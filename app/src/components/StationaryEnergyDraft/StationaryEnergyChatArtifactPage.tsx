@@ -1,22 +1,26 @@
 "use client";
 
-import { Box, Flex, Grid, Icon, Text } from "@chakra-ui/react";
+import { Box, Flex, HStack, Icon, Text, chakra } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { MdArrowBack } from "react-icons/md";
+import {
+  MdArrowBack,
+  MdChevronLeft,
+  MdChevronRight,
+  MdExpandMore,
+} from "react-icons/md";
 
-import { useTranslation } from "@/i18n/client";
+import { AskAiIcon } from "@/components/icons";
+import ProgressLoader from "@/components/ProgressLoader";
 import { ArtifactPanel } from "@/components/StationaryEnergyDraft/stationary-energy-artifact-panel";
 import { ClimaChatPanel } from "@/components/StationaryEnergyDraft/stationary-energy-chat-artifact-panels";
-import { SourceDetailPane } from "@/components/StationaryEnergyDraft/stationary-energy-source-detail-pane";
-import ProgressLoader from "@/components/ProgressLoader";
+import type { DraftStage } from "@/components/StationaryEnergyDraft/flow";
+import { useStationaryEnergyChatArtifactController } from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
+import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { getParamValueRequired } from "@/util/helpers";
-
-import type { DraftStage } from "@/components/StationaryEnergyDraft/flow";
-import { useStationaryEnergyChatArtifactController } from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
 
 interface StationaryEnergyChatArtifactPageProps {
   initialStage?: DraftStage;
@@ -44,6 +48,7 @@ export function StationaryEnergyChatArtifactPage({
   const [desktopViewportHeight, setDesktopViewportHeight] = useState<
     number | null
   >(null);
+  const [progressPanelOpen, setProgressPanelOpen] = useState(true);
   const controller = useStationaryEnergyChatArtifactController({
     cityId,
     featureEnabled,
@@ -87,11 +92,19 @@ export function StationaryEnergyChatArtifactPage({
     inventory?.year ?? t("chat-page-inventory-year-unavailable");
   const { actions, state } = controller;
   const backHref = `/${lng}/cities/${cityId}/GHGI/${inventoryId}`;
+  const draftedCount = state.rows.filter((row) =>
+    ["done", "manual"].includes(row.state),
+  ).length;
+  const progress =
+    state.rows.length > 0
+      ? Math.round((draftedCount / state.rows.length) * 100)
+      : 0;
 
   return (
     <Box
       ref={surfaceRef}
       bg="background.neutral"
+      position="relative"
       minH={{
         base: "100dvh",
         xl: desktopViewportHeight
@@ -105,85 +118,184 @@ export function StationaryEnergyChatArtifactPage({
           : "calc(100dvh - 88px)",
       }}
       overflow={{ base: "visible", xl: "hidden" }}
-      py={{ base: 3, md: 6 }}
     >
-      <Box
-        maxW="1480px"
-        mx="auto"
+      <Flex
+        align="center"
+        justify="space-between"
+        gap={4}
+        h="56px"
         px={{ base: 3, md: 6 }}
-        h="full"
-        display="flex"
-        flexDir="column"
-        minH={0}
-        gap={{ base: 3, md: 4 }}
+        bg="base.light"
+        borderBottomWidth="1px"
+        borderColor="border.neutral"
+        flexShrink={0}
       >
-        <NextLink href={backHref} style={{ textDecoration: "none" }}>
-          <Flex
-            align="center"
-            gap={2}
-            w="fit-content"
-            flexShrink={0}
-            color="interactive.secondary"
-            _hover={{ color: "interactive.primary" }}
-          >
-            <Icon as={MdArrowBack} boxSize={5} />
-            <Text
-              textTransform="uppercase"
-              fontFamily="heading"
-              fontSize="button.sm"
-              fontWeight="bold"
+        <HStack gap={4} minW={0}>
+          <HStack gap={2} minW={0}>
+            <Box
+              w="28px"
+              h="28px"
+              display="grid"
+              placeItems="center"
+              borderRadius="full"
+              bg="interactive.tertiary"
+              color="base.light"
+              flexShrink={0}
             >
-              {t("chat-page-back")}
+              <Icon as={AskAiIcon} h={18} w={18} />
+            </Box>
+            <Text
+              fontFamily="heading"
+              fontSize="title.sm"
+              fontWeight="semibold"
+              color="content.primary"
+            >
+              {t("chat-panel-title")}
             </Text>
-          </Flex>
-        </NextLink>
+          </HStack>
+          <chakra.button
+            type="button"
+            display={{ base: "none", sm: "inline-flex" }}
+            alignItems="center"
+            gap={2}
+            minH="36px"
+            px={3}
+            borderWidth="1px"
+            borderColor="border.overlay"
+            borderRadius="rounded"
+            bg="base.light"
+            color="content.primary"
+            fontFamily="heading"
+            fontSize="label.md"
+            fontWeight="semibold"
+          >
+            {t("artifact-sector-title")}
+            <Icon as={MdExpandMore} boxSize={4} color="content.secondary" />
+          </chakra.button>
+        </HStack>
 
+        <HStack gap={{ base: 2, md: 4 }} flexShrink={0}>
+          <Text
+            display={{ base: "none", md: "block" }}
+            color="content.secondary"
+            fontSize="label.md"
+            fontWeight="semibold"
+          >
+            {t("chat-page-inventory-label", {
+              year: inventoryYear,
+            })}
+          </Text>
+          <NextLink href={backHref} style={{ textDecoration: "none" }}>
+            <Flex
+              align="center"
+              gap={2}
+              w="fit-content"
+              color="interactive.secondary"
+              _hover={{ color: "interactive.primary" }}
+            >
+              <Icon as={MdArrowBack} boxSize={5} />
+              <Text
+                display={{ base: "none", sm: "block" }}
+                textTransform="uppercase"
+                fontFamily="heading"
+                fontSize="button.sm"
+                fontWeight="bold"
+              >
+                {t("chat-page-back")}
+              </Text>
+            </Flex>
+          </NextLink>
+        </HStack>
+      </Flex>
+
+      <Box
+        h={{ base: "auto", xl: "calc(100% - 56px)" }}
+        minH={0}
+        position="relative"
+        overflow={{ base: "visible", xl: "hidden" }}
+      >
         {!featureEnabled ? (
-          <Box bg="base.light" borderRadius="rounded" p={5}>
+          <Box bg="base.light" borderRadius="rounded" p={5} m={6}>
             <Text color="content.primary" fontWeight="semibold">
               {t("chat-page-feature-disabled")}
             </Text>
           </Box>
         ) : (
-          <Grid
-            flex="1"
+          <Box
+            h={{ base: "auto", xl: "full" }}
             minH={0}
-            templateColumns={{ base: "1fr", xl: "430px minmax(0, 1fr)" }}
-            gap={{ base: 4, xl: 6 }}
-            alignItems="stretch"
+            position="relative"
             overflow={{ base: "visible", xl: "hidden" }}
           >
             <Box
-              minW={0}
+              h={{ base: "auto", xl: "full" }}
               minH={0}
-              order={{ base: 2, xl: 1 }}
+              pr={{
+                base: 0,
+                xl: progressPanelOpen ? "520px" : "64px",
+              }}
+              transition="padding-right 220ms ease"
               overflow={{ base: "visible", xl: "hidden" }}
             >
               <ClimaChatPanel actions={actions} state={state} />
             </Box>
 
-            {/*
-              From xl up, the rows panel and the source-review panel sit
-              side-by-side in a locked two-column grid (each scrolls
-              internally); the source column just widens at 2xl. Below xl they
-              stack and the page scrolls. The split must engage at xl — when it
-              only engaged at 2xl, laptop widths (1280–1535px) fell back to a
-              single stacked column and the row list collapsed.
-            */}
             <Box
-              display={{ base: "flex", xl: "grid" }}
-              flexDir="column"
-              minW={0}
-              minH={0}
-              order={{ base: 1, xl: 2 }}
-              overflow={{ base: "visible", xl: "hidden" }}
-              gridTemplateColumns={{
-                xl: "minmax(0, 1fr) 340px",
-                "2xl": "minmax(0, 1fr) 380px",
-              }}
-              gap={{ base: 4, xl: 5 }}
+              display={{ base: "none", xl: "block" }}
+              position="absolute"
+              top={0}
+              right={0}
+              bottom={0}
+              w="520px"
+              pt={3}
+              pb={3}
+              pr={3}
+              transform={
+                progressPanelOpen
+                  ? "translateX(0)"
+                  : "translateX(calc(100% - 16px))"
+              }
+              transition="transform 220ms ease"
+              zIndex={4}
             >
-              <Box minW={0} minH={0} overflow={{ base: "visible", xl: "hidden" }}>
+              <Flex
+                position="absolute"
+                left="-44px"
+                top="50%"
+                transform="translateY(-50%)"
+                flexDir="column"
+                align="stretch"
+                gap={2}
+                zIndex={5}
+              >
+                <chakra.button
+                  type="button"
+                  aria-label={
+                    progressPanelOpen
+                      ? t("artifact-panel-collapse")
+                      : t("artifact-panel-expand")
+                  }
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  w="44px"
+                  h="56px"
+                  borderWidth="1px"
+                  borderColor="border.neutral"
+                  borderRightWidth={0}
+                  borderLeftRadius="rounded-xl"
+                  bg="base.light"
+                  color="content.primary"
+                  boxShadow="sm"
+                  onClick={() => setProgressPanelOpen((open) => !open)}
+                >
+                  <Icon
+                    as={progressPanelOpen ? MdChevronRight : MdChevronLeft}
+                    boxSize={7}
+                  />
+                </chakra.button>
+              </Flex>
+              <Box h="full" minH={0} boxShadow="lg">
                 <ArtifactPanel
                   actions={actions}
                   cityName={cityName}
@@ -191,11 +303,41 @@ export function StationaryEnergyChatArtifactPage({
                   state={state}
                 />
               </Box>
-              <Box minW={0} minH={0} overflow={{ base: "visible", xl: "hidden" }}>
-                <SourceDetailPane actions={actions} state={state} />
-              </Box>
             </Box>
-          </Grid>
+
+            <Box display={{ base: "block", xl: "none" }} px={3} pb={4}>
+              <chakra.button
+                type="button"
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                w="full"
+                px={4}
+                py={3}
+                borderWidth="1px"
+                borderColor="border.neutral"
+                borderRadius="rounded-xl"
+                bg="base.light"
+                color="content.primary"
+                fontFamily="heading"
+                fontWeight="semibold"
+                onClick={() => setProgressPanelOpen((open) => !open)}
+              >
+                {t("artifact-panel-expand")}
+                <Text color="interactive.tertiary">{progress}%</Text>
+              </chakra.button>
+              {progressPanelOpen ? (
+                <Box mt={3}>
+                  <ArtifactPanel
+                    actions={actions}
+                    cityName={cityName}
+                    inventoryYear={inventoryYear}
+                    state={state}
+                  />
+                </Box>
+              ) : null}
+            </Box>
+          </Box>
         )}
       </Box>
     </Box>

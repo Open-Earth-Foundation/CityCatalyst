@@ -128,6 +128,7 @@ export function StageMessages(props: StageMessagesProps) {
         />
         <AgentBubble text={t("chat-start-review-prompt")} />
         <QuickReplies
+          standalone
           buttons={[
             {
               label: t("chat-start-yes-draft"),
@@ -148,7 +149,7 @@ export function StageMessages(props: StageMessagesProps) {
     return (
       <>
         <AgentBubble text={t("chat-drafting-started")} />
-        <QuickReplies buttons={draftingPreferenceButtons(t, props)} />
+        <QuickReplies standalone buttons={draftingPreferenceButtons(t, props)} />
         {props.sourcePreference ? (
           <UserBubble
             text={buildSourcePreferenceLabel(t, props.sourcePreference)}
@@ -171,7 +172,7 @@ export function StageMessages(props: StageMessagesProps) {
           })}
         />
         {props.canSaveToInventory ? (
-          <QuickReplies buttons={reviewQuickReplies(t, props)} />
+          <QuickReplies standalone buttons={reviewQuickReplies(t, props)} />
         ) : null}
       </>
     );
@@ -215,7 +216,7 @@ export function StageMessages(props: StageMessagesProps) {
       />
       <AgentBubble text={t("chat-review-later-notation")} />
       {props.canPersistDraftReview || props.canSaveToInventory ? (
-        <QuickReplies buttons={reviewQuickReplies(t, props)} />
+        <QuickReplies standalone buttons={reviewQuickReplies(t, props)} />
       ) : null}
     </>
   );

@@ -411,13 +411,7 @@ function ArtifactRowView(props: {
   );
 }
 
-function CurrentActionCard({
-  row,
-  t,
-}: {
-  row: ArtifactRow;
-  t: TFunction;
-}) {
+function CurrentActionCard({ row, t }: { row: ArtifactRow; t: TFunction }) {
   return (
     <Box
       mt="m"

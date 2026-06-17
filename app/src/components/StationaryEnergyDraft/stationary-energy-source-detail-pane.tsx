@@ -111,7 +111,11 @@ export function SourceDetailPane({ actions, state }: SourceDetailPaneProps) {
         borderColor="border.neutral"
         bg="base.light"
       >
-        <Text fontFamily="heading" fontWeight="semibold" color="content.primary">
+        <Text
+          fontFamily="heading"
+          fontWeight="semibold"
+          color="content.primary"
+        >
           {t("source-detail-title")}
         </Text>
       </Flex>

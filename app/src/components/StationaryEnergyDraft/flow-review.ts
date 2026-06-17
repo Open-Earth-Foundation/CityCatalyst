@@ -366,8 +366,7 @@ function serializeReviewDecisionInput(params: {
         ? Number(params.decision.manualValue)
         : undefined,
     manual_unit:
-      params.decision.action === "override_manual" &&
-      params.decision.manualUnit
+      params.decision.action === "override_manual" && params.decision.manualUnit
         ? params.decision.manualUnit
         : undefined,
     note: params.decision.note || undefined,

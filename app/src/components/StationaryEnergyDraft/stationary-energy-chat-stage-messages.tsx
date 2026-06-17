@@ -149,7 +149,10 @@ export function StageMessages(props: StageMessagesProps) {
     return (
       <>
         <AgentBubble text={t("chat-drafting-started")} />
-        <QuickReplies standalone buttons={draftingPreferenceButtons(t, props)} />
+        <QuickReplies
+          standalone
+          buttons={draftingPreferenceButtons(t, props)}
+        />
         {props.sourcePreference ? (
           <UserBubble
             text={buildSourcePreferenceLabel(t, props.sourcePreference)}

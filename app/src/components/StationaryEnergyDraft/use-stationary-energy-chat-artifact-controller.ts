@@ -269,9 +269,7 @@ function normalizeToolChoiceSummary(
   };
 }
 
-function decisionOptionsForToolChoice(
-  context: DecisionReviewContext,
-) {
+function decisionOptionsForToolChoice(context: DecisionReviewContext) {
   return [
     ...(context.recommendedOption ? [context.recommendedOption] : []),
     ...context.alternativeOptions,
@@ -347,10 +345,12 @@ function enrichToolChoiceSummary(
     source_label: choice.source_label ?? option?.label ?? null,
     source_short_label:
       choice.source_short_label ??
-      (isLeaveDraft ? (choice.source_label ?? option?.label ?? null) : option?.shortLabel ?? null),
+      (isLeaveDraft
+        ? (choice.source_label ?? option?.label ?? null)
+        : (option?.shortLabel ?? null)),
     source_meta:
-      choice.source_meta ?? (isLeaveDraft ? null : option?.meta ?? null),
-    value: choice.value ?? (isLeaveDraft ? null : option?.value ?? null),
+      choice.source_meta ?? (isLeaveDraft ? null : (option?.meta ?? null)),
+    value: choice.value ?? (isLeaveDraft ? null : (option?.value ?? null)),
   };
 }
 
@@ -882,19 +882,17 @@ export function useStationaryEnergyChatArtifactController(
       }
 
       if (isStationaryEnergyBulkReviewConfirmationToolResult(tool)) {
-        const choices = (tool.pending_choices ?? []).map(
-          (choice) =>
-            enrichToolChoiceSummary(
-              normalizeToolChoiceSummary(choice),
-              decisionReviewContext,
-            ),
+        const choices = (tool.pending_choices ?? []).map((choice) =>
+          enrichToolChoiceSummary(
+            normalizeToolChoiceSummary(choice),
+            decisionReviewContext,
+          ),
         );
-        const blockedChoices = (tool.blocked_choices ?? []).map(
-          (choice) =>
-            enrichToolChoiceSummary(
-              normalizeToolChoiceSummary(choice),
-              decisionReviewContext,
-            ),
+        const blockedChoices = (tool.blocked_choices ?? []).map((choice) =>
+          enrichToolChoiceSummary(
+            normalizeToolChoiceSummary(choice),
+            decisionReviewContext,
+          ),
         );
         appendBulkReviewConfirmation({
           message: tool.message,
@@ -905,19 +903,17 @@ export function useStationaryEnergyChatArtifactController(
       }
 
       if (isStationaryEnergyStagedReviewUpdateConfirmationToolResult(tool)) {
-        const choices = (tool.pending_choices ?? []).map(
-          (choice) =>
-            enrichToolChoiceSummary(
-              normalizeToolChoiceSummary(choice),
-              decisionReviewContext,
-            ),
+        const choices = (tool.pending_choices ?? []).map((choice) =>
+          enrichToolChoiceSummary(
+            normalizeToolChoiceSummary(choice),
+            decisionReviewContext,
+          ),
         );
-        const blockedChoices = (tool.blocked_choices ?? []).map(
-          (choice) =>
-            enrichToolChoiceSummary(
-              normalizeToolChoiceSummary(choice),
-              decisionReviewContext,
-            ),
+        const blockedChoices = (tool.blocked_choices ?? []).map((choice) =>
+          enrichToolChoiceSummary(
+            normalizeToolChoiceSummary(choice),
+            decisionReviewContext,
+          ),
         );
         appendStagedReviewUpdateConfirmation({
           mode:
@@ -936,19 +932,17 @@ export function useStationaryEnergyChatArtifactController(
         return;
       }
 
-      const selectedChoices = (tool.selected_choices ?? []).map(
-        (choice) =>
-          enrichToolChoiceSummary(
-            normalizeToolChoiceSummary(choice),
-            decisionReviewContext,
-          ),
+      const selectedChoices = (tool.selected_choices ?? []).map((choice) =>
+        enrichToolChoiceSummary(
+          normalizeToolChoiceSummary(choice),
+          decisionReviewContext,
+        ),
       );
-      const blockedChoices = (tool.blocked_choices ?? []).map(
-        (choice) =>
-          enrichToolChoiceSummary(
-            normalizeToolChoiceSummary(choice),
-            decisionReviewContext,
-          ),
+      const blockedChoices = (tool.blocked_choices ?? []).map((choice) =>
+        enrichToolChoiceSummary(
+          normalizeToolChoiceSummary(choice),
+          decisionReviewContext,
+        ),
       );
       if (
         selectedChoices.length > 0 ||
@@ -1234,10 +1228,8 @@ export function useStationaryEnergyChatArtifactController(
   }, [
     appendTextMessage,
     canSaveAcceptedRowsToInventory,
-    buildInventorySaveReviewDecisionPayload,
     decisionState,
     draftState,
-    hasInventorySaveReviewChanges,
     inventoryId,
     resolvedProposalIds,
     refreshDraftStatus,

@@ -17,10 +17,10 @@ import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { InventoryType, InventoryTypeEnum, ISector } from "@/util/constants";
 import { BsPlus } from "react-icons/bs";
-import { MdAutoAwesome } from "react-icons/md";
 import { useParams, usePathname } from "next/navigation";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { useTranslation } from "@/i18n/client";
+import { AskAiIcon } from "@/components/icons";
 
 import {
   AccordionItem,
@@ -158,25 +158,24 @@ export function SectorCard({
                 <NextLink href={`${pathname}/draft/stationary-energy`}>
                   <Button
                     data-testid="stationary-energy-agentic-cta"
-                    variant="ghost"
-                    color="content.link"
-                    justifyContent="flex-start"
+                    variant="solid"
+                    bg="interactive.tertiary"
+                    color="base.light"
+                    justifyContent="center"
                     w="256px"
-                    h="auto"
-                    minH="48px"
-                    py="10px"
+                    h="48px"
+                    py="16px"
                     gap={2}
                     ml={2}
                   >
-                    <MdAutoAwesome />
-                    <Box textAlign="left">
-                      <Text fontFamily="heading" fontSize="button.md">
-                        {tAgentic("sector-card-let-agent-draft")}
-                      </Text>
-                      <Text color="content.tertiary" fontSize="label.sm">
-                        {tAgentic("sector-card-review-before-saving")}
-                      </Text>
-                    </Box>
+                    <Icon as={AskAiIcon} h={6} w={6} />
+                    <Text
+                      fontFamily="heading"
+                      fontSize="button.md"
+                      whiteSpace="nowrap"
+                    >
+                      {tAgentic("sector-card-let-agent-draft")}
+                    </Text>
                   </Button>
                 </NextLink>
               )}

@@ -12,6 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { MdCheckCircle, MdErrorOutline } from "react-icons/md";
 import { useParams } from "next/navigation";
+import ReactMarkdown, { Components } from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 import { AskAiIcon } from "@/components/icons";
 import { useTranslation } from "@/i18n/client";
@@ -39,6 +41,193 @@ function useStationaryEnergyAgenticTranslation() {
   const lng = getParamValueRequired(params.lng);
   return useTranslation(lng, "stationary-energy-agentic");
 }
+
+const agentMarkdownComponents: Components = {
+  p: ({ children }) => (
+    <Text
+      mb={3}
+      lineHeight="20px"
+      fontSize="body.md"
+      color="inherit"
+      _last={{ mb: 0 }}
+    >
+      {children}
+    </Text>
+  ),
+  h1: ({ children }) => (
+    <Text
+      as="h1"
+      fontWeight="bold"
+      fontSize="title.lg"
+      mb={3}
+      mt={2}
+      lineHeight="28px"
+      color="inherit"
+    >
+      {children}
+    </Text>
+  ),
+  h2: ({ children }) => (
+    <Text
+      as="h2"
+      fontWeight="bold"
+      fontSize="title.md"
+      mb={3}
+      mt={2}
+      lineHeight="24px"
+      color="inherit"
+    >
+      {children}
+    </Text>
+  ),
+  h3: ({ children }) => (
+    <Text
+      as="h3"
+      fontWeight="semibold"
+      fontSize="body.md"
+      mb={2}
+      mt={2}
+      lineHeight="20px"
+      color="inherit"
+    >
+      {children}
+    </Text>
+  ),
+  ul: ({ children }) => (
+    <Box as="ul" pl={5} mb={3} color="inherit" css={{ listStyleType: "disc" }}>
+      {children}
+    </Box>
+  ),
+  ol: ({ children }) => (
+    <Box
+      as="ol"
+      pl={5}
+      mb={3}
+      color="inherit"
+      css={{ listStyleType: "decimal" }}
+    >
+      {children}
+    </Box>
+  ),
+  li: ({ children }) => (
+    <Box as="li" lineHeight="20px" mb={1} color="inherit">
+      {children}
+    </Box>
+  ),
+  strong: ({ children }) => (
+    <Text as="strong" fontWeight="bold" display="inline" color="inherit">
+      {children}
+    </Text>
+  ),
+  em: ({ children }) => (
+    <Text as="em" fontStyle="italic" display="inline" color="inherit">
+      {children}
+    </Text>
+  ),
+  a: ({ children, href }) => (
+    <chakra.a
+      href={href}
+      color="interactive.primary"
+      fontWeight="semibold"
+      textDecoration="underline"
+      display="inline"
+    >
+      {children}
+    </chakra.a>
+  ),
+  blockquote: ({ children }) => (
+    <Box
+      as="blockquote"
+      borderLeftWidth="3px"
+      borderColor="border.overlay"
+      pl={3}
+      my={3}
+      color="content.tertiary"
+    >
+      {children}
+    </Box>
+  ),
+  code: ({ children }) => (
+    <Text
+      as="code"
+      fontFamily="mono"
+      bg="blackAlpha.100"
+      px={1}
+      borderRadius="sm"
+      fontSize="label.md"
+      color="inherit"
+    >
+      {children}
+    </Text>
+  ),
+  pre: ({ children }) => (
+    <Box
+      as="pre"
+      bg="blackAlpha.100"
+      p={3}
+      borderRadius="rounded"
+      mb={3}
+      overflowX="auto"
+      fontSize="label.md"
+    >
+      {children}
+    </Box>
+  ),
+  table: ({ children }) => (
+    <Box overflowX="auto" mb={3}>
+      <Box
+        as="table"
+        w="full"
+        fontSize="label.md"
+        css={{ borderCollapse: "collapse" }}
+        color="inherit"
+      >
+        {children}
+      </Box>
+    </Box>
+  ),
+  thead: ({ children }) => (
+    <Box as="thead" bg="blackAlpha.100">
+      {children}
+    </Box>
+  ),
+  tbody: ({ children }) => <Box as="tbody">{children}</Box>,
+  tr: ({ children }) => (
+    <Box
+      as="tr"
+      css={{ borderBottom: "1px solid" }}
+      borderColor="border.overlay"
+    >
+      {children}
+    </Box>
+  ),
+  th: ({ children }) => (
+    <Box
+      as="th"
+      px={3}
+      py={2}
+      fontWeight="semibold"
+      textAlign="left"
+      color="inherit"
+      css={{ border: "1px solid" }}
+      borderColor="border.overlay"
+    >
+      {children}
+    </Box>
+  ),
+  td: ({ children }) => (
+    <Box
+      as="td"
+      px={3}
+      py={2}
+      color="inherit"
+      css={{ border: "1px solid" }}
+      borderColor="border.overlay"
+    >
+      {children}
+    </Box>
+  ),
+};
 
 export function AgentBubble({ text }: { text: string }) {
   return (
@@ -78,9 +267,13 @@ export function AgentBubble({ text }: { text: string }) {
         fontSize="body.md"
         lineHeight="20px"
         overflowWrap="anywhere"
-        whiteSpace="pre-wrap"
       >
-        {text}
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={agentMarkdownComponents}
+        >
+          {text}
+        </ReactMarkdown>
       </Box>
     </Flex>
   );

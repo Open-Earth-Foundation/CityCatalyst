@@ -226,15 +226,14 @@ export function StationaryEnergyChatArtifactPage({
             minH={0}
             position="relative"
             overflow={{ base: "visible", xl: "hidden" }}
+            display={{ base: "block", xl: "flex" }}
+            alignItems="stretch"
           >
             <Box
               h={{ base: "auto", xl: "full" }}
               minH={0}
-              pr={{
-                base: 0,
-                xl: progressPanelOpen ? "520px" : 0,
-              }}
-              transition="padding-right 220ms ease"
+              minW={0}
+              flex={{ base: undefined, xl: "1 1 0%" }}
               overflow={{ base: "visible", xl: "hidden" }}
             >
               <ClimaChatPanel actions={actions} state={state} />
@@ -242,20 +241,22 @@ export function StationaryEnergyChatArtifactPage({
 
             <Box
               display={{ base: "none", xl: "block" }}
-              position="absolute"
-              top={0}
-              right={0}
-              bottom={0}
-              w="520px"
+              position="relative"
+              flex={{
+                base: undefined,
+                xl: progressPanelOpen ? "0 0 520px" : "0 0 0px",
+              }}
+              w={{
+                base: undefined,
+                xl: progressPanelOpen ? "520px" : "0px",
+              }}
+              h="full"
+              minH={0}
               pt={0}
               pb={0}
               pr={0}
-              transform={
-                progressPanelOpen
-                  ? "translateX(0)"
-                  : "translateX(100%)"
-              }
-              transition="transform 220ms ease"
+              overflow="visible"
+              transition="flex-basis 220ms ease, width 220ms ease"
               zIndex={4}
             >
               <Flex

@@ -11,7 +11,7 @@ from uuid import UUID
 from agents import RunConfig, Runner, gen_trace_id
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from app.config import get_settings
+from app.config import Settings, get_settings
 from app.middleware import get_request_id
 from app.models.db.stationary_energy_draft import StationaryEnergyDraftRun
 from app.models.requests import MessageCreateRequest
@@ -184,7 +184,7 @@ class StreamingHandler:
 
     async def _load_conversation_history(
         self,
-        settings,
+        settings: Settings,
         payload: MessageCreateRequest,
     ) -> List[Dict[str, str]]:
         """Load conversation history from database with pruning applied.
@@ -642,9 +642,10 @@ class StreamingHandler:
 
     def _enforce_chat_prompt_budget(
         self,
-        agent,
+        agent: Any,
         runner_input: List[Dict[str, str]],
     ) -> List[Dict[str, str]]:
+        """Trim chat input to the Stationary Energy prompt budget."""
         budget = get_stationary_energy_prompt_budget(get_settings(), "chat_context")
         trimmed_input, token_count, removed_messages = trim_messages_to_budget(
             runner_input,
@@ -674,6 +675,7 @@ class StreamingHandler:
     def _format_stationary_energy_context_message(
         context_payload: Dict[str, Any],
     ) -> Dict[str, str]:
+        """Format the persisted Stationary Energy context as a system message."""
         return {
             "role": "system",
             "content": (
@@ -692,6 +694,7 @@ class StreamingHandler:
         }
 
     def _agent_instruction_text(self, agent: Any | None = None) -> str:
+        """Return the active agent instruction text used for token accounting."""
         instructions = getattr(agent, "instructions", None)
         if instructions:
             return str(instructions)
@@ -707,6 +710,7 @@ class StreamingHandler:
         compacted_tokens: int,
         max_prompt_tokens: int,
     ) -> Dict[str, Any]:
+        """Build a compact context payload for prompt budget fallback."""
         return {
             "draft_run": context_payload.get("draft_run"),
             "city": context_payload.get("city"),
@@ -731,7 +735,7 @@ class StreamingHandler:
 
     async def _stream_agent_events(
         self,
-        agent,
+        agent: Any,
         payload: MessageCreateRequest,
         conversation_history: List[Dict[str, str]],
     ) -> AsyncIterator[bytes]:
@@ -762,6 +766,7 @@ class StreamingHandler:
                 yield event_bytes
 
     def _run_config(self, payload: MessageCreateRequest) -> RunConfig:
+        """Build trace metadata and execution options for one streamed run."""
         settings = get_settings()
         req_id = get_request_id()
         draft_run_id = (
@@ -814,7 +819,7 @@ class StreamingHandler:
         )
 
     async def _fallback_stream(
-        self, agent, payload: MessageCreateRequest
+        self, agent: Any, payload: MessageCreateRequest
     ) -> AsyncIterator[bytes]:
         """Fallback streaming method if Runner fails."""
         if not (hasattr(agent, "messages") and hasattr(agent.messages, "run_stream")):
@@ -836,7 +841,7 @@ class StreamingHandler:
             else:
                 yield json.dumps(raw_chunk).encode("utf-8")
 
-    async def _process_chunk(self, chunk) -> AsyncIterator[bytes]:
+    async def _process_chunk(self, chunk: Any) -> AsyncIterator[bytes]:
         """Process a single chunk from the stream."""
         chunk_type = chunk.type
 
@@ -856,7 +861,7 @@ class StreamingHandler:
         else:
             logger.debug("Unhandled stream event type: %s", chunk_type)
 
-    async def _handle_raw_response(self, chunk) -> AsyncIterator[bytes]:
+    async def _handle_raw_response(self, chunk: Any) -> AsyncIterator[bytes]:
         """Handle raw response events (text deltas, errors, etc)."""
         response_event = getattr(chunk, "data", None)
         if not response_event:
@@ -892,7 +897,7 @@ class StreamingHandler:
         else:
             logger.debug("Unhandled raw response event type: %s", response_type)
 
-    async def _handle_run_item(self, chunk) -> AsyncIterator[bytes]:
+    async def _handle_run_item(self, chunk: Any) -> AsyncIterator[bytes]:
         """Handle run item stream events (tool calls, tool outputs)."""
         event_name = getattr(chunk, "name", "")
         run_item = getattr(chunk, "item", None)
@@ -908,7 +913,7 @@ class StreamingHandler:
         else:
             logger.debug("Unhandled run item event: %s", event_name)
 
-    async def _handle_tool_called(self, run_item) -> AsyncIterator[bytes]:
+    async def _handle_tool_called(self, run_item: Any) -> AsyncIterator[bytes]:
         """Handle tool called events."""
         raw_item = getattr(run_item, "raw_item", None)
         tool_name = getattr(raw_item, "name", None) or getattr(
@@ -952,7 +957,7 @@ class StreamingHandler:
             event="tool_result",
         ).encode("utf-8")
 
-    async def _handle_tool_output(self, run_item) -> AsyncIterator[bytes]:
+    async def _handle_tool_output(self, run_item: Any) -> AsyncIterator[bytes]:
         """Handle tool output events."""
         raw_item = getattr(run_item, "raw_item", None)
         call_id = None

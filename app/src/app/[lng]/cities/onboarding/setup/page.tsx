@@ -231,10 +231,6 @@ export default function OnboardingSetup(props: {
             { errors, inventoryId: inventory.inventoryId },
             "Some third-party sources failed to connect during onboarding",
           );
-          makeWarningToast(
-            t("connect-data-sources-partial-failure-title"),
-            t("connect-data-sources-partial-failure-description"),
-          );
         }
       }
 

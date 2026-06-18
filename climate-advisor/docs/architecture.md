@@ -27,7 +27,7 @@ flowchart TB
     end
 
     DB[("PostgreSQL<br/>Threads | Messages<br/>Embeddings")]
-    LLM["OpenRouter<br/>(LLM Provider)"]
+    LLM["Chat Provider<br/>(OpenRouter / OpenAI)"]
     CC["CityCatalyst API<br/>Token & Inventory"]
 
     UI -->|"HTTP/REST<br/>(JWT Token)"| API
@@ -132,12 +132,13 @@ sequenceDiagram
     Client->>API: {user_id, content, thread_id?, context}
 
     API->>Resolver: resolve_thread()
-    alt thread_id exists
+    alt thread_id provided
         Resolver->>DB: Fetch thread
-    else create new
+        Resolver-->>API: existing owned thread
+    else no thread_id provided
         Resolver->>DB: Create thread
+        Resolver-->>API: new thread
     end
-    Resolver-->>API: thread
 
     API->>Token: load_token()
     alt token expired
@@ -266,8 +267,12 @@ WITH (lists = 100);
 **AgentService** (`services/agent_service.py`)
 
 - `create_agent()` - Initialize Agents SDK with tools
-- `_create_openrouter_client()` - Configure OpenRouter endpoint
+- `_create_openrouter_client()` - Build the chat client from shared OpenRouter settings
 - `_setup_tools()` - Build tool definitions for agent
+
+**OpenRouter Client Helper** (`services/openrouter_client.py`)
+
+- `build_openrouter_client_options()` - Resolve shared OpenRouter base URL, headers, timeout, and retry settings for chat clients
 
 **EmbeddingService** (`services/embedding_service.py`)
 
@@ -323,8 +328,8 @@ async def cc_inventory_query(inventory_id: str, data_type: str) -> Dict:
 
 **ThreadResolver** (`utils/thread_resolver.py`)
 
-- Resolves thread_id (existing or create new)
-- Handles thread creation with context
+- Validates that provided thread_ids already exist and belong to the user
+- Creates a new thread only when the request omits thread_id
 
 **TokenHandler** (`utils/token_handler.py`)
 
@@ -387,12 +392,13 @@ CityCatalyst Next.js App
 ### 2. Climate Advisor ↔ OpenRouter (LLM)
 
 ```
-AgentService
-  └─ AsyncOpenAI(base_url="https://openrouter.ai/api/v1")
-      └─ headers: {"Authorization": "Bearer $OPENROUTER_API_KEY"}
-          ├─ LLM Provider: OpenRouter
-          ├─ Tools: [climate_vector_search, cc_inventory_query]
-          └─ Stream: true (token-by-token)
+AgentService / StationaryEnergyProposalLLMService
+  └─ build_openrouter_client_options()
+      └─ AsyncOpenAI(base_url="https://openrouter.ai/api/v1")
+          └─ headers: {"Authorization": "Bearer $OPENROUTER_API_KEY"}
+              ├─ LLM Provider: OpenRouter
+              ├─ Tools: [climate_vector_search, cc_inventory_query]
+              └─ Stream: true (token-by-token)
 ```
 
 ### 3. Climate Advisor ↔ OpenAI (Embeddings)

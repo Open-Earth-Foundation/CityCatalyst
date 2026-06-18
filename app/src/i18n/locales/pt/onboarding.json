@@ -74,8 +74,6 @@
   "sources-drawer-incomplete-setup": "Conclua o ano e o objetivo do inventário nas etapas anteriores para visualizar as fontes.",
   "sources-drawer-load-error": "Não foi possível carregar as fontes. Tente novamente mais tarde.",
   "sources-drawer-no-sources": "Não há fontes de terceiros disponíveis para esta cidade e ano de inventário.",
-  "connect-data-sources-partial-failure-title": "Algumas fontes de dados não puderam ser conectadas",
-  "connect-data-sources-partial-failure-description": "Seu inventário foi criado. Você pode conectar as fontes restantes manualmente nas etapas de dados.",
   "sources-drawer-title": "Fontes",
   "sources-drawer-description": "Nesta seção você encontrará informações relacionadas às fontes do seu objetivo de inventário.",
   "sources-category-empty-placeholder": "Os detalhes das fontes para esta categoria estarão disponíveis em breve.",

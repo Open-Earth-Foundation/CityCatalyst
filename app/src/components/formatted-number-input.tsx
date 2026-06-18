@@ -1,13 +1,13 @@
 import React from "react";
-import { Control, Controller, useWatch } from "react-hook-form";
+import { Control, Controller } from "react-hook-form";
 import { Group, InputAddon } from "@chakra-ui/react";
-import { useParams } from "next/navigation";
 import {
   NumberInputField,
   NumberInputProps,
   NumberInputRoot,
 } from "./ui/number-input";
-import { REGIONALLOCALES } from "@/util/constants";
+import { decimalSeparators, formatNumber } from "@/util/helpers";
+import { NumberFormatEnum } from "@/util/enums";
 
 interface FormattedNumberInputProps extends NumberInputProps {
   control: Control<any, any>;
@@ -25,6 +25,7 @@ interface FormattedNumberInputProps extends NumberInputProps {
   t: Function;
   max?: number;
   min?: number;
+  numberFormat?: string;
 }
 
 function FormattedNumberInput({
@@ -42,17 +43,16 @@ function FormattedNumberInput({
   t,
   min,
   max,
+  numberFormat,
   ...rest
 }: FormattedNumberInputProps) {
-  const { lng } = useParams();
+  const normalizedFormat = numberFormat ?? NumberFormatEnum.COMMA_AND_DOT;
+  const decimalSeparator = decimalSeparators[normalizedFormat];
 
   const format = (nval: number | string) => {
     nval = nval.toString();
-    const locale = REGIONALLOCALES[lng as string] || "en-US"; // Get the user's locale
-    const decimalSeparator = (1.1).toLocaleString(locale).substring(1, 2); // Detect the decimal separator
 
     // Check if the input ends with a decimal separator
-
     const endsWithSeparator = nval.toString().slice(-1) === decimalSeparator;
 
     // Replace the locale-specific separator with a dot for parsing
@@ -65,10 +65,7 @@ function FormattedNumberInput({
     if (isNaN(numericValue)) return nval;
 
     // Format the number part
-    const formattedNumber = new Intl.NumberFormat(locale, {
-      maximumFractionDigits: 20,
-      notation: "standard",
-    }).format(numericValue);
+    const formattedNumber = formatNumber(numericValue, numberFormat, 20);
 
     // If the input ends with a separator, add it back to the formatted string
     return endsWithSeparator
@@ -78,26 +75,17 @@ function FormattedNumberInput({
 
   // Parse the formatted string into a raw number
   const parse = (val: string) => {
-    const localeDecimalSeparator = (1.1)
-      .toLocaleString(REGIONALLOCALES[lng as string])
-      .substring(1, 2); // Get the decimal separator for the current locale
-
     const normalizedVal = val.replace(
-      new RegExp(`[^0-9${localeDecimalSeparator}-]`, "g"),
+      new RegExp(`[^0-9${decimalSeparator}-]`, "g"),
       "",
     ); // Keep only numbers and separators
-    const normalizedNumber = normalizedVal.replace(localeDecimalSeparator, ".");
+    const normalizedNumber = normalizedVal.replace(decimalSeparator, ".");
     return isNaN(parseFloat(normalizedNumber))
       ? ""
       : normalizedNumber.toString();
   };
 
   const isCharacterValid = (char: string) => {
-    const normalizedLocale = REGIONALLOCALES[lng as string] || "en-US"; // Default to en-US
-    const decimalSeparator = (1.1)
-      .toLocaleString(normalizedLocale)
-      .substring(1, 2);
-
     // Build the regex dynamically to include the decimal separator
     const validRegex = new RegExp(`^[0-9${decimalSeparator}]$`);
 

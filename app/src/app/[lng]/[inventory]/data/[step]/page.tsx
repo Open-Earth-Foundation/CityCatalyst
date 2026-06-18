@@ -10,7 +10,6 @@ import {
   NoDatasourcesIcon,
 } from "@/components/icons";
 import {
-  clear,
   InventoryUserFileAttributes,
   removeFile,
 } from "@/features/city/inventoryDataSlice";
@@ -23,7 +22,6 @@ import {
   clamp,
   convertKgToTonnes,
   convertSectorReferenceNumberToNumber,
-  formatEmissions,
   nameToI18NKey,
 } from "@/util/helpers";
 import { bigIntToDecimal } from "@/util/big_int";
@@ -63,7 +61,6 @@ import {
   MdCheckCircle,
   MdCheckCircleOutline,
   MdChevronRight,
-  MdHomeWork,
   MdInfoOutline,
   MdOutlineCheckCircle,
   MdOutlineEdit,
@@ -91,10 +88,6 @@ import {
   BreadcrumbRoot,
 } from "@/components/ui/breadcrumb";
 import { Tag } from "@/components/ui/tag";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
 import { TbWorldSearch } from "react-icons/tb";
 import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
@@ -417,7 +410,10 @@ export default function AddDataSteps() {
     }
   };
 
-  function isSourceConnected(source: DataSourceWithRelations): boolean {
+  function isSourceConnected(source?: DataSourceWithRelations): boolean {
+    if (!source) {
+      return false;
+    }
     return (
       (source.inventoryValues && source.inventoryValues.length > 0) ||
       newlyConnectedDataSourceIds.indexOf(source.datasourceId) > -1
@@ -465,49 +461,12 @@ export default function AddDataSteps() {
     }
   }
 
-  const [selectedSubsector, setSelectedSubsector] =
-    useState<SubSectorWithRelations>();
-  const {
-    open: isSubsectorDrawerOpen,
-    onClose: onSubsectorDrawerClose,
-    onOpen: onSubsectorDrawerOpen,
-  } = useDisclosure();
-  const onSubsectorClick = (subsector: SubSectorWithRelations) => {
-    logger.debug({ subsector });
-    setSelectedSubsector(subsector);
-    onSubsectorDrawerOpen();
-  };
-  const onSubsectorSave = (subsector: SubSectorWithRelations) => {
-    logger.debug({ subsector }, "Save subsector");
-  };
-
-  const [isConfirming, setConfirming] = useState(false);
-  const onConfirm = async () => {
-    setConfirming(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setConfirming(false);
-    if (activeStep >= steps.length - 1) {
-      router.push(`/${inventory}`);
-      dispatch(clear());
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      goToNext();
-    }
-  };
-
   const [isDataSectionExpanded, setDataSectionExpanded] = useState(false);
 
   const getInventoryData = useSelector(
     (state: RootState) => state.inventoryData,
   );
   const dispatch = useDispatch();
-
-  // Add file data to rudux state object
-  const {
-    open: isfileDataModalOpen,
-    onOpen: onFileDataModalOpen,
-    onClose: onfileDataModalClose,
-  } = useDisclosure();
 
   const { showSuccessToast } = UseSuccessToast({
     title: t("file-deletion-success"),
@@ -553,7 +512,6 @@ export default function AddDataSteps() {
     });
   }
 
-  const [buttonText, setButtonText] = useState<string>(t("data-connected"));
   const [hoverStates, setHoverStates] = useState<{ [key: string]: boolean }>(
     {},
   );
@@ -594,48 +552,10 @@ export default function AddDataSteps() {
 
   const onButtonHover = (source: DataSourceWithRelations) => {
     setHoverStates((prev) => ({ ...prev, [source.datasourceId]: true }));
-    setButtonText(t("disconnect-data"));
   };
 
   const onMouseLeave = (source: DataSourceWithRelations) => {
     setHoverStates((prev) => ({ ...prev, [source.datasourceId]: false }));
-    setButtonText(t("data-connected"));
-  };
-
-  const DEFAULT_CONNECTED_BUTTON_PROPS = {
-    variant: "solidPrimary",
-    text: t("data-connected"),
-  };
-
-  const DEFAULT_DISCONNECTED_BUTTON_PROPS = {
-    variant: "outline",
-    text: t("connect-data"),
-  };
-
-  const getButtonProps = (
-    source: DataSourceWithRelations,
-    isHovered: boolean,
-  ) => {
-    if (isSourceConnected(source)) {
-      return {
-        variant: isHovered ? "danger" : DEFAULT_CONNECTED_BUTTON_PROPS.variant,
-        text: isHovered
-          ? t("disconnect-data")
-          : DEFAULT_CONNECTED_BUTTON_PROPS.text,
-        icon: <Icon as={MdCheckCircle} />,
-      };
-    }
-    if (isSourceGpcBlocked(source)) {
-      return {
-        variant: DEFAULT_DISCONNECTED_BUTTON_PROPS.variant,
-        text: t("connect-data-gpc-exists"),
-        icon: undefined,
-      };
-    }
-    return {
-      variant: DEFAULT_DISCONNECTED_BUTTON_PROPS.variant,
-      text: DEFAULT_DISCONNECTED_BUTTON_PROPS.text,
-    };
   };
 
   const [scrollPosition, setScrollPosition] = useState<number>(0);
@@ -664,7 +584,7 @@ export default function AddDataSteps() {
 
   const scrollResizeHeaderThreshold = 50;
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
-  const { organization, isFrozenCheck } = useOrganizationContext();
+  const { isFrozenCheck } = useOrganizationContext();
 
   console.log("dataSources", dataSources);
 
@@ -796,6 +716,7 @@ export default function AddDataSteps() {
                       "striped",
                     ]}
                     height={4}
+                    numberFormat={userInfo?.numberFormat}
                   />
                   <Heading size="sm" ml={6} mt={-1} whiteSpace="nowrap">
                     {t("completion-percent", {
@@ -1034,10 +955,6 @@ export default function AddDataSteps() {
                   .slice(0, isDataSectionExpanded ? dataSources.length : 6)
                   .map(({ source, data }) => {
                     const isHovered = hoverStates[source.datasourceId];
-                    const { variant, text, icon } = getButtonProps(
-                      source,
-                      isHovered,
-                    );
                     return (
                       <Card.Root
                         key={source.datasourceId}
@@ -1192,7 +1109,9 @@ export default function AddDataSteps() {
                                 onMouseLeave={() => onMouseLeave(source)}
                               >
                                 <Icon as={MdCheckCircleOutline} />
-                                {text}
+                                {isHovered
+                                  ? t("disconnect-data")
+                                  : t("data-connected")}
                               </Button>
                             ) : isSourceGpcBlocked(source) ? (
                               <Tooltip
@@ -1399,6 +1318,7 @@ export default function AddDataSteps() {
         {/*** Drawers ***/}
         <SourceDrawer
           source={selectedSource}
+          isConnected={isSourceConnected(selectedSource)}
           sourceData={selectedSourceData}
           sector={{ sectorName: currentStep.sector?.sectorName ?? "" }}
           isOpen={isSourceDrawerOpen}
@@ -1407,6 +1327,7 @@ export default function AddDataSteps() {
           isConnectLoading={isConnectDataSourceLoading}
           t={t}
           inventoryId={inventory}
+          numberFormat={userInfo?.numberFormat}
         />
       </Box>
     </>

@@ -18,13 +18,14 @@ export const EmissionsForecastCard = ({
   forecast,
   t,
   lng,
+  numberFormat,
 }: {
   forecast: EmissionsForecastData;
   t: TFunction;
   lng: string;
+  numberFormat?: string;
 }) => {
   const [isExplanationModalOpen, setIsExplanationModalOpen] = useState(false);
-
 
   return (
     <>
@@ -68,7 +69,11 @@ export const EmissionsForecastCard = ({
           height="600px"
           width="100%"
         >
-          <EmissionsForecastChart forecast={forecast} t={t} />
+          <EmissionsForecastChart
+            forecast={forecast}
+            t={t}
+            numberFormat={numberFormat}
+          />
         </CardBody>
       </Card.Root>
     </>

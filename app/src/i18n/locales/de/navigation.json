@@ -1,11 +1,11 @@
 {
   "learning-hub": "Lernen",
-  "admin": "Admin-BereichÂ \n",
+  "admin": "Admin-Bereich",
   "cities": "Städte",
   "settings": "Einstellungen",
   "account-settings": "Kontoeinstellungen",
   "account-frozen-warning-text": "Ihr Konto ist eingefroren. Bitte wenden Sie sich an einen Administrator oder an <bold>{{ email }}</bold>, um es zu reaktivieren",
-  "page-title-ghg-inventories": "Inventários de GEI",
+  "page-title-ghg-inventories": "Treibhausgas-Inventare",
   "page-title-hiap": "Aktionen & Pläne",
-  "page-title-dashboard": "Treibhausgas-Inventare"
+  "page-title-dashboard": "Dashboard"
 }

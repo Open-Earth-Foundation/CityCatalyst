@@ -1,6 +1,6 @@
 {
   "name": "city-catalyst",
-  "version": "1.18.0-dev.0",
+  "version": "1.19.0-dev.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -74,7 +74,7 @@
     "fuse.js": "^7.1.0",
     "geojson": "^0.5.0",
     "http-errors": "^2.0.0",
-    "i18next": "^25.7.3",
+    "i18next": "^26.2.0",
     "i18next-browser-languagedetector": "^8.1.0",
     "i18next-resources-to-backend": "^1.2.1",
     "js-cookie": "^3.0.5",

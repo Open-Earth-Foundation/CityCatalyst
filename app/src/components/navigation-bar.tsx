@@ -430,7 +430,7 @@ export function NavigationBar({
                       </>
                     )}
 
-                    {!restrictAccess && !userAccessStatus?.isOrgOwner && (
+                    {!restrictAccess && (
                       <MenuItem
                         value="settings"
                         paddingTop="12px"

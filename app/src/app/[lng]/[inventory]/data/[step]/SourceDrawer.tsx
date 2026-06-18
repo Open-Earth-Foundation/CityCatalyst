@@ -12,7 +12,7 @@ import { RefObject } from "react";
 import { MdArrowBack, MdHomeWork, MdInfoOutline } from "react-icons/md";
 import type { DataSourceData, DataSourceWithRelations } from "./types";
 import { getTranslationFromDict } from "@/i18n";
-import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
+import { convertKgToTonnes, formatNumber, toKebabCase } from "@/util/helpers";
 import {
   DrawerBackdrop,
   DrawerBody,
@@ -43,6 +43,8 @@ export function SourceDrawer({
   hideActions,
   totalEmissionsData,
   inventoryId,
+  numberFormat,
+  isConnected,
 }: {
   hideActions?: boolean;
   source?: DataSourceWithRelations;
@@ -57,6 +59,8 @@ export function SourceDrawer({
   totalEmissionsData?: string;
   t: TFunction;
   inventoryId: string;
+  numberFormat?: string;
+  isConnected?: boolean;
 }) {
   function ensureProtocol(url: string) {
     if (!/^https?:\/\//i.test(url)) {
@@ -71,17 +75,27 @@ export function SourceDrawer({
   const emissionsToBeIncluded = () => {
     let converted;
     if (!!totalEmissionsData && totalEmissionsData !== "?") {
-      converted = convertKgToTonnes(parseFloat(totalEmissionsData));
+      converted = convertKgToTonnes(
+        parseFloat(totalEmissionsData),
+        numberFormat,
+      );
     }
     const emissionsData = sourceData?.totals?.emissions?.co2eq_100yr;
     let totalEmissions = emissionsData
-      ? ((Number(emissionsData) * sourceData?.scaleFactor) / 1000).toFixed(2)
+      ? formatNumber(
+          (Number(emissionsData) * sourceData?.scaleFactor) / 1000,
+          numberFormat,
+          2,
+        )
       : "?";
     if (sourceData?.issue) {
       totalEmissions = "?";
     }
     if (!!totalEmissions && totalEmissions !== "?") {
-      converted = convertKgToTonnes(parseFloat(totalEmissions) * 1000);
+      converted = convertKgToTonnes(
+        parseFloat(totalEmissions) * 1000,
+        numberFormat,
+      );
     }
     if (!converted) {
       return { number: totalEmissionsData ?? totalEmissions, unit: "" };
@@ -231,7 +245,7 @@ export function SourceDrawer({
                   )}
 
                   <SourceDrawerTags t={t} source={source} />
-                  <Separator my={4} />
+                  <Separator my={4} borderColor="border.neutral" />
                   <Stack gap={4} mt={2}>
                     <TitleLarge>{t("inside-dataset")}</TitleLarge>
                     <BodyLarge color="content.tertiary">
@@ -242,6 +256,7 @@ export function SourceDrawer({
                       <SourceDrawerActivityTable
                         activities={sourceData.records}
                         t={t}
+                        numberFormat={numberFormat}
                       />
                     )}
                     <VStack
@@ -262,7 +277,7 @@ export function SourceDrawer({
                         {t("about-data-availability-description")}
                       </BodyLarge>
                     </VStack>
-                    <Separator />
+                    <Separator borderColor="border.neutral" />
                     <ScalingSection
                       source={source}
                       t={t}
@@ -271,18 +286,18 @@ export function SourceDrawer({
                   </Stack>
                 </DrawerBody>
               )}
-              {hideActions ? (
-                <Button onClick={onUrlClick} w="543px" h={16} my={6}>
-                  {t("go-to-source")}
-                </Button>
-              ) : (
-                <Stack
-                  w="full"
-                  borderTop={2}
-                  justify="center"
-                  alignItems="center"
-                  dropShadow="md"
-                >
+              <Stack
+                w="full"
+                borderTop={2}
+                justify="center"
+                alignItems="center"
+                dropShadow="md"
+              >
+                {hideActions || isConnected ? (
+                  <Button onClick={onUrlClick} w="543px" h={16} my={6}>
+                    {t("go-to-source")}
+                  </Button>
+                ) : (
                   <Button
                     onClick={onConnectClick}
                     w="543px"
@@ -292,8 +307,8 @@ export function SourceDrawer({
                   >
                     {t("connect-data")}
                   </Button>
-                </Stack>
-              )}
+                )}
+              </Stack>
             </Stack>
           </DrawerBody>
         )}

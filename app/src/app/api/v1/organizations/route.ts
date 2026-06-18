@@ -9,8 +9,6 @@ import {
   CustomOrganizationError,
   OrganizationErrorCodes,
 } from "@/lib/custom-errors/organization-error";
-import { User } from "@/models/User";
-import { OrganizationAdmin } from "@/models/OrganizationAdmin";
 import { Op } from "sequelize";
 
 /**
@@ -64,7 +62,7 @@ import { Op } from "sequelize";
  *                 error:
  *                   type: string
  */
-export const POST = apiHandler(async (req, { params, session }) => {
+export const POST = apiHandler(async (req, { session }) => {
   UserService.validateIsAdmin(session);
   const orgData = createOrganizationRequest.parse(await req.json());
 
@@ -81,27 +79,6 @@ export const POST = apiHandler(async (req, { params, session }) => {
     });
   }
 
-  // Check if contact email is already an org admin for another organization
-  const existingOrgAdmin = await OrganizationAdmin.findOne({
-    include: [
-      {
-        model: User,
-        as: "user",
-        where: {
-          email: orgData.contactEmail,
-        },
-      },
-    ],
-  });
-
-  if (existingOrgAdmin) {
-    throw new CustomOrganizationError({
-      errorKey: OrganizationErrorCodes.CREATION_FAILED,
-      organizationName: orgData.name,
-      message: "user-already-org-admin",
-    });
-  }
-
   const newOrg = await Organization.create({
     organizationId: randomUUID(),
     active: true,
@@ -109,6 +86,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
   });
   return NextResponse.json(newOrg, { status: 201 });
 });
+
 /**
  * @swagger
  * /api/v1/organizations:
@@ -140,7 +118,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
  *                     type: string
  *                     format: date-time
  */
-export const GET = apiHandler(async (_req, { params, session }) => {
+export const GET = apiHandler(async (_req, { session }) => {
   UserService.validateIsAdmin(session);
 
   const organizations = await Organization.findAll({

@@ -70,6 +70,32 @@ export default class InventoryFileStorageService {
   }
 
   /**
+   * Load an imported file from S3 or the legacy BYTEA column on ImportedInventoryFile.
+   */
+  static async resolveImportedFileBuffer(importedFile: {
+    s3Key?: string | null;
+    data?: Buffer | Uint8Array | null;
+  }): Promise<Buffer | null> {
+    if (importedFile.s3Key) {
+      try {
+        return await InventoryFileStorageService.getFileBuffer(importedFile.s3Key);
+      } catch (err) {
+        logger.error(
+          { err, s3Key: importedFile.s3Key },
+          "Failed to fetch imported file from S3",
+        );
+        return null;
+      }
+    }
+    if (importedFile.data) {
+      return Buffer.isBuffer(importedFile.data)
+        ? importedFile.data
+        : Buffer.from(importedFile.data);
+    }
+    return null;
+  }
+
+  /**
    * Download a file from S3 by key and return it as a Buffer.
    */
   static async getFileBuffer(s3Key: string): Promise<Buffer> {

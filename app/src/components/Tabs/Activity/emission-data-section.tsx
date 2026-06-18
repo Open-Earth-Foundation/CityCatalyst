@@ -21,7 +21,6 @@ import HeadingText from "@/components/heading-text";
 import { MdAdd, MdMoreVert } from "react-icons/md";
 import { FaNetworkWired } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
-import { REGIONALLOCALES } from "@/util/constants";
 import { useParams } from "next/navigation";
 import {
   MenuContent,
@@ -42,6 +41,7 @@ interface EmissionDataSectionProps {
   totalEmissions: number;
   changeMethodology: () => void;
   inventoryValue: InventoryValue | null;
+  numberFormat?: string;
 }
 
 const EmissionDataSection = ({
@@ -55,6 +55,7 @@ const EmissionDataSection = ({
   totalEmissions,
   changeMethodology,
   inventoryValue,
+  numberFormat,
 }: EmissionDataSectionProps) => {
   const [selectedActivityValue, setSelectedActivityValue] = useState<
     ActivityValue | undefined
@@ -341,6 +342,7 @@ const EmissionDataSection = ({
                     onDeleteActivity={handleDeleteActivityDataDialog}
                     onEditActivity={onEditActivity}
                     showActivityModal={handleActivityAdded}
+                    numberFormat={numberFormat}
                   />
                 ) : (
                   <ActivityAccordion
@@ -351,6 +353,7 @@ const EmissionDataSection = ({
                     methodologyId={methodology?.id}
                     onDeleteActivity={handleDeleteActivityDataDialog}
                     onEditActivity={onEditActivity}
+                    numberFormat={numberFormat}
                   />
                 )}
                 {/* Total Emissions Section */}
@@ -376,8 +379,7 @@ const EmissionDataSection = ({
                     >
                       {convertKgToTonnes(
                         inventoryValue?.co2eq as bigint,
-                        null,
-                        REGIONALLOCALES[lng as string],
+                        numberFormat,
                       )}
                     </Text>
                   </Box>

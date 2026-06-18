@@ -8,7 +8,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from app.modules.prioritizer.config import resolve_impact_text_multiplier
+from app.modules.prioritizer.scoring_config import resolve_impact_text_multiplier
 from app.modules.prioritizer.utils.co_benefit_taxonomy import ALLOWED_CO_BENEFIT_KEYS
 from app.modules.prioritizer.utils.sector_mapping import ALLOWED_SECTOR_TAGS
 
@@ -572,12 +572,9 @@ class UpstreamDatasource(BaseModel):
     is_latest: bool | None = None
 
 
-class CityApiMeta(BaseModel):
-    """Exact metadata envelope returned by the upstream city attributes API."""
+class CityApiMeta(UpstreamMeta):
+    """Metadata envelope returned by the upstream city attributes API."""
 
-    model_config = ConfigDict(extra="ignore")
-
-    generated_at_utc: str
     api_context: UpstreamApiContext
     datasources: list[UpstreamDatasource] = Field(default_factory=list)
 
@@ -610,11 +607,21 @@ class CityApiItem(BaseModel):
     )
     area_km2: float | None = None
     population: CityIndicator | None = None
+    disability_prevalence: CityIndicator | None = None
     unemployment_rate: CityIndicator | None = None
     renter_share: CityIndicator | None = None
+    employment_agriculture_forestry: CityIndicator | None = None
+    employment_construction: CityIndicator | None = None
+    employment_electricity_gas: CityIndicator | None = None
     employment_in_transport_and_logistics: CityIndicator | None = None
+    employment_manufacturing: CityIndicator | None = None
+    employment_mining: CityIndicator | None = None
+    employment_water_waste: CityIndicator | None = None
     electricity_access_rate: CityIndicator | None = None
-    industry_construction_employment: CityIndicator | None = None
+    fixed_internet_household_share: CityIndicator | None = None
+    indigenous_identification_rate: CityIndicator | None = None
+    literacy_rate: CityIndicator | None = None
+    mean_years_schooling: CityIndicator | None = None
     median_household_income: CityIndicator | None = None
     public_transport_share: CityIndicator | None = None
     poverty_rate: CityIndicator | None = None

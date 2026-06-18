@@ -115,18 +115,17 @@ def _alignment_timeframe_evidence(
 
 
 @pytest.mark.unit
-def test_mock_city_loader_keeps_renamed_indicator_keys() -> None:
-    """Mock city parsing preserves renamed socioeconomic indicators in raw/context."""
+def test_mock_city_loader_preserves_core_city_payload_and_context() -> None:
+    """Mock city parsing keeps core fields plus the small retained context backfill."""
     city = _load_mock_city()
 
-    assert "employment_in_transport_and_logistics" in city.raw
-    assert "electricity_access_rate" in city.raw
     assert "population" in city.raw
+    assert "employment_construction" in city.raw
     city_context_names = {
         row["attribute_name"] for row in city.city_context if "attribute_name" in row
     }
-    assert "employment_in_transport_and_logistics" in city_context_names
-    assert "electricity_access_rate" in city_context_names
+    assert "employment_construction" in city_context_names
+    assert "unemployment_rate" in city_context_names
 
 
 @pytest.mark.unit

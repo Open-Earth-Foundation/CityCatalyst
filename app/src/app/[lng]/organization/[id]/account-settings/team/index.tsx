@@ -9,17 +9,11 @@ import {
   Table,
   Tabs,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react";
-import { MdAdd, MdMoreVert, MdOutlineGroup } from "react-icons/md";
+import { MdAdd, MdMoreVert } from "react-icons/md";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/i18n/client";
-import {
-  api,
-  useGetOrganizationQuery,
-  useGetProjectsQuery,
-  useGetProjectUsersQuery,
-} from "@/services/api";
+import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import {
   AccordionItem,
@@ -27,11 +21,9 @@ import {
   AccordionItemTrigger,
   AccordionRoot,
 } from "@/components/ui/accordion";
-import { convertKgToTonnes } from "@/util/helpers";
 import { LuChevronDown } from "react-icons/lu";
 import DataTable from "@/components/ui/data-table";
 import {
-  InviteStatus,
   OrganizationRole,
   ProjectUserResponse,
   ProjectWithCities,
@@ -42,7 +34,7 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
-import { RiDeleteBin6Line, RiEditLine } from "react-icons/ri";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import { Tag } from "@/components/ui/tag";
 import AddCollaboratorsModal from "@/components/GHGIHomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { uniqBy } from "lodash";
@@ -73,9 +65,9 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
   const sessionData = useSession();
 
   const { data: organization, isLoading: isOrganizationLoading } =
-    useGetOrganizationQuery(id);
+    api.useGetOrganizationQuery(id);
 
-  const { data: projectsData, isLoading } = useGetProjectsQuery(
+  const { data: projectsData, isLoading } = api.useGetProjectsQuery(
     {
       organizationId: id,
     },
@@ -85,7 +77,7 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
   );
 
   const { data: projectUsers, isLoading: isLoadingProjectUsers } =
-    useGetProjectUsersQuery(
+    api.useGetProjectUsersQuery(
       selectedProject.length > 0 ? selectedProject[0] : "",
       {
         skip: !(selectedProject.length > 0),

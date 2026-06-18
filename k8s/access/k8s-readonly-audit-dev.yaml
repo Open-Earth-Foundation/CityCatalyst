@@ -1,0 +1,58 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: k8s-readonly-audit
+rules:
+- apiGroups: [""]
+  resources:
+    - namespaces
+    - nodes
+    - persistentvolumes
+    - pods
+    - pods/log
+    - services
+    - serviceaccounts
+    - endpoints
+    - configmaps
+    - events
+    - persistentvolumeclaims
+  verbs: ["get", "list", "watch"]
+
+- apiGroups: ["apps"]
+  resources:
+    - deployments
+    - replicasets
+    - daemonsets
+    - statefulsets
+  verbs: ["get", "list", "watch"]
+
+- apiGroups: ["batch"]
+  resources:
+    - jobs
+    - cronjobs
+  verbs: ["get", "list", "watch"]
+
+- apiGroups: ["networking.k8s.io"]
+  resources:
+    - ingresses
+    - networkpolicies
+  verbs: ["get", "list", "watch"]
+
+- apiGroups: ["autoscaling"]
+  resources:
+    - horizontalpodautoscalers
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: k8s-readonly-audit-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: k8s-readonly-audit
+subjects:
+- kind: Group
+  name: k8s-readonly-audit
+  apiGroup: rbac.authorization.k8s.io

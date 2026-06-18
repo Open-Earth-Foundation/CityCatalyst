@@ -14,6 +14,7 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 # Copy the application package
 COPY app/ ./app/
+COPY llm_config.yaml ./llm_config.yaml
 
 # TODO: Remove this once we have a real data source
 COPY data/ ./data/

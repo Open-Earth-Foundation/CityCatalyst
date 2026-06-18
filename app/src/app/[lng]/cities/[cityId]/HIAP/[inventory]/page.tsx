@@ -94,8 +94,9 @@ export default function HIAPInventoryPage(props: {
     }
   }, [ignoreExisting, shouldRefetch, refetch]);
 
+  const { data: userInfo } = api.useGetUserInfoQuery();
   const formattedEmissions = inventory?.totalEmissions
-    ? formatEmissions(inventory.totalEmissions)
+    ? formatEmissions(inventory.totalEmissions, userInfo?.numberFormat)
     : { value: t("N/A"), unit: "" };
 
   const { data: population } = useGetCityPopulationQuery(

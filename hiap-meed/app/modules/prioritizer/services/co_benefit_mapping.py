@@ -9,8 +9,9 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from app.modules.prioritizer.config import (
+from app.modules.prioritizer.llm_config import (
     get_alignment_other_preference_mapping_model,
+    get_alignment_other_preference_mapping_temperature,
 )
 from app.modules.prioritizer.utils.co_benefit_taxonomy import (
     ALLOWED_CO_BENEFIT_KEYS,
@@ -68,7 +69,7 @@ def resolve_city_preferred_co_benefits(
     model_name = get_alignment_other_preference_mapping_model()
     if model_name is None:
         logger.warning(
-            "Skipping co-benefit mapping because HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL is not set"
+            "Skipping co-benefit mapping because the alignment_other_preference model is not configured in llm_config.yaml"
         )
         return {
             "resolved_preferred_co_benefits": [],
@@ -176,7 +177,7 @@ def _resolve_from_llm(
     client = create_openai_client()
     completion = client.chat.completions.parse(
         model=model_name,
-        temperature=0.0,
+        temperature=get_alignment_other_preference_mapping_temperature(),
         response_format=CoBenefitMappingResponse,
         messages=[
             {"role": "system", "content": system_prompt},

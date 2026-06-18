@@ -1,0 +1,32 @@
+services:
+  mlflow:
+    container_name: mlflow
+    image: ghcr.io/mlflow/mlflow:latest
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow-data:/mlflow/mlruns
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri sqlite:////mlflow/mlruns/mlflow.db
+      --artifacts-destination /mlflow/mlruns/artifacts
+      --serve-artifacts
+      --allowed-hosts *
+
+  hiap-meed:
+    container_name: hiap-meed
+    build:
+      context: .
+    depends_on:
+      - mlflow
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs
+
+volumes:
+  mlflow-data:

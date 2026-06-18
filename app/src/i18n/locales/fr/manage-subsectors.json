@@ -120,7 +120,7 @@
   "add-data-to-inventory": "Ajouter des données à l'inventaire",
   "completion-percent": "{{progress}}% terminé",
   "data-connected-percent": "{{progress}}% de données de tiers connectées",
-  "data-added-percent": "{{progress}}% de données ajoutées",
+  "manually-added": "Données ajoutées manuellement",
   "check-data-heading": "Explorez les ensembles de données pertinents à intégrer dans votre inventaire",
   "check-data-details": "Examinez et intégrez automatiquement les données pertinentes pour l'inventaire des GES de votre ville.",
   "no-data-sources": "Aucune source de données externe disponible",

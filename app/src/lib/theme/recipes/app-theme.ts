@@ -189,6 +189,10 @@ export const appTheme = createSystem(defaultConfig, {
           radioUnselected: {
             value: "#E4E4E7",
           },
+          /** Disabled controls and non-interactive surfaces. */
+          backgroundDisabled: {
+            value: "#D9D9D9",
+          },
         },
         border: {
           neutral: {
@@ -511,6 +515,7 @@ export const appTheme = createSystem(defaultConfig, {
           backgroundLight: { value: "#FAFAFA" },
           backgroundGreyFlat: { value: "#FAFBFE" },
           backgroundLoading: { value: "#E8EAFB" },
+          backgroundDisabled: { value: "#D9D9D9" },
         },
 
         interactive: {

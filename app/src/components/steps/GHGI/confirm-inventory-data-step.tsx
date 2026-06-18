@@ -15,6 +15,7 @@ export default function ConfirmStep({
   inventoryGoal,
   year,
   setStep,
+  numberFormat,
 }: {
   cityName: String;
   t: TFunction;
@@ -23,6 +24,7 @@ export default function ConfirmStep({
   inventoryGoal: string;
   year: number;
   setStep: (step: number) => void;
+  numberFormat?: string;
 }) {
   return (
     <Box w="full">
@@ -168,7 +170,7 @@ export default function ConfirmStep({
                     >
                       {population ? (
                         <>
-                          {shortenNumber(population)}
+                          {shortenNumber(population, numberFormat)}
                           {getShortenNumberUnit(population)}
                         </>
                       ) : (

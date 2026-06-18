@@ -24,6 +24,7 @@ export interface SSEStreamOptions {
 
 export function useSSEStream(options: SSEStreamOptions = {}) {
   const abortControllerRef = useRef<AbortController | null>(null);
+  const streamErroredRef = useRef(false);
 
   const parseSSEEvent = useCallback((eventText: string): SSEEvent => {
     const lines = eventText.trim().split('\n');
@@ -65,12 +66,14 @@ export function useSSEStream(options: SSEStreamOptions = {}) {
         case 'done':
           if (event.data?.ok && options.onComplete) {
             options.onComplete();
-          } else if (!event.data?.ok && options.onError) {
+          } else if (!event.data?.ok && options.onError && !streamErroredRef.current) {
             options.onError(event.data?.error || "Stream completed with error");
           }
+          streamErroredRef.current = false;
           break;
 
         case 'error':
+          streamErroredRef.current = true;
           if (options.onError) {
             options.onError(event.data?.message || "Stream error");
           }
@@ -169,6 +172,7 @@ export function useSSEStream(options: SSEStreamOptions = {}) {
     abortControllerRef.current = abortController;
 
     try {
+      streamErroredRef.current = false;
       const response = await fetch(url, {
         ...fetchOptions,
         signal: abortController.signal,
@@ -206,6 +210,7 @@ export function useSSEStream(options: SSEStreamOptions = {}) {
       }
     } catch (error: any) {
       if (error.name !== "AbortError") {
+        streamErroredRef.current = true;
         // Call onError callback for any non-abort errors
         if (options.onError) {
           options.onError(error.message || "Failed to start stream");

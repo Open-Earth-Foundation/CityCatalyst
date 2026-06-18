@@ -24,6 +24,7 @@ import {
   mergeDecisionReviewMessages,
   nextDecisionState,
   resolveInventorySaveConfirmationRequest,
+  resolveStationaryEnergyToolMessage,
   removeResolvedProposalId,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-helpers";
 import {
@@ -167,7 +168,8 @@ const EMPTY_RESOLVED_PROPOSALS = new Set<string>();
 function isStationaryEnergyReviewToolResult(tool: unknown): tool is {
   ui_event: string;
   action?: string;
-  message?: string | null;
+  message_key?: string | null;
+  message_params?: unknown;
   draft_run_id?: string;
   selected_choices?: unknown[];
   blocked_choices?: unknown[];
@@ -185,7 +187,8 @@ function isStationaryEnergyInventoryConfirmationToolResult(
 ): tool is {
   success: boolean;
   ui_event: string;
-  message?: string | null;
+  message_key?: string | null;
+  message_params?: unknown;
   error_code?: string | null;
 } {
   return (
@@ -200,7 +203,8 @@ function isStationaryEnergyBulkReviewConfirmationToolResult(
   tool: unknown,
 ): tool is {
   ui_event: string;
-  message?: string | null;
+  message_key?: string | null;
+  message_params?: unknown;
   draft_run_id?: string;
   pending_choices?: unknown[];
   blocked_choices?: unknown[];
@@ -217,7 +221,8 @@ function isStationaryEnergyStagedReviewUpdateConfirmationToolResult(
   tool: unknown,
 ): tool is {
   ui_event: string;
-  message?: string | null;
+  message_key?: string | null;
+  message_params?: unknown;
   draft_run_id?: string;
   pending_choices?: unknown[];
   blocked_choices?: unknown[];
@@ -387,7 +392,8 @@ function stationaryEnergyToolResultSignature(tool: unknown): string | null {
     ui_event: record.ui_event,
     action: record.action,
     draft_run_id: record.draft_run_id,
-    message: record.message,
+    message_key: record.message_key,
+    message_params: record.message_params,
     selected_choices: Array.isArray(record.selected_choices)
       ? record.selected_choices.map(toolChoiceSignature)
       : [],
@@ -865,10 +871,17 @@ export function useStationaryEnergyChatArtifactController(
       }
 
       if (isStationaryEnergyInventoryConfirmationToolResult(tool)) {
+        const toolMessage = resolveStationaryEnergyToolMessage(
+          t,
+          tool,
+          tool.success
+            ? "tool-message-inventory-save-confirm"
+            : "error-failed-to-save-accepted-stationary-energy-rows",
+        );
         const confirmationRequest = resolveInventorySaveConfirmationRequest({
           canSaveToInventory: canSaveAcceptedRowsToInventory,
           toolSuccess: tool.success,
-          toolMessage: tool.message,
+          toolMessage,
           blockedMessage: t("chat-save-inventory-blocked"),
         });
         removeInventorySaveConfirmationMessages();
@@ -894,8 +907,13 @@ export function useStationaryEnergyChatArtifactController(
             decisionReviewContext,
           ),
         );
+        const toolMessage = resolveStationaryEnergyToolMessage(
+          t,
+          tool,
+          "primitives-bulk-review-confirm-description",
+        );
         appendBulkReviewConfirmation({
-          message: tool.message,
+          message: toolMessage,
           choices,
           blockedChoices,
         });
@@ -915,13 +933,21 @@ export function useStationaryEnergyChatArtifactController(
             decisionReviewContext,
           ),
         );
+        const mode =
+          tool.ui_event ===
+          "stationary_energy_review_rollback_confirmation_requested"
+            ? "rollback"
+            : "change";
+        const toolMessage = resolveStationaryEnergyToolMessage(
+          t,
+          tool,
+          mode === "rollback"
+            ? "primitives-staged-review-rollback-confirm-description"
+            : "primitives-staged-review-change-confirm-description",
+        );
         appendStagedReviewUpdateConfirmation({
-          mode:
-            tool.ui_event ===
-            "stationary_energy_review_rollback_confirmation_requested"
-              ? "rollback"
-              : "change",
-          message: tool.message,
+          mode,
+          message: toolMessage,
           choices,
           blockedChoices,
         });
@@ -944,16 +970,21 @@ export function useStationaryEnergyChatArtifactController(
           decisionReviewContext,
         ),
       );
+      const toolMessage = resolveStationaryEnergyToolMessage(
+        t,
+        tool,
+        "tool-message-generic-summary",
+      );
       if (
         selectedChoices.length > 0 ||
         blockedChoices.length > 0 ||
-        tool.message
+        toolMessage
       ) {
         setChatMessages((current) => [
           ...current,
           createStationaryEnergyToolSummaryMessage({
             action: tool.action ?? "stationary_energy_review_tool",
-            message: tool.message,
+            message: toolMessage,
             selectedChoices,
             blockedChoices,
           }),

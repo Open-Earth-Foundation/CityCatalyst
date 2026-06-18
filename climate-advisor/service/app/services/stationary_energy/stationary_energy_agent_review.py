@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timezone
 from typing import Any, Literal
 from uuid import UUID
@@ -30,6 +31,8 @@ from app.services.stationary_energy.stationary_energy_draft_service import (
 )
 
 
+logger = logging.getLogger(__name__)
+
 SOURCE_BACKED_STATUSES = {
     "ready",
     "needs_review",
@@ -38,6 +41,19 @@ SOURCE_BACKED_STATUSES = {
     "accepted",
     "overridden",
 }
+
+MessageParamValue = str | int | float | bool
+
+
+def _message_payload(
+    message_key: str,
+    **message_params: MessageParamValue,
+) -> dict[str, Any]:
+    """Return language-neutral UI message metadata for CityCatalyst."""
+    return {
+        "message_key": message_key,
+        "message_params": message_params,
+    }
 TERMINAL_DRAFT_STATUSES = {
     "saved",
     "partially_saved",
@@ -104,7 +120,8 @@ class StationaryEnergyAgentReviewToolResult(BaseModel):
         default_factory=list
     )
     pending_required_count: int = 0
-    message: str | None = None
+    message_key: str | None = None
+    message_params: dict[str, MessageParamValue] = Field(default_factory=dict)
     saved_decisions: list[ReviewDecisionResponse] = Field(default_factory=list)
 
 
@@ -124,7 +141,8 @@ class StationaryEnergyBulkReviewConfirmationToolResult(BaseModel):
         default_factory=list
     )
     pending_required_count: int = 0
-    message: str | None = None
+    message_key: str | None = None
+    message_params: dict[str, MessageParamValue] = Field(default_factory=dict)
 
 
 class StationaryEnergyStagedReviewUpdateConfirmationToolResult(BaseModel):
@@ -144,7 +162,8 @@ class StationaryEnergyStagedReviewUpdateConfirmationToolResult(BaseModel):
         default_factory=list
     )
     pending_required_count: int = 0
-    message: str | None = None
+    message_key: str | None = None
+    message_params: dict[str, MessageParamValue] = Field(default_factory=dict)
 
 
 def _source_label(candidate: StationaryEnergyDraftSourceCandidate) -> str:
@@ -193,14 +212,13 @@ class StationaryEnergyAgentReviewService:
         user_id: str,
     ) -> StationaryEnergyAgentReviewToolResult:
         """Return selected and pending source-review choices for a draft."""
-        draft_run = await self._load_owned_reviewable_draft(
+        # Load the authoritative CA-owned draft review state.
+        draft_run, staged = await self._load_draft_with_staged(
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
-        staged = await self.repository.get_staged_review_selections(
-            draft_run_id=draft_run_id,
-            user_id=user_id,
-        )
+
+        # Split active staged choices from proposals that still need review.
         selected = [
             self._choice_from_staged(selection, draft_run)
             for selection in staged
@@ -210,7 +228,7 @@ class StationaryEnergyAgentReviewService:
             draft_run=draft_run,
             staged=staged,
         )
-        return StationaryEnergyAgentReviewToolResult(
+        result = StationaryEnergyAgentReviewToolResult(
             success=True,
             action="stationary_energy_list_review_options",
             ui_event=None,
@@ -225,8 +243,19 @@ class StationaryEnergyAgentReviewService:
                 for proposal in pending
             ],
             pending_required_count=len(pending),
-            message="Loaded Stationary Energy review options.",
+            **_message_payload(
+                "tool-message-review-options-loaded",
+                selected=len(selected),
+                pending=len(pending),
+            ),
         )
+        logger.info(
+            "Loaded Stationary Energy review options draft_run_id=%s selected=%s pending=%s",
+            draft_run_id,
+            len(selected),
+            len(pending),
+        )
+        return result
 
     async def accept_one(
         self,
@@ -255,6 +284,7 @@ class StationaryEnergyAgentReviewService:
         action_name: str = "stationary_energy_accept_multiple",
     ) -> StationaryEnergyAgentReviewToolResult:
         """Stage several validated source-review choices in one transaction."""
+        # Validate every requested choice against the persisted draft snapshot.
         draft_run = await self._load_owned_reviewable_draft(
             draft_run_id=draft_run_id,
             user_id=user_id,
@@ -264,27 +294,18 @@ class StationaryEnergyAgentReviewService:
             choices=choices,
         )
 
-        selections: list[StationaryEnergyStagedReviewSelection] = []
-        for resolved in selected_choices:
-            selection = StationaryEnergyStagedReviewSelection(
-                draft_run_id=draft_run.draft_run_id,
-                proposal_id=resolved.proposal_id,
-                user_id=user_id,
-                action=resolved.action,
-                selected_source_id=resolved.selected_source_id,
-                selected_candidate_id=resolved.selected_candidate_id,
-                rationale=resolved.rationale,
-                tool_call_id=tool_call_id,
-                status="active",
-            )
-            selections.append(selection)
-
+        # Persist only resolved choices; blocked choices are reported, not applied.
+        selections = self._selections_from_choices(
+            draft_run=draft_run,
+            user_id=user_id,
+            selected_choices=selected_choices,
+            tool_call_id=tool_call_id,
+        )
         if selections:
             await self.repository.upsert_staged_review_selections(selections)
-            draft_run.workflow_step = "review"
-            draft_run.updated_at = datetime.now(timezone.utc)
-            await self.session.flush()
+            await self._mark_review_step(draft_run)
 
+        # Re-read staged rows so pending counts reflect the committed in-memory state.
         staged = await self.repository.get_staged_review_selections(
             draft_run_id=draft_run_id,
             user_id=user_id,
@@ -293,17 +314,26 @@ class StationaryEnergyAgentReviewService:
             draft_run=draft_run,
             staged=staged,
         )
-        return StationaryEnergyAgentReviewToolResult(
+        result = StationaryEnergyAgentReviewToolResult(
             success=not blocked_choices,
             action=action_name,
             draft_run_id=draft_run_id,
             selected_choices=selected_choices,
             blocked_choices=blocked_choices,
             pending_required_count=len(pending),
-            message=self._stage_message(
+            **self._stage_message_payload(
                 selected_choices, blocked_choices, len(pending)
             ),
         )
+        logger.info(
+            "Staged Stationary Energy review choices action=%s draft_run_id=%s selected=%s blocked=%s pending=%s",
+            action_name,
+            draft_run_id,
+            len(selected_choices),
+            len(blocked_choices),
+            len(pending),
+        )
+        return result
 
     async def accept_all_recommended(
         self,
@@ -314,11 +344,8 @@ class StationaryEnergyAgentReviewService:
         tool_call_id: str | None = None,
     ) -> StationaryEnergyAgentReviewToolResult:
         """Stage recommended choices for unresolved source-backed proposals."""
-        draft_run = await self._load_owned_reviewable_draft(
-            draft_run_id=draft_run_id,
-            user_id=user_id,
-        )
-        staged = await self.repository.get_staged_review_selections(
+        # Load current review state so only unresolved recommendations are staged.
+        draft_run, staged = await self._load_draft_with_staged(
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
@@ -351,6 +378,7 @@ class StationaryEnergyAgentReviewService:
         action_name: str = "stationary_energy_request_bulk_review_confirmation",
     ) -> StationaryEnergyBulkReviewConfirmationToolResult:
         """Validate several choices without persisting them."""
+        # Resolve requested choices without mutating the staged selection table.
         draft_run = await self._load_owned_reviewable_draft(
             draft_run_id=draft_run_id,
             user_id=user_id,
@@ -359,6 +387,8 @@ class StationaryEnergyAgentReviewService:
             draft_run=draft_run,
             choices=choices,
         )
+
+        # Count what would remain if the previewed choices were confirmed.
         staged = await self.repository.get_staged_review_selections(
             draft_run_id=draft_run_id,
             user_id=user_id,
@@ -368,19 +398,28 @@ class StationaryEnergyAgentReviewService:
             staged=staged,
             extra_resolved_ids={choice.proposal_id for choice in selected_choices},
         )
-        return StationaryEnergyBulkReviewConfirmationToolResult(
+        result = StationaryEnergyBulkReviewConfirmationToolResult(
             success=bool(selected_choices) and not blocked_choices,
             action=action_name,
             draft_run_id=draft_run_id,
             pending_choices=selected_choices,
             blocked_choices=blocked_choices,
             pending_required_count=len(pending_after_preview),
-            message=self._bulk_confirmation_message(
+            **self._bulk_confirmation_message_payload(
                 selected_choices,
                 blocked_choices,
                 len(pending_after_preview),
             ),
         )
+        logger.info(
+            "Prepared Stationary Energy review preview action=%s draft_run_id=%s selected=%s blocked=%s pending_after_preview=%s",
+            action_name,
+            draft_run_id,
+            len(selected_choices),
+            len(blocked_choices),
+            len(pending_after_preview),
+        )
+        return result
 
     async def preview_all_recommended(
         self,
@@ -390,11 +429,8 @@ class StationaryEnergyAgentReviewService:
         rationale: str | None = None,
     ) -> StationaryEnergyBulkReviewConfirmationToolResult:
         """Validate the current unresolved recommended choices without staging."""
-        draft_run = await self._load_owned_reviewable_draft(
-            draft_run_id=draft_run_id,
-            user_id=user_id,
-        )
-        staged = await self.repository.get_staged_review_selections(
+        # Build the preview from unresolved recommended candidates only.
+        draft_run, staged = await self._load_draft_with_staged(
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
@@ -425,11 +461,8 @@ class StationaryEnergyAgentReviewService:
         proposal_ids: list[UUID] | None = None,
     ) -> StationaryEnergyStagedReviewUpdateConfirmationToolResult:
         """Validate automatic replacements for active staged source choices."""
-        draft_run = await self._load_owned_reviewable_draft(
-            draft_run_id=draft_run_id,
-            user_id=user_id,
-        )
-        staged = await self.repository.get_staged_review_selections(
+        # Find the exact active staged selections that the user wants to change.
+        draft_run, staged = await self._load_draft_with_staged(
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
@@ -438,6 +471,8 @@ class StationaryEnergyAgentReviewService:
             staged=staged,
             proposal_ids=proposal_ids,
         )
+
+        # Propose the next available source, or an empty row if no alternative exists.
         selected_choices: list[StationaryEnergyAgentReviewChoice] = []
         for selection in targeted:
             resolved = self._change_choice_for_staged_selection(
@@ -449,11 +484,12 @@ class StationaryEnergyAgentReviewService:
                 continue
             selected_choices.append(resolved)
 
+        # Return a confirmation payload without changing staged review state.
         pending = self._pending_required_proposals(
             draft_run=draft_run,
             staged=staged,
         )
-        return StationaryEnergyStagedReviewUpdateConfirmationToolResult(
+        result = StationaryEnergyStagedReviewUpdateConfirmationToolResult(
             success=bool(selected_choices) and not blocked_choices,
             action="stationary_energy_request_staged_source_change_confirmation",
             ui_event="stationary_energy_review_change_confirmation_requested",
@@ -461,11 +497,19 @@ class StationaryEnergyAgentReviewService:
             pending_choices=selected_choices,
             blocked_choices=blocked_choices,
             pending_required_count=len(pending),
-            message=self._staged_change_confirmation_message(
+            **self._staged_change_confirmation_message_payload(
                 selected_choices,
                 blocked_choices,
             ),
         )
+        logger.info(
+            "Prepared Stationary Energy staged-source change preview draft_run_id=%s selected=%s blocked=%s pending=%s",
+            draft_run_id,
+            len(selected_choices),
+            len(blocked_choices),
+            len(pending),
+        )
+        return result
 
     async def preview_staged_sources_rollback(
         self,
@@ -475,11 +519,8 @@ class StationaryEnergyAgentReviewService:
         proposal_ids: list[UUID] | None = None,
     ) -> StationaryEnergyStagedReviewUpdateConfirmationToolResult:
         """Validate active staged selections that would be rolled back."""
-        draft_run = await self._load_owned_reviewable_draft(
-            draft_run_id=draft_run_id,
-            user_id=user_id,
-        )
-        staged = await self.repository.get_staged_review_selections(
+        # Find active staged choices that would be removed by the rollback.
+        draft_run, staged = await self._load_draft_with_staged(
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
@@ -492,6 +533,8 @@ class StationaryEnergyAgentReviewService:
             self._rollback_choice_from_staged(selection, draft_run)
             for selection in targeted
         ]
+
+        # Compute pending count as if the rollback were confirmed.
         staged_after_preview = [
             selection
             for selection in staged
@@ -502,7 +545,7 @@ class StationaryEnergyAgentReviewService:
             draft_run=draft_run,
             staged=staged_after_preview,
         )
-        return StationaryEnergyStagedReviewUpdateConfirmationToolResult(
+        result = StationaryEnergyStagedReviewUpdateConfirmationToolResult(
             success=bool(selected_choices) and not blocked_choices,
             action="stationary_energy_request_staged_sources_rollback_confirmation",
             ui_event="stationary_energy_review_rollback_confirmation_requested",
@@ -510,12 +553,20 @@ class StationaryEnergyAgentReviewService:
             pending_choices=selected_choices,
             blocked_choices=blocked_choices,
             pending_required_count=len(pending_after_preview),
-            message=self._staged_rollback_confirmation_message(
+            **self._staged_rollback_confirmation_message_payload(
                 selected_choices,
                 blocked_choices,
                 len(pending_after_preview),
             ),
         )
+        logger.info(
+            "Prepared Stationary Energy staged-source rollback preview draft_run_id=%s selected=%s blocked=%s pending_after_preview=%s",
+            draft_run_id,
+            len(selected_choices),
+            len(blocked_choices),
+            len(pending_after_preview),
+        )
+        return result
 
     async def rollback_staged_sources(
         self,
@@ -525,11 +576,8 @@ class StationaryEnergyAgentReviewService:
         proposal_ids: list[UUID] | None = None,
     ) -> StationaryEnergyAgentReviewToolResult:
         """Roll back active staged selections after UI confirmation."""
-        draft_run = await self._load_owned_reviewable_draft(
-            draft_run_id=draft_run_id,
-            user_id=user_id,
-        )
-        staged = await self.repository.get_staged_review_selections(
+        # Resolve the confirmed rollback targets against active staged rows.
+        draft_run, staged = await self._load_draft_with_staged(
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
@@ -543,16 +591,16 @@ class StationaryEnergyAgentReviewService:
             for selection in targeted
         ]
 
+        # Mutate only the active selections that were confirmed by the UI card.
         if targeted:
             await self.repository.mark_staged_review_selections_rolled_back(
                 draft_run_id=draft_run_id,
                 user_id=user_id,
                 proposal_ids={selection.proposal_id for selection in targeted},
             )
-            draft_run.workflow_step = "review"
-            draft_run.updated_at = datetime.now(timezone.utc)
-            await self.session.flush()
+            await self._mark_review_step(draft_run)
 
+        # Recalculate pending review work after rollback.
         staged_after = await self.repository.get_staged_review_selections(
             draft_run_id=draft_run_id,
             user_id=user_id,
@@ -561,19 +609,27 @@ class StationaryEnergyAgentReviewService:
             draft_run=draft_run,
             staged=staged_after,
         )
-        return StationaryEnergyAgentReviewToolResult(
+        result = StationaryEnergyAgentReviewToolResult(
             success=bool(selected_choices) and not blocked_choices,
             action="stationary_energy_rollback_staged_sources",
             draft_run_id=draft_run_id,
             selected_choices=selected_choices,
             blocked_choices=blocked_choices,
             pending_required_count=len(pending),
-            message=self._staged_rollback_result_message(
+            **self._staged_rollback_result_message_payload(
                 selected_choices,
                 blocked_choices,
                 len(pending),
             ),
         )
+        logger.info(
+            "Rolled back Stationary Energy staged selections draft_run_id=%s selected=%s blocked=%s pending=%s",
+            draft_run_id,
+            len(selected_choices),
+            len(blocked_choices),
+            len(pending),
+        )
+        return result
 
     async def save_review_draft(
         self,
@@ -583,11 +639,8 @@ class StationaryEnergyAgentReviewService:
         authorization: str | None,
     ) -> StationaryEnergyAgentReviewToolResult:
         """Persist complete staged review choices through the draft service."""
-        draft_run = await self._load_owned_reviewable_draft(
-            draft_run_id=draft_run_id,
-            user_id=user_id,
-        )
-        staged = await self.repository.get_staged_review_selections(
+        # Convert active staged selections into the existing durable review contract.
+        draft_run, staged = await self._load_draft_with_staged(
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
@@ -596,15 +649,25 @@ class StationaryEnergyAgentReviewService:
             staged=staged,
         )
         if blockers:
-            return StationaryEnergyAgentReviewToolResult(
+            result = StationaryEnergyAgentReviewToolResult(
                 success=False,
                 action="stationary_energy_save_review_draft",
                 draft_run_id=draft_run_id,
                 blocked_choices=blockers,
                 pending_required_count=len(blockers),
-                message="Draft review cannot be saved until every source-backed proposal is staged.",
+                **_message_payload(
+                    "tool-message-review-save-blocked",
+                    blocked=len(blockers),
+                ),
             )
+            logger.info(
+                "Blocked Stationary Energy review draft save draft_run_id=%s blockers=%s",
+                draft_run_id,
+                len(blockers),
+            )
+            return result
 
+        # Save through the draft service so existing review validation stays authoritative.
         draft_service = StationaryEnergyDraftService(self.session)
         response = await draft_service.review_draft(
             draft_run_id=draft_run_id,
@@ -618,19 +681,81 @@ class StationaryEnergyAgentReviewService:
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
-        return StationaryEnergyAgentReviewToolResult(
+
+        # Return a tool-facing summary for the rows saved in Clima.
+        selected_choices = [
+            self._choice_from_review_input(decision, draft_run)
+            for decision in decisions
+            if decision.action != "leave_draft"
+        ]
+        result = StationaryEnergyAgentReviewToolResult(
             success=True,
             action="stationary_energy_save_review_draft",
             draft_run_id=draft_run_id,
-            selected_choices=[
-                self._choice_from_review_input(decision, draft_run)
-                for decision in decisions
-                if decision.action != "leave_draft"
-            ],
+            selected_choices=selected_choices,
             pending_required_count=0,
             saved_decisions=response.decisions,
-            message="Draft review decisions were saved in Clima.",
+            **_message_payload(
+                "tool-message-review-save-success",
+                selected=len(selected_choices),
+            ),
         )
+        logger.info(
+            "Saved Stationary Energy review draft draft_run_id=%s decisions=%s selected=%s",
+            draft_run_id,
+            len(response.decisions),
+            len(selected_choices),
+        )
+        return result
+
+    async def _load_draft_with_staged(
+        self,
+        *,
+        draft_run_id: UUID,
+        user_id: str,
+    ) -> tuple[
+        StationaryEnergyDraftRun, list[StationaryEnergyStagedReviewSelection]
+    ]:
+        """Load a mutable draft and its staged selections for the user."""
+        draft_run = await self._load_owned_reviewable_draft(
+            draft_run_id=draft_run_id,
+            user_id=user_id,
+        )
+        staged = await self.repository.get_staged_review_selections(
+            draft_run_id=draft_run_id,
+            user_id=user_id,
+        )
+        return draft_run, staged
+
+    async def _mark_review_step(self, draft_run: StationaryEnergyDraftRun) -> None:
+        """Mark the draft as being actively reviewed and flush the session."""
+        draft_run.workflow_step = "review"
+        draft_run.updated_at = datetime.now(timezone.utc)
+        await self.session.flush()
+
+    @staticmethod
+    def _selections_from_choices(
+        *,
+        draft_run: StationaryEnergyDraftRun,
+        user_id: str,
+        selected_choices: list[StationaryEnergyAgentReviewChoice],
+        tool_call_id: str | None,
+    ) -> list[StationaryEnergyStagedReviewSelection]:
+        """Convert resolved choices into staged selection rows."""
+        return [
+            StationaryEnergyStagedReviewSelection(
+                draft_run_id=draft_run.draft_run_id,
+                proposal_id=choice.proposal_id,
+                user_id=user_id,
+                action=choice.action,
+                selected_source_id=choice.selected_source_id,
+                selected_candidate_id=choice.selected_candidate_id,
+                rationale=choice.rationale,
+                tool_call_id=tool_call_id,
+                status="active",
+            )
+            for choice in selected_choices
+        ]
 
     async def _load_owned_reviewable_draft(
         self,
@@ -1150,112 +1275,131 @@ class StationaryEnergyAgentReviewService:
         )
 
     @staticmethod
-    def _stage_message(
+    def _stage_message_payload(
         selected_choices: list[StationaryEnergyAgentReviewChoice],
         blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
         pending_required_count: int,
-    ) -> str:
-        """Build a concise status message after staging choices."""
+    ) -> dict[str, Any]:
+        """Build localized-message metadata after staging choices."""
         if selected_choices and not blocked_choices:
-            return (
-                f"Staged {len(selected_choices)} Stationary Energy review choices. "
-                f"{pending_required_count} required choices remain."
+            return _message_payload(
+                "tool-message-stage-success",
+                selected=len(selected_choices),
+                pending=pending_required_count,
             )
         if selected_choices:
-            return (
-                f"Staged {len(selected_choices)} choices and blocked "
-                f"{len(blocked_choices)} invalid choices. "
-                f"{pending_required_count} required choices remain."
+            return _message_payload(
+                "tool-message-stage-partial",
+                selected=len(selected_choices),
+                blocked=len(blocked_choices),
+                pending=pending_required_count,
             )
         if blocked_choices:
-            return (
-                "No choices were staged because the requested selections were invalid."
+            return _message_payload(
+                "tool-message-stage-blocked",
+                blocked=len(blocked_choices),
             )
-        return "No unresolved recommended Stationary Energy choices were available."
+        return _message_payload("tool-message-stage-none")
 
     @staticmethod
-    def _bulk_confirmation_message(
+    def _bulk_confirmation_message_payload(
         selected_choices: list[StationaryEnergyAgentReviewChoice],
         blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
         pending_required_count: int,
-    ) -> str:
-        """Build a concise status message for bulk confirmation previews."""
+    ) -> dict[str, Any]:
+        """Build localized-message metadata for bulk confirmation previews."""
         if selected_choices and not blocked_choices:
-            return (
-                f"Please confirm applying {len(selected_choices)} Stationary Energy "
-                f"review choices. {pending_required_count} required choices would remain."
+            return _message_payload(
+                "tool-message-bulk-confirm-success",
+                selected=len(selected_choices),
+                pending=pending_required_count,
             )
         if selected_choices:
-            return (
-                f"Please confirm applying {len(selected_choices)} valid choices. "
-                f"{len(blocked_choices)} requested choices need clarification first."
+            return _message_payload(
+                "tool-message-bulk-confirm-partial",
+                selected=len(selected_choices),
+                blocked=len(blocked_choices),
             )
         if blocked_choices:
-            return "I could not prepare those choices. Please clarify the rows and sources."
-        return "No unresolved recommended Stationary Energy choices are available."
+            return _message_payload(
+                "tool-message-bulk-confirm-blocked",
+                blocked=len(blocked_choices),
+            )
+        return _message_payload("tool-message-bulk-confirm-none")
 
     @staticmethod
-    def _staged_change_confirmation_message(
+    def _staged_change_confirmation_message_payload(
         selected_choices: list[StationaryEnergyAgentReviewChoice],
         blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
-    ) -> str:
-        """Build a concise status message for staged-source change previews."""
+    ) -> dict[str, Any]:
+        """Build localized-message metadata for staged-source change previews."""
         if selected_choices and not blocked_choices:
-            return (
-                f"Please confirm changing {len(selected_choices)} staged "
-                "Stationary Energy source choices."
+            return _message_payload(
+                "tool-message-staged-change-confirm-success",
+                selected=len(selected_choices),
             )
         if selected_choices:
-            return (
-                f"Please confirm changing {len(selected_choices)} valid staged "
-                f"choices. {len(blocked_choices)} choices need clarification first."
+            return _message_payload(
+                "tool-message-staged-change-confirm-partial",
+                selected=len(selected_choices),
+                blocked=len(blocked_choices),
             )
         if blocked_choices:
-            return "I could not prepare staged source changes for those rows."
-        return (
-            "No active staged Stationary Energy source choices are available to change."
-        )
+            return _message_payload(
+                "tool-message-staged-change-confirm-blocked",
+                blocked=len(blocked_choices),
+            )
+        return _message_payload("tool-message-staged-change-confirm-none")
 
     @staticmethod
-    def _staged_rollback_confirmation_message(
-        selected_choices: list[StationaryEnergyAgentReviewChoice],
-        blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
-        pending_required_count: int,
-    ) -> str:
-        """Build a concise status message for staged-source rollback previews."""
-        if selected_choices and not blocked_choices:
-            return (
-                f"Please confirm rolling back {len(selected_choices)} staged "
-                f"Stationary Energy source choices. {pending_required_count} "
-                "required choices would remain."
-            )
-        if selected_choices:
-            return (
-                f"Please confirm rolling back {len(selected_choices)} valid staged "
-                f"choices. {len(blocked_choices)} choices need clarification first."
-            )
-        if blocked_choices:
-            return "I could not prepare staged source rollbacks for those rows."
-        return "No active staged Stationary Energy source choices are available to roll back."
-
-    @staticmethod
-    def _staged_rollback_result_message(
+    def _staged_rollback_confirmation_message_payload(
         selected_choices: list[StationaryEnergyAgentReviewChoice],
         blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
         pending_required_count: int,
-    ) -> str:
-        """Build a concise status message after rolling back staged choices."""
+    ) -> dict[str, Any]:
+        """Build localized-message metadata for staged-source rollback previews."""
         if selected_choices and not blocked_choices:
-            return (
-                f"Rolled back {len(selected_choices)} staged Stationary Energy "
-                f"source choices. {pending_required_count} required choices remain."
+            return _message_payload(
+                "tool-message-staged-rollback-confirm-success",
+                selected=len(selected_choices),
+                pending=pending_required_count,
             )
         if selected_choices:
-            return (
-                f"Rolled back {len(selected_choices)} staged choices and blocked "
-                f"{len(blocked_choices)} invalid choices. "
-                f"{pending_required_count} required choices remain."
+            return _message_payload(
+                "tool-message-staged-rollback-confirm-partial",
+                selected=len(selected_choices),
+                blocked=len(blocked_choices),
             )
         if blocked_choices:
-            return "No staged choices were rolled back because the requested rows were invalid."
-        return "No active staged Stationary Energy source choices were available to roll back."
+            return _message_payload(
+                "tool-message-staged-rollback-confirm-blocked",
+                blocked=len(blocked_choices),
+            )
+        return _message_payload("tool-message-staged-rollback-confirm-none")
+
+    @staticmethod
+    def _staged_rollback_result_message_payload(
+        selected_choices: list[StationaryEnergyAgentReviewChoice],
+        blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
+        pending_required_count: int,
+    ) -> dict[str, Any]:
+        """Build localized-message metadata after rolling back staged choices."""
+        if selected_choices and not blocked_choices:
+            return _message_payload(
+                "tool-message-staged-rollback-success",
+                selected=len(selected_choices),
+                pending=pending_required_count,
+            )
+        if selected_choices:
+            return _message_payload(
+                "tool-message-staged-rollback-partial",
+                selected=len(selected_choices),
+                blocked=len(blocked_choices),
+                pending=pending_required_count,
+            )
+        if blocked_choices:
+            return _message_payload(
+                "tool-message-staged-rollback-blocked",
+                blocked=len(blocked_choices),
+            )
+        return _message_payload("tool-message-staged-rollback-none")

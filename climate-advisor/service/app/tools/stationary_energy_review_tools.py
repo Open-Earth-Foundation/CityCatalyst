@@ -7,10 +7,11 @@ from uuid import UUID
 
 from agents import function_tool
 from fastapi import HTTPException
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, Field, ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.services.stationary_energy.stationary_energy_agent_review import (
+    MessageParamValue,
     StationaryEnergyAgentReviewChoiceInput,
     StationaryEnergyAgentReviewService,
     StationaryEnergyAgentReviewToolResult,
@@ -26,7 +27,8 @@ class StationaryEnergyInventoryConfirmationToolResult(BaseModel):
     action: str = "stationary_energy_request_inventory_save_confirmation"
     ui_event: str = "stationary_energy_inventory_save_confirmation_requested"
     draft_run_id: UUID
-    message: str
+    message_key: str | None = None
+    message_params: dict[str, MessageParamValue] = Field(default_factory=dict)
     error_code: str | None = None
 
 
@@ -46,9 +48,16 @@ def build_stationary_energy_review_tools(
     ) -> str:
         """Run a review operation inside a committed database session."""
         try:
+            # Execute each tool in a short-lived session so DB writes are atomic.
             async with session_factory() as session:
                 result = await operation(StationaryEnergyAgentReviewService(session))
                 await session.commit()
+                logger.info(
+                    "Stationary Energy review tool completed action=%s draft_run_id=%s success=%s",
+                    action,
+                    draft_uuid,
+                    getattr(result, "success", None),
+                )
                 return result.model_dump_json()
         except HTTPException as exc:
             logger.info(
@@ -61,7 +70,8 @@ def build_stationary_energy_review_tools(
             return _error_payload(
                 action=action,
                 draft_run_id=draft_uuid,
-                message=str(exc.detail),
+                message_key="tool-error-http",
+                message_params={"status": exc.status_code},
                 error_code=f"http_{exc.status_code}",
             )
         except Exception as exc:
@@ -73,7 +83,7 @@ def build_stationary_energy_review_tools(
             return _error_payload(
                 action=action,
                 draft_run_id=draft_uuid,
-                message="Stationary Energy review tool failed.",
+                message_key="tool-error-generic",
                 error_code="tool_error",
             )
 
@@ -131,7 +141,7 @@ def build_stationary_energy_review_tools(
             return _error_payload(
                 action="stationary_energy_accept_one",
                 draft_run_id=draft_uuid,
-                message=f"Invalid Stationary Energy review choice: {exc}",
+                message_key="tool-error-invalid-review-choice",
                 error_code="invalid_arguments",
             )
 
@@ -229,7 +239,7 @@ def build_stationary_energy_review_tools(
             return _error_payload(
                 action="stationary_energy_request_bulk_review_confirmation",
                 draft_run_id=draft_uuid,
-                message=f"Invalid Stationary Energy review choices: {exc}",
+                message_key="tool-error-invalid-review-choices",
                 error_code="invalid_arguments",
             )
 
@@ -284,7 +294,7 @@ def build_stationary_energy_review_tools(
             return _error_payload(
                 action="stationary_energy_request_staged_source_change_confirmation",
                 draft_run_id=draft_uuid,
-                message=f"Invalid Stationary Energy proposal ids: {exc}",
+                message_key="tool-error-invalid-proposal-ids",
                 error_code="invalid_arguments",
             )
 
@@ -317,7 +327,7 @@ def build_stationary_energy_review_tools(
             return _error_payload(
                 action="stationary_energy_request_staged_sources_rollback_confirmation",
                 draft_run_id=draft_uuid,
-                message=f"Invalid Stationary Energy proposal ids: {exc}",
+                message_key="tool-error-invalid-proposal-ids",
                 error_code="invalid_arguments",
             )
 
@@ -351,7 +361,7 @@ def build_stationary_energy_review_tools(
             return _error_payload(
                 action="stationary_energy_rollback_staged_sources",
                 draft_run_id=draft_uuid,
-                message=f"Invalid Stationary Energy proposal ids: {exc}",
+                message_key="tool-error-invalid-proposal-ids",
                 error_code="invalid_arguments",
             )
 
@@ -378,7 +388,7 @@ def build_stationary_energy_review_tools(
             return _error_payload(
                 action="stationary_energy_save_review_draft",
                 draft_run_id=draft_uuid,
-                message="CityCatalyst token is missing. The review draft cannot be saved.",
+                message_key="tool-error-missing-token",
                 error_code="missing_token",
             )
 
@@ -408,19 +418,28 @@ def build_stationary_energy_review_tools(
                     draft_run_id=draft_uuid,
                     user_id=user_id,
                 )
-                return StationaryEnergyInventoryConfirmationToolResult(
+                result = StationaryEnergyInventoryConfirmationToolResult(
                     success=True,
                     draft_run_id=draft_uuid,
-                    message=(
-                        "Please confirm before writing the reviewed Stationary "
-                        "Energy rows to the CityCatalyst inventory."
-                    ),
-                ).model_dump_json()
+                    message_key="tool-message-inventory-save-confirm",
+                )
+                logger.info(
+                    "Stationary Energy inventory save confirmation requested draft_run_id=%s",
+                    draft_uuid,
+                )
+                return result.model_dump_json()
         except HTTPException as exc:
+            logger.info(
+                "Stationary Energy inventory save confirmation rejected draft_run_id=%s status=%s detail=%s",
+                draft_uuid,
+                exc.status_code,
+                exc.detail,
+            )
             return StationaryEnergyInventoryConfirmationToolResult(
                 success=False,
                 draft_run_id=draft_uuid,
-                message=str(exc.detail),
+                message_key="tool-error-http",
+                message_params={"status": exc.status_code},
                 error_code=f"http_{exc.status_code}",
             ).model_dump_json()
 
@@ -450,15 +469,17 @@ def _error_payload(
     *,
     action: str,
     draft_run_id: UUID,
-    message: str,
+    message_key: str,
     error_code: str,
+    message_params: dict[str, MessageParamValue] | None = None,
 ) -> str:
     """Serialize a standard failed Stationary Energy review tool response."""
     result = StationaryEnergyAgentReviewToolResult(
         success=False,
         action=action,
         draft_run_id=draft_run_id,
-        message=message,
+        message_key=message_key,
+        message_params=message_params or {},
     ).model_dump(mode="json")
     result["error_code"] = error_code
     return json.dumps(result)

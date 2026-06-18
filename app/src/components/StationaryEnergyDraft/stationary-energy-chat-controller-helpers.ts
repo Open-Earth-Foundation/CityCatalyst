@@ -51,6 +51,46 @@ export const NO_SOURCE_PREFERENCE = "__source_preference_none__";
 export const START_CHOOSE_SOURCES = "__start_choose_sources__";
 export const SET_EMPTY_NOTATION_PREFERENCE = "__set_empty_notation__";
 
+type StationaryEnergyToolMessageParams = Record<
+  string,
+  string | number | boolean
+>;
+
+function isStationaryEnergyToolMessageParams(
+  value: unknown,
+): value is StationaryEnergyToolMessageParams {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  return Object.values(value).every(
+    (item) =>
+      typeof item === "string" ||
+      typeof item === "number" ||
+      typeof item === "boolean",
+  );
+}
+
+export function resolveStationaryEnergyToolMessage(
+  t: TFunction,
+  tool: {
+    message_key?: string | null;
+    message_params?: unknown;
+  },
+  fallbackKey?: string,
+): string | null {
+  if (tool.message_key) {
+    return t(
+      tool.message_key,
+      isStationaryEnergyToolMessageParams(tool.message_params)
+        ? tool.message_params
+        : {},
+    );
+  }
+
+  return fallbackKey ? t(fallbackKey) : null;
+}
+
 export function hasTerminalDraftStatus(status: string): boolean {
   return TERMINAL_DRAFT_STATUSES.has(status);
 }

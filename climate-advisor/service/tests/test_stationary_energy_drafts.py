@@ -1473,6 +1473,9 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         result = asyncio.run(exercise())
         self.assertTrue(result["success"])
         self.assertEqual(len(result["selected_choices"]), 1)
+        self.assertNotIn("message", result)
+        self.assertEqual(result["message_key"], "tool-message-stage-success")
+        self.assertEqual(result["message_params"], {"selected": 1, "pending": 1})
         status = self._get_status(draft_run_id)
         self.assertEqual(len(status["staged_review_selections"]), 1)
         self.assertEqual(
@@ -1501,7 +1504,49 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(result["success"])
         self.assertEqual(result["selected_choices"], [])
         self.assertEqual(len(result["blocked_choices"]), 1)
-        self.assertEqual(self._get_status(draft_run_id)["staged_review_selections"], [])
+        self.assertNotIn("message", result)
+        self.assertEqual(result["message_key"], "tool-message-stage-blocked")
+        self.assertEqual(result["message_params"], {"blocked": 1})
+        self.assertEqual(
+            self._get_status(draft_run_id)["staged_review_selections"], []
+        )
+
+    def test_agent_review_accept_multiple_reports_partial_message_key(self) -> None:
+        draft_run_id, proposal_id, candidate_id = self._start_draft()
+
+        async def exercise() -> dict[str, Any]:
+            async with self.session_factory() as session:
+                service = StationaryEnergyAgentReviewService(session)
+                result = await service.accept_multiple(
+                    draft_run_id=UUID(draft_run_id),
+                    user_id="user-1",
+                    choices=[
+                        StationaryEnergyAgentReviewChoiceInput(
+                            proposal_id=UUID(proposal_id),
+                            candidate_id=UUID(candidate_id),
+                        ),
+                        StationaryEnergyAgentReviewChoiceInput(
+                            proposal_id=uuid4(),
+                            candidate_id=uuid4(),
+                        ),
+                    ],
+                )
+                await session.commit()
+                return result.model_dump(mode="json")
+
+        result = asyncio.run(exercise())
+        self.assertFalse(result["success"])
+        self.assertEqual(len(result["selected_choices"]), 1)
+        self.assertEqual(len(result["blocked_choices"]), 1)
+        self.assertNotIn("message", result)
+        self.assertEqual(result["message_key"], "tool-message-stage-partial")
+        self.assertEqual(
+            result["message_params"],
+            {"selected": 1, "blocked": 1, "pending": 1},
+        )
+        self.assertEqual(
+            len(self._get_status(draft_run_id)["staged_review_selections"]), 1
+        )
 
     def test_agent_review_accept_all_stages_unresolved_recommended_choices(
         self,
@@ -1522,6 +1567,9 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         result = asyncio.run(exercise())
         self.assertTrue(result["success"])
         self.assertEqual(len(result["selected_choices"]), 2)
+        self.assertNotIn("message", result)
+        self.assertEqual(result["message_key"], "tool-message-stage-success")
+        self.assertEqual(result["message_params"], {"selected": 2, "pending": 0})
         status = self._get_status(draft_run_id)
         self.assertEqual(len(status["staged_review_selections"]), 2)
 
@@ -1545,6 +1593,9 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             result["ui_event"],
             "stationary_energy_review_bulk_confirmation_requested",
         )
+        self.assertNotIn("message", result)
+        self.assertEqual(result["message_key"], "tool-message-bulk-confirm-success")
+        self.assertEqual(result["message_params"], {"selected": 2, "pending": 0})
         self.assertEqual(len(result["pending_choices"]), 2)
         status = self._get_status(draft_run_id)
         self.assertEqual(status["staged_review_selections"], [])
@@ -1579,6 +1630,12 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             result["ui_event"],
             "stationary_energy_review_change_confirmation_requested",
         )
+        self.assertNotIn("message", result)
+        self.assertEqual(
+            result["message_key"],
+            "tool-message-staged-change-confirm-success",
+        )
+        self.assertEqual(result["message_params"], {"selected": 1})
         self.assertEqual(result["pending_choices"][0]["action"], "leave_draft")
         self.assertEqual(result["pending_choices"][0]["source_label"], "Leave empty")
         self.assertEqual(
@@ -1677,6 +1734,12 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             result["ui_event"],
             "stationary_energy_review_rollback_confirmation_requested",
         )
+        self.assertNotIn("message", result)
+        self.assertEqual(
+            result["message_key"],
+            "tool-message-staged-rollback-confirm-success",
+        )
+        self.assertEqual(result["message_params"], {"selected": 2, "pending": 2})
         self.assertEqual(len(result["pending_choices"]), 2)
         self.assertTrue(
             all(
@@ -1715,6 +1778,9 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         result = asyncio.run(exercise())
         self.assertTrue(result["success"])
         self.assertEqual(result["selected_choices"][0]["action"], "rollback_staged")
+        self.assertNotIn("message", result)
+        self.assertEqual(result["message_key"], "tool-message-staged-rollback-success")
+        self.assertEqual(result["message_params"], {"selected": 1, "pending": 2})
         self.assertEqual(self._get_status(draft_run_id)["staged_review_selections"], [])
 
     def test_agent_review_accept_all_includes_notation_backed_gap_with_recommended_source(
@@ -1736,6 +1802,9 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         result = asyncio.run(exercise())
         self.assertTrue(result["success"])
         self.assertEqual(len(result["selected_choices"]), 1)
+        self.assertNotIn("message", result)
+        self.assertEqual(result["message_key"], "tool-message-stage-success")
+        self.assertEqual(result["message_params"], {"selected": 1, "pending": 0})
         self.assertEqual(result["selected_choices"][0]["action"], "accept")
 
         status = self._get_status(str(draft_run_id))
@@ -1773,7 +1842,49 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(result["success"])
         self.assertEqual(result["action"], "stationary_energy_save_review_draft")
         self.assertEqual(result["pending_required_count"], 1)
+        self.assertNotIn("message", result)
+        self.assertEqual(result["message_key"], "tool-message-review-save-blocked")
+        self.assertEqual(result["message_params"], {"blocked": 1})
         self.assertEqual(self._get_status(draft_run_id)["review_decisions"], [])
+
+    def test_agent_review_save_draft_tool_returns_message_key_when_token_missing(
+        self,
+    ) -> None:
+        draft_run_id, _proposal_id, _candidate_id = self._start_draft()
+
+        async def exercise() -> dict[str, Any]:
+            tools = build_stationary_energy_review_tools(
+                session_factory=self.session_factory,
+                draft_run_id=draft_run_id,
+                user_id="user-1",
+                token_ref={"value": None},
+            )
+            save_tool = next(
+                tool
+                for tool in tools
+                if getattr(tool, "name", None)
+                == "stationary_energy_save_review_draft"
+            )
+            ctx = ToolContext(
+                context=None,
+                tool_call_id="test-call",
+                tool_name="stationary_energy_save_review_draft",
+                tool_arguments={},
+            )
+
+            output = await save_tool.on_invoke_tool(  # type: ignore[attr-defined]
+                ctx,
+                json.dumps({}),
+            )
+            return json.loads(output)
+
+        data = asyncio.run(exercise())
+
+        self.assertFalse(data["success"])
+        self.assertNotIn("message", data)
+        self.assertEqual(data["message_key"], "tool-error-missing-token")
+        self.assertEqual(data["message_params"], {})
+        self.assertEqual(data["error_code"], "missing_token")
 
     def test_inventory_save_confirmation_tool_allows_partial_review_save(
         self,
@@ -1825,6 +1936,9 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             data["ui_event"],
             "stationary_energy_inventory_save_confirmation_requested",
         )
+        self.assertNotIn("message", data)
+        self.assertEqual(data["message_key"], "tool-message-inventory-save-confirm")
+        self.assertEqual(data["message_params"], {})
 
     def test_inventory_save_confirmation_tool_requests_card_when_review_is_complete(
         self,
@@ -1873,6 +1987,9 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             data["ui_event"],
             "stationary_energy_inventory_save_confirmation_requested",
         )
+        self.assertNotIn("message", data)
+        self.assertEqual(data["message_key"], "tool-message-inventory-save-confirm")
+        self.assertEqual(data["message_params"], {})
 
     def test_agent_review_save_draft_persists_complete_staged_choices(self) -> None:
         draft_run_id, _proposal_id, _candidate_id = self._start_draft()
@@ -1896,6 +2013,9 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         result = asyncio.run(exercise())
         self.assertTrue(result["success"])
         self.assertEqual(result["pending_required_count"], 0)
+        self.assertNotIn("message", result)
+        self.assertEqual(result["message_key"], "tool-message-review-save-success")
+        self.assertEqual(result["message_params"], {"selected": 2})
         status = self._get_status(draft_run_id)
         self.assertEqual(status["status"], "reviewed")
         self.assertEqual(status["staged_review_selections"], [])

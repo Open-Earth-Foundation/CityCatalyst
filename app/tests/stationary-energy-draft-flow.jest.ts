@@ -20,6 +20,7 @@ import {
   buildFocusedDecisionStatePayload,
   buildStationaryEnergyChatRequest,
   resolveInventorySaveConfirmationRequest,
+  resolveStationaryEnergyToolMessage,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-helpers";
 
 function draftFixture(): DraftStatusResponse {
@@ -136,6 +137,35 @@ function draftFixture(): DraftStatusResponse {
 }
 
 describe("Stationary Energy draft flow", () => {
+  it("resolves Stationary Energy tool messages from translation keys only", () => {
+    const t = ((key: string, params?: Record<string, unknown>) =>
+      `${key}:${JSON.stringify(params ?? {})}`) as Parameters<
+      typeof resolveStationaryEnergyToolMessage
+    >[0];
+    const keyedTool = {
+      message: "Raw CA display text",
+      message_key: "tool-message-stage-success",
+      message_params: { selected: 2, pending: 1 },
+    };
+    const fallbackTool = { message: "Raw CA display text" };
+
+    expect(
+      resolveStationaryEnergyToolMessage(
+        t,
+        keyedTool,
+        "tool-message-generic-summary",
+      ),
+    ).toBe('tool-message-stage-success:{"selected":2,"pending":1}');
+
+    expect(
+      resolveStationaryEnergyToolMessage(
+        t,
+        fallbackTool,
+        "tool-message-generic-summary",
+      ),
+    ).toBe("tool-message-generic-summary:{}");
+  });
+
   it("derives stages from draft and explicit review progress", () => {
     expect(deriveDraftStage({ draftState: null, loadingAction: null })).toBe(
       "start",

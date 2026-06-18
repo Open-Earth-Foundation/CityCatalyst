@@ -298,9 +298,29 @@ and Stationary Energy prompt budgets. The environment is only for secrets such a
 Prompt paths are also configured in `llm_config.yaml`. The `prompts.default`
 entry drives the general Climate Advisor chat prompt, and
 `prompts.stationary_energy_review` drives active Stationary Energy draft review
-chat flows. Prompt files may include reusable fragments with
-`{{ include: tools/example.md }}` directives; includes are resolved relative to
-the including prompt first and then against the configured prompt search roots.
+chat flows. The Stationary Energy review prompt is self-contained so its tool
+policy and argument contracts stay in one schema-structured file. Other prompt
+files may include reusable fragments with `{{ include: tools/example.md }}`
+directives; includes are resolved relative to the including prompt first and
+then against the configured prompt search roots.
+
+### Stationary Energy Tool Message Localization
+
+Stationary Energy review tools return localized-message metadata instead of
+English display strings. Tool results should set `message_key` to a stable key
+from CityCatalyst's `stationary-energy-agentic.json` namespace and
+`message_params` to simple interpolation values such as counts or statuses.
+
+Climate Advisor does not translate those messages directly because it is a
+backend service. It does not own CityCatalyst locale files, the active browser
+language, or client-side fallback behavior. The boundary is: Climate Advisor
+owns the tool outcome semantics, and CityCatalyst owns user-facing copy and
+locale rendering.
+
+For future CA tools whose payloads are displayed by CityCatalyst, return stable
+keys and params instead of hardcoded English display text. English logging and
+HTTP diagnostic details can remain in CA when they are not rendered as user
+copy.
 
 ### Environment Variables
 

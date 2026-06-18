@@ -39,7 +39,7 @@ dependencies = [
     "mcp==1.23.0",
     "numpy==2.4.4",
     "openai==2.32.0",
-    "openai-agents==0.13.6",
+    "openai-agents==0.17.3",
     "orjson==3.11.6",
     "ormsgpack==1.12.2",
     "packaging==25.0",

@@ -74,7 +74,7 @@ dependencies = [
     "urllib3==2.7.0",
     "uuid_utils==0.13.0",
     "watchfiles==1.1.1",
-    "websockets==15.0.1",
+    "websockets==16.0",
     "xxhash==3.6.0",
     "zstandard==0.25.0",
 ]

@@ -2,13 +2,17 @@
 
 ## Overview
 
-Climate Advisor is a production FastAPI microservice that manages conversational AI for CityCatalyst. It provides:
+Climate Advisor is the FastAPI service behind CityCatalyst chat. The same
+`/v1/messages` endpoint supports two runtime modes:
 
-- **Thread & Message Management**: Persistent conversation storage in PostgreSQL
-- **Agentic AI with Tool Integration**: OpenAI Agents SDK with function calling
-- **Vector-Based RAG**: Semantic search over climate knowledge base via pgvector
-- **Token Management**: JWT refresh and caching for CityCatalyst API access
-- **Streaming Responses**: Server-Sent Events (SSE) for real-time delivery
+- General climate and inventory chat.
+- Stationary Energy draft review chat scoped to a persisted
+  `stationary_energy_draft_run_id`.
+
+Both modes share thread persistence, token handling, SSE streaming, and the
+Agents SDK runtime. The Stationary Energy review flow adds CA-owned draft state,
+a second prompt entrypoint, and scoped review tools that return UI-oriented
+`tool_result` payloads.
 
 ## Current Architecture (As-Implemented)
 
@@ -17,29 +21,32 @@ Climate Advisor is a production FastAPI microservice that manages conversational
 ```mermaid
 flowchart TB
     subgraph Client["CityCatalyst Web App"]
-        UI["Next.js + React<br/>RTK Query Client"]
+        UI["Next.js / React"]
     end
 
     subgraph Service["Climate Advisor Service"]
-        API["API Layer<br/>POST /v1/threads<br/>POST /v1/messages"]
-        Pipeline["Processing Pipeline<br/>ThreadResolver → TokenHandler<br/>MessageService → AgentService"]
-        Agent["OpenAI Agent<br/>+ climate_vector_search<br/>+ cc_inventory_query"]
+        API["FastAPI<br/>/v1/threads<br/>/v1/messages"]
+        Stream["StreamingHandler"]
+        Agent["AgentService<br/>Agents SDK"]
+        Review["StationaryEnergyAgentReviewService"]
     end
 
-    DB[("PostgreSQL<br/>Threads | Messages<br/>Embeddings")]
-    LLM["Chat Provider<br/>(OpenRouter / OpenAI)"]
-    CC["CityCatalyst API<br/>Token & Inventory"]
+    DB[("PostgreSQL<br/>threads, messages,<br/>embeddings, SE draft state")]
+    LLM["Chat provider<br/>OpenRouter or OpenAI"]
+    CC["CityCatalyst APIs<br/>token, inventory, draft save"]
 
-    UI -->|"HTTP/REST<br/>(JWT Token)"| API
-    API --> Pipeline
-    Pipeline --> Agent
-    Agent -->|Vector Search| DB
-    Agent -->|LLM Calls| LLM
-    Agent -->|Inventory Query| CC
-    Pipeline -->|Store/Retrieve| DB
+    UI --> API
+    API --> Stream
+    Stream --> Agent
+    Stream --> DB
+    Agent --> LLM
+    Agent --> CC
+    Agent --> DB
+    Review --> DB
+    Review --> CC
 ```
 
-### Request Flow Diagram
+### Request Flow
 
 ```mermaid
 sequenceDiagram
@@ -48,509 +55,237 @@ sequenceDiagram
     participant Thread as ThreadResolver
     participant Token as TokenHandler
     participant DB as PostgreSQL
+    participant Stream as StreamingHandler
     participant Agent as AgentService
     participant CC as CityCatalyst API
 
-    Client->>API: POST /v1/messages<br/>{user_id, content, thread_id?, context}
-
-    API->>Thread: Resolve thread
-    alt thread_id exists
-        Thread->>DB: Fetch thread
-    else create new
-        Thread->>DB: Create thread
-    end
+    Client->>API: POST /v1/messages
+    API->>Thread: Resolve existing thread or create one
     Thread-->>API: thread
 
-    API->>Token: Load & validate token
+    API->>Token: Load token from request or thread context
     alt token expired
         Token->>CC: Refresh token
         CC-->>Token: New access token
-        Token->>DB: Update thread context
-    end
-    Token-->>API: Valid token
-
-    API->>Agent: Execute with token
-    Agent->>CC: Use token for CC API calls
-    Agent-->>Client: Response (SSE stream)
-```
-
-### Tool Integration Architecture
-
-```mermaid
-flowchart TD
-    Agent["Agent Decision Loop"]
-
-    Agent -->|Analyze message| Decision{Tool needed?}
-
-    Decision -->|Yes| Tool1["climate_vector_search"]
-    Decision -->|Yes| Tool2["cc_inventory_query"]
-    Decision -->|No| Generate["Generate response"]
-
-    Tool1 --> Embed["Embed query<br/>Search pgvector<br/>Return results"]
-    Tool2 --> Query["Validate token<br/>Refresh if expired<br/>Query CC API"]
-
-    Embed --> Results["Tool Results"]
-    Query --> Results
-
-    Results --> Continue["Agent incorporates results<br/>& generates response"]
-    Generate --> Continue
-
-    Continue --> SSE["Stream tokens via SSE"]
-```
-
-## Data Flow
-
-### 1. Thread Creation Flow
-
-```mermaid
-sequenceDiagram
-    participant Client
-    participant API as POST /v1/threads
-    participant Service as ThreadService
-    participant DB as PostgreSQL
-
-    Client->>API: {user_id, inventory_id, context}
-    API->>Service: create_thread()
-    Service->>Service: Generate UUID
-    Service->>DB: INSERT thread
-    DB-->>Service: Success
-    Service-->>API: Thread object
-    API-->>Client: 201 Created<br/>{thread_id, inventory_id, context}
-```
-
-### 2. Message & Streaming Flow
-
-```mermaid
-sequenceDiagram
-    participant Client
-    participant API as POST /v1/messages
-    participant Resolver as ThreadResolver
-    participant Token as TokenHandler
-    participant DB as PostgreSQL
-    participant CC as CityCatalyst API
-
-    Client->>API: {user_id, content, thread_id?, context}
-
-    API->>Resolver: resolve_thread()
-    alt thread_id provided
-        Resolver->>DB: Fetch thread
-        Resolver-->>API: existing owned thread
-    else no thread_id provided
-        Resolver->>DB: Create thread
-        Resolver-->>API: new thread
+        Token->>DB: Persist refreshed token
     end
 
-    API->>Token: load_token()
-    alt token expired
-        Token->>CC: Refresh token
-        CC-->>Token: New access token
+    API->>Stream: Start streamed response
+    opt Stationary Energy draft run is present
+        Stream->>DB: Load persisted draft snapshot and staged review state
+        Stream-->>Stream: Build STATIONARY_ENERGY_DRAFT_CONTEXT_JSON + ui_context
     end
-    Token->>DB: Save token in thread context
-    Token-->>API: Valid token
 
-    API-->>Client: Proceed with agent execution
+    Stream->>Agent: Create scoped agent
+    Agent->>LLM: Run prompt + tools
+    Agent->>CC: Inventory fetches or draft-save calls
+    Agent->>DB: Read/write staged review data through tools
+    Stream-->>Client: SSE message / tool_result / done
 ```
 
-## Database Schema
+### Tool Registration Rules
 
-### Thread Model
+`AgentService.create_agent()` builds the tool pack at request time:
 
-```python
-class Thread(Base):
-    __tablename__ = "threads"
+- Always available:
+  - `climate_vector_search`
+- Added when the request has CityCatalyst credentials and thread scope:
+  - `get_user_inventories`
+  - `city_inventory_search`
+  - `get_inventory`
+  - `get_all_datasources`
+  - `inventory_context` prompt block when an inventory is active
+- Added when the request is scoped to a Stationary Energy draft run:
+  - `stationary_energy_list_review_options`
+  - `stationary_energy_accept_one`
+  - `stationary_energy_accept_multiple`
+  - `stationary_energy_accept_all_recommended`
+  - `stationary_energy_request_bulk_review_confirmation`
+  - `stationary_energy_request_all_recommended_confirmation`
+  - `stationary_energy_request_staged_source_change_confirmation`
+  - `stationary_energy_request_staged_sources_rollback_confirmation`
+  - `stationary_energy_rollback_staged_sources`
+  - `stationary_energy_save_review_draft`
+  - `stationary_energy_request_inventory_save_confirmation`
+  - `stationary_energy_review` prompt block
 
-    thread_id: UUID = PK
-    user_id: str = FK (User)
-    inventory_id: Optional[str]
-    context: Optional[Dict] = JSONB
-    title: Optional[str]
-    created_at: datetime
-    last_updated: datetime
+## Stationary Energy Review Flow
 
-    messages: List[Message] = relationship(cascade=delete)
+```mermaid
+flowchart LR
+    Draft["Persisted draft run"] --> Context["StreamingHandler loads<br/>STATIONARY_ENERGY_DRAFT_CONTEXT_JSON"]
+    UIContext["focused row / confirmed bulk /<br/>confirmed rollback from request"] --> Context
+    Context --> Agent["Scoped Stationary Energy prompt + tools"]
+    Agent --> Tools["Stationary Energy review tools"]
+    Tools --> Staged["staged_review_selections"]
+    Tools --> Decisions["review_decisions"]
+    Tools --> Confirm["tool_result UI events"]
+    Confirm --> Client["CityCatalyst review UI"]
 ```
 
-**context field example:**
+The review tools operate on CA-owned persisted draft state:
+
+- The draft snapshot contains `source_candidates`, `proposals`,
+  `review_decisions`, and active `staged_review_selections`.
+- Single-row and bulk actions stage temporary selections first.
+- Save-to-draft persists complete `review_decisions`.
+- Save-to-inventory remains a separate UI-confirmed CityCatalyst step after CA
+  emits an inventory-save confirmation payload.
+
+## Persistence Model
+
+Climate Advisor persists both normal chat history and Stationary Energy draft
+workflow state in PostgreSQL.
+
+| Store | Purpose |
+| --- | --- |
+| `threads` | Chat thread ownership, context, and refreshed tokens |
+| `messages` | User and assistant chat history, including tool invocation metadata |
+| `document_embeddings` | pgvector-backed climate knowledge retrieval |
+| `stationary_energy_draft_runs` | One persisted Stationary Energy draft workflow, optionally linked to a thread |
+| `stationary_energy_draft_source_candidates` | Candidate datasources and normalized source rows for the draft |
+| `stationary_energy_draft_proposals` | Proposed Stationary Energy row changes with recommended and alternate candidates |
+| `stationary_energy_review_decisions` | Durable saved review decisions with versioning and commit status |
+| `stationary_energy_staged_review_selections` | Active temporary chat-staged review choices awaiting save, change, or rollback |
+
+## Service And Utility Layers
+
+### Route Layer
+
+- `routes/threads.py`
+  - Creates threads and stores initial context.
+- `routes/messages.py`
+  - Accepts chat requests and streams SSE responses.
+
+### Service Layer
+
+- `services/agent_service.py`
+  - Selects the model for the current workflow context.
+  - Loads `prompts.default` for general chat.
+  - Appends `inventory_context` and `stationary_energy_review` prompts when
+    their scopes are active.
+  - Registers the correct tool pack for the request.
+- `services/stationary_energy/stationary_energy_draft_repository.py`
+  - Loads draft runs, proposals, decisions, and staged review selections.
+  - Persists staged selection status transitions.
+- `services/stationary_energy/stationary_energy_agent_review.py`
+  - Validates review choices.
+  - Builds preview payloads for bulk confirm, staged change, and rollback.
+  - Saves staged review decisions into the CA-owned draft state.
+
+### Tool Layer
+
+- `tools/climate_vector_sync.py`
+  - General climate knowledge retrieval.
+- `tools/cc_inventory_wrappers.py`
+  - The CityCatalyst inventory tool pack used by the general prompt.
+- `tools/stationary_energy_review_tools.py`
+  - The scoped Stationary Energy review tool pack backed by
+    `StationaryEnergyAgentReviewService`.
+
+### Utility Layer
+
+- `utils/streaming_handler.py`
+  - Loads pruned conversation history.
+  - Loads persisted Stationary Energy draft context and request-shaped
+    `ui_context`.
+  - Enforces the Stationary Energy chat prompt budget.
+  - Emits `tool_result` SSE payloads for normal tools and Stationary Energy UI
+    events.
+- `utils/history_manager.py`
+  - Prunes older tool metadata for LLM context while keeping full DB audit data.
+- `utils/token_handler.py`
+  - Refreshes and persists CityCatalyst tokens.
+
+## SSE Contract
+
+Climate Advisor streams these SSE event types today:
+
+- `message`
+  - Token deltas and response text chunks.
+- `tool_result`
+  - Tool execution state and tool outputs.
+  - Used for Stationary Energy confirmation and state-change payloads.
+- `warning`
+  - Recoverable request issues, such as unavailable history.
+- `info`
+  - Non-error metadata such as token refresh notices.
+- `error`
+  - Streaming or token failures.
+- `done`
+  - Terminal response metadata for the request.
+
+Stationary Energy review tool outputs may include one of these `ui_event`
+values inside `tool_result` payloads:
+
+- `stationary_energy_review_state_changed`
+- `stationary_energy_review_bulk_confirmation_requested`
+- `stationary_energy_review_change_confirmation_requested`
+- `stationary_energy_review_rollback_confirmation_requested`
+- `stationary_energy_inventory_save_confirmation_requested`
+
+## Prompts And Configuration
 
-```json
-{
-  "access_token": "eyJ...",
-  "expires_at": "2025-01-29T15:30:00Z",
-  "issued_at": "2025-01-29T13:30:00Z",
-  "cc_access_token": "...",
-  "inventory_name": "San Francisco",
-  "custom_metadata": "..."
-}
-```
+`llm_config.yaml` is the source of truth for model, prompt, retry, and history
+settings.
 
-### Message Model
+- `prompts.default`
+  - General Climate Advisor chat prompt.
+- `prompts.inventory_context`
+  - Injected only when an inventory is active and CA can fetch its details.
+- `prompts.stationary_energy_review`
+  - Appended only for active Stationary Energy draft review chat.
 
-```python
-class Message(Base):
-    __tablename__ = "messages"
+Prompt include directives such as `{{ include: tools/default_tool_policy.md }}`
+are resolved relative to the including file first and then against the prompt
+search roots discovered by `PromptsConfig`.
 
-    message_id: UUID = PK
-    thread_id: UUID = FK (Thread)
-    text: str
-    role: Enum = {'user', 'assistant'}
-    tools_used: Optional[Dict] = JSONB
-    created_at: datetime
+Stationary Energy chat also has a dedicated prompt budget:
 
-    thread: Thread = relationship(back_populates=messages)
-```
+- `StreamingHandler` prepends `STATIONARY_ENERGY_DRAFT_CONTEXT_JSON`.
+- If needed, the draft snapshot is compacted before the run.
+- The final runner input is trimmed to the configured `chat_context` budget.
 
-**tools_used field example:**
+## External Integrations
 
-```json
-[
-  {
-    "name": "climate_vector_search",
-    "status": "success",
-    "arguments": {
-      "query": "emissions reduction strategies"
-    },
-    "results": [
-      {
-        "filename": "GPC_Full_MASTER_RW_v7.pdf",
-        "chunk_index": 42,
-        "score": 0.87,
-        "content": "Document excerpt..."
-      }
-    ]
-  }
-]
-```
+### LLM Providers
 
-### DocumentEmbedding Model (Vector DB)
+- OpenRouter is the default chat-completions provider.
+- Direct OpenAI chat endpoints are also supported through the same
+  OpenAI-compatible client abstraction.
+- OpenAI embeddings power `climate_vector_search`.
 
-**Vector Index:**
+### CityCatalyst
 
-```sql
-CREATE INDEX ix_document_embeddings_vector
-ON document_embeddings
-USING ivfflat (embedding_vector vector_cosine_ops)
-WITH (lists = 100);
-```
+- Token refresh flows through `TokenHandler`.
+- Inventory tools call CityCatalyst APIs with the scoped bearer token.
+- Stationary Energy draft-save uses the existing CityCatalyst draft-save route
+  after CA has assembled a complete reviewed draft state.
+- Inventory commit is not executed directly by CA chat tools; CA returns a
+  confirmation payload and CityCatalyst owns the final inventory-write step.
 
-## Service Layers
+### PostgreSQL And pgvector
 
-### 1. Route Layer (FastAPI)
+- SQLAlchemy async sessions back thread, message, and draft workflow
+  persistence.
+- pgvector stores semantic-search embeddings for the climate knowledge base.
 
-**`routes/health.py`**
+## Conversation History And Prompt Budgets
 
-- `GET /health` - Liveness probe
+Climate Advisor prunes older tool metadata for LLM context while preserving the
+full audit trail in PostgreSQL.
 
-**`routes/threads.py`**
+For Stationary Energy review chat:
 
-- `POST /v1/threads` - Create thread with optional context
+1. `load_conversation_history()` loads pruned history.
+2. `StreamingHandler` loads the persisted draft snapshot.
+3. `ui_context` from the request is attached to the snapshot when present.
+4. The context message is compacted if it exceeds the configured prompt budget.
+5. The final runner input is trimmed again before the streamed run starts.
 
-**`routes/messages.py`**
+## Observability
 
-- `POST /v1/messages` - Send message, stream response (SSE)
-
-### 2. Service Layer
-
-**ThreadService** (`services/thread_service.py`)
-
-- `create_thread()` - Create new thread
-- `get_thread()` - Retrieve thread by ID
-- `get_thread_for_user()` - Verify user ownership
-- `update_context()` - Update thread JSONB context
-- `touch_thread()` - Update last_updated timestamp
-
-**MessageService** (`services/message_service.py`)
-
-- `create_user_message()` - Persist user message
-- `create_assistant_message()` - Persist assistant response
-- `get_thread_messages()` - Load conversation history
-
-**AgentService** (`services/agent_service.py`)
-
-- `create_agent()` - Initialize Agents SDK with tools
-- `_create_openrouter_client()` - Build the chat client from shared OpenRouter settings
-- `_setup_tools()` - Build tool definitions for agent
-
-**OpenRouter Client Helper** (`services/openrouter_client.py`)
-
-- `build_openrouter_client_options()` - Resolve shared OpenRouter base URL, headers, timeout, and retry settings for chat clients
-
-**EmbeddingService** (`services/embedding_service.py`)
-
-- `generate_embeddings()` - Call OpenAI embedding API
-- `generate_embeddings_batch()` - Batch embedding generation
-
-**CityCatalystClient** (`services/citycatalyst_client.py`)
-
-- `refresh_token()` - Call CityCatalyst token refresh endpoint
-- `query_inventory()` - Call CityCatalyst inventory APIs
-- Error handling and retry logic
-
-### 3. Tool Layer
-
-**ClimateVectorSearchTool** (`tools/climate_vector_tool.py`)
-
-```python
-async def climate_vector_search(query: str, top_k: int = 5) -> List[VectorSearchMatch]:
-    """
-    Semantic search over climate knowledge base.
-
-    1. Generate embedding for query using OpenAI
-    2. Search pgvector for similar chunks
-    3. Return top-k results with similarity scores
-    4. Tool invocation recorded in message.tools_used
-    """
-```
-
-**CCInventoryTool** (`tools/cc_inventory_tool.py`)
-
-```python
-async def cc_inventory_query(inventory_id: str, data_type: str) -> Dict:
-    """
-    Query CityCatalyst inventory APIs.
-
-    1. Load JWT token from thread context
-    2. Check token expiration
-    3. Refresh token if needed via CityCatalyst
-    4. Call CityCatalyst inventory endpoint
-    5. Return formatted inventory data
-    6. Tool invocation recorded in message.tools_used
-    """
-```
-
-### 4. Utility Layer
-
-**StreamingHandler** (`utils/streaming_handler.py`)
-
-- Orchestrates agent execution
-- Handles SSE stream formatting
-- Manages tool invocation tracking
-- Persists messages after streaming
-
-**ThreadResolver** (`utils/thread_resolver.py`)
-
-- Validates that provided thread_ids already exist and belong to the user
-- Creates a new thread only when the request omits thread_id
-
-**TokenHandler** (`utils/token_handler.py`)
-
-- Loads token from multiple sources
-- Manages token refresh logic
-- Handles CityCatalyst token endpoint calls
-
-**HistoryManager** (`utils/history_manager.py`)
-
-- Loads conversation messages from database with optional limit
-- Applies configurable pruning to manage context size
-- Splits messages into "preserved" (full metadata) and "discarded" (trimmed)
-- Provides DB-optional mode for graceful degradation
-- Reduces context token usage by stripping tool metadata from older messages
-
-**ToolHandler** (`utils/tool_handler.py`)
-
-- Persists assistant messages post-stream
-- Gates tool invocation persistence based on configuration
-- Trims tool metadata for storage efficiency in older messages
-- Handles graceful fallback when database unavailable
-
-## Configuration & Settings
-
-### LLM Configuration (`llm_config.yaml`)
-
-See `llm_config.yaml` in the project root for configuration of models, prompts, tools, conversation history limits, and observability settings.
-
-### Environment Variables (`settings.py`)
-
-Environment variables are configured in `.env` file. See `.env.example` for all available configuration options including database URL, API keys (OpenRouter, OpenAI), CityCatalyst settings, and LangSmith configuration.
-
-## Integration Points
-
-### 1. CityCatalyst App ↔ Climate Advisor
-
-**Request Flow:**
-
-```
-CityCatalyst Next.js App
-  └─ POST /api/v0/chat/messages
-      {
-        "user_id": "...",
-        "content": "...",
-        "thread_id": "..." (optional),
-        "context": {
-          "cc_access_token": "jwt"
-        }
-      }
-      ↓
-      Proxy to Climate Advisor Service
-      └─ POST /v1/messages
-          ↓
-          Response: SSE stream
-          ├─ event: message
-          ├─ event: tool_use
-          └─ event: done
-```
-
-### 2. Climate Advisor ↔ OpenRouter (LLM)
-
-```
-AgentService / StationaryEnergyProposalLLMService
-  └─ build_openrouter_client_options()
-      └─ AsyncOpenAI(base_url="https://openrouter.ai/api/v1")
-          └─ headers: {"Authorization": "Bearer $OPENROUTER_API_KEY"}
-              ├─ LLM Provider: OpenRouter
-              ├─ Tools: [climate_vector_search, cc_inventory_query]
-              └─ Stream: true (token-by-token)
-```
-
-### 3. Climate Advisor ↔ OpenAI (Embeddings)
-
-```
-EmbeddingService
-  └─ AsyncOpenAI(api_key=$OPENAI_API_KEY)
-      └─ Model: text-embedding-3-large
-          ├─ Used for query embeddings (climate_vector_search)
-          ├─ Dimension: 3072
-          └─ Rate limit: 3000 RPM
-```
-
-### 4. Climate Advisor ↔ CityCatalyst (Token & Inventory)
-
-```
-TokenHandler / CCInventoryTool
-  └─ POST $CC_BASE_URL/api/v0/assistants/token-refresh
-      ├─ Input: refresh_token or access_token
-      ├─ Response: new access_token with expiry
-      └─ Cached in thread.context["access_token"]
-
-  └─ GET $CC_BASE_URL/api/v0/inventory/{data_type}
-      ├─ Headers: Authorization: Bearer {access_token}
-      ├─ Query: inventory_id
-      └─ Response: Formatted inventory data
-```
-
-### 5. Climate Advisor ↔ PostgreSQL
-
-```
-AsyncSession (SQLAlchemy)
-  ├─ Threads table (CRUD)
-  ├─ Messages table (Write + Read history)
-  └─ DocumentEmbeddings table (Vector search)
-```
-
-### 6. Climate Advisor ↔ pgvector (Vector Search)
-
-```
-vector_search query:
-SELECT
-  embedding_id,
-  filename,
-  content,
-  embedding_vector <=> query_embedding as distance
-FROM document_embeddings
-ORDER BY embedding_vector <=> query_embedding
-LIMIT 5
-```
-
-### Conversation History Pruning & Retention
-
-**Overview**: Conversation history is loaded and pruned to reduce LLM context token usage while keeping complete tool metadata in the database for audit trails.
-
-**Key Principle**: Full tool metadata is **always saved to the database**. Pruning only affects what is sent to the LLM.
-
-**Retention Configuration** (`llm_config.yaml` → `conversation.retention`):
-
-```yaml
-conversation:
-  retention:
-    preserve_turns: 4         # Keep last 4 turns in LLM context
-    max_loaded_messages: 20   # Load max 20 messages from DB
-    prune_tools_for_llm: true # Apply pruning window for tool-output injection
-```
-
-**Pruning Pipeline**:
-
-1. **Load Phase** (`HistoryManager.load_messages`):
-   - Fetch up to `max_loaded_messages` messages from DB (oldest first)
-   - Messages have FULL tool metadata from database
-   - Gracefully return empty list if DB unavailable
-
-2. **Pruning Phase** (`HistoryManager.build_context`):
-   - Split messages into "preserved" (latest N turns) and "pruned" (older)
-   - For pruned messages: do not inject tool outputs into LLM context
-   - For preserved assistant messages: inject tool outputs as additional SYSTEM messages
-   - **Database message objects are unchanged** (always have full tools)
-
-3. **Context Building for LLM**:
-   - Messages sent to the model are always role/content only:
-     - Base messages: `{"role": "user/assistant", "content": "..."}`
-     - Tool grounding: a SYSTEM message is appended after preserved assistant messages:
-       `{"role": "system", "content": "INTERNAL_TOOL_OUTPUT_JSON\\n{...}"}`
-   - This context is sent to the LLM only; the DB rows do not include these SYSTEM items.
-
-4. **Persistence Phase** (`tool_handler.persist_assistant_message`):
-   - Always persist FULL tool metadata to database
-   - No trimming, no gating
-   - Ensures complete audit trail of all tool invocations
-
-**Benefits**:
-
-- **Token Usage**: 20-50% reduction for long conversations by not sending older tool metadata to LLM
-- **Database Integrity**: Complete audit trail with all tool invocation details preserved
-- **Context Quality**: Latest turns retain full metadata for traceability in LLM
-- **Flexibility**: Can still access full history from database for analytics/debugging
-- **Graceful Degradation**: DB-optional mode returns empty history instead of crashing
-
-**Usage in StreamingHandler**:
-
-```python
-# Instead of loading raw history:
-conversation_history = await message_service.get_thread_messages(...)
-
-# Now uses pruned context for LLM:
-conversation_history = await load_conversation_history(
-    thread_id=thread_id,
-    user_id=user_id,
-    session_factory=session_factory,
-)
-# Returns LLM-ready context with older tools removed
-# Database still has complete messages with full tools
-```
-
-**Feature Flags**:
-
-- `prune_tools_for_llm=true` (default): Strip tools from older messages for LLM (token optimization)
-- `prune_tools_for_llm=false`: Treat all loaded messages as preserved for tool-output injection (higher tokens)
-- `preserve_turns`: Control how many recent turns get tool-output SYSTEM messages injected
-
-**Observability**:
-
-Logged metrics:
-- `total_messages`: Messages loaded from DB (with full tools)
-- `preserved_count`: Messages kept with full metadata for LLM
-- `pruned_count`: Messages with tools removed from LLM context
-- `context_items`: Final LLM context size (smaller due to pruning)
-
-**Conversation History Loading**
-
-- **Default Limit**: Last 5 messages (configurable via `history_limit` in `llm_config.yaml`)
-- **Pruning**: Applied automatically via `HistoryManager` (see above)
-- **Query**: Indexed by `thread_id` for O(log n) lookup
-- **Benefit**: Balances context richness vs. token usage while reducing payload size
-
-### Vector Search Optimization
-
-- **Index**: IVFFlat on `embedding_vector` column
-- **Search Time**: ~10-50ms for 10k+ documents
-- **Distance Metric**: Cosine similarity
-- **Tuning**: `WITH (lists = 100)` for balance
-
-### Database Connection Pooling
-
-```python
-engine = create_async_engine(
-    database_url,
-    poolclass=NullPool,  # Async-safe
-    pool_size=20,
-    max_overflow=10,
-    pool_timeout=30
-)
-```
+Each streamed request creates a `RunConfig` with workflow-specific metadata.
+Stationary Energy context chat uses a dedicated workflow name and includes
+`stationary_energy_draft_run_id` in trace metadata so it can be separated from
+general conversations in traces and logs.

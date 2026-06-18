@@ -5,21 +5,13 @@ from app.services.stationary_energy.stationary_energy_draft_service import (
     LOAD_CONTEXT_CAPABILITY,
     StationaryEnergyDraftService,
 )
-from app.services.stationary_energy.stationary_energy_llm_models import (
-    StationaryEnergyLLMProposal,
-)
-from app.services.stationary_energy.stationary_energy_llm_service import (
-    StationaryEnergyLLMProposalResult,
-    StationaryEnergyLLMServiceError,
-    StationaryEnergyProposalLLMService,
+from app.services.stationary_energy.stationary_energy_proposal_builder import (
+    build_deterministic_proposals,
 )
 
 __all__ = [
     "COMMIT_ACCEPTED_CAPABILITY",
     "LOAD_CONTEXT_CAPABILITY",
     "StationaryEnergyDraftService",
-    "StationaryEnergyLLMProposal",
-    "StationaryEnergyLLMProposalResult",
-    "StationaryEnergyLLMServiceError",
-    "StationaryEnergyProposalLLMService",
+    "build_deterministic_proposals",
 ]

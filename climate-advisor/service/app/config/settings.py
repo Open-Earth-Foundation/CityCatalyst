@@ -131,9 +131,6 @@ class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
 
 
 class StationaryEnergyPromptBudgetConfig(BaseModel):
-    draft_generation: StationaryEnergyPromptBudgetFlowConfig = Field(
-        default_factory=StationaryEnergyPromptBudgetFlowConfig,
-    )
     chat_context: StationaryEnergyPromptBudgetFlowConfig = Field(
         default_factory=StationaryEnergyPromptBudgetFlowConfig,
     )
@@ -153,10 +150,10 @@ class GenerationConfig(BaseModel):
 
 
 class PromptsConfig(BaseModel):
+    """Configured prompt entry points and include-aware prompt loading."""
+
     default: str
     inventory_context: Optional[str] = None
-    data_analysis: Optional[str] = None
-    stationary_energy_draft_generation: Optional[str] = None
     stationary_energy_review: Optional[str] = None
 
     def get_prompt(self, prompt_type: str) -> str:
@@ -214,6 +211,7 @@ class PromptsConfig(BaseModel):
         seen: set[Path],
     ) -> str:
         """Read a prompt file and recursively expand include directives."""
+        # Guard against include cycles before reading nested prompt files.
         resolved_path = prompt_path.resolve()
         if resolved_path in seen:
             raise ValueError(f"Recursive prompt include detected: {resolved_path}")
@@ -222,6 +220,7 @@ class PromptsConfig(BaseModel):
         content = resolved_path.read_text(encoding="utf-8")
         resolved_lines: list[str] = []
 
+        # Expand include directives in-place so configured prompts stay composable.
         for line in content.splitlines():
             include_path = cls._parse_include_directive(line)
             if include_path is None:
@@ -237,6 +236,7 @@ class PromptsConfig(BaseModel):
                 cls._read_prompt_file(included_path, search_roots, seen)
             )
 
+        # Remove this file from the recursion stack before returning to callers.
         seen.remove(resolved_path)
         return "\n".join(resolved_lines)
 

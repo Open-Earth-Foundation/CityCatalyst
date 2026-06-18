@@ -11,9 +11,8 @@ from concurrent.futures import Future
 from decimal import Decimal
 from pathlib import Path
 from threading import Thread
-from types import SimpleNamespace
 from typing import Any, AsyncIterator
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import AsyncMock, patch
 from uuid import UUID, uuid4
 
 import pytest
@@ -37,12 +36,6 @@ from app.services.citycatalyst_client import CityCatalystClientError
 from app.services.stationary_energy import (
     COMMIT_ACCEPTED_CAPABILITY,
     LOAD_CONTEXT_CAPABILITY,
-    StationaryEnergyLLMProposal,
-    StationaryEnergyLLMProposalResult,
-    StationaryEnergyLLMServiceError,
-    StationaryEnergyProposalLLMService,
-)
-from app.services.stationary_energy.stationary_energy_llm_output import (
     build_deterministic_proposals,
 )
 from app.services.stationary_energy.stationary_energy_agent_review import (
@@ -319,16 +312,12 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
 
     def test_start_persists_source_candidates_and_status_returns_snapshot(self) -> None:
         mock_client = self._mock_cc_client()
-        mock_llm = self._mock_llm_generator()
 
         with patch.dict(
             os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}
         ), patch(
             "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
-            return_value=mock_llm,
         ):
             start_response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
@@ -410,8 +399,6 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             ["draft", "draft"],
         )
         self.assertEqual(mock_client.load_stationary_energy_context.await_count, 2)
-        mock_llm.generate_proposals.assert_not_awaited()
-        mock_llm.generate_proposals_for_rows.assert_not_awaited()
         context_summary = self._draft_context_summary(draft_run_id)
         self.assertEqual(context_summary["source_candidates_count"], 4)
         self.assertEqual(context_summary["applicable_source_candidates_count"], 2)
@@ -509,7 +496,6 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
 
     def test_resume_marks_draft_stale_when_connected_sources_change(self) -> None:
         mock_client = self._mock_cc_client()
-        mock_llm = self._mock_llm_generator()
         stale_context = _context_payload()
         stale_context["source_candidates"] = [
             {
@@ -580,9 +566,6 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         ), patch(
             "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
-            return_value=mock_llm,
         ):
             start_response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
@@ -624,16 +607,12 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             "user-1", context={"access_token": _expired_jwt()}
         )
         mock_client = self._mock_cc_client()
-        mock_llm = self._mock_llm_generator()
 
         with patch.dict(
             os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}
         ), patch(
             "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
-            return_value=mock_llm,
         ):
             response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
@@ -659,16 +638,12 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
     def test_start_rejects_thread_user_mismatch_before_calling_cc(self) -> None:
         thread_id = self._create_thread("thread-owner")
         mock_client = self._mock_cc_client()
-        mock_llm = self._mock_llm_generator()
 
         with patch.dict(
             os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}
         ), patch(
             "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
-            return_value=mock_llm,
         ):
             response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
@@ -682,20 +657,15 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(response.status_code, 403)
         mock_client.get_stationary_energy_allowed_capabilities.assert_not_awaited()
-        mock_llm.generate_proposals.assert_not_awaited()
 
     def test_start_requires_access_token_before_calling_cc(self) -> None:
         mock_client = self._mock_cc_client()
-        mock_llm = self._mock_llm_generator()
 
         with patch.dict(
             os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}
         ), patch(
             "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
-            return_value=mock_llm,
         ):
             response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
@@ -709,23 +679,18 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.status_code, 401)
         mock_client.refresh_token.assert_not_awaited()
         mock_client.get_stationary_energy_allowed_capabilities.assert_not_awaited()
-        mock_llm.generate_proposals.assert_not_awaited()
 
     def test_start_rejects_token_that_cc_does_not_authorize(self) -> None:
         mock_client = self._mock_cc_client()
         mock_client.get_stationary_energy_allowed_capabilities = AsyncMock(
             side_effect=CityCatalystClientError("token rejected", status_code=401)
         )
-        mock_llm = self._mock_llm_generator()
 
         with patch.dict(
             os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}
         ), patch(
             "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
-            return_value=mock_llm,
         ):
             response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
@@ -739,23 +704,18 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(response.status_code, 401)
         mock_client.get_stationary_energy_allowed_capabilities.assert_awaited_once()
-        mock_llm.generate_proposals.assert_not_awaited()
 
     def test_start_returns_502_when_context_loading_fails(self) -> None:
         mock_client = self._mock_cc_client()
         mock_client.load_stationary_energy_context = AsyncMock(
             side_effect=CityCatalystClientError("context failed", status_code=502)
         )
-        mock_llm = self._mock_llm_generator()
 
         with patch.dict(
             os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}
         ), patch(
             "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
-            return_value=mock_llm,
         ):
             response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
@@ -771,24 +731,18 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.status_code, 502)
         self.assertIn("context failed", response.text)
         mock_client.load_stationary_energy_context.assert_awaited_once()
-        mock_llm.generate_proposals.assert_not_awaited()
-        mock_llm.generate_proposals_for_rows.assert_not_awaited()
 
     def test_retry_failed_draft_regenerates_snapshot(self) -> None:
         mock_client = self._mock_cc_client()
         mock_client.load_stationary_energy_context = AsyncMock(
             side_effect=CityCatalystClientError("context failed", status_code=502)
         )
-        mock_llm = self._mock_llm_generator()
 
         with patch.dict(
             os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}
         ), patch(
             "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
-            return_value=mock_llm,
         ):
             failed_response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
@@ -817,15 +771,11 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         )
 
         retry_client = self._mock_cc_client()
-        success_llm = self._mock_llm_generator()
         with patch.dict(
             os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}
         ), patch(
             "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=retry_client,
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
-            return_value=success_llm,
         ):
             retry_response = self.client.post(
                 f"/v1/stationary-energy-drafts/{draft_run_id}/retry",
@@ -851,16 +801,12 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         retry_client.load_stationary_energy_context = AsyncMock(
             side_effect=CityCatalystClientError("retry context failed", status_code=502)
         )
-        failing_llm = self._mock_llm_generator()
 
         with patch.dict(
             os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}
         ), patch(
             "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=retry_client,
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
-            return_value=failing_llm,
         ):
             retry_response = self.client.post(
                 f"/v1/stationary-energy-drafts/{draft_run_id}/retry",
@@ -908,50 +854,13 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
 
     def test_review_and_save_reject_generating_draft(self) -> None:
         mock_client = self._mock_cc_client()
-        mock_llm = self._mock_llm_generator()
-        conflict_context = _context_payload()
-        conflict_context["source_candidates"].append(
-            {
-                "datasource_id": "ds-residential-alt",
-                "name": "Residential alternative source",
-                "publisher_name": "Alternative Publisher",
-                "dataset_name": "Residential building energy",
-                "dataset_year": 2023,
-                "url": "https://example.test/residential-alt",
-                "geography_match": "city",
-                "source_scope": {
-                    "sector_id": "I",
-                    "sector_name": "Stationary Energy",
-                    "subsector_id": "I.1",
-                    "subsector_name": "Residential buildings",
-                    "scope_id": "1",
-                    "scope_name": "Scope 1",
-                },
-                "normalized_rows": [
-                    {
-                        "value": 120,
-                        "unit": "MWh",
-                        "emissions_value_100yr": "1200000",
-                        "emissions_unit": "kgCO2e",
-                    }
-                ],
-                "applicability_status": "applicable",
-                "applicability_issues": [],
-            }
-        )
-        mock_client.load_stationary_energy_context = AsyncMock(
-            return_value=conflict_context
-        )
 
-        async def slow_conflict_resolution(
-            **kwargs: Any,
-        ) -> StationaryEnergyLLMProposalResult:
-            await asyncio.sleep(0.3)
-            raise StationaryEnergyLLMServiceError("slow conflict resolution")
-
-        mock_llm.generate_proposals_for_rows = AsyncMock(
-            side_effect=slow_conflict_resolution
-        )
+        def hold_background_task(coro: Any) -> Future[Any]:
+            """Leave the draft in generating state for route guard assertions."""
+            coro.close()
+            future: Future[Any] = Future()
+            future.set_result(None)
+            return future
 
         with patch.dict(
             os.environ,
@@ -960,8 +869,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
         ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
-            return_value=mock_llm,
+            "app.services.stationary_energy.stationary_energy_draft_service._schedule_background_task",
+            side_effect=hold_background_task,
         ):
             start_response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
@@ -991,7 +900,6 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                 json={"user_id": "user-1"},
                 headers=_auth_headers(),
             )
-            self._wait_for_draft_status(draft_run_id, "ready")
 
         self.assertEqual(review_response.status_code, 409, review_response.text)
         self.assertIn("still in progress", review_response.text)
@@ -1289,16 +1197,12 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
 
     def test_save_commits_latest_pending_review_decisions(self) -> None:
         mock_client = self._mock_cc_client()
-        mock_llm = self._mock_llm_generator()
 
         with patch.dict(
             os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}
         ), patch(
             "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
-            return_value=mock_llm,
         ):
             start_response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
@@ -1370,16 +1274,12 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
 
     def test_save_commits_manual_review_decisions(self) -> None:
         mock_client = self._mock_cc_client()
-        mock_llm = self._mock_llm_generator()
 
         with patch.dict(
             os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}
         ), patch(
             "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
-            return_value=mock_llm,
         ):
             start_response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
@@ -1708,6 +1608,39 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             result["pending_choices"][0]["selected_source_id"],
             "ds-preview-alt-details",
+        )
+
+    def test_agent_review_options_include_source_evidence_for_chat_checks(
+        self,
+    ) -> None:
+        draft_run_id, _proposal_id, _candidate_id = self._start_draft()
+
+        async def exercise() -> dict[str, Any]:
+            async with self.session_factory() as session:
+                service = StationaryEnergyAgentReviewService(session)
+                result = await service.list_review_options(
+                    draft_run_id=UUID(draft_run_id),
+                    user_id="user-1",
+                )
+                return result.model_dump(mode="json")
+
+        result = asyncio.run(exercise())
+        option = next(
+            option
+            for blocker in result["blocked_choices"]
+            for option in blocker["available_options"]
+            if option["datasource_id"] == "ds-applicable"
+        )
+        self.assertEqual(
+            option["evidence"],
+            {
+                "dataset_year": 2024,
+                "geography_match": "city",
+                "activity_value": 100,
+                "activity_unit": "MWh",
+                "emissions_value": "1000000",
+                "emissions_unit": "kgCO2e",
+            },
         )
 
     def test_agent_review_preview_staged_sources_rollback_does_not_mutate(self) -> None:
@@ -2093,8 +2026,8 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("STATIONARY_ENERGY_DRAFT_CONTEXT_JSON", history[0]["content"])
         self.assertIn("Testopolis", history[0]["content"])
         self.assertIn("ds-chat", history[0]["content"])
-        self.assertIn("openai/gpt-5.4", history[0]["content"])
         self.assertIn("guidance_context", history[0]["content"])
+        self.assertNotIn("llm_generation", history[0]["content"])
         self.assertIn("ui_context", history[0]["content"])
         self.assertIn(proposal_id, history[0]["content"])
         self.assertIn("Focused right pane row", history[0]["content"])
@@ -2132,89 +2065,14 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         )
         return mock_client
 
-    def _mock_llm_generator(self) -> Mock:
-        """Return a proposal generator mock for full and row-batched calls."""
-
-        async def generate_proposals(
-            *,
-            context: Any,
-            stored_source_candidates: list[dict[str, Any]],
-            rows: list[Any] | None = None,
-            trace_id: str | None,
-        ) -> StationaryEnergyLLMProposalResult:
-            candidate_by_datasource = {
-                candidate["datasource_id"]: candidate
-                for candidate in stored_source_candidates
-            }
-            residential = candidate_by_datasource["ds-applicable"]
-            commercial = candidate_by_datasource["ds-commercial"]
-            proposals = []
-            for row in rows or context.taxonomy:
-                row_payload = row.model_dump(mode="json", exclude_none=True)
-                if row_payload.get("subsector_id") == "I.1":
-                    candidate = residential
-                    current_value = (
-                        context.current_values[0].model_dump(
-                            mode="json", exclude_none=True
-                        )
-                        if context.current_values
-                        else None
-                    )
-                    rationale = "Mock LLM selected the stored residential source."
-                    confidence = Decimal("0.91")
-                else:
-                    candidate = commercial
-                    current_value = None
-                    rationale = "Mock LLM selected the stored commercial source."
-                    confidence = Decimal("0.82")
-                proposals.append(
-                    {
-                        "target_ref": row_payload,
-                        "current_value": current_value,
-                        "recommended_candidate_id": UUID(candidate["candidate_id"]),
-                        "recommended_datasource_id": candidate["datasource_id"],
-                        "alternative_candidate_ids": [],
-                        "proposed_value": {
-                            "datasource_id": candidate["datasource_id"],
-                            "row": candidate["normalized_rows"][0],
-                        },
-                        "rationale": rationale,
-                        "status": "ready",
-                        "confidence_score": confidence,
-                    }
-                )
-            return StationaryEnergyLLMProposalResult(
-                proposals=proposals,
-                trace={
-                    "model": "mock-llm",
-                    "input": {
-                        "source_candidates": stored_source_candidates,
-                    },
-                    "raw_output": '{"proposals": []}',
-                    "parsed_output": {"proposal_count": len(proposals)},
-                    "trace_id": trace_id,
-                },
-            )
-
-        mock_generator = Mock()
-        mock_generator.generate_proposals = AsyncMock(side_effect=generate_proposals)
-        mock_generator.generate_proposals_for_rows = AsyncMock(
-            side_effect=generate_proposals
-        )
-        return mock_generator
-
     def _start_draft(self) -> tuple[str, str, str]:
         """Create a ready draft and return one proposal/candidate pair."""
         mock_client = self._mock_cc_client()
-        mock_llm = self._mock_llm_generator()
         with patch.dict(
             os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}
         ), patch(
             "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
             return_value=mock_client,
-        ), patch(
-            "app.services.stationary_energy.stationary_energy_draft_service.StationaryEnergyProposalLLMService",
-            return_value=mock_llm,
         ):
             response = self.client.post(
                 "/v1/stationary-energy-drafts/start",
@@ -2427,11 +2285,6 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                             "Use subsector-specific energy activity data first."
                         ],
                     },
-                    "llm_trace": {
-                        "model": "openai/gpt-5.4",
-                        "raw_output": "raw-output-should-not-be-in-chat-context",
-                        "parsed_output": {"proposals": [{"status": "ready"}]},
-                    },
                 },
                 permission_summary={"can_review": True},
             )
@@ -2566,7 +2419,7 @@ class StationaryEnergyMigrationTests(unittest.TestCase):
         self.assertIn("tool_call_id", staged_selection_columns)
 
 
-class StationaryEnergyLLMValidationTests(unittest.TestCase):
+class StationaryEnergyProposalBuilderTests(unittest.TestCase):
     def test_equal_multi_source_values_become_needs_review(self) -> None:
         taxonomy = [_context_payload()["taxonomy"][0]]
         candidate_1 = {
@@ -2600,17 +2453,15 @@ class StationaryEnergyLLMValidationTests(unittest.TestCase):
             "applicability_status": "applicable",
         }
 
-        deterministic, llm_rows, fallback = build_deterministic_proposals(
+        proposals = build_deterministic_proposals(
             taxonomy_rows=taxonomy,
             stored_source_candidates=[candidate_1, candidate_2],
             current_values=[],
             inventory_year=2024,
         )
 
-        self.assertEqual(len(deterministic), 1)
-        self.assertEqual(llm_rows, [])
-        self.assertEqual(fallback, [])
-        proposal = deterministic[0]
+        self.assertEqual(len(proposals), 1)
+        proposal = proposals[0]
         self.assertEqual(proposal["status"], "needs_review")
         self.assertEqual(proposal["recommended_datasource_id"], "ds-a")
         self.assertEqual(
@@ -2618,7 +2469,7 @@ class StationaryEnergyLLMValidationTests(unittest.TestCase):
             [candidate_2["candidate_id"]],
         )
 
-    def test_different_multi_source_values_stay_conflict_for_agent_reasoning(
+    def test_different_multi_source_values_become_deterministic_conflict(
         self,
     ) -> None:
         taxonomy = [_context_payload()["taxonomy"][0]]
@@ -2653,163 +2504,21 @@ class StationaryEnergyLLMValidationTests(unittest.TestCase):
             "applicability_status": "applicable",
         }
 
-        deterministic, llm_rows, fallback = build_deterministic_proposals(
+        proposals = build_deterministic_proposals(
             taxonomy_rows=taxonomy,
             stored_source_candidates=[candidate_1, candidate_2],
             current_values=[],
             inventory_year=2024,
         )
 
-        self.assertEqual(deterministic, [])
-        self.assertEqual(llm_rows, taxonomy)
-        self.assertEqual(len(fallback), 1)
-        self.assertEqual(fallback[0]["status"], "conflict")
-
-    @patch(
-        "app.services.stationary_energy.stationary_energy_llm_service.configure_agents_tracing"
-    )
-    @patch("app.services.stationary_energy.stationary_energy_llm_service.get_settings")
-    def test_service_uses_shared_openrouter_options_and_prompt_config(
-        self,
-        mock_get_settings,
-        _mock_tracing,
-    ) -> None:
-        """Verify prompt loading and OpenRouter client setup are centralized."""
-
-        prompts = Mock()
-        prompts.get_prompt = Mock(return_value="Stationary Energy prompt")
-        mock_settings = SimpleNamespace(
-            openrouter_api_key="test-key",
-            openrouter_base_url="https://custom-openrouter.example/v1",
-            openrouter_model="openai/gpt-4.1",
-            llm=SimpleNamespace(
-                models=SimpleNamespace(
-                    orchestrator=SimpleNamespace(
-                        name="openai/gpt-4.1",
-                        temperature=0.0,
-                    ),
-                    agentic_flow=SimpleNamespace(
-                        name="openai/gpt-5.4",
-                        temperature=0.0,
-                    ),
-                ),
-                prompts=prompts,
-                api=SimpleNamespace(
-                    openrouter=SimpleNamespace(
-                        base_url="https://custom-openrouter.example/v1",
-                        timeout_ms=30000,
-                        retry_attempts=3,
-                    )
-                ),
-            ),
-            langsmith_tracing_enabled=False,
+        self.assertEqual(len(proposals), 1)
+        proposal = proposals[0]
+        self.assertEqual(proposal["status"], "conflict")
+        self.assertEqual(proposal["recommended_datasource_id"], "ds-a")
+        self.assertEqual(
+            proposal["alternative_candidate_ids"],
+            [candidate_2["candidate_id"]],
         )
-        mock_get_settings.return_value = mock_settings
-        client_kwargs = {
-            "api_key": "test-key",
-            "base_url": "https://custom-openrouter.example/v1",
-            "timeout": 30.0,
-            "max_retries": 3,
-            "default_headers": {
-                "HTTP-Referer": "https://citycatalyst.ai",
-                "X-Title": "CityCatalyst Climate Advisor",
-                "Accept": "application/json",
-            },
-        }
-
-        with patch(
-            "app.services.stationary_energy.stationary_energy_llm_service.build_openrouter_client_options",
-            return_value=SimpleNamespace(
-                base_url="https://custom-openrouter.example/v1",
-                kwargs=client_kwargs,
-            ),
-        ) as mock_builder, patch(
-            "app.services.stationary_energy.stationary_energy_llm_service.AsyncOpenAI"
-        ) as mock_client_class:
-            service = StationaryEnergyProposalLLMService()
-
-        prompts.get_prompt.assert_called_once_with("stationary_energy_draft_generation")
-        mock_builder.assert_called_once_with(
-            mock_settings,
-            missing_api_key_message=(
-                "OPENROUTER_API_KEY must be set for Stationary Energy LLM proposals"
-            ),
-            error_cls=StationaryEnergyLLMServiceError,
-        )
-        mock_client_class.assert_called_once_with(**client_kwargs)
-        self.assertEqual(service.model, "openai/gpt-5.4")
-        self.assertEqual(service.temperature, 0.0)
-        self.assertEqual(service.system_prompt, "Stationary Energy prompt")
-
-    def test_rejects_candidate_datasource_mismatch(self) -> None:
-        target_ref = _context_payload()["taxonomy"][0]
-        candidate_id = uuid4()
-        proposal = StationaryEnergyLLMProposal(
-            target_ref=target_ref,
-            recommended_candidate_id=candidate_id,
-            recommended_datasource_id="wrong-ds",
-            rationale="Bad source pairing",
-            status="ready",
-            confidence_score=Decimal("0.5"),
-        )
-
-        with self.assertRaisesRegex(ValueError, "does not match"):
-            StationaryEnergyProposalLLMService._validate_and_normalize_proposals(
-                [proposal],
-                [
-                    {
-                        "candidate_id": str(candidate_id),
-                        "datasource_id": "expected-ds",
-                        "applicability_status": "applicable",
-                        "source_scope": target_ref,
-                    }
-                ],
-                [target_ref],
-            )
-
-    def test_rejects_missing_taxonomy_row(self) -> None:
-        taxonomy = _context_payload()["taxonomy"]
-        proposal = StationaryEnergyLLMProposal(
-            target_ref=taxonomy[0],
-            recommended_candidate_id=None,
-            recommended_datasource_id=None,
-            rationale="Only one proposal returned",
-            status="gap",
-            confidence_score=Decimal("0.5"),
-        )
-
-        with self.assertRaisesRegex(ValueError, "omitted taxonomy rows"):
-            StationaryEnergyProposalLLMService._validate_and_normalize_proposals(
-                [proposal],
-                [],
-                taxonomy,
-            )
-
-    def test_rejects_candidate_outside_target_scope(self) -> None:
-        taxonomy = _context_payload()["taxonomy"]
-        candidate_id = uuid4()
-        proposal = StationaryEnergyLLMProposal(
-            target_ref=taxonomy[0],
-            recommended_candidate_id=candidate_id,
-            recommended_datasource_id="ds-commercial",
-            rationale="Bad scope pairing",
-            status="ready",
-            confidence_score=Decimal("0.5"),
-        )
-
-        with self.assertRaisesRegex(ValueError, "outside the proposal target scope"):
-            StationaryEnergyProposalLLMService._validate_and_normalize_proposals(
-                [proposal],
-                [
-                    {
-                        "candidate_id": str(candidate_id),
-                        "datasource_id": "ds-commercial",
-                        "applicability_status": "applicable",
-                        "source_scope": taxonomy[1],
-                    }
-                ],
-                [taxonomy[0]],
-            )
 
 
 if __name__ == "__main__":

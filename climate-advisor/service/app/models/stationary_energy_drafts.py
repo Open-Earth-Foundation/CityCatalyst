@@ -286,6 +286,8 @@ class GetStationaryEnergyDraftQuery(BaseModel):
 
 
 class StationaryEnergyDraftStatusResponse(BaseModel):
+    """Full status response for a Stationary Energy draft run."""
+
     draft_run_id: UUID
     thread_id: UUID | None = None
     user_id: str

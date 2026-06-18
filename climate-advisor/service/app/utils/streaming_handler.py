@@ -200,6 +200,7 @@ class StreamingHandler:
             List of message dicts ready for LLM, with pruning applied.
             Empty list if history is disabled or DB is unavailable.
         """
+        # Load persisted chat history before injecting workflow-specific context.
         conversation_history = await load_conversation_history(
             thread_id=self.thread_id,
             user_id=self.user_id,
@@ -208,6 +209,7 @@ class StreamingHandler:
         stationary_energy_context = await self._load_stationary_energy_context_message(
             payload
         )
+        # Prepend the CA-owned draft snapshot so short replies stay grounded.
         if stationary_energy_context:
             conversation_history = [stationary_energy_context, *conversation_history]
             if not self._history_contains_current_user_message(
@@ -218,6 +220,7 @@ class StreamingHandler:
                     {"role": "user", "content": payload.content}
                 )
 
+        # Log the effective context size after workflow injection and pruning.
         if conversation_history:
             logger.info(
                 "Loaded and pruned conversation history: %d messages for thread_id=%s",
@@ -237,6 +240,7 @@ class StreamingHandler:
         payload: MessageCreateRequest,
     ) -> Optional[Dict[str, str]]:
         """Load the persisted Stationary Energy draft snapshot for chat grounding."""
+        # Resolve the draft id from request context first, then fall back to thread state.
         draft_run_id_text = extract_stationary_energy_draft_run_id(
             payload.context,
             payload.options,
@@ -251,6 +255,7 @@ class StreamingHandler:
         if not draft_run_id_text:
             return None
 
+        # Reject malformed context ids without failing the whole chat request.
         try:
             draft_run_id = UUID(str(draft_run_id_text))
         except ValueError:
@@ -260,6 +265,7 @@ class StreamingHandler:
             )
             return None
 
+        # Keep the resolved id on the handler so tool registration uses the same draft.
         self.stationary_energy_draft_run_id = str(draft_run_id)
 
         if not self.session_factory:
@@ -268,6 +274,7 @@ class StreamingHandler:
             )
             return None
 
+        # Load the CA-owned draft snapshot with source, proposal, and review rows.
         try:
             async with self.session_factory() as session:
                 repository = StationaryEnergyDraftRepository(session)
@@ -280,6 +287,7 @@ class StreamingHandler:
             )
             return None
 
+        # Return a system blocker when the requested draft is missing or not owned.
         if draft_run is None or draft_run.user_id != self.user_id:
             logger.warning(
                 "Stationary Energy draft context unavailable draft_run_id=%s user_id=%s",
@@ -294,6 +302,7 @@ class StreamingHandler:
                 ),
             }
 
+        # Attach UI focus/confirmation state to the persisted draft snapshot.
         context_payload = self._stationary_energy_context_payload(draft_run)
         ui_context = self._stationary_energy_ui_context(payload)
         if ui_context:
@@ -337,26 +346,8 @@ class StreamingHandler:
     ) -> Dict[str, Any]:
         """Build the persisted draft snapshot used to ground Stationary Energy chat."""
         context_summary = draft_run.context_summary or {}
-        llm_trace = (
-            context_summary.get("llm_trace")
-            if isinstance(context_summary, dict)
-            else None
-        )
-        llm_generation = None
-        if isinstance(llm_trace, dict):
-            parsed_output = llm_trace.get("parsed_output")
-            llm_generation = {
-                "model": llm_trace.get("model"),
-                "temperature": llm_trace.get("temperature"),
-                "usage": llm_trace.get("usage"),
-                "proposal_count": (
-                    len(parsed_output.get("proposals"))
-                    if isinstance(parsed_output, dict)
-                    and isinstance(parsed_output.get("proposals"), list)
-                    else None
-                ),
-            }
 
+        # Serialize the full CA-owned review snapshot with stable id strings.
         return {
             "draft_run": {
                 "draft_run_id": str(draft_run.draft_run_id),
@@ -403,7 +394,6 @@ class StreamingHandler:
                 if isinstance(context_summary, dict)
                 else None
             ),
-            "llm_generation": llm_generation,
             "source_candidates": [
                 {
                     "candidate_id": str(candidate.candidate_id),
@@ -505,6 +495,7 @@ class StreamingHandler:
         payload: MessageCreateRequest,
     ) -> Optional[Dict[str, Any]]:
         """Extract UI focus and confirmation context from the request payload."""
+        # Normalize request containers so missing context/options behave like empty maps.
         request_context = payload.context if isinstance(payload.context, dict) else {}
         request_options = payload.options if isinstance(payload.options, dict) else {}
         focused_proposal_id = request_context.get(
@@ -521,6 +512,7 @@ class StreamingHandler:
         if not isinstance(pending_reviews, list):
             pending_reviews = []
 
+        # Find the detailed pending-review row that matches the visible pane.
         focused_review = None
         if focused_proposal_id:
             focused_review = next(
@@ -544,6 +536,7 @@ class StreamingHandler:
         if not isinstance(confirmed_rollback_choices, list):
             confirmed_rollback_choices = []
 
+        # Preserve the explicit UI count when the request sent one.
         pending_count = request_options.get(
             "stationary_energy_pending_decision_review_count"
         )
@@ -560,6 +553,7 @@ class StreamingHandler:
             "confirmed_bulk_review_choices": confirmed_bulk_choices,
             "confirmed_staged_review_rollback_choices": confirmed_rollback_choices,
         }
+        # Omit empty UI context so generic chats do not receive irrelevant metadata.
         if any(value for value in ui_context.values()):
             return ui_context
         return None
@@ -646,6 +640,7 @@ class StreamingHandler:
         runner_input: List[Dict[str, str]],
     ) -> List[Dict[str, str]]:
         """Trim chat input to the Stationary Energy prompt budget."""
+        # Count the full agent instructions plus runner input against the chat budget.
         budget = get_stationary_energy_prompt_budget(get_settings(), "chat_context")
         trimmed_input, token_count, removed_messages = trim_messages_to_budget(
             runner_input,
@@ -658,6 +653,7 @@ class StreamingHandler:
                 "Trimmed %s conversation messages from Stationary Energy chat prompt to fit token budget",
                 removed_messages,
             )
+        # Fail loudly if even the compacted workflow context exceeds the budget.
         if token_count.tokens > budget.max_prompt_tokens:
             raise ValueError(
                 "Stationary Energy chat prompt exceeds configured token budget "
@@ -683,7 +679,7 @@ class StreamingHandler:
                 f"{json.dumps(context_payload, ensure_ascii=False, default=str)}\n"
                 "Use this authoritative persisted CA draft snapshot to explain the Stationary Energy "
                 "screen the user is viewing. Do not re-fetch data. Do not invent missing values. "
-                "Treat source_candidates, proposals, review_decisions, llm_generation, and guidance_context "
+                "Treat source_candidates, proposals, review_decisions, and guidance_context "
                 "as the ground truth for this draft. If ui_context.focused_proposal_id is present, "
                 "it is the current right-side Source review decision visible to the user. "
                 "If ui_context.focused_decision_state is present, it is the action currently "
@@ -711,6 +707,7 @@ class StreamingHandler:
         max_prompt_tokens: int,
     ) -> Dict[str, Any]:
         """Build a compact context payload for prompt budget fallback."""
+        # Keep only routing and user-facing summary fields in the final fallback.
         return {
             "draft_run": context_payload.get("draft_run"),
             "city": context_payload.get("city"),
@@ -728,7 +725,6 @@ class StreamingHandler:
                     "source_candidates",
                     "proposals",
                     "review_decisions",
-                    "llm_generation",
                 ],
             },
         }
@@ -740,12 +736,15 @@ class StreamingHandler:
         conversation_history: List[Dict[str, str]],
     ) -> AsyncIterator[bytes]:
         """Stream events from the agent."""
+        # Use structured history when available; otherwise send the raw user text.
         runner_input: Any = (
             conversation_history if conversation_history else payload.content
         )
+        # Stationary Energy chats carry more context, so enforce the configured budget.
         if self.stationary_energy_draft_run_id and isinstance(runner_input, list):
             runner_input = self._enforce_chat_prompt_budget(agent, runner_input)
 
+        # Prefer the Agents SDK streamed runner and keep the legacy fallback path.
         try:
             result = Runner.run_streamed(
                 agent,
@@ -761,12 +760,14 @@ class StreamingHandler:
                 yield event_bytes
             return
 
+        # Convert SDK stream events into the app's SSE event contract.
         async for chunk in result.stream_events():
             async for event_bytes in self._process_chunk(chunk):
                 yield event_bytes
 
     def _run_config(self, payload: MessageCreateRequest) -> RunConfig:
         """Build trace metadata and execution options for one streamed run."""
+        # Resolve workflow context for trace naming and metadata classification.
         settings = get_settings()
         req_id = get_request_id()
         draft_run_id = (
@@ -784,6 +785,7 @@ class StreamingHandler:
             if has_stationary_energy_context
             else "Climate Advisor Conversation"
         )
+        # Keep trace metadata low-cardinality except for scoped request ids.
         trace_metadata: dict[str, Any] = {
             "service": "climate-advisor",
             "workflow": (
@@ -810,6 +812,7 @@ class StreamingHandler:
             trace_metadata["feature_flag"] = "STATIONARY_ENERGY_AGENTIC"
             trace_metadata["stationary_energy_draft_run_id"] = str(draft_run_id)
 
+        # Disable tracing from central settings without changing stream behavior.
         return RunConfig(
             workflow_name=workflow_name,
             trace_id=gen_trace_id(),
@@ -863,12 +866,14 @@ class StreamingHandler:
 
     async def _handle_raw_response(self, chunk: Any) -> AsyncIterator[bytes]:
         """Handle raw response events (text deltas, errors, etc)."""
+        # Ignore empty SDK event shells; there is nothing to send over SSE.
         response_event = getattr(chunk, "data", None)
         if not response_event:
             return
 
         response_type = getattr(response_event, "type", "")
 
+        # Stream text/refusal deltas as message events and preserve token order.
         if response_type in {"response.output_text.delta", "response.refusal.delta"}:
             content = getattr(response_event, "delta", "")
             if content:
@@ -880,6 +885,7 @@ class StreamingHandler:
                 ).encode("utf-8")
                 self.token_index += 1
 
+        # Surface SDK error events to the client and mark the stream as failed.
         elif response_type == "error":
             error_message = getattr(response_event, "message", "Streaming error")
             logger.error("Received error event from Responses API: %s", error_message)

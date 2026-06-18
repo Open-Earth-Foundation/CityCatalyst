@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from app.config.settings import _load_llm_config
 from app.config.settings import PromptsConfig
+
+CA_ROOT = Path(__file__).resolve().parents[2]
 
 
 def test_prompt_include_directive_resolves_relative_tools_fragment(tmp_path) -> None:
@@ -28,8 +32,12 @@ def test_prompt_include_directive_resolves_relative_tools_fragment(tmp_path) -> 
 def test_stationary_energy_review_prompt_has_rendered_tools_section() -> None:
     prompts = _load_llm_config().prompts
 
+    raw_prompt = (CA_ROOT / "prompts" / "stationary_energy_review.md").read_text(
+        encoding="utf-8"
+    )
     rendered_prompt = prompts.get_prompt("stationary_energy_review")
 
+    assert "{{ include:" not in raw_prompt
     assert "{{ include:" not in rendered_prompt
     assert "<tools>" in rendered_prompt
     assert "</tools>" in rendered_prompt

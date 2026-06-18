@@ -18,7 +18,9 @@ from app.models.db.stationary_energy_draft import (
 
 
 class StationaryEnergyDraftRepository:
-    def __init__(self, session: AsyncSession):
+    """Database access layer for Stationary Energy draft persistence."""
+
+    def __init__(self, session: AsyncSession) -> None:
         """Store the async session used for draft persistence queries."""
         self.session = session
 
@@ -84,6 +86,7 @@ class StationaryEnergyDraftRepository:
         excluded_statuses: set[str] | None = None,
     ) -> StationaryEnergyDraftRun | None:
         """Load the newest draft matching the durable user/city/inventory scope."""
+        # Eager-load review children because resume callers immediately serialize state.
         query = (
             select(StationaryEnergyDraftRun)
             .options(
@@ -104,11 +107,13 @@ class StationaryEnergyDraftRepository:
                 StationaryEnergyDraftRun.draft_run_id.desc(),
             )
         )
+        # Exclude terminal or failed statuses when callers need a resumable draft.
         if excluded_statuses:
             query = query.where(
                 StationaryEnergyDraftRun.status.notin_(excluded_statuses)
             )
 
+        # Use updated_at first so retries and review saves become the active draft.
         result = await self.session.execute(query)
         return result.scalars().first()
 
@@ -122,6 +127,7 @@ class StationaryEnergyDraftRepository:
         excluded_statuses: set[str] | None = None,
     ) -> list[StationaryEnergyDraftRun]:
         """Load every draft matching the durable user/city/inventory scope."""
+        # Eager-load related rows to avoid lazy IO during list serialization.
         query = (
             select(StationaryEnergyDraftRun)
             .options(
@@ -142,11 +148,13 @@ class StationaryEnergyDraftRepository:
                 StationaryEnergyDraftRun.draft_run_id.desc(),
             )
         )
+        # Keep filtering optional so history screens can include terminal drafts.
         if excluded_statuses:
             query = query.where(
                 StationaryEnergyDraftRun.status.notin_(excluded_statuses)
             )
 
+        # Preserve newest-first ordering for draft picker consumers.
         result = await self.session.execute(query)
         return list(result.scalars().all())
 
@@ -276,6 +284,7 @@ class StationaryEnergyDraftRepository:
         """Create or replace active staged selections keyed by draft/proposal/user."""
         persisted: list[StationaryEnergyStagedReviewSelection] = []
         for selection in selections:
+            # Reuse the unique draft/proposal/user row so staging is idempotent.
             existing_result = await self.session.execute(
                 select(StationaryEnergyStagedReviewSelection).where(
                     StationaryEnergyStagedReviewSelection.draft_run_id
@@ -291,6 +300,7 @@ class StationaryEnergyDraftRepository:
                 persisted.append(selection)
                 continue
 
+            # Replace the staged choice while keeping the stable selection identity.
             existing.action = selection.action
             existing.selected_source_id = selection.selected_source_id
             existing.selected_candidate_id = selection.selected_candidate_id
@@ -300,6 +310,7 @@ class StationaryEnergyDraftRepository:
             existing.updated_at = datetime.now(timezone.utc)
             persisted.append(existing)
 
+        # Flush once after all inserts/updates so callers can continue the transaction.
         await self.session.flush()
         return persisted
 

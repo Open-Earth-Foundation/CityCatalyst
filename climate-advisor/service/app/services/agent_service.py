@@ -20,12 +20,10 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import get_settings
 from app.services.openrouter_client import build_openrouter_client_options
-from app.tools import (
-    CCInventoryTool,
-    build_cc_inventory_tools,
-    build_stationary_energy_review_tools,
-    climate_vector_search,
-)
+from app.tools.cc_inventory_tool import CCInventoryTool
+from app.tools.cc_inventory_wrappers import build_cc_inventory_tools
+from app.tools.climate_vector_sync import climate_vector_search
+from app.tools.stationary_energy_review_tools import build_stationary_energy_review_tools
 from app.utils.agent_tracing import configure_agents_tracing
 
 logger = logging.getLogger(__name__)
@@ -324,6 +322,7 @@ class AgentService:
         Returns:
             Configured Agent instance
         """
+        # Resolve model and instruction settings before registering workflow tools.
         raw_agent_model = model or self.raw_default_model
         agent_model = self._resolve_chat_model_name(raw_agent_model)
         agent_temperature = self._temperature_for_model(
@@ -334,6 +333,7 @@ class AgentService:
         inventory_prompt: Optional[str] = None
         tools = []
 
+        # Add CityCatalyst inventory tools only when the request has scoped credentials.
         if self.cc_access_token and self.cc_user_id and self.cc_thread_id:
             thread_identifier = str(self.cc_thread_id)
             self._inventory_tool = CCInventoryTool()
@@ -364,6 +364,7 @@ class AgentService:
         if inventory_prompt:
             agent_instructions = f"{agent_instructions}\n\n{inventory_prompt}"
 
+        # Add Stationary Energy review tools only for an active CA-owned draft run.
         if (
             self.stationary_energy_draft_run_id
             and self.session_factory
@@ -389,8 +390,10 @@ class AgentService:
                 self.cc_user_id,
             )
 
+        # Keep vector search available for general climate-advice fallback context.
         tools.append(climate_vector_search)
 
+        # Build the Agents SDK object with the finalized instructions and tool list.
         agent = Agent(
             name="Climate Advisor",
             instructions=agent_instructions,

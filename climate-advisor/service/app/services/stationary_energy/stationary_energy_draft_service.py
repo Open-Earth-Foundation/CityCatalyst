@@ -65,12 +65,8 @@ from app.services.stationary_energy.stationary_energy_draft_serializers import (
     to_start_response,
     to_status_response,
 )
-from app.services.stationary_energy.stationary_energy_llm_output import (
+from app.services.stationary_energy.stationary_energy_proposal_builder import (
     build_deterministic_proposals,
-)
-from app.services.stationary_energy.stationary_energy_llm_service import (
-    StationaryEnergyLLMServiceError,
-    StationaryEnergyProposalLLMService,
 )
 from app.services.thread_service import ThreadService
 
@@ -81,10 +77,6 @@ LOAD_CONTEXT_CAPABILITY = "ghgi.stationary_energy.load_context"
 COMMIT_ACCEPTED_CAPABILITY = "ghgi.stationary_energy.commit_accepted"
 RESUME_EXCLUDED_STATUSES = {"saved", "partially_saved", "no_changes", "failed"}
 GENERATION_IN_PROGRESS_STATUSES = {"resolving_scope", "loading_context", "generating"}
-
-# Staggered (per-row) generation: number of taxonomy rows per LLM call. Smaller
-# batches surface proposals to pollers sooner; larger batches reduce total calls.
-STAGGER_BATCH_SIZE = 4
 
 # Keep strong references to in-flight background generation tasks so the event
 # loop does not garbage-collect them before they finish.
@@ -107,14 +99,12 @@ class StationaryEnergyDraftService:
         session: AsyncSession,
         *,
         cc_client: CityCatalystClient | None = None,
-        proposal_generator: StationaryEnergyProposalLLMService | None = None,
     ) -> None:
         """Initialize repository, thread, and external integration dependencies."""
         self.session = session
         self.repository = StationaryEnergyDraftRepository(session)
         self.thread_service = ThreadService(session)
         self.cc_client = cc_client or CityCatalystClient()
-        self.proposal_generator = proposal_generator
 
     async def start_draft(
         self,
@@ -216,7 +206,7 @@ class StationaryEnergyDraftService:
         trace_id: str | None,
         allowed_capabilities: list[str] | None = None,
     ) -> StartStationaryEnergyDraftResponse:
-        """Load draft context, call the LLM, persist the snapshot, and return status."""
+        """Load CC context, persist source snapshots, and schedule deterministic proposals."""
         failed_step = "resolving_scope"
         try:
             await self.repository.update_draft_run(
@@ -307,14 +297,13 @@ class StationaryEnergyDraftService:
             )
 
             logger.info(
-                "Stationary Energy staggered generation scheduled run=%s user_id=%s city_id=%s inventory_id=%s candidates=%s rows=%s batch=%s",
+                "Stationary Energy deterministic generation scheduled run=%s user_id=%s city_id=%s inventory_id=%s candidates=%s rows=%s",
                 draft_run.draft_run_id,
                 user_id,
                 city_id,
                 inventory_id,
                 len(candidate_records),
                 len(context.taxonomy),
-                STAGGER_BATCH_SIZE,
             )
             return to_start_response(
                 draft_run,
@@ -345,14 +334,6 @@ class StationaryEnergyDraftService:
                 trace_id=trace_id,
             )
             raise HTTPException(status_code=502, detail=str(exc)) from exc
-        except StationaryEnergyLLMServiceError as exc:
-            await self._mark_failed(
-                draft_run,
-                failed_step=failed_step,
-                exc=exc,
-                trace_id=trace_id,
-            )
-            raise HTTPException(status_code=502, detail=str(exc)) from exc
         except Exception as exc:
             await self._mark_failed(
                 draft_run,
@@ -379,9 +360,7 @@ class StationaryEnergyDraftService:
         user_id: str,
         trace_id: str | None,
     ) -> None:
-        """Generate proposals batch-by-batch in a fresh DB session, detached from
-        the originating request, committing each batch so status pollers observe
-        proposals accumulate incrementally."""
+        """Generate deterministic proposals in a fresh DB session."""
         factory = get_session_factory()
         rows = list(context.taxonomy)
         try:
@@ -389,83 +368,32 @@ class StationaryEnergyDraftService:
                 service = StationaryEnergyDraftService(
                     session,
                     cc_client=self.cc_client,
-                    proposal_generator=self.proposal_generator,
                 )
                 draft_run = await service.repository.get_draft_run(draft_run_id)
                 if draft_run is None:
                     logger.warning(
-                        "Stationary Energy staggered generation: draft run %s not found",
+                        "Stationary Energy deterministic generation: draft run %s not found",
                         draft_run_id,
                     )
                     return
 
                 total = 0
-                # Phase 2 + 3: resolve no-source (gap), single-source (ready), and
-                # multi-source (conflict, ranked recommendation + alternatives)
-                # rows deterministically -- no LLM. Persist immediately.
-                deterministic, llm_rows, llm_fallback = build_deterministic_proposals(
+                proposals = build_deterministic_proposals(
                     taxonomy_rows=rows,
                     stored_source_candidates=applicable_source_candidates,
                     current_values=list(context.current_values),
                     inventory_year=getattr(context.inventory, "year", None),
                 )
-                if deterministic:
-                    await service.repository.add_proposals(
-                        draft_run_id, deterministic
-                    )
+                if proposals:
+                    await service.repository.add_proposals(draft_run_id, proposals)
                     await session.commit()
-                    total += len(deterministic)
+                    total += len(proposals)
                     logger.info(
-                        "Stationary Energy deterministic run=%s resolved=%s/%s; %s conflict rows go to the agent",
+                        "Stationary Energy deterministic run=%s resolved=%s/%s",
                         draft_run_id,
-                        len(deterministic),
+                        len(proposals),
                         len(rows),
-                        len(llm_rows),
                     )
-
-                # Hybrid: rows where multiple real sources compete are reasoned
-                # about and explained by the agent. If the agent (LLM) is
-                # unavailable or errors, fall back per batch to the deterministic
-                # ranked proposal so generation always completes.
-                if llm_rows:
-                    generator = None
-                    for start in range(0, len(llm_rows), STAGGER_BATCH_SIZE):
-                        batch = llm_rows[start : start + STAGGER_BATCH_SIZE]
-                        fallback_batch = llm_fallback[start : start + STAGGER_BATCH_SIZE]
-                        try:
-                            if generator is None:
-                                generator = (
-                                    service.proposal_generator
-                                    or StationaryEnergyProposalLLMService()
-                                )
-                            result = await generator.generate_proposals_for_rows(
-                                context=context,
-                                stored_source_candidates=applicable_source_candidates,
-                                rows=batch,
-                                trace_id=trace_id,
-                            )
-                            await service.repository.add_proposals(
-                                draft_run_id, result.proposals
-                            )
-                            total += len(result.proposals)
-                            logger.info(
-                                "Stationary Energy agent batch run=%s rows=%s total=%s/%s",
-                                draft_run_id,
-                                len(batch),
-                                total,
-                                len(rows),
-                            )
-                        except Exception as exc:
-                            logger.warning(
-                                "Stationary Energy agent unavailable for conflict batch run=%s (%s); using deterministic fallback",
-                                draft_run_id,
-                                exc,
-                            )
-                            await service.repository.add_proposals(
-                                draft_run_id, fallback_batch
-                            )
-                            total += len(fallback_batch)
-                        await session.commit()
 
                 summary = context_summary(
                     context,
@@ -499,13 +427,13 @@ class StationaryEnergyDraftService:
                     )
 
                 logger.info(
-                    "Stationary Energy staggered draft ready run=%s proposals=%s",
+                    "Stationary Energy deterministic draft ready run=%s proposals=%s",
                     draft_run_id,
                     total,
                 )
         except Exception as exc:
             logger.exception(
-                "Stationary Energy staggered generation failed run=%s: %s",
+                "Stationary Energy deterministic generation failed run=%s: %s",
                 draft_run_id,
                 exc,
             )

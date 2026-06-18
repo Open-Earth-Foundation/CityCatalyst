@@ -197,6 +197,74 @@ def _is_source_backed(proposal: StationaryEnergyDraftProposal) -> bool:
     return bool(proposal.recommended_candidate_id or proposal.alternative_candidate_ids)
 
 
+def _first_normalized_row(
+    candidate: StationaryEnergyDraftSourceCandidate,
+) -> dict[str, Any] | None:
+    """Return the first normalized source row available for chat evidence."""
+    for row in candidate.normalized_rows or []:
+        if isinstance(row, dict):
+            return row
+    return None
+
+
+def _row_emissions_evidence(row: dict[str, Any]) -> dict[str, Any]:
+    """Extract compact emissions evidence from one normalized source row."""
+    # Prefer the precomputed total emissions value when the source row has one.
+    value = row.get("emissions_value_100yr")
+    unit = row.get("emissions_unit_100yr") or row.get("emissions_unit")
+    if value is None or value == "":
+        value = row.get("emissions_value")
+        unit = row.get("emissions_unit")
+    if value is not None and value != "":
+        return {"emissions_value": value, "emissions_unit": unit}
+
+    gases = row.get("gases")
+    if not isinstance(gases, list):
+        return {}
+    # Fall back to the first gas-level emissions value for sparse source rows.
+    for gas in gases:
+        if not isinstance(gas, dict):
+            continue
+        gas_value = gas.get("emissions_value_100yr")
+        gas_unit = gas.get("emissions_unit_100yr") or gas.get("emissions_unit")
+        if gas_value is None or gas_value == "":
+            gas_value = gas.get("emissions_value")
+            gas_unit = gas.get("emissions_unit")
+        if gas_value is not None and gas_value != "":
+            return {
+                "gas": gas.get("gas"),
+                "emissions_value": gas_value,
+                "emissions_unit": gas_unit,
+            }
+    return {}
+
+
+def _candidate_option_evidence(
+    candidate: StationaryEnergyDraftSourceCandidate,
+) -> dict[str, Any]:
+    """Build compact read-only evidence for source comparison in chat."""
+    evidence: dict[str, Any] = {
+        "dataset_year": candidate.dataset_year,
+        "geography_match": candidate.geography_match,
+        "confidence_notes": candidate.confidence_notes,
+    }
+    row = _first_normalized_row(candidate)
+    if row is not None:
+        if "value" in row:
+            evidence["activity_value"] = row.get("value")
+        if "unit" in row:
+            evidence["activity_unit"] = row.get("unit")
+        evidence.update(_row_emissions_evidence(row))
+
+    source_data = candidate.source_data or {}
+    notation_key = source_data.get("notation_key")
+    if notation_key:
+        evidence["notation_key"] = notation_key
+        evidence["notation_key_name"] = source_data.get("notation_key_name")
+
+    return {key: value for key, value in evidence.items() if value is not None}
+
+
 class StationaryEnergyAgentReviewService:
     """CA-owned tool backing service for Stationary Energy draft review staging."""
 
@@ -853,6 +921,7 @@ class StationaryEnergyAgentReviewService:
                     "source_label": _source_label(candidate),
                     "recommended": is_recommended,
                     "action": "accept" if is_recommended else "override_source",
+                    "evidence": _candidate_option_evidence(candidate),
                 }
             )
         options.append(
@@ -1151,11 +1220,13 @@ class StationaryEnergyAgentReviewService:
         blockers: list[StationaryEnergyAgentReviewBlockedChoice] = []
 
         for proposal in draft_run.proposals:
+            # Prefer the latest staged selection because it is the user's pending intent.
             staged_selection = staged_by_proposal.get(proposal.proposal_id)
             if staged_selection is not None:
                 decisions.append(self._review_input_from_staged(staged_selection))
                 continue
 
+            # Reuse existing durable decisions so a save does not require restaging.
             latest = latest_decisions.get(proposal.proposal_id)
             if latest is not None:
                 decisions.append(
@@ -1175,6 +1246,7 @@ class StationaryEnergyAgentReviewService:
                 )
                 continue
 
+            # Source-backed proposals need an explicit choice before draft save.
             if _is_source_backed(proposal):
                 blockers.append(
                     StationaryEnergyAgentReviewBlockedChoice(
@@ -1185,6 +1257,7 @@ class StationaryEnergyAgentReviewService:
                 )
                 continue
 
+            # Non-source-backed rows can remain as draft placeholders.
             decisions.append(
                 ReviewDecisionInput(
                     proposal_id=proposal.proposal_id,
@@ -1217,11 +1290,13 @@ class StationaryEnergyAgentReviewService:
         draft_run: StationaryEnergyDraftRun,
     ) -> StationaryEnergyAgentReviewChoice:
         """Serialize a staged selection into a tool choice summary."""
+        # Join the staged row back to its proposal for user-facing row labels.
         proposal = next(
             proposal
             for proposal in draft_run.proposals
             if proposal.proposal_id == selection.proposal_id
         )
+        # Resolve the source label only when the staged row points at a candidate.
         candidate = (
             self._candidate_by_id(draft_run).get(str(selection.selected_candidate_id))
             if selection.selected_candidate_id
@@ -1243,11 +1318,13 @@ class StationaryEnergyAgentReviewService:
         draft_run: StationaryEnergyDraftRun,
     ) -> StationaryEnergyAgentReviewChoice:
         """Serialize a review input into a tool choice summary."""
+        # Rehydrate the proposal so the tool response can name the reviewed row.
         proposal = next(
             proposal
             for proposal in draft_run.proposals
             if proposal.proposal_id == decision.proposal_id
         )
+        # Resolve the candidate through the same accept/override rules used for saves.
         if decision.action == "accept":
             candidate = self._candidate_by_id(draft_run).get(
                 str(proposal.recommended_candidate_id)
@@ -1281,6 +1358,7 @@ class StationaryEnergyAgentReviewService:
         pending_required_count: int,
     ) -> dict[str, Any]:
         """Build localized-message metadata after staging choices."""
+        # Select a stable localization key based on full, partial, or blocked success.
         if selected_choices and not blocked_choices:
             return _message_payload(
                 "tool-message-stage-success",
@@ -1384,6 +1462,7 @@ class StationaryEnergyAgentReviewService:
         pending_required_count: int,
     ) -> dict[str, Any]:
         """Build localized-message metadata after rolling back staged choices."""
+        # Select a stable localization key based on rollback success shape.
         if selected_choices and not blocked_choices:
             return _message_payload(
                 "tool-message-staged-rollback-success",

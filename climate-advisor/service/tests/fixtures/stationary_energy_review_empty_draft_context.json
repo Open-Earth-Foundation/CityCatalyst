@@ -56,16 +56,6 @@
       "I.4.2": "Municipal facilities grid electricity"
     }
   },
-  "llm_generation": {
-    "model": "openai/gpt-5.4",
-    "temperature": 0.0,
-    "usage": {
-      "input_tokens": 11240,
-      "output_tokens": 844,
-      "total_tokens": 12084
-    },
-    "proposal_count": 4
-  },
   "source_candidates": [
     {
       "candidate_id": "8a7d1046-8333-46ce-92e8-4f66250d0f11",

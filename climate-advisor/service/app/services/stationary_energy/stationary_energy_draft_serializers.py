@@ -175,6 +175,7 @@ def to_status_response(
     staleness: DraftStalenessResponse | None = None,
 ) -> StationaryEnergyDraftStatusResponse:
     """Serialize a draft run into the status response contract."""
+    # Sort child collections for stable API payloads and deterministic tests.
     return StationaryEnergyDraftStatusResponse(
         draft_run_id=draft_run.draft_run_id,
         thread_id=draft_run.thread_id,
@@ -225,12 +226,14 @@ def to_list_item_response(
     draft_run: StationaryEnergyDraftRun,
 ) -> StationaryEnergyDraftListItemResponse:
     """Serialize a draft run into the scoped draft picker list shape."""
+    # Count only source-backed proposals as reviewable work for the picker.
     reviewable_proposal_ids = {
         proposal.proposal_id
         for proposal in draft_run.proposals
         if proposal.recommended_candidate_id is not None
         or bool(proposal.alternative_candidate_ids)
     }
+    # Treat active staged selections as resolved because they represent pending intent.
     decisions = latest_review_decisions(draft_run.review_decisions)
     staged_selection_ids = {
         selection.proposal_id
@@ -242,6 +245,7 @@ def to_list_item_response(
         for proposal_id in reviewable_proposal_ids
         if proposal_id in decisions or proposal_id in staged_selection_ids
     )
+    # Count only decisions that still need the CityCatalyst commit step.
     staged_commit_count = sum(
         1
         for decision in decisions.values()

@@ -12,7 +12,7 @@ This repository subtree contains a single AI project. All contributions must opt
 
 ## Cursor Agent Skills (project-level)
 
-This repo includes **project-level Cursor skills** under `.cursor/skills/` (version-controlled). These skills are available to anyone who checks out the repository and opens it in Cursor.
+This repo includes **project-level Cursor skills** under `../.cursor/skills/` from this subtree, which is the repository-root `.cursor/skills/` directory. These skills are available to anyone who checks out the repository and opens it in Cursor.
 
 Skills included:
 
@@ -117,6 +117,10 @@ Notes:
 
 Prompt files for Climate Advisor live in `prompts/`, and `llm_config.yaml` is the source of truth for which prompt files are active.
 
+Full prompt files referenced by `llm_config.yaml` must use the required prompt schema. Reusable include fragments, such as `prompts/tools/*.md`, are runtime prompt fragments used by those full prompts; they may contain only focused tool policy or argument-contract text and do not need their own `<role>`, `<task>`, `<input>`, or `<output>` blocks unless they become directly configured prompt entries.
+
+Tool policy fragments are not developer guidelines. They instruct the runtime model when and how to use application tools. `AGENTS.md` remains the source of truth for contribution rules and code standards.
+
 When editing prompts:
 
 - use the `prompt-schema-authoring` skill
@@ -157,9 +161,10 @@ Use `script-quality-gate` when you add or change one.
 
 ### Docstrings are required
 
-- Every Python function and method should have a docstring.
-- Trivial functions can use a one-liner.
-- Non-trivial or side-effecting functions should describe inputs, outputs, side effects, and raised exceptions when non-obvious.
+- Every production Python function and method should have a docstring.
+- Trivial production functions can use a one-liner.
+- Non-trivial or side-effecting production functions should describe inputs, outputs, side effects, and raised exceptions when non-obvious.
+- Tests should use descriptive names. Add test docstrings only when the setup or intent is not obvious from the name and assertions.
 
 ### Logging is required
 
@@ -177,7 +182,8 @@ Use `script-quality-gate` when you add or change one.
 
 ### Type hints
 
-- All function signatures must have Python type hints.
+- All production function signatures must have Python type hints.
+- Reusable test helpers and fixtures should be typed where practical; decorator-injected mock parameters may stay untyped if the type would add noise.
 - Prefer concrete return types and avoid `Any` unless justified.
 
 ### Path handling

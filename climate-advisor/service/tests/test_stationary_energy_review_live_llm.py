@@ -88,7 +88,6 @@ def _decimal_or_none(value: Any) -> Decimal | None:
 
 
 def _context_summary_from_fixture(payload: dict[str, Any]) -> dict[str, Any]:
-    llm_generation = payload.get("llm_generation") or {}
     return {
         "city": payload.get("city"),
         "inventory": payload.get("inventory"),
@@ -100,20 +99,6 @@ def _context_summary_from_fixture(payload: dict[str, Any]) -> dict[str, Any]:
             "source_candidates_count"
         ),
         "guidance_context": payload.get("guidance_context"),
-        "llm_trace": {
-            "model": llm_generation.get("model"),
-            "temperature": llm_generation.get("temperature"),
-            "usage": llm_generation.get("usage"),
-            "parsed_output": {
-                "proposals": [
-                    {
-                        "proposal_id": proposal["proposal_id"],
-                        "status": proposal.get("status"),
-                    }
-                    for proposal in payload.get("proposals", [])
-                ]
-            },
-        },
     }
 
 

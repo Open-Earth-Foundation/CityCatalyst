@@ -129,6 +129,7 @@ def build_stationary_energy_review_tools(
         options. It never invents rows, sources, values, or units.
         """
 
+        # Parse model-supplied identifiers before opening a database transaction.
         try:
             choice = StationaryEnergyAgentReviewChoiceInput(
                 proposal_id=UUID(str(proposal_id)),
@@ -145,6 +146,7 @@ def build_stationary_energy_review_tools(
                 error_code="invalid_arguments",
             )
 
+        # Stage the single validated choice through the scoped service operation.
         return await _run_tool(
             "stationary_energy_accept_one",
             lambda service: service.accept_one(
@@ -170,6 +172,7 @@ def build_stationary_energy_review_tools(
         exact staged list to the user. Invalid rows are skipped and reported.
         """
 
+        # Normalize SDK-provided objects and plain dictionaries to one input model.
         parsed_choices = [
             (
                 choice
@@ -179,6 +182,7 @@ def build_stationary_energy_review_tools(
             for choice in choices
         ]
 
+        # Apply the already-confirmed batch in one committed service operation.
         return await _run_tool(
             "stationary_energy_accept_multiple",
             lambda service: service.accept_multiple(
@@ -226,6 +230,7 @@ def build_stationary_energy_review_tools(
         question instead of calling this tool.
         """
 
+        # Validate the proposed choices before asking the UI for confirmation.
         try:
             parsed_choices = [
                 (
@@ -243,6 +248,7 @@ def build_stationary_energy_review_tools(
                 error_code="invalid_arguments",
             )
 
+        # Return a preview payload only; the confirmation card performs no writes.
         return await _run_tool(
             "stationary_energy_request_bulk_review_confirmation",
             lambda service: service.preview_multiple(
@@ -288,6 +294,7 @@ def build_stationary_energy_review_tools(
         payload without staging anything.
         """
 
+        # Convert optional proposal-id filters to UUIDs before preview validation.
         try:
             parsed_proposal_ids = _parse_optional_uuid_list(proposal_ids)
         except ValueError as exc:
@@ -298,6 +305,7 @@ def build_stationary_energy_review_tools(
                 error_code="invalid_arguments",
             )
 
+        # Preview staged-source replacements without mutating active selections.
         return await _run_tool(
             "stationary_energy_request_staged_source_change_confirmation",
             lambda service: service.preview_staged_source_changes(
@@ -321,6 +329,7 @@ def build_stationary_energy_review_tools(
         does not modify the draft until the user confirms the rollback card.
         """
 
+        # Convert optional proposal-id filters to UUIDs before preview validation.
         try:
             parsed_proposal_ids = _parse_optional_uuid_list(proposal_ids)
         except ValueError as exc:
@@ -331,6 +340,7 @@ def build_stationary_energy_review_tools(
                 error_code="invalid_arguments",
             )
 
+        # Return the rollback preview so the browser can ask for confirmation.
         return await _run_tool(
             "stationary_energy_request_staged_sources_rollback_confirmation",
             lambda service: service.preview_staged_sources_rollback(
@@ -355,6 +365,7 @@ def build_stationary_energy_review_tools(
         the confirmed rollback choices are present in runtime context.
         """
 
+        # Parse the UI-confirmed rollback target ids before modifying staged rows.
         try:
             parsed_proposal_ids = _parse_optional_uuid_list(proposal_ids)
         except ValueError as exc:
@@ -365,6 +376,7 @@ def build_stationary_energy_review_tools(
                 error_code="invalid_arguments",
             )
 
+        # Remove only the active staged selections that passed confirmation.
         return await _run_tool(
             "stationary_energy_rollback_staged_sources",
             lambda service: service.rollback_staged_sources(
@@ -383,6 +395,7 @@ def build_stationary_energy_review_tools(
         proposal is unresolved, the tool returns blockers instead of saving.
         """
 
+        # Require the current CC token because draft-save reuses the existing route.
         token = token_ref.get("value")
         if not token:
             return _error_payload(
@@ -392,6 +405,7 @@ def build_stationary_energy_review_tools(
                 error_code="missing_token",
             )
 
+        # Persist the reviewed draft in Clima without committing inventory rows.
         return await _run_tool(
             "stationary_energy_save_review_draft",
             lambda service: service.save_review_draft(
@@ -411,6 +425,7 @@ def build_stationary_energy_review_tools(
         route can run.
         """
 
+        # Verify the scoped draft is still accessible before showing confirmation.
         try:
             async with session_factory() as session:
                 service = StationaryEnergyAgentReviewService(session)
@@ -423,6 +438,7 @@ def build_stationary_energy_review_tools(
                     draft_run_id=draft_uuid,
                     message_key="tool-message-inventory-save-confirm",
                 )
+                # Return only confirmation metadata; inventory writes stay in CC.
                 logger.info(
                     "Stationary Energy inventory save confirmation requested draft_run_id=%s",
                     draft_uuid,

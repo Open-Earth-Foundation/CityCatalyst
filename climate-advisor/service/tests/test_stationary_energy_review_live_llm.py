@@ -31,11 +31,13 @@ from app.models.db.stationary_energy_draft import (
 from app.models.requests import MessageCreateRequest
 from app.services.agent_service import AgentService
 from app.services.stationary_energy.stationary_energy_agent_review import (
-    StationaryEnergyAgentReviewChoiceInput,
     StationaryEnergyAgentReviewService,
 )
 from app.services.stationary_energy.stationary_energy_draft_repository import (
     StationaryEnergyDraftRepository,
+)
+from app.services.stationary_energy.stationary_energy_review_models import (
+    StationaryEnergyAgentReviewChoiceInput,
 )
 from app.utils.streaming_handler import StreamingHandler
 

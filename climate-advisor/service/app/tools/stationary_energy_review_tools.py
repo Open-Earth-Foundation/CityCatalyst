@@ -11,9 +11,11 @@ from pydantic import BaseModel, Field, ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.services.stationary_energy.stationary_energy_agent_review import (
+    StationaryEnergyAgentReviewService,
+)
+from app.services.stationary_energy.stationary_energy_review_models import (
     MessageParamValue,
     StationaryEnergyAgentReviewChoiceInput,
-    StationaryEnergyAgentReviewService,
     StationaryEnergyAgentReviewToolResult,
 )
 

@@ -1,268 +1,53 @@
+"""Stationary Energy review service orchestration."""
+
 from __future__ import annotations
 
 import logging
 from datetime import datetime, timezone
-from typing import Any, Literal
 from uuid import UUID
 
 from fastapi import HTTPException
-from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.db.stationary_energy_draft import (
-    StationaryEnergyDraftProposal,
     StationaryEnergyDraftRun,
-    StationaryEnergyDraftSourceCandidate,
     StationaryEnergyStagedReviewSelection,
 )
-from app.models.stationary_energy_drafts import (
-    ReviewDecisionInput,
-    ReviewDecisionResponse,
-    ReviewStationaryEnergyDraftRequest,
-)
+from app.models.stationary_energy_drafts import ReviewStationaryEnergyDraftRequest
 from app.services.stationary_energy.stationary_energy_draft_repository import (
     StationaryEnergyDraftRepository,
-)
-from app.services.stationary_energy.stationary_energy_draft_review import (
-    latest_review_decisions,
 )
 from app.services.stationary_energy.stationary_energy_draft_service import (
     StationaryEnergyDraftService,
 )
-
+from app.services.stationary_energy.stationary_energy_review_messages import (
+    bulk_confirmation_message_payload,
+    message_payload,
+    stage_message_payload,
+    staged_change_confirmation_message_payload,
+    staged_rollback_confirmation_message_payload,
+    staged_rollback_result_message_payload,
+)
+from app.services.stationary_energy.stationary_energy_review_models import (
+    StationaryEnergyAgentReviewBlockedChoice,
+    StationaryEnergyAgentReviewChoice,
+    StationaryEnergyAgentReviewChoiceInput,
+    StationaryEnergyAgentReviewToolResult,
+    StationaryEnergyBulkReviewConfirmationToolResult,
+    StationaryEnergyStagedReviewUpdateConfirmationToolResult,
+)
+from app.services.stationary_energy.stationary_energy_review_resolver import (
+    StationaryEnergyReviewChoiceResolver,
+)
 
 logger = logging.getLogger(__name__)
 
-SOURCE_BACKED_STATUSES = {
-    "ready",
-    "needs_review",
-    "conflict",
-    "gap",
-    "accepted",
-    "overridden",
-}
-
-MessageParamValue = str | int | float | bool
-
-
-def _message_payload(
-    message_key: str,
-    **message_params: MessageParamValue,
-) -> dict[str, Any]:
-    """Return language-neutral UI message metadata for CityCatalyst."""
-    return {
-        "message_key": message_key,
-        "message_params": message_params,
-    }
 TERMINAL_DRAFT_STATUSES = {
     "saved",
     "partially_saved",
     "no_changes",
     "failed",
 }
-
-
-class StationaryEnergyAgentReviewChoiceInput(BaseModel):
-    """User or model-selected source choice for one draft proposal."""
-
-    proposal_id: UUID
-    candidate_id: UUID | None = None
-    selected_source_id: str | None = None
-    action: Literal["accept", "override_source", "leave_draft"] | None = None
-    rationale: str | None = None
-
-
-AgentReviewChoiceAction = Literal[
-    "accept",
-    "override_source",
-    "override_manual",
-    "leave_draft",
-    "rollback_staged",
-]
-
-
-class StationaryEnergyAgentReviewChoice(BaseModel):
-    """Resolved and validated review choice ready for staging or display."""
-
-    proposal_id: UUID
-    action: AgentReviewChoiceAction
-    selected_source_id: str | None = None
-    selected_candidate_id: UUID | None = None
-    source_label: str | None = None
-    target_label: str
-    rationale: str | None = None
-
-
-class StationaryEnergyAgentReviewBlockedChoice(BaseModel):
-    """Choice that cannot be staged plus the valid alternatives."""
-
-    proposal_id: UUID | None = None
-    reason: str
-    available_options: list[dict[str, Any]] = Field(default_factory=list)
-
-
-class StationaryEnergyAgentReviewToolResult(BaseModel):
-    """Tool response for staged selections and save outcomes."""
-
-    success: bool
-    action: str
-    ui_event: Literal["stationary_energy_review_state_changed"] | None = (
-        "stationary_energy_review_state_changed"
-    )
-    draft_run_id: UUID
-    selected_choices: list[StationaryEnergyAgentReviewChoice] = Field(
-        default_factory=list
-    )
-    skipped_choices: list[StationaryEnergyAgentReviewBlockedChoice] = Field(
-        default_factory=list
-    )
-    blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice] = Field(
-        default_factory=list
-    )
-    pending_required_count: int = 0
-    message_key: str | None = None
-    message_params: dict[str, MessageParamValue] = Field(default_factory=dict)
-    saved_decisions: list[ReviewDecisionResponse] = Field(default_factory=list)
-
-
-class StationaryEnergyBulkReviewConfirmationToolResult(BaseModel):
-    """Tool response that asks the UI to confirm bulk review choices."""
-
-    success: bool
-    action: str = "stationary_energy_request_bulk_review_confirmation"
-    ui_event: Literal["stationary_energy_review_bulk_confirmation_requested"] = (
-        "stationary_energy_review_bulk_confirmation_requested"
-    )
-    draft_run_id: UUID
-    pending_choices: list[StationaryEnergyAgentReviewChoice] = Field(
-        default_factory=list
-    )
-    blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice] = Field(
-        default_factory=list
-    )
-    pending_required_count: int = 0
-    message_key: str | None = None
-    message_params: dict[str, MessageParamValue] = Field(default_factory=dict)
-
-
-class StationaryEnergyStagedReviewUpdateConfirmationToolResult(BaseModel):
-    """Tool response that asks the UI to confirm staged-review updates."""
-
-    success: bool
-    action: str
-    ui_event: Literal[
-        "stationary_energy_review_change_confirmation_requested",
-        "stationary_energy_review_rollback_confirmation_requested",
-    ]
-    draft_run_id: UUID
-    pending_choices: list[StationaryEnergyAgentReviewChoice] = Field(
-        default_factory=list
-    )
-    blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice] = Field(
-        default_factory=list
-    )
-    pending_required_count: int = 0
-    message_key: str | None = None
-    message_params: dict[str, MessageParamValue] = Field(default_factory=dict)
-
-
-def _source_label(candidate: StationaryEnergyDraftSourceCandidate) -> str:
-    """Return a concise display label for a source candidate."""
-    return candidate.name or candidate.publisher_name or candidate.datasource_id
-
-
-def _target_label(proposal: StationaryEnergyDraftProposal) -> str:
-    """Return a readable GPC target label for a draft proposal."""
-    target = proposal.target_ref or {}
-    parts = [
-        target.get("subsector_name"),
-        target.get("subcategory_name"),
-        target.get("scope_name") or target.get("scope_id"),
-    ]
-    label = " / ".join(str(part) for part in parts if part)
-    return label or "Stationary Energy row"
-
-
-def _details_datasource_id(candidate: StationaryEnergyDraftSourceCandidate) -> str:
-    """Return the source id expected by existing review-save contracts."""
-    source_data = candidate.source_data or {}
-    value = source_data.get("details_datasource_id")
-    if isinstance(value, str) and value.strip():
-        return value
-    return candidate.datasource_id
-
-
-def _is_source_backed(proposal: StationaryEnergyDraftProposal) -> bool:
-    """Return whether a proposal requires an explicit source review choice."""
-    return bool(proposal.recommended_candidate_id or proposal.alternative_candidate_ids)
-
-
-def _first_normalized_row(
-    candidate: StationaryEnergyDraftSourceCandidate,
-) -> dict[str, Any] | None:
-    """Return the first normalized source row available for chat evidence."""
-    for row in candidate.normalized_rows or []:
-        if isinstance(row, dict):
-            return row
-    return None
-
-
-def _row_emissions_evidence(row: dict[str, Any]) -> dict[str, Any]:
-    """Extract compact emissions evidence from one normalized source row."""
-    # Prefer the precomputed total emissions value when the source row has one.
-    value = row.get("emissions_value_100yr")
-    unit = row.get("emissions_unit_100yr") or row.get("emissions_unit")
-    if value is None or value == "":
-        value = row.get("emissions_value")
-        unit = row.get("emissions_unit")
-    if value is not None and value != "":
-        return {"emissions_value": value, "emissions_unit": unit}
-
-    gases = row.get("gases")
-    if not isinstance(gases, list):
-        return {}
-    # Fall back to the first gas-level emissions value for sparse source rows.
-    for gas in gases:
-        if not isinstance(gas, dict):
-            continue
-        gas_value = gas.get("emissions_value_100yr")
-        gas_unit = gas.get("emissions_unit_100yr") or gas.get("emissions_unit")
-        if gas_value is None or gas_value == "":
-            gas_value = gas.get("emissions_value")
-            gas_unit = gas.get("emissions_unit")
-        if gas_value is not None and gas_value != "":
-            return {
-                "gas": gas.get("gas"),
-                "emissions_value": gas_value,
-                "emissions_unit": gas_unit,
-            }
-    return {}
-
-
-def _candidate_option_evidence(
-    candidate: StationaryEnergyDraftSourceCandidate,
-) -> dict[str, Any]:
-    """Build compact read-only evidence for source comparison in chat."""
-    evidence: dict[str, Any] = {
-        "dataset_year": candidate.dataset_year,
-        "geography_match": candidate.geography_match,
-        "confidence_notes": candidate.confidence_notes,
-    }
-    row = _first_normalized_row(candidate)
-    if row is not None:
-        if "value" in row:
-            evidence["activity_value"] = row.get("value")
-        if "unit" in row:
-            evidence["activity_unit"] = row.get("unit")
-        evidence.update(_row_emissions_evidence(row))
-
-    source_data = candidate.source_data or {}
-    notation_key = source_data.get("notation_key")
-    if notation_key:
-        evidence["notation_key"] = notation_key
-        evidence["notation_key_name"] = source_data.get("notation_key_name")
-
-    return {key: value for key, value in evidence.items() if value is not None}
 
 
 class StationaryEnergyAgentReviewService:
@@ -285,17 +70,15 @@ class StationaryEnergyAgentReviewService:
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
+        resolver = StationaryEnergyReviewChoiceResolver(draft_run)
 
         # Split active staged choices from proposals that still need review.
         selected = [
-            self._choice_from_staged(selection, draft_run)
+            resolver.choice_from_staged(selection)
             for selection in staged
             if selection.status == "active"
         ]
-        pending = self._pending_required_proposals(
-            draft_run=draft_run,
-            staged=staged,
-        )
+        pending = resolver.pending_required_proposals(staged=staged)
         result = StationaryEnergyAgentReviewToolResult(
             success=True,
             action="stationary_energy_list_review_options",
@@ -306,12 +89,12 @@ class StationaryEnergyAgentReviewService:
                 StationaryEnergyAgentReviewBlockedChoice(
                     proposal_id=proposal.proposal_id,
                     reason="pending",
-                    available_options=self._available_options(proposal, draft_run),
+                    available_options=resolver.available_options(proposal),
                 )
                 for proposal in pending
             ],
             pending_required_count=len(pending),
-            **_message_payload(
+            **message_payload(
                 "tool-message-review-options-loaded",
                 selected=len(selected),
                 pending=len(pending),
@@ -357,10 +140,8 @@ class StationaryEnergyAgentReviewService:
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
-        selected_choices, blocked_choices = self._resolve_choice_inputs(
-            draft_run=draft_run,
-            choices=choices,
-        )
+        resolver = StationaryEnergyReviewChoiceResolver(draft_run)
+        selected_choices, blocked_choices = resolver.resolve_choice_inputs(choices)
 
         # Persist only resolved choices; blocked choices are reported, not applied.
         selections = self._selections_from_choices(
@@ -378,10 +159,7 @@ class StationaryEnergyAgentReviewService:
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
-        pending = self._pending_required_proposals(
-            draft_run=draft_run,
-            staged=staged,
-        )
+        pending = resolver.pending_required_proposals(staged=staged)
         result = StationaryEnergyAgentReviewToolResult(
             success=not blocked_choices,
             action=action_name,
@@ -389,8 +167,10 @@ class StationaryEnergyAgentReviewService:
             selected_choices=selected_choices,
             blocked_choices=blocked_choices,
             pending_required_count=len(pending),
-            **self._stage_message_payload(
-                selected_choices, blocked_choices, len(pending)
+            **stage_message_payload(
+                selected_choices,
+                blocked_choices,
+                len(pending),
             ),
         )
         logger.info(
@@ -417,16 +197,14 @@ class StationaryEnergyAgentReviewService:
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
+        resolver = StationaryEnergyReviewChoiceResolver(draft_run)
         choices = [
             StationaryEnergyAgentReviewChoiceInput(
                 proposal_id=proposal.proposal_id,
                 action="accept",
                 rationale=rationale,
             )
-            for proposal in self._pending_required_proposals(
-                draft_run=draft_run,
-                staged=staged,
-            )
+            for proposal in resolver.pending_required_proposals(staged=staged)
             if proposal.recommended_candidate_id is not None
         ]
         return await self.accept_multiple(
@@ -451,18 +229,15 @@ class StationaryEnergyAgentReviewService:
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
-        selected_choices, blocked_choices = self._resolve_choice_inputs(
-            draft_run=draft_run,
-            choices=choices,
-        )
+        resolver = StationaryEnergyReviewChoiceResolver(draft_run)
+        selected_choices, blocked_choices = resolver.resolve_choice_inputs(choices)
 
         # Count what would remain if the previewed choices were confirmed.
         staged = await self.repository.get_staged_review_selections(
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
-        pending_after_preview = self._pending_required_proposals(
-            draft_run=draft_run,
+        pending_after_preview = resolver.pending_required_proposals(
             staged=staged,
             extra_resolved_ids={choice.proposal_id for choice in selected_choices},
         )
@@ -473,7 +248,7 @@ class StationaryEnergyAgentReviewService:
             pending_choices=selected_choices,
             blocked_choices=blocked_choices,
             pending_required_count=len(pending_after_preview),
-            **self._bulk_confirmation_message_payload(
+            **bulk_confirmation_message_payload(
                 selected_choices,
                 blocked_choices,
                 len(pending_after_preview),
@@ -502,16 +277,14 @@ class StationaryEnergyAgentReviewService:
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
+        resolver = StationaryEnergyReviewChoiceResolver(draft_run)
         choices = [
             StationaryEnergyAgentReviewChoiceInput(
                 proposal_id=proposal.proposal_id,
                 action="accept",
                 rationale=rationale,
             )
-            for proposal in self._pending_required_proposals(
-                draft_run=draft_run,
-                staged=staged,
-            )
+            for proposal in resolver.pending_required_proposals(staged=staged)
             if proposal.recommended_candidate_id is not None
         ]
         return await self.preview_multiple(
@@ -534,8 +307,8 @@ class StationaryEnergyAgentReviewService:
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
-        targeted, blocked_choices = self._target_active_staged_selections(
-            draft_run=draft_run,
+        resolver = StationaryEnergyReviewChoiceResolver(draft_run)
+        targeted, blocked_choices = resolver.target_active_staged_selections(
             staged=staged,
             proposal_ids=proposal_ids,
         )
@@ -543,20 +316,14 @@ class StationaryEnergyAgentReviewService:
         # Propose the next available source, or an empty row if no alternative exists.
         selected_choices: list[StationaryEnergyAgentReviewChoice] = []
         for selection in targeted:
-            resolved = self._change_choice_for_staged_selection(
-                selection=selection,
-                draft_run=draft_run,
-            )
+            resolved = resolver.change_choice_for_staged_selection(selection)
             if isinstance(resolved, StationaryEnergyAgentReviewBlockedChoice):
                 blocked_choices.append(resolved)
                 continue
             selected_choices.append(resolved)
 
         # Return a confirmation payload without changing staged review state.
-        pending = self._pending_required_proposals(
-            draft_run=draft_run,
-            staged=staged,
-        )
+        pending = resolver.pending_required_proposals(staged=staged)
         result = StationaryEnergyStagedReviewUpdateConfirmationToolResult(
             success=bool(selected_choices) and not blocked_choices,
             action="stationary_energy_request_staged_source_change_confirmation",
@@ -565,7 +332,7 @@ class StationaryEnergyAgentReviewService:
             pending_choices=selected_choices,
             blocked_choices=blocked_choices,
             pending_required_count=len(pending),
-            **self._staged_change_confirmation_message_payload(
+            **staged_change_confirmation_message_payload(
                 selected_choices,
                 blocked_choices,
             ),
@@ -592,13 +359,13 @@ class StationaryEnergyAgentReviewService:
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
-        targeted, blocked_choices = self._target_active_staged_selections(
-            draft_run=draft_run,
+        resolver = StationaryEnergyReviewChoiceResolver(draft_run)
+        targeted, blocked_choices = resolver.target_active_staged_selections(
             staged=staged,
             proposal_ids=proposal_ids,
         )
         selected_choices = [
-            self._rollback_choice_from_staged(selection, draft_run)
+            resolver.rollback_choice_from_staged(selection)
             for selection in targeted
         ]
 
@@ -609,8 +376,7 @@ class StationaryEnergyAgentReviewService:
             if selection.proposal_id
             not in {choice.proposal_id for choice in selected_choices}
         ]
-        pending_after_preview = self._pending_required_proposals(
-            draft_run=draft_run,
+        pending_after_preview = resolver.pending_required_proposals(
             staged=staged_after_preview,
         )
         result = StationaryEnergyStagedReviewUpdateConfirmationToolResult(
@@ -621,7 +387,7 @@ class StationaryEnergyAgentReviewService:
             pending_choices=selected_choices,
             blocked_choices=blocked_choices,
             pending_required_count=len(pending_after_preview),
-            **self._staged_rollback_confirmation_message_payload(
+            **staged_rollback_confirmation_message_payload(
                 selected_choices,
                 blocked_choices,
                 len(pending_after_preview),
@@ -649,13 +415,13 @@ class StationaryEnergyAgentReviewService:
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
-        targeted, blocked_choices = self._target_active_staged_selections(
-            draft_run=draft_run,
+        resolver = StationaryEnergyReviewChoiceResolver(draft_run)
+        targeted, blocked_choices = resolver.target_active_staged_selections(
             staged=staged,
             proposal_ids=proposal_ids,
         )
         selected_choices = [
-            self._rollback_choice_from_staged(selection, draft_run)
+            resolver.rollback_choice_from_staged(selection)
             for selection in targeted
         ]
 
@@ -673,10 +439,7 @@ class StationaryEnergyAgentReviewService:
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
-        pending = self._pending_required_proposals(
-            draft_run=draft_run,
-            staged=staged_after,
-        )
+        pending = resolver.pending_required_proposals(staged=staged_after)
         result = StationaryEnergyAgentReviewToolResult(
             success=bool(selected_choices) and not blocked_choices,
             action="stationary_energy_rollback_staged_sources",
@@ -684,7 +447,7 @@ class StationaryEnergyAgentReviewService:
             selected_choices=selected_choices,
             blocked_choices=blocked_choices,
             pending_required_count=len(pending),
-            **self._staged_rollback_result_message_payload(
+            **staged_rollback_result_message_payload(
                 selected_choices,
                 blocked_choices,
                 len(pending),
@@ -712,10 +475,8 @@ class StationaryEnergyAgentReviewService:
             draft_run_id=draft_run_id,
             user_id=user_id,
         )
-        decisions, blockers = self._build_complete_decision_inputs(
-            draft_run=draft_run,
-            staged=staged,
-        )
+        resolver = StationaryEnergyReviewChoiceResolver(draft_run)
+        decisions, blockers = resolver.build_complete_decision_inputs(staged=staged)
         if blockers:
             result = StationaryEnergyAgentReviewToolResult(
                 success=False,
@@ -723,7 +484,7 @@ class StationaryEnergyAgentReviewService:
                 draft_run_id=draft_run_id,
                 blocked_choices=blockers,
                 pending_required_count=len(blockers),
-                **_message_payload(
+                **message_payload(
                     "tool-message-review-save-blocked",
                     blocked=len(blockers),
                 ),
@@ -752,7 +513,7 @@ class StationaryEnergyAgentReviewService:
 
         # Return a tool-facing summary for the rows saved in Clima.
         selected_choices = [
-            self._choice_from_review_input(decision, draft_run)
+            resolver.choice_from_review_input(decision)
             for decision in decisions
             if decision.action != "leave_draft"
         ]
@@ -763,7 +524,7 @@ class StationaryEnergyAgentReviewService:
             selected_choices=selected_choices,
             pending_required_count=0,
             saved_decisions=response.decisions,
-            **_message_payload(
+            **message_payload(
                 "tool-message-review-save-success",
                 selected=len(selected_choices),
             ),
@@ -852,633 +613,3 @@ class StationaryEnergyAgentReviewService:
                 detail="Stationary Energy draft generation is not complete",
             )
         return draft_run
-
-    def _candidate_by_id(
-        self,
-        draft_run: StationaryEnergyDraftRun,
-    ) -> dict[str, StationaryEnergyDraftSourceCandidate]:
-        """Index source candidates by candidate id."""
-        return {
-            str(candidate.candidate_id): candidate
-            for candidate in draft_run.source_candidates
-        }
-
-    def _candidate_by_source_id(
-        self,
-        draft_run: StationaryEnergyDraftRun,
-    ) -> dict[str, StationaryEnergyDraftSourceCandidate]:
-        """Index source candidates by public datasource identifiers."""
-        by_source: dict[str, StationaryEnergyDraftSourceCandidate] = {}
-        for candidate in draft_run.source_candidates:
-            by_source[candidate.datasource_id] = candidate
-            by_source[_details_datasource_id(candidate)] = candidate
-        return by_source
-
-    def _available_candidates(
-        self,
-        proposal: StationaryEnergyDraftProposal,
-        draft_run: StationaryEnergyDraftRun,
-    ) -> list[StationaryEnergyDraftSourceCandidate]:
-        """Return applicable candidates the user can choose for a proposal."""
-        candidate_by_id = self._candidate_by_id(draft_run)
-        ids = [
-            (
-                str(proposal.recommended_candidate_id)
-                if proposal.recommended_candidate_id
-                else None
-            ),
-            *[
-                str(candidate_id)
-                for candidate_id in proposal.alternative_candidate_ids or []
-            ],
-        ]
-        candidates: list[StationaryEnergyDraftSourceCandidate] = []
-        seen: set[str] = set()
-        for candidate_id in ids:
-            if not candidate_id or candidate_id in seen:
-                continue
-            candidate = candidate_by_id.get(candidate_id)
-            if candidate is None or candidate.applicability_status != "applicable":
-                continue
-            seen.add(candidate_id)
-            candidates.append(candidate)
-        return candidates
-
-    def _available_options(
-        self,
-        proposal: StationaryEnergyDraftProposal,
-        draft_run: StationaryEnergyDraftRun,
-    ) -> list[dict[str, Any]]:
-        """Build UI/model options for one proposal."""
-        options = []
-        for candidate in self._available_candidates(proposal, draft_run):
-            is_recommended = candidate.candidate_id == proposal.recommended_candidate_id
-            options.append(
-                {
-                    "candidate_id": str(candidate.candidate_id),
-                    "datasource_id": candidate.datasource_id,
-                    "selected_source_id": _details_datasource_id(candidate),
-                    "source_label": _source_label(candidate),
-                    "recommended": is_recommended,
-                    "action": "accept" if is_recommended else "override_source",
-                    "evidence": _candidate_option_evidence(candidate),
-                }
-            )
-        options.append(
-            {
-                "candidate_id": None,
-                "datasource_id": None,
-                "selected_source_id": None,
-                "source_label": "Leave empty",
-                "recommended": False,
-                "action": "leave_draft",
-            }
-        )
-        return options
-
-    def _resolve_choice(
-        self,
-        *,
-        proposal: StationaryEnergyDraftProposal,
-        draft_run: StationaryEnergyDraftRun,
-        choice: StationaryEnergyAgentReviewChoiceInput,
-    ) -> StationaryEnergyAgentReviewChoice | StationaryEnergyAgentReviewBlockedChoice:
-        """Resolve a requested choice to a valid candidate or blocker."""
-        if choice.action == "leave_draft":
-            return StationaryEnergyAgentReviewChoice(
-                proposal_id=proposal.proposal_id,
-                action="leave_draft",
-                selected_source_id=None,
-                selected_candidate_id=None,
-                source_label="Leave empty",
-                target_label=_target_label(proposal),
-                rationale=choice.rationale,
-            )
-
-        candidate = None
-        if choice.candidate_id:
-            candidate = self._candidate_by_id(draft_run).get(str(choice.candidate_id))
-        elif choice.selected_source_id:
-            candidate = self._candidate_by_source_id(draft_run).get(
-                choice.selected_source_id
-            )
-        elif proposal.recommended_candidate_id:
-            candidate = self._candidate_by_id(draft_run).get(
-                str(proposal.recommended_candidate_id)
-            )
-
-        available = self._available_candidates(proposal, draft_run)
-        available_ids = {candidate.candidate_id for candidate in available}
-        if candidate is None or candidate.candidate_id not in available_ids:
-            return StationaryEnergyAgentReviewBlockedChoice(
-                proposal_id=proposal.proposal_id,
-                reason="Selected source is not an available option for this proposal",
-                available_options=self._available_options(proposal, draft_run),
-            )
-
-        action: Literal["accept", "override_source"]
-        if candidate.candidate_id == proposal.recommended_candidate_id:
-            action = "accept"
-        else:
-            action = "override_source"
-
-        if choice.action in {"accept", "override_source"} and choice.action != action:
-            return StationaryEnergyAgentReviewBlockedChoice(
-                proposal_id=proposal.proposal_id,
-                reason=f"Action {choice.action} is not valid for the selected source",
-                available_options=self._available_options(proposal, draft_run),
-            )
-
-        return StationaryEnergyAgentReviewChoice(
-            proposal_id=proposal.proposal_id,
-            action=action,
-            selected_source_id=_details_datasource_id(candidate),
-            selected_candidate_id=candidate.candidate_id,
-            source_label=_source_label(candidate),
-            target_label=_target_label(proposal),
-            rationale=choice.rationale,
-        )
-
-    def _resolve_choice_inputs(
-        self,
-        *,
-        draft_run: StationaryEnergyDraftRun,
-        choices: list[StationaryEnergyAgentReviewChoiceInput],
-    ) -> tuple[
-        list[StationaryEnergyAgentReviewChoice],
-        list[StationaryEnergyAgentReviewBlockedChoice],
-    ]:
-        """Validate a batch of requested choices against the draft snapshot."""
-        selected_choices: list[StationaryEnergyAgentReviewChoice] = []
-        blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice] = []
-
-        proposal_by_id = {
-            proposal.proposal_id: proposal for proposal in draft_run.proposals
-        }
-        for choice in choices:
-            proposal = proposal_by_id.get(choice.proposal_id)
-            if proposal is None:
-                blocked_choices.append(
-                    StationaryEnergyAgentReviewBlockedChoice(
-                        proposal_id=choice.proposal_id,
-                        reason="proposal_id does not belong to this draft",
-                    )
-                )
-                continue
-
-            resolved = self._resolve_choice(
-                proposal=proposal,
-                draft_run=draft_run,
-                choice=choice,
-            )
-            if isinstance(resolved, StationaryEnergyAgentReviewBlockedChoice):
-                blocked_choices.append(resolved)
-                continue
-
-            selected_choices.append(
-                resolved.model_copy(
-                    update={"rationale": choice.rationale or resolved.rationale}
-                )
-            )
-
-        return selected_choices, blocked_choices
-
-    def _target_active_staged_selections(
-        self,
-        *,
-        draft_run: StationaryEnergyDraftRun,
-        staged: list[StationaryEnergyStagedReviewSelection],
-        proposal_ids: list[UUID] | None,
-    ) -> tuple[
-        list[StationaryEnergyStagedReviewSelection],
-        list[StationaryEnergyAgentReviewBlockedChoice],
-    ]:
-        """Return requested active staged selections plus row-level blockers."""
-        proposal_by_id = {
-            proposal.proposal_id: proposal for proposal in draft_run.proposals
-        }
-        staged_by_proposal = {
-            selection.proposal_id: selection
-            for selection in staged
-            if selection.status == "active"
-        }
-        blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice] = []
-
-        if proposal_ids is None:
-            return list(staged_by_proposal.values()), blocked_choices
-
-        targeted: list[StationaryEnergyStagedReviewSelection] = []
-        seen: set[UUID] = set()
-        for proposal_id in proposal_ids:
-            if proposal_id in seen:
-                continue
-            seen.add(proposal_id)
-            proposal = proposal_by_id.get(proposal_id)
-            if proposal is None:
-                blocked_choices.append(
-                    StationaryEnergyAgentReviewBlockedChoice(
-                        proposal_id=proposal_id,
-                        reason="proposal_id does not belong to this draft",
-                    )
-                )
-                continue
-            selection = staged_by_proposal.get(proposal_id)
-            if selection is None:
-                blocked_choices.append(
-                    StationaryEnergyAgentReviewBlockedChoice(
-                        proposal_id=proposal_id,
-                        reason="No active staged source selection exists for this proposal",
-                        available_options=self._available_options(proposal, draft_run),
-                    )
-                )
-                continue
-            targeted.append(selection)
-
-        return targeted, blocked_choices
-
-    def _change_choice_for_staged_selection(
-        self,
-        *,
-        selection: StationaryEnergyStagedReviewSelection,
-        draft_run: StationaryEnergyDraftRun,
-    ) -> StationaryEnergyAgentReviewChoice | StationaryEnergyAgentReviewBlockedChoice:
-        """Choose a different available source, or empty if none exists."""
-        proposal = next(
-            proposal
-            for proposal in draft_run.proposals
-            if proposal.proposal_id == selection.proposal_id
-        )
-        current_source_ids = {
-            source_id
-            for source_id in [
-                selection.selected_source_id,
-                (
-                    str(selection.selected_candidate_id)
-                    if selection.selected_candidate_id
-                    else None
-                ),
-            ]
-            if source_id
-        }
-        for candidate in self._available_candidates(proposal, draft_run):
-            candidate_ids = {
-                str(candidate.candidate_id),
-                candidate.datasource_id,
-                _details_datasource_id(candidate),
-            }
-            if candidate_ids.isdisjoint(current_source_ids):
-                return self._resolve_choice(
-                    proposal=proposal,
-                    draft_run=draft_run,
-                    choice=StationaryEnergyAgentReviewChoiceInput(
-                        proposal_id=proposal.proposal_id,
-                        candidate_id=candidate.candidate_id,
-                        rationale="User asked to change the staged source.",
-                    ),
-                )
-
-        if selection.action != "leave_draft":
-            return self._resolve_choice(
-                proposal=proposal,
-                draft_run=draft_run,
-                choice=StationaryEnergyAgentReviewChoiceInput(
-                    proposal_id=proposal.proposal_id,
-                    action="leave_draft",
-                    rationale=(
-                        "User asked to change the staged source; no different "
-                        "source is available for this row."
-                    ),
-                ),
-            )
-
-        return StationaryEnergyAgentReviewBlockedChoice(
-            proposal_id=proposal.proposal_id,
-            reason="No different source or empty-state change is available for this staged selection",
-            available_options=self._available_options(proposal, draft_run),
-        )
-
-    def _rollback_choice_from_staged(
-        self,
-        selection: StationaryEnergyStagedReviewSelection,
-        draft_run: StationaryEnergyDraftRun,
-    ) -> StationaryEnergyAgentReviewChoice:
-        """Serialize an active staged selection as a rollback choice."""
-        staged_choice = self._choice_from_staged(selection, draft_run)
-        return staged_choice.model_copy(
-            update={
-                "action": "rollback_staged",
-                "rationale": "This staged source choice will be removed.",
-            }
-        )
-
-    def _pending_required_proposals(
-        self,
-        *,
-        draft_run: StationaryEnergyDraftRun,
-        staged: list[StationaryEnergyStagedReviewSelection],
-        extra_resolved_ids: set[UUID] | None = None,
-    ) -> list[StationaryEnergyDraftProposal]:
-        """Return source-backed proposals still requiring user review."""
-        staged_ids = {
-            selection.proposal_id
-            for selection in staged
-            if selection.status == "active"
-        }
-        extra_resolved_ids = extra_resolved_ids or set()
-        final_decision_ids = set(latest_review_decisions(draft_run.review_decisions))
-        pending = []
-        for proposal in draft_run.proposals:
-            if not _is_source_backed(proposal):
-                continue
-            if (
-                proposal.proposal_id in staged_ids
-                or proposal.proposal_id in final_decision_ids
-                or proposal.proposal_id in extra_resolved_ids
-            ):
-                continue
-            if proposal.status not in SOURCE_BACKED_STATUSES:
-                continue
-            pending.append(proposal)
-        return pending
-
-    def _build_complete_decision_inputs(
-        self,
-        *,
-        draft_run: StationaryEnergyDraftRun,
-        staged: list[StationaryEnergyStagedReviewSelection],
-    ) -> tuple[
-        list[ReviewDecisionInput], list[StationaryEnergyAgentReviewBlockedChoice]
-    ]:
-        """Convert staged selections into complete draft review decisions."""
-        staged_by_proposal = {
-            selection.proposal_id: selection
-            for selection in staged
-            if selection.status == "active"
-        }
-        latest_decisions = latest_review_decisions(draft_run.review_decisions)
-        decisions: list[ReviewDecisionInput] = []
-        blockers: list[StationaryEnergyAgentReviewBlockedChoice] = []
-
-        for proposal in draft_run.proposals:
-            # Prefer the latest staged selection because it is the user's pending intent.
-            staged_selection = staged_by_proposal.get(proposal.proposal_id)
-            if staged_selection is not None:
-                decisions.append(self._review_input_from_staged(staged_selection))
-                continue
-
-            # Reuse existing durable decisions so a save does not require restaging.
-            latest = latest_decisions.get(proposal.proposal_id)
-            if latest is not None:
-                decisions.append(
-                    ReviewDecisionInput(
-                        proposal_id=proposal.proposal_id,
-                        action=latest.action,  # type: ignore[arg-type]
-                        selected_source_id=(
-                            str(latest.selected_candidate_id)
-                            if latest.action == "override_source"
-                            and latest.selected_candidate_id
-                            else latest.selected_source_id
-                        ),
-                        manual_value=latest.manual_value,
-                        manual_unit=latest.manual_unit,
-                        note=latest.note,
-                    )
-                )
-                continue
-
-            # Source-backed proposals need an explicit choice before draft save.
-            if _is_source_backed(proposal):
-                blockers.append(
-                    StationaryEnergyAgentReviewBlockedChoice(
-                        proposal_id=proposal.proposal_id,
-                        reason="Source-backed proposal has no staged review selection",
-                        available_options=self._available_options(proposal, draft_run),
-                    )
-                )
-                continue
-
-            # Non-source-backed rows can remain as draft placeholders.
-            decisions.append(
-                ReviewDecisionInput(
-                    proposal_id=proposal.proposal_id,
-                    action="leave_draft",
-                )
-            )
-
-        return decisions, blockers
-
-    @staticmethod
-    def _review_input_from_staged(
-        selection: StationaryEnergyStagedReviewSelection,
-    ) -> ReviewDecisionInput:
-        """Convert one staged selection into the review API input shape."""
-        return ReviewDecisionInput(
-            proposal_id=selection.proposal_id,
-            action=selection.action,  # type: ignore[arg-type]
-            selected_source_id=(
-                str(selection.selected_candidate_id)
-                if selection.action == "override_source"
-                and selection.selected_candidate_id
-                else selection.selected_source_id
-            ),
-            note=selection.rationale,
-        )
-
-    def _choice_from_staged(
-        self,
-        selection: StationaryEnergyStagedReviewSelection,
-        draft_run: StationaryEnergyDraftRun,
-    ) -> StationaryEnergyAgentReviewChoice:
-        """Serialize a staged selection into a tool choice summary."""
-        # Join the staged row back to its proposal for user-facing row labels.
-        proposal = next(
-            proposal
-            for proposal in draft_run.proposals
-            if proposal.proposal_id == selection.proposal_id
-        )
-        # Resolve the source label only when the staged row points at a candidate.
-        candidate = (
-            self._candidate_by_id(draft_run).get(str(selection.selected_candidate_id))
-            if selection.selected_candidate_id
-            else None
-        )
-        return StationaryEnergyAgentReviewChoice(
-            proposal_id=selection.proposal_id,
-            action=selection.action,  # type: ignore[arg-type]
-            selected_source_id=selection.selected_source_id,
-            selected_candidate_id=selection.selected_candidate_id,
-            source_label=_source_label(candidate) if candidate else "Leave empty",
-            target_label=_target_label(proposal),
-            rationale=selection.rationale,
-        )
-
-    def _choice_from_review_input(
-        self,
-        decision: ReviewDecisionInput,
-        draft_run: StationaryEnergyDraftRun,
-    ) -> StationaryEnergyAgentReviewChoice:
-        """Serialize a review input into a tool choice summary."""
-        # Rehydrate the proposal so the tool response can name the reviewed row.
-        proposal = next(
-            proposal
-            for proposal in draft_run.proposals
-            if proposal.proposal_id == decision.proposal_id
-        )
-        # Resolve the candidate through the same accept/override rules used for saves.
-        if decision.action == "accept":
-            candidate = self._candidate_by_id(draft_run).get(
-                str(proposal.recommended_candidate_id)
-            )
-        elif decision.action == "override_source" and decision.selected_source_id:
-            candidate = self._candidate_by_id(draft_run).get(
-                decision.selected_source_id
-            ) or self._candidate_by_source_id(draft_run).get(
-                decision.selected_source_id
-            )
-        else:
-            candidate = None
-        return StationaryEnergyAgentReviewChoice(
-            proposal_id=decision.proposal_id,
-            action=decision.action,  # type: ignore[arg-type]
-            selected_source_id=(
-                _details_datasource_id(candidate)
-                if candidate is not None
-                else decision.selected_source_id
-            ),
-            selected_candidate_id=candidate.candidate_id if candidate else None,
-            source_label=_source_label(candidate) if candidate else None,
-            target_label=_target_label(proposal),
-            rationale=decision.note,
-        )
-
-    @staticmethod
-    def _stage_message_payload(
-        selected_choices: list[StationaryEnergyAgentReviewChoice],
-        blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
-        pending_required_count: int,
-    ) -> dict[str, Any]:
-        """Build localized-message metadata after staging choices."""
-        # Select a stable localization key based on full, partial, or blocked success.
-        if selected_choices and not blocked_choices:
-            return _message_payload(
-                "tool-message-stage-success",
-                selected=len(selected_choices),
-                pending=pending_required_count,
-            )
-        if selected_choices:
-            return _message_payload(
-                "tool-message-stage-partial",
-                selected=len(selected_choices),
-                blocked=len(blocked_choices),
-                pending=pending_required_count,
-            )
-        if blocked_choices:
-            return _message_payload(
-                "tool-message-stage-blocked",
-                blocked=len(blocked_choices),
-            )
-        return _message_payload("tool-message-stage-none")
-
-    @staticmethod
-    def _bulk_confirmation_message_payload(
-        selected_choices: list[StationaryEnergyAgentReviewChoice],
-        blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
-        pending_required_count: int,
-    ) -> dict[str, Any]:
-        """Build localized-message metadata for bulk confirmation previews."""
-        if selected_choices and not blocked_choices:
-            return _message_payload(
-                "tool-message-bulk-confirm-success",
-                selected=len(selected_choices),
-                pending=pending_required_count,
-            )
-        if selected_choices:
-            return _message_payload(
-                "tool-message-bulk-confirm-partial",
-                selected=len(selected_choices),
-                blocked=len(blocked_choices),
-            )
-        if blocked_choices:
-            return _message_payload(
-                "tool-message-bulk-confirm-blocked",
-                blocked=len(blocked_choices),
-            )
-        return _message_payload("tool-message-bulk-confirm-none")
-
-    @staticmethod
-    def _staged_change_confirmation_message_payload(
-        selected_choices: list[StationaryEnergyAgentReviewChoice],
-        blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
-    ) -> dict[str, Any]:
-        """Build localized-message metadata for staged-source change previews."""
-        if selected_choices and not blocked_choices:
-            return _message_payload(
-                "tool-message-staged-change-confirm-success",
-                selected=len(selected_choices),
-            )
-        if selected_choices:
-            return _message_payload(
-                "tool-message-staged-change-confirm-partial",
-                selected=len(selected_choices),
-                blocked=len(blocked_choices),
-            )
-        if blocked_choices:
-            return _message_payload(
-                "tool-message-staged-change-confirm-blocked",
-                blocked=len(blocked_choices),
-            )
-        return _message_payload("tool-message-staged-change-confirm-none")
-
-    @staticmethod
-    def _staged_rollback_confirmation_message_payload(
-        selected_choices: list[StationaryEnergyAgentReviewChoice],
-        blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
-        pending_required_count: int,
-    ) -> dict[str, Any]:
-        """Build localized-message metadata for staged-source rollback previews."""
-        if selected_choices and not blocked_choices:
-            return _message_payload(
-                "tool-message-staged-rollback-confirm-success",
-                selected=len(selected_choices),
-                pending=pending_required_count,
-            )
-        if selected_choices:
-            return _message_payload(
-                "tool-message-staged-rollback-confirm-partial",
-                selected=len(selected_choices),
-                blocked=len(blocked_choices),
-            )
-        if blocked_choices:
-            return _message_payload(
-                "tool-message-staged-rollback-confirm-blocked",
-                blocked=len(blocked_choices),
-            )
-        return _message_payload("tool-message-staged-rollback-confirm-none")
-
-    @staticmethod
-    def _staged_rollback_result_message_payload(
-        selected_choices: list[StationaryEnergyAgentReviewChoice],
-        blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
-        pending_required_count: int,
-    ) -> dict[str, Any]:
-        """Build localized-message metadata after rolling back staged choices."""
-        # Select a stable localization key based on rollback success shape.
-        if selected_choices and not blocked_choices:
-            return _message_payload(
-                "tool-message-staged-rollback-success",
-                selected=len(selected_choices),
-                pending=pending_required_count,
-            )
-        if selected_choices:
-            return _message_payload(
-                "tool-message-staged-rollback-partial",
-                selected=len(selected_choices),
-                blocked=len(blocked_choices),
-                pending=pending_required_count,
-            )
-        if blocked_choices:
-            return _message_payload(
-                "tool-message-staged-rollback-blocked",
-                blocked=len(blocked_choices),
-            )
-        return _message_payload("tool-message-staged-rollback-none")

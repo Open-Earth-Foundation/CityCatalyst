@@ -169,9 +169,20 @@ workflow state in PostgreSQL.
   - Loads draft runs, proposals, decisions, and staged review selections.
   - Persists staged selection status transitions.
 - `services/stationary_energy/stationary_energy_agent_review.py`
-  - Validates review choices.
-  - Builds preview payloads for bulk confirm, staged change, and rollback.
-  - Saves staged review decisions into the CA-owned draft state.
+  - Orchestrates review staging, preview, rollback, and draft-save flows.
+  - Commits staged selection transitions through the repository and draft service.
+- `services/stationary_energy/stationary_energy_review_resolver.py`
+  - Resolves selectable sources, pending review rows, and save-ready decision inputs
+    for one persisted draft snapshot.
+- `services/stationary_energy/stationary_energy_review_models.py`
+  - Defines shared Stationary Energy review tool request and response payloads.
+- `services/stationary_energy/stationary_energy_review_messages.py`
+  - Builds language-neutral review message metadata for the UI.
+- `services/stationary_energy/stationary_energy_chat_context.py`
+  - Serializes persisted draft snapshots and request-shaped `ui_context` for
+    Stationary Energy chat grounding.
+- `services/stationary_energy/stationary_energy_tool_events.py`
+  - Builds Stationary Energy `tool_result` SSE payloads for UI event cards.
 
 ### Tool Layer
 
@@ -187,11 +198,11 @@ workflow state in PostgreSQL.
 
 - `utils/streaming_handler.py`
   - Loads pruned conversation history.
-  - Loads persisted Stationary Energy draft context and request-shaped
-    `ui_context`.
+  - Loads persisted Stationary Energy draft context and delegates Stationary
+    Energy payload shaping to `services/stationary_energy/stationary_energy_chat_context.py`.
   - Enforces the Stationary Energy chat prompt budget.
   - Emits `tool_result` SSE payloads for normal tools and Stationary Energy UI
-    events.
+    events via `services/stationary_energy/stationary_energy_tool_events.py`.
 - `utils/history_manager.py`
   - Prunes older tool metadata for LLM context while keeping full DB audit data.
 - `utils/token_handler.py`

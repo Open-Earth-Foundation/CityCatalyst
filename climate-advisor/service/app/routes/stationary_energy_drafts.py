@@ -18,7 +18,9 @@ from app.models.stationary_energy_drafts import (
     StartStationaryEnergyDraftResponse,
     StationaryEnergyDraftStatusResponse,
 )
-from app.services.stationary_energy import StationaryEnergyDraftService
+from app.services.stationary_energy.stationary_energy_draft_service import (
+    StationaryEnergyDraftService,
+)
 
 
 router = APIRouter()

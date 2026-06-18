@@ -33,14 +33,19 @@ from app.models.db.stationary_energy_draft import (
 )
 from app.models.requests import MessageCreateRequest
 from app.services.citycatalyst_client import CityCatalystClientError
-from app.services.stationary_energy import (
+from app.services.stationary_energy.stationary_energy_draft_service import (
     COMMIT_ACCEPTED_CAPABILITY,
     LOAD_CONTEXT_CAPABILITY,
+    StationaryEnergyDraftService,
+)
+from app.services.stationary_energy.stationary_energy_proposal_builder import (
     build_deterministic_proposals,
 )
 from app.services.stationary_energy.stationary_energy_agent_review import (
-    StationaryEnergyAgentReviewChoiceInput,
     StationaryEnergyAgentReviewService,
+)
+from app.services.stationary_energy.stationary_energy_review_models import (
+    StationaryEnergyAgentReviewChoiceInput,
 )
 from app.tools.stationary_energy_review_tools import (
     build_stationary_energy_review_tools,

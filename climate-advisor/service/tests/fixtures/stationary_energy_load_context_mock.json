@@ -1,0 +1,213 @@
+{
+  "city": {
+    "city_id": "mock-rio-city",
+    "name": "Rio de Janeiro",
+    "locode": "BR RIO",
+    "country": "Brazil",
+    "country_locode": "BR",
+    "region": "Rio de Janeiro",
+    "region_locode": "BR-RJ",
+    "area": 1200.25,
+    "population": 6211223
+  },
+  "inventory": {
+    "inventory_id": "mock-rio-inventory-2023",
+    "year": 2023,
+    "inventory_type": "gpc_basic_plus",
+    "gwp": "ar5",
+    "total_emissions": 17824561.4
+  },
+  "taxonomy": [
+    {
+      "sector_id": "I",
+      "sector_name": "Stationary Energy",
+      "sector_reference_number": "I",
+      "subsector_id": "I.1",
+      "subsector_name": "Residential buildings",
+      "subsector_reference_number": "I.1",
+      "subcategory_id": "I.1.2",
+      "subcategory_name": "Emissions from grid-supplied energy consumed within the city boundary",
+      "subcategory_reference_number": "I.1.2",
+      "scope_id": "2",
+      "scope_name": "Scope 2"
+    },
+    {
+      "sector_id": "I",
+      "sector_name": "Stationary Energy",
+      "sector_reference_number": "I",
+      "subsector_id": "I.2",
+      "subsector_name": "Commercial and institutional buildings and facilities",
+      "subsector_reference_number": "I.2",
+      "subcategory_id": "I.2.2",
+      "subcategory_name": "Emissions from grid-supplied energy consumed within the city boundary",
+      "subcategory_reference_number": "I.2.2",
+      "scope_id": "2",
+      "scope_name": "Scope 2"
+    }
+  ],
+  "current_values": [
+    {
+      "inventory_value_id": "mock-current-residential-electricity",
+      "datasource_id": "mock-existing-rio-electricity",
+      "sector_id": "I",
+      "subsector_id": "I.1",
+      "subcategory_id": "I.1.2",
+      "scope_id": "2",
+      "value": 1284300,
+      "unit": "MWh",
+      "emissions_value": 94851.9,
+      "emissions_unit": "tCO2e",
+      "data_source": {
+        "name": "Existing inventory value"
+      }
+    }
+  ],
+  "source_candidates": [
+    {
+      "datasource_id": "mock-source-residential-electricity",
+      "name": "Residential electricity consumption estimate",
+      "publisher_name": "Mock utility open data",
+      "retrieval_method": "api",
+      "dataset_name": "Municipal electricity consumption",
+      "dataset_year": 2023,
+      "url": "https://example.test/rio/residential-electricity",
+      "geography_match": "city",
+      "source_scope": {
+        "sector_id": "I",
+        "sector_name": "Stationary Energy",
+        "sector_reference_number": "I",
+        "subsector_id": "I.1",
+        "subsector_name": "Residential buildings",
+        "subsector_reference_number": "I.1",
+        "subcategory_id": "I.1.2",
+        "subcategory_name": "Emissions from grid-supplied energy consumed within the city boundary",
+        "subcategory_reference_number": "I.1.2",
+        "scope_id": "2",
+        "scope_name": "Scope 2"
+      },
+      "source_data": {
+        "city": "Rio de Janeiro",
+        "year": 2023,
+        "activity": "electricity_consumption"
+      },
+      "normalized_rows": [
+        {
+          "activity_value": 1301200,
+          "activity_unit": "MWh",
+          "emission_factor": 0.073,
+          "emission_factor_unit": "tCO2e/MWh",
+          "emissions_value": 94987.6,
+          "emissions_unit": "tCO2e"
+        }
+      ],
+      "applicability_status": "applicable",
+      "applicability_issues": [],
+      "quality_score": 0.91,
+      "confidence_notes": "City-level annual source matching the selected inventory year."
+    },
+    {
+      "datasource_id": "mock-source-commercial-electricity",
+      "name": "Commercial electricity consumption estimate",
+      "publisher_name": "Mock utility open data",
+      "retrieval_method": "api",
+      "dataset_name": "Municipal electricity consumption",
+      "dataset_year": 2023,
+      "url": "https://example.test/rio/commercial-electricity",
+      "geography_match": "city",
+      "source_scope": {
+        "sector_id": "I",
+        "sector_name": "Stationary Energy",
+        "sector_reference_number": "I",
+        "subsector_id": "I.2",
+        "subsector_name": "Commercial and institutional buildings and facilities",
+        "subsector_reference_number": "I.2",
+        "subcategory_id": "I.2.2",
+        "subcategory_name": "Emissions from grid-supplied energy consumed within the city boundary",
+        "subcategory_reference_number": "I.2.2",
+        "scope_id": "2",
+        "scope_name": "Scope 2"
+      },
+      "source_data": {
+        "city": "Rio de Janeiro",
+        "year": 2023,
+        "activity": "electricity_consumption"
+      },
+      "normalized_rows": [
+        {
+          "activity_value": 2894500,
+          "activity_unit": "MWh",
+          "emission_factor": 0.073,
+          "emission_factor_unit": "tCO2e/MWh",
+          "emissions_value": 211298.5,
+          "emissions_unit": "tCO2e"
+        }
+      ],
+      "applicability_status": "applicable",
+      "applicability_issues": [],
+      "quality_score": 0.88,
+      "confidence_notes": "City-level annual source matching the selected inventory year."
+    },
+    {
+      "datasource_id": "mock-source-old-electricity",
+      "name": "Older electricity consumption estimate",
+      "publisher_name": "Mock utility open data",
+      "retrieval_method": "api",
+      "dataset_name": "Municipal electricity consumption",
+      "dataset_year": 2020,
+      "url": "https://example.test/rio/old-electricity",
+      "geography_match": "city",
+      "source_scope": {
+        "sector_id": "I",
+        "sector_name": "Stationary Energy",
+        "subsector_id": "I.1",
+        "subsector_name": "Residential buildings",
+        "subcategory_id": "I.1.2",
+        "scope_id": "2",
+        "scope_name": "Scope 2"
+      },
+      "source_data": null,
+      "normalized_rows": [],
+      "applicability_status": "removed",
+      "applicability_issues": [
+        "Dataset year does not match selected inventory year"
+      ],
+      "failure_reason": null,
+      "quality_score": 0.35,
+      "confidence_notes": "Stored for audit as a filtered candidate."
+    },
+    {
+      "datasource_id": "mock-source-timeout",
+      "name": "Regional building fuel source",
+      "publisher_name": "Mock regional data portal",
+      "retrieval_method": "api",
+      "dataset_name": "Building fuel consumption",
+      "dataset_year": 2023,
+      "url": "https://example.test/rio/building-fuels",
+      "geography_match": "region",
+      "source_scope": {
+        "sector_id": "I",
+        "sector_name": "Stationary Energy",
+        "subsector_id": "I.1",
+        "subsector_name": "Residential buildings",
+        "subcategory_id": "I.1.1",
+        "scope_id": "1",
+        "scope_name": "Scope 1"
+      },
+      "source_data": null,
+      "normalized_rows": [],
+      "applicability_status": "failed",
+      "applicability_issues": [
+        "Source fetch failed"
+      ],
+      "failure_reason": "Mock upstream timeout",
+      "quality_score": null,
+      "confidence_notes": "Stored for audit as a failed candidate."
+    }
+  ],
+  "permission_summary": {
+    "can_review": true,
+    "can_commit": false,
+    "fixture": true,
+    "note": "Mock fixture for CA Stationary Energy flow simulation."
+  }
+}

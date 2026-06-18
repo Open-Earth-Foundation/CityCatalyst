@@ -1,12 +1,11 @@
 "use client";
 
-import React, { use } from "react";
+import React from "react";
 import { useParams, useSearchParams } from "next/navigation";
 
 import { useTranslation } from "@/i18n/client";
 import { Box, Tabs, Text } from "@chakra-ui/react";
 import { MyProfileTab } from "@/components/Tabs/MyProfileTab";
-import MyFilesTab from "@/components/Tabs/my-files-tab";
 import MyInventoriesTab from "@/components/Tabs/my-inventories-tab";
 import MyAppsTab from "@/components/Tabs/my-apps-tab";
 import MyTokensTab from "@/components/Tabs/my-tokens-tab";
@@ -23,6 +22,7 @@ export type ProfileInputs = {
   userId: string;
   title?: string | null;
   preferredLanguage?: string;
+  numberFormat?: string;
 };
 
 export type UserDetails = {
@@ -77,10 +77,6 @@ export default function Settings() {
   });
 
   const cityId = inventory?.city.cityId;
-
-  const { data: userFiles } = api.useGetUserFilesQuery(cityId!, {
-    skip: !cityId,
-  });
 
   return (
     <Box backgroundColor="background.backgroundLight" paddingBottom="125px">

@@ -8,8 +8,9 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from app.modules.prioritizer.config import (
+from app.modules.prioritizer.llm_config import (
     get_explanations_model,
+    get_explanations_temperature,
     is_explanations_enabled,
 )
 from app.modules.prioritizer.internal_models import ScoredAction
@@ -53,13 +54,13 @@ def generate_explanations(
     simple and explicit.
     """
     if not is_explanations_enabled():
-        return {}, {"status": "skipped", "reason": "HIAP_MEED_EXPLANATIONS_ENABLED=false"}
+        return {}, {"status": "skipped", "reason": "explanations_disabled"}
     if not scored_actions:
         return {}, {"status": "skipped", "reason": "no_scored_actions"}
     model_name = get_explanations_model()
     if model_name is None:
         raise ValueError(
-            "HIAP_MEED_EXPLANATIONS_MODEL must be set when createExplanations=true"
+            "The explanations model must be configured in llm_config.yaml when createExplanations=true"
         )
 
     curated_actions = [
@@ -93,7 +94,7 @@ def generate_explanations(
         # Parse helper converts the Pydantic model to JSON schema and returns
         # a typed parsed object in `message.parsed`.
         model=model_name,
-        temperature=0,
+        temperature=get_explanations_temperature(),
         response_format=ExplanationBatch,
         messages=[
             {

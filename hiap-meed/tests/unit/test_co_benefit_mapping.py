@@ -50,7 +50,11 @@ def test_resolve_city_preferred_co_benefits_logs_warning_and_falls_back_on_error
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Resolver fails open when LLM mapping raises an exception."""
-    monkeypatch.setenv("HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL", "gpt-test")
+    monkeypatch.setattr(
+        co_benefit_mapping,
+        "get_alignment_other_preference_mapping_model",
+        lambda: "gpt-test",
+    )
 
     def _boom(**_: object) -> object:
         raise ValueError("parse failed")
@@ -72,7 +76,11 @@ def test_resolve_city_preferred_co_benefits_truncates_free_text_before_mapping(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Mapping input is truncated to the configured free-text cap."""
-    monkeypatch.setenv("HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL", "gpt-test")
+    monkeypatch.setattr(
+        co_benefit_mapping,
+        "get_alignment_other_preference_mapping_model",
+        lambda: "gpt-test",
+    )
     oversized_text = "A" * (co_benefit_mapping.CO_BENEFIT_MAPPING_FREE_TEXT_MAX_CHARS + 20)
 
     captured: dict[str, str] = {}
@@ -101,7 +109,11 @@ def test_resolve_city_preferred_co_benefits_fails_open_on_prompt_length_guard(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Prompt length overflow should fail open before any OpenAI call."""
-    monkeypatch.setenv("HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL", "gpt-test")
+    monkeypatch.setattr(
+        co_benefit_mapping,
+        "get_alignment_other_preference_mapping_model",
+        lambda: "gpt-test",
+    )
 
     monkeypatch.setattr(
         co_benefit_mapping,

@@ -15,7 +15,7 @@ export default function SourceDrawerBadges({
   t,
 }: SourceDrawerBadgesProps) {
   return (
-    <Flex direction="row" my={4} className="gap-4 flex-wrap" alignItems="start">
+    <Flex direction="row" my={4} gap={4} flexWrap="wrap" alignItems="start">
       <Badge>
         <Icon as={MdOutlineLocationOn} boxSize={4} />
         {t("location")}: {source.geographicalLocation}

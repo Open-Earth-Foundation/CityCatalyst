@@ -57,7 +57,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
   const getLatestInventoryId = (years: CityYearData[]): string | null => {
     if (!years || years.length === 0) return null;
     const latestYear = years.reduce((latest, current) =>
-      current.year > latest.year ? current : latest
+      current.year > latest.year ? current : latest,
     );
     return latestYear.inventoryId;
   };
@@ -78,7 +78,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
     }
 
     const latestYear = years.reduce((latest, current) =>
-      current.year > latest.year ? current : latest
+      current.year > latest.year ? current : latest,
     );
 
     setIsDownloading(cityId);
@@ -123,7 +123,10 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
       URL.revokeObjectURL(downloadLink.href);
       downloadLink.remove();
     } catch (error) {
-      logger.error({ err: error, cityId, inventoryId }, "Failed to download ECRF");
+      logger.error(
+        { err: error, cityId, inventoryId },
+        "Failed to download ECRF",
+      );
       toaster.dismiss();
       toaster.create({
         description: t("download-failed"),
@@ -159,7 +162,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
         >
           {t("city")}
         </Text>
-        <NextLink href="/onboarding/setup">
+        <NextLink href="/cities/onboarding/setup">
           <Button
             aria-label="Add City"
             type="submit"
@@ -262,7 +265,9 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                   </Text>
                 </Table.Cell>
                 <Table.Cell>
-                  <PopoverRoot positioning={{ placement: "bottom-end", flip: true }}>
+                  <PopoverRoot
+                    positioning={{ placement: "bottom-end", flip: true }}
+                  >
                     <PopoverTrigger asChild>
                       <IconButton
                         aria-label="action-button"
@@ -289,7 +294,9 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                         <List.Root padding="0">
                           <List.Item
                             display="flex"
-                            cursor={isDownloading === city.cityId ? "wait" : "pointer"}
+                            cursor={
+                              isDownloading === city.cityId ? "wait" : "pointer"
+                            }
                             gap="16px"
                             color="content.tertiary"
                             alignItems="center"

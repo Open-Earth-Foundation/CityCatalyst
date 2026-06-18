@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Box, Table, useDisclosure, Text, Flex, Icon } from "@chakra-ui/react";
+import { Box, Table, useDisclosure, Icon } from "@chakra-ui/react";
 import { ActivityDataByScope } from "@/util/types";
 import type { TFunction } from "i18next";
-import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
+import { convertKgToTonnes, formatNumber, toKebabCase } from "@/util/helpers";
 import { InventoryTypeEnum, SECTORS } from "@/util/constants";
 import { ButtonSmall } from "@/components/package/Texts/Button";
 import { BodyMedium } from "@/components/package/Texts/Body";
@@ -16,6 +16,7 @@ interface ByScopeViewProps {
   sectorName: string;
   inventoryType: InventoryTypeEnum;
   inventoryId: string;
+  numberFormat?: string;
 }
 
 const ByScopeView: React.FC<ByScopeViewProps> = ({
@@ -25,6 +26,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
   sectorName,
   inventoryType,
   inventoryId,
+  numberFormat,
 }) => {
   const scopes = SECTORS.find((s) => sectorName === s.name)!.inventoryTypes[
     inventoryType
@@ -81,7 +83,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
       </Table.Cell>
       <Table.Cell>
         <BodyMedium color="content.secondary">
-          {convertKgToTonnes(item.totalEmissions)}
+          {convertKgToTonnes(item.totalEmissions, numberFormat)}
         </BodyMedium>
       </Table.Cell>
       <Table.Cell>
@@ -90,7 +92,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
       {scopes.map((s) => (
         <Table.Cell key={s}>
           <BodyMedium color="content.secondary">
-            {convertKgToTonnes(item.scopes[s] || 0)}
+            {convertKgToTonnes(item.scopes[s] || 0, numberFormat)}
           </BodyMedium>
         </Table.Cell>
       ))}
@@ -157,12 +159,12 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
           </Table.Cell>
           <Table.Cell>
             <BodyMedium color="content.secondary">
-              {convertKgToTonnes(totalEmissions)}
+              {convertKgToTonnes(totalEmissions, numberFormat)}
             </BodyMedium>
           </Table.Cell>
           <Table.Cell>
             <BodyMedium color="content.secondary">
-              {totalPercentage.toFixed(1)}%
+              {formatNumber(totalPercentage, numberFormat, 1)}%
             </BodyMedium>
           </Table.Cell>
           {scopes.map((s) => (
@@ -173,6 +175,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
                     (sum, item) => sum + Number(item.scopes[s] || 0),
                     0,
                   ),
+                  numberFormat,
                 )}
               </BodyMedium>
             </Table.Cell>
@@ -238,6 +241,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
         onClose={onSourceDrawerClose}
         t={tData}
         inventoryId={inventoryId}
+        numberFormat={numberFormat}
       />
     </Box>
   );

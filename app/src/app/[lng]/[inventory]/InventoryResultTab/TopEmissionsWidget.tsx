@@ -1,12 +1,4 @@
-import {
-  Box,
-  Card,
-  Center,
-  Heading,
-  HStack,
-  Table,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Card, Center, Heading, Table } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import type {
   InventoryResponse,
@@ -16,6 +8,7 @@ import type {
 import {
   capitalizeFirstLetter,
   convertKgToTonnes,
+  formatNumber,
   toKebabCase,
 } from "@/util/helpers";
 import { api } from "@/services/api";
@@ -36,9 +29,11 @@ import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 const EmissionsTable = ({
   topEmissions,
   t,
+  numberFormat,
 }: {
   topEmissions: TopEmission[];
   t: TFunction;
+  numberFormat?: string;
 }) => {
   return (
     <Table.Root my={4} variant="outline">
@@ -68,10 +63,14 @@ const EmissionsTable = ({
               </BodySmall>
             </Table.Cell>
             <Table.Cell>
-              <BodyMedium>{convertKgToTonnes(emission.co2eq)}</BodyMedium>
+              <BodyMedium>
+                {convertKgToTonnes(emission.co2eq, numberFormat)}
+              </BodyMedium>
             </Table.Cell>
             <Table.Cell>
-              <BodyMedium>{emission.percentage}%</BodyMedium>
+              <BodyMedium>
+                {formatNumber(emission.percentage, numberFormat)}%
+              </BodyMedium>
             </Table.Cell>
           </Table.Row>
         ))}
@@ -84,10 +83,12 @@ const TopEmissionsWidget = ({
   t,
   inventory,
   isPublic,
+  numberFormat,
 }: {
   t: Function & TFunction<"translation", undefined>;
   inventory?: InventoryResponse;
   isPublic: boolean;
+  numberFormat?: string;
 }) => {
   const { data: results, isLoading: isTopEmissionsResponseLoading } =
     api.useGetResultsQuery(inventory!.inventoryId!);
@@ -122,7 +123,15 @@ const TopEmissionsWidget = ({
         </Card.Body>
       </Card.Root>
     );
-  } else if (!results || !results.totalEmissions || results.totalEmissions.total === null || results.totalEmissions.total === undefined || !results.totalEmissions.bySector || !Array.isArray(results.totalEmissions.bySector) || results.totalEmissions.bySector.length === 0) {
+  } else if (
+    !results ||
+    !results.totalEmissions ||
+    results.totalEmissions.total === null ||
+    results.totalEmissions.total === undefined ||
+    !results.totalEmissions.bySector ||
+    !Array.isArray(results.totalEmissions.bySector) ||
+    results.totalEmissions.bySector.length === 0
+  ) {
     return (
       <Card.Root width={"713px"} height={"448px"}>
         <Card.Header>
@@ -155,6 +164,7 @@ const TopEmissionsWidget = ({
             colors={allSectorColors}
             showLabels
             showHover
+            numberFormat={numberFormat}
           />
           <Box>
             <Heading size="sm" marginTop={10} marginBottom={4}>
@@ -164,6 +174,7 @@ const TopEmissionsWidget = ({
           <EmissionsTable
             topEmissions={results?.topEmissions?.bySubSector?.slice(0, 3) ?? []}
             t={t}
+            numberFormat={numberFormat}
           />
         </Card.Body>
       </Card.Root>

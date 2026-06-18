@@ -38,7 +38,7 @@ def test_prioritize_e2e_with_mock_api_payloads(
     # Route request artifacts into an isolated test folder.
     artifact_log_dir = tmp_path / "logs"
     monkeypatch.setenv("LOG_DIR", str(artifact_log_dir))
-    monkeypatch.setenv("ARTIFACT_LOG_JSONL", "true")
+    monkeypatch.setenv("LOCAL_ARTIFACTS_ENABLED", "true")
 
     mock_data_dir = _mock_data_dir()
     request_payload = json.loads(
@@ -265,7 +265,7 @@ def test_prioritize_e2e_stubbed_activity_mapping_matches_disabled_mode(
     """Stub-enabled activity mapping should preserve the same prioritization output."""
     artifact_log_dir = tmp_path / "logs"
     monkeypatch.setenv("LOG_DIR", str(artifact_log_dir))
-    monkeypatch.setenv("ARTIFACT_LOG_JSONL", "true")
+    monkeypatch.setenv("LOCAL_ARTIFACTS_ENABLED", "true")
 
     mock_data_dir = _mock_data_dir()
     request_payload = json.loads(

@@ -14,6 +14,7 @@ interface EmissionBySectorChartProps {
     inventoryId: string;
   }[];
   lng: string;
+  numberFormat?: string;
 }
 
 interface CustomBar {
@@ -217,6 +218,7 @@ function CustomCombinedBarLayer<D extends BarDatum>({
 const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
   data,
   lng,
+  numberFormat,
 }) => {
   const { t: tData } = useTranslation(lng, "data");
   const { t: tDashboard } = useTranslation(lng, "dashboard");
@@ -297,7 +299,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
                       textAlign="right"
                       color="content.primary"
                     >
-                      {convertKgToTonnes(segment.value)}
+                      {convertKgToTonnes(segment.value, numberFormat)}
                     </Text>
                   </Box>
                 </Box>
@@ -328,7 +330,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
               textAlign="right"
               color="content.primary"
             >
-              {convertKgToTonnes(point.data.total)}
+              {convertKgToTonnes(point.data.total, numberFormat)}
             </Text>
           </Box>
         </Box>
@@ -382,7 +384,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
                 <Text>
                   {tData(id as string)}
                   {" - "}
-                  {convertKgToTonnes(value)}
+                  {convertKgToTonnes(value, numberFormat)}
                 </Text>
               </HStack>
             </Card.Root>
@@ -411,7 +413,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
             legend: "CO2eq",
             legendPosition: "middle",
             legendOffset: -100,
-            format: (value) => convertKgToTonnes(value),
+            format: (value) => convertKgToTonnes(value, numberFormat),
           }}
           labelSkipWidth={12}
           labelSkipHeight={12}
@@ -422,7 +424,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
           role="application"
           ariaLabel="Nivo bar chart demo"
           barAriaLabel={function (e) {
-            return `${e.id}: ${convertKgToTonnes(e.value!)} in year: ${e.indexValue}`;
+            return `${e.id}: ${convertKgToTonnes(e.value!, numberFormat)} in year: ${e.indexValue}`;
           }}
           layers={[
             "grid",

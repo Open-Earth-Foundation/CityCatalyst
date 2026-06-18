@@ -1,9 +1,7 @@
-import { convertKgToTonnes, clamp } from "@/util/helpers";
+import { convertKgToTonnes, clamp, formatNumber } from "@/util/helpers";
 import {
   Box,
   Card,
-  CardBody,
-  CardHeader,
   Heading,
   HStack,
   Icon,
@@ -14,7 +12,6 @@ import {
 import { TFunction } from "i18next";
 import { InventoryResponse } from "@/util/types";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { MdArrowOutward } from "react-icons/md";
 import { PopulationAttributes } from "@/models/Population";
 import { HeatIcon } from "@/components/icons";
 
@@ -31,17 +28,19 @@ const EmissionsWidgetCard = ({
   field,
   showProgress,
   isLoading = false,
+  numberFormat,
 }: {
   icon: any;
   value?: number | undefined;
   field: any;
   showProgress: boolean;
   isLoading?: boolean;
+  numberFormat?: string;
 }) => {
   const finalValue = value
     ? showProgress
-      ? `${value.toFixed(3)}%`
-      : convertKgToTonnes(value)
+      ? `${formatNumber(value, numberFormat, 3)}%`
+      : convertKgToTonnes(value, numberFormat)
     : "N/A";
 
   return (
@@ -83,10 +82,12 @@ const EmissionsWidget = ({
   t,
   inventory,
   population,
+  numberFormat,
 }: {
   t: Function & TFunction<"translation", undefined>;
   inventory?: InventoryResponse;
   population?: PopulationAttributes;
+  numberFormat?: string;
 }) => {
   // Fetch country emissions data
   const {
@@ -169,6 +170,7 @@ const EmissionsWidget = ({
                 value={value}
                 field={field}
                 showProgress={showProgress}
+                numberFormat={numberFormat}
               />
             ))}
           </Stack>

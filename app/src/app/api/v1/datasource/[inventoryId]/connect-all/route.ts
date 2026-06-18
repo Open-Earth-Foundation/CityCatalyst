@@ -42,6 +42,7 @@ export const POST = apiHandler(async (_req, { params, session }) => {
     params.inventoryId,
     inventory.city.locode,
     session?.user.id,
+    false, // don't autofill empty GPC refnos with notation key entries (not estimated)
   );
 
   return NextResponse.json({ errors });

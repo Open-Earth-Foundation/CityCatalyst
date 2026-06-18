@@ -12,7 +12,7 @@ from app.modules.prioritizer.blocks import (
     hard_filter,
     impact,
 )
-from app.modules.prioritizer.config import validate_weights
+from app.modules.prioritizer.scoring_config import validate_weights
 from app.modules.prioritizer.internal_models import Action, CityEmissionsContext
 from app.modules.prioritizer.models import PrioritizationResponse, RankedActionResult
 from app.modules.prioritizer.services.explanations import generate_explanations

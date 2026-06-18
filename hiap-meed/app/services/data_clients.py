@@ -123,11 +123,12 @@ class MockCityDataApiClient:
                 "Invalid city mock payload: expected `city` or `cities` key"
             )
         requested_locode = locode.strip().upper()
+        response_meta = payload.get("meta", {}) if isinstance(payload, dict) else {}
         for city in response_cities:
             if city.locode.strip().upper() != requested_locode:
                 continue
             # Keep full indicator fields so CityData can backfill city_context.
-            city_raw = city.model_dump()
+            city_raw = city.model_dump(mode="json")
             city_for_validation = dict(city_raw)
             city_for_validation.update(
                 {
@@ -145,6 +146,12 @@ class MockCityDataApiClient:
                         **_base_source_metadata(),
                         "mock_file_path": str(self.mock_file_path),
                         "requested_locode": requested_locode,
+                        "requested_version_label": None,
+                        "upstream_generated_at_utc": response_meta.get(
+                            "generated_at_utc"
+                        ),
+                        "upstream_api_context": response_meta.get("api_context"),
+                        "upstream_datasources": response_meta.get("datasources", []),
                     },
                 }
             )

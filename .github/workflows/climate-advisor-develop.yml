@@ -69,6 +69,15 @@ jobs:
         run: |
           uv sync --locked --group dev
 
+      - name: Validate OpenRouter API key
+        working-directory: climate-advisor
+        env:
+          OPENROUTER_SMOKE_TEST: "1"
+        run: |
+          uv run --directory service pytest tests/test_openrouter_key_smoke.py \
+                 --junit-xml=test-results-openrouter-smoke.xml \
+                 -v --tb=short --color=yes
+
       - name: Run unit tests
         working-directory: climate-advisor
         run: |
@@ -164,6 +173,7 @@ jobs:
             CA_LOG_LEVEL=info \
             CA_CORS_ORIGINS="*" \
             CC_BASE_URL=https://citycatalyst.openearth.dev \
+            CA_FEATURE_FLAGS=STATIONARY_ENERGY_AGENTIC \
             LANGSMITH_API_KEY=${{secrets.LANGSMITH_API_KEY}} \
             LANGSMITH_WORKSPACE_ID=${{secrets.LANGSMITH_WORKSPACE_ID}} \
             -n default

@@ -6,20 +6,20 @@ import logging
 from typing import Optional, Union
 from uuid import UUID
 
-from agents import set_trace_processors
 from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.responses import StreamingResponse
-from langsmith.wrappers import OpenAIAgentsTracingProcessor
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from ..config import get_settings
-from ..db.session import get_session_factory, get_session_optional
-from ..middleware import get_request_id
-from ..models.requests import MessageCreateRequest
-from ..services.message_service import MessageService
-from ..services.thread_service import ThreadService
-from ..utils.streaming_handler import StreamingHandler
-from ..utils.thread_resolver import ThreadResolver
+from app.config import get_settings
+from app.db.session import get_session_factory, get_session_optional
+from app.middleware import get_request_id
+from app.models.requests import MessageCreateRequest
+from app.services.message_service import MessageService
+from app.services.thread_service import ThreadService
+from app.utils.agent_tracing import configure_agents_tracing
+from app.utils.streaming_handler import StreamingHandler
+from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
+from app.utils.thread_resolver import ThreadResolver
 
 logger = logging.getLogger(__name__)
 
@@ -27,20 +27,7 @@ router = APIRouter()
 
 # Configure LangSmith tracing for Agents SDK
 settings = get_settings()
-if settings.langsmith_tracing_enabled:
-    try:
-        trace_metadata = {"service": settings.app_name}
-        set_trace_processors(
-            [
-                OpenAIAgentsTracingProcessor(
-                    project_name=settings.langsmith_project,
-                    metadata=trace_metadata,
-                )
-            ]
-        )
-        logger.info("LangSmith tracing enabled for Agents SDK")
-    except Exception as exc:
-        logger.warning("Failed to initialize LangSmith tracing: %s", exc)
+configure_agents_tracing(settings)
 
 
 @router.options("/messages", include_in_schema=False)
@@ -112,7 +99,7 @@ async def post_message(
         
         # If no token in payload, load from thread context
         if not cc_access_token and session_factory:
-            from ..utils.token_handler import TokenHandler
+            from app.utils.token_handler import TokenHandler
             token_handler = TokenHandler(
                 thread_id=resolved_thread_id,
                 user_id=payload.user_id,
@@ -141,12 +128,29 @@ async def post_message(
                     
                     if thread:
                         # If token came from payload, persist it to thread context using standard "access_token" key
+                        context_update = {}
                         if token_from_payload:
+                            context_update["access_token"] = token_from_payload
+                            logger.info("Persisted CC token from payload to thread context")
+
+                        stationary_energy_draft_run_id = extract_stationary_energy_draft_run_id(
+                            payload.context,
+                            payload.options,
+                        )
+                        if stationary_energy_draft_run_id:
+                            context_update["stationary_energy_draft_run_id"] = (
+                                stationary_energy_draft_run_id
+                            )
+                            logger.info(
+                                "Persisted Stationary Energy draft context on thread_id=%s",
+                                resolved_thread_id,
+                            )
+
+                        if context_update:
                             await thread_service.update_context(
                                 thread=thread,
-                                context_update={"access_token": token_from_payload},
+                                context_update=context_update,
                             )
-                            logger.info("Persisted CC token from payload to thread context")
                         
                         message_service = MessageService(db_session)
                         await message_service.create_user_message(
@@ -172,6 +176,8 @@ async def post_message(
             session_factory=session_factory,
             cc_access_token=cc_access_token,
             inventory_id=payload.inventory_id,
+            request_context=payload.context,
+            request_options=payload.options,
         )
 
         headers = {

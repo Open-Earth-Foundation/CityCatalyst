@@ -21,7 +21,7 @@ upstream city-scoped feasibility scores API.
 
 from __future__ import annotations
 
-from app.modules.prioritizer.config import (
+from app.modules.prioritizer.scoring_config import (
     FEASIBILITY_WEIGHT_LEGAL,
     FEASIBILITY_WEIGHT_MITIGATION_FEASIBILITY,
     validate_block_component_weights,

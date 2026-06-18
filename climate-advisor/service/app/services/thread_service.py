@@ -8,10 +8,10 @@ from uuid import uuid4, UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..exceptions import ThreadNotFoundException, ThreadAccessDeniedException
-from ..models.db.thread import Thread
-from ..models.requests import ThreadCreateRequest
-from ..utils.token_manager import create_token_context
+from app.exceptions import ThreadNotFoundException, ThreadAccessDeniedException
+from app.models.db.thread import Thread
+from app.models.requests import ThreadCreateRequest
+from app.utils.token_manager import create_token_context
 
 
 logger = logging.getLogger(__name__)
@@ -118,11 +118,10 @@ class ThreadService:
             thread: Thread to update
             context_update: Dictionary with new context values
         """
-        if thread.context is None:
-            thread.context = {}
-        
-        # Merge new context into existing
-        thread.context.update(context_update)
+        # Reassign instead of mutating in place so SQLAlchemy tracks JSON updates.
+        merged_context = dict(thread.context or {})
+        merged_context.update(context_update)
+        thread.context = merged_context
         await self.session.flush()
     
     async def update_access_token(

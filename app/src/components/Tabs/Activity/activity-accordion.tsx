@@ -1,5 +1,5 @@
 import { ActivityValue } from "@/models/ActivityValue";
-import { convertKgToTonnes } from "@/util/helpers";
+import { convertKgToTonnes, formatNumber } from "@/util/helpers";
 import { Box, Icon, IconButton, Table, TagLabel, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useMemo } from "react";
@@ -13,8 +13,6 @@ import {
   AccordionItemTrigger,
   AccordionRoot,
 } from "@/components/ui/accordion";
-import { useParams } from "next/navigation";
-import { REGIONALLOCALES } from "@/util/constants";
 import {
   MenuContent,
   MenuItem,
@@ -41,6 +39,7 @@ interface ActivityAccordionProps {
   onDeleteActivity: (activity: ActivityValue) => void;
   onEditActivity: (activity: ActivityValue) => void;
   referenceNumber: string;
+  numberFormat?: string;
 }
 
 const ActivityAccordion: FC<ActivityAccordionProps> = ({
@@ -51,8 +50,8 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
   onDeleteActivity,
   onEditActivity,
   referenceNumber,
+  numberFormat,
 }) => {
-  const { lng } = useParams();
   // perform the group by logic when there's more than one activity.
   // split the data into groups
   // for each table group by the group by field
@@ -293,10 +292,15 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                   {activity?.activityData[sourceField as string]}
                 </Table.Cell>
                 <Table.Cell>
-                  {parseFloat(activity?.activityData[title])}{" "}
+                  {formatNumber(
+                    parseFloat(activity?.activityData[title]),
+                    numberFormat,
+                  )}{" "}
                   {t(activity?.activityData[title + "-unit"])}
                 </Table.Cell>
-                <Table.Cell>{convertKgToTonnes(activity?.co2eq)}</Table.Cell>
+                <Table.Cell>
+                  {convertKgToTonnes(activity?.co2eq, numberFormat)}
+                </Table.Cell>
                 <Table.Cell>
                   <MenuRoot>
                     <MenuTrigger asChild>
@@ -433,7 +437,11 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                         color="content.tertiary"
                         letterSpacing="wide"
                         fontSize="body.md"
+                        fontWeight="semibold"
                       >
+                        <Text as="span" color="sentiment.positiveDefault">
+                          {t("manually-added")}
+                        </Text>{" "}
                         {activityGroups[key]?.activityData.length}{" "}
                         {t("activities-added")}
                       </Text>
@@ -461,8 +469,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                               (acc, curr) => acc + BigInt(curr.co2eq as bigint),
                               0n,
                             ),
-                            null,
-                            REGIONALLOCALES[lng as string],
+                            numberFormat,
                           )}{" "}
                         </Text>
                       </Box>

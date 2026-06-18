@@ -1,0 +1,10 @@
+{
+  "draft-value-no-current": "No current inventory value",
+  "draft-value-no-source": "No source-backed draft value",
+  "draft-value-reported-notation": "Reported notation",
+  "draft-notation-key-NO": "Not occurring",
+  "draft-notation-key-NE": "Not estimated",
+  "draft-notation-key-IE": "Included elsewhere",
+  "draft-notation-key-C": "Confidential",
+  "draft-notation-key-NA": "Not applicable"
+}

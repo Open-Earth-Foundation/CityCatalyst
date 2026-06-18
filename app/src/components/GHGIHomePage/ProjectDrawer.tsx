@@ -141,7 +141,7 @@ const SingleProjectView = ({
       return;
     }
 
-    router.push(`/${lng}/${inventoryId}`);
+    router.push(`/${lng}/cities/${city.cityId}/GHGI/${inventoryId}`);
   };
 
   const [searchTerm, setSearchTerm] = React.useState("");

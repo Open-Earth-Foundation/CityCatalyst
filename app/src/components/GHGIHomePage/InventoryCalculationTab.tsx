@@ -1,11 +1,5 @@
 "use client";
 
-import { SectorCard } from "@/components/Cards/SectorCard";
-import { SegmentedProgress } from "@/components/SegmentedProgress";
-import { CircleIcon } from "@/components/icons";
-import { useTranslation } from "@/i18n/client";
-import { clamp, formatPercent } from "@/util/helpers";
-import { InventoryProgressResponse, InventoryResponse } from "@/util/types";
 import {
   Badge,
   Box,
@@ -16,9 +10,19 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
+
+import { SectorCard } from "@/components/Cards/sector-card";
 import { TabHeader } from "@/components/GHGIHomePage/TabHeader";
+import { SegmentedProgress } from "@/components/SegmentedProgress";
+import { CircleIcon } from "@/components/icons";
 import { BlueSubtitle } from "@/components/package/Texts/BlueSubtitle";
+import { useTranslation } from "@/i18n/client";
 import { getSectorsForInventory, SECTORS } from "@/util/constants";
+import { clamp, formatPercent } from "@/util/helpers";
+import type {
+  InventoryProgressResponse,
+  InventoryResponse,
+} from "@/util/types";
 
 const getSectorProgresses = (
   inventoryProgress: InventoryProgressResponse,
@@ -123,7 +127,7 @@ export default function InventoryCalculationTab({
               <Box
                 boxSize={3}
                 borderRadius="full"
-                backgroundImage="repeating-linear-gradient(45deg, #C5CBF5, #C5CBF5 2px, transparent 2px, transparent 4px)"
+                backgroundImage="repeating-linear-gradient(45deg, var(--chakra-colors-background-overlay), var(--chakra-colors-background-overlay) 2px, transparent 2px, transparent 4px)"
               />
               {formatPercent(reasonNOProgress)}%{" "}
               <Trans t={t}>not-occurring</Trans>

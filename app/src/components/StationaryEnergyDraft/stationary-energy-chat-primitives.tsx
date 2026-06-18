@@ -151,7 +151,7 @@ const agentMarkdownComponents: Components = {
     <Text
       as="code"
       fontFamily="mono"
-      bg="blackAlpha.100"
+      bg="background.neutral"
       px={1}
       borderRadius="sm"
       fontSize="label.md"
@@ -163,7 +163,7 @@ const agentMarkdownComponents: Components = {
   pre: ({ children }) => (
     <Box
       as="pre"
-      bg="blackAlpha.100"
+      bg="background.neutral"
       p={3}
       borderRadius="rounded"
       mb={3}
@@ -187,7 +187,7 @@ const agentMarkdownComponents: Components = {
     </Box>
   ),
   thead: ({ children }) => (
-    <Box as="thead" bg="blackAlpha.100">
+    <Box as="thead" bg="background.neutral">
       {children}
     </Box>
   ),

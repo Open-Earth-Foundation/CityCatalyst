@@ -10,6 +10,7 @@ import {
   chakra,
 } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
+import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MdSend } from "react-icons/md";
 
@@ -47,7 +48,6 @@ import type {
 } from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
 import { Button } from "@/components/ui/button";
 import { getParamValueRequired } from "@/util/helpers";
-import { useParams } from "next/navigation";
 
 type ClimaChatPanelProps = {
   actions: Pick<
@@ -196,7 +196,7 @@ function SuggestedQuestions(props: {
               borderWidth="1px"
               borderColor="border.overlay"
               borderRadius="rounded"
-              bg="rgba(255, 255, 255, 0.72)"
+              bg="background.transparentGrey"
               color="content.secondary"
               fontSize="label.md"
               lineHeight="18px"

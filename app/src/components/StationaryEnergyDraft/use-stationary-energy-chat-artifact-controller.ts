@@ -1,5 +1,6 @@
 "use client";
 
+import type { TFunction } from "i18next";
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -73,7 +74,6 @@ import type {
   SaveResponse,
 } from "@/components/StationaryEnergyDraft/types";
 import { useSSEStream } from "@/hooks/useSSEStream";
-import type { TFunction } from "i18next";
 
 export type LoadingAction =
   | "start"

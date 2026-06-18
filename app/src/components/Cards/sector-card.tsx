@@ -1,26 +1,26 @@
 "use client";
-import SubSectorCard from "@/components/Cards/SubSectorCard";
-import { InventoryResponse, SectorProgress } from "@/util/types";
-import { Box, Heading, Icon, Text, SimpleGrid } from "@chakra-ui/react";
-import { Button } from "@/components/ui/button";
-import NextLink from "next/link";
 
+import { Box, Heading, Icon, SimpleGrid, Text } from "@chakra-ui/react";
+import type { TFunction } from "i18next";
+import NextLink from "next/link";
+import { useParams, usePathname } from "next/navigation";
 import { useState } from "react";
-import { SegmentedProgress } from "../SegmentedProgress";
+import { BsPlus } from "react-icons/bs";
+import { Trans } from "react-i18next/TransWithoutContext";
+
+import SubSectorCard from "@/components/Cards/SubSectorCard";
+import { AskAiIcon } from "@/components/icons";
+import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/i18n/client";
+import { InventoryType, InventoryTypeEnum, ISector } from "@/util/constants";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import {
   clamp,
   convertSectorReferenceNumberToNumber,
   formatPercent,
   getParamValueRequired,
 } from "@/util/helpers";
-import { TFunction } from "i18next";
-import { Trans } from "react-i18next/TransWithoutContext";
-import { InventoryType, InventoryTypeEnum, ISector } from "@/util/constants";
-import { BsPlus } from "react-icons/bs";
-import { useParams, usePathname } from "next/navigation";
-import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
-import { useTranslation } from "@/i18n/client";
-import { AskAiIcon } from "@/components/icons";
+import type { InventoryResponse, SectorProgress } from "@/util/types";
 
 import {
   AccordionItem,
@@ -28,6 +28,7 @@ import {
   AccordionItemTrigger,
   AccordionRoot,
 } from "@/components/ui/accordion";
+import { SegmentedProgress } from "../SegmentedProgress";
 
 export function SectorCard({
   sectorProgress,
@@ -257,7 +258,10 @@ export function SectorCard({
                 fontSize="button.md"
                 letterSpacing="wider"
                 fontStyle="normal"
-                _hover={{ textDecoration: "underline", color: "#001EA7" }}
+                _hover={{
+                  textDecoration: "underline",
+                  color: "interactive.primary",
+                }}
               >
                 {isAccordionOpen ? t("view-less") : t("view-more")}
               </Text>

@@ -1,5 +1,8 @@
 "use client";
 
+import type { TFunction } from "i18next";
+import { useParams } from "next/navigation";
+
 import {
   AgentBubble,
   CoveragePanel,
@@ -23,8 +26,6 @@ import type {
 import { useTranslation } from "@/i18n/client";
 import type { DraftStatusResponse } from "@/components/StationaryEnergyDraft/types";
 import { getParamValueRequired } from "@/util/helpers";
-import type { TFunction } from "i18next";
-import { useParams } from "next/navigation";
 
 type StageMessagesProps = {
   stage: DraftStage;

@@ -1,3 +1,5 @@
+import type { TFunction } from "i18next";
+
 import type {
   DecisionOption,
   DecisionReviewContext,
@@ -22,7 +24,6 @@ import {
   shortSourceName,
   sourceGeographyLabel,
 } from "@/components/StationaryEnergyDraft/utils";
-import type { TFunction } from "i18next";
 
 const REVIEW_FALLBACKS = {
   "review-option-leave-empty": "Leave empty",
@@ -32,6 +33,15 @@ const REVIEW_FALLBACKS = {
 } as const;
 
 const REVIEW_READY_DRAFT_STATUSES = new Set(["ready", "reviewed"]);
+
+type ReviewDecisionPayload = {
+  proposal_id: string;
+  action: DraftDecisionState["action"];
+  selected_source_id?: string;
+  manual_value?: number;
+  manual_unit?: string;
+  note?: string;
+};
 
 function canReviewDraftStatus(status: string): boolean {
   return REVIEW_READY_DRAFT_STATUSES.has(status);
@@ -352,7 +362,7 @@ export function hasInventorySaveReviewChanges(params: {
 function serializeReviewDecisionInput(params: {
   proposal: DraftProposal;
   decision: DraftDecisionState;
-}) {
+}): ReviewDecisionPayload {
   return {
     proposal_id: params.proposal.proposal_id,
     action: params.decision.action,
@@ -390,7 +400,7 @@ function persistedDecisionState(decision: ReviewDecision): DraftDecisionState {
 export function buildReviewDecisionPayload(params: {
   draftState: DraftStatusResponse;
   decisionState: Record<string, DraftDecisionState>;
-}) {
+}): ReviewDecisionPayload[] {
   return params.draftState.proposals.map((proposal) => {
     const decision =
       params.decisionState[proposal.proposal_id] ??
@@ -403,7 +413,7 @@ export function buildInventorySaveReviewDecisionPayload(params: {
   draftState: DraftStatusResponse;
   decisionState: Record<string, DraftDecisionState>;
   resolvedProposalIds: Set<string>;
-}) {
+}): ReviewDecisionPayload[] {
   const persistedDecisions = latestDecisionByProposal(
     params.draftState.review_decisions,
   );

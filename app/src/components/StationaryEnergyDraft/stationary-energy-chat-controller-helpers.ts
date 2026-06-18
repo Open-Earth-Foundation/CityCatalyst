@@ -1,3 +1,5 @@
+import type { TFunction } from "i18next";
+
 import {
   createDecisionReviewMessage,
   type ChatMessage,
@@ -11,7 +13,6 @@ import type {
   DraftDecisionState,
   DraftStatusResponse,
 } from "@/components/StationaryEnergyDraft/types";
-import type { TFunction } from "i18next";
 
 export type ConfirmedBulkReviewChoicePayload = {
   proposal_id: string;

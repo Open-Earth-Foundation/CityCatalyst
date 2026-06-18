@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { Box, Button, HStack } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ProfileInputs } from "@/app/[lng]/[inventory]/settings/page";
+import { ProfileInputs } from "@/components/GHGI/inventory-pages/settings-page";
 import FormInput from "../../form-input";
 import EmailInput from "../../email-input";
 import { useSetCurrentUserDataMutation } from "@/services/api";

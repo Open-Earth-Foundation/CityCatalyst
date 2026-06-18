@@ -1,7 +1,1 @@
-"use client";
-
-import PreferencesPage from "@/app/[lng]/[inventory]/preferences/page";
-
-export default function CityInventoryPreferencesPage() {
-  return <PreferencesPage />;
-}
+export { default } from "@/components/GHGI/inventory-pages/preferences-explanation-page";

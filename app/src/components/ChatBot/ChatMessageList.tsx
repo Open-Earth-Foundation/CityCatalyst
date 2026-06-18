@@ -232,7 +232,9 @@ export function ChatMessageList({
                     <Icon as={BsStars} boxSize={5} color="base.light" />
                   </Box>
                 )}
-                <Spacer />
+                {/* Push the bubble right only for user messages; assistant
+                    bubbles stay left next to the avatar. */}
+                {isUser && <Spacer />}
                 {!shouldShowPulsing && (
                   <Box
                     borderTopLeftRadius={isUser ? "2xl" : "0"}
@@ -289,6 +291,8 @@ export function ChatMessageList({
                     </>
                   </Box>
                 )}
+                {/* Fill remaining space to the right of an assistant bubble. */}
+                {!isUser && !shouldShowPulsing && <Spacer />}
               </Box>
             </HStack>
           </Box>

@@ -20,12 +20,11 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import get_settings
 from app.services.openrouter_client import build_openrouter_client_options
-from app.tools import (
-    CCInventoryTool,
-    build_cc_inventory_tools,
-    build_stationary_energy_review_tools,
-    climate_vector_search,
-)
+from app.tools.cc_inventory_tool import CCInventoryTool
+from app.tools.cc_inventory_wrappers import build_cc_inventory_tools
+from app.tools.climate_vector_sync import climate_vector_search
+from app.tools.hiap_tools import build_hiap_tools
+from app.tools.stationary_energy_review_tools import build_stationary_energy_review_tools
 from app.utils.agent_tracing import configure_agents_tracing
 
 logger = logging.getLogger(__name__)
@@ -46,13 +45,20 @@ class AgentService:
         inventory_id: Optional[str] = None,
         session_factory: Optional[async_sessionmaker[AsyncSession]] = None,
         stationary_energy_draft_run_id: Optional[Union[str, UUID]] = None,
+        hiap_context: Optional[dict[str, Any]] = None,
+        hiap_web_grounding: bool = False,
     ) -> None:
         """Initialize the agent service with settings and OpenRouter client.
         
         Args:
-            cc_access_token: JWT token from CityCatalyst for inventory access
-            cc_thread_id: Current thread ID (for token refresh context)
-            cc_user_id: User ID (for token refresh and inventory queries)
+            cc_access_token: JWT token from CityCatalyst for tool calls.
+            cc_thread_id: Current thread ID for token refresh context.
+            cc_user_id: User ID for token refresh and scoped workflow tools.
+            inventory_id: Active inventory id for inventory-scoped tools.
+            session_factory: Async database session factory for draft review tools.
+            stationary_energy_draft_run_id: Active Stationary Energy draft run id.
+            hiap_context: Active HIAP city and inventory context.
+            hiap_web_grounding: Whether to enable OpenRouter web grounding for HIAP.
         """
         self.settings = get_settings()
         configure_agents_tracing(self.settings)
@@ -68,6 +74,8 @@ class AgentService:
             if stationary_energy_draft_run_id
             else None
         )
+        self.hiap_context = hiap_context
+        self.hiap_web_grounding = hiap_web_grounding
         self._inventory_tool: Optional[CCInventoryTool] = None
         self._token_ref: Dict[str, Optional[str]] = {"value": cc_access_token}
         self._inventory_prompt: Optional[str] = None
@@ -111,9 +119,10 @@ class AgentService:
         self,
         *,
         stationary_energy_draft_run_id: Optional[str] = None,
+        hiap_context: Optional[dict[str, Any]] = None,
     ) -> str:
         """Choose the default chat model for the current workflow context."""
-        if stationary_energy_draft_run_id:
+        if stationary_energy_draft_run_id or hiap_context:
             return self.agentic_flow_model
         return self.default_model
 
@@ -389,7 +398,37 @@ class AgentService:
                 self.cc_user_id,
             )
 
+        if self.hiap_context and self.cc_user_id:
+            hiap_tools = build_hiap_tools(
+                hiap_context=self.hiap_context,
+                user_id=str(self.cc_user_id),
+                token_ref=self._token_ref,
+            )
+            tools.extend(hiap_tools)
+            hiap_review_prompt = self.settings.llm.prompts.get_prompt("hiap_review")
+            agent_instructions = f"{agent_instructions}\n\n{hiap_review_prompt}"
+            logger.info(
+                "Registered HIAP tools for city_id=%s inventory_id=%s thread_id=%s user_id=%s web_grounding=%s",
+                self.hiap_context.get("city_id"),
+                self.hiap_context.get("inventory_id"),
+                self.cc_thread_id,
+                self.cc_user_id,
+                self.hiap_web_grounding,
+            )
+
         tools.append(climate_vector_search)
+
+        model_extra_body: Optional[dict[str, Any]] = None
+        if self.hiap_context and self.hiap_web_grounding:
+            model_extra_body = {
+                "plugins": [
+                    {
+                        "id": "web",
+                        "engine": "exa",
+                        "max_results": 5,
+                    }
+                ]
+            }
 
         agent = Agent(
             name="Climate Advisor",
@@ -401,6 +440,7 @@ class AgentService:
             model_settings=ModelSettings(
                 temperature=agent_temperature,
                 include_usage=True,
+                extra_body=model_extra_body,
             ),
             tools=tools,
         )

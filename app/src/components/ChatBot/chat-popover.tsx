@@ -113,9 +113,16 @@ export default function ChatPopover({
   const isStationaryEnergyAgenticRoute = pathname.includes(
     "/draft/stationary-energy",
   );
+  const isHiapAgenticRoute =
+    pathname.includes("/HIAP/") &&
+    (pathname.endsWith("/chat") || pathname.endsWith("/chat/"));
 
   // Hide the global launcher where Clima is embedded as the primary workflow.
-  if (pathname.startsWith(`/${lng}/auth`) || isStationaryEnergyAgenticRoute) {
+  if (
+    pathname.startsWith(`/${lng}/auth`) ||
+    isStationaryEnergyAgenticRoute ||
+    isHiapAgenticRoute
+  ) {
     return null;
   }
 

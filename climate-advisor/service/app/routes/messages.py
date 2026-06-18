@@ -17,6 +17,7 @@ from app.models.requests import MessageCreateRequest
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
 from app.utils.agent_tracing import configure_agents_tracing
+from app.utils.hiap_context import extract_hiap_context
 from app.utils.streaming_handler import StreamingHandler
 from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
 from app.utils.thread_resolver import ThreadResolver
@@ -143,6 +144,17 @@ async def post_message(
                             )
                             logger.info(
                                 "Persisted Stationary Energy draft context on thread_id=%s",
+                                resolved_thread_id,
+                            )
+
+                        hiap_context = extract_hiap_context(
+                            payload.context,
+                            payload.options,
+                        )
+                        if hiap_context:
+                            context_update["hiap"] = hiap_context
+                            logger.info(
+                                "Persisted HIAP context on thread_id=%s",
                                 resolved_thread_id,
                             )
 

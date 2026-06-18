@@ -48,6 +48,7 @@ import { apiHandler } from "@/util/api";
 const createThreadRequest = z.object({
   title: z.string().optional(),
   inventory_id: z.string().uuid().optional(),
+  context: z.record(z.string(), z.unknown()).optional(),
 });
 
 export const POST = apiHandler(async (req, { session }) => {
@@ -56,7 +57,8 @@ export const POST = apiHandler(async (req, { session }) => {
   }
 
   const requestBody = await req.json().catch(() => ({}));
-  const { title, inventory_id } = createThreadRequest.parse(requestBody);
+  const { title, inventory_id, context } =
+    createThreadRequest.parse(requestBody);
 
   logger.info(
     {
@@ -70,6 +72,7 @@ export const POST = apiHandler(async (req, { session }) => {
   const caData = await createClimateAdvisorThread({
     userId: session.user.id,
     inventoryId: inventory_id,
+    context,
   });
 
   logger.debug(

@@ -38,3 +38,18 @@ def test_stationary_energy_review_prompt_has_rendered_tools_section() -> None:
     assert "`stationary_energy_save_review_draft`" in rendered_prompt
     assert "save just that one" in rendered_prompt
     assert "focused_decision_state" in rendered_prompt
+
+
+def test_hiap_review_prompt_has_rendered_tools_section() -> None:
+    """Verify the HIAP review prompt renders its tool fragments."""
+    prompts = _load_llm_config().prompts
+
+    rendered_prompt = prompts.get_prompt("hiap_review")
+
+    assert "{{ include:" not in rendered_prompt
+    assert "<tools>" in rendered_prompt
+    assert "</tools>" in rendered_prompt
+    assert "`hiap_load_context`" in rendered_prompt
+    assert "`hiap_update_selection`" in rendered_prompt
+    assert "`hiap_generate_action_plan`" in rendered_prompt
+    assert "HIAP_CONTEXT_JSON" in rendered_prompt

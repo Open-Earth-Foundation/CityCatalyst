@@ -182,6 +182,7 @@ export async function readClimateAdvisorResponsePayload(
 export async function createClimateAdvisorThread(params: {
   userId: string;
   inventoryId?: string;
+  context?: Record<string, unknown>;
 }): Promise<ThreadCreateResponse> {
   const token = await issueClimateAdvisorUserToken({
     userId: params.userId,
@@ -195,6 +196,7 @@ export async function createClimateAdvisorThread(params: {
       user_id: params.userId,
       inventory_id: params.inventoryId,
       context: {
+        ...(params.context ?? {}),
         access_token: token.access_token,
         expires_in: token.expires_in,
         token_type: token.token_type,

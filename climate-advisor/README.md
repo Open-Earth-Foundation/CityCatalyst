@@ -298,7 +298,8 @@ and Stationary Energy prompt budgets. The environment is only for secrets such a
 Prompt paths are also configured in `llm_config.yaml`. The `prompts.default`
 entry drives the general Climate Advisor chat prompt, and
 `prompts.stationary_energy_review` drives active Stationary Energy draft review
-chat flows. Prompt files may include reusable fragments with
+chat flows. The `prompts.hiap_review` entry drives active HIAP review and
+action-planning chat flows. Prompt files may include reusable fragments with
 `{{ include: tools/example.md }}` directives; includes are resolved relative to
 the including prompt first and then against the configured prompt search roots.
 

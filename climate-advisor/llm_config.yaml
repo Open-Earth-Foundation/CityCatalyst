@@ -45,6 +45,9 @@ prompts:
   # Prompt for active Stationary Energy review chat flows
   stationary_energy_review: "prompts/stationary_energy_review.md"
 
+  # Prompt for active HIAP review and action-planning chat flows
+  hiap_review: "prompts/hiap/review.md"
+
 # API Configuration
 api:
   # OpenRouter configuration

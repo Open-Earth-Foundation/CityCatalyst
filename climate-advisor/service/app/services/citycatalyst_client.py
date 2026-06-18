@@ -448,7 +448,73 @@ class CityCatalystClient:
             json_data=request_payload,
             token=token,
         )
-    
+
+    async def load_hiap_context(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Load the bounded HIAP context through the CC internal capability route."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/hiap/load-context",
+            json_data=request_payload,
+            token=token,
+        )
+
+    async def update_hiap_selection(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Update selected HIAP actions through the CC internal capability route."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/hiap/update-selection",
+            json_data=request_payload,
+            token=token,
+        )
+
+    async def rerank_hiap_action(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Rerank one HIAP action through the CC internal capability route."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/hiap/rerank-action",
+            json_data=request_payload,
+            token=token,
+        )
+
+    async def generate_hiap_action_plan(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Start HIAP action plan generation through the CC internal capability route."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/hiap/generate-plan",
+            json_data=request_payload,
+            token=token,
+            request_timeout=self.datasource_timeout,
+        )
+
+    async def read_hiap_action_plan(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Read HIAP action plan data through the CC internal capability route."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/hiap/read-plan",
+            json_data=request_payload,
+            token=token,
+        )
+
     # Convenience methods for common CC API operations
     
     async def get_inventory(

@@ -16,11 +16,16 @@ from app.middleware import get_request_id
 from app.models.db.stationary_energy_draft import StationaryEnergyDraftRun
 from app.models.requests import MessageCreateRequest
 from app.services.agent_service import AgentService
+from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
 from app.services.message_service import MessageService
 from app.services.stationary_energy.stationary_energy_draft_repository import (
     StationaryEnergyDraftRepository,
 )
 from app.services.thread_service import ThreadService
+from app.utils.hiap_context import (
+    extract_hiap_context,
+    should_enable_hiap_web_grounding,
+)
 from app.utils.sse import format_sse
 from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
 from app.utils.tool_handler import persist_assistant_message
@@ -59,11 +64,14 @@ class StreamingHandler:
         self.request_options = request_options
         self.thread_identifier = str(thread_id)
         self.stationary_energy_draft_run_id: Optional[str] = None
+        self.hiap_context: Optional[dict[str, Any]] = None
+        self.hiap_web_grounding = False
         self.agent_model: Optional[str] = None
 
         # Response state
         self.assistant_tokens: List[str] = []
         self.tool_invocations: List[dict] = []
+        self.web_citations: List[dict] = []
         self.token_index = 0
         self.history_saved = False
         self.streaming_error = False
@@ -115,6 +123,24 @@ class StreamingHandler:
                     )
                     or await self._load_thread_stationary_energy_draft_run_id()
                 )
+            if not self.hiap_context:
+                self.hiap_context = (
+                    extract_hiap_context(
+                        payload.context,
+                        payload.options,
+                        self.request_context,
+                        self.request_options,
+                    )
+                    or await self._load_thread_hiap_context()
+                )
+            self.hiap_web_grounding = bool(
+                self.hiap_context
+                and should_enable_hiap_web_grounding(
+                    message=payload.content,
+                    context=payload.context if isinstance(payload.context, dict) else None,
+                    options=payload.options if isinstance(payload.options, dict) else None,
+                )
+            )
 
             # Create agent service
             self.agent_service = AgentService(
@@ -124,6 +150,8 @@ class StreamingHandler:
                 inventory_id=self.inventory_id,
                 session_factory=self.session_factory,
                 stationary_energy_draft_run_id=self.stationary_energy_draft_run_id,
+                hiap_context=self.hiap_context,
+                hiap_web_grounding=self.hiap_web_grounding,
             )
 
             # Get model override from options
@@ -134,12 +162,15 @@ class StreamingHandler:
                 model_override
                 or self.agent_service.preferred_model_for_context(
                     stationary_energy_draft_run_id=self.stationary_energy_draft_run_id,
+                    hiap_context=self.hiap_context,
                 )
             )
             logger.info(
-                "Selected chat model=%s stationary_energy_context=%s thread_id=%s",
+                "Selected chat model=%s stationary_energy_context=%s hiap_context=%s hiap_web_grounding=%s thread_id=%s",
                 self.agent_model,
                 bool(self.stationary_energy_draft_run_id),
+                bool(self.hiap_context),
+                self.hiap_web_grounding,
                 self.thread_id,
             )
 
@@ -218,6 +249,17 @@ class StreamingHandler:
                     {"role": "user", "content": payload.content}
                 )
 
+        hiap_context = await self._load_hiap_context_message(payload)
+        if hiap_context:
+            conversation_history = [hiap_context, *conversation_history]
+            if not self._history_contains_current_user_message(
+                conversation_history,
+                payload.content,
+            ):
+                conversation_history.append(
+                    {"role": "user", "content": payload.content}
+                )
+
         if conversation_history:
             logger.info(
                 "Loaded and pruned conversation history: %d messages for thread_id=%s",
@@ -231,6 +273,85 @@ class StreamingHandler:
             )
 
         return conversation_history
+
+    async def _load_hiap_context_message(
+        self,
+        payload: MessageCreateRequest,
+    ) -> Optional[Dict[str, str]]:
+        """Load the current HIAP snapshot for chat grounding."""
+        hiap_context = (
+            extract_hiap_context(
+                payload.context,
+                payload.options,
+                self.request_context,
+                self.request_options,
+            )
+            or self.hiap_context
+            or await self._load_thread_hiap_context()
+        )
+        if not hiap_context:
+            return None
+
+        self.hiap_context = hiap_context
+        request_payload = {
+            "user_id": self.user_id,
+            "city_id": hiap_context["city_id"],
+            "inventory_id": hiap_context["inventory_id"],
+            "lng": hiap_context.get("lng") or "en",
+        }
+
+        try:
+            client = CityCatalystClient()
+            context_payload = await client.load_hiap_context(
+                request_payload=request_payload,
+                token=self.cc_access_token,
+            )
+        except CityCatalystClientError as exc:
+            logger.warning(
+                "Failed to load HIAP context city_id=%s inventory_id=%s: %s",
+                hiap_context.get("city_id"),
+                hiap_context.get("inventory_id"),
+                exc,
+            )
+            context_payload = {
+                "context_unavailable": True,
+                "error": str(exc),
+                "scope": request_payload,
+            }
+        except Exception as exc:
+            logger.warning(
+                "Unexpected HIAP context load failure city_id=%s inventory_id=%s: %s",
+                hiap_context.get("city_id"),
+                hiap_context.get("inventory_id"),
+                exc,
+            )
+            context_payload = {
+                "context_unavailable": True,
+                "error": "HIAP context unavailable",
+                "scope": request_payload,
+            }
+
+        return self._format_hiap_context_message(context_payload)
+
+    async def _load_thread_hiap_context(self) -> Optional[dict[str, Any]]:
+        """Load HIAP context persisted on the current chat thread."""
+        if not self.session_factory:
+            return None
+
+        try:
+            async with self.session_factory() as session:
+                thread_service = ThreadService(session)
+                thread = await thread_service.get_thread(self.thread_id)
+                if thread is None or thread.user_id != self.user_id:
+                    return None
+                return extract_hiap_context(thread.context)
+        except Exception as exc:
+            logger.warning(
+                "Failed to load thread HIAP context thread_id=%s: %s",
+                self.thread_id,
+                exc,
+            )
+            return None
 
     async def _load_stationary_energy_context_message(
         self,
@@ -693,6 +814,28 @@ class StreamingHandler:
             ),
         }
 
+    def _format_hiap_context_message(
+        self,
+        context_payload: Dict[str, Any],
+    ) -> Dict[str, str]:
+        """Format the current HIAP context as a system message."""
+        payload = {
+            **context_payload,
+            "openrouter_web_grounding": self.hiap_web_grounding,
+        }
+        return {
+            "role": "system",
+            "content": (
+                "HIAP_CONTEXT_JSON\n"
+                f"{json.dumps(payload, ensure_ascii=False, default=str)}\n"
+                "Use this authoritative current CityCatalyst HIAP snapshot to explain the screen the user is viewing. "
+                "Treat city, inventory, mitigation, adaptation, selectedActions, rankedActions, unrankedActions, "
+                "and action_plans as product state. Use HIAP tools before changing selections, generating plans, "
+                "or reading completed plans. OpenRouter web grounding, when true, is available as model grounding "
+                "for external current evidence and citations; it is not a product-state source."
+            ),
+        }
+
     def _agent_instruction_text(self, agent: Any | None = None) -> str:
         """Return the active agent instruction text used for token accounting."""
         instructions = getattr(agent, "instructions", None)
@@ -779,9 +922,21 @@ class StreamingHandler:
             or self.stationary_energy_draft_run_id
         )
         has_stationary_energy_context = bool(draft_run_id)
+        hiap_context = (
+            extract_hiap_context(
+                payload.context,
+                payload.options,
+                self.request_context,
+                self.request_options,
+            )
+            or self.hiap_context
+        )
+        has_hiap_context = bool(hiap_context)
         workflow_name = (
             "Climate Advisor Stationary Energy Context Chat"
             if has_stationary_energy_context
+            else "Climate Advisor HIAP Context Chat"
+            if has_hiap_context
             else "Climate Advisor Conversation"
         )
         trace_metadata: dict[str, Any] = {
@@ -789,17 +944,21 @@ class StreamingHandler:
             "workflow": (
                 "stationary_energy_context_chat"
                 if has_stationary_energy_context
+                else "hiap_context_chat"
+                if has_hiap_context
                 else "climate_advisor_conversation"
             ),
             "trace_category": (
                 "ca_agentic_context_chat"
-                if has_stationary_energy_context
+                if has_stationary_energy_context or has_hiap_context
                 else "normal_conversation"
             ),
-            "ca_agentic_flow": has_stationary_energy_context,
+            "ca_agentic_flow": has_stationary_energy_context or has_hiap_context,
             "context_mode": (
                 "stationary_energy_draft"
                 if has_stationary_energy_context
+                else "hiap"
+                if has_hiap_context
                 else "general"
             ),
             "request_id": req_id,
@@ -809,6 +968,13 @@ class StreamingHandler:
         if has_stationary_energy_context:
             trace_metadata["feature_flag"] = "STATIONARY_ENERGY_AGENTIC"
             trace_metadata["stationary_energy_draft_run_id"] = str(draft_run_id)
+        if has_hiap_context and hiap_context:
+            trace_metadata["feature_flag"] = "HIAP_AGENTIC"
+            trace_metadata["hiap_city_id"] = str(hiap_context.get("city_id"))
+            trace_metadata["hiap_inventory_id"] = str(
+                hiap_context.get("inventory_id")
+            )
+            trace_metadata["hiap_web_grounding"] = str(self.hiap_web_grounding)
 
         return RunConfig(
             workflow_name=workflow_name,
@@ -868,6 +1034,9 @@ class StreamingHandler:
             return
 
         response_type = getattr(response_event, "type", "")
+        citations = self._extract_url_citations(response_event)
+        if citations:
+            self._record_web_citations(citations)
 
         if response_type in {"response.output_text.delta", "response.refusal.delta"}:
             content = getattr(response_event, "delta", "")
@@ -1085,6 +1254,10 @@ class StreamingHandler:
             "thread_id": self.thread_identifier,
             "tools_used": self.tool_invocations or None,
         }
+        if self.hiap_context:
+            event_data["hiap_web_grounding"] = self.hiap_web_grounding
+        if self.web_citations:
+            event_data["web_citations"] = self.web_citations
 
         if not ok:
             event_data["error"] = "Streaming error occurred"
@@ -1105,3 +1278,106 @@ class StreamingHandler:
             tool_invocations=self.tool_invocations or None,
         )
         return self.history_saved
+
+    def _record_web_citations(self, citations: List[dict]) -> None:
+        """Persist OpenRouter url_citation annotations when surfaced by the SDK."""
+        known = {
+            (citation.get("url"), citation.get("title"))
+            for citation in self.web_citations
+        }
+        for citation in citations:
+            key = (citation.get("url"), citation.get("title"))
+            if key in known:
+                continue
+            known.add(key)
+            self.web_citations.append(citation)
+
+        invocation = next(
+            (
+                item
+                for item in self.tool_invocations
+                if item.get("name") == "openrouter_web_grounding"
+            ),
+            None,
+        )
+        if invocation is None:
+            invocation = {
+                "id": "openrouter_web_grounding",
+                "name": "openrouter_web_grounding",
+                "arguments": {"plugin": "web"},
+                "status": "success",
+            }
+            self.tool_invocations.append(invocation)
+        invocation["result_json"] = {"citations": self.web_citations}
+        invocation["result"] = json.dumps(
+            invocation["result_json"],
+            ensure_ascii=False,
+            default=str,
+        )
+
+    def _extract_url_citations(
+        self,
+        value: Any,
+        *,
+        depth: int = 0,
+        seen: Optional[set[int]] = None,
+    ) -> List[dict]:
+        """Recursively extract OpenRouter url_citation annotations from SDK events."""
+        if depth > 8:
+            return []
+        if seen is None:
+            seen = set()
+        if id(value) in seen:
+            return []
+        seen.add(id(value))
+
+        if isinstance(value, dict):
+            citations: List[dict] = []
+            citation = value.get("url_citation")
+            if value.get("type") == "url_citation" and isinstance(citation, dict):
+                citations.append(
+                    {
+                        "url": citation.get("url"),
+                        "title": citation.get("title"),
+                        "content": citation.get("content"),
+                        "start_index": citation.get("start_index"),
+                        "end_index": citation.get("end_index"),
+                    }
+                )
+            for child in value.values():
+                citations.extend(
+                    self._extract_url_citations(child, depth=depth + 1, seen=seen)
+                )
+            return citations
+
+        if isinstance(value, list):
+            citations = []
+            for child in value:
+                citations.extend(
+                    self._extract_url_citations(child, depth=depth + 1, seen=seen)
+                )
+            return citations
+
+        if isinstance(value, (str, bytes, int, float, bool)) or value is None:
+            return []
+
+        model_dump = getattr(value, "model_dump", None)
+        if callable(model_dump):
+            try:
+                return self._extract_url_citations(
+                    model_dump(mode="json"),
+                    depth=depth + 1,
+                    seen=seen,
+                )
+            except Exception:
+                pass
+
+        value_dict = getattr(value, "__dict__", None)
+        if isinstance(value_dict, dict):
+            return self._extract_url_citations(
+                value_dict,
+                depth=depth + 1,
+                seen=seen,
+            )
+
+        return []

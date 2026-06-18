@@ -158,6 +158,7 @@ class PromptsConfig(BaseModel):
     data_analysis: Optional[str] = None
     stationary_energy_draft_generation: Optional[str] = None
     stationary_energy_review: Optional[str] = None
+    hiap_review: Optional[str] = None
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""

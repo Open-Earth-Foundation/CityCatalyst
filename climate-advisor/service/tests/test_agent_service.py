@@ -571,6 +571,53 @@ class InventoryToolIntegrationTests(unittest.TestCase):
                 instructions,
             )
 
+    @patch("app.services.agent_service.get_settings")
+    def test_hiap_tools_and_prompt_registered_with_hiap_context(
+        self,
+        mock_get_settings: MagicMock,
+    ) -> None:
+        """Test HIAP context registers HIAP tools, prompt text, and web grounding."""
+        mock_settings = build_mock_settings(prompt="Base prompt")
+        mock_settings.llm.prompts.get_prompt.side_effect = lambda prompt_type: {
+            "default": "Base prompt",
+            "hiap_review": "HIAP review prompt with tools section",
+        }[prompt_type]
+        mock_get_settings.return_value = mock_settings
+
+        with patch("app.services.agent_service.AsyncOpenAI"), patch(
+            "app.services.agent_service.Agent"
+        ) as mock_agent_class, patch("app.tools.hiap_tools.CityCatalystClient"):
+            service = AgentService(
+                cc_access_token="jwt-token",
+                cc_user_id="user-123",
+                hiap_context={
+                    "module": "hiap",
+                    "city_id": "city-123",
+                    "inventory_id": "inventory-123",
+                    "lng": "en",
+                },
+                hiap_web_grounding=True,
+            )
+
+            asyncio.run(service.create_agent())
+
+            tool_names = [
+                getattr(tool, "name", "")
+                for tool in mock_agent_class.call_args.kwargs["tools"]
+            ]
+            self.assertIn("hiap_load_context", tool_names)
+            self.assertIn("hiap_update_selection", tool_names)
+            self.assertIn("hiap_generate_action_plan", tool_names)
+            mock_settings.llm.prompts.get_prompt.assert_any_call("hiap_review")
+            self.assertIn(
+                "HIAP review prompt with tools section",
+                mock_agent_class.call_args.kwargs["instructions"],
+            )
+            self.assertEqual(
+                mock_agent_class.call_args.kwargs["model_settings"].extra_body,
+                {"plugins": [{"id": "web", "engine": "exa", "max_results": 5}]},
+            )
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

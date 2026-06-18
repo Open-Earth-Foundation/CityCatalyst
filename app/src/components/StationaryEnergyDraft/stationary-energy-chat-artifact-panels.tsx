@@ -179,7 +179,6 @@ function SuggestedQuestions(props: {
       zIndex={2}
       px={{ base: 3, md: 6 }}
       py={2}
-      bg="transparent"
       pointerEvents="none"
     >
       <Box w="full" maxW="900px" mx="auto" pointerEvents="auto">
@@ -333,7 +332,6 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
   return (
     <Box
       position="relative"
-      bg="transparent"
       overflow="hidden"
       h={{ base: "min(78dvh, 820px)", xl: "full" }}
       maxH={{ base: "78dvh", xl: "none" }}

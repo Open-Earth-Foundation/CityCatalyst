@@ -55,6 +55,7 @@ import {
   pendingDecisionReviewProposals,
   resolvedProposalIdsFromReview,
   type ArtifactRow,
+  type DecisionOption,
   type DecisionReviewContext,
   type DraftCounts,
   type DraftStage,
@@ -274,7 +275,9 @@ function normalizeToolChoiceSummary(
   };
 }
 
-function decisionOptionsForToolChoice(context: DecisionReviewContext) {
+function decisionOptionsForToolChoice(
+  context: DecisionReviewContext,
+): DecisionOption[] {
   return [
     ...(context.recommendedOption ? [context.recommendedOption] : []),
     ...context.alternativeOptions,
@@ -285,7 +288,7 @@ function decisionOptionsForToolChoice(context: DecisionReviewContext) {
 function optionForToolChoice(
   choice: StationaryEnergyToolChoiceSummary,
   context: DecisionReviewContext,
-) {
+): DecisionOption | null {
   if (choice.action === "leave_draft") {
     return context.leaveDraftOption;
   }

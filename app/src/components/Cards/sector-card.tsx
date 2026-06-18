@@ -28,7 +28,7 @@ import {
   AccordionItemTrigger,
   AccordionRoot,
 } from "@/components/ui/accordion";
-import { SegmentedProgress } from "../SegmentedProgress";
+import { SegmentedProgress } from "@/components/SegmentedProgress";
 
 export function SectorCard({
   sectorProgress,

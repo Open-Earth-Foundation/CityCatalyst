@@ -44,13 +44,7 @@ function useStationaryEnergyAgenticTranslation() {
 
 const agentMarkdownComponents: Components = {
   p: ({ children }) => (
-    <Text
-      mb={3}
-      lineHeight="20px"
-      fontSize="body.md"
-      color="inherit"
-      _last={{ mb: 0 }}
-    >
+    <Text mb={3} lineHeight="20px" fontSize="body.md" _last={{ mb: 0 }}>
       {children}
     </Text>
   ),
@@ -62,7 +56,6 @@ const agentMarkdownComponents: Components = {
       mb={3}
       mt={2}
       lineHeight="28px"
-      color="inherit"
     >
       {children}
     </Text>
@@ -75,7 +68,6 @@ const agentMarkdownComponents: Components = {
       mb={3}
       mt={2}
       lineHeight="24px"
-      color="inherit"
     >
       {children}
     </Text>
@@ -88,39 +80,32 @@ const agentMarkdownComponents: Components = {
       mb={2}
       mt={2}
       lineHeight="20px"
-      color="inherit"
     >
       {children}
     </Text>
   ),
   ul: ({ children }) => (
-    <Box as="ul" pl={5} mb={3} color="inherit" css={{ listStyleType: "disc" }}>
+    <Box as="ul" pl={5} mb={3} css={{ listStyleType: "disc" }}>
       {children}
     </Box>
   ),
   ol: ({ children }) => (
-    <Box
-      as="ol"
-      pl={5}
-      mb={3}
-      color="inherit"
-      css={{ listStyleType: "decimal" }}
-    >
+    <Box as="ol" pl={5} mb={3} css={{ listStyleType: "decimal" }}>
       {children}
     </Box>
   ),
   li: ({ children }) => (
-    <Box as="li" lineHeight="20px" mb={1} color="inherit">
+    <Box as="li" lineHeight="20px" mb={1}>
       {children}
     </Box>
   ),
   strong: ({ children }) => (
-    <Text as="strong" fontWeight="bold" display="inline" color="inherit">
+    <Text as="strong" fontWeight="bold" display="inline">
       {children}
     </Text>
   ),
   em: ({ children }) => (
-    <Text as="em" fontStyle="italic" display="inline" color="inherit">
+    <Text as="em" fontStyle="italic" display="inline">
       {children}
     </Text>
   ),
@@ -155,7 +140,6 @@ const agentMarkdownComponents: Components = {
       px={1}
       borderRadius="sm"
       fontSize="label.md"
-      color="inherit"
     >
       {children}
     </Text>
@@ -180,7 +164,6 @@ const agentMarkdownComponents: Components = {
         w="full"
         fontSize="label.md"
         css={{ borderCollapse: "collapse" }}
-        color="inherit"
       >
         {children}
       </Box>
@@ -208,7 +191,6 @@ const agentMarkdownComponents: Components = {
       py={2}
       fontWeight="semibold"
       textAlign="left"
-      color="inherit"
       css={{ border: "1px solid" }}
       borderColor="border.overlay"
     >
@@ -220,7 +202,6 @@ const agentMarkdownComponents: Components = {
       as="td"
       px={3}
       py={2}
-      color="inherit"
       css={{ border: "1px solid" }}
       borderColor="border.overlay"
     >

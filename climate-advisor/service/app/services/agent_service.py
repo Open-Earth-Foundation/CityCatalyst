@@ -9,20 +9,22 @@ management.
 from __future__ import annotations
 
 import logging
-import os
+from urllib.parse import urlparse
 from typing import Any, Dict, Optional, Union
 from uuid import UUID
 
 import openai
-from agents import Agent
+from agents import Agent, ModelSettings, OpenAIChatCompletionsModel
 from openai import AsyncOpenAI
 
-from ..config import get_settings
-from ..tools import (
+from app.config import get_settings
+from app.services.openrouter_client import build_openrouter_client_options
+from app.tools import (
     CCInventoryTool,
     build_cc_inventory_tools,
     climate_vector_search,
 )
+from app.utils.agent_tracing import configure_agents_tracing
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +51,7 @@ class AgentService:
             cc_user_id: User ID (for token refresh and inventory queries)
         """
         self.settings = get_settings()
+        configure_agents_tracing(self.settings)
         
         # Store CC credentials for tools to use
         self.cc_access_token = cc_access_token
@@ -71,53 +74,74 @@ class AgentService:
         # Load system prompt
         self.system_prompt = self.settings.llm.prompts.get_prompt("default")
 
-        # Get default model and temperature from settings
-        self.default_model = self.settings.llm.models.get("default", "openai/gpt-4o")
-        self.default_temperature = self.settings.llm.generation.defaults.temperature
+        orchestrator_model = self.settings.llm.models.orchestrator
+        agentic_flow_model = self.settings.llm.models.agentic_flow or orchestrator_model
+        self.raw_default_model = orchestrator_model.name
+        self.raw_agentic_flow_model = agentic_flow_model.name
+        self.default_model = self._resolve_chat_model_name(self.raw_default_model)
+        self.agentic_flow_model = self._resolve_chat_model_name(
+            self.raw_agentic_flow_model
+        )
+        self.default_temperature = orchestrator_model.temperature
+        self.agentic_flow_temperature = agentic_flow_model.temperature
 
         logger.info(
-            "AgentService initialized with model=%s, temperature=%s, cc_token=%s",
+            "AgentService initialized with raw_default_model=%s, default_model=%s, raw_agentic_flow_model=%s, agentic_flow_model=%s, base_url=%s, temperature=%s, agentic_flow_temperature=%s, cc_token=%s",
+            self.raw_default_model,
             self.default_model,
+            self.raw_agentic_flow_model,
+            self.agentic_flow_model,
+            self._chat_base_url,
             self.default_temperature,
+            self.agentic_flow_temperature,
             "present" if cc_access_token else "absent",
         )
+
+    def preferred_model_for_context(
+        self,
+        *,
+        stationary_energy_draft_run_id: Optional[str] = None,
+    ) -> str:
+        """Choose the default chat model for the current workflow context."""
+        if stationary_energy_draft_run_id:
+            return self.agentic_flow_model
+        return self.default_model
+
+    def _chat_base_hostname(self) -> str:
+        """Return the hostname for the active chat-completions base URL."""
+        if not self._chat_base_url:
+            return ""
+        return (urlparse(self._chat_base_url).hostname or "").lower()
+
+    def _uses_openai_model_names(self) -> bool:
+        """Return whether the active chat provider expects raw OpenAI model IDs."""
+        return self._chat_base_hostname() == "api.openai.com"
+
+    def _resolve_chat_model_name(self, model: str) -> str:
+        """Normalize provider-prefixed model IDs for the active chat provider."""
+        if self._uses_openai_model_names() and model.startswith("openai/"):
+            return model.split("/", 1)[1]
+        return model
+
+    def _temperature_for_model(self, *, raw_model: str, resolved_model: str) -> float:
+        """Return the configured temperature for the selected chat model."""
+        if (
+            raw_model == self.raw_agentic_flow_model
+            or resolved_model == self.agentic_flow_model
+        ):
+            return self.agentic_flow_temperature
+        return self.default_temperature
     
     def _create_openrouter_client(self) -> AsyncOpenAI:
-        """Create an AsyncOpenAI client configured for OpenRouter.
-        
-        Returns:
-            Configured AsyncOpenAI client
-        """
-        api_key = self.settings.openrouter_api_key
-        if not api_key:
-            raise ValueError("OpenRouter API key (OPENROUTER_API_KEY) must be set")
-        
-        base_url = self.settings.openrouter_base_url or "https://openrouter.ai/api/v1"
-        
-        # Get OpenRouter metadata from environment or settings
-        referer = os.getenv("OPENROUTER_REFERER") or "https://citycatalyst.ai"
-        title = os.getenv("OPENROUTER_TITLE") or "CityCatalyst Climate Advisor"
-        
-        # Configure headers for OpenRouter
-        default_headers = {
-            "HTTP-Referer": referer,
-            "X-Title": title,
-            "Accept": "application/json",
-        }
-        
-        # Get timeout from settings
-        timeout_ms = self.settings.llm.api.openrouter.timeout_ms or 30000
-        timeout_seconds = timeout_ms / 1000
-        
-        client = AsyncOpenAI(
-            api_key=api_key,
-            base_url=base_url.rstrip("/"),
-            timeout=timeout_seconds,
-            default_headers=default_headers,
-            max_retries=2,
+        """Create an AsyncOpenAI client configured from the shared OpenRouter helper."""
+
+        client_options = build_openrouter_client_options(
+            self.settings,
+            missing_api_key_message="OpenRouter API key (OPENROUTER_API_KEY) must be set",
         )
-        
-        logger.info("OpenRouter client created with base_url=%s", base_url)
+        self._chat_base_url = client_options.base_url
+        client = AsyncOpenAI(**client_options.kwargs)
+        logger.info("OpenRouter client created with base_url=%s", self._chat_base_url)
         return client
 
     async def _build_inventory_prompt(self, *, thread_identifier: str) -> Optional[str]:
@@ -280,7 +304,7 @@ class AgentService:
     ) -> Agent:
         """Create an AI agent with climate tools.
         
-        Temperature is configured globally in llm_config.yaml and applies to all requests.
+        Temperature is selected from the configured orchestrator or agentic-flow role.
         The Agents SDK uses the OpenAI client configuration set during initialization.
         
         Args:
@@ -290,7 +314,12 @@ class AgentService:
         Returns:
             Configured Agent instance
         """
-        agent_model = model or self.default_model
+        raw_agent_model = model or self.raw_default_model
+        agent_model = self._resolve_chat_model_name(raw_agent_model)
+        agent_temperature = self._temperature_for_model(
+            raw_model=raw_agent_model,
+            resolved_model=agent_model,
+        )
         agent_instructions = instructions or self.system_prompt
         inventory_prompt: Optional[str] = None
         tools = []
@@ -330,14 +359,22 @@ class AgentService:
         agent = Agent(
             name="Climate Advisor",
             instructions=agent_instructions,
-            model=agent_model,
+            model=OpenAIChatCompletionsModel(
+                model=agent_model,
+                openai_client=self.client,
+            ),
+            model_settings=ModelSettings(
+                temperature=agent_temperature,
+                include_usage=True,
+            ),
             tools=tools,
         )
         
         logger.info(
-            "Created agent with model=%s, temperature=%s (from config), tools=%s",
+            "Created agent with raw_model=%s, resolved_model=%s, temperature=%s (from config), tools=%s",
+            raw_agent_model,
             agent_model,
-            self.default_temperature,
+            agent_temperature,
             [tool.name for tool in agent.tools] if hasattr(agent, 'tools') else []
         )
         

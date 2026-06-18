@@ -18,9 +18,9 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from ..config import get_settings
-from ..models.db.message import Message, MessageRole
-from ..services.message_service import MessageService
+from app.config import get_settings
+from app.models.db.message import Message, MessageRole
+from app.services.message_service import MessageService
 
 logger = logging.getLogger(__name__)
 

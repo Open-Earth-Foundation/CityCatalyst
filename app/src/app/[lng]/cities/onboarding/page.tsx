@@ -5,7 +5,7 @@ import { useTranslation } from "@/i18n/client";
 import { Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import NextLink from "next/link";
-import { MdArrowForward } from "react-icons/md";
+import { MdArrowForward, MdUpload } from "react-icons/md";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/services/api";
@@ -35,6 +35,11 @@ export default function Onboarding(props: {
   }, [searchParams, acceptOrgInvite]);
 
   const steps = [1, 2, 3, 4];
+  const projectId = searchParams.get("project");
+  const setupHref = projectId ? `setup?project=${projectId}` : "setup";
+  const uploadSetupHref = projectId
+    ? `setup?project=${projectId}&mode=upload`
+    : "setup?mode=upload";
 
   return (
     <>
@@ -105,6 +110,7 @@ export default function Onboarding(props: {
           justifyContent="end"
           py="32px"
           px="175px"
+          gap="16px"
         >
           <Button
             w="auto"
@@ -112,7 +118,23 @@ export default function Onboarding(props: {
             py="16px"
             px="24px"
             h="64px"
-            onClick={() => router.push("setup")}
+            variant="outline"
+            onClick={() => router.push(uploadSetupHref)}
+            data-testid="upload-inventory-button"
+          >
+            <MdUpload height="24px" width="24px" />
+            <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
+              {t("upload-existing-inventory")}
+            </Text>
+          </Button>
+          <Button
+            w="auto"
+            gap="8px"
+            py="16px"
+            px="24px"
+            h="64px"
+            onClick={() => router.push(setupHref)}
+            data-testid="start-inventory-button"
           >
             <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
               {t("welcome-CTA")}

@@ -55,18 +55,21 @@ export default function ChatPopover({
     setHasAcceptedDisclaimer(disclaimerAccepted === "true");
   }, []);
 
-  const onOpenChange = (e: OpenChangeDetails) => {
-    if (!e.open) {
-      onClose();
-    } else {
-      // Check if user needs to see disclaimer first
-      if (!hasAcceptedDisclaimer) {
-        setShowDisclaimer(true);
+  const onOpenChange = useCallback(
+    (e: OpenChangeDetails) => {
+      if (!e.open) {
+        onClose();
       } else {
-        onOpen();
+        // Check if user needs to see disclaimer first
+        if (!hasAcceptedDisclaimer) {
+          setShowDisclaimer(true);
+        } else {
+          onOpen();
+        }
       }
-    }
-  };
+    },
+    [hasAcceptedDisclaimer, onClose, onOpen],
+  );
 
   const handleDisclaimerAccept = () => {
     localStorage.setItem("clima-ai-disclaimer-accepted", "true");
@@ -107,9 +110,12 @@ export default function ChatPopover({
   const dynamicBottomPosition = useAIButtonPosition();
 
   const pathname = usePathname();
+  const isStationaryEnergyAgenticRoute = pathname.includes(
+    "/draft/stationary-energy",
+  );
 
-  // Hide the ChatPopover on auth pages
-  if (pathname.startsWith(`/${lng}/auth`)) {
+  // Hide the global launcher where Clima is embedded as the primary workflow.
+  if (pathname.startsWith(`/${lng}/auth`) || isStationaryEnergyAgenticRoute) {
     return null;
   }
 

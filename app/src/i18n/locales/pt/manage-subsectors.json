@@ -120,7 +120,7 @@
   "add-data-to-inventory": "Adicione dados ao inventário",
   "completion-percent": "{{progress}}% concluído",
   "data-connected-percent": "{{progress}}% de dados de terceiros conectados",
-  "data-added-percent": "{{progress}}% de dados adicionados",
+  "manually-added": "Dados adicionados manualmente",
   "check-data-heading": "Explore Conjuntos de Dados Relevantes para Integrar ao Seu Inventário",
   "check-data-details": "Revise e integre automaticamente dados relevantes para o inventário de GEE da sua cidade.",
   "no-data-sources": "Não há Fontes Externas de Dados Disponíveis",

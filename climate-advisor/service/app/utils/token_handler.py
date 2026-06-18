@@ -8,10 +8,10 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from ..services.thread_service import ThreadService
+from app.services.thread_service import ThreadService
 
 if TYPE_CHECKING:
-    from ..services.agent_service import AgentService
+    from app.services.agent_service import AgentService
 
 logger = logging.getLogger(__name__)
 

@@ -2,7 +2,7 @@
 
 Climate Advisor (CA) is a standalone FastAPI microservice that powers the conversational experience for CityCatalyst (CC). The service lives under `climate-advisor/service` and exposes versioned APIs under `/v1/*`.
 
-- **Agentic AI**: Uses OpenAI's Agents SDK with OpenRouter for flexible LLM routing
+- **Agentic AI**: Uses OpenAI's Agents SDK with an OpenAI-compatible chat client; OpenRouter is the default router and direct OpenAI chat endpoints are also supported
 - **Persistent Threads & Messages**: PostgreSQL-backed conversation history
 - **Vector Search**: Semantic search over climate knowledge base using pgvector
 - **Tool Integration**:
@@ -54,7 +54,7 @@ Climate Advisor (CA) is a standalone FastAPI microservice that powers the conver
                     ┌─────────────┼──────────────┐
                     │             │              │
                     ▼             ▼              ▼
-              PostgreSQL    OpenRouter API  CityCatalyst
+              PostgreSQL    Chat Provider   CityCatalyst
               (History)     (LLM Routing)   (Inventory)
 ```
 
@@ -93,7 +93,7 @@ Content-Type: application/json
 
 - ThreadService creates a UUID-based thread
 - Stores thread with user_id, inventory_id, and context (JSONB)
-- Returns thread_id for client use
+- Returns thread_id for client use on later `/v1/messages` calls
 
 ### 2. Send Message & Stream Response
 
@@ -112,10 +112,12 @@ Content-Type: application/json
     "cc_access_token": "jwt_token_from_citycatalyst"
   },
   "options": {
-    "model": "openai/gpt-4o"  # Optional model override
+    "model": "openai/gpt-5.4-mini"  # Optional model override; normalized automatically for direct OpenAI routing
   }
 }
 ```
+
+If `thread_id` is omitted, Climate Advisor creates a new thread. If `thread_id` is supplied, it must already exist and belong to the requesting user.
 
 **Server Response (SSE Stream):**
 
@@ -135,7 +137,7 @@ data: {}
 
 **Processing Pipeline:**
 
-1. **Thread Resolution**: If no thread_id provided, creates new thread with context
+1. **Thread Resolution**: If no thread_id is provided, creates a new thread with context. If thread_id is provided, validates that the thread already exists and belongs to the user.
 2. **Token Management**: Loads CC access token from payload context or thread context
 3. **Message Persistence**: Stores user message to database
 4. **Agent Execution**:
@@ -288,7 +290,10 @@ uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --rel
 
 ### LLM Configuration
 
-All LLM-related settings are centralized in (`llm_config.yaml`)
+All non-secret LLM settings are centralized in (`llm_config.yaml`), including the
+orchestrator and agentic-flow model settings, provider base URLs, retry/timeouts,
+and Stationary Energy prompt budgets. The environment is only for secrets such as
+`OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`.
 
 ### Environment Variables
 
@@ -482,9 +487,11 @@ Content-Type: application/json
   "content": "What are climate risks?",
   "thread_id": "550e8400-e29b-41d4-a716-446655440000",
   "inventory_id": "inv-456",
-  "options": { "model": "openai/gpt-4o" }
+  "options": { "model": "openai/gpt-5.4-mini" }
 }
 ```
+
+When calling `/v1/messages` directly, create the thread first via `/v1/threads` or omit `thread_id` and let the service start a new conversation.
 
 **Response (200, text/event-stream):**
 
@@ -552,7 +559,7 @@ uv run --directory service pytest tests/test_e2e_conversation.py -v
 ### Prompt Flow Smoke Test
 
 ```bash
-uv run python service/tests/run_ca_e2e.py
+uv run --directory service python -m scripts.run_ca_e2e
 ```
 
 ## Docker Deployment (Local Testing)

@@ -60,6 +60,7 @@ export default function OnboardingSetup(props: {
 
   const params = useSearchParams();
   const projectId = params.get("project");
+  const isUploadMode = params.get("mode") === "upload";
 
   const EnterpriseMode = hasFeatureFlag(FeatureFlags.ENTERPRISE_MODE);
 
@@ -68,18 +69,29 @@ export default function OnboardingSetup(props: {
     { skip: !EnterpriseMode },
   );
 
+  const { data: userInfo } = api.useGetUserInfoQuery();
+
   useEffect(() => {
     if (projectsList && projectsList.length > 0) {
       setSelectedProject([projectsList[0].projectId]);
     }
   }, [projectsList]);
 
-  const steps = [
-    { title: t("setup-step") },
-    { title: t("set-inventory-details-step") },
-    { title: t("set-population-step") },
-    { title: t("set-third-party-data-step") },
-  ];
+  const steps = isUploadMode
+    ? [
+        { title: t("setup-step") },
+        { title: t("set-inventory-details-step") },
+        { title: t("set-population-step") },
+      ]
+    : [
+        { title: t("setup-step") },
+        { title: t("set-inventory-details-step") },
+        { title: t("set-population-step") },
+        { title: t("set-third-party-data-step") },
+      ];
+
+  const thirdPartyStepIndex = 3;
+  const inventoryConfirmStepIndex = isUploadMode ? 2 : thirdPartyStepIndex;
 
   const {
     value: activeStep,
@@ -219,17 +231,19 @@ export default function OnboardingSetup(props: {
             { errors, inventoryId: inventory.inventoryId },
             "Some third-party sources failed to connect during onboarding",
           );
-          makeWarningToast(
-            t("connect-data-sources-partial-failure-title"),
-            t("connect-data-sources-partial-failure-description"),
-          );
         }
       }
 
       setConfirming(false);
-      router.push(
-        `/${lng}/cities/${createdCityId}/GHGI/${inventory.inventoryId}`,
-      );
+      if (isUploadMode) {
+        router.push(
+          `/${lng}/cities/${createdCityId}/GHGI/onboarding/import?inventory=${inventory.inventoryId}`,
+        );
+      } else {
+        router.push(
+          `/${lng}/cities/${createdCityId}/GHGI/${inventory.inventoryId}`,
+        );
+      }
     } catch (err: any) {
       logger.error({ err }, "Onboarding - Failed to create inventory");
       makeErrorToast("failed-to-create-inventory", err.data?.error?.message);
@@ -311,10 +325,10 @@ export default function OnboardingSetup(props: {
 
   // Reset third-party choice when user enters that step
   useEffect(() => {
-    if (activeStep === 3) {
+    if (!isUploadMode && activeStep === thirdPartyStepIndex) {
       setThirdPartyDataChoice(null);
     }
-  }, [activeStep]);
+  }, [activeStep, isUploadMode]);
 
   const [selectedProject, setSelectedProject] = useState<string[]>([]);
   useEffect(() => {
@@ -371,9 +385,7 @@ export default function OnboardingSetup(props: {
           {activeStep === 1 && (
             <SetInventoryDetailsStep
               t={t}
-              register={
-                register as unknown as UseFormRegister<GHGIFormInputs>
-              }
+              register={register as unknown as UseFormRegister<GHGIFormInputs>}
               errors={errors as unknown as FieldErrors<GHGIFormInputs>}
               control={control as unknown as Control<GHGIFormInputs>}
               setValue={setValue}
@@ -393,9 +405,7 @@ export default function OnboardingSetup(props: {
           {activeStep === 2 && (
             <SetPopulationDataStep
               t={t}
-              register={
-                register as unknown as UseFormRegister<GHGIFormInputs>
-              }
+              register={register as unknown as UseFormRegister<GHGIFormInputs>}
               control={control as unknown as Control<GHGIFormInputs>}
               errors={errors as unknown as FieldErrors<GHGIFormInputs>}
               years={years}
@@ -404,9 +414,10 @@ export default function OnboardingSetup(props: {
               setValue={setValue}
               watch={watch}
               ocCityData={ocCityData}
+              numberFormat={userInfo?.numberFormat}
             />
           )}
-          {activeStep === 3 && (
+          {!isUploadMode && activeStep === thirdPartyStepIndex && (
             <ThirdPartyInventoryDataStep
               t={t}
               cityId={createdCityId!}
@@ -429,7 +440,6 @@ export default function OnboardingSetup(props: {
           left={0}
           pb={8}
           px={1}
-          zIndex={9999}
           transition="all"
           data-onboarding-bottom-bar
         >
@@ -438,40 +448,45 @@ export default function OnboardingSetup(props: {
               <ProgressSteps steps={steps} currentStep={activeStep} />
             </Box>
             <Box w="full" display="flex" justifyContent="end" px="135px">
-              {(activeStep === 0 || activeStep === 1 || activeStep === 2) && (
-                <Button
-                  w="auto"
-                  gap="8px"
-                  py="16px"
-                  px="24px"
-                  onClick={handleSubmit(onSubmit)}
-                  h="64px"
-                  type="submit"
-                  loading={isCreatingCity}
-                  disabled={
-                    isCreatingCity ||
-                    (activeStep === 0 && !ocCityData) ||
-                    (activeStep === 1 && !isInventoryDetailsValid) ||
-                    (activeStep === 2 && !isPopulationValid)
-                  }
-                >
-                  <Text
-                    fontFamily="button.md"
-                    fontWeight="600"
-                    letterSpacing="wider"
+              {(activeStep === 0 || activeStep === 1 || activeStep === 2) &&
+                activeStep !== inventoryConfirmStepIndex && (
+                  <Button
+                    w="auto"
+                    gap="8px"
+                    py="16px"
+                    px="24px"
+                    onClick={handleSubmit(onSubmit)}
+                    h="64px"
+                    type="submit"
+                    loading={isCreatingCity}
+                    disabled={
+                      isCreatingCity ||
+                      (activeStep === 0 && !ocCityData) ||
+                      (activeStep === 1 && !isInventoryDetailsValid) ||
+                      (activeStep === 2 && !isPopulationValid)
+                    }
                   >
-                    {t("continue")}
-                  </Text>
-                  <MdArrowForward height="24px" width="24px" />
-                </Button>
-              )}
-              {activeStep === 3 && (
+                    <Text
+                      fontFamily="button.md"
+                      fontWeight="600"
+                      letterSpacing="wider"
+                    >
+                      {t("continue")}
+                    </Text>
+                    <MdArrowForward height="24px" width="24px" />
+                  </Button>
+                )}
+              {activeStep === inventoryConfirmStepIndex && (
                 <Button
                   h={16}
                   w="auto"
                   px="24px"
                   loading={isConfirming}
-                  disabled={!thirdPartyDataChoice || isConfirming}
+                  disabled={
+                    isConfirming ||
+                    (!isUploadMode && !thirdPartyDataChoice) ||
+                    (isUploadMode && !isPopulationValid)
+                  }
                   onClick={onInventoryConfirm}
                 >
                   <Text

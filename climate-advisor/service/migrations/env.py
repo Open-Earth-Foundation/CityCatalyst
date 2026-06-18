@@ -38,6 +38,12 @@ from app.config.settings import get_settings
 # Import all models to ensure they're registered with Base.metadata
 from app.models.db.thread import Thread  # noqa: F401
 from app.models.db.message import Message  # noqa: F401
+from app.models.db.stationary_energy_draft import (  # noqa: F401
+    StationaryEnergyDraftProposal,
+    StationaryEnergyDraftRun,
+    StationaryEnergyDraftSourceCandidate,
+    StationaryEnergyReviewDecision,
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

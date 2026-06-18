@@ -52,7 +52,7 @@ const InviteSuccessModal: React.FC<InviteSuccessModalProps> = ({
       <VStack gap="24px" mt="100px" justify="flex-start">
         <DisplaySmall
           w="100%"
-          text={t("invitatin-accepted")}
+          text={t("invitation-accepted")}
           color="content.alternative"
         />
 

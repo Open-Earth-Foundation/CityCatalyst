@@ -10,7 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from pgvector.sqlalchemy import Vector
 
-from ...db import Base
+from app.db import Base
 
 
 class DocumentEmbedding(Base):

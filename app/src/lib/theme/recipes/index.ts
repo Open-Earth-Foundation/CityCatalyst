@@ -4,14 +4,10 @@
 
 import { defineRecipe } from "@chakra-ui/react";
 import { buttonRecipe } from "./button.recipe";
+import { linkRecipe } from "./link.recipe";
 import { separatorRecipe } from "./separator.recipe";
 
-// define a recipe for the link (anchor tag)
-export const linkRecipe = defineRecipe({
-  base: {
-    color: "brand.secondary",
-  },
-});
+export { linkRecipe, navLinkStyles } from "./link.recipe";
 
 // define a recipe for the tag
 export const tagRecipe = defineRecipe({

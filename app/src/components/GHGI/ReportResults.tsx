@@ -44,14 +44,11 @@ import { MdBarChart, MdTableChart } from "react-icons/md";
 import EmissionBySectorTableSection from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionBySectorTable";
 import EmissionBySectorChart from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionBySectorChart";
 import { EmissionsForecastSection } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/EmissionsForecastSection";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
 import { TooltipProvider } from "@nivo/tooltip";
 import { UseErrorToast } from "@/hooks/Toasts";
 import Decimal from "decimal.js";
 import { logger } from "@/services/logger";
+import ProgressLoader from "../ProgressLoader";
 
 enum TableView {
   BY_ACTIVITY = "by-activity",
@@ -63,11 +60,13 @@ function SectorTabs({
   inventory,
   lng,
   isPublic,
+  numberFormat,
 }: {
   t: TFunction;
   inventory: InventoryResponse;
   lng: string;
   isPublic: boolean;
+  numberFormat?: string;
 }) {
   const { t: tData } = useTranslation(lng, "data");
   const [selectedTab, setSelectedTab] = useState(SECTORS[0].name);
@@ -175,11 +174,7 @@ function SectorTabs({
         return (
           <Tabs.Content value={name} key={name}>
             {isTopEmissionsResponseLoading ? (
-              <Center h="128px">
-                <ProgressCircleRoot value={null}>
-                  <ProgressCircleRing cap="round" />
-                </ProgressCircleRoot>
-              </Center>
+              <ProgressLoader />
             ) : (
               <Card.Root p={4}>
                 <Card.Header>
@@ -189,14 +184,11 @@ function SectorTabs({
                       sectorName={t(name)}
                       dataForSector={getDataForSector(name)}
                       t={t}
+                      numberFormat={numberFormat}
                     />
                     <Box flex={1} />
                     {(isResultsLoading || isLoadingNewData) && (
-                      <Center>
-                        <ProgressCircleRoot value={null}>
-                          <ProgressCircleRing cap="round" />
-                        </ProgressCircleRoot>
-                      </Center>
+                      <ProgressLoader />
                     )}
                   </HStack>
                 </Card.Header>
@@ -234,6 +226,7 @@ function SectorTabs({
                       tData={tData}
                       tDashboard={t}
                       sectorName={name}
+                      numberFormat={numberFormat}
                     />
                   )}
                   {shouldShowTableByScope && (
@@ -244,6 +237,7 @@ function SectorTabs({
                       tData={tData}
                       tDashboard={t}
                       sectorName={name}
+                      numberFormat={numberFormat}
                     />
                   )}
                 </Card.Body>
@@ -261,11 +255,13 @@ function EmissionsBreakdown({
   inventory,
   lng,
   isPublic,
+  numberFormat,
 }: {
   t: TFunction;
   inventory: InventoryResponse;
   lng: string;
   isPublic: boolean;
+  numberFormat?: string;
 }) {
   return (
     <>
@@ -285,7 +281,13 @@ function EmissionsBreakdown({
       >
         {t("view-total-emissions-data-by-GPC-required-sectors")}
       </Text>
-      <SectorTabs t={t} inventory={inventory} lng={lng} isPublic={isPublic} />
+      <SectorTabs
+        t={t}
+        inventory={inventory}
+        lng={lng}
+        isPublic={isPublic}
+        numberFormat={numberFormat}
+      />
     </>
   );
 }
@@ -295,11 +297,13 @@ export function EmissionPerSectors({
   inventory,
   lng,
   isPublic,
+  numberFormat,
 }: {
   t: TFunction;
   inventory: InventoryResponse;
   lng: string;
   isPublic: boolean;
+  numberFormat?: string;
 }) {
   const [selectedView, setSelectedView] = useState("table");
 
@@ -440,19 +444,7 @@ export function EmissionPerSectors({
             </Card.Header>
             <ButtonGroupToggle options={options} activeOption={selectedView} />
           </Box>
-          {loadingState && (
-            <Box
-              w="full"
-              py={12}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <ProgressCircleRoot value={null}>
-                <ProgressCircleRing cap="round" />
-              </ProgressCircleRoot>
-            </Box>
-          )}
+          {loadingState && <ProgressLoader />}
           {!loadingState && transformedYearOverYearData.length === 0 && (
             <EmptyStateCardContent
               t={t}
@@ -470,6 +462,7 @@ export function EmissionPerSectors({
                   <EmissionBySectorTableSection
                     lng={lng}
                     data={transformedYearOverYearData}
+                    numberFormat={numberFormat}
                   />
                 ) : (
                   <TooltipProvider container={containerRef}>
@@ -477,6 +470,7 @@ export function EmissionPerSectors({
                       <EmissionBySectorChart
                         data={transformedYearOverYearData}
                         lng={lng}
+                        numberFormat={numberFormat}
                       />
                     </Box>
                   </TooltipProvider>
@@ -515,6 +509,10 @@ export default function ReportResults({
   // Determine what to show based on context
   const showManageMissingSectors = context === "inventory" && !isPublic;
   const showOpenCCInventories = context === "dashboard" && !isPublic;
+
+  const { data: userInfo } = api.useGetUserInfoQuery(undefined, {
+    skip: isPublic,
+  });
 
   return (
     <Box display="flex" flexDirection="column" gap={8} w="full">
@@ -562,25 +560,38 @@ export default function ReportResults({
         {t("see-your-citys-emissions")}
       </Text>
       <HStack my={4} alignItems={"start"}>
-        <EmissionsWidget t={t} inventory={inventory} population={population} />
-        <TopEmissionsWidget t={t} inventory={inventory} isPublic={isPublic} />
+        <EmissionsWidget
+          t={t}
+          inventory={inventory}
+          population={population}
+          numberFormat={userInfo?.numberFormat}
+        />
+        <TopEmissionsWidget
+          t={t}
+          inventory={inventory}
+          isPublic={isPublic}
+          numberFormat={userInfo?.numberFormat}
+        />
       </HStack>
       <EmissionsForecastSection
         inventoryId={inventory.inventoryId}
         t={t}
         lng={lng}
+        numberFormat={userInfo?.numberFormat}
       />
       <EmissionPerSectors
         t={t}
         inventory={inventory}
         lng={lng}
         isPublic={isPublic}
+        numberFormat={userInfo?.numberFormat}
       />
       <EmissionsBreakdown
         t={t}
         inventory={inventory}
         lng={lng}
         isPublic={isPublic}
+        numberFormat={userInfo?.numberFormat}
       />
     </Box>
   );

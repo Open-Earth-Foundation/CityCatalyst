@@ -586,6 +586,7 @@ export const api = createApi({
           method: "PATCH",
           body: data,
         }),
+        invalidatesTags: ["UserInfo"],
       }),
       checkUser: builder.mutation<
         UserAttributes,

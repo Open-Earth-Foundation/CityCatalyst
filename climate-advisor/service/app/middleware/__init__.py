@@ -1,4 +1,4 @@
-from .request_context import get_request_id
+from app.middleware.request_context import get_request_id
 
 __all__ = ["get_request_id"]
 

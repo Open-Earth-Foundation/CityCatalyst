@@ -169,9 +169,13 @@ describe("Chat routes", () => {
       );
 
     const response = await postChatThread(
-      makeRequest("https://request-origin.example/api/v1/chat/threads", "POST", {
-        inventory_id: testInventoryId,
-      }),
+      makeRequest(
+        "https://request-origin.example/api/v1/chat/threads",
+        "POST",
+        {
+          inventory_id: testInventoryId,
+        },
+      ),
       { params: Promise.resolve({}) },
     );
 
@@ -378,5 +382,73 @@ describe("Chat routes", () => {
     await expect(response.json()).resolves.toEqual({
       detail: "thread not found",
     });
+  });
+
+  it("creates an inventory-less thread when inventory_id is an empty string", async () => {
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: "token-123",
+          expires_in: 3600,
+          token_type: "Bearer",
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({ thread_id: "thread-1" }, { status: 201 }),
+      );
+
+    // A user with no inventory yet (e.g. during onboarding) sends "".
+    const response = await postChatThread(
+      makeRequest("http://localhost:3000/api/v1/chat/threads", "POST", {
+        title: "Onboarding chat",
+        inventory_id: "",
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ threadId: "thread-1" });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("creates an inventory-less thread when inventory_id is omitted", async () => {
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: "token-123",
+          expires_in: 3600,
+          token_type: "Bearer",
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({ thread_id: "thread-1" }, { status: 201 }),
+      );
+
+    const response = await postChatThread(
+      makeRequest("http://localhost:3000/api/v1/chat/threads", "POST", {
+        title: "Onboarding chat",
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ threadId: "thread-1" });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("rejects a malformed non-empty inventory_id without calling CA", async () => {
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+
+    const response = await postChatThread(
+      makeRequest("http://localhost:3000/api/v1/chat/threads", "POST", {
+        inventory_id: "not-a-uuid",
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(400);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

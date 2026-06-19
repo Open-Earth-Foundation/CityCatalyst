@@ -75,6 +75,7 @@ function isStationaryEnergyToolMessageParams(
 export function resolveStationaryEnergyToolMessage(
   t: TFunction,
   tool: {
+    message?: string | null;
     message_key?: string | null;
     message_params?: unknown;
   },

@@ -53,3 +53,10 @@ def test_hiap_review_prompt_has_rendered_tools_section() -> None:
     assert "`hiap_update_selection`" in rendered_prompt
     assert "`hiap_generate_action_plan`" in rendered_prompt
     assert "HIAP_CONTEXT_JSON" in rendered_prompt
+    assert "VISIBLE_HIAP_PANEL_SUMMARY" in rendered_prompt
+    assert "exact action `name` values" in rendered_prompt
+    assert "call `hiap_rerank_action`" in rendered_prompt
+    assert "switch action 1 and 2" in rendered_prompt
+    assert "Do not answer with a rewritten list" in rendered_prompt
+    assert "building efficiency and fleet electrification actions" not in rendered_prompt
+    assert "Expand zero-emission transit priority corridors" in rendered_prompt

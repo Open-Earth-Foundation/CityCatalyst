@@ -819,22 +819,121 @@ class StreamingHandler:
         context_payload: Dict[str, Any],
     ) -> Dict[str, str]:
         """Format the current HIAP context as a system message."""
+        visible_panel = self._hiap_visible_panel_summary(context_payload)
         payload = {
             **context_payload,
+            "visible_panel": visible_panel,
             "openrouter_web_grounding": self.hiap_web_grounding,
         }
         return {
             "role": "system",
             "content": (
+                "VISIBLE_HIAP_PANEL_SUMMARY\n"
+                f"{json.dumps(visible_panel, ensure_ascii=False, default=str)}\n"
                 "HIAP_CONTEXT_JSON\n"
                 f"{json.dumps(payload, ensure_ascii=False, default=str)}\n"
                 "Use this authoritative current CityCatalyst HIAP snapshot to explain the screen the user is viewing. "
-                "Treat city, inventory, mitigation, adaptation, selectedActions, rankedActions, unrankedActions, "
-                "and action_plans as product state. Use HIAP tools before changing selections, generating plans, "
+                "When the user refers to top, selected, visible, or right-side actions, use VISIBLE_HIAP_PANEL_SUMMARY first. "
+                "Treat city, inventory, mitigation, adaptation, visible_panel, selectedActions, rankedActions, "
+                "unrankedActions, and action_plans as product state. Use HIAP tools before changing selections, generating plans, "
                 "or reading completed plans. OpenRouter web grounding, when true, is available as model grounding "
                 "for external current evidence and citations; it is not a product-state source."
             ),
         }
+
+    @staticmethod
+    def _compact_hiap_panel_action(action: Any) -> Optional[dict[str, Any]]:
+        """Return the action fields the HIAP panel exposes to the user."""
+        if not isinstance(action, dict):
+            return None
+        return {
+            "id": action.get("id"),
+            "actionId": action.get("actionId"),
+            "rank": action.get("rank"),
+            "name": action.get("name"),
+            "type": action.get("type"),
+            "isSelected": bool(action.get("isSelected")),
+            "sectors": action.get("sectors") or [],
+            "subsectors": action.get("subsectors") or [],
+            "hazards": action.get("hazards") or [],
+            "primaryPurposes": action.get("primaryPurposes") or [],
+        }
+
+    @classmethod
+    def _hiap_visible_actions(cls, action_set: Any) -> list[dict[str, Any]]:
+        """Return the same top actions rendered in the CityCatalyst HIAP panel."""
+        if not isinstance(action_set, dict):
+            return []
+
+        ranked_actions = action_set.get("rankedActions")
+        if not isinstance(ranked_actions, list):
+            ranked_actions = []
+
+        selected_actions = action_set.get("selectedActions")
+        if not isinstance(selected_actions, list):
+            unranked_actions = cls._list_value(action_set.get("unrankedActions"))
+            selected_actions = [
+                action
+                for action in ranked_actions + unranked_actions
+                if isinstance(action, dict) and action.get("isSelected")
+            ]
+
+        source_actions = selected_actions if selected_actions else ranked_actions[:3]
+        compact_actions = [
+            compacted
+            for action in source_actions[:6]
+            if (compacted := cls._compact_hiap_panel_action(action)) is not None
+        ]
+        return compact_actions
+
+    @classmethod
+    def _hiap_visible_panel_summary(
+        cls,
+        context_payload: Dict[str, Any],
+    ) -> dict[str, Any]:
+        """Build a compact summary of the current HIAP context panel."""
+        mitigation = context_payload.get("mitigation")
+        adaptation = context_payload.get("adaptation")
+        return {
+            "city": context_payload.get("city"),
+            "inventory": context_payload.get("inventory"),
+            "top_mitigation_actions": cls._hiap_visible_actions(mitigation),
+            "top_adaptation_actions": cls._hiap_visible_actions(adaptation),
+            "counts": {
+                "mitigation": cls._hiap_action_counts(mitigation),
+                "adaptation": cls._hiap_action_counts(adaptation),
+            },
+        }
+
+    @staticmethod
+    def _hiap_action_counts(action_set: Any) -> dict[str, int]:
+        """Return action counts from a HIAP action set."""
+        if not isinstance(action_set, dict):
+            return {"ranked": 0, "unranked": 0, "selected": 0}
+        counts = action_set.get("counts")
+        if isinstance(counts, dict):
+            return {
+                "ranked": int(counts.get("ranked") or 0),
+                "unranked": int(counts.get("unranked") or 0),
+                "selected": int(counts.get("selected") or 0),
+            }
+        ranked_actions = StreamingHandler._list_value(action_set.get("rankedActions"))
+        unranked_actions = StreamingHandler._list_value(action_set.get("unrankedActions"))
+        selected_actions = [
+            action
+            for action in ranked_actions + unranked_actions
+            if isinstance(action, dict) and action.get("isSelected")
+        ]
+        return {
+            "ranked": len(ranked_actions),
+            "unranked": len(unranked_actions),
+            "selected": len(selected_actions),
+        }
+
+    @staticmethod
+    def _list_value(value: Any) -> list[Any]:
+        """Return a list value or an empty list when the payload shape differs."""
+        return value if isinstance(value, list) else []
 
     def _agent_instruction_text(self, agent: Any | None = None) -> str:
         """Return the active agent instruction text used for token accounting."""
@@ -1176,13 +1275,7 @@ class StreamingHandler:
         if parsed_output is not None:
             async for event_bytes in self._handle_tool_result_metadata(parsed_output):
                 yield event_bytes
-            if parsed_output.get("ui_event") in {
-                "stationary_energy_review_state_changed",
-                "stationary_energy_review_bulk_confirmation_requested",
-                "stationary_energy_review_change_confirmation_requested",
-                "stationary_energy_review_rollback_confirmation_requested",
-                "stationary_energy_inventory_save_confirmation_requested",
-            }:
+            if self._should_emit_structured_tool_result(parsed_output):
                 yield format_sse(
                     {
                         "name": invocation.get("name", "unknown_tool"),
@@ -1200,6 +1293,18 @@ class StreamingHandler:
             },
             event="tool_result",
         ).encode("utf-8")
+
+    @staticmethod
+    def _should_emit_structured_tool_result(parsed_output: dict) -> bool:
+        """Return whether the UI needs the full tool payload."""
+        return parsed_output.get("ui_event") in {
+            "stationary_energy_review_state_changed",
+            "stationary_energy_review_bulk_confirmation_requested",
+            "stationary_energy_review_change_confirmation_requested",
+            "stationary_energy_review_rollback_confirmation_requested",
+            "stationary_energy_inventory_save_confirmation_requested",
+            "hiap_rerank_action_applied",
+        }
 
     async def _handle_tool_result_metadata(
         self, parsed_output: dict

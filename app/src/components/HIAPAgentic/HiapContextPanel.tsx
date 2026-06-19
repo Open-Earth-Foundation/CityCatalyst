@@ -1,7 +1,19 @@
 "use client";
 
-import { Badge, Box, HStack, SimpleGrid, Text, VStack } from "@chakra-ui/react";
+import { useState } from "react";
+import type { ReactNode } from "react";
+import {
+  Badge,
+  Box,
+  HStack,
+  Icon,
+  SimpleGrid,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import { MdExpandMore } from "react-icons/md";
 
+import { Button } from "@/components/ui/button";
 import { formatEmissions } from "@/util/helpers";
 
 function cityInitials(name: string): string {
@@ -116,9 +128,269 @@ function topActionsFor(data: any): any[] {
   return (selected.length > 0 ? selected : ranked.slice(0, 3)).slice(0, 6);
 }
 
+function translatedIdentifier(
+  value: unknown,
+  namespace: string,
+  t: (key: string) => string,
+): string {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return "";
+  }
+  const key = `${namespace}.${value}`;
+  const translated = t(key);
+  return translated === key ? humanizeIdentifier(value) : translated;
+}
+
+function translatedLevel(
+  value: unknown,
+  namespace: string,
+  t: (key: string) => string,
+): string {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return t("n-a");
+  }
+  const key = `${namespace}.${value}`;
+  const translated = t(key);
+  if (translated !== key) {
+    return translated;
+  }
+  const direct = t(value);
+  return direct === value ? humanizeIdentifier(value) : direct;
+}
+
+function actionExplanation(action: any, lng: string): string {
+  const explanations = action?.explanation?.explanations;
+  if (explanations && typeof explanations === "object") {
+    return explanations[lng] ?? explanations.en ?? "";
+  }
+  return typeof action?.explanation === "string" ? action.explanation : "";
+}
+
+function stringList(values: unknown): string[] {
+  return Array.isArray(values)
+    ? values
+        .map((value) => (typeof value === "string" ? value.trim() : ""))
+        .filter(Boolean)
+    : [];
+}
+
+function impactEntries(action: any, t: (key: string) => string): string[] {
+  if (action?.GHGReductionPotential) {
+    return Object.entries(action.GHGReductionPotential)
+      .filter(([, value]) => value)
+      .map(([sector, value]) => {
+        const label = translatedIdentifier(sector, "sector", t);
+        const level = translatedLevel(value, "effectiveness-level", t);
+        return `${label}: ${level}`;
+      });
+  }
+
+  if (action?.adaptationEffectiveness) {
+    return [
+      translatedLevel(action.adaptationEffectiveness, "effectiveness-level", t),
+    ];
+  }
+
+  return [];
+}
+
+function DetailValue(props: { label: string; children: ReactNode }) {
+  return (
+    <Box>
+      <Text
+        color="content.tertiary"
+        fontSize="label.sm"
+        fontWeight="semibold"
+        textTransform="uppercase"
+      >
+        {props.label}
+      </Text>
+      <Text
+        mt={1}
+        color="content.secondary"
+        fontSize="body.sm"
+        lineHeight="20px"
+        overflowWrap="anywhere"
+      >
+        {props.children}
+      </Text>
+    </Box>
+  );
+}
+
+function DetailList(props: { label: string; items: string[] }) {
+  if (props.items.length === 0) {
+    return null;
+  }
+
+  return (
+    <Box>
+      <Text
+        color="content.tertiary"
+        fontSize="label.sm"
+        fontWeight="semibold"
+        textTransform="uppercase"
+      >
+        {props.label}
+      </Text>
+      <VStack as="ul" align="stretch" gap={1} mt={1} pl={4}>
+        {props.items.map((item) => (
+          <Text
+            as="li"
+            key={item}
+            color="content.secondary"
+            fontSize="body.sm"
+            lineHeight="20px"
+            overflowWrap="anywhere"
+          >
+            {item}
+          </Text>
+        ))}
+      </VStack>
+    </Box>
+  );
+}
+
+function ActionCard(props: {
+  action: any;
+  lng: string;
+  t: (key: string, options?: Record<string, unknown>) => string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const category = actionCategory(props.action, props.t);
+  const description = props.action?.description;
+  const explanation = actionExplanation(props.action, props.lng);
+  const primaryPurposes = stringList(props.action?.primaryPurposes).map(
+    (purpose) => translatedIdentifier(purpose, "primary-purpose", props.t),
+  );
+  const kpis = stringList(props.action?.keyPerformanceIndicators);
+  const mandates = stringList(props.action?.powersAndMandates);
+  const impacts = impactEntries(props.action, props.t);
+  const cost = props.action?.costInvestmentNeeded
+    ? translatedLevel(props.action.costInvestmentNeeded, "cost-level", props.t)
+    : "";
+  const timeline = props.action?.timelineForImplementation
+    ? translatedLevel(
+        props.action.timelineForImplementation,
+        "timeline",
+        props.t,
+      )
+    : "";
+  const hasDetails =
+    Boolean(description) ||
+    Boolean(explanation) ||
+    primaryPurposes.length > 0 ||
+    kpis.length > 0 ||
+    mandates.length > 0 ||
+    impacts.length > 0 ||
+    Boolean(cost) ||
+    Boolean(timeline);
+
+  return (
+    <Box
+      p={3}
+      borderWidth="1px"
+      borderColor="border.overlay"
+      borderRadius="8px"
+      bg="base.light"
+    >
+      <HStack align="start" justify="space-between" gap={3}>
+        <Text fontWeight="semibold" color="content.primary">
+          {props.action.name}
+        </Text>
+        <Badge colorPalette={props.action.isSelected ? "green" : "gray"}>
+          #{props.action.rank}
+        </Badge>
+      </HStack>
+      <HStack mt={3} gap={2}>
+        <Box
+          w="8px"
+          h="8px"
+          borderRadius="full"
+          bg="interactive.secondary"
+          opacity={0.7}
+        />
+        <Badge colorPalette={category.palette} variant="subtle">
+          {category.label}
+        </Badge>
+      </HStack>
+
+      <Button
+        mt={3}
+        size="xs"
+        variant="ghost"
+        color="interactive.secondary"
+        px={0}
+        minW="auto"
+        onClick={() => setIsOpen((open) => !open)}
+      >
+        {isOpen ? props.t("hide-details") : props.t("see-more-details")}
+        <Icon
+          as={MdExpandMore}
+          boxSize={4}
+          transform={isOpen ? "rotate(180deg)" : undefined}
+          transition="transform 0.15s ease"
+        />
+      </Button>
+
+      {isOpen ? (
+        <VStack
+          align="stretch"
+          gap={3}
+          mt={3}
+          pt={3}
+          borderTopWidth="1px"
+          borderColor="border.overlay"
+        >
+          {!hasDetails ? (
+            <Text color="content.tertiary" fontSize="body.sm">
+              {props.t("no-action-details")}
+            </Text>
+          ) : (
+            <>
+              {description ? (
+                <DetailValue label={props.t("action-description")}>
+                  {description}
+                </DetailValue>
+              ) : null}
+              {explanation ? (
+                <DetailValue label={props.t("action-explanation")}>
+                  {explanation}
+                </DetailValue>
+              ) : null}
+              <DetailList
+                label={props.t("action-purpose")}
+                items={primaryPurposes}
+              />
+              <DetailList label={props.t("impact")} items={impacts} />
+              {cost ? (
+                <DetailValue label={props.t("cost")}>{cost}</DetailValue>
+              ) : null}
+              {timeline ? (
+                <DetailValue label={props.t("timeline-label")}>
+                  {timeline}
+                </DetailValue>
+              ) : null}
+              <DetailList
+                label={props.t("key-performance-indicators")}
+                items={kpis}
+              />
+              <DetailList
+                label={props.t("powers-and-mandates")}
+                items={mandates}
+              />
+            </>
+          )}
+        </VStack>
+      ) : null}
+    </Box>
+  );
+}
+
 function ActionList(props: {
   title: string;
   data: any;
+  lng: string;
   t: (key: string, options?: Record<string, unknown>) => string;
 }) {
   const actions = topActionsFor(props.data);
@@ -135,40 +407,14 @@ function ActionList(props: {
             {props.t("no-actions-available-yet")}
           </Text>
         ) : (
-          actions.map((action: any) => {
-            const category = actionCategory(action, props.t);
-            return (
-              <Box
-                key={action.id ?? action.actionId}
-                p={3}
-                borderWidth="1px"
-                borderColor="border.overlay"
-                borderRadius="8px"
-                bg="base.light"
-              >
-                <HStack align="start" justify="space-between" gap={3}>
-                  <Text fontWeight="semibold" color="content.primary">
-                    {action.name}
-                  </Text>
-                  <Badge colorPalette={action.isSelected ? "green" : "gray"}>
-                    #{action.rank}
-                  </Badge>
-                </HStack>
-                <HStack mt={3} gap={2}>
-                  <Box
-                    w="8px"
-                    h="8px"
-                    borderRadius="full"
-                    bg="interactive.secondary"
-                    opacity={0.7}
-                  />
-                  <Badge colorPalette={category.palette} variant="subtle">
-                    {category.label}
-                  </Badge>
-                </HStack>
-              </Box>
-            );
-          })
+          actions.map((action: any) => (
+            <ActionCard
+              key={action.id ?? action.actionId}
+              action={action}
+              lng={props.lng}
+              t={props.t}
+            />
+          ))
         )}
       </VStack>
     </Box>
@@ -179,6 +425,7 @@ export function HiapContextPanel(props: {
   city: any;
   inventory: any;
   hiapData: any;
+  lng: string;
   t: (key: string, options?: Record<string, unknown>) => string;
 }) {
   const mitigation = props.hiapData?.mitigation;
@@ -305,11 +552,13 @@ export function HiapContextPanel(props: {
         <ActionList
           title={props.t("top-mitigation-actions")}
           data={mitigation}
+          lng={props.lng}
           t={props.t}
         />
         <ActionList
           title={props.t("top-adaptation-actions")}
           data={adaptation}
+          lng={props.lng}
           t={props.t}
         />
       </VStack>

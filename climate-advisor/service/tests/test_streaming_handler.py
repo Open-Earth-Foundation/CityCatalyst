@@ -210,3 +210,159 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             emitted_tool_result["data"]["action"],
             "stationary_energy_request_staged_sources_rollback_confirmation",
         )
+
+    async def test_hiap_rerank_ui_event_is_emitted_as_tool_result(self) -> None:
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        handler.tool_invocations.append(
+            {
+                "id": "tool-call-1",
+                "name": "hiap_rerank_action",
+                "status": "executing",
+            }
+        )
+        run_item = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                call_id="tool-call-1",
+                name="hiap_rerank_action",
+            ),
+            output=json.dumps(
+                {
+                    "success": True,
+                    "ui_event": "hiap_rerank_action_applied",
+                    "actionId": "action-2",
+                    "actionName": "Electrify municipal buildings",
+                    "actionType": "mitigation",
+                    "previousRank": 2,
+                    "newRank": 1,
+                }
+            ),
+        )
+
+        chunks = [chunk async for chunk in handler._handle_tool_output(run_item)]
+        parsed_chunks = [_parse_sse_payload(chunk) for chunk in chunks]
+        emitted_tool_result = next(
+            payload
+            for payload in parsed_chunks
+            if payload["event"] == "tool_result"
+            and payload["data"].get("ui_event") == "hiap_rerank_action_applied"
+        )
+
+        self.assertEqual(emitted_tool_result["data"]["name"], "hiap_rerank_action")
+        self.assertEqual(
+            emitted_tool_result["data"]["actionName"],
+            "Electrify municipal buildings",
+        )
+        self.assertEqual(emitted_tool_result["data"]["previousRank"], 2)
+        self.assertEqual(emitted_tool_result["data"]["newRank"], 1)
+
+
+class StreamingHandlerHiapContextTests(unittest.TestCase):
+    def test_hiap_context_message_includes_visible_panel_summary(self) -> None:
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        handler.hiap_web_grounding = True
+        context_payload = {
+            "city": {"name": "CA Demo New York 145354"},
+            "inventory": {"year": 2024},
+            "mitigation": {
+                "rankedActions": [
+                    {
+                        "actionId": "mitigation-1",
+                        "rank": 1,
+                        "name": "Expand zero-emission transit priority corridors",
+                        "type": "mitigation",
+                        "sectors": ["transportation"],
+                    },
+                    {
+                        "actionId": "mitigation-2",
+                        "rank": 2,
+                        "name": "Electrify municipal buildings",
+                        "type": "mitigation",
+                        "sectors": ["stationary_energy"],
+                    },
+                    {
+                        "actionId": "mitigation-3",
+                        "rank": 3,
+                        "name": "Capture methane from organic waste",
+                        "type": "mitigation",
+                        "sectors": ["waste"],
+                    },
+                    {
+                        "actionId": "mitigation-4",
+                        "rank": 4,
+                        "name": "Procure offsite renewables",
+                        "type": "mitigation",
+                    },
+                ],
+                "selectedActions": [],
+                "unrankedActions": [],
+                "counts": {"ranked": 4, "unranked": 0, "selected": 0},
+            },
+            "adaptation": {
+                "rankedActions": [
+                    {
+                        "actionId": "adaptation-1",
+                        "rank": 1,
+                        "name": "Open neighborhood cooling resilience hubs",
+                        "type": "adaptation",
+                        "hazards": ["public_health"],
+                    },
+                ],
+                "selectedActions": [
+                    {
+                        "actionId": "adaptation-2",
+                        "rank": 2,
+                        "name": "Expand shaded streets and urban tree canopy",
+                        "type": "adaptation",
+                        "isSelected": True,
+                        "hazards": ["biodiversity"],
+                    },
+                ],
+                "unrankedActions": [],
+                "counts": {"ranked": 1, "unranked": 0, "selected": 1},
+            },
+        }
+
+        message = handler._format_hiap_context_message(context_payload)
+
+        self.assertEqual(message["role"], "system")
+        self.assertIn("VISIBLE_HIAP_PANEL_SUMMARY", message["content"])
+        self.assertIn("HIAP_CONTEXT_JSON", message["content"])
+
+        visible_json = message["content"].split("VISIBLE_HIAP_PANEL_SUMMARY\n", 1)[
+            1
+        ].split("\nHIAP_CONTEXT_JSON\n", 1)[0]
+        visible_panel = json.loads(visible_json)
+        self.assertEqual(
+            [
+                action["name"]
+                for action in visible_panel["top_mitigation_actions"]
+            ],
+            [
+                "Expand zero-emission transit priority corridors",
+                "Electrify municipal buildings",
+                "Capture methane from organic waste",
+            ],
+        )
+        self.assertEqual(
+            [
+                action["name"]
+                for action in visible_panel["top_adaptation_actions"]
+            ],
+            ["Expand shaded streets and urban tree canopy"],
+        )
+
+        payload_json = message["content"].split("HIAP_CONTEXT_JSON\n", 1)[1].split(
+            "\nUse this authoritative",
+            1,
+        )[0]
+        payload = json.loads(payload_json)
+        self.assertTrue(payload["openrouter_web_grounding"])
+        self.assertEqual(payload["visible_panel"], visible_panel)

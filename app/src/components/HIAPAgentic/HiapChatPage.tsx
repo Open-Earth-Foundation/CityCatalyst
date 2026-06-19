@@ -649,6 +649,7 @@ export function HiapChatPage() {
                 city={city}
                 inventory={inventory}
                 hiapData={hiapData}
+                lng={lng}
                 t={t}
               />
             </Box>
@@ -687,6 +688,7 @@ export function HiapChatPage() {
                   city={city}
                   inventory={inventory}
                   hiapData={hiapData}
+                  lng={lng}
                   t={t}
                 />
               </Box>

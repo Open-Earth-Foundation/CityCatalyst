@@ -1,7 +1,1 @@
-"use client";
-
-import CDPPage from "@/app/[lng]/[inventory]/cdp/page";
-
-export default function CityInventoryCDPPage() {
-  return <CDPPage />;
-}
+export { default } from "@/components/GHGI/inventory-pages/cdp-page";

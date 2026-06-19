@@ -16,7 +16,7 @@ import {
   SegmentedProgress,
   SegmentedProgressValues,
 } from "@/components/SegmentedProgress";
-import { EmptyStateCardContent } from "@/app/[lng]/[inventory]/InventoryResultTab/EmptyStateCardContent";
+import { EmptyStateCardContent } from "@/components/GHGI/inventory-result/EmptyStateCardContent";
 import { allSectorColors, SECTORS } from "@/util/constants";
 
 import {

@@ -70,12 +70,12 @@ import {
   MdWarning,
 } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import { SourceDrawer } from "@/app/[lng]/[inventory]/data/[step]/SourceDrawer";
+import { SourceDrawer } from "@/components/GHGI/data-step/SourceDrawer";
 import type {
   DataSourceWithRelations,
   DataStep,
   SubSectorWithRelations,
-} from "@/app/[lng]/[inventory]/data/[step]/types";
+} from "@/components/GHGI/data-step/types";
 
 import { InventoryValueAttributes } from "@/models/InventoryValue";
 import { motion } from "framer-motion";

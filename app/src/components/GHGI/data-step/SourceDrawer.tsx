@@ -26,7 +26,7 @@ import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
 import { SourceDrawerActivityTable } from "./SourceDrawerActivityTable";
 import { BodyLarge } from "@/components/package/Texts/Body";
 import { DisplayMedium } from "@/components/package/Texts/Display";
-import ScalingSection from "./[subsector]/ScalingSection";
+import ScalingSection from "./ScalingSection";
 import ProgressLoader from "@/components/ProgressLoader";
 
 export function SourceDrawer({

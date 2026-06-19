@@ -1,7 +1,7 @@
 import { EmissionsForecastData } from "@/util/types";
 import { TFunction } from "i18next";
 import { useState } from "react";
-import { GrowthRatesExplanationModal } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/GrowthRatesExplanationModal";
+import { GrowthRatesExplanationModal } from "@/components/GHGI/inventory-result/EmissionsForecast/GrowthRatesExplanationModal";
 import {
   Card,
   CardBody,
@@ -10,7 +10,7 @@ import {
   Icon,
   IconButton,
 } from "@chakra-ui/react";
-import { EmissionsForecastChart } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/EmissionsForecastChart";
+import { EmissionsForecastChart } from "@/components/GHGI/inventory-result/EmissionsForecast/EmissionsForecastChart";
 import { MdInfoOutline } from "react-icons/md";
 import { TitleMedium } from "@/components/package/Texts/Title";
 

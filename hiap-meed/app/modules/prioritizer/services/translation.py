@@ -8,7 +8,10 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from app.modules.prioritizer.config import get_explanation_translations_model
+from app.modules.prioritizer.llm_config import (
+    get_explanation_translations_model,
+    get_explanation_translations_temperature,
+)
 from app.services.openai_client import create_openai_client
 
 
@@ -66,7 +69,7 @@ def translate_explanations(
     model_name = get_explanation_translations_model()
     if model_name is None:
         raise ValueError(
-            "HIAP_MEED_EXPLANATION_TRANSLATIONS_MODEL must be set when translations are requested"
+            "The explanation_translations model must be configured in llm_config.yaml when translations are requested"
         )
 
     actions_payload = [
@@ -92,7 +95,7 @@ def translate_explanations(
     client = create_openai_client()
     completion = client.chat.completions.parse(
         model=model_name,
-        temperature=0,
+        temperature=get_explanation_translations_temperature(),
         response_format=TranslationBatch,
         messages=[
             {"role": "system", "content": system_prompt},

@@ -62,3 +62,27 @@ export function UseInfoToast({
 
   return { showInfoToast };
 }
+
+export function UseWarningToast({
+  title,
+  description,
+  duration = 6000,
+}: {
+  title: string;
+  description?: string;
+  duration?: number;
+}) {
+  const showWarningToast = (data?: {
+    title: string;
+    description?: string;
+  }) => {
+    return toaster.create({
+      title: data?.title ?? title,
+      description: data?.description ?? description,
+      type: "warning",
+      duration,
+    });
+  };
+
+  return { showWarningToast };
+}

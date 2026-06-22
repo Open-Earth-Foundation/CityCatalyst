@@ -18,7 +18,6 @@ import {
   AccordionRoot,
 } from "@/components/ui/accordion";
 import { useParams } from "next/navigation";
-import { REGIONALLOCALES } from "@/util/constants";
 import {
   MenuContent,
   MenuItem,
@@ -34,6 +33,7 @@ interface DirectMeasureTableProps {
   onEditActivity: (activity: ActivityValue) => void;
   referenceNumber?: string;
   showActivityModal: () => void;
+  numberFormat?: string;
 }
 
 const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
@@ -43,6 +43,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   referenceNumber,
   t,
   showActivityModal,
+  numberFormat,
 }) => {
   const { lng } = useParams();
   const directMeasure = MANUAL_INPUT_HIERARCHY[referenceNumber as string]
@@ -192,8 +193,8 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                     activity?.activityData?.co2_unit === "units-tonnes"
                       ? activity?.activityData?.co2_amount * 1000
                       : activity?.activityData?.co2_amount,
+                    numberFormat,
                     "CO2e",
-                    REGIONALLOCALES[lng as string],
                   )}
                 </Table.Cell>
                 <Table.Cell textAlign="end" truncate>
@@ -201,8 +202,8 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                     activity?.activityData?.n2o_unit === "units-tonnes"
                       ? activity?.activityData?.n2o_amount * 1000
                       : activity?.activityData?.n2o_amount,
+                    numberFormat,
                     "N2O",
-                    REGIONALLOCALES[lng as string],
                   )}
                 </Table.Cell>
                 <Table.Cell textAlign="end" truncate>
@@ -210,8 +211,8 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                     activity?.activityData?.ch4_unit === "units-tonnes"
                       ? activity?.activityData?.ch4_amount * 1000
                       : activity?.activityData?.ch4_amount,
+                    numberFormat,
                     "CH4",
-                    REGIONALLOCALES[lng as string],
                   )}
                 </Table.Cell>
                 <Table.Cell>
@@ -356,6 +357,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                               (acc, curr) => acc + BigInt(curr.co2eq as bigint),
                               0n,
                             ),
+                            numberFormat,
                           )}{" "}
                         </Text>
                       </Box>

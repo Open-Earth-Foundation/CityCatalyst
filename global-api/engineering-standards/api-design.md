@@ -41,6 +41,12 @@ The top-level resources in this API are:
 
 ### City sub-resources
 
+City collection endpoints:
+
+```
+/cities/search?q={query}&country_code={country_code}
+```
+
 City-scoped data hangs off `/cities/{locode}`:
 
 ```

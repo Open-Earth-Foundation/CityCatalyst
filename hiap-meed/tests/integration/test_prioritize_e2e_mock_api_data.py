@@ -1,4 +1,4 @@
-"""Dedicated end-to-end prioritize test using checked-in mock API payloads."""
+﻿"""Dedicated end-to-end prioritize test using checked-in mock API payloads."""
 
 from __future__ import annotations
 
@@ -10,13 +10,15 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.modules.prioritizer.api import (
-    get_action_data_api_client,
+    get_action_pathways_data_api_client,
     get_city_data_api_client,
     get_legal_data_api_client,
     get_action_policy_scores_data_api_client,
+    get_action_mitigation_feasibility_scores_data_api_client,
 )
 from app.services.data_clients import (
-    MockActionDataApiClient,
+    MockActionPathwaysDataApiClient,
+    MockActionMitigationFeasibilityScoresDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
     MockActionPolicyScoresDataApiClient,
@@ -36,7 +38,7 @@ def test_prioritize_e2e_with_mock_api_payloads(
     # Route request artifacts into an isolated test folder.
     artifact_log_dir = tmp_path / "logs"
     monkeypatch.setenv("LOG_DIR", str(artifact_log_dir))
-    monkeypatch.setenv("ARTIFACT_LOG_JSONL", "true")
+    monkeypatch.setenv("LOCAL_ARTIFACTS_ENABLED", "true")
 
     mock_data_dir = _mock_data_dir()
     request_payload = json.loads(
@@ -45,8 +47,8 @@ def test_prioritize_e2e_with_mock_api_payloads(
     request_payload["requestData"]["createExplanations"] = False
 
     mock_city_client = MockCityDataApiClient(mock_file_path=mock_data_dir / "city_api_mock.json")
-    mock_action_client = MockActionDataApiClient(
-        mock_file_path=mock_data_dir / "actions_api_mock.json"
+    mock_action_client = MockActionPathwaysDataApiClient(
+        mock_file_path=mock_data_dir / "action_pathways_api_mock.json"
     )
     mock_legal_client = MockLegalDataApiClient(
         mock_file_path=mock_data_dir / "actions_legal_api_mock.json"
@@ -54,12 +56,24 @@ def test_prioritize_e2e_with_mock_api_payloads(
     mock_policy_client = MockActionPolicyScoresDataApiClient(
         mock_file_path=mock_data_dir / "action_policy_scores_api_mock.json"
     )
+    mock_feasibility_client = MockActionMitigationFeasibilityScoresDataApiClient(
+        mock_file_path=mock_data_dir / "action_mitigation_feasibility_scores_api_mock.json"
+    )
+    mock_feasibility_client = MockActionMitigationFeasibilityScoresDataApiClient(
+        mock_file_path=mock_data_dir / "action_mitigation_feasibility_scores_api_mock.json"
+    )
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
-    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_action_pathways_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
     app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
+    )
+    app.dependency_overrides[get_action_mitigation_feasibility_scores_data_api_client] = (
+        lambda: mock_feasibility_client
+    )
+    app.dependency_overrides[get_action_mitigation_feasibility_scores_data_api_client] = (
+        lambda: mock_feasibility_client
     )
     try:
         with TestClient(app) as test_client:
@@ -77,7 +91,7 @@ def test_prioritize_e2e_with_mock_api_payloads(
 
         assert result["locode"] == "CL IQQ"
         assert metadata["weights"] == {"impact": 0.5, "alignment": 0.3, "feasibility": 0.2}
-        assert metadata["counts"]["total_actions"] == 155
+        assert metadata["counts"]["total_actions"] == 102
         assert metadata["counts"]["discarded_excluded"] == 1
         assert metadata["counts"]["discarded_legal"] > 0
         assert metadata["counts"]["valid_actions"] == (
@@ -107,25 +121,38 @@ def test_prioritize_e2e_with_mock_api_payloads(
         }
 
         blocked_evidence = metadata["hard_filter_evidence_by_action_id"]["c40_0013"]
-        missing_evidence = metadata["hard_filter_evidence_by_action_id"]["icare_0172"]
+        missing_evidence_rows = [
+            row
+            for row in metadata["hard_filter_evidence_by_action_id"].values()
+            if row.get("legal_assessment_present") is False
+        ]
         assert blocked_evidence["discard_reason"] == "legal_verdict_blocked"
         assert blocked_evidence["legal_verdict_category"] == "blocked"
-        assert missing_evidence["legal_assessment_present"] is False
+        assert missing_evidence_rows
 
         # Verify artifact naming and full-response persistence.
         request_runs = sorted((artifact_log_dir / "requests" / "prioritization").glob("*"))
         assert len(request_runs) == 1
         run_dir = request_runs[0]
 
-        feasibility_step = json.loads((run_dir / "010_feasibility.json").read_text("utf-8"))
-        assert feasibility_step["payload"]["missing_legal_assessment_actions_count"] > 0
-        assert "icare_0172" in feasibility_step["payload"]["missing_legal_assessment_action_ids"]
-        assert feasibility_step["payload"]["neutral_legal_fallback_actions_count"] > 0
-        assert "icare_0172" in feasibility_step["payload"]["neutral_legal_fallback_action_ids"]
-
         manifest_payload = json.loads((run_dir / "manifest.json").read_text("utf-8"))
         assert manifest_payload["request_kind"] == "prioritization"
         generated_files = set(manifest_payload["generated_files"])
+
+        feasibility_files = [
+            file_name
+            for file_name in generated_files
+            if file_name.endswith("_feasibility.json")
+        ]
+        assert len(feasibility_files) == 1
+        feasibility_step = json.loads(
+            (run_dir / feasibility_files[0]).read_text("utf-8")
+        )
+        assert feasibility_step["payload"]["missing_legal_assessment_actions_count"] > 0
+        assert feasibility_step["payload"]["neutral_legal_fallback_actions_count"] > 0
+        assert set(feasibility_step["payload"]["missing_legal_assessment_action_ids"])
+        assert set(feasibility_step["payload"]["neutral_legal_fallback_action_ids"])
+
         response_summary_files = [
             file_name
             for file_name in generated_files
@@ -161,9 +188,12 @@ def test_prioritize_e2e_with_mock_api_payloads(
         fetch_actions_payload = json.loads(
             (run_dir / fetch_actions_files[0]).read_text("utf-8")
         )["payload"]
-        assert fetch_actions_payload["source"] == "mock_actions_api"
+        assert fetch_actions_payload["source"] == "mock_action_pathways_api"
+        assert fetch_actions_payload["total_fetched_actions"] >= fetch_actions_payload["total_actions"]
+        assert fetch_actions_payload["supported_action_type"] == "mitigation"
+        assert fetch_actions_payload["filtered_out_action_type_actions_count"] >= 0
         assert fetch_actions_payload["source_metadata"]["mock_file_path"].endswith(
-            "actions_api_mock.json"
+            "action_pathways_api_mock.json"
         )
 
         fetch_legal_files = [
@@ -196,6 +226,24 @@ def test_prioritize_e2e_with_mock_api_payloads(
             "action_policy_scores_api_mock.json"
         )
 
+        fetch_feasibility_files = [
+            file_name
+            for file_name in generated_files
+            if file_name.endswith("_fetch_action_mitigation_feasibility_scores.json")
+        ]
+        assert len(fetch_feasibility_files) == 1
+        fetch_feasibility_payload = json.loads(
+            (run_dir / fetch_feasibility_files[0]).read_text("utf-8")
+        )["payload"]
+        assert (
+            fetch_feasibility_payload["source"]
+            == "mock_action_mitigation_feasibility_scores_api"
+        )
+        assert fetch_feasibility_payload["source_metadata"]["requested_locode"] == "CL IQQ"
+        assert fetch_feasibility_payload["source_metadata"]["mock_file_path"].endswith(
+            "action_mitigation_feasibility_scores_api_mock.json"
+        )
+
         response_full_payload = json.loads(
             (run_dir / "response_full.json").read_text("utf-8")
         )
@@ -217,7 +265,7 @@ def test_prioritize_e2e_stubbed_activity_mapping_matches_disabled_mode(
     """Stub-enabled activity mapping should preserve the same prioritization output."""
     artifact_log_dir = tmp_path / "logs"
     monkeypatch.setenv("LOG_DIR", str(artifact_log_dir))
-    monkeypatch.setenv("ARTIFACT_LOG_JSONL", "true")
+    monkeypatch.setenv("LOCAL_ARTIFACTS_ENABLED", "true")
 
     mock_data_dir = _mock_data_dir()
     request_payload = json.loads(
@@ -226,8 +274,8 @@ def test_prioritize_e2e_stubbed_activity_mapping_matches_disabled_mode(
     request_payload["requestData"]["createExplanations"] = False
 
     mock_city_client = MockCityDataApiClient(mock_file_path=mock_data_dir / "city_api_mock.json")
-    mock_action_client = MockActionDataApiClient(
-        mock_file_path=mock_data_dir / "actions_api_mock.json"
+    mock_action_client = MockActionPathwaysDataApiClient(
+        mock_file_path=mock_data_dir / "action_pathways_api_mock.json"
     )
     mock_legal_client = MockLegalDataApiClient(
         mock_file_path=mock_data_dir / "actions_legal_api_mock.json"
@@ -237,7 +285,7 @@ def test_prioritize_e2e_stubbed_activity_mapping_matches_disabled_mode(
     )
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
-    app.dependency_overrides[get_action_data_api_client] = lambda: mock_action_client
+    app.dependency_overrides[get_action_pathways_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
     app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
@@ -277,3 +325,4 @@ def test_prioritize_e2e_stubbed_activity_mapping_matches_disabled_mode(
         )
     finally:
         app.dependency_overrides.clear()
+

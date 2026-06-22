@@ -1,6 +1,10 @@
 import { SectorEmission } from "@/util/types";
 import { Box, Icon, Table, Text } from "@chakra-ui/react";
-import { convertKgToTonnes, shortSectorNameToKebabCase } from "@/util/helpers";
+import {
+  convertKgToTonnes,
+  formatNumber,
+  shortSectorNameToKebabCase,
+} from "@/util/helpers";
 import React from "react";
 import { useTranslation } from "@/i18n/client";
 import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
@@ -20,6 +24,7 @@ interface EmissionBySectorTableProps {
   }[];
 
   lng: string;
+  numberFormat?: string;
 }
 
 type ExtendedSectorEmission = SectorEmission & {
@@ -30,6 +35,7 @@ type ExtendedSectorEmission = SectorEmission & {
 const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
   data,
   lng,
+  numberFormat,
 }) => {
   const { t: tData } = useTranslation(lng, "data");
   const { t: tDashboard } = useTranslation(lng, "dashboard");
@@ -86,10 +92,14 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
                   )}
                 </Table.Cell>
                 <Table.Cell>
-                  {convertKgToTonnes(sectorBreakDown.co2eq)}
+                  {convertKgToTonnes(sectorBreakDown.co2eq, numberFormat)}
                 </Table.Cell>
                 <Table.Cell>
-                  {sectorBreakDown.totalInventoryPercentage}%
+                  {formatNumber(
+                    sectorBreakDown.totalInventoryPercentage ?? 0,
+                    numberFormat,
+                  )}
+                  %
                 </Table.Cell>
                 <Table.Cell
                   display="flex"
@@ -164,6 +174,7 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
                             (acc, curr) => acc + BigInt(curr.co2eq as bigint),
                             0n,
                           ),
+                          numberFormat,
                         )}{" "}
                       </Text>
                     </Box>

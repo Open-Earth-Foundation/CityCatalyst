@@ -9,8 +9,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 
-from ...db import Base
-from .types import JSONBCompat
+from app.db import Base
+from app.models.db.types import JSONBCompat
 
 
 class Thread(Base):
@@ -62,4 +62,4 @@ class Thread(Base):
         return self.get_access_token() is not None
 
 
-from .message import Message  # noqa: E402  (circular import resolution)
+from app.models.db.message import Message  # noqa: E402  (circular import resolution)

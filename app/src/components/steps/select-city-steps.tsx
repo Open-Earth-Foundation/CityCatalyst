@@ -1,9 +1,4 @@
 import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
-import {
-  CountryEmissionsEntry,
-  Inputs,
-  OnboardingData,
-} from "../../app/[lng]/onboarding/setup/page";
 import { TFunction } from "i18next";
 import {
   OCCityAttributes,
@@ -14,6 +9,7 @@ import { useAppDispatch } from "@/lib/hooks";
 import React, { useEffect, useMemo, useState } from "react";
 import { set } from "@/features/city/openclimateCitySlice";
 import {
+  api,
   useGetCityQuery,
   useGetOCCityDataQuery,
   useGetOCCityQuery,
@@ -28,10 +24,18 @@ import {
   Input,
   InputAddon,
   Link,
+  Spinner,
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { MdCheck, MdInfoOutline, MdSearch, MdWarning } from "react-icons/md";
+import {
+  MdCheck,
+  MdInfoOutline,
+  MdOutlineAspectRatio,
+  MdSearch,
+  MdWarning,
+} from "react-icons/md";
+import { CircleFlag } from "react-circle-flags";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { NoResultsIcon } from "../icons";
@@ -54,6 +58,33 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
+
+export type Inputs = {
+  city: string;
+  year: number;
+  inventoryGoal: string;
+  globalWarmingPotential: string;
+  cityPopulation: number;
+  cityPopulationYear: number;
+  regionPopulation: number;
+  regionPopulationYear: number;
+  countryPopulation: number;
+  countryPopulationYear: number;
+  totalCountryEmissions: number;
+};
+
+export type CountryEmissionsEntry = {
+  year: number;
+  total_emissions: number;
+};
+
+export type OnboardingData = {
+  name: string;
+  locode: string;
+  year: number;
+  inventoryGoal: string;
+  globalWarmingPotential: string;
+};
 
 export default function SelectCityStep({
   errors,
@@ -283,6 +314,13 @@ export default function SelectCityStep({
     setTimeout(() => setOnInputClicked(false), 0),
   );
 
+  // Fetch city area/boundary for the selected city to display "Total land area"
+  const { data: cityBoundary, isFetching: isAreaLoading } =
+    api.useGetCityBoundaryQuery(ocCityData?.actor_id!, {
+      skip: !ocCityData?.actor_id,
+    });
+  const area = cityBoundary?.area ?? ocCityData?.area ?? 0;
+
   return (
     <Box w="full">
       <Box
@@ -290,9 +328,21 @@ export default function SelectCityStep({
         w="full"
         display="flex"
         flexDir="column"
-        gap="24px"
+        gap="16px"
         mb="48px"
       >
+        <Text
+          fontFamily="heading"
+          fontWeight="600"
+          lineHeight="16px"
+          letterSpacing="1.5px"
+          textTransform="uppercase"
+          color="content.tertiary"
+          fontSize="title.sm"
+          data-testid="ghg-inventory-creation-tag"
+        >
+          {t("ghg-inventory-creation")}
+        </Text>
         <Heading data-testid="setup-city-heading" size="xl">
           {t("setup-city-heading")}
         </Heading>
@@ -361,7 +411,7 @@ export default function SelectCityStep({
                     </Text>
                   </Box>
                 }
-                label={t("city")}
+                label={t("select-your-city")}
                 data-testid="setup-city-input-label"
               >
                 <InputGroup
@@ -502,37 +552,110 @@ export default function SelectCityStep({
               {ocCityData ? (
                 <Box
                   display="flex"
-                  flexDir="column"
-                  borderRadius="8px"
-                  w="full"
-                  h="full"
+                  flexDir={{ base: "column", md: "row" }}
                   gap="24px"
-                  overflow="hidden"
+                  w="full"
+                  alignItems="flex-start"
+                  mt={4}
                 >
-                  <CityMap
-                    locode={ocCityData.actor_id}
-                    height={500}
-                    width={1100}
-                  />
-                  <Box display="flex" alignItems="center" gap="6px">
-                    <MdInfoOutline />
-                    <Text
-                      color="content.secondary"
-                      fontWeight="normal"
-                      letterSpacing="wide"
-                    >
-                      <Trans i18nKey="city-boundary-info" t={t}>
-                        <Link
-                          color="content.link"
-                          fontWeight="bold"
-                          textDecoration="underline"
-                          letterSpacing="wide"
-                          href="mailto:greta@openearth.org"
+                  <Box
+                    flex="1"
+                    display="flex"
+                    flexDir="column"
+                    gap="32px"
+                    pt={2}
+                  >
+                    <Box display="flex" alignItems="center" gap="16px">
+                      <CircleFlag
+                        countryCode={
+                          ocCityData.actor_id?.substring(0, 2).toLowerCase() ||
+                          ""
+                        }
+                        width={32}
+                      />
+                      <Heading
+                        fontSize="title.md"
+                        color="content.alternative"
+                        fontStyle="normal"
+                        lineHeight="24px"
+                        textOverflow="ellipsis"
+                        overflow="hidden"
+                        data-testid="selected-city-name"
+                      >
+                        {ocCityData.name}
+                      </Heading>
+                    </Box>
+                    <Box display="flex" alignItems="center" h="44px" gap="16px">
+                      <Icon
+                        as={MdOutlineAspectRatio}
+                        color="interactive.control"
+                        h="24px"
+                        w="24px"
+                      />
+                      <Box>
+                        <Text
+                          fontSize="title.md"
+                          fontWeight="600"
+                          lineHeight="24px"
+                          color="content.secondary"
+                          fontFamily="heading"
+                          data-testid="selected-city-area"
                         >
-                          Contact Us
-                        </Link>
-                      </Trans>
-                    </Text>
+                          {isAreaLoading ? (
+                            <Spinner size="sm" color="content.tertiary" />
+                          ) : area && area > 0 ? (
+                            <>
+                              {/* eslint-disable-next-line i18next/no-literal-string */}
+                              {Math.round(area)}Km<sup>2</sup>
+                            </>
+                          ) : (
+                            "N/A"
+                          )}
+                        </Text>
+                        <Text
+                          fontSize="label.md"
+                          fontWeight="500"
+                          lineHeight="16px"
+                          color="content.tertiary"
+                          letterSpacing="wide"
+                        >
+                          {t("total-land-area")}
+                        </Text>
+                      </Box>
+                    </Box>
+                    <Box display="flex" alignItems="flex-start" gap="6px">
+                      <Icon
+                        as={MdInfoOutline}
+                        mt={1}
+                        color="interactive.control"
+                      />
+                      <Text
+                        color="content.secondary"
+                        fontWeight="normal"
+                        letterSpacing="wide"
+                        fontFamily="body"
+                      >
+                        <Trans i18nKey="city-boundary-info" t={t}>
+                          <Link
+                            color="content.link"
+                            fontWeight="bold"
+                            textDecoration="underline"
+                            letterSpacing="wide"
+                            href="mailto:greta@openearth.org"
+                            fontFamily="heading"
+                          >
+                            Contact Us
+                          </Link>
+                        </Trans>
+                      </Text>
+                    </Box>
+                  </Box>
+                  <Box flex="1" w="full" borderRadius="8px" overflow="hidden">
+                    <CityMap
+                      locode={ocCityData.actor_id}
+                      height={300}
+                      width={450}
+                    />
                   </Box>
                 </Box>
               ) : (

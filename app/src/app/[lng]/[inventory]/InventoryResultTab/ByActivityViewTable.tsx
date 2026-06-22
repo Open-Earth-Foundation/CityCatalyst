@@ -9,6 +9,7 @@ interface ByActivityViewTableProps {
   tData: TFunction;
   tDashboard: TFunction;
   sectorName: string;
+  numberFormat?: string;
 }
 
 const ByActivityViewTable: React.FC<ByActivityViewTableProps> = ({
@@ -16,6 +17,7 @@ const ByActivityViewTable: React.FC<ByActivityViewTableProps> = ({
   tData,
   tDashboard,
   sectorName,
+  numberFormat,
 }) => {
   const renderRows = (data: ActivityBreakdown) => {
     const rows: JSX.Element[] = [];
@@ -39,7 +41,9 @@ const ByActivityViewTable: React.FC<ByActivityViewTableProps> = ({
                 ? "N/A"
                 : `${activityValue} ${tData(activityUnits)}`}
             </Table.Cell>
-            <Table.Cell>{convertKgToTonnes(totalActivityEmissions)}</Table.Cell>
+            <Table.Cell>
+              {convertKgToTonnes(totalActivityEmissions, numberFormat)}
+            </Table.Cell>
             <Table.Cell>{totalEmissionsPercentage}%</Table.Cell>
           </Table.Row>,
         );

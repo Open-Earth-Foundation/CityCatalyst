@@ -1,5 +1,5 @@
-from .requests import ThreadCreateRequest, MessageCreateRequest
-from .responses import ThreadCreateResponse
+from app.models.requests import ThreadCreateRequest, MessageCreateRequest
+from app.models.responses import ThreadCreateResponse
 
 __all__ = [
     "ThreadCreateRequest",

@@ -15,17 +15,19 @@ import { Overline } from "@/components/package/Texts/Overline";
 interface SourceDrawerActivityTableProps {
   activities: DataSourceActivityDataRecord[];
   t: TFunction;
+  numberFormat?: string;
 }
 
 export function SourceDrawerActivityTable({
   activities,
   t,
+  numberFormat,
 }: SourceDrawerActivityTableProps) {
   const getTotalEmissions = (activity: DataSourceActivityDataRecord) => {
     const emissions = activity.gases.reduce((acc, gas) => {
       return acc + gas.emissions_value_100yr;
     }, 0);
-    return convertKgToTonnes(emissions);
+    return convertKgToTonnes(emissions, numberFormat);
   };
 
   const columns = [
@@ -75,7 +77,10 @@ export function SourceDrawerActivityTable({
                       <Table.Row key={gas.gas_name}>
                         <Table.Cell>{t(gas.gas_name)}</Table.Cell>
                         <Table.Cell>
-                          {convertKgToTonnes(gas.emissions_value_100yr)}
+                          {convertKgToTonnes(
+                            gas.emissions_value_100yr,
+                            numberFormat,
+                          )}
                         </Table.Cell>
                         <Table.Cell>
                           {`${gas.activity_value} ${t(activity.activity_units)}`}

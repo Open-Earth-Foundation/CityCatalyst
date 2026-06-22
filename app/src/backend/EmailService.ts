@@ -99,7 +99,7 @@ export default class EmailService {
     params.set("email", email);
     params.set("role", role);
 
-    const url = `${host}/organization/invites?${params.toString()}`;
+    const url = `${host}/cities/onboarding?${params.toString()}`;
     const html = await render(
       InviteToOrganizationTemplate({
         url,

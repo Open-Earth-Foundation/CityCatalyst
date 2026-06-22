@@ -36,6 +36,7 @@ function CustomTooltipLayer(props: any) {
     data,
     forecast,
     t,
+    numberFormat,
   } = props;
 
   // Get all unique x values (years) from all series
@@ -73,12 +74,13 @@ function CustomTooltipLayer(props: any) {
             data,
             forecast,
             t,
+            numberFormat,
           };
 
           showTooltipFromEvent(
             <TooltipCard {...tooltipData} />,
             event,
-            "right"
+            "right",
           );
         };
 
@@ -108,9 +110,11 @@ function CustomTooltipLayer(props: any) {
 const EmissionsForecastChartInner = ({
   forecast,
   t,
+  numberFormat,
 }: {
   forecast: EmissionsForecastData;
   t: TFunction;
+  numberFormat?: string;
 }) => {
   const convertToLineChartData = (
     forecastData: EmissionsForecastData,
@@ -167,7 +171,7 @@ const EmissionsForecastChartInner = ({
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            format: (value: number) => convertKgToTonnes(value),
+            format: (value: number) => convertKgToTonnes(value, numberFormat),
           }}
           colors={colors}
           enableGridX={false}
@@ -199,6 +203,7 @@ const EmissionsForecastChartInner = ({
                 data,
                 forecast,
                 t,
+                numberFormat,
               }),
           ]}
         />
@@ -211,13 +216,19 @@ const EmissionsForecastChartInner = ({
 export const EmissionsForecastChart = ({
   forecast,
   t,
+  numberFormat,
 }: {
   forecast: EmissionsForecastData;
   t: TFunction;
+  numberFormat?: string;
 }) => {
   return (
     <TooltipProvider>
-      <EmissionsForecastChartInner forecast={forecast} t={t} />
+      <EmissionsForecastChartInner
+        forecast={forecast}
+        t={t}
+        numberFormat={numberFormat}
+      />
     </TooltipProvider>
   );
 };

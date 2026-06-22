@@ -186,8 +186,16 @@ async function next(req: NextRequestWithAuth): Promise<NextMiddlewareResult> {
     return NextResponse.next();
   }
 
-  // handle invite routes
-  if (inviteMatcher.test(basePath) && !searchParams.has("from")) {
+  // handle invite routes (org invite via onboarding page uses token + organizationId params)
+  const isOnboardingOrgInvite =
+    /^\/[a-z]{2}\/cities\/onboarding\/?$/.test(basePath) &&
+    searchParams.has("token") &&
+    searchParams.has("organizationId");
+
+  if (
+    (inviteMatcher.test(basePath) || isOnboardingOrgInvite) &&
+    !searchParams.has("from")
+  ) {
     return await withAuth(req, {
       ...config,
       pages: { signIn: "/auth/signup" },

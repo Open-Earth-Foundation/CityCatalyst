@@ -26,8 +26,10 @@ _SCORES_SQL = text(
         src_action_id,
         global_mitigation_option,
         action_mapping_strength,
+        strength_weight,
         option_family,
         score,
+        raw_score,
         n_indicators_total,
         n_dims_scored,
         econ,
@@ -144,8 +146,12 @@ def _format_score_row(row: Dict[str, Any]) -> Dict[str, Any]:
         "src_action_id": normalized["src_action_id"],
         "global_mitigation_option": normalized["global_mitigation_option"],
         "action_mapping_strength": normalized["action_mapping_strength"],
+        "strength_weight": normalized.get("strength_weight"),
         "option_family": normalized["option_family"],
+        # action_score is shrunk toward 0.5 by strength_weight.
+        # raw_action_score preserves the pure IPCC+city evidence blend for auditability.
         "action_score": normalized["score"],
+        # "raw_action_score": normalized.get("raw_score"),
         "n_feasibility_dimensions": normalized["n_dims_scored"],
         "dimension_scores": _dimension_scores(normalized),
         "breakdown": _ordered_breakdown(normalized.get("breakdown")),

@@ -4,8 +4,7 @@ metadata:
   name: citycatalyst-check-hiap-jobs
   namespace: default
 spec:
-  # Run every minute
-  schedule: "* * * * *"
+  schedule: "*/5 * * * *"
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
   concurrencyPolicy: Forbid # Prevent overlapping runs

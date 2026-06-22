@@ -97,7 +97,7 @@ describe("User API", () => {
   it("should not update a user with invalid data", async () => {
     const req = mockRequest(invalidUserUpdate);
     const res = await updateUser(req, emptyParams);
-    await expectStatusCode(res, 200);
+    await expectStatusCode(res, 400);
     const user = await db.models.User.findOne({
       where: { userId: userData.userId },
     });

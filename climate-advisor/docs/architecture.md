@@ -94,7 +94,6 @@ sequenceDiagram
   - `city_inventory_search`
   - `get_inventory`
   - `get_all_datasources`
-  - `inventory_context` prompt block when an inventory is active
 - Added when the request is scoped to a Stationary Energy draft run:
   - `stationary_energy_list_review_options`
   - `stationary_energy_accept_one`
@@ -107,7 +106,13 @@ sequenceDiagram
   - `stationary_energy_rollback_staged_sources`
   - `stationary_energy_save_review_draft`
   - `stationary_energy_request_inventory_save_confirmation`
-  - `stationary_energy_review` prompt block
+
+`AgentService.create_agent()` also appends prompt blocks to the base
+instructions when their runtime context is present:
+
+- `inventory_context` when an inventory is active.
+- `stationary_energy_review` when the request is scoped to a Stationary Energy
+  draft run.
 
 ## Stationary Energy Review Flow
 

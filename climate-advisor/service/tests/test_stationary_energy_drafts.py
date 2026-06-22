@@ -1092,6 +1092,42 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(status_data["review_decisions"]), len(decisions))
         self.assertEqual(status_data["review_decisions"][0]["user_id"], "user-1")
 
+    def test_review_marks_staged_agent_choices_saved(self) -> None:
+        draft_run_id, proposal_id, candidate_id = self._start_draft()
+
+        async def stage_choice() -> None:
+            async with self.session_factory() as session:
+                service = StationaryEnergyAgentReviewService(session)
+                await service.accept_one(
+                    draft_run_id=UUID(draft_run_id),
+                    user_id="user-1",
+                    choice=StationaryEnergyAgentReviewChoiceInput(
+                        proposal_id=UUID(proposal_id),
+                        candidate_id=UUID(candidate_id),
+                        rationale="Use the agent-selected source.",
+                    ),
+                )
+                await session.commit()
+
+        asyncio.run(stage_choice())
+        self.assertEqual(
+            len(self._get_status(draft_run_id)["staged_review_selections"]),
+            1,
+        )
+        decisions = self._complete_review_decisions(draft_run_id)
+
+        with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}):
+            review_response = self.client.post(
+                f"/v1/stationary-energy-drafts/{draft_run_id}/review",
+                json={"user_id": "user-1", "decisions": decisions},
+                headers=_auth_headers(),
+            )
+
+        self.assertEqual(review_response.status_code, 200, review_response.text)
+        status_data = self._get_status(draft_run_id)
+        self.assertEqual(status_data["staged_review_selections"], [])
+        self.assertEqual(len(status_data["review_decisions"]), len(decisions))
+
     def test_review_accept_persists_recommended_source_and_candidate(self) -> None:
         draft_run_id, _proposal_id, _candidate_id = self._start_draft()
         status_before_review = self._get_status(draft_run_id)

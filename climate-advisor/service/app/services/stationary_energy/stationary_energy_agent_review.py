@@ -506,10 +506,6 @@ class StationaryEnergyAgentReviewService:
             ),
             authorization=authorization,
         )
-        await self.repository.mark_staged_review_selections_saved(
-            draft_run_id=draft_run_id,
-            user_id=user_id,
-        )
 
         # Return a tool-facing summary for the rows saved in Clima.
         selected_choices = [

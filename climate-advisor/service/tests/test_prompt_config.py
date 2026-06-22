@@ -39,8 +39,15 @@ def test_stationary_energy_review_prompt_has_rendered_tools_section() -> None:
 
     assert "{{ include:" not in raw_prompt
     assert "{{ include:" not in rendered_prompt
+    assert "You are Clima" in rendered_prompt
+    assert "Handle one Stationary Energy review intent per user turn" in rendered_prompt
+    assert "Route the user request by choosing the first matching route" in rendered_prompt
+    assert "Confirmation payload routes 4 and 6 take precedence" in rendered_prompt
     assert "<tools>" in rendered_prompt
     assert "</tools>" in rendered_prompt
+    assert "`proposal_id`" in rendered_prompt
+    assert "`selected_source_id`" in rendered_prompt
+    assert "`activity_value`" in rendered_prompt
     assert "`stationary_energy_accept_one`" in rendered_prompt
     assert "`stationary_energy_request_bulk_review_confirmation`" in rendered_prompt
     assert "`stationary_energy_save_review_draft`" in rendered_prompt

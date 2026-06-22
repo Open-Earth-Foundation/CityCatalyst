@@ -554,7 +554,7 @@ class StationaryEnergyDraftService:
         payload: ReviewStationaryEnergyDraftRequest,
         authorization: str | None = None,
     ) -> ReviewStationaryEnergyDraftResponse:
-        """Persist a complete review decision set for a draft run."""
+        """Persist a complete review decision set and finalize staged choices."""
         draft_run = await self._get_draft_run_or_404(draft_run_id)
         await self._require_scope_token_and_capabilities(
             requested_user_id=payload.user_id,
@@ -595,6 +595,10 @@ class StationaryEnergyDraftService:
         )
 
         await self.repository.persist_review_decisions(decisions)
+        await self.repository.mark_staged_review_selections_saved(
+            draft_run_id=draft_run.draft_run_id,
+            user_id=payload.user_id,
+        )
         await self.repository.update_draft_run(
             draft_run,
             status="reviewed",

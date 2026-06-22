@@ -20,7 +20,7 @@ def _ensure_asyncpg_url(url: str) -> str:
 
 logger = logging.getLogger(__name__)
 
-from ..config.settings import get_settings
+from app.config.settings import get_settings
 
 _engine = None
 _session_factory: async_sessionmaker[AsyncSession] | None = None

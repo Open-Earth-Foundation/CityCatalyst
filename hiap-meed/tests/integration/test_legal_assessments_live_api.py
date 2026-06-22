@@ -148,7 +148,7 @@ def test_legal_assessments_live_payload_matches_expected_contract() -> None:
 
     validated = [ActionLegalAssessmentApiItem.model_validate(row) for row in payload]
     assert validated
-    assert validated[0].countryCode == "CL"
+    assert validated[0].country_code == "CL"
 
 
 @pytest.mark.integration

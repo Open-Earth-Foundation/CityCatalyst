@@ -108,20 +108,28 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   const failedInvites: { cityId: string }[] = [];
   await Promise.all(
     invites.map(async (invite) => {
-      const cityUser = await db.models.CityUser.create({
-        cityUserId: randomUUID(),
-        cityId: invite.cityId,
-        userId: session.user.id,
-      });
-      if (!cityUser) {
-        failedInvites.push({ cityId: invite.cityId! });
-        logger.error({
+      const [cityUser, created] = await db.models.CityUser.findOrCreate({
+        where: {
           cityId: invite.cityId,
-          email,
-        }, "[UserInviteAccept] Error creating CityUser");
-        throw new createHttpError.BadRequest("Something went wrong");
-      }
-      logger.info({ cityId: invite.cityId, userId: session.user.id }, "[UserInviteAccept] Created CityUser");
+          userId: session.user.id,
+        },
+        defaults: {
+          cityUserId: randomUUID(),
+          cityId: invite.cityId!,
+          userId: session.user.id,
+        },
+      });
+      logger.info(
+        {
+          cityId: invite.cityId,
+          userId: session.user.id,
+          cityUserId: cityUser.cityUserId,
+          created,
+        },
+        created
+          ? "[UserInviteAccept] Created CityUser"
+          : "[UserInviteAccept] CityUser already exists; continuing accept",
+      );
       await invite.update({
         status: InviteStatus.ACCEPTED,
         userId: session.user.id,

@@ -16,13 +16,15 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # Import configuration
 try:
-    from ..config_loader import get_embedding_config
+    from vector_db.config_loader import get_embedding_config
 except ImportError:
     # Handle case when running module directly
     import sys
-    import os
-    sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-    from config_loader import get_embedding_config
+
+    project_root = Path(__file__).resolve().parents[2]
+    if str(project_root) not in sys.path:
+        sys.path.append(str(project_root))
+    from vector_db.config_loader import get_embedding_config
 
 
 class PDFProcessor:

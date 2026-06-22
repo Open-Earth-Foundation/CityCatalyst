@@ -60,6 +60,41 @@ export default class CalculationService {
     return { co2eq, co2eqYears };
   }
 
+  private static sumGasCO2eq(
+    gasToCO2Eqs: GasToCO2Eq[],
+    gases: Gas[],
+  ): { totalCO2e: Decimal; totalCO2eYears: number } {
+    let totalCO2e = new Decimal(0);
+    let totalCO2eYears = 0;
+
+    for (const gas of gases) {
+      const { co2eq, co2eqYears } = this.calculateCO2eq(
+        gasToCO2Eqs,
+        gas.gas,
+        gas.amount,
+      );
+
+      totalCO2e = Decimal.sum(totalCO2e, co2eq);
+      totalCO2eYears = Math.max(co2eqYears, totalCO2eYears);
+    }
+
+    return { totalCO2e, totalCO2eYears };
+  }
+
+  public static async calculateCO2eqForGases(
+    gases: Gas[],
+  ): Promise<{ totalCO2e: Decimal; totalCO2eYears: number }> {
+    const [result] = await this.calculateCO2eqForGasGroups([gases]);
+    return result;
+  }
+
+  public static async calculateCO2eqForGasGroups(
+    gasGroups: Gas[][],
+  ): Promise<Array<{ totalCO2e: Decimal; totalCO2eYears: number }>> {
+    const gasToCO2Eqs = await db.models.GasToCO2Eq.findAll();
+    return gasGroups.map((gases) => this.sumGasCO2eq(gasToCO2Eqs, gases));
+  }
+
   public static async getFormula(inputMethodology: string): Promise<string> {
     if (inputMethodology === "direct-measure") {
       return "direct-measure";
@@ -105,8 +140,6 @@ export default class CalculationService {
 
     // TODO cache
     const gasToCO2Eqs = await db.models.GasToCO2Eq.findAll();
-    let totalCO2e = new Decimal(0);
-    let totalCO2eYears = 0;
     let gases: Gas[] = [];
 
     switch (formula) {
@@ -200,16 +233,7 @@ export default class CalculationService {
         );
     }
 
-    for (const gas of gases) {
-      const { co2eq, co2eqYears } = this.calculateCO2eq(
-        gasToCO2Eqs,
-        gas.gas,
-        gas.amount,
-      );
-
-      totalCO2e = Decimal.sum(totalCO2e, co2eq);
-      totalCO2eYears = Math.max(co2eqYears, totalCO2eYears);
-    }
+    const { totalCO2e, totalCO2eYears } = this.sumGasCO2eq(gasToCO2Eqs, gases);
 
     return {
       totalCO2e,

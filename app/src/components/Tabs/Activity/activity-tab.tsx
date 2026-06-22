@@ -119,6 +119,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
   const [deleteInventoryValue, { isLoading: isDeletingInventoryValue }] =
     api.useDeleteInventoryValueMutation();
 
+  const { data: userInfo } = api.useGetUserInfoQuery();
+
   const inventoryValue = useMemo<InventoryValueAttributes | null>(() => {
     return (
       inventoryValues?.find(
@@ -337,6 +339,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
           <ExternalDataSection
             t={t}
             inventoryValue={externalInventoryValue as unknown as InventoryValue}
+            numberFormat={userInfo?.numberFormat}
           />
         </Box>
       )}
@@ -362,6 +365,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
                 totalEmissions={totalEmissions}
                 changeMethodology={changeMethodology}
                 inventoryValue={inventoryValue as unknown as InventoryValue}
+                numberFormat={userInfo?.numberFormat}
               />
             </Box>
           ) : (

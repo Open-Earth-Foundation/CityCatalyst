@@ -25,8 +25,8 @@ import {
   MdReplay,
 } from "react-icons/md";
 
-function toEmissionsString(totalEmissions: number): string {
-  const { value, unit } = formatEmissions(totalEmissions);
+function toEmissionsString(totalEmissions: number, format?: string): string {
+  const { value, unit } = formatEmissions(totalEmissions, format);
   return `${value} ${unit}CO2e`;
 }
 
@@ -127,6 +127,7 @@ export default function VersionEntry({
   versionEntries,
   versionNumber,
   moduleName = "ghgi",
+  numberFormat,
 }: {
   t: TFunction;
   tData: TFunction;
@@ -134,6 +135,7 @@ export default function VersionEntry({
   versionEntries: VersionHistoryEntry[];
   versionNumber: number;
   moduleName?: string;
+  numberFormat?: string;
 }) {
   const firstEntry = versionEntries[0];
 
@@ -165,10 +167,13 @@ export default function VersionEntry({
         " " +
         tData(entry.subCategory?.subcategoryName ?? ""),
       totalEmissions: entry.version.data?.co2eq
-        ? toEmissionsString(entry.version.data.co2eq)
+        ? toEmissionsString(entry.version.data.co2eq, numberFormat)
         : "-",
       previousTotalEmissions: entry.version.previousVersion?.data?.co2eq
-        ? toEmissionsString(entry.version.previousVersion?.data?.co2eq)
+        ? toEmissionsString(
+            entry.version.previousVersion?.data?.co2eq,
+            numberFormat,
+          )
         : "-",
       totalEmissionsChangeSign: getChangeSign(entry),
       source: entry.dataSource?.datasourceName ?? "-",

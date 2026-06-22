@@ -1,4 +1,4 @@
-import { DataTypes, Model, Sequelize, Optional } from 'sequelize';
+import { DataTypes, Model, Sequelize, Optional } from "sequelize";
 
 export interface ProjectModulesAttributes {
   id: string;
@@ -16,10 +16,10 @@ export class ProjectModules
   extends Model<ProjectModulesAttributes, ProjectModulesCreationAttributes>
   implements ProjectModulesAttributes
 {
-  public declare id: string;
-  public declare projectId: string;
-  public declare moduleId: string;
-  public expiresOn?: Date;
+  declare public id: string;
+  declare public projectId: string;
+  declare public moduleId: string;
+  declare public expiresOn?: Date;
 
   static initModel(sequelize: Sequelize): typeof ProjectModules {
     ProjectModules.init(
@@ -64,4 +64,5 @@ export class ProjectModules
     );
     return ProjectModules;
   }
-} 
+}
+

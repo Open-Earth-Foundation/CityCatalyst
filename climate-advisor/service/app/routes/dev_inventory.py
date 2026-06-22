@@ -6,7 +6,7 @@ from typing import Any, Dict, List
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from ..services.citycatalyst_client import (
+from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
     TokenRefreshError,

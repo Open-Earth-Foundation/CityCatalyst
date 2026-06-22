@@ -44,7 +44,7 @@ class CityData(BaseModel):
             "renter_share",
             "employment_in_transport_and_logistics",
             "electricity_access_rate",
-            "industry_construction_employment",
+            "employment_construction",
             "median_household_income",
             "public_transport_share",
             "poverty_rate",
@@ -66,19 +66,33 @@ class Action(BaseModel):
     action_id: str = Field(min_length=1)
     action_name: str
     action_type: str | None = None
-    activity_type_description: str | None = None
     description: str | None = None
-    action_category: str | None = None
-    action_subcategory: str | None = None
+    intervention_summary: str | None = None
+    outcome_summary: str | None = None
+    intervention_type: str | None = None
+    action_role: str | None = None
+    publisher_id: str | None = None
+    generation_method: str | None = None
+    name_i18n: dict[str, str] = Field(default_factory=dict)
+    description_i18n: dict[str, str] = Field(default_factory=dict)
+    intervention_summary_i18n: dict[str, str] = Field(default_factory=dict)
+    outcome_summary_i18n: dict[str, str] = Field(default_factory=dict)
     investment_cost: str | None = None
     implementation_timeline: str | None = None
-    biome: str | None = None
     emissions: dict[str, Any] = Field(default_factory=dict)
     co_benefits: dict[str, dict[str, Any]] = Field(default_factory=dict)
-    socioeconomic_indicators: list[dict[str, Any]] = Field(default_factory=list)
     as_of: datetime | None = None
     source: str | None = None
     raw: dict[str, Any] = Field(default_factory=dict)
+
+
+class ActionPathwaysFetchResult(BaseModel):
+    """Action pathway rows plus request-scoped fetch metadata."""
+
+    actions: list[Action] = Field(default_factory=list)
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
+    upstream_meta: dict[str, Any] = Field(default_factory=dict)
+    warning: str | None = None
 
 
 class BlockScoreResult(BaseModel):
@@ -168,6 +182,34 @@ class ActionPolicyScoresFetchResult(BaseModel):
     """Action policy score rows plus request-scoped fetch metadata."""
 
     scores_by_action_id: dict[str, ActionPolicyScoreRecord] = Field(
+        default_factory=dict
+    )
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
+    upstream_meta: dict[str, Any] = Field(default_factory=dict)
+    warning: str | None = None
+
+
+class ActionMitigationFeasibilityScoreRecord(BaseModel):
+    """Internal mitigation feasibility score contract consumed by Feasibility."""
+
+    action_id: str = Field(min_length=1)
+    locode: str
+    global_mitigation_option: str | None = None
+    action_mapping_strength: str | None = None
+    option_family: str | None = None
+    action_score: float | None = None
+    n_feasibility_dimensions: int | None = None
+    dimension_scores: dict[str, float] = Field(default_factory=dict)
+    breakdown: dict[str, Any] = Field(default_factory=dict)
+    rank_within_city: int | None = None
+    raw: dict[str, Any] = Field(default_factory=dict)
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class ActionMitigationFeasibilityScoresFetchResult(BaseModel):
+    """Mitigation feasibility score rows plus request-scoped fetch metadata."""
+
+    scores_by_action_id: dict[str, ActionMitigationFeasibilityScoreRecord] = Field(
         default_factory=dict
     )
     source_metadata: dict[str, Any] = Field(default_factory=dict)

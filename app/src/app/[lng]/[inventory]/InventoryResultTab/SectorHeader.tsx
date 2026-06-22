@@ -9,11 +9,13 @@ export const SectorHeader = ({
   t,
   sectorName,
   dataForSector,
+  numberFormat,
 }: {
   icon: React.ElementType<IconBaseProps>;
   t: TFunction;
   sectorName: string;
   dataForSector?: SectorEmission;
+  numberFormat?: string;
 }) => (
   <HStack alignItems={"start"}>
     <Icon as={icon} height="24px" w="24px" color="interactive.secondary" />
@@ -24,7 +26,7 @@ export const SectorHeader = ({
       </Text>
       <Text fontWeight={"600"} fontSize={"28px"} color={"content.secondary"}>
         {dataForSector?.co2eq
-          ? convertKgToTonnes(dataForSector!.co2eq)
+          ? convertKgToTonnes(dataForSector!.co2eq, numberFormat)
           : t("N/A")}
       </Text>
       <Text

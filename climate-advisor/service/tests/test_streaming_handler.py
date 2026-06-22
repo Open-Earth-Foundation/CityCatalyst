@@ -1,16 +1,9 @@
 from __future__ import annotations
 
 import json
-import sys
 import unittest
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
+from uuid import uuid4
 
 from app.models.requests import MessageCreateRequest
 from app.utils.sse import format_sse
@@ -79,3 +72,29 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(done_payload["data"]["history_saved"])
         self.assertTrue(handler.history_saved)
         fake_agent_service.close.assert_awaited_once()
+
+    async def test_run_config_uses_persisted_stationary_energy_context_marker(self) -> None:
+        draft_run_id = str(uuid4())
+        payload = MessageCreateRequest(user_id="user-1", content="hello")
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        handler.stationary_energy_draft_run_id = draft_run_id
+
+        run_config = handler._run_config(payload)
+
+        self.assertEqual(
+            run_config.workflow_name,
+            "Climate Advisor Stationary Energy Context Chat",
+        )
+        self.assertEqual(
+            run_config.trace_metadata["trace_category"],
+            "ca_agentic_context_chat",
+        )
+        self.assertTrue(run_config.trace_metadata["ca_agentic_flow"])
+        self.assertEqual(
+            run_config.trace_metadata["stationary_energy_draft_run_id"],
+            draft_run_id,
+        )

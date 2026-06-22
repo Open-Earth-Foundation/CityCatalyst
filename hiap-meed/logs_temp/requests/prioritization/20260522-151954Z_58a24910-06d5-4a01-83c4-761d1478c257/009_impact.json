@@ -1,0 +1,2368 @@
+{
+  "timestamp": "2026-05-22T15:20:00.975445+00:00",
+  "request_id": "58a24910-06d5-4a01-83c4-761d1478c257",
+  "request_kind": "prioritization",
+  "event_index": 9,
+  "step_name": "impact",
+  "event_type": "impact.completed",
+  "payload": {
+    "actions": 82,
+    "all_scores_zero": false,
+    "min_score": 0.0,
+    "max_score": 0.5095162595620255,
+    "impact_matching": {
+      "activity_data_level_mapping_enabled": false,
+      "stub_invoked": false,
+      "matching_mode": "subsector_only",
+      "city_activity_rows_count": 16,
+      "city_subsector_keys": [
+        "I.1",
+        "II.1",
+        "III.1",
+        "III.2",
+        "III.4",
+        "IV.1",
+        "IV.2",
+        "V.1",
+        "VI.1"
+      ],
+      "warnings": [],
+      "candidate_action_ids_by_subsector_key": {
+        "IV.1": [
+          "icare_0001",
+          "icare_0034",
+          "icare_0071",
+          "icare_0072",
+          "icare_0074",
+          "icare_0076",
+          "icare_0078",
+          "icare_0079",
+          "icare_0082",
+          "ipcc_0023",
+          "ipcc_0024",
+          "ipcc_0025",
+          "ipcc_0026",
+          "ipcc_0031",
+          "ipcc_0033",
+          "ipcc_0040",
+          "ipcc_0041",
+          "ipcc_0042",
+          "ipcc_0043",
+          "ipcc_0045",
+          "ipcc_0049",
+          "ipcc_0050",
+          "ipcc_0076"
+        ],
+        "I.1": [
+          "icare_0002",
+          "icare_0010",
+          "icare_0016",
+          "icare_0028",
+          "icare_0040",
+          "c40_0010",
+          "c40_0071"
+        ],
+        "V.1": [
+          "icare_0099",
+          "ipcc_0064",
+          "ipcc_0067"
+        ],
+        "II.1": [
+          "icare_0121",
+          "ipcc_0001",
+          "ipcc_0105"
+        ],
+        "IV.2": [
+          "ipcc_0037",
+          "ipcc_0038",
+          "ipcc_0039"
+        ]
+      },
+      "action_text_sources_by_action_id": {},
+      "activity_row_candidates": []
+    },
+    "evidence_by_action_id": {
+      "c40_0010": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.1"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "I.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 1755987.5520000001,
+        "emissions_reduction_component_score": 0.19344766222626594,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.15475812978101278,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.3547581297810128,
+        "subsector_contributors": [
+          {
+            "subsector_key": "I.1",
+            "city_emissions": 8779937.76,
+            "scoring_city_emissions_magnitude": 8779937.76,
+            "share_of_city": 0.9672383111313296,
+            "reduction_amount": 1755987.5520000001
+          }
+        ]
+      },
+      "c40_0012": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.2"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "subsector_contributors": []
+      },
+      "c40_0016": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.2"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "subsector_contributors": []
+      },
+      "c40_0017": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.2"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "subsector_contributors": []
+      },
+      "c40_0034": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "III.1"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "subsector_contributors": []
+      },
+      "c40_0035": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "III.1"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "subsector_contributors": []
+      },
+      "c40_0040": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "III.1"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "c40_0042": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "c40_0071": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.1"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "I.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 1755987.5520000001,
+        "emissions_reduction_component_score": 0.19344766222626594,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.15475812978101278,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.25475812978101275,
+        "subsector_contributors": [
+          {
+            "subsector_key": "I.1",
+            "city_emissions": 8779937.76,
+            "scoring_city_emissions_magnitude": 8779937.76,
+            "share_of_city": 0.9672383111313296,
+            "reduction_amount": 1755987.5520000001
+          }
+        ]
+      },
+      "icare_0001": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 11463.3464,
+        "emissions_reduction_component_score": 0.0012628549444124314,
+        "timeline_component_score": 0.0,
+        "emissions_reduction_contribution": 0.0010102839555299452,
+        "timeline_contribution": 0.0,
+        "impact_block_score": 0.0010102839555299452,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "icare_0002": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "I.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 3511975.1040000003,
+        "emissions_reduction_component_score": 0.3868953244525319,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.30951625956202555,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.5095162595620255,
+        "subsector_contributors": [
+          {
+            "subsector_key": "I.1",
+            "city_emissions": 8779937.76,
+            "scoring_city_emissions_magnitude": 8779937.76,
+            "share_of_city": 0.9672383111313296,
+            "reduction_amount": 3511975.1040000003
+          }
+        ]
+      },
+      "icare_0006": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.4"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.0,
+        "impact_block_score": 0.0,
+        "subsector_contributors": []
+      },
+      "icare_0010": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.1"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "I.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 1755987.5520000001,
+        "emissions_reduction_component_score": 0.19344766222626594,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.15475812978101278,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.25475812978101275,
+        "subsector_contributors": [
+          {
+            "subsector_key": "I.1",
+            "city_emissions": 8779937.76,
+            "scoring_city_emissions_magnitude": 8779937.76,
+            "share_of_city": 0.9672383111313296,
+            "reduction_amount": 1755987.5520000001
+          }
+        ]
+      },
+      "icare_0012": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.4"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "icare_0015": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.4"
+        ],
+        "impact_band": "high",
+        "reduction_multiplier": 0.8,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "icare_0016": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.1",
+          "I.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "I.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 3511975.1040000003,
+        "emissions_reduction_component_score": 0.3868953244525319,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.30951625956202555,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.5095162595620255,
+        "subsector_contributors": [
+          {
+            "subsector_key": "I.1",
+            "city_emissions": 8779937.76,
+            "scoring_city_emissions_magnitude": 8779937.76,
+            "share_of_city": 0.9672383111313296,
+            "reduction_amount": 3511975.1040000003
+          }
+        ]
+      },
+      "icare_0024": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.4"
+        ],
+        "impact_band": "very high",
+        "reduction_multiplier": 1.0,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "icare_0027": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.4"
+        ],
+        "impact_band": "high",
+        "reduction_multiplier": 0.8,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "icare_0028": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.1",
+          "I.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "I.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 3511975.1040000003,
+        "emissions_reduction_component_score": 0.3868953244525319,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.30951625956202555,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.5095162595620255,
+        "subsector_contributors": [
+          {
+            "subsector_key": "I.1",
+            "city_emissions": 8779937.76,
+            "scoring_city_emissions_magnitude": 8779937.76,
+            "share_of_city": 0.9672383111313296,
+            "reduction_amount": 3511975.1040000003
+          }
+        ]
+      },
+      "icare_0033": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.5"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "subsector_contributors": []
+      },
+      "icare_0034": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 11463.3464,
+        "emissions_reduction_component_score": 0.0012628549444124314,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0010102839555299452,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.20101028395552994,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "icare_0040": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.1"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "I.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 1755987.5520000001,
+        "emissions_reduction_component_score": 0.19344766222626594,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.15475812978101278,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.25475812978101275,
+        "subsector_contributors": [
+          {
+            "subsector_key": "I.1",
+            "city_emissions": 8779937.76,
+            "scoring_city_emissions_magnitude": 8779937.76,
+            "share_of_city": 0.9672383111313296,
+            "reduction_amount": 1755987.5520000001
+          }
+        ]
+      },
+      "icare_0045": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "subsector_contributors": []
+      },
+      "icare_0050": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "icare_0053": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "III.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "subsector_contributors": []
+      },
+      "icare_0064": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "III.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "icare_0069": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "subsector_contributors": []
+      },
+      "icare_0071": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 5731.6732,
+        "emissions_reduction_component_score": 0.0006314274722062157,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0005051419777649726,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.10050514197776497,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 5731.6732
+          }
+        ]
+      },
+      "icare_0072": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 5731.6732,
+        "emissions_reduction_component_score": 0.0006314274722062157,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0005051419777649726,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.20050514197776498,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 5731.6732
+          }
+        ]
+      },
+      "icare_0074": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 5731.6732,
+        "emissions_reduction_component_score": 0.0006314274722062157,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0005051419777649726,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.10050514197776497,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 5731.6732
+          }
+        ]
+      },
+      "icare_0076": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 11463.3464,
+        "emissions_reduction_component_score": 0.0012628549444124314,
+        "timeline_component_score": 0.0,
+        "emissions_reduction_contribution": 0.0010102839555299452,
+        "timeline_contribution": 0.0,
+        "impact_block_score": 0.0010102839555299452,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "icare_0078": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 5731.6732,
+        "emissions_reduction_component_score": 0.0006314274722062157,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0005051419777649726,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.10050514197776497,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 5731.6732
+          }
+        ]
+      },
+      "icare_0079": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 11463.3464,
+        "emissions_reduction_component_score": 0.0012628549444124314,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0010102839555299452,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.20101028395552994,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "icare_0082": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 11463.3464,
+        "emissions_reduction_component_score": 0.0012628549444124314,
+        "timeline_component_score": 0.0,
+        "emissions_reduction_contribution": 0.0010102839555299452,
+        "timeline_contribution": 0.0,
+        "impact_block_score": 0.0010102839555299452,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "icare_0099": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.1",
+          "V.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "V.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 411.47159999999997,
+        "emissions_reduction_component_score": 4.5329603277564235e-05,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 3.626368262205139e-05,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.20003626368262206,
+        "subsector_contributors": [
+          {
+            "subsector_key": "V.1",
+            "city_emissions": -1028.6789999999999,
+            "scoring_city_emissions_magnitude": 1028.6789999999999,
+            "share_of_city": 0.00011332400819391057,
+            "reduction_amount": 411.47159999999997
+          }
+        ]
+      },
+      "icare_0101": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "icare_0104": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.4"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.0,
+        "impact_block_score": 0.0,
+        "subsector_contributors": []
+      },
+      "icare_0110": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "III.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "subsector_contributors": []
+      },
+      "icare_0120": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.6"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "subsector_contributors": []
+      },
+      "icare_0121": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "II.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "II.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 11035.2936,
+        "emissions_reduction_component_score": 0.001215698679907541,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0009725589439260328,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.20097255894392604,
+        "subsector_contributors": [
+          {
+            "subsector_key": "II.1",
+            "city_emissions": 27588.234,
+            "scoring_city_emissions_magnitude": 27588.234,
+            "share_of_city": 0.003039246699768852,
+            "reduction_amount": 11035.2936
+          }
+        ]
+      },
+      "icare_0122": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "subsector_contributors": []
+      },
+      "icare_0127": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "icare_0128": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "icare_0131": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "subsector_contributors": []
+      },
+      "icare_0132": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "subsector_contributors": []
+      },
+      "icare_0137": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.2,
+        "subsector_contributors": []
+      },
+      "ipcc_0001": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "II.1"
+        ],
+        "impact_band": "very low",
+        "reduction_multiplier": 0.2,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "II.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 5517.6468,
+        "emissions_reduction_component_score": 0.0006078493399537705,
+        "timeline_component_score": 0.0,
+        "emissions_reduction_contribution": 0.0004862794719630164,
+        "timeline_contribution": 0.0,
+        "impact_block_score": 0.0004862794719630164,
+        "subsector_contributors": [
+          {
+            "subsector_key": "II.1",
+            "city_emissions": 27588.234,
+            "scoring_city_emissions_magnitude": 27588.234,
+            "share_of_city": 0.003039246699768852,
+            "reduction_amount": 5517.6468
+          }
+        ]
+      },
+      "ipcc_0023": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 11463.3464,
+        "emissions_reduction_component_score": 0.0012628549444124314,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0010102839555299452,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.10101028395552995,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "ipcc_0024": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 11463.3464,
+        "emissions_reduction_component_score": 0.0012628549444124314,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0010102839555299452,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.10101028395552995,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "ipcc_0025": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 11463.3464,
+        "emissions_reduction_component_score": 0.0012628549444124314,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0010102839555299452,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.10101028395552995,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "ipcc_0026": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "high",
+        "reduction_multiplier": 0.8,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 22926.6928,
+        "emissions_reduction_component_score": 0.0025257098888248628,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0020205679110598903,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1020205679110599,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 22926.6928
+          }
+        ]
+      },
+      "ipcc_0028": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "ipcc_0031": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 11463.3464,
+        "emissions_reduction_component_score": 0.0012628549444124314,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0010102839555299452,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.10101028395552995,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "ipcc_0033": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 17195.0196,
+        "emissions_reduction_component_score": 0.001894282416618647,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0015154259332949178,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.10151542593329492,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 17195.0196
+          }
+        ]
+      },
+      "ipcc_0034": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "ipcc_0037": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.2"
+        ],
+        "impact_band": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.2"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 2105.3741999999997,
+        "emissions_reduction_component_score": 0.00023193770174373922,
+        "timeline_component_score": 0.0,
+        "emissions_reduction_contribution": 0.00018555016139499138,
+        "timeline_contribution": 0.0,
+        "impact_block_score": 0.00018555016139499138,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.2",
+            "city_emissions": 3508.957,
+            "scoring_city_emissions_magnitude": 3508.957,
+            "share_of_city": 0.0003865628362395654,
+            "reduction_amount": 2105.3741999999997
+          }
+        ]
+      },
+      "ipcc_0038": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.2"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 1403.5828000000001,
+        "emissions_reduction_component_score": 0.00015462513449582618,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.00012370010759666096,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.10012370010759666,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.2",
+            "city_emissions": 3508.957,
+            "scoring_city_emissions_magnitude": 3508.957,
+            "share_of_city": 0.0003865628362395654,
+            "reduction_amount": 1403.5828000000001
+          }
+        ]
+      },
+      "ipcc_0039": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.2"
+        ],
+        "impact_band": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.2"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 2105.3741999999997,
+        "emissions_reduction_component_score": 0.00023193770174373922,
+        "timeline_component_score": 0.0,
+        "emissions_reduction_contribution": 0.00018555016139499138,
+        "timeline_contribution": 0.0,
+        "impact_block_score": 0.00018555016139499138,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.2",
+            "city_emissions": 3508.957,
+            "scoring_city_emissions_magnitude": 3508.957,
+            "share_of_city": 0.0003865628362395654,
+            "reduction_amount": 2105.3741999999997
+          }
+        ]
+      },
+      "ipcc_0040": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 17195.0196,
+        "emissions_reduction_component_score": 0.001894282416618647,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0015154259332949178,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.10151542593329492,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 17195.0196
+          }
+        ]
+      },
+      "ipcc_0041": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 11463.3464,
+        "emissions_reduction_component_score": 0.0012628549444124314,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0010102839555299452,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.10101028395552995,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "ipcc_0042": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 17195.0196,
+        "emissions_reduction_component_score": 0.001894282416618647,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0015154259332949178,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.10151542593329492,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 17195.0196
+          }
+        ]
+      },
+      "ipcc_0043": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 17195.0196,
+        "emissions_reduction_component_score": 0.001894282416618647,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0015154259332949178,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.10151542593329492,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 17195.0196
+          }
+        ]
+      },
+      "ipcc_0045": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 11463.3464,
+        "emissions_reduction_component_score": 0.0012628549444124314,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0010102839555299452,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.20101028395552994,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "ipcc_0049": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 17195.0196,
+        "emissions_reduction_component_score": 0.001894282416618647,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0015154259332949178,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.10151542593329492,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 17195.0196
+          }
+        ]
+      },
+      "ipcc_0050": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 11463.3464,
+        "emissions_reduction_component_score": 0.0012628549444124314,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0010102839555299452,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.20101028395552994,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "ipcc_0052": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "high",
+        "reduction_multiplier": 0.8,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "ipcc_0053": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "high",
+        "reduction_multiplier": 0.8,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "ipcc_0054": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "ipcc_0055": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "ipcc_0056": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "ipcc_0057": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "ipcc_0060": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.0,
+        "impact_block_score": 0.0,
+        "subsector_contributors": []
+      },
+      "ipcc_0062": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "ipcc_0064": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "V.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 411.47159999999997,
+        "emissions_reduction_component_score": 4.5329603277564235e-05,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 3.626368262205139e-05,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.10003626368262206,
+        "subsector_contributors": [
+          {
+            "subsector_key": "V.1",
+            "city_emissions": -1028.6789999999999,
+            "scoring_city_emissions_magnitude": 1028.6789999999999,
+            "share_of_city": 0.00011332400819391057,
+            "reduction_amount": 411.47159999999997
+          }
+        ]
+      },
+      "ipcc_0067": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.1",
+          "V.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "V.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 411.47159999999997,
+        "emissions_reduction_component_score": 4.5329603277564235e-05,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 3.626368262205139e-05,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.10003626368262206,
+        "subsector_contributors": [
+          {
+            "subsector_key": "V.1",
+            "city_emissions": -1028.6789999999999,
+            "scoring_city_emissions_magnitude": 1028.6789999999999,
+            "share_of_city": 0.00011332400819391057,
+            "reduction_amount": 411.47159999999997
+          }
+        ]
+      },
+      "ipcc_0068": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "high",
+        "reduction_multiplier": 0.8,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.0,
+        "impact_block_score": 0.0,
+        "subsector_contributors": []
+      },
+      "ipcc_0069": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "ipcc_0070": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "ipcc_0071": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "V.2"
+        ],
+        "impact_band": "medium",
+        "reduction_multiplier": 0.6,
+        "timeline_bucket": "5-10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.5,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.5,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.1,
+        "impact_block_score": 0.1,
+        "subsector_contributors": []
+      },
+      "ipcc_0074": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "I.2"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_subsector_keys_count": 0,
+        "matched_city_subsector_keys": [],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 0,
+        "emissions_reduction_component_score": 0.0,
+        "timeline_component_score": 0.0,
+        "emissions_reduction_contribution": 0.0,
+        "timeline_contribution": 0.0,
+        "impact_block_score": 0.0,
+        "subsector_contributors": []
+      },
+      "ipcc_0076": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "IV.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": ">10 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 0.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "IV.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 11463.3464,
+        "emissions_reduction_component_score": 0.0012628549444124314,
+        "timeline_component_score": 0.0,
+        "emissions_reduction_contribution": 0.0010102839555299452,
+        "timeline_contribution": 0.0,
+        "impact_block_score": 0.0010102839555299452,
+        "subsector_contributors": [
+          {
+            "subsector_key": "IV.1",
+            "city_emissions": 28658.365999999998,
+            "scoring_city_emissions_magnitude": 28658.365999999998,
+            "share_of_city": 0.0031571373610310783,
+            "reduction_amount": 11463.3464
+          }
+        ]
+      },
+      "ipcc_0105": {
+        "has_emissions_entry": true,
+        "has_any_action_subsector_key": true,
+        "action_subsector_keys": [
+          "II.1"
+        ],
+        "impact_band": "low",
+        "reduction_multiplier": 0.4,
+        "timeline_bucket": "<5 years",
+        "timeline_bucket_known": true,
+        "timeline_score": 1.0,
+        "matched_city_subsector_keys_count": 1,
+        "matched_city_subsector_keys": [
+          "II.1"
+        ],
+        "total_city_emissions": 9077326.299999999,
+        "total_city_emissions_scoring_basis": "AFOLU V.* uses absolute inventory magnitude; non-AFOLU uses strictly positive inventory only",
+        "total_reduction_amount": 11035.2936,
+        "emissions_reduction_component_score": 0.001215698679907541,
+        "timeline_component_score": 1.0,
+        "emissions_reduction_contribution": 0.0009725589439260328,
+        "timeline_contribution": 0.2,
+        "impact_block_score": 0.20097255894392604,
+        "subsector_contributors": [
+          {
+            "subsector_key": "II.1",
+            "city_emissions": 27588.234,
+            "scoring_city_emissions_magnitude": 27588.234,
+            "share_of_city": 0.003039246699768852,
+            "reduction_amount": 11035.2936
+          }
+        ]
+      }
+    },
+    "elapsed_seconds": 0.0020278570000016316
+  }
+}

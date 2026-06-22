@@ -29,6 +29,19 @@ def test_prompt_include_directive_resolves_relative_tools_fragment(tmp_path) -> 
     assert "`example_tool`" in rendered_prompt
 
 
+def test_default_prompt_has_rendered_tool_argument_examples() -> None:
+    prompts = _load_llm_config().prompts
+
+    rendered_prompt = prompts.get_prompt("default")
+
+    assert "{{ include:" not in rendered_prompt
+    assert '`{"city_name": "New York"}`' in rendered_prompt
+    assert '`{"city_name": "Paris", "year": 2023}`' in rendered_prompt
+    assert '`{"inventory_id": "<id-from-prior-tool-output>"}`' in rendered_prompt
+    assert '`{"question": "What is scope 2 emissions under GPC?"}`' in rendered_prompt
+    assert "`year` (integer, optional; omit when not specified)" in rendered_prompt
+
+
 def test_stationary_energy_review_prompt_has_rendered_tools_section() -> None:
     prompts = _load_llm_config().prompts
 

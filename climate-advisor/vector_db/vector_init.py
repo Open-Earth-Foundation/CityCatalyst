@@ -7,14 +7,19 @@ vector columns for document embeddings.
 
 import asyncio
 import os
+import sys
 from pathlib import Path
+
 from dotenv import load_dotenv
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-import sys
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
 # Load environment variables from .env file in parent directory
 env_path = Path(__file__).parent.parent / '.env'
 load_dotenv(env_path)
+service_path = Path(__file__).parent.parent / "service"
+if str(service_path) not in sys.path:
+    sys.path.insert(0, str(service_path))
 
 
 def create_db_connection():
@@ -107,9 +112,7 @@ async def create_vector_tables() -> None:
 
     async with async_session_factory() as session:
         # Import here to avoid circular imports
-        # Add service path for imports
-        # Use relative import to avoid sys.path manipulation
-        from ..service.app.models.db.document_embedding import DocumentEmbedding
+        from app.models.db.document_embedding import DocumentEmbedding
 
         # Create all tables defined in the models
         # This will create: document_embeddings table

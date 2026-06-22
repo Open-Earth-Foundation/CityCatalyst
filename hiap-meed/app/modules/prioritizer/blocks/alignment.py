@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import logging
 
-from app.modules.prioritizer.config import (
+from app.modules.prioritizer.scoring_config import (
     ALIGNMENT_WEIGHT_OTHER,
     ALIGNMENT_WEIGHT_POLICY,
     ALIGNMENT_WEIGHT_SECTOR,

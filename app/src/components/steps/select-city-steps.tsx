@@ -1,9 +1,4 @@
 import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
-import {
-  CountryEmissionsEntry,
-  Inputs,
-  OnboardingData,
-} from "../../app/[lng]/onboarding/setup/page";
 import { TFunction } from "i18next";
 import {
   OCCityAttributes,
@@ -63,6 +58,33 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
+
+export type Inputs = {
+  city: string;
+  year: number;
+  inventoryGoal: string;
+  globalWarmingPotential: string;
+  cityPopulation: number;
+  cityPopulationYear: number;
+  regionPopulation: number;
+  regionPopulationYear: number;
+  countryPopulation: number;
+  countryPopulationYear: number;
+  totalCountryEmissions: number;
+};
+
+export type CountryEmissionsEntry = {
+  year: number;
+  total_emissions: number;
+};
+
+export type OnboardingData = {
+  name: string;
+  locode: string;
+  year: number;
+  inventoryGoal: string;
+  globalWarmingPotential: string;
+};
 
 export default function SelectCityStep({
   errors,

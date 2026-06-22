@@ -4,7 +4,6 @@ export enum OrganizationErrorCodes {
   NAME_ALREADY_EXISTS = "NAME_ALREADY_EXISTS",
   ORGANIZATION_NOT_FOUND = "ORGANIZATION_NOT_FOUND",
   INVALID_ORGANIZATION_NAME = "INVALID_ORGANIZATION_NAME",
-  CREATION_FAILED = "CREATION_FAILED",
 }
 
 export interface OrganizationErrorData {
@@ -21,7 +20,10 @@ export interface OrganizationErrorResponse {
   };
 }
 
-export class CustomOrganizationError extends Error implements OrganizationErrorResponse {
+export class CustomOrganizationError
+  extends Error
+  implements OrganizationErrorResponse
+{
   data: {
     error: {
       data: OrganizationErrorData;
@@ -39,3 +41,4 @@ export class CustomOrganizationError extends Error implements OrganizationErrorR
     };
   }
 }
+

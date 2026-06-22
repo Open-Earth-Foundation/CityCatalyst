@@ -1,19 +1,14 @@
 from __future__ import annotations
 
-import sys
-from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Dict, List, Optional
 import unittest
 from unittest.mock import AsyncMock, patch
 
 import httpx
+import pytest
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-for extra_path in (PROJECT_ROOT, PROJECT_ROOT / "service"):
-    path_str = str(extra_path)
-    if path_str not in sys.path:
-        sys.path.insert(0, path_str)
+pytest.importorskip("pgvector.sqlalchemy")
 
 from app.services.citycatalyst_client import (
     CityCatalystClient,
@@ -74,6 +69,94 @@ def _response(
 
 class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
     """Unit tests for the CityCatalystClient helper methods."""
+
+    async def test_commit_stationary_energy_accepted_posts_internal_capability(self) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+        ):
+            client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
+            stub = _StubAsyncClient(
+                [
+                    _response(
+                        200,
+                        json_data={"results": [{"proposal_id": "proposal-1", "status": "committed"}]},
+                    )
+                ]
+            )
+
+            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+                result = await client.commit_stationary_energy_accepted(
+                    request_payload={
+                        "draft_run_id": "draft-1",
+                        "user_id": "user-1",
+                        "city_id": "city-1",
+                        "inventory_id": "inventory-1",
+                        "rows": [
+                            {
+                                "row_type": "selected_source",
+                                "proposal_id": "proposal-1",
+                                "decision_version": 1,
+                                "target_ref": {"subsector_id": "I.1", "scope_id": "1"},
+                                "selected_source_id": "ds-1",
+                            }
+                        ],
+                    },
+                    token="jwt-token",
+                )
+
+        self.assertEqual(result["results"][0]["status"], "committed")
+        recorded = stub.requests[0]
+        self.assertEqual(
+            recorded["url"],
+            "https://cc.example/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted",
+        )
+        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
+        self.assertEqual(recorded["json"]["rows"][0]["row_type"], "selected_source")
+        self.assertEqual(recorded["json"]["rows"][0]["selected_source_id"], "ds-1")
+
+    async def test_commit_stationary_energy_accepted_posts_manual_override_rows(self) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+        ):
+            client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
+            stub = _StubAsyncClient(
+                [
+                    _response(
+                        200,
+                        json_data={"results": [{"proposal_id": "proposal-2", "status": "committed"}]},
+                    )
+                ]
+            )
+
+            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+                await client.commit_stationary_energy_accepted(
+                    request_payload={
+                        "draft_run_id": "draft-1",
+                        "user_id": "user-1",
+                        "city_id": "city-1",
+                        "inventory_id": "inventory-1",
+                        "rows": [
+                            {
+                                "row_type": "manual_override",
+                                "proposal_id": "proposal-2",
+                                "decision_version": 2,
+                                "target_ref": {"subsector_id": "I.2", "scope_id": "1"},
+                                "manual_value": 12.5,
+                                "manual_unit": "tCO2e",
+                                "note": "Manual reviewer correction",
+                            }
+                        ],
+                    },
+                    token="jwt-token",
+                )
+
+        recorded = stub.requests[0]
+        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
+        self.assertEqual(recorded["json"]["rows"][0]["row_type"], "manual_override")
+        self.assertEqual(recorded["json"]["rows"][0]["manual_value"], 12.5)
+        self.assertEqual(recorded["json"]["rows"][0]["manual_unit"], "tCO2e")
 
     async def test_get_inventory_success(self) -> None:
         with patch(
@@ -151,3 +234,27 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
             )
             self.assertEqual(recorded["headers"]["X-CA-Service-Key"], "test-api-key")
             self.assertEqual(recorded["json"]["user_id"], "user-123")
+
+    async def test_allowed_capabilities_preserves_auth_failure_status(self) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+        ):
+            client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
+            stub = _StubAsyncClient(
+                [
+                    _response(401, json_data={"error": "Unauthorized"}),
+                ]
+            )
+
+            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+                with self.assertRaises(CityCatalystClientError) as captured:
+                    await client.get_stationary_energy_allowed_capabilities(
+                        user_id="user-1",
+                        city_id="city-1",
+                        inventory_id="inventory-1",
+                        workflow_step="draft",
+                        token="jwt-token",
+                    )
+
+        self.assertEqual(captured.exception.status_code, 401)

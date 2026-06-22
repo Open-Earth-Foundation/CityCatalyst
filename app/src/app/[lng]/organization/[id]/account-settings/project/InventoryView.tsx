@@ -13,11 +13,11 @@ import {
   IconButton,
   Text,
   Separator,
-  Grid,
 } from "@chakra-ui/react";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
 import {
   clamp,
+  formatNumber,
   formatPercent,
   getShortenNumberUnit,
   shortenNumber,
@@ -29,8 +29,6 @@ import { CityResponse } from "@/util/types";
 import { BsDownload } from "react-icons/bs";
 import { formatEmissions } from "@/util/helpers";
 import { MdArrowOutward, MdGroup, MdOutlineAspectRatio } from "react-icons/md";
-import { useSession } from "next-auth/react";
-import MyFilesTab from "@/components/Tabs/my-files-tab";
 import FilesTable from "@/components/Files/fileTable";
 
 interface InventoryViewProps {
@@ -66,15 +64,7 @@ const InventoryView = ({
       { skip: !cityId || !inventoryYear },
     );
 
-  const popWithDS = useMemo(
-    () =>
-      cityData?.population?.find(
-        (p: { population: number; year: number }) =>
-          p.population === population?.population &&
-          p.year === population?.year,
-      ),
-    [cityData?.population, population?.population, population?.year],
-  );
+  const { data: userInfo } = api.useGetUserInfoQuery();
 
   const { data: inventoryProgress, isLoading: isInventoryProgressLoading } =
     api.useGetInventoryProgressQuery(inventoryId);
@@ -102,10 +92,8 @@ const InventoryView = ({
   }, [inventoryProgress]);
 
   const formattedEmissions = inventory?.totalEmissions
-    ? formatEmissions(inventory.totalEmissions)
+    ? formatEmissions(inventory.totalEmissions, userInfo?.numberFormat)
     : { value: t("N/A"), unit: "" };
-
-  const { data: session, status } = useSession();
 
   const { data: userFiles } = api.useGetUserFilesQuery(cityId!, {
     skip: !cityId,
@@ -155,6 +143,7 @@ const InventoryView = ({
             progressDetails.uploadedProgress,
           ]}
           colors={["interactive.connected", "interactive.tertiary"]}
+          numberFormat={userInfo?.numberFormat}
         />
         <Heading fontWeight="semibold" fontSize="body.md" whiteSpace="nowrap">
           {formatPercent(progressDetails.totalProgress)}%{" "}
@@ -240,7 +229,7 @@ const InventoryView = ({
                   fontWeight="semibold"
                   lineHeight="32"
                 >
-                  {shortenNumber(population.population)}
+                  {shortenNumber(population.population, userInfo?.numberFormat)}
                   <Text as="span" fontSize="body.md">
                     {population?.population
                       ? getShortenNumberUnit(population.population)
@@ -299,7 +288,10 @@ const InventoryView = ({
                     fontWeight="semibold"
                     lineHeight="32"
                   >
-                    {Math.round(inventory?.city.area!).toLocaleString()}
+                    {formatNumber(
+                      Math.round(inventory?.city.area!),
+                      userInfo?.numberFormat,
+                    )}
                     {/* eslint-disable-next-line i18next/no-literal-string */}
                     <Text as="span" fontSize="body.md">
                       km<sup>2</sup>

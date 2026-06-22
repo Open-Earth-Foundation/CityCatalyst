@@ -29,15 +29,20 @@ export default function CityInventoryPage() {
 
     // If inventory doesn't exist or user doesn't have access, redirect appropriately
     if (inventoryError || !inventoryData) {
-      if (userInfo?.defaultInventoryId) {
-        // Redirect to default inventory
+      if (userInfo?.defaultInventoryId && userInfo?.defaultCityId) {
+        // Redirect to default inventory in city-scoped GHGI route
+        router.replace(
+          `/${lngValue}/cities/${userInfo.defaultCityId}/GHGI/${userInfo.defaultInventoryId}`,
+        );
+      } else if (userInfo?.defaultInventoryId) {
+        // Keep a safe fallback for users missing defaultCityId
         router.replace(`/${lngValue}/${userInfo.defaultInventoryId}`);
       } else if (userInfo?.defaultCityId) {
         // Redirect to default city
         router.replace(`/${lngValue}/cities/${userInfo.defaultCityId}`);
       } else {
         // Redirect to onboarding
-        router.replace(`/${lngValue}/onboarding`);
+        router.replace(`/${lngValue}/cities/onboarding`);
       }
     }
   }, [

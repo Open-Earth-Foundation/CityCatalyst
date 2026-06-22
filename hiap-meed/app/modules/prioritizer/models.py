@@ -8,7 +8,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from app.modules.prioritizer.config import resolve_impact_text_multiplier
+from app.modules.prioritizer.scoring_config import resolve_impact_text_multiplier
 from app.modules.prioritizer.utils.co_benefit_taxonomy import ALLOWED_CO_BENEFIT_KEYS
 from app.modules.prioritizer.utils.sector_mapping import ALLOWED_SECTOR_TAGS
 

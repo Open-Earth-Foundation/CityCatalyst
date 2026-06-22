@@ -114,11 +114,11 @@ const SingleProjectView = ({
 }) => {
   const router = useRouter();
   const [isProjectLimitModalOpen, setIsProjectLimitModalOpen] = useState(false);
-  
+
   // Check user permissions for this project
   const { userRole } = useUserPermissions({
     projectId: project.projectId,
-    skip: !project.projectId
+    skip: !project.projectId,
   });
   const goToOnboarding = () => {
     if (
@@ -127,7 +127,7 @@ const SingleProjectView = ({
     ) {
       setIsProjectLimitModalOpen(true);
     } else {
-      router.push(`/onboarding/setup?project=${project.projectId}`);
+      router.push(`/cities/onboarding/setup?project=${project.projectId}`);
     }
   };
 
@@ -141,7 +141,7 @@ const SingleProjectView = ({
       return;
     }
 
-    router.push(`/${lng}/${inventoryId}`);
+    router.push(`/${lng}/cities/${city.cityId}/GHGI/${inventoryId}`);
   };
 
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -183,19 +183,24 @@ const SingleProjectView = ({
       </Button>
       <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       {/* Only show add city button for ORG_ADMIN and PROJECT_ADMIN */}
-      {userRole !== UserRole.COLLABORATOR && userRole !== UserRole.NO_ACCESS && (
-        <Button
-          variant="ghost"
-          w="full"
-          justifyContent="start"
-          onClick={goToOnboarding}
-        >
-          <Icon as={MdAdd} color={"content.alternative"} boxSize={6} />
-          <Text fontSize="body.lg" color="content.primary" fontWeight="normal">
-            {t("add-a-new-city")}
-          </Text>
-        </Button>
-      )}
+      {userRole !== UserRole.COLLABORATOR &&
+        userRole !== UserRole.NO_ACCESS && (
+          <Button
+            variant="ghost"
+            w="full"
+            justifyContent="start"
+            onClick={goToOnboarding}
+          >
+            <Icon as={MdAdd} color={"content.alternative"} boxSize={6} />
+            <Text
+              fontSize="body.lg"
+              color="content.primary"
+              fontWeight="normal"
+            >
+              {t("add-a-new-city")}
+            </Text>
+          </Button>
+        )}
       <HStack
         flexDirection="column"
         w="full"

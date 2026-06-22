@@ -6,6 +6,7 @@ import pytest
 
 from app.modules.prioritizer.internal_models import Action
 from app.modules.prioritizer.models import ExclusionPreviewCityInput
+from app.modules.prioritizer.services import exclusion_resolution
 from app.modules.prioritizer.services.exclusion_resolution import (
     FreeTextExclusionMatch,
     _build_catalog_row,
@@ -75,8 +76,16 @@ def test_exclusion_preview_warns_when_free_text_llm_is_disabled(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Free-text preview should fail closed when the LLM resolver is disabled."""
-    monkeypatch.setenv("HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED", "false")
-    monkeypatch.delenv("HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL", raising=False)
+    monkeypatch.setattr(
+        exclusion_resolution,
+        "is_free_text_exclusion_resolution_enabled",
+        lambda: False,
+    )
+    monkeypatch.setattr(
+        exclusion_resolution,
+        "get_free_text_exclusion_model",
+        lambda: None,
+    )
     city_input = ExclusionPreviewCityInput(
         locode="CL-SCL",
         excludedActionsFreeText="No fossil fuel infrastructure",

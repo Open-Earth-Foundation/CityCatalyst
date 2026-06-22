@@ -11,7 +11,6 @@ psycopg2-binary==2.9.12
 pandas==3.0.3
 pydantic-settings==2.*
 pytest==9.0.3
-rioxarray>=0.15.0,<1.0
 scipy==1.17.*
 shapely==2.1.2
 SQLAlchemy==2.0.49

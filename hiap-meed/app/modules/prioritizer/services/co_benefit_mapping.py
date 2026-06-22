@@ -1,4 +1,4 @@
-"""Legacy LLM-assisted mapping helpers for free-text co-benefit preferences."""
+"""LLM-assisted mapping helpers for optional free-text co-benefit preferences."""
 
 from __future__ import annotations
 
@@ -9,8 +9,9 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from app.modules.prioritizer.config import (
+from app.modules.prioritizer.llm_config import (
     get_alignment_other_preference_mapping_model,
+    get_alignment_other_preference_mapping_temperature,
 )
 from app.modules.prioritizer.utils.co_benefit_taxonomy import (
     ALLOWED_CO_BENEFIT_KEYS,
@@ -40,7 +41,7 @@ def resolve_city_preferred_co_benefits(
     city_preference_other_text: str | None,
     available_co_benefit_keys: list[str],
 ) -> dict[str, object]:
-    """Deprecated legacy helper for resolving free text into co-benefit keys."""
+    """Resolve free text into co-benefit keys for the optional helper path."""
     logger.warning(
         "Deprecated free-text co-benefit resolver invoked; active request flow should use direct checkbox values instead"
     )
@@ -68,7 +69,7 @@ def resolve_city_preferred_co_benefits(
     model_name = get_alignment_other_preference_mapping_model()
     if model_name is None:
         logger.warning(
-            "Skipping co-benefit mapping because HIAP_MEED_ALIGNMENT_OTHER_PREFERENCE_MODEL is not set"
+            "Skipping co-benefit mapping because the alignment_other_preference model is not configured in llm_config.yaml"
         )
         return {
             "resolved_preferred_co_benefits": [],
@@ -176,7 +177,7 @@ def _resolve_from_llm(
     client = create_openai_client()
     completion = client.chat.completions.parse(
         model=model_name,
-        temperature=0.0,
+        temperature=get_alignment_other_preference_mapping_temperature(),
         response_format=CoBenefitMappingResponse,
         messages=[
             {"role": "system", "content": system_prompt},

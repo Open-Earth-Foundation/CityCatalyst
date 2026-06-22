@@ -123,6 +123,7 @@ export interface UserInfoResponse {
   role: Roles;
   email?: string;
   preferredLanguage?: string;
+  numberFormat?: string;
 }
 
 export type DataSource = DataSourceAttributes & {
@@ -153,6 +154,12 @@ export interface ConnectDataSourceQuery {
   inventoryId: string;
   dataSourceIds: string[];
 }
+
+export type {
+  DataSourcePreviewItem,
+  DataSourcePreviewResult,
+  ConnectAllDataSourcesError,
+} from "@/backend/DataSourceConnectService";
 
 export interface ConnectDataSourceResponse {
   successful: string[];
@@ -550,6 +557,7 @@ export interface UpdateUserPayload {
   userId: string;
   title?: string;
   preferredLanguage?: string;
+  numberFormat?: string;
 }
 
 export interface FormulaInputValuesResponse {

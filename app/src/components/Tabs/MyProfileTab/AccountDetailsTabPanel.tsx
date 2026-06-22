@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { Box, Button, HStack } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ProfileInputs } from "@/app/[lng]/[inventory]/settings/page";
+import { ProfileInputs } from "@/components/GHGI/inventory-pages/settings-page";
 import FormInput from "../../form-input";
 import EmailInput from "../../email-input";
 import { useSetCurrentUserDataMutation } from "@/services/api";
@@ -13,12 +13,25 @@ import { BodyMedium } from "@/components/package/Texts/Body";
 import { LANGUAGES, UpdateUserPayload } from "@/util/types";
 import { LanguageSelector } from "@/app/[lng]/auth/signup/LanguageSelector";
 import { Field } from "@/components/ui/field";
+import { NumberFormatEnum } from "@/util/enums";
+import {
+  NativeSelectField,
+  NativeSelectRoot,
+} from "@/components/ui/native-select";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 interface AccountDetailsFormProps {
   t: TFunction;
   userInfo: any;
   showTitle?: boolean;
 }
+
+const numberFormatOptions = [
+  { value: NumberFormatEnum.COMMA_AND_DOT, label: "comma-and-dot" },
+  { value: NumberFormatEnum.DOT_AND_COMMA, label: "dot-and-comma" },
+  { value: NumberFormatEnum.SPACE_AND_COMMA, label: "space-and-comma" },
+  { value: NumberFormatEnum.APOSTROPHE_AND_DOT, label: "apostrophe-and-dot" },
+];
 
 const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
   t,
@@ -29,7 +42,6 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
     title: t("user-details-updated"),
     duration: 5000,
   });
-  const [inputValue, setInputValue] = useState<string>("");
   const {
     handleSubmit,
     register,
@@ -44,6 +56,7 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
       setValue("email", userInfo.email);
       setValue("title", userInfo.title);
       setValue("preferredLanguage", userInfo.preferredLanguage);
+      setValue("numberFormat", userInfo.numberFormat);
     }
   }, [setValue, userInfo]);
 
@@ -53,15 +66,12 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
       name: data.name ?? "",
       email: data.email ?? "",
       preferredLanguage: data.preferredLanguage ?? LANGUAGES.en,
+      numberFormat: data.numberFormat ?? NumberFormatEnum.COMMA_AND_DOT,
     };
     if (data.title) {
       payload.title = data.title;
     }
     await setCurrentUserData(payload).then(() => showSuccessToast());
-  };
-
-  const onInputChange = (e: any) => {
-    setInputValue(e.target.value);
   };
 
   return (
@@ -128,6 +138,38 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
               t={t}
             />
           </Field>
+
+          {hasFeatureFlag(FeatureFlags.NUMERICAL_FORMATS) && (
+            <Field
+              label={t("numerical-formats")}
+              invalid={!!errors.numberFormat}
+              errorText={errors.numberFormat?.message}
+            >
+              <NativeSelectRoot
+                shadow="2dp"
+                borderRadius="4px"
+                border="inputBox"
+                background={
+                  errors.numberFormat
+                    ? "sentiment.negativeOverlay"
+                    : "background.default"
+                }
+              >
+                <NativeSelectField
+                  {...register("numberFormat", {
+                    required: t("numerical-formats-required"),
+                  })}
+                  defaultValue={NumberFormatEnum.COMMA_AND_DOT}
+                >
+                  {numberFormatOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {t(option.label)}
+                    </option>
+                  ))}
+                </NativeSelectField>
+              </NativeSelectRoot>
+            </Field>
+          )}
           <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
             <Button
               type="submit"

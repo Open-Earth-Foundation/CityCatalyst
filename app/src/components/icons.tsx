@@ -1895,3 +1895,34 @@ export const AboutPrivacyIcon = () => {
     </svg>
   );
 };
+
+export const AskAiIconOutline2 = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M15.5 2C15.4892 4.8272 16.868 6.44 20 6.5C17.0924 6.4892 15.6476 8.0492 15.5 11C15.4748 8.216 14.228 6.5 11 6.5C13.8884 6.4604 15.4892 5.066 15.5 2Z"
+        stroke="#008600"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M9.00057 10C8.9858 14.0827 10.8179 16.3985 15 16.5006C11.1212 16.4846 9.19707 18.7376 9.00057 23C8.96309 18.9788 7.30364 16.4945 3 16.5006C6.85045 16.4416 8.9858 14.4285 9.00057 10Z"
+        stroke="#008600"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+};

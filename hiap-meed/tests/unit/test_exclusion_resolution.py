@@ -6,6 +6,7 @@ import pytest
 
 from app.modules.prioritizer.internal_models import Action
 from app.modules.prioritizer.models import ExclusionPreviewCityInput
+from app.modules.prioritizer.services import exclusion_resolution
 from app.modules.prioritizer.services.exclusion_resolution import (
     FreeTextExclusionMatch,
     _build_catalog_row,
@@ -19,29 +20,19 @@ from app.modules.prioritizer.utils.sector_mapping import (
 )
 
 
-def test_sector_mapping_resolves_gpc_and_category_metadata() -> None:
-    """Sector mapping should use exact canonical tags plus GPC sector numbers."""
+def test_sector_mapping_resolves_gpc_metadata() -> None:
+    """Sector mapping should use GPC sector numbers from action emissions."""
     waste_action = Action(
         action_id="A_waste",
         action_name="Waste action",
         emissions={"sector_number": "III"},
     )
-    transport_action = Action(
-        action_id="A_transport",
-        action_name="Transport action",
-        action_category="Urban mobility",
-    )
-    canonical_category_action = Action(
-        action_id="A_canonical",
-        action_name="Canonical category action",
-        action_category="transportation",
-    )
+    uncategorized_action = Action(action_id="A_empty", action_name="No sector action")
 
     assert normalize_sector_tag("stationary_energy") == "stationary_energy"
     assert normalize_sector_tag("Stationary Energy") is None
     assert resolve_action_sector_tags(waste_action) == {"waste"}
-    assert resolve_action_sector_tags(transport_action) == set()
-    assert resolve_action_sector_tags(canonical_category_action) == {"transportation"}
+    assert resolve_action_sector_tags(uncategorized_action) == set()
 
 
 def test_exclusion_preview_deterministic_sector_and_co_benefit_resolution() -> None:
@@ -85,8 +76,16 @@ def test_exclusion_preview_warns_when_free_text_llm_is_disabled(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Free-text preview should fail closed when the LLM resolver is disabled."""
-    monkeypatch.setenv("HIAP_MEED_FREE_TEXT_EXCLUSIONS_ENABLED", "false")
-    monkeypatch.delenv("HIAP_MEED_FREE_TEXT_EXCLUSIONS_MODEL", raising=False)
+    monkeypatch.setattr(
+        exclusion_resolution,
+        "is_free_text_exclusion_resolution_enabled",
+        lambda: False,
+    )
+    monkeypatch.setattr(
+        exclusion_resolution,
+        "get_free_text_exclusion_model",
+        lambda: None,
+    )
     city_input = ExclusionPreviewCityInput(
         locode="CL-SCL",
         excludedActionsFreeText="No fossil fuel infrastructure",
@@ -167,14 +166,14 @@ def test_build_catalog_row_truncates_long_descriptions() -> None:
             action_id="A_long",
             action_name="Long description action",
             description="Very long text " * 40,
-            action_category="Projects",
-            action_subcategory="Infrastructure",
+            intervention_type="infrastructure",
+            action_role="intervention",
         )
     )
 
     assert row["action_id"] == "A_long"
     assert row["action_name"] == "Long description action"
-    assert row["action_category"] == "Projects"
-    assert row["action_subcategory"] == "Infrastructure"
+    assert row["intervention_type"] == "infrastructure"
+    assert row["action_role"] == "intervention"
     assert row["description"].endswith("...")
     assert len(row["description"]) <= 203

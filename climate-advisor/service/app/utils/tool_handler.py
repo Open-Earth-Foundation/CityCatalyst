@@ -44,8 +44,8 @@ async def persist_assistant_message(
 
     try:
         # Import lazily to avoid circular dependencies.
-        from ..services.message_service import MessageService
-        from ..services.thread_service import ThreadService
+        from app.services.message_service import MessageService
+        from app.services.thread_service import ThreadService
 
         async with session_factory() as session:
             message_service = MessageService(session)

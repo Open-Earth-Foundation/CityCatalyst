@@ -185,6 +185,14 @@ export const appTheme = createSystem(defaultConfig, {
               _violet_theme: "{colors.violet_theme.background.overlay}",
             },
           },
+          /** Unselected filled radio control (zinc-200). */
+          radioUnselected: {
+            value: "#E4E4E7",
+          },
+          /** Disabled controls and non-interactive surfaces. */
+          backgroundDisabled: {
+            value: "#D9D9D9",
+          },
         },
         border: {
           neutral: {
@@ -507,6 +515,7 @@ export const appTheme = createSystem(defaultConfig, {
           backgroundLight: { value: "#FAFAFA" },
           backgroundGreyFlat: { value: "#FAFBFE" },
           backgroundLoading: { value: "#E8EAFB" },
+          backgroundDisabled: { value: "#D9D9D9" },
         },
 
         interactive: {
@@ -531,6 +540,7 @@ export const appTheme = createSystem(defaultConfig, {
           warningOverlay: { value: "#FEF8E1" }, // stays the same
           negativeDefault: { value: "#F23D33" }, // stays the same
           negativeOverlay: { value: "#FFEAEE" }, // stays the same
+          backgroundOverlay: { value: "#E8FBEC" },
         },
 
         brandScheme: {

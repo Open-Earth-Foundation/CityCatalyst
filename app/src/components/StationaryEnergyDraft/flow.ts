@@ -11,14 +11,17 @@ export type {
 export { REVIEWED_STATUSES } from "@/components/StationaryEnergyDraft/flow-types";
 export { buildArtifactRows } from "@/components/StationaryEnergyDraft/flow-artifact-rows";
 export {
+  buildInventorySaveReviewDecisionPayload,
   buildDecisionReviewContext,
   buildInitialDecisionState,
   buildReviewDecisionPayload,
   buildSourcePreferenceOptions,
   canPersistDraftReview,
   canSaveDraft,
+  canSaveToInventory,
   decisionOptionsForProposal,
   hasDraftReviewChanges,
+  hasInventorySaveReviewChanges,
   latestDecisionByProposal,
   pendingDecisionReviewProposals,
   resolvedProposalIdsFromReview,

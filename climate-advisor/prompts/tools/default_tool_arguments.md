@@ -1,0 +1,10 @@
+- `get_user_inventories`: no arguments.
+- `city_inventory_search`: pass a JSON object such as `{"city_name": "New York"}` or `{"city_name": "Paris", "year": 2023}`.
+  - `city_name` (string, required)
+  - `year` (integer, optional; omit when not specified)
+- `get_inventory`: pass `{"inventory_id": "<id-from-prior-tool-output>"}`.
+  - `inventory_id` (string, required)
+- `get_all_datasources`: pass `{"inventory_id": "<id-from-prior-tool-output>"}`.
+  - `inventory_id` (string, required)
+- `climate_vector_search`: pass `{"question": "What is scope 2 emissions under GPC?"}`.
+  - `question` (string, required)

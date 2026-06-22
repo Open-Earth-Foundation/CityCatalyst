@@ -93,12 +93,7 @@ function RadioDot({ selected }: { selected: boolean }) {
       transition="border-color 140ms ease"
     >
       {selected ? (
-        <Box
-          w="10px"
-          h="10px"
-          borderRadius="full"
-          bg="interactive.tertiary"
-        />
+        <Box w="10px" h="10px" borderRadius="full" bg="interactive.tertiary" />
       ) : null}
     </Box>
   );
@@ -462,6 +457,91 @@ export function ResolvedDecisionSummaryCard(props: {
   );
 }
 
+export function ActionCompletedDecisionCard(props: {
+  context: DecisionReviewContext;
+  decision?: DraftDecisionState;
+}) {
+  const { t } = useStationaryEnergyAgenticTranslation();
+  const selectedOption = selectedDecisionOption(props.context, props.decision);
+  const sourceLabel =
+    selectedOption?.action === "leave_draft" ? null : selectedOption?.label;
+  const sourceMeta =
+    selectedOption?.action === "leave_draft"
+      ? t("review-summary-set-notation")
+      : [selectedOption?.meta, selectedOption?.value]
+          .filter(Boolean)
+          .join(" | ");
+  const actionText =
+    props.decision?.action === "leave_draft"
+      ? t("review-action-completed-left-empty", {
+          label: props.context.label,
+        })
+      : t("review-action-completed-accepted", {
+          label: props.context.label,
+        });
+
+  return (
+    <Box
+      w="full"
+      maxW={CHAT_SURFACE_MAX_W}
+      alignSelf="flex-start"
+      data-message-kind="action-completed"
+      data-proposal-id={props.context.proposal_id}
+      bg="sentiment.positiveOverlay"
+      borderColor="sentiment.positiveDefault"
+      borderWidth="1px"
+      borderRadius="rounded-xl"
+      px={4}
+      py={3}
+    >
+      <Flex align="center" gap={3}>
+        <Box
+          w="36px"
+          h="36px"
+          flexShrink={0}
+          display="grid"
+          placeItems="center"
+          borderRadius="full"
+          bg="interactive.primary"
+          color="base.light"
+        >
+          <MdCheckCircle />
+        </Box>
+        <Box flex="1 1 auto" minW={0}>
+          <Text
+            color="content.primary"
+            fontFamily="heading"
+            fontSize="body.md"
+            fontWeight="semibold"
+          >
+            {t("review-action-completed-title")}
+          </Text>
+          <Text
+            color="content.primary"
+            fontSize="label.md"
+            fontWeight="semibold"
+            mt="2px"
+          >
+            {actionText}
+          </Text>
+          {sourceLabel ? (
+            <Text color="content.secondary" fontSize="label.md" mt="2px">
+              {t("review-action-completed-source", {
+                source: sourceLabel,
+              })}
+            </Text>
+          ) : null}
+          {sourceMeta ? (
+            <Text color="content.tertiary" fontSize="label.sm" mt="2px">
+              {sourceMeta}
+            </Text>
+          ) : null}
+        </Box>
+      </Flex>
+    </Box>
+  );
+}
+
 export function SingleSourceProposalCard(props: {
   context: Extract<DecisionReviewContext, { kind: "single_source" }>;
   decision?: DraftDecisionState;
@@ -519,13 +599,23 @@ export function MultiSourceProposalCard(props: {
     ...props.context.alternativeOptions,
     props.context.leaveDraftOption,
   ];
+  const sourcesAgree = props.context.status === "needs_review";
 
   return (
     <DecisionReviewBaseCard
-      title={t("review-multi-source-title")}
-      description={t("review-multi-source-description", {
-        label: props.context.label,
-      })}
+      title={
+        sourcesAgree
+          ? t("review-agreement-source-title")
+          : t("review-multi-source-title")
+      }
+      description={t(
+        sourcesAgree
+          ? "review-agreement-source-description"
+          : "review-multi-source-description",
+        {
+          label: props.context.label,
+        },
+      )}
       reviewLabel={props.context.label}
       proposal={props.context.proposal}
       options={options}

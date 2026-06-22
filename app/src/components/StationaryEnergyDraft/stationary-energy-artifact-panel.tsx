@@ -14,7 +14,13 @@ import {
 import type { TFunction } from "i18next";
 import { useParams } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { MdAdd, MdExpandMore, MdRefresh, MdSave } from "react-icons/md";
+import {
+  MdAdd,
+  MdCheckCircle,
+  MdExpandMore,
+  MdRefresh,
+  MdSave,
+} from "react-icons/md";
 
 import { useTranslation } from "@/i18n/client";
 import ProgressLoader from "@/components/ProgressLoader";
@@ -36,6 +42,7 @@ export type ArtifactPanelProps = {
   actions: Pick<
     StationaryEnergyChatArtifactControllerActions,
     | "refreshActiveDraft"
+    | "requestSaveToInventoryConfirmation"
     | "saveDraft"
     | "saveToInventory"
     | "selectDraft"
@@ -44,6 +51,8 @@ export type ArtifactPanelProps = {
   >;
   cityName: string;
   inventoryYear: string | number;
+  flush?: boolean;
+  squared?: boolean;
   state: Pick<
     StationaryEnergyChatArtifactControllerState,
     | "activeDraftRunId"
@@ -236,12 +245,9 @@ function RowGroupHeading({
       gap="s"
       px="m"
       py="s"
-      bg="background.backgroundGreyFlat"
+      bg="base.light"
       borderBottomWidth="1px"
       borderColor="border.neutral"
-      position="sticky"
-      top={0}
-      zIndex={1}
     >
       <Text
         fontFamily="heading"
@@ -405,10 +411,70 @@ function ArtifactRowView(props: {
   );
 }
 
+function CurrentActionCard({ row, t }: { row: ArtifactRow; t: TFunction }) {
+  return (
+    <Box
+      mt="m"
+      bg="sentiment.positiveOverlay"
+      borderColor="sentiment.positiveDefault"
+      borderWidth="1px"
+      borderRadius="rounded"
+      px="m"
+      py="s"
+    >
+      <HStack align="flex-start" gap="s">
+        <Box
+          w="22px"
+          h="22px"
+          flexShrink={0}
+          display="grid"
+          placeItems="center"
+          borderRadius="full"
+          bg="interactive.primary"
+          color="base.light"
+          mt="1px"
+        >
+          <Icon as={MdCheckCircle} boxSize="14px" />
+        </Box>
+        <Box minW={0}>
+          <Text
+            color="content.primary"
+            fontFamily="heading"
+            fontSize="label.md"
+            fontWeight="semibold"
+          >
+            {t("artifact-current-action-title")}
+          </Text>
+          <Text
+            color="content.primary"
+            fontSize="label.md"
+            fontWeight="semibold"
+            mt="2px"
+            lineClamp={1}
+          >
+            {t("artifact-current-action-accepted", {
+              label: row.subcategoryLabel,
+            })}
+          </Text>
+          {row.sourceName ? (
+            <Text color="content.secondary" fontSize="label.sm" mt="2px">
+              {t("artifact-current-action-source", {
+                source: row.sourceName,
+              })}
+            </Text>
+          ) : null}
+        </Box>
+      </HStack>
+    </Box>
+  );
+}
+
 export function ArtifactPanel({
   actions,
   cityName,
+  flush = false,
   inventoryYear,
+  squared = false,
   state,
 }: ArtifactPanelProps) {
   const params = useParams();
@@ -437,6 +503,14 @@ export function ArtifactPanel({
   const activeDraftRun = state.draftRuns.find(
     (draftRun) => draftRun.draft_run_id === state.activeDraftRunId,
   );
+  const currentActionRow =
+    state.rows.find(
+      (row) =>
+        row.id === state.focusedProposalId &&
+        ["done", "manual"].includes(row.state),
+    ) ??
+    state.rows.find((row) => ["done", "manual"].includes(row.state)) ??
+    null;
 
   return (
     <Box
@@ -448,8 +522,8 @@ export function ArtifactPanel({
       overflow={{ base: "visible", xl: "hidden" }}
       bg="base.light"
       borderColor="border.neutral"
-      borderWidth="1px"
-      borderRadius="rounded-xl"
+      borderWidth={flush ? 0 : "1px"}
+      borderRadius={squared ? "none" : "rounded-xl"}
     >
       <Box borderBottomWidth="1px" borderColor="border.neutral" px="m" py="m">
         <VStack align="stretch" gap="m">
@@ -601,6 +675,9 @@ export function ArtifactPanel({
                 transition="width 220ms ease"
               />
             </Box>
+            {currentActionRow ? (
+              <CurrentActionCard row={currentActionRow} t={t} />
+            ) : null}
           </Box>
         </VStack>
       </Box>
@@ -640,34 +717,34 @@ export function ArtifactPanel({
       </VStack>
 
       <Flex
-        align={{ base: "stretch", md: "center" }}
+        align="stretch"
         justify="space-between"
         gap="m"
-        flexDir={{ base: "column", md: "row" }}
+        flexDir="column"
         borderTopWidth="1px"
         borderColor="border.neutral"
         px="m"
         py="m"
       >
         <Text color="content.secondary" fontSize="body.md">
-          {state.stage === "review"
-            ? state.canSaveToInventory
-              ? t("artifact-footer-ready", {
-                  ready: state.counts.ready + state.counts.accepted,
-                  gaps: state.counts.gap,
-                })
-              : state.canPersistDraftReview
+          {state.canSaveToInventory
+            ? t("artifact-footer-ready", {
+                ready: state.counts.ready + state.counts.accepted,
+                gaps: state.counts.gap,
+              })
+            : state.stage === "review"
+              ? state.canPersistDraftReview
                 ? t("artifact-footer-save-draft-ready")
                 : state.hasSourceBackedProposals
                   ? t("artifact-footer-no-staged")
                   : t("artifact-footer-no-ready")
-            : state.unresolvedCount > 0
-              ? t("artifact-footer-decisions-needed", {
-                  count: state.unresolvedCount,
-                })
-              : t("artifact-footer-nothing-written")}
+              : state.unresolvedCount > 0
+                ? t("artifact-footer-decisions-needed", {
+                    count: state.unresolvedCount,
+                  })
+                : t("artifact-footer-nothing-written")}
         </Text>
-        <HStack gap="s" justify={{ base: "flex-end", md: "initial" }}>
+        <HStack gap="s" justify="flex-end" flexWrap="wrap" w="full">
           <Button
             variant="outline"
             borderRadius={FLOW_BUTTON_RADIUS}
@@ -706,7 +783,7 @@ export function ArtifactPanel({
               borderRadius={FLOW_BUTTON_RADIUS}
               disabled={!state.canSaveToInventory}
               loading={state.loadingAction === "save_inventory"}
-              onClick={actions.saveToInventory}
+              onClick={actions.requestSaveToInventoryConfirmation}
             >
               <MdSave />
               {t("chat-quick-reply-save-to-inventory")}

@@ -1,5 +1,8 @@
 "use client";
 
+import type { TFunction } from "i18next";
+import { useParams } from "next/navigation";
+
 import {
   AgentBubble,
   CoveragePanel,
@@ -23,8 +26,6 @@ import type {
 import { useTranslation } from "@/i18n/client";
 import type { DraftStatusResponse } from "@/components/StationaryEnergyDraft/types";
 import { getParamValueRequired } from "@/util/helpers";
-import type { TFunction } from "i18next";
-import { useParams } from "next/navigation";
 
 type StageMessagesProps = {
   stage: DraftStage;
@@ -128,6 +129,7 @@ export function StageMessages(props: StageMessagesProps) {
         />
         <AgentBubble text={t("chat-start-review-prompt")} />
         <QuickReplies
+          standalone
           buttons={[
             {
               label: t("chat-start-yes-draft"),
@@ -148,7 +150,10 @@ export function StageMessages(props: StageMessagesProps) {
     return (
       <>
         <AgentBubble text={t("chat-drafting-started")} />
-        <QuickReplies buttons={draftingPreferenceButtons(t, props)} />
+        <QuickReplies
+          standalone
+          buttons={draftingPreferenceButtons(t, props)}
+        />
         {props.sourcePreference ? (
           <UserBubble
             text={buildSourcePreferenceLabel(t, props.sourcePreference)}
@@ -161,14 +166,19 @@ export function StageMessages(props: StageMessagesProps) {
 
   if (props.stage === "decision" && props.pendingDecisionCount > 0) {
     return (
-      <AgentBubble
-        text={t("chat-decision-summary", {
-          pendingDecisionLabel: decisionStageLabel(
-            t,
-            props.pendingDecisionCount,
-          ),
-        })}
-      />
+      <>
+        <AgentBubble
+          text={t("chat-decision-summary", {
+            pendingDecisionLabel: decisionStageLabel(
+              t,
+              props.pendingDecisionCount,
+            ),
+          })}
+        />
+        {props.canSaveToInventory ? (
+          <QuickReplies standalone buttons={reviewQuickReplies(t, props)} />
+        ) : null}
+      </>
     );
   }
 
@@ -210,7 +220,7 @@ export function StageMessages(props: StageMessagesProps) {
       />
       <AgentBubble text={t("chat-review-later-notation")} />
       {props.canPersistDraftReview || props.canSaveToInventory ? (
-        <QuickReplies buttons={reviewQuickReplies(t, props)} />
+        <QuickReplies standalone buttons={reviewQuickReplies(t, props)} />
       ) : null}
     </>
   );

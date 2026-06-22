@@ -131,9 +131,6 @@ class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
 
 
 class StationaryEnergyPromptBudgetConfig(BaseModel):
-    draft_generation: StationaryEnergyPromptBudgetFlowConfig = Field(
-        default_factory=StationaryEnergyPromptBudgetFlowConfig,
-    )
     chat_context: StationaryEnergyPromptBudgetFlowConfig = Field(
         default_factory=StationaryEnergyPromptBudgetFlowConfig,
     )
@@ -153,50 +150,105 @@ class GenerationConfig(BaseModel):
 
 
 class PromptsConfig(BaseModel):
+    """Configured prompt entry points and include-aware prompt loading."""
+
     default: str
     inventory_context: Optional[str] = None
-    data_analysis: Optional[str] = None
-    stationary_energy_draft_generation: Optional[str] = None
+    stationary_energy_review: Optional[str] = None
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""
-        from pathlib import Path
-
-        # Get the prompt file path from config
         prompt_path = getattr(self, prompt_type)
         if not prompt_path:
             raise ValueError(f"Prompt type '{prompt_type}' not configured")
 
-        # Build search roots dynamically to handle both development and containerized environments
+        search_roots = self._prompt_search_roots()
+        full_path = self._find_prompt_path(prompt_path, search_roots)
+        return self._read_prompt_file(full_path, search_roots, set()).strip()
+
+    @staticmethod
+    def _prompt_search_roots() -> list[Path]:
+        """Build search roots for development and containerized environments."""
         search_roots = [
             Path.cwd(),  # Container root or current working directory
             Path(__file__).resolve().parents[3],  # climate-advisor/
         ]
 
-        # Dynamically search up the directory tree for the repository root
-        # without assuming a fixed depth (which fails in some environments)
         current = Path(__file__).resolve()
-        for _ in range(10):  # Limit iterations to prevent infinite loops
+        for _ in range(10):
             current = current.parent
             if (current / "llm_config.yaml").exists():
-                # Found the climate-advisor directory
                 search_roots.append(current)
                 break
 
-        full_path = None
-        for root in search_roots:
-            candidate = root / prompt_path
-            if candidate.exists():
-                full_path = candidate
-                break
+        return search_roots
 
-        if full_path is None or not full_path.exists():
-            raise FileNotFoundError(
-                f"Prompt file not found: {Path.cwd() / prompt_path}"
+    @staticmethod
+    def _find_prompt_path(
+        prompt_path: str,
+        search_roots: list[Path],
+        *,
+        relative_to: Optional[Path] = None,
+    ) -> Path:
+        """Resolve a prompt path from include-relative and configured roots."""
+        candidates: list[Path] = []
+        path = Path(prompt_path)
+        if relative_to is not None:
+            candidates.append(relative_to / path)
+        candidates.extend(root / path for root in search_roots)
+
+        for candidate in candidates:
+            if candidate.exists():
+                return candidate
+
+        raise FileNotFoundError(f"Prompt file not found: {Path.cwd() / prompt_path}")
+
+    @classmethod
+    def _read_prompt_file(
+        cls,
+        prompt_path: Path,
+        search_roots: list[Path],
+        seen: set[Path],
+    ) -> str:
+        """Read a prompt file and recursively expand include directives."""
+        # Guard against include cycles before reading nested prompt files.
+        resolved_path = prompt_path.resolve()
+        if resolved_path in seen:
+            raise ValueError(f"Recursive prompt include detected: {resolved_path}")
+
+        seen.add(resolved_path)
+        content = resolved_path.read_text(encoding="utf-8")
+        resolved_lines: list[str] = []
+
+        # Expand include directives in-place so configured prompts stay composable.
+        for line in content.splitlines():
+            include_path = cls._parse_include_directive(line)
+            if include_path is None:
+                resolved_lines.append(line)
+                continue
+
+            included_path = cls._find_prompt_path(
+                include_path,
+                search_roots,
+                relative_to=resolved_path.parent,
+            )
+            resolved_lines.append(
+                cls._read_prompt_file(included_path, search_roots, seen)
             )
 
-        with open(full_path, "r", encoding="utf-8") as f:
-            return f.read().strip()
+        # Remove this file from the recursion stack before returning to callers.
+        seen.remove(resolved_path)
+        return "\n".join(resolved_lines)
+
+    @staticmethod
+    def _parse_include_directive(line: str) -> Optional[str]:
+        """Extract the path from a prompt include directive line."""
+        stripped = line.strip()
+        if not (stripped.startswith("{{ include:") and stripped.endswith("}}")):
+            return None
+
+        include_path = stripped[len("{{ include:") : -2].strip()
+        return include_path.strip("\"'")
 
 
 class OpenRouterConfig(BaseModel):

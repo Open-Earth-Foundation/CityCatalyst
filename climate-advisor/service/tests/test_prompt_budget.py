@@ -13,15 +13,11 @@ from app.utils.prompt_budget import (
 def test_stationary_energy_prompt_budget_loads_from_llm_config() -> None:
     settings = type("Settings", (), {"llm": _load_llm_config()})()
 
-    draft_budget = get_stationary_energy_prompt_budget(
-        settings,
-        "draft_generation",
-    )
     chat_budget = get_stationary_energy_prompt_budget(settings, "chat_context")
 
-    assert draft_budget.tokenizer_encoding == "o200k_base"
-    assert draft_budget.max_prompt_tokens == 150000
+    assert chat_budget.tokenizer_encoding == "o200k_base"
     assert chat_budget.max_prompt_tokens == 150000
+    assert chat_budget.max_normalized_rows_per_candidate == 3
 
 
 def test_count_prompt_tokens_falls_back_for_openrouter_gpt_5_4_slug() -> None:

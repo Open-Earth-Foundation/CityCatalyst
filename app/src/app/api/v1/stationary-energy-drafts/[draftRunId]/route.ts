@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { callClimateAdvisor } from "@/backend/agentic/ghgi/stationary-energy/ca";
 import { requireStationaryEnergyAgenticEnabled } from "@/backend/agentic/ghgi/stationary-energy/auth";
+import { enrichStationaryEnergyDraftCO2e } from "@/backend/agentic/ghgi/stationary-energy/draft-emissions";
 import { apiHandler } from "@/util/api";
 
 const querySchema = z.object({
@@ -28,7 +29,7 @@ export const GET = apiHandler(async (req, { session, params }) => {
     tokenUserID: session.user.id,
     inventoryId: query.inventory_id,
   });
-  const payload = await response.json();
+  const payload = await enrichStationaryEnergyDraftCO2e(await response.json());
 
   return NextResponse.json(payload, { status: response.status });
 });

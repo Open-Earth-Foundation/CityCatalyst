@@ -219,6 +219,27 @@ class StationaryEnergyDraftRepository:
         await self.session.flush()
         return models
 
+    async def add_proposals(
+        self,
+        draft_run_id: UUID,
+        proposals: list[dict[str, Any]],
+    ) -> list[StationaryEnergyDraftProposal]:
+        """Append proposals to a draft run without clearing existing rows.
+
+        Used by the staggered (per-row) generation path so that pollers can see
+        proposals accumulate incrementally instead of all-at-once.
+        """
+        models = [
+            StationaryEnergyDraftProposal(
+                draft_run_id=draft_run_id,
+                **proposal,
+            )
+            for proposal in proposals
+        ]
+        self.session.add_all(models)
+        await self.session.flush()
+        return models
+
     async def persist_review_decisions(
         self,
         decisions: list[StationaryEnergyReviewDecision],

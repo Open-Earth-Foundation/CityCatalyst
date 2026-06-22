@@ -59,6 +59,7 @@ class StoredSourceCandidate(FlexibleContract):
 class DraftStatusSourceCandidate(FlexibleContract):
     candidate_id: UUID | None = None
     datasource_id: str
+    details_datasource_id: str | None = None
     name: str | None = None
     publisher_name: str | None = None
     dataset_name: str | None = None
@@ -74,6 +75,8 @@ class DraftStatusSourceCandidate(FlexibleContract):
     source_scope: StoredSourceScope = Field(default_factory=StoredSourceScope)
     normalized_rows: list[dict[str, Any]] = Field(default_factory=list)
     applicability_status: Literal["applicable", "removed", "failed"]
+    applicability_issues: list[str] = Field(default_factory=list)
+    failure_reason: str | None = None
 
 
 class StationaryEnergyCityContext(FlexibleContract):

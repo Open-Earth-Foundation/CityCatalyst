@@ -21,7 +21,7 @@ export const InventorySelect = ({
   currentInventoryId?: string | null;
 }) => {
   const router = useRouter();
-  const goToOnboarding = () => router.push("/onboarding/setup");
+  const goToOnboarding = () => router.push("/cities/onboarding/setup");
 
   const { data: citiesAndYears, isLoading } = useGetCitiesAndYearsQuery();
 

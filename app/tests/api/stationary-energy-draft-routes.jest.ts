@@ -77,9 +77,9 @@ describe("Stationary Energy draft routes", () => {
   beforeEach(() => {
     process.env.NEXT_PUBLIC_FEATURE_FLAGS =
       "CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC";
-    process.env.HOST = "http://localhost:3000";
     process.env.CA_BASE_URL = "http://ca.example";
     process.env.CC_SERVICE_API_KEY = "cc-service-key";
+    process.env.HOST = "http://cc.example";
     db.initialized = true;
     global.fetch = jest.fn() as unknown as typeof fetch;
   });
@@ -92,9 +92,9 @@ describe("Stationary Energy draft routes", () => {
   afterAll(() => {
     db.initialized = originalDbInitialized;
     process.env.NEXT_PUBLIC_FEATURE_FLAGS = originalFeatureFlags;
-    process.env.HOST = originalHost;
     process.env.CA_BASE_URL = originalCaBaseUrl;
     process.env.CC_SERVICE_API_KEY = originalServiceKey;
+    process.env.HOST = originalHost;
     sessionSpy.mockRestore();
   });
 
@@ -142,6 +142,92 @@ describe("Stationary Energy draft routes", () => {
       }),
     );
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("enriches draft status gas rows with backend-calculated CO2e totals", async () => {
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    const gasToCo2EqSpy = jest.spyOn(db.models.GasToCO2Eq, "findAll");
+    gasToCo2EqSpy.mockResolvedValue([
+      { gas: "CO2", co2eqPerKg: 1, co2eqYears: 100 },
+      { gas: "CH4", co2eqPerKg: 28, co2eqYears: 100 },
+      { gas: "N2O", co2eqPerKg: 265, co2eqYears: 100 },
+    ] as any);
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: "token-123",
+          expires_in: 3600,
+          token_type: "Bearer",
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({
+          draft_run_id: TEST_DRAFT_RUN_ID,
+          status: "ready",
+          review_decisions: [],
+          proposals: [
+            {
+              proposal_id: "proposal-1",
+              proposed_value: {
+                row: {
+                  gases: [
+                    { gas_name: "CH4", emissions_value: "2" },
+                    { gas_name: "CO2", emissions_value: "3" },
+                  ],
+                },
+              },
+            },
+          ],
+          source_candidates: [
+            {
+              datasource_id: "source-1",
+              normalized_rows: [
+                {
+                  gases: [{ gas_name: "N2O", emissions_value: "4" }],
+                },
+              ],
+            },
+          ],
+        }),
+      );
+
+    const response = await getDraftStatus(
+      makeRequest(
+        `http://localhost:3000/api/v1/stationary-energy-drafts/${TEST_DRAFT_RUN_ID}?inventory_id=${TEST_INVENTORY_ID}`,
+        "GET",
+      ),
+      { params: Promise.resolve({ draftRunId: TEST_DRAFT_RUN_ID }) },
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual(
+      expect.objectContaining({
+        proposals: [
+          expect.objectContaining({
+            proposed_value: expect.objectContaining({
+              row: expect.objectContaining({
+                emissions_value_100yr: "59",
+                emissions_unit: "kgco2e",
+                co2eq_years: 100,
+              }),
+            }),
+          }),
+        ],
+        source_candidates: [
+          expect.objectContaining({
+            normalized_rows: [
+              expect.objectContaining({
+                emissions_value_100yr: "1060",
+                emissions_unit: "kgco2e",
+                co2eq_years: 100,
+              }),
+            ],
+          }),
+        ],
+      }),
+    );
+    expect(gasToCo2EqSpy).toHaveBeenCalledTimes(1);
+    gasToCo2EqSpy.mockRestore();
   });
 
   it("forwards upstream JSON error payloads from the start route", async () => {

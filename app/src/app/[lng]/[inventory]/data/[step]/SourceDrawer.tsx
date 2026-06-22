@@ -44,6 +44,7 @@ export function SourceDrawer({
   totalEmissionsData,
   inventoryId,
   numberFormat,
+  isConnected,
 }: {
   hideActions?: boolean;
   source?: DataSourceWithRelations;
@@ -59,6 +60,7 @@ export function SourceDrawer({
   t: TFunction;
   inventoryId: string;
   numberFormat?: string;
+  isConnected?: boolean;
 }) {
   function ensureProtocol(url: string) {
     if (!/^https?:\/\//i.test(url)) {
@@ -243,7 +245,7 @@ export function SourceDrawer({
                   )}
 
                   <SourceDrawerTags t={t} source={source} />
-                  <Separator my={4} />
+                  <Separator my={4} borderColor="border.neutral" />
                   <Stack gap={4} mt={2}>
                     <TitleLarge>{t("inside-dataset")}</TitleLarge>
                     <BodyLarge color="content.tertiary">
@@ -275,7 +277,7 @@ export function SourceDrawer({
                         {t("about-data-availability-description")}
                       </BodyLarge>
                     </VStack>
-                    <Separator />
+                    <Separator borderColor="border.neutral" />
                     <ScalingSection
                       source={source}
                       t={t}
@@ -284,18 +286,18 @@ export function SourceDrawer({
                   </Stack>
                 </DrawerBody>
               )}
-              {hideActions ? (
-                <Button onClick={onUrlClick} w="543px" h={16} my={6}>
-                  {t("go-to-source")}
-                </Button>
-              ) : (
-                <Stack
-                  w="full"
-                  borderTop={2}
-                  justify="center"
-                  alignItems="center"
-                  dropShadow="md"
-                >
+              <Stack
+                w="full"
+                borderTop={2}
+                justify="center"
+                alignItems="center"
+                dropShadow="md"
+              >
+                {hideActions || isConnected ? (
+                  <Button onClick={onUrlClick} w="543px" h={16} my={6}>
+                    {t("go-to-source")}
+                  </Button>
+                ) : (
                   <Button
                     onClick={onConnectClick}
                     w="543px"
@@ -305,8 +307,8 @@ export function SourceDrawer({
                   >
                     {t("connect-data")}
                   </Button>
-                </Stack>
-              )}
+                )}
+              </Stack>
             </Stack>
           </DrawerBody>
         )}

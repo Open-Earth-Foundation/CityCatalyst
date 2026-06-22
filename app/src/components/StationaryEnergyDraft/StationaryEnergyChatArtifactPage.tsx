@@ -1,12 +1,15 @@
 "use client";
 
-import { Box, Grid, Text } from "@chakra-ui/react";
+import { Box, Flex, Grid, Icon, Text } from "@chakra-ui/react";
+import NextLink from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { MdArrowBack } from "react-icons/md";
 
 import { useTranslation } from "@/i18n/client";
 import { ArtifactPanel } from "@/components/StationaryEnergyDraft/stationary-energy-artifact-panel";
 import { ClimaChatPanel } from "@/components/StationaryEnergyDraft/stationary-energy-chat-artifact-panels";
+import { SourceDetailPane } from "@/components/StationaryEnergyDraft/stationary-energy-source-detail-pane";
 import ProgressLoader from "@/components/ProgressLoader";
 import { api } from "@/services/api";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
@@ -83,6 +86,7 @@ export function StationaryEnergyChatArtifactPage({
   const inventoryYear =
     inventory?.year ?? t("chat-page-inventory-year-unavailable");
   const { actions, state } = controller;
+  const backHref = `/${lng}/cities/${cityId}/GHGI/${inventoryId}`;
 
   return (
     <Box
@@ -111,8 +115,29 @@ export function StationaryEnergyChatArtifactPage({
         display="flex"
         flexDir="column"
         minH={0}
-        gap={{ base: 3, md: 5 }}
+        gap={{ base: 3, md: 4 }}
       >
+        <NextLink href={backHref} style={{ textDecoration: "none" }}>
+          <Flex
+            align="center"
+            gap={2}
+            w="fit-content"
+            flexShrink={0}
+            color="interactive.secondary"
+            _hover={{ color: "interactive.primary" }}
+          >
+            <Icon as={MdArrowBack} boxSize={5} />
+            <Text
+              textTransform="uppercase"
+              fontFamily="heading"
+              fontSize="button.sm"
+              fontWeight="bold"
+            >
+              {t("chat-page-back")}
+            </Text>
+          </Flex>
+        </NextLink>
+
         {!featureEnabled ? (
           <Box bg="base.light" borderRadius="rounded" p={5}>
             <Text color="content.primary" fontWeight="semibold">
@@ -137,18 +162,38 @@ export function StationaryEnergyChatArtifactPage({
               <ClimaChatPanel actions={actions} state={state} />
             </Box>
 
+            {/*
+              From xl up, the rows panel and the source-review panel sit
+              side-by-side in a locked two-column grid (each scrolls
+              internally); the source column just widens at 2xl. Below xl they
+              stack and the page scrolls. The split must engage at xl — when it
+              only engaged at 2xl, laptop widths (1280–1535px) fell back to a
+              single stacked column and the row list collapsed.
+            */}
             <Box
+              display={{ base: "flex", xl: "grid" }}
+              flexDir="column"
               minW={0}
               minH={0}
               order={{ base: 1, xl: 2 }}
               overflow={{ base: "visible", xl: "hidden" }}
+              gridTemplateColumns={{
+                xl: "minmax(0, 1fr) 340px",
+                "2xl": "minmax(0, 1fr) 380px",
+              }}
+              gap={{ base: 4, xl: 5 }}
             >
-              <ArtifactPanel
-                actions={actions}
-                cityName={cityName}
-                inventoryYear={inventoryYear}
-                state={state}
-              />
+              <Box minW={0} minH={0} overflow={{ base: "visible", xl: "hidden" }}>
+                <ArtifactPanel
+                  actions={actions}
+                  cityName={cityName}
+                  inventoryYear={inventoryYear}
+                  state={state}
+                />
+              </Box>
+              <Box minW={0} minH={0} overflow={{ base: "visible", xl: "hidden" }}>
+                <SourceDetailPane actions={actions} state={state} />
+              </Box>
             </Box>
           </Grid>
         )}

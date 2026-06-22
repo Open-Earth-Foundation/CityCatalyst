@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
 
-import { SectorCard } from "@/components/Cards/sector-card";
+import { SectorCard } from "@/components/Cards/SectorCard";
 import { TabHeader } from "@/components/GHGIHomePage/TabHeader";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { CircleIcon } from "@/components/icons";

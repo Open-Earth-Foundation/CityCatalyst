@@ -1,26 +1,26 @@
 "use client";
-
-import { Box, Heading, Icon, SimpleGrid, Text } from "@chakra-ui/react";
-import type { TFunction } from "i18next";
-import NextLink from "next/link";
-import { useParams, usePathname } from "next/navigation";
-import { useState } from "react";
-import { BsPlus } from "react-icons/bs";
-import { Trans } from "react-i18next/TransWithoutContext";
-
 import SubSectorCard from "@/components/Cards/SubSectorCard";
-import { AskAiIcon } from "@/components/icons";
+import { InventoryResponse, SectorProgress } from "@/util/types";
+import { Box, Heading, Icon, Text, SimpleGrid } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
-import { useTranslation } from "@/i18n/client";
-import { InventoryType, InventoryTypeEnum, ISector } from "@/util/constants";
-import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
+import NextLink from "next/link";
+
+import { useState } from "react";
+import { SegmentedProgress } from "../SegmentedProgress";
 import {
   clamp,
   convertSectorReferenceNumberToNumber,
   formatPercent,
   getParamValueRequired,
 } from "@/util/helpers";
-import type { InventoryResponse, SectorProgress } from "@/util/types";
+import { TFunction } from "i18next";
+import { Trans } from "react-i18next/TransWithoutContext";
+import { InventoryType, InventoryTypeEnum, ISector } from "@/util/constants";
+import { BsPlus } from "react-icons/bs";
+import { MdAutoAwesome } from "react-icons/md";
+import { useParams, usePathname } from "next/navigation";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
+import { useTranslation } from "@/i18n/client";
 
 import {
   AccordionItem,
@@ -28,7 +28,6 @@ import {
   AccordionItemTrigger,
   AccordionRoot,
 } from "@/components/ui/accordion";
-import { SegmentedProgress } from "@/components/SegmentedProgress";
 
 export function SectorCard({
   sectorProgress,
@@ -159,24 +158,25 @@ export function SectorCard({
                 <NextLink href={`${pathname}/draft/stationary-energy`}>
                   <Button
                     data-testid="stationary-energy-agentic-cta"
-                    variant="solid"
-                    bg="interactive.tertiary"
-                    color="base.light"
-                    justifyContent="center"
+                    variant="ghost"
+                    color="content.link"
+                    justifyContent="flex-start"
                     w="256px"
-                    h="48px"
-                    py="16px"
+                    h="auto"
+                    minH="48px"
+                    py="10px"
                     gap={2}
                     ml={2}
                   >
-                    <Icon as={AskAiIcon} h={6} w={6} />
-                    <Text
-                      fontFamily="heading"
-                      fontSize="button.md"
-                      whiteSpace="nowrap"
-                    >
-                      {tAgentic("sector-card-let-agent-draft")}
-                    </Text>
+                    <MdAutoAwesome />
+                    <Box textAlign="left">
+                      <Text fontFamily="heading" fontSize="button.md">
+                        {tAgentic("sector-card-let-agent-draft")}
+                      </Text>
+                      <Text color="content.tertiary" fontSize="label.sm">
+                        {tAgentic("sector-card-review-before-saving")}
+                      </Text>
+                    </Box>
                   </Button>
                 </NextLink>
               )}
@@ -258,10 +258,7 @@ export function SectorCard({
                 fontSize="button.md"
                 letterSpacing="wider"
                 fontStyle="normal"
-                _hover={{
-                  textDecoration: "underline",
-                  color: "interactive.primary",
-                }}
+                _hover={{ textDecoration: "underline", color: "#001EA7" }}
               >
                 {isAccordionOpen ? t("view-less") : t("view-more")}
               </Text>

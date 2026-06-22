@@ -12,10 +12,11 @@ import {
 } from "@chakra-ui/react";
 import { MdCheckCircle, MdErrorOutline } from "react-icons/md";
 import { useParams } from "next/navigation";
-import ReactMarkdown, { Components } from "react-markdown";
+import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { AskAiIcon } from "@/components/icons";
+import { createChatMarkdownComponents } from "@/components/shared/chat-markdown-components";
 import { useTranslation } from "@/i18n/client";
 import {
   AGENT_BUBBLE_MAX_W,
@@ -42,173 +43,50 @@ function useStationaryEnergyAgenticTranslation() {
   return useTranslation(lng, "stationary-energy-agentic");
 }
 
-const agentMarkdownComponents: Components = {
-  p: ({ children }) => (
-    <Text mb={3} lineHeight="20px" fontSize="body.md" _last={{ mb: 0 }}>
-      {children}
-    </Text>
-  ),
-  h1: ({ children }) => (
-    <Text
-      as="h1"
-      fontWeight="bold"
-      fontSize="title.lg"
-      mb={3}
-      mt={2}
-      lineHeight="28px"
-    >
-      {children}
-    </Text>
-  ),
-  h2: ({ children }) => (
-    <Text
-      as="h2"
-      fontWeight="bold"
-      fontSize="title.md"
-      mb={3}
-      mt={2}
-      lineHeight="24px"
-    >
-      {children}
-    </Text>
-  ),
-  h3: ({ children }) => (
-    <Text
-      as="h3"
-      fontWeight="semibold"
-      fontSize="body.md"
-      mb={2}
-      mt={2}
-      lineHeight="20px"
-    >
-      {children}
-    </Text>
-  ),
-  ul: ({ children }) => (
-    <Box as="ul" pl={5} mb={3} css={{ listStyleType: "disc" }}>
-      {children}
-    </Box>
-  ),
-  ol: ({ children }) => (
-    <Box as="ol" pl={5} mb={3} css={{ listStyleType: "decimal" }}>
-      {children}
-    </Box>
-  ),
-  li: ({ children }) => (
-    <Box as="li" lineHeight="20px" mb={1}>
-      {children}
-    </Box>
-  ),
-  strong: ({ children }) => (
-    <Text as="strong" fontWeight="bold" display="inline">
-      {children}
-    </Text>
-  ),
-  em: ({ children }) => (
-    <Text as="em" fontStyle="italic" display="inline">
-      {children}
-    </Text>
-  ),
-  a: ({ children, href }) => (
-    <chakra.a
-      href={href}
-      color="interactive.primary"
-      fontWeight="semibold"
-      textDecoration="underline"
-      display="inline"
-    >
-      {children}
-    </chakra.a>
-  ),
-  blockquote: ({ children }) => (
-    <Box
-      as="blockquote"
-      borderLeftWidth="3px"
-      borderColor="border.overlay"
-      pl={3}
-      my={3}
-      color="content.tertiary"
-    >
-      {children}
-    </Box>
-  ),
-  code: ({ children }) => (
-    <Text
-      as="code"
-      fontFamily="mono"
-      bg="background.neutral"
-      px={1}
-      borderRadius="sm"
-      fontSize="label.md"
-    >
-      {children}
-    </Text>
-  ),
-  pre: ({ children }) => (
-    <Box
-      as="pre"
-      bg="background.neutral"
-      p={3}
-      borderRadius="rounded"
-      mb={3}
-      overflowX="auto"
-      fontSize="label.md"
-    >
-      {children}
-    </Box>
-  ),
-  table: ({ children }) => (
-    <Box overflowX="auto" mb={3}>
-      <Box
-        as="table"
-        w="full"
-        fontSize="label.md"
-        css={{ borderCollapse: "collapse" }}
-      >
-        {children}
-      </Box>
-    </Box>
-  ),
-  thead: ({ children }) => (
-    <Box as="thead" bg="background.neutral">
-      {children}
-    </Box>
-  ),
-  tbody: ({ children }) => <Box as="tbody">{children}</Box>,
-  tr: ({ children }) => (
-    <Box
-      as="tr"
-      css={{ borderBottom: "1px solid" }}
-      borderColor="border.overlay"
-    >
-      {children}
-    </Box>
-  ),
-  th: ({ children }) => (
-    <Box
-      as="th"
-      px={3}
-      py={2}
-      fontWeight="semibold"
-      textAlign="left"
-      css={{ border: "1px solid" }}
-      borderColor="border.overlay"
-    >
-      {children}
-    </Box>
-  ),
-  td: ({ children }) => (
-    <Box
-      as="td"
-      px={3}
-      py={2}
-      css={{ border: "1px solid" }}
-      borderColor="border.overlay"
-    >
-      {children}
-    </Box>
-  ),
-};
+const agentMarkdownComponents = createChatMarkdownComponents({
+  paragraph: {
+    fontSize: "body.md",
+    lineHeight: "20px",
+  },
+  h1: {
+    fontSize: "title.lg",
+    lineHeight: "28px",
+  },
+  h2: {
+    fontSize: "title.md",
+    lineHeight: "24px",
+  },
+  h3: {
+    fontSize: "body.md",
+    lineHeight: "20px",
+  },
+  list: {
+    lineHeight: "20px",
+  },
+  code: {
+    bg: "background.neutral",
+    fontSize: "label.md",
+  },
+  pre: {
+    bg: "background.neutral",
+    borderRadius: "rounded",
+    fontSize: "label.md",
+  },
+  table: {
+    fontSize: "label.md",
+    headBg: "background.neutral",
+  },
+  borderColor: "border.overlay",
+  link: {
+    color: "interactive.primary",
+    fontWeight: "semibold",
+    textDecoration: "underline",
+  },
+  blockquote: {
+    borderColor: "border.overlay",
+    color: "content.tertiary",
+  },
+});
 
 export function AgentBubble({ text }: { text: string }) {
   return (

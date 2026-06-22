@@ -3,7 +3,7 @@
 import { Box, Flex, HStack, Icon, Text, chakra } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   MdArrowBack,
   MdChevronLeft,
@@ -29,7 +29,6 @@ interface StationaryEnergyChatArtifactPageProps {
 export function StationaryEnergyChatArtifactPage({
   initialStage = "start",
 }: StationaryEnergyChatArtifactPageProps) {
-  const surfaceRef = useRef<HTMLDivElement | null>(null);
   const params = useParams();
   const searchParams = useSearchParams();
   const lng = getParamValueRequired(params.lng);
@@ -45,9 +44,6 @@ export function StationaryEnergyChatArtifactPage({
     api.useGetInventoryQuery(inventoryId, {
       skip: !inventoryId,
     });
-  const [desktopViewportHeight, setDesktopViewportHeight] = useState<
-    number | null
-  >(null);
   const [progressPanelOpen, setProgressPanelOpen] = useState(true);
   const controller = useStationaryEnergyChatArtifactController({
     cityId,
@@ -58,30 +54,6 @@ export function StationaryEnergyChatArtifactPage({
     queryDraftRunId,
     t,
   });
-
-  useEffect(() => {
-    const updateDesktopViewportHeight = () => {
-      if (window.innerWidth < 1280) {
-        setDesktopViewportHeight(null);
-        return;
-      }
-
-      const surface = surfaceRef.current;
-      if (!surface) {
-        return;
-      }
-
-      const { top } = surface.getBoundingClientRect();
-      setDesktopViewportHeight(Math.max(window.innerHeight - top, 480));
-    };
-
-    updateDesktopViewportHeight();
-    window.addEventListener("resize", updateDesktopViewportHeight);
-
-    return () => {
-      window.removeEventListener("resize", updateDesktopViewportHeight);
-    };
-  }, []);
 
   if (inventoryLoading) {
     return <ProgressLoader />;
@@ -102,20 +74,15 @@ export function StationaryEnergyChatArtifactPage({
 
   return (
     <Box
-      ref={surfaceRef}
       bg="background.neutral"
       position="relative"
       minH={{
         base: "100dvh",
-        xl: desktopViewportHeight
-          ? `${desktopViewportHeight}px`
-          : "calc(100dvh - 88px)",
+        xl: "calc(100dvh - 88px)",
       }}
       h={{
         base: "auto",
-        xl: desktopViewportHeight
-          ? `${desktopViewportHeight}px`
-          : "calc(100dvh - 88px)",
+        xl: "calc(100dvh - 88px)",
       }}
       overflow={{ base: "visible", xl: "hidden" }}
     >

@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, Optional, Union
 from uuid import UUID
 
-from ..services.citycatalyst_client import (
+from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
 )

@@ -118,30 +118,6 @@ export const POST = apiHandler(async (req, { params, session }) => {
     throw new createHttpError.NotFound("organization-not-found");
   }
 
-  const existingOrgAdmins = await OrganizationAdmin.findAll({
-    include: [
-      {
-        model: User,
-        as: "user",
-        where: {
-          email: {
-            [Op.in]: validatedData.inviteeEmails,
-          },
-        },
-      },
-    ],
-  });
-
-  if (existingOrgAdmins.length > 0) {
-    throw new CustomInviteError({
-      errorKey: InviteErrorCodes.USER_ALREADY_ORG_ADMIN,
-      emails: existingOrgAdmins
-        .map((admin) => admin.user.email)
-        .filter((email): email is string => !!email),
-      message: "user-already-org-admin",
-    });
-  }
-
   const failedInvites: { email: string }[] = [];
   const inviteUrls: Record<string, string> = {};
 
@@ -187,7 +163,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
           failedInvites.push({ email });
           logger.error(
             { email, organizationId },
-            `error in organization/${organizationId}/invitations/route POST`
+            `error in organization/${organizationId}/invitations/route POST`,
           );
         } else {
           // Store the invite URL from the email service
@@ -198,7 +174,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
         failedInvites.push({ email });
         logger.error(
           { err: e, email, organizationId },
-          `error in organization/${organizationId}/invitations/route POST`
+          `error in organization/${organizationId}/invitations/route POST`,
         );
       }
     }),

@@ -1,5 +1,4 @@
 import dynamic from "next/dynamic";
-import type { TFunction } from "i18next";
 import type { PopulationAttributes } from "@/models/Population";
 import type {
   CityWithProjectDataResponse,
@@ -17,7 +16,11 @@ import {
 } from "react-icons/md";
 import { Tooltip } from "@/components/ui/tooltip";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
+import {
+  formatNumber,
+  getShortenNumberUnit,
+  shortenNumber,
+} from "@/util/helpers";
 import Link from "next/link";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { useTranslation } from "@/i18n/client";
@@ -28,6 +31,7 @@ import {
   BreadcrumbRoot,
 } from "@/components/ui/breadcrumb";
 import { usePathname } from "next/navigation";
+import { NumberFormatEnum } from "@/util/enums";
 
 // only render map on the client
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
@@ -41,6 +45,7 @@ interface HeroProps {
   population?: PopulationAttributes | null;
   lng: string;
   city?: CityWithProjectDataResponse | undefined;
+  numberFormat?: string;
 }
 
 export function Hero({
@@ -52,6 +57,7 @@ export function Hero({
   population,
   lng,
   city,
+  numberFormat,
 }: HeroProps) {
   const { t } = useTranslation(lng, "dashboard");
   const pathname = usePathname();
@@ -158,10 +164,10 @@ export function Hero({
                   <Link
                     href={`/public/project/${inventory?.city?.project?.projectId}`}
                   >
-                    <ProjectTitle t={t} activeProject={activeProject} />
+                    <ProjectTitle activeProject={activeProject} />
                   </Link>
                 ) : (
-                  <ProjectTitle t={t} activeProject={activeProject} />
+                  <ProjectTitle activeProject={activeProject} />
                 )}
                 <Box display="flex" alignItems="center" gap={4}>
                   {inventory?.city || city ? (
@@ -259,7 +265,7 @@ export function Hero({
                           fontWeight="semibold"
                           lineHeight="32"
                         >
-                          {shortenNumber(population.population)}
+                          {shortenNumber(population.population, numberFormat)}
                           <Text as="span" fontSize="16px">
                             {population?.population
                               ? getShortenNumberUnit(population.population)
@@ -341,7 +347,10 @@ export function Hero({
                           fontWeight="semibold"
                           lineHeight="32"
                         >
-                          {Math.round(inventory?.city.area!).toLocaleString()}
+                          {formatNumber(
+                            Math.round(inventory?.city.area!),
+                            numberFormat,
+                          )}
                           {/* eslint-disable-next-line i18next/no-literal-string */}
                           <Text as="span" fontSize="16px">
                             km<sup>2</sup>
@@ -395,10 +404,8 @@ export function Hero({
 }
 
 function ProjectTitle({
-  t,
   activeProject,
 }: {
-  t: TFunction;
   activeProject: string | undefined;
 }) {
   return (

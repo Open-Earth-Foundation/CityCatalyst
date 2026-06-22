@@ -28,8 +28,15 @@ const MissingInventory = ({
       return;
     }
 
-    if (userInfo?.defaultInventoryId) {
+    if (userInfo?.defaultInventoryId && userInfo?.defaultCityId) {
       // TODO send to JNHome [ON-4452]
+      router.push(
+        `/${lng}/cities/${userInfo.defaultCityId}/GHGI/${userInfo.defaultInventoryId}`,
+      );
+      return;
+    }
+
+    if (userInfo?.defaultInventoryId) {
       router.push(`/${lng}/${userInfo.defaultInventoryId}`);
       return;
     }
@@ -100,7 +107,11 @@ const MissingInventory = ({
           </Text>
           <Button
             onClick={() => {
-              if (userInfo?.defaultInventoryId) {
+              if (userInfo?.defaultInventoryId && userInfo?.defaultCityId) {
+                router.push(
+                  `/${lng}/cities/${userInfo.defaultCityId}/GHGI/${userInfo.defaultInventoryId}`,
+                );
+              } else if (userInfo?.defaultInventoryId) {
                 router.push(`/${lng}/${userInfo?.defaultInventoryId}`);
               } else if (cityId) {
                 router.push(`/${lng}/cities/${cityId}/GHGI/onboarding`);

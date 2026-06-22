@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-05-21T14:22:19.628824+00:00",
+  "request_id": "d5fecbe9-384e-4398-b5a7-8ef5d2d2b299",
+  "request_kind": "prioritization",
+  "event_index": 6,
+  "step_name": "validate_weights",
+  "event_type": "validate_weights.completed",
+  "payload": {
+    "weights_override_provided": true,
+    "requested_weights_override": {
+      "impact": 0.5,
+      "alignment": 0.3,
+      "feasibility": 0.2
+    },
+    "weights": {
+      "impact": 0.5,
+      "alignment": 0.3,
+      "feasibility": 0.2
+    },
+    "elapsed_seconds": 3.1932999945638585e-05
+  }
+}

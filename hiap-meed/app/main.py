@@ -1,4 +1,4 @@
-"""
+﻿"""
 This is the main file for the HIAP-MEED API.
 It is responsible for setting up the FastAPI app and basic middleware.
 
@@ -16,14 +16,17 @@ import os
 import uvicorn
 from fastapi import FastAPI
 
+from app.modules.mlflow_trace_test.api import router as mlflow_trace_test_router
 from app.modules.prioritizer.api import router as prioritization_router
 from app.utils.logging_config import setup_logger
+from app.utils.mlflow_logging import initialize_mlflow
 
 
 setup_logger()
 # Always log under the `app.*` namespace so `setup_logger()` captures it,
 # including when this module is executed as `__main__`.
 logger = logging.getLogger("app.main")
+initialize_mlflow()
 
 
 app = FastAPI(
@@ -47,21 +50,29 @@ async def health() -> dict[str, str]:
 
 
 app.include_router(prioritization_router)
+app.include_router(mlflow_trace_test_router)
 
 
 if __name__ == "__main__":
     host = os.getenv("API_HOST", "0.0.0.0")
     port = int(os.getenv("API_PORT", "8000"))
     logger.info(
-        "Starting server host=%s port=%s LOG_LEVEL=%s LOG_DIR=%s ARTIFACT_LOG_JSONL=%s "
-        "CITY_SOURCE=%s ACTION_SOURCE=%s LEGAL_SOURCE=%s",
+        "Starting server host=%s port=%s LOG_LEVEL=%s LOG_DIR=%s LOCAL_ARTIFACTS_ENABLED=%s "
+        "CITY_SOURCE=%s ACTION_SOURCE=%s LEGAL_SOURCE=%s POLICY_SOURCE=%s "
+        "MITIGATION_FEASIBILITY_SOURCE=%s",
         host,
         port,
         os.getenv("LOG_LEVEL", "INFO"),
         os.getenv("LOG_DIR", "logs"),
-        os.getenv("ARTIFACT_LOG_JSONL", "true"),
+        os.getenv("LOCAL_ARTIFACTS_ENABLED", "true"),
         os.getenv("HIAP_MEED_CITY_DATA_SOURCE", "api"),
-        os.getenv("HIAP_MEED_ACTION_DATA_SOURCE", "mock"),
+        os.getenv("HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE", "api"),
         os.getenv("HIAP_MEED_LEGAL_DATA_SOURCE", "api"),
+        os.getenv("HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE", "api"),
+        os.getenv(
+            "HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE",
+            "api",
+        ),
     )
     uvicorn.run(app, host=host, port=port)
+

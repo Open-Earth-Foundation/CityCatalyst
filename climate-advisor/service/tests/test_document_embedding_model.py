@@ -1,17 +1,10 @@
 from __future__ import annotations
 
-import sys
-from pathlib import Path
 import unittest
 
 from pgvector.sqlalchemy import Vector
 
-# Ensure project root (containing vector_db) is importable
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
-
-from vector_db.models.document import DocumentEmbedding  # noqa: E402
+from vector_db.models.document import DocumentEmbedding
 
 
 class DocumentEmbeddingModelTests(unittest.TestCase):

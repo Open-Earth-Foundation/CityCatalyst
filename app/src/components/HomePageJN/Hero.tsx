@@ -4,23 +4,11 @@ import type { TFunction } from "i18next";
 import type { PopulationAttributes } from "@/models/Population";
 import { useGetOCCityDataQuery } from "@/services/api";
 import { useMemo } from "react";
-import {
-  Box,
-  Heading,
-  Icon,
-  Spinner,
-  Text,
-  HStack,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Icon, Spinner, HStack, VStack } from "@chakra-ui/react";
 import { CircleFlag } from "react-circle-flags";
-import { MdGroup, MdInfoOutline, MdOutlineAspectRatio } from "react-icons/md";
+import { MdInfoOutline, MdOutlineAspectRatio } from "react-icons/md";
 import { Tooltip } from "@/components/ui/tooltip";
-import {
-  formatEmissions,
-  getShortenNumberUnit,
-  shortenNumber,
-} from "@/util/helpers";
+import { formatEmissions, formatNumber } from "@/util/helpers";
 import Link from "next/link";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { CityWithProjectDataResponse, InventoryResponse } from "@/util/types";
@@ -28,7 +16,6 @@ import { TitleMedium } from "@/components/package/Texts/Title";
 import { DisplayMedium } from "@/components/package/Texts/Display";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { BodyMedium } from "@/components/package/Texts/Body";
-import { FiArrowUpRight } from "react-icons/fi";
 import { HeatIcon } from "../icons";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
@@ -36,30 +23,30 @@ const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 interface HeroProps {
   city: CityWithProjectDataResponse;
   ghgiCityData?: InventoryResponse;
-  year: number;
   isPublic: boolean;
   isLoading: boolean;
   t: TFunction;
   population?: PopulationAttributes;
   hideMap?: boolean;
+  numberFormat?: string;
 }
 
 export function Hero({
   city,
   ghgiCityData,
-  year,
   isLoading: isInventoryLoading,
   isPublic,
   population,
   t,
   hideMap = false,
+  numberFormat,
 }: HeroProps) {
   const { data: cityData } = useGetOCCityDataQuery(city?.locode!, {
     skip: !city?.locode,
   });
 
   const formattedEmissions = ghgiCityData?.totalEmissions
-    ? formatEmissions(ghgiCityData.totalEmissions)
+    ? formatEmissions(ghgiCityData.totalEmissions, numberFormat)
     : { value: t("n-a"), unit: "" };
 
   const popWithDS = useMemo(
@@ -180,7 +167,7 @@ export function Hero({
                   >
                     {city.area && city.area > 0 ? (
                       <>
-                        {Math.round(city.area).toLocaleString()}
+                        {formatNumber(Math.round(city.area), numberFormat)}
                         <HeadlineSmall
                           as="span"
                           fontSize="lg"

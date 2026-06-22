@@ -11,6 +11,7 @@ interface ByScopeViewProps {
   totalEmissionsData?: string;
   t: TFunction;
   inventoryId: string;
+  numberFormat?: string;
 }
 
 const ByScopeViewSourceDrawer: React.FC<ByScopeViewProps> = ({
@@ -21,6 +22,7 @@ const ByScopeViewSourceDrawer: React.FC<ByScopeViewProps> = ({
   t,
   totalEmissionsData,
   inventoryId,
+  numberFormat,
 }) => {
   const {
     data: source,
@@ -52,6 +54,7 @@ const ByScopeViewSourceDrawer: React.FC<ByScopeViewProps> = ({
       t={t}
       inventoryId={inventoryId}
       hideActions={true}
+      numberFormat={numberFormat}
     />
   );
 };

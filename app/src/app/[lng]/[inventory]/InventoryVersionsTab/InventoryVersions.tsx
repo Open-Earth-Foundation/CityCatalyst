@@ -22,6 +22,7 @@ export default function InventoryVersions({
     { inventoryId: inventoryId! },
     { skip: !inventoryId },
   );
+  const { data: userInfo } = api.useGetUserInfoQuery();
   const groupedVersions = groupInventoryHistory(data);
 
   return (
@@ -55,6 +56,7 @@ export default function InventoryVersions({
               versionEntries={entries}
               isCurrent={i === 0}
               versionNumber={groupedVersions.length - i - 1}
+              numberFormat={userInfo?.numberFormat}
             />
           ))
         ))}

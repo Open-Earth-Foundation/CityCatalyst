@@ -21,9 +21,14 @@ from routes.ghgi_emission_forecast import api_router as emission_forecast
 from routes.ghgi_notation_key import api_router as ghgi_notation_key_route
 from routes.city_context import api_router as city_context_route
 from routes.city_attribute import api_router as city_attributes_route
+from routes.cities_search import api_router as cities_search_route
 from routes.get_climate_actions import api_router as climate_actions_route
 from routes.population_endpoint import api_router as population_route
 from routes.projects import api_router as projects_route
+from routes.finance_opportunities import api_router as finance_opportunities_route
+from routes.city_action_financial_feasibility import api_router as city_action_financial_feasibility_route
+from routes.city_action_finance_detail import api_router as city_action_finance_detail_route
+from routes.city_finance_projects import api_router as city_finance_projects_route
 from routes.city_action_policy_scores import api_router as city_action_policy_scores_route
 from routes.city_action_mitigation_feasibility_scores import api_router as city_action_mitigation_feasibility_scores_route
 from routes.actions_pathway import api_router as actions_pathway_route
@@ -136,6 +141,11 @@ app.include_router(
 
 app.include_router(
     population_route,
+    tags=["City Definitions"],
+)
+
+app.include_router(
+    cities_search_route,
     tags=["City Definitions"],
 )
 
@@ -252,6 +262,28 @@ app.include_router(
 app.include_router(
     projects_route,
     tags=["Projects"],
+)
+
+## Endpoints for Climate Finance
+
+app.include_router(
+    finance_opportunities_route,
+    tags=["Climate Finance"],
+)
+
+app.include_router(
+    city_action_financial_feasibility_route,
+    tags=["Climate Finance"],
+)
+
+app.include_router(
+    city_action_finance_detail_route,
+    tags=["Climate Finance"],
+)
+
+app.include_router(
+    city_finance_projects_route,
+    tags=["Climate Finance"],
 )
 
 app.include_router(

@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import logging
 
-from app.modules.prioritizer.config import (
+from app.modules.prioritizer.scoring_config import (
     IMPACT_DEFAULT_TIMELINE_SCORE,
     IMPACT_TIMELINE_TO_SCORE,
     IMPACT_WEIGHT_REDUCTION_SHARE,
@@ -88,17 +88,47 @@ def _read_impact_band(*, action_id: str, emissions_entry: dict[str, object]) -> 
     return str(raw_impact_band)
 
 
+def _is_afolu_subsector_key(sector_subsector_key: str) -> bool:
+    """Return whether one normalized subsector key belongs to AFOLU sector `V`."""
+    return sector_subsector_key.startswith("V.")
+
+
+def _resolve_scoring_emissions_magnitude(
+    *, sector_subsector_key: str, city_emissions_by_subsector_key: dict[str, float]
+) -> float:
+    """
+    Return the non-negative emissions magnitude used by Impact scoring for one key.
+
+    Current scoring rule:
+    - AFOLU `V.*` uses the absolute inventory magnitude so removals and sources
+      contribute by size in both the numerator and denominator.
+    - Non-AFOLU subsectors still contribute only when the city inventory value is
+      strictly positive.
+    """
+    emissions_value = city_emissions_by_subsector_key.get(sector_subsector_key, 0.0)
+    if _is_afolu_subsector_key(sector_subsector_key):
+        return abs(emissions_value)
+    if emissions_value > 0.0:
+        return emissions_value
+    return 0.0
+
+
 def _has_matchable_city_emissions(
     *, sector_subsector_key: str, city_emissions_by_subsector_key: dict[str, float]
 ) -> bool:
     """
     Return whether the city inventory has a matchable emissions value for one key.
 
-    Impact only scores reducible emissions. Negative AFOLU removals remain valid
-    inventory data, but they are not treated as reducible emissions for matching.
+    Impact uses absolute AFOLU `V.*` magnitudes for matching. Other sectors still
+    require strictly positive inventory values.
     """
-    emissions_value = city_emissions_by_subsector_key.get(sector_subsector_key, 0.0)
-    return emissions_value > 0.0
+    return (
+        _resolve_scoring_emissions_magnitude(
+            sector_subsector_key=sector_subsector_key,
+            city_emissions_by_subsector_key=city_emissions_by_subsector_key,
+        )
+        > 0.0
+    )
 
 
 def _compute_impact_block_score(
@@ -124,17 +154,25 @@ def _has_activity_type(activity_row: CityActivityRow) -> bool:
 
 
 def _resolve_action_text_source(action: Action) -> tuple[str, str | None]:
-    """Choose the future activity-mapping text source for one action."""
-    if action.activity_type_description and action.activity_type_description.strip():
-        return "activity_type_description", action.activity_type_description.strip()
+    """
+    Choose the current placeholder text source for future activity matching.
+
+    This ordering is intentionally provisional. The active ranking path does
+    not use this text today, and a future implementation should revisit which
+    action-pathways fields best represent the matchable action text.
+    """
+    if action.intervention_summary and action.intervention_summary.strip():
+        return "intervention_summary", action.intervention_summary.strip()
+    if action.outcome_summary and action.outcome_summary.strip():
+        return "outcome_summary", action.outcome_summary.strip()
     if action.description and action.description.strip():
         logger.warning(
-            "Missing action activity_type_description action_id=%s; future mapping would fall back to description",
+            "Missing action intervention/outcome summary action_id=%s; future mapping would fall back to description",
             action.action_id,
         )
         return "description", action.description.strip()
     logger.warning(
-        "Missing action activity_type_description and description action_id=%s",
+        "Missing action intervention/outcome summary and description action_id=%s",
         action.action_id,
     )
     return "missing", None
@@ -151,8 +189,11 @@ def _collect_activity_data_level_mapping_stub_metadata(
     Return no-op stub diagnostics without changing subsector matches or ranking.
 
     Future intended logic:
-    - compare each city `activityType` against action `activity_type_description`
-    - if `activity_type_description` is missing, fall back to action `description`
+    - compare each city `activityType` against selected action catalog text
+    - current placeholder order is `intervention_summary`, then
+      `outcome_summary`, then `description`
+    - exact field choice and matching behavior are still a future discussion
+      and should be confirmed before this path affects ranking
     - retain only activity-to-action matches that pass that semantic check
     """
     logger.warning(
@@ -232,9 +273,11 @@ def run(actions: list[Action], city_emissions_context: CityEmissionsContext) -> 
     evidence_by_action_id: dict[str, dict[str, object]] = {}
     city_emissions_by_subsector_key = city_emissions_context.emissions_by_subsector_key
     total_city_emissions = sum(
-        emissions_value
-        for emissions_value in city_emissions_by_subsector_key.values()
-        if emissions_value > 0.0
+        _resolve_scoring_emissions_magnitude(
+            sector_subsector_key=subsector_key,
+            city_emissions_by_subsector_key=city_emissions_by_subsector_key,
+        )
+        for subsector_key in city_emissions_by_subsector_key
     )
     activity_data_level_mapping_enabled = is_activity_data_level_mapping_enabled()
 
@@ -319,7 +362,11 @@ def run(actions: list[Action], city_emissions_context: CityEmissionsContext) -> 
         total_reduction_amount = 0.0
         if reduction_multiplier is not None:
             total_reduction_amount = sum(
-                city_emissions_by_subsector_key[subsector_key] * reduction_multiplier
+                _resolve_scoring_emissions_magnitude(
+                    sector_subsector_key=subsector_key,
+                    city_emissions_by_subsector_key=city_emissions_by_subsector_key,
+                )
+                * reduction_multiplier
                 for subsector_key in matched_city_subsector_keys
             )
         reduction_share_of_city_emissions = (
@@ -332,15 +379,20 @@ def run(actions: list[Action], city_emissions_context: CityEmissionsContext) -> 
         subsector_contributors: list[dict[str, float | str]] = []
         for subsector_key in matched_city_subsector_keys:
             subsector_city_emissions = city_emissions_by_subsector_key[subsector_key]
+            subsector_scoring_magnitude = _resolve_scoring_emissions_magnitude(
+                sector_subsector_key=subsector_key,
+                city_emissions_by_subsector_key=city_emissions_by_subsector_key,
+            )
             reduction_amount = 0.0
             if reduction_multiplier is not None:
-                reduction_amount = subsector_city_emissions * reduction_multiplier
+                reduction_amount = subsector_scoring_magnitude * reduction_multiplier
             subsector_contributors.append(
                 {
                     "subsector_key": subsector_key,
                     "city_emissions": subsector_city_emissions,
+                    "scoring_city_emissions_magnitude": subsector_scoring_magnitude,
                     "share_of_city": (
-                        subsector_city_emissions / total_city_emissions
+                        subsector_scoring_magnitude / total_city_emissions
                         if total_city_emissions > 0.0
                         else 0.0
                     ),
@@ -385,6 +437,10 @@ def run(actions: list[Action], city_emissions_context: CityEmissionsContext) -> 
             "matched_city_subsector_keys_count": len(matched_city_subsector_keys),
             "matched_city_subsector_keys": matched_city_subsector_keys,
             "total_city_emissions": total_city_emissions,
+            "total_city_emissions_scoring_basis": (
+                "AFOLU V.* uses absolute inventory magnitude; "
+                "non-AFOLU uses strictly positive inventory only"
+            ),
             "total_reduction_amount": total_reduction_amount,
             "emissions_reduction_component_score": reduction_share_of_city_emissions,
             "timeline_component_score": timeline_score,

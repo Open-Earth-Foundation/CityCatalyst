@@ -49,9 +49,15 @@
  *         description: Unauthorized
  */
 
-import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
+import {
+  callClimateAdvisorChat,
+  extractClimateAdvisorErrorMessage,
+  readClimateAdvisorResponsePayload,
+} from "@/backend/chat/climate-advisor";
+import { buildClimateAdvisorMessagePayload } from "@/backend/chat/message-payload";
 import { logger } from "@/services/logger";
+import { apiHandler } from "@/util/api";
 
 export const POST = apiHandler(async (req, { session }) => {
   try {
@@ -60,7 +66,9 @@ export const POST = apiHandler(async (req, { session }) => {
       throw new Error("User authentication required");
     }
 
-    const { threadId, content, options } = await req.json();
+    const body = await req.json();
+    const { threadId, content, options, context, inventory_id, inventoryId } =
+      body;
 
     if (!threadId || !content) {
       return NextResponse.json(
@@ -74,39 +82,42 @@ export const POST = apiHandler(async (req, { session }) => {
         user_id: session.user.id,
         thread_id: threadId,
         content_length: content.length,
+        inventory_id: inventory_id ?? inventoryId,
+        has_context: !!context,
         has_options: !!options,
       },
       "Sending message to CA thread",
     );
 
-    // Call CA messages endpoint
-    const caResponse = await fetch(`${process.env.CA_BASE_URL}/v1/messages`, {
+    const caResponse = await callClimateAdvisorChat({
+      path: "/v1/messages",
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         "X-Request-ID": `cc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       },
-      body: JSON.stringify({
-        thread_id: threadId,
-        user_id: session.user.id,
-        content,
-        options: options || {},
+      body: buildClimateAdvisorMessagePayload({
+        userId: session.user.id,
+        body,
       }),
     });
 
     if (!caResponse.ok) {
-      const errorText = await caResponse.text();
+      const payload = await readClimateAdvisorResponsePayload(caResponse);
+      const errorMessage = extractClimateAdvisorErrorMessage(
+        payload,
+        `CA service error (${caResponse.status})`,
+      );
       logger.error(
         {
           status: caResponse.status,
-          error: errorText,
+          error: payload,
           user_id: session.user.id,
           thread_id: threadId,
         },
         "CA message request failed",
       );
 
-      throw new Error(`CA service error: ${caResponse.status} - ${errorText}`);
+      throw new Error(errorMessage);
     }
 
     logger.info(

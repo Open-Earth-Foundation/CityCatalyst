@@ -38,6 +38,7 @@
   "modeled-data-desc": "Emissões estimadas a partir de modelos preditivos",
   "modeled-fuel": "Consumo de intensidade de combustível modelado",
   "built-area": "Área Construída",
+  "by-data-source": "Por",
   "building-type": "Tipo de edifício",
   "select-type-of-building": "Selecione o tipo de edifício",
   "direct-measure-desc": "Medições diretas de emissões de fontes de combustão em edifícios comerciais.",
@@ -94,7 +95,7 @@
   "add-data-to-inventory": "Adicionar Dados ao Inventário",
   "completion-percent": "{{progress}}% concluído",
   "data-connected-percent": "{{progress}}% Dados de terceiros conectados",
-  "data-added-percent": "{{progress}}% Dados adicionados",
+  "manually-added": "Dados adicionados manualmente",
   "check-data-heading": "Explore Conjuntos de Dados Relevantes para Conectar ao Seu Inventário",
   "check-data-details": "Revise e integre automaticamente dados relevantes para o inventário de GEE da sua cidade.",
   "no-data-sources": "Sem Fontes de Dados Externas Disponíveis",
@@ -106,6 +107,7 @@
   "scope": "Escopo",
   "see-more-details": "Ver mais detalhes",
   "connect-data": "Conectar Dados",
+  "connect-data-gpc-exists": "Dados já adicionados",
   "data-source-connect-failed": "Falha ao conectar a fonte de dados",
   "data-source-connect-load-error": "Ocorreu um erro ao carregar os dados",
   "data-source-connect-invalid-error": "A fonte de dados não se aplica ao seu ano de inventário ou cidade",
@@ -1270,5 +1272,6 @@
   "not-occurring": "Não Ocorrendo",
   "not-estimated-progress": "Não Estimado",
   "uncategorized": "Não categorizado",
-  "legend": "Legenda"
+  "legend": "Legenda",
+  "data-already-added-connected": "Este conjunto de dados não está disponível porque já tem um conjunto conectado para este subsetor."
 }

@@ -8,10 +8,12 @@ export const EmissionsForecastSection = ({
   inventoryId,
   t,
   lng,
+  numberFormat,
 }: {
   inventoryId: string;
   t: TFunction;
   lng: string;
+  numberFormat?: string;
 }) => {
   const { data: forecast, isLoading: isForecastLoading } =
     api.useGetEmissionsForecastQuery(inventoryId);
@@ -40,7 +42,12 @@ export const EmissionsForecastSection = ({
         {t("sector-emissions-forecast-description")}
       </Text>
       <Box height="auto" width="100%">
-        <EmissionsForecastCard t={t} forecast={forecast} lng={lng} />
+        <EmissionsForecastCard
+          t={t}
+          forecast={forecast}
+          lng={lng}
+          numberFormat={numberFormat}
+        />
       </Box>
     </Box>
   );

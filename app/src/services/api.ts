@@ -15,8 +15,10 @@ import {
   AcceptInviteResponse,
   CityAndYearsResponse,
   ConnectDataSourceQuery,
+  ConnectAllDataSourcesError,
   CountryEmissionsResponse,
   ConnectDataSourceResponse,
+  DataSourcePreviewResult,
   EmissionsFactorResponse,
   EmissionsForecastData,
   GetDataSourcesResult,
@@ -350,6 +352,37 @@ export const api = createApi({
         query: ({ inventoryId }) => `datasource/${inventoryId}`,
         transformResponse: (response: GetDataSourcesResult) => response,
       }),
+      getDataSourcePreview: builder.query<
+        DataSourcePreviewResult,
+        { cityId: string; year: number; inventoryType?: string }
+      >({
+        query: ({ cityId, year, inventoryType }) => ({
+          url: "datasource/preview",
+          params: {
+            cityId,
+            year,
+            ...(inventoryType ? { inventoryType } : {}),
+          },
+        }),
+        transformResponse: (response: { data: DataSourcePreviewResult }) =>
+          response.data,
+      }),
+      connectAllInventoryDataSources: builder.mutation<
+        { errors: ConnectAllDataSourcesError[] },
+        { inventoryId: string }
+      >({
+        query: ({ inventoryId }) => ({
+          url: `datasource/${inventoryId}/connect-all`,
+          method: "POST",
+        }),
+        invalidatesTags: [
+          "Inventory",
+          "InventoryProgress",
+          "InventoryValue",
+          "ReportResults",
+          "YearlyReportResults",
+        ],
+      }),
       getDataSource: builder.query<
         DataSourceResponse,
         { datasourceId: string; inventoryId: string }
@@ -553,6 +586,7 @@ export const api = createApi({
           method: "PATCH",
           body: data,
         }),
+        invalidatesTags: ["UserInfo"],
       }),
       checkUser: builder.mutation<
         UserAttributes,
@@ -2117,6 +2151,8 @@ export const {
   useDeleteProjectMutation,
   useCreateBulkInventoriesMutation,
   useConnectDataSourcesMutation,
+  useGetDataSourcePreviewQuery,
+  useConnectAllInventoryDataSourcesMutation,
   useMarkCitiesPublicMutation,
   useMigrateHiapSelectionsMutation,
   useStartBulkHiapPrioritizationMutation,

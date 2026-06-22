@@ -160,7 +160,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
             isFrozenCheck()
               ? null
               : router.push(
-                  `/${lng}/onboarding/setup?project=${selectedProjectData?.projectId as string}${selectedCityData?.cityId ? `&city=${selectedCityData?.cityId}` : ""}`,
+                  `/${lng}/cities/onboarding/setup?project=${selectedProjectData?.projectId as string}${selectedCityData?.cityId ? `&city=${selectedCityData?.cityId}` : ""}`,
                 )
           }
           variant="outline"

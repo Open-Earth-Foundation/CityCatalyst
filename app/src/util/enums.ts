@@ -20,3 +20,11 @@ export enum ImportStatusEnum {
   COMPLETED = "completed",
   FAILED = "failed",
 }
+
+export enum NumberFormatEnum {
+  DEFAULT = "default",
+  COMMA_AND_DOT = "comma_and_dot",
+  DOT_AND_COMMA = "dot_and_comma",
+  SPACE_AND_COMMA = "space_and_comma",
+  APOSTROPHE_AND_DOT = "apostrophe_and_dot",
+}

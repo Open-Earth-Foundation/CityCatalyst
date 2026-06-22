@@ -7,7 +7,7 @@ Current implementation note: exclusion preview and prioritization are separate f
 ```mermaid
 graph TD
   CityData[(City Data)]
-  ActionData[(Action Data)]
+  ActionPathways[(Action Pathways Data)]
 
   ExclusionPrefs[Exclusion Preferences]
   Preview[Exclusion Preview]
@@ -23,11 +23,11 @@ graph TD
   WeightedSum[Weighted Sum]
   FinalList((Final Prioritized Action List))
 
-  ActionData --> Preview
+  ActionPathways --> Preview
   ExclusionPrefs --> Preview
   Preview --> Confirmed
   CityData --> HardFilter
-  ActionData --> HardFilter
+  ActionPathways --> HardFilter
   Confirmed --> HardFilter
 
   HardFilter -- fails --> Discard

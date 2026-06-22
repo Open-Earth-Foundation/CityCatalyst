@@ -36,6 +36,13 @@
       "datasource": "cl-ine-censo",
       "version_label": "2024"
     },
+    "disability_prevalence": {
+      "attribute_value": 8.59,
+      "attribute_units": "percent",
+      "attribute_category": "very low",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
+    },
     "unemployment_rate": {
       "attribute_value": 9.44,
       "attribute_units": "percent",
@@ -50,10 +57,52 @@
       "datasource": "cl-ine-censo",
       "version_label": "2024"
     },
+    "employment_agriculture_forestry": {
+      "attribute_value": 1.19,
+      "attribute_units": "percent",
+      "attribute_category": "very low",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
+    },
+    "employment_construction": {
+      "attribute_value": 5.54,
+      "attribute_units": "percent",
+      "attribute_category": "very low",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
+    },
+    "employment_electricity_gas": {
+      "attribute_value": 0.6,
+      "attribute_units": "percent",
+      "attribute_category": "very low",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
+    },
     "employment_in_transport_and_logistics": {
       "attribute_value": 7.35,
       "attribute_units": "percent",
       "attribute_category": "low",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
+    },
+    "employment_manufacturing": {
+      "attribute_value": 4.46,
+      "attribute_units": "percent",
+      "attribute_category": "very low",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
+    },
+    "employment_mining": {
+      "attribute_value": 9.54,
+      "attribute_units": "percent",
+      "attribute_category": "very high",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
+    },
+    "employment_water_waste": {
+      "attribute_value": 0.63,
+      "attribute_units": "percent",
+      "attribute_category": "very low",
       "datasource": "cl-ine-censo",
       "version_label": "2024"
     },
@@ -64,10 +113,31 @@
       "datasource": "cl-ine-censo",
       "version_label": "2024"
     },
-    "industry_construction_employment": {
-      "attribute_value": 22.79,
+    "fixed_internet_household_share": {
+      "attribute_value": 76.84,
+      "attribute_units": "percent",
+      "attribute_category": "very high",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
+    },
+    "indigenous_identification_rate": {
+      "attribute_value": 16.81,
       "attribute_units": "percent",
       "attribute_category": "high",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
+    },
+    "literacy_rate": {
+      "attribute_value": 97.03,
+      "attribute_units": "percent",
+      "attribute_category": "very high",
+      "datasource": "cl-ine-censo",
+      "version_label": "2024"
+    },
+    "mean_years_schooling": {
+      "attribute_value": 10.89,
+      "attribute_units": "years",
+      "attribute_category": "very high",
       "datasource": "cl-ine-censo",
       "version_label": "2024"
     },

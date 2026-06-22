@@ -8,9 +8,9 @@ import httpx
 import pytest
 from pydantic import ValidationError
 
-from app.modules.prioritizer.config import is_activity_data_level_mapping_enabled
+from app.modules.prioritizer.scoring_config import is_activity_data_level_mapping_enabled
 from app.modules.prioritizer.models import (
-    ActionApiItem,
+    ActionPathwayApiItem,
     ActionPolicyScoreApiItem,
     PrioritizerApiRequest,
 )
@@ -18,6 +18,10 @@ from app.services.action_policy_scores_api import (
     ACTION_POLICY_SCORES_ENDPOINT_TEMPLATE,
     ActionPolicyScoresApiService,
     DEFAULT_ACTION_POLICY_SCORES_BASE_URL,
+)
+from app.services.action_pathways_api import (
+    ACTION_PATHWAYS_ENDPOINT,
+    ActionPathwaysApiService,
 )
 from app.services.city_attributes_api import (
     DEFAULT_CITY_ATTRIBUTES_BASE_URL,
@@ -34,15 +38,17 @@ from app.services.http_client import (
     get_json_with_retries,
 )
 from app.services.data_clients import (
+    ApiActionPathwaysDataApiClient,
     ApiActionPolicyScoresDataApiClient,
     ApiCityDataApiClient,
     ApiLegalDataApiClient,
     MockActionPolicyScoresDataApiClient,
-    MockActionDataApiClient,
+    MockActionPathwaysDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
+    get_action_mitigation_feasibility_scores_data_api_client,
     get_action_policy_scores_data_api_client,
-    get_action_data_api_client,
+    get_action_pathways_data_api_client,
     get_city_data_api_client,
     get_legal_data_api_client,
 )
@@ -52,11 +58,12 @@ from app.services.data_clients import (
 def test_mock_action_client_loads_actions_from_file() -> None:
     """Mock action client reads and maps actions from the checked-in mock payload."""
     mock_file_path = (
-        Path(__file__).resolve().parents[2] / "data" / "mock" / "actions_api_mock.json"
+        Path(__file__).resolve().parents[2] / "data" / "mock" / "action_pathways_api_mock.json"
     )
-    client = MockActionDataApiClient(mock_file_path=mock_file_path)
+    client = MockActionPathwaysDataApiClient(mock_file_path=mock_file_path)
 
-    actions = client.list_actions()
+    fetch_result = client.list_actions()
+    actions = fetch_result.actions
 
     assert len(actions) > 0
     assert actions[0].action_id
@@ -67,15 +74,197 @@ def test_mock_action_client_loads_actions_from_file() -> None:
 
 
 @pytest.mark.unit
-def test_get_action_data_client_uses_mock_for_unknown_source(
+def test_mock_action_client_returns_full_catalog_without_action_type_filter(
+    tmp_path: Path,
+) -> None:
+    """Mock action client returns non-mitigation rows; filtering happens later."""
+    mock_file_path = tmp_path / "action_pathways_api_mock.json"
+    mock_file_path.write_text(
+        """
+        {
+          "meta": {
+            "generatedAtUtc": "2026-05-21T00:00:00+00:00",
+            "apiContext": {"endpoint": "GET /api/v1/action-pathways"},
+            "totalRecords": 2
+          },
+          "actions": [
+            {
+              "actionId": "mitigation_1",
+              "actionType": "mitigation",
+              "actionName": "Mitigation action",
+              "coBenefits": {},
+              "emissions": {
+                "sectorNumber": "I",
+                "subsectorNumber": [1],
+                "gpcReferenceNumber": ["I.1.1"],
+                "impactText": "high"
+              }
+            },
+            {
+              "actionId": "adaptation_1",
+              "actionType": "adaptation",
+              "actionName": "Adaptation action",
+              "coBenefits": {},
+              "emissions": {
+                "sectorNumber": "I",
+                "subsectorNumber": [1],
+                "gpcReferenceNumber": ["I.1.1"],
+                "impactText": "high"
+              }
+            }
+          ]
+        }
+        """.strip(),
+        encoding="utf-8",
+    )
+    client = MockActionPathwaysDataApiClient(mock_file_path=mock_file_path)
+
+    fetch_result = client.list_actions()
+    actions = fetch_result.actions
+
+    assert [action.action_id for action in actions] == ["mitigation_1", "adaptation_1"]
+    assert [action.action_type for action in actions] == ["mitigation", "adaptation"]
+
+
+@pytest.mark.unit
+def test_mock_action_client_records_fetch_metadata(tmp_path: Path) -> None:
+    """Mock action client exposes generated-at metadata for fetch artifacts."""
+    mock_file_path = tmp_path / "action_pathways_api_mock.json"
+    mock_file_path.write_text(
+        """
+        {
+          "meta": {
+            "generatedAtUtc": "2026-05-21T00:00:00+00:00",
+            "apiContext": {"endpoint": "GET /api/v1/action-pathways"},
+            "totalRecords": 1
+          },
+          "actions": [
+            {
+              "actionId": "mitigation_1",
+              "actionType": "mitigation",
+              "actionName": "Mitigation action",
+              "coBenefits": {},
+              "emissions": {
+                "sectorNumber": "I",
+                "subsectorNumber": [1],
+                "gpcReferenceNumber": ["I.1.1"],
+                "impactText": "high"
+              }
+            }
+          ]
+        }
+        """.strip(),
+        encoding="utf-8",
+    )
+    client = MockActionPathwaysDataApiClient(mock_file_path=mock_file_path)
+
+    fetch_result = client.list_actions()
+
+    assert fetch_result.source_metadata["mock_file_path"].endswith(
+        "action_pathways_api_mock.json"
+    )
+    assert fetch_result.source_metadata["upstream_endpoint"] == ACTION_PATHWAYS_ENDPOINT
+    assert fetch_result.source_metadata["upstream_generated_at_utc"] == (
+        "2026-05-21T00:00:00+00:00"
+    )
+
+
+@pytest.mark.unit
+def test_get_action_pathways_data_client_rejects_invalid_source(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Action dependency provider defaults unknown source values to mock data."""
-    monkeypatch.setenv("HIAP_MEED_ACTION_DATA_SOURCE", "unexpected")
+    """Action dependency provider rejects invalid source values."""
+    monkeypatch.setenv("HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE", "unexpected")
 
-    client = get_action_data_api_client()
+    with pytest.raises(ValueError, match="HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE"):
+        get_action_pathways_data_api_client()
 
-    assert isinstance(client, MockActionDataApiClient)
+
+@pytest.mark.unit
+def test_action_pathways_service_uses_default_base_url_when_env_is_unset(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Action pathways service falls back to the documented default host."""
+    monkeypatch.delenv("CCGLOBAL_API_BASE_URL", raising=False)
+
+    service = ActionPathwaysApiService()
+
+    assert service.base_url == "https://ccglobal.openearth.dev"
+
+
+@pytest.mark.unit
+def test_action_pathways_service_uses_env_base_url_override(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Action pathways service honors the configured upstream host override."""
+    monkeypatch.setenv(
+        "CCGLOBAL_API_BASE_URL",
+        "https://pathways.example.test/root/ ",
+    )
+
+    service = ActionPathwaysApiService()
+
+    assert service.base_url == "https://pathways.example.test/root/"
+    assert (
+        service._build_action_pathways_url()
+        == "https://pathways.example.test/root/api/v1/action-pathways"
+    )
+
+
+@pytest.mark.unit
+def test_api_action_pathways_client_maps_remote_payload_and_metadata(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """API action client exposes fetch metadata from the live-shaped payload."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        request = httpx.Request("GET", url, headers=headers)
+        return httpx.Response(
+            200,
+            request=request,
+            json={
+                "meta": {
+                    "generatedAtUtc": "2026-05-21T14:07:38.144930+00:00",
+                    "backendConsumer": "unspecified",
+                    "upstreamProvider": "global-api",
+                    "apiContext": {"endpoint": ACTION_PATHWAYS_ENDPOINT},
+                    "totalRecords": 1,
+                },
+                "actions": [
+                    {
+                        "actionId": "icare_0001",
+                        "actionType": "mitigation",
+                        "actionName": "Improve heat and energy recovery",
+                        "coBenefits": {},
+                        "emissions": {
+                            "sectorNumber": "IV",
+                            "subsectorNumber": [1],
+                            "gpcReferenceNumber": ["IV.1"],
+                            "impactText": "low",
+                            "impactNumeric": 2,
+                        },
+                    }
+                ],
+            },
+        )
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    client = ApiActionPathwaysDataApiClient()
+
+    fetch_result = client.list_actions()
+    actions = fetch_result.actions
+
+    assert actions[0].action_id == "icare_0001"
+    assert fetch_result.source_metadata["upstream_endpoint"] == ACTION_PATHWAYS_ENDPOINT
+    assert fetch_result.source_metadata["http_status_code"] == 200
+    assert fetch_result.source_metadata["upstream_generated_at_utc"] == (
+        "2026-05-21T14:07:38.144930+00:00"
+    )
+    assert fetch_result.source_metadata["upstream_url"].endswith(
+        "/api/v1/action-pathways"
+    )
 
 
 @pytest.mark.unit
@@ -90,11 +279,13 @@ def test_mock_city_client_loads_city_from_file() -> None:
 
     assert city.city_name == "Iquique"
     assert city.region_name == "Tarapaca"
-    assert city.city_context
-    assert any(
-        row.get("attribute_name") == "unemployment_rate" for row in city.city_context
-    )
     assert city.source_metadata["mock_file_path"].endswith("city_api_mock.json")
+    assert city.source_metadata["requested_locode"] == "CL IQQ"
+    assert city.source_metadata["requested_version_label"] is None
+    assert city.source_metadata["upstream_api_context"]["endpoint"] == (
+        "GET /api/v0/city_attributes/{locode}"
+    )
+    assert city.source_metadata["upstream_datasources"]
 
 
 @pytest.mark.unit
@@ -150,6 +341,17 @@ def test_get_city_data_client_defaults_to_api(monkeypatch: pytest.MonkeyPatch) -
 
 
 @pytest.mark.unit
+def test_get_city_data_client_rejects_invalid_source(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """City dependency provider rejects invalid source values."""
+    monkeypatch.setenv("HIAP_MEED_CITY_DATA_SOURCE", "apii")
+
+    with pytest.raises(ValueError, match="HIAP_MEED_CITY_DATA_SOURCE"):
+        get_city_data_api_client()
+
+
+@pytest.mark.unit
 def test_get_legal_data_client_defaults_to_api(monkeypatch: pytest.MonkeyPatch) -> None:
     """Legal dependency provider defaults to API data source."""
     monkeypatch.delenv("HIAP_MEED_LEGAL_DATA_SOURCE", raising=False)
@@ -157,6 +359,17 @@ def test_get_legal_data_client_defaults_to_api(monkeypatch: pytest.MonkeyPatch) 
     client = get_legal_data_api_client()
 
     assert isinstance(client, ApiLegalDataApiClient)
+
+
+@pytest.mark.unit
+def test_get_legal_data_client_rejects_invalid_source(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Legal dependency provider rejects invalid source values."""
+    monkeypatch.setenv("HIAP_MEED_LEGAL_DATA_SOURCE", "apii")
+
+    with pytest.raises(ValueError, match="HIAP_MEED_LEGAL_DATA_SOURCE"):
+        get_legal_data_api_client()
 
 
 @pytest.mark.unit
@@ -187,6 +400,10 @@ def test_city_attributes_service_uses_env_base_url_override(
     assert (
         service._build_city_url("CL IQQ")
         == "https://city-attributes.example.test/root/api/v0/city_attributes/CL%20IQQ"
+    )
+    assert (
+        service._build_city_url("CL IQQ", "2024")
+        == "https://city-attributes.example.test/root/api/v0/city_attributes/CL%20IQQ?version_label=2024"
     )
 
 
@@ -316,9 +533,16 @@ def test_api_city_client_maps_remote_payload_and_metadata(
     )
     assert city.source_metadata["http_status_code"] == 200
     assert city.source_metadata["requested_locode"] == "CL IQQ"
+    assert city.source_metadata["requested_version_label"] is None
     assert city.source_metadata["upstream_generated_at_utc"] == (
         "2026-05-13T09:39:51.706285+00:00"
     )
+    assert city.source_metadata["upstream_api_context"] == {
+        "endpoint": "GET /api/v0/city_attributes/{locode}",
+        "locode": "CL IQQ",
+        "version_label": None,
+    }
+    assert city.source_metadata["upstream_datasources"] == []
 
 
 @pytest.mark.unit
@@ -512,7 +736,7 @@ def test_api_legal_client_rejects_duplicate_action_ids(
     monkeypatch.setattr(httpx.Client, "get", _mock_get)
     client = ApiLegalDataApiClient()
 
-    with pytest.raises(UpstreamApiError, match="duplicate srcActionId"):
+    with pytest.raises(UpstreamApiError, match="duplicate src_action_id"):
         client.get_action_legal_assessments("CL")
 
 
@@ -790,6 +1014,37 @@ def test_get_action_policy_scores_data_client_defaults_to_api(
 
 
 @pytest.mark.unit
+def test_get_action_policy_scores_data_client_rejects_invalid_source(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Policy dependency provider rejects invalid source values."""
+    monkeypatch.setenv("HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE", "apii")
+
+    with pytest.raises(
+        ValueError,
+        match="HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE",
+    ):
+        get_action_policy_scores_data_api_client()
+
+
+@pytest.mark.unit
+def test_get_action_mitigation_feasibility_scores_data_client_rejects_invalid_source(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Mitigation feasibility dependency provider rejects invalid source values."""
+    monkeypatch.setenv(
+        "HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE",
+        "apii",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE",
+    ):
+        get_action_mitigation_feasibility_scores_data_api_client()
+
+
+@pytest.mark.unit
 def test_policy_support_score_must_be_between_zero_and_one() -> None:
     """Policy support score rejects values outside the [0, 1] contract."""
     with pytest.raises(ValidationError):
@@ -803,66 +1058,74 @@ def test_policy_support_score_must_be_between_zero_and_one() -> None:
 def test_action_co_benefit_impact_numeric_must_be_between_minus2_and_2() -> None:
     """Action co-benefit impact numeric values are constrained to `[-2, 2]`."""
     with pytest.raises(ValidationError):
-        ActionApiItem(
+        ActionPathwayApiItem(
             actionId="action_1",
             actionName="Action 1",
+            actionType="mitigation",
             coBenefits={
                 "air_quality": {
-                    "impact_numeric": 3,
+                    "impactNumeric": 3,
                 }
             },
             emissions={
-                "sector_number": "I",
-                "subsector_number": [1],
-                "gpc_reference_number": ["I.1.1"],
-                "impact_text": "high",
-                "impact_numeric": 2,
+                "sectorNumber": "I",
+                "subsectorNumber": [1],
+                "gpcReferenceNumber": ["I.1.1"],
+                "impactText": "high",
+                "impactNumeric": 2,
             },
         )
 
 
 @pytest.mark.unit
-def test_action_api_item_accepts_subsector_number_list_and_activity_type_description() -> None:
-    """Action payload accepts one-element subsector lists and nullable mapping text."""
-    action = ActionApiItem.model_validate(
+def test_action_api_item_accepts_live_camelcase_action_pathways_fields() -> None:
+    """Action payload accepts live action-pathways fields and camelCase impact rows."""
+    action = ActionPathwayApiItem.model_validate(
         {
             "actionId": "action_1",
+            "actionType": "mitigation",
             "actionName": "Action 1",
-            "activity_type_description": None,
+            "interventionSummary": None,
+            "outcomeSummary": "Buildings use less energy.",
+            "interventionType": "infrastructure",
+            "actionRole": "outcome",
             "coBenefits": {
                 "air_quality": {
-                    "impact_numeric": 1,
+                    "impactNumeric": 1,
                 }
             },
             "emissions": {
-                "sector_number": "I",
-                "subsector_number": [1],
-                "gpc_reference_number": ["I.1.1"],
-                "impact_text": "high",
-                "impact_numeric": 2,
+                "sectorNumber": "I",
+                "subsectorNumber": [1],
+                "gpcReferenceNumber": ["I.1.1"],
+                "impactText": "high",
+                "impactNumeric": 2,
             },
         }
     )
 
-    assert action.activity_type_description is None
+    assert action.action_type == "mitigation"
+    assert action.intervention_summary is None
+    assert action.outcome_summary == "Buildings use less energy."
     assert action.emissions is not None
     assert action.emissions.subsector_number == [1]
-    assert action.coBenefits["air_quality"].impact_numeric == 1
+    assert action.co_benefits["air_quality"].impact_numeric == 1
 
 
 @pytest.mark.unit
 def test_action_api_item_rejects_scalar_subsector_number() -> None:
     """Action payload requires subsector_number to stay a list, not a scalar."""
     with pytest.raises(ValidationError):
-        ActionApiItem.model_validate(
+        ActionPathwayApiItem.model_validate(
             {
                 "actionId": "action_1",
+                "actionType": "mitigation",
                 "actionName": "Action 1",
                 "emissions": {
-                    "sector_number": "I",
-                    "subsector_number": 1,
-                    "gpc_reference_number": ["I.1.1"],
-                    "impact_text": "high",
+                    "sectorNumber": "I",
+                    "subsectorNumber": 1,
+                    "gpcReferenceNumber": ["I.1.1"],
+                    "impactText": "high",
                 },
             }
         )
@@ -871,21 +1134,22 @@ def test_action_api_item_rejects_scalar_subsector_number() -> None:
 @pytest.mark.unit
 def test_action_api_item_ignores_unexpected_upstream_field() -> None:
     """Upstream action DTO ignores additive extra fields it does not use."""
-    action = ActionApiItem.model_validate(
+    action = ActionPathwayApiItem.model_validate(
         {
             "actionId": "action_1",
+            "actionType": "mitigation",
             "actionName": "Action 1",
             "unexpectedField": "ignored",
             "emissions": {
-                "sector_number": "I",
-                "subsector_number": [1],
-                "gpc_reference_number": ["I.1.1"],
-                "impact_text": "high",
+                "sectorNumber": "I",
+                "subsectorNumber": [1],
+                "gpcReferenceNumber": ["I.1.1"],
+                "impactText": "high",
             },
         }
     )
 
-    assert action.actionId == "action_1"
+    assert action.action_id == "action_1"
     assert not hasattr(action, "unexpectedField")
 
 
@@ -1082,3 +1346,4 @@ def test_activity_data_level_mapping_flag_defaults_to_false(
     monkeypatch.delenv("ACTIVITY_DATA_LEVEL_MAPPING", raising=False)
 
     assert is_activity_data_level_mapping_enabled() is False
+

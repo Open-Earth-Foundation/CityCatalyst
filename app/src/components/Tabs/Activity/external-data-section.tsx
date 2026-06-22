@@ -31,9 +31,11 @@ import { UseErrorToast } from "@/hooks/Toasts";
 const ExternalDataSection = ({
   t,
   inventoryValue,
+  numberFormat,
 }: {
   t: TFunction;
   inventoryValue: InventoryValue;
+  numberFormat?: string;
 }) => {
   const source = inventoryValue.dataSource;
   const [disconnectThirdPartyData, { isLoading: isDisconnectLoading }] =
@@ -194,7 +196,7 @@ const ExternalDataSection = ({
             fontWeight="semibold"
             fontSize="headline.md"
           >
-            {convertKgToTonnes(inventoryValue.co2eq as bigint)}
+            {convertKgToTonnes(inventoryValue.co2eq as bigint, numberFormat)}
           </Text>
         </Box>
       </Box>
@@ -210,6 +212,7 @@ const ExternalDataSection = ({
         onConnectClick={() => {}}
         isConnectLoading={false}
         t={t}
+        numberFormat={numberFormat}
       />
     </Box>
   );

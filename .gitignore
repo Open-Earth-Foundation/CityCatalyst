@@ -161,5 +161,18 @@ climate-advisor/scripts/setup_local_db.py
 sdk/
 climate-advisor/service/tests/output/
 
+# Local generated artifacts
+/output/
+
 # Cursor plans
 .cursor/plans/
+
+.playwright-mcp/
+app/demo-recording/
+docs/design-references/
+tmp-pgvector/
+app/playwright-output/
+demo-recording/
+
+# Codex
+.codex/

@@ -1,0 +1,24 @@
+# HIAP-MEED LLM Configuration
+# Shared non-secret configuration for OpenAI-backed features.
+
+models:
+  alignment_other_preference:
+    name: "gpt-5.4-mini"
+    temperature: 0.0
+  free_text_exclusions:
+    name: "gpt-5.4-mini"
+    temperature: 0.0
+  explanations:
+    name: "gpt-5.4-mini"
+    temperature: 0.0
+  explanation_translations:
+    name: "gpt-5.4-mini"
+    temperature: 0.0
+
+features:
+  free_text_exclusions_enabled: true
+  explanations_enabled: true
+
+openai:
+  timeout_seconds: 30
+  max_retries: 3

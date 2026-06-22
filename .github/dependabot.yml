@@ -33,8 +33,8 @@ updates:
       interval: "weekly"
     cooldown:
       default-days: 7
-  # ── Climate Advisor (pip)
-  - package-ecosystem: "pip"
+  # ── Climate Advisor (uv)
+  - package-ecosystem: "uv"
     directory: "/climate-advisor"
     schedule:
       interval: "weekly"

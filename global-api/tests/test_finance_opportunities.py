@@ -92,7 +92,7 @@ def test_get_finance_opportunities_success(monkeypatch):
     monkeypatch.setattr(
         "routes.finance_opportunities.SessionLocal", lambda: _DummySession()
     )
-    resp = client.get("/api/v1/finance/opportunities", params={"country_code": "CL"})
+    resp = client.get("/api/v1/climate-finance/opportunities", params={"country_code": "CL"})
     assert resp.status_code == 200
     body = resp.json()
 

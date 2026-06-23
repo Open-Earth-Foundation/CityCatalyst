@@ -10,6 +10,13 @@ import Wrapper from "@/components/wrapper";
 import { api } from "@/services/api";
 import { getParamValueRequired } from "@/util/helpers";
 
+/**
+ * Client-side redirect for legacy `/{lng}/{inventoryId}/draft/stationary-energy` URLs.
+ *
+ * Most traffic is handled earlier by `maybeRedirectLegacyInventoryUrl` in middleware.
+ * This component is kept so the Stationary Energy draft module can evolve in parallel
+ * (e.g. AI team work) without route-level merge conflicts during legacy URL removal.
+ */
 export function LegacyStationaryEnergyDraftRoute() {
   const router = useRouter();
   const params = useParams();

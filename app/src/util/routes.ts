@@ -1,5 +1,6 @@
 import { hasFeatureFlag } from "./feature-flags";
 import { FeatureFlags } from "./feature-flags";
+import { getGhgiInventoryPath } from "./ghgi-routes";
 
 export const getHomePath = (
   lng: string,
@@ -10,7 +11,12 @@ export const getHomePath = (
   const firstInventoryId = Array.isArray(inventoryId)
     ? inventoryId[0]
     : inventoryId;
-  const cityPath = `/${lng}/cities/${firstCityId ?? ""}`; // Always go to cities overview when JN is enabled
+
+  if (firstCityId && firstInventoryId) {
+    return getGhgiInventoryPath(lng, firstCityId, firstInventoryId);
+  }
+
+  const cityPath = `/${lng}/cities/${firstCityId ?? ""}`;
   const inventoryPath = `/${lng}/${firstInventoryId ?? ""}`;
 
   return hasFeatureFlag(FeatureFlags.JN_ENABLED) ? cityPath : inventoryPath;

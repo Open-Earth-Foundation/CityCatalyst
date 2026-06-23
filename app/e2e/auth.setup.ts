@@ -1,34 +1,36 @@
 import { expect, test as setup, test } from "@playwright/test";
-import { expectText, signup } from "./helpers";
 import { TEST_ADMIN_EMAIL, TEST_ADMIN_PASSWORD } from "./test-constants";
 
 const authFile = "playwright/.auth/user.json";
 
-test.beforeEach(async ({ page }) => {});
+test.beforeEach(async () => {});
 
-setup("authenticate", async ({ page, request }) => {
-  test.setTimeout(30000);
+setup("authenticate", async ({ page }) => {
+  test.setTimeout(60000);
 
-  // Login with the test admin (created by global setup)
-  await page.goto("/en/auth/login");
-  await expectText(page, "LOG IN");
+  const csrfResponse = await page.request.get("/api/auth/csrf");
+  expect(csrfResponse.ok()).toBeTruthy();
+  const { csrfToken } = await csrfResponse.json();
 
-  // Fill the login form
-  await page.locator('input[name="email"]').fill(TEST_ADMIN_EMAIL);
-  await page.locator('input[name="password"]').fill(TEST_ADMIN_PASSWORD);
+  const loginResponse = await page.request.post(
+    "/api/auth/callback/credentials",
+    {
+      form: {
+        csrfToken,
+        email: TEST_ADMIN_EMAIL,
+        password: TEST_ADMIN_PASSWORD,
+        callbackUrl: "/en/cities",
+        json: "true",
+      },
+    },
+  );
+  expect(loginResponse.ok()).toBeTruthy();
+  const loginBody = await loginResponse.json();
+  expect(loginBody.url).not.toMatch(/\/auth\/login/);
 
-  // Verify the form is filled
-  await page.waitForTimeout(500);
-
-  // Click login and wait for navigation to cities page
-  await Promise.all([
-    page.waitForURL((url) => url.pathname.includes("/cities"), {
-      timeout: 30000,
-    }),
-    page.getByRole("button", { name: "LOG IN" }).click(),
-  ]);
-
+  await page.goto("/en/cities");
   await page.waitForLoadState("networkidle");
+  await expect(page).toHaveURL(/\/cities/, { timeout: 30000 });
 
   await page.context().storageState({ path: authFile });
 });

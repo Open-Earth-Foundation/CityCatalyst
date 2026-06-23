@@ -4,6 +4,26 @@ export async function expectText(page: Page, text: string) {
   await expect(page.getByText(text).first()).toBeVisible({ timeout: 10000 });
 }
 
+/** Wait until the auth form is hydrated and react-hook-form owns submit handling. */
+export async function waitForAuthFormReady(page: Page) {
+  const submitButton = page.getByRole("button", {
+    name: /^(LOG IN|Create Account)$/i,
+  });
+  await expect(submitButton).toBeVisible();
+  await expect(submitButton).toHaveAttribute("formnovalidate", "");
+}
+
+export async function expectValidationMessage(
+  page: Page,
+  pattern: string | RegExp,
+) {
+  const locator =
+    typeof pattern === "string"
+      ? page.getByText(pattern, { exact: false })
+      : page.getByText(pattern);
+  await expect(locator.first()).toBeVisible({ timeout: 15000 });
+}
+
 export async function dismissCookieConsent(page: Page) {
   try {
     await page.getByTestId("cookie-decline-button").waitFor({ timeout: 2000 });

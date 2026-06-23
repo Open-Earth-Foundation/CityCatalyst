@@ -105,7 +105,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
       <Text my={4} color="content.tertiary">
         {t("login-details")}
       </Text>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form noValidate onSubmit={handleSubmit(onSubmit)}>
         <Box display="flex" flexDirection="column" gap="16px">
           <EmailInput register={register} error={errors.email} t={t} />
           <PasswordInput register={register} error={errors.password} t={t} />

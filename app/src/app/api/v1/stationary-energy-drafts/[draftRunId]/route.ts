@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { callClimateAdvisor } from "@/backend/agentic/ghgi/stationary-energy/ca";
+import {
+  callClimateAdvisor,
+  getClimateAdvisorRequestId,
+} from "@/backend/agentic/ghgi/stationary-energy/ca";
 import { requireStationaryEnergyAgenticEnabled } from "@/backend/agentic/ghgi/stationary-energy/auth";
 import { enrichStationaryEnergyDraftCO2e } from "@/backend/agentic/ghgi/stationary-energy/draft-emissions";
 import { apiHandler } from "@/util/api";
@@ -28,6 +31,7 @@ export const GET = apiHandler(async (req, { session, params }) => {
     method: "GET",
     tokenUserID: session.user.id,
     inventoryId: query.inventory_id,
+    requestId: getClimateAdvisorRequestId(req),
   });
   const payload = await enrichStationaryEnergyDraftCO2e(await response.json());
 

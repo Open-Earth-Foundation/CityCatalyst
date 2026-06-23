@@ -107,12 +107,13 @@ sequenceDiagram
   - `stationary_energy_save_review_draft`
   - `stationary_energy_request_inventory_save_confirmation`
 
-`AgentService.create_agent()` also appends prompt blocks to the base
-instructions when their runtime context is present:
+`AgentService.create_agent()` selects instructions from the active chat mode:
 
-- `inventory_context` when an inventory is active.
-- `stationary_energy_review` when the request is scoped to a Stationary Energy
-  draft run.
+- General chat starts from `prompts.default`.
+- General inventory chat can append `prompts.inventory_context`.
+- Stationary Energy review chat starts from `prompts.stationary_energy_review`
+  instead of appending to `prompts.default`, and registers only scoped
+  Stationary Energy review tools.
 
 ## Stationary Energy Review Flow
 
@@ -167,8 +168,10 @@ workflow state in PostgreSQL.
 - `services/agent_service.py`
   - Selects the model for the current workflow context.
   - Loads `prompts.default` for general chat.
-  - Appends `inventory_context` and `stationary_energy_review` prompts when
-    their scopes are active.
+  - Appends `inventory_context` only for general inventory chat.
+  - Uses `stationary_energy_review` as the full prompt for active Stationary
+    Energy review chat.
+  - Keeps general inventory and vector-search tools out of active review chat.
   - Registers the correct tool pack for the request.
 - `services/stationary_energy/stationary_energy_draft_repository.py`
   - Loads draft runs, proposals, decisions, and staged review selections.
@@ -250,7 +253,7 @@ settings.
 - `prompts.inventory_context`
   - Injected only when an inventory is active and CA can fetch its details.
 - `prompts.stationary_energy_review`
-  - Appended only for active Stationary Energy draft review chat.
+  - Used as the full prompt for active Stationary Energy draft review chat.
 
 Prompt include directives such as `{{ include: tools/default_tool_policy.md }}`
 are resolved relative to the including file first and then against the prompt

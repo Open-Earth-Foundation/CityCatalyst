@@ -18,6 +18,20 @@ function requireEnv(name: string): string {
 }
 
 /**
+ * Generate a CityCatalyst-scoped request id for CA correlation.
+ */
+function createClimateAdvisorRequestId(): string {
+  return `cc-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+}
+
+/**
+ * Read the incoming CityCatalyst request id for CA correlation.
+ */
+export function getClimateAdvisorRequestId(req: Request): string | undefined {
+  return req.headers.get("x-request-id")?.trim() || undefined;
+}
+
+/**
  * Extract the most useful error message from a Climate Advisor JSON payload.
  */
 function climateAdvisorErrorMessage(
@@ -123,6 +137,7 @@ export async function callClimateAdvisor(params: {
   inventoryId?: string;
   method?: "GET" | "POST";
   body?: Record<string, unknown>;
+  requestId?: string;
 }): Promise<Response> {
   const token = await issueCaUserToken({
     tokenUserID: params.tokenUserID,
@@ -135,6 +150,7 @@ export async function callClimateAdvisor(params: {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token.access_token}`,
+        "X-Request-ID": params.requestId ?? createClimateAdvisorRequestId(),
       },
       body: params.body ? JSON.stringify(params.body) : undefined,
     });

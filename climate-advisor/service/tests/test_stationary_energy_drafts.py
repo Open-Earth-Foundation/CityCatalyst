@@ -2064,26 +2064,47 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertGreaterEqual(len(history), 2)
         self.assertEqual(history[0]["role"], "system")
-        self.assertIn("STATIONARY_ENERGY_DRAFT_CONTEXT_JSON", history[0]["content"])
-        self.assertIn("Testopolis", history[0]["content"])
-        self.assertIn("ds-chat", history[0]["content"])
-        self.assertIn("guidance_context", history[0]["content"])
-        self.assertNotIn("llm_generation", history[0]["content"])
-        self.assertIn("ui_context", history[0]["content"])
-        self.assertIn(proposal_id, history[0]["content"])
-        self.assertIn("Focused right pane row", history[0]["content"])
-        self.assertIn("focused_decision_state", history[0]["content"])
-        self.assertIn("candidate-chat", history[0]["content"])
-        self.assertIn("confirmed_bulk_review_choices", history[0]["content"])
+        system_content = history[0]["content"]
+        self.assertIn(
+            "You are Clima assisting with an active GPC Stationary Energy draft review.",
+            system_content,
+        )
+        self.assertIn(
+            "Handle one Stationary Energy review intent per user turn.",
+            system_content,
+        )
+        context_start = system_content.index("<context>")
+        self.assertGreater(
+            context_start,
+            system_content.index(
+                "Handle one Stationary Energy review intent per user turn."
+            ),
+        )
+        self.assertIn("</context>", system_content)
+        self.assertTrue(system_content.rstrip().endswith("</context>"))
+        self.assertIn(
+            "STATIONARY_ENERGY_DRAFT_CONTEXT_JSON",
+            system_content[context_start:],
+        )
+        self.assertIn("Testopolis", system_content)
+        self.assertIn("ds-chat", system_content)
+        self.assertIn("guidance_context", system_content)
+        self.assertNotIn("llm_generation", system_content)
+        self.assertIn("ui_context", system_content)
+        self.assertIn(proposal_id, system_content)
+        self.assertIn("Focused right pane row", system_content)
+        self.assertIn("focused_decision_state", system_content)
+        self.assertIn("candidate-chat", system_content)
+        self.assertIn("confirmed_bulk_review_choices", system_content)
         self.assertIn(
             "confirmed_staged_review_rollback_choices",
-            history[0]["content"],
+            system_content,
         )
         self.assertIn(
-            "Use subsector-specific energy activity data first.", history[0]["content"]
+            "Use subsector-specific energy activity data first.", system_content
         )
         self.assertNotIn(
-            "raw-output-should-not-be-in-chat-context", history[0]["content"]
+            "raw-output-should-not-be-in-chat-context", system_content
         )
         self.assertEqual(history[-1]["role"], "user")
         self.assertEqual(history[-1]["content"], payload.content)

@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { callClimateAdvisor } from "@/backend/agentic/ghgi/stationary-energy/ca";
+import {
+  callClimateAdvisor,
+  getClimateAdvisorRequestId,
+} from "@/backend/agentic/ghgi/stationary-energy/ca";
 import { requireStationaryEnergyAgenticEnabled } from "@/backend/agentic/ghgi/stationary-energy/auth";
 import { apiHandler } from "@/util/api";
 
@@ -26,6 +29,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
     method: "POST",
     tokenUserID: session.user.id,
     inventoryId: body.inventory_id,
+    requestId: getClimateAdvisorRequestId(req),
     body: {
       user_id: session.user.id,
     },

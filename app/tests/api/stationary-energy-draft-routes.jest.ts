@@ -30,8 +30,9 @@ function makeRequest(
   method: "GET" | "POST",
   body?: unknown,
   jsonImpl?: () => Promise<unknown>,
+  headers?: HeadersInit,
 ): NextRequest {
-  const request = new NextRequest(new URL(url), { method });
+  const request = new NextRequest(new URL(url), { headers, method });
   if (jsonImpl) {
     request.json = jest.fn(jsonImpl) as unknown as typeof request.json;
   } else if (body !== undefined) {
@@ -265,6 +266,45 @@ describe("Stationary Energy draft routes", () => {
     await expect(response.json()).resolves.toEqual({
       detail: "bad draft context",
     });
+    const [, requestInit] = fetchMock.mock.calls[1] ?? [];
+    const headers = new Headers(requestInit?.headers);
+    expect(headers.get("X-Request-ID")).toMatch(/^cc-/);
+  });
+
+  it("forwards incoming request IDs to Climate Advisor", async () => {
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: "token-123",
+          expires_in: 3600,
+          token_type: "Bearer",
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({
+          draft_run_id: TEST_DRAFT_RUN_ID,
+        }),
+      );
+
+    const response = await startDraft(
+      makeRequest(
+        "http://localhost:3000/api/v1/stationary-energy-drafts/start",
+        "POST",
+        {
+          city_id: TEST_CITY_ID,
+          inventory_id: TEST_INVENTORY_ID,
+        },
+        undefined,
+        { "x-request-id": "cc-parent-request-123" },
+      ),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(201);
+    const [, requestInit] = fetchMock.mock.calls[1] ?? [];
+    const headers = new Headers(requestInit?.headers);
+    expect(headers.get("X-Request-ID")).toBe("cc-parent-request-123");
   });
 
   it("uses configured HOST instead of request origin for CA token issuance", async () => {

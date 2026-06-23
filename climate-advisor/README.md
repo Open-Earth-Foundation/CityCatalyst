@@ -18,7 +18,8 @@ conversational experience for CityCatalyst (CC). The service lives under
   access
 - **Streaming Responses**: Server-Sent Events (SSE) for real-time message
   delivery
-- **Observable**: Optional LangSmith integration for tracing and monitoring
+- **Observable**: Optional LangSmith tracing plus MLflow request, artifact, and
+  OpenAI trace logging
 
 ## Current Architecture
 
@@ -32,10 +33,11 @@ Climate Advisor runs two chat modes through the same `/v1/messages` endpoint:
 2. Stationary Energy review chat
    - Activates when the request or thread context carries
      `stationary_energy_draft_run_id`
-   - Loads the persisted draft snapshot into
-     `STATIONARY_ENERGY_DRAFT_CONTEXT_JSON`
-   - Appends `prompts.stationary_energy_review`
-   - Registers scoped review tools that stage, preview, rollback, and save
+   - Loads `prompts.stationary_energy_review`, then appends the persisted draft
+     snapshot as `STATIONARY_ENERGY_DRAFT_CONTEXT_JSON` inside a
+     `<context>...</context>` block
+   - Uses `prompts.stationary_energy_review` instead of `prompts.default`
+   - Registers only scoped review tools that stage, preview, rollback, and save
      draft-review choices
 
 At runtime:
@@ -141,6 +143,9 @@ data: {}
    - Loads pruned conversation history from PostgreSQL
    - If a `stationary_energy_draft_run_id` is active, loads the persisted draft
      snapshot plus request-scoped `ui_context`
+   - For Stationary Energy review chat, the first model input is the active
+     `prompts.stationary_energy_review` text followed by the draft snapshot in
+     `<context>...</context>`
 4. **Message Persistence**
    - Stores the user message in PostgreSQL
 5. **Agent Execution**
@@ -197,8 +202,8 @@ When a request is scoped to an active `stationary_energy_draft_run_id`:
    `staged_review_selections`
 2. Request-scoped UI state such as focused row, confirmed bulk choices, and
    confirmed rollback choices is attached as `ui_context`
-3. `AgentService` appends `prompts.stationary_energy_review` and registers the
-   scoped review tools
+3. `AgentService` uses `prompts.stationary_energy_review` as the active
+   instructions and registers only the scoped review tools
 4. Review tools stage temporary selections first, then save them into durable
    `review_decisions` only when the user asks to save the reviewed draft
 5. Save-to-inventory stays a separate CityCatalyst confirmation step. CA chat
@@ -322,9 +327,10 @@ such as `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`.
 Prompt paths are also configured in `llm_config.yaml`:
 
 - `prompts.default` drives general Climate Advisor chat
-- `prompts.inventory_context` is appended when CA can load inventory metadata
+- `prompts.inventory_context` is appended for general inventory chat when CA can
+  load inventory metadata
 - `prompts.stationary_energy_review` drives active Stationary Energy draft
-  review chat
+  review chat without appending `prompts.default`
 
 Some prompt files use reusable fragments with
 `{{ include: tools/example.md }}` directives. Includes are resolved relative to
@@ -354,6 +360,21 @@ language, or client-side fallback behavior. The boundary is:
 - `OPENAI_API_KEY` - OpenAI API key for embeddings
 - `LANGSMITH_API_KEY` - LangSmith API key when tracing is enabled
 - `CC_BASE_URL` - CityCatalyst base URL for inventory API and token refresh
+- `MLFLOW_ENABLED` - Enables best-effort MLflow logging when set to `true`
+- `MLFLOW_TRACKING_URI` - Shared MLflow backend URL, normally
+  `https://mlflow-dev.openearth.dev`
+- `MLFLOW_ENVIRONMENT` - Environment tag for runs: `dev`, `test`, or `prod`
+- `MLFLOW_EXPERIMENT_NAME` - Experiment for all Climate Advisor MLflow runs,
+  default `clima`
+- `MLFLOW_HTTP_REQUEST_TIMEOUT` - MLflow HTTP timeout in seconds; use `3` to
+  match the shared HIAP-MEED fail-open tuning
+- `MLFLOW_HTTP_REQUEST_MAX_RETRIES` - MLflow HTTP retry count; use `1`
+- `MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR` - MLflow retry backoff factor; use `1`
+- `MLFLOW_HTTP_REQUEST_BACKOFF_JITTER` - MLflow retry jitter; use `0`
+- `GIT_PYTHON_REFRESH` - Set to `quiet` so service runtimes without `git` do
+  not emit GitPython warnings during MLflow initialization
+- `MLFLOW_ASYNC_LOGGING_ENABLED` - Enables MLflow async logging when set to
+  `true`
 
 ## Database Schema
 
@@ -666,6 +687,54 @@ Notes:
   launching Uvicorn
 
 ## Observability
+
+### MLflow Integration
+
+Climate Advisor can log to the same deployed MLflow instance used by
+HIAP-MEED. The split is experiment-based between services, and tag-based inside
+Climate Advisor:
+
+- `hiap-meed` remains the existing HIAP-MEED experiment
+- `clima` stores all Climate Advisor runs, including general `/v1/messages`
+  chat, Stationary Energy draft, review, save, background generation, and
+  draft-context chat runs
+
+Each run includes tags such as `service`, `environment`, `workflow`,
+`prompt_name`, `request_id`, `thread_id`, `inventory_id`, and
+`stationary_energy_draft_run_id` when present. Full debug artifacts are logged
+with bearer tokens, API keys, JWTs, and secrets redacted.
+
+Each streamed `/v1/messages` model turn emits one MLflow trace. Climate Advisor
+also assigns the active trace session to the CA `thread_id`, so MLflow's
+session grouping shows all turns from the same UI conversation together while
+still preserving per-turn trace detail.
+
+The shared MLflow variables match HIAP-MEED where deployment needs explicit
+configuration (`MLFLOW_ENABLED`, `MLFLOW_TRACKING_URI`,
+`MLFLOW_EXPERIMENT_NAME`, `MLFLOW_ENVIRONMENT`, the
+`MLFLOW_HTTP_REQUEST_*` timeout/retry settings, `GIT_PYTHON_REFRESH`, and
+`MLFLOW_ASYNC_LOGGING_ENABLED`). Agentic and general Climate Advisor flows are
+separated by MLflow tags such as `workflow` and `context_mode`; active
+Stationary Energy draft chat is tagged `prompt_name=stationary_energy_review`.
+MLflow request previews for active Stationary Energy turns show the configured
+Stationary Energy prompt first, followed by the draft JSON context in
+`<context>...</context>`. Other operational defaults such as the MLflow
+`Created by` service identity are handled in code.
+
+GitHub Actions deployments can override the experiment name through the
+repository variable `MLFLOW_EXPERIMENT_NAME`. It is a variable, not a secret,
+because the value is a non-sensitive experiment name. The Kubernetes manifests
+still keep the same default so direct `kubectl apply` deployments work without
+GitHub.
+
+Before enabling MLflow in an environment:
+
+1. Confirm the MLflow UI is reachable at `https://mlflow-dev.openearth.dev`.
+2. Confirm or create the experiment named `clima`.
+3. Set the MLflow environment variables documented above in `.env` or the
+   Kubernetes deployment.
+4. If the MLflow server later requires authentication, provide MLflow auth
+   variables through Kubernetes secrets rather than configmaps.
 
 ### LangSmith Integration
 

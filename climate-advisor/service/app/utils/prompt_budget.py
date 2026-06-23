@@ -163,11 +163,24 @@ def trim_messages_to_budget(
 def _oldest_non_stationary_context_index(messages: list[dict[str, Any]]) -> int | None:
     """Find the oldest removable message that is not draft-context metadata."""
     for index, message in enumerate(messages[:-1]):
-        content = str(message.get("content") or "")
-        if content.startswith("STATIONARY_ENERGY_DRAFT_CONTEXT_JSON"):
+        if _is_stationary_energy_context_message(message):
             continue
         return index
     return None
+
+
+def _is_stationary_energy_context_message(message: dict[str, Any]) -> bool:
+    """Return whether a system message contains Stationary Energy draft context."""
+    if message.get("role") != "system":
+        return False
+    content = str(message.get("content") or "")
+    markers = (
+        "STATIONARY_ENERGY_DRAFT_CONTEXT_JSON",
+        "STATIONARY_ENERGY_DRAFT_CONTEXT_UNAVAILABLE",
+    )
+    if content.startswith(markers):
+        return True
+    return "<context>" in content and any(marker in content for marker in markers)
 
 
 def _tokenizer_for_model(model: str | None, fallback_encoding: str):

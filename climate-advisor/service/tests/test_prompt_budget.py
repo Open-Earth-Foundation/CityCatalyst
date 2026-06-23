@@ -121,3 +121,31 @@ def test_trim_messages_to_budget_preserves_stationary_context_and_current_user()
     assert trimmed[0] == stationary_context
     assert trimmed[-1]["content"] == "current question"
     assert token_count.tokens <= 80
+
+
+def test_trim_messages_to_budget_preserves_embedded_stationary_context() -> None:
+    stationary_context = {
+        "role": "system",
+        "content": (
+            "<role>\nStationary Energy prompt\n</role>\n\n"
+            "<context>\nSTATIONARY_ENERGY_DRAFT_CONTEXT_JSON\nsmall context\n</context>"
+        ),
+    }
+    messages = [
+        stationary_context,
+        {"role": "user", "content": "old " * 500},
+        {"role": "assistant", "content": "old response " * 500},
+        {"role": "user", "content": "current question"},
+    ]
+
+    trimmed, token_count, removed = trim_messages_to_budget(
+        messages,
+        instruction_text="",
+        model="openai/gpt-5.4",
+        budget=StationaryEnergyPromptBudget(max_prompt_tokens=80),
+    )
+
+    assert removed > 0
+    assert trimmed[0] == stationary_context
+    assert trimmed[-1]["content"] == "current question"
+    assert token_count.tokens <= 80

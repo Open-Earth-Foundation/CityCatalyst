@@ -17,7 +17,12 @@ import {
   GET as getProject,
   PATCH as updateProject,
 } from "@/app/api/v1/projects/[project]/route";
-import { mockRequest, setupTests, testUserID } from "../helpers";
+import {
+  expectStatusCode,
+  mockRequest,
+  setupTests,
+  testUserID,
+} from "../helpers";
 
 import {
   CreateOrganizationRequest,
@@ -98,7 +103,7 @@ describe("Project API", () => {
           organization: organization.organizationId,
         }),
       });
-      expect(response.status).toBe(200);
+      await expectStatusCode(response, 200);
       const data = await response.json();
       expect(data.name).toBe(projectData.name);
 
@@ -118,7 +123,7 @@ describe("Project API", () => {
           organization: organization.organizationId,
         }),
       });
-      expect(response.status).toBe(400);
+      await expectStatusCode(response, 400);
     });
   });
 
@@ -138,7 +143,7 @@ describe("Project API", () => {
           organization: organization.organizationId,
         }),
       });
-      expect(response.status).toBe(200);
+      await expectStatusCode(response, 200);
       const data = await response.json();
       expect(data.length).toBe(1);
 
@@ -163,7 +168,7 @@ describe("Project API", () => {
       const response = await getProject(req, {
         params: Promise.resolve({ project: project.projectId }),
       });
-      expect(response.status).toBe(200);
+      await expectStatusCode(response, 200);
       const data = await response.json();
       expect(data.name).toBe(projectData.name);
 
@@ -179,7 +184,7 @@ describe("Project API", () => {
         params: Promise.resolve({ project: randomUUID() }),
       });
       const data = await response.json();
-      expect(response.status).toBe(404);
+      await expectStatusCode(response, 404);
     });
   });
 
@@ -200,7 +205,7 @@ describe("Project API", () => {
       const response = await updateProject(req, {
         params: Promise.resolve({ project: project.projectId }),
       });
-      expect(response.status).toBe(200);
+      await expectStatusCode(response, 200);
       const data = await response.json();
       expect(data.name).toBe(updatedProject.name);
 
@@ -224,7 +229,7 @@ describe("Project API", () => {
       const response = await deleteProject(req, {
         params: Promise.resolve({ project: project.projectId }),
       });
-      expect(response.status).toBe(200);
+      await expectStatusCode(response, 200);
     });
   });
 });

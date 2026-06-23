@@ -2,7 +2,12 @@ import { PATCH as updateUser } from "@/app/api/v1/user/route";
 import { db } from "@/models";
 import { UserAttributes } from "@/models/User";
 import { beforeAll, afterAll, describe, it, expect } from "@jest/globals";
-import { mockRequest, setupTests, testUserID } from "../helpers";
+import {
+  expectStatusCode,
+  mockRequest,
+  setupTests,
+  testUserID,
+} from "../helpers";
 import {
   GlobalWarmingPotentialTypeEnum,
   InventoryTypeEnum,
@@ -78,7 +83,7 @@ describe("User API", () => {
   it("should update a user", async () => {
     const req = mockRequest(userUpdate);
     const res = await updateUser(req, emptyParams);
-    expect(res.status).toBe(200);
+    await expectStatusCode(res, 200);
     const data = await res.json();
     expect(data.success).toBeTruthy();
     const user = await db.models.User.findOne({
@@ -92,7 +97,7 @@ describe("User API", () => {
   it("should not update a user with invalid data", async () => {
     const req = mockRequest(invalidUserUpdate);
     const res = await updateUser(req, emptyParams);
-    expect(res.status).toBe(400);
+    await expectStatusCode(res, 400);
     const user = await db.models.User.findOne({
       where: { userId: userData.userId },
     });

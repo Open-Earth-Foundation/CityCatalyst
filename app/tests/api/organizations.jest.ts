@@ -13,7 +13,12 @@ import {
 } from "@/app/api/v1/organizations/route";
 import { db } from "@/models";
 import { CreateOrganizationRequest } from "@/util/validation";
-import { mockRequest, setupTests, testUserID } from "../helpers";
+import {
+  expectStatusCode,
+  mockRequest,
+  setupTests,
+  testUserID,
+} from "../helpers";
 import { Organization } from "@/models/Organization";
 import { randomUUID } from "node:crypto";
 import { AppSession, Auth } from "@/lib/auth";
@@ -73,7 +78,7 @@ describe("Organization API", () => {
 
     const req = mockRequest(uniqueOrgData);
     const res = await createOrganization(req, emptyParams);
-    expect(res.status).toEqual(201);
+    await expectStatusCode(res, 201);
     const data = await res.json();
     expect(data.name).toEqual(uniqueOrgData.name);
     expect(data.contactEmail).toEqual(uniqueOrgData.contactEmail);
@@ -82,7 +87,7 @@ describe("Organization API", () => {
   it("should not create an organization with invalid data", async () => {
     const req = mockRequest(invalidOrganization);
     const res = await createOrganization(req, emptyParams);
-    expect(res.status).toEqual(400);
+    await expectStatusCode(res, 400);
     const {
       error: { issues },
     } = await res.json();
@@ -101,7 +106,7 @@ describe("Organization API", () => {
     const uniqueOrgData = getUniqueOrganizationData();
     const req = mockRequest(uniqueOrgData);
     const res = await createOrganization(req, emptyParams);
-    expect(res.status).toEqual(403);
+    await expectStatusCode(res, 403);
   });
 
   it("should allow admin to query organizations", async () => {
@@ -109,7 +114,7 @@ describe("Organization API", () => {
     const res = await getOrganizations(req, {
       params: Promise.resolve({ organizationId: organization.organizationId }),
     });
-    expect(res.status).toEqual(200);
+    await expectStatusCode(res, 200);
     const data = await res.json();
     expect(data.length).toBeGreaterThan(0);
   });
@@ -120,6 +125,6 @@ describe("Organization API", () => {
     const res = await getOrganizations(req, {
       params: Promise.resolve({ organizationId: organization.organizationId }),
     });
-    expect(res.status).toEqual(403);
+    await expectStatusCode(res, 403);
   });
 });

@@ -14,7 +14,12 @@ import {
 } from "@/app/api/v1/organizations/[organization]/route";
 import { db } from "@/models";
 import { CreateOrganizationRequest } from "@/util/validation";
-import { mockRequest, setupTests, testUserID } from "../helpers";
+import {
+  expectStatusCode,
+  mockRequest,
+  setupTests,
+  testUserID,
+} from "../helpers";
 import { Organization } from "@/models/Organization";
 import { randomUUID } from "node:crypto";
 import { AppSession, Auth } from "@/lib/auth";
@@ -76,7 +81,7 @@ describe("Organization API", () => {
     const res = await getOrganization(req, {
       params: Promise.resolve({ organization: organization.organizationId }),
     });
-    expect(res.status).toEqual(200);
+    await expectStatusCode(res, 200);
     const data = await res.json();
     expect(data.name).toEqual(organizationData.name);
     expect(data.contactEmail).toEqual(organizationData.contactEmail);
@@ -87,7 +92,7 @@ describe("Organization API", () => {
     const res = await getOrganization(req, {
       params: Promise.resolve({ organization: randomUUID() }),
     });
-    expect(res.status).toEqual(404);
+    await expectStatusCode(res, 404);
   });
 
   it("should update an organization", async () => {
@@ -95,7 +100,7 @@ describe("Organization API", () => {
     const res = await updateOrganization(req, {
       params: Promise.resolve({ organization: organization.organizationId }),
     });
-    expect(res.status).toEqual(200);
+    await expectStatusCode(res, 200);
     const data = await res.json();
     expect(data.name).toEqual(organization2.name);
     expect(data.contactEmail).toEqual(organization2.contactEmail);
@@ -106,7 +111,7 @@ describe("Organization API", () => {
     const res = await updateOrganization(req, {
       params: Promise.resolve({ organization: organization.organizationId }),
     });
-    expect(res.status).toEqual(400);
+    await expectStatusCode(res, 400);
     const {
       error: { issues },
     } = await res.json();
@@ -126,7 +131,7 @@ describe("Organization API", () => {
     const res = await deleteOrganization(req, {
       params: Promise.resolve({ organization: organization.organizationId }),
     });
-    expect(res.status).toEqual(200);
+    await expectStatusCode(res, 200);
     const { deleted } = await res.json();
     expect(deleted).toBe(true);
   });
@@ -136,7 +141,7 @@ describe("Organization API", () => {
     const res = await deleteOrganization(req, {
       params: Promise.resolve({ organization: randomUUID() }),
     });
-    expect(res.status).toEqual(404);
+    await expectStatusCode(res, 404);
   });
 
   it("should not allow non-admins to update an organization", async () => {
@@ -145,7 +150,7 @@ describe("Organization API", () => {
     const res = await updateOrganization(req, {
       params: Promise.resolve({ organization: organization.organizationId }),
     });
-    expect(res.status).toEqual(403);
+    await expectStatusCode(res, 403);
   });
 
   it("should not allow non-admins to delete an organization", async () => {
@@ -154,6 +159,6 @@ describe("Organization API", () => {
     const res = await deleteOrganization(req, {
       params: Promise.resolve({ organization: organization.organizationId }),
     });
-    expect(res.status).toEqual(403);
+    await expectStatusCode(res, 403);
   });
 });

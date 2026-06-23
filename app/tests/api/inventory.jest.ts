@@ -19,7 +19,11 @@ import {
   setupTests,
   testUserID,
 } from "../helpers";
-import { createTestData, cleanupTestData, TestData } from "../helpers/testDataCreationHelper";
+import {
+  createTestData,
+  cleanupTestData,
+  TestData,
+} from "../helpers/testDataCreationHelper";
 import { SubSector, SubSectorAttributes } from "@/models/SubSector";
 import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
@@ -101,8 +105,14 @@ describe("Inventory API", () => {
   let testData: TestData;
 
   // Mock sessions for different user types
-  const collaboratorSession: AppSession = { user: { id: collaboratorUserId, role: Roles.User }, expires: "1h" };
-  const orgAdminSession: AppSession = { user: { id: orgAdminUserId, role: Roles.User }, expires: "1h" };
+  const collaboratorSession: AppSession = {
+    user: { id: collaboratorUserId, role: Roles.User },
+    expires: "1h",
+  };
+  const orgAdminSession: AppSession = {
+    user: { id: orgAdminUserId, role: Roles.User },
+    expires: "1h",
+  };
 
   let prevGetServerSession = Auth.getServerSession;
 
@@ -139,10 +149,10 @@ describe("Inventory API", () => {
     // Create proper test data hierarchy
     testData = await createTestData({
       cityName: cityName,
-      countryLocode: "XX"
+      countryLocode: "XX",
     });
 
-    city = await db.models.City.findByPk(testData.cityId) as City;
+    city = (await db.models.City.findByPk(testData.cityId)) as City;
     if (!city) {
       throw new Error(`Failed to find city with ID ${testData.cityId}`);
     }
@@ -151,12 +161,18 @@ describe("Inventory API", () => {
     await city.update({
       name: cityName,
       country: cityCountry,
-      locode
+      locode,
     });
 
     // Create test users
-    await db.models.User.upsert({ userId: collaboratorUserId, name: "COLLABORATOR_USER" });
-    await db.models.User.upsert({ userId: orgAdminUserId, name: "ORG_ADMIN_USER" });
+    await db.models.User.upsert({
+      userId: collaboratorUserId,
+      name: "COLLABORATOR_USER",
+    });
+    await db.models.User.upsert({
+      userId: orgAdminUserId,
+      name: "ORG_ADMIN_USER",
+    });
 
     // Set up permissions:
     // 1. Collaborator - can only access/edit inventories, not create/delete
@@ -166,7 +182,7 @@ describe("Inventory API", () => {
     await db.models.OrganizationAdmin.create({
       organizationAdminId: randomUUID(),
       userId: orgAdminUserId,
-      organizationId: testData.organizationId
+      organizationId: testData.organizationId,
     });
     sector = await db.models.Sector.create({
       sectorId: randomUUID(),
@@ -266,9 +282,11 @@ describe("Inventory API", () => {
     const res = await createInventory(req, {
       params: Promise.resolve({ city: city.cityId }),
     });
-    expect(res.status).toEqual(403);
+    await expectStatusCode(res, 403);
     const { error } = await res.json();
-    expect(error.message).toEqual("You do not have permission to create inventories in this city");
+    expect(error.message).toEqual(
+      "You do not have permission to create inventories in this city",
+    );
   });
 
   it("should not create an inventory with invalid data", async () => {
@@ -276,7 +294,7 @@ describe("Inventory API", () => {
     const res = await createInventory(req, {
       params: Promise.resolve({ city: locode }),
     });
-    expect(res.status).toEqual(400);
+    await expectStatusCode(res, 400);
     const {
       error: { issues },
     } = await res.json();
@@ -290,7 +308,7 @@ describe("Inventory API", () => {
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
-    expect(res.status).toEqual(200);
+    await expectStatusCode(res, 200);
     const { data } = await res.json();
     expect(data.inventoryName).toEqual(inventory.inventoryName);
     expect(data.year).toEqual(inventory.year);
@@ -305,7 +323,7 @@ describe("Inventory API", () => {
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
-    expect(res.status).toEqual(200);
+    await expectStatusCode(res, 200);
     const { data } = await res.json();
     expect(data.inventoryName).toEqual(inventory.inventoryName);
     expect(data.year).toEqual(inventory.year);
@@ -319,7 +337,7 @@ describe("Inventory API", () => {
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
-    expect(res.status).toEqual(200);
+    await expectStatusCode(res, 200);
     expect(res.headers.get("content-type")).toEqual("text/csv");
     expect(
       res.headers.get("content-disposition")?.startsWith("attachment"),
@@ -352,7 +370,7 @@ describe("Inventory API", () => {
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
-    expect(res.status).toEqual(200);
+    await expectStatusCode(res, 200);
     expect(res.headers.get("content-type")).toEqual("application/vnd.ms-excel");
     expect(
       res.headers.get("content-disposition")?.startsWith("attachment"),
@@ -367,7 +385,7 @@ describe("Inventory API", () => {
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: randomUUID() }),
     });
-    expect(res.status).toEqual(404);
+    await expectStatusCode(res, 404);
   });
 
   it("should return 404 for non-existing inventories as collaborator", async () => {
@@ -377,7 +395,7 @@ describe("Inventory API", () => {
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: randomUUID() }),
     });
-    expect(res.status).toEqual(404);
+    await expectStatusCode(res, 404);
   });
 
   it("should update an inventory", async () => {
@@ -385,7 +403,7 @@ describe("Inventory API", () => {
     const res = await updateInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
-    expect(res.status).toEqual(200);
+    await expectStatusCode(res, 200);
     const { data } = await res.json();
     expect(data.inventoryName).toEqual(inventoryData2.inventoryName);
     expect(data.year).toEqual(inventoryData2.year);
@@ -397,7 +415,7 @@ describe("Inventory API", () => {
     const res = await updateInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
-    expect(res.status).toEqual(400);
+    await expectStatusCode(res, 400);
     const {
       error: { issues },
     } = await res.json();
@@ -411,7 +429,7 @@ describe("Inventory API", () => {
     const res = await deleteInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
-    expect(res.status).toEqual(200);
+    await expectStatusCode(res, 200);
     const { data, deleted } = await res.json();
     expect(deleted).toEqual(true);
     expect(data.inventoryName).toEqual(inventory.inventoryName);
@@ -425,9 +443,11 @@ describe("Inventory API", () => {
     const res = await deleteInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
-    expect(res.status).toEqual(403);
+    await expectStatusCode(res, 403);
     const { error } = await res.json();
-    expect(error.message).toEqual("You do not have permission to delete this inventory");
+    expect(error.message).toEqual(
+      "You do not have permission to delete this inventory",
+    );
   });
 
   it("should not delete a non-existing inventory as org admin", async () => {
@@ -437,7 +457,7 @@ describe("Inventory API", () => {
     const res = await deleteInventory(req, {
       params: Promise.resolve({ inventory: randomUUID() }),
     });
-    expect(res.status).toEqual(404);
+    await expectStatusCode(res, 404);
   });
 
   // TODO these tests need to be redone.
@@ -501,7 +521,7 @@ describe("Inventory API", () => {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
 
-    expect(res.status).toEqual(200);
+    await expectStatusCode(res, 200);
     const { totalProgress, sectorProgress } = (await res.json()).data;
     const cleanedSectorProgress = sectorProgress
       .filter(({ sector: checkSector }: { sector: { sectorName: string } }) => {
@@ -554,7 +574,7 @@ describe("Inventory API", () => {
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: "null" }),
     });
-    expect(res.status).toEqual(400);
+    await expectStatusCode(res, 400);
   });
 
   // TODO: set up a default inventory for the test user
@@ -564,7 +584,7 @@ describe("Inventory API", () => {
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: "default" }),
     });
-    expect(res.status).toEqual(200);
+    await expectStatusCode(res, 200);
   });
 
   it("should return 400 for a non-UUID string in inventory ID", async () => {
@@ -572,7 +592,7 @@ describe("Inventory API", () => {
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: "not-an-inventory-id" }),
     });
-    expect(res.status).toEqual(400);
+    await expectStatusCode(res, 400);
   });
 
   it("should return 404 for a uuid string in that doesn't exist as org admin", async () => {
@@ -584,6 +604,6 @@ describe("Inventory API", () => {
         inventory: "D8802AA9-F9DA-460F-86FE-F45F7D8D23F9",
       }),
     });
-    expect(res.status).toEqual(404);
+    await expectStatusCode(res, 404);
   });
 });

@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { validate as isValidUuid } from "uuid";
 import { languages } from "@/i18n/settings";
 import { resolveLegacyInventoryRedirectPath } from "@/util/ghgi-routes";
 
@@ -15,9 +16,6 @@ const RESERVED_LNG_CHILD_SEGMENTS = new Set([
   "methodologies",
   "GHGI",
 ]);
-
-const INVENTORY_ID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 type LegacyInventoryPath = {
   lng: string;
@@ -38,7 +36,7 @@ export function parseLegacyInventoryPath(pathname: string): LegacyInventoryPath 
   if (RESERVED_LNG_CHILD_SEGMENTS.has(inventoryId)) {
     return null;
   }
-  if (!INVENTORY_ID_PATTERN.test(inventoryId)) {
+  if (!isValidUuid(inventoryId)) {
     return null;
   }
 

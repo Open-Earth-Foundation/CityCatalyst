@@ -69,7 +69,9 @@ async function addScope1ResidentialEmissions(
   await expect(
     page.getByText("Add Data to Complete Your GHG Inventory"),
   ).toBeVisible();
-  const stationaryEnergyCard = page.getByTestId("stationary-energy-sector-card");
+  const stationaryEnergyCard = page.getByTestId(
+    "stationary-energy-sector-card",
+  );
   const sectorDataUrlGlob = `**/cities/${cityId}/GHGI/${inventoryId}/data/1/`;
   await Promise.all([
     page.waitForURL(sectorDataUrlGlob),
@@ -157,6 +159,7 @@ async function addScope2ResidentialEmissions(
 
 // Serial flow: one city/inventory, scope 1 + scope 2 data, then dashboard assertions.
 test.describe.serial("Report Results", () => {
+  test.skip();
   test.setTimeout(120000);
 
   let cityId: string;

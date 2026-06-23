@@ -71,7 +71,7 @@ from app.services.stationary_energy.stationary_energy_proposal_builder import (
 )
 from app.services.thread_service import ThreadService
 from app.utils.mlflow_logging import (
-    agentic_experiment_name,
+    general_experiment_name,
     log_json_artifact,
     log_metrics,
     log_tags,
@@ -220,7 +220,7 @@ class StationaryEnergyDraftService:
         started_at = time.perf_counter()
         with start_run(
             run_name=f"stationary_energy_draft_{operation}_request",
-            experiment_name=agentic_experiment_name(),
+            experiment_name=general_experiment_name(),
             tags=self._mlflow_tags(
                 request_kind=f"stationary_energy_draft_{operation}",
                 endpoint=(
@@ -470,7 +470,7 @@ class StationaryEnergyDraftService:
         started_at = time.perf_counter()
         with start_run(
             run_name="stationary_energy_draft_generation_background",
-            experiment_name=agentic_experiment_name(),
+            experiment_name=general_experiment_name(),
             tags=self._mlflow_tags(
                 request_kind="stationary_energy_draft_background_generation",
                 endpoint="background:stationary_energy_draft_generation",
@@ -764,11 +764,11 @@ class StationaryEnergyDraftService:
         payload: ReviewStationaryEnergyDraftRequest,
         authorization: str | None = None,
     ) -> ReviewStationaryEnergyDraftResponse:
-        """Persist review decisions inside an MLflow agentic-flow run."""
+        """Persist review decisions inside an MLflow Climate Advisor run."""
         started_at = time.perf_counter()
         with start_run(
             run_name="stationary_energy_review_request",
-            experiment_name=agentic_experiment_name(),
+            experiment_name=general_experiment_name(),
             tags=self._mlflow_tags(
                 request_kind="stationary_energy_review",
                 endpoint=f"/v1/stationary-energy-drafts/{draft_run_id}/review",
@@ -896,11 +896,11 @@ class StationaryEnergyDraftService:
         payload: SaveStationaryEnergyDraftRequest,
         authorization: str | None = None,
     ) -> SaveStationaryEnergyDraftResponse:
-        """Commit reviewed rows inside an MLflow agentic-flow run."""
+        """Commit reviewed rows inside an MLflow Climate Advisor run."""
         started_at = time.perf_counter()
         with start_run(
             run_name="stationary_energy_save_request",
-            experiment_name=agentic_experiment_name(),
+            experiment_name=general_experiment_name(),
             tags=self._mlflow_tags(
                 request_kind="stationary_energy_save",
                 endpoint=f"/v1/stationary-energy-drafts/{draft_run_id}/save",

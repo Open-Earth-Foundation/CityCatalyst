@@ -24,7 +24,6 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_MLFLOW_TRACKING_URI = "https://mlflow-dev.openearth.dev"
 DEFAULT_GENERAL_EXPERIMENT_NAME = "clima"
-DEFAULT_AGENTIC_EXPERIMENT_NAME = "agentic-flow"
 DEFAULT_MLFLOW_RUN_USER = "climate-advisor"
 MLFLOW_INIT_RETRY_COOLDOWN_SECONDS = 60.0
 REDACTED_VALUE = "[REDACTED]"
@@ -60,15 +59,6 @@ def general_experiment_name() -> str:
         )
         .strip()
         or DEFAULT_GENERAL_EXPERIMENT_NAME
-    )
-
-
-def agentic_experiment_name() -> str:
-    """Return the configured MLflow experiment for agentic Climate Advisor flows."""
-    return (
-        os.getenv("MLFLOW_AGENTIC_EXPERIMENT_NAME", DEFAULT_AGENTIC_EXPERIMENT_NAME)
-        .strip()
-        or DEFAULT_AGENTIC_EXPERIMENT_NAME
     )
 
 

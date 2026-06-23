@@ -38,8 +38,6 @@ spec:
               value: "dev"
             - name: MLFLOW_EXPERIMENT_NAME
               value: "clima"
-            - name: MLFLOW_AGENTIC_EXPERIMENT_NAME
-              value: "agentic-flow"
           resources:
             requests:
               memory: "512Mi"

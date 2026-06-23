@@ -359,9 +359,8 @@ language, or client-side fallback behavior. The boundary is:
 - `MLFLOW_TRACKING_URI` - Shared MLflow backend URL, normally
   `https://mlflow-dev.openearth.dev`
 - `MLFLOW_ENVIRONMENT` - Environment tag for runs: `dev`, `test`, or `prod`
-- `MLFLOW_EXPERIMENT_NAME` - Experiment for general CA chat, default `clima`
-- `MLFLOW_AGENTIC_EXPERIMENT_NAME` - Experiment for Stationary Energy agentic
-  flow runs, default `agentic-flow`
+- `MLFLOW_EXPERIMENT_NAME` - Experiment for all Climate Advisor MLflow runs,
+  default `clima`
 
 ## Database Schema
 
@@ -678,12 +677,13 @@ Notes:
 ### MLflow Integration
 
 Climate Advisor can log to the same deployed MLflow instance used by
-HIAP-MEED. The split is experiment-based:
+HIAP-MEED. The split is experiment-based between services, and tag-based inside
+Climate Advisor:
 
 - `hiap-meed` remains the existing HIAP-MEED experiment
-- `clima` stores general `/v1/messages` chat runs
-- `agentic-flow` stores Stationary Energy draft, review, save,
-  background generation, and draft-context chat runs
+- `clima` stores all Climate Advisor runs, including general `/v1/messages`
+  chat, Stationary Energy draft, review, save, background generation, and
+  draft-context chat runs
 
 Each run includes tags such as `service`, `environment`, `workflow`,
 `request_id`, `thread_id`, `inventory_id`, and
@@ -692,22 +692,21 @@ with bearer tokens, API keys, JWTs, and secrets redacted.
 
 The shared MLflow variables match HIAP-MEED where deployment needs explicit
 configuration (`MLFLOW_ENABLED`, `MLFLOW_TRACKING_URI`,
-`MLFLOW_EXPERIMENT_NAME`, and `MLFLOW_ENVIRONMENT`). Climate Advisor adds
-`MLFLOW_AGENTIC_EXPERIMENT_NAME` because it writes Stationary Energy agentic
-runs to a separate experiment. Other operational defaults such as async logging,
-retry behavior, and the MLflow `Created by` service identity are handled in
-code.
+`MLFLOW_EXPERIMENT_NAME`, and `MLFLOW_ENVIRONMENT`). Agentic and general
+Climate Advisor flows are separated by MLflow tags such as `workflow` and
+`context_mode`. Other operational defaults such as async logging, retry
+behavior, and the MLflow `Created by` service identity are handled in code.
 
-GitHub Actions deployments can override the two experiment names through
-repository variables named `MLFLOW_EXPERIMENT_NAME` and
-`MLFLOW_AGENTIC_EXPERIMENT_NAME`. They are variables, not secrets, because the
-values are non-sensitive experiment names. The Kubernetes manifests still keep
-the same defaults so direct `kubectl apply` deployments work without GitHub.
+GitHub Actions deployments can override the experiment name through the
+repository variable `MLFLOW_EXPERIMENT_NAME`. It is a variable, not a secret,
+because the value is a non-sensitive experiment name. The Kubernetes manifests
+still keep the same default so direct `kubectl apply` deployments work without
+GitHub.
 
 Before enabling MLflow in an environment:
 
 1. Confirm the MLflow UI is reachable at `https://mlflow-dev.openearth.dev`.
-2. Confirm or create experiments named `clima` and `agentic-flow`.
+2. Confirm or create the experiment named `clima`.
 3. Set the MLflow environment variables documented above in `.env` or the
    Kubernetes deployment.
 4. If the MLflow server later requires authentication, provide MLflow auth

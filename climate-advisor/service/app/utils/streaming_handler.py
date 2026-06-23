@@ -36,7 +36,6 @@ from app.utils.tool_handler import persist_assistant_message
 from app.utils.token_handler import TokenHandler
 from app.utils.history_manager import load_conversation_history
 from app.utils.mlflow_logging import (
-    agentic_experiment_name,
     general_experiment_name,
     log_json_artifact,
     log_metrics,
@@ -914,8 +913,6 @@ class StreamingHandler:
 
     def _mlflow_experiment_name(self, payload: MessageCreateRequest) -> str:
         """Return the MLflow experiment for the current chat workflow."""
-        if self._has_agentic_context(payload):
-            return agentic_experiment_name()
         return general_experiment_name()
 
     def _mlflow_run_name(self, payload: MessageCreateRequest) -> str:

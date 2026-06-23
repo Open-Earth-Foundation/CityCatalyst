@@ -87,15 +87,15 @@ def test_start_run_uses_named_experiment_id(monkeypatch) -> None:
 
     with mlflow_logging.start_run(
         run_name="test-run",
-        experiment_name="agentic-flow",
+        experiment_name="clima",
         tags={"workflow": "stationary_energy_draft"},
         params={"records": 2},
     ) as run:
         assert run is not None
 
     assert recorded["tracking_uri"] == "https://mlflow.example"
-    assert recorded["looked_up"] == "agentic-flow"
-    assert recorded["created"] == "agentic-flow"
+    assert recorded["looked_up"] == "clima"
+    assert recorded["created"] == "clima"
     assert recorded["experiment_id"] == "exp-created"
     assert recorded["run_name"] == "test-run"
     assert recorded["closed"] is True
@@ -167,12 +167,11 @@ def test_log_json_artifact_redacts_before_logging(monkeypatch) -> None:
     }
 
 
-def test_streaming_handler_selects_general_and_agentic_experiments(
+def test_streaming_handler_uses_single_experiment_with_agentic_tags(
     monkeypatch,
 ) -> None:
-    """Chat MLflow experiment names should split general and agentic traffic."""
+    """General and agentic chat traffic should share one experiment and split by tags."""
     monkeypatch.setenv("MLFLOW_EXPERIMENT_NAME", "ca-general")
-    monkeypatch.setenv("MLFLOW_AGENTIC_EXPERIMENT_NAME", "ca-agentic")
     handler = StreamingHandler(
         thread_id=uuid4(),
         user_id="user-1",
@@ -193,7 +192,7 @@ def test_streaming_handler_selects_general_and_agentic_experiments(
     )
 
     assert handler._mlflow_experiment_name(general_payload) == "ca-general"
-    assert handler._mlflow_experiment_name(agentic_payload) == "ca-agentic"
+    assert handler._mlflow_experiment_name(agentic_payload) == "ca-general"
     assert handler._mlflow_tags(agentic_payload)["ca_agentic_flow"] is True
     assert (
         handler._mlflow_tags(agentic_payload)["workflow"]
@@ -245,10 +244,10 @@ def test_streaming_handler_wraps_stream_in_mlflow_run(monkeypatch) -> None:
     assert recorded["run_name"] == "climate_advisor_message_request"
 
 
-def test_streaming_handler_uses_agentic_experiment_from_thread_context(
+def test_streaming_handler_tags_agentic_flow_from_thread_context(
     monkeypatch,
 ) -> None:
-    """Thread-stored draft context should route chat runs to the agentic experiment."""
+    """Thread-stored draft context should tag chat runs as agentic inside one experiment."""
     recorded: dict[str, object] = {}
     draft_run_id = uuid4()
 
@@ -268,7 +267,6 @@ def test_streaming_handler_uses_agentic_experiment_from_thread_context(
         session_factory=None,
     )
     monkeypatch.setenv("MLFLOW_EXPERIMENT_NAME", "ca-general")
-    monkeypatch.setenv("MLFLOW_AGENTIC_EXPERIMENT_NAME", "ca-agentic")
     monkeypatch.setattr(
         "app.utils.streaming_handler.start_run",
         fake_start_run,
@@ -297,6 +295,7 @@ def test_streaming_handler_uses_agentic_experiment_from_thread_context(
     chunks = asyncio.run(collect())
 
     assert chunks == [b"event: done\ndata: {\"ok\": true}\n\n"]
-    assert recorded["experiment_name"] == "ca-agentic"
+    assert recorded["experiment_name"] == "ca-general"
     assert recorded["run_name"] == "stationary_energy_context_chat_request"
+    assert recorded["tags"]["workflow"] == "stationary_energy_context_chat"
     assert recorded["tags"]["stationary_energy_draft_run_id"] == str(draft_run_id)

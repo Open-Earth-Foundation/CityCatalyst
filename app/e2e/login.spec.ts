@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import {
   expectText,
-  expectValidationMessage,
+  expectFieldInvalid,
   signup,
   waitForAuthFormReady,
 } from "./helpers";
@@ -45,7 +45,7 @@ test.describe("Login page", () => {
     await page.getByRole("button", { name: "LOG IN" }).click();
 
     await expect(page).toHaveURL(/\/en\/auth\/login/);
-    await expectValidationMessage(page, /valid email address/i);
-    await expectValidationMessage(page, /Minimum length/i);
+    await expectFieldInvalid(page, "email");
+    await expectFieldInvalid(page, "password");
   });
 });

@@ -4,13 +4,22 @@ export async function expectText(page: Page, text: string) {
   await expect(page.getByText(text).first()).toBeVisible({ timeout: 10000 });
 }
 
-/** Wait until the auth form is hydrated and react-hook-form owns submit handling. */
+/** Wait until the auth form is hydrated and inputs are interactive. */
 export async function waitForAuthFormReady(page: Page) {
+  await expect(page.locator('input[name="email"]')).toBeVisible();
   const submitButton = page.getByRole("button", {
     name: /^(LOG IN|Create Account)$/i,
   });
   await expect(submitButton).toBeVisible();
-  await expect(submitButton).toHaveAttribute("formnovalidate", "");
+  await expect(submitButton).toBeEnabled();
+}
+
+export async function expectFieldInvalid(page: Page, fieldName: string) {
+  await expect(page.locator(`input[name="${fieldName}"]`)).toHaveAttribute(
+    "aria-invalid",
+    "true",
+    { timeout: 15000 },
+  );
 }
 
 export async function expectValidationMessage(

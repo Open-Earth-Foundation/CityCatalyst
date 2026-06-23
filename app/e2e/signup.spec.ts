@@ -1,6 +1,11 @@
 import { test, expect } from "@playwright/test";
 import { randomUUID } from "node:crypto";
-import { expectText } from "./helpers";
+import {
+  expectText,
+  expectFieldInvalid,
+  expectValidationMessage,
+  waitForAuthFormReady,
+} from "./helpers";
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
@@ -67,15 +72,18 @@ test.describe("Signup", () => {
     await expect(
       page.getByRole("heading", { name: "Sign Up to City Catalyst" }),
     ).toBeVisible();
+    await waitForAuthFormReady(page);
 
     await page.getByPlaceholder("Your full name").fill("asd");
     await page.getByLabel("Password", { exact: true }).fill("Pas");
     await page.getByLabel("Confirm Password").fill("Pa1");
     await page.getByRole("button", { name: "Create Account" }).click();
 
-    await expectText(page, "valid email address");
-    await expectText(page, "Minimum length");
-    await expectText(page, "Please accept the privacy policy");
+    await expect(page).toHaveURL(/\/en\/auth\/signup/);
+    await expectFieldInvalid(page, "email");
+    await expectFieldInvalid(page, "name");
+    await expectFieldInvalid(page, "password");
+    await expectValidationMessage(page, /accept the privacy policy/i);
   });
 
   test("should require matching passwords", async ({ page }) => {
@@ -86,6 +94,7 @@ test.describe("Signup", () => {
     await expect(
       page.getByRole("heading", { name: "Sign Up to City Catalyst" }),
     ).toBeVisible();
+    await waitForAuthFormReady(page);
 
     await page.getByPlaceholder("Your full name").fill("Test Account");
     await page.getByLabel("Password", { exact: true }).fill("Password1");

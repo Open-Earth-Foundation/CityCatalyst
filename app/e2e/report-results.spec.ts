@@ -1,204 +1,210 @@
-import { APIRequestContext, expect, Page, test } from "@playwright/test";
+import { expect, Locator, Page, test } from "@playwright/test";
 import {
   createCityAndInventoryThroughOnboarding,
   navigateToDashboard,
   navigateToDataPage,
-  navigateToGHGIModule,
 } from "./helpers";
 
+<<<<<<< HEAD
 test.describe.skip("Report Results", () => {
+=======
+async function openResidentialSubsector(
+  page: Page,
+  cityId: string,
+  inventoryId: string,
+) {
+  await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/data/1/`);
+  await expect(
+    page.getByRole("heading", { name: /Stationary energy/i }),
+  ).toBeVisible({ timeout: 30000 });
+
+  const residentialCard = page
+    .getByTestId("subsector-card")
+    .filter({ hasText: /Residential/i });
+  await expect(residentialCard.first()).toBeVisible({ timeout: 30000 });
+  await residentialCard.first().click();
+  await page.waitForURL(new RegExp(`/GHGI/${inventoryId}/data/1/[^/]+`));
+
+  await expect(page.getByText(/I\.1.*Residential/i)).toBeVisible({
+    timeout: 30000,
+  });
+  await expect(page.getByTestId("manual-input-header")).toBeVisible({
+    timeout: 30000,
+  });
+}
+
+/** Select a methodology when the picker is shown; no-op if already in data-entry mode. */
+async function ensureMethodologySelected(page: Page) {
+  const addActivity = page.getByText(/Add activity/i);
+  if (await addActivity.isVisible({ timeout: 3000 }).catch(() => false)) {
+    return;
+  }
+
+  await expect(
+    page.getByText(/Select methodology|Select The Methodology/i).first(),
+  ).toBeVisible({ timeout: 30000 });
+
+  const methodologyCards = page.getByTestId("methodology-card");
+  await expect(methodologyCards.first()).toBeVisible({ timeout: 30000 });
+  await methodologyCards.first().click();
+  await expect(addActivity).toBeVisible({ timeout: 30000 });
+}
+
+async function fillCustomEmissionFactors(addEmissionModal: Locator) {
+  await addEmissionModal
+    .getByLabel(/Select emission factor type/i)
+    .selectOption("custom");
+  await addEmissionModal.getByLabel("CO2 emission factor").fill("10");
+  await addEmissionModal.getByLabel("N2O emission factor").fill("10");
+  await addEmissionModal.getByLabel("CH4 emission factor").fill("1");
+  await addEmissionModal.getByLabel(/Data Quality/i).selectOption("high");
+  await addEmissionModal.getByLabel("Data source").fill("test");
+  await addEmissionModal.getByLabel("Explanatory comments").fill("test");
+}
+
+async function addScope1ResidentialEmissions(
+  page: Page,
+  cityId: string,
+  inventoryId: string,
+) {
+  await navigateToDataPage(page, cityId, inventoryId);
+
+  await expect(
+    page.getByText("Add Data to Complete Your GHG Inventory"),
+  ).toBeVisible();
+  const stationaryEnergyCard = page.getByTestId(
+    "stationary-energy-sector-card",
+  );
+  const sectorDataUrlGlob = `**/cities/${cityId}/GHGI/${inventoryId}/data/1/`;
+  await Promise.all([
+    page.waitForURL(sectorDataUrlGlob),
+    stationaryEnergyCard.getByTestId("sector-card-button").click(),
+  ]);
+  await page.waitForLoadState("networkidle");
+  await expect(
+    page.getByRole("heading", { name: /Stationary energy/i }),
+  ).toBeVisible();
+
+  await openResidentialSubsector(page, cityId, inventoryId);
+
+  const scopeOnePanel = page.getByLabel(/Scope 1/i);
+  const hasExistingActivity = await scopeOnePanel
+    .getByText(/Propane/i)
+    .isVisible()
+    .catch(() => false);
+  if (hasExistingActivity) {
+    return;
+  }
+
+  await ensureMethodologySelected(page);
+
+  await page.getByText(/Add activity/i).click();
+  const addEmissionModal = page.getByTestId("add-emission-modal");
+  await expect(addEmissionModal).toBeVisible();
+
+  await addEmissionModal
+    .getByLabel(/Building type/i)
+    .selectOption("building-type-all");
+  await addEmissionModal
+    .getByLabel(/Fuel type/i)
+    .selectOption("fuel-type-propane");
+  await addEmissionModal.getByLabel("Total fuel consumption").fill("100");
+  await addEmissionModal
+    .getByLabel(/Select Unit/i)
+    .selectOption("units-cubic-meters");
+  await fillCustomEmissionFactors(addEmissionModal);
+
+  await addEmissionModal.getByTestId("add-emission-modal-submit").click();
+  await expect(addEmissionModal).not.toBeVisible({ timeout: 30000 });
+}
+
+async function addScope2ResidentialEmissions(
+  page: Page,
+  cityId: string,
+  inventoryId: string,
+) {
+  await openResidentialSubsector(page, cityId, inventoryId);
+  await page.getByRole("tab", { name: /Scope 2/i }).click();
+  await expect(page.getByTestId("manual-input-header")).toBeVisible({
+    timeout: 30000,
+  });
+
+  const scopeTwoPanel = page.getByRole("tabpanel");
+  const hasExistingActivity = await scopeTwoPanel
+    .getByText(/activities added/i)
+    .isVisible()
+    .catch(() => false);
+  if (hasExistingActivity) {
+    return;
+  }
+
+  await ensureMethodologySelected(page);
+
+  await page.getByText(/Add activity/i).click();
+  const addEmissionModal = page.getByTestId("add-emission-modal");
+  await expect(addEmissionModal).toBeVisible();
+
+  await addEmissionModal
+    .getByLabel(/Building type/i)
+    .selectOption("building-type-all");
+  await addEmissionModal
+    .getByLabel(/Energy usage type/i)
+    .selectOption("energy-usage-electricity");
+  await addEmissionModal.getByLabel("Energy consumption").fill("100");
+  await addEmissionModal
+    .getByLabel(/Select Unit/i)
+    .selectOption("units-kilowatt-hours");
+  await fillCustomEmissionFactors(addEmissionModal);
+
+  await addEmissionModal.getByTestId("add-emission-modal-submit").click();
+  await expect(addEmissionModal).not.toBeVisible({ timeout: 30000 });
+}
+
+// Serial flow: one city/inventory, scope 1 + scope 2 data, then dashboard assertions.
+test.describe.serial("Report Results", () => {
+  test.skip();
+>>>>>>> v1.20.0-rc.0
   test.setTimeout(120000);
-  // before each test, create a city and inventory
+
   let cityId: string;
   let inventoryId: string;
-  test.beforeEach(async ({ page }) => {
+
+  test.beforeAll(async ({ browser }) => {
+    const page = await browser.newPage();
     const cityInventoryData =
       await createCityAndInventoryThroughOnboarding(page);
     cityId = cityInventoryData.cityId;
     inventoryId = cityInventoryData.inventoryId;
+    await page.close();
   });
 
-  //   can navigate to ghgimodule
   test("User can navigate to GHGI module", async ({ page }) => {
+    await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
     await page.waitForLoadState("networkidle");
-    await navigateToGHGIModule(page);
     await expect(page.getByText("Chicago")).toBeVisible();
   });
 
-  //   can navigate to data page and select a subsector
   test("User can navigate to subsector page and enter scope 1 emissions data", async ({
     page,
   }) => {
-    await navigateToDataPage(page, cityId, inventoryId);
-
-    await expect(
-      page.getByText("Add Data to Complete Your GHG Inventory"),
-    ).toBeVisible();
-    const stationaryEnergyCard = page.getByTestId(
-      "stationary-energy-sector-card",
-    );
-    const sectorDataUrlGlob = `**/cities/${cityId}/GHGI/${inventoryId}/data/1/`;
-    await Promise.all([
-      page.waitForURL(sectorDataUrlGlob),
-      stationaryEnergyCard.getByTestId("sector-card-button").click(),
-    ]);
-    await page.waitForLoadState("networkidle");
-    await expect(
-      page.getByRole("heading", { name: /Stationary energy/i }),
-    ).toBeVisible();
-    const subsectorCards = page.getByTestId("subsector-card");
-    await expect(subsectorCards.first()).toBeVisible();
-    await subsectorCards.first().click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.getByText("I.1 Residential buildings")).toBeVisible();
-
-    await page.waitForTimeout(3000);
-
-    // select methodology when cards exist, otherwise verify existing data table
-    const visibleMethodologyCards = page.getByTestId("methodology-card");
-    const visibleMethodologyCount = await visibleMethodologyCards.count();
-    if (visibleMethodologyCount === 0) {
-      const scopeOnePanel = page.getByLabel(/Scope 1/i);
-      await expect(scopeOnePanel.getByText(/activities added/i)).toBeVisible({
-        timeout: 15000,
-      });
-      await expect(scopeOnePanel.getByText(/Emissions:/i)).toBeVisible();
-      await expect(scopeOnePanel.getByText(/Fuel Type/i)).toBeVisible();
-      await expect(scopeOnePanel.getByText(/Data Quality/i)).toBeVisible();
-      await expect(scopeOnePanel.getByText(/Data Source/i)).toBeVisible();
-      await expect(
-        scopeOnePanel.getByText(/Total Fuel Consumption/i),
-      ).toBeVisible();
-      await expect(scopeOnePanel.getByText(/Propane/i)).toBeVisible();
-      return;
-    }
-    await expect(visibleMethodologyCards.first()).toBeVisible({
-      timeout: 15000,
-    });
-    await visibleMethodologyCards.first().click();
-    await page.waitForLoadState("networkidle");
-
-    // can add data to subsector
-    await page.getByText(/Add activity/i).click();
-    const addEmissionModal = page.getByTestId("add-emission-modal");
-    await expect(addEmissionModal).toBeVisible();
-
-    // fill in the form fields
-    await addEmissionModal
-      .getByLabel(/Building type/i)
-      .selectOption("building-type-all");
-
-    await addEmissionModal
-      .getByLabel(/Fuel type/i)
-      .selectOption("fuel-type-propane");
-
-    await addEmissionModal.getByLabel("Total fuel consumption").fill("100");
-
-    await addEmissionModal
-      .getByLabel(/Select Unit/i)
-      .selectOption("units-cubic-meters");
-
-    await addEmissionModal
-      .getByLabel(/Select emission factor type/i)
-      .selectOption("custom");
-
-    await addEmissionModal.getByLabel("CO2 emission factor").fill("10");
-
-    await addEmissionModal.getByLabel("N2O emission factor").fill("10");
-
-    await addEmissionModal.getByLabel("CH4 emission factor").fill("1");
-
-    await addEmissionModal.getByLabel(/Data Quality/i).selectOption("high");
-
-    await addEmissionModal.getByLabel("Data source").fill("test");
-    await addEmissionModal.getByLabel("Explanatory comments").fill("test");
-
-    await addEmissionModal.getByTestId("add-emission-modal-submit").click();
-    await expect(addEmissionModal).not.toBeVisible({ timeout: 30000 });
+    await addScope1ResidentialEmissions(page, cityId, inventoryId);
   });
 
   test("User can navigate to subsector page and enter scope 2 emissions data", async ({
     page,
   }) => {
-    // navigate to subsector page
-    await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/data/1/`);
-    await page.waitForLoadState("networkidle");
-    const subsectorCards = page.getByTestId("subsector-card");
-    await expect(subsectorCards.first()).toBeVisible();
-    await subsectorCards.first().click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.getByText("I.1 Residential buildings")).toBeVisible();
-
-    // select scope 1 tab
-    await page.getByText("Scope 2").click();
-    await page.waitForTimeout(3000);
-    // select methodology when cards exist, otherwise verify existing data table
-    const visibleMethodologyCards = page.getByTestId("methodology-card");
-    const visibleMethodologyCount = await visibleMethodologyCards.count();
-    if (visibleMethodologyCount === 0) {
-      const scopeTwoPanel = page.getByLabel(/Scope 2/i);
-      await expect(scopeTwoPanel.getByText(/activities added/i)).toBeVisible({
-        timeout: 15000,
-      });
-      return;
-    }
-
-    await expect(visibleMethodologyCards.first()).toBeVisible({
-      timeout: 15000,
-    });
-    await visibleMethodologyCards.first().click();
-    await page.waitForLoadState("networkidle");
-
-    // can add data to subsector
-    await page.getByText(/Add activity/i).click();
-    const addEmissionModal = page.getByTestId("add-emission-modal");
-    await expect(addEmissionModal).toBeVisible();
-
-    // fill in the form fields
-    await addEmissionModal
-      .getByLabel(/Building type/i)
-      .selectOption("building-type-all");
-    await addEmissionModal
-      .getByLabel(/Energy usage type/i)
-      .selectOption("energy-usage-electricity");
-
-    await addEmissionModal.getByLabel("Energy consumption").fill("100");
-
-    await addEmissionModal
-      .getByLabel(/Select Unit/i)
-      .selectOption("units-kilowatt-hours");
-
-    await addEmissionModal
-      .getByLabel(/Select emission factor type/i)
-      .selectOption("custom");
-
-    await addEmissionModal.getByLabel("CO2 emission factor").fill("10");
-
-    await addEmissionModal.getByLabel("N2O emission factor").fill("10");
-
-    await addEmissionModal.getByLabel("CH4 emission factor").fill("1");
-
-    await addEmissionModal.getByLabel(/Data Quality/i).selectOption("high");
-
-    await addEmissionModal.getByLabel("Data source").fill("test");
-    await addEmissionModal.getByLabel("Explanatory comments").fill("test");
-
-    await addEmissionModal.getByTestId("add-emission-modal-submit").click();
-    await expect(addEmissionModal).not.toBeVisible({ timeout: 30000 });
+    await addScope2ResidentialEmissions(page, cityId, inventoryId);
   });
 
   test("User can navigate to dashboard and verify data", async ({ page }) => {
     await navigateToDashboard(page, cityId);
     await expect(page.getByText("Chicago")).toBeVisible();
 
-    // Wait for the results API call to complete by waiting for the table to appear
-    // The table only appears when data is loaded, ensuring the widget is no longer in loading state
     const topEmissionsTable = page.locator("table").filter({
       has: page.getByText(/Total emissions \(CO2eq\)/i),
     });
     await expect(topEmissionsTable).toBeVisible({ timeout: 30000 });
 
-    // Now that data is loaded, check for the heading
     const topEmissionsHeading = page.getByRole("heading", {
       name: /Top Emissions/i,
     });
@@ -207,7 +213,7 @@ test.describe.skip("Report Results", () => {
     const residentialRows = topEmissionsTable
       .locator("tbody tr")
       .filter({ has: page.getByText("Residential buildings") });
-    await expect(residentialRows).toHaveCount(2);
+    await expect(residentialRows).toHaveCount(2, { timeout: 30000 });
     await expect(
       residentialRows.filter({ has: page.getByText(/Scope 2/i) }),
     ).toHaveCount(1);

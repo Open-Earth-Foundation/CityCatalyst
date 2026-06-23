@@ -1,43 +1,53 @@
 "use client";
 
-import { Box, Flex, HStack, Input, Text, VStack } from "@chakra-ui/react";
-import type { FormEvent } from "react";
+import {
+  Box,
+  Flex,
+  HStack,
+  Input,
+  Text,
+  VStack,
+  chakra,
+} from "@chakra-ui/react";
+import type { TFunction } from "i18next";
+import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MdSend } from "react-icons/md";
 
+import ByScopeViewSourceDrawer from "@/components/GHGI/inventory-result/ByScopeViewSourceDrawer";
 import { useTranslation } from "@/i18n/client";
-import { FLOW_BUTTON_RADIUS } from "@/components/StationaryEnergyDraft/stationary-energy-chat-constants";
+import {
+  CHAT_SURFACE_MAX_W,
+  CHAT_WIDGET_TRANSFORM,
+  FLOW_BUTTON_RADIUS,
+} from "@/components/StationaryEnergyDraft/stationary-energy-chat-constants";
 import { StageMessages } from "@/components/StationaryEnergyDraft/stationary-energy-chat-stage-messages";
 import {
   AgentBubble,
-  PendingDecisionNudge,
+  BulkReviewConfirmationCard,
+  InventorySaveConfirmationCard,
   StaleDraftPanel,
+  StagedReviewUpdateConfirmationCard,
+  StationaryEnergyToolSummaryCard,
   UserBubble,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-primitives";
 import {
+  ActionCompletedDecisionCard,
   MultiSourceProposalCard,
-  ResolvedDecisionSummaryCard,
   SingleSourceProposalCard,
 } from "@/components/StationaryEnergyDraft/stationary-energy-review-cards";
 import type { ChatMessage } from "@/components/StationaryEnergyDraft/stationary-energy-chat-messages";
 import type {
   DecisionReviewContext,
-  DraftCounts,
   DraftStage,
 } from "@/components/StationaryEnergyDraft/flow";
-import type {
-  DraftDecisionAction,
-  DraftDecisionState,
-  DraftProposal,
-  DraftStatusResponse,
-} from "@/components/StationaryEnergyDraft/types";
+import type { DraftStatusResponse } from "@/components/StationaryEnergyDraft/types";
 import type {
   StationaryEnergyChatArtifactControllerActions,
   StationaryEnergyChatArtifactControllerState,
 } from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
 import { Button } from "@/components/ui/button";
 import { getParamValueRequired } from "@/util/helpers";
-import { useParams } from "next/navigation";
 
 type ClimaChatPanelProps = {
   actions: Pick<
@@ -45,9 +55,18 @@ type ClimaChatPanelProps = {
     | "chooseDecision"
     | "choosePreference"
     | "continueStaleDraft"
+    | "confirmBulkReviewChanges"
+    | "cancelBulkReviewChanges"
+    | "confirmStagedReviewRollback"
+    | "cancelStagedReviewUpdate"
+    | "confirmSaveToInventory"
+    | "requestSaveToInventoryConfirmation"
+    | "cancelSaveToInventoryConfirmation"
     | "editDecision"
     | "saveDraft"
     | "saveToInventory"
+    | "sendChatMessage"
+    | "setFocusedProposal"
     | "setChatInput"
     | "startDraftFromChat"
     | "startOver"
@@ -65,6 +84,7 @@ type ClimaChatPanelProps = {
     | "decisionState"
     | "draftState"
     | "errorMessage"
+    | "focusedProposalId"
     | "hasSourceBackedProposals"
     | "loadingAction"
     | "pendingDecisionCount"
@@ -77,20 +97,175 @@ type ClimaChatPanelProps = {
   >;
 };
 
+type SuggestedQuestion = { id: string; label: string; message: string };
+
+function buildSuggestedQuestions(
+  t: TFunction,
+  stage: DraftStage,
+  focused: DecisionReviewContext | null,
+): SuggestedQuestion[] {
+  const plain = (key: string): SuggestedQuestion => ({
+    id: key,
+    label: t(key),
+    message: t(key),
+  });
+
+  if (stage === "start") {
+    return [
+      plain("chat-suggestion-start-sources"),
+      plain("chat-suggestion-start-missing"),
+      plain("chat-suggestion-start-method"),
+    ];
+  }
+
+  if (stage === "drafting") {
+    return [
+      plain("chat-suggestion-drafting-progress"),
+      plain("chat-suggestion-drafting-sources"),
+    ];
+  }
+
+  if (stage === "decision") {
+    if (focused) {
+      const label = focused.label;
+      const questions: SuggestedQuestion[] = [
+        {
+          id: "focused-why",
+          label: t("chat-suggestion-decision-focused-why-short"),
+          message: t("chat-suggestion-decision-focused-why", { label }),
+        },
+      ];
+      if (focused.kind === "multi_source") {
+        questions.push({
+          id: "focused-diff",
+          label: t("chat-suggestion-decision-focused-diff-short"),
+          message: t("chat-suggestion-decision-focused-diff", { label }),
+        });
+      }
+      questions.push({
+        id: "focused-empty",
+        label: t("chat-suggestion-decision-focused-empty-short"),
+        message: t("chat-suggestion-decision-focused-empty", { label }),
+      });
+      return questions;
+    }
+    return [
+      plain("chat-suggestion-decision-remaining"),
+      plain("chat-suggestion-decision-gaps"),
+      plain("chat-suggestion-decision-notation"),
+    ];
+  }
+
+  return [
+    plain("chat-suggestion-review-check"),
+    plain("chat-suggestion-review-gaps"),
+    plain("chat-suggestion-review-notation"),
+  ];
+}
+
+function SuggestedQuestions(props: {
+  questions: SuggestedQuestion[];
+  onAsk: (message: string) => void;
+}) {
+  if (props.questions.length === 0) {
+    return null;
+  }
+  return (
+    <Box
+      position="absolute"
+      left={0}
+      right={0}
+      bottom="52px"
+      zIndex={2}
+      px={{ base: 3, md: 6 }}
+      py={2}
+      pointerEvents="none"
+    >
+      <Box w="full" maxW="900px" mx="auto" pointerEvents="auto">
+        <Flex gap={2} flexWrap="wrap">
+          {props.questions.map((question) => (
+            <chakra.button
+              type="button"
+              key={question.id}
+              onClick={() => props.onAsk(question.message)}
+              textAlign="left"
+              maxW="100%"
+              px={3}
+              py="6px"
+              borderWidth="1px"
+              borderColor="border.overlay"
+              borderRadius="rounded"
+              bg="background.transparentGrey"
+              color="content.secondary"
+              fontSize="label.md"
+              lineHeight="18px"
+              lineClamp={2}
+              whiteSpace="normal"
+              wordBreak="break-word"
+              appearance="none"
+              cursor="pointer"
+              transition="background 140ms ease, border-color 140ms ease"
+              _hover={{
+                bg: "background.neutral",
+                borderColor: "interactive.primary",
+                color: "interactive.primary",
+              }}
+            >
+              {question.label}
+            </chakra.button>
+          ))}
+        </Flex>
+      </Box>
+    </Box>
+  );
+}
+
 export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
   const params = useParams();
   const lng = getParamValueRequired(params.lng);
+  const inventoryId = getParamValueRequired(params.inventory);
   const { t } = useTranslation(lng, "stationary-energy-agentic");
+  const { t: tDrawer } = useTranslation(lng, "data");
   const scrollRegionRef = useRef<HTMLDivElement | null>(null);
+  const shouldFollowChatRef = useRef(true);
   const chatInputRef = useRef<HTMLInputElement | null>(null);
-  const pendingDecisionAnchorRef = useRef<HTMLDivElement | null>(null);
-  const [showPendingDecisionNudge, setShowPendingDecisionNudge] =
-    useState(false);
+  const [viewSourceId, setViewSourceId] = useState<string | null>(null);
   const firstPendingDecision =
     state.decisionReviewContext.find(
       (context) => !state.resolvedProposalIds.has(context.proposal_id),
     ) ?? null;
+  const focusedContext =
+    state.decisionReviewContext.find(
+      (context) =>
+        context.proposal_id === state.focusedProposalId &&
+        !state.resolvedProposalIds.has(context.proposal_id),
+    ) ?? firstPendingDecision;
+  const suggestedQuestions = buildSuggestedQuestions(
+    t,
+    state.stage,
+    focusedContext,
+  );
+  const showSuggestedQuestions =
+    !state.showStaleWarning &&
+    state.loadingAction !== "chat" &&
+    suggestedQuestions.length > 0;
   const { chatInput } = state;
+  const lastChatMessage = state.chatMessages[state.chatMessages.length - 1];
+  const lastChatMessageText =
+    lastChatMessage?.kind === "text" ? lastChatMessage.text : "";
+
+  const handleChatScroll = useCallback(() => {
+    const scrollRegion = scrollRegionRef.current;
+    if (!scrollRegion) {
+      return;
+    }
+
+    const distanceFromBottom =
+      scrollRegion.scrollHeight -
+      scrollRegion.scrollTop -
+      scrollRegion.clientHeight;
+    shouldFollowChatRef.current = distanceFromBottom < 140;
+  }, []);
 
   const focusChatComposer = useCallback(
     (draftQuestion?: string) => {
@@ -118,102 +293,65 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
     [focusChatComposer, t],
   );
 
-  const handleJumpToPendingDecision = useCallback(() => {
-    pendingDecisionAnchorRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-    });
-  }, []);
-
   useEffect(() => {
-    if (state.showStaleWarning || !firstPendingDecision) {
-      setShowPendingDecisionNudge(false);
-      return;
-    }
-
     const scrollRegion = scrollRegionRef.current;
-    const pendingDecisionAnchor = pendingDecisionAnchorRef.current;
-    if (!scrollRegion || !pendingDecisionAnchor) {
-      setShowPendingDecisionNudge(false);
+    if (!scrollRegion) {
       return;
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShowPendingDecisionNudge(!entry.isIntersecting);
-      },
-      {
-        root: scrollRegion,
-        threshold: 0.45,
-      },
-    );
+    const shouldFollow =
+      shouldFollowChatRef.current ||
+      state.loadingAction === "chat" ||
+      lastChatMessage?.kind === "text";
+    if (!shouldFollow) {
+      return;
+    }
 
-    observer.observe(pendingDecisionAnchor);
-    return () => observer.disconnect();
-  }, [firstPendingDecision, state.chatMessages.length, state.showStaleWarning]);
+    const scrollToBottom = () => {
+      scrollRegion.scrollTo({
+        top: scrollRegion.scrollHeight,
+        behavior: state.loadingAction === "chat" ? "auto" : "smooth",
+      });
+    };
+
+    const animationFrame = window.requestAnimationFrame(scrollToBottom);
+    const timeout = window.setTimeout(scrollToBottom, 80);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      window.clearTimeout(timeout);
+    };
+  }, [
+    lastChatMessage?.id,
+    lastChatMessage?.kind,
+    lastChatMessageText,
+    state.chatMessages.length,
+    state.loadingAction,
+  ]);
 
   return (
     <Box
-      bg="base.light"
-      borderColor="border.neutral"
-      borderWidth="1px"
-      borderRadius="rounded-xl"
+      position="relative"
       overflow="hidden"
-      h={{ base: "min(72dvh, 760px)", xl: "full" }}
-      maxH={{ base: "72dvh", xl: "none" }}
+      h={{ base: "min(78dvh, 820px)", xl: "full" }}
+      maxH={{ base: "78dvh", xl: "none" }}
       minH={0}
       display="flex"
       flexDir="column"
     >
-      <Flex
-        align="center"
-        gap={3}
-        bg="interactive.tertiary"
-        color="base.light"
-        p={4}
-      >
-        <Box
-          w="32px"
-          h="32px"
-          display="grid"
-          placeItems="center"
-          borderRadius="rounded"
-          bg="interactive.primary"
-          fontFamily="heading"
-          fontWeight="semibold"
-        >
-          *
-        </Box>
-        <Box>
-          <Text fontFamily="heading" fontWeight="semibold">
-            {t("chat-panel-title")}
-          </Text>
-          <Text fontSize="label.md" opacity={0.9}>
-            {t("chat-panel-subtitle")}
-          </Text>
-        </Box>
-      </Flex>
-
       <VStack
         ref={scrollRegionRef}
-        align="stretch"
-        gap={3}
+        align="center"
+        gap={4}
         flex="1"
         minH={0}
         overflowY="auto"
-        p={4}
+        px={{ base: 3, md: 6 }}
+        py={{ base: 4, md: 6 }}
         bg="background.backgroundGreyFlat"
         data-testid="clima-chat-scroll-region"
+        onScroll={handleChatScroll}
       >
-        {showPendingDecisionNudge && firstPendingDecision ? (
-          <PendingDecisionNudge
-            pendingDecisionCount={state.pendingDecisionCount}
-            onAskQuestion={() =>
-              handleAskAboutProposal(firstPendingDecision.label)
-            }
-            onJumpToReview={handleJumpToPendingDecision}
-          />
-        ) : null}
         {state.showStaleWarning ? (
           <StaleDraftPanel
             staleDraft={state.staleDraft ?? null}
@@ -231,7 +369,7 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
               hasSourceBackedProposals={state.hasSourceBackedProposals}
               onPreference={actions.choosePreference}
               onSaveDraft={actions.saveDraft}
-              onSaveToInventory={actions.saveToInventory}
+              onSaveToInventory={actions.requestSaveToInventoryConfirmation}
               onStartDraft={actions.startDraftFromChat}
               pendingDecisionCount={state.pendingDecisionCount}
               sourcePreference={state.sourcePreference}
@@ -259,53 +397,134 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
                   return null;
                 }
 
-                const content = state.resolvedProposalIds.has(
+                const resolved = state.resolvedProposalIds.has(
                   context.proposal_id,
-                ) ? (
-                  <ResolvedDecisionSummaryCard
-                    context={context}
-                    decision={state.decisionState[context.proposal_id]}
-                    onEditDecision={actions.editDecision}
-                  />
-                ) : context.kind === "single_source" ? (
-                  <SingleSourceProposalCard
-                    context={context}
-                    decision={state.decisionState[context.proposal_id]}
-                    resolved={false}
-                    onDecisionChoice={actions.chooseDecision}
-                    onAskAboutProposal={handleAskAboutProposal}
-                  />
-                ) : (
-                  <MultiSourceProposalCard
-                    context={context}
-                    decision={state.decisionState[context.proposal_id]}
-                    resolved={false}
-                    onDecisionChoice={actions.chooseDecision}
-                    onAskAboutProposal={handleAskAboutProposal}
-                  />
                 );
+                const focusRow = () =>
+                  actions.setFocusedProposal(context.proposal_id);
 
                 return (
                   <Box
                     key={message.id}
-                    ref={
-                      context.proposal_id === firstPendingDecision?.proposal_id
-                        ? pendingDecisionAnchorRef
-                        : undefined
-                    }
-                    scrollMarginTop="72px"
+                    w="full"
+                    maxW={CHAT_SURFACE_MAX_W}
+                    alignSelf="center"
+                    transform={CHAT_WIDGET_TRANSFORM}
+                    onMouseEnter={focusRow}
+                    onFocus={focusRow}
                   >
-                    {content}
+                    {resolved ? (
+                      <ActionCompletedDecisionCard
+                        context={context}
+                        decision={state.decisionState[context.proposal_id]}
+                      />
+                    ) : context.kind === "single_source" ? (
+                      <SingleSourceProposalCard
+                        context={context}
+                        decision={state.decisionState[context.proposal_id]}
+                        resolved={false}
+                        onDecisionChoice={actions.chooseDecision}
+                        onAskAboutProposal={handleAskAboutProposal}
+                        onViewSource={setViewSourceId}
+                      />
+                    ) : (
+                      <MultiSourceProposalCard
+                        context={context}
+                        decision={state.decisionState[context.proposal_id]}
+                        resolved={false}
+                        onDecisionChoice={actions.chooseDecision}
+                        onAskAboutProposal={handleAskAboutProposal}
+                        onViewSource={setViewSourceId}
+                      />
+                    )}
                   </Box>
                 );
               }
 
-              return message.role === "user" ? (
-                <UserBubble key={message.id} text={message.text} />
-              ) : (
+              if (message.kind === "inventory_save_confirmation") {
+                return (
+                  <InventorySaveConfirmationCard
+                    key={message.id}
+                    disabled={!state.canSaveToInventory}
+                    loading={state.loadingAction === "save_inventory"}
+                    onCancel={actions.cancelSaveToInventoryConfirmation}
+                    onConfirm={actions.confirmSaveToInventory}
+                  />
+                );
+              }
+
+              if (
+                message.kind === "stationary_energy_bulk_review_confirmation"
+              ) {
+                return (
+                  <BulkReviewConfirmationCard
+                    key={message.id}
+                    choices={message.choices}
+                    blockedChoices={message.blockedChoices}
+                    disabled={message.choices.length === 0}
+                    loading={state.loadingAction === "chat"}
+                    message={message.message}
+                    onCancel={actions.cancelBulkReviewChanges}
+                    onConfirm={() =>
+                      actions.confirmBulkReviewChanges(message.choices)
+                    }
+                  />
+                );
+              }
+
+              if (
+                message.kind ===
+                "stationary_energy_staged_review_update_confirmation"
+              ) {
+                return (
+                  <StagedReviewUpdateConfirmationCard
+                    key={message.id}
+                    mode={message.mode}
+                    choices={message.choices}
+                    blockedChoices={message.blockedChoices}
+                    disabled={message.choices.length === 0}
+                    loading={state.loadingAction === "chat"}
+                    message={message.message}
+                    onCancel={actions.cancelStagedReviewUpdate}
+                    onConfirm={() =>
+                      message.mode === "rollback"
+                        ? actions.confirmStagedReviewRollback(message.choices)
+                        : actions.confirmBulkReviewChanges(message.choices)
+                    }
+                  />
+                );
+              }
+
+              if (message.kind === "stationary_energy_tool_summary") {
+                return (
+                  <StationaryEnergyToolSummaryCard
+                    key={message.id}
+                    action={message.action}
+                    message={message.message}
+                    selectedChoices={message.selectedChoices}
+                    blockedChoices={message.blockedChoices}
+                  />
+                );
+              }
+
+              if (message.role === "user") {
+                return <UserBubble key={message.id} text={message.text} />;
+              }
+
+              const isActiveThinkingMessage =
+                state.loadingAction === "chat" &&
+                message.id === lastChatMessage?.id;
+              if (!message.text.trim() && !isActiveThinkingMessage) {
+                return null;
+              }
+
+              return (
                 <AgentBubble
                   key={message.id}
-                  text={message.text || t("chat-panel-thinking")}
+                  text={
+                    message.text ||
+                    (isActiveThinkingMessage ? t("chat-panel-thinking") : "")
+                  }
                 />
               );
             })}
@@ -313,14 +532,23 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
         )}
       </VStack>
 
+      {showSuggestedQuestions ? (
+        <SuggestedQuestions
+          questions={suggestedQuestions}
+          onAsk={actions.sendChatMessage}
+        />
+      ) : null}
+
       <Box
         data-testid="clima-chat-composer"
-        p={3}
-        bg="base.light"
-        borderTopWidth="1px"
-        borderColor="border.neutral"
+        px={{ base: 3, md: 6 }}
+        py={3}
+        bg="background.backgroundGreyFlat"
       >
-        <form onSubmit={actions.submitChat}>
+        <form
+          onSubmit={actions.submitChat}
+          style={{ width: "100%", maxWidth: "900px", margin: "0 auto" }}
+        >
           <HStack gap={2}>
             <Input
               ref={chatInputRef}
@@ -352,6 +580,15 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
           </HStack>
         </form>
       </Box>
+
+      <ByScopeViewSourceDrawer
+        sourceId={viewSourceId ?? ""}
+        sector={{ sectorName: "stationary-energy" }}
+        isOpen={viewSourceId !== null}
+        onClose={() => setViewSourceId(null)}
+        t={tDrawer}
+        inventoryId={inventoryId}
+      />
     </Box>
   );
 }

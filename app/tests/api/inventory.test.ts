@@ -9,6 +9,7 @@ import { literal, Op } from "sequelize";
 import {
   cascadeDeleteDataSource,
   createRequest,
+  expectStatusCode,
   mockRequest,
   setupTests,
   testUserID,
@@ -167,7 +168,7 @@ describe("Inventory API", () => {
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
-    assert.equal(res.status, 200);
+    await expectStatusCode(res, 200);
     assert.equal(res.headers.get("content-type"), "text/csv");
     assert.ok(res.headers.get("content-disposition")?.startsWith("attachment"));
     const csv = await res.text();
@@ -196,7 +197,7 @@ describe("Inventory API", () => {
     const res = await findInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
-    assert.equal(res.status, 200);
+    await expectStatusCode(res, 200);
     assert.equal(res.headers.get("content-type"), "application/vnd.ms-excel");
     assert.ok(res.headers.get("content-disposition")?.startsWith("attachment"));
     const body = await res.blob();
@@ -210,7 +211,7 @@ describe("Inventory API", () => {
       const res = await submitInventory(req, {
         params: Promise.resolve({ inventory: inventory.inventoryId }),
       });
-      assert.equal(res.status, 200);
+      await expectStatusCode(res, 200);
       const json = await res.json();
       assert.equal(json.success, true);
     },

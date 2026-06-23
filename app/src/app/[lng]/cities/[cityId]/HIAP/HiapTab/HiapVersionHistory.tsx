@@ -1,7 +1,7 @@
 "use client";
 
-import { groupInventoryHistory } from "@/app/[lng]/[inventory]/InventoryVersionsTab/history-helpers";
-import VersionEntry from "@/app/[lng]/[inventory]/InventoryVersionsTab/VersionEntry";
+import { groupInventoryHistory } from "@/components/GHGI/inventory-versions/history-helpers";
+import VersionEntry from "@/components/GHGI/inventory-versions/VersionEntry";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";

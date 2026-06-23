@@ -59,6 +59,7 @@ class StoredSourceCandidate(FlexibleContract):
 class DraftStatusSourceCandidate(FlexibleContract):
     candidate_id: UUID | None = None
     datasource_id: str
+    details_datasource_id: str | None = None
     name: str | None = None
     publisher_name: str | None = None
     dataset_name: str | None = None
@@ -74,6 +75,8 @@ class DraftStatusSourceCandidate(FlexibleContract):
     source_scope: StoredSourceScope = Field(default_factory=StoredSourceScope)
     normalized_rows: list[dict[str, Any]] = Field(default_factory=list)
     applicability_status: Literal["applicable", "removed", "failed"]
+    applicability_issues: list[str] = Field(default_factory=list)
+    failure_reason: str | None = None
 
 
 class StationaryEnergyCityContext(FlexibleContract):
@@ -226,6 +229,23 @@ class ReviewDecisionResponse(FlexibleContract):
     updated_at: datetime | None = None
 
 
+class StagedReviewSelectionResponse(FlexibleContract):
+    """API response for an active agent-staged review selection."""
+
+    selection_id: UUID
+    draft_run_id: UUID
+    proposal_id: UUID
+    user_id: str
+    action: str
+    selected_source_id: str | None = None
+    selected_candidate_id: UUID | None = None
+    rationale: str | None = None
+    tool_call_id: str | None = None
+    status: str
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+
+
 class DraftStalenessResponse(FlexibleContract):
     is_stale: bool = False
     reason: str | None = None
@@ -266,6 +286,8 @@ class GetStationaryEnergyDraftQuery(BaseModel):
 
 
 class StationaryEnergyDraftStatusResponse(BaseModel):
+    """Full status response for a Stationary Energy draft run."""
+
     draft_run_id: UUID
     thread_id: UUID | None = None
     user_id: str
@@ -276,6 +298,7 @@ class StationaryEnergyDraftStatusResponse(BaseModel):
     workflow_step: str | None = None
     proposals: list[DraftProposal] = Field(default_factory=list)
     review_decisions: list[ReviewDecisionResponse] = Field(default_factory=list)
+    staged_review_selections: list[StagedReviewSelectionResponse] = Field(default_factory=list)
     source_candidates: list[DraftStatusSourceCandidate] = Field(default_factory=list)
     trace_id: str | None = None
     error_summary: dict[str, Any] | None = None

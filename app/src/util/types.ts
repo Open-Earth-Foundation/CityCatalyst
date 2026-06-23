@@ -2,7 +2,7 @@ import type {
   DataSourceWithRelations,
   InventoryValueData,
   SubSectorWithRelations,
-} from "@/app/[lng]/[inventory]/data/[step]/types";
+} from "@/components/GHGI/data-step/types";
 import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import type { DraftStatusResponse } from "@/components/StationaryEnergyDraft/types";
 import {
+  buildInventorySaveReviewDecisionPayload,
   buildArtifactRows,
   buildDecisionReviewContext,
   buildInitialDecisionState,
@@ -8,11 +9,19 @@ import {
   buildSourcePreferenceOptions,
   canPersistDraftReview,
   canSaveDraft,
+  canSaveToInventory,
   deriveDraftStage,
   hasDraftReviewChanges,
+  hasInventorySaveReviewChanges,
   pendingDecisionReviewProposals,
   resolvedProposalIdsFromReview,
 } from "@/components/StationaryEnergyDraft/flow";
+import {
+  buildFocusedDecisionStatePayload,
+  buildStationaryEnergyChatRequest,
+  resolveInventorySaveConfirmationRequest,
+  resolveStationaryEnergyToolMessage,
+} from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-helpers";
 
 function draftFixture(): DraftStatusResponse {
   return {
@@ -128,6 +137,35 @@ function draftFixture(): DraftStatusResponse {
 }
 
 describe("Stationary Energy draft flow", () => {
+  it("resolves Stationary Energy tool messages from translation keys only", () => {
+    const t = ((key: string, params?: Record<string, unknown>) =>
+      `${key}:${JSON.stringify(params ?? {})}`) as Parameters<
+      typeof resolveStationaryEnergyToolMessage
+    >[0];
+    const keyedTool = {
+      message: "Raw CA display text",
+      message_key: "tool-message-stage-success",
+      message_params: { selected: 2, pending: 1 },
+    };
+    const fallbackTool = { message: "Raw CA display text" };
+
+    expect(
+      resolveStationaryEnergyToolMessage(
+        t,
+        keyedTool,
+        "tool-message-generic-summary",
+      ),
+    ).toBe('tool-message-stage-success:{"selected":2,"pending":1}');
+
+    expect(
+      resolveStationaryEnergyToolMessage(
+        t,
+        fallbackTool,
+        "tool-message-generic-summary",
+      ),
+    ).toBe("tool-message-generic-summary:{}");
+  });
+
   it("derives stages from draft and explicit review progress", () => {
     expect(deriveDraftStage({ draftState: null, loadingAction: null })).toBe(
       "start",
@@ -180,6 +218,45 @@ describe("Stationary Energy draft flow", () => {
     ).toBe(true);
   });
 
+  it("blocks save actions while async generation is still running", () => {
+    const draft: DraftStatusResponse = {
+      ...draftFixture(),
+      status: "generating",
+    };
+    const decisionState = buildInitialDecisionState(draft);
+    const resolvedProposalIds = new Set([
+      "proposal-ready",
+      "proposal-conflict",
+    ]);
+
+    expect(
+      canSaveDraft({
+        draftState: draft,
+        resolvedProposalIds,
+        decisionState,
+      }),
+    ).toBe(false);
+    expect(
+      canPersistDraftReview({
+        draftState: draft,
+        resolvedProposalIds,
+        decisionState,
+      }),
+    ).toBe(false);
+    expect(
+      pendingDecisionReviewProposals({
+        draftState: draft,
+        resolvedProposalIds,
+      }),
+    ).toEqual([]);
+    expect(
+      buildDecisionReviewContext({
+        draftState: draft,
+        resolvedProposalIds,
+      }),
+    ).toEqual([]);
+  });
+
   it("hides save when nothing committable remains after review", () => {
     const draft = draftFixture();
     const decisionState = buildInitialDecisionState(draft);
@@ -205,6 +282,100 @@ describe("Stationary Energy draft flow", () => {
         decisionState,
       }),
     ).toBe(false);
+  });
+
+  it("allows partial inventory save before every source-backed row is resolved", () => {
+    const draft = draftFixture();
+    const decisionState = buildInitialDecisionState(draft);
+
+    expect(
+      canSaveToInventory({
+        draftState: draft,
+        resolvedProposalIds: new Set(["proposal-ready"]),
+        decisionState,
+      }),
+    ).toBe(true);
+
+    expect(
+      buildInventorySaveReviewDecisionPayload({
+        draftState: draft,
+        decisionState,
+        resolvedProposalIds: new Set(["proposal-ready"]),
+      }),
+    ).toEqual([
+      {
+        proposal_id: "proposal-ready",
+        action: "accept",
+        selected_source_id: undefined,
+        manual_value: undefined,
+        manual_unit: undefined,
+        note: undefined,
+      },
+      {
+        proposal_id: "proposal-conflict",
+        action: "leave_draft",
+      },
+      {
+        proposal_id: "proposal-gap",
+        action: "leave_draft",
+        selected_source_id: undefined,
+        manual_value: undefined,
+        manual_unit: undefined,
+        note: undefined,
+      },
+    ]);
+  });
+
+  it("preserves persisted review decisions for unresolved rows during partial inventory save", () => {
+    const draft = draftFixture();
+    draft.status = "reviewed";
+    draft.review_decisions = [
+      {
+        proposal_id: "proposal-ready",
+        action: "accept",
+        selected_source_id: "source-3",
+        commit_status: "pending_cc_commit",
+        decision_version: 1,
+      },
+      {
+        proposal_id: "proposal-conflict",
+        action: "accept",
+        selected_source_id: "source-1",
+        commit_status: "pending_cc_commit",
+        decision_version: 1,
+      },
+      {
+        proposal_id: "proposal-gap",
+        action: "leave_draft",
+        commit_status: "not_applicable",
+        decision_version: 1,
+      },
+    ];
+
+    const decisionState = buildInitialDecisionState(draft);
+
+    expect(
+      hasInventorySaveReviewChanges({
+        draftState: draft,
+        decisionState,
+        resolvedProposalIds: new Set(["proposal-ready"]),
+      }),
+    ).toBe(false);
+
+    expect(
+      buildInventorySaveReviewDecisionPayload({
+        draftState: draft,
+        decisionState,
+        resolvedProposalIds: new Set(["proposal-ready"]),
+      }).find((decision) => decision.proposal_id === "proposal-conflict"),
+    ).toEqual({
+      proposal_id: "proposal-conflict",
+      action: "accept",
+      selected_source_id: undefined,
+      manual_value: undefined,
+      manual_unit: undefined,
+      note: undefined,
+    });
   });
 
   it("allows save when a manual override is the only committable decision", () => {
@@ -451,8 +622,37 @@ describe("Stationary Energy draft flow", () => {
     expect(resolvedProposalIdsFromReview(draft)).toContain("proposal-conflict");
   });
 
+  it("uses active agent-staged selections as resolved proposal ids", () => {
+    const draft = draftFixture();
+    draft.staged_review_selections = [
+      {
+        selection_id: "selection-1",
+        draft_run_id: "draft-1",
+        proposal_id: "proposal-conflict",
+        user_id: "user-1",
+        action: "override_source",
+        selected_source_id: "source-2",
+        selected_candidate_id: "candidate-2",
+        rationale: "Agent selected the alternative source.",
+        status: "active",
+      },
+    ];
+
+    const decisionState = buildInitialDecisionState(draft);
+
+    expect(resolvedProposalIdsFromReview(draft)).toContain("proposal-conflict");
+    expect(decisionState["proposal-conflict"]).toEqual(
+      expect.objectContaining({
+        action: "override_source",
+        selectedSourceId: "candidate-2",
+        note: "Agent selected the alternative source.",
+      }),
+    );
+  });
+
   it("classifies single-source and multi-source widgets and skips gaps", () => {
     const draft = draftFixture();
+    draft.source_candidates[1].details_datasource_id = "source-2-real";
     const pending = pendingDecisionReviewProposals({
       draftState: draft,
       resolvedProposalIds: new Set(),
@@ -493,6 +693,7 @@ describe("Stationary Energy draft flow", () => {
         alternativeOptions: expect.arrayContaining([
           expect.objectContaining({
             action: "override_source",
+            datasourceId: "source-2-real",
             label: "ClimateTRACE",
           }),
         ]),
@@ -537,18 +738,149 @@ describe("Stationary Energy draft flow", () => {
     });
 
     expect(rows.find((row) => row.id === "proposal-conflict")?.value).toBe(
-      "(6.82 Mt CO2e)",
+      "6.82 Mt CO2e",
     );
-    expect(rows.find((row) => row.id === "proposal-conflict")?.source).toBe(
-      "SEEG / 2024",
+    expect(rows.find((row) => row.id === "proposal-conflict")?.sourceName).toBe(
+      "SEEG",
+    );
+    expect(rows.find((row) => row.id === "proposal-conflict")?.sourceMeta).toBe(
+      "2024",
     );
     expect(context[1]).toEqual(
       expect.objectContaining({
         recommendedOption: expect.objectContaining({
           meta: "2024",
-          value: "(6.82 Mt CO2e)",
+          value: "6.82 Mt CO2e",
         }),
       }),
     );
+  });
+
+  it("builds chat requests with draft review context and focused proposal", () => {
+    const draft = draftFixture();
+    const decisionReviewContext = buildDecisionReviewContext({
+      draftState: draft,
+      resolvedProposalIds: new Set(),
+    });
+    const decisionState = buildInitialDecisionState(draft);
+    decisionState["proposal-conflict"] = {
+      action: "override_source",
+      selectedSourceId: "candidate-2",
+      manualValue: "",
+      manualUnit: "",
+      note: "",
+    };
+    const focusedDecisionState = buildFocusedDecisionStatePayload({
+      decisionReviewContext,
+      decisionState,
+      focusedProposalId: "proposal-conflict",
+    });
+    const request = buildStationaryEnergyChatRequest({
+      cityId: "city-1",
+      content: "yes, I agree",
+      confirmedBulkReviewChoices: [
+        {
+          proposal_id: "proposal-conflict",
+          candidate_id: "candidate-2",
+          action: "override_source",
+        },
+      ],
+      confirmedRollbackReviewChoices: [
+        {
+          proposal_id: "proposal-ready",
+        },
+      ],
+      decisionReviewContext,
+      draftState: draft,
+      focusedDecisionState,
+      focusedProposalId: "proposal-conflict",
+      inventoryId: "inventory-1",
+      threadId: "thread-1",
+    });
+
+    expect(request).toEqual(
+      expect.objectContaining({
+        threadId: "thread-1",
+        content: "yes, I agree",
+        inventory_id: "inventory-1",
+      }),
+    );
+    expect(request.context).toEqual(
+      expect.objectContaining({
+        stationary_energy_draft_run_id: "draft-1",
+        stationary_energy_focused_proposal_id: "proposal-conflict",
+        stationary_energy_focused_decision_state: {
+          action: "override_source",
+          selected_option: {
+            id: "candidate-2",
+            action: "override_source",
+            label: "ClimateTRACE",
+            short_label: "ClimateTRACE",
+            selected_source_id: "source-2",
+            recommended: false,
+          },
+        },
+        stationary_energy_confirmed_bulk_review_choices: [
+          {
+            proposal_id: "proposal-conflict",
+            candidate_id: "candidate-2",
+            action: "override_source",
+          },
+        ],
+        stationary_energy_confirmed_staged_review_rollback_choices: [
+          {
+            proposal_id: "proposal-ready",
+          },
+        ],
+        stationary_energy_pending_decision_reviews: decisionReviewContext,
+      }),
+    );
+    expect(request.options).toEqual(
+      expect.objectContaining({
+        stationary_energy_draft_run_id: "draft-1",
+        stationary_energy_pending_decision_review_count:
+          decisionReviewContext.length,
+      }),
+    );
+  });
+
+  it("blocks inventory confirmation cards when save is not currently allowed", () => {
+    expect(
+      resolveInventorySaveConfirmationRequest({
+        canSaveToInventory: false,
+        toolSuccess: true,
+        toolMessage: "Please confirm before writing inventory data.",
+        blockedMessage: "Inventory save is still blocked.",
+      }),
+    ).toEqual({
+      message: "Inventory save is still blocked.",
+      showConfirmation: false,
+    });
+
+    expect(
+      resolveInventorySaveConfirmationRequest({
+        canSaveToInventory: true,
+        toolSuccess: false,
+        toolMessage:
+          "Inventory save is blocked until every source-backed proposal is staged.",
+        blockedMessage: "Inventory save is still blocked.",
+      }),
+    ).toEqual({
+      message:
+        "Inventory save is blocked until every source-backed proposal is staged.",
+      showConfirmation: false,
+    });
+
+    expect(
+      resolveInventorySaveConfirmationRequest({
+        canSaveToInventory: true,
+        toolSuccess: true,
+        toolMessage: "Please confirm before writing inventory data.",
+        blockedMessage: "Inventory save is still blocked.",
+      }),
+    ).toEqual({
+      message: "Please confirm before writing inventory data.",
+      showConfirmation: true,
+    });
   });
 });

@@ -1,6 +1,6 @@
 import { AppSession, Auth } from "@/lib/auth";
 import env from "@next/env";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { jest } from "@jest/globals";
 import stream from "stream";
 import { Blob } from "fetch-blob";
@@ -117,14 +117,16 @@ export function setupTests() {
   sessionSpy?.mockRestore();
 
   // mock getServerSession from NextAuth, since NextJS headers() isn't available outside of the server context (needs async storage)
-  sessionSpy = jest.spyOn(Auth, "getServerSession").mockResolvedValue((() => {
-    const expires = new Date();
-    expires.setDate(expires.getDate() + 1);
-    return {
-      user: testUserData,
-      expires: expires.toISOString(),
-    } as AppSession;
-  })());
+  sessionSpy = jest.spyOn(Auth, "getServerSession").mockResolvedValue(
+    (() => {
+      const expires = new Date();
+      expires.setDate(expires.getDate() + 1);
+      return {
+        user: testUserData,
+        expires: expires.toISOString(),
+      } as AppSession;
+    })(),
+  );
 }
 
 export function teardownTests() {
@@ -142,6 +144,20 @@ export async function expectStatusCode(
     const apiError = await response.text();
     (err as Error).message =
       `Expected status code ${statusCode}, got ${response.status}.\nAPI error: ${apiError}`;
+    throw err;
+  }
+}
+
+export async function expectStatusCodes(
+  response: ApiResponse,
+  statusCodes: number[],
+) {
+  try {
+    expect(statusCodes).toContain(response.status);
+  } catch (err: unknown) {
+    const apiError = await response.text();
+    (err as Error).message =
+      `Expected status code ${statusCodes.join(" or ")}, got ${response.status}.\nAPI error: ${apiError}`;
     throw err;
   }
 }

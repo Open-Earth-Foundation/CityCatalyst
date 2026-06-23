@@ -7,14 +7,23 @@ import {
   it,
   jest,
 } from "@jest/globals";
-import { mockRequest, setupTests } from "../helpers";
+import {
+  expectStatusCode,
+  expectStatusCodes,
+  mockRequest,
+  setupTests,
+} from "../helpers";
 import {
   createTestData,
   cleanupTestData,
   TestData,
 } from "../helpers/testDataCreationHelper";
 import { AppSession, Auth } from "@/lib/auth";
-import { Roles, ACTION_TYPES, HighImpactActionRankingStatus } from "@/util/types";
+import {
+  Roles,
+  ACTION_TYPES,
+  HighImpactActionRankingStatus,
+} from "@/util/types";
 import { db } from "@/models";
 import { randomUUID } from "node:crypto";
 import {
@@ -26,9 +35,7 @@ import {
   PATCH as updateActionPlan,
   DELETE as deleteActionPlan,
 } from "@/app/api/v1/city/[city]/hiap/action-plan/[id]/route";
-import {
-  POST as generateActionPlan,
-} from "@/app/api/v1/city/[city]/hiap/action-plan/generate/[rankingId]/route";
+import { POST as generateActionPlan } from "@/app/api/v1/city/[city]/hiap/action-plan/generate/[rankingId]/route";
 
 import * as HiapApiService from "@/backend/hiap/HiapApiService";
 
@@ -117,7 +124,7 @@ describe("City HIAP Prioritization API", () => {
         params: Promise.resolve({ city: testData.cityId }),
       });
 
-      expect(res.status).toBe(400);
+      await expectStatusCode(res, 400);
       const body = await res.json();
       expect(body?.error?.message).toMatch(/Invalid query parameters/i);
     });
@@ -131,7 +138,7 @@ describe("City HIAP Prioritization API", () => {
         params: Promise.resolve({ city: testData.cityId }),
       });
 
-      expect(res.status).toBe(400);
+      await expectStatusCode(res, 400);
       const body = await res.json();
       expect(body?.error?.message).toMatch(/Invalid query parameters/i);
     });
@@ -180,7 +187,7 @@ describe("City HIAP Prioritization API", () => {
         params: Promise.resolve({ city: testData.cityId }),
       });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
       expect(body.data).toBeTruthy();
       // fetchOrTranslateActionPlan returns an array
@@ -191,10 +198,13 @@ describe("City HIAP Prioritization API", () => {
 
       // Cleanup
       await db.models.ActionPlan.destroy({ where: { id: actionPlan.id } });
-      await db.models.HighImpactActionRanked.destroy({ where: { id: rankedAction.id } });
-      await db.models.HighImpactActionRanking.destroy({ where: { id: ranking.id } });
+      await db.models.HighImpactActionRanked.destroy({
+        where: { id: rankedAction.id },
+      });
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: ranking.id },
+      });
     });
-
   });
 
   describe("POST /api/v0/city/[city]/hiap/action-plan", () => {
@@ -208,7 +218,7 @@ describe("City HIAP Prioritization API", () => {
         session: mockSession,
       } as any);
 
-      expect(res.status).toBe(400);
+      await expectStatusCode(res, 400);
       const body = await res.json();
       expect(body?.error).toBeTruthy();
     });
@@ -255,7 +265,7 @@ describe("City HIAP Prioritization API", () => {
         session: mockSession,
       } as any);
 
-      expect(res.status).toBe(201);
+      await expectStatusCode(res, 201);
       const body = await res.json();
       expect(body.data).toBeTruthy();
       expect(body.data.actionId).toBe(rankedAction.actionId);
@@ -263,7 +273,7 @@ describe("City HIAP Prioritization API", () => {
 
       // Verify it was saved to database
       const savedPlan = await db.models.ActionPlan.findOne({
-        where: { 
+        where: {
           actionId: rankedAction.actionId,
           language: "en",
         },
@@ -275,8 +285,12 @@ describe("City HIAP Prioritization API", () => {
       if (savedPlan) {
         await db.models.ActionPlan.destroy({ where: { id: savedPlan.id } });
       }
-      await db.models.HighImpactActionRanked.destroy({ where: { id: rankedAction.id } });
-      await db.models.HighImpactActionRanking.destroy({ where: { id: ranking.id } });
+      await db.models.HighImpactActionRanked.destroy({
+        where: { id: rankedAction.id },
+      });
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: ranking.id },
+      });
     });
 
     it("validates UUID format for inventoryId and hiActionRankingId", async () => {
@@ -294,7 +308,7 @@ describe("City HIAP Prioritization API", () => {
         session: mockSession,
       } as any);
 
-      expect(res.status).toBe(400);
+      await expectStatusCode(res, 400);
       const body = await res.json();
       expect(body?.error).toBeTruthy();
     });
@@ -308,7 +322,7 @@ describe("City HIAP Prioritization API", () => {
         params: Promise.resolve({ city: testData.cityId, id: nonExistentId }),
       });
 
-      expect(res.status).toBe(404);
+      await expectStatusCode(res, 404);
       const body = await res.json();
       expect(body?.error?.message).toMatch(/not found/i);
     });
@@ -353,15 +367,19 @@ describe("City HIAP Prioritization API", () => {
         params: Promise.resolve({ city: testData.cityId, id: actionPlan.id }),
       });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
       expect(body.data).toBeTruthy();
       expect(body.data.id).toBe(actionPlan.id);
 
       // Cleanup
       await db.models.ActionPlan.destroy({ where: { id: actionPlan.id } });
-      await db.models.HighImpactActionRanked.destroy({ where: { id: rankedAction.id } });
-      await db.models.HighImpactActionRanking.destroy({ where: { id: ranking.id } });
+      await db.models.HighImpactActionRanked.destroy({
+        where: { id: rankedAction.id },
+      });
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: ranking.id },
+      });
     });
   });
 
@@ -411,7 +429,7 @@ describe("City HIAP Prioritization API", () => {
         params: Promise.resolve({ city: testData.cityId, id: actionPlan.id }),
       });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
       expect(body.data).toBeTruthy();
       expect(body.data.actionName).toBe("Updated Action Name");
@@ -422,8 +440,12 @@ describe("City HIAP Prioritization API", () => {
 
       // Cleanup
       await db.models.ActionPlan.destroy({ where: { id: actionPlan.id } });
-      await db.models.HighImpactActionRanked.destroy({ where: { id: rankedAction.id } });
-      await db.models.HighImpactActionRanking.destroy({ where: { id: ranking.id } });
+      await db.models.HighImpactActionRanked.destroy({
+        where: { id: rankedAction.id },
+      });
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: ranking.id },
+      });
     });
 
     it("returns 404 when action plan does not exist", async () => {
@@ -433,7 +455,7 @@ describe("City HIAP Prioritization API", () => {
       });
 
       // Service returns 200 with null data when not found
-      expect([200, 404]).toContain(res.status);
+      await expectStatusCodes(res, [200, 404]);
     });
   });
 
@@ -478,7 +500,7 @@ describe("City HIAP Prioritization API", () => {
         params: Promise.resolve({ city: testData.cityId, id: actionPlan.id }),
       });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
       expect(body.success).toBe(true);
 
@@ -487,8 +509,12 @@ describe("City HIAP Prioritization API", () => {
       expect(deleted).toBeNull();
 
       // Cleanup
-      await db.models.HighImpactActionRanked.destroy({ where: { id: rankedAction.id } });
-      await db.models.HighImpactActionRanking.destroy({ where: { id: ranking.id } });
+      await db.models.HighImpactActionRanked.destroy({
+        where: { id: rankedAction.id },
+      });
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: ranking.id },
+      });
     });
 
     it("returns 404 when action plan does not exist", async () => {
@@ -498,7 +524,7 @@ describe("City HIAP Prioritization API", () => {
       });
 
       // Service may return 200 or 404 depending on implementation
-      expect([200, 404]).toContain(res.status);
+      await expectStatusCodes(res, [200, 404]);
     });
   });
 
@@ -540,24 +566,33 @@ describe("City HIAP Prioritization API", () => {
 
       const req = mockRequest(requestBody);
       const res = await generateActionPlan(req, {
-        params: Promise.resolve({ city: testData.cityId, rankingId: ranking.id }),
+        params: Promise.resolve({
+          city: testData.cityId,
+          rankingId: ranking.id,
+        }),
         session: mockSession,
       } as any);
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
       expect(body.data).toBeTruthy();
       expect(body.data.actionName).toBe("Mock Action");
 
       // Verify the mock was called
-      expect(HiapApiService.hiapApiWrapper.startActionPlanJob).toHaveBeenCalled();
+      expect(
+        HiapApiService.hiapApiWrapper.startActionPlanJob,
+      ).toHaveBeenCalled();
 
       // Cleanup action plans created by the service
       await db.models.ActionPlan.destroy({
         where: { actionId: rankedAction.actionId },
       });
-      await db.models.HighImpactActionRanked.destroy({ where: { id: rankedAction.id } });
-      await db.models.HighImpactActionRanking.destroy({ where: { id: ranking.id } });
+      await db.models.HighImpactActionRanked.destroy({
+        where: { id: rankedAction.id },
+      });
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: ranking.id },
+      });
     });
 
     it("returns 400 when required fields are missing", async () => {
@@ -566,12 +601,14 @@ describe("City HIAP Prioritization API", () => {
         // missing inventoryId and cityLocode
       });
       const res = await generateActionPlan(req, {
-        params: Promise.resolve({ city: testData.cityId, rankingId: randomUUID() }),
+        params: Promise.resolve({
+          city: testData.cityId,
+          rankingId: randomUUID(),
+        }),
         session: mockSession,
       } as any);
 
-      expect(res.status).toBe(400);
+      await expectStatusCode(res, 400);
     });
   });
 });
-

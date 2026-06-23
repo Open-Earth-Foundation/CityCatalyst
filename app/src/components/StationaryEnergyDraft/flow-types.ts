@@ -14,11 +14,20 @@ export type DraftStage = "start" | "drafting" | "decision" | "review";
 
 export type ArtifactRow = {
   id: string;
-  label: string;
+  // GPC sub-sector the row belongs to, used to group rows under a heading
+  // (e.g. ref "I.1", label "Residential Buildings"). Empty for placeholder rows.
+  subsectorRef: string;
+  subsectorLabel: string;
+  // The row's own label within the sub-sector (the subcategory description).
+  subcategoryLabel: string;
   scope: string;
   state: ArtifactRowState;
   value: string | null;
-  source: string | null;
+  // Connected data source. sourceName is a short brand/acronym for the chip;
+  // sourceFullName + sourceMeta (year · geography) are surfaced on hover.
+  sourceName: string | null;
+  sourceFullName: string | null;
+  sourceMeta: string | null;
   status: string;
 };
 
@@ -35,10 +44,15 @@ export type DraftCounts = {
 export type DecisionOption = {
   id: string;
   action: DraftDecisionState["action"];
+  // label is the full source name; shortLabel is the brand/acronym shown first.
   label: string;
+  shortLabel: string;
   meta: string;
   value: string;
   recommended: boolean;
+  // datasource of the connected source behind this option, used to open the
+  // shared source-details drawer. Absent for the "leave empty" option.
+  datasourceId?: string | null;
 };
 
 type BaseDecisionReviewContext = {

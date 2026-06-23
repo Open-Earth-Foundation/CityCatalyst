@@ -138,7 +138,7 @@ describe("OAuth Client API", () => {
     it("should return an array of OAuth2.0 client objects with name and description in different languages", async () => {
       const req = mockRequest();
       const res = await listClients(req, { params: Promise.resolve({}) });
-      expect(res.status).toEqual(200);
+      await expectStatusCode(res, 200);
       const { data } = await res.json();
       expect(Array.isArray(data)).toBe(true);
       expect(data.length).toBeGreaterThanOrEqual(3);
@@ -179,7 +179,7 @@ describe("OAuth Client API", () => {
     it("should create a new OAuth2.0 client object", async () => {
       const req = mockRequest(clientCreationArgs);
       const res = await addClient(req, { params: Promise.resolve({}) });
-      expect(res.status).toEqual(201);
+      await expectStatusCode(res, 201);
       expect(res.headers.get("location")).toBeDefined();
       const { data } = await res.json();
       expect(data.clientId).toBeDefined();
@@ -198,7 +198,7 @@ describe("OAuth Client API", () => {
     it("should be in the list of all clients", async () => {
       const req = mockRequest();
       const res = await listClients(req, { params: Promise.resolve({}) });
-      expect(res.status).toEqual(200);
+      await expectStatusCode(res, 200);
       const { data } = await res.json();
       expect(Array.isArray(data)).toBe(true);
       const found = data.find((cl: any) => cl.clientId === createdClientId);
@@ -227,7 +227,7 @@ describe("OAuth Client API", () => {
       const res = await getClient(req, {
         params: Promise.resolve({ client: client.clientId }),
       });
-      expect(res.status).toEqual(200);
+      await expectStatusCode(res, 200);
       const { data } = await res.json();
       expect(data.clientId).toEqual(client.clientId);
       expect(data.redirectUri).toEqual(client.redirectURI);
@@ -254,7 +254,7 @@ describe("OAuth Client API", () => {
       const res = await getClient(req, {
         params: Promise.resolve({ client: testClientDNE }),
       });
-      expect(res.status).toEqual(404);
+      await expectStatusCode(res, 404);
     });
   });
 
@@ -303,13 +303,13 @@ describe("OAuth Client API", () => {
       const res = await removeClient(req, {
         params: Promise.resolve({ client: toDelete.clientId }),
       });
-      expect(res.status).toEqual(204);
+      await expectStatusCode(res, 204);
     });
 
     it("should not be in the list of all clients", async () => {
       const req = mockRequest();
       const res = await listClients(req, { params: Promise.resolve({}) });
-      expect(res.status).toEqual(200);
+      await expectStatusCode(res, 200);
       const { data } = await res.json();
       expect(Array.isArray(data)).toBe(true);
       const found = data.find((cl: any) => cl.clientId === toDelete.clientId);
@@ -321,7 +321,7 @@ describe("OAuth Client API", () => {
       const res = await removeClient(req, {
         params: Promise.resolve({ client: testClientDNE }),
       });
-      expect(res.status).toEqual(404);
+      await expectStatusCode(res, 404);
     });
   });
 });

@@ -20,8 +20,11 @@ export type SourceCandidate = {
   publisher_name?: string | null;
   dataset_name?: string | null;
   dataset_year?: string | number | null;
+  details_datasource_id?: string | null;
   geography_match?: string | null;
   applicability_status: string;
+  applicability_issues?: string[];
+  failure_reason?: string | null;
   source_scope: Record<string, string | null | undefined>;
   normalized_rows?: Array<Record<string, unknown>>;
 };
@@ -30,11 +33,27 @@ export type ReviewDecision = {
   proposal_id: string;
   action: string;
   selected_source_id?: string | null;
+  selected_candidate_id?: string | null;
   manual_value?: string | number | null;
   manual_unit?: string | null;
   commit_status?: string;
   note?: string | null;
   decision_version?: number;
+};
+
+export type StagedReviewSelection = {
+  selection_id: string;
+  draft_run_id: string;
+  proposal_id: string;
+  user_id: string;
+  action: string;
+  selected_source_id?: string | null;
+  selected_candidate_id?: string | null;
+  rationale?: string | null;
+  tool_call_id?: string | null;
+  status: string;
+  created_at?: string | null;
+  updated_at?: string | null;
 };
 
 export type DraftStaleness = {
@@ -52,6 +71,7 @@ export type DraftStatusResponse = {
   proposals: DraftProposal[];
   source_candidates: SourceCandidate[];
   review_decisions: ReviewDecision[];
+  staged_review_selections?: StagedReviewSelection[];
   error_summary?: Record<string, unknown> | null;
   staleness?: DraftStaleness | null;
 };

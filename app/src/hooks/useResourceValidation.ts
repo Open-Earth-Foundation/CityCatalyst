@@ -43,15 +43,20 @@ export function useResourceValidation({
     // If resource doesn't exist or user doesn't have access, redirect appropriately
     if (resourceError || !resourceData) {
       if (resourceType === 'inventory') {
-        if (userInfo?.defaultInventoryId) {
-          // Redirect to default inventory
+        if (userInfo?.defaultInventoryId && userInfo?.defaultCityId) {
+          // Redirect to default inventory in city-scoped GHGI route
+          router.replace(
+            `/${lng}/cities/${userInfo.defaultCityId}/GHGI/${userInfo.defaultInventoryId}`,
+          );
+        } else if (userInfo?.defaultInventoryId) {
+          // Keep a safe fallback for users missing defaultCityId
           router.replace(`/${lng}/${userInfo.defaultInventoryId}`);
         } else if (userInfo?.defaultCityId) {
           // Redirect to default city
           router.replace(`/${lng}/cities/${userInfo.defaultCityId}`);
         } else {
           // Redirect to onboarding
-          router.replace(`/${lng}/onboarding`);
+          router.replace(`/${lng}/cities/onboarding`);
         }
       } else if (resourceType === 'city') {
         if (userInfo?.defaultCityId) {

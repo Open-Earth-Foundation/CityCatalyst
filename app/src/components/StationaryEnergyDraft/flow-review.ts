@@ -1,3 +1,5 @@
+import type { TFunction } from "i18next";
+
 import type {
   DecisionOption,
   DecisionReviewContext,
@@ -8,18 +10,20 @@ import type {
   DraftProposal,
   DraftStatusResponse,
   ReviewDecision,
+  StagedReviewSelection,
   SourceCandidate,
 } from "@/components/StationaryEnergyDraft/types";
 import {
+  compareProposalsByGpcReference,
   compatibleSources,
-  formatDraftEmissionsLabel,
+  draftRowEmissionsLabel,
   findRecommendedSource,
   initialDecisionForProposal,
   proposalLabel,
   proposedValueLabel,
+  shortSourceName,
   sourceGeographyLabel,
 } from "@/components/StationaryEnergyDraft/utils";
-import type { TFunction } from "i18next";
 
 const REVIEW_FALLBACKS = {
   "review-option-leave-empty": "Leave empty",
@@ -27,6 +31,21 @@ const REVIEW_FALLBACKS = {
   "review-fallback-row-label": "Stationary Energy row",
   "review-option-alternative-source": "Alternative source",
 } as const;
+
+const REVIEW_READY_DRAFT_STATUSES = new Set(["ready", "reviewed"]);
+
+type ReviewDecisionPayload = {
+  proposal_id: string;
+  action: DraftDecisionState["action"];
+  selected_source_id?: string;
+  manual_value?: number;
+  manual_unit?: string;
+  note?: string;
+};
+
+function canReviewDraftStatus(status: string): boolean {
+  return REVIEW_READY_DRAFT_STATUSES.has(status);
+}
 
 export function latestDecisionByProposal(
   decisions: ReviewDecision[],
@@ -45,6 +64,19 @@ export function latestDecisionByProposal(
   return byProposal;
 }
 
+export function activeStagedSelectionByProposal(
+  selections: StagedReviewSelection[] | undefined,
+): Map<string, StagedReviewSelection> {
+  const byProposal = new Map<string, StagedReviewSelection>();
+  for (const selection of selections ?? []) {
+    if (selection.status !== "active") {
+      continue;
+    }
+    byProposal.set(selection.proposal_id, selection);
+  }
+  return byProposal;
+}
+
 export function proposalNeedsUserResolution(proposal: DraftProposal): boolean {
   return ["conflict", "needs_review"].includes(proposal.status);
 }
@@ -57,8 +89,30 @@ export function buildInitialDecisionState(
   }
 
   const latestDecisions = latestDecisionByProposal(draftState.review_decisions);
+  const stagedSelections = activeStagedSelectionByProposal(
+    draftState.staged_review_selections,
+  );
   return Object.fromEntries(
     draftState.proposals.map((proposal) => {
+      const staged = stagedSelections.get(proposal.proposal_id);
+      if (staged) {
+        return [
+          proposal.proposal_id,
+          {
+            action: staged.action as DraftDecisionState["action"],
+            selectedSourceId:
+              staged.action === "override_source"
+                ? (staged.selected_candidate_id ??
+                  staged.selected_source_id ??
+                  "")
+                : (staged.selected_source_id ?? ""),
+            manualValue: "",
+            manualUnit: "",
+            note: staged.rationale ?? "",
+          },
+        ];
+      }
+
       const existing = latestDecisions.get(proposal.proposal_id);
       if (existing) {
         return [
@@ -87,11 +141,17 @@ export function buildInitialDecisionState(
 export function resolvedProposalIdsFromReview(
   draftState: DraftStatusResponse | null,
 ): Set<string> {
-  return new Set(
+  const resolved = new Set(
     Array.from(
       latestDecisionByProposal(draftState?.review_decisions ?? []).keys(),
     ),
   );
+  for (const proposalId of activeStagedSelectionByProposal(
+    draftState?.staged_review_selections,
+  ).keys()) {
+    resolved.add(proposalId);
+  }
+  return resolved;
 }
 
 export function unresolvedBlockingProposalIds(params: {
@@ -140,6 +200,9 @@ export function canSaveDraft(params: {
   if (TERMINAL_DRAFT_STATUSES.has(params.draftState.status)) {
     return false;
   }
+  if (!canReviewDraftStatus(params.draftState.status)) {
+    return false;
+  }
   if (pendingDecisionReviewProposals(params).length > 0) {
     return false;
   }
@@ -158,6 +221,34 @@ export function canSaveDraft(params: {
   });
 }
 
+export function canSaveToInventory(params: {
+  draftState: DraftStatusResponse | null;
+  resolvedProposalIds: Set<string>;
+  decisionState: Record<string, DraftDecisionState>;
+  isSaving?: boolean;
+}): boolean {
+  if (!params.draftState || params.isSaving) {
+    return false;
+  }
+  if (TERMINAL_DRAFT_STATUSES.has(params.draftState.status)) {
+    return false;
+  }
+  if (!canReviewDraftStatus(params.draftState.status)) {
+    return false;
+  }
+
+  return buildInventorySaveReviewDecisionPayload({
+    draftState: params.draftState,
+    decisionState: params.decisionState,
+    resolvedProposalIds: params.resolvedProposalIds,
+  }).some(
+    (decision) =>
+      decision.action === "accept" ||
+      decision.action === "override_source" ||
+      decision.action === "override_manual",
+  );
+}
+
 export function canPersistDraftReview(params: {
   draftState: DraftStatusResponse | null;
   resolvedProposalIds: Set<string>;
@@ -168,6 +259,9 @@ export function canPersistDraftReview(params: {
     return false;
   }
   if (TERMINAL_DRAFT_STATUSES.has(params.draftState.status)) {
+    return false;
+  }
+  if (!canReviewDraftStatus(params.draftState.status)) {
     return false;
   }
   const reviewableProposals = reviewableDraftProposals(params.draftState);
@@ -225,31 +319,144 @@ export function hasDraftReviewChanges(params: {
   });
 }
 
+export function hasInventorySaveReviewChanges(params: {
+  draftState: DraftStatusResponse | null;
+  decisionState: Record<string, DraftDecisionState>;
+  resolvedProposalIds: Set<string>;
+}): boolean {
+  if (!params.draftState) {
+    return false;
+  }
+  const persistedDecisions = latestDecisionByProposal(
+    params.draftState.review_decisions,
+  );
+  return buildInventorySaveReviewDecisionPayload({
+    draftState: params.draftState,
+    decisionState: params.decisionState,
+    resolvedProposalIds: params.resolvedProposalIds,
+  }).some((decision) => {
+    const persisted = persistedDecisions.get(decision.proposal_id);
+    if (!persisted) {
+      return true;
+    }
+    const sourceSelectionChanged =
+      decision.action === "override_source"
+        ? (persisted.selected_source_id ?? "") !==
+          (decision.selected_source_id ?? "")
+        : false;
+    const manualOverrideChanged =
+      decision.action === "override_manual"
+        ? String(persisted.manual_value ?? "") !==
+            String(decision.manual_value ?? "") ||
+          (persisted.manual_unit ?? "") !== (decision.manual_unit ?? "")
+        : false;
+    return (
+      persisted.action !== decision.action ||
+      sourceSelectionChanged ||
+      manualOverrideChanged ||
+      (persisted.note ?? "") !== (decision.note ?? "")
+    );
+  });
+}
+
+function serializeReviewDecisionInput(params: {
+  proposal: DraftProposal;
+  decision: DraftDecisionState;
+}): ReviewDecisionPayload {
+  return {
+    proposal_id: params.proposal.proposal_id,
+    action: params.decision.action,
+    selected_source_id:
+      params.decision.action === "override_source"
+        ? params.decision.selectedSourceId || undefined
+        : undefined,
+    manual_value:
+      params.decision.action === "override_manual" &&
+      params.decision.manualValue
+        ? Number(params.decision.manualValue)
+        : undefined,
+    manual_unit:
+      params.decision.action === "override_manual" && params.decision.manualUnit
+        ? params.decision.manualUnit
+        : undefined,
+    note: params.decision.note || undefined,
+  };
+}
+
+function persistedDecisionState(decision: ReviewDecision): DraftDecisionState {
+  return {
+    action: decision.action as DraftDecisionState["action"],
+    selectedSourceId:
+      decision.action === "override_source"
+        ? (decision.selected_candidate_id ?? decision.selected_source_id ?? "")
+        : (decision.selected_source_id ?? ""),
+    manualValue:
+      decision.manual_value == null ? "" : String(decision.manual_value),
+    manualUnit: decision.manual_unit ?? "",
+    note: decision.note ?? "",
+  };
+}
+
 export function buildReviewDecisionPayload(params: {
   draftState: DraftStatusResponse;
   decisionState: Record<string, DraftDecisionState>;
-}) {
+}): ReviewDecisionPayload[] {
   return params.draftState.proposals.map((proposal) => {
     const decision =
       params.decisionState[proposal.proposal_id] ??
       initialDecisionForProposal(proposal, params.draftState.source_candidates);
-    return {
-      proposal_id: proposal.proposal_id,
-      action: decision.action,
-      selected_source_id:
-        decision.action === "override_source"
-          ? decision.selectedSourceId || undefined
-          : undefined,
-      manual_value:
-        decision.action === "override_manual" && decision.manualValue
-          ? Number(decision.manualValue)
-          : undefined,
-      manual_unit:
-        decision.action === "override_manual" && decision.manualUnit
-          ? decision.manualUnit
-          : undefined,
-      note: decision.note || undefined,
-    };
+    return serializeReviewDecisionInput({ proposal, decision });
+  });
+}
+
+export function buildInventorySaveReviewDecisionPayload(params: {
+  draftState: DraftStatusResponse;
+  decisionState: Record<string, DraftDecisionState>;
+  resolvedProposalIds: Set<string>;
+}): ReviewDecisionPayload[] {
+  const persistedDecisions = latestDecisionByProposal(
+    params.draftState.review_decisions,
+  );
+  const reviewableProposalIds = new Set(
+    reviewableDraftProposals(params.draftState).map(
+      (proposal) => proposal.proposal_id,
+    ),
+  );
+
+  return params.draftState.proposals.map((proposal) => {
+    if (params.resolvedProposalIds.has(proposal.proposal_id)) {
+      const decision =
+        params.decisionState[proposal.proposal_id] ??
+        initialDecisionForProposal(
+          proposal,
+          params.draftState.source_candidates,
+        );
+      return serializeReviewDecisionInput({ proposal, decision });
+    }
+
+    const persisted = persistedDecisions.get(proposal.proposal_id);
+    if (persisted) {
+      return serializeReviewDecisionInput({
+        proposal,
+        decision: persistedDecisionState(persisted),
+      });
+    }
+
+    if (reviewableProposalIds.has(proposal.proposal_id)) {
+      return {
+        proposal_id: proposal.proposal_id,
+        action: "leave_draft" as const,
+        selected_source_id: undefined,
+        manual_value: undefined,
+        manual_unit: undefined,
+        note: undefined,
+      };
+    }
+
+    const decision =
+      params.decisionState[proposal.proposal_id] ??
+      initialDecisionForProposal(proposal, params.draftState.source_candidates);
+    return serializeReviewDecisionInput({ proposal, decision });
   });
 }
 
@@ -291,15 +498,17 @@ export function buildSourcePreferenceOptions(
 export function reviewableDraftProposals(
   draftState: DraftStatusResponse | null,
 ): DraftProposal[] {
-  if (!draftState) {
+  if (!draftState || !canReviewDraftStatus(draftState.status)) {
     return [];
   }
-  return draftState.proposals.filter((proposal) =>
-    decisionOptionsForProposal({
-      proposal,
-      candidates: draftState.source_candidates,
-    }).some((option) => option.action !== "leave_draft"),
-  );
+  return draftState.proposals
+    .filter((proposal) =>
+      decisionOptionsForProposal({
+        proposal,
+        candidates: draftState.source_candidates,
+      }).some((option) => option.action !== "leave_draft"),
+    )
+    .sort(compareProposalsByGpcReference);
 }
 
 function buildDecisionOptionGroups(
@@ -322,9 +531,13 @@ function buildDecisionOptionGroups(
       id: recommended.candidate_id ?? recommended.datasource_id,
       action: "accept",
       label: sourceDisplayName(recommended),
+      shortLabel:
+        shortSourceName(recommended) ?? sourceDisplayName(recommended),
       meta: sourceMetaLabel(recommended),
-      value: proposedValueLabel(proposal),
+      value: proposedValueLabel(proposal, t),
       recommended: true,
+      datasourceId:
+        recommended.details_datasource_id ?? recommended.datasource_id,
     };
     realOptions.push(recommendedOption);
   }
@@ -342,9 +555,11 @@ function buildDecisionOptionGroups(
       id,
       action: "override_source" as const,
       label: sourceDisplayName(candidate),
+      shortLabel: shortSourceName(candidate) ?? sourceDisplayName(candidate),
       meta: sourceMetaLabel(candidate),
       value: sourceCandidateValueLabel(candidate, t),
       recommended: false,
+      datasourceId: candidate.details_datasource_id ?? candidate.datasource_id,
     };
     alternativeOptions.push(option);
     realOptions.push(option);
@@ -358,6 +573,7 @@ function buildDecisionOptionGroups(
       id: "leave_draft",
       action: "leave_draft",
       label: translateReviewText(t, "review-option-leave-empty"),
+      shortLabel: translateReviewText(t, "review-option-leave-empty"),
       meta: translateReviewText(t, "review-option-set-notation"),
       value: translateReviewText(t, "review-option-set-notation"),
       recommended: false,
@@ -425,25 +641,10 @@ function sourceCandidateValueLabel(
   t?: TFunction,
 ): string {
   const rows = candidate.normalized_rows ?? [];
-  const firstRow = rows[0] as Record<string, unknown> | undefined;
-  if (!firstRow) {
-    return translateReviewText(t, "review-option-alternative-source");
-  }
-  const value =
-    firstRow.emissions_value ??
-    firstRow.co2eq ??
-    firstRow.value ??
-    firstRow.activity_value ??
-    firstRow["activity-value"];
-  const unit =
-    firstRow.emissions_unit ??
-    firstRow.unit ??
-    firstRow.activity_unit ??
-    firstRow["activity-unit"];
+  const firstRow = rows[0];
+  const emissionsLabel = draftRowEmissionsLabel(firstRow);
   return (
-    formatDraftEmissionsLabel(value, unit) ??
-    ([value, unit].filter(Boolean).join(" ") ||
-      translateReviewText(t, "review-option-alternative-source"))
+    emissionsLabel ?? translateReviewText(t, "review-option-alternative-source")
   );
 }
 

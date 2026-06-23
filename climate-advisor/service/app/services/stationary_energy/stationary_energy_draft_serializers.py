@@ -8,6 +8,7 @@ from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftRun,
     StationaryEnergyDraftSourceCandidate,
     StationaryEnergyReviewDecision,
+    StationaryEnergyStagedReviewSelection,
 )
 from app.models.stationary_energy_drafts import (
     DraftStatusSourceCandidate,
@@ -16,6 +17,7 @@ from app.models.stationary_energy_drafts import (
     ReviewDecisionResponse,
     SaveStationaryEnergyDraftResponse,
     StartStationaryEnergyDraftResponse,
+    StagedReviewSelectionResponse,
     StationaryEnergyDraftListItemResponse,
     StationaryEnergyDraftStatusResponse,
     StoredSourceScope,
@@ -68,9 +70,11 @@ def to_status_source_candidate(
     candidate: StationaryEnergyDraftSourceCandidate,
 ) -> DraftStatusSourceCandidate:
     """Serialize only the source-candidate fields used by the review frontend."""
+    source_data = candidate.source_data or {}
     return DraftStatusSourceCandidate(
         candidate_id=candidate.candidate_id,
         datasource_id=candidate.datasource_id,
+        details_datasource_id=source_data.get("details_datasource_id"),
         name=candidate.name,
         publisher_name=candidate.publisher_name,
         dataset_name=candidate.dataset_name,
@@ -79,6 +83,8 @@ def to_status_source_candidate(
         source_scope=StoredSourceScope.model_validate(candidate.source_scope or {}),
         normalized_rows=candidate.normalized_rows or [],
         applicability_status=candidate.applicability_status,  # type: ignore[arg-type]
+        applicability_issues=candidate.applicability_issues or [],
+        failure_reason=candidate.failure_reason,
     )
 
 
@@ -102,6 +108,33 @@ def to_review_decision_response(
         commit_response=decision.commit_response,
         created_at=decision.created_at,
         updated_at=decision.updated_at,
+    )
+
+
+def staged_selection_sort_key(
+    selection: StationaryEnergyStagedReviewSelection,
+) -> tuple[str, str]:
+    """Return a stable sort key for staged selections."""
+    return (str(selection.proposal_id), str(selection.selection_id))
+
+
+def to_staged_review_selection_response(
+    selection: StationaryEnergyStagedReviewSelection,
+) -> StagedReviewSelectionResponse:
+    """Serialize a staged tool selection into the API response contract."""
+    return StagedReviewSelectionResponse(
+        selection_id=selection.selection_id,
+        draft_run_id=selection.draft_run_id,
+        proposal_id=selection.proposal_id,
+        user_id=selection.user_id,
+        action=selection.action,
+        selected_source_id=selection.selected_source_id,
+        selected_candidate_id=selection.selected_candidate_id,
+        rationale=selection.rationale,
+        tool_call_id=selection.tool_call_id,
+        status=selection.status,
+        created_at=selection.created_at,
+        updated_at=selection.updated_at,
     )
 
 
@@ -142,6 +175,7 @@ def to_status_response(
     staleness: DraftStalenessResponse | None = None,
 ) -> StationaryEnergyDraftStatusResponse:
     """Serialize a draft run into the status response contract."""
+    # Sort child collections for stable API payloads and deterministic tests.
     return StationaryEnergyDraftStatusResponse(
         draft_run_id=draft_run.draft_run_id,
         thread_id=draft_run.thread_id,
@@ -165,6 +199,14 @@ def to_status_response(
                 key=review_decision_sort_key,
             )
         ],
+        staged_review_selections=[
+            to_staged_review_selection_response(selection)
+            for selection in sorted(
+                draft_run.staged_review_selections,
+                key=staged_selection_sort_key,
+            )
+            if selection.status == "active"
+        ],
         source_candidates=[
             to_status_source_candidate(candidate)
             for candidate in sorted(
@@ -184,16 +226,26 @@ def to_list_item_response(
     draft_run: StationaryEnergyDraftRun,
 ) -> StationaryEnergyDraftListItemResponse:
     """Serialize a draft run into the scoped draft picker list shape."""
+    # Count only source-backed proposals as reviewable work for the picker.
     reviewable_proposal_ids = {
         proposal.proposal_id
         for proposal in draft_run.proposals
         if proposal.recommended_candidate_id is not None
         or bool(proposal.alternative_candidate_ids)
     }
+    # Treat active staged selections as resolved because they represent pending intent.
     decisions = latest_review_decisions(draft_run.review_decisions)
+    staged_selection_ids = {
+        selection.proposal_id
+        for selection in draft_run.staged_review_selections
+        if selection.status == "active"
+    }
     resolved_review_count = sum(
-        1 for proposal_id in reviewable_proposal_ids if proposal_id in decisions
+        1
+        for proposal_id in reviewable_proposal_ids
+        if proposal_id in decisions or proposal_id in staged_selection_ids
     )
+    # Count only decisions that still need the CityCatalyst commit step.
     staged_commit_count = sum(
         1
         for decision in decisions.values()

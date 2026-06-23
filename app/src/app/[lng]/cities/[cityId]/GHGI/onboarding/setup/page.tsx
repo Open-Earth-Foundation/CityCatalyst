@@ -56,6 +56,7 @@ export default function OnboardingSetup(props: {
   const params = useSearchParams();
 
   const projectId = params.get("project");
+  const isUploadMode = params.get("mode") === "upload";
 
   const EnterpriseMode = hasFeatureFlag(FeatureFlags.ENTERPRISE_MODE);
 
@@ -92,12 +93,20 @@ export default function OnboardingSetup(props: {
     }
   }, [cityData]);
 
-  const steps = [
-    { title: t("set-inventory-details-step") },
-    { title: t("set-population-step") },
-    { title: t("set-third-party-data-step") },
-    { title: t("confirm-step") },
-  ];
+  const steps = isUploadMode
+    ? [
+        { title: t("set-inventory-details-step") },
+        { title: t("set-population-step") },
+        { title: t("confirm-step") },
+      ]
+    : [
+        { title: t("set-inventory-details-step") },
+        { title: t("set-population-step") },
+        { title: t("set-third-party-data-step") },
+        { title: t("confirm-step") },
+      ];
+
+  const confirmStepIndex = isUploadMode ? 2 : 3;
 
   const {
     value: activeStep,
@@ -234,10 +243,6 @@ export default function OnboardingSetup(props: {
             { errors, inventoryId: inventory.inventoryId },
             "Some third-party sources failed to connect during onboarding",
           );
-          makeErrorToast(
-            t("connect-data-sources-partial-failure-title"),
-            t("connect-data-sources-partial-failure-description"),
-          );
         }
       }
 
@@ -273,10 +278,10 @@ export default function OnboardingSetup(props: {
 
   // Reset third-party choice each time the user enters that step
   useEffect(() => {
-    if (activeStep === 2) {
+    if (!isUploadMode && activeStep === 2) {
       setThirdPartyDataChoice(null);
     }
-  }, [activeStep]);
+  }, [activeStep, isUploadMode]);
 
   const [selectedProject, setSelectedProject] = useState<string[]>([]);
   useEffect(() => {
@@ -349,7 +354,7 @@ export default function OnboardingSetup(props: {
               numberFormat={userInfo?.numberFormat}
             />
           )}
-          {activeStep === 2 && (
+          {!isUploadMode && activeStep === 2 && (
             <ThirdPartyInventoryDataStep
               t={t}
               cityId={cityId}
@@ -363,7 +368,7 @@ export default function OnboardingSetup(props: {
               onValueChange={setThirdPartyDataChoice}
             />
           )}
-          {activeStep === 3 && (
+          {activeStep === confirmStepIndex && (
             <ConfirmStep
               cityName={data.name}
               t={t}
@@ -437,7 +442,7 @@ export default function OnboardingSetup(props: {
                   <MdArrowForward height="24px" width="24px" />
                 </Button>
               )}
-              {activeStep == 2 && (
+              {!isUploadMode && activeStep == 2 && (
                 <Button
                   w="auto"
                   gap="8px"
@@ -457,7 +462,7 @@ export default function OnboardingSetup(props: {
                   <MdArrowForward height="24px" width="24px" />
                 </Button>
               )}
-              {activeStep == 3 && (
+              {activeStep == confirmStepIndex && (
                 <Button
                   h={16}
                   w="auto"

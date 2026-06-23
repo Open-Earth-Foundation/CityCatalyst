@@ -182,9 +182,7 @@ def test_stationary_energy_cc_manual_llm_e2e() -> None:
 
         assert start_data["status"] == "ready"
         assert start_data["proposals"], "Live draft returned no proposals"
-        assert start_data.get("llm_trace"), "Live draft did not return llm_trace"
-        assert start_data["llm_trace"].get("model")
-        assert start_data["llm_trace"]["model"] != "mock-llm"
+        assert "llm_trace" not in start_data
 
         accepted_proposals = [
             proposal

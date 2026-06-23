@@ -13,11 +13,14 @@ from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftRun,
     StationaryEnergyDraftSourceCandidate,
     StationaryEnergyReviewDecision,
+    StationaryEnergyStagedReviewSelection,
 )
 
 
 class StationaryEnergyDraftRepository:
-    def __init__(self, session: AsyncSession):
+    """Database access layer for Stationary Energy draft persistence."""
+
+    def __init__(self, session: AsyncSession) -> None:
         """Store the async session used for draft persistence queries."""
         self.session = session
 
@@ -56,6 +59,7 @@ class StationaryEnergyDraftRepository:
                 selectinload(StationaryEnergyDraftRun.source_candidates),
                 selectinload(StationaryEnergyDraftRun.proposals),
                 selectinload(StationaryEnergyDraftRun.review_decisions),
+                selectinload(StationaryEnergyDraftRun.staged_review_selections),
             )
             .where(StationaryEnergyDraftRun.draft_run_id == draft_run_id)
         )
@@ -82,12 +86,14 @@ class StationaryEnergyDraftRepository:
         excluded_statuses: set[str] | None = None,
     ) -> StationaryEnergyDraftRun | None:
         """Load the newest draft matching the durable user/city/inventory scope."""
+        # Eager-load review children because resume callers immediately serialize state.
         query = (
             select(StationaryEnergyDraftRun)
             .options(
                 selectinload(StationaryEnergyDraftRun.source_candidates),
                 selectinload(StationaryEnergyDraftRun.proposals),
                 selectinload(StationaryEnergyDraftRun.review_decisions),
+                selectinload(StationaryEnergyDraftRun.staged_review_selections),
             )
             .where(
                 StationaryEnergyDraftRun.user_id == user_id,
@@ -101,11 +107,13 @@ class StationaryEnergyDraftRepository:
                 StationaryEnergyDraftRun.draft_run_id.desc(),
             )
         )
+        # Exclude terminal or failed statuses when callers need a resumable draft.
         if excluded_statuses:
             query = query.where(
                 StationaryEnergyDraftRun.status.notin_(excluded_statuses)
             )
 
+        # Use updated_at first so retries and review saves become the active draft.
         result = await self.session.execute(query)
         return result.scalars().first()
 
@@ -119,12 +127,14 @@ class StationaryEnergyDraftRepository:
         excluded_statuses: set[str] | None = None,
     ) -> list[StationaryEnergyDraftRun]:
         """Load every draft matching the durable user/city/inventory scope."""
+        # Eager-load related rows to avoid lazy IO during list serialization.
         query = (
             select(StationaryEnergyDraftRun)
             .options(
                 selectinload(StationaryEnergyDraftRun.source_candidates),
                 selectinload(StationaryEnergyDraftRun.proposals),
                 selectinload(StationaryEnergyDraftRun.review_decisions),
+                selectinload(StationaryEnergyDraftRun.staged_review_selections),
             )
             .where(
                 StationaryEnergyDraftRun.user_id == user_id,
@@ -138,11 +148,13 @@ class StationaryEnergyDraftRepository:
                 StationaryEnergyDraftRun.draft_run_id.desc(),
             )
         )
+        # Keep filtering optional so history screens can include terminal drafts.
         if excluded_statuses:
             query = query.where(
                 StationaryEnergyDraftRun.status.notin_(excluded_statuses)
             )
 
+        # Preserve newest-first ordering for draft picker consumers.
         result = await self.session.execute(query)
         return list(result.scalars().all())
 
@@ -219,6 +231,27 @@ class StationaryEnergyDraftRepository:
         await self.session.flush()
         return models
 
+    async def add_proposals(
+        self,
+        draft_run_id: UUID,
+        proposals: list[dict[str, Any]],
+    ) -> list[StationaryEnergyDraftProposal]:
+        """Append proposals to a draft run without clearing existing rows.
+
+        Used by the staggered (per-row) generation path so that pollers can see
+        proposals accumulate incrementally instead of all-at-once.
+        """
+        models = [
+            StationaryEnergyDraftProposal(
+                draft_run_id=draft_run_id,
+                **proposal,
+            )
+            for proposal in proposals
+        ]
+        self.session.add_all(models)
+        await self.session.flush()
+        return models
+
     async def persist_review_decisions(
         self,
         decisions: list[StationaryEnergyReviewDecision],
@@ -227,6 +260,98 @@ class StationaryEnergyDraftRepository:
         self.session.add_all(decisions)
         await self.session.flush()
         return decisions
+
+    async def get_staged_review_selections(
+        self,
+        *,
+        draft_run_id: UUID,
+        user_id: str,
+    ) -> list[StationaryEnergyStagedReviewSelection]:
+        """Load active staged selections for one user and draft."""
+        result = await self.session.execute(
+            select(StationaryEnergyStagedReviewSelection).where(
+                StationaryEnergyStagedReviewSelection.draft_run_id == draft_run_id,
+                StationaryEnergyStagedReviewSelection.user_id == user_id,
+                StationaryEnergyStagedReviewSelection.status == "active",
+            )
+        )
+        return list(result.scalars().all())
+
+    async def upsert_staged_review_selections(
+        self,
+        selections: list[StationaryEnergyStagedReviewSelection],
+    ) -> list[StationaryEnergyStagedReviewSelection]:
+        """Create or replace active staged selections keyed by draft/proposal/user."""
+        persisted: list[StationaryEnergyStagedReviewSelection] = []
+        for selection in selections:
+            # Reuse the unique draft/proposal/user row so staging is idempotent.
+            existing_result = await self.session.execute(
+                select(StationaryEnergyStagedReviewSelection).where(
+                    StationaryEnergyStagedReviewSelection.draft_run_id
+                    == selection.draft_run_id,
+                    StationaryEnergyStagedReviewSelection.proposal_id
+                    == selection.proposal_id,
+                    StationaryEnergyStagedReviewSelection.user_id == selection.user_id,
+                )
+            )
+            existing = existing_result.scalar_one_or_none()
+            if existing is None:
+                self.session.add(selection)
+                persisted.append(selection)
+                continue
+
+            # Replace the staged choice while keeping the stable selection identity.
+            existing.action = selection.action
+            existing.selected_source_id = selection.selected_source_id
+            existing.selected_candidate_id = selection.selected_candidate_id
+            existing.rationale = selection.rationale
+            existing.tool_call_id = selection.tool_call_id
+            existing.status = selection.status
+            existing.updated_at = datetime.now(timezone.utc)
+            persisted.append(existing)
+
+        # Flush once after all inserts/updates so callers can continue the transaction.
+        await self.session.flush()
+        return persisted
+
+    async def mark_staged_review_selections_saved(
+        self,
+        *,
+        draft_run_id: UUID,
+        user_id: str,
+    ) -> None:
+        """Mark active staged selections as persisted into review decisions."""
+        selections = await self.get_staged_review_selections(
+            draft_run_id=draft_run_id,
+            user_id=user_id,
+        )
+        for selection in selections:
+            selection.status = "saved"
+            selection.updated_at = datetime.now(timezone.utc)
+        await self.session.flush()
+
+    async def mark_staged_review_selections_rolled_back(
+        self,
+        *,
+        draft_run_id: UUID,
+        user_id: str,
+        proposal_ids: set[UUID] | None = None,
+    ) -> list[StationaryEnergyStagedReviewSelection]:
+        """Mark active staged selections as rolled back."""
+        selections = await self.get_staged_review_selections(
+            draft_run_id=draft_run_id,
+            user_id=user_id,
+        )
+        rolled_back = [
+            selection
+            for selection in selections
+            if proposal_ids is None or selection.proposal_id in proposal_ids
+        ]
+        for selection in rolled_back:
+            selection.status = "rolled_back"
+            selection.updated_at = datetime.now(timezone.utc)
+        await self.session.flush()
+        return rolled_back
 
     async def get_next_review_versions(
         self,

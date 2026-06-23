@@ -189,7 +189,7 @@ describe("DataSource API", () => {
         sectorId: sector.sectorId,
       }),
     });
-    expect(res.status).toBe(200);
+    await expectStatusCode(res, 200);
     const { data } = await res.json();
     expect(data.length).toBe(1);
     const { source } = data[0];
@@ -206,7 +206,7 @@ describe("DataSource API", () => {
     const res = await getAllDataSources(req, {
       params: Promise.resolve({ inventoryId: inventory.inventoryId }),
     });
-    expect(res.status).toBe(200);
+    await expectStatusCode(res, 200);
     const { data } = await res.json();
     expect(data.length).toBe(2);
   });
@@ -272,7 +272,7 @@ describe("DataSource API", () => {
         datasourceId: datasource.datasourceId,
       }),
     });
-    expect(res.status).toBe(200);
+    await expectStatusCode(res, 200);
     const data = await res.json();
     expect(data.source.datasourceId).toBe(datasource.datasourceId);
     expect(data.data).toBeDefined();
@@ -287,7 +287,7 @@ describe("DataSource API", () => {
         datasourceId: randomUUID(),
       }),
     });
-    expect(res.status).toBe(404);
+    await expectStatusCode(res, 404);
   });
 
   it("should return 404 if inventory not found", async () => {
@@ -302,6 +302,6 @@ describe("DataSource API", () => {
         datasourceId: datasource.datasourceId,
       }),
     });
-    expect(res.status).toBe(404);
+    await expectStatusCode(res, 404);
   });
 });

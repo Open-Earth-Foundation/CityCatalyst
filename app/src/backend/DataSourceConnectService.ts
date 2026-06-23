@@ -138,6 +138,7 @@ export default class DataSourceConnectService {
     inventoryId: string,
     cityLocode: string,
     userId: string | undefined,
+    addNotationKeysForEmptyRefnos: boolean = true,
   ): Promise<ConnectAllDataSourcesError[]> {
     const errors: ConnectAllDataSourcesError[] = [];
     logger.info(
@@ -259,7 +260,7 @@ export default class DataSourceConnectService {
           }
         }
 
-        if (!isSuccessful) {
+        if (!isSuccessful && addNotationKeysForEmptyRefnos) {
           await DataSourceConnectService.createUnavailableInventoryValue(
             inventoryId,
             gpcReferenceNumber,
@@ -269,7 +270,7 @@ export default class DataSourceConnectService {
             "reason-NE",
           );
         }
-      } else {
+      } else if (addNotationKeysForEmptyRefnos) {
         await DataSourceConnectService.createUnavailableInventoryValue(
           inventoryId,
           gpcReferenceNumber,

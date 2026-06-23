@@ -15,8 +15,8 @@ import { Button } from "@/components/ui/button";
 import { MdOpenInNew } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { TabHeader } from "@/components/GHGIHomePage/TabHeader";
-import EmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsWidget";
-import TopEmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/TopEmissionsWidget";
+import EmissionsWidget from "@/components/GHGI/inventory-result/EmissionsWidget";
+import TopEmissionsWidget from "@/components/GHGI/inventory-result/TopEmissionsWidget";
 import { BlueSubtitle } from "@/components/package/Texts/BlueSubtitle";
 import { PopulationAttributes } from "@/models/Population";
 import type { TFunction } from "i18next";
@@ -33,17 +33,17 @@ import {
   useGetCityYearsQuery,
   useGetYearOverYearResultsQuery,
 } from "@/services/api";
-import ByScopeView from "@/app/[lng]/[inventory]/InventoryResultTab/ByScopeView";
-import { SectorHeader } from "@/app/[lng]/[inventory]/InventoryResultTab/SectorHeader";
-import { ByActivityView } from "@/app/[lng]/[inventory]/InventoryResultTab/ByActivityView";
+import ByScopeView from "@/components/GHGI/inventory-result/ByScopeView";
+import { SectorHeader } from "@/components/GHGI/inventory-result/SectorHeader";
+import { ByActivityView } from "@/components/GHGI/inventory-result/ByActivityView";
 import { getSectorsForInventory, SECTORS } from "@/util/constants";
-import { EmptyStateCardContent } from "@/app/[lng]/[inventory]/InventoryResultTab/EmptyStateCardContent";
+import { EmptyStateCardContent } from "@/components/GHGI/inventory-result/EmptyStateCardContent";
 import { Trans } from "react-i18next/TransWithoutContext";
 import ButtonGroupToggle from "@/components/button-group-toggle";
 import { MdBarChart, MdTableChart } from "react-icons/md";
-import EmissionBySectorTableSection from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionBySectorTable";
-import EmissionBySectorChart from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionBySectorChart";
-import { EmissionsForecastSection } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/EmissionsForecastSection";
+import EmissionBySectorTableSection from "@/components/GHGI/inventory-result/EmissionBySectorTable";
+import EmissionBySectorChart from "@/components/GHGI/inventory-result/EmissionBySectorChart";
+import { EmissionsForecastSection } from "@/components/GHGI/inventory-result/EmissionsForecast/EmissionsForecastSection";
 import { TooltipProvider } from "@nivo/tooltip";
 import { UseErrorToast } from "@/hooks/Toasts";
 import Decimal from "decimal.js";

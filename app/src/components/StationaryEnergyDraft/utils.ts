@@ -1,13 +1,36 @@
 "use client";
 
-import { convertKgToTonnes } from "@/util/helpers";
+import { compareGpcRefNumbers, convertKgToTonnes } from "@/util/helpers";
 import type {
   DraftDecisionState,
   DraftProposal,
   SourceCandidate,
 } from "@/components/StationaryEnergyDraft/types";
+import type { TFunction } from "i18next";
 
 const RAW_KG_EMISSIONS_UNITS = new Set(["", "kgco2e", "tco2e"]);
+
+const DRAFT_LABEL_FALLBACKS = {
+  "draft-value-no-current": "No current inventory value",
+  "draft-value-no-source": "No source-backed draft value",
+  "draft-value-reported-notation": "Reported notation",
+  "draft-notation-key-NO": "Not occurring",
+  "draft-notation-key-NE": "Not estimated",
+  "draft-notation-key-IE": "Included elsewhere",
+  "draft-notation-key-C": "Confidential",
+  "draft-notation-key-NA": "Not applicable",
+} as const;
+
+const NOTATION_KEY_LABEL_KEYS: Record<
+  string,
+  keyof typeof DRAFT_LABEL_FALLBACKS
+> = {
+  NO: "draft-notation-key-NO",
+  NE: "draft-notation-key-NE",
+  IE: "draft-notation-key-IE",
+  C: "draft-notation-key-C",
+  NA: "draft-notation-key-NA",
+};
 
 export function extractErrorMessage(
   payload: unknown,
@@ -134,18 +157,87 @@ export function scopeMatches(
   return true;
 }
 
-export function proposalLabel(proposal: DraftProposal): string {
-  const subsector =
+export function compareProposalsByGpcReference(
+  a: DraftProposal,
+  b: DraftProposal,
+): number {
+  return compareGpcRefNumbers(
+    a.target_ref.subcategory_reference_number ?? "",
+    b.target_ref.subcategory_reference_number ?? "",
+  );
+}
+
+export function proposalSubsectorLabel(proposal: DraftProposal): string {
+  return (
     proposal.target_ref.subsector_name ??
     proposal.target_ref.subsector_reference_number ??
-    proposal.target_ref.subsector_id;
-  const subcategory =
+    proposal.target_ref.subsector_id ??
+    ""
+  );
+}
+
+export function proposalSubsectorRef(proposal: DraftProposal): string {
+  return proposal.target_ref.subsector_reference_number ?? "";
+}
+
+export function proposalSubcategoryLabel(proposal: DraftProposal): string {
+  return (
     proposal.target_ref.subcategory_name ??
     proposal.target_ref.subcategory_reference_number ??
-    proposal.target_ref.subcategory_id;
+    proposal.target_ref.subcategory_id ??
+    ""
+  );
+}
+
+export function proposalLabel(proposal: DraftProposal): string {
   const scope = proposal.target_ref.scope_name ?? proposal.target_ref.scope_id;
 
-  return [subsector, subcategory, scope].filter(Boolean).join(" / ");
+  return [
+    proposalSubsectorLabel(proposal),
+    proposalSubcategoryLabel(proposal),
+    scope,
+  ]
+    .filter(Boolean)
+    .join(" / ");
+}
+
+export function sourceNameLabel(
+  candidate: SourceCandidate | undefined,
+): string | null {
+  if (!candidate) {
+    return null;
+  }
+  return candidate.name ?? candidate.datasource_id ?? null;
+}
+
+// A short, recognisable label for a source. Publishers are often a clean
+// acronym/brand (EPE, SEEG, OGIM) — prefer those; otherwise fall back to the
+// full dataset name (already short for the likes of "Global Energy Monitor",
+// and better than a lowercase slug like "globalenergymonitor").
+export function shortSourceName(
+  candidate: SourceCandidate | undefined,
+): string | null {
+  if (!candidate) {
+    return null;
+  }
+  const publisher = candidate.publisher_name?.trim();
+  if (publisher && /^[A-Z][A-Z0-9]{1,7}$/.test(publisher)) {
+    return publisher;
+  }
+  return candidate.name ?? candidate.datasource_id ?? null;
+}
+
+export function sourceMetaLabel(
+  candidate: SourceCandidate | undefined,
+): string | null {
+  if (!candidate) {
+    return null;
+  }
+  const meta = [
+    candidate.dataset_year ? String(candidate.dataset_year) : null,
+    sourceGeographyLabel(candidate.geography_match),
+  ].filter(Boolean);
+  return meta.length > 0 ? meta.join(" · ") : null;
 }
 
 function parseEmissionsKgValue(value: unknown): bigint | number | null {
@@ -221,24 +313,39 @@ export function formatDraftEmissionsLabel(
   return [text, displayUnit].filter(Boolean).join(" ");
 }
 
-export function sourceGeographyLabel(
-  geographyMatch: string | null | undefined,
-): string | null {
-  const text = String(geographyMatch ?? "")
-    .trim()
-    .toLowerCase();
-  if (!text || text === "unknown" || text === "global") {
+export function draftRowEmissionsLabel(row: unknown): string | null {
+  if (!row || typeof row !== "object") {
     return null;
   }
-  if (text === "locode") {
-    return "city";
-  }
-  return text;
+  const rowRecord = row as Record<string, unknown>;
+  const value =
+    rowRecord["emissions_value_100yr"] ??
+    rowRecord["co2eq_100yr"] ??
+    rowRecord["co2eq"] ??
+    rowRecord["emissions_value"];
+  const unit =
+    rowRecord["emissions_unit"] ??
+    (value === rowRecord["emissions_value_100yr"] ||
+    value === rowRecord["co2eq_100yr"] ||
+    value === rowRecord["co2eq"]
+      ? "kgco2e"
+      : undefined);
+  return formatDraftEmissionsLabel(value, unit);
 }
 
-export function currentValueLabel(proposal: DraftProposal): string {
+function translateDraftLabel(
+  t: TFunction | undefined,
+  key: keyof typeof DRAFT_LABEL_FALLBACKS,
+): string {
+  return t?.(key) ?? DRAFT_LABEL_FALLBACKS[key];
+}
+
+export function currentValueLabel(
+  proposal: DraftProposal,
+  t?: TFunction,
+): string {
   if (!proposal.current_value) {
-    return "No current inventory value";
+    return translateDraftLabel(t, "draft-value-no-current");
   }
 
   const value = proposal.current_value["value"];
@@ -255,23 +362,48 @@ export function currentValueLabel(proposal: DraftProposal): string {
     .join(" ");
 }
 
-export function proposedValueLabel(proposal: DraftProposal): string {
+export function sourceGeographyLabel(
+  geographyMatch: string | null | undefined,
+): string | null {
+  const text = String(geographyMatch ?? "")
+    .trim()
+    .toLowerCase();
+  if (!text || text === "unknown" || text === "global") {
+    return null;
+  }
+  if (text === "locode") {
+    return "city";
+  }
+  return text;
+}
+
+export function proposedValueLabel(
+  proposal: DraftProposal,
+  t?: TFunction,
+): string {
   if (!proposal.proposed_value) {
-    return "No source-backed draft value";
+    return translateDraftLabel(t, "draft-value-no-source");
   }
 
-  const value = proposal.proposed_value["value"];
-  const unit = proposal.proposed_value["unit"];
-  const emissionsValue = proposal.proposed_value["emissions_value"];
-  const emissionsUnit = proposal.proposed_value["emissions_unit"];
-  const emissionsLabel = formatDraftEmissionsLabel(
-    emissionsValue,
-    emissionsUnit,
-  );
+  // proposed_value is { row: { gases: [...] }, datasource_id } for a value, or
+  // { notation_key: "NO", ... } when the source reports "not occurring".
+  const proposedValue = proposal.proposed_value as Record<string, unknown>;
+  const notationKey = proposedValue["notation_key"];
+  if (typeof notationKey === "string" && notationKey.trim()) {
+    const key = notationKey.trim().toUpperCase();
+    const label = translateDraftLabel(
+      t,
+      NOTATION_KEY_LABEL_KEYS[key] ?? "draft-value-reported-notation",
+    );
+    return `${label} (${key})`;
+  }
+  const row = (proposedValue["row"] ?? proposedValue) as Record<
+    string,
+    unknown
+  >;
+  const emissionsLabel = draftRowEmissionsLabel(row);
 
-  return [value, unit, emissionsLabel ? `(${emissionsLabel})` : null]
-    .filter(Boolean)
-    .join(" ");
+  return emissionsLabel ?? translateDraftLabel(t, "draft-value-no-source");
 }
 
 export function sourceLabel(candidate: SourceCandidate | undefined): string {

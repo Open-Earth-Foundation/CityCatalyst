@@ -3,14 +3,13 @@ import {
   beforeAll,
   beforeEach,
   describe,
+  expect,
   it,
   jest,
 } from "@jest/globals";
 import { POST as uploadImportFile } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/route";
 import { GET as getImportStatus } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/[importedFileId]/route";
-import {
-  POST as approveImport,
-} from "@/app/api/v1/city/[city]/inventory/[inventory]/import/approve/route";
+import { POST as approveImport } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/approve/route";
 import { db } from "@/models";
 import assert from "node:assert";
 import { NextRequest } from "next/server";
@@ -21,12 +20,16 @@ import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
 import { randomUUID } from "node:crypto";
 import { ImportStatusEnum } from "@/util/enums";
-import { InventoryTypeEnum, GlobalWarmingPotentialTypeEnum } from "@/util/enums";
+import {
+  InventoryTypeEnum,
+  GlobalWarmingPotentialTypeEnum,
+} from "@/util/enums";
 import { Sector } from "@/models/Sector";
 import { SubSector } from "@/models/SubSector";
 import { SubCategory } from "@/models/SubCategory";
 import { Op } from "sequelize";
 import Excel from "exceljs";
+import { expectStatusCode, expectStatusCodes } from "../helpers";
 
 // Test helpers (avoiding helpers.ts due to import.meta.url ESM issue)
 const mockUrl = "http://localhost:3000/api/v1";
@@ -112,20 +115,22 @@ export function setupTests() {
   }
 
   // mock getServerSession from NextAuth
-  jest.spyOn(Auth, "getServerSession").mockResolvedValue((() => {
-    const expires = new Date();
-    expires.setDate(expires.getDate() + 1);
-    return {
-      user: {
-        id: testUserID,
-        name: "Test User",
-        email: "test@example.com",
-        image: null,
-        role: Roles.User,
-      },
-      expires: expires.toISOString(),
-    } as AppSession;
-  })());
+  jest.spyOn(Auth, "getServerSession").mockResolvedValue(
+    (() => {
+      const expires = new Date();
+      expires.setDate(expires.getDate() + 1);
+      return {
+        user: {
+          id: testUserID,
+          name: "Test User",
+          email: "test@example.com",
+          image: null,
+          role: Roles.User,
+        },
+        expires: expires.toISOString(),
+      } as AppSession;
+    })(),
+  );
 }
 
 const testCityLocode = "XX_IMPORT_TEST";
@@ -263,10 +268,14 @@ describe("Import Routes API", () => {
       await db.models.City.destroy({ where: { cityId: city.cityId } });
     }
     if (subcategoryScope?.scopeId) {
-      await db.models.Scope.destroy({ where: { scopeId: subcategoryScope.scopeId } });
+      await db.models.Scope.destroy({
+        where: { scopeId: subcategoryScope.scopeId },
+      });
     }
     if (subsectorScope?.scopeId) {
-      await db.models.Scope.destroy({ where: { scopeId: subsectorScope.scopeId } });
+      await db.models.Scope.destroy({
+        where: { scopeId: subsectorScope.scopeId },
+      });
     }
     // Close database connection to prevent hanging async operations in CI
     if (db.sequelize) {
@@ -291,7 +300,7 @@ describe("Import Routes API", () => {
         }),
       });
 
-      assert.equal(res.status, 400);
+      await expectStatusCode(res, 400);
     });
 
     it("should reject request with invalid city ID", async () => {
@@ -377,7 +386,7 @@ describe("Import Routes API", () => {
         }),
       });
 
-      assert.equal(res.status, 200);
+      await expectStatusCode(res, 200);
       const json = await res.json();
       assert.ok(json.data);
       assert.equal(json.data.currentStep, 1);
@@ -418,7 +427,7 @@ describe("Import Routes API", () => {
         }),
       });
 
-      assert.equal(res.status, 200);
+      await expectStatusCode(res, 200);
       const json = await res.json();
       assert.ok(json.data);
       assert.equal(json.data.currentStep, 2);
@@ -462,7 +471,7 @@ describe("Import Routes API", () => {
         }),
       });
 
-      assert.equal(res.status, 200);
+      await expectStatusCode(res, 200);
       const json = await res.json();
       assert.ok(json.data);
       assert.equal(json.data.currentStep, 3);
@@ -514,7 +523,7 @@ describe("Import Routes API", () => {
         }),
       });
 
-      assert.equal(res.status, 200);
+      await expectStatusCode(res, 200);
       const json = await res.json();
       assert.ok(json.data);
       assert.equal(json.data.currentStep, 4);
@@ -535,7 +544,7 @@ describe("Import Routes API", () => {
         }),
       });
 
-      assert.equal(res.status, 404);
+      await expectStatusCode(res, 404);
     });
 
     it("should return 404 for imported file from different user", async () => {
@@ -568,7 +577,7 @@ describe("Import Routes API", () => {
         }),
       });
 
-      assert.equal(res.status, 404);
+      await expectStatusCode(res, 404);
     });
 
     it("should return inferredYearFromFile in data when present on validationResults", async () => {
@@ -607,7 +616,7 @@ describe("Import Routes API", () => {
         }),
       });
 
-      assert.equal(res.status, 200);
+      await expectStatusCode(res, 200);
       const json = await res.json();
       assert.strictEqual(json.data.inferredYearFromFile, 2021);
     });
@@ -659,17 +668,22 @@ describe("Import Routes API", () => {
 
       // Approve returns 202 Accepted when import is started in background; client polls for completion.
       // The import process may fail in tests due to incomplete file data, but we verify the approval step.
-      assert.ok([200, 202, 500].includes(res.status));
+      await expectStatusCodes(res, [200, 202, 500]);
 
       // Reload to check status - should have moved from WAITING_FOR_APPROVAL
       await importedFile.reload();
-      assert.ok([
-        ImportStatusEnum.APPROVED,
-        ImportStatusEnum.IMPORTING,
-        ImportStatusEnum.COMPLETED,
-        ImportStatusEnum.FAILED,
-      ].includes(importedFile.importStatus));
-      assert.notEqual(importedFile.importStatus, ImportStatusEnum.WAITING_FOR_APPROVAL);
+      assert.ok(
+        [
+          ImportStatusEnum.APPROVED,
+          ImportStatusEnum.IMPORTING,
+          ImportStatusEnum.COMPLETED,
+          ImportStatusEnum.FAILED,
+        ].includes(importedFile.importStatus),
+      );
+      assert.notEqual(
+        importedFile.importStatus,
+        ImportStatusEnum.WAITING_FOR_APPROVAL,
+      );
     });
 
     it("should reject approval for file not in waiting_for_approval status", async () => {
@@ -698,7 +712,7 @@ describe("Import Routes API", () => {
         }),
       });
 
-      assert.equal(res.status, 400);
+      await expectStatusCode(res, 400);
     });
 
     it("should reject approval with invalid importedFileId", async () => {
@@ -731,7 +745,7 @@ describe("Import Routes API", () => {
         }),
       });
 
-      assert.equal(res.status, 404);
+      await expectStatusCode(res, 404);
     });
 
     it("should accept mappingOverrides in request body", async () => {
@@ -781,7 +795,7 @@ describe("Import Routes API", () => {
       // Verify mapping overrides were stored
       await importedFile.reload();
       const config = importedFile.mappingConfiguration as any;
-      assert.ok(config?.overrides);
+      expect(config?.overrides).toBeTruthy();
     });
   });
 });

@@ -37,7 +37,7 @@ import {
   cleanupTestData,
   TestData,
 } from "../helpers/testDataCreationHelper";
-import { setupTests, mockRequest } from "../helpers";
+import { setupTests, mockRequest, expectStatusCode } from "../helpers";
 
 const MOCK_CRON_API_KEY = "MOCK_CRON_API_KEY";
 
@@ -339,7 +339,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await POST(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(401);
+      await expectStatusCode(res, 401);
       const body = await res.json();
       expect(body.error.message).toContain("Unauthorized");
     });
@@ -356,7 +356,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await POST(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(403);
+      await expectStatusCode(res, 403);
       const body = await res.json();
       expect(body.error.message).toContain("Forbidden");
     });
@@ -369,7 +369,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await POST(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(400);
+      await expectStatusCode(res, 400);
       const body = await res.json();
       expect(body.error).toBeTruthy();
     });
@@ -384,7 +384,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await POST(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(400);
+      await expectStatusCode(res, 400);
       const body = await res.json();
       expect(body.error.issues).toBeDefined();
       expect(body.error.issues[0].path).toContain("actionType");
@@ -400,7 +400,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await POST(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(400);
+      await expectStatusCode(res, 400);
       const body = await res.json();
       expect(body.error.issues).toBeDefined();
       expect(body.error.issues[0].path).toContain("languages");
@@ -416,7 +416,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await POST(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
 
       // Should return immediately with summary
@@ -467,7 +467,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await POST(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
       expect(body.data.totalCities).toBe(0);
       expect(body.data.firstBatchSize).toBe(0);
@@ -483,7 +483,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await POST(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
       expect(body.data.totalCities).toBeGreaterThan(0);
 
@@ -1526,7 +1526,7 @@ describe("Bulk HIAP Prioritization API", () => {
       const res = await POST(req, { params: Promise.resolve({}) });
 
       // API should still return 200 since it responds immediately
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
       expect(body.data.totalCities).toBeGreaterThan(0);
 
@@ -1663,7 +1663,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       // Call cron endpoint (simulating cron job run)
       const response = await callHiapCronJobRoute();
-      expect(response.status).toBe(200);
+      await expectStatusCode(response, 200);
 
       // Parse response body
       const responseBody = await response.json();
@@ -1737,7 +1737,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       // Call cron endpoint
       const response = await callHiapCronJobRoute();
-      expect(response.status).toBe(200);
+      await expectStatusCode(response, 200);
 
       // Parse response body
       const responseBody = await response.json();
@@ -1969,7 +1969,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await PATCH(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
 
       // Should exclude 1 and retry 2
@@ -2030,7 +2030,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await PATCH(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
 
       expect(body.data.excludedCount).toBe(2);
@@ -2066,7 +2066,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await PATCH(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
 
       expect(body.data.excludedCount).toBe(0);
@@ -2124,7 +2124,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await PATCH(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
 
       // Should only affect batch-1
@@ -2175,7 +2175,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await PUT(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
 
       expect(body.data.unexcludedCount).toBe(2);
@@ -2220,7 +2220,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await PUT(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
 
       expect(body.data.unexcludedCount).toBe(1);
@@ -2256,7 +2256,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await PUT(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(400);
+      await expectStatusCode(res, 400);
       const body = await res.json();
       expect(body.error).toBeTruthy();
     });
@@ -2270,7 +2270,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await PUT(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(200);
+      await expectStatusCode(res, 200);
       const body = await res.json();
       expect(body.data.unexcludedCount).toBe(0);
     });
@@ -2286,7 +2286,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       const res = await PUT(req, { params: Promise.resolve({}) });
 
-      expect(res.status).toBe(403);
+      await expectStatusCode(res, 403);
       const body = await res.json();
       expect(body.error.message).toContain("Forbidden");
     });
@@ -2320,7 +2320,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       // Call cron endpoint
       const response = await callHiapCronJobRoute();
-      expect(response.status).toBe(200);
+      await expectStatusCode(response, 200);
 
       // Parse response body
       const responseBody = await response.json();
@@ -2440,7 +2440,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
       // Call cron endpoint
       const response = await callHiapCronJobRoute();
-      expect(response.status).toBe(200);
+      await expectStatusCode(response, 200);
 
       const responseBody = await response.json();
 

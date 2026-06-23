@@ -16,7 +16,12 @@ import { POST as createCity } from "@/app/api/v1/city/route";
 import { db } from "@/models";
 import { CreateCityRequest } from "@/util/validation";
 import assert from "node:assert";
-import { mockRequest, setupTests, testUserID } from "../helpers";
+import {
+  expectStatusCode,
+  mockRequest,
+  setupTests,
+  testUserID,
+} from "../helpers";
 import { City } from "@/models/City";
 import { randomUUID } from "node:crypto";
 import { AppSession, Auth } from "@/lib/auth";
@@ -102,11 +107,13 @@ describe("City API", () => {
 
     // Get the organization ID from the project
     const projectWithOrg = await db.models.Project.findByPk(project.projectId, {
-      include: [{
-        model: db.models.Organization,
-        as: 'organization',
-        attributes: ['organizationId']
-      }]
+      include: [
+        {
+          model: db.models.Organization,
+          as: "organization",
+          attributes: ["organizationId"],
+        },
+      ],
     });
     organizationId = projectWithOrg?.organization?.organizationId as string;
 
@@ -118,7 +125,7 @@ describe("City API", () => {
     await db.models.OrganizationAdmin.create({
       organizationAdminId: randomUUID(),
       userId: orgAdminUserId,
-      organizationId: organizationId
+      organizationId: organizationId,
     });
   });
 
@@ -155,7 +162,7 @@ describe("City API", () => {
 
     const req = mockRequest({ ...cityData, projectId: project?.projectId });
     const res = await createCity(req, emptyParams);
-    assert.equal(res.status, 200);
+    await expectStatusCode(res, 200);
     const { data } = await res.json();
     assert.equal(data.locode, cityData.locode);
     assert.equal(data.name, cityData.name);
@@ -169,7 +176,7 @@ describe("City API", () => {
 
     const req = mockRequest({ ...cityData, projectId: project?.projectId });
     const res = await createCity(req, emptyParams);
-    assert.equal(res.status, 403);
+    await expectStatusCode(res, 403);
     const { error } = await res.json();
     assert.equal(error.message, "You do not have access to this project");
   });
@@ -179,7 +186,7 @@ describe("City API", () => {
 
     const req = mockRequest(invalidCity);
     const res = await createCity(req, emptyParams);
-    assert.equal(res.status, 400);
+    await expectStatusCode(res, 400);
     const {
       error: { issues },
     } = await res.json();
@@ -193,7 +200,7 @@ describe("City API", () => {
     const res = await findCity(req, {
       params: Promise.resolve({ city: city.cityId }),
     });
-    assert.equal(res.status, 200);
+    await expectStatusCode(res, 200);
     const { data } = await res.json();
     assert.equal(data.locode, cityData.locode);
     assert.equal(data.name, cityData.name);
@@ -209,7 +216,7 @@ describe("City API", () => {
     const res = await findCity(req, {
       params: Promise.resolve({ city: city.cityId }),
     });
-    assert.equal(res.status, 200);
+    await expectStatusCode(res, 200);
     const { data } = await res.json();
     assert.equal(data.locode, cityData.locode);
     assert.equal(data.name, cityData.name);
@@ -222,14 +229,14 @@ describe("City API", () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(collaboratorSession));
     const req = mockRequest();
     const res = await getAllCities(req, emptyParams);
-    assert.equal(res.status, 403);
+    await expectStatusCode(res, 403);
   });
 
   it("should get all cities for system admin", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(systemAdminSession));
     const req = mockRequest();
     const res = await getAllCities(req, emptyParams);
-    assert.equal(res.status, 200);
+    await expectStatusCode(res, 200);
     const { data } = await res.json();
     assert.notEqual(data.length, 0);
   });
@@ -241,7 +248,7 @@ describe("City API", () => {
     const res = await findCity(req, {
       params: Promise.resolve({ city: randomUUID() }),
     });
-    assert.equal(res.status, 404);
+    await expectStatusCode(res, 404);
   });
 
   it("should return 404 for non-existing city as collaborator", async () => {
@@ -251,7 +258,7 @@ describe("City API", () => {
     const res = await findCity(req, {
       params: Promise.resolve({ city: randomUUID() }),
     });
-    assert.equal(res.status, 404);
+    await expectStatusCode(res, 404);
   });
 
   it("should update a city", async () => {
@@ -259,7 +266,7 @@ describe("City API", () => {
     const res = await updateCity(req, {
       params: Promise.resolve({ city: city.cityId }),
     });
-    assert.equal(res.status, 200);
+    await expectStatusCode(res, 200);
     const { data } = await res.json();
     assert.equal(data.locode, city2.locode);
     assert.equal(data.name, city2.name);
@@ -273,7 +280,7 @@ describe("City API", () => {
     const res = await updateCity(req, {
       params: Promise.resolve({ city: city.cityId }),
     });
-    assert.equal(res.status, 400);
+    await expectStatusCode(res, 400);
     const {
       error: { issues },
     } = await res.json();
@@ -285,7 +292,7 @@ describe("City API", () => {
     const res = await deleteCity(req, {
       params: Promise.resolve({ city: city.cityId }),
     });
-    assert.equal(res.status, 200);
+    await expectStatusCode(res, 200);
     const { data, deleted } = await res.json();
     assert.equal(deleted, true);
     assert.equal(data.locode, cityData.locode);
@@ -300,6 +307,6 @@ describe("City API", () => {
     const res = await deleteCity(req, {
       params: Promise.resolve({ city: randomUUID() }),
     });
-    assert.equal(res.status, 404);
+    await expectStatusCode(res, 404);
   });
 });

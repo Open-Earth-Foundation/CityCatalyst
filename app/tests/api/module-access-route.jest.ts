@@ -9,7 +9,7 @@ import {
   expect,
   jest,
 } from "@jest/globals";
-import { setupTests, mockRequest } from "../helpers";
+import { setupTests, mockRequest, expectStatusCode } from "../helpers";
 import {
   createTestData,
   cleanupTestData,
@@ -75,7 +75,7 @@ describe("City Module Access Route", () => {
     };
     const response = await GET(req, ctx);
     const data = await response.json();
-    expect(response.status).toBe(200);
+    await expectStatusCode(response, 200);
     expect(data).toEqual({ data: { hasAccess: true } });
     expect(mockHasModuleAccess).toHaveBeenCalledWith(
       testData.projectId,
@@ -105,7 +105,7 @@ describe("City Module Access Route", () => {
     };
     const response = await GET(req, ctx);
     const data = await response.json();
-    expect(response.status).toBe(200);
+    await expectStatusCode(response, 200);
     expect(data).toEqual({ data: { hasAccess: true } });
     expect(mockHasModuleAccess).toHaveBeenCalledWith(
       testData.projectId,
@@ -130,7 +130,7 @@ describe("City Module Access Route", () => {
       }),
     };
     const response = await GET(req, ctx);
-    expect(response.status).toBe(401);
+    await expectStatusCode(response, 401);
     const data = await response.json();
     expect(data.error.message).toMatch(/User is not part of this city/);
   });
@@ -147,7 +147,7 @@ describe("City Module Access Route", () => {
       }),
     };
     const response = await GET(req, ctx);
-    expect(response.status).toBe(401);
+    await expectStatusCode(response, 401);
     const data = await response.json();
     expect(data.error.message).toMatch(/Not signed in/);
   });
@@ -167,7 +167,7 @@ describe("City Module Access Route", () => {
     };
     const response = await GET(req, ctx);
     const data = await response.json();
-    expect(response.status).toBe(200);
+    await expectStatusCode(response, 200);
     expect(data).toEqual({ data: { hasAccess: false } });
     expect(mockHasModuleAccess).toHaveBeenCalledWith(
       testData.projectId,
@@ -188,7 +188,7 @@ describe("City Module Access Route", () => {
       }),
     };
     const response = await GET(req, ctx);
-    expect(response.status).toBe(404);
+    await expectStatusCode(response, 404);
     const data = await response.json();
     expect(data.error.message).toMatch(/City not found/);
   });
@@ -206,7 +206,7 @@ describe("City Module Access Route", () => {
       }),
     };
     const response = await GET(req, ctx);
-    expect(response.status).toBe(500);
+    await expectStatusCode(response, 500);
     const data = await response.json();
     expect(data.error.message).toMatch(/Internal server error/);
 
@@ -222,7 +222,7 @@ describe("City Module Access Route", () => {
       params: Promise.resolve({ city: testData.cityId, module: "" }),
     };
     const response = await GET(req, ctx);
-    expect(response.status).toBe(400);
+    await expectStatusCode(response, 400);
     const data = await response.json();
     expect(data.error.message).toMatch(/Invalid request/);
   });
@@ -241,7 +241,7 @@ describe("City Module Access Route", () => {
       }),
     };
     const response = await GET(req, ctx);
-    expect(response.status).toBe(500);
+    await expectStatusCode(response, 500);
     const data = await response.json();
     expect(data.error.message).toMatch(/Internal server error/);
   });

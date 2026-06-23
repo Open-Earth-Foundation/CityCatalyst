@@ -89,7 +89,7 @@ describe("OAuth Client Authz API", () => {
     it("should return an array of client authorization objects", async () => {
       const req = mockRequest();
       const res = await listClientAuthz(req, { params: Promise.resolve({}) });
-      expect(res.status).toEqual(200);
+      await expectStatusCode(res, 200);
       const { data } = await res.json();
       expect(Array.isArray(data)).toBe(true);
       expect(data.length).toEqual(testOAuthClientAuthzs.length);
@@ -120,7 +120,7 @@ describe("OAuth Client Authz API", () => {
       const res = await getClientAuthz(req, {
         params: Promise.resolve({ client: clientAuthz.clientId }),
       });
-      expect(res.status).toEqual(200);
+      await expectStatusCode(res, 200);
       const { data } = await res.json();
       expect(data.lastUsed).toBeDefined();
       expect(data.created).toBeDefined();
@@ -137,7 +137,7 @@ describe("OAuth Client Authz API", () => {
       const res = await getClientAuthz(req, {
         params: Promise.resolve({ client: testClientDNE }),
       });
-      expect(res.status).toEqual(404);
+      await expectStatusCode(res, 404);
     });
 
     it("should fail for an unauthorized client", async () => {
@@ -145,7 +145,7 @@ describe("OAuth Client Authz API", () => {
       const res = await getClientAuthz(req, {
         params: Promise.resolve({ client: "test-client-4" }),
       });
-      expect(res.status).toEqual(404);
+      await expectStatusCode(res, 404);
     });
   });
 
@@ -155,13 +155,13 @@ describe("OAuth Client Authz API", () => {
       const res = await deleteClientAuthz(req, {
         params: Promise.resolve({ client: "test-client-3" }),
       });
-      expect(res.status).toEqual(204);
+      await expectStatusCode(res, 204);
     });
 
     it("should not be in the list of all clients", async () => {
       const req = mockRequest();
       const res = await listClientAuthz(req, { params: Promise.resolve({}) });
-      expect(res.status).toEqual(200);
+      await expectStatusCode(res, 200);
       const { data } = await res.json();
       expect(Array.isArray(data)).toBe(true);
       const found = data.find(
@@ -175,7 +175,7 @@ describe("OAuth Client Authz API", () => {
       const res = await deleteClientAuthz(req, {
         params: Promise.resolve({ client: testClientDNE }),
       });
-      expect(res.status).toEqual(404);
+      await expectStatusCode(res, 404);
     });
 
     it("should fail for an unauthorized client", async () => {
@@ -183,7 +183,7 @@ describe("OAuth Client Authz API", () => {
       const res = await deleteClientAuthz(req, {
         params: Promise.resolve({ client: "test-client-4" }),
       });
-      expect(res.status).toEqual(404);
+      await expectStatusCode(res, 404);
     });
   });
 });

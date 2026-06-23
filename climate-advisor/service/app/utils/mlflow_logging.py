@@ -91,6 +91,24 @@ def _has_active_run() -> bool:
         return False
 
 
+def _install_live_span_set_tag_compatibility() -> None:
+    """Add MLflow LiveSpan.set_tag when the installed MLflow build lacks it."""
+    if mlflow is None:
+        return
+    try:
+        from mlflow.entities import LiveSpan
+    except Exception:
+        return
+
+    if hasattr(LiveSpan, "set_tag") or not hasattr(LiveSpan, "set_attribute"):
+        return
+
+    def set_tag(self: Any, key: str, value: Any) -> None:
+        self.set_attribute(key, value)
+
+    setattr(LiveSpan, "set_tag", set_tag)
+
+
 def initialize_mlflow() -> bool:
     """Initialize MLflow tracking and OpenAI autologging with retry cooldown."""
     global _INITIALIZED, _LAST_INITIALIZATION_FAILURE_AT
@@ -121,6 +139,7 @@ def initialize_mlflow() -> bool:
     try:
         mlflow.set_tracking_uri(tracking_uri)
         mlflow.config.enable_async_logging(is_async_logging_enabled())
+        _install_live_span_set_tag_compatibility()
         mlflow.openai.autolog()
     except Exception as error:
         logger.warning(
@@ -243,16 +262,49 @@ def log_tags(tags: Mapping[str, object]) -> None:
     if not _has_active_run() or not tags:
         return
     try:
-        mlflow.set_tags(
-            {
-                key: str(value)
-                for key, value in tags.items()
-                if value is not None and str(value).strip()
-            },
-            synchronous=not is_async_logging_enabled(),
-        )
+        mlflow.set_tags(_string_map(tags), synchronous=not is_async_logging_enabled())
     except Exception as error:
         logger.warning("MLflow tag logging failed error=%s", error)
+
+
+def update_current_trace_context(
+    *,
+    session_id: object | None = None,
+    user_id: object | None = None,
+    client_request_id: object | None = None,
+    tags: Mapping[str, object] | None = None,
+    metadata: Mapping[str, object] | None = None,
+) -> bool:
+    """Attach session and request context to the current active MLflow trace."""
+    if not _INITIALIZED or mlflow is None:
+        return False
+
+    # Avoid the warning MLflow emits when no trace span is active yet.
+    active_span_getter = getattr(mlflow, "get_current_active_span", None)
+    if callable(active_span_getter):
+        try:
+            if active_span_getter() is None:
+                return False
+        except Exception as error:
+            logger.warning("MLflow active trace lookup failed error=%s", error)
+            return False
+
+    update_trace = getattr(mlflow, "update_current_trace", None)
+    if not callable(update_trace):
+        return False
+
+    try:
+        update_trace(
+            tags=_string_map(tags or {}) or None,
+            metadata=_string_map(metadata or {}) or None,
+            client_request_id=_optional_string(client_request_id),
+            session_id=_optional_string(session_id),
+            user=_optional_string(user_id),
+        )
+        return True
+    except Exception as error:
+        logger.warning("MLflow current trace update failed error=%s", error)
+        return False
 
 
 def log_params(params: Mapping[str, object]) -> None:
@@ -329,6 +381,23 @@ def _param_value(value: object) -> object:
     if isinstance(value, int | float | bool):
         return value
     return str(_json_safe(value))
+
+
+def _optional_string(value: object | None) -> str | None:
+    """Return a non-empty string for optional MLflow trace context fields."""
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text or None
+
+
+def _string_map(values: Mapping[str, object]) -> dict[str, str]:
+    """Return non-empty string values suitable for MLflow tags and metadata."""
+    return {
+        key: text
+        for key, value in values.items()
+        if (text := _optional_string(value)) is not None
+    }
 
 
 def _json_safe(value: Any, *, key: str | None = None) -> Any:

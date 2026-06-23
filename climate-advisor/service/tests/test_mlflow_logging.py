@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+import sys
 from contextlib import nullcontext
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 from uuid import uuid4
 
 from app.models.requests import MessageCreateRequest
@@ -117,6 +118,28 @@ def test_mlflow_run_user_defaults_and_overrides(monkeypatch) -> None:
     assert mlflow_logging.mlflow_run_user() == "ca-local-smoke"
 
 
+def test_live_span_set_tag_compatibility_uses_span_attributes(monkeypatch) -> None:
+    """OpenAI Agents tracing should work with MLflow builds missing LiveSpan.set_tag."""
+
+    class LiveSpan:
+        def __init__(self) -> None:
+            self.attributes: dict[str, object] = {}
+
+        def set_attribute(self, key: str, value: object) -> None:
+            self.attributes[key] = value
+
+    fake_entities = ModuleType("mlflow.entities")
+    fake_entities.LiveSpan = LiveSpan
+    monkeypatch.setitem(sys.modules, "mlflow.entities", fake_entities)
+    monkeypatch.setattr(mlflow_logging, "mlflow", object())
+
+    mlflow_logging._install_live_span_set_tag_compatibility()
+
+    span = LiveSpan()
+    span.set_tag("group_id", "thread-1")
+    assert span.attributes == {"group_id": "thread-1"}
+
+
 def test_redact_payload_removes_credentials_without_redacting_token_counts() -> None:
     """Debug artifacts should keep useful counts while removing credentials."""
     payload = mlflow_logging.redact_payload(
@@ -165,6 +188,64 @@ def test_log_json_artifact_redacts_before_logging(monkeypatch) -> None:
         "access_token": mlflow_logging.REDACTED_VALUE,
         "token_count": 7,
     }
+
+
+def test_update_current_trace_context_sets_session_and_metadata(monkeypatch) -> None:
+    """Active traces should receive the CA thread id as the MLflow session id."""
+    _reset_mlflow_state(monkeypatch)
+    recorded: dict[str, object] = {}
+
+    class RecordingMlflow:
+        @staticmethod
+        def get_current_active_span() -> object:
+            return object()
+
+        @staticmethod
+        def update_current_trace(**kwargs) -> None:
+            recorded.update(kwargs)
+
+    monkeypatch.setattr(mlflow_logging, "_INITIALIZED", True)
+    monkeypatch.setattr(mlflow_logging, "mlflow", RecordingMlflow)
+
+    ok = mlflow_logging.update_current_trace_context(
+        session_id="thread-1",
+        user_id="user-1",
+        client_request_id="request-1",
+        tags={"workflow": "stationary_energy_context_chat", "empty": ""},
+        metadata={"thread_id": "thread-1", "turn": 2},
+    )
+
+    assert ok is True
+    assert recorded == {
+        "tags": {"workflow": "stationary_energy_context_chat"},
+        "metadata": {"thread_id": "thread-1", "turn": "2"},
+        "client_request_id": "request-1",
+        "session_id": "thread-1",
+        "user": "user-1",
+    }
+
+
+def test_update_current_trace_context_skips_without_active_trace(monkeypatch) -> None:
+    """Trace updates should no-op cleanly when MLflow has no active span yet."""
+    _reset_mlflow_state(monkeypatch)
+    recorded: dict[str, object] = {}
+
+    class RecordingMlflow:
+        @staticmethod
+        def get_current_active_span() -> None:
+            return None
+
+        @staticmethod
+        def update_current_trace(**kwargs) -> None:
+            recorded.update(kwargs)
+
+    monkeypatch.setattr(mlflow_logging, "_INITIALIZED", True)
+    monkeypatch.setattr(mlflow_logging, "mlflow", RecordingMlflow)
+
+    ok = mlflow_logging.update_current_trace_context(session_id="thread-1")
+
+    assert ok is False
+    assert recorded == {}
 
 
 def test_streaming_handler_uses_single_experiment_with_agentic_tags(
@@ -299,3 +380,99 @@ def test_streaming_handler_tags_agentic_flow_from_thread_context(
     assert recorded["run_name"] == "stationary_energy_context_chat_request"
     assert recorded["tags"]["workflow"] == "stationary_energy_context_chat"
     assert recorded["tags"]["stationary_energy_draft_run_id"] == str(draft_run_id)
+
+
+def test_streaming_handler_assigns_mlflow_trace_session(monkeypatch) -> None:
+    """Each streamed model turn should attach its trace to the CA thread session."""
+    import asyncio
+
+    recorded: dict[str, object] = {}
+    trace_updates: list[dict[str, object]] = []
+    thread_id = uuid4()
+    draft_run_id = uuid4()
+
+    class FakeStreamResult:
+        async def stream_events(self):
+            yield SimpleNamespace(type="agent_updated_stream_event")
+
+    def fake_run_streamed(agent: object, runner_input: object, run_config: object):
+        recorded["runner_input"] = runner_input
+        recorded["run_config"] = run_config
+        return FakeStreamResult()
+
+    def fake_update_current_trace_context(**kwargs: object) -> bool:
+        trace_updates.append(kwargs)
+        return True
+
+    handler = StreamingHandler(
+        thread_id=thread_id,
+        user_id="user-1",
+        session_factory=None,
+        inventory_id="inventory-1",
+    )
+    handler.stationary_energy_draft_run_id = str(draft_run_id)
+    monkeypatch.setattr(
+        "app.utils.streaming_handler.Runner.run_streamed",
+        fake_run_streamed,
+    )
+    monkeypatch.setattr(
+        "app.utils.streaming_handler.update_current_trace_context",
+        fake_update_current_trace_context,
+    )
+
+    payload = MessageCreateRequest(
+        user_id="user-1",
+        content="Which rows are gaps?",
+        inventory_id="inventory-1",
+    )
+
+    async def collect() -> list[bytes]:
+        return [
+            chunk
+            async for chunk in handler._stream_agent_events(
+                object(),
+                payload,
+                [],
+            )
+        ]
+
+    chunks = asyncio.run(collect())
+
+    assert chunks == []
+    assert recorded["runner_input"] == "Which rows are gaps?"
+    assert recorded["run_config"].group_id == str(thread_id)
+    assert recorded["run_config"].trace_metadata["thread_id"] == str(thread_id)
+    assert (
+        recorded["run_config"].trace_metadata["prompt_name"]
+        == "stationary_energy_review"
+    )
+    assert len(trace_updates) == 1
+    assert trace_updates[0]["session_id"] == str(thread_id)
+    assert trace_updates[0]["user_id"] == "user-1"
+    assert trace_updates[0]["client_request_id"]
+    assert (
+        trace_updates[0]["metadata"]["request_id"]
+        == trace_updates[0]["client_request_id"]
+    )
+    assert trace_updates[0]["tags"] == {
+        "workflow": "stationary_energy_context_chat",
+        "trace_category": "ca_agentic_context_chat",
+        "ca_agentic_flow": True,
+        "context_mode": "stationary_energy_draft",
+        "prompt_name": "stationary_energy_review",
+        "thread_id": str(thread_id),
+        "inventory_id": "inventory-1",
+        "stationary_energy_draft_run_id": str(draft_run_id),
+    }
+    assert trace_updates[0]["metadata"] == {
+        "service": "climate-advisor",
+        "workflow": "stationary_energy_context_chat",
+        "trace_category": "ca_agentic_context_chat",
+        "context_mode": "stationary_energy_draft",
+        "prompt_name": "stationary_energy_review",
+        "request_id": trace_updates[0]["client_request_id"],
+        "thread_id": str(thread_id),
+        "inventory_id": "inventory-1",
+        "feature_flag": "STATIONARY_ENERGY_AGENTIC",
+        "stationary_energy_draft_run_id": str(draft_run_id),
+    }

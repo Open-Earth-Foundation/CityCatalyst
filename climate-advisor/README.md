@@ -33,8 +33,9 @@ Climate Advisor runs two chat modes through the same `/v1/messages` endpoint:
 2. Stationary Energy review chat
    - Activates when the request or thread context carries
      `stationary_energy_draft_run_id`
-   - Loads the persisted draft snapshot into
-     `STATIONARY_ENERGY_DRAFT_CONTEXT_JSON`
+   - Loads `prompts.stationary_energy_review`, then appends the persisted draft
+     snapshot as `STATIONARY_ENERGY_DRAFT_CONTEXT_JSON` inside a
+     `<context>...</context>` block
    - Uses `prompts.stationary_energy_review` instead of `prompts.default`
    - Registers only scoped review tools that stage, preview, rollback, and save
      draft-review choices
@@ -142,6 +143,9 @@ data: {}
    - Loads pruned conversation history from PostgreSQL
    - If a `stationary_energy_draft_run_id` is active, loads the persisted draft
      snapshot plus request-scoped `ui_context`
+   - For Stationary Energy review chat, the first model input is the active
+     `prompts.stationary_energy_review` text followed by the draft snapshot in
+     `<context>...</context>`
 4. **Message Persistence**
    - Stores the user message in PostgreSQL
 5. **Agent Execution**
@@ -687,16 +691,25 @@ Climate Advisor:
   draft-context chat runs
 
 Each run includes tags such as `service`, `environment`, `workflow`,
-`request_id`, `thread_id`, `inventory_id`, and
+`prompt_name`, `request_id`, `thread_id`, `inventory_id`, and
 `stationary_energy_draft_run_id` when present. Full debug artifacts are logged
 with bearer tokens, API keys, JWTs, and secrets redacted.
+
+Each streamed `/v1/messages` model turn emits one MLflow trace. Climate Advisor
+also assigns the active trace session to the CA `thread_id`, so MLflow's
+session grouping shows all turns from the same UI conversation together while
+still preserving per-turn trace detail.
 
 The shared MLflow variables match HIAP-MEED where deployment needs explicit
 configuration (`MLFLOW_ENABLED`, `MLFLOW_TRACKING_URI`,
 `MLFLOW_EXPERIMENT_NAME`, and `MLFLOW_ENVIRONMENT`). Agentic and general
 Climate Advisor flows are separated by MLflow tags such as `workflow` and
-`context_mode`. Other operational defaults such as async logging, retry
-behavior, and the MLflow `Created by` service identity are handled in code.
+`context_mode`; active Stationary Energy draft chat is tagged
+`prompt_name=stationary_energy_review`. MLflow request previews for active
+Stationary Energy turns show the configured Stationary Energy prompt first,
+followed by the draft JSON context in `<context>...</context>`. Other
+operational defaults such as async logging, retry behavior, and the MLflow
+`Created by` service identity are handled in code.
 
 GitHub Actions deployments can override the experiment name through the
 repository variable `MLFLOW_EXPERIMENT_NAME`. It is a variable, not a secret,

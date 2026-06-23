@@ -107,6 +107,82 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             draft_run_id,
         )
 
+    async def test_embedded_stationary_energy_context_clears_agent_instructions(
+        self,
+    ) -> None:
+        recorded: dict[str, object] = {}
+        draft_run_id = str(uuid4())
+        system_content = (
+            "<role>\n"
+            "You are Clima assisting with an active GPC Stationary Energy draft review.\n"
+            "</role>\n\n"
+            "<context>\n"
+            "STATIONARY_ENERGY_DRAFT_CONTEXT_JSON\n"
+            '{"draft_run": {"draft_run_id": "draft-1"}}\n'
+            "</context>"
+        )
+        conversation_history = [
+            {"role": "system", "content": system_content},
+            {"role": "user", "content": "Which rows are gaps?"},
+        ]
+        payload = MessageCreateRequest(
+            user_id="user-1",
+            content="Which rows are gaps?",
+            inventory_id="inventory-1",
+        )
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+            inventory_id="inventory-1",
+        )
+        handler.stationary_energy_draft_run_id = draft_run_id
+        agent = SimpleNamespace(
+            instructions=(
+                "<role>\n"
+                "You are Clima assisting with an active GPC Stationary Energy draft review.\n"
+                "</role>"
+            )
+        )
+
+        class FakeStreamResult:
+            async def stream_events(self):
+                if False:
+                    yield SimpleNamespace(type="agent_updated_stream_event")
+
+        def fake_run_streamed(agent, runner_input, run_config):
+            recorded["agent_instructions"] = agent.instructions
+            recorded["runner_input"] = runner_input
+            recorded["run_config"] = run_config
+            return FakeStreamResult()
+
+        with (
+            patch(
+                "app.utils.streaming_handler.Runner.run_streamed",
+                side_effect=fake_run_streamed,
+            ),
+            patch(
+                "app.utils.streaming_handler.update_current_trace_context",
+                return_value=True,
+            ),
+        ):
+            chunks = [
+                chunk
+                async for chunk in handler._stream_agent_events(
+                    agent,
+                    payload,
+                    conversation_history,
+                )
+            ]
+
+        self.assertEqual(chunks, [])
+        self.assertEqual(recorded["agent_instructions"], "")
+        self.assertEqual(recorded["runner_input"], conversation_history)
+        self.assertEqual(
+            recorded["run_config"].trace_metadata["prompt_name"],
+            "stationary_energy_review",
+        )
+
     async def test_bulk_review_confirmation_ui_event_is_emitted_as_tool_result(
         self,
     ) -> None:

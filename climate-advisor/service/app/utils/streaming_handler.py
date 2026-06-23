@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import inspect
 import json
 import logging
@@ -244,6 +245,28 @@ class StreamingHandler:
             )
             yield self._format_completion_event(req_id)
 
+        except asyncio.CancelledError:
+            logger.info(
+                "Agents SDK streaming cancelled for thread_id=%s request_id=%s",
+                self.thread_id,
+                req_id,
+            )
+            self.streaming_error = True
+            log_json_artifact(
+                "errors/stream_cancelled.json",
+                {
+                    "type": "CancelledError",
+                    "message": "Client disconnected or request was cancelled.",
+                    "thread_id": self.thread_identifier,
+                },
+            )
+            self._log_mlflow_stream_summary(
+                ok=False,
+                started_at=started_at,
+                status="cancelled",
+            )
+            raise
+
         except Exception as exc:
             logger.exception("Unhandled exception in Agents SDK streaming")
             self.streaming_error = True
@@ -251,7 +274,11 @@ class StreamingHandler:
                 "errors/stream_error.json",
                 {"type": type(exc).__name__, "message": str(exc)},
             )
-            self._log_mlflow_stream_summary(ok=False, started_at=started_at)
+            self._log_mlflow_stream_summary(
+                ok=False,
+                started_at=started_at,
+                status="error",
+            )
             yield format_sse(
                 {"message": "An internal error has occurred."}, event="error"
             ).encode("utf-8")
@@ -1150,10 +1177,13 @@ class StreamingHandler:
         *,
         ok: bool,
         started_at: float,
+        status: str | None = None,
     ) -> None:
         """Log final chat artifacts and metrics for the active MLflow run."""
         assistant_content = "".join(self.assistant_tokens)
         duration_ms = (time.perf_counter() - started_at) * 1000
+        stream_status = status or ("ok" if ok else "error")
+        log_tags({"stream_status": stream_status})
         log_metrics(
             {
                 "duration_ms": duration_ms,
@@ -1173,6 +1203,7 @@ class StreamingHandler:
             "response/stream_summary.json",
             {
                 "ok": ok,
+                "status": stream_status,
                 "history_saved": self.history_saved,
                 "thread_id": self.thread_identifier,
                 "model": self.agent_model,

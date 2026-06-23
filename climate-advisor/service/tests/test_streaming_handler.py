@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import unittest
 from types import SimpleNamespace
@@ -181,6 +182,94 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             recorded["run_config"].trace_metadata["prompt_name"],
             "stationary_energy_review",
+        )
+
+    async def test_cancelled_stream_logs_cancelled_mlflow_summary(self) -> None:
+        payload = MessageCreateRequest(user_id="user-1", content="hello")
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        fake_agent_service = MagicMock()
+        fake_agent_service.create_agent = AsyncMock(return_value=object())
+        fake_agent_service.close = AsyncMock()
+        logged_tags: list[dict[str, object]] = []
+        logged_metrics: list[dict[str, object]] = []
+        logged_json_artifacts: list[tuple[str, object]] = []
+
+        async def cancel_stream(self, agent, request_payload, conversation_history):
+            raise asyncio.CancelledError()
+            yield b""
+
+        def record_json_artifact(artifact_file: str, payload: object) -> None:
+            logged_json_artifacts.append((artifact_file, payload))
+
+        with (
+            patch(
+                "app.utils.streaming_handler.AgentService",
+                return_value=fake_agent_service,
+            ),
+            patch.object(
+                StreamingHandler,
+                "_load_conversation_history",
+                AsyncMock(return_value=[]),
+            ),
+            patch.object(
+                StreamingHandler,
+                "_stream_agent_events",
+                new=cancel_stream,
+            ),
+            patch(
+                "app.utils.streaming_handler.log_tags",
+                side_effect=lambda tags: logged_tags.append(tags),
+            ),
+            patch(
+                "app.utils.streaming_handler.log_metrics",
+                side_effect=lambda metrics: logged_metrics.append(metrics),
+            ),
+            patch(
+                "app.utils.streaming_handler.log_json_artifact",
+                side_effect=record_json_artifact,
+            ),
+            patch("app.utils.streaming_handler.log_text_artifact"),
+        ):
+            with self.assertRaises(asyncio.CancelledError):
+                [
+                    chunk
+                    async for chunk in handler._stream_response_with_mlflow(
+                        payload=payload,
+                        history_warning=None,
+                        req_id="request-1",
+                        settings=MagicMock(),
+                        started_at=0.0,
+                    )
+                ]
+
+        self.assertTrue(handler.streaming_error)
+        fake_agent_service.close.assert_awaited_once()
+        self.assertIn({"stream_status": "cancelled"}, logged_tags)
+        self.assertTrue(
+            any(metrics.get("ok") == 0 for metrics in logged_metrics),
+        )
+        self.assertIn(
+            (
+                "errors/stream_cancelled.json",
+                {
+                    "type": "CancelledError",
+                    "message": "Client disconnected or request was cancelled.",
+                    "thread_id": handler.thread_identifier,
+                },
+            ),
+            logged_json_artifacts,
+        )
+        self.assertTrue(
+            any(
+                artifact_file == "response/stream_summary.json"
+                and isinstance(payload, dict)
+                and payload.get("status") == "cancelled"
+                for artifact_file, payload in logged_json_artifacts
+            ),
         )
 
     async def test_bulk_review_confirmation_ui_event_is_emitted_as_tool_result(

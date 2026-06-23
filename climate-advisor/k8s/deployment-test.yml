@@ -38,6 +38,18 @@ spec:
               value: "test"
             - name: MLFLOW_EXPERIMENT_NAME
               value: "clima"
+            - name: MLFLOW_HTTP_REQUEST_TIMEOUT
+              value: "3"
+            - name: MLFLOW_HTTP_REQUEST_MAX_RETRIES
+              value: "1"
+            - name: MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR
+              value: "1"
+            - name: MLFLOW_HTTP_REQUEST_BACKOFF_JITTER
+              value: "0"
+            - name: GIT_PYTHON_REFRESH
+              value: "quiet"
+            - name: MLFLOW_ASYNC_LOGGING_ENABLED
+              value: "true"
           resources:
             requests:
               memory: "512Mi"

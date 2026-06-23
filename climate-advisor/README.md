@@ -366,6 +366,15 @@ language, or client-side fallback behavior. The boundary is:
 - `MLFLOW_ENVIRONMENT` - Environment tag for runs: `dev`, `test`, or `prod`
 - `MLFLOW_EXPERIMENT_NAME` - Experiment for all Climate Advisor MLflow runs,
   default `clima`
+- `MLFLOW_HTTP_REQUEST_TIMEOUT` - MLflow HTTP timeout in seconds; use `3` to
+  match the shared HIAP-MEED fail-open tuning
+- `MLFLOW_HTTP_REQUEST_MAX_RETRIES` - MLflow HTTP retry count; use `1`
+- `MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR` - MLflow retry backoff factor; use `1`
+- `MLFLOW_HTTP_REQUEST_BACKOFF_JITTER` - MLflow retry jitter; use `0`
+- `GIT_PYTHON_REFRESH` - Set to `quiet` so service runtimes without `git` do
+  not emit GitPython warnings during MLflow initialization
+- `MLFLOW_ASYNC_LOGGING_ENABLED` - Enables MLflow async logging when set to
+  `true`
 
 ## Database Schema
 
@@ -702,13 +711,14 @@ still preserving per-turn trace detail.
 
 The shared MLflow variables match HIAP-MEED where deployment needs explicit
 configuration (`MLFLOW_ENABLED`, `MLFLOW_TRACKING_URI`,
-`MLFLOW_EXPERIMENT_NAME`, and `MLFLOW_ENVIRONMENT`). Agentic and general
-Climate Advisor flows are separated by MLflow tags such as `workflow` and
-`context_mode`; active Stationary Energy draft chat is tagged
-`prompt_name=stationary_energy_review`. MLflow request previews for active
-Stationary Energy turns show the configured Stationary Energy prompt first,
-followed by the draft JSON context in `<context>...</context>`. Other
-operational defaults such as async logging, retry behavior, and the MLflow
+`MLFLOW_EXPERIMENT_NAME`, `MLFLOW_ENVIRONMENT`, the
+`MLFLOW_HTTP_REQUEST_*` timeout/retry settings, `GIT_PYTHON_REFRESH`, and
+`MLFLOW_ASYNC_LOGGING_ENABLED`). Agentic and general Climate Advisor flows are
+separated by MLflow tags such as `workflow` and `context_mode`; active
+Stationary Energy draft chat is tagged `prompt_name=stationary_energy_review`.
+MLflow request previews for active Stationary Energy turns show the configured
+Stationary Energy prompt first, followed by the draft JSON context in
+`<context>...</context>`. Other operational defaults such as the MLflow
 `Created by` service identity are handled in code.
 
 GitHub Actions deployments can override the experiment name through the

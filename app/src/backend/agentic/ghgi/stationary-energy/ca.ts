@@ -25,6 +25,13 @@ function createClimateAdvisorRequestId(): string {
 }
 
 /**
+ * Read the incoming CityCatalyst request id for CA correlation.
+ */
+export function getClimateAdvisorRequestId(req: Request): string | undefined {
+  return req.headers.get("x-request-id")?.trim() || undefined;
+}
+
+/**
  * Extract the most useful error message from a Climate Advisor JSON payload.
  */
 function climateAdvisorErrorMessage(

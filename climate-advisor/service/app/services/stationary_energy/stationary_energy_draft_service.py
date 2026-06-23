@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from typing import Any
 from uuid import UUID
 
@@ -69,6 +70,13 @@ from app.services.stationary_energy.stationary_energy_proposal_builder import (
     build_deterministic_proposals,
 )
 from app.services.thread_service import ThreadService
+from app.utils.mlflow_logging import (
+    agentic_experiment_name,
+    log_json_artifact,
+    log_metrics,
+    log_tags,
+    start_run,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -191,9 +199,96 @@ class StationaryEnergyDraftService:
             token=token,
             trace_id=trace_id,
             allowed_capabilities=allowed_capabilities,
+            operation="retry",
         )
 
     async def _run_draft_generation(
+        self,
+        *,
+        draft_run: StationaryEnergyDraftRun,
+        user_id: str,
+        city_id: str,
+        inventory_id: str,
+        thread_id: UUID | None,
+        locale: str | None,
+        token: str | None,
+        trace_id: str | None,
+        allowed_capabilities: list[str] | None = None,
+        operation: str = "start",
+    ) -> StartStationaryEnergyDraftResponse:
+        """Run Stationary Energy draft generation inside an MLflow request run."""
+        started_at = time.perf_counter()
+        with start_run(
+            run_name=f"stationary_energy_draft_{operation}_request",
+            experiment_name=agentic_experiment_name(),
+            tags=self._mlflow_tags(
+                request_kind=f"stationary_energy_draft_{operation}",
+                endpoint=(
+                    "/v1/stationary-energy-drafts/start"
+                    if operation == "start"
+                    else f"/v1/stationary-energy-drafts/{draft_run.draft_run_id}/retry"
+                ),
+                draft_run_id=draft_run.draft_run_id,
+                user_id=user_id,
+                city_id=city_id,
+                inventory_id=inventory_id,
+                thread_id=thread_id,
+                workflow="stationary_energy_draft",
+            ),
+            params={
+                "operation": operation,
+                "locale": locale,
+                "allowed_capabilities_count": (
+                    len(allowed_capabilities) if allowed_capabilities is not None else 0
+                ),
+            },
+        ):
+            log_json_artifact(
+                "request/stationary_energy_draft_generation.json",
+                {
+                    "operation": operation,
+                    "draft_run_id": draft_run.draft_run_id,
+                    "user_id": user_id,
+                    "city_id": city_id,
+                    "inventory_id": inventory_id,
+                    "thread_id": thread_id,
+                    "locale": locale,
+                    "trace_id": trace_id,
+                    "allowed_capabilities": allowed_capabilities,
+                },
+            )
+            try:
+                response = await self._run_draft_generation_impl(
+                    draft_run=draft_run,
+                    user_id=user_id,
+                    city_id=city_id,
+                    inventory_id=inventory_id,
+                    thread_id=thread_id,
+                    locale=locale,
+                    token=token,
+                    trace_id=trace_id,
+                    allowed_capabilities=allowed_capabilities,
+                )
+                log_json_artifact(
+                    "response/stationary_energy_draft_generation_response.json",
+                    response,
+                )
+                self._log_mlflow_duration(
+                    started_at=started_at,
+                    ok=True,
+                    extra={"operation": operation},
+                )
+                return response
+            except Exception as exc:
+                self._log_mlflow_error(
+                    artifact_file="errors/stationary_energy_draft_generation_error.json",
+                    exc=exc,
+                    started_at=started_at,
+                    extra={"operation": operation},
+                )
+                raise
+
+    async def _run_draft_generation_impl(
         self,
         *,
         draft_run: StationaryEnergyDraftRun,
@@ -244,6 +339,10 @@ class StationaryEnergyDraftService:
                 locale=locale,
                 token=token,
             )
+            log_json_artifact(
+                "draft/context_response.json",
+                context,
+            )
 
             candidate_records = source_candidate_records(
                 draft_run.draft_run_id,
@@ -261,6 +360,13 @@ class StationaryEnergyDraftService:
                 for candidate in stored_source_candidates
                 if candidate.get("applicability_status") == "applicable"
             ]
+            log_json_artifact(
+                "draft/source_candidates.json",
+                {
+                    "all_candidates": stored_source_candidates,
+                    "applicable_candidates": applicable_source_candidates,
+                },
+            )
 
             failed_step = "generating"
             # Staggered generation: persist candidates, clear any prior proposals
@@ -360,6 +466,74 @@ class StationaryEnergyDraftService:
         user_id: str,
         trace_id: str | None,
     ) -> None:
+        """Run background proposal generation inside its own MLflow run."""
+        started_at = time.perf_counter()
+        with start_run(
+            run_name="stationary_energy_draft_generation_background",
+            experiment_name=agentic_experiment_name(),
+            tags=self._mlflow_tags(
+                request_kind="stationary_energy_draft_background_generation",
+                endpoint="background:stationary_energy_draft_generation",
+                draft_run_id=draft_run_id,
+                user_id=user_id,
+                city_id=None,
+                inventory_id=None,
+                thread_id=thread_id,
+                workflow="stationary_energy_draft",
+            ),
+            params={
+                "source_candidates_count": source_candidates_count,
+                "applicable_source_candidates_count": applicable_source_candidates_count,
+                "allowed_capabilities_count": len(allowed_capabilities),
+            },
+            nested=True,
+        ):
+            log_json_artifact(
+                "generation/background_input.json",
+                {
+                    "draft_run_id": draft_run_id,
+                    "context": context,
+                    "stored_source_candidates": stored_source_candidates,
+                    "applicable_source_candidates": applicable_source_candidates,
+                    "allowed_capabilities": allowed_capabilities,
+                    "source_candidates_count": source_candidates_count,
+                    "applicable_source_candidates_count": (
+                        applicable_source_candidates_count
+                    ),
+                    "thread_id": thread_id,
+                    "user_id": user_id,
+                    "trace_id": trace_id,
+                },
+            )
+            await self._generate_rows_background_impl(
+                draft_run_id=draft_run_id,
+                context=context,
+                stored_source_candidates=stored_source_candidates,
+                applicable_source_candidates=applicable_source_candidates,
+                allowed_capabilities=allowed_capabilities,
+                source_candidates_count=source_candidates_count,
+                applicable_source_candidates_count=applicable_source_candidates_count,
+                thread_id=thread_id,
+                user_id=user_id,
+                trace_id=trace_id,
+                started_at=started_at,
+            )
+
+    async def _generate_rows_background_impl(
+        self,
+        *,
+        draft_run_id: UUID,
+        context: Any,
+        stored_source_candidates: list[dict[str, Any]],
+        applicable_source_candidates: list[dict[str, Any]],
+        allowed_capabilities: list[str],
+        source_candidates_count: int,
+        applicable_source_candidates_count: int,
+        thread_id: UUID | None,
+        user_id: str,
+        trace_id: str | None,
+        started_at: float,
+    ) -> None:
         """Generate deterministic proposals in a fresh DB session."""
         factory = get_session_factory()
         rows = list(context.taxonomy)
@@ -376,6 +550,13 @@ class StationaryEnergyDraftService:
                         draft_run_id,
                     )
                     return
+                log_tags(
+                    {
+                        "city_id": draft_run.city_id,
+                        "inventory_id": draft_run.inventory_id,
+                        "thread_id": draft_run.thread_id,
+                    }
+                )
 
                 total = 0
                 proposals = build_deterministic_proposals(
@@ -383,6 +564,14 @@ class StationaryEnergyDraftService:
                     stored_source_candidates=applicable_source_candidates,
                     current_values=list(context.current_values),
                     inventory_year=getattr(context.inventory, "year", None),
+                )
+                log_json_artifact(
+                    "generation/proposals.json",
+                    {
+                        "draft_run_id": draft_run_id,
+                        "proposal_count": len(proposals),
+                        "proposals": proposals,
+                    },
                 )
                 if proposals:
                     await service.repository.add_proposals(draft_run_id, proposals)
@@ -400,6 +589,10 @@ class StationaryEnergyDraftService:
                     allowed_capabilities,
                     source_candidates_count=source_candidates_count,
                     applicable_source_candidates_count=applicable_source_candidates_count,
+                )
+                log_json_artifact(
+                    "generation/context_summary.json",
+                    summary,
                 )
                 await service.repository.update_draft_run(
                     draft_run,
@@ -431,11 +624,28 @@ class StationaryEnergyDraftService:
                     draft_run_id,
                     total,
                 )
+                self._log_mlflow_duration(
+                    started_at=started_at,
+                    ok=True,
+                    extra={
+                        "proposal_count": total,
+                        "taxonomy_rows": len(rows),
+                    },
+                )
         except Exception as exc:
             logger.exception(
                 "Stationary Energy deterministic generation failed run=%s: %s",
                 draft_run_id,
                 exc,
+            )
+            self._log_mlflow_error(
+                artifact_file="errors/stationary_energy_background_generation_error.json",
+                exc=exc,
+                started_at=started_at,
+                extra={
+                    "draft_run_id": draft_run_id,
+                    "taxonomy_rows": len(rows),
+                },
             )
             try:
                 async with factory() as session:
@@ -554,8 +764,65 @@ class StationaryEnergyDraftService:
         payload: ReviewStationaryEnergyDraftRequest,
         authorization: str | None = None,
     ) -> ReviewStationaryEnergyDraftResponse:
+        """Persist review decisions inside an MLflow agentic-flow run."""
+        started_at = time.perf_counter()
+        with start_run(
+            run_name="stationary_energy_review_request",
+            experiment_name=agentic_experiment_name(),
+            tags=self._mlflow_tags(
+                request_kind="stationary_energy_review",
+                endpoint=f"/v1/stationary-energy-drafts/{draft_run_id}/review",
+                draft_run_id=draft_run_id,
+                user_id=payload.user_id,
+                city_id=None,
+                inventory_id=None,
+                thread_id=None,
+                workflow="stationary_energy_review",
+            ),
+            params={"decision_count": len(payload.decisions)},
+        ):
+            log_json_artifact("request/stationary_energy_review_payload.json", payload)
+            try:
+                response = await self._review_draft_impl(
+                    draft_run_id=draft_run_id,
+                    payload=payload,
+                    authorization=authorization,
+                )
+                log_json_artifact(
+                    "response/stationary_energy_review_response.json",
+                    response,
+                )
+                self._log_mlflow_duration(
+                    started_at=started_at,
+                    ok=True,
+                    extra={"decision_count": len(payload.decisions)},
+                )
+                return response
+            except Exception as exc:
+                self._log_mlflow_error(
+                    artifact_file="errors/stationary_energy_review_error.json",
+                    exc=exc,
+                    started_at=started_at,
+                    extra={"decision_count": len(payload.decisions)},
+                )
+                raise
+
+    async def _review_draft_impl(
+        self,
+        *,
+        draft_run_id: UUID,
+        payload: ReviewStationaryEnergyDraftRequest,
+        authorization: str | None = None,
+    ) -> ReviewStationaryEnergyDraftResponse:
         """Persist a complete review decision set and finalize staged choices."""
         draft_run = await self._get_draft_run_or_404(draft_run_id)
+        log_tags(
+            {
+                "city_id": draft_run.city_id,
+                "inventory_id": draft_run.inventory_id,
+                "thread_id": draft_run.thread_id,
+            }
+        )
         await self._require_scope_token_and_capabilities(
             requested_user_id=payload.user_id,
             city_id=draft_run.city_id,
@@ -593,6 +860,14 @@ class StationaryEnergyDraftService:
             candidate_by_datasource=candidate_by_datasource,
             next_review_versions=next_review_versions,
         )
+        log_json_artifact(
+            "review/review_decisions.json",
+            {
+                "draft_run_id": draft_run.draft_run_id,
+                "decision_count": len(decisions),
+                "request_decisions": payload.decisions,
+            },
+        )
 
         await self.repository.persist_review_decisions(decisions)
         await self.repository.mark_staged_review_selections_saved(
@@ -621,8 +896,60 @@ class StationaryEnergyDraftService:
         payload: SaveStationaryEnergyDraftRequest,
         authorization: str | None = None,
     ) -> SaveStationaryEnergyDraftResponse:
+        """Commit reviewed rows inside an MLflow agentic-flow run."""
+        started_at = time.perf_counter()
+        with start_run(
+            run_name="stationary_energy_save_request",
+            experiment_name=agentic_experiment_name(),
+            tags=self._mlflow_tags(
+                request_kind="stationary_energy_save",
+                endpoint=f"/v1/stationary-energy-drafts/{draft_run_id}/save",
+                draft_run_id=draft_run_id,
+                user_id=payload.user_id,
+                city_id=None,
+                inventory_id=None,
+                thread_id=None,
+                workflow="stationary_energy_save",
+            ),
+            params={"has_authorization": bool(authorization)},
+        ):
+            log_json_artifact("request/stationary_energy_save_payload.json", payload)
+            try:
+                response = await self._save_draft_impl(
+                    draft_run_id=draft_run_id,
+                    payload=payload,
+                    authorization=authorization,
+                )
+                log_json_artifact(
+                    "response/stationary_energy_save_response.json",
+                    response,
+                )
+                self._log_mlflow_duration(started_at=started_at, ok=True)
+                return response
+            except Exception as exc:
+                self._log_mlflow_error(
+                    artifact_file="errors/stationary_energy_save_error.json",
+                    exc=exc,
+                    started_at=started_at,
+                )
+                raise
+
+    async def _save_draft_impl(
+        self,
+        *,
+        draft_run_id: UUID,
+        payload: SaveStationaryEnergyDraftRequest,
+        authorization: str | None = None,
+    ) -> SaveStationaryEnergyDraftResponse:
         """Commit accepted reviewed rows into CityCatalyst and persist the outcome."""
         draft_run = await self._get_draft_run_or_404(draft_run_id)
+        log_tags(
+            {
+                "city_id": draft_run.city_id,
+                "inventory_id": draft_run.inventory_id,
+                "thread_id": draft_run.thread_id,
+            }
+        )
         token, _allowed_capabilities = await self._require_scope_token_and_capabilities(
             requested_user_id=payload.user_id,
             city_id=draft_run.city_id,
@@ -688,9 +1015,17 @@ class StationaryEnergyDraftService:
                 "inventory_id": draft_run.inventory_id,
                 "rows": rows,
             }
+            log_json_artifact(
+                "save/cc_commit_payload.json",
+                commit_payload,
+            )
             commit_response = await self.cc_client.commit_stationary_energy_accepted(
                 request_payload=commit_payload,
                 token=token,
+            )
+            log_json_artifact(
+                "save/cc_commit_response.json",
+                commit_response,
             )
             raw_results = (
                 commit_response.get("results")
@@ -724,6 +1059,83 @@ class StationaryEnergyDraftService:
             workflow_step="review",
         )
         return to_save_response(draft_run, status_override=save_status)
+
+    def _mlflow_tags(
+        self,
+        *,
+        request_kind: str,
+        endpoint: str,
+        draft_run_id: UUID | None,
+        user_id: str,
+        city_id: str | None,
+        inventory_id: str | None,
+        thread_id: UUID | None,
+        workflow: str,
+    ) -> dict[str, object]:
+        """Build common MLflow tags for Stationary Energy agentic runs."""
+        return {
+            "request_kind": request_kind,
+            "endpoint": endpoint,
+            "workflow": workflow,
+            "trace_category": "ca_agentic_flow",
+            "ca_agentic_flow": True,
+            "context_mode": "stationary_energy_draft",
+            "request_id": get_request_id(),
+            "draft_run_id": draft_run_id,
+            "stationary_energy_draft_run_id": draft_run_id,
+            "user_id": user_id,
+            "city_id": city_id,
+            "inventory_id": inventory_id,
+            "thread_id": thread_id,
+        }
+
+    def _log_mlflow_duration(
+        self,
+        *,
+        started_at: float,
+        ok: bool,
+        extra: dict[str, Any] | None = None,
+    ) -> None:
+        """Log operation duration metrics and a small summary artifact."""
+        duration_ms = (time.perf_counter() - started_at) * 1000
+        extra = extra or {}
+        numeric_extra = {
+            key: value for key, value in extra.items() if isinstance(value, int | float)
+        }
+        log_metrics(
+            {
+                "duration_ms": duration_ms,
+                "ok": int(ok),
+                **numeric_extra,
+            }
+        )
+        log_json_artifact(
+            "metrics/operation_summary.json",
+            {
+                "ok": ok,
+                "duration_ms": duration_ms,
+                **extra,
+            },
+        )
+
+    def _log_mlflow_error(
+        self,
+        *,
+        artifact_file: str,
+        exc: Exception,
+        started_at: float,
+        extra: dict[str, Any] | None = None,
+    ) -> None:
+        """Log an error artifact and failed operation duration metric."""
+        log_json_artifact(
+            artifact_file,
+            {
+                "type": type(exc).__name__,
+                "message": str(exc),
+                **(extra or {}),
+            },
+        )
+        self._log_mlflow_duration(started_at=started_at, ok=False, extra=extra)
 
     async def _get_draft_run_or_404(
         self,

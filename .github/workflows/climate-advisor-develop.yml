@@ -154,6 +154,8 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
       EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+      MLFLOW_EXPERIMENT_NAME: ${{ vars.MLFLOW_EXPERIMENT_NAME || 'clima' }}
+      MLFLOW_AGENTIC_EXPERIMENT_NAME: ${{ vars.MLFLOW_AGENTIC_EXPERIMENT_NAME || 'agentic-flow' }}
     steps:
       - uses: actions/checkout@v4
       - name: Creating kubeconfig file
@@ -174,6 +176,8 @@ jobs:
             CA_CORS_ORIGINS="*" \
             CC_BASE_URL=https://citycatalyst.openearth.dev \
             CA_FEATURE_FLAGS=STATIONARY_ENERGY_AGENTIC \
+            MLFLOW_EXPERIMENT_NAME="${MLFLOW_EXPERIMENT_NAME}" \
+            MLFLOW_AGENTIC_EXPERIMENT_NAME="${MLFLOW_AGENTIC_EXPERIMENT_NAME}" \
             LANGSMITH_API_KEY=${{secrets.LANGSMITH_API_KEY}} \
             LANGSMITH_WORKSPACE_ID=${{secrets.LANGSMITH_WORKSPACE_ID}} \
             -n default

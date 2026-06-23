@@ -5,6 +5,7 @@ from __future__ import annotations
 import inspect
 import json
 import logging
+import time
 from typing import Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID
 
@@ -34,6 +35,15 @@ from app.utils.stationary_energy_context import extract_stationary_energy_draft_
 from app.utils.tool_handler import persist_assistant_message
 from app.utils.token_handler import TokenHandler
 from app.utils.history_manager import load_conversation_history
+from app.utils.mlflow_logging import (
+    agentic_experiment_name,
+    general_experiment_name,
+    log_json_artifact,
+    log_metrics,
+    log_text_artifact,
+    log_tags,
+    start_run,
+)
 from app.utils.prompt_budget import (
     compact_stationary_energy_prompt_payload,
     count_prompt_tokens,
@@ -94,6 +104,39 @@ class StreamingHandler:
         """
         req_id = get_request_id()
         settings = get_settings()
+        started_at = time.perf_counter()
+        await self._prime_mlflow_workflow_context(payload)
+
+        with start_run(
+            run_name=self._mlflow_run_name(payload),
+            experiment_name=self._mlflow_experiment_name(payload),
+            tags=self._mlflow_tags(payload),
+            params=self._mlflow_params(payload),
+        ):
+            log_json_artifact(
+                "request/message_payload.json",
+                payload.model_dump(mode="json"),
+            )
+
+            async for event_bytes in self._stream_response_with_mlflow(
+                payload=payload,
+                history_warning=history_warning,
+                req_id=req_id,
+                settings=settings,
+                started_at=started_at,
+            ):
+                yield event_bytes
+
+    async def _stream_response_with_mlflow(
+        self,
+        *,
+        payload: MessageCreateRequest,
+        history_warning: Optional[str],
+        req_id: str,
+        settings: Settings,
+        started_at: float,
+    ) -> AsyncIterator[bytes]:
+        """Stream one response while the current MLflow run is active."""
 
         # Send history warning if database is unavailable
         if history_warning:
@@ -150,12 +193,28 @@ class StreamingHandler:
                 bool(self.stationary_energy_draft_run_id),
                 self.thread_id,
             )
+            log_tags(
+                {
+                    "model": self.agent_model,
+                    "ca_agentic_flow": bool(self.stationary_energy_draft_run_id),
+                    "workflow": (
+                        "stationary_energy_context_chat"
+                        if self.stationary_energy_draft_run_id
+                        else "climate_advisor_conversation"
+                    ),
+                    "stationary_energy_draft_run_id": self.stationary_energy_draft_run_id,
+                }
+            )
 
             agent = await self.agent_service.create_agent(model=self.agent_model)
 
             # Load conversation history
             conversation_history = await self._load_conversation_history(
                 settings, payload
+            )
+            log_json_artifact(
+                "chat/conversation_history.json",
+                {"messages": conversation_history},
             )
 
             logger.info(
@@ -176,10 +235,20 @@ class StreamingHandler:
             await self.persist_message()
 
             # Send completion event
+            self._log_mlflow_stream_summary(
+                ok=not self.streaming_error,
+                started_at=started_at,
+            )
             yield self._format_completion_event(req_id)
 
         except Exception as exc:
             logger.exception("Unhandled exception in Agents SDK streaming")
+            self.streaming_error = True
+            log_json_artifact(
+                "errors/stream_error.json",
+                {"type": type(exc).__name__, "message": str(exc)},
+            )
+            self._log_mlflow_stream_summary(ok=False, started_at=started_at)
             yield format_sse(
                 {"message": "An internal error has occurred."}, event="error"
             ).encode("utf-8")
@@ -842,3 +911,128 @@ class StreamingHandler:
             tool_invocations=self.tool_invocations or None,
         )
         return self.history_saved
+
+    def _mlflow_experiment_name(self, payload: MessageCreateRequest) -> str:
+        """Return the MLflow experiment for the current chat workflow."""
+        if self._has_agentic_context(payload):
+            return agentic_experiment_name()
+        return general_experiment_name()
+
+    def _mlflow_run_name(self, payload: MessageCreateRequest) -> str:
+        """Return the MLflow run name for the current chat workflow."""
+        if self._has_agentic_context(payload):
+            return "stationary_energy_context_chat_request"
+        return "climate_advisor_message_request"
+
+    def _mlflow_tags(self, payload: MessageCreateRequest) -> dict[str, object]:
+        """Return low-cardinality MLflow tags for one chat request."""
+        draft_run_id = self._draft_run_id_from_payload(payload)
+        has_agentic_context = bool(draft_run_id)
+        return {
+            "request_kind": "message_stream",
+            "endpoint": "/v1/messages",
+            "workflow": (
+                "stationary_energy_context_chat"
+                if has_agentic_context
+                else "climate_advisor_conversation"
+            ),
+            "trace_category": (
+                "ca_agentic_context_chat"
+                if has_agentic_context
+                else "normal_conversation"
+            ),
+            "ca_agentic_flow": has_agentic_context,
+            "context_mode": (
+                "stationary_energy_draft" if has_agentic_context else "general"
+            ),
+            "request_id": get_request_id(),
+            "thread_id": self.thread_identifier,
+            "user_id": self.user_id,
+            "inventory_id": payload.inventory_id or self.inventory_id,
+            "stationary_energy_draft_run_id": draft_run_id,
+        }
+
+    def _mlflow_params(self, payload: MessageCreateRequest) -> dict[str, object]:
+        """Return stable MLflow params for one chat request."""
+        options = payload.options or {}
+        context = payload.context if isinstance(payload.context, dict) else {}
+        return {
+            "content_length": len(payload.content),
+            "has_context": bool(payload.context),
+            "has_options": bool(options),
+            "has_inventory_id": bool(payload.inventory_id or self.inventory_id),
+            "model_override": options.get("model"),
+            "context_keys": sorted(context.keys()),
+            "option_keys": sorted(options.keys()),
+        }
+
+    def _draft_run_id_from_payload(self, payload: MessageCreateRequest) -> str | None:
+        """Return a Stationary Energy draft id from handler state or request payload."""
+        return (
+            self.stationary_energy_draft_run_id
+            or extract_stationary_energy_draft_run_id(
+                payload.context,
+                payload.options,
+                self.request_context,
+                self.request_options,
+            )
+        )
+
+    async def _prime_mlflow_workflow_context(
+        self,
+        payload: MessageCreateRequest,
+    ) -> None:
+        """Resolve thread-stored workflow context before opening the MLflow run."""
+        draft_run_id_text = self._draft_run_id_from_payload(payload)
+        if not draft_run_id_text:
+            draft_run_id_text = await self._load_thread_stationary_energy_draft_run_id()
+        if not draft_run_id_text:
+            return
+
+        try:
+            self.stationary_energy_draft_run_id = str(UUID(str(draft_run_id_text)))
+        except ValueError:
+            logger.warning(
+                "Ignoring invalid Stationary Energy draft_run_id before MLflow run: %s",
+                draft_run_id_text,
+            )
+
+    def _has_agentic_context(self, payload: MessageCreateRequest) -> bool:
+        """Return whether this chat request belongs to the agentic workflow."""
+        return bool(self._draft_run_id_from_payload(payload))
+
+    def _log_mlflow_stream_summary(
+        self,
+        *,
+        ok: bool,
+        started_at: float,
+    ) -> None:
+        """Log final chat artifacts and metrics for the active MLflow run."""
+        assistant_content = "".join(self.assistant_tokens)
+        duration_ms = (time.perf_counter() - started_at) * 1000
+        log_metrics(
+            {
+                "duration_ms": duration_ms,
+                "assistant_characters": len(assistant_content),
+                "assistant_chunks": len(self.assistant_tokens),
+                "tool_invocations": len(self.tool_invocations),
+                "history_saved": int(self.history_saved),
+                "ok": int(ok),
+            }
+        )
+        log_text_artifact("chat/assistant_response.txt", assistant_content)
+        log_json_artifact(
+            "chat/tool_invocations.json",
+            {"tool_invocations": self.tool_invocations},
+        )
+        log_json_artifact(
+            "response/stream_summary.json",
+            {
+                "ok": ok,
+                "history_saved": self.history_saved,
+                "thread_id": self.thread_identifier,
+                "model": self.agent_model,
+                "assistant_characters": len(assistant_content),
+                "tool_invocation_count": len(self.tool_invocations),
+            },
+        )

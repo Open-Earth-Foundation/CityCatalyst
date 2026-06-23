@@ -265,6 +265,9 @@ describe("Stationary Energy draft routes", () => {
     await expect(response.json()).resolves.toEqual({
       detail: "bad draft context",
     });
+    const [, requestInit] = fetchMock.mock.calls[1] ?? [];
+    const headers = new Headers(requestInit?.headers);
+    expect(headers.get("X-Request-ID")).toMatch(/^cc-/);
   });
 
   it("uses configured HOST instead of request origin for CA token issuance", async () => {

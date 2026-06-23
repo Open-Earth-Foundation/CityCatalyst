@@ -18,7 +18,8 @@ conversational experience for CityCatalyst (CC). The service lives under
   access
 - **Streaming Responses**: Server-Sent Events (SSE) for real-time message
   delivery
-- **Observable**: Optional LangSmith integration for tracing and monitoring
+- **Observable**: Optional LangSmith tracing plus MLflow request, artifact, and
+  OpenAI trace logging
 
 ## Current Architecture
 
@@ -354,6 +355,27 @@ language, or client-side fallback behavior. The boundary is:
 - `OPENAI_API_KEY` - OpenAI API key for embeddings
 - `LANGSMITH_API_KEY` - LangSmith API key when tracing is enabled
 - `CC_BASE_URL` - CityCatalyst base URL for inventory API and token refresh
+- `MLFLOW_ENABLED` - Enables best-effort MLflow logging when set to `true`
+- `MLFLOW_TRACKING_URI` - Shared MLflow backend URL, normally
+  `https://mlflow-dev.openearth.dev`
+- `MLFLOW_ENVIRONMENT` - Environment tag for runs: `dev`, `test`, or `prod`
+- `MLFLOW_EXPERIMENT_NAME` - Experiment for general CA chat, default `clima`
+- `MLFLOW_AGENTIC_EXPERIMENT_NAME` - Experiment for Stationary Energy agentic
+  flow runs, default `agentic-flow`
+- `MLFLOW_RUN_USER` - Service identity shown in MLflow's `Created by` field,
+  default `climate-advisor`
+- `MLFLOW_HTTP_REQUEST_TIMEOUT` - MLflow client HTTP timeout in seconds. Keep
+  this low, for example `3`, so bad or unreachable tracking URLs fail fast.
+- `MLFLOW_HTTP_REQUEST_MAX_RETRIES` - Number of extra MLflow HTTP retry attempts
+  after the initial failure. Keep this low, for example `1`.
+- `MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR` - MLflow retry backoff multiplier, for
+  example `1`.
+- `MLFLOW_HTTP_REQUEST_BACKOFF_JITTER` - Extra random retry delay. Set this to
+  `0` for deterministic local testing.
+- `MLFLOW_ASYNC_LOGGING_ENABLED` - Enables async MLflow tag, param, and metric
+  logging where supported
+- `GIT_PYTHON_REFRESH` - Set to `quiet` to suppress GitPython warnings from
+  MLflow in containers without `git`
 
 ## Database Schema
 
@@ -666,6 +688,44 @@ Notes:
   launching Uvicorn
 
 ## Observability
+
+### MLflow Integration
+
+Climate Advisor can log to the same deployed MLflow instance used by
+HIAP-MEED. The split is experiment-based:
+
+- `hiap-meed` remains the existing HIAP-MEED experiment
+- `clima` stores general `/v1/messages` chat runs
+- `agentic-flow` stores Stationary Energy draft, review, save,
+  background generation, and draft-context chat runs
+
+Each run includes tags such as `service`, `environment`, `workflow`,
+`request_id`, `thread_id`, `inventory_id`, and
+`stationary_energy_draft_run_id` when present. Full debug artifacts are logged
+with bearer tokens, API keys, JWTs, and secrets redacted.
+
+The shared MLflow variables match HIAP-MEED (`MLFLOW_ENABLED`,
+`MLFLOW_TRACKING_URI`, `MLFLOW_EXPERIMENT_NAME`, `MLFLOW_ENVIRONMENT`,
+`MLFLOW_HTTP_REQUEST_*`, `GIT_PYTHON_REFRESH`, and
+`MLFLOW_ASYNC_LOGGING_ENABLED`). Climate Advisor adds
+`MLFLOW_AGENTIC_EXPERIMENT_NAME` because it writes Stationary Energy agentic
+runs to a separate experiment, and `MLFLOW_RUN_USER` so MLflow's `Created by`
+field is a stable service identity rather than the local OS/container user.
+
+GitHub Actions deployments can override the two experiment names through
+repository variables named `MLFLOW_EXPERIMENT_NAME` and
+`MLFLOW_AGENTIC_EXPERIMENT_NAME`. They are variables, not secrets, because the
+values are non-sensitive experiment names. The Kubernetes manifests still keep
+the same defaults so direct `kubectl apply` deployments work without GitHub.
+
+Before enabling MLflow in an environment:
+
+1. Confirm the MLflow UI is reachable at `https://mlflow-dev.openearth.dev`.
+2. Confirm or create experiments named `clima` and `agentic-flow`.
+3. Set the MLflow environment variables documented above in `.env` or the
+   Kubernetes deployment.
+4. If the MLflow server later requires authentication, provide MLflow auth
+   variables through Kubernetes secrets rather than configmaps.
 
 ### LangSmith Integration
 

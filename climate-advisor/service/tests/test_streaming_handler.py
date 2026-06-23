@@ -184,6 +184,78 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             "stationary_energy_review",
         )
 
+    async def test_embedded_stationary_energy_context_restores_instructions_for_fallback(
+        self,
+    ) -> None:
+        recorded: dict[str, object] = {}
+        draft_run_id = str(uuid4())
+        original_instructions = (
+            "<role>\n"
+            "You are Clima assisting with an active GPC Stationary Energy draft review.\n"
+            "</role>"
+        )
+        system_content = (
+            original_instructions
+            + "\n\n<context>\n"
+            + "STATIONARY_ENERGY_DRAFT_CONTEXT_JSON\n"
+            + '{"draft_run": {"draft_run_id": "draft-1"}}\n'
+            + "</context>"
+        )
+        conversation_history = [
+            {"role": "system", "content": system_content},
+            {"role": "user", "content": "Which rows are gaps?"},
+        ]
+        payload = MessageCreateRequest(
+            user_id="user-1",
+            content="Which rows are gaps?",
+            inventory_id="inventory-1",
+        )
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+            inventory_id="inventory-1",
+        )
+        handler.stationary_energy_draft_run_id = draft_run_id
+        agent = SimpleNamespace(instructions=original_instructions)
+
+        class FakeMessages:
+            def run_stream(self, prompt: str):
+                recorded["fallback_prompt"] = prompt
+                recorded["fallback_instructions"] = agent.instructions
+
+                async def chunks():
+                    yield "fallback answer"
+
+                return chunks()
+
+        agent.messages = FakeMessages()
+
+        def fail_run_streamed(agent, runner_input, run_config):
+            recorded["runner_instructions"] = agent.instructions
+            recorded["runner_input"] = runner_input
+            raise RuntimeError("sdk stream unavailable")
+
+        with patch(
+            "app.utils.streaming_handler.Runner.run_streamed",
+            side_effect=fail_run_streamed,
+        ):
+            chunks = [
+                chunk
+                async for chunk in handler._stream_agent_events(
+                    agent,
+                    payload,
+                    conversation_history,
+                )
+            ]
+
+        self.assertEqual(chunks, [b"fallback answer"])
+        self.assertEqual(recorded["runner_instructions"], "")
+        self.assertEqual(recorded["runner_input"], conversation_history)
+        self.assertEqual(recorded["fallback_prompt"], payload.content)
+        self.assertEqual(recorded["fallback_instructions"], original_instructions)
+        self.assertEqual(agent.instructions, original_instructions)
+
     async def test_cancelled_stream_logs_cancelled_mlflow_summary(self) -> None:
         payload = MessageCreateRequest(user_id="user-1", content="hello")
         handler = StreamingHandler(

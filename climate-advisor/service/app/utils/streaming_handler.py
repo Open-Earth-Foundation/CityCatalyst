@@ -17,7 +17,6 @@ from app.config import Settings, get_settings
 from app.middleware import get_request_id
 from app.models.requests import MessageCreateRequest
 from app.services.agent_service import AgentService
-from app.services.message_service import MessageService
 from app.services.stationary_energy.stationary_energy_chat_context import (
     build_minimal_stationary_energy_context_payload,
     build_stationary_energy_context_payload,
@@ -630,9 +629,14 @@ class StreamingHandler:
         runner_input: Any = (
             conversation_history if conversation_history else payload.content
         )
+        restore_agent_instructions = False
+        original_agent_instructions: Any = None
         # Stationary Energy chats carry more context, so enforce the configured budget.
         if self.stationary_energy_draft_run_id and isinstance(runner_input, list):
             if self._has_embedded_stationary_energy_system_context(runner_input):
+                if hasattr(agent, "instructions"):
+                    original_agent_instructions = getattr(agent, "instructions", None)
+                    restore_agent_instructions = True
                 self._clear_agent_instructions(agent)
             runner_input = self._enforce_chat_prompt_budget(agent, runner_input)
 
@@ -648,6 +652,15 @@ class StreamingHandler:
                 "Agents Runner streaming failed (%s); falling back to agent.messages.run_stream",
                 runner_exc,
             )
+            # The fallback only sends raw user content, so restore the scoped prompt.
+            if restore_agent_instructions:
+                try:
+                    setattr(agent, "instructions", original_agent_instructions)
+                except Exception as exc:
+                    logger.debug(
+                        "Could not restore embedded agent instructions before fallback: %s",
+                        exc,
+                    )
             async for event_bytes in self._fallback_stream(agent, payload):
                 yield event_bytes
             return
@@ -979,13 +992,6 @@ class StreamingHandler:
         """Format the final completion event."""
         if ok is None:
             ok = not self.streaming_error
-
-        if ok:
-            # Persist assistant message
-            if self.assistant_tokens:
-                assistant_content = "".join(self.assistant_tokens)
-                # Note: persist_assistant_message is async, but we can't await in sync method
-                # This should be handled in the calling async context
 
         event_data = {
             "ok": ok,

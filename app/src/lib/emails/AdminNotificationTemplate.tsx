@@ -114,7 +114,7 @@ export default function AdminNotificationTemplate({
             }}
           >
             <Link
-              href={`${host}/${inventoryId}/settings/?tabIndex=1`}
+              href={`${host}/${language}/cities/${file.cityId}/GHGI/${inventoryId}/settings/?tabIndex=1`}
               style={urlLink}
             >
               {t("admin-notification.cta")}

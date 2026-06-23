@@ -1,7 +1,7 @@
 import { api, useGetCitiesAndYearsQuery } from "@/services/api";
 import type { CityAndYearsResponse } from "@/util/types";
 import { Center, Icon, IconButton, Spinner, Text } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import {
   MdAdd,
   MdArrowDropDown,
@@ -12,6 +12,8 @@ import { MenuRoot, MenuContent, MenuItem, MenuTrigger } from "./ui/menu";
 import { Button } from "./ui/button";
 import type { TFunction } from "i18next";
 import { useState } from "react";
+import { getParamValueRequired } from "@/util/helpers";
+import { getGhgiInventoryPath } from "@/util/ghgi-routes";
 
 export const InventorySelect = ({
   t,
@@ -21,6 +23,8 @@ export const InventorySelect = ({
   currentInventoryId?: string | null;
 }) => {
   const router = useRouter();
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
   const goToOnboarding = () => router.push("/cities/onboarding/setup");
 
   const { data: citiesAndYears, isLoading } = useGetCitiesAndYearsQuery();
@@ -33,7 +37,9 @@ export const InventorySelect = ({
       defaultCityId: city.cityId!,
       defaultInventoryId: targetInventory.inventoryId,
     }).unwrap();
-    router.push(`/${targetInventory.inventoryId}`);
+    router.push(
+      getGhgiInventoryPath(lng, city.cityId!, targetInventory.inventoryId),
+    );
   };
 
   const [menuHighlight, setMenuHighlight] = useState<string | null>(null);

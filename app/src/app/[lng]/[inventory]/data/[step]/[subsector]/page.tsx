@@ -1,1 +1,1 @@
-export { default } from "@/components/GHGI/inventory-pages/sub-sector-page";
+export { default } from "@/components/GHGI/LegacyInventoryRouteRedirect";

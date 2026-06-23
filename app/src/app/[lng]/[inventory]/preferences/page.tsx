@@ -1,1 +1,1 @@
-export { default } from "@/components/GHGI/inventory-pages/preferences-explanation-page";
+export { default } from "@/components/GHGI/LegacyInventoryRouteRedirect";

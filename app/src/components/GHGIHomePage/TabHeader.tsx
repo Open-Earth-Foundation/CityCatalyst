@@ -7,9 +7,11 @@ import { InventoryTypeEnum } from "@/util/constants";
 import { Selector } from "@/components/selector";
 import React, { useMemo } from "react";
 import { api, useGetCitiesAndYearsQuery } from "@/services/api";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useParams } from "next/navigation";
 import { Button } from "../ui/button";
 import { DataAlertIcon } from "../icons";
+import { getParamValueRequired } from "@/util/helpers";
+import { getGhgiInventoryPath } from "@/util/ghgi-routes";
 
 export function TabHeader({
   t,
@@ -29,6 +31,8 @@ export function TabHeader({
   const [setUserInfo] = api.useSetUserInfoMutation();
   const router = useRouter();
   const pathname = usePathname();
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
 
   const targetYears = useMemo(() => {
     if (citiesAndYears && inventory) {
@@ -47,7 +51,15 @@ export function TabHeader({
       defaultCityId: inventory?.city.cityId as string,
     });
 
-    router.push(`${isPublic ? "/public" : ""}/${targetYear?.inventoryId}`);
+    router.push(
+      isPublic
+        ? `/public/${targetYear?.inventoryId}`
+        : getGhgiInventoryPath(
+            lng,
+            inventory!.city.cityId,
+            targetYear!.inventoryId,
+          ),
+    );
   };
 
   return (

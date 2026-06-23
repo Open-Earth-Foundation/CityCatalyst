@@ -48,7 +48,8 @@ import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { Trans } from "react-i18next";
 import JNDrawer from "./HomePage/JNDrawer";
-import { getDashboardPath, getHomePath } from "@/util/routes";
+import { getGhgiInventoryPath } from "@/util/ghgi-routes";
+import { getCityHomePath, getDashboardPath } from "@/util/routes";
 import { useRouteParams } from "@/hooks/useRouteParams";
 
 function countryFromLanguage(language: string) {
@@ -83,9 +84,6 @@ export function NavigationBar({
     inventoryId: inventoryIdFromRoute,
     pathname,
   } = useRouteParams();
-  const { data: inventory } = api.useGetInventoryQuery(
-    inventoryIdFromRoute ?? "default",
-  );
 
   const { data: userAccessStatus } = useGetUserAccessStatusQuery(
     {},
@@ -132,11 +130,23 @@ export function NavigationBar({
 
   // Memoize paths to recompute when pathname or IDs change
   const dashboardPath = useMemo(
-    () => getDashboardPath(lng, currentCityId ?? "", currentInventoryId ?? ""),
-    [lng, currentCityId, currentInventoryId],
+    () => getDashboardPath(lng, currentCityId ?? ""),
+    [lng, currentCityId],
   );
   const homePath = useMemo(
-    () => getHomePath(lng, currentCityId ?? "", currentInventoryId ?? ""),
+    () => getCityHomePath(lng, currentCityId ?? ""),
+    [lng, currentCityId],
+  );
+  const settingsPath = useMemo(
+    () =>
+      currentCityId && currentInventoryId
+        ? getGhgiInventoryPath(
+            lng,
+            currentCityId,
+            currentInventoryId,
+            "/settings",
+          )
+        : null,
     [lng, currentCityId, currentInventoryId],
   );
   const { setTheme } = useTheme();
@@ -436,11 +446,7 @@ export function NavigationBar({
                         paddingTop="12px"
                         paddingBottom="12px"
                         px="16px"
-                        onClick={() =>
-                          router.push(
-                            `/${inventory ? inventory.inventoryId : currentInventoryId}/settings`,
-                          )
-                        }
+                        onClick={() => settingsPath && router.push(settingsPath)}
                       >
                         <Box display="flex" alignItems="center">
                           {" "}

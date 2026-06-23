@@ -2,19 +2,19 @@
 
 import { Heading, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
-import { PreferenceCard } from "./PreferenceCard";
+import { PreferenceCard } from "@/components/GHGI/preferences/PreferenceCard";
 
-import { ACTIVITY_ITEMS } from "../constants";
+import { TRANSPORTATION_ITEMS } from "@/components/GHGI/preferences/constants";
 
-export default function ActivitiesPage({ t }: { t: TFunction }) {
+export default function TransportationPage({ t }: { t: TFunction }) {
   function onClick() {}
 
   return (
     <VStack marginLeft={"5vw"}>
-      <Heading my={"6"}>{t("which-activities")}</Heading>
-      <Text mb={"6"}>{t("which-activities-description")}</Text>
+      <Heading my={"6"}>{t("which-transportation")}</Heading>
+      <Text mb={"6"}>{t("which-transportation-description")}</Text>
       <SimpleGrid my={"6"} columns={3} gap={4}>
-        {ACTIVITY_ITEMS.map(({ id, icon }) => (
+        {TRANSPORTATION_ITEMS.map(({ id, icon }) => (
           <PreferenceCard
             key={id}
             onClick={onClick}

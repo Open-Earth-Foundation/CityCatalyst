@@ -1,4 +1,4 @@
-import { DataSourceActivityDataRecord } from "@/app/[lng]/[inventory]/data/[step]/types";
+import { DataSourceActivityDataRecord } from "@/components/GHGI/data-step/types";
 import { TFunction } from "i18next";
 import {
   AccordionItem,

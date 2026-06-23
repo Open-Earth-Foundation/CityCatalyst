@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { useTranslation } from "@/i18n/client";
-import ByScopeViewSourceDrawer from "@/app/[lng]/[inventory]/InventoryResultTab/ByScopeViewSourceDrawer";
+import ByScopeViewSourceDrawer from "@/components/GHGI/inventory-result/ByScopeViewSourceDrawer";
 import {
   MultiSourceProposalCard,
   ResolvedDecisionSummaryCard,

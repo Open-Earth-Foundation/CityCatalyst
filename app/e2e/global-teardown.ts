@@ -6,24 +6,22 @@ const execAsync = promisify(exec);
 
 async function globalTeardown() {
   console.log("Cleaning up E2E test admin user...");
-  
+
   try {
-    const { stdout: deleteOutput } = await execAsync(`
-      npx tsx -e "(async () => {
-        const { db } = await import('./src/models/index.js');
-        const env = await import('@next/env');
-        const projectDir = process.cwd();
-        env.default.loadEnvConfig(projectDir);
-        if (!db.initialized) await db.initialize();
-        const deleted = await db.models.User.destroy({ where: { email: '${TEST_ADMIN_EMAIL}' } });
-        console.log(deleted > 0 ? 'Deleted test admin user' : 'No test admin user found to delete');
-        await db.sequelize?.close();
-      })()"
-    `);
+    const { stdout: deleteOutput } = await execAsync(
+      "npx tsx scripts/delete-e2e-test-admin.ts",
+      {
+        env: {
+          ...process.env,
+          E2E_TEST_ADMIN_EMAIL: TEST_ADMIN_EMAIL,
+        },
+        timeout: 30000,
+      },
+    );
     console.log("Teardown completed:", deleteOutput.trim());
   } catch (cleanupError) {
     console.log("Teardown failed:", cleanupError);
-    // Don't fail if cleanup fails - just log it
+    // Don't fail the suite if cleanup fails — log only
   }
 }
 

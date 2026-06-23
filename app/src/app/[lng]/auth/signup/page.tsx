@@ -146,6 +146,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         {t("signup-details")}
       </Text>
       <form
+        noValidate
         onSubmit={handleSubmit(onSubmit)}
         style={{ gap: "16px", display: "flex", flexDirection: "column" }}
       >

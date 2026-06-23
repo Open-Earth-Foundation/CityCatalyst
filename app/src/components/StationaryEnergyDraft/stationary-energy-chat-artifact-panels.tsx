@@ -14,7 +14,7 @@ import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MdSend } from "react-icons/md";
 
-import ByScopeViewSourceDrawer from "@/app/[lng]/[inventory]/InventoryResultTab/ByScopeViewSourceDrawer";
+import ByScopeViewSourceDrawer from "@/components/GHGI/inventory-result/ByScopeViewSourceDrawer";
 import { useTranslation } from "@/i18n/client";
 import {
   CHAT_SURFACE_MAX_W,

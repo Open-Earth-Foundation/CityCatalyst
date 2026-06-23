@@ -6,7 +6,7 @@ import { BodyLarge } from "@/components/package/Texts/Body";
 import { HeadlineLarge } from "@/components/package/Texts/Headline";
 import LabelLarge from "@/components/package/Texts/Label";
 import { api } from "@/services/api";
-import { DataSourceWithRelations } from "@/app/[lng]/[inventory]/data/[step]/types";
+import { DataSourceWithRelations } from "@/components/GHGI/data-step/types";
 import { TFunction } from "i18next";
 
 interface ScalingSectionProps {

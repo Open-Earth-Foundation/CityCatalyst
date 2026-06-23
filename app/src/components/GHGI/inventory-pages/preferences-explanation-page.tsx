@@ -3,11 +3,11 @@
 import React from "react";
 import { useParams } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
-import PreferencesExplanation from "@/app/[lng]/[inventory]/preferences/PreferencesExplanation";
-import PreferencesPageLayout from "@/app/[lng]/[inventory]/preferences/PreferencesPageLayout";
+import PreferencesExplanation from "@/components/GHGI/preferences/PreferencesExplanation";
+import PreferencesPageLayout from "@/components/GHGI/preferences/PreferencesPageLayout";
 import { getParamValueRequired } from "@/util/helpers";
 
-import { LINKS } from "@/app/[lng]/[inventory]/preferences/constants";
+import { LINKS } from "@/components/GHGI/preferences/constants";
 
 export default function PreferencesExplanationPage() {
   const params = useParams();

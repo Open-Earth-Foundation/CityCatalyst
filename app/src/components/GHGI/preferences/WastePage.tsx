@@ -2,9 +2,9 @@
 
 import { Heading, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
-import { PreferenceCard } from "@/app/[lng]/[inventory]/preferences/activities/PreferenceCard";
+import { PreferenceCard } from "@/components/GHGI/preferences/PreferenceCard";
 
-import { WASTE_ITEMS } from "@/app/[lng]/[inventory]/preferences/constants";
+import { WASTE_ITEMS } from "@/components/GHGI/preferences/constants";
 
 export default function WastePage({ t }: { t: TFunction }) {
   function onClick() {}

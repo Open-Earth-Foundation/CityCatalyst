@@ -2,10 +2,10 @@
 
 import React, { use } from "react";
 import { useTranslation } from "@/i18n/client";
-import PreferencesPageLayout from "../PreferencesPageLayout";
-import WastePage from "./WastePage";
+import PreferencesPageLayout from "@/components/GHGI/preferences/PreferencesPageLayout";
+import WastePage from "@/components/GHGI/preferences/WastePage";
 
-import { LINKS } from "@/app/[lng]/[inventory]/preferences/constants";
+import { LINKS } from "@/components/GHGI/preferences/constants";
 
 export default function WasteLayout(props: {
   params: Promise<{ lng: string }>;

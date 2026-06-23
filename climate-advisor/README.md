@@ -362,20 +362,6 @@ language, or client-side fallback behavior. The boundary is:
 - `MLFLOW_EXPERIMENT_NAME` - Experiment for general CA chat, default `clima`
 - `MLFLOW_AGENTIC_EXPERIMENT_NAME` - Experiment for Stationary Energy agentic
   flow runs, default `agentic-flow`
-- `MLFLOW_RUN_USER` - Service identity shown in MLflow's `Created by` field,
-  default `climate-advisor`
-- `MLFLOW_HTTP_REQUEST_TIMEOUT` - MLflow client HTTP timeout in seconds. Keep
-  this low, for example `3`, so bad or unreachable tracking URLs fail fast.
-- `MLFLOW_HTTP_REQUEST_MAX_RETRIES` - Number of extra MLflow HTTP retry attempts
-  after the initial failure. Keep this low, for example `1`.
-- `MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR` - MLflow retry backoff multiplier, for
-  example `1`.
-- `MLFLOW_HTTP_REQUEST_BACKOFF_JITTER` - Extra random retry delay. Set this to
-  `0` for deterministic local testing.
-- `MLFLOW_ASYNC_LOGGING_ENABLED` - Enables async MLflow tag, param, and metric
-  logging where supported
-- `GIT_PYTHON_REFRESH` - Set to `quiet` to suppress GitPython warnings from
-  MLflow in containers without `git`
 
 ## Database Schema
 
@@ -704,13 +690,13 @@ Each run includes tags such as `service`, `environment`, `workflow`,
 `stationary_energy_draft_run_id` when present. Full debug artifacts are logged
 with bearer tokens, API keys, JWTs, and secrets redacted.
 
-The shared MLflow variables match HIAP-MEED (`MLFLOW_ENABLED`,
-`MLFLOW_TRACKING_URI`, `MLFLOW_EXPERIMENT_NAME`, `MLFLOW_ENVIRONMENT`,
-`MLFLOW_HTTP_REQUEST_*`, `GIT_PYTHON_REFRESH`, and
-`MLFLOW_ASYNC_LOGGING_ENABLED`). Climate Advisor adds
+The shared MLflow variables match HIAP-MEED where deployment needs explicit
+configuration (`MLFLOW_ENABLED`, `MLFLOW_TRACKING_URI`,
+`MLFLOW_EXPERIMENT_NAME`, and `MLFLOW_ENVIRONMENT`). Climate Advisor adds
 `MLFLOW_AGENTIC_EXPERIMENT_NAME` because it writes Stationary Energy agentic
-runs to a separate experiment, and `MLFLOW_RUN_USER` so MLflow's `Created by`
-field is a stable service identity rather than the local OS/container user.
+runs to a separate experiment. Other operational defaults such as async logging,
+retry behavior, and the MLflow `Created by` service identity are handled in
+code.
 
 GitHub Actions deployments can override the two experiment names through
 repository variables named `MLFLOW_EXPERIMENT_NAME` and

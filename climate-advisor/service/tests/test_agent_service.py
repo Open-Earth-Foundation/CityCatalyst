@@ -517,6 +517,11 @@ class InventoryToolIntegrationTests(unittest.TestCase):
                 "stationary_energy_request_inventory_save_confirmation",
                 tool_names,
             )
+            self.assertNotIn("get_user_inventories", tool_names)
+            self.assertNotIn("get_inventory", tool_names)
+            self.assertNotIn("get_all_datasources", tool_names)
+            self.assertNotIn("city_inventory_search", tool_names)
+            self.assertNotIn("climate_vector_search", tool_names)
 
         with patch("app.services.agent_service.AsyncOpenAI"), patch(
             "app.services.agent_service.Agent"
@@ -537,13 +542,14 @@ class InventoryToolIntegrationTests(unittest.TestCase):
             self.assertNotIn("stationary_energy_accept_one", tool_names)
 
     @patch("app.services.agent_service.get_settings")
-    def test_stationary_energy_review_prompt_loaded_from_prompt_config(
+    def test_stationary_energy_review_prompt_replaces_default_prompt(
         self,
         mock_get_settings,
     ) -> None:
         mock_settings = build_mock_settings(prompt="Base prompt")
         mock_settings.llm.prompts.get_prompt.side_effect = lambda prompt_type: {
             "default": "Base prompt",
+            "inventory_context": "Inventory prompt",
             "stationary_energy_review": "Stationary Energy review prompt with tools section",
         }[prompt_type]
         mock_get_settings.return_value = mock_settings
@@ -565,7 +571,14 @@ class InventoryToolIntegrationTests(unittest.TestCase):
                 "stationary_energy_review"
             )
             instructions = mock_agent_class.call_args.kwargs["instructions"]
-            self.assertIn("Base prompt", instructions)
+            requested_prompts = [
+                call.args[0]
+                for call in mock_settings.llm.prompts.get_prompt.call_args_list
+            ]
+            self.assertNotIn("default", requested_prompts)
+            self.assertNotIn("inventory_context", requested_prompts)
+            self.assertNotIn("Base prompt", instructions)
+            self.assertNotIn("Inventory prompt", instructions)
             self.assertIn(
                 "Stationary Energy review prompt with tools section",
                 instructions,

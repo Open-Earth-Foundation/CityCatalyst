@@ -69,6 +69,7 @@ class AgentService:
         self._inventory_tool: Optional[CCInventoryTool] = None
         self._token_ref: Dict[str, Optional[str]] = {"value": cc_access_token}
         self._inventory_prompt: Optional[str] = None
+        self.active_instructions: Optional[str] = None
 
         # Initialize OpenRouter-configured AsyncOpenAI client and set globally
         self.client = self._create_openrouter_client()
@@ -79,8 +80,20 @@ class AgentService:
         openai.timeout = self.client.timeout
         openai.max_retries = self.client.max_retries
 
-        # Load system prompt
-        self.system_prompt = self.settings.llm.prompts.get_prompt("default")
+        self._uses_stationary_energy_review_prompt = bool(
+            self.stationary_energy_draft_run_id
+            and self.session_factory
+            and self.cc_user_id
+        )
+
+        # General chat uses the default prompt. Stationary Energy review chat
+        # starts from its dedicated prompt instead, so default.md is not part of
+        # that agentic flow.
+        self.system_prompt = (
+            None
+            if self._uses_stationary_energy_review_prompt
+            else self.settings.llm.prompts.get_prompt("default")
+        )
 
         orchestrator_model = self.settings.llm.models.orchestrator
         agentic_flow_model = self.settings.llm.models.agentic_flow or orchestrator_model
@@ -317,7 +330,7 @@ class AgentService:
         
         Args:
             model: Optional model override (uses default if not provided)
-            instructions: Optional instructions override (uses system prompt if not provided)
+            instructions: Optional instructions override
         
         Returns:
             Configured Agent instance
@@ -329,12 +342,29 @@ class AgentService:
             raw_model=raw_agent_model,
             resolved_model=agent_model,
         )
-        agent_instructions = instructions or self.system_prompt
+        if instructions:
+            agent_instructions = instructions
+        elif self._uses_stationary_energy_review_prompt:
+            agent_instructions = self.settings.llm.prompts.get_prompt(
+                "stationary_energy_review"
+            )
+        else:
+            agent_instructions = (
+                self.system_prompt
+                or self.settings.llm.prompts.get_prompt("default")
+            )
         inventory_prompt: Optional[str] = None
         tools = []
 
-        # Add CityCatalyst inventory tools only when the request has scoped credentials.
-        if self.cc_access_token and self.cc_user_id and self.cc_thread_id:
+        # General chat can query CityCatalyst inventory data directly. Active
+        # Stationary Energy review chat uses the persisted draft snapshot and
+        # scoped review tools instead.
+        if (
+            not self._uses_stationary_energy_review_prompt
+            and self.cc_access_token
+            and self.cc_user_id
+            and self.cc_thread_id
+        ):
             thread_identifier = str(self.cc_thread_id)
             self._inventory_tool = CCInventoryTool()
             inventory_tools, token_ref = build_cc_inventory_tools(
@@ -377,12 +407,6 @@ class AgentService:
                 token_ref=self._token_ref,
             )
             tools.extend(stationarity_tools)
-            stationary_energy_review_prompt = self.settings.llm.prompts.get_prompt(
-                "stationary_energy_review"
-            )
-            agent_instructions = (
-                f"{agent_instructions}\n\n{stationary_energy_review_prompt}"
-            )
             logger.info(
                 "Registered Stationary Energy review tools for draft_run_id=%s thread_id=%s user_id=%s",
                 self.stationary_energy_draft_run_id,
@@ -391,7 +415,10 @@ class AgentService:
             )
 
         # Keep vector search available for general climate-advice fallback context.
-        tools.append(climate_vector_search)
+        if not self._uses_stationary_energy_review_prompt:
+            tools.append(climate_vector_search)
+
+        self.active_instructions = agent_instructions
 
         # Build the Agents SDK object with the finalized instructions and tool list.
         agent = Agent(

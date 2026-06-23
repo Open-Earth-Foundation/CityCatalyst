@@ -531,7 +531,11 @@ class StreamingHandler:
         if instructions:
             return str(instructions)
         if self.agent_service:
-            return str(getattr(self.agent_service, "system_prompt", "") or "")
+            return str(
+                getattr(self.agent_service, "active_instructions", None)
+                or getattr(self.agent_service, "system_prompt", "")
+                or ""
+            )
         return ""
 
     async def _stream_agent_events(

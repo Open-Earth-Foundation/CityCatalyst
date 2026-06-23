@@ -35,8 +35,8 @@ Climate Advisor runs two chat modes through the same `/v1/messages` endpoint:
      `stationary_energy_draft_run_id`
    - Loads the persisted draft snapshot into
      `STATIONARY_ENERGY_DRAFT_CONTEXT_JSON`
-   - Appends `prompts.stationary_energy_review`
-   - Registers scoped review tools that stage, preview, rollback, and save
+   - Uses `prompts.stationary_energy_review` instead of `prompts.default`
+   - Registers only scoped review tools that stage, preview, rollback, and save
      draft-review choices
 
 At runtime:
@@ -198,8 +198,8 @@ When a request is scoped to an active `stationary_energy_draft_run_id`:
    `staged_review_selections`
 2. Request-scoped UI state such as focused row, confirmed bulk choices, and
    confirmed rollback choices is attached as `ui_context`
-3. `AgentService` appends `prompts.stationary_energy_review` and registers the
-   scoped review tools
+3. `AgentService` uses `prompts.stationary_energy_review` as the active
+   instructions and registers only the scoped review tools
 4. Review tools stage temporary selections first, then save them into durable
    `review_decisions` only when the user asks to save the reviewed draft
 5. Save-to-inventory stays a separate CityCatalyst confirmation step. CA chat
@@ -323,9 +323,10 @@ such as `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`.
 Prompt paths are also configured in `llm_config.yaml`:
 
 - `prompts.default` drives general Climate Advisor chat
-- `prompts.inventory_context` is appended when CA can load inventory metadata
+- `prompts.inventory_context` is appended for general inventory chat when CA can
+  load inventory metadata
 - `prompts.stationary_energy_review` drives active Stationary Energy draft
-  review chat
+  review chat without appending `prompts.default`
 
 Some prompt files use reusable fragments with
 `{{ include: tools/example.md }}` directives. Includes are resolved relative to

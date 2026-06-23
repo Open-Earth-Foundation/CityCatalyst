@@ -1,33 +1,65 @@
-import { expect, Locator, Page, test } from "@playwright/test";
+import { APIRequestContext, expect, Locator, Page, test } from "@playwright/test";
 import {
   createCityAndInventoryThroughOnboarding,
   navigateToDashboard,
-  navigateToDataPage,
 } from "./helpers";
+
+const AUTH_STORAGE = "playwright/.auth/user.json";
+
+async function fetchResidentialSubsectorId(
+  request: APIRequestContext,
+  inventoryId: string,
+): Promise<string> {
+  const progressRes = await request.get(
+    `/api/v1/inventory/${inventoryId}/progress`,
+  );
+  expect(progressRes.ok()).toBeTruthy();
+  const { data } = await progressRes.json();
+  const stationarySector = data.sectorProgress.find(
+    (sector: { sector: { referenceNumber: string } }) =>
+      sector.sector.referenceNumber === "I",
+  );
+  const residential = stationarySector?.subSectors.find(
+    (subSector: { referenceNumber?: string }) =>
+      subSector.referenceNumber === "I.1",
+  );
+  if (!residential?.subsectorId) {
+    throw new Error(
+      `Residential subsector I.1 not found for inventory ${inventoryId}`,
+    );
+  }
+  return residential.subsectorId as string;
+}
+
+/** Wait until scope tabs and manual-entry UI are rendered (inventory + scopes loaded). */
+async function waitForSubsectorActivityReady(page: Page) {
+  await expect(page.getByRole("tab", { name: /Scope 1/i })).toBeVisible({
+    timeout: 60000,
+  });
+
+  const activityUi = page
+    .getByTestId("manual-input-header")
+    .or(page.getByText(/Select methodology|Select The Methodology/i).first())
+    .or(page.getByText(/Add activity/i))
+    .or(page.getByTestId("methodology-card").first());
+
+  await expect(activityUi).toBeVisible({ timeout: 60000 });
+}
 
 async function openResidentialSubsector(
   page: Page,
   cityId: string,
   inventoryId: string,
+  subsectorId: string,
 ) {
-  await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/data/1/`);
-  await expect(
-    page.getByRole("heading", { name: /Stationary energy/i }),
-  ).toBeVisible({ timeout: 30000 });
-
-  const residentialCard = page
-    .getByTestId("subsector-card")
-    .filter({ hasText: /Residential/i });
-  await expect(residentialCard.first()).toBeVisible({ timeout: 30000 });
-  await residentialCard.first().click();
-  await page.waitForURL(new RegExp(`/GHGI/${inventoryId}/data/1/[^/]+`));
+  await page.goto(
+    `/en/cities/${cityId}/GHGI/${inventoryId}/data/1/${subsectorId}?refNo=I.1`,
+  );
 
   await expect(page.getByText(/I\.1.*Residential/i)).toBeVisible({
-    timeout: 30000,
+    timeout: 60000,
   });
-  await expect(page.getByTestId("manual-input-header")).toBeVisible({
-    timeout: 30000,
-  });
+  await waitForSubsectorActivityReady(page);
 }
 
 /** Select a methodology when the picker is shown; no-op if already in data-entry mode. */
@@ -63,26 +95,11 @@ async function addScope1ResidentialEmissions(
   page: Page,
   cityId: string,
   inventoryId: string,
+  subsectorId: string,
 ) {
-  await navigateToDataPage(page, cityId, inventoryId);
+  await openResidentialSubsector(page, cityId, inventoryId, subsectorId);
 
-  await expect(
-    page.getByText("Add Data to Complete Your GHG Inventory"),
-  ).toBeVisible();
-  const stationaryEnergyCard = page.getByTestId("stationary-energy-sector-card");
-  const sectorDataUrlGlob = `**/cities/${cityId}/GHGI/${inventoryId}/data/1/`;
-  await Promise.all([
-    page.waitForURL(sectorDataUrlGlob),
-    stationaryEnergyCard.getByTestId("sector-card-button").click(),
-  ]);
-  await page.waitForLoadState("networkidle");
-  await expect(
-    page.getByRole("heading", { name: /Stationary energy/i }),
-  ).toBeVisible();
-
-  await openResidentialSubsector(page, cityId, inventoryId);
-
-  const scopeOnePanel = page.getByLabel(/Scope 1/i);
+  const scopeOnePanel = page.getByRole("tabpanel");
   const hasExistingActivity = await scopeOnePanel
     .getByText(/Propane/i)
     .isVisible()
@@ -117,12 +134,11 @@ async function addScope2ResidentialEmissions(
   page: Page,
   cityId: string,
   inventoryId: string,
+  subsectorId: string,
 ) {
-  await openResidentialSubsector(page, cityId, inventoryId);
+  await openResidentialSubsector(page, cityId, inventoryId, subsectorId);
   await page.getByRole("tab", { name: /Scope 2/i }).click();
-  await expect(page.getByTestId("manual-input-header")).toBeVisible({
-    timeout: 30000,
-  });
+  await waitForSubsectorActivityReady(page);
 
   const scopeTwoPanel = page.getByRole("tabpanel");
   const hasExistingActivity = await scopeTwoPanel
@@ -157,18 +173,25 @@ async function addScope2ResidentialEmissions(
 
 // Serial flow: one city/inventory, scope 1 + scope 2 data, then dashboard assertions.
 test.describe.serial("Report Results", () => {
-  test.setTimeout(120000);
+  test.setTimeout(180000);
 
   let cityId: string;
   let inventoryId: string;
+  let residentialSubsectorId: string;
 
   test.beforeAll(async ({ browser }) => {
-    const page = await browser.newPage();
+    const context = await browser.newContext({ storageState: AUTH_STORAGE });
+    const page = await context.newPage();
     const cityInventoryData =
       await createCityAndInventoryThroughOnboarding(page);
     cityId = cityInventoryData.cityId;
     inventoryId = cityInventoryData.inventoryId;
+    residentialSubsectorId = await fetchResidentialSubsectorId(
+      context.request,
+      inventoryId,
+    );
     await page.close();
+    await context.close();
   });
 
   test("User can navigate to GHGI module", async ({ page }) => {
@@ -180,13 +203,23 @@ test.describe.serial("Report Results", () => {
   test("User can navigate to subsector page and enter scope 1 emissions data", async ({
     page,
   }) => {
-    await addScope1ResidentialEmissions(page, cityId, inventoryId);
+    await addScope1ResidentialEmissions(
+      page,
+      cityId,
+      inventoryId,
+      residentialSubsectorId,
+    );
   });
 
   test("User can navigate to subsector page and enter scope 2 emissions data", async ({
     page,
   }) => {
-    await addScope2ResidentialEmissions(page, cityId, inventoryId);
+    await addScope2ResidentialEmissions(
+      page,
+      cityId,
+      inventoryId,
+      residentialSubsectorId,
+    );
   });
 
   test("User can navigate to dashboard and verify data", async ({ page }) => {

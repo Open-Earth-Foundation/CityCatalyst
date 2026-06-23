@@ -48,11 +48,12 @@ def source_candidate_records(
     """Convert context candidates into persisted draft candidate payloads.
 
     Applicable candidates can back proposals. Removed and failed candidates are
-    persisted for audit/debug visibility, but proposal generation filters them
-    out before deterministic or LLM selection.
+    persisted for audit/debug visibility, but deterministic proposal generation
+    filters them out before source selection.
     """
     records: list[dict[str, Any]] = []
     for candidate in candidates:
+        # Keep the raw JSON payload for fields that are already Pydantic-normalized.
         candidate_json = candidate.model_dump(mode="json", exclude={"quality_score"})
         records.append(
             {
@@ -79,6 +80,7 @@ def source_candidate_records(
             }
         )
 
+    # Emit a diagnostic when the draft has evidence but nothing usable for proposals.
     if not any(record["applicability_status"] == "applicable" for record in records):
         logger.info(
             "No applicable Stationary Energy source candidates received for draft=%s",

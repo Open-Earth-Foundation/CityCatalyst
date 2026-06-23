@@ -21,7 +21,6 @@ import {
   bytesToMB,
   clamp,
   convertKgToTonnes,
-  convertSectorReferenceNumberToNumber,
   nameToI18NKey,
 } from "@/util/helpers";
 import { bigIntToDecimal } from "@/util/big_int";
@@ -70,12 +69,12 @@ import {
   MdWarning,
 } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import { SourceDrawer } from "@/app/[lng]/[inventory]/data/[step]/SourceDrawer";
+import { SourceDrawer } from "@/components/GHGI/data-step/SourceDrawer";
 import type {
   DataSourceWithRelations,
   DataStep,
   SubSectorWithRelations,
-} from "@/app/[lng]/[inventory]/data/[step]/types";
+} from "@/components/GHGI/data-step/types";
 
 import { InventoryValueAttributes } from "@/models/InventoryValue";
 import { motion } from "framer-motion";
@@ -296,6 +295,11 @@ export default function AddDataSteps() {
   });
 
   const currentStep = steps[activeStep];
+
+  const inventoryDataBasePath = pathname
+    .replace(`/data/${step}`, "/data")
+    .replace(/\/$/, "");
+  const subsectorBasePath = pathname.replace(/\/$/, "");
 
   useEffect(() => {
     // change step param in URL without reloading
@@ -636,7 +640,7 @@ export default function AddDataSteps() {
                 }
               >
                 <BreadcrumbLink
-                  href={`/${inventory}/data`}
+                  href={inventoryDataBasePath}
                   color="content.tertiary"
                   textDecoration="none"
                   _hover={{
@@ -812,7 +816,7 @@ export default function AddDataSteps() {
                       transition="all 300ms"
                       onClick={() => {
                         router.push(
-                          `/${inventory}/data/${convertSectorReferenceNumberToNumber(currentStep.referenceNumber)}/${subSector.subsectorId}?refNo=${subSector.referenceNumber}`,
+                          `${subsectorBasePath}/${subSector.subsectorId}?refNo=${subSector.referenceNumber}`,
                         );
                       }}
                       key={subSector.subsectorId}

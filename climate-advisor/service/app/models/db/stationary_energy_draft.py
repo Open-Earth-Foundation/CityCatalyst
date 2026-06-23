@@ -14,6 +14,8 @@ from app.models.db.types import JSONBCompat
 
 
 class StationaryEnergyDraftRun(Base):
+    """Persisted Stationary Energy draft workflow owned by Climate Advisor."""
+
     __tablename__ = "stationary_energy_draft_runs"
 
     draft_run_id: Mapped[UUID] = mapped_column(
@@ -72,6 +74,14 @@ class StationaryEnergyDraftRun(Base):
     )
     review_decisions: Mapped[List["StationaryEnergyReviewDecision"]] = relationship(
         "StationaryEnergyReviewDecision",
+        back_populates="draft_run",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    staged_review_selections: Mapped[
+        List["StationaryEnergyStagedReviewSelection"]
+    ] = relationship(
+        "StationaryEnergyStagedReviewSelection",
         back_populates="draft_run",
         cascade="all, delete-orphan",
         passive_deletes=True,
@@ -156,6 +166,8 @@ class StationaryEnergyDraftSourceCandidate(Base):
 
 
 class StationaryEnergyDraftProposal(Base):
+    """One proposed Stationary Energy row decision within a draft run."""
+
     __tablename__ = "stationary_energy_draft_proposals"
 
     proposal_id: Mapped[UUID] = mapped_column(
@@ -218,6 +230,14 @@ class StationaryEnergyDraftProposal(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
+    staged_review_selections: Mapped[
+        List["StationaryEnergyStagedReviewSelection"]
+    ] = relationship(
+        "StationaryEnergyStagedReviewSelection",
+        back_populates="proposal",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
     __table_args__ = (
         Index("ix_stationary_energy_draft_proposals_run", "draft_run_id"),
@@ -227,6 +247,8 @@ class StationaryEnergyDraftProposal(Base):
 
 
 class StationaryEnergyReviewDecision(Base):
+    """Durable user review decision for one Stationary Energy proposal."""
+
     __tablename__ = "stationary_energy_review_decisions"
 
     decision_id: Mapped[UUID] = mapped_column(
@@ -297,4 +319,76 @@ class StationaryEnergyReviewDecision(Base):
         Index("ix_stationary_energy_review_decisions_run_user", "draft_run_id", "user_id"),
         Index("ix_stationary_energy_review_decisions_proposal", "proposal_id"),
         Index("ix_stationary_energy_review_decisions_run_proposal", "draft_run_id", "proposal_id"),
+    )
+
+
+class StationaryEnergyStagedReviewSelection(Base):
+    """Temporary agent-staged review selection for a draft proposal."""
+
+    __tablename__ = "stationary_energy_staged_review_selections"
+
+    selection_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        primary_key=True,
+        default=uuid4,
+    )
+    draft_run_id: Mapped[UUID] = mapped_column(
+        ForeignKey("stationary_energy_draft_runs.draft_run_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    proposal_id: Mapped[UUID] = mapped_column(
+        ForeignKey("stationary_energy_draft_proposals.proposal_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    user_id: Mapped[str] = mapped_column(String(255), nullable=False)
+    action: Mapped[str] = mapped_column(String(32), nullable=False)
+    selected_source_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    selected_candidate_id: Mapped[Optional[UUID]] = mapped_column(
+        PGUUID(as_uuid=True),
+        nullable=True,
+    )
+    rationale: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    tool_call_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    status: Mapped[str] = mapped_column(
+        String(32),
+        nullable=False,
+        default="active",
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+
+    draft_run: Mapped[StationaryEnergyDraftRun] = relationship(
+        "StationaryEnergyDraftRun",
+        back_populates="staged_review_selections",
+    )
+    proposal: Mapped[StationaryEnergyDraftProposal] = relationship(
+        "StationaryEnergyDraftProposal",
+        back_populates="staged_review_selections",
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "draft_run_id",
+            "proposal_id",
+            "user_id",
+            name="uq_stationary_energy_staged_selection_active",
+        ),
+        Index(
+            "ix_stationary_energy_staged_review_selections_run_user",
+            "draft_run_id",
+            "user_id",
+        ),
+        Index(
+            "ix_stationary_energy_staged_review_selections_proposal",
+            "proposal_id",
+        ),
     )

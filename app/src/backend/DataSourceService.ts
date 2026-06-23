@@ -6,7 +6,7 @@ import createHttpError from "http-errors";
 import Decimal from "decimal.js";
 import { decimalToBigInt } from "@/util/big_int";
 import { SubSector } from "@/models/SubSector";
-import { DataSourceActivityDataRecord } from "@/app/[lng]/[inventory]/data/[step]/types";
+import { DataSourceActivityDataRecord } from "@/components/GHGI/data-step/types";
 import { InventoryValue } from "@/models/InventoryValue";
 import { Publisher } from "@/models/Publisher";
 import { Scope } from "@/models/Scope";

@@ -27,7 +27,7 @@ const ManageSubSectors = () => {
         flexDirection="column"
         gap="48px"
       >
-        <Heading t={t} inventoryParam={inventory} />
+        <Heading t={t} />
         <NotationsDefinitionAccordion t={t} />
         <SectorTabs t={t} inventoryId={inventory} />
       </Box>

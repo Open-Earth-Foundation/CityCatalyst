@@ -18,7 +18,7 @@ import { formatEmissions } from "@/util/helpers";
 import { Box, Icon, Tabs, Text, VStack } from "@chakra-ui/react";
 import MissingInventory from "@/components/missing-inventory";
 import InventoryCalculationTab from "./InventoryCalculationTab";
-import InventoryReportTab from "../../app/[lng]/[inventory]/InventoryResultTab";
+import InventoryReportTab from "@/components/GHGI/inventory-result";
 import NotAvailable from "@/components/NotAvailable";
 import { Hero } from "./Hero";
 import { ActionCards } from "./ActionCards";
@@ -32,7 +32,7 @@ import { UserRole } from "@/util/types";
 import { logger } from "@/services/logger";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { useInventoryOrganization } from "@/hooks/use-inventory-organization";
-import InventoryVersions from "@/app/[lng]/[inventory]/InventoryVersionsTab/InventoryVersions";
+import InventoryVersions from "@/components/GHGI/inventory-versions/InventoryVersions";
 
 function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
   return typeof error === "object" && error != null && "status" in error;

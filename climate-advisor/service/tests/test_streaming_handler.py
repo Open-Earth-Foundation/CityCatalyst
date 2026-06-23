@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import unittest
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
@@ -39,7 +40,9 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         fake_agent_service.create_agent = AsyncMock(return_value=object())
         fake_agent_service.close = AsyncMock()
 
-        async def fake_stream_events(self, agent, request_payload, conversation_history):
+        async def fake_stream_events(
+            self, agent, request_payload, conversation_history
+        ):
             self.assistant_tokens.append("Persisted answer")
             yield format_sse(
                 {"index": 0, "content": "Persisted answer"},
@@ -48,7 +51,10 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             ).encode("utf-8")
 
         with (
-            patch("app.utils.streaming_handler.AgentService", return_value=fake_agent_service),
+            patch(
+                "app.utils.streaming_handler.AgentService",
+                return_value=fake_agent_service,
+            ),
             patch.object(
                 StreamingHandler,
                 "_load_conversation_history",
@@ -73,7 +79,9 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(handler.history_saved)
         fake_agent_service.close.assert_awaited_once()
 
-    async def test_run_config_uses_persisted_stationary_energy_context_marker(self) -> None:
+    async def test_run_config_uses_persisted_stationary_energy_context_marker(
+        self,
+    ) -> None:
         draft_run_id = str(uuid4())
         payload = MessageCreateRequest(user_id="user-1", content="hello")
         handler = StreamingHandler(
@@ -97,4 +105,108 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             run_config.trace_metadata["stationary_energy_draft_run_id"],
             draft_run_id,
+        )
+
+    async def test_bulk_review_confirmation_ui_event_is_emitted_as_tool_result(
+        self,
+    ) -> None:
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        handler.tool_invocations.append(
+            {
+                "id": "tool-call-1",
+                "name": "stationary_energy_request_all_recommended_confirmation",
+                "status": "executing",
+            }
+        )
+        run_item = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                call_id="tool-call-1",
+                name="stationary_energy_request_all_recommended_confirmation",
+            ),
+            output=json.dumps(
+                {
+                    "success": True,
+                    "action": "stationary_energy_request_all_recommended_confirmation",
+                    "ui_event": "stationary_energy_review_bulk_confirmation_requested",
+                    "draft_run_id": str(uuid4()),
+                    "pending_choices": [
+                        {
+                            "proposal_id": str(uuid4()),
+                            "action": "accept",
+                            "selected_source_id": "ds-1",
+                        }
+                    ],
+                }
+            ),
+        )
+
+        chunks = [chunk async for chunk in handler._handle_tool_output(run_item)]
+        parsed_chunks = [_parse_sse_payload(chunk) for chunk in chunks]
+        emitted_tool_result = next(
+            payload
+            for payload in parsed_chunks
+            if payload["event"] == "tool_result"
+            and payload["data"].get("ui_event")
+            == "stationary_energy_review_bulk_confirmation_requested"
+        )
+
+        self.assertEqual(
+            emitted_tool_result["data"]["action"],
+            "stationary_energy_request_all_recommended_confirmation",
+        )
+
+    async def test_staged_review_rollback_ui_event_is_emitted_as_tool_result(
+        self,
+    ) -> None:
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        handler.tool_invocations.append(
+            {
+                "id": "tool-call-1",
+                "name": "stationary_energy_request_staged_sources_rollback_confirmation",
+                "status": "executing",
+            }
+        )
+        run_item = SimpleNamespace(
+            raw_item=SimpleNamespace(
+                call_id="tool-call-1",
+                name="stationary_energy_request_staged_sources_rollback_confirmation",
+            ),
+            output=json.dumps(
+                {
+                    "success": True,
+                    "action": "stationary_energy_request_staged_sources_rollback_confirmation",
+                    "ui_event": "stationary_energy_review_rollback_confirmation_requested",
+                    "draft_run_id": str(uuid4()),
+                    "pending_choices": [
+                        {
+                            "proposal_id": str(uuid4()),
+                            "action": "rollback_staged",
+                            "selected_source_id": "ds-1",
+                        }
+                    ],
+                }
+            ),
+        )
+
+        chunks = [chunk async for chunk in handler._handle_tool_output(run_item)]
+        parsed_chunks = [_parse_sse_payload(chunk) for chunk in chunks]
+        emitted_tool_result = next(
+            payload
+            for payload in parsed_chunks
+            if payload["event"] == "tool_result"
+            and payload["data"].get("ui_event")
+            == "stationary_energy_review_rollback_confirmation_requested"
+        )
+
+        self.assertEqual(
+            emitted_tool_result["data"]["action"],
+            "stationary_energy_request_staged_sources_rollback_confirmation",
         )

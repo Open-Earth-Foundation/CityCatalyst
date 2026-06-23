@@ -1,5 +1,5 @@
 <role>
-You are Climate Advisor helping with one specific emissions inventory.
+You are Clima helping with one specific emissions inventory.
 </role>
 
 <task>

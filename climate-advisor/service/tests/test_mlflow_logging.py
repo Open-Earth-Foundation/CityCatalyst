@@ -171,7 +171,7 @@ def test_streaming_handler_uses_single_experiment_with_agentic_tags(
     monkeypatch,
 ) -> None:
     """General and agentic chat traffic should share one experiment and split by tags."""
-    monkeypatch.setenv("MLFLOW_EXPERIMENT_NAME", "ca-general")
+    monkeypatch.setenv("MLFLOW_EXPERIMENT_NAME", "clima")
     handler = StreamingHandler(
         thread_id=uuid4(),
         user_id="user-1",
@@ -191,8 +191,8 @@ def test_streaming_handler_uses_single_experiment_with_agentic_tags(
         context={"stationary_energy_draft_run_id": "draft-1"},
     )
 
-    assert handler._mlflow_experiment_name(general_payload) == "ca-general"
-    assert handler._mlflow_experiment_name(agentic_payload) == "ca-general"
+    assert handler._mlflow_experiment_name(general_payload) == "clima"
+    assert handler._mlflow_experiment_name(agentic_payload) == "clima"
     assert handler._mlflow_tags(agentic_payload)["ca_agentic_flow"] is True
     assert (
         handler._mlflow_tags(agentic_payload)["workflow"]
@@ -216,7 +216,7 @@ def test_streaming_handler_wraps_stream_in_mlflow_run(monkeypatch) -> None:
         user_id="user-1",
         session_factory=None,
     )
-    monkeypatch.setenv("MLFLOW_EXPERIMENT_NAME", "ca-general")
+    monkeypatch.setenv("MLFLOW_EXPERIMENT_NAME", "clima")
     monkeypatch.setattr(
         "app.utils.streaming_handler.start_run",
         fake_start_run,
@@ -240,7 +240,7 @@ def test_streaming_handler_wraps_stream_in_mlflow_run(monkeypatch) -> None:
     chunks = asyncio.run(collect())
 
     assert chunks == [b"event: done\ndata: {\"ok\": true}\n\n"]
-    assert recorded["experiment_name"] == "ca-general"
+    assert recorded["experiment_name"] == "clima"
     assert recorded["run_name"] == "climate_advisor_message_request"
 
 
@@ -266,7 +266,7 @@ def test_streaming_handler_tags_agentic_flow_from_thread_context(
         user_id="user-1",
         session_factory=None,
     )
-    monkeypatch.setenv("MLFLOW_EXPERIMENT_NAME", "ca-general")
+    monkeypatch.setenv("MLFLOW_EXPERIMENT_NAME", "clima")
     monkeypatch.setattr(
         "app.utils.streaming_handler.start_run",
         fake_start_run,
@@ -295,7 +295,7 @@ def test_streaming_handler_tags_agentic_flow_from_thread_context(
     chunks = asyncio.run(collect())
 
     assert chunks == [b"event: done\ndata: {\"ok\": true}\n\n"]
-    assert recorded["experiment_name"] == "ca-general"
+    assert recorded["experiment_name"] == "clima"
     assert recorded["run_name"] == "stationary_energy_context_chat_request"
     assert recorded["tags"]["workflow"] == "stationary_energy_context_chat"
     assert recorded["tags"]["stationary_energy_draft_run_id"] == str(draft_run_id)

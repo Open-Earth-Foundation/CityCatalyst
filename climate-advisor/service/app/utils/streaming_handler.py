@@ -36,7 +36,7 @@ from app.utils.tool_handler import persist_assistant_message
 from app.utils.token_handler import TokenHandler
 from app.utils.history_manager import load_conversation_history
 from app.utils.mlflow_logging import (
-    general_experiment_name,
+    climate_advisor_experiment_name,
     log_json_artifact,
     log_metrics,
     log_text_artifact,
@@ -913,7 +913,7 @@ class StreamingHandler:
 
     def _mlflow_experiment_name(self, payload: MessageCreateRequest) -> str:
         """Return the MLflow experiment for the current chat workflow."""
-        return general_experiment_name()
+        return climate_advisor_experiment_name()
 
     def _mlflow_run_name(self, payload: MessageCreateRequest) -> str:
         """Return the MLflow run name for the current chat workflow."""

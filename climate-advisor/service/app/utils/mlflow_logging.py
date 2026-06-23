@@ -23,7 +23,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 DEFAULT_MLFLOW_TRACKING_URI = "https://mlflow-dev.openearth.dev"
-DEFAULT_GENERAL_EXPERIMENT_NAME = "clima"
+DEFAULT_CLIMATE_ADVISOR_EXPERIMENT_NAME = "clima"
 DEFAULT_MLFLOW_RUN_USER = "climate-advisor"
 MLFLOW_INIT_RETRY_COOLDOWN_SECONDS = 60.0
 REDACTED_VALUE = "[REDACTED]"
@@ -50,15 +50,14 @@ _LAST_INITIALIZATION_FAILURE_AT: float | None = None
 _EXPERIMENT_IDS: dict[str, str] = {}
 
 
-def general_experiment_name() -> str:
-    """Return the configured MLflow experiment for general Climate Advisor chat."""
+def climate_advisor_experiment_name() -> str:
+    """Return the configured MLflow experiment for all Climate Advisor runs."""
     return (
         os.getenv(
             "MLFLOW_EXPERIMENT_NAME",
-            os.getenv("MLFLOW_GENERAL_EXPERIMENT_NAME", DEFAULT_GENERAL_EXPERIMENT_NAME),
-        )
-        .strip()
-        or DEFAULT_GENERAL_EXPERIMENT_NAME
+            DEFAULT_CLIMATE_ADVISOR_EXPERIMENT_NAME,
+        ).strip()
+        or DEFAULT_CLIMATE_ADVISOR_EXPERIMENT_NAME
     )
 
 

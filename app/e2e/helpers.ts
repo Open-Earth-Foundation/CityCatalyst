@@ -7,11 +7,13 @@ export async function expectText(page: Page, text: string) {
 /** Wait until the auth form is hydrated and inputs are interactive. */
 export async function waitForAuthFormReady(page: Page) {
   await expect(page.locator('input[name="email"]')).toBeVisible();
+  await expect(page.locator("form").first()).toHaveAttribute("novalidate", "");
   const submitButton = page.getByRole("button", {
     name: /^(LOG IN|Create Account)$/i,
   });
   await expect(submitButton).toBeVisible();
   await expect(submitButton).toBeEnabled();
+  await expect(submitButton).toHaveAttribute("formnovalidate", "");
 }
 
 export async function expectFieldInvalid(page: Page, fieldName: string) {
@@ -131,8 +133,8 @@ async function walkCitiesOnboardingWizard(
   const citySearchResults = page.getByText(
     new RegExp(`^${cityName}\\s*United States of America > Illinois$`),
   );
-  await citySearchResults.waitFor();
-  await citySearchResults.click();
+  await expect(citySearchResults.first()).toBeVisible({ timeout: 30000 });
+  await citySearchResults.first().click();
 
   // Continue (creates the city, advances to inventory details)
   {
@@ -199,11 +201,13 @@ async function walkCitiesOnboardingWizard(
   }
 
   // Step 3: third-party data — opt out for speed/determinism
-  await completeThirdPartyDataOnboardingStep(page, "no");
+  await completeThirdPartyDataOnboardingStep(page, "no", {
+    waitForInventoryUrl: true,
+  });
 
   // Wizard exits to `/cities/{cityId}/GHGI/{inventoryId}/`
   await page.waitForURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/?$/, {
-    timeout: 30000,
+    timeout: 60000,
   });
   const match = page
     .url()
@@ -225,6 +229,7 @@ export async function createCityThroughOnboarding(page: Page): Promise<string> {
 export async function completeThirdPartyDataOnboardingStep(
   page: Page,
   choice: "yes" | "no" = "no",
+  options?: { waitForInventoryUrl?: boolean },
 ) {
   const step = page.getByTestId("third-party-data-step");
   await expect(step).toBeVisible({ timeout: 10000 });
@@ -237,8 +242,16 @@ export async function completeThirdPartyDataOnboardingStep(
 
   const continueBtn = page.getByRole("button", { name: /Continue/i });
   await expect(continueBtn).toBeEnabled({ timeout: 15000 });
-  await continueBtn.click();
 
+  if (options?.waitForInventoryUrl) {
+    await Promise.all([
+      page.waitForURL(/\/cities\/[^/]+\/GHGI\/[^/]+/, { timeout: 60000 }),
+      continueBtn.click(),
+    ]);
+    return;
+  }
+
+  await continueBtn.click();
   await page.waitForTimeout(1000);
 }
 

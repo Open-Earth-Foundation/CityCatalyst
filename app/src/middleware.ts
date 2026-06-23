@@ -1,5 +1,6 @@
 import { fallbackLng, languages } from "@/i18n/settings";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
+import { maybeRedirectLegacyInventoryUrl } from "@/util/legacy-inventory-middleware";
 import acceptLanguage from "accept-language";
 import { withAuth, type NextRequestWithAuth } from "next-auth/middleware";
 import type { NextMiddlewareResult } from "next/dist/server/web/types";
@@ -129,6 +130,11 @@ export async function middleware(req: NextRequestWithAuth) {
     // When JN is disabled, let the PrivateHome component handle the routing
     // Don't redirect here to avoid infinite loops
     return NextResponse.next();
+  }
+
+  const legacyInventoryRedirect = await maybeRedirectLegacyInventoryUrl(req);
+  if (legacyInventoryRedirect) {
+    return legacyInventoryRedirect;
   }
 
   // redirect for paths that don't have lng at the start

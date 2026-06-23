@@ -41,9 +41,11 @@ export default function ReviewPage() {
   const onBack = () => {
     router.back();
   };
+  const inventoryHomePath = pathname.replace(/\/data\/review\/?$/, "");
+
   const onDiscard = () => {
     dispatch(clear());
-    router.push(`/${inventoryId}`);
+    router.push(inventoryHomePath);
   };
 
   const stationaryEnergy = getAllSectorData.filter(
@@ -107,7 +109,7 @@ export default function ReviewPage() {
       // TODO
       // Trigger notification to user
     } finally {
-      router.push(`/${inventoryId}`);
+      router.push(inventoryHomePath);
       dispatch(clear());
       setIsConfirming(false);
     }

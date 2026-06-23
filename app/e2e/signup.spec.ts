@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import {
   expectText,
+  expectFieldInvalid,
   expectValidationMessage,
   waitForAuthFormReady,
 } from "./helpers";
@@ -79,8 +80,9 @@ test.describe("Signup", () => {
     await page.getByRole("button", { name: "Create Account" }).click();
 
     await expect(page).toHaveURL(/\/en\/auth\/signup/);
-    await expectValidationMessage(page, /valid email address/i);
-    await expectValidationMessage(page, /Minimum length/i);
+    await expectFieldInvalid(page, "email");
+    await expectFieldInvalid(page, "name");
+    await expectFieldInvalid(page, "password");
     await expectValidationMessage(page, /accept the privacy policy/i);
   });
 

@@ -6,7 +6,10 @@ import { Box } from "@chakra-ui/react";
 import { useParams } from "next/navigation";
 import { getParamValueRequired } from "@/util/helpers";
 
-export default function DataLayout(props: { children: React.ReactNode }) {
+/** Layout for the remaining legacy inventory routes (stationary-energy draft redirect). */
+export default function LegacyInventoryLayout(props: {
+  children: React.ReactNode;
+}) {
   const { children } = props;
   const params = useParams();
 

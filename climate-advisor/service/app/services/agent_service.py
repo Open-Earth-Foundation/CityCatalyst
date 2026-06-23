@@ -16,14 +16,14 @@ from uuid import UUID
 import openai
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel
 from openai import AsyncOpenAI
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import get_settings
 from app.services.openrouter_client import build_openrouter_client_options
-from app.tools import (
-    CCInventoryTool,
-    build_cc_inventory_tools,
-    climate_vector_search,
-)
+from app.tools.cc_inventory_tool import CCInventoryTool
+from app.tools.cc_inventory_wrappers import build_cc_inventory_tools
+from app.tools.climate_vector_sync import climate_vector_search
+from app.tools.stationary_energy_review_tools import build_stationary_energy_review_tools
 from app.utils.agent_tracing import configure_agents_tracing
 
 logger = logging.getLogger(__name__)
@@ -42,7 +42,9 @@ class AgentService:
         cc_thread_id: Optional[Union[str, UUID]] = None,
         cc_user_id: Optional[str] = None,
         inventory_id: Optional[str] = None,
-    ):
+        session_factory: Optional[async_sessionmaker[AsyncSession]] = None,
+        stationary_energy_draft_run_id: Optional[Union[str, UUID]] = None,
+    ) -> None:
         """Initialize the agent service with settings and OpenRouter client.
         
         Args:
@@ -58,6 +60,12 @@ class AgentService:
         self.cc_thread_id = cc_thread_id
         self.cc_user_id = cc_user_id
         self.inventory_id = inventory_id
+        self.session_factory = session_factory
+        self.stationary_energy_draft_run_id = (
+            str(stationary_energy_draft_run_id)
+            if stationary_energy_draft_run_id
+            else None
+        )
         self._inventory_tool: Optional[CCInventoryTool] = None
         self._token_ref: Dict[str, Optional[str]] = {"value": cc_access_token}
         self._inventory_prompt: Optional[str] = None
@@ -314,6 +322,7 @@ class AgentService:
         Returns:
             Configured Agent instance
         """
+        # Resolve model and instruction settings before registering workflow tools.
         raw_agent_model = model or self.raw_default_model
         agent_model = self._resolve_chat_model_name(raw_agent_model)
         agent_temperature = self._temperature_for_model(
@@ -324,6 +333,7 @@ class AgentService:
         inventory_prompt: Optional[str] = None
         tools = []
 
+        # Add CityCatalyst inventory tools only when the request has scoped credentials.
         if self.cc_access_token and self.cc_user_id and self.cc_thread_id:
             thread_identifier = str(self.cc_thread_id)
             self._inventory_tool = CCInventoryTool()
@@ -354,8 +364,36 @@ class AgentService:
         if inventory_prompt:
             agent_instructions = f"{agent_instructions}\n\n{inventory_prompt}"
 
+        # Add Stationary Energy review tools only for an active CA-owned draft run.
+        if (
+            self.stationary_energy_draft_run_id
+            and self.session_factory
+            and self.cc_user_id
+        ):
+            stationarity_tools = build_stationary_energy_review_tools(
+                session_factory=self.session_factory,
+                draft_run_id=self.stationary_energy_draft_run_id,
+                user_id=str(self.cc_user_id),
+                token_ref=self._token_ref,
+            )
+            tools.extend(stationarity_tools)
+            stationary_energy_review_prompt = self.settings.llm.prompts.get_prompt(
+                "stationary_energy_review"
+            )
+            agent_instructions = (
+                f"{agent_instructions}\n\n{stationary_energy_review_prompt}"
+            )
+            logger.info(
+                "Registered Stationary Energy review tools for draft_run_id=%s thread_id=%s user_id=%s",
+                self.stationary_energy_draft_run_id,
+                self.cc_thread_id,
+                self.cc_user_id,
+            )
+
+        # Keep vector search available for general climate-advice fallback context.
         tools.append(climate_vector_search)
 
+        # Build the Agents SDK object with the finalized instructions and tool list.
         agent = Agent(
             name="Climate Advisor",
             instructions=agent_instructions,
@@ -380,7 +418,7 @@ class AgentService:
         
         return agent
     
-    async def close(self):
+    async def close(self) -> None:
         """Close the underlying HTTP client."""
         if self.client:
             await self.client.close()

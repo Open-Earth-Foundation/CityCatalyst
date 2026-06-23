@@ -10,7 +10,7 @@ import tiktoken
 
 logger = logging.getLogger(__name__)
 
-StationaryEnergyBudgetFlow = Literal["draft_generation", "chat_context"]
+StationaryEnergyBudgetFlow = Literal["chat_context"]
 
 
 @dataclass(frozen=True)
@@ -32,12 +32,13 @@ def get_stationary_energy_prompt_budget(
     flow: StationaryEnergyBudgetFlow,
 ) -> StationaryEnergyPromptBudget:
     """Read the Stationary Energy prompt budget config for a specific workflow."""
-    default_rows = 5 if flow == "draft_generation" else 3
+    # Walk the nested settings object defensively so tests can pass lightweight stubs.
     generation = getattr(getattr(settings, "llm", None), "generation", None)
     prompt_budget = getattr(generation, "prompt_budget", None)
     stationary_energy_budget = getattr(prompt_budget, "stationary_energy", None)
     flow_budget = getattr(stationary_energy_budget, flow, None)
 
+    # Apply runtime defaults while preserving explicit zero row limits.
     return StationaryEnergyPromptBudget(
         tokenizer_encoding=getattr(prompt_budget, "tokenizer_encoding", None)
         or "o200k_base",
@@ -48,7 +49,7 @@ def get_stationary_energy_prompt_budget(
             0,
             int(
                 getattr(flow_budget, "max_normalized_rows_per_candidate", None)
-                or default_rows,
+                or 3,
             ),
         ),
         include_source_data=bool(

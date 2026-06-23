@@ -5,9 +5,6 @@ import {
   navigateToDataPage,
 } from "./helpers";
 
-<<<<<<< HEAD
-test.describe.skip("Report Results", () => {
-=======
 async function openResidentialSubsector(
   page: Page,
   cityId: string,
@@ -163,7 +160,6 @@ async function addScope2ResidentialEmissions(
 // Serial flow: one city/inventory, scope 1 + scope 2 data, then dashboard assertions.
 test.describe.serial("Report Results", () => {
   test.skip();
->>>>>>> v1.20.0-rc.0
   test.setTimeout(120000);
 
   let cityId: string;

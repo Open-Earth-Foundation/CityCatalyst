@@ -130,15 +130,6 @@ export function NavigationBar({
 
   // Memoize paths to recompute when pathname or IDs change
   const dashboardPath = useMemo(
-<<<<<<< HEAD
-    () =>
-      getDashboardPath(activeLng, currentCityId ?? "", currentInventoryId ?? ""),
-    [activeLng, currentCityId, currentInventoryId],
-  );
-  const homePath = useMemo(
-    () => getHomePath(activeLng, currentCityId ?? "", currentInventoryId ?? ""),
-    [activeLng, currentCityId, currentInventoryId],
-=======
     () => getDashboardPath(lng, currentCityId ?? ""),
     [lng, currentCityId],
   );
@@ -157,7 +148,6 @@ export function NavigationBar({
           )
         : null,
     [lng, currentCityId, currentInventoryId],
->>>>>>> v1.20.0-rc.0
   );
   const { setTheme } = useTheme();
 
@@ -456,7 +446,9 @@ export function NavigationBar({
                         paddingTop="12px"
                         paddingBottom="12px"
                         px="16px"
-                        onClick={() => settingsPath && router.push(settingsPath)}
+                        onClick={() =>
+                          settingsPath && router.push(settingsPath)
+                        }
                       >
                         <Box display="flex" alignItems="center">
                           {" "}

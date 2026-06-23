@@ -10,7 +10,7 @@ import {
 import type {
   DirectMeasureData,
   SubcategoryData,
-} from "../../../app/[lng]/[inventory]/data/[step]/types";
+} from "@/components/GHGI/data-step/types";
 import { ExtraField, Methodology, SuggestedActivity } from "@/util/form-schema";
 import { ActivityValue } from "@/models/ActivityValue";
 import { EmissionFactorTypes } from "@/hooks/activity-value-form/use-emission-factors";

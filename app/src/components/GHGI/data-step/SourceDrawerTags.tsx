@@ -2,7 +2,7 @@ import { Flex, Icon, Badge } from "@chakra-ui/react";
 import { MdOutlineLocationOn, MdOutlineTimer, MdToday } from "react-icons/md";
 import { DataCheckIcon, ScaleIcon } from "@/components/icons";
 import { FiTarget } from "react-icons/fi";
-import { DataSourceWithRelations } from "@/app/[lng]/[inventory]/data/[step]/types";
+import { DataSourceWithRelations } from "@/components/GHGI/data-step/types";
 import type { TFunction } from "i18next";
 
 interface SourceDrawerBadgesProps {

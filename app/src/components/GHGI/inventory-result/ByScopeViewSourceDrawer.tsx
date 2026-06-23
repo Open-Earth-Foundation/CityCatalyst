@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import type { TFunction } from "i18next";
-import { SourceDrawer } from "../data/[step]/SourceDrawer";
+import { SourceDrawer } from "@/components/GHGI/data-step/SourceDrawer";
 import { api } from "@/services/api";
 
 interface ByScopeViewProps {

@@ -2,7 +2,7 @@ import { Box, Heading, Text } from "@chakra-ui/react";
 import { api } from "@/services/api";
 import { BlueSubtitle } from "@/components/package/Texts/BlueSubtitle";
 import type { TFunction } from "i18next";
-import { EmissionsForecastCard } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/EmissionsForecastCard";
+import { EmissionsForecastCard } from "@/components/GHGI/inventory-result/EmissionsForecast/EmissionsForecastCard";
 
 export const EmissionsForecastSection = ({
   inventoryId,

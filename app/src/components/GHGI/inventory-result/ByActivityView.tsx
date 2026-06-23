@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Heading, HStack, Text } from "@chakra-ui/react";
 import { capitalizeFirstLetter, convertKgToTonnes } from "@/util/helpers";
-import ByActivityViewTable from "@/app/[lng]/[inventory]/InventoryResultTab/ByActivityViewTable";
+import ByActivityViewTable from "@/components/GHGI/inventory-result/ByActivityViewTable";
 import type { TFunction } from "i18next";
 import type { SectorBreakdownResponse } from "@/util/types";
 import {

@@ -10,7 +10,7 @@ import {
 import { Box } from "@chakra-ui/react";
 import { convertKgToTonnes } from "@/util/helpers";
 import { ResponsiveLine } from "@nivo/line";
-import CustomLegend from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/CustomLegend";
+import CustomLegend from "@/components/GHGI/inventory-result/EmissionsForecast/CustomLegend";
 import TooltipCard from "./TooltipCard";
 import { TooltipProvider, useCustomTooltip } from "./CustomTooltipContext";
 

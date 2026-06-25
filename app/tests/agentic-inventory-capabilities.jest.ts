@@ -62,6 +62,7 @@ describe("GHGI inventory internal CA capability routes", () => {
   let thirdPartySource: DataSourceI18n;
 
   beforeAll(async () => {
+    setupTests();
     await db.initialize();
     testData = await createTestData({
       cityName: "Agentic Inventory City",
@@ -154,6 +155,9 @@ describe("GHGI inventory internal CA capability routes", () => {
     const stationaryEnergy = payload.data.by_sector.find(
       (sector: { reference: string }) => sector.reference === "I",
     );
+    const transportation = payload.data.by_sector.find(
+      (sector: { reference: string }) => sector.reference === "II",
+    );
 
     expect(payload.action).toBe(INVENTORY_STATUS_OVERVIEW_CAPABILITY);
     expect(payload.success).toBe(true);
@@ -166,7 +170,7 @@ describe("GHGI inventory internal CA capability routes", () => {
     expect(payload.data.completion.required).toBeGreaterThan(0);
     expect(payload.data.completion.filled).toBeGreaterThan(0);
     expect(stationaryEnergy.data_state.third_party).toBe(1);
-    expect(stationaryEnergy.data_state.manual_or_uploaded).toBeGreaterThan(0);
+    expect(transportation.data_state.manual_or_uploaded).toBeGreaterThan(0);
     expect(JSON.stringify(payload)).not.toContain(inventory.inventoryId);
     expect(JSON.stringify(payload)).not.toContain(city.cityId);
   });

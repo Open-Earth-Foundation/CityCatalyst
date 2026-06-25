@@ -77,8 +77,8 @@ def resolve_release_ids(
                 "WHERE release_id = CAST(:rid AS uuid)"
             ),
             {"rid": str(release_id)},
-        ).first()
-        return [str(row[0])] if row else []
+        ).mappings().first()
+        return [str(row["release_id"])] if row else []
 
     clauses = ["pd.datasource_name = ANY(:names)"] if names is not None else []
     if version_label is not None:
@@ -100,8 +100,8 @@ def resolve_release_ids(
             """
         ),
         {"names": names, "version_label": version_label},
-    ).all()
-    return [str(r[0]) for r in rows]
+    ).mappings().all()
+    return [str(r["release_id"]) for r in rows]
 
 
 def build_datasources(session, release_ids: Iterable[str]) -> List[Dict[str, Any]]:

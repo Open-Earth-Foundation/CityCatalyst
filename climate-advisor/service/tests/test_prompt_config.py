@@ -37,8 +37,7 @@ def test_stationary_energy_review_prompt_has_rendered_tools_section() -> None:
     )
     rendered_prompt = prompts.get_prompt("stationary_energy_review")
 
-    assert "tools/stationary_energy_inventory_context_tool_policy.md" in raw_prompt
-    assert "tools/stationary_energy_inventory_context_tool_arguments.md" in raw_prompt
+    assert "{{ include:" not in raw_prompt
     assert "{{ include:" not in rendered_prompt
     assert "You are Clima" in rendered_prompt
     assert "Handle one Stationary Energy review intent per user turn" in rendered_prompt

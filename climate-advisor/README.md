@@ -337,8 +337,6 @@ Prompt paths are also configured in `llm_config.yaml`:
 Some prompt files use reusable fragments with
 `{{ include: tools/example.md }}` directives. Includes are resolved relative to
 the including prompt first and then against the configured prompt search roots.
-The Stationary Energy review prompt uses this include mechanism for reusable
-tool policy and argument-contract fragments.
 
 ### Stationary Energy Tool Message Localization
 

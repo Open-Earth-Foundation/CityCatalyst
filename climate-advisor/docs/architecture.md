@@ -258,7 +258,7 @@ settings.
   - Injected only when an inventory is active and CA can fetch its details.
 - `prompts.stationary_energy_review`
   - Used as the full prompt for active Stationary Energy draft review chat.
-  - Includes reusable tool fragments for `inventory_status_overview`,
+  - Defines inline tool policy for `inventory_status_overview`,
     `inventory_emissions_context`, and the Stationary Energy review tools.
 
 Prompt include directives such as `{{ include: tools/default_tool_policy.md }}`

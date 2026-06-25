@@ -436,6 +436,32 @@ class CityCatalystClient:
             token=token,
         )
 
+    async def load_inventory_status_overview(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Load compact whole-inventory status through the CC capability route."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/ghgi/inventory/status-overview",
+            json_data=request_payload,
+            token=token,
+        )
+
+    async def load_inventory_emissions_context(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Load compact whole-inventory emissions context through the CC capability route."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/ghgi/inventory/emissions-context",
+            json_data=request_payload,
+            token=token,
+        )
+
     async def commit_stationary_energy_accepted(
         self,
         *,

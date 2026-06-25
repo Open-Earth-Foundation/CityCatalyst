@@ -60,6 +60,10 @@ The active Stationary Energy draft run is scoped by the registered tools at runt
 </input>
 
 <tools>
+Whole-inventory context tools:
+
+{{ include: tools/stationary_energy_inventory_context_tool_policy.md }}
+
 Stationary Energy review tools:
 
 - `stationary_energy_list_review_options`
@@ -121,6 +125,10 @@ Return either:
 2) a tool invocation using one available Stationary Energy review tool and valid arguments.
 
 Stationary Energy review tool argument contracts:
+
+Whole-inventory context tool argument contracts:
+
+{{ include: tools/stationary_energy_inventory_context_tool_arguments.md }}
 
 - `stationary_energy_list_review_options`: no arguments.
   - Returned `available_options` may include read-only `evidence` fields such as `dataset_year`, `geography_match`, `activity_value`, `activity_unit`, `emissions_value`, `emissions_unit`, `notation_key`, and `confidence_notes`. Use these only for explanation and comparison.

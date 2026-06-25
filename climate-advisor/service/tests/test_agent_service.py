@@ -492,6 +492,8 @@ class InventoryToolIntegrationTests(unittest.TestCase):
                 getattr(tool, "name", "")
                 for tool in mock_agent_class.call_args.kwargs["tools"]
             ]
+            self.assertIn("inventory_status_overview", tool_names)
+            self.assertIn("inventory_emissions_context", tool_names)
             self.assertIn("stationary_energy_accept_one", tool_names)
             self.assertIn("stationary_energy_accept_multiple", tool_names)
             self.assertIn("stationary_energy_accept_all_recommended", tool_names)

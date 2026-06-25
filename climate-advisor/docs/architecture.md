@@ -95,6 +95,8 @@ sequenceDiagram
   - `get_inventory`
   - `get_all_datasources`
 - Added when the request is scoped to a Stationary Energy draft run:
+  - `inventory_status_overview`
+  - `inventory_emissions_context`
   - `stationary_energy_list_review_options`
   - `stationary_energy_accept_one`
   - `stationary_energy_accept_multiple`
@@ -112,8 +114,9 @@ sequenceDiagram
 - General chat starts from `prompts.default`.
 - General inventory chat can append `prompts.inventory_context`.
 - Stationary Energy review chat starts from `prompts.stationary_energy_review`
-  instead of appending to `prompts.default`, and registers only scoped
-  Stationary Energy review tools.
+  instead of appending to `prompts.default`, and registers only tools scoped to
+  the active draft review workflow. That pack includes read-only whole-inventory
+  context tools plus Stationary Energy review tools.
 
 ## Stationary Energy Review Flow
 
@@ -172,7 +175,8 @@ workflow state in PostgreSQL.
   - Uses `stationary_energy_review` as the full prompt for active Stationary
     Energy review chat.
   - Keeps general inventory and vector-search tools out of active review chat.
-  - Registers the correct tool pack for the request.
+  - Registers the correct tool pack for the request, including read-only
+    whole-inventory context tools when a Stationary Energy draft run is active.
 - `services/stationary_energy/stationary_energy_draft_repository.py`
   - Loads draft runs, proposals, decisions, and staged review selections.
   - Persists staged selection status transitions.
@@ -254,6 +258,8 @@ settings.
   - Injected only when an inventory is active and CA can fetch its details.
 - `prompts.stationary_energy_review`
   - Used as the full prompt for active Stationary Energy draft review chat.
+  - Includes reusable tool fragments for `inventory_status_overview`,
+    `inventory_emissions_context`, and the Stationary Energy review tools.
 
 Prompt include directives such as `{{ include: tools/default_tool_policy.md }}`
 are resolved relative to the including file first and then against the prompt

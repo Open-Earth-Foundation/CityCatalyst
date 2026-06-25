@@ -330,11 +330,15 @@ Prompt paths are also configured in `llm_config.yaml`:
 - `prompts.inventory_context` is appended for general inventory chat when CA can
   load inventory metadata
 - `prompts.stationary_energy_review` drives active Stationary Energy draft
-  review chat without appending `prompts.default`
+  review chat without appending `prompts.default`. It includes the scoped
+  Stationary Energy review tools plus read-only whole-inventory context tools
+  such as `inventory_status_overview` and `inventory_emissions_context`.
 
 Some prompt files use reusable fragments with
 `{{ include: tools/example.md }}` directives. Includes are resolved relative to
 the including prompt first and then against the configured prompt search roots.
+The Stationary Energy review prompt uses this include mechanism for reusable
+tool policy and argument-contract fragments.
 
 ### Stationary Energy Tool Message Localization
 

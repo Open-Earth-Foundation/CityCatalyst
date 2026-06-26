@@ -18,11 +18,13 @@ from app.modules.prioritizer.models import PrioritizationResponse, RankedActionR
 from app.modules.prioritizer.services.explanations import generate_explanations
 from app.modules.prioritizer.services.translation import translate_explanations
 from app.services.data_clients import (
+    ApiActionFinancialFeasibilityScoresDataApiClient,
     ApiActionPathwaysDataApiClient,
     ApiActionMitigationFeasibilityScoresDataApiClient,
     ApiCityDataApiClient,
     ApiLegalDataApiClient,
     ApiActionPolicyScoresDataApiClient,
+    MockActionFinancialFeasibilityScoresDataApiClient,
     MockActionPathwaysDataApiClient,
     MockActionMitigationFeasibilityScoresDataApiClient,
     MockCityDataApiClient,
@@ -195,6 +197,15 @@ def _build_evidence_summary(
             "mitigation_feasibility_component_score": _safe_float(
                 feasibility_evidence.get("mitigation_feasibility_component_score")
             ),
+            "financial_feasibility_component_score": _safe_float(
+                feasibility_evidence.get("financial_feasibility_component_score")
+            ),
+            "financial_feasibility_route": feasibility_evidence.get(
+                "financial_feasibility_route"
+            ),
+            "financial_feasibility_reason": feasibility_evidence.get(
+                "financial_feasibility_reason"
+            ),
         },
     }
 
@@ -267,6 +278,10 @@ def run_prioritization(
     action_mitigation_feasibility_scores_data_api_client: (
         MockActionMitigationFeasibilityScoresDataApiClient
         | ApiActionMitigationFeasibilityScoresDataApiClient
+    ),
+    action_financial_feasibility_scores_data_api_client: (
+        MockActionFinancialFeasibilityScoresDataApiClient
+        | ApiActionFinancialFeasibilityScoresDataApiClient
     ),
     create_explanations: bool,
 ) -> PrioritizationResponse:
@@ -575,7 +590,70 @@ def run_prioritization(
         block.elapsed_seconds,
     )
 
-    # Phase 6: validate and resolve ranking weights for this run.
+    # Phase 6: fetch financial feasibility scores used by Feasibility scoring.
+    with time_block("fetch_action_financial_feasibility_scores") as block:
+        financial_feasibility_scores_fetch_result = (
+            action_financial_feasibility_scores_data_api_client
+            .get_action_financial_feasibility_scores(
+                locode,
+                country_code,
+            )
+        )
+    financial_feasibility_scores_by_action_id = (
+        financial_feasibility_scores_fetch_result.scores_by_action_id
+    )
+    timings["fetch_action_financial_feasibility_scores"] = block.elapsed_seconds
+    fetch_financial_feasibility_payload = {
+        "actions_with_financial_feasibility_scores": len(
+            financial_feasibility_scores_by_action_id
+        ),
+        "source": (
+            "mock_action_financial_feasibility_scores_api"
+            if isinstance(
+                action_financial_feasibility_scores_data_api_client,
+                MockActionFinancialFeasibilityScoresDataApiClient,
+            )
+            else "action_financial_feasibility_scores_api"
+        ),
+        "source_metadata": financial_feasibility_scores_fetch_result.source_metadata,
+        "upstream_meta": financial_feasibility_scores_fetch_result.upstream_meta,
+        "warning": financial_feasibility_scores_fetch_result.warning,
+        "elapsed_seconds": block.elapsed_seconds,
+    }
+    fetch_financial_feasibility_event_index = artifact_writer.write_event(
+        "fetch_action_financial_feasibility_scores.completed",
+        fetch_financial_feasibility_payload,
+    )
+    artifact_writer.write_step_detail(
+        "fetch_action_financial_feasibility_scores",
+        {
+            "actions_with_financial_feasibility_scores": len(
+                financial_feasibility_scores_by_action_id
+            ),
+            "action_ids_with_financial_feasibility_scores": sorted(
+                financial_feasibility_scores_by_action_id.keys()
+            ),
+            "source": fetch_financial_feasibility_payload["source"],
+            "source_metadata": (
+                financial_feasibility_scores_fetch_result.source_metadata
+            ),
+            "upstream_meta": financial_feasibility_scores_fetch_result.upstream_meta,
+            "warning": financial_feasibility_scores_fetch_result.warning,
+            "elapsed_seconds": block.elapsed_seconds,
+        },
+        event_index=fetch_financial_feasibility_event_index,
+        event_type="fetch_action_financial_feasibility_scores.completed",
+    )
+    logger.info(
+        "Fetched action financial feasibility scores internal_request_id=%s "
+        "locode=%s actions_with_scores=%s elapsed_seconds=%.3f",
+        internal_request_id,
+        locode,
+        len(financial_feasibility_scores_by_action_id),
+        block.elapsed_seconds,
+    )
+
+    # Phase 7: validate and resolve ranking weights for this run.
     with time_block("validate_weights") as block:
         try:
             weights = validate_weights(weights_override)
@@ -653,7 +731,7 @@ def run_prioritization(
         },
     )
 
-    # Phase 6: run hard filter to remove excluded and legally blocked actions.
+    # Phase 8: run hard filter to remove excluded and legally blocked actions.
     with time_block("hard_filter") as block:
         hard_filter_result = hard_filter.run(
             actions=actions,
@@ -713,7 +791,7 @@ def run_prioritization(
         block.elapsed_seconds,
     )
 
-    # Phase 7: run Impact block scoring on hard-filtered actions.
+    # Phase 9: run Impact block scoring on hard-filtered actions.
     with time_block("impact") as block:
         impact_result = impact.run(
             hard_filter_result.valid_actions,
@@ -740,7 +818,7 @@ def run_prioritization(
         event_type="impact.completed",
     )
 
-    # Phase 8: run Alignment block scoring on hard-filtered actions.
+    # Phase 10: run Alignment block scoring on hard-filtered actions.
     with time_block("alignment") as block:
         alignment_result = alignment.run(
             hard_filter_result.valid_actions,
@@ -771,13 +849,16 @@ def run_prioritization(
         event_type="alignment.completed",
     )
 
-    # Phase 10: run Feasibility block scoring on hard-filtered actions.
+    # Phase 11: run Feasibility block scoring on hard-filtered actions.
     with time_block("feasibility") as block:
         feasibility_result = feasibility.run(
             hard_filter_result.valid_actions,
             legal_assessments_by_action_id=legal_assessments_by_action_id,
             mitigation_feasibility_scores_by_action_id=(
                 mitigation_feasibility_scores_by_action_id
+            ),
+            financial_feasibility_scores_by_action_id=(
+                financial_feasibility_scores_by_action_id
             ),
         )
     # Emit feasibility score stats and detailed evidence artifacts.
@@ -819,7 +900,7 @@ def run_prioritization(
         len(feasibility_result.score_by_action_id),
     )
 
-    # Phase 11: aggregate pillar scores into final ranking.
+    # Phase 12: aggregate pillar scores into final ranking.
     with time_block("final_scoring") as block:
         scored_actions = final_scoring.run(
             actions=hard_filter_result.valid_actions,
@@ -869,7 +950,7 @@ def run_prioritization(
         block.elapsed_seconds,
     )
 
-    # Phase 11: attach per-block evidence into each ranked action object.
+    # Phase 12b: attach per-block evidence into each ranked action object.
     for scored_action in scored_actions:
         action_id = scored_action.action.action_id
         scored_action.evidence = {
@@ -886,7 +967,7 @@ def run_prioritization(
             ),
         }
 
-    # Phase 12: optionally generate post-ranking qualitative explanations in English.
+    # Phase 13: optionally generate post-ranking qualitative explanations in English.
     explanations_by_action_id: dict[str, str] = {}
     explanation_translations_by_action_id: dict[str, dict[str, str]] = {}
     translation_warnings: list[str] = []
@@ -997,7 +1078,7 @@ def run_prioritization(
             )
         timings["explanations"] = block.elapsed_seconds
 
-        # Phase 12b: optionally translate canonical English explanations.
+        # Phase 13b: optionally translate canonical English explanations.
         target_languages = [
             language
             for language in _resolve_requested_output_languages(requested_languages)
@@ -1161,7 +1242,7 @@ def run_prioritization(
             create_explanations,
         )
 
-    # Phase 13: build public ranked action payloads and response metadata.
+    # Phase 14: build public ranked action payloads and response metadata.
     ranked_actions: list[RankedActionResult] = []
     for scored_action in scored_actions:
         action_id = scored_action.action.action_id

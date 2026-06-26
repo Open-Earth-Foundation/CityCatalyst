@@ -922,6 +922,44 @@ class ActionMitigationFeasibilityScoresApiResponse(BaseModel):
     scores: list[ActionMitigationFeasibilityScoreApiItem] = Field(default_factory=list)
 
 
+class ActionFinancialFeasibilityScoresApiMeta(BaseModel):
+    """Metadata envelope returned by the financial feasibility scores endpoint."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    generated_at_utc: str | None = None
+    endpoint: str | None = None
+    locode: str | None = None
+    country_code: str | None = None
+    caveat: str | None = None
+    filters: dict[str, object] = Field(default_factory=dict)
+    total_records: int | None = None
+
+
+class ActionFinancialFeasibilityScoreApiItem(BaseModel):
+    """Single score row returned by the financial feasibility scores endpoint."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    action_id: str
+    action_name: str | None = None
+    sector: str | None = None
+    financial_feasibility: float | None = Field(default=None, ge=0.0, le=1.0)
+    route: str | None = None
+    reason: str | None = None
+    inputs: dict[str, Any] = Field(default_factory=dict)
+    links: dict[str, Any] = Field(default_factory=dict)
+
+
+class ActionFinancialFeasibilityScoresApiResponse(BaseModel):
+    """Response model for city-scoped financial feasibility scores endpoint."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    meta: ActionFinancialFeasibilityScoresApiMeta
+    data: list[ActionFinancialFeasibilityScoreApiItem] = Field(default_factory=list)
+
+
 class ActionLegalAssessmentApiItem(BaseModel):
     """Flat legal assessment row returned by `GET /api/v1/action-legal-assessments`."""
 

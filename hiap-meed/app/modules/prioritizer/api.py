@@ -32,16 +32,19 @@ from app.modules.prioritizer.services.exclusion_resolution import (
 )
 from app.modules.prioritizer.services.translation import translate_explanations
 from app.services.data_clients import (
+    ApiActionFinancialFeasibilityScoresDataApiClient,
     ApiActionPathwaysDataApiClient,
     ApiActionMitigationFeasibilityScoresDataApiClient,
     ApiCityDataApiClient,
     ApiLegalDataApiClient,
     ApiActionPolicyScoresDataApiClient,
+    MockActionFinancialFeasibilityScoresDataApiClient,
     MockActionPathwaysDataApiClient,
     MockActionMitigationFeasibilityScoresDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
     MockActionPolicyScoresDataApiClient,
+    get_action_financial_feasibility_scores_data_api_client,
     get_action_mitigation_feasibility_scores_data_api_client,
     get_action_pathways_data_api_client,
     get_city_data_api_client,
@@ -162,6 +165,10 @@ def _mlflow_source_params() -> dict[str, str]:
         ),
         "action_mitigation_feasibility_scores_data_source": os.getenv(
             "HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE",
+            "api",
+        ),
+        "action_financial_feasibility_scores_data_source": os.getenv(
+            "HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE",
             "api",
         ),
     }
@@ -390,6 +397,10 @@ def prioritize(
         MockActionMitigationFeasibilityScoresDataApiClient
         | ApiActionMitigationFeasibilityScoresDataApiClient
     ) = Depends(get_action_mitigation_feasibility_scores_data_api_client),
+    action_financial_feasibility_scores_data_api_client: (
+        MockActionFinancialFeasibilityScoresDataApiClient
+        | ApiActionFinancialFeasibilityScoresDataApiClient
+    ) = Depends(get_action_financial_feasibility_scores_data_api_client),
 ) -> PrioritizerApiResponse:
     """
     Prioritize actions from the caller request envelope.
@@ -448,6 +459,9 @@ def prioritize(
                     action_policy_scores_data_api_client=action_policy_scores_data_api_client,
                     action_mitigation_feasibility_scores_data_api_client=(
                         action_mitigation_feasibility_scores_data_api_client
+                    ),
+                    action_financial_feasibility_scores_data_api_client=(
+                        action_financial_feasibility_scores_data_api_client
                     ),
                     create_explanations=request.requestData.createExplanations,
                     requested_languages=requested_languages,
@@ -714,6 +728,10 @@ def _run_for_city_input(
         MockActionMitigationFeasibilityScoresDataApiClient
         | ApiActionMitigationFeasibilityScoresDataApiClient
     ),
+    action_financial_feasibility_scores_data_api_client: (
+        MockActionFinancialFeasibilityScoresDataApiClient
+        | ApiActionFinancialFeasibilityScoresDataApiClient
+    ),
     create_explanations: bool,
     requested_languages: list[str],
     frontend_request_id: str,
@@ -774,6 +792,9 @@ def _run_for_city_input(
             action_policy_scores_data_api_client=action_policy_scores_data_api_client,
             action_mitigation_feasibility_scores_data_api_client=(
                 action_mitigation_feasibility_scores_data_api_client
+            ),
+            action_financial_feasibility_scores_data_api_client=(
+                action_financial_feasibility_scores_data_api_client
             ),
             create_explanations=create_explanations,
             requested_languages=requested_languages,

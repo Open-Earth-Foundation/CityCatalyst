@@ -19,6 +19,11 @@ from app.services.action_policy_scores_api import (
     ActionPolicyScoresApiService,
     DEFAULT_ACTION_POLICY_SCORES_BASE_URL,
 )
+from app.services.action_financial_feasibility_scores_api import (
+    ACTION_FINANCIAL_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE,
+    ActionFinancialFeasibilityScoresApiService,
+    DEFAULT_ACTION_FINANCIAL_FEASIBILITY_SCORES_BASE_URL,
+)
 from app.services.action_pathways_api import (
     ACTION_PATHWAYS_ENDPOINT,
     ActionPathwaysApiService,
@@ -38,14 +43,17 @@ from app.services.http_client import (
     get_json_with_retries,
 )
 from app.services.data_clients import (
+    ApiActionFinancialFeasibilityScoresDataApiClient,
     ApiActionPathwaysDataApiClient,
     ApiActionPolicyScoresDataApiClient,
     ApiCityDataApiClient,
     ApiLegalDataApiClient,
+    MockActionFinancialFeasibilityScoresDataApiClient,
     MockActionPolicyScoresDataApiClient,
     MockActionPathwaysDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
+    get_action_financial_feasibility_scores_data_api_client,
     get_action_mitigation_feasibility_scores_data_api_client,
     get_action_policy_scores_data_api_client,
     get_action_pathways_data_api_client,
@@ -1042,6 +1050,223 @@ def test_get_action_mitigation_feasibility_scores_data_client_rejects_invalid_so
         match="HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE",
     ):
         get_action_mitigation_feasibility_scores_data_api_client()
+
+
+@pytest.mark.unit
+def test_get_action_financial_feasibility_scores_data_client_defaults_to_api(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Financial feasibility dependency provider defaults to API data source."""
+    monkeypatch.delenv(
+        "HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE",
+        raising=False,
+    )
+
+    client = get_action_financial_feasibility_scores_data_api_client()
+
+    assert isinstance(client, ApiActionFinancialFeasibilityScoresDataApiClient)
+
+
+@pytest.mark.unit
+def test_get_action_financial_feasibility_scores_data_client_rejects_invalid_source(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Financial feasibility dependency provider rejects invalid source values."""
+    monkeypatch.setenv(
+        "HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE",
+        "apii",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE",
+    ):
+        get_action_financial_feasibility_scores_data_api_client()
+
+
+@pytest.mark.unit
+def test_action_financial_feasibility_scores_service_uses_default_base_url_when_env_is_unset(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Financial feasibility service falls back to the documented default host."""
+    monkeypatch.delenv("CCGLOBAL_API_BASE_URL", raising=False)
+
+    service = ActionFinancialFeasibilityScoresApiService()
+
+    assert service.base_url == DEFAULT_ACTION_FINANCIAL_FEASIBILITY_SCORES_BASE_URL
+
+
+@pytest.mark.unit
+def test_action_financial_feasibility_scores_service_uses_env_base_url_override(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Financial feasibility service honors the configured upstream host."""
+    monkeypatch.setenv(
+        "CCGLOBAL_API_BASE_URL",
+        "https://finance.example.test/root/ ",
+    )
+
+    service = ActionFinancialFeasibilityScoresApiService()
+
+    assert service.base_url == "https://finance.example.test/root/"
+    assert service._build_action_financial_feasibility_scores_url("CL IQQ", "CL") == (
+        "https://finance.example.test/root/api/v1/cities/"
+        "CL%20IQQ/climate-finance/feasibility?country_code=CL"
+    )
+
+
+@pytest.mark.unit
+def test_mock_action_financial_feasibility_scores_client_loads_scores_from_file() -> None:
+    """Mock financial feasibility client reads checked-in compact score payloads."""
+    mock_file_path = (
+        Path(__file__).resolve().parents[2]
+        / "data"
+        / "mock"
+        / "action_financial_feasibility_scores_api_mock.json"
+    )
+    client = MockActionFinancialFeasibilityScoresDataApiClient(
+        mock_file_path=mock_file_path
+    )
+
+    fetch_result = client.get_action_financial_feasibility_scores("CL IQQ", "CL")
+    scores = fetch_result.scores_by_action_id
+
+    assert scores["c40_0034"].financial_feasibility == pytest.approx(1.0)
+    assert scores["c40_0034"].route == "self-deliverable"
+    assert scores["c40_0034"].reason == (
+        "Low-capital action the city can deliver itself."
+    )
+    assert scores["c40_0034"].inputs["finance"]["fund_access"] == "direct"
+    assert scores["c40_0034"].links["detail"].endswith(
+        "/climate-finance/actions/c40_0034"
+    )
+    assert scores["c40_0034"].source_metadata["upstream_endpoint"] == (
+        ACTION_FINANCIAL_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE
+    )
+    assert scores["c40_0034"].source_metadata["requested_locode"] == "CL IQQ"
+
+
+@pytest.mark.unit
+def test_api_action_financial_feasibility_scores_client_maps_remote_payload_and_metadata(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """API financial feasibility client maps compact batch rows and metadata."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        request = httpx.Request("GET", url, headers=headers)
+        return httpx.Response(
+            200,
+            request=request,
+            json={
+                "meta": {
+                    "generated_at_utc": "2026-06-26T14:37:36.830291+00:00",
+                    "endpoint": ACTION_FINANCIAL_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE,
+                    "locode": "CL IQQ",
+                    "country_code": "CL",
+                    "caveat": "Working estimate.",
+                    "filters": {"action_id": None},
+                    "total_records": 1,
+                },
+                "data": [
+                    {
+                        "action_id": "c40_0034",
+                        "action_name": "Material bans",
+                        "sector": "waste",
+                        "financial_feasibility": 1.0,
+                        "route": "self-deliverable",
+                        "reason": "Low-capital action.",
+                        "inputs": {
+                            "action": {"capital_intensity": 0.2},
+                            "city": {"profile": "Self-sufficient"},
+                            "finance": {"fund_access": "direct"},
+                            "evidence": {"n_existing_projects": 0},
+                        },
+                        "links": {
+                            "detail": (
+                                "/api/v1/cities/CL IQQ/climate-finance/actions/c40_0034"
+                            ),
+                        },
+                    }
+                ],
+            },
+        )
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    client = ApiActionFinancialFeasibilityScoresDataApiClient()
+
+    fetch_result = client.get_action_financial_feasibility_scores("CL IQQ", "CL")
+    scores = fetch_result.scores_by_action_id
+
+    assert scores["c40_0034"].financial_feasibility == pytest.approx(1.0)
+    assert scores["c40_0034"].source_metadata["upstream_endpoint"] == (
+        ACTION_FINANCIAL_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE
+    )
+    assert scores["c40_0034"].source_metadata["requested_locode"] == "CL IQQ"
+    assert scores["c40_0034"].source_metadata["requested_country_code"] == "CL"
+    assert scores["c40_0034"].source_metadata["http_status_code"] == 200
+
+
+@pytest.mark.unit
+def test_api_action_financial_feasibility_scores_client_rejects_duplicate_action_ids(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """API financial feasibility client rejects duplicate action IDs for one city."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        request = httpx.Request("GET", url, headers=headers)
+        row = {
+            "action_id": "c40_0034",
+            "financial_feasibility": 1.0,
+            "inputs": {},
+            "links": {},
+        }
+        return httpx.Response(
+            200,
+            request=request,
+            json={
+                "meta": {
+                    "generated_at_utc": "2026-06-26T14:37:36.830291+00:00",
+                    "endpoint": ACTION_FINANCIAL_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE,
+                    "locode": "CL IQQ",
+                    "country_code": "CL",
+                    "total_records": 2,
+                },
+                "data": [row, dict(row)],
+            },
+        )
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    client = ApiActionFinancialFeasibilityScoresDataApiClient()
+
+    with pytest.raises(UpstreamApiError, match="duplicate action_id"):
+        client.get_action_financial_feasibility_scores("CL IQQ", "CL")
+
+
+@pytest.mark.unit
+def test_api_action_financial_feasibility_scores_client_maps_404_to_empty_scores(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """API financial feasibility client treats upstream 404 as no scores."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        request = httpx.Request("GET", url, headers=headers)
+        return httpx.Response(404, request=request, json={"detail": "not found"})
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    monkeypatch.setenv("UPSTREAM_HTTP_MAX_RETRIES", "0")
+    client = ApiActionFinancialFeasibilityScoresDataApiClient()
+
+    fetch_result = client.get_action_financial_feasibility_scores("CL IQQ", "CL")
+
+    assert fetch_result.scores_by_action_id == {}
+    assert fetch_result.source_metadata["http_status_code"] == 404
+    assert fetch_result.warning is not None
 
 
 @pytest.mark.unit

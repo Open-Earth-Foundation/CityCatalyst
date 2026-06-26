@@ -58,6 +58,7 @@ HIAP_MEED_LEGAL_DATA_SOURCE=api
 HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE=api
 HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE=api
 HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE=api
+HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE=api
 HIAP_MEED_TOP_N=20
 ACTIVITY_DATA_LEVEL_MAPPING=false
 OPENAI_API_KEY=
@@ -91,6 +92,7 @@ Variables:
 - `HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE`: action catalog source (`api` or `mock`)
 - `HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE`: action policy scores input source (`api` or `mock`)
 - `HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE`: mitigation feasibility scores input source (`api` or `mock`)
+- `HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE`: climate-finance feasibility scores input source (`api` or `mock`)
 - `HIAP_MEED_TOP_N`: default number of ranked actions to return per city (default `20`)
 - `ACTIVITY_DATA_LEVEL_MAPPING`: guarded future Impact mapping switch; `false` keeps true subsector-only matching, `true` calls the current stub and still returns subsector-only results
 - `OPENAI_API_KEY`: API key used by OpenAI-backed features
@@ -327,7 +329,7 @@ Score normalization policy:
 - Each block applies explicit internal weights that sum to `1.0`.
 - Block score is the canonical weighted sum of those components (no run-relative max-normalization).
 - For normalized components in this system, `0.5` is the neutral midpoint when a component is designed around beneficial vs harmful effects.
-  - Example: the Alignment other-preference co-benefit component and the Feasibility socio-economic component use `0.5` as neutral.
+  - Example: the Alignment other-preference co-benefit component and missing Feasibility legal, mitigation, or financial rows use `0.5` as neutral.
   - By contrast, some one-sided components use `0.0` as the natural baseline because they measure absence of support rather than harmful effect, such as missing policy support or no preferred-sector match.
 
 Impact block behavior (implemented):
@@ -593,7 +595,7 @@ Common validation errors:
 - Missing `requestData.cityDataList` or empty `cityDataList` -> HTTP `422`.
 - Missing `locode` or empty `locode` in a city entry -> HTTP `422`.
 
-Note: city, action, legal, policy-score, and mitigation-feasibility clients resolve to `mock` (file-backed) or `api`. The city client uses synchronous HTTP for `GET /api/v0/city_attributes/{locode}`. The action client uses `GET /api/v1/action-pathways` without query parameters and returns the full upstream catalog plus fetch metadata. The prioritization pipeline then keeps only mitigation actions and records fetched-versus-kept counts in the `fetch_actions` artifacts. The legal client uses `GET /api/v1/action-legal-assessments?countryCode=...`. Policy scores use `GET /api/v1/cities/{locode}/action-policy-scores`. Mitigation feasibility uses `GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; 404 or missing rows are treated as neutral `0.5` in scoring. These API-backed clients default to `api`. The shared `CCGLOBAL_API_BASE_URL` defaults to `https://ccglobal.openearth.dev` for local/dev use; the hiap-meed GitHub workflows override it per environment, with dev using `https://ccglobal.openearth.dev` and test/prod using `https://api.citycatalyst.io/`. If that host mapping changes, update both the runtime config and the hiap-meed deploy workflows together. The shared upstream HTTP path also includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. Upstream response DTOs are intentionally additive-tolerant right now: they ignore unexpected extra fields while still validating the fields the pipeline depends on. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests. Legal fetch artifacts intentionally keep `source_metadata.upstream_generated_at_utc = null` because the current legal assessments endpoint does not expose a top-level generated-at field.
+Note: city, action, legal, policy-score, mitigation-feasibility, and financial-feasibility clients resolve to `mock` (file-backed) or `api`. The city client uses synchronous HTTP for `GET /api/v0/city_attributes/{locode}`. The action client uses `GET /api/v1/action-pathways` without query parameters and returns the full upstream catalog plus fetch metadata. The prioritization pipeline then keeps only mitigation actions and records fetched-versus-kept counts in the `fetch_actions` artifacts. The legal client uses `GET /api/v1/action-legal-assessments?countryCode=...`. Policy scores use `GET /api/v1/cities/{locode}/action-policy-scores`. Mitigation feasibility uses `GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; 404 or missing rows are treated as neutral `0.5` in scoring. Financial feasibility uses `GET /api/v1/cities/{locode}/climate-finance/feasibility?country_code=...`; the first implementation consumes the compact batch evidence only and does not fetch linked named opportunities or projects. These API-backed clients default to `api`. The shared `CCGLOBAL_API_BASE_URL` defaults to `https://ccglobal.openearth.dev` for local/dev use; the hiap-meed GitHub workflows override it per environment, with dev using `https://ccglobal.openearth.dev` and test/prod using `https://api.citycatalyst.io/`. If that host mapping changes, update both the runtime config and the hiap-meed deploy workflows together. The shared upstream HTTP path also includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. Upstream response DTOs are intentionally additive-tolerant right now: they ignore unexpected extra fields while still validating the fields the pipeline depends on. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests. Legal fetch artifacts intentionally keep `source_metadata.upstream_generated_at_utc = null` because the current legal assessments endpoint does not expose a top-level generated-at field.
 
 ### 5. Logging and artifacts
 

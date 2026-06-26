@@ -58,6 +58,11 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
                 "mitigation_feasibility_score_present": False,
                 "legal_verdict_score_missing": False,
                 "mitigation_feasibility_score_missing": False,
+                "financial_feasibility_component_score": 0.5,
+                "financial_feasibility_score_present": False,
+                "financial_feasibility_score_missing": False,
+                "financial_feasibility_route": "self-deliverable",
+                "financial_feasibility_reason": "Low-capital action.",
             },
         },
     )
@@ -87,6 +92,18 @@ def test_build_curated_action_payload_uses_qualitative_evidence() -> None:
     assert (
         payload["feasibility_signals"]["mitigation_feasibility_component_bucket"]
         == "neutral"
+    )
+    assert (
+        payload["feasibility_signals"]["financial_feasibility_component_bucket"]
+        == "neutral"
+    )
+    assert (
+        payload["feasibility_signals"]["financial_feasibility_route"]
+        == "self-deliverable"
+    )
+    assert (
+        payload["feasibility_signals"]["financial_feasibility_reason"]
+        == "Low-capital action."
     )
     assert payload["main_strengths"] == [
         "Expected to make a very strong emissions reduction in the current city inventory.",
@@ -228,6 +245,9 @@ def test_build_curated_action_payload_uses_component_buckets_for_constraints() -
                     "mitigation_feasibility_component_score": 0.25,
                     "mitigation_feasibility_score_present": True,
                     "mitigation_feasibility_score_missing": False,
+                    "financial_feasibility_component_score": 0.2,
+                    "financial_feasibility_score_present": True,
+                    "financial_feasibility_score_missing": False,
                 },
             },
         )
@@ -242,6 +262,7 @@ def test_build_curated_action_payload_uses_component_buckets_for_constraints() -
         "Offers very weak support for the city's preferred co-benefits.",
         "Shows very weak legal feasibility conditions in the current evidence.",
         "Shows weaker mitigation feasibility for the current city.",
+        "Needs a difficult financing route for the current city.",
     ]
 
 

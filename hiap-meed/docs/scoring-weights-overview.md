@@ -48,30 +48,26 @@ flowchart TD
     ALN_TIME -->|0.5| ALN_TIME_NOPREF["no_preference / no supported preference"]
     ALN_TIME -->|0.5| ALN_TIME_UNKNOWN["Missing / Unknown action timeline"]
 
-    FEA -->|0.50| FEA_LEG["Soft Legal Component"]
-    FEA -->|0.50| FEA_SOC["Socioeconomic Component"]
+    FEA -->|0.34| FEA_LEG["Legal Verdict Component"]
+    FEA -->|0.33| FEA_MIT["Mitigation Feasibility Component"]
+    FEA -->|0.33| FEA_FIN["Financial Feasibility Component"]
 
-    FEA_LEG -->|aligned_soft / total_soft| LEG_RATIO["Recommended + Optional requirements only"]
-    LEG_RATIO -->|0.0 fallback| LEG_NONE["No soft legal requirements"]
+    FEA_LEG -->|direct 0..1 input| LEG_SCORE["verdictScore"]
+    LEG_SCORE -->|0.5 fallback| LEG_MISS["Missing legal row or verdictScore"]
 
-    FEA_SOC -->|normalize from -2..2 to 0..1| SOC_NORM["Weighted socioeconomic average"]
-    SOC_NORM -->|bucket -2| SOC_VLOW["very_low"]
-    SOC_NORM -->|bucket -1| SOC_LOW["low"]
-    SOC_NORM -->|bucket 0| SOC_MED["medium"]
-    SOC_NORM -->|bucket 1| SOC_HIGH["high"]
-    SOC_NORM -->|bucket 2| SOC_VHIGH["very_high"]
-    FEA_SOC -->|missing city indicator -> raw 0| SOC_MISS["Missing city indicator contributes 0 before normalization"]
-    FEA_SOC -->|0.5 fallback| SOC_NONE["No socioeconomic rules on action"]
+    FEA_MIT -->|direct 0..1 input| MIT_SCORE["action_score"]
+    MIT_SCORE -->|0.5 fallback| MIT_MISS["Missing row or action_score"]
 
-    linkStyle 0,1,2 stroke-width:4px
-    linkStyle 3,4,16,17 stroke-width:3px
-    linkStyle 18,19,20,21,27,28 stroke-width:2.5px
+    FEA_FIN -->|direct 0..1 input| FIN_SCORE["financial_feasibility"]
+    FIN_SCORE -->|route/reason retained| FIN_EVID["Compact finance evidence"]
+    FIN_SCORE -->|0.5 fallback| FIN_MISS["Missing row or financial_feasibility"]
+
 ```
 
 ## Notes
 
 - `0.5` is not universally neutral across all components.
-- `0.5` is a true neutral midpoint only for components normalized from a signed scale such as `-2..2`.
+- `0.5` is the intended neutral fallback for missing legal, mitigation feasibility, or financial feasibility rows in the Feasibility block.
 - Impact emissions share now uses scoring magnitude rather than raw signed inventory:
   - AFOLU `V.*` contributes `abs(totalEmissions)` in both the numerator and denominator.
   - Non-AFOLU subsectors contribute only when `totalEmissions > 0`.
@@ -137,15 +133,20 @@ This means Impact is a bit more than twice as influential as Alignment or Feasib
 
 ### Feasibility examples
 
-- Soft legal has internal weight `0.50`
+- Legal verdict has internal weight `0.34`
   - `0.0` -> `1.0`
-  - Feasibility score change = `+0.50`
-  - Final score change = `0.23 * 0.50 = 0.115`
+  - Feasibility score change = `+0.34`
+  - Final score change = `0.23 * 0.34 = 0.0782`
 
-- Socioeconomic fit also has internal weight `0.50`
-  - `0.5` neutral -> `1.0` very supportive
-  - Feasibility score change = `+0.25`
-  - Final score change = `0.23 * 0.25 = 0.0575`
+- Mitigation feasibility has internal weight `0.33`
+  - `0.5` neutral -> `1.0` very feasible
+  - Feasibility score change = `+0.165`
+  - Final score change = `0.23 * 0.165 = 0.03795`
+
+- Financial feasibility has internal weight `0.33`
+  - `0.5` neutral -> `1.0` very accessible finance route
+  - Feasibility score change = `+0.165`
+  - Final score change = `0.23 * 0.165 = 0.03795`
 
 ### Quick reading guide
 

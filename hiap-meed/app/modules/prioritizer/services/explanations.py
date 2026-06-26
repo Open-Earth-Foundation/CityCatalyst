@@ -327,6 +327,9 @@ def _build_feasibility_signals(
     mitigation_feasibility_component_score = feasibility_evidence.get(
         "mitigation_feasibility_component_score"
     )
+    financial_feasibility_component_score = feasibility_evidence.get(
+        "financial_feasibility_component_score"
+    )
     return {
         "legal_assessment_present": bool(
             feasibility_evidence.get("legal_assessment_present", False)
@@ -341,6 +344,15 @@ def _build_feasibility_signals(
         ),
         "mitigation_feasibility_component_bucket": _component_score_bucket(
             mitigation_feasibility_component_score
+        ),
+        "financial_feasibility_component_bucket": _component_score_bucket(
+            financial_feasibility_component_score
+        ),
+        "financial_feasibility_route": feasibility_evidence.get(
+            "financial_feasibility_route"
+        ),
+        "financial_feasibility_reason": feasibility_evidence.get(
+            "financial_feasibility_reason"
         ),
     }
 
@@ -420,6 +432,16 @@ def _build_main_strengths(
             ),
             strong_message="Shows strong mitigation feasibility for the current city.",
             very_strong_message="Shows very strong mitigation feasibility for the current city.",
+        )
+
+    if bool(feasibility_evidence.get("financial_feasibility_score_present", False)):
+        _append_strength_message_for_score(
+            strengths,
+            score_value=feasibility_evidence.get(
+                "financial_feasibility_component_score"
+            ),
+            strong_message="Shows accessible financing and delivery readiness for the current city.",
+            very_strong_message="Shows very accessible financing and delivery readiness for the current city.",
         )
 
     return strengths
@@ -506,6 +528,16 @@ def _build_main_constraints(
             very_weak_message="Shows very weak mitigation feasibility for the current city.",
         )
 
+    if bool(feasibility_evidence.get("financial_feasibility_score_present", False)):
+        _append_constraint_message_for_score(
+            constraints,
+            score_value=feasibility_evidence.get(
+                "financial_feasibility_component_score"
+            ),
+            weak_message="Needs a more challenging financing route for the current city.",
+            very_weak_message="Needs a difficult financing route for the current city.",
+        )
+
     return constraints
 
 
@@ -533,6 +565,16 @@ def _build_known_limitations(
     ):
         limitations.append(
             "The mitigation feasibility score row was incomplete for this action, so the feasibility component used a neutral fallback."
+        )
+    if bool(feasibility_evidence.get("financial_feasibility_score_missing", False)):
+        limitations.append(
+            "No financial feasibility score row was available for this action, so the financial feasibility component used a neutral fallback."
+        )
+    elif bool(
+        feasibility_evidence.get("financial_feasibility_action_score_missing", False)
+    ):
+        limitations.append(
+            "The financial feasibility score row was incomplete for this action, so the financial feasibility component used a neutral fallback."
         )
     return limitations
 

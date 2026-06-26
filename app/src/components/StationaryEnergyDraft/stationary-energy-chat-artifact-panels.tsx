@@ -229,6 +229,8 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
   const scrollRegionRef = useRef<HTMLDivElement | null>(null);
   const shouldFollowChatRef = useRef(true);
   const chatInputRef = useRef<HTMLInputElement | null>(null);
+  const previousLoadingActionRef = useRef(state.loadingAction);
+  const lastFocusedMessageIdRef = useRef<string | null>(null);
   const [viewSourceId, setViewSourceId] = useState<string | null>(null);
   const firstPendingDecision =
     state.decisionReviewContext.find(
@@ -250,6 +252,7 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
     state.loadingAction !== "chat" &&
     suggestedQuestions.length > 0;
   const { chatInput } = state;
+  const setChatInput = actions.setChatInput;
   const lastChatMessage = state.chatMessages[state.chatMessages.length - 1];
   const lastChatMessageText =
     lastChatMessage?.kind === "text" ? lastChatMessage.text : "";
@@ -270,7 +273,7 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
   const focusChatComposer = useCallback(
     (draftQuestion?: string) => {
       if (draftQuestion && !chatInput.trim()) {
-        actions.setChatInput(draftQuestion);
+        setChatInput(draftQuestion);
       }
 
       window.requestAnimationFrame(() => {
@@ -283,7 +286,7 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
         input.setSelectionRange(cursorPosition, cursorPosition);
       });
     },
-    [actions, chatInput],
+    [chatInput, setChatInput],
   );
 
   const handleAskAboutProposal = useCallback(
@@ -327,6 +330,35 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
     lastChatMessageText,
     state.chatMessages.length,
     state.loadingAction,
+  ]);
+
+  useEffect(() => {
+    const previousLoadingAction = previousLoadingActionRef.current;
+    previousLoadingActionRef.current = state.loadingAction;
+
+    if (state.showStaleWarning || state.loadingAction === "chat") {
+      return;
+    }
+
+    const chatJustFinished =
+      previousLoadingAction === "chat" && state.loadingAction !== "chat";
+    const focusableWidgetPresented =
+      lastChatMessage?.kind !== undefined &&
+      lastChatMessage.kind !== "text" &&
+      lastChatMessage.id !== lastFocusedMessageIdRef.current;
+
+    if (!chatJustFinished && !focusableWidgetPresented) {
+      return;
+    }
+
+    lastFocusedMessageIdRef.current = lastChatMessage?.id ?? null;
+    focusChatComposer();
+  }, [
+    focusChatComposer,
+    lastChatMessage?.id,
+    lastChatMessage?.kind,
+    state.loadingAction,
+    state.showStaleWarning,
   ]);
 
   return (

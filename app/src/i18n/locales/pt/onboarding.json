@@ -186,6 +186,7 @@
   "map-rows-description-pdf": "As linhas extraídas já estão mapeadas para os campos do inventário. Reveja os dados abaixo e continue para a etapa final.",
   "upload-failed": "Falha no upload",
   "failed-to-upload-file": "Falha ao enviar o arquivo",
+  "edit": "Editar",
   "citycatalyst-demo": "CityCatalyst Demo",
   "inventory-goal-description-ghgi": "O GPC fornece um quadro robusto para contabilizar e reportar as emissões de gases de efeito estufa em toda a cidade.",
   "gwp-description-ghgi": "O potencial de aquecimento global (GWP) mede a quantidade de calor que um gás de efeito estufa retém na atmosfera durante um período específico, em relação ao dióxido de carbono.",

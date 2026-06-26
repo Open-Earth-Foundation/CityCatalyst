@@ -5,9 +5,9 @@ import { useParams } from "next/navigation";
 
 import {
   AgentBubble,
-  CoveragePanel,
   QuickReplies,
   RunSummary,
+  StationaryEnergyChatWelcome,
   StatusLine,
   UserBubble,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-primitives";
@@ -121,28 +121,10 @@ export function StageMessages(props: StageMessagesProps) {
 
   if (props.stage === "start") {
     return (
-      <>
-        <AgentBubble text={t("chat-start-intro")} />
-        <CoveragePanel
-          sourceCount={props.draftState?.source_candidates.length ?? null}
-          currentCount={props.counts.total}
-        />
-        <AgentBubble text={t("chat-start-review-prompt")} />
-        <QuickReplies
-          standalone
-          buttons={[
-            {
-              label: t("chat-start-yes-draft"),
-              primary: true,
-              onClick: props.onStartDraft,
-            },
-            {
-              label: t("chat-start-choose-sources"),
-              onClick: () => props.onPreference(START_CHOOSE_SOURCES),
-            },
-          ]}
-        />
-      </>
+      <StationaryEnergyChatWelcome
+        onStartDraft={props.onStartDraft}
+        onChooseSources={() => props.onPreference(START_CHOOSE_SOURCES)}
+      />
     );
   }
 

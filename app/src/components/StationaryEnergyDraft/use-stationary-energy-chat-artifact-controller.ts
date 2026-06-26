@@ -873,6 +873,28 @@ export function useStationaryEnergyChatArtifactController(
         setAcknowledgedStaleDraftRunId(toolDraftRunId);
       }
 
+      // The agent started a draft from chat: load the newly created draft so the
+      // overview + review pane pick it up. Generation continues in the
+      // background and the status poller fills in proposals as they arrive.
+      const toolUiEvent =
+        typeof (tool as { ui_event?: unknown } | null)?.ui_event === "string"
+          ? (tool as { ui_event: string }).ui_event
+          : null;
+      if (toolUiEvent === "stationary_energy_draft_started") {
+        if (toolDraftRunId) {
+          void refreshDraftStatusSilently(toolDraftRunId).catch((error) => {
+            setErrorMessage(
+              resolveErrorMessage(
+                t,
+                error,
+                "error-failed-to-load-stationary-energy-draft-status",
+              ),
+            );
+          });
+        }
+        return;
+      }
+
       if (isStationaryEnergyInventoryConfirmationToolResult(tool)) {
         const toolMessage = resolveStationaryEnergyToolMessage(
           t,

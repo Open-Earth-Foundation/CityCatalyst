@@ -222,6 +222,104 @@ export function CoveragePanel(props: {
   );
 }
 
+export function StationaryEnergyChatWelcome(props: {
+  onStartDraft: () => void;
+  onChooseSources: () => void;
+}) {
+  const { t } = useStationaryEnergyAgenticTranslation();
+  const capabilities = [
+    t("chat-welcome-capability-draft"),
+    t("chat-welcome-capability-compare"),
+    t("chat-welcome-capability-save"),
+  ];
+
+  return (
+    <Box
+      w="full"
+      maxW={CHAT_SURFACE_MAX_W}
+      alignSelf="center"
+      transform={CHAT_WIDGET_TRANSFORM}
+      my="auto"
+      py="l"
+    >
+      <VStack align="stretch" gap="l">
+        <VStack align="center" gap="s" textAlign="center">
+          <Box
+            w="48px"
+            h="48px"
+            display="grid"
+            placeItems="center"
+            borderRadius="full"
+            bg="interactive.tertiary"
+            color="base.light"
+          >
+            <AskAiIcon />
+          </Box>
+          <Text
+            fontFamily="heading"
+            fontSize="title.md"
+            fontWeight="semibold"
+            color="content.primary"
+          >
+            {t("chat-welcome-title")}
+          </Text>
+          <Text color="content.secondary" fontSize="body.md" maxW="520px">
+            {t("chat-welcome-subtitle")}
+          </Text>
+        </VStack>
+
+        <VStack
+          align="stretch"
+          gap="s"
+          bg="base.light"
+          borderWidth="1px"
+          borderColor="border.overlay"
+          borderRadius="rounded-xl"
+          p="m"
+        >
+          <Text
+            fontFamily="heading"
+            fontSize="label.sm"
+            fontWeight="bold"
+            textTransform="uppercase"
+            letterSpacing="wide"
+            color="content.tertiary"
+          >
+            {t("chat-welcome-can-do")}
+          </Text>
+          {capabilities.map((capability) => (
+            <HStack key={capability} align="flex-start" gap="s">
+              <Box color="interactive.tertiary" mt="2px" flexShrink={0}>
+                <MdCheckCircle />
+              </Box>
+              <Text color="content.secondary" fontSize="body.md">
+                {capability}
+              </Text>
+            </HStack>
+          ))}
+        </VStack>
+
+        <QuickReplies
+          buttons={[
+            {
+              label: t("chat-start-yes-draft"),
+              primary: true,
+              onClick: props.onStartDraft,
+            },
+            {
+              label: t("chat-start-choose-sources"),
+              onClick: props.onChooseSources,
+            },
+          ]}
+        />
+        <Text color="content.tertiary" fontSize="label.md" textAlign="center">
+          {t("chat-welcome-or-ask")}
+        </Text>
+      </VStack>
+    </Box>
+  );
+}
+
 export function QuickReplies(props: {
   buttons: QuickReplyButton[];
   standalone?: boolean;

@@ -24,9 +24,24 @@ from app.tools.cc_inventory_tool import CCInventoryTool
 from app.tools.cc_inventory_wrappers import build_cc_inventory_tools
 from app.tools.climate_vector_sync import climate_vector_search
 from app.tools.stationary_energy_review_tools import build_stationary_energy_review_tools
+from app.tools.stationary_energy_start_draft_tools import (
+    build_stationary_energy_start_draft_tools,
+)
 from app.utils.agent_tracing import configure_agents_tracing
 
 logger = logging.getLogger(__name__)
+
+# Appended to the default chat prompt when the Stationary Energy draft surface is
+# active but no draft exists yet, so the agent knows it can start drafting.
+_STATIONARY_ENERGY_START_INSTRUCTION = (
+    "Stationary Energy drafting: This inventory's Stationary Energy sector has no "
+    "draft loaded yet. If the user asks to draft, generate, fill, or start the "
+    "empty Stationary Energy rows (for example 'draft the empty rows', 'fill it "
+    "in', 'go ahead', or an affirmative reply about drafting), call the "
+    "`stationary_energy_start_draft` tool. It generates source-backed values for "
+    "every empty row from the connected datasets for the user to review, and does "
+    "not write to the inventory. Answer other questions normally."
+)
 
 
 class AgentService:
@@ -42,8 +57,10 @@ class AgentService:
         cc_thread_id: Optional[Union[str, UUID]] = None,
         cc_user_id: Optional[str] = None,
         inventory_id: Optional[str] = None,
+        city_id: Optional[str] = None,
         session_factory: Optional[async_sessionmaker[AsyncSession]] = None,
         stationary_energy_draft_run_id: Optional[Union[str, UUID]] = None,
+        stationary_energy_surface: bool = False,
     ) -> None:
         """Initialize the agent service with settings and OpenRouter client.
         
@@ -60,11 +77,15 @@ class AgentService:
         self.cc_thread_id = cc_thread_id
         self.cc_user_id = cc_user_id
         self.inventory_id = inventory_id
+        self.city_id = city_id
         self.session_factory = session_factory
         self.stationary_energy_draft_run_id = (
             str(stationary_energy_draft_run_id)
             if stationary_energy_draft_run_id
             else None
+        )
+        self._stationary_energy_surface = bool(
+            stationary_energy_surface or self.stationary_energy_draft_run_id
         )
         self._inventory_tool: Optional[CCInventoryTool] = None
         self._token_ref: Dict[str, Optional[str]] = {"value": cc_access_token}
@@ -410,6 +431,41 @@ class AgentService:
             logger.info(
                 "Registered Stationary Energy review tools for draft_run_id=%s thread_id=%s user_id=%s",
                 self.stationary_energy_draft_run_id,
+                self.cc_thread_id,
+                self.cc_user_id,
+            )
+
+        # Allow the agent to START a Stationary Energy draft from chat (the
+        # "draft the empty rows" action) whenever the SE draft surface is active,
+        # independent of whether a draft run already exists.
+        if (
+            self._stationary_energy_surface
+            and self.city_id
+            and self.inventory_id
+            and self.session_factory
+            and self.cc_user_id
+        ):
+            start_draft_tools = build_stationary_energy_start_draft_tools(
+                session_factory=self.session_factory,
+                city_id=str(self.city_id),
+                inventory_id=str(self.inventory_id),
+                user_id=str(self.cc_user_id),
+                thread_id=(
+                    UUID(str(self.cc_thread_id)) if self.cc_thread_id else None
+                ),
+                token_ref=self._token_ref,
+            )
+            tools.extend(start_draft_tools)
+            # Once a draft exists the Stationary Energy review prompt carries its
+            # own start/redraft route; before any draft exists the default prompt
+            # is active, so append a focused hint there.
+            if not self._uses_stationary_energy_review_prompt:
+                agent_instructions = (
+                    f"{agent_instructions}\n\n{_STATIONARY_ENERGY_START_INSTRUCTION}"
+                )
+            logger.info(
+                "Registered Stationary Energy start-draft tool inventory_id=%s thread_id=%s user_id=%s",
+                self.inventory_id,
                 self.cc_thread_id,
                 self.cc_user_id,
             )

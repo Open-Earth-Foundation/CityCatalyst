@@ -229,6 +229,7 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
   const scrollRegionRef = useRef<HTMLDivElement | null>(null);
   const shouldFollowChatRef = useRef(true);
   const chatInputRef = useRef<HTMLInputElement | null>(null);
+  const previousLoadingActionRef = useRef(state.loadingAction);
   const [viewSourceId, setViewSourceId] = useState<string | null>(null);
   const firstPendingDecision =
     state.decisionReviewContext.find(
@@ -267,24 +268,38 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
     shouldFollowChatRef.current = distanceFromBottom < 140;
   }, []);
 
+  const focusComposerInput = useCallback(() => {
+    window.requestAnimationFrame(() => {
+      const input = chatInputRef.current;
+      if (!input) {
+        return;
+      }
+      input.focus();
+      const cursorPosition = input.value.length;
+      input.setSelectionRange(cursorPosition, cursorPosition);
+    });
+  }, []);
+
   const focusChatComposer = useCallback(
     (draftQuestion?: string) => {
       if (draftQuestion && !chatInput.trim()) {
         actions.setChatInput(draftQuestion);
       }
-
-      window.requestAnimationFrame(() => {
-        const input = chatInputRef.current;
-        if (!input) {
-          return;
-        }
-        input.focus();
-        const cursorPosition = input.value.length;
-        input.setSelectionRange(cursorPosition, cursorPosition);
-      });
+      focusComposerInput();
     },
-    [actions, chatInput],
+    [actions, chatInput, focusComposerInput],
   );
+
+  // Keep the cursor in the composer after a reply finishes streaming, so the
+  // user can keep typing without clicking back in (the input also stays
+  // enabled mid-stream now).
+  useEffect(() => {
+    const previousLoadingAction = previousLoadingActionRef.current;
+    previousLoadingActionRef.current = state.loadingAction;
+    if (previousLoadingAction === "chat" && state.loadingAction !== "chat") {
+      focusComposerInput();
+    }
+  }, [state.loadingAction, focusComposerInput]);
 
   const handleAskAboutProposal = useCallback(
     (label: string) => {
@@ -400,8 +415,13 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
                 const resolved = state.resolvedProposalIds.has(
                   context.proposal_id,
                 );
-                const focusRow = () =>
+                // Focus is set only when the user explicitly asks about this
+                // row, so the chat sends the right context — no longer on
+                // hover, which made the overview panel mirror the chat.
+                const askAboutThisRow = (label: string) => {
                   actions.setFocusedProposal(context.proposal_id);
+                  handleAskAboutProposal(label);
+                };
 
                 return (
                   <Box
@@ -410,8 +430,6 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
                     maxW={CHAT_SURFACE_MAX_W}
                     alignSelf="center"
                     transform={CHAT_WIDGET_TRANSFORM}
-                    onMouseEnter={focusRow}
-                    onFocus={focusRow}
                   >
                     {resolved ? (
                       <ActionCompletedDecisionCard
@@ -423,8 +441,9 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
                         context={context}
                         decision={state.decisionState[context.proposal_id]}
                         resolved={false}
+                        pristine={!resolved}
                         onDecisionChoice={actions.chooseDecision}
-                        onAskAboutProposal={handleAskAboutProposal}
+                        onAskAboutProposal={askAboutThisRow}
                         onViewSource={setViewSourceId}
                       />
                     ) : (
@@ -432,8 +451,9 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
                         context={context}
                         decision={state.decisionState[context.proposal_id]}
                         resolved={false}
+                        pristine={!resolved}
                         onDecisionChoice={actions.chooseDecision}
-                        onAskAboutProposal={handleAskAboutProposal}
+                        onAskAboutProposal={askAboutThisRow}
                         onViewSource={setViewSourceId}
                       />
                     )}
@@ -562,7 +582,6 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
               borderRadius="rounded"
               bg="background.backgroundGreyFlat"
               borderColor="border.overlay"
-              disabled={state.loadingAction === "chat"}
             />
             {state.loadingAction === "chat" ? (
               <Button

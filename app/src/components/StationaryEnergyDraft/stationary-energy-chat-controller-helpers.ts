@@ -314,27 +314,33 @@ export function buildStationaryEnergyChatRequest(params: {
     threadId,
     content,
     inventory_id: inventoryId,
-    context: draftState
-      ? {
-          stationary_energy_draft_run_id: draftState.draft_run_id,
-          draft_run_id: draftState.draft_run_id,
-          city_id: cityId,
-          inventory_id: inventoryId,
-          stationary_energy_interaction_mode: "free_text",
-          stationary_energy_pending_decision_reviews: decisionReviewContext,
-          stationary_energy_focused_decision_state: focusedDecisionState,
-          stationary_energy_focused_proposal_id: focusedProposalId,
-          stationary_energy_confirmed_bulk_review_choices:
-            confirmedBulkReviewChoices && confirmedBulkReviewChoices.length > 0
-              ? confirmedBulkReviewChoices
-              : undefined,
-          stationary_energy_confirmed_staged_review_rollback_choices:
-            confirmedRollbackReviewChoices &&
-            confirmedRollbackReviewChoices.length > 0
-              ? confirmedRollbackReviewChoices
-              : undefined,
-        }
-      : undefined,
+    // Always identify the Stationary Energy draft surface (city + inventory +
+    // interaction marker) so the agent can offer the start-draft tool even
+    // before a draft exists. Only this page sends these, so the general chat is
+    // unaffected.
+    context: {
+      city_id: cityId,
+      inventory_id: inventoryId,
+      stationary_energy_interaction_mode: "free_text",
+      ...(draftState
+        ? {
+            stationary_energy_draft_run_id: draftState.draft_run_id,
+            draft_run_id: draftState.draft_run_id,
+            stationary_energy_pending_decision_reviews: decisionReviewContext,
+            stationary_energy_focused_decision_state: focusedDecisionState,
+            stationary_energy_focused_proposal_id: focusedProposalId,
+            stationary_energy_confirmed_bulk_review_choices:
+              confirmedBulkReviewChoices && confirmedBulkReviewChoices.length > 0
+                ? confirmedBulkReviewChoices
+                : undefined,
+            stationary_energy_confirmed_staged_review_rollback_choices:
+              confirmedRollbackReviewChoices &&
+              confirmedRollbackReviewChoices.length > 0
+                ? confirmedRollbackReviewChoices
+                : undefined,
+          }
+        : {}),
+    },
     options: draftState
       ? {
           stationary_energy_draft_run_id: draftState.draft_run_id,
@@ -342,7 +348,10 @@ export function buildStationaryEnergyChatRequest(params: {
             decisionReviewContext.length,
           stationary_energy_ui_surfaces: ["chat_text", "decision_review_card"],
         }
-      : {},
+      : {
+          stationary_energy_interaction_mode: "free_text",
+          stationary_energy_ui_surfaces: ["chat_text"],
+        },
   };
 }
 

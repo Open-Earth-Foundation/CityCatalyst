@@ -1,4 +1,4 @@
-aiohttp==3.13.*
+aiohttp==3.14.*
 alembic==1.18.4
 black==26.3.1
 fastapi==0.136.1
@@ -15,7 +15,7 @@ scipy==1.17.*
 shapely==2.1.2
 SQLAlchemy==2.0.49
 tqdm==4.67.*
-uvicorn==0.47.0
+uvicorn==0.49.0
 xarray==2026.*
 geojson==3.2.*
 openclimate==0.1.*

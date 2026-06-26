@@ -40,3 +40,6 @@ importer/osm/cache/**
 importer/osm/data/**
 data/**
 
+
+# FUSE leftover files from moves while a process held them open
+.fuse_hidden*

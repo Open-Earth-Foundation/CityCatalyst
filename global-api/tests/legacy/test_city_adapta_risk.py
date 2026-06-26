@@ -8,7 +8,7 @@ client = TestClient(app)
 
 @pytest.fixture(autouse=True)
 def mock_adapta_db(monkeypatch):
-    monkeypatch.setattr("routes.city_adapta_risk._has_any_adapta_rows", lambda actor_id, scenario: True)
+    monkeypatch.setattr("routes.legacy.city_adapta_risk._has_any_adapta_rows", lambda actor_id, scenario: True)
 
     def _mock_rows(actor_id, timeframe, scenario, level, omit_timeframe_filter=False):
         row_base = {
@@ -58,7 +58,7 @@ def mock_adapta_db(monkeypatch):
         row = {**row_base, "timeframe": timeframe if timeframe is not None else 2020}
         return [row]
 
-    monkeypatch.setattr("routes.city_adapta_risk.db_city_adapta_risk_fact", _mock_rows)
+    monkeypatch.setattr("routes.legacy.city_adapta_risk.db_city_adapta_risk_fact", _mock_rows)
 
 
 def test_get_city_adapta_risk_summary():
@@ -121,7 +121,7 @@ def test_get_city_adapta_risk_invalid_level():
 
 
 def test_get_city_adapta_risk_not_found(monkeypatch):
-    monkeypatch.setattr("routes.city_adapta_risk._has_any_adapta_rows", lambda actor_id, scenario: False)
+    monkeypatch.setattr("routes.legacy.city_adapta_risk._has_any_adapta_rows", lambda actor_id, scenario: False)
     response = client.get("/api/v1/cities/BR%20XYZ/climate-risk/adapta")
     assert response.status_code == 404
     assert response.json() == {"detail": "No data available"}
@@ -173,7 +173,7 @@ def test_data_gap_value_status(monkeypatch):
             }
         ]
 
-    monkeypatch.setattr("routes.city_adapta_risk.db_city_adapta_risk_fact", _mock_data_gap)
+    monkeypatch.setattr("routes.legacy.city_adapta_risk.db_city_adapta_risk_fact", _mock_data_gap)
     response = client.get("/api/v1/cities/BR%20ADG/climate-risk/adapta")
     assert response.status_code == 200
     assert response.json()["data"][0]["value_status"] == "data_unavailable"

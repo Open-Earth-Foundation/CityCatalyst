@@ -34,7 +34,7 @@ def test_get_emissions_success(monkeypatch):
                         return (5270, 5270)  # total emissions_value_100yr, emissions_value_20yr
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v1/source/test_source/city/CITY123/2023/I.1")
     
@@ -93,7 +93,7 @@ def test_get_emissions_single_gas(monkeypatch):
                         return (500, 500)
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v1/source/test_source/city/CITY456/2022/I.2")
     
@@ -128,7 +128,7 @@ def test_get_emissions_with_data_quality(monkeypatch):
                         return (1000, 1000)
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v1/source/test_source/city/CITY789/2023/I.1")
     
@@ -161,7 +161,7 @@ def test_get_emissions_with_detailed_records(monkeypatch):
                         return (1000, 1000)
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v1/source/test_source/city/CITY999/2023/I.1")
     
@@ -197,7 +197,7 @@ def test_get_emissions_ar2_gwp(monkeypatch):
                         return (1050, 1050)
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v1/source/test_source/city/CITY123/2023/I.1?gwp=ar2")
     
@@ -228,7 +228,7 @@ def test_get_emissions_ar6_gwp(monkeypatch):
                         return (2730, 2730)
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v1/source/test_source/city/CITY123/2023/I.1?gwp=ar6")
     
@@ -260,7 +260,7 @@ def test_get_emissions_country_granularity(monkeypatch):
                         return (10000, 10000)
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v1/source/test_source/country/COUNTRY123/2023/I.1")
     
@@ -291,7 +291,7 @@ def test_get_emissions_region_granularity(monkeypatch):
                         return (5000, 5000)
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v1/source/test_source/region/REGION123/2023/I.1")
     
@@ -314,7 +314,7 @@ def test_get_emissions_no_data(monkeypatch):
                 def fetchone(self): return None
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v1/source/test_source/city/NONEXISTENT/2023/I.1")
     
@@ -336,7 +336,7 @@ def test_get_emissions_invalid_gwp(monkeypatch):
                 def fetchone(self): return None
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     # The route will call db_query_total first, which validates GWP and raises ValueError
     # This should result in a 500 error since the exception isn't caught
@@ -355,7 +355,7 @@ def test_get_emissions_invalid_gpc_reference(monkeypatch):
                 def fetchone(self): return None
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v1/source/test_source/city/CITY123/2023/INVALID.REF")
     
@@ -384,7 +384,7 @@ def test_get_emissions_zero_emissions(monkeypatch):
                         return (0, 0)
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v1/source/test_source/city/CITY123/2023/I.1")
     
@@ -417,7 +417,7 @@ def test_get_emissions_missing_data_quality(monkeypatch):
                         return (1000, 1000)
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v1/source/test_source/city/CITY123/2023/I.1")
     
@@ -450,7 +450,7 @@ def test_get_emissions_null_values_in_records(monkeypatch):
                         return (1000, 1000)
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v1/source/test_source/city/CITY123/2023/I.1")
     
@@ -504,7 +504,7 @@ def test_database_query_parameters(monkeypatch):
                 def fetchone(self): return None
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     client.get("/api/v1/source/test_source/city/TESTCITY/2023/I.1?gwp=ar4")
     
@@ -538,7 +538,7 @@ def test_get_emissions_different_gpc_references(monkeypatch):
                         return (1000, 1000)
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     # Test different GPC reference numbers
     gpc_refs = ["I.1", "I.2", "II.1", "III.1", "IV.1", "V.1"]
@@ -572,7 +572,7 @@ def test_get_emissions_different_years(monkeypatch):
                         return (1000, 1000)
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     # Test different years
     years = [2020, 2021, 2022, 2023, 2024]
@@ -606,7 +606,7 @@ def test_get_emissions_all_gwp_values(monkeypatch):
                         return (1000, 1000)
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emissions.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emissions.SessionLocal", lambda: DummySession())
     
     # Test all valid GWP values
     gwp_values = ["ar2", "ar3", "ar4", "ar5", "ar6"]

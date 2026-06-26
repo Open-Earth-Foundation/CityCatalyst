@@ -89,7 +89,7 @@ class _DummySession:
 
 def test_get_finance_opportunities_success(monkeypatch):
     monkeypatch.setattr(
-        "routes.finance_opportunities.SessionLocal", lambda: _DummySession()
+        "routes.legacy.finance_opportunities.SessionLocal", lambda: _DummySession()
     )
     resp = client.get("/api/v1/climate-finance/opportunities", params={"country_code": "CL"})
     assert resp.status_code == 200
@@ -120,7 +120,7 @@ def test_get_finance_opportunities_no_release(monkeypatch):
             return _Result([])
 
     monkeypatch.setattr(
-        "routes.finance_opportunities.SessionLocal", lambda: _EmptySession()
+        "routes.legacy.finance_opportunities.SessionLocal", lambda: _EmptySession()
     )
     resp = client.get("/api/v1/climate-finance/opportunities")
     assert resp.status_code == 404

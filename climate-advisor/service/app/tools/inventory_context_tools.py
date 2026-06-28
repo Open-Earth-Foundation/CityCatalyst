@@ -15,6 +15,7 @@ from app.services.citycatalyst_client import (
 
 logger = logging.getLogger(__name__)
 
+INVENTORY_LIST_ACCESSIBLE_ACTION = "ghgi.inventory.list_accessible"
 INVENTORY_STATUS_OVERVIEW_ACTION = "ghgi.inventory.status_overview"
 INVENTORY_EMISSIONS_CONTEXT_ACTION = "ghgi.inventory.emissions_context"
 
@@ -145,6 +146,160 @@ def build_inventory_context_tools(
     return [inventory_status_overview, inventory_emissions_context]
 
 
+def build_inventory_capability_tools(
+    *,
+    user_id: str,
+    token_ref: Dict[str, Optional[str]],
+    client_factory: ClientFactory = CityCatalystClient,
+) -> Sequence[object]:
+    """Create read-only whole-inventory tools for default Clima chat."""
+
+    async def _run_capability_tool(
+        action: str,
+        request_payload: Dict[str, Any],
+        loader: CapabilityLoader,
+    ) -> str:
+        """Call one CC inventory capability route with explicit tool arguments."""
+        token = token_ref.get("value")
+        if not token:
+            return _error_payload(
+                action=action,
+                error_code="missing_token",
+                error="CityCatalyst access token is required.",
+            )
+
+        try:
+            client = client_factory()
+            try:
+                result = await loader(client, request_payload, token)
+            finally:
+                await _close_client(client)
+
+            if not isinstance(result, dict):
+                return _error_payload(
+                    action=action,
+                    error_code="invalid_response",
+                    error="CityCatalyst returned an invalid capability response.",
+                )
+            return json.dumps(result, default=str)
+        except CityCatalystClientError as exc:
+            logger.error("Inventory capability CC error action=%s: %s", action, exc)
+            return _error_payload(
+                action=action,
+                error_code="cc_error",
+                error=str(exc),
+                status_code=exc.status_code,
+            )
+        except Exception as exc:
+            logger.exception("Inventory capability tool failed action=%s", action)
+            return _error_payload(
+                action=action,
+                error_code="tool_error",
+                error=str(exc),
+            )
+
+    @function_tool
+    async def inventory_list_accessible(
+        city_query: Optional[str] = None,
+        year: Optional[int] = None,
+        include_all_city_years: bool = False,
+    ) -> str:
+        """List city/year inventories the user can access.
+
+        Use optional city/year filters to narrow choices. Set
+        include_all_city_years when the user asks for every inventory year for a
+        matching city.
+        """
+
+        request_payload: Dict[str, Any] = {
+            "user_id": user_id,
+            "include_all_city_years": include_all_city_years,
+        }
+        if city_query and city_query.strip():
+            request_payload["city_query"] = city_query.strip()
+        if year is not None:
+            request_payload["year"] = year
+
+        return await _run_capability_tool(
+            INVENTORY_LIST_ACCESSIBLE_ACTION,
+            request_payload,
+            lambda client, payload, token: client.load_inventory_list_accessible(
+                request_payload=payload,
+                token=token,
+            ),
+        )
+
+    inventory_list_accessible.name = (  # type: ignore[attr-defined]
+        "inventory_list_accessible"
+    )
+
+    @function_tool
+    async def inventory_status_overview(city_id: str, inventory_id: str) -> str:
+        """Return compact whole-inventory completion and sector data state.
+
+        The city_id and inventory_id values must come from
+        inventory_list_accessible. Do not expose these raw IDs to the user.
+        """
+
+        request_payload = _explicit_inventory_payload(
+            action=INVENTORY_STATUS_OVERVIEW_ACTION,
+            user_id=user_id,
+            city_id=city_id,
+            inventory_id=inventory_id,
+        )
+        if isinstance(request_payload, str):
+            return request_payload
+
+        return await _run_capability_tool(
+            INVENTORY_STATUS_OVERVIEW_ACTION,
+            request_payload,
+            lambda client, payload, token: client.load_inventory_status_overview(
+                request_payload=payload,
+                token=token,
+            ),
+        )
+
+    inventory_status_overview.name = (  # type: ignore[attr-defined]
+        "inventory_status_overview"
+    )
+
+    @function_tool
+    async def inventory_emissions_context(city_id: str, inventory_id: str) -> str:
+        """Return compact whole-inventory emissions distribution and source mix.
+
+        The city_id and inventory_id values must come from
+        inventory_list_accessible. Do not expose these raw IDs to the user.
+        """
+
+        request_payload = _explicit_inventory_payload(
+            action=INVENTORY_EMISSIONS_CONTEXT_ACTION,
+            user_id=user_id,
+            city_id=city_id,
+            inventory_id=inventory_id,
+        )
+        if isinstance(request_payload, str):
+            return request_payload
+
+        return await _run_capability_tool(
+            INVENTORY_EMISSIONS_CONTEXT_ACTION,
+            request_payload,
+            lambda client, payload, token: client.load_inventory_emissions_context(
+                request_payload=payload,
+                token=token,
+            ),
+        )
+
+    inventory_emissions_context.name = (  # type: ignore[attr-defined]
+        "inventory_emissions_context"
+    )
+
+    return [
+        inventory_list_accessible,
+        inventory_status_overview,
+        inventory_emissions_context,
+    ]
+
+
 async def _close_client(client: object) -> None:
     """Close a client and tolerate synchronous test doubles."""
     close = getattr(client, "close", None)
@@ -153,6 +308,34 @@ async def _close_client(client: object) -> None:
     close_result = close()
     if inspect.isawaitable(close_result):
         await close_result
+
+
+def _explicit_inventory_payload(
+    *,
+    action: str,
+    user_id: str,
+    city_id: str,
+    inventory_id: str,
+) -> Dict[str, Any] | str:
+    """Build a scoped inventory capability payload from default tool args."""
+    if not city_id or not city_id.strip():
+        return _error_payload(
+            action=action,
+            error_code="invalid_arguments",
+            error="city_id is required.",
+        )
+    if not inventory_id or not inventory_id.strip():
+        return _error_payload(
+            action=action,
+            error_code="invalid_arguments",
+            error="inventory_id is required.",
+        )
+
+    return {
+        "user_id": user_id,
+        "city_id": city_id.strip(),
+        "inventory_id": inventory_id.strip(),
+    }
 
 
 def _error_payload(

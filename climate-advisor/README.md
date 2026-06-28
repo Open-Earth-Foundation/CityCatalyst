@@ -11,7 +11,8 @@ conversational experience for CityCatalyst (CC). The service lives under
 - **Vector Search**: Semantic search over climate knowledge base using pgvector
 - **Tool Integration**:
   - General chat tools: climate knowledge search plus CityCatalyst inventory
-    tools (`get_user_inventories`, `city_inventory_search`, `get_inventory`,
+    tools (`inventory_list_accessible`, `inventory_status_overview`,
+    `inventory_emissions_context`, and temporary legacy
     `get_all_datasources`)
   - Stationary Energy draft review tools scoped to an active CA-owned draft run
 - **Token Management**: JWT token refresh and caching for CityCatalyst API
@@ -167,13 +168,19 @@ data: {}
 
 **Added for CityCatalyst inventory chat**
 
-- `get_user_inventories`
-- `city_inventory_search`
-- `get_inventory`
+- `inventory_list_accessible`
+  - Lists all accessible city/year inventories, or filters by city and year.
+- `inventory_status_overview`
+  - Summarizes selected-inventory metadata, completion, and filled/missing
+    sector state.
+- `inventory_emissions_context`
+  - Summarizes selected-inventory total emissions, sector shares, top emitters,
+    and source mix.
 - `get_all_datasources`
+  - Temporary legacy datasource tool used only after an inventory is selected.
 
-These wrappers use the scoped bearer token, refresh it if needed, and trim the
-response payload before it is sent back to the model.
+These tools use the scoped bearer token, refresh it if needed, and keep raw
+CityCatalyst IDs internal to tool chaining rather than user-facing responses.
 
 **Added for active Stationary Energy draft review chat**
 
@@ -583,19 +590,19 @@ data: {}
 
 ### Inventory API Access
 
-The CityCatalyst inventory tool pack exposes:
+The default Clima inventory tool pack exposes:
 
-- `get_user_inventories`
-- `city_inventory_search`
-- `get_inventory`
-- `get_all_datasources`
+- `inventory_list_accessible`
+- `inventory_status_overview`
+- `inventory_emissions_context`
+- `get_all_datasources` as the temporary legacy datasource lookup
 
 These tools:
 
-- construct requests to CityCatalyst inventory endpoints
+- construct requests to CityCatalyst inventory capability endpoints
 - automatically include the scoped JWT in the `Authorization` header
 - refresh the token when needed
-- return trimmed payloads to the agent for lower token cost
+- return compact, read-only inventory context to the agent
 
 ### Stationary Energy Draft Review Boundary
 

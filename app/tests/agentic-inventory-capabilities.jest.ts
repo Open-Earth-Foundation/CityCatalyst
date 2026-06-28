@@ -12,9 +12,11 @@ import { randomUUID } from "node:crypto";
 import { Op } from "sequelize";
 
 import { POST as emissionsContextRoute } from "@/app/api/v1/internal/ca/capabilities/ghgi/inventory/emissions-context/route";
+import { POST as listAccessibleRoute } from "@/app/api/v1/internal/ca/capabilities/ghgi/inventory/list-accessible/route";
 import { POST as statusOverviewRoute } from "@/app/api/v1/internal/ca/capabilities/ghgi/inventory/status-overview/route";
 import {
   INVENTORY_EMISSIONS_CONTEXT_CAPABILITY,
+  INVENTORY_LIST_ACCESSIBLE_CAPABILITY,
   INVENTORY_STATUS_OVERVIEW_CAPABILITY,
 } from "@/backend/agentic/ghgi/inventory/registry";
 import { PermissionService } from "@/backend/permissions/PermissionService";
@@ -49,6 +51,7 @@ import {
 
 const serviceKey = "test-cc-service-key";
 const notEstimatedValueId = "58830000-0000-4000-8000-000000000501";
+const priorYearInventoryId = "58830000-0000-4000-8000-000000000502";
 
 const serviceHeaders = {
   "X-Service-Name": "climate-advisor",
@@ -59,6 +62,7 @@ describe("GHGI inventory internal CA capability routes", () => {
   let testData: TestData;
   let city: City;
   let inventory: Inventory;
+  let priorYearInventory: Inventory;
   let thirdPartySource: DataSourceI18n;
 
   beforeAll(async () => {
@@ -97,6 +101,15 @@ describe("GHGI inventory internal CA capability routes", () => {
       globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
       year: 2024,
     });
+    priorYearInventory = await db.models.Inventory.create({
+      inventoryId: priorYearInventoryId,
+      ...baseInventory,
+      inventoryName: "AgenticInventoryCapabilityTestInventory2023",
+      cityId: city.cityId,
+      inventoryType: InventoryTypeEnum.GPC_BASIC,
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+      year: 2023,
+    });
 
     await db.models.InventoryValue.bulkCreate(
       inventoryValuesData.map((value, index) => ({
@@ -133,7 +146,9 @@ describe("GHGI inventory internal CA capability routes", () => {
       },
     });
     await db.models.InventoryValue.destroy({ where: { inventoryId } });
-    await db.models.Inventory.destroy({ where: { inventoryId } });
+    await db.models.Inventory.destroy({
+      where: { inventoryId: { [Op.in]: [inventoryId, priorYearInventoryId] } },
+    });
     if (thirdPartySource) {
       await db.models.DataSource.destroy({
         where: { datasourceId: thirdPartySource.datasourceId },
@@ -143,6 +158,90 @@ describe("GHGI inventory internal CA capability routes", () => {
     if (db.sequelize) {
       await db.sequelize.close();
     }
+  });
+
+  it("lists accessible inventories with no filters", async () => {
+    const res = await listAccessibleRoute(listAccessibleRequest(), {
+      params: Promise.resolve({}),
+    });
+
+    await expectStatusCode(res, 200);
+    const payload = await res.json();
+
+    expect(payload.action).toBe(INVENTORY_LIST_ACCESSIBLE_CAPABILITY);
+    expect(payload.success).toBe(true);
+    expect(payload.data.total_cities).toBeGreaterThanOrEqual(1);
+    expect(payload.data.total_inventories).toBeGreaterThanOrEqual(2);
+    expect(payload.data.cities).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          city_id: city.cityId,
+          name: "New York",
+          country: "United States of America",
+          inventories: expect.arrayContaining([
+            expect.objectContaining({
+              inventory_id: inventory.inventoryId,
+              year: 2024,
+            }),
+            expect.objectContaining({
+              inventory_id: priorYearInventory.inventoryId,
+              year: 2023,
+            }),
+          ]),
+        }),
+      ]),
+    );
+  });
+
+  it("filters accessible inventories by city and year", async () => {
+    const res = await listAccessibleRoute(
+      listAccessibleRequest({ city_query: "york", year: 2024 }),
+      { params: Promise.resolve({}) },
+    );
+
+    await expectStatusCode(res, 200);
+    const payload = await res.json();
+    const matchingCity = payload.data.cities.find(
+      (candidate: { city_id: string }) => candidate.city_id === city.cityId,
+    );
+
+    expect(matchingCity.inventories).toEqual([
+      expect.objectContaining({
+        inventory_id: inventory.inventoryId,
+        year: 2024,
+      }),
+    ]);
+    expect(payload.data.filters).toEqual({
+      city_query: "york",
+      year: 2024,
+      include_all_city_years: false,
+    });
+  });
+
+  it("returns all matching city years when requested", async () => {
+    const res = await listAccessibleRoute(
+      listAccessibleRequest({
+        city_query: "new york",
+        year: 2024,
+        include_all_city_years: true,
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    await expectStatusCode(res, 200);
+    const payload = await res.json();
+    const matchingCity = payload.data.cities.find(
+      (candidate: { city_id: string }) => candidate.city_id === city.cityId,
+    );
+
+    expect(
+      matchingCity.inventories.map(({ year }: { year: number }) => year),
+    ).toEqual([2024, 2023]);
+    expect(payload.data.filters).toEqual({
+      city_query: "new york",
+      year: 2024,
+      include_all_city_years: true,
+    });
   });
 
   it("returns compact whole-inventory status counts", async () => {
@@ -245,6 +344,17 @@ function capabilityRequest(cityId: string) {
       user_id: testUserID,
       city_id: cityId,
       inventory_id: inventoryId,
+    },
+    undefined,
+    serviceHeaders,
+  );
+}
+
+function listAccessibleRequest(overrides: Record<string, unknown> = {}) {
+  return mockRequest(
+    {
+      user_id: testUserID,
+      ...overrides,
     },
     undefined,
     serviceHeaders,

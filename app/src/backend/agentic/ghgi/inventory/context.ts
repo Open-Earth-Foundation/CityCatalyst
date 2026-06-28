@@ -3,6 +3,7 @@ import createHttpError from "http-errors";
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import { getEmissionResults } from "@/backend/ResultsService";
 import { db } from "@/models";
+import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
 
 type InventoryMetadata = {
@@ -11,6 +12,34 @@ type InventoryMetadata = {
     year: number | null;
     type: string | null;
     gwp: string | null;
+  };
+};
+
+type AccessibleInventory = {
+  inventory_id: string;
+  inventory_name: string | null;
+  year: number | null;
+  type: string | null;
+  gwp: string | null;
+};
+
+type AccessibleInventoryCity = {
+  city_id: string;
+  name: string | null;
+  country: string | null;
+  region: string | null;
+  locode: string | null;
+  inventories: AccessibleInventory[];
+};
+
+type AccessibleInventoryList = {
+  cities: AccessibleInventoryCity[];
+  total_cities: number;
+  total_inventories: number;
+  filters: {
+    city_query: string | null;
+    year: number | null;
+    include_all_city_years: boolean;
   };
 };
 
@@ -118,6 +147,55 @@ const SECTOR_REFERENCE_BY_DB_NAME: Record<string, string> = {
   "Agriculture, Forestry, and Other Land Use (AFOLU)": "V",
 };
 
+export async function buildAccessibleInventoryList({
+  userId,
+  cityQuery,
+  year,
+  includeAllCityYears = false,
+}: {
+  userId: string;
+  cityQuery?: string;
+  year?: number;
+  includeAllCityYears?: boolean;
+}): Promise<AccessibleInventoryList> {
+  const user = await db.models.User.findOne({
+    attributes: [],
+    where: { userId },
+    include: [
+      {
+        model: db.models.City,
+        as: "cities",
+        include: [{ model: db.models.Inventory, as: "inventories" }],
+      },
+    ],
+  });
+
+  if (!user) {
+    throw new createHttpError.NotFound("User not found");
+  }
+
+  const normalizedQuery = normalizeSearch(cityQuery);
+  const cities = user.cities
+    .filter((city: City) => cityMatchesQuery(city, normalizedQuery))
+    .map((city: City) => accessibleCity(city, year, includeAllCityYears))
+    .filter((city) => city.inventories.length > 0)
+    .sort((a, b) => citySortLabel(a).localeCompare(citySortLabel(b)));
+
+  return {
+    cities,
+    total_cities: cities.length,
+    total_inventories: cities.reduce(
+      (sum, city) => sum + city.inventories.length,
+      0,
+    ),
+    filters: {
+      city_query: cityQuery?.trim() || null,
+      year: year ?? null,
+      include_all_city_years: includeAllCityYears,
+    },
+  };
+}
+
 export async function buildInventoryStatusOverview(
   inventory: Inventory,
 ): Promise<InventoryStatusOverview> {
@@ -185,6 +263,36 @@ async function loadInventoryForProgress(
   }
 
   return inventoryWithValues;
+}
+
+function accessibleCity(
+  city: City,
+  year: number | undefined,
+  includeAllCityYears: boolean,
+): AccessibleInventoryCity {
+  const inventories = (city.inventories ?? [])
+    .filter((inventory: Inventory) => {
+      return includeAllCityYears || year == null || inventory.year === year;
+    })
+    .sort(
+      (a: Inventory, b: Inventory) => Number(b.year ?? 0) - Number(a.year ?? 0),
+    )
+    .map((inventory: Inventory) => ({
+      inventory_id: inventory.inventoryId,
+      inventory_name: inventory.inventoryName ?? null,
+      year: inventory.year ?? null,
+      type: inventory.inventoryType ?? null,
+      gwp: inventory.globalWarmingPotentialType ?? null,
+    }));
+
+  return {
+    city_id: city.cityId,
+    name: city.name ?? null,
+    country: city.country ?? null,
+    region: city.region ?? null,
+    locode: city.locode ?? null,
+    inventories,
+  };
 }
 
 function metadataForInventory(inventory: Inventory): InventoryMetadata {
@@ -349,6 +457,31 @@ function valueToString(value: unknown): string | null {
     return null;
   }
   return String(value);
+}
+
+function normalizeSearch(value: string | null | undefined): string | null {
+  const normalized = value?.trim().toLowerCase();
+  return normalized ? normalized : null;
+}
+
+function cityMatchesQuery(city: City, normalizedQuery: string | null): boolean {
+  if (!normalizedQuery) {
+    return true;
+  }
+
+  return [city.name, city.country, city.region, city.locode]
+    .filter(isPresentString)
+    .some((value) => value.toLowerCase().includes(normalizedQuery));
+}
+
+function citySortLabel(city: AccessibleInventoryCity): string {
+  return [city.name, city.country, city.region, city.locode]
+    .filter(isPresentString)
+    .join(" ");
+}
+
+function isPresentString(value: string | null | undefined): value is string {
+  return Boolean(value);
 }
 
 function friendlyLabel(value: string | null | undefined): string {

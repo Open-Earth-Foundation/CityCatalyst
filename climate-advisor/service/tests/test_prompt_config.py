@@ -29,6 +29,20 @@ def test_prompt_include_directive_resolves_relative_tools_fragment(tmp_path) -> 
     assert "`example_tool`" in rendered_prompt
 
 
+def test_default_prompt_uses_shared_inventory_flow() -> None:
+    rendered_prompt = _load_llm_config().prompts.get_prompt("default")
+
+    assert "{{ include:" not in rendered_prompt
+    assert "`inventory_list_accessible`" in rendered_prompt
+    assert "`inventory_status_overview`" in rendered_prompt
+    assert "`inventory_emissions_context`" in rendered_prompt
+    assert "`get_all_datasources`" in rendered_prompt
+    assert "`climate_vector_search`" in rendered_prompt
+    assert "`get_user_inventories`" not in rendered_prompt
+    assert "`city_inventory_search`" not in rendered_prompt
+    assert "`get_inventory`" not in rendered_prompt
+
+
 def test_stationary_energy_review_prompt_has_rendered_tools_section() -> None:
     prompts = _load_llm_config().prompts
 

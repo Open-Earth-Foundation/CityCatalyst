@@ -1,8 +1,12 @@
-- `get_user_inventories`: no arguments.
-- `city_inventory_search`: pass a JSON object such as `{"city_name": "New York"}` or `{"city_name": "Paris", "year": 2023}`.
-  - `city_name` (string, required)
+- `inventory_list_accessible`: pass `{}` to list all accessible inventories, or a filtered object such as `{"city_query": "New York"}`, `{"city_query": "Paris", "year": 2023}`, or `{"city_query": "Paris", "include_all_city_years": true}`.
+  - `city_query` (string, optional)
   - `year` (integer, optional; omit when not specified)
-- `get_inventory`: pass `{"inventory_id": "<id-from-prior-tool-output>"}`.
+  - `include_all_city_years` (boolean, optional; use true only when the user asks for every year for a matching city)
+- `inventory_status_overview`: pass `{"city_id": "<id-from-inventory_list_accessible>", "inventory_id": "<id-from-inventory_list_accessible>"}`.
+  - `city_id` (string, required)
+  - `inventory_id` (string, required)
+- `inventory_emissions_context`: pass `{"city_id": "<id-from-inventory_list_accessible>", "inventory_id": "<id-from-inventory_list_accessible>"}`.
+  - `city_id` (string, required)
   - `inventory_id` (string, required)
 - `get_all_datasources`: pass `{"inventory_id": "<id-from-prior-tool-output>"}`.
   - `inventory_id` (string, required)

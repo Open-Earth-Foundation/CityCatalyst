@@ -70,6 +70,46 @@ def _response(
 class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
     """Unit tests for the CityCatalystClient helper methods."""
 
+    async def test_load_inventory_list_accessible_posts_internal_capability(self) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+        ):
+            client = CityCatalystClient(
+                base_url="https://cc.example", api_key="test-api-key"
+            )
+            stub = _StubAsyncClient(
+                [
+                    _response(
+                        200,
+                        json_data={
+                            "action": "ghgi.inventory.list_accessible",
+                            "success": True,
+                            "data": {"cities": []},
+                        },
+                    )
+                ]
+            )
+
+            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+                result = await client.load_inventory_list_accessible(
+                    request_payload={
+                        "user_id": "user-1",
+                        "city_query": "New York",
+                        "year": 2024,
+                    },
+                    token="jwt-token",
+                )
+
+        self.assertEqual(result["action"], "ghgi.inventory.list_accessible")
+        recorded = stub.requests[0]
+        self.assertEqual(
+            recorded["url"],
+            "https://cc.example/api/v1/internal/ca/capabilities/ghgi/inventory/list-accessible",
+        )
+        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
+        self.assertEqual(recorded["json"]["city_query"], "New York")
+
     async def test_load_inventory_status_overview_posts_internal_capability(self) -> None:
         with patch(
             "app.services.citycatalyst_client.get_settings",

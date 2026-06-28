@@ -21,8 +21,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.config import get_settings
 from app.services.openrouter_client import build_openrouter_client_options
 from app.tools.cc_inventory_tool import CCInventoryTool
-from app.tools.cc_inventory_wrappers import build_cc_inventory_tools
+from app.tools.cc_inventory_wrappers import build_cc_datasource_tools
 from app.tools.climate_vector_sync import climate_vector_search
+from app.tools.inventory_context_tools import build_inventory_capability_tools
 from app.tools.stationary_energy_review_tools import build_stationary_energy_review_tools
 from app.utils.agent_tracing import configure_agents_tracing
 
@@ -367,16 +368,21 @@ class AgentService:
         ):
             thread_identifier = str(self.cc_thread_id)
             self._inventory_tool = CCInventoryTool()
-            inventory_tools, token_ref = build_cc_inventory_tools(
+            datasource_tools, token_ref = build_cc_datasource_tools(
                 inventory_tool=self._inventory_tool,
                 access_token=self._token_ref["value"],
                 user_id=str(self.cc_user_id),
                 thread_id=thread_identifier,
             )
             self._token_ref = token_ref
+            inventory_tools = build_inventory_capability_tools(
+                user_id=str(self.cc_user_id),
+                token_ref=self._token_ref,
+            )
             tools.extend(inventory_tools)
+            tools.extend(datasource_tools)
             logger.info(
-                "Registered CC inventory tools for thread_id=%s user_id=%s",
+                "Registered CC inventory capability tools for thread_id=%s user_id=%s",
                 thread_identifier,
                 self.cc_user_id,
             )

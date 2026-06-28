@@ -78,7 +78,7 @@ sequenceDiagram
 
     Stream->>Agent: Create scoped agent
     Agent->>LLM: Run prompt + tools
-    Agent->>CC: Inventory fetches or draft-save calls
+    Agent->>CC: Inventory capability or draft-save calls
     Agent->>DB: Read/write staged review data through tools
     Stream-->>Client: SSE message / tool_result / done
 ```
@@ -87,13 +87,13 @@ sequenceDiagram
 
 `AgentService.create_agent()` builds the tool pack at request time:
 
-- Always available:
+- Added for default/general Clima:
   - `climate_vector_search`
 - Added when the request has CityCatalyst credentials and thread scope:
-  - `get_user_inventories`
-  - `city_inventory_search`
-  - `get_inventory`
-  - `get_all_datasources`
+  - `inventory_list_accessible`
+  - `inventory_status_overview`
+  - `inventory_emissions_context`
+  - `get_all_datasources` as the temporary legacy datasource lookup
 - Added when the request is scoped to a Stationary Energy draft run:
   - `inventory_status_overview`
   - `inventory_emissions_context`
@@ -108,6 +108,24 @@ sequenceDiagram
   - `stationary_energy_rollback_staged_sources`
   - `stationary_energy_save_review_draft`
   - `stationary_energy_request_inventory_save_confirmation`
+
+```mermaid
+flowchart LR
+    Pool["Climate Advisor tool pool"]
+    Default["Default Clima"]
+    Review["Stationary Energy review"]
+    Core["Core inventory tools<br/>inventory_list_accessible<br/>inventory_status_overview<br/>inventory_emissions_context"]
+    Legacy["Temporary legacy<br/>get_all_datasources"]
+    ReviewTools["Specialized review tools<br/>stage / confirm / save / rollback"]
+    SharedContext["Shared no-argument context tools<br/>inventory_status_overview<br/>inventory_emissions_context"]
+
+    Pool --> Default
+    Pool --> Review
+    Default --> Core
+    Default --> Legacy
+    Review --> ReviewTools
+    Review --> SharedContext
+```
 
 `AgentService.create_agent()` selects instructions from the active chat mode:
 
@@ -176,7 +194,8 @@ workflow state in PostgreSQL.
     Energy review chat.
   - Keeps general inventory and vector-search tools out of active review chat.
   - Registers the correct tool pack for the request, including read-only
-    whole-inventory context tools when a Stationary Energy draft run is active.
+    whole-inventory context tools for both default inventory chat and active
+    Stationary Energy draft review chat.
 - `services/stationary_energy/stationary_energy_draft_repository.py`
   - Loads draft runs, proposals, decisions, and staged review selections.
   - Persists staged selection status transitions.
@@ -201,7 +220,10 @@ workflow state in PostgreSQL.
 - `tools/climate_vector_sync.py`
   - General climate knowledge retrieval.
 - `tools/cc_inventory_wrappers.py`
-  - The CityCatalyst inventory tool pack used by the general prompt.
+  - The temporary legacy datasource wrapper used by the general prompt.
+- `tools/inventory_context_tools.py`
+  - The shared CityCatalyst inventory capability tools used by the general
+    prompt and the scoped Stationary Energy review prompt.
 - `tools/stationary_energy_review_tools.py`
   - The scoped Stationary Energy review tool pack backed by
     `StationaryEnergyAgentReviewService`.

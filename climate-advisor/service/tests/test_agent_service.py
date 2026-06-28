@@ -519,6 +519,7 @@ class InventoryToolIntegrationTests(unittest.TestCase):
                 "stationary_energy_request_inventory_save_confirmation",
                 tool_names,
             )
+            self.assertNotIn("inventory_list_accessible", tool_names)
             self.assertNotIn("get_user_inventories", tool_names)
             self.assertNotIn("get_inventory", tool_names)
             self.assertNotIn("get_all_datasources", tool_names)
@@ -541,6 +542,14 @@ class InventoryToolIntegrationTests(unittest.TestCase):
                 getattr(tool, "name", "")
                 for tool in mock_agent_class.call_args.kwargs["tools"]
             ]
+            self.assertIn("inventory_list_accessible", tool_names)
+            self.assertIn("inventory_status_overview", tool_names)
+            self.assertIn("inventory_emissions_context", tool_names)
+            self.assertIn("get_all_datasources", tool_names)
+            self.assertIn("climate_vector_search", tool_names)
+            self.assertNotIn("get_user_inventories", tool_names)
+            self.assertNotIn("city_inventory_search", tool_names)
+            self.assertNotIn("get_inventory", tool_names)
             self.assertNotIn("stationary_energy_accept_one", tool_names)
 
     @patch("app.services.agent_service.get_settings")

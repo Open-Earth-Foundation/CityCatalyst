@@ -104,6 +104,17 @@ the start-draft tool. The controller handles a new `stationary_energy_draft_star
 tool event by loading the freshly created draft, after which the existing status
 poller fills in proposals.
 
+### 8. Streaming-chat polish — composer and scroll
+**File:** `stationary-energy-chat-artifact-panels.tsx`
+
+The suggested-question chips moved out of a floating overlay (which clipped tall
+in-chat review widgets) into an in-flow band directly above the composer. The
+composer became an auto-growing textarea — Enter sends, Shift+Enter inserts a
+newline — that expands with content up to a max height and then scrolls. Auto-
+scroll now honours reader intent: it follows the live edge only while the reader
+is already at the bottom, never pulls them while they have scrolled up or are
+selecting text, and re-pins when they send a message themselves.
+
 ---
 
 ## Climate Advisor agent (backend)

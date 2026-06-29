@@ -107,6 +107,10 @@ Fetch metadata note:
 - city attributes, action pathways, action policy scores, action mitigation feasibility scores, and action financial feasibility scores expose upstream generated-at metadata in their current contracts, so artifacts record `source_metadata.upstream_generated_at_utc`
 - the legal assessments endpoint does not currently expose an equivalent top-level generated-at field, so legal fetch artifacts intentionally keep `source_metadata.upstream_generated_at_utc = null`
 
+Feasibility artifact note:
+- the diagnostic artifact `012_feasibility.json` keeps the full grouped feasibility breakdown under `legal`, `mitigation_feasibility`, and `financial_feasibility`
+- the API response keeps `ranked_actions[].evidence_summary.feasibility` intentionally smaller: it uses the same grouped top-level component keys, but only returns the compact consumer-facing subset plus `feasibility_score`
+
 ---
 
 ## Request lifecycle

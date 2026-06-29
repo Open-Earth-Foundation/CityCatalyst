@@ -43,8 +43,12 @@ def test_stationary_energy_review_prompt_has_rendered_tools_section() -> None:
     assert "Handle one Stationary Energy review intent per user turn" in rendered_prompt
     assert "Route the user request by choosing the first matching route" in rendered_prompt
     assert "Confirmation payload routes 4 and 6 take precedence" in rendered_prompt
+    assert "Do not start a new draft from casual affirmation" in rendered_prompt
+    assert "New draft / start-over UI confirmation" in rendered_prompt
     assert "<tools>" in rendered_prompt
     assert "</tools>" in rendered_prompt
+    assert "`stationary_energy_start_draft`" not in rendered_prompt
+    assert '"go ahead" when nothing is staged yet' not in rendered_prompt
     assert "`proposal_id`" in rendered_prompt
     assert "`selected_source_id`" in rendered_prompt
     assert "`activity_value`" in rendered_prompt

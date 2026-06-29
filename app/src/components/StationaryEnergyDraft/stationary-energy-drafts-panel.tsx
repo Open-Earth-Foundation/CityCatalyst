@@ -15,6 +15,10 @@ import { MdAdd } from "react-icons/md";
 
 import { useTranslation } from "@/i18n/client";
 import { FLOW_BUTTON_RADIUS } from "@/components/StationaryEnergyDraft/stationary-energy-chat-constants";
+import {
+  draftRunStatusLabel,
+  formatDraftRunUpdatedAt,
+} from "@/components/StationaryEnergyDraft/stationary-energy-drafts-panel-format";
 import type { DraftListItem } from "@/components/StationaryEnergyDraft/types";
 import type {
   StationaryEnergyChatArtifactControllerActions,
@@ -34,32 +38,6 @@ export type DraftsPanelProps = {
   >;
 };
 
-function draftRunStatusLabel(t: TFunction, status: string): string {
-  if (status === "reviewed") {
-    return t("artifact-draft-status-reviewed");
-  }
-  if (status === "ready") {
-    return t("artifact-draft-status-ready");
-  }
-  if (status === "failed") {
-    return t("artifact-draft-status-failed");
-  }
-  return status.replaceAll("_", " ");
-}
-
-function formatDraftRunUpdatedAt(value: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-  return new Intl.DateTimeFormat(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(date);
-}
-
 function draftReviewLabel(draftRun: DraftListItem): string | null {
   return draftRun.reviewable_proposal_count > 0
     ? `${draftRun.resolved_review_count}/${draftRun.reviewable_proposal_count}`
@@ -71,6 +49,7 @@ function DraftSessionButton(props: {
   active: boolean;
   disabled?: boolean;
   onSelect: () => void;
+  lng: string;
   t: TFunction;
 }) {
   const reviewLabel = draftReviewLabel(props.draftRun);
@@ -127,7 +106,7 @@ function DraftSessionButton(props: {
         ) : null}
       </HStack>
       <Text color="content.tertiary" fontSize="label.sm" mt="2px">
-        {formatDraftRunUpdatedAt(props.draftRun.updated_at)}
+        {formatDraftRunUpdatedAt(props.t, props.draftRun.updated_at, props.lng)}
       </Text>
     </chakra.button>
   );
@@ -188,6 +167,7 @@ export function StationaryEnergyDraftsPanel({
               active={draftRun.draft_run_id === state.activeDraftRunId}
               disabled={state.draftListLoading}
               onSelect={() => actions.selectDraft(draftRun.draft_run_id)}
+              lng={lng}
               t={t}
             />
           ))

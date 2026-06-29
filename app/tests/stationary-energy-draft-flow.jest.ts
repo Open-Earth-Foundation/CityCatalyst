@@ -23,6 +23,10 @@ import {
   resolveStationaryEnergyStartDraftFailureMessage,
   resolveStationaryEnergyToolMessage,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-helpers";
+import {
+  draftRunStatusLabel,
+  formatDraftRunUpdatedAt,
+} from "@/components/StationaryEnergyDraft/stationary-energy-drafts-panel-format";
 
 function draftFixture(): DraftStatusResponse {
   return {
@@ -138,6 +142,44 @@ function draftFixture(): DraftStatusResponse {
 }
 
 describe("Stationary Energy draft flow", () => {
+  it("resolves draft list status labels through translation keys", () => {
+    const t = ((key: string) => key) as Parameters<
+      typeof draftRunStatusLabel
+    >[0];
+
+    expect(draftRunStatusLabel(t, "resolving_scope")).toBe(
+      "artifact-draft-status-resolving-scope",
+    );
+    expect(draftRunStatusLabel(t, "loading_context")).toBe(
+      "artifact-draft-status-loading-context",
+    );
+    expect(draftRunStatusLabel(t, "partially_saved")).toBe(
+      "artifact-draft-status-partially-saved",
+    );
+    expect(draftRunStatusLabel(t, "future_backend_status")).toBe(
+      "artifact-draft-status-unknown",
+    );
+  });
+
+  it("formats draft list timestamps with the active route locale", () => {
+    const value = "2026-02-03T04:05:00.000Z";
+    const expected = new Intl.DateTimeFormat("fr", {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(new Date(value));
+
+    const t = ((key: string) => key) as Parameters<
+      typeof formatDraftRunUpdatedAt
+    >[0];
+
+    expect(formatDraftRunUpdatedAt(t, value, "fr")).toBe(expected);
+    expect(formatDraftRunUpdatedAt(t, "invalid timestamp", "fr")).toBe(
+      "drafts-panel-updated-at-unavailable",
+    );
+  });
+
   it("resolves Stationary Energy tool messages from translation keys only", () => {
     const t = ((key: string, params?: Record<string, unknown>) =>
       `${key}:${JSON.stringify(params ?? {})}`) as Parameters<

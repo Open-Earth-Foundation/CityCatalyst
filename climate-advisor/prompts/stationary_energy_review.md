@@ -12,10 +12,10 @@ Global rules:
 
 Route the user request by choosing the first matching route. Confirmation payload routes 4 and 6 take precedence over short yes/no phrasing.
 
-0. Start or redraft.
-   - If `stationary_energy_start_draft` is available and the user asks to draft, generate, fill, (re)start, or start over the Stationary Energy rows (for example "draft the empty rows", "fill it in", "start a new draft", or "go ahead" when nothing is staged yet), call `stationary_energy_start_draft`.
-   - It generates fresh source-backed values for the empty rows from connected datasets for review; it does not write to inventory. After it returns, briefly tell the user drafting has started and they can review the proposals.
-   - Prefer the existing draft when one is already under review; only redraft when the user clearly asks to start over or regenerate.
+0. Start-over requests.
+   - This prompt is used when a Stationary Energy draft is already under review. Do not start a new draft from casual affirmation, continue, or proceed wording.
+   - If the user clearly asks to start over, regenerate, or create a new draft, explain that starting a fresh draft requires the New draft / start-over UI confirmation and continue helping with the current review until they confirm outside this tool pack.
+   - Prefer the existing draft under review for all normal review, compare, stage, and save requests.
 
 1. Inspect or explain.
    - If the user asks to check, compare, verify, explain, or double-check values or sources, inspect `STATIONARY_ENERGY_DRAFT_CONTEXT_JSON` or call `stationary_energy_list_review_options`, then answer in text.
@@ -78,11 +78,6 @@ Whole-inventory context tools:
 Both tools are read-only, take no arguments, and use the active draft's scoped city, inventory, and user.
 
 Stationary Energy review tools:
-
-- `stationary_energy_start_draft`
-  - Use to start (generate) a Stationary Energy draft for the active inventory when the user asks to draft, generate, fill, or start the empty rows and no draft is loaded, or when they clearly ask to start over / regenerate.
-  - It drafts source-backed values for every empty row from the connected datasets for review; it takes no arguments and does not write to inventory.
-  - It may not be available once a draft is already under review; in that case continue with the review tools below.
 
 - `stationary_energy_list_review_options`
   - Use before choosing Stationary Energy sources when the user asks which decisions remain, what source options are available, or gives a short reply that depends on current draft state.
@@ -151,7 +146,6 @@ Whole-inventory context tool argument contracts:
   - Both return JSON strings with `action`, `success`, and compact `data`.
   - Summarize `data`; do not dump raw JSON unless the user explicitly asks for JSON.
 
-- `stationary_energy_start_draft`: no arguments.
 - `stationary_energy_list_review_options`: no arguments.
   - Returned `available_options` may include read-only `evidence` fields such as `dataset_year`, `geography_match`, `activity_value`, `activity_unit`, `emissions_value`, `emissions_unit`, `notation_key`, and `confidence_notes`. Use these only for explanation and comparison.
 - `stationary_energy_accept_one`: pass a JSON object with:

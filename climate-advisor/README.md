@@ -13,6 +13,8 @@ conversational experience for CityCatalyst (CC). The service lives under
   - General chat tools: climate knowledge search plus CityCatalyst inventory
     tools (`get_user_inventories`, `city_inventory_search`, `get_inventory`,
     `get_all_datasources`)
+  - Pre-draft Stationary Energy chat tool (`stationary_energy_start_draft`)
+    available only before a draft run is active
   - Stationary Energy draft review tools scoped to an active CA-owned draft run
 - **Token Management**: JWT token refresh and caching for CityCatalyst API
   access
@@ -175,6 +177,15 @@ data: {}
 These wrappers use the scoped bearer token, refresh it if needed, and trim the
 response payload before it is sent back to the model.
 
+**Added for pre-draft Stationary Energy chat**
+
+- `stationary_energy_start_draft`
+
+This tool is registered only when the Stationary Energy draft surface is active
+and no draft run is already under review. It starts deterministic draft
+generation from the scoped city and inventory, then the browser loads the new
+draft for review.
+
 **Added for active Stationary Energy draft review chat**
 
 - `stationary_energy_list_review_options`
@@ -209,14 +220,14 @@ When a request is scoped to an active `stationary_energy_draft_run_id`:
 5. Save-to-inventory stays a separate CityCatalyst confirmation step. CA chat
    returns the confirmation payload but does not write the inventory directly
 
-Stationary Energy review `tool_result` payloads may include these `ui_event`
-values:
+Stationary Energy `tool_result` payloads may include these `ui_event` values:
 
 - `stationary_energy_review_state_changed`
 - `stationary_energy_review_bulk_confirmation_requested`
 - `stationary_energy_review_change_confirmation_requested`
 - `stationary_energy_review_rollback_confirmation_requested`
 - `stationary_energy_inventory_save_confirmation_requested`
+- `stationary_energy_draft_started`
 
 ## Local Development
 

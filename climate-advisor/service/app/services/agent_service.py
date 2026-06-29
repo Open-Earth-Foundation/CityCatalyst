@@ -435,11 +435,12 @@ class AgentService:
                 self.cc_user_id,
             )
 
-        # Allow the agent to START a Stationary Energy draft from chat (the
-        # "draft the empty rows" action) whenever the SE draft surface is active,
-        # independent of whether a draft run already exists.
+        # Allow the agent to START a Stationary Energy draft from chat only
+        # before a draft exists. Active draft review uses the scoped review
+        # tools below and must not expose a second draft-start mutation.
         if (
             self._stationary_energy_surface
+            and not self.stationary_energy_draft_run_id
             and self.city_id
             and self.inventory_id
             and self.session_factory
@@ -456,9 +457,8 @@ class AgentService:
                 token_ref=self._token_ref,
             )
             tools.extend(start_draft_tools)
-            # Once a draft exists the Stationary Energy review prompt carries its
-            # own start/redraft route; before any draft exists the default prompt
-            # is active, so append a focused hint there.
+            # Before any draft exists the default prompt is active, so append a
+            # focused hint that makes the pre-draft start action discoverable.
             if not self._uses_stationary_energy_review_prompt:
                 agent_instructions = (
                     f"{agent_instructions}\n\n{_STATIONARY_ENERGY_START_INSTRUCTION}"

@@ -139,11 +139,12 @@ generation continues in the background exactly as the button path does.
 `climate-advisor/prompts/stationary_energy_review.md`
 
 `AgentService` now accepts `city_id` and a Stationary-Energy-surface flag and
-registers the start-draft tool whenever that surface is active (independent of
-whether a draft exists); `StreamingHandler` extracts those from the chat context.
-The new UI event was added to the streamed-event whitelist, and the review prompt
-gained a "Start or redraft" route plus the tool's documentation (with a focused
-hint appended to the default prompt for the pre-draft case).
+registers the start-draft tool only when that surface is active and no draft run
+is already under review; `StreamingHandler` extracts those from the chat
+context. The new UI event was added to the streamed-event whitelist, and the
+default prompt gets a focused hint for the pre-draft case. The active review
+prompt keeps users on the current draft unless they use the New draft /
+start-over confirmation path outside the review tool pack.
 
 > The compare / stage / "accept all recommended" / save-to-inventory tools were
 > already reachable from chat (with confirmation cards for writes) and are

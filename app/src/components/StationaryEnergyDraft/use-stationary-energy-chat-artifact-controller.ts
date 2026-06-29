@@ -724,8 +724,14 @@ export function useStationaryEnergyChatArtifactController(
         decisionReviewContext,
         decisionState,
         focusedProposalId: effectiveFocusedProposalId,
+        resolvedProposalIds,
       }),
-    [decisionReviewContext, decisionState, effectiveFocusedProposalId],
+    [
+      decisionReviewContext,
+      decisionState,
+      effectiveFocusedProposalId,
+      resolvedProposalIds,
+    ],
   );
   const canSaveAcceptedRowsToInventory = canSaveToInventory({
     draftState,

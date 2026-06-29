@@ -251,9 +251,19 @@ export function buildFocusedDecisionStatePayload(params: {
   decisionReviewContext: DecisionReviewContext[];
   decisionState: Record<string, DraftDecisionState>;
   focusedProposalId?: string | null;
+  resolvedProposalIds: Set<string>;
 }): FocusedDecisionStatePayload | undefined {
-  const { decisionReviewContext, decisionState, focusedProposalId } = params;
+  const {
+    decisionReviewContext,
+    decisionState,
+    focusedProposalId,
+    resolvedProposalIds,
+  } = params;
   if (!focusedProposalId) {
+    return undefined;
+  }
+
+  if (!resolvedProposalIds.has(focusedProposalId)) {
     return undefined;
   }
 

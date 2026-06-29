@@ -774,6 +774,7 @@ describe("Stationary Energy draft flow", () => {
       decisionReviewContext,
       decisionState,
       focusedProposalId: "proposal-conflict",
+      resolvedProposalIds: new Set(["proposal-conflict"]),
     });
     const request = buildStationaryEnergyChatRequest({
       cityId: "city-1",
@@ -842,6 +843,38 @@ describe("Stationary Energy draft flow", () => {
           decisionReviewContext.length,
       }),
     );
+  });
+
+  it("does not send hidden default source choices as focused chat selections", () => {
+    const draft = draftFixture();
+    const decisionReviewContext = buildDecisionReviewContext({
+      draftState: draft,
+      resolvedProposalIds: new Set(),
+    });
+    const decisionState = buildInitialDecisionState(draft);
+    const focusedDecisionState = buildFocusedDecisionStatePayload({
+      decisionReviewContext,
+      decisionState,
+      focusedProposalId: "proposal-conflict",
+      resolvedProposalIds: new Set(),
+    });
+
+    const request = buildStationaryEnergyChatRequest({
+      cityId: "city-1",
+      content: "save just that one",
+      decisionReviewContext,
+      draftState: draft,
+      focusedDecisionState,
+      focusedProposalId: "proposal-conflict",
+      inventoryId: "inventory-1",
+      threadId: "thread-1",
+    });
+
+    expect(focusedDecisionState).toBeUndefined();
+    expect(
+      (request.context as Record<string, unknown>)
+        .stationary_energy_focused_decision_state,
+    ).toBeUndefined();
   });
 
   it("blocks inventory confirmation cards when save is not currently allowed", () => {

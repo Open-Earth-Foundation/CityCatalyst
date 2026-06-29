@@ -117,6 +117,34 @@ class InventoryContextToolTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data["data"]["total_emissions_tco2e"], "12500000")
         self.assertEqual(stub_client.requests[0]["action"], "emissions")
 
+    async def test_tool_refreshes_token_before_cc_call(self) -> None:
+        stub_client = _StubInventoryContextClient()
+        token_ref = {"value": "expired-token"}
+
+        async def refresh_token(token: str, thread_id: object | None) -> str:
+            self.assertEqual(token, "expired-token")
+            self.assertIsNone(thread_id)
+            return "fresh-token"
+
+        tools = build_inventory_context_tools(
+            resolve_scope=_resolve_scope,
+            user_id="user-1",
+            token_ref=token_ref,
+            token_refresher=refresh_token,
+            client_factory=lambda: stub_client,
+        )
+        status_tool = _find_tool(tools, "inventory_status_overview")
+
+        output = await status_tool.on_invoke_tool(  # type: ignore[attr-defined]
+            _tool_context("inventory_status_overview"),
+            "{}",
+        )
+        data = json.loads(output)
+
+        self.assertTrue(data["success"])
+        self.assertEqual(stub_client.requests[0]["token"], "fresh-token")
+        self.assertEqual(token_ref["value"], "fresh-token")
+
     async def test_tool_reports_missing_token_without_cc_call(self) -> None:
         stub_client = _StubInventoryContextClient()
         tools = build_inventory_context_tools(
@@ -161,8 +189,8 @@ class InventoryContextToolTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data["status_code"], 403)
 
 
-async def _resolve_scope() -> tuple[str, str]:
-    return "city-1", "inventory-1"
+async def _resolve_scope() -> tuple[str, str, None]:
+    return "city-1", "inventory-1", None
 
 
 def _find_tool(tools: list[object] | tuple[object, ...], name: str) -> object:

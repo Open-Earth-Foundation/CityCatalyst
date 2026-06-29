@@ -4,6 +4,7 @@ import inspect
 import json
 import logging
 from typing import Any, Awaitable, Callable, Dict, Optional, Sequence
+from uuid import UUID
 
 from agents import function_tool
 from fastapi import HTTPException
@@ -18,12 +19,13 @@ logger = logging.getLogger(__name__)
 INVENTORY_STATUS_OVERVIEW_ACTION = "ghgi.inventory.status_overview"
 INVENTORY_EMISSIONS_CONTEXT_ACTION = "ghgi.inventory.emissions_context"
 
-ScopeResolver = Callable[[], Awaitable[tuple[str, str]]]
+ScopeResolver = Callable[[], Awaitable[tuple[str, str, UUID | None]]]
 ClientFactory = Callable[[], CityCatalystClient]
 CapabilityLoader = Callable[
     [CityCatalystClient, Dict[str, Any], Optional[str]],
     Awaitable[Dict[str, Any]],
 ]
+TokenRefresher = Callable[[str, UUID | None], Awaitable[str]]
 
 
 def build_inventory_context_tools(
@@ -31,6 +33,7 @@ def build_inventory_context_tools(
     resolve_scope: ScopeResolver,
     user_id: str,
     token_ref: Dict[str, Optional[str]],
+    token_refresher: TokenRefresher | None = None,
     client_factory: ClientFactory = CityCatalystClient,
 ) -> Sequence[object]:
     """Create read-only whole-inventory context tools for a scoped workflow."""
@@ -50,12 +53,15 @@ def build_inventory_context_tools(
 
         try:
             # Resolve city/inventory from workflow state, not from LLM arguments.
-            city_id, inventory_id = await resolve_scope()
+            city_id, inventory_id, thread_id = await resolve_scope()
             request_payload = {
                 "user_id": user_id,
                 "city_id": city_id,
                 "inventory_id": inventory_id,
             }
+            if token_refresher is not None:
+                token = await token_refresher(token, thread_id)
+                token_ref["value"] = token
 
             # Use a short-lived CC client so the tool has no durable resources.
             client = client_factory()

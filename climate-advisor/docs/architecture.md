@@ -94,6 +94,8 @@ sequenceDiagram
   - `city_inventory_search`
   - `get_inventory`
   - `get_all_datasources`
+- Added when the request is scoped to the Stationary Energy draft surface:
+  - `stationary_energy_start_draft`
 - Added when the request is scoped to a Stationary Energy draft run:
   - `inventory_status_overview`
   - `inventory_emissions_context`
@@ -113,10 +115,13 @@ sequenceDiagram
 
 - General chat starts from `prompts.default`.
 - General inventory chat can append `prompts.inventory_context`.
+- Stationary Energy draft-surface chat can register `stationary_energy_start_draft`
+  before a draft run exists, using the default prompt plus a focused start-draft
+  instruction.
 - Stationary Energy review chat starts from `prompts.stationary_energy_review`
   instead of appending to `prompts.default`, and registers only tools scoped to
-  the active draft review workflow. That pack includes read-only whole-inventory
-  context tools plus Stationary Energy review tools.
+  the active draft review workflow. That pack includes `stationary_energy_start_draft`,
+  read-only whole-inventory context tools, and Stationary Energy review tools.
 
 ## Stationary Energy Review Flow
 
@@ -205,6 +210,9 @@ workflow state in PostgreSQL.
 - `tools/stationary_energy_review_tools.py`
   - The scoped Stationary Energy review tool pack backed by
     `StationaryEnergyAgentReviewService`.
+- `tools/stationary_energy_start_draft_tools.py`
+  - The scoped chat tool that starts Stationary Energy draft generation before
+    review proposals exist.
 
 ### Utility Layer
 
@@ -246,6 +254,7 @@ values inside `tool_result` payloads:
 - `stationary_energy_review_change_confirmation_requested`
 - `stationary_energy_review_rollback_confirmation_requested`
 - `stationary_energy_inventory_save_confirmation_requested`
+- `stationary_energy_draft_started`
 
 ## Prompts And Configuration
 

@@ -394,7 +394,7 @@ Response fields:
     - `impact_score` (`float`)
     - `alignment_score` (`float`)
     - `feasibility_score` (`float`)
-    - `evidence_summary` (`object`): compact explainability snapshot from hard-filter/impact/alignment/feasibility evidence
+    - `evidence_summary` (`object`): compact explainability snapshot from hard-filter/impact/alignment/feasibility evidence; the feasibility section now keeps `feasibility_score` at the top level and groups details under `legal`, `mitigation_feasibility`, and `financial_feasibility`
     - `explanations` (`object`): optional explanation texts keyed by language code when `createExplanations=true`
   - `metadata` (`object`): request IDs, timings, counts, and hard-filter evidence.
   - `warnings` (`string[]`): human-readable translation warnings when canonical English inputs appear non-English or mixed-language
@@ -551,6 +551,22 @@ Example response:
             "impact": {
               "impact_block_score": 0.88,
               "matched_city_subsector_keys_count": 1
+            },
+            "feasibility": {
+              "feasibility_score": 0.59,
+              "legal": {
+                "component_score": 0.5,
+                "component_source": "neutral_fallback"
+              },
+              "mitigation_feasibility": {
+                "component_score": 0.78,
+                "component_source": "action_mitigation_feasibility_score"
+              },
+              "financial_feasibility": {
+                "component_score": 0.6,
+                "route": "needs technical assistance",
+                "reason": "Capacity is the constraint, not money; needs technical assistance."
+              }
             }
           },
           "explanations": {}

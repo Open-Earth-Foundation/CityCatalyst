@@ -124,14 +124,12 @@ def test_prioritize_e2e_with_mock_api_payloads(
         feasibility_summary = ranked_actions[0]["evidence_summary"]["feasibility"]
         assert set(feasibility_summary.keys()) == {
             "feasibility_score",
-            "legal_component_score",
-            "mitigation_feasibility_component_score",
-            "financial_feasibility_component_score",
-            "financial_feasibility_route",
-            "financial_feasibility_reason",
+            "legal",
+            "mitigation_feasibility",
+            "financial_feasibility",
         }
         assert isinstance(
-            feasibility_summary["financial_feasibility_route"],
+            feasibility_summary["financial_feasibility"]["route"],
             str,
         )
 

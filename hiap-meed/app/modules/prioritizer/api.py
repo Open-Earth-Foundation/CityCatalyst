@@ -468,7 +468,7 @@ def prioritize(
                     frontend_request_id=request_trace_id,
                 )
                 # Echo frontend request ID for response correlation in clients/logs.
-                per_city_result.metadata["frontend_request_id"] = request_trace_id
+                per_city_result.metadata.frontend_request_id = request_trace_id
                 results.append(
                     PrioritizerApiCityResult(
                         locode=city_input.locode,
@@ -800,26 +800,21 @@ def _run_for_city_input(
             requested_languages=requested_languages,
         )
         metadata = result.metadata
+        explanations_metadata = metadata.explanations
         log_params(
             {
                 "generated_languages_count": len(
-                    metadata.get("explanations", {}).get("generated_languages", [])
-                )
-                if isinstance(metadata.get("explanations"), dict)
-                else None,
+                    explanations_metadata.generated_languages
+                ),
             }
         )
         metrics: dict[str, float] = {"warnings": float(len(result.warnings))}
-        counts = metadata.get("counts")
-        if isinstance(counts, dict):
-            for key, value in counts.items():
-                if isinstance(value, int | float):
-                    metrics[f"counts_{key}"] = float(value)
-        timings = metadata.get("timings")
-        if isinstance(timings, dict):
-            for key, value in timings.items():
-                if isinstance(value, int | float):
-                    metrics[f"timings_{key}"] = float(value)
+        for key, value in metadata.counts.model_dump(mode="json").items():
+            if isinstance(value, int | float):
+                metrics[f"counts_{key}"] = float(value)
+        for key, value in metadata.timings.items():
+            if isinstance(value, int | float):
+                metrics[f"timings_{key}"] = float(value)
         log_metrics(metrics)
         return result
 

@@ -1040,39 +1040,52 @@ Main output:
 
 - `feasibility_score`
 
-Key evidence fields:
+Key evidence fields in `012_feasibility.json` are grouped per component:
 
-- `legal_assessment_present`
-- `legal_assessment_missing`
-- `legal_verdict_category`
-- `legal_component_score`
-- `legal_component_source`
-- `legal_verdict_score_missing`
-- `mitigation_feasibility_component_score`
-- `mitigation_feasibility_component_source`
-- `mitigation_feasibility_weight`
-- `mitigation_feasibility_contribution`
-- `mitigation_feasibility_score_present`
-- `mitigation_feasibility_score_missing`
-- `mitigation_feasibility_action_score_missing`
-- `global_mitigation_option`
-- `action_mapping_strength`
-- `option_family`
-- `dimension_scores`
-- `feasibility_breakdown`
-- `rank_within_city`
-- `financial_feasibility_component_score`
-- `financial_feasibility_component_source`
-- `financial_feasibility_weight`
-- `financial_feasibility_contribution`
-- `financial_feasibility_score_present`
-- `financial_feasibility_score_missing`
-- `financial_feasibility_action_score_missing`
-- `financial_feasibility_route`
-- `financial_feasibility_reason`
-- `financial_feasibility_sector`
-- `financial_feasibility_inputs`
-- `financial_feasibility_links`
+- `legal`
+  - `assessment_present`
+  - `assessment_missing`
+  - `verdict_category`
+  - `component_score`
+  - `component_source`
+  - `weight`
+  - `contribution`
+  - `verdict_score_missing`
+  - `ownership_category`
+  - `ownership_score`
+  - `restrictions_category`
+  - `restrictions_score`
+  - `analysis_date`
+  - `generation_method`
+  - `references`
+- `mitigation_feasibility`
+  - `component_score`
+  - `component_source`
+  - `weight`
+  - `contribution`
+  - `score_present`
+  - `score_missing`
+  - `action_score_missing`
+  - `global_mitigation_option`
+  - `action_mapping_strength`
+  - `option_family`
+  - `n_feasibility_dimensions`
+  - `dimension_scores`
+  - `breakdown`
+  - `rank_within_city`
+- `financial_feasibility`
+  - `component_score`
+  - `component_source`
+  - `weight`
+  - `contribution`
+  - `score_present`
+  - `score_missing`
+  - `action_score_missing`
+  - `route`
+  - `reason`
+  - `sector`
+  - `inputs`
+  - `links`
 - `feasibility_score`
 
 ## 8. Final Scoring Block
@@ -1175,6 +1188,7 @@ For each ranked action, the output includes:
 
 Important current behavior:
 
+- `evidence_summary.feasibility` keeps `feasibility_score` at the top level and groups detailed component evidence under `legal`, `mitigation_feasibility`, and `financial_feasibility`
 - `explanations` is `{}` unless `requestData.createExplanations=true` and the explanation call succeeds
 - Explanations are generated only after ranking is finished; they do not change scores or ranks
 - The explanation stage uses the ranked actions plus curated evidence from the Impact, Alignment, and Feasibility blocks

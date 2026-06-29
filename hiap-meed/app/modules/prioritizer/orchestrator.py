@@ -130,6 +130,95 @@ def _legal_fetch_source_descriptor(
     }
 
 
+def _group_feasibility_evidence(evidence: dict[str, object]) -> dict[str, object]:
+    """Return grouped public feasibility evidence for one action."""
+    return {
+        "legal": {
+            "assessment_present": bool(evidence.get("legal_assessment_present", False)),
+            "assessment_missing": bool(evidence.get("legal_assessment_missing", False)),
+            "verdict_category": evidence.get("legal_verdict_category"),
+            "component_score": _safe_float(evidence.get("legal_component_score")),
+            "component_source": evidence.get("legal_component_source"),
+            "weight": _safe_float(evidence.get("legal_weight")),
+            "contribution": _safe_float(evidence.get("legal_contribution")),
+            "verdict_score_missing": bool(
+                evidence.get("legal_verdict_score_missing", False)
+            ),
+            "ownership_category": evidence.get("ownership_category"),
+            "ownership_score": evidence.get("ownership_score"),
+            "restrictions_category": evidence.get("restrictions_category"),
+            "restrictions_score": evidence.get("restrictions_score"),
+            "analysis_date": evidence.get("legal_analysis_date"),
+            "generation_method": evidence.get("legal_generation_method"),
+            "references": list(evidence.get("legal_references", [])),
+        },
+        "mitigation_feasibility": {
+            "component_score": _safe_float(
+                evidence.get("mitigation_feasibility_component_score")
+            ),
+            "component_source": evidence.get(
+                "mitigation_feasibility_component_source"
+            ),
+            "weight": _safe_float(evidence.get("mitigation_feasibility_weight")),
+            "contribution": _safe_float(
+                evidence.get("mitigation_feasibility_contribution")
+            ),
+            "score_present": bool(
+                evidence.get("mitigation_feasibility_score_present", False)
+            ),
+            "score_missing": bool(
+                evidence.get("mitigation_feasibility_score_missing", False)
+            ),
+            "action_score_missing": bool(
+                evidence.get("mitigation_feasibility_action_score_missing", False)
+            ),
+            "global_mitigation_option": evidence.get("global_mitigation_option"),
+            "action_mapping_strength": evidence.get("action_mapping_strength"),
+            "option_family": evidence.get("option_family"),
+            "n_feasibility_dimensions": evidence.get("n_feasibility_dimensions"),
+            "dimension_scores": dict(evidence.get("dimension_scores", {})),
+            "breakdown": dict(evidence.get("feasibility_breakdown", {})),
+            "rank_within_city": evidence.get("rank_within_city"),
+        },
+        "financial_feasibility": {
+            "component_score": _safe_float(
+                evidence.get("financial_feasibility_component_score")
+            ),
+            "component_source": evidence.get("financial_feasibility_component_source"),
+            "weight": _safe_float(evidence.get("financial_feasibility_weight")),
+            "contribution": _safe_float(
+                evidence.get("financial_feasibility_contribution")
+            ),
+            "score_present": bool(
+                evidence.get("financial_feasibility_score_present", False)
+            ),
+            "score_missing": bool(
+                evidence.get("financial_feasibility_score_missing", False)
+            ),
+            "action_score_missing": bool(
+                evidence.get("financial_feasibility_action_score_missing", False)
+            ),
+            "route": evidence.get("financial_feasibility_route"),
+            "reason": evidence.get("financial_feasibility_reason"),
+            "sector": evidence.get("financial_feasibility_sector"),
+            "inputs": dict(evidence.get("financial_feasibility_inputs", {})),
+            "links": dict(evidence.get("financial_feasibility_links", {})),
+        },
+        "feasibility_score": _safe_float(evidence.get("feasibility_score")),
+    }
+
+
+def _group_all_feasibility_evidence(
+    evidence_by_action_id: dict[str, dict[str, object]] | None,
+) -> dict[str, dict[str, object]]:
+    """Return grouped public feasibility evidence keyed by action ID."""
+    all_evidence = _all_block_evidence(evidence_by_action_id)
+    return {
+        action_id: _group_feasibility_evidence(action_evidence)
+        for action_id, action_evidence in all_evidence.items()
+    }
+
+
 def _build_evidence_summary(
     scored_action_evidence: dict[str, object],
 ) -> dict[str, object]:
@@ -191,21 +280,76 @@ def _build_evidence_summary(
             "feasibility_score": _safe_float(
                 feasibility_evidence.get("feasibility_score")
             ),
-            "legal_component_score": _safe_float(
-                feasibility_evidence.get("legal_component_score")
-            ),
-            "mitigation_feasibility_component_score": _safe_float(
-                feasibility_evidence.get("mitigation_feasibility_component_score")
-            ),
-            "financial_feasibility_component_score": _safe_float(
-                feasibility_evidence.get("financial_feasibility_component_score")
-            ),
-            "financial_feasibility_route": feasibility_evidence.get(
-                "financial_feasibility_route"
-            ),
-            "financial_feasibility_reason": feasibility_evidence.get(
-                "financial_feasibility_reason"
-            ),
+            "legal": {
+                "assessment_present": bool(
+                    feasibility_evidence.get("legal", {}).get(
+                        "assessment_present", False
+                    )
+                ),
+                "assessment_missing": bool(
+                    feasibility_evidence.get("legal", {}).get(
+                        "assessment_missing", False
+                    )
+                ),
+                "verdict_category": feasibility_evidence.get("legal", {}).get(
+                    "verdict_category"
+                ),
+                "component_score": _safe_float(
+                    feasibility_evidence.get("legal", {}).get("component_score")
+                ),
+                "component_source": feasibility_evidence.get("legal", {}).get(
+                    "component_source"
+                ),
+            },
+            "mitigation_feasibility": {
+                "component_score": _safe_float(
+                    feasibility_evidence.get("mitigation_feasibility", {}).get(
+                        "component_score"
+                    )
+                ),
+                "component_source": feasibility_evidence.get(
+                    "mitigation_feasibility", {}
+                ).get("component_source"),
+                "score_present": bool(
+                    feasibility_evidence.get("mitigation_feasibility", {}).get(
+                        "score_present", False
+                    )
+                ),
+                "score_missing": bool(
+                    feasibility_evidence.get("mitigation_feasibility", {}).get(
+                        "score_missing", False
+                    )
+                ),
+            },
+            "financial_feasibility": {
+                "component_score": _safe_float(
+                    feasibility_evidence.get("financial_feasibility", {}).get(
+                        "component_score"
+                    )
+                ),
+                "component_source": feasibility_evidence.get(
+                    "financial_feasibility", {}
+                ).get("component_source"),
+                "score_present": bool(
+                    feasibility_evidence.get("financial_feasibility", {}).get(
+                        "score_present", False
+                    )
+                ),
+                "score_missing": bool(
+                    feasibility_evidence.get("financial_feasibility", {}).get(
+                        "score_missing", False
+                    )
+                ),
+                "route": feasibility_evidence.get("financial_feasibility", {}).get(
+                    "route"
+                ),
+                "reason": feasibility_evidence.get("financial_feasibility", {}).get(
+                    "reason"
+                ),
+                "sector": feasibility_evidence.get("financial_feasibility", {}).get(
+                    "sector"
+                ),
+            },
         },
     }
 
@@ -875,7 +1019,7 @@ def run_prioritization(
         {
             **_score_stats(feasibility_result.score_by_action_id),
             **feasibility_result.metadata,
-            "evidence_by_action_id": _all_block_evidence(
+            "evidence_by_action_id": _group_all_feasibility_evidence(
                 feasibility_result.evidence_by_action_id
             ),
             "elapsed_seconds": block.elapsed_seconds,
@@ -961,9 +1105,11 @@ def run_prioritization(
             "alignment": _safe_block_evidence(
                 alignment_result.evidence_by_action_id, action_id
             ),
-            "feasibility": _safe_block_evidence(
-                feasibility_result.evidence_by_action_id,
-                action_id,
+            "feasibility": _group_feasibility_evidence(
+                _safe_block_evidence(
+                    feasibility_result.evidence_by_action_id,
+                    action_id,
+                )
             ),
         }
 

@@ -27,6 +27,29 @@ SYSTEM_PROMPT_FILE_PATH = (
 EXPLANATION_PROMPT_WARNING_CHARS = 20_000
 
 
+def _feasibility_component(
+    feasibility_evidence: dict[str, object], component_name: str
+) -> dict[str, object]:
+    """Return one grouped feasibility component, or an empty dict."""
+    component = feasibility_evidence.get(component_name, {})
+    if not isinstance(component, dict):
+        return {}
+    return component
+
+
+def _feasibility_component_value(
+    feasibility_evidence: dict[str, object],
+    component_name: str,
+    key: str,
+    legacy_key: str,
+) -> object:
+    """Read grouped feasibility evidence with a flat-key fallback."""
+    component = _feasibility_component(feasibility_evidence, component_name)
+    if key in component:
+        return component.get(key)
+    return feasibility_evidence.get(legacy_key)
+
+
 class ExplanationItem(BaseModel):
     """Structured explanation row returned by the LLM."""
 
@@ -323,22 +346,44 @@ def _build_feasibility_signals(
     feasibility_evidence: dict[str, object],
 ) -> dict[str, object]:
     """Build qualitative feasibility signals from block evidence."""
-    legal_component_score = feasibility_evidence.get("legal_component_score")
-    mitigation_feasibility_component_score = feasibility_evidence.get(
-        "mitigation_feasibility_component_score"
+    legal_component_score = _feasibility_component_value(
+        feasibility_evidence, "legal", "component_score", "legal_component_score"
     )
-    financial_feasibility_component_score = feasibility_evidence.get(
-        "financial_feasibility_component_score"
+    mitigation_feasibility_component_score = _feasibility_component_value(
+        feasibility_evidence,
+        "mitigation_feasibility",
+        "component_score",
+        "mitigation_feasibility_component_score",
+    )
+    financial_feasibility_component_score = _feasibility_component_value(
+        feasibility_evidence,
+        "financial_feasibility",
+        "component_score",
+        "financial_feasibility_component_score",
     )
     return {
         "legal_assessment_present": bool(
-            feasibility_evidence.get("legal_assessment_present", False)
+            _feasibility_component_value(
+                feasibility_evidence,
+                "legal",
+                "assessment_present",
+                "legal_assessment_present",
+            )
         ),
         "legal_assessment_missing": bool(
-            feasibility_evidence.get("legal_assessment_missing", False)
+            _feasibility_component_value(
+                feasibility_evidence,
+                "legal",
+                "assessment_missing",
+                "legal_assessment_missing",
+            )
         ),
-        "legal_verdict_category": feasibility_evidence.get("legal_verdict_category"),
-        "legal_component_source": feasibility_evidence.get("legal_component_source"),
+        "legal_verdict_category": _feasibility_component_value(
+            feasibility_evidence, "legal", "verdict_category", "legal_verdict_category"
+        ),
+        "legal_component_source": _feasibility_component_value(
+            feasibility_evidence, "legal", "component_source", "legal_component_source"
+        ),
         "legal_component_bucket": _component_score_bucket(
             legal_component_score
         ),
@@ -348,11 +393,17 @@ def _build_feasibility_signals(
         "financial_feasibility_component_bucket": _component_score_bucket(
             financial_feasibility_component_score
         ),
-        "financial_feasibility_route": feasibility_evidence.get(
-            "financial_feasibility_route"
+        "financial_feasibility_route": _feasibility_component_value(
+            feasibility_evidence,
+            "financial_feasibility",
+            "route",
+            "financial_feasibility_route",
         ),
-        "financial_feasibility_reason": feasibility_evidence.get(
-            "financial_feasibility_reason"
+        "financial_feasibility_reason": _feasibility_component_value(
+            feasibility_evidence,
+            "financial_feasibility",
+            "reason",
+            "financial_feasibility_reason",
         ),
     }
 
@@ -416,29 +467,61 @@ def _build_main_strengths(
             very_strong_message="Supports the city's preferred co-benefits very well.",
         )
 
-    if bool(feasibility_evidence.get("legal_assessment_present", False)):
+    if bool(
+        _feasibility_component_value(
+            feasibility_evidence,
+            "legal",
+            "assessment_present",
+            "legal_assessment_present",
+        )
+    ):
         _append_strength_message_for_score(
             strengths,
-            score_value=feasibility_evidence.get("legal_component_score"),
+            score_value=_feasibility_component_value(
+                feasibility_evidence,
+                "legal",
+                "component_score",
+                "legal_component_score",
+            ),
             strong_message="Shows supportive legal feasibility conditions in the current evidence.",
             very_strong_message="Shows very supportive legal feasibility conditions in the current evidence.",
         )
 
-    if bool(feasibility_evidence.get("mitigation_feasibility_score_present", False)):
+    if bool(
+        _feasibility_component_value(
+            feasibility_evidence,
+            "mitigation_feasibility",
+            "score_present",
+            "mitigation_feasibility_score_present",
+        )
+    ):
         _append_strength_message_for_score(
             strengths,
-            score_value=feasibility_evidence.get(
-                "mitigation_feasibility_component_score"
+            score_value=_feasibility_component_value(
+                feasibility_evidence,
+                "mitigation_feasibility",
+                "component_score",
+                "mitigation_feasibility_component_score",
             ),
             strong_message="Shows strong mitigation feasibility for the current city.",
             very_strong_message="Shows very strong mitigation feasibility for the current city.",
         )
 
-    if bool(feasibility_evidence.get("financial_feasibility_score_present", False)):
+    if bool(
+        _feasibility_component_value(
+            feasibility_evidence,
+            "financial_feasibility",
+            "score_present",
+            "financial_feasibility_score_present",
+        )
+    ):
         _append_strength_message_for_score(
             strengths,
-            score_value=feasibility_evidence.get(
-                "financial_feasibility_component_score"
+            score_value=_feasibility_component_value(
+                feasibility_evidence,
+                "financial_feasibility",
+                "component_score",
+                "financial_feasibility_component_score",
             ),
             strong_message="Shows accessible financing and delivery readiness for the current city.",
             very_strong_message="Shows very accessible financing and delivery readiness for the current city.",
@@ -510,29 +593,58 @@ def _build_main_constraints(
             very_weak_message="Offers very weak support for the city's preferred co-benefits.",
         )
 
-    if bool(feasibility_evidence.get("legal_assessment_present", False)):
+    if bool(
+        _feasibility_component_value(
+            feasibility_evidence, "legal", "assessment_present", "legal_assessment_present"
+        )
+    ):
         _append_constraint_message_for_score(
             constraints,
-            score_value=feasibility_evidence.get("legal_component_score"),
+            score_value=_feasibility_component_value(
+                feasibility_evidence,
+                "legal",
+                "component_score",
+                "legal_component_score",
+            ),
             weak_message="Shows weak legal feasibility conditions in the current evidence.",
             very_weak_message="Shows very weak legal feasibility conditions in the current evidence.",
         )
 
-    if bool(feasibility_evidence.get("mitigation_feasibility_score_present", False)):
+    if bool(
+        _feasibility_component_value(
+            feasibility_evidence,
+            "mitigation_feasibility",
+            "score_present",
+            "mitigation_feasibility_score_present",
+        )
+    ):
         _append_constraint_message_for_score(
             constraints,
-            score_value=feasibility_evidence.get(
-                "mitigation_feasibility_component_score"
+            score_value=_feasibility_component_value(
+                feasibility_evidence,
+                "mitigation_feasibility",
+                "component_score",
+                "mitigation_feasibility_component_score",
             ),
             weak_message="Shows weaker mitigation feasibility for the current city.",
             very_weak_message="Shows very weak mitigation feasibility for the current city.",
         )
 
-    if bool(feasibility_evidence.get("financial_feasibility_score_present", False)):
+    if bool(
+        _feasibility_component_value(
+            feasibility_evidence,
+            "financial_feasibility",
+            "score_present",
+            "financial_feasibility_score_present",
+        )
+    ):
         _append_constraint_message_for_score(
             constraints,
-            score_value=feasibility_evidence.get(
-                "financial_feasibility_component_score"
+            score_value=_feasibility_component_value(
+                feasibility_evidence,
+                "financial_feasibility",
+                "component_score",
+                "financial_feasibility_component_score",
             ),
             weak_message="Needs a more challenging financing route for the current city.",
             very_weak_message="Needs a difficult financing route for the current city.",
@@ -548,30 +660,68 @@ def _build_known_limitations(
     """List known limitations that should be acknowledged in explanations."""
     limitations: list[str] = []
 
-    if bool(feasibility_evidence.get("legal_assessment_missing", False)):
+    if bool(
+        _feasibility_component_value(
+            feasibility_evidence,
+            "legal",
+            "assessment_missing",
+            "legal_assessment_missing",
+        )
+    ):
         limitations.append(
             "No legal assessment row was available for this action, so the legal component used a neutral fallback."
         )
-    elif bool(feasibility_evidence.get("legal_verdict_score_missing", False)):
+    elif bool(
+        _feasibility_component_value(
+            feasibility_evidence,
+            "legal",
+            "verdict_score_missing",
+            "legal_verdict_score_missing",
+        )
+    ):
         limitations.append(
             "The legal assessment was incomplete for this action, so the legal component used a neutral fallback."
         )
-    if bool(feasibility_evidence.get("mitigation_feasibility_score_missing", False)):
+    if bool(
+        _feasibility_component_value(
+            feasibility_evidence,
+            "mitigation_feasibility",
+            "score_missing",
+            "mitigation_feasibility_score_missing",
+        )
+    ):
         limitations.append(
             "No mitigation feasibility score row was available for this action, so the feasibility component used a neutral fallback."
         )
     elif bool(
-        feasibility_evidence.get("mitigation_feasibility_action_score_missing", False)
+        _feasibility_component_value(
+            feasibility_evidence,
+            "mitigation_feasibility",
+            "action_score_missing",
+            "mitigation_feasibility_action_score_missing",
+        )
     ):
         limitations.append(
             "The mitigation feasibility score row was incomplete for this action, so the feasibility component used a neutral fallback."
         )
-    if bool(feasibility_evidence.get("financial_feasibility_score_missing", False)):
+    if bool(
+        _feasibility_component_value(
+            feasibility_evidence,
+            "financial_feasibility",
+            "score_missing",
+            "financial_feasibility_score_missing",
+        )
+    ):
         limitations.append(
             "No financial feasibility score row was available for this action, so the financial feasibility component used a neutral fallback."
         )
     elif bool(
-        feasibility_evidence.get("financial_feasibility_action_score_missing", False)
+        _feasibility_component_value(
+            feasibility_evidence,
+            "financial_feasibility",
+            "action_score_missing",
+            "financial_feasibility_action_score_missing",
+        )
     ):
         limitations.append(
             "The financial feasibility score row was incomplete for this action, so the financial feasibility component used a neutral fallback."

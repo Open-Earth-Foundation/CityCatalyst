@@ -62,12 +62,17 @@ def build_stationary_energy_start_draft_tools(
         "go ahead", or an affirmative reply to drafting) and no draft is loaded yet.
         This does not write to the CityCatalyst inventory.
         """
-        token = token_ref.get("value")
         try:
             # Use a short-lived committed session, mirroring the review tools so the
             # draft-run row and its initial status updates persist atomically.
             async with session_factory() as session:
                 service = StationaryEnergyDraftService(session)
+                token = await service.ensure_user_token(
+                    user_id=user_id,
+                    thread_id=thread_id,
+                    token=token_ref.get("value"),
+                )
+                token_ref["value"] = token
                 payload = StartStationaryEnergyDraftRequest(
                     user_id=user_id,
                     city_id=city_id,

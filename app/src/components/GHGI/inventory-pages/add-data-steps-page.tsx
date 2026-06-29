@@ -64,6 +64,10 @@ import {
   MdOutlineCheckCircle,
   MdOutlineEdit,
   MdOutlineHomeWork,
+  MdOutlineDelete,
+  MdOutlineFactory,
+  MdOutlineAgriculture,
+  MdOutlineLocalShipping,
   MdRefresh,
   MdSearch,
   MdWarning,
@@ -974,23 +978,68 @@ export default function AddDataSteps() {
                         shadow="none"
                         _hover={{ shadow: "xl" }}
                         transition="all 300ms"
-                        height="488px"
+                        height="540px"
                         w="337px"
                         p="24px"
-                        spaceY="16px"
+                        gap="4px"
                       >
-                        <Card.Header p="0" spaceY="8px">
-                          {/* TODO add icon to DataSource */}
+                        <Card.Header p="0" display="flex" flexDirection="column" gap="0">
                           <Icon
-                            as={MdOutlineHomeWork}
+                            as={
+                              {
+                                I: MdOutlineHomeWork,
+                                II: MdOutlineLocalShipping,
+                                III: MdOutlineDelete,
+                                IV: MdOutlineFactory,
+                                V: MdOutlineAgriculture,
+                              }[currentStep.referenceNumber] ??
+                              MdOutlineHomeWork
+                            }
                             boxSize={9}
                             color="content.tertiary-light"
+                            mb="18px"
                           />
-                          <Heading size="sm" lineClamp={2} minHeight={10}>
+                          <Flex direction="row" align="center" gap="8px">
+                            <Badge
+                              variant="plain"
+                              fontSize="label.sm"
+                              fontWeight="medium"
+                              fontFamily="heading"
+                              letterSpacing="widest"
+                              bg="background.graySubtle"
+                              color="content.secondary"
+                              px="8px"
+                              py="1px"
+                              borderRadius="md"
+                              lineHeight="1.2"
+                              borderWidth="0"
+                            >
+                              {source.subCategory?.referenceNumber ||
+                                source.subSector?.referenceNumber}
+                            </Badge>
+                            <Tooltip
+                              showArrow
+                              content={source.subSector?.subsectorName}
+                            >
+                              <Text
+                                fontSize="overline"
+                                fontWeight="bold"
+                                color="content.primary"
+                                textTransform="uppercase"
+                                letterSpacing="widest"
+                                lineHeight="24"
+                                fontFamily="heading"
+                                lineClamp={1}
+                              >
+                                {source.subSector?.subsectorName}
+                              </Text>
+                            </Tooltip>
+                          </Flex>
+                          <Heading fontSize="title.md" lineClamp={2} minHeight={10} mt="9px" lineHeight={24}>
                             {getTranslationFromDict(source.datasetName)}
                           </Heading>
-                          <Text fontSize="label.md" fontWeight="semibold">
-                            {t("by-data-source")}:{" "}
+                          <Text fontSize="label.md" mt="7px">
+                            {t("by-data-source")} {" "}
                             <Link
                               href={source.publisher?.url}
                               target="_blank"
@@ -1002,15 +1051,16 @@ export default function AddDataSteps() {
                             </Link>
                           </Text>
                         </Card.Header>
-                        <Card.Body justifyContent="space-between" p="0">
-                          <Flex direction="row" mb={4} wrap="wrap" gap={2}>
+                        <Card.Body justifyContent="space-between" p="0" >
+                          <Flex direction="row" mb={0} wrap="wrap" gap={2}>
                             {/* show converted to CO2eq total emissions for the data source */}
                             {/* Only show emissions if data is connected */}
                             {!isSourceConnected(source) &&
                               !source.inventoryValues?.length && (
                                 <Text
-                                  fontSize="headline.md"
+                                  fontSize="display.sm"
                                   fontWeight="semibold"
+                                  
                                 >
                                   {convertKgToTonnes(
                                     bigIntToDecimal(
@@ -1020,10 +1070,9 @@ export default function AddDataSteps() {
                                   )}
                                 </Text>
                               )}
-                            <Box>
+                            <Flex direction="column" gap="4px">
                               <Badge
-                                fontSize={11}
-                                fontWeight="semibold"
+                                fontSize={12}
                                 borderColor="border.overlay"
                               >
                                 <Icon
@@ -1036,8 +1085,7 @@ export default function AddDataSteps() {
                               </Badge>
                               {source.subCategory?.scope && (
                                 <Badge
-                                  fontSize={11}
-                                  fontWeight="semibold"
+                                  fontSize={12}
                                   borderColor="border.overlay"
                                 >
                                   <Icon
@@ -1049,7 +1097,7 @@ export default function AddDataSteps() {
                                   {source.subCategory.scope.scopeName}
                                 </Badge>
                               )}
-                            </Box>
+                            </Flex>
                           </Flex>
                           <Text
                             textOverflow="ellipsis"
@@ -1072,6 +1120,7 @@ export default function AddDataSteps() {
                             fontSize="body.md"
                             lineHeight="20px"
                             fontWeight="regular"
+                            marginTop="11px"
                           >
                             {getTranslationFromDict(
                               source.datasetDescription,
@@ -1080,25 +1129,31 @@ export default function AddDataSteps() {
                                 source.methodologyDescription,
                               )}
                           </Text>
-                          <VStack w="full">
+                          <VStack w="full" mb="24px">
                             <Link
                               textDecoration="underline"
-                              mt={4}
-                              mb={6}
+                              mt={6}
+                              mb={2}
                               onClick={() => onSourceClick(source, data)}
                               alignSelf="flex-start"
                               fontSize="label.lg"
-                              fontWeight="semibold"
+                              fontWeight="medium"
+                              letterSpacing="wide"
                             >
                               {t("see-more-details")}
                             </Link>
                             {isSourceConnected(source) &&
                             source.inventoryValues?.length ? (
                               <Button
-                                variant="solid"
+                                variant="outline"
                                 w="full"
-                                bg="content.alternative"
-                                fontWeight="normal"
+                                h="50px"
+                                bg={isHovered ? "semantic.dangerOverlay" : "semantic.successOverlay"}
+                                borderColor={isHovered ? "semantic.danger" : "semantic.success"}
+                                borderWidth="1px"
+                                color={isHovered ? "semantic.danger" : "semantic.success"}
+                                fontWeight="semibold"
+                                fontSize="14px"
                                 onClick={() =>
                                   isFrozenCheck()
                                     ? null
@@ -1125,12 +1180,12 @@ export default function AddDataSteps() {
                                 <Button
                                   variant="outline"
                                   w="full"
-                                  borderWidth="1px"
-                                  py="16px"
-                                  bgColor="background.backgroundDisabled"
-                                  border="none"
+                                  h="50px"
+                                  borderWidth="0"
+                                  bgColor="background.graySubtle"
                                   disabled
                                   color="interactive.control"
+                                  fontWeight="semibold"
                                   fontSize="14px"
                                 >
                                   {t("connect-data")}
@@ -1141,15 +1196,18 @@ export default function AddDataSteps() {
                               <Button
                                 variant="outline"
                                 w="full"
+                                h="50px"
                                 borderWidth="1px"
-                                py="16px"
+                                borderColor="border.overlay"
                                 bgColor="background.neutral"
+                                color="interactive.secondary"
+                                fontWeight="semibold"
+                                fontSize="14px"
                                 onClick={() => onConnectClick(source)}
                                 loading={
                                   isConnectDataSourceLoading &&
                                   source.datasourceId === connectingDataSourceId
                                 }
-                                fontSize="14px"
                               >
                                 {t("connect-data")}
                               </Button>

@@ -20,6 +20,7 @@ import {
   buildFocusedDecisionStatePayload,
   buildStationaryEnergyChatRequest,
   resolveInventorySaveConfirmationRequest,
+  resolveStationaryEnergyStartDraftFailureMessage,
   resolveStationaryEnergyToolMessage,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-helpers";
 
@@ -164,6 +165,37 @@ describe("Stationary Energy draft flow", () => {
         "tool-message-generic-summary",
       ),
     ).toBe("tool-message-generic-summary:{}");
+  });
+
+  it("resolves chat start-draft tool failures to retryable user copy", () => {
+    const t = ((key: string, params?: Record<string, unknown>) =>
+      `${key}:${JSON.stringify(params ?? {})}`) as Parameters<
+      typeof resolveStationaryEnergyStartDraftFailureMessage
+    >[0];
+
+    expect(
+      resolveStationaryEnergyStartDraftFailureMessage(t, {
+        ui_event: "stationary_energy_draft_started",
+        success: false,
+        message_key: "tool-error-generic",
+      }),
+    ).toBe("error-failed-to-start-stationary-energy-draft-retry:{}");
+
+    expect(
+      resolveStationaryEnergyStartDraftFailureMessage(t, {
+        ui_event: "stationary_energy_draft_started",
+        success: false,
+        message_key: "tool-error-specific-start",
+        message_params: { status: 401 },
+      }),
+    ).toBe('tool-error-specific-start:{"status":401}');
+
+    expect(
+      resolveStationaryEnergyStartDraftFailureMessage(t, {
+        ui_event: "stationary_energy_draft_started",
+        success: true,
+      }),
+    ).toBeNull();
   });
 
   it("derives stages from draft and explicit review progress", () => {

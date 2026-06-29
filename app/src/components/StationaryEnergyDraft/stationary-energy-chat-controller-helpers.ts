@@ -40,6 +40,15 @@ export type FocusedDecisionStatePayload = {
   selected_option: FocusedDecisionOptionPayload | null;
 };
 
+export type StationaryEnergyStartDraftToolResult = {
+  success: boolean;
+  ui_event: "stationary_energy_draft_started";
+  message_key?: string | null;
+  message_params?: unknown;
+  draft_run_id?: string | null;
+  error_code?: string | null;
+};
+
 const TERMINAL_DRAFT_STATUSES = new Set([
   "saved",
   "partially_saved",
@@ -51,6 +60,12 @@ const SOURCE_PREFERENCE_PREFIX = "source:";
 export const NO_SOURCE_PREFERENCE = "__source_preference_none__";
 export const START_CHOOSE_SOURCES = "__start_choose_sources__";
 export const SET_EMPTY_NOTATION_PREFERENCE = "__set_empty_notation__";
+
+const GENERIC_START_DRAFT_FAILURE_KEYS = new Set([
+  "tool-error-generic",
+  "tool-error-http",
+  "tool-error-missing-token",
+]);
 
 type StationaryEnergyToolMessageParams = Record<
   string,
@@ -91,6 +106,40 @@ export function resolveStationaryEnergyToolMessage(
   }
 
   return fallbackKey ? t(fallbackKey) : null;
+}
+
+export function isStationaryEnergyStartDraftToolResult(
+  tool: unknown,
+): tool is StationaryEnergyStartDraftToolResult {
+  return (
+    typeof tool === "object" &&
+    tool !== null &&
+    (tool as { ui_event?: unknown }).ui_event ===
+      "stationary_energy_draft_started" &&
+    typeof (tool as { success?: unknown }).success === "boolean"
+  );
+}
+
+export function resolveStationaryEnergyStartDraftFailureMessage(
+  t: TFunction,
+  tool: unknown,
+): string | null {
+  if (!isStationaryEnergyStartDraftToolResult(tool) || tool.success) {
+    return null;
+  }
+
+  if (
+    tool.message_key &&
+    !GENERIC_START_DRAFT_FAILURE_KEYS.has(tool.message_key)
+  ) {
+    return resolveStationaryEnergyToolMessage(
+      t,
+      tool,
+      "error-failed-to-start-stationary-energy-draft-retry",
+    );
+  }
+
+  return t("error-failed-to-start-stationary-energy-draft-retry");
 }
 
 export function hasTerminalDraftStatus(status: string): boolean {
@@ -340,7 +389,8 @@ export function buildStationaryEnergyChatRequest(params: {
             stationary_energy_focused_decision_state: focusedDecisionState,
             stationary_energy_focused_proposal_id: focusedProposalId,
             stationary_energy_confirmed_bulk_review_choices:
-              confirmedBulkReviewChoices && confirmedBulkReviewChoices.length > 0
+              confirmedBulkReviewChoices &&
+              confirmedBulkReviewChoices.length > 0
                 ? confirmedBulkReviewChoices
                 : undefined,
             stationary_energy_confirmed_staged_review_rollback_choices:

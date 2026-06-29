@@ -406,6 +406,56 @@ export function StatusLine({ text }: { text: string }) {
   );
 }
 
+export function RetryableErrorPanel(props: {
+  message: string;
+  onRetry?: () => void;
+  retrying?: boolean;
+}) {
+  const { t } = useStationaryEnergyAgenticTranslation();
+
+  return (
+    <Box
+      w="full"
+      maxW={CHAT_SURFACE_MAX_W}
+      alignSelf="center"
+      transform={CHAT_WIDGET_TRANSFORM}
+      bg="sentiment.negativeOverlay"
+      borderColor="sentiment.negativeDefault"
+      borderWidth="1px"
+      borderRadius="rounded-xl"
+      p={4}
+    >
+      <HStack gap={2} mb={2} color="sentiment.negativeDefault">
+        <MdErrorOutline />
+        <Text fontFamily="heading" fontSize="body.md" fontWeight="semibold">
+          {t("primitives-error-title")}
+        </Text>
+      </HStack>
+      <Text
+        color="content.primary"
+        fontSize="body.md"
+        mb={props.onRetry ? 3 : 0}
+      >
+        {props.message}
+      </Text>
+      {props.onRetry ? (
+        <QuickReplies
+          buttons={[
+            {
+              label: props.retrying
+                ? t("primitives-error-retrying")
+                : t("primitives-error-retry"),
+              primary: true,
+              disabled: props.retrying,
+              onClick: props.onRetry,
+            },
+          ]}
+        />
+      ) : null}
+    </Box>
+  );
+}
+
 export function StaleDraftPanel(props: {
   staleDraft: DraftStatusResponse["staleness"];
   onContinue: () => void;

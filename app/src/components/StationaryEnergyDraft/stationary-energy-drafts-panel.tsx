@@ -97,7 +97,9 @@ function DraftSessionButton(props: {
         props.disabled
           ? undefined
           : {
-              bg: props.active ? "background.alternative" : "background.neutral",
+              bg: props.active
+                ? "background.alternative"
+                : "background.neutral",
             }
       }
     >

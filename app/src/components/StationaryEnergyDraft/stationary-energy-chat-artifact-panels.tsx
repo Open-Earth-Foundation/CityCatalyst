@@ -26,6 +26,7 @@ import {
   AgentBubble,
   BulkReviewConfirmationCard,
   InventorySaveConfirmationCard,
+  RetryableErrorPanel,
   StaleDraftPanel,
   StagedReviewUpdateConfirmationCard,
   StationaryEnergyToolSummaryCard,
@@ -84,6 +85,7 @@ type ClimaChatPanelProps = {
     | "decisionState"
     | "draftState"
     | "errorMessage"
+    | "errorRecoveryAction"
     | "focusedProposalId"
     | "hasSourceBackedProposals"
     | "loadingAction"
@@ -423,16 +425,15 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
               stage={state.stage}
             />
             {state.errorMessage ? (
-              <Box
-                color="sentiment.negativeDefault"
-                bg="sentiment.negativeOverlay"
-                borderRadius="rounded"
-                px={3}
-                py={2}
-                fontSize="label.md"
-              >
-                {state.errorMessage}
-              </Box>
+              <RetryableErrorPanel
+                message={state.errorMessage}
+                onRetry={
+                  state.errorRecoveryAction === "start_draft"
+                    ? actions.startDraftFromChat
+                    : undefined
+                }
+                retrying={state.loadingAction === "start"}
+              />
             ) : null}
             {state.chatMessages.map((message) => {
               if (message.kind === "decision_review") {

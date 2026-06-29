@@ -66,7 +66,6 @@ import {
   MdOutlineHomeWork,
   MdOutlineDelete,
   MdOutlineFactory,
-  MdOutlineAgriculture,
   MdOutlineLocalShipping,
   MdRefresh,
   MdSearch,
@@ -92,6 +91,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Tag } from "@/components/ui/tag";
 import { TbWorldSearch } from "react-icons/tb";
+import { LuWheat } from "react-icons/lu";
 import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
@@ -991,7 +991,7 @@ export default function AddDataSteps() {
                                 II: MdOutlineLocalShipping,
                                 III: MdOutlineDelete,
                                 IV: MdOutlineFactory,
-                                V: MdOutlineAgriculture,
+                                V: LuWheat,
                               }[currentStep.referenceNumber] ??
                               MdOutlineHomeWork
                             }

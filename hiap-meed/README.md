@@ -268,6 +268,12 @@ Design note:
   The action client returns the full upstream catalog; the prioritization
   pipeline then keeps only mitigation actions and records the filtered count in
   fetch artifacts.
+- Legal API note: the current live `GET /api/v1/action-legal-assessments?countryCode=...`
+  endpoint may return `200` with an empty payload because the underlying legal
+  dataset was removed. The integration tests in
+  `tests/integration/test_legal_assessments_live_api.py` therefore `xfail` on
+  that known-empty state for now. When the legal client is migrated to the
+  replacement endpoint, restore strict live assertions there.
 - Current implementation note: exclusion preview and prioritization are separate flows. Exclusion preview resolves raw exclusion preferences into proposals for review, while prioritization consumes confirmed `excludedActionIds`. Prioritization uses a dedicated orchestrator for run-level artifact writing, while exclusion preview currently writes its request artifacts directly from the API layer.
 
 ### 4. Call the prioritization endpoint

@@ -100,6 +100,7 @@ Clients are injected via FastAPI's `Depends()` pattern. The city, action, legal,
 
 Action API note:
 - `GET /api/v1/action-pathways` is called without `limit`, `lang`, or other query parameters
+- the current live legal endpoint `GET /api/v1/action-legal-assessments?countryCode=...` can now return `200` with an empty payload because its upstream legal dataset was removed; the hiap-meed legal client still supports that route today, but it should be migrated to a replacement endpoint before strict live contract coverage is re-enabled
 - mitigation feasibility now comes from the separate city-scoped scores endpoint and missing action rows use the neutral `0.5` fallback in Feasibility scoring
 - financial feasibility comes from the compact climate-finance feasibility batch endpoint; linked opportunity/project detail endpoints are preserved as evidence links but are not fetched by hiap-meed yet
 

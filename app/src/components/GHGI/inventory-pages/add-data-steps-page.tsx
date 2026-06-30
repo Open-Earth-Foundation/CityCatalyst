@@ -958,7 +958,7 @@ export default function AddDataSteps() {
                 year={year}
               />
             ) : (
-              <SimpleGrid templateColumns="repeat(3, 1fr)" gap="16px">
+              <SimpleGrid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} gap="16px">
                 {dataSources
                   .slice(0, isDataSectionExpanded ? dataSources.length : 6)
                   .map(({ source, data }) => {
@@ -978,8 +978,7 @@ export default function AddDataSteps() {
                         shadow="none"
                         _hover={{ shadow: "xl" }}
                         transition="all 300ms"
-                        height="540px"
-                        w="337px"
+                        w="full"
                         p="24px"
                         gap="4px"
                       >
@@ -997,7 +996,7 @@ export default function AddDataSteps() {
                             }
                             boxSize={9}
                             color="content.tertiary-light"
-                            mb="18px"
+                            mb="10px"
                           />
                           <Flex direction="row" align="center" gap="8px">
                             <Badge
@@ -1035,10 +1034,10 @@ export default function AddDataSteps() {
                               </Text>
                             </Tooltip>
                           </Flex>
-                          <Heading fontSize="title.md" lineClamp={2} minHeight={10} mt="9px" lineHeight={24}>
+                          <Heading fontSize="title.md" lineClamp={2} minHeight={10} mt="6px" lineHeight={24}>
                             {getTranslationFromDict(source.datasetName)}
                           </Heading>
-                          <Text fontSize="label.md" mt="7px">
+                          <Text fontSize="label.md" mt="4px">
                             {t("by-data-source")} {" "}
                             <Link
                               href={source.publisher?.url}
@@ -1070,10 +1069,11 @@ export default function AddDataSteps() {
                                   )}
                                 </Text>
                               )}
-                            <Flex direction="column" gap="4px">
+                            <Flex direction="row" gap="4px" flexWrap="nowrap">
                               <Badge
                                 fontSize={12}
                                 borderColor="border.overlay"
+                                w="fit-content"
                               >
                                 <Icon
                                   as={DataCheckIcon}
@@ -1087,6 +1087,7 @@ export default function AddDataSteps() {
                                 <Badge
                                   fontSize={12}
                                   borderColor="border.overlay"
+                                  w="fit-content"
                                 >
                                   <Icon
                                     as={FiTarget}
@@ -1120,7 +1121,7 @@ export default function AddDataSteps() {
                             fontSize="body.md"
                             lineHeight="20px"
                             fontWeight="regular"
-                            marginTop="11px"
+                            marginTop="8px"
                           >
                             {getTranslationFromDict(
                               source.datasetDescription,
@@ -1129,10 +1130,10 @@ export default function AddDataSteps() {
                                 source.methodologyDescription,
                               )}
                           </Text>
-                          <VStack w="full" mb="24px">
+                          <VStack w="full" mb="16px">
                             <Link
                               textDecoration="underline"
-                              mt={6}
+                              mt={4}
                               mb={2}
                               onClick={() => onSourceClick(source, data)}
                               alignSelf="flex-start"

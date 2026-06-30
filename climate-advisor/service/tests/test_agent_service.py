@@ -494,32 +494,21 @@ class InventoryToolIntegrationTests(unittest.TestCase):
                 getattr(tool, "name", "")
                 for tool in mock_agent_class.call_args.kwargs["tools"]
             ]
-            self.assertIn("inventory_status_overview", tool_names)
-            self.assertIn("inventory_emissions_context", tool_names)
-            self.assertIn("stationary_energy_accept_one", tool_names)
-            self.assertIn("stationary_energy_accept_multiple", tool_names)
-            self.assertIn("stationary_energy_accept_all_recommended", tool_names)
-            self.assertIn(
-                "stationary_energy_request_bulk_review_confirmation",
-                tool_names,
-            )
-            self.assertIn(
-                "stationary_energy_request_all_recommended_confirmation",
-                tool_names,
-            )
-            self.assertIn(
-                "stationary_energy_request_staged_source_change_confirmation",
-                tool_names,
-            )
-            self.assertIn(
-                "stationary_energy_request_staged_sources_rollback_confirmation",
-                tool_names,
-            )
-            self.assertIn("stationary_energy_rollback_staged_sources", tool_names)
-            self.assertIn("stationary_energy_save_review_draft", tool_names)
-            self.assertIn(
-                "stationary_energy_request_inventory_save_confirmation",
-                tool_names,
+            self.assertEqual(
+                set(tool_names),
+                {
+                    "stationary_energy_list_review_options",
+                    "stationary_energy_accept_one",
+                    "stationary_energy_accept_multiple",
+                    "stationary_energy_accept_all_recommended",
+                    "stationary_energy_request_bulk_review_confirmation",
+                    "stationary_energy_request_all_recommended_confirmation",
+                    "stationary_energy_request_staged_source_change_confirmation",
+                    "stationary_energy_request_staged_sources_rollback_confirmation",
+                    "stationary_energy_rollback_staged_sources",
+                    "stationary_energy_save_review_draft",
+                    "stationary_energy_request_inventory_save_confirmation",
+                },
             )
             self.assertNotIn("stationary_energy_start_draft", tool_names)
             self.assertNotIn("get_user_inventories", tool_names)

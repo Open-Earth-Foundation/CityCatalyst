@@ -52,8 +52,6 @@ def test_stationary_energy_review_prompt_has_rendered_tools_section() -> None:
     assert "`proposal_id`" in rendered_prompt
     assert "`selected_source_id`" in rendered_prompt
     assert "`activity_value`" in rendered_prompt
-    assert "`inventory_status_overview`" in rendered_prompt
-    assert "`inventory_emissions_context`" in rendered_prompt
     assert "`stationary_energy_accept_one`" in rendered_prompt
     assert "`stationary_energy_request_bulk_review_confirmation`" in rendered_prompt
     assert "`stationary_energy_save_review_draft`" in rendered_prompt

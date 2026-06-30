@@ -13,15 +13,11 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.services.stationary_energy.stationary_energy_agent_review import (
     StationaryEnergyAgentReviewService,
 )
-from app.services.stationary_energy.stationary_energy_draft_service import (
-    StationaryEnergyDraftService,
-)
 from app.services.stationary_energy.stationary_energy_review_models import (
     MessageParamValue,
     StationaryEnergyAgentReviewChoiceInput,
     StationaryEnergyAgentReviewToolResult,
 )
-from app.tools.inventory_context_tools import build_inventory_context_tools
 
 logger = logging.getLogger(__name__)
 
@@ -47,37 +43,6 @@ def build_stationary_energy_review_tools(
 ) -> Sequence[object]:
     """Create scoped Stationary Energy review tools for one draft run."""
     draft_uuid = UUID(str(draft_run_id))
-
-    async def _resolve_inventory_scope() -> tuple[str, str, UUID | None]:
-        """Resolve the CityCatalyst inventory scope owned by this draft run."""
-        # Load the CA-owned draft row so the LLM never supplies scope ids.
-        async with session_factory() as session:
-            service = StationaryEnergyAgentReviewService(session)
-            draft_run = await service.repository.get_draft_run_for_user(
-                draft_uuid,
-                user_id,
-            )
-            if draft_run is None:
-                raise HTTPException(
-                    status_code=404,
-                    detail="Stationary Energy draft run not found",
-                )
-            return draft_run.city_id, draft_run.inventory_id, draft_run.thread_id
-
-    async def _refresh_inventory_context_token(
-        token: str,
-        thread_id: UUID | None,
-    ) -> str:
-        """Refresh the scoped CityCatalyst token before inventory context calls."""
-        async with session_factory() as session:
-            service = StationaryEnergyDraftService(session)
-            refreshed_token = await service.ensure_user_token(
-                user_id=user_id,
-                thread_id=thread_id,
-                token=token,
-            )
-            await session.commit()
-            return refreshed_token
 
     async def _run_tool(
         action: str,
@@ -496,15 +461,7 @@ def build_stationary_energy_review_tools(
                 error_code=f"http_{exc.status_code}",
             ).model_dump_json()
 
-    inventory_context_tools = build_inventory_context_tools(
-        resolve_scope=_resolve_inventory_scope,
-        user_id=user_id,
-        token_ref=token_ref,
-        token_refresher=_refresh_inventory_context_token,
-    )
-
     return [
-        *inventory_context_tools,
         stationary_energy_list_review_options,
         stationary_energy_accept_one,
         stationary_energy_accept_multiple,

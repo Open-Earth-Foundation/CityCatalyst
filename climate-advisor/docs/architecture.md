@@ -87,7 +87,7 @@ sequenceDiagram
 
 `AgentService.create_agent()` builds the tool pack at request time:
 
-- Always available:
+- Added outside active Stationary Energy review chat:
   - `climate_vector_search`
 - Added when the request has CityCatalyst credentials and thread scope:
   - `get_user_inventories`
@@ -98,8 +98,6 @@ sequenceDiagram
   no draft run is active:
   - `stationary_energy_start_draft`
 - Added when the request is scoped to a Stationary Energy draft run:
-  - `inventory_status_overview`
-  - `inventory_emissions_context`
   - `stationary_energy_list_review_options`
   - `stationary_energy_accept_one`
   - `stationary_energy_accept_multiple`
@@ -121,9 +119,8 @@ sequenceDiagram
   instruction.
 - Stationary Energy review chat starts from `prompts.stationary_energy_review`
   instead of appending to `prompts.default`, and registers only tools scoped to
-  the active draft review workflow. That pack includes read-only whole-inventory
-  context tools and Stationary Energy review tools, but not the pre-draft
-  `stationary_energy_start_draft` tool.
+  the active draft review workflow. That pack includes Stationary Energy review
+  tools, but not the pre-draft `stationary_energy_start_draft` tool.
 
 ## Stationary Energy Review Flow
 
@@ -182,8 +179,8 @@ workflow state in PostgreSQL.
   - Uses `stationary_energy_review` as the full prompt for active Stationary
     Energy review chat.
   - Keeps general inventory and vector-search tools out of active review chat.
-  - Registers the correct tool pack for the request, including read-only
-    whole-inventory context tools when a Stationary Energy draft run is active.
+  - Registers the correct Stationary Energy review tool pack when a draft run is
+    active.
 - `services/stationary_energy/stationary_energy_draft_repository.py`
   - Loads draft runs, proposals, decisions, and staged review selections.
   - Persists staged selection status transitions.
@@ -269,8 +266,7 @@ settings.
   - Injected only when an inventory is active and CA can fetch its details.
 - `prompts.stationary_energy_review`
   - Used as the full prompt for active Stationary Energy draft review chat.
-  - Defines inline tool policy for `inventory_status_overview`,
-    `inventory_emissions_context`, and the Stationary Energy review tools.
+  - Defines inline tool policy for the Stationary Energy review tools.
 
 Prompt include directives such as `{{ include: tools/default_tool_policy.md }}`
 are resolved relative to the including file first and then against the prompt

@@ -65,18 +65,6 @@ The active Stationary Energy draft run is scoped by the registered tools at runt
 </input>
 
 <tools>
-Whole-inventory context tools:
-
-- `inventory_status_overview`
-  - Use for overall inventory metadata, completion, and sector data-state questions.
-  - Do not use for exact Stationary Energy row choices or source drilldown.
-
-- `inventory_emissions_context`
-  - Use for total emissions, sector shares, top emitters, and source mix.
-  - Do not use for raw source rows, source issues, or source-application decisions.
-
-Both tools are read-only, take no arguments, and use the active draft's scoped city, inventory, and user.
-
 Stationary Energy review tools:
 
 - `stationary_energy_list_review_options`
@@ -138,13 +126,6 @@ Return either:
 2) a tool invocation using one available Stationary Energy review tool and valid arguments.
 
 Stationary Energy review tool argument contracts:
-
-Whole-inventory context tool argument contracts:
-
-- `inventory_status_overview`: no arguments.
-- `inventory_emissions_context`: no arguments.
-  - Both return JSON strings with `action`, `success`, and compact `data`.
-  - Summarize `data`; do not dump raw JSON unless the user explicitly asks for JSON.
 
 - `stationary_energy_list_review_options`: no arguments.
   - Returned `available_options` may include read-only `evidence` fields such as `dataset_year`, `geography_match`, `activity_value`, `activity_unit`, `emissions_value`, `emissions_unit`, `notation_key`, and `confidence_notes`. Use these only for explanation and comparison.

@@ -1296,5 +1296,8 @@
   "not-estimated-progress": "Nicht Geschätzt",
   "uncategorized": "Unkategorisiert",
   "legend": "Legende",
-  "data-already-added-connected": "Dieser Datensatz ist nicht verfügbar, weil Sie bereits einen verbundenen Datensatz für diesen Teilsektor haben."
+  "data-already-added-connected": "Dieser Datensatz ist nicht verfügbar, weil Sie bereits einen verbundenen Datensatz für diesen Teilsektor haben.",
+  "datasets": "Datensatz(e)",
+  "filter-by-subsector": "Nach Teilsektor filtern",
+  "refresh-datasets": "Datensätze aktualisieren"
 }

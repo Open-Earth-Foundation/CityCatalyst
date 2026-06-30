@@ -10,6 +10,7 @@ import {
   VStack,
   chakra,
 } from "@chakra-ui/react";
+import type { ReactElement } from "react";
 import { MdCheckCircle, MdErrorOutline } from "react-icons/md";
 import { useParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -225,7 +226,7 @@ export function CoveragePanel(props: {
 export function StationaryEnergyChatWelcome(props: {
   onStartDraft: () => void;
   onChooseSources: () => void;
-}) {
+}): ReactElement {
   const { t } = useStationaryEnergyAgenticTranslation();
   const capabilities = [
     t("chat-welcome-capability-draft"),
@@ -410,7 +411,7 @@ export function RetryableErrorPanel(props: {
   message: string;
   onRetry?: () => void;
   retrying?: boolean;
-}) {
+}): ReactElement {
   const { t } = useStationaryEnergyAgenticTranslation();
 
   return (

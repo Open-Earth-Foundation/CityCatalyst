@@ -8,6 +8,7 @@ import {
   it,
   jest,
 } from "@jest/globals";
+import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
 import { Op } from "sequelize";
 
@@ -18,6 +19,7 @@ import {
   INVENTORY_STATUS_OVERVIEW_CAPABILITY,
 } from "@/backend/agentic/ghgi/inventory/registry";
 import { PermissionService } from "@/backend/permissions/PermissionService";
+import { Auth } from "@/lib/auth";
 import { db } from "@/models";
 import { City } from "@/models/City";
 import { DataSourceI18n } from "@/models/DataSourceI18n";
@@ -26,6 +28,7 @@ import {
   GlobalWarmingPotentialTypeEnum,
   InventoryTypeEnum,
 } from "@/util/enums";
+import { FeatureFlags, setServerFeatureFlag } from "@/util/feature-flags";
 import {
   expectStatusCode,
   mockRequest,
@@ -54,6 +57,122 @@ const serviceHeaders = {
   "X-Service-Name": "climate-advisor",
   "X-Service-Key": serviceKey,
 };
+
+const routeGuardCityId = "58830000-0000-4000-8000-000000000601";
+const originalFeatureFlags = process.env.NEXT_PUBLIC_FEATURE_FLAGS;
+const originalServiceKey = process.env.CC_SERVICE_API_KEY;
+
+function enableStationaryEnergyAgenticFlags(): void {
+  process.env.CC_SERVICE_API_KEY = serviceKey;
+  process.env.NEXT_PUBLIC_FEATURE_FLAGS =
+    "CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC";
+  setServerFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION, true);
+  setServerFeatureFlag(FeatureFlags.STATIONARY_ENERGY_AGENTIC, true);
+}
+
+function restoreOriginalStationaryEnergyFlags(): void {
+  process.env.CC_SERVICE_API_KEY = originalServiceKey;
+  process.env.NEXT_PUBLIC_FEATURE_FLAGS = originalFeatureFlags;
+  const originalFlags = new Set(
+    originalFeatureFlags
+      ?.split(",")
+      .map((flag) => flag.trim())
+      .filter(Boolean) ?? [],
+  );
+  setServerFeatureFlag(
+    FeatureFlags.CA_SERVICE_INTEGRATION,
+    originalFlags.has(FeatureFlags.CA_SERVICE_INTEGRATION),
+  );
+  setServerFeatureFlag(
+    FeatureFlags.STATIONARY_ENERGY_AGENTIC,
+    originalFlags.has(FeatureFlags.STATIONARY_ENERGY_AGENTIC),
+  );
+}
+
+describe("GHGI inventory internal CA capability route guards", () => {
+  const originalDbInitialized = db.initialized;
+
+  beforeEach(() => {
+    setupTests();
+    db.initialized = true;
+    enableStationaryEnergyAgenticFlags();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  afterAll(() => {
+    db.initialized = originalDbInitialized;
+    restoreOriginalStationaryEnergyFlags();
+  });
+
+  it("rejects requests when the Stationary Energy agentic feature is disabled", async () => {
+    setServerFeatureFlag(FeatureFlags.STATIONARY_ENERGY_AGENTIC, false);
+
+    const res = await statusOverviewRoute(capabilityRequest(routeGuardCityId), {
+      params: Promise.resolve({}),
+    });
+
+    await expectStatusCode(res, 404);
+  });
+
+  it("rejects missing or invalid Climate Advisor service headers", async () => {
+    const missingHeadersRes = await statusOverviewRoute(
+      capabilityRequest(routeGuardCityId, { headers: {} }),
+      {
+        params: Promise.resolve({}),
+      },
+    );
+    const invalidHeadersRes = await statusOverviewRoute(
+      capabilityRequest(routeGuardCityId, {
+        headers: { ...serviceHeaders, "X-Service-Key": "wrong-key" },
+      }),
+      {
+        params: Promise.resolve({}),
+      },
+    );
+
+    await expectStatusCode(missingHeadersRes, 401);
+    await expectStatusCode(invalidHeadersRes, 401);
+  });
+
+  it("rejects requests without an authenticated user token", async () => {
+    const getServerSessionMock = Auth.getServerSession as jest.MockedFunction<
+      typeof Auth.getServerSession
+    >;
+    getServerSessionMock.mockResolvedValue(null);
+
+    const res = await statusOverviewRoute(capabilityRequest(routeGuardCityId), {
+      params: Promise.resolve({}),
+    });
+
+    await expectStatusCode(res, 401);
+  });
+
+  it("rejects requests for a different user id", async () => {
+    const res = await statusOverviewRoute(
+      capabilityRequest(routeGuardCityId, { userId: randomUUID() }),
+      {
+        params: Promise.resolve({}),
+      },
+    );
+
+    await expectStatusCode(res, 403);
+  });
+
+  it("rejects users without inventory read access", async () => {
+    jest
+      .spyOn(PermissionService, "canAccessInventory")
+      .mockRejectedValue(new createHttpError.Forbidden("No inventory access"));
+
+    const res = await statusOverviewRoute(capabilityRequest(routeGuardCityId), {
+      params: Promise.resolve({}),
+    });
+
+    await expectStatusCode(res, 403);
+  });
+});
 
 describe("GHGI inventory internal CA capability routes", () => {
   let testData: TestData;
@@ -109,9 +228,7 @@ describe("GHGI inventory internal CA capability routes", () => {
 
   beforeEach(() => {
     setupTests();
-    process.env.CC_SERVICE_API_KEY = serviceKey;
-    process.env.NEXT_PUBLIC_FEATURE_FLAGS =
-      "CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC";
+    enableStationaryEnergyAgenticFlags();
   });
 
   afterEach(() => {
@@ -143,6 +260,7 @@ describe("GHGI inventory internal CA capability routes", () => {
     if (db.sequelize) {
       await db.sequelize.close();
     }
+    restoreOriginalStationaryEnergyFlags();
   });
 
   it("returns compact whole-inventory status counts", async () => {
@@ -239,15 +357,22 @@ describe("GHGI inventory internal CA capability routes", () => {
   });
 });
 
-function capabilityRequest(cityId: string) {
+function capabilityRequest(
+  cityId: string,
+  options: {
+    headers?: Record<string, string>;
+    inventoryId?: string;
+    userId?: string;
+  } = {},
+) {
   return mockRequest(
     {
-      user_id: testUserID,
+      user_id: options.userId ?? testUserID,
       city_id: cityId,
-      inventory_id: inventoryId,
+      inventory_id: options.inventoryId ?? inventoryId,
     },
     undefined,
-    serviceHeaders,
+    options.headers ?? serviceHeaders,
   );
 }
 

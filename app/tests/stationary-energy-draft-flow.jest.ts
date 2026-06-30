@@ -919,6 +919,37 @@ describe("Stationary Energy draft flow", () => {
     );
   });
 
+  it("builds pre-draft chat requests with Stationary Energy surface context", () => {
+    const request = buildStationaryEnergyChatRequest({
+      cityId: "city-1",
+      content: "draft the empty rows",
+      decisionReviewContext: [],
+      draftState: null,
+      inventoryId: "inventory-1",
+      threadId: "thread-1",
+    });
+
+    expect(request).toEqual(
+      expect.objectContaining({
+        threadId: "thread-1",
+        content: "draft the empty rows",
+        inventory_id: "inventory-1",
+        context: {
+          city_id: "city-1",
+          inventory_id: "inventory-1",
+          stationary_energy_interaction_mode: "free_text",
+        },
+        options: {
+          stationary_energy_interaction_mode: "free_text",
+          stationary_energy_ui_surfaces: ["chat_text"],
+        },
+      }),
+    );
+    expect(request.context).not.toHaveProperty(
+      "stationary_energy_draft_run_id",
+    );
+  });
+
   it("does not send hidden default source choices as focused chat selections", () => {
     const draft = draftFixture();
     const decisionReviewContext = buildDecisionReviewContext({

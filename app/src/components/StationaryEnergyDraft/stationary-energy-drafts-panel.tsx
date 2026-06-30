@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { useParams } from "next/navigation";
+import type { ReactElement } from "react";
 import { MdAdd } from "react-icons/md";
 
 import { useTranslation } from "@/i18n/client";
@@ -51,7 +52,7 @@ function DraftSessionButton(props: {
   onSelect: () => void;
   lng: string;
   t: TFunction;
-}) {
+}): ReactElement {
   const reviewLabel = draftReviewLabel(props.draftRun);
   return (
     <chakra.button
@@ -68,7 +69,7 @@ function DraftSessionButton(props: {
       borderRadius="rounded"
       borderColor={props.active ? "interactive.primary" : "border.overlay"}
       borderLeftWidth="3px"
-      borderLeftColor={props.active ? "interactive.primary" : "transparent"}
+      borderLeftColor={props.active ? "interactive.primary" : "border.overlay"}
       bg={props.active ? "background.alternative" : "base.light"}
       cursor={props.disabled ? "not-allowed" : "pointer"}
       transition="background 140ms ease, border-color 140ms ease"
@@ -115,7 +116,7 @@ function DraftSessionButton(props: {
 export function StationaryEnergyDraftsPanel({
   actions,
   state,
-}: DraftsPanelProps) {
+}: DraftsPanelProps): ReactElement {
   const params = useParams();
   const lng = getParamValueRequired(params.lng);
   const { t } = useTranslation(lng, "stationary-energy-agentic");

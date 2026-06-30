@@ -701,6 +701,44 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             "fresh-token",
         )
 
+    def test_agent_start_draft_tool_maps_http_errors(self) -> None:
+        token_ref = {"value": None}
+
+        async def exercise() -> dict[str, Any]:
+            tools = build_stationary_energy_start_draft_tools(
+                session_factory=self.session_factory,
+                city_id="city-1",
+                inventory_id="inventory-1",
+                user_id="user-1",
+                thread_id=None,
+                token_ref=token_ref,
+            )
+            start_tool = next(
+                tool
+                for tool in tools
+                if getattr(tool, "name", None) == "stationary_energy_start_draft"
+            )
+            ctx = ToolContext(
+                context=None,
+                tool_call_id="test-call",
+                tool_name="stationary_energy_start_draft",
+                tool_arguments={},
+            )
+
+            output = await start_tool.on_invoke_tool(  # type: ignore[attr-defined]
+                ctx,
+                json.dumps({}),
+            )
+            return json.loads(output)
+
+        data = asyncio.run(exercise())
+
+        self.assertFalse(data["success"], data)
+        self.assertEqual(data["action"], "stationary_energy_start_draft")
+        self.assertEqual(data["message_key"], "tool-error-http")
+        self.assertEqual(data["message_params"], {"status": 401})
+        self.assertEqual(data["error_code"], "http_401")
+
     def test_start_rejects_thread_user_mismatch_before_calling_cc(self) -> None:
         thread_id = self._create_thread("thread-owner")
         mock_client = self._mock_cc_client()

@@ -574,8 +574,18 @@ class InventoryToolIntegrationTests(unittest.TestCase):
                 for tool in mock_agent_class.call_args.kwargs["tools"]
             ]
             instructions = mock_agent_class.call_args.kwargs["instructions"]
+            start_draft_tool = next(
+                tool
+                for tool in mock_agent_class.call_args.kwargs["tools"]
+                if getattr(tool, "name", "") == "stationary_energy_start_draft"
+            )
             self.assertIn("stationary_energy_start_draft", tool_names)
-            self.assertIn("Stationary Energy drafting", instructions)
+            self.assertEqual(instructions, "Base prompt")
+            self.assertIn(
+                "pre-draft Stationary Energy surface",
+                start_draft_tool.description,
+            )
+            self.assertIn("no arguments", start_draft_tool.description)
 
         with patch("app.services.agent_service.AsyncOpenAI"), patch(
             "app.services.agent_service.Agent"

@@ -31,18 +31,6 @@ from app.utils.agent_tracing import configure_agents_tracing
 
 logger = logging.getLogger(__name__)
 
-# Appended to the default chat prompt when the Stationary Energy draft surface is
-# active but no draft exists yet, so the agent knows it can start drafting.
-_STATIONARY_ENERGY_START_INSTRUCTION = (
-    "Stationary Energy drafting: This inventory's Stationary Energy sector has no "
-    "draft loaded yet. If the user asks to draft, generate, fill, or start the "
-    "empty Stationary Energy rows (for example 'draft the empty rows', 'fill it "
-    "in', 'go ahead', or an affirmative reply about drafting), call the "
-    "`stationary_energy_start_draft` tool. It generates source-backed values for "
-    "every empty row from the connected datasets for the user to review, and does "
-    "not write to the inventory. Answer other questions normally."
-)
-
 
 class AgentService:
     """Service for creating and managing AI agents with OpenRouter support.
@@ -457,12 +445,7 @@ class AgentService:
                 token_ref=self._token_ref,
             )
             tools.extend(start_draft_tools)
-            # Before any draft exists the default prompt is active, so append a
-            # focused hint that makes the pre-draft start action discoverable.
-            if not self._uses_stationary_energy_review_prompt:
-                agent_instructions = (
-                    f"{agent_instructions}\n\n{_STATIONARY_ENERGY_START_INSTRUCTION}"
-                )
+            # The tool description carries the pre-draft routing instructions.
             logger.info(
                 "Registered Stationary Energy start-draft tool inventory_id=%s thread_id=%s user_id=%s",
                 self.inventory_id,

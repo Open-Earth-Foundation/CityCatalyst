@@ -981,55 +981,55 @@ export default function AddDataSteps() {
                 <Text color="content.tertiary">{t("check-data-details")}</Text>
               </Stack>
             </Flex>
-            <HStack justify="space-between" py="48px">
-              <Box>
-                {/* filter by subsector dropdown */}
-                <Select.Root
-                  collection={subsectorCollection}
-                  size="sm"
-                  width="320px"
-                  value={selectedSubsector}
-                  onValueChange={(event) => setSelectedSubsector(event.value)}
-                >
-                  <Select.HiddenSelect />
-                  <Select.Label
-                    fontFamily="heading"
-                    fontWeight="semibold"
-                    fontSize="label.lg"
+            {dataSources && (
+              <HStack justify="space-between" py="48px">
+                <Box>
+                  {/* filter by subsector dropdown */}
+                  <Select.Root
+                    collection={subsectorCollection}
+                    size="sm"
+                    width="320px"
+                    value={selectedSubsector}
+                    onValueChange={(event) => setSelectedSubsector(event.value)}
                   >
-                    {t("filter-by-subsector")}
-                  </Select.Label>
-                  <Select.Control>
-                    <Select.Trigger
-                      p="12px 16px"
-                      borderRadius="4px"
-                      border="1px solid"
-                      borderColor="border.neutral"
+                    <Select.HiddenSelect />
+                    <Select.Label
+                      fontFamily="heading"
+                      fontWeight="semibold"
+                      fontSize="label.lg"
                     >
-                      <Select.ValueText placeholder={t("select-subsector")} />
-                    </Select.Trigger>
-                    <Select.IndicatorGroup>
-                      <Select.Indicator>
-                        <Icon as={MdArrowDropDown} boxSize={6} />
-                      </Select.Indicator>
-                    </Select.IndicatorGroup>
-                  </Select.Control>
-                  <Portal>
-                    <Select.Positioner>
-                      <Select.Content gap="12px">
-                        {subsectorCollection.items.map((item) => (
-                          <Select.Item item={item} key={item.value}>
-                            {item.label}
-                            <Select.ItemIndicator />
-                          </Select.Item>
-                        ))}
-                      </Select.Content>
-                    </Select.Positioner>
-                  </Portal>
-                </Select.Root>
-              </Box>
-              <Box>
-                {dataSources && (
+                      {t("filter-by-subsector")}
+                    </Select.Label>
+                    <Select.Control>
+                      <Select.Trigger
+                        p="12px 16px"
+                        borderRadius="4px"
+                        border="1px solid"
+                        borderColor="border.neutral"
+                      >
+                        <Select.ValueText placeholder={t("select-subsector")} />
+                      </Select.Trigger>
+                      <Select.IndicatorGroup>
+                        <Select.Indicator>
+                          <Icon as={MdArrowDropDown} boxSize={6} />
+                        </Select.Indicator>
+                      </Select.IndicatorGroup>
+                    </Select.Control>
+                    <Portal>
+                      <Select.Positioner>
+                        <Select.Content gap="12px">
+                          {subsectorCollection.items.map((item) => (
+                            <Select.Item item={item} key={item.value}>
+                              {item.label}
+                              <Select.ItemIndicator />
+                            </Select.Item>
+                          ))}
+                        </Select.Content>
+                      </Select.Positioner>
+                    </Portal>
+                  </Select.Root>
+                </Box>
+                <Box>
                   <Button
                     variant="outline"
                     borderWidth="1px"
@@ -1046,9 +1046,9 @@ export default function AddDataSteps() {
                     <Icon as={RefreshIcon} boxSize={6} />
                     {t("refresh-datasets")}
                   </Button>
-                )}
-              </Box>
-            </HStack>
+                </Box>
+              </HStack>
+            )}
             {!dataSources ? (
               <SearchDataSourcesPrompt
                 t={t}

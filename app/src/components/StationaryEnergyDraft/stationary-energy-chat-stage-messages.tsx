@@ -11,18 +11,19 @@ import {
   StatusLine,
   UserBubble,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-primitives";
+import type {
+  DecisionReviewContext,
+  DraftCounts,
+  DraftStage,
+} from "@/components/StationaryEnergyDraft/flow";
 import {
   buildSourcePreferenceLabel,
   NO_SOURCE_PREFERENCE,
   SET_EMPTY_NOTATION_PREFERENCE,
   sourcePreferenceCommand,
   START_CHOOSE_SOURCES,
-} from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-helpers";
-import type {
-  DecisionReviewContext,
-  DraftCounts,
-  DraftStage,
-} from "@/components/StationaryEnergyDraft/flow";
+  type SourcePreferenceCommand,
+} from "@/components/StationaryEnergyDraft/source-preference";
 import { useTranslation } from "@/i18n/client";
 import type { DraftStatusResponse } from "@/components/StationaryEnergyDraft/types";
 import { getParamValueRequired } from "@/util/helpers";
@@ -36,9 +37,9 @@ type StageMessagesProps = {
   canPersistDraftReview: boolean;
   canSaveToInventory: boolean;
   hasSourceBackedProposals: boolean;
-  sourcePreference: string | null;
+  sourcePreference: SourcePreferenceCommand | null;
   sourcePreferenceOptions: string[];
-  onPreference: (preference: string) => void;
+  onPreference: (preference: SourcePreferenceCommand) => void;
   onSaveDraft: () => void;
   onSaveToInventory: () => void;
   onStartDraft: () => void;

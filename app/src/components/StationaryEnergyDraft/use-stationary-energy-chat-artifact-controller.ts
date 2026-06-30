@@ -16,8 +16,6 @@ import {
 import {
   addResolvedProposalId,
   buildFocusedDecisionStatePayload,
-  buildSourcePreferenceLabel,
-  buildSourcePreferenceReply,
   buildStationaryEnergyChatRequest,
   type ConfirmedBulkReviewChoicePayload,
   type ConfirmedRollbackReviewChoicePayload,
@@ -30,6 +28,11 @@ import {
   resolveStationaryEnergyToolMessage,
   removeResolvedProposalId,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-helpers";
+import {
+  buildSourcePreferenceLabel,
+  buildSourcePreferenceReply,
+  type SourcePreferenceCommand,
+} from "@/components/StationaryEnergyDraft/source-preference";
 import {
   appendAssistantDeltaToMessages,
   createBulkReviewConfirmationMessage,
@@ -121,7 +124,7 @@ export type StationaryEnergyChatArtifactControllerState = {
   resolvedProposalIds: Set<string>;
   rows: ArtifactRow[];
   showStaleWarning: boolean;
-  sourcePreference: string | null;
+  sourcePreference: SourcePreferenceCommand | null;
   sourcePreferenceOptions: string[];
   stage: DraftStage;
   staleDraft: DraftStatusResponse["staleness"];
@@ -135,7 +138,7 @@ export type StationaryEnergyChatArtifactControllerActions = {
     selectedSourceId?: string,
     label?: string,
   ) => void;
-  choosePreference: (preference: string) => void;
+  choosePreference: (preference: SourcePreferenceCommand) => void;
   continueStaleDraft: () => void;
   confirmBulkReviewChanges: (
     choices: StationaryEnergyToolChoiceSummary[],
@@ -508,7 +511,8 @@ export function useStationaryEnergyChatArtifactController(
   const [draftRuns, setDraftRuns] = useState<DraftListItem[]>([]);
   const [draftListLoading, setDraftListLoading] = useState(false);
   const [resumeAttempted, setResumeAttempted] = useState(false);
-  const [sourcePreference, setSourcePreference] = useState<string | null>(null);
+  const [sourcePreference, setSourcePreference] =
+    useState<SourcePreferenceCommand | null>(null);
   const handledToolResultSignaturesRef = useRef<Set<string>>(new Set());
   const [focusedProposalId, setFocusedProposalId] = useState<string | null>(
     null,
@@ -1188,7 +1192,7 @@ export function useStationaryEnergyChatArtifactController(
   ]);
 
   const choosePreference = useCallback(
-    (preference: string): void => {
+    (preference: SourcePreferenceCommand): void => {
       setSourcePreference(preference);
       appendTextMessage("user", buildSourcePreferenceLabel(t, preference));
       appendTextMessage("assistant", buildSourcePreferenceReply(t, preference));

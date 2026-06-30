@@ -4,6 +4,7 @@ import {
   createDecisionReviewMessage,
   type ChatMessage,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-messages";
+import { TERMINAL_DRAFT_STATUSES } from "@/components/StationaryEnergyDraft/flow-types";
 import type {
   DecisionOption,
   DecisionReviewContext,
@@ -48,18 +49,6 @@ export type StationaryEnergyStartDraftToolResult = {
   draft_run_id?: string | null;
   error_code?: string | null;
 };
-
-const TERMINAL_DRAFT_STATUSES = new Set([
-  "saved",
-  "partially_saved",
-  "no_changes",
-  "failed",
-]);
-const SOURCE_PREFERENCE_PREFIX = "source:";
-
-export const NO_SOURCE_PREFERENCE = "__source_preference_none__";
-export const START_CHOOSE_SOURCES = "__start_choose_sources__";
-export const SET_EMPTY_NOTATION_PREFERENCE = "__set_empty_notation__";
 
 const GENERIC_START_DRAFT_FAILURE_KEYS = new Set([
   "tool-error-generic",
@@ -164,64 +153,6 @@ export function mergeDecisionReviewMessages(
     .map((context) => createDecisionReviewMessage(context.proposal_id));
 
   return additions.length === 0 ? current : [...current, ...additions];
-}
-
-export function sourcePreferenceCommand(sourceName: string): string {
-  return `${SOURCE_PREFERENCE_PREFIX}${sourceName}`;
-}
-
-function sourceNameFromPreference(preference: string): string | null {
-  return preference.startsWith(SOURCE_PREFERENCE_PREFIX)
-    ? preference.slice(SOURCE_PREFERENCE_PREFIX.length)
-    : null;
-}
-
-export function buildSourcePreferenceLabel(
-  t: TFunction,
-  preference: string,
-): string {
-  if (preference === NO_SOURCE_PREFERENCE) {
-    return t("chat-source-preference-no-preference");
-  }
-  if (preference === START_CHOOSE_SOURCES) {
-    return t("chat-start-choose-sources");
-  }
-  if (preference === SET_EMPTY_NOTATION_PREFERENCE) {
-    return t("chat-quick-reply-set-notation");
-  }
-
-  const sourceName = sourceNameFromPreference(preference);
-  if (sourceName) {
-    return t("chat-source-preference-prefer", {
-      sourceName,
-    });
-  }
-
-  return preference;
-}
-
-export function buildSourcePreferenceReply(
-  t: TFunction,
-  preference: string,
-): string {
-  if (preference === NO_SOURCE_PREFERENCE) {
-    return t("chat-source-preference-reply-no-preference");
-  }
-  if (preference === START_CHOOSE_SOURCES) {
-    return t("chat-start-choose-sources-reply");
-  }
-  if (preference === SET_EMPTY_NOTATION_PREFERENCE) {
-    return t("chat-quick-reply-set-notation-reply");
-  }
-
-  const sourceName = sourceNameFromPreference(preference);
-  if (sourceName) {
-    return t("chat-source-preference-reply-prefer", {
-      sourceName,
-    });
-  }
-
-  return preference;
 }
 
 export function nextDecisionState(

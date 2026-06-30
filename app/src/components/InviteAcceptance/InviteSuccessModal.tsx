@@ -116,8 +116,8 @@ const InviteSuccessModal: React.FC<InviteSuccessModalProps> = ({
           my="24px"
           fontSize="body.md"
         >
-          <Icon as={MdArrowForward} />
           {t("continue")}
+          <Icon as={MdArrowForward} />
         </Button>
       </VStack>
     </Box>

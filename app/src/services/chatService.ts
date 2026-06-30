@@ -3,7 +3,7 @@ import { trackEvent } from "@/lib/analytics";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 export interface ChatServiceConfig {
-  inventoryId: string;
+  inventoryId?: string;
   onError: (error: any, errorMessage: string) => void;
 }
 
@@ -36,9 +36,9 @@ export class ChatService {
         this.saveThreadToDatabase(threadId);
         return threadId;
       } else {
-        // Legacy thread creation for old implementation
+        // Legacy thread creation for old implementation (requires an inventory id)
         const threadId = await createLegacyThread({
-          inventoryId: this.config.inventoryId,
+          inventoryId: this.config.inventoryId ?? "",
           content: t("initial-message"),
         });
         this.saveThreadToDatabase(threadId);

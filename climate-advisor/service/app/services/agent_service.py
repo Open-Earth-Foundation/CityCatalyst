@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import logging
 from urllib.parse import urlparse
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Sequence, Union
 from uuid import UUID
 
 import openai
@@ -325,6 +325,35 @@ class AgentService:
             return None
 
         return "\n".join(lines)
+
+    def _can_register_stationary_energy_start_draft_tools(self) -> bool:
+        """Return whether chat can expose the pre-draft Stationary Energy tool."""
+        return bool(
+            self._stationary_energy_surface
+            and not self.stationary_energy_draft_run_id
+            and self.city_id
+            and self.inventory_id
+            and self.session_factory
+            and self.cc_user_id
+        )
+
+    def _build_stationary_energy_start_draft_tools(self) -> Sequence[object]:
+        """Create start-draft tools scoped to the active city and inventory."""
+        assert self.session_factory is not None
+        assert self.city_id is not None
+        assert self.inventory_id is not None
+        assert self.cc_user_id is not None
+
+        return build_stationary_energy_start_draft_tools(
+            session_factory=self.session_factory,
+            city_id=str(self.city_id),
+            inventory_id=str(self.inventory_id),
+            user_id=str(self.cc_user_id),
+            thread_id=(
+                UUID(str(self.cc_thread_id)) if self.cc_thread_id else None
+            ),
+            token_ref=self._token_ref,
+        )
     
     async def create_agent(
         self,
@@ -423,28 +452,8 @@ class AgentService:
                 self.cc_user_id,
             )
 
-        # Allow the agent to START a Stationary Energy draft from chat only
-        # before a draft exists. Active draft review uses the scoped review
-        # tools below and must not expose a second draft-start mutation.
-        if (
-            self._stationary_energy_surface
-            and not self.stationary_energy_draft_run_id
-            and self.city_id
-            and self.inventory_id
-            and self.session_factory
-            and self.cc_user_id
-        ):
-            start_draft_tools = build_stationary_energy_start_draft_tools(
-                session_factory=self.session_factory,
-                city_id=str(self.city_id),
-                inventory_id=str(self.inventory_id),
-                user_id=str(self.cc_user_id),
-                thread_id=(
-                    UUID(str(self.cc_thread_id)) if self.cc_thread_id else None
-                ),
-                token_ref=self._token_ref,
-            )
-            tools.extend(start_draft_tools)
+        if self._can_register_stationary_energy_start_draft_tools():
+            tools.extend(self._build_stationary_energy_start_draft_tools())
             # The tool description carries the pre-draft routing instructions.
             logger.info(
                 "Registered Stationary Energy start-draft tool inventory_id=%s thread_id=%s user_id=%s",

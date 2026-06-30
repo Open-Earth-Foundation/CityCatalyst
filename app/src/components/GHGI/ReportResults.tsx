@@ -131,7 +131,7 @@ function SectorTabs({
             <Tabs.Trigger
               key={index}
               value={name}
-              minWidth="170px"
+              minWidth="200px"
               height="64px"
             >
               <Icon
@@ -145,6 +145,7 @@ function SectorTabs({
               <Text
                 fontSize="16"
                 lineClamp={2}
+                wordBreak="keep-all"
                 textAlign="left"
                 fontWeight={selectedTab === name ? 600 : 400}
                 fontStyle="normal"

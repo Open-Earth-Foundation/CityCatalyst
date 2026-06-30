@@ -8,6 +8,10 @@ Current implementation note: exclusion preview and prioritization are separate f
 graph TD
   CityData[(City Data)]
   ActionPathways[(Action Pathways Data)]
+  LegalData[(Legal Assessments)]
+  PolicyScores[(Action Policy Scores)]
+  MitigationFeasibility[(Mitigation Feasibility Scores)]
+  FinancialFeasibility[(Financial Feasibility Scores)]
 
   ExclusionPrefs[Exclusion Preferences]
   Preview[Exclusion Preview]
@@ -28,6 +32,7 @@ graph TD
   Preview --> Confirmed
   CityData --> HardFilter
   ActionPathways --> HardFilter
+  LegalData --> HardFilter
   Confirmed --> HardFilter
 
   HardFilter -- fails --> Discard
@@ -36,6 +41,13 @@ graph TD
   Valid --> Impact
   Valid --> Alignment
   Valid --> Feasibility
+
+  CityData --> Impact
+  ActionPathways --> Impact
+  PolicyScores --> Alignment
+  LegalData --> Feasibility
+  MitigationFeasibility --> Feasibility
+  FinancialFeasibility --> Feasibility
 
   Impact --> WeightedSum
   Alignment --> WeightedSum

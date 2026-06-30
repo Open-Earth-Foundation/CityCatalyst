@@ -329,3 +329,17 @@ export const markCitiesPublicRequest = z.object({
 });
 
 export type MarkCitiesPublicRequest = z.infer<typeof markCitiesPublicRequest>;
+
+// Climate Advisor chat thread creation. inventory_id is optional: a user with
+// no inventory yet (e.g. during onboarding) has no context to attach, and the
+// frontend may send an empty string. Coerce "" to undefined so an inventory-less
+// thread is created instead of failing uuid validation.
+export const createChatThreadRequest = z.object({
+  title: z.string().optional(),
+  inventory_id: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z.string().uuid().optional(),
+  ),
+});
+
+export type CreateChatThreadRequest = z.infer<typeof createChatThreadRequest>;

@@ -187,6 +187,7 @@
   "map-rows-description-pdf": "Las filas extraídas ya están asignadas a los campos del inventario. Revisa los datos a continuación y continúa hasta el último paso.",
   "upload-failed": "Error al subir",
   "failed-to-upload-file": "No se pudo subir el archivo",
+  "edit": "Editar",
   "citycatalyst-demo": "CityCatalyst Demo",
   "inventory-goal-description-ghgi": "El GPC proporciona un marco sólido para contabilizar e informar las emisiones de gases de efecto invernadero a escala municipal.",
   "gwp-description-ghgi": "El potencial de calentamiento global (GWP) mide cuánto calor atrapa un gas de efecto invernadero en la atmósfera durante un período específico, en relación con el dióxido de carbono.",

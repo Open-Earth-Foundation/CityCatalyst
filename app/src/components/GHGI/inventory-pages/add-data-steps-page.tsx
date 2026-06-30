@@ -595,6 +595,13 @@ export default function AddDataSteps() {
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
   const { isFrozenCheck } = useOrganizationContext();
 
+  const getSubsectorReferenceNumber = (subSectorId?: string): string => {
+    const subSector = currentStep.subSectors?.find(
+      (subSector) => subSector.subsectorId === subSectorId,
+    );
+    return subSector?.referenceNumber ?? "-";
+  };
+
   const getSourceSubsectorId = (
     source: DataSourceWithRelations,
   ): string | undefined =>
@@ -1085,27 +1092,30 @@ export default function AddDataSteps() {
                       ),
                     );
 
+                    const subsectorReferenceNumber =
+                      getSubsectorReferenceNumber(subSectorId);
+
                     return (
                       <Box key={subSectorId}>
-                        <HStack justify="space-between" mb={4}>
-                          <Heading size="sm">
+                        <HStack
+                          justify="space-between"
+                          mb={4}
+                          color="content.tertiary"
+                          fontSize="body.md"
+                          fontWeight="normal"
+                          fontFamily="body"
+                        >
+                          <Text>
+                            {subsectorReferenceNumber}{" "}
                             {getSubsectorLabel(subSectorId)}
-                          </Heading>
-                          <Text color="content.tertiary">
-                            {sourcesForSubsector.length}
+                          </Text>
+                          <Text>
+                            {sourcesForSubsector.length} {t("datasets")}
                           </Text>
                         </HStack>
                         <VStack align="stretch" gap={6}>
                           {groupedByScope.map(([scopeName, scopeSources]) => (
                             <Box key={`${subSectorId}-${scopeName}`}>
-                              <HStack mb={4}>
-                                <Text
-                                  fontWeight="semibold"
-                                  color="content.tertiary"
-                                >
-                                  {t("scope")}: {scopeName}
-                                </Text>
-                              </HStack>
                               <SimpleGrid
                                 templateColumns="repeat(3, 1fr)"
                                 gap="16px"

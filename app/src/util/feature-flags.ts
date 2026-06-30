@@ -159,22 +159,6 @@ export function hasServerFeatureFlag(flag: FeatureFlags): boolean {
   return getServerFeatureFlags().includes(flag);
 }
 
-export function setServerFeatureFlag(
-  flag: FeatureFlags,
-  enabled: boolean,
-): boolean {
-  const flags = getServerFeatureFlags();
-  const idx = flags.indexOf(flag);
-
-  if (enabled && idx === -1) {
-    flags.push(flag);
-  } else if (!enabled && idx !== -1) {
-    flags.splice(idx, 1);
-  }
-
-  return idx !== -1;
-}
-
 // =============================================================================
 // QA FEATURE FLAG MANAGEMENT
 // =============================================================================

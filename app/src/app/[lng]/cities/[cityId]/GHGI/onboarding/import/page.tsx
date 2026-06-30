@@ -192,6 +192,8 @@ export default function ImportPage(props: {
   const [mappingOverrides, setMappingOverrides] = useState<
     Record<string, string>
   >({});
+  const [mappingRequiredSatisfied, setMappingRequiredSatisfied] =
+    useState(false);
   const [showDataLossModal, setShowDataLossModal] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
   const [extractionProgress, setExtractionProgress] = useState<{
@@ -231,6 +233,8 @@ export default function ImportPage(props: {
   // Reset year-mismatch toast when the user switches to a different import
   useEffect(() => {
     fileYearMismatchToastShownRef.current = false;
+    // A new file means the mapping step must re-validate before continuing.
+    setMappingRequiredSatisfied(false);
   }, [importedFileId]);
 
   const inventoryYear =
@@ -762,6 +766,7 @@ export default function ImportPage(props: {
                         [columnName]: mappedKey,
                       }));
                     }}
+                    onValidityChange={setMappingRequiredSatisfied}
                   />
                 </motion.div>
               )}
@@ -871,6 +876,7 @@ export default function ImportPage(props: {
                   px="24px"
                   onClick={handleContinue}
                   h="64px"
+                  disabled={!mappingRequiredSatisfied}
                 >
                   <Text
                     fontFamily="button.md"

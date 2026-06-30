@@ -10,7 +10,7 @@
 | Impact       | GPC reference evidence collection              | Implemented                                      |
 | Impact       | Activity relevance x reduction band x timeline | Implemented                                      |
 | Alignment    | Policy + sector + other components             | Implemented (`other` uses direct co-benefit selections plus normalized selected co-benefit scoring) |
-| Feasibility  | Legal verdict score + socio-economic weighted component | Implemented                                      |
+| Feasibility  | Legal verdict score + mitigation feasibility + financial feasibility | Implemented                                      |
 | Weighted Sum | Weighted aggregation, sort, rank, `top_n`      | Implemented                                      |
 
 ---
@@ -219,7 +219,8 @@ Feasibility answers: **Can this city realistically implement this action?**
 It combines:
 
 - Legal feasibility using the direct legal verdict score
-- Socio-economic fit via action-defined fit rules applied to city indicator buckets
+- Mitigation feasibility from the city-scoped action feasibility endpoint
+- Financial feasibility from the city-scoped climate-finance endpoint
 
 Blocked legal verdicts are enforced in the Hard Filter stage.
 
@@ -233,6 +234,9 @@ Blocked legal verdicts are enforced in the Hard Filter stage.
   - Source: `ownership*`, `restrictions*`, `legalJustification*`, `legalReferences`, and timestamps
 - Mitigation feasibility scores for the city
   - Source: `action_mitigation_feasibility_scores_api_mock.json` or the matching live endpoint, keyed by `src_action_id`
+- Financial feasibility scores for the city
+  - Source: `action_financial_feasibility_scores_api_mock.json` or `GET /api/v1/cities/{locode}/climate-finance/feasibility?country_code=...`, keyed by `action_id`
+  - hiap-meed consumes the compact batch score, route, reason, and links; linked opportunity/project detail endpoints are not fetched in the first implementation
 - Candidate actions (already hard-filtered)
   - Source: `Valid Actions for Scoring`
 
@@ -241,33 +245,35 @@ Blocked legal verdicts are enforced in the Hard Filter stage.
 - Feasibility scores per action
   - Output: `Feasibility Scores` (one score per action, used in final ranking)
 - Optional trace fields
-  - Output: `Feasibility Evidence` (legal component values, fallback source, per-indicator contributions)
+  - Output: `Feasibility Evidence` (legal, mitigation, and financial component values; contribution weights; fallback diagnostics; compact route/reason/link evidence)
 
 ```mermaid
 graph TD
   Valid[(Valid Actions for Scoring)]
-  LegSig[(LegalSignal)]
-  ActLeg[(ActionLegalRequirement)]
-  CitySoc[(CityMitigationSocioEconomicIndicatorValue)]
-  ActionTbl[(Action)]
+  LegalRows[(Action legal assessments)]
+  MitRows[(Action mitigation feasibility scores)]
+  FinRows[(Action financial feasibility scores)]
 
-  LegalSoft[Legal score]
-  SocFit[Socio-economic fit score]
+  LegalSoft[Legal verdict component<br/>weight 0.34]
+  MitFit[Mitigation feasibility component<br/>weight 0.33]
+  FinFit[Financial feasibility component<br/>weight 0.33]
 
   Combine[Feasibility Score]
   FeasOut[Feasibility Scores]
   FeasExplain[Feasibility Evidence optional]
 
   Valid --> LegalSoft
-  LegSig -.-> LegalSoft
-  ActLeg -.-> LegalSoft
+  LegalRows -.-> LegalSoft
 
-  Valid --> SocFit
-  CitySoc -.-> SocFit
-  ActionTbl -.-> SocFit
+  Valid --> MitFit
+  MitRows -.-> MitFit
+
+  Valid --> FinFit
+  FinRows -.-> FinFit
 
   LegalSoft --> Combine
-  SocFit --> Combine
+  MitFit --> Combine
+  FinFit --> Combine
 
   Combine --> FeasOut
   Combine -.-> FeasExplain
@@ -296,6 +302,9 @@ This step combines the three pillar scores into a single ranking score and produ
 
 - Final prioritized action list
   - Output: `ranked_action_ids` plus `ranked_actions[]` payload items containing `rank`, pillar scores, final score, compact `evidence_summary`, and optional `explanation`
+- Feasibility diagnostics artifact
+  - Output: `012_feasibility.json` with the full grouped feasibility breakdown under `legal`, `mitigation_feasibility`, and `financial_feasibility`
+  - API contrast: `ranked_actions[].evidence_summary.feasibility` uses the same grouped top-level component keys, but only includes the compact response subset plus `feasibility_score`
 
 ```mermaid
 graph TD

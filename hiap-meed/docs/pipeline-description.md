@@ -171,7 +171,7 @@ Shape note:
 - The city payload also includes a `population` indicator object alongside the top-level population fields.
 - The current city response DTOs are intentionally lenient: they still accept the current camelCase population aliases and ignore unexpected extra keys.
 
-Fields that affect the result:
+Additional city indicator fields retained for compatibility:
 
 - `city.unemployment_rate.attribute_category`
 - `city.renter_share.attribute_category`
@@ -185,8 +185,8 @@ Fields that affect the result:
 
 What these are used for:
 
-- These category labels feed the Feasibility block.
-- They tell the system whether a city condition is very low, low, medium, high, or very high for a given socio-economic indicator.
+- These category labels are preserved in the city context model but do not currently feed scoring.
+- Feasibility now uses legal, mitigation feasibility, and financial feasibility API inputs instead of city socioeconomic indicator rules.
 
 ### Action catalog
 
@@ -239,7 +239,7 @@ What these are used for:
 - `emissions.subsector_number[]` defines the active true subsector join used by Impact.
 - `emissions.gpc_reference_number[]` is retained as reference data and is also used to keep the mock catalog consistent.
 - `emissions.impact_text` gives the action's expected strength of emissions reduction.
-- Feasibility uses the city-scoped mitigation feasibility scores endpoint.
+- Feasibility uses the city-scoped mitigation feasibility and climate-finance feasibility scores endpoints.
 
 ### Legal assessments data
 
@@ -508,7 +508,7 @@ Score semantics used in this document:
 - `1.0` means the strongest support available within that component's own logic.
 - `0.0` means the weakest support available within that component's own logic.
 - `0.5` is the neutral midpoint only for components that start from a signed scale and are then normalized into `0..1`.
-  - Current examples: the Alignment other-preference co-benefit component and the Feasibility socio-economic component.
+  - Current examples: the Alignment other-preference co-benefit component and missing Feasibility legal, mitigation, or financial component rows.
 - Not every component uses `0.5` as neutral.
   - Example: a missing policy support score remains `0.0` because that component measures support, not beneficial-versus-harmful effect.
 
@@ -890,7 +890,8 @@ The Feasibility block measures how practical the action looks for the city.
 It combines:
 
 - the direct legal verdict score,
-- and fit with the city's socio-economic profile.
+- the city-scoped mitigation feasibility score,
+- and the city-scoped climate-finance feasibility score.
 
 ### 7.1 Inputs
 
@@ -921,9 +922,19 @@ From the mitigation feasibility scores endpoint:
 - `scores[].breakdown`
 - `scores[].rank_within_city`
 
+From the climate-finance feasibility endpoint:
+
+- `data[].action_id`
+- `data[].financial_feasibility`
+- `data[].route`
+- `data[].reason`
+- `data[].sector`
+- `data[].inputs`
+- `data[].links`
+
 ### 7.2 Logic
 
-The Feasibility block has two equal parts.
+The Feasibility block has three fixed-weight parts.
 
 #### Part A: legal verdict score
 
@@ -954,7 +965,7 @@ Important details:
 
 Scoring rule:
 
-- Use `scores[].action_score` from `GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores`.
+- Use `scores[].action_score` from `GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`.
 - Match rows to actions by `src_action_id`.
 - If the endpoint returns `404`, if an action has no score row, or if the row is missing `action_score`, use neutral `0.5`.
 
@@ -977,22 +988,51 @@ Important details:
 - Missing mapped rows are expected and intentionally neutral, not a penalty.
 - Dimension details are retained in evidence and artifacts but are not recomputed by this service.
 
+#### Part C: financial feasibility score
+
+Scoring rule:
+
+- Use `data[].financial_feasibility` from `GET /api/v1/cities/{locode}/climate-finance/feasibility?country_code=...`.
+- Match rows to actions by `action_id`.
+- If the endpoint returns `404`, if an action has no score row, or if the row is missing `financial_feasibility`, use neutral `0.5`.
+
+Plain-language formula:
+
+```text
+Financial feasibility component
+= financial_feasibility
+```
+
+Fallback rule:
+
+```text
+If financial_feasibility is missing, financial feasibility component = 0.5
+```
+
+Important details:
+
+- The first implementation consumes only the compact batch evidence.
+- The upstream row can include links to detail, opportunities, and projects; hiap-meed preserves those links in evidence but does not fetch the additional detail endpoints yet.
+- Route and reason are retained as compact evidence and can be transformed by the explanation layer into UI-friendly wording.
+
 #### Final Feasibility formula
 
 Plain-language formula:
 
 ```text
 Feasibility score
-= 0.50 * legal component
- + 0.50 * mitigation feasibility component
+= 0.34 * legal component
+ + 0.33 * mitigation feasibility component
+ + 0.33 * financial feasibility component
 ```
 
 ### 7.3 Weights used
 
 Internal Feasibility weights:
 
-- Legal verdict score = `0.50`
-- Mitigation feasibility score = `0.50`
+- Legal verdict score = `0.34`
+- Mitigation feasibility score = `0.33`
+- Financial feasibility score = `0.33`
 
 ### 7.4 Outputs
 
@@ -1000,27 +1040,52 @@ Main output:
 
 - `feasibility_score`
 
-Key evidence fields:
+Key evidence fields in `012_feasibility.json` are grouped per component:
 
-- `legal_assessment_present`
-- `legal_assessment_missing`
-- `legal_verdict_category`
-- `legal_component_score`
-- `legal_component_source`
-- `legal_verdict_score_missing`
-- `mitigation_feasibility_component_score`
-- `mitigation_feasibility_component_source`
-- `mitigation_feasibility_weight`
-- `mitigation_feasibility_contribution`
-- `mitigation_feasibility_score_present`
-- `mitigation_feasibility_score_missing`
-- `mitigation_feasibility_action_score_missing`
-- `global_mitigation_option`
-- `action_mapping_strength`
-- `option_family`
-- `dimension_scores`
-- `feasibility_breakdown`
-- `rank_within_city`
+- `legal`
+  - `assessment_present`
+  - `assessment_missing`
+  - `verdict_category`
+  - `component_score`
+  - `component_source`
+  - `weight`
+  - `contribution`
+  - `verdict_score_missing`
+  - `ownership_category`
+  - `ownership_score`
+  - `restrictions_category`
+  - `restrictions_score`
+  - `analysis_date`
+  - `generation_method`
+  - `references`
+- `mitigation_feasibility`
+  - `component_score`
+  - `component_source`
+  - `weight`
+  - `contribution`
+  - `score_present`
+  - `score_missing`
+  - `action_score_missing`
+  - `global_mitigation_option`
+  - `action_mapping_strength`
+  - `option_family`
+  - `n_feasibility_dimensions`
+  - `dimension_scores`
+  - `breakdown`
+  - `rank_within_city`
+- `financial_feasibility`
+  - `component_score`
+  - `component_source`
+  - `weight`
+  - `contribution`
+  - `score_present`
+  - `score_missing`
+  - `action_score_missing`
+  - `route`
+  - `reason`
+  - `sector`
+  - `inputs`
+  - `links`
 - `feasibility_score`
 
 ## 8. Final Scoring Block
@@ -1123,6 +1188,7 @@ For each ranked action, the output includes:
 
 Important current behavior:
 
+- `evidence_summary.feasibility` keeps `feasibility_score` at the top level and groups detailed component evidence under `legal`, `mitigation_feasibility`, and `financial_feasibility`
 - `explanations` is `{}` unless `requestData.createExplanations=true` and the explanation call succeeds
 - Explanations are generated only after ranking is finished; they do not change scores or ranks
 - The explanation stage uses the ranked actions plus curated evidence from the Impact, Alignment, and Feasibility blocks
@@ -1168,7 +1234,7 @@ Internal weights inside each scoring block:
 
 - Impact = `0.80 / 0.20`
 - Alignment = `0.75 / 0.15 / 0.05 / 0.05`
-- Feasibility = `0.50 / 0.50`
+- Feasibility = `0.34 / 0.33 / 0.33`
 
 Final weights across the three blocks:
 
@@ -1213,7 +1279,7 @@ In business terms, the current implementation works like this:
 - Actions that have `verdictCategory = blocked` are removed before ranking.
 - Actions score higher on Impact when they target large city emissions sources and can be implemented sooner.
 - Actions score higher on Alignment when they already have stronger policy support and belong to sectors the city has said it prefers.
-- Actions score higher on Feasibility when the legal verdict score is stronger and the city's socio-economic profile looks supportive.
+- Actions score higher on Feasibility when the legal verdict score is stronger, mitigation feasibility is stronger, and the climate-finance feasibility route looks more accessible.
 - The final list is then created by applying the chosen top-level weights to those three scores.
 
 So the final ranking is not one black-box judgment. It is a step-by-step combination of:

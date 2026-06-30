@@ -59,7 +59,7 @@ if __name__ == "__main__":
     logger.info(
         "Starting server host=%s port=%s LOG_LEVEL=%s LOG_DIR=%s LOCAL_ARTIFACTS_ENABLED=%s "
         "CITY_SOURCE=%s ACTION_SOURCE=%s LEGAL_SOURCE=%s POLICY_SOURCE=%s "
-        "MITIGATION_FEASIBILITY_SOURCE=%s",
+        "MITIGATION_FEASIBILITY_SOURCE=%s FINANCIAL_FEASIBILITY_SOURCE=%s",
         host,
         port,
         os.getenv("LOG_LEVEL", "INFO"),
@@ -71,6 +71,10 @@ if __name__ == "__main__":
         os.getenv("HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE", "api"),
         os.getenv(
             "HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE",
+            "api",
+        ),
+        os.getenv(
+            "HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE",
             "api",
         ),
     )

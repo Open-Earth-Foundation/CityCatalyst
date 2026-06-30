@@ -12,6 +12,10 @@ from app.services.action_legal_assessments_api import (
     ActionLegalAssessmentsApiService,
     LEGAL_ASSESSMENTS_ENDPOINT_TEMPLATE,
 )
+from app.services.action_financial_feasibility_scores_api import (
+    ACTION_FINANCIAL_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE,
+    ActionFinancialFeasibilityScoresApiService,
+)
 from app.services.action_mitigation_feasibility_scores_api import (
     ACTION_MITIGATION_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE,
     ActionMitigationFeasibilityScoresApiService,
@@ -28,6 +32,8 @@ from app.services.action_policy_scores_api import (
 from app.services.city_attributes_api import CityAttributesApiService
 from app.modules.prioritizer.internal_models import (
     Action,
+    ActionFinancialFeasibilityScoreRecord,
+    ActionFinancialFeasibilityScoresFetchResult,
     ActionPathwaysFetchResult,
     ActionMitigationFeasibilityScoreRecord,
     ActionMitigationFeasibilityScoresFetchResult,
@@ -37,6 +43,8 @@ from app.modules.prioritizer.internal_models import (
     LegalAssessmentRecord,
 )
 from app.modules.prioritizer.models import (
+    ActionFinancialFeasibilityScoreApiItem,
+    ActionFinancialFeasibilityScoresApiResponse,
     ActionMitigationFeasibilityScoreApiItem,
     ActionMitigationFeasibilityScoresApiResponse,
     ActionPolicyScoreApiItem,
@@ -347,6 +355,29 @@ def _map_action_mitigation_feasibility_score_item(
     )
 
 
+def _map_action_financial_feasibility_score_item(
+    *,
+    score: ActionFinancialFeasibilityScoreApiItem,
+    source_metadata: dict[str, object],
+) -> ActionFinancialFeasibilityScoreRecord:
+    """Map one upstream financial feasibility item into the action-keyed record."""
+    score_raw = score.model_dump(mode="json")
+    return ActionFinancialFeasibilityScoreRecord.model_validate(
+        {
+            "action_id": score.action_id,
+            "action_name": score.action_name,
+            "sector": score.sector,
+            "financial_feasibility": score.financial_feasibility,
+            "route": score.route,
+            "reason": score.reason,
+            "inputs": score.inputs,
+            "links": score.links,
+            "raw": score_raw,
+            "source_metadata": source_metadata,
+        }
+    )
+
+
 @dataclass
 class MockActionMitigationFeasibilityScoresDataApiClient:
     """File-backed mitigation feasibility scores client loading mock payload."""
@@ -384,6 +415,50 @@ class MockActionMitigationFeasibilityScoresDataApiClient:
                 )
             )
         return ActionMitigationFeasibilityScoresFetchResult(
+            scores_by_action_id=scores_by_action_id,
+            source_metadata=source_metadata,
+            upstream_meta=response.meta.model_dump(mode="json"),
+            warning=None,
+        )
+
+
+@dataclass
+class MockActionFinancialFeasibilityScoresDataApiClient:
+    """File-backed financial feasibility scores client loading mock payload."""
+
+    mock_file_path: Path
+
+    def get_action_financial_feasibility_scores(
+        self, locode: str, country_code: str
+    ) -> ActionFinancialFeasibilityScoresFetchResult:
+        """Load financial feasibility scores grouped by action ID."""
+        payload = json.loads(self.mock_file_path.read_text(encoding="utf-8"))
+        response = ActionFinancialFeasibilityScoresApiResponse.model_validate(payload)
+        requested_locode = locode.strip().upper()
+        requested_country_code = country_code.strip().upper()
+        source_metadata = {
+            **_base_source_metadata(),
+            "mock_file_path": str(self.mock_file_path),
+            "requested_locode": requested_locode,
+            "requested_country_code": requested_country_code,
+            "upstream_endpoint": ACTION_FINANCIAL_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE,
+            "upstream_generated_at_utc": response.meta.generated_at_utc,
+        }
+        scores_by_action_id: dict[str, ActionFinancialFeasibilityScoreRecord] = {}
+        for score in response.data:
+            action_id = score.action_id
+            if action_id in scores_by_action_id:
+                raise ValueError(
+                    "Mock action financial feasibility scores payload contains duplicate "
+                    f"action_id values for locode={requested_locode}"
+                )
+            scores_by_action_id[action_id] = (
+                _map_action_financial_feasibility_score_item(
+                    score=score,
+                    source_metadata=source_metadata,
+                )
+            )
+        return ActionFinancialFeasibilityScoresFetchResult(
             scores_by_action_id=scores_by_action_id,
             source_metadata=source_metadata,
             upstream_meta=response.meta.model_dump(mode="json"),
@@ -434,6 +509,22 @@ class ApiActionMitigationFeasibilityScoresDataApiClient:
         self, locode: str, country_code: str
     ) -> ActionMitigationFeasibilityScoresFetchResult:
         """Fetch city-scoped mitigation feasibility scores from the upstream API."""
+        return self._service.get_scores_by_action_id(locode, country_code)
+
+
+class ApiActionFinancialFeasibilityScoresDataApiClient:
+    """API-backed financial feasibility client using the upstream score service."""
+
+    def __init__(
+        self, service: ActionFinancialFeasibilityScoresApiService | None = None
+    ) -> None:
+        """Create the financial feasibility API client with a service wrapper."""
+        self._service = service or ActionFinancialFeasibilityScoresApiService()
+
+    def get_action_financial_feasibility_scores(
+        self, locode: str, country_code: str
+    ) -> ActionFinancialFeasibilityScoresFetchResult:
+        """Fetch city-scoped financial feasibility scores from the upstream API."""
         return self._service.get_scores_by_action_id(locode, country_code)
 
 
@@ -508,6 +599,20 @@ _default_api_action_mitigation_feasibility_scores_client = (
 _default_mock_action_mitigation_feasibility_scores_client = (
     MockActionMitigationFeasibilityScoresDataApiClient(
         mock_file_path=_default_action_mitigation_feasibility_scores_mock_file_path
+    )
+)
+_default_action_financial_feasibility_scores_mock_file_path = (
+    Path(__file__).resolve().parents[2]
+    / "data"
+    / "mock"
+    / "action_financial_feasibility_scores_api_mock.json"
+)
+_default_api_action_financial_feasibility_scores_client = (
+    ApiActionFinancialFeasibilityScoresDataApiClient()
+)
+_default_mock_action_financial_feasibility_scores_client = (
+    MockActionFinancialFeasibilityScoresDataApiClient(
+        mock_file_path=_default_action_financial_feasibility_scores_mock_file_path
     )
 )
 
@@ -601,4 +706,26 @@ def get_action_mitigation_feasibility_scores_data_api_client() -> (
         return _default_api_action_mitigation_feasibility_scores_client
 
     return _default_mock_action_mitigation_feasibility_scores_client
+
+
+def get_action_financial_feasibility_scores_data_api_client() -> (
+    MockActionFinancialFeasibilityScoresDataApiClient
+    | ApiActionFinancialFeasibilityScoresDataApiClient
+):
+    """FastAPI dependency provider for financial feasibility scores client."""
+    source = _resolve_configured_data_source(
+        "HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE"
+    )
+    if source == "api":
+        return _default_api_action_financial_feasibility_scores_client
+
+    if not _default_action_financial_feasibility_scores_mock_file_path.exists():
+        logger.warning(
+            "Mock action financial feasibility scores file not found at `%s`; "
+            "using API action financial feasibility scores client",
+            _default_action_financial_feasibility_scores_mock_file_path,
+        )
+        return _default_api_action_financial_feasibility_scores_client
+
+    return _default_mock_action_financial_feasibility_scores_client
 

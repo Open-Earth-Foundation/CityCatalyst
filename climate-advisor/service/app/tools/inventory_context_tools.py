@@ -16,9 +16,6 @@ from app.services.citycatalyst_client import (
 
 logger = logging.getLogger(__name__)
 
-INVENTORY_STATUS_OVERVIEW_ACTION = "ghgi.inventory.status_overview"
-INVENTORY_EMISSIONS_CONTEXT_ACTION = "ghgi.inventory.emissions_context"
-
 ScopeResolver = Callable[[], Awaitable[tuple[str, str, UUID | None]]]
 ClientFactory = Callable[[], CityCatalystClient]
 CapabilityLoader = Callable[
@@ -116,7 +113,7 @@ def build_inventory_context_tools(
         """
 
         return await _run_capability_tool(
-            INVENTORY_STATUS_OVERVIEW_ACTION,
+            "ghgi.inventory.status_overview",
             lambda client, payload, token: client.load_inventory_status_overview(
                 request_payload=payload,
                 token=token,
@@ -137,7 +134,7 @@ def build_inventory_context_tools(
         """
 
         return await _run_capability_tool(
-            INVENTORY_EMISSIONS_CONTEXT_ACTION,
+            "ghgi.inventory.emissions_context",
             lambda client, payload, token: client.load_inventory_emissions_context(
                 request_payload=payload,
                 token=token,

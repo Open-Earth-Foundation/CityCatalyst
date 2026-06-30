@@ -1273,5 +1273,7 @@
   "not-estimated-progress": "Não Estimado",
   "uncategorized": "Não categorizado",
   "legend": "Legenda",
-  "data-already-added-connected": "Este conjunto de dados não está disponível porque já tem um conjunto conectado para este subsetor."
+  "data-already-added-connected": "Este conjunto de dados não está disponível porque já tem um conjunto conectado para este subsetor.",
+  "agriculture-forestry-and-other-land-use-afolu": "Agricultura, silvicultura e uso da terra (AFOLU)",
+  "industrial-processes-and-product-uses-ippu": "Processos industriais e uso de produtos (IPPU)"
 }

@@ -148,8 +148,11 @@ export default function ChatPopover({
             fontWeight="600"
             letterSpacing="wider"
             py="26px"
+            px="24px"
             bg="interactive.tertiary"
-            maxW="220px"
+            w="fit-content"
+            maxW="280px"
+            whiteSpace="nowrap"
             fontFamily="heading"
             aria-label={t("ai-expert")}
             variant="solid"

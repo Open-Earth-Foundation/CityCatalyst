@@ -508,7 +508,6 @@ export default function ReportResults({
   }
 
   // Determine what to show based on context
-  const showManageMissingSectors = context === "inventory" && !isPublic;
   const showOpenCCInventories = context === "dashboard" && !isPublic;
 
   const { data: userInfo } = api.useGetUserInfoQuery(undefined, {
@@ -523,7 +522,7 @@ export default function ReportResults({
           inventory={inventory}
           title={"tab-emission-inventory-results-title"}
           isPublic={isPublic}
-          showActionButtons={showManageMissingSectors}
+          showActionButtons={false}
         />
       )}
 

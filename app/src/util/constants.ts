@@ -1,6 +1,7 @@
 import { BsTruck } from "react-icons/bs";
-import { PiPlant, PiTrashLight } from "react-icons/pi";
+import { PiTrashLight } from "react-icons/pi";
 import { TbBuildingCommunity } from "react-icons/tb";
+import { LuWheat } from "react-icons/lu";
 import { IconBaseProps } from "react-icons";
 import { LiaIndustrySolid } from "react-icons/lia";
 import { SectorColors, SubSectorColors } from "@/lib/theme/custom-colors";
@@ -132,7 +133,7 @@ export const SECTORS: ISector[] = [
     number: 5,
     name: "afolu",
     description: "afolu-description",
-    icon: PiPlant,
+    icon: LuWheat,
     color: SectorColors.V,
     testId: "afolu-sector-card",
     inventoryTypes: {

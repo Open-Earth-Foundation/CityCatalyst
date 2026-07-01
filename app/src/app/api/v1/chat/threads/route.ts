@@ -39,16 +39,11 @@
  */
 
 import createHttpError from "http-errors";
-import { z } from "zod";
 import { NextResponse } from "next/server";
 import { createClimateAdvisorThread } from "@/backend/chat/climate-advisor";
 import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
-
-const createThreadRequest = z.object({
-  title: z.string().optional(),
-  inventory_id: z.string().uuid().optional(),
-});
+import { createChatThreadRequest } from "@/util/validation";
 
 export const POST = apiHandler(async (req, { session }) => {
   if (!session?.user?.id) {
@@ -56,7 +51,7 @@ export const POST = apiHandler(async (req, { session }) => {
   }
 
   const requestBody = await req.json().catch(() => ({}));
-  const { title, inventory_id } = createThreadRequest.parse(requestBody);
+  const { title, inventory_id } = createChatThreadRequest.parse(requestBody);
 
   logger.info(
     {

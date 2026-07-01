@@ -31,9 +31,9 @@ i18next
   });
 
 export function useTranslation(
-  _lng: string,
+  lng: string,
   ns: string,
   options: UseTranslationOptions<undefined> = {},
 ) {
-  return useTranslationOrg(ns, options);
+  return useTranslationOrg(ns, { ...options, lng });
 }

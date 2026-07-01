@@ -14,6 +14,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 import app.modules.prioritizer.orchestrator as prioritizer_orchestrator
 from app.modules.prioritizer.api import (
+    get_action_financial_feasibility_scores_data_api_client,
     get_action_pathways_data_api_client,
     get_city_data_api_client,
     get_legal_data_api_client,
@@ -22,6 +23,7 @@ from app.modules.prioritizer.api import (
 )
 from app.modules.prioritizer.internal_models import (
     Action,
+    ActionFinancialFeasibilityScoresFetchResult,
     ActionPathwaysFetchResult,
     ActionMitigationFeasibilityScoresFetchResult,
     ActionPolicyScoresFetchResult,
@@ -99,17 +101,42 @@ class MockActionMitigationFeasibilityScoresDataApiClient:
         )
 
 
+@dataclass
+class MockActionFinancialFeasibilityScoresDataApiClient:
+    """In-memory financial feasibility score client for endpoint tests."""
+
+    scores_by_action_id: dict[str, object]
+
+    def get_action_financial_feasibility_scores(
+        self, locode: str, country_code: str
+    ) -> ActionFinancialFeasibilityScoresFetchResult:
+        """Return financial feasibility scores for the requested city test case."""
+        del locode, country_code
+        return ActionFinancialFeasibilityScoresFetchResult(
+            scores_by_action_id=dict(self.scores_by_action_id)
+        )
+
+
 @pytest.fixture(autouse=True)
-def _default_mitigation_feasibility_override() -> None:
-    """Keep prioritization tests off the live feasibility API by default."""
+def _default_feasibility_overrides() -> None:
+    """Keep prioritization tests off live feasibility APIs by default."""
     app.dependency_overrides[
         get_action_mitigation_feasibility_scores_data_api_client
     ] = lambda: MockActionMitigationFeasibilityScoresDataApiClient(
         scores_by_action_id={}
     )
+    app.dependency_overrides[
+        get_action_financial_feasibility_scores_data_api_client
+    ] = lambda: MockActionFinancialFeasibilityScoresDataApiClient(
+        scores_by_action_id={}
+    )
     yield
     app.dependency_overrides.pop(
         get_action_mitigation_feasibility_scores_data_api_client,
+        None,
+    )
+    app.dependency_overrides.pop(
+        get_action_financial_feasibility_scores_data_api_client,
         None,
     )
 

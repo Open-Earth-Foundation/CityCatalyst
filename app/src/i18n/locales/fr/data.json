@@ -1271,5 +1271,10 @@
   "not-estimated-progress": "Non Estimé",
   "uncategorized": "Non classé",
   "legend": "Légende",
-  "data-already-added-connected": "Ce jeu de données n'est pas disponible, car vous disposez déjà d'un jeu de données connecté pour ce sous-secteur."
+  "data-already-added-connected": "Ce jeu de données n'est pas disponible, car vous disposez déjà d'un jeu de données connecté pour ce sous-secteur.",
+  "datasets": "jeu de données(s)",
+  "filter-by-subsector": "Filtrer par sous-secteur",
+  "refresh-datasets": "Actualiser les jeux de données",
+  "agriculture-forestry-and-other-land-use-afolu": "Agriculture, foresterie et utilisation des terres (AFOLU)",
+  "industrial-processes-and-product-uses-ippu": "Processus industriels et utilisation de produits (IPPU)"
 }

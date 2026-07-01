@@ -12,6 +12,7 @@ export const THIRD_PARTY_DATA_FILL_NO = "no";
 
 interface ThirdPartyInventoryDataStepProps {
   t: TFunction;
+  tDrawer: TFunction;
   cityId: string;
   year: number;
   inventoryType?: string;
@@ -21,6 +22,7 @@ interface ThirdPartyInventoryDataStepProps {
 
 export default function ThirdPartyInventoryDataStep({
   t,
+  tDrawer,
   cityId,
   year,
   inventoryType,
@@ -160,6 +162,7 @@ export default function ThirdPartyInventoryDataStep({
                   </Text>
                   <ThirdPartySourcesDrawer
                     t={t}
+                    tDrawer={tDrawer}
                     cityId={cityId}
                     year={year}
                     inventoryType={inventoryType}

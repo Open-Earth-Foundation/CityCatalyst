@@ -29,7 +29,7 @@ import {
   MdOutlineMenu,
 } from "react-icons/md";
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { api, useGetUserAccessStatusQuery } from "@/services/api";
 import {
   MenuContent,
@@ -51,6 +51,7 @@ import JNDrawer from "./HomePage/JNDrawer";
 import { getGhgiInventoryPath } from "@/util/ghgi-routes";
 import { getCityHomePath, getDashboardPath } from "@/util/routes";
 import { useRouteParams } from "@/hooks/useRouteParams";
+import { getParamValue } from "@/util/helpers";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -74,7 +75,9 @@ export function NavigationBar({
   restrictAccess?: boolean;
   isOrgOwner?: boolean;
 }) {
-  const { t } = useTranslation(lng, "navigation");
+  const params = useParams();
+  const activeLng = getParamValue(params.lng) ?? lng;
+  const { t } = useTranslation(activeLng, "navigation");
   const { organization, clearOrganization } = useOrganizationContext();
   const logoUrl = organization?.logoUrl;
   const isFrozen = organization != null && !organization.active;
@@ -91,23 +94,20 @@ export function NavigationBar({
       skip: isPublic,
     },
   );
-  const onChangeLanguage = (language: string) => {
-    Cookies.set("i18next", language, { path: "/", sameSite: "strict" });
-    const cookieLanguage = Cookies.get("i18next");
-
-    if (cookieLanguage) {
-      i18next.changeLanguage(cookieLanguage);
-    }
-
-    // Use Next.js router to properly handle language change with middleware
-    const currentPath = pathname || location.pathname;
-    const newPath = currentPath.replace(/^\/[a-z]{2}/, `/${language}`);
-    router.replace(newPath);
-  };
 
   const { data: session, status } = useSession();
   const { data: userInfo } = api.useGetUserInfoQuery();
   const router = useRouter();
+
+  const onChangeLanguage = async (language: string) => {
+    Cookies.set("i18next", language, { path: "/", sameSite: "strict" });
+    await i18next.changeLanguage(language);
+
+    const currentPath = pathname || location.pathname;
+    const newPath = currentPath.replace(/^\/[a-z]{2}(?=\/|$)/, `/${language}`);
+    router.replace(newPath);
+    router.refresh();
+  };
 
   // Derive the active module name from the current pathname
   const moduleName = useMemo(() => {
@@ -526,7 +526,7 @@ export function NavigationBar({
         {/* Should be shown if JN is enabled */}
         {hasFeatureFlag(FeatureFlags.JN_ENABLED) && (
           <JNDrawer
-            lng={lng}
+            lng={activeLng}
             currentCityId={currentCityId}
             organizationId={
               (organization?.organizationId ??
@@ -541,7 +541,7 @@ export function NavigationBar({
         {/* Project Drawer */}
         {!hasFeatureFlag(FeatureFlags.JN_ENABLED) && (
           <ProjectDrawer
-            lng={lng}
+            lng={activeLng}
             currentInventoryId={currentInventoryId as string}
             isOpen={isDrawerOpen}
             onClose={() => setIsDrawerOpen(false)}

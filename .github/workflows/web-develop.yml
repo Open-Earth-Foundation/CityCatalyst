@@ -12,15 +12,21 @@ on:
     paths:
       - app/**
       - k8s/cc-migrate.yml
+      - k8s/cc-ca-smoke-fixture.yml
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
+      - .github/scripts/cc-ca-post-deploy-smoke.sh
+      - .github/scripts/run-k8s-job-and-wait.sh
       - .github/workflows/web-develop.yml
   pull_request:
     paths:
       - app/**
       - k8s/cc-migrate.yml
+      - k8s/cc-ca-smoke-fixture.yml
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
+      - .github/scripts/cc-ca-post-deploy-smoke.sh
+      - .github/scripts/run-k8s-job-and-wait.sh
       - .github/workflows/web-develop.yml
 
 jobs:
@@ -493,10 +499,19 @@ jobs:
           # once it works cc-sync-catalogue-manual.yml can be removed
           # kubectl create job --from=cronjob/cc-sync-catalogue cc-sync-catalogue-manual -n default
           kubectl create -f k8s/cc-create-admin.yml -n default
+          bash .github/scripts/run-k8s-job-and-wait.sh k8s/cc-ca-smoke-fixture.yml default
           kubectl set env cronjob/citycatalyst-check-hiap-jobs \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default
+          kubectl rollout status deployment/cc-web-deploy -n default --timeout=300s
+          CA_SERVICE_NAME=climate-advisor-service-dev \
+          CA_DEPLOYMENT_NAME=climate-advisor-dev \
+          CC_EXPECTED_AUDIENCE=https://citycatalyst.openearth.dev \
+          CA_SMOKE_USER_ID="${{ vars.CA_SMOKE_USER_ID }}" \
+          CA_SMOKE_CITY_ID="${{ vars.CA_SMOKE_CITY_ID }}" \
+          CA_SMOKE_INVENTORY_ID="${{ vars.CA_SMOKE_INVENTORY_ID }}" \
+          bash .github/scripts/cc-ca-post-deploy-smoke.sh
 
   notifyDeploymentFailure:
     needs: [runTests, pushToGHCR, deployToEKS]

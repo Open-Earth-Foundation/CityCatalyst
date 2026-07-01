@@ -104,6 +104,173 @@ CA_BASE_URL=http://127.0.0.1:8080
 NEXT_PUBLIC_FEATURE_FLAGS=CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC
 ```
 
+### Reviewer Auth Concern To Cover
+
+Milan's review adds one important requirement on top of the existing service-key
+checks: every route that requires a proper CityCatalyst JWT must prove both that
+the token is present and valid, and that the authenticated token subject is the
+same user as the request is trying to act for.
+
+The critical negative case is:
+
+```text
+token minted for USER_ID
+request says user_id = OTHER_USER_ID
+expected result: reject
+```
+
+So the test pack should not stop at "can we mint a token for user A" or "does a
+route reject a missing token." It should also prove that a valid token for user
+A cannot be reused to make requests for user B.
+
+### Aligned Decisions
+
+This test pack should follow the agreed shape:
+
+- Keep `3` layers overall:
+  1. static deployment contract test
+  2. near-deployment pull-request auth contract test
+  3. post-deploy runtime smoke
+- In the PR layer, stay as close as possible to deployment behavior.
+- Cover both sides of the CC/CA boundary:
+  - app-side internal CA HTTP routes
+  - Climate Advisor client and route surface
+- On the CA side, cover every route that requires the scoped CityCatalyst bearer
+  JWT. Today that means the Stationary Energy draft route surface; any new CA
+  route that adopts the same scoped JWT contract should enter this matrix.
+- Use true signed JWTs where possible.
+- If an auth mismatch currently exposes a real issue, surface it in the test
+  instead of smoothing it over. Do not change the expected assertion just to make
+  the suite pass; decide any code fix explicitly once the issue is visible.
+- Keep the cases in a reusable matrix and document every auth mismatch case.
+- Do not expand this pass to generic CA `/v1/threads` and `/v1/messages` yet.
+
+### Reusable Auth Mismatch Matrix
+
+Apply the same matrix to the app-side internal CA routes and to the CA
+Stationary Energy draft route surface.
+
+| Case | App internal CA routes | CA Stationary Energy draft routes | Notes |
+| ---- | ---------------------- | --------------------------------- | ----- |
+| Happy path | succeeds | succeeds | use real seeded user, city, and inventory |
+| Missing bearer token | reject | reject | expected `401` |
+| Malformed `Authorization` header | reject | reject | expected `400` or `401` per route contract; not `500` |
+| Invalid JWT | reject | reject through scoped CC auth failure | if this currently returns `500`, keep it visible as a real bug |
+| Expired JWT | reject | reject through scoped CC auth failure | do not treat refresh-only behavior as a substitute for auth validation |
+| JWT subject and request `user_id` mismatch | reject | reject | expected `403` |
+| Wrong service key or service name | reject | n/a at direct CA route surface | app internal CA routes only |
+| Wrong city, inventory, or draft ownership | reject | reject | expected permission failure |
+
+### Additional Token-Exchange Coverage
+
+For the CC/CA connection specifically, also cover the token handoff itself, not
+only the downstream route authorization.
+
+1. CityCatalyst must reject signed-but-wrong service JWT claims.
+   - Build tokens signed with `VERIFICATION_TOKEN_SECRET` but with:
+     - wrong `aud`
+     - wrong `iss`
+     - missing or empty `sub`
+   - Send them to the internal CA capability routes with otherwise valid
+     service headers.
+   - Expected result: reject clearly, not `500`.
+   - If current behavior accepts a token with the right signature but wrong
+     `aud` or `iss`, surface that as an auth-contract issue.
+
+2. CityCatalyst bridge routes must validate the token response before calling
+   Climate Advisor.
+   - Stub `/api/v1/internal/ca/user-token` to return `200` with malformed
+     token payloads:
+     - no `access_token`
+     - `access_token: null`
+     - `token_type` other than `Bearer`
+     - missing, zero, negative, or non-numeric `expires_in`
+   - Exercise CC routes that proxy to CA, for example
+     `/api/v1/stationary-energy-drafts/start`.
+   - Expected result: CC fails before making the CA request.
+   - Assert CA is not called with `Authorization: Bearer undefined`,
+     `Authorization: Bearer null`, or another malformed bearer value.
+
+3. URL normalization must work in both directions.
+   - CC to CA:
+     - `CA_BASE_URL=http://climate-advisor-service-test/`
+     - path `/v1/stationary-energy-drafts/start`
+     - expected request URL:
+       `http://climate-advisor-service-test/v1/stationary-energy-drafts/start`
+   - CC to its own token endpoint:
+     - `HOST=https://cc.example/`
+     - expected token URL:
+       `https://cc.example/api/v1/internal/ca/user-token/`
+   - CA to CC:
+     - `CC_BASE_URL=https://cc.example/`
+     - expected refresh URL:
+       `https://cc.example/api/v1/internal/ca/user-token`
+   - These tests catch deploy failures where a trailing slash creates `//api` or
+     `//v1` paths that behave differently through ingress or service routing.
+
+4. Climate Advisor must validate the token response it receives from CC.
+   - `CityCatalystClient.refresh_token(USER_ID)` should fail if CC returns:
+     - no `access_token`
+     - `token_type` other than `Bearer`
+     - missing or non-positive `expires_in`
+     - a JWT whose `sub` does not equal the requested `USER_ID`
+     - unexpected `iss` or `aud`
+   - This is the client-side mirror of Milan's point: CA should not silently
+     accept a token for a different user and discover the mismatch only later.
+
+5. Token issuance must remain user-scoped while inventory access is enforced by
+   capability checks.
+   - Confirm `/api/v1/internal/ca/user-token` can issue a token for an existing
+     `USER_ID` when called with the correct `X-CA-Service-Key`.
+   - Confirm the returned JWT does not claim inventory access just because
+     `inventory_id` was passed to the token route.
+   - Use that token against
+     `/api/v1/internal/ca/capabilities/allowed-capabilities` for an inventory
+     the user cannot access.
+   - Expected result: token issuance may succeed, but the capability check must
+     reject the inaccessible inventory with a clear permission failure.
+   - This prevents false confidence from "the token minted successfully" when
+     the real deployment failure is inventory or city scope authorization.
+
+6. Nonexistent or deleted user token exchange must fail clearly.
+   - CA calls `CityCatalystClient.refresh_token(DELETED_USER_ID)` or
+     `refresh_token(UNKNOWN_USER_ID)`.
+   - CC `/api/v1/internal/ca/user-token` returns `404`.
+   - CA raises `TokenRefreshError` and preserves the HTTP status in the error.
+   - Assert CA does not retry downstream capability calls after a failed token
+     exchange for a nonexistent user.
+
+7. Refresh-and-retry behavior must keep the same user binding.
+   - Start with an expired token for `USER_ID`.
+   - Make a CA client call that should refresh on expiry or first `401`.
+   - Assert the refresh request asks CC for `USER_ID`, not another user.
+   - Assert the retried request uses the refreshed bearer token.
+   - Assert final `401` or `403` responses are preserved instead of hidden by
+     generic retry errors.
+
+8. Public CC bridge routes must derive the token user from the CC session.
+   - Exercise the CC Stationary Energy draft proxy routes as logged-in
+     `USER_ID`.
+   - Assert CC calls `/api/v1/internal/ca/user-token` with
+     `user_id = session.user.id`.
+   - Assert CC forwards `user_id = session.user.id` to CA and does not trust a
+     client-supplied `user_id`.
+   - This covers the browser-to-CC-to-CA side of the connection, while the
+     internal CA capability tests cover the CA-to-CC side.
+
+9. Add a route-inventory guard for token-exchange coverage.
+   - Every CC route under `/api/v1/internal/ca/capabilities/**` that imports
+     `requireRequestUser` must either appear in the auth matrix or be explicitly
+     exempted with a reason.
+   - Current CC internal CA capability routes to cover:
+     - `allowed-capabilities`
+     - `ghgi/stationary-energy/load-context`
+     - `ghgi/stationary-energy/commit-accepted`
+     - `ghgi/stationary-energy/list-notation-keys` if included in this branch
+     - `ghgi/stationary-energy/commit-notation-keys` if included in this branch
+   - Every CA route that requires the scoped CC bearer token must either appear
+     in the matrix or be explicitly exempted with a reason.
+
 ### App HTTP Contract Test
 
 Create an app-side HTTP test, for example:
@@ -119,6 +286,7 @@ Seed a fixed fixture before the tests:
 
 ```text
 USER_ID=<fixed UUID>
+OTHER_USER_ID=<fixed UUID>
 CITY_ID=<fixed UUID>
 INVENTORY_ID=<fixed UUID>
 ```
@@ -126,10 +294,12 @@ INVENTORY_ID=<fixed UUID>
 The fixture should include:
 
 - a user with `userId = USER_ID`
+- a second user with `userId = OTHER_USER_ID`
 - an organization
 - a project
 - a city with `cityId = CITY_ID`
 - an inventory with `inventoryId = INVENTORY_ID` and `cityId = CITY_ID`
+- the membership and permissions needed for `USER_ID` to access that inventory
 
 Test cases:
 
@@ -153,7 +323,15 @@ Test cases:
      - `iss === "climate-advisor-service"`
      - `issued_by === "climate-advisor-service"`
 
-4. `POST /api/v1/internal/ca/capabilities/allowed-capabilities` rejects a wrong
+4. `POST /api/v1/internal/ca/capabilities/allowed-capabilities` rejects a
+   malformed or invalid bearer JWT.
+   - Use valid service headers.
+   - Header: `Authorization: Bearer not-a-real-jwt`
+   - Expected status: `401`
+   - If this currently returns `500`, surface that as a real auth-contract issue
+     before treating the auth contract as complete.
+
+5. `POST /api/v1/internal/ca/capabilities/allowed-capabilities` rejects a wrong
    `X-Service-Key`.
    - Use the JWT from the token route.
    - Headers:
@@ -162,7 +340,7 @@ Test cases:
      - `X-Service-Key: wrong`
    - Expected status: `401`
 
-5. `POST /api/v1/internal/ca/capabilities/allowed-capabilities` rejects a wrong
+6. `POST /api/v1/internal/ca/capabilities/allowed-capabilities` rejects a wrong
    `X-Service-Name`.
    - Headers:
      - `Authorization: Bearer <token>`
@@ -170,7 +348,16 @@ Test cases:
      - `X-Service-Key: ci-shared-service-key`
    - Expected status: `401`
 
-6. `POST /api/v1/internal/ca/capabilities/allowed-capabilities` accepts a valid
+7. `POST /api/v1/internal/ca/capabilities/allowed-capabilities` rejects a valid
+   service token when the JWT subject and request `user_id` do not match.
+   - Mint the token for `USER_ID`.
+   - Send `body.user_id = OTHER_USER_ID`.
+   - Use valid service headers.
+   - Expected status: `403`
+   - Expected error indicates the authenticated service token user does not
+     match the request user.
+
+8. `POST /api/v1/internal/ca/capabilities/allowed-capabilities` accepts a valid
    service token and matching service key.
    - Headers:
      - `Authorization: Bearer <token>`
@@ -191,9 +378,31 @@ Test cases:
    - Expected status: `200`
    - Expected response includes `ghgi.stationary_energy.load_context`
 
+9. `POST /api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context`
+   rejects a valid token for `USER_ID` when the request body says
+   `OTHER_USER_ID`.
+   - Use valid service headers.
+   - Use a minimal valid load-context request body.
+   - Expected status: `403`
+
+10. `POST /api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context`
+    accepts the same request when `body.user_id = USER_ID`.
+    - Expected status: `200`
+
+11. `POST /api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted`
+    rejects a valid token for `USER_ID` when the request body says
+    `OTHER_USER_ID`.
+    - Use valid service headers.
+    - Use a minimal valid commit request body.
+    - Expected status: `403`
+
+12. `POST /api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted`
+    accepts the same request when `body.user_id = USER_ID`.
+    - Expected status: `200`
+
 This proves the real CityCatalyst route stack: HTTP, environment variables, JWT
-signing, `apiHandler`, service headers, database user lookup, and the permission
-gate.
+signing, `apiHandler`, service headers, database user lookup, JWT subject
+binding to the request user, and the permission gate.
 
 ### Climate Advisor Client Contract Test
 
@@ -212,6 +421,7 @@ Environment:
 CC_BASE_URL=http://127.0.0.1:3000/
 CC_API_KEY=ci-shared-service-key
 CA_AUTH_CONTRACT_USER_ID=<same USER_ID>
+CA_AUTH_CONTRACT_OTHER_USER_ID=<same OTHER_USER_ID>
 CA_AUTH_CONTRACT_CITY_ID=<same CITY_ID>
 CA_AUTH_CONTRACT_INVENTORY_ID=<same INVENTORY_ID>
 ```
@@ -235,6 +445,65 @@ Test cases:
    - Call `refresh_token(...)`.
    - Assert `TokenRefreshError`.
    - Assert the error includes `HTTP 401`.
+
+4. A token minted for `CA_AUTH_CONTRACT_USER_ID` cannot be reused for
+   `CA_AUTH_CONTRACT_OTHER_USER_ID`.
+   - Call `refresh_token(CA_AUTH_CONTRACT_USER_ID)`.
+   - Then call `get_stationary_energy_allowed_capabilities(...)` with:
+     - `user_id=CA_AUTH_CONTRACT_OTHER_USER_ID`
+     - the same `city_id` and `inventory_id`
+     - the token minted for `CA_AUTH_CONTRACT_USER_ID`
+   - Assert CityCatalyst rejects the request with a real `403`.
+   - This proves the CC side enforces JWT subject binding instead of trusting
+     the request body alone.
+
+### Climate Advisor Route Subject-Binding Regression Test
+
+Extend:
+
+```text
+climate-advisor/service/tests/test_stationary_energy_drafts.py
+```
+
+Add route-surface regression checks for the Stationary Energy draft endpoints:
+
+1. `POST /v1/stationary-energy-drafts/start` rejects a bearer token for
+   `USER_ID` when the payload says `user_id=OTHER_USER_ID`.
+   - Expected status: `403`
+
+2. `GET /v1/stationary-energy-drafts`,
+   `GET /v1/stationary-energy-drafts/resume`, and
+   `GET /v1/stationary-energy-drafts/{draft_run_id}` reject the same mismatch.
+   - Expected status: `403`
+
+3. `POST /v1/stationary-energy-drafts/{draft_run_id}/retry`,
+   `POST /v1/stationary-energy-drafts/{draft_run_id}/review`, and
+   `POST /v1/stationary-energy-drafts/{draft_run_id}/save` reject the same
+   mismatch after seeding a ready draft for `USER_ID`.
+   - Expected status: `403`
+
+4. The Stationary Energy draft endpoints reject a missing `Authorization`
+   header.
+   - Expected status: `401`
+
+5. The Stationary Energy draft endpoints reject a malformed `Authorization`
+   header that is not `Bearer <token>`.
+   - Expected status: `401`
+
+These tests prove the CA route surface continues to pass through and enforce
+the CC user-binding contract instead of only checking that some token exists.
+
+### Scope Note
+
+Apply the Milan user-binding test matrix to:
+
+- the CC internal capability routes
+- the CA Stationary Energy draft routes
+
+Do not extend the same expectation to generic CA `/v1/threads` and
+`/v1/messages` yet. Those routes currently accept `payload.user_id` and optional
+context tokens, but they do not enforce a route-level bearer-token subject match
+in the same way as the Stationary Energy draft flow.
 
 ### Small Climate Advisor Unit Checks To Keep
 
@@ -262,6 +531,11 @@ Extend `climate-advisor/service/tests/test_citycatalyst_client.py` with:
      - `X-Service-Key == "test-api-key"`
      - `Authorization == "Bearer jwt-token"` when a token is passed.
 
+4. Keep lightweight unsigned JWT fixtures only for CA-local unit scope where the
+   CC boundary is mocked.
+   - Do not use those fixtures as a replacement for the real signed-JWT app
+     HTTP contract tests.
+
 ### CI Job Shape
 
 Add one focused pull-request job, separate from the broad test suites:
@@ -282,6 +556,10 @@ cc-ca-auth-contract
 This is the closest pull-request-safe version of the deployment auth test. It
 uses a real CC HTTP server, real CA client, real DB-backed user and inventory,
 real JWT signing and verification, and real service-auth headers.
+
+Yes, this should work in PR tests. The limitation is not JWT signing itself; the
+limitation is that PR cannot prove live cluster DNS, deployed secret values, or
+post-rollout pod state.
 
 It still cannot prove EKS DNS, Kubernetes Secret values, or public host routing.
 Those still require a post-deploy smoke check in the deployment workflow.

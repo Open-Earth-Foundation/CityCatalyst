@@ -1271,5 +1271,7 @@
   "on-road-transportation-fuel-type": "Fuel type",
   "water-transportation-outside-fuel-type": "Fuel type",
   "legend": "Legend",
-  "data-already-added-connected": "This data set is not available because you already have a connected one for this sub-sector."
+  "data-already-added-connected": "This data set is not available because you already have a connected one for this sub-sector.",
+  "agriculture-forestry-and-other-land-use-afolu": "Agriculture, forestry and land use (AFOLU)",
+  "industrial-processes-and-product-uses-ippu": "Industrial processes and product use (IPPU)"
 }

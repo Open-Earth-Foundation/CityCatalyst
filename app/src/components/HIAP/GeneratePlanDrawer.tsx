@@ -245,6 +245,7 @@ export const GeneratePlanDrawer = ({
                       fontWeight="bold"
                       color="content.primary"
                       pb="12px"
+                      textTransform="capitalize"
                     >
                       {action.name} - {t("implementation-plan")}
                     </HeadlineMedium>

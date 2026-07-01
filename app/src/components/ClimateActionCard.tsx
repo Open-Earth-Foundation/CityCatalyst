@@ -97,6 +97,7 @@ export const ClimateActionCard = ({
           lineClamp={2}
           color="content.secondary"
           minHeight="56px"
+          textTransform="capitalize"
         >
           {action.name}
         </TitleLarge>

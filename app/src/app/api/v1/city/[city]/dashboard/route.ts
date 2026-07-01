@@ -211,7 +211,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
     city: cityWithRelations as CityDashboardResponse["city"],
     inventories: inventories.map((inv) => ({
       ...inv.toJSON(),
-      totalEmissions: totalEmissionsByInventory[inv.inventoryId] ?? inv.totalEmissions ?? null,
+      totalEmissions: totalEmissionsByInventory[inv.inventoryId] ?? inv.totalEmissions ?? undefined,
     })),
     population:
       populationData &&

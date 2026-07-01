@@ -14,7 +14,7 @@ pytest==9.0.3
 scipy==1.17.*
 shapely==2.1.2
 SQLAlchemy==2.0.51
-tqdm==4.67.*
+tqdm==4.68.*
 uvicorn==0.49.0
 xarray==2026.*
 geojson==3.2.*

@@ -48,8 +48,6 @@ import {
   useDisclosure,
   useSteps,
   VStack,
-  Portal,
-  Select,
   createListCollection,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
@@ -75,6 +73,7 @@ import {
 } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { SourceDrawer } from "@/components/GHGI/data-step/SourceDrawer";
+import { SubsectorDatasetFilterSelect } from "@/components/GHGI/inventory-pages/SubsectorDatasetFilterSelect";
 import type {
   DataSourceWithRelations,
   DataStep,
@@ -991,50 +990,12 @@ export default function AddDataSteps() {
             {dataSources && (
               <HStack justify="space-between" py="48px">
                 <Box>
-                  {/* filter by subsector dropdown */}
-                  <Select.Root
+                  <SubsectorDatasetFilterSelect
                     collection={subsectorCollection}
-                    size="sm"
-                    width="320px"
                     value={selectedSubsector}
-                    onValueChange={(event) => setSelectedSubsector(event.value)}
-                  >
-                    <Select.HiddenSelect />
-                    <Select.Label
-                      fontFamily="heading"
-                      fontWeight="semibold"
-                      fontSize="label.lg"
-                    >
-                      {t("filter-by-subsector")}
-                    </Select.Label>
-                    <Select.Control>
-                      <Select.Trigger
-                        p="12px 16px"
-                        borderRadius="4px"
-                        border="1px solid"
-                        borderColor="border.neutral"
-                      >
-                        <Select.ValueText placeholder={t("select-subsector")} />
-                      </Select.Trigger>
-                      <Select.IndicatorGroup>
-                        <Select.Indicator>
-                          <Icon as={MdArrowDropDown} boxSize={6} />
-                        </Select.Indicator>
-                      </Select.IndicatorGroup>
-                    </Select.Control>
-                    <Portal>
-                      <Select.Positioner>
-                        <Select.Content gap="12px">
-                          {subsectorCollection.items.map((item) => (
-                            <Select.Item item={item} key={item.value}>
-                              {item.label}
-                              <Select.ItemIndicator />
-                            </Select.Item>
-                          ))}
-                        </Select.Content>
-                      </Select.Positioner>
-                    </Portal>
-                  </Select.Root>
+                    onValueChange={setSelectedSubsector}
+                    t={t}
+                  />
                 </Box>
                 <Box>
                   <Button

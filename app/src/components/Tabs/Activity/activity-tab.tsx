@@ -558,6 +558,12 @@ const ActivityTab: FC<ActivityTabProps> = ({
             t={t}
             inventoryValue={externalInventoryValue as unknown as InventoryValue}
             numberFormat={userInfo?.numberFormat}
+            onDisconnect={(datasourceId) => {
+              setNewlyConnectedDataSourceIds((prev) =>
+                prev.filter((id) => id !== datasourceId),
+              );
+              refetchDataSources();
+            }}
           />
         </Box>
       )}
@@ -597,7 +603,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
         </>
       )}
 
-      {matchingSources.length > 0 && (
+      {(isDataSourcesLoading || matchingSources.length > 0) && (
         <Box mt={12} borderTop="1px solid" borderColor="border.neutral" pt={8}>
           <Heading fontSize="title.lg" mb={2}>
             {t("browse-and-connect-external-datasets-heading")}
@@ -605,6 +611,11 @@ const ActivityTab: FC<ActivityTabProps> = ({
           <Text color="content.tertiary" mb={8}>
             {t("browse-and-connect-external-datasets-description")}
           </Text>
+          {isDataSourcesLoading ? (
+            <Center py="48px">
+              <Spinner size="xl" color="interactive.secondary" />
+            </Center>
+          ) : (
           <SimpleGrid
             columns={{
               base: 1,
@@ -853,6 +864,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
               );
             })}
           </SimpleGrid>
+          )}
         </Box>
       )}
 

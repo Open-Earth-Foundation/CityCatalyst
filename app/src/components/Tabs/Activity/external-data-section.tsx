@@ -47,10 +47,12 @@ const ExternalDataSection = ({
   t,
   inventoryValue,
   numberFormat,
+  onDisconnect,
 }: {
   t: TFunction;
   inventoryValue: InventoryValue;
   numberFormat?: string;
+  onDisconnect?: (datasourceId: string) => void;
 }) => {
   const source = inventoryValue.dataSource;
   const [disconnectThirdPartyData, { isLoading: isDisconnectLoading }] =
@@ -81,6 +83,7 @@ const ExternalDataSection = ({
       type: "info",
       duration: 5000,
     });
+    onDisconnect?.(inventoryValue.datasourceId!);
   };
 
   if (!source) {
@@ -331,7 +334,7 @@ const ExternalDataSection = ({
         sector={inventoryValue.sector}
         isOpen={isSourceDrawerOpen}
         onClose={onSourceDrawerClose}
-        onConnectClick={() => {}}
+        onConnectClick={() => { }}
         isConnectLoading={false}
         t={t}
         numberFormat={numberFormat}

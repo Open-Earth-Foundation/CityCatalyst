@@ -103,6 +103,8 @@
   "manually-added": "Manually added data",
   "check-data-heading": "Explore Relevant Datasets to Connect Into Your Inventory",
   "check-data-details": "Review and integrate automatically sourced data relevant to your city's GHG inventory.",
+  "browse-and-connect-external-datasets-heading": "Browse and connect external datasets to your GHG emissions inventory",
+  "browse-and-connect-external-datasets-description": "You can review and integrate emissions data from external providers directly into your GHG emissions inventory.",
   "no-data-sources": "No External Data Sources Available",
   "no-data-sources-description": "It seems like there are no external sources available at this moment.<1></1>If you know any, <3>please report this</3> and we’ll prioritize your request.",
   "data-quality": "Data Quality",

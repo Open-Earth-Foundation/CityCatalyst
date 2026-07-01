@@ -67,6 +67,9 @@ import {
   MdOutlineCheckCircle,
   MdOutlineEdit,
   MdOutlineHomeWork,
+  MdOutlineDelete,
+  MdOutlineFactory,
+  MdOutlineLocalShipping,
   MdRefresh,
   MdSearch,
   MdWarning,
@@ -92,6 +95,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Tag } from "@/components/ui/tag";
 import { TbWorldSearch } from "react-icons/tb";
+import { LuWheat } from "react-icons/lu";
 import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
@@ -1004,8 +1008,8 @@ export default function AddDataSteps() {
                     bgColor="border.neutral"
                     aria-label="Refresh"
                     fontSize="button.md"
-                    py="16px"
-                    px="24px"
+                    w="full"
+                    h="50px"
                     loading={areDataSourcesFetching}
                     onClick={() =>
                       isFrozenCheck() ? null : onSearchDataSourcesClicked()
@@ -1078,7 +1082,11 @@ export default function AddDataSteps() {
                           {groupedByScope.map(([scopeName, scopeSources]) => (
                             <Box key={`${subSectorId}-${scopeName}`}>
                               <SimpleGrid
-                                templateColumns="repeat(3, 1fr)"
+                                templateColumns={{
+                                  base: "1fr",
+                                  md: "repeat(2, 1fr)",
+                                  lg: "repeat(3, 1fr)",
+                                }}
                                 gap="16px"
                               >
                                 {scopeSources.map(({ source, data }) => {
@@ -1099,31 +1107,88 @@ export default function AddDataSteps() {
                                       shadow="none"
                                       _hover={{ shadow: "xl" }}
                                       transition="all 300ms"
-                                      height="488px"
-                                      w="337px"
+                                      w="full"
                                       p="24px"
-                                      spaceY="16px"
+                                      gap="4px"
                                     >
-                                      <Card.Header p="0" spaceY="8px">
+                                      <Card.Header
+                                        p="0"
+                                        display="flex"
+                                        flexDirection="column"
+                                        gap="0"
+                                      >
                                         <Icon
-                                          as={MdOutlineHomeWork}
+                                          as={
+                                            {
+                                              I: MdOutlineHomeWork,
+                                              II: MdOutlineLocalShipping,
+                                              III: MdOutlineDelete,
+                                              IV: MdOutlineFactory,
+                                              V: LuWheat,
+                                            }[
+                                              currentStep.referenceNumber
+                                            ] ?? MdOutlineHomeWork
+                                          }
                                           boxSize={9}
                                           color="content.tertiary-light"
+                                          mb="10px"
                                         />
+                                        <Flex
+                                          direction="row"
+                                          align="center"
+                                          gap="8px"
+                                        >
+                                          <Badge
+                                            variant="plain"
+                                            fontSize="label.sm"
+                                            fontWeight="medium"
+                                            fontFamily="heading"
+                                            letterSpacing="widest"
+                                            bg="background.graySubtle"
+                                            color="content.secondary"
+                                            px="8px"
+                                            py="1px"
+                                            borderRadius="md"
+                                            lineHeight="1.2"
+                                            borderWidth="0"
+                                          >
+                                            {source.subCategory
+                                              ?.referenceNumber ||
+                                              source.subSector?.referenceNumber}
+                                          </Badge>
+                                          <Tooltip
+                                            showArrow
+                                            content={
+                                              source.subSector?.subsectorName
+                                            }
+                                          >
+                                            <Text
+                                              fontSize="overline"
+                                              fontWeight="bold"
+                                              color="content.primary"
+                                              textTransform="uppercase"
+                                              letterSpacing="widest"
+                                              lineHeight="24"
+                                              fontFamily="heading"
+                                              lineClamp={1}
+                                            >
+                                              {source.subSector?.subsectorName}
+                                            </Text>
+                                          </Tooltip>
+                                        </Flex>
                                         <Heading
-                                          size="sm"
+                                          fontSize="title.md"
                                           lineClamp={2}
                                           minHeight={10}
+                                          mt="6px"
+                                          lineHeight={24}
                                         >
                                           {getTranslationFromDict(
                                             source.datasetName,
                                           )}
                                         </Heading>
-                                        <Text
-                                          fontSize="label.md"
-                                          fontWeight="semibold"
-                                        >
-                                          {t("by-data-source")}:{" "}
+                                        <Text fontSize="label.md" mt="4px">
+                                          {t("by-data-source")}{" "}
                                           <Link
                                             href={source.publisher?.url}
                                             target="_blank"
@@ -1141,14 +1206,15 @@ export default function AddDataSteps() {
                                       >
                                         <Flex
                                           direction="row"
-                                          mb={4}
+                                          mb={0}
                                           wrap="wrap"
                                           gap={2}
                                         >
                                           {!isSourceConnected(source) &&
-                                            !source.inventoryValues?.length && (
+                                            !source.inventoryValues
+                                              ?.length && (
                                               <Text
-                                                fontSize="headline.md"
+                                                fontSize="display.sm"
                                                 fontWeight="semibold"
                                               >
                                                 {convertKgToTonnes(
@@ -1159,11 +1225,15 @@ export default function AddDataSteps() {
                                                 )}
                                               </Text>
                                             )}
-                                          <Box>
+                                          <Flex
+                                            direction="row"
+                                            gap="4px"
+                                            flexWrap="nowrap"
+                                          >
                                             <Badge
-                                              fontSize={11}
-                                              fontWeight="semibold"
+                                              fontSize={12}
                                               borderColor="border.overlay"
+                                              w="fit-content"
                                             >
                                               <Icon
                                                 as={DataCheckIcon}
@@ -1177,9 +1247,9 @@ export default function AddDataSteps() {
                                             </Badge>
                                             {source.subCategory?.scope && (
                                               <Badge
-                                                fontSize={11}
-                                                fontWeight="semibold"
+                                                fontSize={12}
                                                 borderColor="border.overlay"
+                                                w="fit-content"
                                               >
                                                 <Icon
                                                   as={FiTarget}
@@ -1193,7 +1263,7 @@ export default function AddDataSteps() {
                                                 }
                                               </Badge>
                                             )}
-                                          </Box>
+                                          </Flex>
                                         </Flex>
                                         <Text
                                           textOverflow="ellipsis"
@@ -1216,6 +1286,7 @@ export default function AddDataSteps() {
                                           fontSize="body.md"
                                           lineHeight="20px"
                                           fontWeight="regular"
+                                          marginTop="8px"
                                         >
                                           {getTranslationFromDict(
                                             source.datasetDescription,
@@ -1224,27 +1295,45 @@ export default function AddDataSteps() {
                                               source.methodologyDescription,
                                             )}
                                         </Text>
-                                        <VStack w="full">
+                                        <VStack w="full" mb="16px">
                                           <Link
                                             textDecoration="underline"
                                             mt={4}
-                                            mb={6}
+                                            mb={2}
                                             onClick={() =>
                                               onSourceClick(source, data)
                                             }
                                             alignSelf="flex-start"
                                             fontSize="label.lg"
-                                            fontWeight="semibold"
+                                            fontWeight="medium"
+                                            letterSpacing="wide"
                                           >
                                             {t("see-more-details")}
                                           </Link>
                                           {isSourceConnected(source) &&
                                           source.inventoryValues?.length ? (
                                             <Button
-                                              variant="solid"
+                                              variant="outline"
                                               w="full"
-                                              bg="content.alternative"
-                                              fontWeight="normal"
+                                              h="50px"
+                                              bg={
+                                                isHovered
+                                                  ? "semantic.dangerOverlay"
+                                                  : "semantic.successOverlay"
+                                              }
+                                              borderColor={
+                                                isHovered
+                                                  ? "semantic.danger"
+                                                  : "semantic.success"
+                                              }
+                                              borderWidth="1px"
+                                              color={
+                                                isHovered
+                                                  ? "semantic.danger"
+                                                  : "semantic.success"
+                                              }
+                                              fontWeight="semibold"
+                                              fontSize="14px"
                                               onClick={() =>
                                                 isFrozenCheck()
                                                   ? null
@@ -1279,12 +1368,12 @@ export default function AddDataSteps() {
                                               <Button
                                                 variant="outline"
                                                 w="full"
-                                                borderWidth="1px"
-                                                py="16px"
-                                                bgColor="background.backgroundDisabled"
-                                                border="none"
+                                                h="50px"
+                                                borderWidth="0"
+                                                bgColor="background.graySubtle"
                                                 disabled
                                                 color="interactive.control"
+                                                fontWeight="semibold"
                                                 fontSize="14px"
                                               >
                                                 {t("connect-data")}
@@ -1298,9 +1387,13 @@ export default function AddDataSteps() {
                                             <Button
                                               variant="outline"
                                               w="full"
+                                              h="50px"
                                               borderWidth="1px"
-                                              py="16px"
+                                              borderColor="border.overlay"
                                               bgColor="background.neutral"
+                                              color="interactive.secondary"
+                                              fontWeight="semibold"
+                                              fontSize="14px"
                                               onClick={() =>
                                                 onConnectClick(source)
                                               }
@@ -1309,7 +1402,6 @@ export default function AddDataSteps() {
                                                 source.datasourceId ===
                                                   connectingDataSourceId
                                               }
-                                              fontSize="14px"
                                             >
                                               {t("connect-data")}
                                             </Button>

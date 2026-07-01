@@ -17,7 +17,7 @@ import {
 import { TFunction } from "i18next";
 
 interface UseChatProps {
-  inventoryId: string;
+  inventoryId?: string;
   t: TFunction;
 }
 
@@ -122,7 +122,8 @@ export function useChat({ inventoryId, t }: UseChatProps) {
         },
         async (data) => {
           const result = await createThreadId({
-            inventoryId: data.inventoryId || inventoryId,
+            // Legacy assistant threads require an inventory id in the URL.
+            inventoryId: data.inventoryId || inventoryId || "",
             content: data.content || t("initial-message"),
           }).unwrap();
           return result;

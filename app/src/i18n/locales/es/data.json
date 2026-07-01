@@ -1284,5 +1284,7 @@
   "data-already-added-connected": "Este conjunto de datos no está disponible porque ya tiene uno conectado para este subsector.",
   "datasets": "conjunto de datos(s)",
   "filter-by-subsector": "Filtrar por subsector",
-  "refresh-datasets": "Actualizar conjuntos de datos"
+  "refresh-datasets": "Actualizar conjuntos de datos",
+  "agriculture-forestry-and-other-land-use-afolu": "Agricultura, silvicultura y uso de la tierra (AFOLU)",
+  "industrial-processes-and-product-uses-ippu": "Procesos industriales y uso de productos (IPPU)"
 }

@@ -203,6 +203,7 @@ jobs:
           kubectl set env deployment/cc-web-deploy \
             SMTP_USER=${{secrets.SMTP_USER}} \
             SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}} \
+            "SMTP_FROM_EMAIL=info@citycatalyst.io" \
             NEXTAUTH_SECRET=${{secrets.NEXTAUTH_SECRET}} \
             RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}} \
             VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}} \

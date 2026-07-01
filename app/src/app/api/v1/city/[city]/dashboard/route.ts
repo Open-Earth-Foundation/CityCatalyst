@@ -15,6 +15,7 @@ import type {
 import { Inventory } from "@/models/Inventory";
 import type { AppSession } from "@/lib/auth";
 import { logger } from "@/services/logger";
+import { QueryTypes } from "sequelize";
 
 /**
  * @swagger
@@ -159,6 +160,28 @@ export const GET = apiHandler(async (req, { params, session }) => {
   const [ghgiData, hiapData, ccraData, organization] =
     await Promise.all(widgetPromises);
 
+  // Compute totalEmissions for all inventories from InventoryValue.co2eq sums
+  let totalEmissionsByInventory: Record<string, number | null> = {};
+  if (inventories.length > 0) {
+    const inventoryIds = inventories.map((inv) => inv.inventoryId);
+    const emissionRows = (await db.sequelize!.query(
+      `SELECT inventory_id,
+        CASE WHEN COUNT(*) > 0 THEN COALESCE(SUM(co2eq), 0) ELSE NULL END AS sum
+       FROM "InventoryValue"
+       WHERE inventory_id IN (:inventoryIds)
+       GROUP BY inventory_id`,
+      {
+        replacements: { inventoryIds },
+        type: QueryTypes.SELECT,
+        raw: true,
+      },
+    )) as { inventory_id: string; sum: number | null }[];
+
+    for (const row of emissionRows) {
+      totalEmissionsByInventory[row.inventory_id] = row.sum;
+    }
+  }
+
   // Fetch city with project/organization data
   const cityWithRelations = await db.models.City.findByPk(cityId, {
     include: [
@@ -186,7 +209,10 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
   const response: CityDashboardResponse = {
     city: cityWithRelations as CityDashboardResponse["city"],
-    inventories: inventories.map((inv) => inv.toJSON()),
+    inventories: inventories.map((inv) => ({
+      ...inv.toJSON(),
+      totalEmissions: totalEmissionsByInventory[inv.inventoryId] ?? inv.totalEmissions ?? null,
+    })),
     population:
       populationData &&
       populationData.year !== null &&

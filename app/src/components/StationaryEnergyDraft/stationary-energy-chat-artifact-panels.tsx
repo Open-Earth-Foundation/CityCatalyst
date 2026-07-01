@@ -340,8 +340,7 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
       return;
     }
 
-    const chatJustFinished =
-      previousLoadingAction === "chat" && state.loadingAction !== "chat";
+    const chatJustFinished = previousLoadingAction === "chat";
     const focusableWidgetPresented =
       lastChatMessage?.kind !== undefined &&
       lastChatMessage.kind !== "text" &&

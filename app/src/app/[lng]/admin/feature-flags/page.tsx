@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Card,
@@ -15,13 +15,9 @@ import {
   Table,
 } from "@chakra-ui/react";
 import { MdCheck, MdClose, MdFlag, MdRefresh } from "react-icons/md";
-import { useTranslation } from "@/i18n/client";
-import { useAdminGuard } from "@/hooks/useAdminGuard";
-import ProgressLoader from "@/components/ProgressLoader";
 import {
   FeatureFlags,
   listQAFeatureFlags,
-  getFeatureFlags,
   hasFeatureFlag,
 } from "@/util/feature-flags";
 
@@ -31,23 +27,15 @@ interface FlagStatus {
   source: "env" | "qa_override";
 }
 
-export default function FeatureFlagsPage({
-  params,
-}: {
-  params: Promise<{ lng: string }>;
-}) {
-  const { lng } = use(params);
-  const { t } = useTranslation(lng, "admin");
+export default function FeatureFlagsPage() {
   const [flagStatuses, setFlagStatuses] = useState<FlagStatus[]>([]);
   const [qaOverrides, setQaOverrides] = useState<Record<string, boolean>>({});
-  const isAdmin = useAdminGuard(lng, t);
 
   useEffect(() => {
     loadFeatureFlags();
   }, []);
 
   const loadFeatureFlags = () => {
-    const envFlags = getFeatureFlags();
     const qaFlags = listQAFeatureFlags();
     setQaOverrides(qaFlags);
 
@@ -60,10 +48,6 @@ export default function FeatureFlagsPage({
     setFlagStatuses(statuses);
   };
 
-  if (!isAdmin) {
-    return <ProgressLoader />;
-  }
-
   return (
     <Box p={8} maxW="1400px" mx="auto">
       <VStack align="stretch" gap={6}>
@@ -74,8 +58,8 @@ export default function FeatureFlagsPage({
             <Heading size="lg">LocalStorage Feature Flags (QA Testing)</Heading>
           </HStack>
           <Text color="gray.600">
-            This page displays all feature flags and their current status.
-            QA overrides (localStorage) take precedence over environment variables.
+            This page displays all feature flags and their current status. QA
+            overrides (localStorage) take precedence over environment variables.
           </Text>
           <Text color="gray.500" fontSize="sm" mt={2}>
             Note: This page is only accessible to admin users by direct URL.
@@ -134,16 +118,15 @@ export default function FeatureFlagsPage({
                         alignItems="center"
                         gap={1}
                       >
-                        <Icon
-                          as={enabled ? MdCheck : MdClose}
-                          boxSize={4}
-                        />
+                        <Icon as={enabled ? MdCheck : MdClose} boxSize={4} />
                         {enabled ? "Enabled" : "Disabled"}
                       </Badge>
                     </Table.Cell>
                     <Table.Cell>
                       <Badge
-                        colorScheme={source === "qa_override" ? "orange" : "blue"}
+                        colorScheme={
+                          source === "qa_override" ? "orange" : "blue"
+                        }
                       >
                         {source === "qa_override"
                           ? "QA Override"
@@ -176,8 +159,8 @@ export default function FeatureFlagsPage({
                   </HStack>
                 ))}
                 <Text fontSize="sm" color="orange.700" mt={2}>
-                  💡 To remove overrides, use{" "}
-                  <Code>qaFlags.clearAll()</Code> in the console
+                  💡 To remove overrides, use <Code>qaFlags.clearAll()</Code> in
+                  the console
                 </Text>
               </VStack>
             </Card.Body>
@@ -268,7 +251,9 @@ export default function FeatureFlagsPage({
 }`}
               </Code>
               <Text fontSize="sm" color="gray.600" mt={2}>
-                Use these flag names when setting overrides. All flags are accessible via the global <Code>qaFlags</Code> object in the browser console.
+                Use these flag names when setting overrides. All flags are
+                accessible via the global <Code>qaFlags</Code> object in the
+                browser console.
               </Text>
             </VStack>
           </Card.Body>

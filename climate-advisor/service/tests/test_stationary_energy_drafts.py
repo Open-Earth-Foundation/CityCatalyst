@@ -2066,9 +2066,10 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(history[0]["role"], "system")
         system_content = history[0]["content"]
         self.assertIn(
-            "You are Clima assisting with an active GPC Stationary Energy draft review.",
+            "You are Clima, the CityCatalyst climate assistant.",
             system_content,
         )
+        self.assertIn("<additional_instructions>", system_content)
         self.assertIn(
             "Handle one Stationary Energy review intent per user turn.",
             system_content,

@@ -447,3 +447,20 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             emitted_tool_result["data"]["action"],
             "stationary_energy_request_staged_sources_rollback_confirmation",
         )
+
+    def test_stationary_energy_instruction_fallback_uses_composed_prompt(self) -> None:
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        handler.stationary_energy_draft_run_id = str(uuid4())
+        prompts = MagicMock()
+        prompts.compose_prompt.return_value = "Composed Stationary Energy prompt"
+        settings = SimpleNamespace(llm=SimpleNamespace(prompts=prompts))
+
+        with patch("app.utils.streaming_handler.get_settings", return_value=settings):
+            instruction_text = handler._stationary_energy_review_instruction_text()
+
+        self.assertEqual(instruction_text, "Composed Stationary Energy prompt")
+        prompts.compose_prompt.assert_called_once_with("stationary_energy_review")

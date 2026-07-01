@@ -11,8 +11,8 @@ Climate Advisor is the FastAPI service behind CityCatalyst chat. The same
 
 Both modes share thread persistence, token handling, SSE streaming, and the
 Agents SDK runtime. The Stationary Energy review flow adds CA-owned draft state,
-a second prompt entrypoint, and scoped review tools that return UI-oriented
-`tool_result` payloads.
+a workflow-specific prompt layer, and scoped review tools that return
+UI-oriented `tool_result` payloads.
 
 ## Current Architecture (As-Implemented)
 
@@ -129,11 +129,10 @@ flowchart LR
 
 `AgentService.create_agent()` selects instructions from the active chat mode:
 
-- General chat starts from `prompts.default`.
-- General inventory chat can append `prompts.inventory_context`.
-- Stationary Energy review chat starts from `prompts.stationary_energy_review`
-  instead of appending to `prompts.default`, and registers only tools scoped to
-  the active draft review workflow. That pack includes read-only whole-inventory
+- General chat composes `prompts.core` with `prompts.chat`.
+- Stationary Energy review chat composes `prompts.core` with
+  `prompts.stationary_energy_review` and registers only tools scoped to the
+  active draft review workflow. That pack includes read-only whole-inventory
   context tools plus Stationary Energy review tools.
 
 ## Stationary Energy Review Flow
@@ -188,13 +187,12 @@ workflow state in PostgreSQL.
 
 - `services/agent_service.py`
   - Selects the model for the current workflow context.
-  - Loads `prompts.default` for general chat.
-  - Appends `inventory_context` only for general inventory chat.
-  - Uses `stationary_energy_review` as the full prompt for active Stationary
-    Energy review chat.
+  - Composes `prompts.core` with `prompts.chat` for general chat.
+  - Composes `prompts.core` with `prompts.stationary_energy_review` for active
+    Stationary Energy review chat.
   - Keeps general inventory and vector-search tools out of active review chat.
   - Registers the correct tool pack for the request, including read-only
-    whole-inventory context tools for both default inventory chat and active
+    whole-inventory context tools for both general inventory chat and active
     Stationary Energy draft review chat.
 - `services/stationary_energy/stationary_energy_draft_repository.py`
   - Loads draft runs, proposals, decisions, and staged review selections.
@@ -274,14 +272,25 @@ values inside `tool_result` payloads:
 `llm_config.yaml` is the source of truth for model, prompt, retry, and history
 settings.
 
-- `prompts.default`
-  - General Climate Advisor chat prompt.
-- `prompts.inventory_context`
-  - Injected only when an inventory is active and CA can fetch its details.
+- `prompts.core`
+  - Shared Clima base prompt used in every workflow.
+- `prompts.chat`
+  - Workflow prompt for general Climate Advisor chat.
 - `prompts.stationary_energy_review`
-  - Used as the full prompt for active Stationary Energy draft review chat.
-  - Defines inline tool policy for `inventory_status_overview`,
-    `inventory_emissions_context`, and the Stationary Energy review tools.
+  - Workflow prompt for active Stationary Energy draft review chat.
+
+At runtime, Climate Advisor composes final instructions as:
+
+- `prompts.core + prompts.chat` for general chat
+- `prompts.core + prompts.stationary_energy_review` for active Stationary
+  Energy draft review chat
+
+Workflow prompt `<tools>` sections include shared tool-policy fragments. Exact
+tool argument contracts remain source-of-truth in the registered runtime tool
+definitions rather than duplicated prompt text.
+Each configured prompt file still defines the required prompt schema blocks on
+its own; runtime composition wraps the selected workflow prompt inside
+`<additional_instructions>`.
 
 Prompt include directives such as `{{ include: tools/default_tool_policy.md }}`
 are resolved relative to the including file first and then against the prompt

@@ -173,7 +173,6 @@ class StreamingHandler:
                 cc_access_token=self.cc_access_token,
                 cc_thread_id=self.thread_id,
                 cc_user_id=self.user_id,
-                inventory_id=self.inventory_id,
                 session_factory=self.session_factory,
                 stationary_energy_draft_run_id=self.stationary_energy_draft_run_id,
             )
@@ -561,7 +560,7 @@ class StreamingHandler:
         if instruction_text or not self.stationary_energy_draft_run_id:
             return instruction_text
         try:
-            return get_settings().llm.prompts.get_prompt(
+            return get_settings().llm.prompts.compose_prompt(
                 "stationary_energy_review"
             ).strip()
         except Exception as exc:
@@ -1105,7 +1104,7 @@ class StreamingHandler:
                 else "normal_conversation"
             ),
             "prompt_name": (
-                "stationary_energy_review" if has_agentic_context else "default"
+                "stationary_energy_review" if has_agentic_context else "chat"
             ),
             "ca_agentic_flow": has_agentic_context,
             "context_mode": (

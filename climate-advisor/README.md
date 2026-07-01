@@ -27,17 +27,18 @@ conversational experience for CityCatalyst (CC). The service lives under
 Climate Advisor runs two chat modes through the same `/v1/messages` endpoint:
 
 1. General chat
-   - Uses `prompts.default`
+   - Composes `prompts.core` with `prompts.chat`
    - Always exposes `climate_vector_search`
    - Adds CityCatalyst inventory tools only when the request has token, user,
      and thread scope
 2. Stationary Energy review chat
    - Activates when the request or thread context carries
      `stationary_energy_draft_run_id`
-   - Loads `prompts.stationary_energy_review`, then appends the persisted draft
-     snapshot as `STATIONARY_ENERGY_DRAFT_CONTEXT_JSON` inside a
-     `<context>...</context>` block
-   - Uses `prompts.stationary_energy_review` instead of `prompts.default`
+   - Loads the composed `prompts.core + prompts.stationary_energy_review`
+     instructions, then appends the persisted draft snapshot as
+     `STATIONARY_ENERGY_DRAFT_CONTEXT_JSON` inside a `<context>...</context>`
+     block
+   - Composes `prompts.core` with `prompts.stationary_energy_review`
    - Registers only scoped review tools that stage, preview, rollback, and save
      draft-review choices
 
@@ -144,9 +145,9 @@ data: {}
    - Loads pruned conversation history from PostgreSQL
    - If a `stationary_energy_draft_run_id` is active, loads the persisted draft
      snapshot plus request-scoped `ui_context`
-   - For Stationary Energy review chat, the first model input is the active
-     `prompts.stationary_energy_review` text followed by the draft snapshot in
-     `<context>...</context>`
+   - For Stationary Energy review chat, the first model input is the composed
+     `prompts.core + prompts.stationary_energy_review` instruction text
+     followed by the draft snapshot in `<context>...</context>`
 4. **Message Persistence**
    - Stores the user message in PostgreSQL
 5. **Agent Execution**
@@ -333,13 +334,22 @@ such as `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`.
 
 Prompt paths are also configured in `llm_config.yaml`:
 
-- `prompts.default` drives general Climate Advisor chat
-- `prompts.inventory_context` is appended for general inventory chat when CA can
-  load inventory metadata
-- `prompts.stationary_energy_review` drives active Stationary Energy draft
-  review chat without appending `prompts.default`. It includes the scoped
-  Stationary Energy review tools plus read-only whole-inventory context tools
-  such as `inventory_status_overview` and `inventory_emissions_context`.
+- `prompts.core` is the shared Clima base prompt used by every workflow
+- `prompts.chat` is the workflow prompt for general Climate Advisor chat
+- `prompts.stationary_energy_review` is the workflow prompt for active
+  Stationary Energy draft review chat
+
+At runtime, CA composes the final system instructions as:
+
+- general chat: `prompts.core + prompts.chat`
+- Stationary Energy review chat: `prompts.core + prompts.stationary_energy_review`
+
+Workflow prompt `<tools>` sections load shared tool-policy fragments with
+`{{ include: ... }}` directives. Exact tool argument contracts come from the
+registered runtime tool definitions rather than duplicated prompt text.
+Each configured prompt file remains schema-complete with `<role>`, `<task>`,
+`<input>`, and `<output>` blocks; runtime composition wraps the workflow prompt
+inside `<additional_instructions>`.
 
 Some prompt files use reusable fragments with
 `{{ include: tools/example.md }}` directives. Includes are resolved relative to
@@ -724,9 +734,10 @@ configuration (`MLFLOW_ENABLED`, `MLFLOW_TRACKING_URI`,
 `MLFLOW_HTTP_REQUEST_*` timeout/retry settings, `GIT_PYTHON_REFRESH`, and
 `MLFLOW_ASYNC_LOGGING_ENABLED`). Agentic and general Climate Advisor flows are
 separated by MLflow tags such as `workflow` and `context_mode`; active
-Stationary Energy draft chat is tagged `prompt_name=stationary_energy_review`.
-MLflow request previews for active Stationary Energy turns show the configured
-Stationary Energy prompt first, followed by the draft JSON context in
+Stationary Energy draft chat is tagged `prompt_name=stationary_energy_review`,
+while general chat is tagged `prompt_name=chat`. MLflow request previews for
+active Stationary Energy turns show the composed shared core plus Stationary
+Energy workflow prompt first, followed by the draft JSON context in
 `<context>...</context>`. Other operational defaults such as the MLflow
 `Created by` service identity are handled in code.
 

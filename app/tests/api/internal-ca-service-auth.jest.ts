@@ -1,6 +1,7 @@
 import {
   afterAll,
   afterEach,
+  beforeAll,
   beforeEach,
   describe,
   expect,
@@ -15,18 +16,43 @@ import path from "node:path";
 import { NextRequest } from "next/server";
 
 import { POST as postAllowedCapabilities } from "@/app/api/v1/internal/ca/capabilities/allowed-capabilities/route";
-import { POST as postCommitAccepted } from "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted/route";
-import { POST as postLoadContext } from "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context/route";
 import { POST as postUserToken } from "@/app/api/v1/internal/ca/user-token/route";
 import {
   COMMIT_ACCEPTED_CAPABILITY,
   LOAD_CONTEXT_CAPABILITY,
 } from "@/backend/agentic/ghgi/stationary-energy/registry";
-import * as contextModule from "@/backend/agentic/ghgi/stationary-energy/context";
-import * as commitModule from "@/backend/agentic/ghgi/stationary-energy/commit";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { db } from "@/models";
 import { Roles } from "@/util/types";
+
+const mockBuildStationaryEnergyContext = jest.fn<() => Promise<unknown>>();
+const mockCommitAcceptedStationaryEnergyRows =
+  jest.fn<() => Promise<unknown>>();
+
+jest.unstable_mockModule(
+  "@/backend/agentic/ghgi/stationary-energy/context",
+  () => ({
+    buildStationaryEnergyContext: mockBuildStationaryEnergyContext,
+  }),
+);
+jest.unstable_mockModule(
+  "@/backend/agentic/ghgi/stationary-energy/commit",
+  () => ({
+    commitAcceptedStationaryEnergyRows: mockCommitAcceptedStationaryEnergyRows,
+  }),
+);
+
+let postLoadContext: typeof import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context/route").POST;
+let postCommitAccepted: typeof import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted/route").POST;
+
+beforeAll(async () => {
+  ({ POST: postLoadContext } = await import(
+    "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context/route"
+  ));
+  ({ POST: postCommitAccepted } = await import(
+    "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted/route"
+  ));
+});
 
 const USER_ID = "11111111-1111-4111-8111-111111111111";
 const OTHER_USER_ID = "22222222-2222-4222-8222-222222222222";
@@ -175,26 +201,24 @@ describe("internal CA service auth contract", () => {
     jest.spyOn(PermissionService, "canEditInventory").mockResolvedValue({
       resource: { cityId: CITY_ID },
     } as any);
-    jest
-      .spyOn(contextModule, "buildStationaryEnergyContext")
-      .mockResolvedValue({
-        city: {},
-        current_values: [],
-        guidance_context: {},
-        inventory: {},
-        permission_summary: {},
-        source_candidates: [],
-        taxonomy: [],
-      } as any);
-    jest
-      .spyOn(commitModule, "commitAcceptedStationaryEnergyRows")
-      .mockResolvedValue([
-        { proposal_id: PROPOSAL_ID, status: "committed" },
-      ] as any);
+    mockBuildStationaryEnergyContext.mockResolvedValue({
+      city: {},
+      current_values: [],
+      guidance_context: {},
+      inventory: {},
+      permission_summary: {},
+      source_candidates: [],
+      taxonomy: [],
+    });
+    mockCommitAcceptedStationaryEnergyRows.mockResolvedValue([
+      { proposal_id: PROPOSAL_ID, status: "committed" },
+    ]);
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
+    mockBuildStationaryEnergyContext.mockReset();
+    mockCommitAcceptedStationaryEnergyRows.mockReset();
   });
 
   afterAll(() => {

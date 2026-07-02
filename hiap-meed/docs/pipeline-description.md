@@ -387,24 +387,30 @@ From the action catalog:
 
 - `actions[].actionId`
 
-From the legal assessments file:
+From the S3 legal classification CSV after the adapter maps it into the internal legal record contract:
 
-- `[].srcActionId`
-- `[].verdictCategory`
-- `[].verdictScore`
+- `[].action_id`
+- `[].verdict_category`
+- `[].verdict_score`
 
 Supporting legal fields that are returned as evidence, but do not drive the actual yes/no decision:
 
-- `[].ownershipCategory`
-- `[].ownershipScore`
-- `[].restrictionsCategory`
-- `[].restrictionsScore`
-- `[].ownershipDescriptionI18n`
-- `[].restrictionsDescriptionI18n`
-- `[].legalJustificationI18n`
-- `[].legalReferences`
-- `[].analysisDate`
-- `[].generationMethod`
+- `[].ownership_category`
+- `[].ownership_score`
+- `[].restrictions_category`
+- `[].restrictions_score`
+- `[].ownership_description_i18n`
+- `[].restrictions_description_i18n`
+- `[].legal_justification_i18n`
+- `[].legal_references`
+- `[].analysis_date`
+- `[].generation_method`
+
+The runtime CSV source is configured with `HIAP_MEED_LEGAL_S3_BUCKET` and
+`HIAP_MEED_LEGAL_S3_KEY`. Its flat columns such as `action_id`,
+`legal_reference_1` through `legal_reference_6`, and bilingual description
+columns are normalized in `app/services/action_legal_assessments_s3.py` before
+the scoring blocks see the data.
 
 ### 4.2 Logic
 
@@ -895,21 +901,21 @@ It combines:
 
 ### 7.1 Inputs
 
-From the legal assessments file:
+From the S3 legal classification CSV after the adapter maps it into the internal legal record contract:
 
-- `[].srcActionId`
-- `[].verdictCategory`
-- `[].verdictScore`
+- `[].action_id`
+- `[].verdict_category`
+- `[].verdict_score`
 
 Fields returned mainly as evidence:
 
-- `[].ownershipCategory`
-- `[].ownershipScore`
-- `[].restrictionsCategory`
-- `[].restrictionsScore`
-- `[].legalReferences`
-- `[].analysisDate`
-- `[].generationMethod`
+- `[].ownership_category`
+- `[].ownership_score`
+- `[].restrictions_category`
+- `[].restrictions_score`
+- `[].legal_references`
+- `[].analysis_date`
+- `[].generation_method`
 
 From the mitigation feasibility scores endpoint:
 

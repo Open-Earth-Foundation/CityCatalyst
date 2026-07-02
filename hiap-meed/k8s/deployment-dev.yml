@@ -75,7 +75,13 @@ spec:
             - name: HIAP_MEED_CITY_DATA_SOURCE
               value: "api"
             - name: HIAP_MEED_LEGAL_DATA_SOURCE
-              value: "api"
+              value: "s3"
+            - name: HIAP_MEED_LEGAL_S3_BUCKET
+              value: "test-global-api"
+            - name: HIAP_MEED_LEGAL_S3_KEY
+              value: "raw_data/cl_ssg/cl_ssg_legal_signals/release/v2/legal-classification-v2.csv"
+            - name: HIAP_MEED_LEGAL_S3_REGION
+              value: "us-east-1"
             - name: HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE
               value: "api"
             - name: HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE

@@ -20,7 +20,6 @@ on:
       - climate-advisor/k8s/db-configmap-prod.yml
       - k8s/prod/cc-prod-ca-smoke-fixture.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
-      - .github/scripts/run-k8s-job-and-wait.sh
       - .github/workflows/climate-advisor-tag.yml
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
@@ -203,7 +202,7 @@ jobs:
             -n default
           kubectl rollout restart deployment climate-advisor-prod -n default
           kubectl rollout status deployment/climate-advisor-prod -n default --timeout=300s
-          bash .github/scripts/run-k8s-job-and-wait.sh k8s/prod/cc-prod-ca-smoke-fixture.yml default
+          SMOKE_FIXTURE_MANIFEST=k8s/prod/cc-prod-ca-smoke-fixture.yml \
           CA_SERVICE_NAME=climate-advisor-service-prod \
           CA_DEPLOYMENT_NAME=climate-advisor-prod \
           CC_EXPECTED_AUDIENCE=https://citycatalyst.io \

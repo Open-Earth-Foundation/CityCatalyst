@@ -10,7 +10,6 @@ import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SMOKE_SCRIPT_PATH = ".github/scripts/cc-ca-post-deploy-smoke.sh"
-JOB_WAIT_SCRIPT_PATH = ".github/scripts/run-k8s-job-and-wait.sh"
 
 ENVIRONMENTS = {
     "dev": {
@@ -167,7 +166,6 @@ def test_workflow_path_filters_include_validated_files(
         str(config["deployment"]),
         str(config["fixture"]),
         SMOKE_SCRIPT_PATH,
-        JOB_WAIT_SCRIPT_PATH,
         ca_workflow_path,
     ]:
         assert path in ca_workflow, f"{path} missing from {ca_workflow_path} paths"
@@ -176,7 +174,6 @@ def test_workflow_path_filters_include_validated_files(
         *config["web_manifests"],
         str(config["fixture"]),
         SMOKE_SCRIPT_PATH,
-        JOB_WAIT_SCRIPT_PATH,
         web_workflow_path,
     ]:
         assert path in web_workflow, f"{path} missing from {web_workflow_path} paths"
@@ -197,16 +194,28 @@ def test_smoke_fixture_job_is_wired_before_runtime_smoke(
     assert container["command"] == ["npm", "run", "upsert-ca-smoke-fixture"]
     assert "configMapRef" in fixture["spec"]["template"]["spec"]["containers"][0]["envFrom"][0]
 
-    expected_job_command = f"bash {JOB_WAIT_SCRIPT_PATH} {fixture_path} default"
+    expected_fixture_env = f"SMOKE_FIXTURE_MANIFEST={fixture_path}"
     expected_smoke_command = f"bash {SMOKE_SCRIPT_PATH}"
     for workflow_name, text in [
         (str(config["web_workflow"]), web_workflow),
         (str(config["ca_workflow"]), ca_workflow),
     ]:
-        fixture_position = text.find(expected_job_command)
+        fixture_position = text.find(expected_fixture_env)
         smoke_position = text.find(expected_smoke_command)
-        assert fixture_position != -1, f"{workflow_name} does not run fixture job"
+        assert fixture_position != -1, f"{workflow_name} does not pass fixture manifest"
         assert smoke_position != -1, f"{workflow_name} does not run runtime smoke"
         assert fixture_position < smoke_position, (
-            f"{workflow_name} runs smoke before seeding fixture in {environment}"
+            f"{workflow_name} runs smoke before selecting fixture in {environment}"
         )
+
+
+def test_single_smoke_script_runs_fixture_job_and_runtime_smoke() -> None:
+    """Ensure the single deploy-smoke script owns fixture setup and runtime checks."""
+    script = (REPO_ROOT / SMOKE_SCRIPT_PATH).read_text(encoding="utf-8")
+
+    assert "SMOKE_FIXTURE_MANIFEST" in script
+    assert 'kubectl create -f "${SMOKE_FIXTURE_MANIFEST}"' in script
+    assert "kubectl wait --for=condition=complete" in script
+    assert 'kubectl logs "job/${JOB_NAME}"' in script
+    assert "kubectl rollout status" in script
+    assert "python -m scripts.smoke_cc_contract" in script

@@ -22,7 +22,6 @@ on:
       - "climate-advisor/k8s/db-configmap-test.yml"
       - "k8s/test/cc-test-ca-smoke-fixture.yml"
       - ".github/scripts/cc-ca-post-deploy-smoke.sh"
-      - ".github/scripts/run-k8s-job-and-wait.sh"
       - ".github/workflows/climate-advisor-test.yml"
 
 concurrency:
@@ -190,7 +189,7 @@ jobs:
 
           kubectl rollout restart deployment climate-advisor-test -n default
           kubectl rollout status deployment/climate-advisor-test -n default --timeout=300s
-          bash .github/scripts/run-k8s-job-and-wait.sh k8s/test/cc-test-ca-smoke-fixture.yml default
+          SMOKE_FIXTURE_MANIFEST=k8s/test/cc-test-ca-smoke-fixture.yml \
           CA_SERVICE_NAME=climate-advisor-service-test \
           CA_DEPLOYMENT_NAME=climate-advisor-test \
           CC_EXPECTED_AUDIENCE=https://citycatalyst-test.openearth.dev \

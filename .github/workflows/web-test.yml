@@ -15,7 +15,6 @@ on:
       - k8s/test/cc-test-web-deploy.yml
       - k8s/test/cc-test-web.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
-      - .github/scripts/run-k8s-job-and-wait.sh
       - .github/workflows/web-test.yml
     branches: ["main"]
 
@@ -267,12 +266,12 @@ jobs:
           CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}} \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl create -f k8s/test/cc-test-create-admin.yml -n default
-          bash .github/scripts/run-k8s-job-and-wait.sh k8s/test/cc-test-ca-smoke-fixture.yml default
           kubectl set env cronjob/citycatalyst-test-check-hiap-jobs \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
           kubectl rollout restart deployment cc-test-web-deploy -n default
           kubectl rollout status deployment/cc-test-web-deploy -n default --timeout=300s
+          SMOKE_FIXTURE_MANIFEST=k8s/test/cc-test-ca-smoke-fixture.yml \
           CA_SERVICE_NAME=climate-advisor-service-test \
           CA_DEPLOYMENT_NAME=climate-advisor-test \
           CC_EXPECTED_AUDIENCE=https://citycatalyst-test.openearth.dev \

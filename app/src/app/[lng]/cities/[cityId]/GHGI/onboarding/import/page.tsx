@@ -10,8 +10,7 @@ import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
 import { UseErrorToast, UseInfoToast, UseSuccessToast } from "@/hooks/Toasts";
 import UploadFileStep from "@/components/steps/GHGI/import/upload-file-step";
-import ValidationResultsStep from "@/components/steps/GHGI/import/validation-results-step";
-import MappingColumnsStep from "@/components/steps/GHGI/import/mapping-columns-step";
+import InventoryMappingStep from "@/components/steps/GHGI/import/inventory-mapping-step";
 import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-step";
 import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
 import { api } from "@/services/api";
@@ -183,8 +182,7 @@ export default function ImportPage(props: {
 
   const steps = [
     { title: t("upload-file-step") },
-    { title: t("validation-results-step") },
-    { title: t("mapping-columns-step") },
+    { title: t("inventory-mapping-step") },
     { title: t("review-confirm-step") },
   ];
 
@@ -209,6 +207,7 @@ export default function ImportPage(props: {
   const [mappingOverrides, setMappingOverrides] = useState<
     Record<string, string>
   >({});
+  const [canContinueMapping, setCanContinueMapping] = useState(false);
   const [showDataLossModal, setShowDataLossModal] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
   const [extractionProgress, setExtractionProgress] = useState<{
@@ -759,12 +758,19 @@ export default function ImportPage(props: {
                   exit={{ opacity: 0, x: -100 }}
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
-                  <ValidationResultsStep
+                  <InventoryMappingStep
                     t={t}
                     cityId={cityId}
                     inventoryId={inventoryId}
                     importedFileId={importedFileId}
-                    onContinue={handleContinue}
+                    mappingOverrides={mappingOverrides}
+                    onMappingChange={(columnName, mappedKey) => {
+                      setMappingOverrides((prev) => ({
+                        ...prev,
+                        [columnName]: mappedKey,
+                      }));
+                    }}
+                    onCanContinueChange={setCanContinueMapping}
                   />
                 </motion.div>
               )}
@@ -776,38 +782,12 @@ export default function ImportPage(props: {
                   exit={{ opacity: 0, x: -100 }}
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
-                  <MappingColumnsStep
-                    t={t}
-                    cityId={cityId}
-                    inventoryId={inventoryId}
-                    importedFileId={importedFileId}
-                    onContinue={handleContinue}
-                    mappingOverrides={mappingOverrides}
-                    onMappingChange={(columnName, mappedKey) => {
-                      setMappingOverrides((prev) => ({
-                        ...prev,
-                        [columnName]: mappedKey,
-                      }));
-                    }}
-                  />
-                </motion.div>
-              )}
-              {activeStep === 3 && importedFileId && inventoryId && (
-                <motion.div
-                  key="step-3"
-                  initial={{ opacity: 0, x: 100 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -100 }}
-                  transition={{ duration: 0.2, ease: "easeInOut" }}
-                >
                   <ReviewConfirmStep
                     t={t}
                     cityId={cityId}
                     inventoryId={inventoryId}
                     importedFileId={importedFileId}
-                    onImport={() => {
-                      // This is no longer used but kept for interface compatibility
-                    }}
+                    onImport={() => {}}
                   />
                 </motion.div>
               )}
@@ -878,7 +858,7 @@ export default function ImportPage(props: {
                   px="24px"
                   onClick={handleContinue}
                   h="64px"
-                  disabled={fileYearMismatch}
+                  disabled={fileYearMismatch || !canContinueMapping}
                 >
                   <Text
                     fontFamily="button.md"
@@ -890,26 +870,7 @@ export default function ImportPage(props: {
                   <MdArrowForward height="24px" width="24px" />
                 </Button>
               )}
-              {activeStep === 2 && (
-                <Button
-                  w="auto"
-                  gap="8px"
-                  py="16px"
-                  px="24px"
-                  onClick={handleContinue}
-                  h="64px"
-                >
-                  <Text
-                    fontFamily="button.md"
-                    fontWeight="600"
-                    letterSpacing="wider"
-                  >
-                    {t("continue")}
-                  </Text>
-                  <MdArrowForward height="24px" width="24px" />
-                </Button>
-              )}
-              {activeStep === 3 && importedFileId && inventoryId && (
+              {activeStep === 2 && importedFileId && inventoryId && (
                 <ImportButton
                   cityId={cityId}
                   inventoryId={inventoryId}

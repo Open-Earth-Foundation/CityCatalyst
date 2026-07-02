@@ -172,6 +172,7 @@
   "upload-started-description": "Téléchargement de {{fileName}} en cours...",
   "loading-validation-results": "Chargement des résultats de validation...",
   "no-field-mappings": "Aucun mappage de champ disponible",
+  "not-specified": "Non spécifié",
   "extract-with-ai": "Extraire avec IA",
   "pdf-ready-for-extraction": "PDF prêt pour l'extraction",
   "validation-results-description-pdf": "{{count}} lignes ont été extraites du PDF. Vérifiez les données ci-dessous.",

@@ -80,8 +80,8 @@ export default function ReviewConfirmStep({
 
   // Fallback to fileInfo and validationResults if reviewData is not available
   const importSummary = reviewData?.importSummary || {
-    sourceFile: fileInfo?.originalFileName || "-",
-    formatDetected: fileInfo?.fileType?.toUpperCase() || "-",
+    sourceFile: fileInfo?.originalFileName || null,
+    formatDetected: fileInfo?.fileType?.toUpperCase() || null,
     rowsFound: data?.rowCount || 0,
     fieldsMapped:
       reviewData?.fieldMappings?.length ||
@@ -129,13 +129,29 @@ export default function ReviewConfirmStep({
               <Text fontSize="body.sm" color="content.tertiary" mb={1}>
                 {t("source-file")}
               </Text>
-              <Text fontWeight="medium">{importSummary.sourceFile}</Text>
+              <Text
+                fontWeight={importSummary.sourceFile ? "medium" : undefined}
+                color={
+                  importSummary.sourceFile ? undefined : "content.tertiary"
+                }
+              >
+                {importSummary.sourceFile || t("not-specified")}
+              </Text>
             </Box>
             <Box w="full">
               <Text fontSize="body.sm" color="content.tertiary" mb={1}>
                 {t("format-detected")}
               </Text>
-              <Text fontWeight="medium">{importSummary.formatDetected}</Text>
+              <Text
+                fontWeight={
+                  importSummary.formatDetected ? "medium" : undefined
+                }
+                color={
+                  importSummary.formatDetected ? undefined : "content.tertiary"
+                }
+              >
+                {importSummary.formatDetected || t("not-specified")}
+              </Text>
             </Box>
             <Box w="full">
               <Text fontSize="body.sm" color="content.tertiary" mb={1}>

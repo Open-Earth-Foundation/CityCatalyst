@@ -44,14 +44,39 @@ export default function MappingColumnsStep({
     },
   );
 
-  const columns: ColumnInfo[] = data?.columnMappings?.columns || [];
+  const columns: ColumnInfo[] = [...(data?.columnMappings?.columns || [])].sort(
+    (a, b) => (b.interpretedAs ? 1 : 0) - (a.interpretedAs ? 1 : 0),
+  );
   const requiredMappings: RequiredMappingOption[] =
     data?.columnMappings?.requiredMappings || [];
+
+  const EMISSION_FACTOR_KEYS = new Set([
+    "emissionFactorCO2",
+    "emissionFactorCH4",
+    "emissionFactorN2O",
+    "emissionFactorTotalCO2e",
+  ]);
 
   const getKeyForLabel = (label: string | null): string => {
     if (!label) return "";
     const m = requiredMappings.find((r) => r.label === label);
     return m?.key ?? "";
+  };
+
+  const formatExampleValue = (column: ColumnInfo): string | null => {
+    if (!column.exampleValue) return null;
+    if (EMISSION_FACTOR_KEYS.has(getKeyForLabel(column.interpretedAs))) {
+      const num = parseFloat(column.exampleValue);
+      if (!isNaN(num)) {
+        const tonnes = num / 1000;
+        const formatted =
+          tonnes < 0.0001
+            ? tonnes.toExponential(2)
+            : parseFloat(tonnes.toFixed(4)).toString();
+        return `${formatted} t CO2e`;
+      }
+    }
+    return column.exampleValue;
   };
 
   const handleMappingChange = (columnName: string, value: string) => {
@@ -133,9 +158,20 @@ export default function MappingColumnsStep({
                     <Text fontWeight="medium">{column.columnName}</Text>
                   </Table.Cell>
                   <Table.Cell>
-                    <Text color="content.secondary">
-                      {column.exampleValue || "-"}
-                    </Text>
+                    {(() => {
+                      const displayValue = formatExampleValue(column);
+                      return (
+                        <Text
+                          color={
+                            displayValue
+                              ? "content.secondary"
+                              : "content.tertiary"
+                          }
+                        >
+                          {displayValue || t("not-specified")}
+                        </Text>
+                      );
+                    })()}
                   </Table.Cell>
                   <Table.Cell>
                     <NativeSelect.Root>

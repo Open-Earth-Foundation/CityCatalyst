@@ -9,13 +9,15 @@ Run it standalone from the root of the project with the following command:
 python -m scripts.get_actions
 """
 
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 import argparse
 import json
 import logging
+import os
 from typing import Optional
+
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 logger = logging.getLogger(__name__)
 
@@ -29,10 +31,10 @@ retry_strategy = Retry(
 
 
 def get_actions(language: str = "en") -> Optional[list[dict]]:
-    # Base URL for the API
-    base_url = (
-        f"https://ccglobal.openearth.dev/api/v0/climate_actions?language={language}"
+    global_api_base = (
+        os.getenv("CCGLOBAL_API_BASE_URL", "https://ccglobal.openearth.dev").rstrip("/")
     )
+    base_url = f"{global_api_base}/api/v0/climate_actions?language={language}"
 
     # Create a session with retry strategy
     session = requests.Session()

@@ -44,14 +44,15 @@ graph TD
 
     CityClient -.->|"API mode: GET /api/v0/city_attributes/{locode}"| GlobalAPI
     ActionClient -.->|"API mode: GET /api/v1/action-pathways"| GlobalAPI
-    LegalClient -.->|"API mode: GET /api/v1/action-legal-assessments?countryCode=..."| GlobalAPI
+    LegalClient -.->|"S3 mode: GetObject legal classification CSV"| S3[(Private S3)]
+    LegalClient -.->|"deprecated API guard: raises before HTTP"| GlobalAPI
     PolicyClient -.->|"API mode: GET /api/v1/cities/{locode}/action-policy-scores"| GlobalAPI
     MitFeasClient -.->|"API mode: GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=..."| GlobalAPI
     FinFeasClient -.->|"API mode: GET /api/v1/cities/{locode}/climate-finance/feasibility?country_code=..."| GlobalAPI
 
     GlobalAPI -.->|"CityData"| CityClient
     GlobalAPI -.->|"Action list"| ActionClient
-    GlobalAPI -.->|"Action legal assessments"| LegalClient
+    S3 -.->|"Legal classification CSV"| LegalClient
     GlobalAPI -.->|"Action policy scores"| PolicyClient
     GlobalAPI -.->|"Action mitigation feasibility scores"| MitFeasClient
     GlobalAPI -.->|"Action financial feasibility scores"| FinFeasClient
@@ -91,22 +92,23 @@ This is the right choice as long as the orchestrator and data clients are synchr
 | ------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------- | --------------- |
 | City data client          | `get_city(locode)`                    | Mock/API switch (`HIAP_MEED_CITY_DATA_SOURCE`); `mock` is file-backed, `api` performs synchronous HTTP GET `/api/v0/city_attributes/{locode}` against the shared `CCGLOBAL_API_BASE_URL` (default `https://ccglobal.openearth.dev` locally; overridden in workflows per environment) | configurable city attributes API host |
 | Action pathways data client | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/action-pathways` with no query parameters and returns the full upstream catalog plus fetch metadata; `mock` is file-backed and returns the same shape | Global API |
-| Legal data client         | `get_action_legal_assessments(country_code)` | Mock/API switch (`HIAP_MEED_LEGAL_DATA_SOURCE`); `mock` is file-backed, `api` performs synchronous HTTP GET `/api/v1/action-legal-assessments?countryCode=...` against the shared `CCGLOBAL_API_BASE_URL` | configurable legal assessments API host |
+| Legal data client         | `get_action_legal_assessments(country_code)` | S3/mock/deprecated API switch (`HIAP_MEED_LEGAL_DATA_SOURCE`); `s3` is the default and reads the private CSV configured by `HIAP_MEED_LEGAL_S3_BUCKET` and `HIAP_MEED_LEGAL_S3_KEY`; `mock` is file-backed; `api` raises before HTTP as a deprecated guard | private S3 legal classification CSV |
 | Action policy scores data client | `get_action_policy_scores(locode)`    | Mock/API switch (`HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/cities/{locode}/action-policy-scores`; `mock` is file-backed | Global API |
 | Action mitigation feasibility scores data client | `get_action_mitigation_feasibility_scores(locode, country_code)` | Mock/API switch (`HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; `mock` is file-backed | Global API |
 | Action financial feasibility scores data client | `get_action_financial_feasibility_scores(locode, country_code)` | Mock/API switch (`HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/cities/{locode}/climate-finance/feasibility?country_code=...`; `mock` is file-backed | Global API |
 
-Clients are injected via FastAPI's `Depends()` pattern. The city, action, legal, action policy scores, mitigation feasibility, and financial feasibility clients default to their live upstream APIs.
+Clients are injected via FastAPI's `Depends()` pattern. The city, action, action policy scores, mitigation feasibility, and financial feasibility clients default to their live upstream APIs. The legal client defaults to the internal S3-backed CSV source.
 
 Action API note:
 - `GET /api/v1/action-pathways` is called without `limit`, `lang`, or other query parameters
-- the current live legal endpoint `GET /api/v1/action-legal-assessments?countryCode=...` can now return `200` with an empty payload because its upstream legal dataset was removed; the hiap-meed legal client still supports that route today, but it should be migrated to a replacement endpoint before strict live contract coverage is re-enabled
+- the old live legal endpoint `GET /api/v1/action-legal-assessments?countryCode=...` is intentionally retained only as a deprecated failure path; legal rows now come from the internal S3 CSV and are mapped into the existing legal record contract
+- legal S3 fetch failures are fail-closed: missing credentials, access denial, missing bucket/key, or S3 connectivity errors return an upstream dependency error instead of running ranking with neutral legal defaults
 - mitigation feasibility now comes from the separate city-scoped scores endpoint and missing action rows use the neutral `0.5` fallback in Feasibility scoring
 - financial feasibility comes from the compact climate-finance feasibility batch endpoint; linked opportunity/project detail endpoints are preserved as evidence links but are not fetched by hiap-meed yet
 
 Fetch metadata note:
 - city attributes, action pathways, action policy scores, action mitigation feasibility scores, and action financial feasibility scores expose upstream generated-at metadata in their current contracts, so artifacts record `source_metadata.upstream_generated_at_utc`
-- the legal assessments endpoint does not currently expose an equivalent top-level generated-at field, so legal fetch artifacts intentionally keep `source_metadata.upstream_generated_at_utc = null`
+- successful legal S3 fetch artifacts record the logical `s3:GetObject legal classification CSV` operation, requested country code, object key suffix, ETag, and S3 `LastModified` timestamp when available
 
 Feasibility artifact note:
 - the diagnostic artifact `012_feasibility.json` keeps the full grouped feasibility breakdown under `legal`, `mitigation_feasibility`, and `financial_feasibility`

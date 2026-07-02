@@ -351,6 +351,7 @@ export const api = createApi({
       >({
         query: ({ inventoryId }) => `datasource/${inventoryId}`,
         transformResponse: (response: GetDataSourcesResult) => response,
+        providesTags: ["InventoryValue"],
       }),
       getDataSourcePreview: builder.query<
         DataSourcePreviewResult,
@@ -465,6 +466,8 @@ export const api = createApi({
           "InventoryValue",
           "ReportResults",
           "YearlyReportResults",
+          "UserInventories",
+          "Inventories",
         ],
       }),
       updateOrCreateInventoryValue: builder.mutation<
@@ -749,9 +752,10 @@ export const api = createApi({
           "ReportResults",
           "SubSectorValue",
           "YearlyReportResults",
-          "InventoryValue",
           "SectorBreakdown",
           "Inventory",
+          "UserInventories",
+          "Inventories",
         ],
         transformResponse: (response: { data: EmissionsFactorResponse }) =>
           response.data,

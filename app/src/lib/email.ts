@@ -50,7 +50,7 @@ export const sendEmail = async (data: EmailPayload) => {
     logger.debug("Sending email...");
 
     const result = await transporter.sendMail({
-      from: emailFrom,
+      from: { name: "CityCatalyst", address: emailFrom },
       ...data,
     });
 

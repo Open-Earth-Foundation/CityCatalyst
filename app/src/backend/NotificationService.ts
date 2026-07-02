@@ -94,7 +94,7 @@ class NotificationService {
     await NotificationService.sendEmail({
       to: process.env.ADMIN_EMAILS!,
       subject: translatedSubject,
-      text: "City Catalyst",
+      text: "CityCatalyst",
       html,
     });
   }

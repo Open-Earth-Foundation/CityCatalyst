@@ -60,8 +60,11 @@ export class InventoryService {
     }
 
     // TODO [ON-2429]: Save total emissions for inventory every time activity data is modified
+    // Returns 0 when inventory values exist but all co2eq are null (e.g. notation-key-only prefill),
+    // and NULL only when no inventory values exist at all.
     const rawQuery = `
-    SELECT SUM(co2eq)
+    SELECT
+      CASE WHEN COUNT(*) > 0 THEN COALESCE(SUM(co2eq), 0) ELSE NULL END AS sum
     FROM "InventoryValue"
     WHERE inventory_id = :inventoryId
   `;
@@ -70,7 +73,7 @@ export class InventoryService {
       replacements: { inventoryId },
       type: QueryTypes.SELECT,
       raw: true,
-    })) as unknown as { sum: number }[];
+    })) as unknown as { sum: number | null }[];
 
     inventory.totalEmissions = sum != null ? Number(sum) : 0;
     return inventory;

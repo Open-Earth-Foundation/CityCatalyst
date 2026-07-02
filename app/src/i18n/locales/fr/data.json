@@ -100,6 +100,8 @@
   "manually-added": "Données ajoutées manuellement",
   "check-data-heading": "Explorez les ensembles de données pertinents à intégrer dans votre inventaire",
   "check-data-details": "Examinez et intégrez automatiquement les données pertinentes pour l'inventaire des GES de votre ville.",
+  "browse-and-connect-external-datasets-heading": "Parcourir et connecter des ensembles de données externes à votre inventaire d'émissions de GES",
+  "browse-and-connect-external-datasets-description": "Vous pouvez examiner et intégrer les données d'émissions de fournisseurs externes directement dans votre inventaire d'émissions de GES.",
   "no-data-sources": "Aucune source de données externe disponible",
   "no-data-sources-description": "Il semble qu'il n'y ait aucune source externe disponible pour le moment.<1></1>Si vous en connaissez, <3>veuillez le signaler</3> et nous donnerons la priorité à votre demande.",
   "data-quality": "Qualité des Données",

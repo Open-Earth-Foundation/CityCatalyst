@@ -124,8 +124,8 @@ jobs:
 
           kubectl set env deployment/hiap-meed-dev \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_HIAP_MEED_DEV}}
-            AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID_HIAP_MEED}} \
-            AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_HIAP_MEED}}
+            AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID_HIAP_MEED_DEV}} \
+            AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_HIAP_MEED_DEV}}
 
           kubectl rollout restart deployment hiap-meed-dev -n default
           kubectl rollout status deployment/hiap-meed-dev -n default

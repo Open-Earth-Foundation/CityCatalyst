@@ -72,7 +72,7 @@ export class InventoryService {
       raw: true,
     })) as unknown as { sum: number }[];
 
-    inventory.totalEmissions = sum;
+    inventory.totalEmissions = sum != null ? Number(sum) : 0;
     return inventory;
   }
 }

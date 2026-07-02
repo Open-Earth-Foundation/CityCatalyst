@@ -158,6 +158,50 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(recorded["json"]["rows"][0]["manual_value"], 12.5)
         self.assertEqual(recorded["json"]["rows"][0]["manual_unit"], "tCO2e")
 
+    async def test_commit_stationary_energy_notation_keys_posts_internal_capability(self) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+        ):
+            client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
+            stub = _StubAsyncClient(
+                [
+                    _response(
+                        200,
+                        json_data={"results": [{"proposal_id": "proposal-3", "status": "committed"}]},
+                    )
+                ]
+            )
+
+            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+                await client.commit_stationary_energy_notation_keys(
+                    request_payload={
+                        "draft_run_id": "draft-1",
+                        "user_id": "user-1",
+                        "city_id": "city-1",
+                        "inventory_id": "inventory-1",
+                        "rows": [
+                            {
+                                "proposal_id": "proposal-3",
+                                "decision_version": 1,
+                                "target_id": "I.1.2",
+                                "target_ref": {"subcategory_id": "I.1.2"},
+                                "notation_key": "NO",
+                                "unavailable_explanation": "No activity occurs.",
+                            }
+                        ],
+                    },
+                    token="jwt-token",
+                )
+
+        recorded = stub.requests[0]
+        self.assertEqual(
+            recorded["url"],
+            "https://cc.example/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys",
+        )
+        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
+        self.assertEqual(recorded["json"]["rows"][0]["notation_key"], "NO")
+
     async def test_get_inventory_success(self) -> None:
         with patch(
             "app.services.citycatalyst_client.get_settings",

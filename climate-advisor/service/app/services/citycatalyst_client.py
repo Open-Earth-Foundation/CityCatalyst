@@ -436,6 +436,19 @@ class CityCatalystClient:
             token=token,
         )
 
+    async def list_stationary_energy_notation_keys(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """List Stationary Energy notation-key targets through the CC internal route."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/list-notation-keys",
+            json_data=request_payload,
+            token=token,
+        )
+
     async def commit_stationary_energy_accepted(
         self,
         *,
@@ -445,6 +458,19 @@ class CityCatalystClient:
         """Commit accepted Stationary Energy review rows through the CC internal capability route."""
         return await self.post_internal_capability(
             "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted",
+            json_data=request_payload,
+            token=token,
+        )
+
+    async def commit_stationary_energy_notation_keys(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Commit saved Stationary Energy notation-key rows through CC."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys",
             json_data=request_payload,
             token=token,
         )

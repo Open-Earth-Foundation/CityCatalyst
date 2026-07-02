@@ -38,7 +38,7 @@ Climate Advisor runs two chat modes through the same `/v1/messages` endpoint:
      `<context>...</context>` block
    - Uses `prompts.stationary_energy_review` instead of `prompts.default`
    - Registers only scoped review tools that stage, preview, rollback, and save
-     draft-review choices
+     draft-review choices, including notation-key choices
 
 At runtime:
 
@@ -178,14 +178,19 @@ response payload before it is sent back to the model.
 **Added for active Stationary Energy draft review chat**
 
 - `stationary_energy_list_review_options`
+- `stationary_energy_list_notation_keys`
 - `stationary_energy_accept_one`
+- `stationary_energy_stage_notation_key`
 - `stationary_energy_accept_multiple`
 - `stationary_energy_accept_all_recommended`
 - `stationary_energy_request_bulk_review_confirmation`
+- `stationary_energy_request_bulk_notation_confirmation`
+- `stationary_energy_apply_bulk_notation_choices`
 - `stationary_energy_request_all_recommended_confirmation`
 - `stationary_energy_request_staged_source_change_confirmation`
 - `stationary_energy_request_staged_sources_rollback_confirmation`
 - `stationary_energy_rollback_staged_sources`
+- `stationary_energy_rollback_staged_notation_keys`
 - `stationary_energy_save_review_draft`
 - `stationary_energy_request_inventory_save_confirmation`
 
@@ -206,7 +211,11 @@ When a request is scoped to an active `stationary_energy_draft_run_id`:
    instructions and registers only the scoped review tools
 4. Review tools stage temporary selections first, then save them into durable
    `review_decisions` only when the user asks to save the reviewed draft
-5. Save-to-inventory stays a separate CityCatalyst confirmation step. CA chat
+5. Notation-key tools use the same staged-first boundary. They list eligible
+   Stationary Energy rows and the allowed settable keys (`NO`, `NE`, `IE`,
+   `C`), stage or roll back notation choices in CA state, and never write
+   directly to inventory from chat
+6. Save-to-inventory stays a separate CityCatalyst confirmation step. CA chat
    returns the confirmation payload but does not write the inventory directly
 
 Stationary Energy review `tool_result` payloads may include these `ui_event`
@@ -427,9 +436,11 @@ Climate Advisor also persists CA-owned Stationary Energy draft workflow state:
 - `stationary_energy_draft_proposals`
   - Per-row proposed values plus recommended and alternate candidate references
 - `stationary_energy_review_decisions`
-  - Durable saved review decisions with versioning and commit status
+  - Durable saved review decisions with versioning, commit status, and optional
+    notation-key metadata
 - `stationary_energy_staged_review_selections`
-  - Active temporary chat-staged selections awaiting save, change, or rollback
+  - Active temporary chat-staged source or notation-key selections awaiting
+    save, change, or rollback
 
 `StreamingHandler` loads this state into chat context when the request is
 scoped to an active `stationary_energy_draft_run_id`.
@@ -601,9 +612,12 @@ The Stationary Energy review tool pack uses the same scoped CityCatalyst token
 for draft-save flows, but the ownership split is:
 
 - Climate Advisor owns pre-commit draft state, staged review selections, and
-  saved review decisions
+  saved review decisions, including notation-key choices
 - CityCatalyst owns the final user-facing inventory-write confirmation and
   commit flow
+- The agent can list notation-key targets and stage `NO`, `NE`, `IE`, or `C`
+  choices, but committed notation-key writes happen only after the reviewed
+  draft is saved and the existing inventory-save confirmation is approved
 
 ## Testing
 

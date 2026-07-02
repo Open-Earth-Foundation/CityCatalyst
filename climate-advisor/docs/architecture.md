@@ -96,14 +96,19 @@ sequenceDiagram
   - `get_all_datasources`
 - Added when the request is scoped to a Stationary Energy draft run:
   - `stationary_energy_list_review_options`
+  - `stationary_energy_list_notation_keys`
   - `stationary_energy_accept_one`
+  - `stationary_energy_stage_notation_key`
   - `stationary_energy_accept_multiple`
   - `stationary_energy_accept_all_recommended`
   - `stationary_energy_request_bulk_review_confirmation`
+  - `stationary_energy_request_bulk_notation_confirmation`
+  - `stationary_energy_apply_bulk_notation_choices`
   - `stationary_energy_request_all_recommended_confirmation`
   - `stationary_energy_request_staged_source_change_confirmation`
   - `stationary_energy_request_staged_sources_rollback_confirmation`
   - `stationary_energy_rollback_staged_sources`
+  - `stationary_energy_rollback_staged_notation_keys`
   - `stationary_energy_save_review_draft`
   - `stationary_energy_request_inventory_save_confirmation`
 
@@ -134,9 +139,13 @@ The review tools operate on CA-owned persisted draft state:
 - The draft snapshot contains `source_candidates`, `proposals`,
   `review_decisions`, and active `staged_review_selections`.
 - Single-row and bulk actions stage temporary selections first.
+- Notation-key actions first list CC-eligible Stationary Energy targets and the
+  allowed settable keys (`NO`, `NE`, `IE`, `C`), then stage or roll back CA
+  notation choices without writing inventory data.
 - Save-to-draft persists complete `review_decisions`.
 - Save-to-inventory remains a separate UI-confirmed CityCatalyst step after CA
-  emits an inventory-save confirmation payload.
+  emits an inventory-save confirmation payload. That final save can commit
+  both source/manual rows and saved notation-key rows.
 
 ## Persistence Model
 
@@ -151,8 +160,8 @@ workflow state in PostgreSQL.
 | `stationary_energy_draft_runs` | One persisted Stationary Energy draft workflow, optionally linked to a thread |
 | `stationary_energy_draft_source_candidates` | Candidate datasources and normalized source rows for the draft |
 | `stationary_energy_draft_proposals` | Proposed Stationary Energy row changes with recommended and alternate candidates |
-| `stationary_energy_review_decisions` | Durable saved review decisions with versioning and commit status |
-| `stationary_energy_staged_review_selections` | Active temporary chat-staged review choices awaiting save, change, or rollback |
+| `stationary_energy_review_decisions` | Durable saved review decisions with versioning, commit status, and optional notation-key metadata |
+| `stationary_energy_staged_review_selections` | Active temporary chat-staged source or notation-key choices awaiting save, change, or rollback |
 
 ## Service And Utility Layers
 
@@ -177,11 +186,12 @@ workflow state in PostgreSQL.
   - Loads draft runs, proposals, decisions, and staged review selections.
   - Persists staged selection status transitions.
 - `services/stationary_energy/stationary_energy_agent_review.py`
-  - Orchestrates review staging, preview, rollback, and draft-save flows.
+  - Orchestrates review staging, notation-key staging, preview, rollback, and
+    draft-save flows.
   - Commits staged selection transitions through the repository and draft service.
 - `services/stationary_energy/stationary_energy_review_resolver.py`
-  - Resolves selectable sources, pending review rows, and save-ready decision inputs
-    for one persisted draft snapshot.
+  - Resolves selectable sources, notation-key targets, pending review rows, and
+    save-ready decision inputs for one persisted draft snapshot.
 - `services/stationary_energy/stationary_energy_review_models.py`
   - Defines shared Stationary Energy review tool request and response payloads.
 - `services/stationary_energy/stationary_energy_review_messages.py`
@@ -282,6 +292,9 @@ Stationary Energy chat also has a dedicated prompt budget:
   after CA has assembled a complete reviewed draft state.
 - Inventory commit is not executed directly by CA chat tools; CA returns a
   confirmation payload and CityCatalyst owns the final inventory-write step.
+- Stationary Energy notation-key commits use an internal CC capability only
+  from the confirmed save-to-inventory path. Public notation-key routes remain
+  backward compatible.
 
 ### PostgreSQL And pgvector
 

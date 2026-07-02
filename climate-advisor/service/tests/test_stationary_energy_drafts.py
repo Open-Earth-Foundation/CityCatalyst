@@ -31,10 +31,12 @@ from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftRun,
     StationaryEnergyDraftSourceCandidate,
 )
+from app.models.stationary_energy_drafts import SaveStationaryEnergyDraftRequest
 from app.models.requests import MessageCreateRequest
 from app.services.citycatalyst_client import CityCatalystClientError
 from app.services.stationary_energy.stationary_energy_draft_service import (
     COMMIT_ACCEPTED_CAPABILITY,
+    COMMIT_NOTATION_KEYS_CAPABILITY,
     LOAD_CONTEXT_CAPABILITY,
     StationaryEnergyDraftService,
 )
@@ -46,6 +48,7 @@ from app.services.stationary_energy.stationary_energy_agent_review import (
 )
 from app.services.stationary_energy.stationary_energy_review_models import (
     StationaryEnergyAgentReviewChoiceInput,
+    StationaryEnergyNotationKeyChoiceInput,
 )
 from app.tools.stationary_energy_review_tools import (
     build_stationary_energy_review_tools,
@@ -709,6 +712,179 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(response.status_code, 401)
         mock_client.get_stationary_energy_allowed_capabilities.assert_awaited_once()
+
+    def test_start_list_and_resume_reject_token_subject_mismatch_from_cc(self) -> None:
+        mock_client = self._mock_subject_mismatch_cc_client()
+
+        with patch.dict(
+            os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}
+        ), patch(
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
+            return_value=mock_client,
+        ):
+            start_response = self.client.post(
+                "/v1/stationary-energy-drafts/start",
+                json={
+                    "user_id": "other-user",
+                    "city_id": "city-1",
+                    "inventory_id": "inventory-1",
+                },
+                headers=_auth_headers("user-1"),
+            )
+            list_response = self.client.get(
+                "/v1/stationary-energy-drafts",
+                params={
+                    "user_id": "other-user",
+                    "city_id": "city-1",
+                    "inventory_id": "inventory-1",
+                    "sector_code": "stationary_energy",
+                },
+                headers=_auth_headers("user-1"),
+            )
+            resume_response = self.client.get(
+                "/v1/stationary-energy-drafts/resume",
+                params={
+                    "user_id": "other-user",
+                    "city_id": "city-1",
+                    "inventory_id": "inventory-1",
+                    "sector_code": "stationary_energy",
+                },
+                headers=_auth_headers("user-1"),
+            )
+
+        self.assertEqual(start_response.status_code, 403, start_response.text)
+        self.assertEqual(list_response.status_code, 403, list_response.text)
+        self.assertEqual(resume_response.status_code, 403, resume_response.text)
+        self.assertEqual(
+            [
+                call.kwargs["user_id"]
+                for call in mock_client.get_stationary_energy_allowed_capabilities.await_args_list
+            ],
+            ["other-user", "other-user", "other-user"],
+        )
+        self.assertTrue(
+            all(
+                call.kwargs["token"] == _active_jwt("user-1")
+                for call in mock_client.get_stationary_energy_allowed_capabilities.await_args_list
+            )
+        )
+
+    def test_status_retry_review_and_save_reject_token_subject_mismatch_from_cc(
+        self,
+    ) -> None:
+        draft_run_id, _proposal_id, _candidate_id = self._start_draft()
+        review_decisions = self._complete_review_decisions(draft_run_id)
+        mock_client = self._mock_subject_mismatch_cc_client()
+
+        with patch.dict(
+            os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}
+        ), patch(
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
+            return_value=mock_client,
+        ):
+            status_response = self.client.get(
+                f"/v1/stationary-energy-drafts/{draft_run_id}",
+                params={"user_id": "other-user"},
+                headers=_auth_headers("user-1"),
+            )
+            retry_response = self.client.post(
+                f"/v1/stationary-energy-drafts/{draft_run_id}/retry",
+                json={"user_id": "other-user"},
+                headers=_auth_headers("user-1"),
+            )
+            review_response = self.client.post(
+                f"/v1/stationary-energy-drafts/{draft_run_id}/review",
+                json={"user_id": "other-user", "decisions": review_decisions},
+                headers=_auth_headers("user-1"),
+            )
+            save_response = self.client.post(
+                f"/v1/stationary-energy-drafts/{draft_run_id}/save",
+                json={"user_id": "other-user"},
+                headers=_auth_headers("user-1"),
+            )
+
+        self.assertEqual(status_response.status_code, 403, status_response.text)
+        self.assertEqual(retry_response.status_code, 403, retry_response.text)
+        self.assertEqual(review_response.status_code, 403, review_response.text)
+        self.assertEqual(save_response.status_code, 403, save_response.text)
+        self.assertEqual(
+            [
+                call.kwargs["user_id"]
+                for call in mock_client.get_stationary_energy_allowed_capabilities.await_args_list
+            ],
+            ["other-user", "other-user", "other-user", "other-user"],
+        )
+        self.assertTrue(
+            all(
+                call.kwargs["token"] == _active_jwt("user-1")
+                for call in mock_client.get_stationary_energy_allowed_capabilities.await_args_list
+            )
+        )
+
+    def test_stationary_energy_routes_reject_missing_or_malformed_bearer_tokens(
+        self,
+    ) -> None:
+        draft_run_id, _proposal_id, _candidate_id = self._start_draft()
+        endpoints = [
+            ("POST", "/v1/stationary-energy-drafts/start", {
+                "user_id": "user-1",
+                "city_id": "city-1",
+                "inventory_id": "inventory-1",
+            }),
+            ("GET", "/v1/stationary-energy-drafts", {
+                "user_id": "user-1",
+                "city_id": "city-1",
+                "inventory_id": "inventory-1",
+                "sector_code": "stationary_energy",
+            }),
+            ("GET", "/v1/stationary-energy-drafts/resume", {
+                "user_id": "user-1",
+                "city_id": "city-1",
+                "inventory_id": "inventory-1",
+                "sector_code": "stationary_energy",
+            }),
+            ("GET", f"/v1/stationary-energy-drafts/{draft_run_id}", {
+                "user_id": "user-1",
+            }),
+            ("POST", f"/v1/stationary-energy-drafts/{draft_run_id}/retry", {
+                "user_id": "user-1",
+            }),
+            ("POST", f"/v1/stationary-energy-drafts/{draft_run_id}/review", {
+                "user_id": "user-1",
+                "decisions": self._complete_review_decisions(draft_run_id),
+            }),
+            ("POST", f"/v1/stationary-energy-drafts/{draft_run_id}/save", {
+                "user_id": "user-1",
+            }),
+        ]
+
+        with patch.dict(os.environ, {"CA_FEATURE_FLAGS": "STATIONARY_ENERGY_AGENTIC"}):
+            for method, endpoint, payload in endpoints:
+                if method == "GET":
+                    missing_response = self.client.get(endpoint, params=payload)
+                    malformed_response = self.client.get(
+                        endpoint,
+                        params=payload,
+                        headers={"Authorization": "Basic token"},
+                    )
+                else:
+                    missing_response = self.client.post(endpoint, json=payload)
+                    malformed_response = self.client.post(
+                        endpoint,
+                        json=payload,
+                        headers={"Authorization": "Basic token"},
+                    )
+
+                self.assertEqual(
+                    missing_response.status_code,
+                    401,
+                    f"{method} {endpoint}: {missing_response.text}",
+                )
+                self.assertEqual(
+                    malformed_response.status_code,
+                    401,
+                    f"{method} {endpoint}: {malformed_response.text}",
+                )
 
     def test_start_returns_502_when_context_loading_fails(self) -> None:
         mock_client = self._mock_cc_client()
@@ -1788,6 +1964,153 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             "accept",
         )
 
+    def test_agent_review_stage_edit_and_rollback_notation_key(self) -> None:
+        draft_run_id = asyncio.run(self._create_persisted_draft_snapshot())
+        mock_client = self._mock_cc_client()
+        mock_client.list_stationary_energy_notation_keys.return_value = (
+            self._notation_targets_payload()
+        )
+
+        async def exercise() -> dict[str, Any]:
+            async with self.session_factory() as session:
+                proposal_id = await self._first_proposal_id(session, draft_run_id)
+                service = StationaryEnergyAgentReviewService(
+                    session,
+                    cc_client=mock_client,
+                )
+                listed = await service.list_notation_keys(
+                    draft_run_id=draft_run_id,
+                    user_id="user-1",
+                    authorization=f"Bearer {_active_jwt()}",
+                )
+                staged = await service.stage_notation_key(
+                    draft_run_id=draft_run_id,
+                    user_id="user-1",
+                    authorization=f"Bearer {_active_jwt()}",
+                    choice=StationaryEnergyNotationKeyChoiceInput(
+                        target_id="I.1.2",
+                        notation_key="NO",
+                        unavailable_explanation="No activity occurs in scope.",
+                    ),
+                )
+                edited = await service.stage_notation_key(
+                    draft_run_id=draft_run_id,
+                    user_id="user-1",
+                    authorization=f"Bearer {_active_jwt()}",
+                    choice=StationaryEnergyNotationKeyChoiceInput(
+                        proposal_id=proposal_id,
+                        notation_key="NE",
+                        unavailable_explanation="Data was not estimated.",
+                    ),
+                )
+                rolled_back = await service.rollback_staged_notation_keys(
+                    draft_run_id=draft_run_id,
+                    user_id="user-1",
+                    target_ids=["I.1.2"],
+                )
+                await session.commit()
+                return {
+                    "listed": listed.model_dump(mode="json"),
+                    "staged": staged.model_dump(mode="json"),
+                    "edited": edited.model_dump(mode="json"),
+                    "rolled_back": rolled_back.model_dump(mode="json"),
+                }
+
+        result = asyncio.run(exercise())
+
+        self.assertTrue(result["listed"]["success"])
+        self.assertEqual(
+            [entry["notation_key"] for entry in result["listed"]["allowed_notation_keys"]],
+            ["NO", "NE", "IE", "C"],
+        )
+        self.assertEqual(result["listed"]["targets"][0]["target_id"], "I.1.2")
+        self.assertTrue(result["staged"]["success"])
+        self.assertEqual(
+            result["staged"]["selected_choices"][0]["action"],
+            "set_notation_key",
+        )
+        self.assertEqual(
+            result["edited"]["selected_choices"][0]["notation_key"],
+            "NE",
+        )
+        self.assertTrue(result["rolled_back"]["success"])
+        self.assertEqual(
+            result["rolled_back"]["message_key"],
+            "tool-message-notation-rollback-success",
+        )
+        self.assertEqual(
+            self._get_status(str(draft_run_id))["staged_review_selections"],
+            [],
+        )
+
+    def test_save_commits_notation_key_decisions_after_review_save(self) -> None:
+        draft_run_id = asyncio.run(self._create_persisted_draft_snapshot())
+        mock_client = self._mock_cc_client()
+        mock_client.list_stationary_energy_notation_keys.return_value = (
+            self._notation_targets_payload()
+        )
+
+        async def exercise() -> dict[str, Any]:
+            async with self.session_factory() as session:
+                service = StationaryEnergyAgentReviewService(
+                    session,
+                    cc_client=mock_client,
+                )
+                await service.stage_notation_key(
+                    draft_run_id=draft_run_id,
+                    user_id="user-1",
+                    authorization=f"Bearer {_active_jwt()}",
+                    choice=StationaryEnergyNotationKeyChoiceInput(
+                        target_id="I.1.2",
+                        notation_key="NO",
+                        unavailable_explanation="No activity occurs in scope.",
+                    ),
+                )
+                review_result = await service.save_review_draft(
+                    draft_run_id=draft_run_id,
+                    user_id="user-1",
+                    authorization=f"Bearer {_active_jwt()}",
+                )
+                await session.commit()
+
+            async with self.session_factory() as session:
+                draft_service = StationaryEnergyDraftService(
+                    session,
+                    cc_client=mock_client,
+                )
+                save_result = await draft_service.save_draft(
+                    draft_run_id=draft_run_id,
+                    payload=SaveStationaryEnergyDraftRequest(user_id="user-1"),
+                    authorization=f"Bearer {_active_jwt()}",
+                )
+                await session.commit()
+                return {
+                    "review": review_result.model_dump(mode="json"),
+                    "save": save_result.model_dump(mode="json"),
+                }
+
+        result = asyncio.run(exercise())
+
+        self.assertTrue(result["review"]["success"])
+        decision = result["review"]["saved_decisions"][0]
+        self.assertEqual(decision["action"], "set_notation_key")
+        self.assertEqual(decision["notation_key"], "NO")
+        self.assertEqual(decision["commit_status"], "pending_cc_commit")
+
+        self.assertEqual(result["save"]["status"], "saved")
+        saved_decision = result["save"]["decisions"][0]
+        self.assertEqual(saved_decision["commit_status"], "committed")
+        self.assertEqual(saved_decision["commit_response"]["notation_key"], "NO")
+        mock_client.commit_stationary_energy_accepted.assert_not_awaited()
+        mock_client.commit_stationary_energy_notation_keys.assert_awaited_once()
+        notation_rows = (
+            mock_client.commit_stationary_energy_notation_keys.await_args.kwargs[
+                "request_payload"
+            ]["rows"]
+        )
+        self.assertEqual(notation_rows[0]["target_id"], "I.1.2")
+        self.assertEqual(notation_rows[0]["notation_key"], "NO")
+
     def test_agent_review_save_draft_blocks_when_required_choices_are_missing(
         self,
     ) -> None:
@@ -2116,7 +2439,7 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             side_effect=lambda **kwargs: (
                 [LOAD_CONTEXT_CAPABILITY]
                 if kwargs.get("workflow_step") == "draft"
-                else [COMMIT_ACCEPTED_CAPABILITY]
+                else [COMMIT_ACCEPTED_CAPABILITY, COMMIT_NOTATION_KEYS_CAPABILITY]
             )
         )
         mock_client.load_stationary_energy_context = AsyncMock(
@@ -2124,6 +2447,50 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         )
         mock_client.commit_stationary_energy_accepted = AsyncMock(
             side_effect=self._mock_commit_response
+        )
+        mock_client.list_stationary_energy_notation_keys = AsyncMock(
+            return_value={
+                "allowed_notation_keys": [
+                    {
+                        "notation_key": "NO",
+                        "label": "NO",
+                        "meaning": "Not occurring",
+                        "unavailable_reason": "no-occurrance",
+                    },
+                    {
+                        "notation_key": "NE",
+                        "label": "NE",
+                        "meaning": "Not estimated",
+                        "unavailable_reason": "not-estimated",
+                    },
+                    {
+                        "notation_key": "IE",
+                        "label": "IE",
+                        "meaning": "Included elsewhere",
+                        "unavailable_reason": "included-elsewhere",
+                    },
+                    {
+                        "notation_key": "C",
+                        "label": "C",
+                        "meaning": "Confidential",
+                        "unavailable_reason": "confidential-information",
+                    },
+                ],
+                "targets": [],
+            }
+        )
+        mock_client.commit_stationary_energy_notation_keys = AsyncMock(
+            side_effect=self._mock_notation_commit_response
+        )
+        return mock_client
+
+    def _mock_subject_mismatch_cc_client(self) -> AsyncMock:
+        mock_client = self._mock_cc_client()
+        mock_client.get_stationary_energy_allowed_capabilities = AsyncMock(
+            side_effect=CityCatalystClientError(
+                "token subject does not match request user",
+                status_code=403,
+            )
         )
         return mock_client
 
@@ -2267,6 +2634,29 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             ],
         }
 
+    @staticmethod
+    async def _mock_notation_commit_response(
+        *,
+        request_payload: dict[str, Any],
+        token: str | None = None,
+    ) -> dict[str, Any]:
+        rows = request_payload.get("rows") or []
+        return {
+            "draft_run_id": request_payload.get("draft_run_id"),
+            "inventory_id": request_payload.get("inventory_id"),
+            "results": [
+                {
+                    "proposal_id": row["proposal_id"],
+                    "decision_version": row["decision_version"],
+                    "target_id": row.get("target_id"),
+                    "notation_key": row.get("notation_key"),
+                    "status": "committed",
+                    "token_present": bool(token),
+                }
+                for row in rows
+            ],
+        }
+
     def _complete_review_decisions(
         self,
         draft_run_id: str,
@@ -2311,6 +2701,61 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
                 return str(draft_run.draft_run_id)
 
         return asyncio.run(load_id())
+
+    @staticmethod
+    async def _first_proposal_id(
+        session: AsyncSession,
+        draft_run_id: UUID,
+    ) -> UUID:
+        result = await session.execute(
+            select(StationaryEnergyDraftProposal.proposal_id)
+            .where(StationaryEnergyDraftProposal.draft_run_id == draft_run_id)
+            .order_by(StationaryEnergyDraftProposal.proposal_id)
+        )
+        return result.scalar_one()
+
+    @staticmethod
+    def _notation_targets_payload() -> dict[str, Any]:
+        return {
+            "allowed_notation_keys": [
+                {
+                    "notation_key": "NO",
+                    "label": "NO",
+                    "meaning": "Not occurring",
+                    "unavailable_reason": "no-occurrance",
+                },
+                {
+                    "notation_key": "NE",
+                    "label": "NE",
+                    "meaning": "Not estimated",
+                    "unavailable_reason": "not-estimated",
+                },
+                {
+                    "notation_key": "IE",
+                    "label": "IE",
+                    "meaning": "Included elsewhere",
+                    "unavailable_reason": "included-elsewhere",
+                },
+                {
+                    "notation_key": "C",
+                    "label": "C",
+                    "meaning": "Confidential",
+                    "unavailable_reason": "confidential-information",
+                },
+            ],
+            "targets": [
+                {
+                    "target_id": "I.1.2",
+                    "target_label": "Residential buildings / Scope 2",
+                    "target_ref": {
+                        "subcategory_id": "I.1.2",
+                        "subcategory_name": "Residential buildings",
+                        "scope_id": "2",
+                    },
+                    "current_notation_key": None,
+                }
+            ],
+        }
 
     def _set_draft_run_status(self, draft_run_id: str, status: str) -> None:
         async def set_status() -> None:

@@ -266,7 +266,7 @@ export default function HomePage({
                   lng={language}
                   city={city}
                   inventory={inventory}
-                  organizationId={organization.organizationId}
+                  organizationId={organization?.organizationId}
                 />
               )}
             </VStack>

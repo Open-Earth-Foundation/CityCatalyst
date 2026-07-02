@@ -13,6 +13,7 @@ export function ActionCards({
   city,
   inventory,
   inventoryId,
+  organizationId,
   lng,
   t,
 }: {
@@ -21,6 +22,7 @@ export function ActionCards({
   city?: CityAttributes;
   lng: string;
   inventory?: InventoryAttributes;
+  organizationId?: string;
 }) {
   const pathname = usePathname();
 
@@ -82,7 +84,7 @@ export function ActionCards({
         </Card.Root>
       </NextLink>
       <Box display="flex" flexDirection="column" gap="8px">
-        <AddCollaboratorButton lng={lng} />
+        <AddCollaboratorButton lng={lng} organizationId={organizationId} />
         <DownloadButton
           lng={lng}
           inventoryId={inventoryId!}

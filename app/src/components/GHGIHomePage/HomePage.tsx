@@ -217,7 +217,7 @@ export default function HomePage({
     inventoryIdFromParam!,
   );
 
-  const { isFrozenCheck } = useOrganizationContext();
+  const { isFrozenCheck, organization } = useOrganizationContext();
 
   if (isUserInfoLoading) {
     return <ProgressLoader />;
@@ -266,6 +266,7 @@ export default function HomePage({
                   lng={language}
                   city={city}
                   inventory={inventory}
+                  organizationId={organization.organizationId}
                 />
               )}
             </VStack>

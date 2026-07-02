@@ -107,7 +107,7 @@ export default class ActionPlanEmailService {
     inventoryId: string,
     language: string = "en",
   ): string {
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+    const baseUrl = process.env.HOST || "http://localhost:3000";
     return `${baseUrl}/${language}/cities/${cityId}/HIAP/${inventoryId}`;
   }
 

@@ -32,7 +32,7 @@ Biome filtering is intentionally not included yet.
   - Source: caller request `excludedActionIds[]`, usually confirmed after `POST /v1/prioritize/exclusions/preview`
   - Current behavior: each matching `action_id` is discarded before legal filtering
 - **Legal assessment per action**
-  - Source: legal assessments client payload (mock/API), filtered by request `countryCode`
+  - Source: legal assessments client payload (S3 by default, mock for fixtures), filtered by request `countryCode`
 
 ### Outputs
 

@@ -98,6 +98,8 @@
   "manually-added": "Dados adicionados manualmente",
   "check-data-heading": "Explore Conjuntos de Dados Relevantes para Conectar ao Seu Inventário",
   "check-data-details": "Revise e integre automaticamente dados relevantes para o inventário de GEE da sua cidade.",
+  "browse-and-connect-external-datasets-heading": "Navegar e conectar conjuntos de dados externos ao seu inventário de emissões de GEE",
+  "browse-and-connect-external-datasets-description": "Você pode revisar e integrar dados de emissões de provedores externos diretamente em seu inventário de emissões de GEE.",
   "no-data-sources": "Sem Fontes de Dados Externas Disponíveis",
   "no-data-sources-description": "Parece que não há fontes externas disponíveis no momento.<1></1>Se você conhece alguma, <3>por favor, relate isso</3> e priorizaremos sua solicitação.",
   "data-quality": "Qualidade dos Dados",

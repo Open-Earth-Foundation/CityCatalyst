@@ -30,6 +30,7 @@ from app.services.data_clients import (
     MockCityDataApiClient,
     MockLegalDataApiClient,
     MockActionPolicyScoresDataApiClient,
+    S3LegalDataApiClient,
     describe_legal_data_source,
 )
 from app.services.http_client import UpstreamApiError
@@ -415,7 +416,9 @@ def run_prioritization(
     internal_request_id: UUID,
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient,
     action_pathways_data_api_client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient,
-    legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient,
+    legal_data_api_client: (
+        MockLegalDataApiClient | ApiLegalDataApiClient | S3LegalDataApiClient
+    ),
     action_policy_scores_data_api_client: (
         MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
     ),

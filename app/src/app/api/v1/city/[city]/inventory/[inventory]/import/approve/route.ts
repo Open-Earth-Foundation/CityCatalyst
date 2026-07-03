@@ -309,6 +309,19 @@ async function runApproveImportInBackground(args: {
         const gpcRefNo =
           row.gpcRefNo?.trim() ||
           resolveGpcRefNo(sector, subsector, activityHint) ||
+          // Fallback: if subsector was split on " > " and the right part
+          // (e.g. "Other/uncategorized") didn't resolve, retry with the
+          // parent (left) subsector name (e.g. "On-road").
+          (() => {
+            const rawSub = row.subsector?.trim() ?? "";
+            if (rawSub.includes(" > ")) {
+              const parentSub = rawSub.split(" > ")[0].trim();
+              if (parentSub && parentSub !== subsector) {
+                return resolveGpcRefNo(sector, parentSub, activityHint);
+              }
+            }
+            return null;
+          })() ||
           null;
 
         if (!gpcRefNo) {

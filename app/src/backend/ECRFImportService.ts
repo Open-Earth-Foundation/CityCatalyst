@@ -137,11 +137,31 @@ export default class ECRFImportService {
           const activityType = activityHeader
             ? row[activityHeader]?.toString().trim()
             : undefined;
-          const resolved = resolveGpcRefNo(
+          let resolved = resolveGpcRefNo(
             rawSector,
             rawSubsector,
             activityType,
           );
+          // Fallback: if the subsector was split on " > " and the right part
+          // (e.g. "Other/uncategorized") didn't resolve, retry with the left
+          // part (e.g. "On-road") which is typically the parent subsector name.
+          if (!resolved) {
+            const originalSubsector = hasSubsectorColumn
+              ? row[headers[detectedColumns.subsector!]]?.toString().trim()
+              : "";
+            if (originalSubsector && originalSubsector.includes(" > ")) {
+              const parentSubsector = originalSubsector
+                .split(" > ")[0]
+                .trim();
+              if (parentSubsector && parentSubsector !== rawSubsector) {
+                resolved = resolveGpcRefNo(
+                  rawSector,
+                  parentSubsector,
+                  activityType,
+                );
+              }
+            }
+          }
           if (resolved) {
             gpcRefNo = resolved;
           } else {

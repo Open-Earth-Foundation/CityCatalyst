@@ -16,6 +16,7 @@ import { api } from "@/services/api";
 interface ReviewConfirmStepProps {
   t: TFunction;
   cityId: string;
+  cityName?: string;
   inventoryId: string;
   importedFileId: string;
   onImport: () => void;
@@ -24,6 +25,7 @@ interface ReviewConfirmStepProps {
 export default function ReviewConfirmStep({
   t,
   cityId,
+  cityName,
   importedFileId,
   onImport,
   inventoryId,
@@ -43,6 +45,11 @@ export default function ReviewConfirmStep({
     return (
       <Box w="full">
         <Box display="flex" flexDir="column" gap="24px" mb={6}>
+          {cityName && (
+            <Text fontSize="body.md" color="content.tertiary" fontWeight="medium">
+              {cityName}
+            </Text>
+          )}
           <Heading size="lg">{t("review-confirm-heading")}</Heading>
           <Text fontSize="body.lg" color="content.tertiary">
             {t("review-confirm-description")}
@@ -104,6 +111,11 @@ export default function ReviewConfirmStep({
   return (
     <Box w="full">
       <Box display="flex" flexDir="column" gap="24px" mb={6}>
+        {cityName && (
+          <Text fontSize="body.md" color="content.tertiary" fontWeight="medium">
+            {cityName}
+          </Text>
+        )}
         <Heading size="lg">{t("review-confirm-heading")}</Heading>
         <Text fontSize="body.lg" color="content.tertiary">
           {t("review-confirm-description")}

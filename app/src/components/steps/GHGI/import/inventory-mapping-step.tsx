@@ -21,6 +21,7 @@ const MANDATORY_KEYS = new Set(["gpcRefNo", "sector", "subsector", "activityAmou
 interface InventoryMappingStepProps {
   t: TFunction;
   cityId: string;
+  cityName?: string;
   inventoryId: string;
   importedFileId: string;
   mappingOverrides: Record<string, string>;
@@ -31,6 +32,7 @@ interface InventoryMappingStepProps {
 export default function InventoryMappingStep({
   t,
   cityId,
+  cityName,
   inventoryId,
   importedFileId,
   mappingOverrides,
@@ -74,6 +76,11 @@ export default function InventoryMappingStep({
     return (
       <Box w="full">
         <Box display="flex" flexDir="column" gap="24px" mb={6}>
+          {cityName && (
+            <Text fontSize="body.md" color="content.tertiary" fontWeight="medium">
+              {cityName}
+            </Text>
+          )}
           <Heading size="lg">{t("inventory-mapping-heading")}</Heading>
           <Text fontSize="body.lg" color="content.tertiary">
             {t("inventory-mapping-description")}
@@ -103,6 +110,11 @@ export default function InventoryMappingStep({
   return (
     <Box w="full">
       <Box display="flex" flexDir="column" gap="24px" mb={6}>
+        {cityName && (
+          <Text fontSize="body.md" color="content.tertiary" fontWeight="medium">
+            {cityName}
+          </Text>
+        )}
         <Heading size="lg">{t("inventory-mapping-heading")}</Heading>
         <Text fontSize="body.lg" color="content.tertiary">
           {t("inventory-mapping-description")}

@@ -18,6 +18,7 @@ import { bytesToMB } from "@/util/helpers";
 
 interface UploadFileStepProps {
   t: TFunction;
+  cityName?: string;
   uploadedFile: File | null;
   onFileUpload: (file: File) => void;
   onRemoveFile: () => void;
@@ -26,6 +27,7 @@ interface UploadFileStepProps {
 
 export default function UploadFileStep({
   t,
+  cityName,
   uploadedFile,
   onFileUpload,
   onRemoveFile,
@@ -64,6 +66,11 @@ export default function UploadFileStep({
   return (
     <Box w="full">
       <Box display="flex" flexDir="column" gap="24px" mb={6}>
+        {cityName && (
+          <Text fontSize="body.md" color="content.tertiary" fontWeight="medium">
+            {cityName}
+          </Text>
+        )}
         <Heading size="lg">{t("upload-inventory-file-heading")}</Heading>
         <Text fontSize="body.lg" color="content.tertiary">
           {t("upload-inventory-file-description")}

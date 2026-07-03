@@ -663,6 +663,7 @@ export default function ImportPage(props: {
                   <Box w="full" display="flex" flexDirection="column" gap="24px">
                     <UploadFileStep
                       t={t}
+                      cityName={inventory?.city?.name}
                       uploadedFile={uploadedFile}
                       onFileUpload={handleFileUpload}
                       onRemoveFile={handleRemoveFile}
@@ -781,6 +782,7 @@ export default function ImportPage(props: {
                   <InventoryMappingStep
                     t={t}
                     cityId={cityId}
+                    cityName={inventory?.city?.name}
                     inventoryId={inventoryId}
                     importedFileId={importedFileId}
                     mappingOverrides={mappingOverrides}
@@ -805,6 +807,7 @@ export default function ImportPage(props: {
                   <ReviewConfirmStep
                     t={t}
                     cityId={cityId}
+                    cityName={inventory?.city?.name}
                     inventoryId={inventoryId}
                     importedFileId={importedFileId}
                     onImport={() => {}}

@@ -15,14 +15,8 @@ import {
 import { MdError, MdWarning } from "react-icons/md";
 import { api } from "@/services/api";
 import type { ColumnInfo, RequiredMappingOption } from "@/util/types";
-import { useEffect } from "react";
 
-const MANDATORY_KEYS = new Set([
-  "gpcRefNo",
-  "sector",
-  "subsector",
-  "activityAmount",
-]);
+const MANDATORY_KEYS = new Set(["gpcRefNo", "sector", "subsector", "activityAmount"]);
 
 interface InventoryMappingStepProps {
   t: TFunction;
@@ -31,7 +25,7 @@ interface InventoryMappingStepProps {
   importedFileId: string;
   mappingOverrides: Record<string, string>;
   onMappingChange: (columnName: string, mappedKey: string) => void;
-  onCanContinueChange: (canContinue: boolean) => void;
+  canContinue: boolean;
 }
 
 export default function InventoryMappingStep({
@@ -41,7 +35,7 @@ export default function InventoryMappingStep({
   importedFileId,
   mappingOverrides,
   onMappingChange,
-  onCanContinueChange,
+  canContinue,
 }: InventoryMappingStepProps) {
   const { data, isLoading } = api.useGetImportStatusQuery(
     { cityId, inventoryId, importedFileId },
@@ -62,23 +56,13 @@ export default function InventoryMappingStep({
     return getKeyForLabel(col.interpretedAs);
   };
 
-  const mappedKeys = new Set(columns.map(getEffectiveKey).filter((k) => k !== ""));
-
-  const gpcRefNoMapped = mappedKeys.has("gpcRefNo");
-  const sectorMapped = mappedKeys.has("sector");
-  const subsectorMapped = mappedKeys.has("subsector");
-  const canContinue = gpcRefNoMapped || (sectorMapped && subsectorMapped);
-
-  const hasUnmappedColumns = columns.some((col) => getEffectiveKey(col) === "");
-
-  useEffect(() => {
-    onCanContinueChange(canContinue);
-  }, [canContinue, onCanContinueChange]);
-
   const isMandatoryColumn = (col: ColumnInfo): boolean => {
     const autoKey = getKeyForLabel(col.interpretedAs);
-    return MANDATORY_KEYS.has(autoKey) || MANDATORY_KEYS.has(mappingOverrides[col.columnName] ?? "");
+    const overrideKey = mappingOverrides[col.columnName] ?? "";
+    return MANDATORY_KEYS.has(autoKey) || MANDATORY_KEYS.has(overrideKey);
   };
+
+  const hasUnmappedColumns = columns.some((col) => getEffectiveKey(col) === "");
 
   const sortedColumns = [...columns].sort((a, b) => {
     const aReq = isMandatoryColumn(a) ? 0 : 1;

@@ -4,7 +4,7 @@ import { useTranslation } from "@/i18n/client";
 import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import React, { use, useState, useEffect, useRef, useCallback } from "react";
+import React, { use, useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
@@ -207,7 +207,6 @@ export default function ImportPage(props: {
   const [mappingOverrides, setMappingOverrides] = useState<
     Record<string, string>
   >({});
-  const [canContinueMapping, setCanContinueMapping] = useState(false);
   const [showDataLossModal, setShowDataLossModal] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
   const [extractionProgress, setExtractionProgress] = useState<{
@@ -240,9 +239,30 @@ export default function ImportPage(props: {
   const [interpretImport, { isLoading: isInterpreting }] =
     api.useInterpretImportMutation();
   const [getImportStatus] = api.useLazyGetImportStatusQuery();
+  const { data: mappingStepData } = api.useGetImportStatusQuery(
+    { cityId, inventoryId: inventoryId ?? "", importedFileId: importedFileId ?? "" },
+    { skip: !importedFileId || !inventoryId },
+  );
   const { data: inventory } = api.useGetInventoryQuery(inventoryId ?? "", {
     skip: !inventoryId,
   });
+
+  const canContinueMapping = useMemo(() => {
+    const cols = mappingStepData?.columnMappings?.columns ?? [];
+    const reqMappings = mappingStepData?.columnMappings?.requiredMappings ?? [];
+    if (cols.length === 0 || reqMappings.length === 0) return false;
+    const MANDATORY = new Set(["gpcRefNo", "sector", "subsector", "activityAmount"]);
+    const keyForLabel = (label: string | null) =>
+      label ? (reqMappings.find((r) => r.label === label)?.key ?? "") : "";
+    const effectiveKey = (col: { columnName: string; interpretedAs: string | null }) =>
+      col.columnName in mappingOverrides
+        ? mappingOverrides[col.columnName]
+        : keyForLabel(col.interpretedAs);
+    const isMandatory = (col: { columnName: string; interpretedAs: string | null }) =>
+      MANDATORY.has(keyForLabel(col.interpretedAs)) ||
+      MANDATORY.has(mappingOverrides[col.columnName] ?? "");
+    return cols.filter(isMandatory).every((col) => effectiveKey(col) !== "");
+  }, [mappingStepData, mappingOverrides]);
 
   // Reset year-mismatch toast when the user switches to a different import
   useEffect(() => {
@@ -770,7 +790,7 @@ export default function ImportPage(props: {
                         [columnName]: mappedKey,
                       }));
                     }}
-                    onCanContinueChange={setCanContinueMapping}
+                    canContinue={canContinueMapping}
                   />
                 </motion.div>
               )}

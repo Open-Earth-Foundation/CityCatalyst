@@ -94,6 +94,8 @@ sequenceDiagram
   - `inventory_status_overview`
   - `inventory_emissions_context`
   - `get_all_datasources` as the temporary legacy datasource lookup
+  - The general prompt must disambiguate same-city/year inventories with
+    inventory name, type, and GWP before calling inventory detail tools.
 - Added when the request is scoped to a Stationary Energy draft run:
   - `inventory_status_overview`
   - `inventory_emissions_context`
@@ -222,6 +224,8 @@ workflow state in PostgreSQL.
 - `tools/inventory_context_tools.py`
   - The shared CityCatalyst inventory capability tools used by the general
     prompt and the scoped Stationary Energy review prompt.
+  - Updates the shared request token reference after a capability call refreshes
+    the CityCatalyst bearer token.
 - `tools/stationary_energy_review_tools.py`
   - The scoped Stationary Energy review tool pack backed by
     `StationaryEnergyAgentReviewService`.

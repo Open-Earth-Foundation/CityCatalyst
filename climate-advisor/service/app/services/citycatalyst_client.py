@@ -74,6 +74,7 @@ class CityCatalystClient:
         # Datasource aggregation pulls several upstream feeds and often exceeds the default 30s.
         self.datasource_timeout = max(self.timeout, 90)
         self._client: Optional[httpx.AsyncClient] = None
+        self.last_refreshed_token: Optional[str] = None
         
         if not self.base_url:
             logger.warning(
@@ -361,19 +362,52 @@ class CityCatalystClient:
         token: Optional[str] = None,
         request_timeout: Optional[float] = None,
     ) -> Dict[str, Any]:
-        """POST to an internal CityCatalyst capability endpoint and parse the JSON response."""
+        """POST to an internal CityCatalyst capability endpoint with auth refresh."""
         if not self.base_url:
             raise CityCatalystClientError("CC_BASE_URL not configured")
 
         url = f"{self.base_url.rstrip('/')}{path}"
         client = await self._get_client()
+        request_token = token
+        user_id = self._refresh_user_id(json_data)
+        self.last_refreshed_token = None
+
+        # Refresh before the request when the caller supplied user-scoped auth.
+        if request_token and user_id and is_token_expired(request_token):
+            logger.debug("Internal capability token expired, refreshing preemptively")
+            try:
+                request_token, _ = await self.refresh_token(user_id)
+                self.last_refreshed_token = request_token
+            except TokenRefreshError as e:
+                logger.warning("Internal capability preemptive token refresh failed: %s", e)
+
         response = await client.post(
             url,
-            headers=self._internal_headers(token),
+            headers=self._internal_headers(request_token),
             json=json_data,
             follow_redirects=True,
             timeout=request_timeout or self.datasource_timeout,
         )
+
+        # Retry once on 401 with a fresh user token, matching the public POST path.
+        if response.status_code == 401 and request_token and user_id:
+            logger.debug("Internal capability got 401, attempting token refresh")
+            try:
+                request_token, _ = await self.refresh_token(user_id)
+                self.last_refreshed_token = request_token
+                response = await client.post(
+                    url,
+                    headers=self._internal_headers(request_token),
+                    json=json_data,
+                    follow_redirects=True,
+                    timeout=request_timeout or self.datasource_timeout,
+                )
+            except TokenRefreshError as e:
+                logger.error("Failed to refresh internal capability token: %s", e)
+                raise CityCatalystClientError(
+                    f"Authentication failed: {e}",
+                    status_code=401,
+                ) from e
 
         if not response.is_success:
             error_text = response.text[:500] if response.text else "Unknown error"
@@ -388,6 +422,14 @@ class CityCatalystClient:
             raise CityCatalystClientError(
                 f"Failed to parse CC capability response: {e}"
             ) from e
+
+    def _refresh_user_id(self, payload: Dict[str, Any]) -> Optional[str]:
+        """Return the user id available for internal capability token refresh."""
+        user_id = payload.get("user_id")
+        if user_id is None:
+            return None
+        user_id_text = str(user_id).strip()
+        return user_id_text or None
 
     async def get_stationary_energy_allowed_capabilities(
         self,

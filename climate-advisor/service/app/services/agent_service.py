@@ -307,3 +307,7 @@ class AgentService:
         """Update the cached CC token used by inventory tools."""
         self.cc_access_token = token
         self._token_ref["value"] = token
+
+    def current_cc_token(self) -> Optional[str]:
+        """Return the latest CC token after tool execution."""
+        return self._token_ref.get("value")

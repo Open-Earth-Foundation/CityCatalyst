@@ -186,6 +186,66 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
         self.assertEqual(recorded["json"]["city_id"], "city-1")
 
+    async def test_inventory_capability_retries_with_refreshed_token_on_401(self) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(
+                cc_base_url="https://cc.example",
+                cc_api_key="test-api-key",
+            ),
+        ), patch("app.services.citycatalyst_client.is_token_expired", return_value=False):
+            client = CityCatalystClient()
+            stub = _StubAsyncClient(
+                [
+                    _response(401, json_data={"error": "Unauthorized"}),
+                    _response(
+                        200,
+                        json_data={
+                            "access_token": "fresh-token",
+                            "expires_in": 3600,
+                        },
+                    ),
+                    _response(
+                        200,
+                        json_data={
+                            "action": "ghgi.inventory.status_overview",
+                            "success": True,
+                        },
+                    ),
+                ]
+            )
+
+            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+                result = await client.load_inventory_status_overview(
+                    request_payload={
+                        "user_id": "user-1",
+                        "city_id": "city-1",
+                        "inventory_id": "inventory-1",
+                    },
+                    token="expired-token",
+                )
+
+        self.assertTrue(result["success"])
+        self.assertEqual(client.last_refreshed_token, "fresh-token")
+        self.assertEqual(len(stub.requests), 3)
+        self.assertEqual(
+            stub.requests[0]["url"],
+            "https://cc.example/api/v1/internal/ca/capabilities/ghgi/inventory/status-overview",
+        )
+        self.assertEqual(
+            stub.requests[0]["headers"]["Authorization"],
+            "Bearer expired-token",
+        )
+        self.assertEqual(
+            stub.requests[1]["url"],
+            "https://cc.example/api/v1/internal/ca/user-token",
+        )
+        self.assertEqual(stub.requests[1]["json"]["user_id"], "user-1")
+        self.assertEqual(
+            stub.requests[2]["headers"]["Authorization"],
+            "Bearer fresh-token",
+        )
+
     async def test_commit_stationary_energy_accepted_posts_internal_capability(self) -> None:
         with patch(
             "app.services.citycatalyst_client.get_settings",

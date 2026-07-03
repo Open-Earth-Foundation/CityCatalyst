@@ -70,6 +70,8 @@ def test_compose_prompt_wraps_core_and_chat() -> None:
     assert "`get_all_datasources`" in composed_prompt
     assert "`climate_vector_search`" in composed_prompt
     assert "Exact tool argument contracts come from the registered runtime tool definitions" in composed_prompt
+    assert "Confirm by city/year only when that pair identifies one inventory" in composed_prompt
+    assert "`inventory_name`, `type`, and `gwp`" in composed_prompt
     assert "inventory_context" not in composed_prompt
     assert "Tool invocation argument contracts:" not in composed_prompt
 

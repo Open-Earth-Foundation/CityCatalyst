@@ -80,6 +80,26 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(handler.history_saved)
         fake_agent_service.close.assert_awaited_once()
 
+    async def test_persist_refreshed_token_from_agent_service(self) -> None:
+        handler = StreamingHandler(
+            thread_id="thread-1",
+            user_id="user-1",
+            session_factory=MagicMock(),
+            cc_access_token="old-token",
+        )
+        handler.agent_service = MagicMock()
+        handler.agent_service.current_cc_token.return_value = "fresh-token"
+        handler.token_handler = MagicMock()
+        handler.token_handler.handle_refreshed_token = AsyncMock(return_value=True)
+
+        await handler._persist_refreshed_token_from_agent()
+
+        handler.token_handler.handle_refreshed_token.assert_awaited_once_with(
+            "fresh-token",
+            handler.agent_service,
+        )
+        self.assertEqual(handler.cc_access_token, "fresh-token")
+
     async def test_run_config_uses_persisted_stationary_energy_context_marker(
         self,
     ) -> None:

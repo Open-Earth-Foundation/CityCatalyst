@@ -232,6 +232,8 @@ class StreamingHandler:
             ):
                 yield event_bytes
 
+            await self._persist_refreshed_token_from_agent()
+
             # Persist the assistant message before the terminal done event so
             # history_saved reflects the actual write result.
             await self.persist_message()
@@ -986,6 +988,20 @@ class StreamingHandler:
                 },
                 event="info",
             ).encode("utf-8")
+
+    async def _persist_refreshed_token_from_agent(self) -> None:
+        """Persist a refreshed token held by AgentService after tool execution."""
+        if not self.agent_service or not self.token_handler:
+            return
+
+        current_token = getattr(self.agent_service, "current_cc_token", lambda: None)()
+        if not isinstance(current_token, str) or not current_token:
+            return
+        if current_token == self.cc_access_token:
+            return
+
+        await self.token_handler.handle_refreshed_token(current_token, self.agent_service)
+        self.cc_access_token = current_token
 
     def _format_completion_event(self, req_id: str, ok: bool = None) -> bytes:
         """Format the final completion event."""

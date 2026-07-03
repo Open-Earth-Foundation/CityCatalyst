@@ -171,6 +171,8 @@ data: {}
 
 - `inventory_list_accessible`
   - Lists all accessible city/year inventories, or filters by city and year.
+  - Requires name, type, and GWP disambiguation when one city/year has multiple
+    inventories.
 - `inventory_status_overview`
   - Summarizes selected-inventory metadata, completion, and filled/missing
     sector state.
@@ -182,6 +184,8 @@ data: {}
 
 These tools use the scoped bearer token, refresh it if needed, and keep raw
 CityCatalyst IDs internal to tool chaining rather than user-facing responses.
+When city/year is ambiguous, the prompt asks the user to choose by inventory
+name, type, and GWP before calling detail tools.
 
 **Added for active Stationary Energy draft review chat**
 
@@ -611,8 +615,10 @@ These tools:
 
 - construct requests to CityCatalyst inventory capability endpoints
 - automatically include the scoped JWT in the `Authorization` header
-- refresh the token when needed
+- refresh and persist the token when needed
 - return compact, read-only inventory context to the agent
+- require inventory name, type, and GWP disambiguation when city/year is not
+  unique
 
 ### Stationary Energy Draft Review Boundary
 

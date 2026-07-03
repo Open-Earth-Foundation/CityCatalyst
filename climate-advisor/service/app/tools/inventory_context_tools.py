@@ -62,6 +62,7 @@ def build_inventory_context_tools(
             client = client_factory()
             try:
                 result = await loader(client, request_payload, token)
+                _update_token_ref_from_client(client, token_ref)
             finally:
                 await _close_client(client)
 
@@ -172,6 +173,7 @@ def build_inventory_capability_tools(
             client = client_factory()
             try:
                 result = await loader(client, request_payload, token)
+                _update_token_ref_from_client(client, token_ref)
             finally:
                 await _close_client(client)
 
@@ -308,6 +310,16 @@ async def _close_client(client: object) -> None:
     close_result = close()
     if inspect.isawaitable(close_result):
         await close_result
+
+
+def _update_token_ref_from_client(
+    client: object,
+    token_ref: Dict[str, Optional[str]],
+) -> None:
+    """Copy a refreshed client token into the shared tool token reference."""
+    refreshed_token = getattr(client, "last_refreshed_token", None)
+    if isinstance(refreshed_token, str) and refreshed_token:
+        token_ref["value"] = refreshed_token
 
 
 def _explicit_inventory_payload(

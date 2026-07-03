@@ -109,11 +109,16 @@ export default class ECRFImportService {
         let rawSubsector = hasSubsectorColumn
           ? row[headers[detectedColumns.subsector!]]?.toString().trim()
           : "";
+        // Preserve the left parts of " > " splits for fallback resolution
+        // e.g. "On-road > Other/uncategorized" → right = "Other/uncategorized", leftFallback = "On-road"
+        let sectorLeftFallback: string | undefined;
+        let subsectorLeftFallback: string | undefined;
         if (rawSector && rawSector.includes(" > ")) {
           const [left, right] = rawSector
             .split(" > ")
             .map((s: string) => s.trim());
           if (left && right) {
+            sectorLeftFallback = left;
             rawSector = left;
             if (!rawSubsector) rawSubsector = right;
           }
@@ -123,6 +128,7 @@ export default class ECRFImportService {
             .split(" > ")
             .map((s: string) => s.trim());
           if (left && right) {
+            subsectorLeftFallback = left;
             if (!rawSector) rawSector = left;
             rawSubsector = right;
           }
@@ -142,25 +148,21 @@ export default class ECRFImportService {
             rawSubsector,
             activityType,
           );
-          // Fallback: if the subsector was split on " > " and the right part
-          // (e.g. "Other/uncategorized") didn't resolve, retry with the left
-          // part (e.g. "On-road") which is typically the parent subsector name.
-          if (!resolved) {
-            const originalSubsector = hasSubsectorColumn
-              ? row[headers[detectedColumns.subsector!]]?.toString().trim()
-              : "";
-            if (originalSubsector && originalSubsector.includes(" > ")) {
-              const parentSubsector = originalSubsector
-                .split(" > ")[0]
-                .trim();
-              if (parentSubsector && parentSubsector !== rawSubsector) {
-                resolved = resolveGpcRefNo(
-                  rawSector,
-                  parentSubsector,
-                  activityType,
-                );
-              }
-            }
+          // Fallback: if the right side of " > " didn't resolve, try the left side
+          // e.g. "On-road > Other/uncategorized" → "Other/uncategorized" fails → try "On-road"
+          if (!resolved && subsectorLeftFallback) {
+            resolved = resolveGpcRefNo(
+              rawSector,
+              subsectorLeftFallback,
+              activityType,
+            );
+          }
+          if (!resolved && sectorLeftFallback) {
+            resolved = resolveGpcRefNo(
+              sectorLeftFallback,
+              rawSubsector,
+              activityType,
+            );
           }
           if (resolved) {
             gpcRefNo = resolved;

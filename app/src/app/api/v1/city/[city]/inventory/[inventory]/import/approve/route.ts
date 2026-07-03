@@ -306,23 +306,31 @@ async function runApproveImportInBackground(args: {
           row.activityType?.trim() ||
           row.category?.trim() ||
           undefined;
-        const gpcRefNo =
+        let gpcRefNo =
           row.gpcRefNo?.trim() ||
           resolveGpcRefNo(sector, subsector, activityHint) ||
-          // Fallback: if subsector was split on " > " and the right part
-          // (e.g. "Other/uncategorized") didn't resolve, retry with the
-          // parent (left) subsector name (e.g. "On-road").
-          (() => {
-            const rawSub = row.subsector?.trim() ?? "";
-            if (rawSub.includes(" > ")) {
-              const parentSub = rawSub.split(" > ")[0].trim();
-              if (parentSub && parentSub !== subsector) {
-                return resolveGpcRefNo(sector, parentSub, activityHint);
+          null;
+        // Fallback: if the right side of " > " didn't resolve, try the left side
+        // e.g. "On-road > Other/uncategorized" → split gives subsector="Other/uncategorized" (fails)
+        //       → retry with left part "On-road" (resolves to on-road-transportation)
+        if (!gpcRefNo) {
+          const rawSub = row.subsector?.trim() ?? "";
+          if (rawSub.includes(" > ")) {
+            const leftPart = rawSub.split(" > ")[0].trim();
+            if (leftPart && leftPart !== subsector) {
+              gpcRefNo = resolveGpcRefNo(sector, leftPart, activityHint);
+            }
+          }
+          if (!gpcRefNo) {
+            const rawSec = row.sector?.trim() ?? "";
+            if (rawSec.includes(" > ")) {
+              const leftPart = rawSec.split(" > ")[0].trim();
+              if (leftPart && leftPart !== sector) {
+                gpcRefNo = resolveGpcRefNo(leftPart, subsector, activityHint);
               }
             }
-            return null;
-          })() ||
-          null;
+          }
+        }
 
         if (!gpcRefNo) {
           errors.push(

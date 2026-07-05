@@ -186,7 +186,7 @@ class CityCatalystClient:
         data: Any,
         user_id: str,
     ) -> tuple[str, int, dict[str, Any]]:
-        """Validate a CityCatalyst token refresh payload before using it."""
+        """Validate refresh fields and JWT claims when the token exposes them."""
         if not isinstance(data, dict):
             raise TokenRefreshError("Invalid token refresh response")
 
@@ -195,7 +195,7 @@ class CityCatalystClient:
         expires_in = data.get("expires_in")
         if not isinstance(fresh_token, str) or not fresh_token.strip():
             raise TokenRefreshError("No token in refresh response")
-        if token_type != "Bearer":
+        if token_type is not None and token_type != "Bearer":
             raise TokenRefreshError("Invalid token type in refresh response")
         if (
             isinstance(expires_in, bool)
@@ -205,14 +205,15 @@ class CityCatalystClient:
             raise TokenRefreshError("Invalid token expiry in refresh response")
 
         claims = parse_jwt_claims(fresh_token)
-        if not isinstance(claims, dict):
-            raise TokenRefreshError("Invalid token claims in refresh response")
-        if claims.get("sub") != user_id:
-            raise TokenRefreshError("Refreshed token subject does not match requested user")
-        if claims.get("iss") != "climate-advisor-service":
-            raise TokenRefreshError("Invalid token issuer in refresh response")
-        if not self._audience_matches(claims.get("aud")):
-            raise TokenRefreshError("Invalid token audience in refresh response")
+        if isinstance(claims, dict):
+            if claims.get("sub") != user_id:
+                raise TokenRefreshError("Refreshed token subject does not match requested user")
+            if claims.get("iss") != "climate-advisor-service":
+                raise TokenRefreshError("Invalid token issuer in refresh response")
+            if not self._audience_matches(claims.get("aud")):
+                raise TokenRefreshError("Invalid token audience in refresh response")
+        else:
+            claims = {}
 
         return fresh_token, int(expires_in), claims
 
@@ -416,15 +417,6 @@ class CityCatalystClient:
         request_token = token
         user_id = self._refresh_user_id(json_data)
         self.last_refreshed_token = None
-
-        # Refresh before the request when the caller supplied user-scoped auth.
-        if request_token and user_id and is_token_expired(request_token):
-            logger.debug("Internal capability token expired, refreshing preemptively")
-            try:
-                request_token, _ = await self.refresh_token(user_id)
-                self.last_refreshed_token = request_token
-            except TokenRefreshError as e:
-                logger.warning("Internal capability preemptive token refresh failed: %s", e)
 
         response = await client.post(
             url,

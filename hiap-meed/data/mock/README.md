@@ -192,7 +192,9 @@ It includes:
 # actions_legal_api_mock.json:
 
 Mock for `GET /api/v1/action-legal-assessments?countryCode=...`.
-Returns the same flat list shape as the live legal assessments API.
+Returns the same flat list shape as the deprecated legal assessments API. The
+runtime legal source now defaults to the internal S3 CSV, while this fixture
+keeps the old API-like shape for local mock-mode regression tests.
 
 It includes:
 
@@ -205,7 +207,9 @@ It includes:
 
 # Legal mock coverage notes:
 
-The flat legal mock now mirrors the live legal assessments API rather than the older requirement-based mock.
+The flat legal mock mirrors the deprecated API-like shape rather than the newer
+S3 CSV shape. The S3 adapter maps its CSV rows into the same internal legal
+record contract before scoring.
 
 For ranking validation, the important cases are:
 

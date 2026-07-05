@@ -57,13 +57,18 @@ Examples:
 
 ### Body
 
-Keep the body short and concise. Prefer this structure:
+Keep the body short and concise.
+
+**If the repo has `.github/PULL_REQUEST_TEMPLATE.md`, use it as the scaffold.** Fill each section, delete any that do not apply, and remove the HTML comment hints. Do not invent extra sections.
+
+If no template exists, prefer this structure:
 
 1. **Summary** (1-3 sentences): What this PR does and why.
 2. **Changes** (optional): Bullet list of main changes, only if it adds clarity.
-3. **Commits** (optional): Short commit subject list when drafting from history.
+3. **How to test** (optional): Concrete steps a reviewer can follow. Include when the change is user-facing or non-obvious to verify.
+4. **Commits** (optional): Short commit subject list when drafting from history.
 
-Example:
+Example (matches the repo template):
 
 ```markdown
 ## Summary
@@ -75,11 +80,14 @@ Briefly states the user-visible outcome and motivation.
 - Touched area A
 - Touched area B
 
-## Commits (3)
+## How to test
 
-- fix: handle null path in inventory API
-- test: add regression coverage
-- docs: clarify export limits
+1. Run `npm run dev` and open `/inventory`.
+2. Confirm the null case renders the empty state instead of a 500.
+
+## Ticket
+
+ON-1234
 ```
 
 ## Create Or Update Workflow
@@ -87,9 +95,10 @@ Briefly states the user-visible outcome and motivation.
 1. Derive `owner`, `repo`, `head`, and `base` from git state.
 2. Check whether a PR already exists for the branch.
 3. Inspect commits between `origin/<base>` and `HEAD`, and **scope file/area lists** with `git diff origin/<base>...HEAD` (three-dot), not two-dot tip diff—see **PR change scope** above.
-4. Draft a concise title and body using the standards above.
-5. Create a PR when none exists, or update the existing PR when one exists or when the user asks to update.
-6. Return the PR URL and summarize only the metadata changed.
+4. Check whether `.github/PULL_REQUEST_TEMPLATE.md` exists. If it does, use it as the body scaffold.
+5. Draft a concise title and body using the standards above.
+6. Create a PR when none exists, or update the existing PR when one exists or when the user asks to update.
+7. Return the PR URL and summarize only the metadata changed.
 
 ## GitHub Tool Guidance
 

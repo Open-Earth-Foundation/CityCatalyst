@@ -11,7 +11,6 @@ import {
 } from "@chakra-ui/react";
 import React, { useMemo, useState, use } from "react";
 import { useTranslation } from "@/i18n/client";
-import { useAdminGuard } from "@/hooks/useAdminGuard";
 import {
   useGetAllCitiesInSystemQuery,
   useGetOrganizationsQuery,
@@ -31,7 +30,6 @@ import { CityWithProjectDataResponse } from "@/util/types";
 const CitiesPage = (props: { params: Promise<{ lng: string }> }) => {
   const { lng } = use(props.params);
   const { t } = useTranslation(lng, "admin");
-  const isAdmin = useAdminGuard(lng, t);
 
   const { data, isLoading } = useGetAllCitiesInSystemQuery({});
   const { data: organizationData, isLoading: isLoadingOrganizationData } =
@@ -59,10 +57,6 @@ const CitiesPage = (props: { params: Promise<{ lng: string }> }) => {
   const selectedCityIds = useMemo(() => {
     return singleRowSelected ? [singleRowSelected] : selectedRowKeys;
   }, [selectedRowKeys, singleRowSelected]);
-
-  if (!isAdmin) {
-    return <ProgressLoader />;
-  }
 
   if (isLoading || isLoadingOrganizationData) {
     return <ProgressLoader />;

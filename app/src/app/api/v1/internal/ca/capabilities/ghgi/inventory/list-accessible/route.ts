@@ -6,7 +6,7 @@
  *       - internal
  *     operationId: postInternalCaInventoryListAccessible
  *     summary: List accessible GHGI inventories for Climate Advisor
- *     description: Internal Climate Advisor capability route. Requires service-to-service headers plus a user-scoped bearer token, then returns the city/year inventories the requested user can access.
+ *     description: Internal Climate Advisor capability route. Requires service-to-service headers plus a user-scoped bearer token, then returns the city/year inventories the authenticated user can access.
  *     parameters:
  *       - in: header
  *         name: X-Service-Name
@@ -31,11 +31,7 @@
  *         application/json:
  *           schema:
  *             type: object
- *             required: [user_id]
  *             properties:
- *               user_id:
- *                 type: string
- *                 format: uuid
  *               city_query:
  *                 type: string
  *               year:
@@ -48,11 +44,12 @@
  *       401:
  *         description: Missing or invalid Climate Advisor service authentication.
  *       403:
- *         description: Authenticated user does not match the requested user.
+ *         description: Authenticated user cannot access the requested resource.
  *       404:
  *         description: Feature disabled or user not found.
  */
 
+import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 
 import { buildAccessibleInventoryList } from "@/backend/agentic/ghgi/inventory/context";
@@ -62,7 +59,6 @@ import {
 } from "@/backend/agentic/ghgi/inventory/registry";
 import {
   requireClimateAdvisorServiceRequest,
-  requireRequestUser,
   requireStationaryEnergyAgenticEnabled,
 } from "@/backend/agentic/ghgi/stationary-energy/auth";
 import { apiHandler } from "@/util/api";
@@ -72,13 +68,16 @@ export const POST = apiHandler(async (req, { session }) => {
   requireClimateAdvisorServiceRequest(req);
 
   const body = inventoryListAccessibleInputSchema.parse(await req.json());
-  requireRequestUser(session, body.user_id);
+  const userId = session?.user?.id;
+  if (!userId) {
+    throw new createHttpError.Unauthorized("Unauthorized");
+  }
 
   return NextResponse.json({
     action: INVENTORY_LIST_ACCESSIBLE_CAPABILITY,
     success: true,
     data: await buildAccessibleInventoryList({
-      userId: body.user_id,
+      userId,
       cityQuery: body.city_query,
       year: body.year,
       includeAllCityYears: body.include_all_city_years,

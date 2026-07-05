@@ -41,13 +41,11 @@ export type InventoryCapabilityDefinition = {
 const recordSchema = z.record(z.string(), z.unknown());
 
 export const inventoryCapabilityInputSchema = z.object({
-  user_id: z.string().uuid(),
   city_id: z.string().uuid(),
   inventory_id: z.string().uuid(),
 });
 
 export const inventoryListAccessibleInputSchema = z.object({
-  user_id: z.string().uuid(),
   city_query: z.string().trim().min(1).optional(),
   year: z.number().int().optional(),
   include_all_city_years: z.boolean().optional().default(false),

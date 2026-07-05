@@ -31,11 +31,8 @@
  *         application/json:
  *           schema:
  *             type: object
- *             required: [user_id, city_id, inventory_id]
+ *             required: [city_id, inventory_id]
  *             properties:
- *               user_id:
- *                 type: string
- *                 format: uuid
  *               city_id:
  *                 type: string
  *                 format: uuid
@@ -74,7 +71,7 @@
  *       401:
  *         description: Missing or invalid Climate Advisor service authentication.
  *       403:
- *         description: Authenticated user does not match the requested user or cannot access the inventory.
+ *         description: Authenticated user cannot access the inventory.
  *       404:
  *         description: Feature disabled or inventory not found.
  */
@@ -89,7 +86,6 @@ import {
 } from "@/backend/agentic/ghgi/inventory/registry";
 import {
   requireClimateAdvisorServiceRequest,
-  requireRequestUser,
   requireStationaryEnergyAgenticEnabled,
 } from "@/backend/agentic/ghgi/stationary-energy/auth";
 import { PermissionService } from "@/backend/permissions/PermissionService";
@@ -101,7 +97,6 @@ export const POST = apiHandler(async (req, { session }) => {
   requireClimateAdvisorServiceRequest(req);
 
   const body = inventoryCapabilityInputSchema.parse(await req.json());
-  requireRequestUser(session, body.user_id);
 
   const { resource } = await PermissionService.canAccessInventory(
     session,

@@ -18,6 +18,11 @@ import { NextRequest } from "next/server";
 import { POST as postAllowedCapabilities } from "@/app/api/v1/internal/ca/capabilities/allowed-capabilities/route";
 import { POST as postUserToken } from "@/app/api/v1/internal/ca/user-token/route";
 import {
+  INVENTORY_EMISSIONS_CONTEXT_CAPABILITY,
+  INVENTORY_LIST_ACCESSIBLE_CAPABILITY,
+  INVENTORY_STATUS_OVERVIEW_CAPABILITY,
+} from "@/backend/agentic/ghgi/inventory/registry";
+import {
   COMMIT_ACCEPTED_CAPABILITY,
   LOAD_CONTEXT_CAPABILITY,
 } from "@/backend/agentic/ghgi/stationary-energy/registry";
@@ -28,6 +33,9 @@ import { Roles } from "@/util/types";
 const mockBuildStationaryEnergyContext = jest.fn<() => Promise<unknown>>();
 const mockCommitAcceptedStationaryEnergyRows =
   jest.fn<() => Promise<unknown>>();
+const mockBuildAccessibleInventoryList = jest.fn<() => Promise<unknown>>();
+const mockBuildInventoryStatusOverview = jest.fn<() => Promise<unknown>>();
+const mockBuildInventoryEmissionsContext = jest.fn<() => Promise<unknown>>();
 
 jest.unstable_mockModule(
   "@/backend/agentic/ghgi/stationary-energy/context",
@@ -41,9 +49,17 @@ jest.unstable_mockModule(
     commitAcceptedStationaryEnergyRows: mockCommitAcceptedStationaryEnergyRows,
   }),
 );
+jest.unstable_mockModule("@/backend/agentic/ghgi/inventory/context", () => ({
+  buildAccessibleInventoryList: mockBuildAccessibleInventoryList,
+  buildInventoryEmissionsContext: mockBuildInventoryEmissionsContext,
+  buildInventoryStatusOverview: mockBuildInventoryStatusOverview,
+}));
 
 let postLoadContext: typeof import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context/route").POST;
 let postCommitAccepted: typeof import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted/route").POST;
+let postInventoryListAccessible: typeof import("@/app/api/v1/internal/ca/capabilities/ghgi/inventory/list-accessible/route").POST;
+let postInventoryStatusOverview: typeof import("@/app/api/v1/internal/ca/capabilities/ghgi/inventory/status-overview/route").POST;
+let postInventoryEmissionsContext: typeof import("@/app/api/v1/internal/ca/capabilities/ghgi/inventory/emissions-context/route").POST;
 
 beforeAll(async () => {
   ({ POST: postLoadContext } = await import(
@@ -51,6 +67,15 @@ beforeAll(async () => {
   ));
   ({ POST: postCommitAccepted } = await import(
     "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted/route"
+  ));
+  ({ POST: postInventoryListAccessible } = await import(
+    "@/app/api/v1/internal/ca/capabilities/ghgi/inventory/list-accessible/route"
+  ));
+  ({ POST: postInventoryStatusOverview } = await import(
+    "@/app/api/v1/internal/ca/capabilities/ghgi/inventory/status-overview/route"
+  ));
+  ({ POST: postInventoryEmissionsContext } = await import(
+    "@/app/api/v1/internal/ca/capabilities/ghgi/inventory/emissions-context/route"
   ));
 });
 
@@ -137,6 +162,23 @@ function loadContextBody(userId = USER_ID): Record<string, string> {
   };
 }
 
+function inventoryListBody(userId = USER_ID): Record<string, unknown> {
+  return {
+    city_query: "New York",
+    include_all_city_years: false,
+    user_id: userId,
+    year: 2024,
+  };
+}
+
+function inventoryCapabilityBody(userId = USER_ID): Record<string, string> {
+  return {
+    city_id: CITY_ID,
+    inventory_id: INVENTORY_ID,
+    user_id: userId,
+  };
+}
+
 function commitAcceptedBody(userId = USER_ID): Record<string, unknown> {
   return {
     city_id: CITY_ID,
@@ -201,6 +243,9 @@ describe("internal CA service auth contract", () => {
     jest.spyOn(PermissionService, "canEditInventory").mockResolvedValue({
       resource: { cityId: CITY_ID },
     } as any);
+    jest.spyOn(PermissionService, "canAccessInventory").mockResolvedValue({
+      resource: { cityId: CITY_ID },
+    } as any);
     mockBuildStationaryEnergyContext.mockResolvedValue({
       city: {},
       current_values: [],
@@ -213,12 +258,39 @@ describe("internal CA service auth contract", () => {
     mockCommitAcceptedStationaryEnergyRows.mockResolvedValue([
       { proposal_id: PROPOSAL_ID, status: "committed" },
     ]);
+    mockBuildAccessibleInventoryList.mockResolvedValue({
+      cities: [],
+      filters: {
+        city_query: "New York",
+        include_all_city_years: false,
+        year: 2024,
+      },
+      total_cities: 0,
+      total_inventories: 0,
+    });
+    mockBuildInventoryStatusOverview.mockResolvedValue({
+      by_sector: [],
+      city: "New York",
+      completion: { completion_percent: 0, filled: 0, missing: 0, required: 0 },
+      inventory: { gwp: null, type: null, year: 2024 },
+    });
+    mockBuildInventoryEmissionsContext.mockResolvedValue({
+      by_sector: [],
+      city: "New York",
+      inventory: { gwp: null, type: null, year: 2024 },
+      source_summary: {},
+      top_emitters: [],
+      total_emissions_tco2e: "0",
+    });
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
     mockBuildStationaryEnergyContext.mockReset();
     mockCommitAcceptedStationaryEnergyRows.mockReset();
+    mockBuildAccessibleInventoryList.mockReset();
+    mockBuildInventoryStatusOverview.mockReset();
+    mockBuildInventoryEmissionsContext.mockReset();
   });
 
   afterAll(() => {
@@ -427,6 +499,76 @@ describe("internal CA service auth contract", () => {
     expect(commitPayload.results[0].status).toBe("committed");
   });
 
+  it("applies subject-binding checks to inventory internal routes", async () => {
+    const token = serviceToken(USER_ID);
+    const listMismatch = await postInventoryListAccessible(
+      makeRequest(
+        "/api/v1/internal/ca/capabilities/ghgi/inventory/list-accessible",
+        inventoryListBody(OTHER_USER_ID),
+        serviceHeaders(token),
+      ),
+      { params: Promise.resolve({}) },
+    );
+    const statusMismatch = await postInventoryStatusOverview(
+      makeRequest(
+        "/api/v1/internal/ca/capabilities/ghgi/inventory/status-overview",
+        inventoryCapabilityBody(OTHER_USER_ID),
+        serviceHeaders(token),
+      ),
+      { params: Promise.resolve({}) },
+    );
+    const emissionsMismatch = await postInventoryEmissionsContext(
+      makeRequest(
+        "/api/v1/internal/ca/capabilities/ghgi/inventory/emissions-context",
+        inventoryCapabilityBody(OTHER_USER_ID),
+        serviceHeaders(token),
+      ),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(listMismatch.status).toBe(403);
+    expect(statusMismatch.status).toBe(403);
+    expect(emissionsMismatch.status).toBe(403);
+
+    const listValid = await postInventoryListAccessible(
+      makeRequest(
+        "/api/v1/internal/ca/capabilities/ghgi/inventory/list-accessible",
+        inventoryListBody(USER_ID),
+        serviceHeaders(token),
+      ),
+      { params: Promise.resolve({}) },
+    );
+    const statusValid = await postInventoryStatusOverview(
+      makeRequest(
+        "/api/v1/internal/ca/capabilities/ghgi/inventory/status-overview",
+        inventoryCapabilityBody(USER_ID),
+        serviceHeaders(token),
+      ),
+      { params: Promise.resolve({}) },
+    );
+    const emissionsValid = await postInventoryEmissionsContext(
+      makeRequest(
+        "/api/v1/internal/ca/capabilities/ghgi/inventory/emissions-context",
+        inventoryCapabilityBody(USER_ID),
+        serviceHeaders(token),
+      ),
+      { params: Promise.resolve({}) },
+    );
+
+    await expect(expectJsonStatus(listValid, 200)).resolves.toMatchObject({
+      action: INVENTORY_LIST_ACCESSIBLE_CAPABILITY,
+      success: true,
+    });
+    await expect(expectJsonStatus(statusValid, 200)).resolves.toMatchObject({
+      action: INVENTORY_STATUS_OVERVIEW_CAPABILITY,
+      success: true,
+    });
+    await expect(expectJsonStatus(emissionsValid, 200)).resolves.toMatchObject({
+      action: INVENTORY_EMISSIONS_CONTEXT_CAPABILITY,
+      success: true,
+    });
+  });
+
   it("keeps every internal CA route that requires request users in the auth matrix", () => {
     const routesRoot = path.join(
       process.cwd(),
@@ -434,6 +576,9 @@ describe("internal CA service auth contract", () => {
     );
     const coveredRoutes = new Set([
       "allowed-capabilities",
+      "ghgi/inventory/emissions-context",
+      "ghgi/inventory/list-accessible",
+      "ghgi/inventory/status-overview",
       "ghgi/stationary-energy/commit-accepted",
       "ghgi/stationary-energy/load-context",
     ]);

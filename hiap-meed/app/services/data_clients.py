@@ -12,6 +12,10 @@ from app.services.action_legal_assessments_api import (
     ActionLegalAssessmentsApiService,
     LEGAL_ASSESSMENTS_ENDPOINT_TEMPLATE,
 )
+from app.services.action_legal_assessments_s3 import (
+    ActionLegalAssessmentsS3Service,
+    LEGAL_ASSESSMENTS_S3_ENDPOINT,
+)
 from app.services.action_financial_feasibility_scores_api import (
     ACTION_FINANCIAL_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE,
     ActionFinancialFeasibilityScoresApiService,
@@ -58,18 +62,26 @@ from app.modules.prioritizer.models import (
 logger = logging.getLogger(__name__)
 
 
-def _resolve_configured_data_source(env_var_name: str, default: str = "api") -> str:
+def _resolve_configured_data_source(
+    env_var_name: str,
+    default: str = "api",
+    allowed_sources: set[str] | None = None,
+) -> str:
     """Return a validated data-source mode from the environment."""
+    if allowed_sources is None:
+        allowed_sources = {"mock", "api"}
     source = os.getenv(env_var_name, default).strip().lower()
-    if source in {"mock", "api"}:
+    if source in allowed_sources:
         return source
+    allowed_sources_label = ", ".join(sorted(allowed_sources))
     logger.error(
-        "Invalid %s=`%s`; expected one of: api, mock",
+        "Invalid %s=`%s`; expected one of: %s",
         env_var_name,
         source,
+        allowed_sources_label,
     )
     raise ValueError(
-        f"Invalid {env_var_name}=`{source}`; expected one of: api, mock"
+        f"Invalid {env_var_name}=`{source}`; expected one of: {allowed_sources_label}"
     )
 
 
@@ -85,7 +97,7 @@ def _base_source_metadata() -> dict[str, object]:
 
 
 def describe_legal_data_source(
-    client: MockLegalDataApiClient | ApiLegalDataApiClient,
+    client: MockLegalDataApiClient | ApiLegalDataApiClient | S3LegalDataApiClient,
     *,
     country_code: str,
 ) -> dict[str, object]:
@@ -102,6 +114,16 @@ def describe_legal_data_source(
     source_metadata = _base_source_metadata()
     source_metadata["requested_country_code"] = normalized_country_code
     service = getattr(client, "_service", None)
+    if service is not None and hasattr(service, "bucket") and hasattr(service, "key"):
+        source_metadata["upstream_url"] = f"s3://{service.bucket}/{service.key}"
+        source_metadata["upstream_endpoint"] = LEGAL_ASSESSMENTS_S3_ENDPOINT
+        source_metadata["source_type"] = "s3_csv"
+        source_metadata["s3_bucket"] = service.bucket
+        source_metadata["s3_key_suffix"] = str(service.key).rsplit("/", 1)[-1]
+        return {
+            "source": "action_legal_assessments_s3",
+            "source_metadata": source_metadata,
+        }
     if service is not None and hasattr(service, "_build_legal_assessments_url"):
         source_metadata["upstream_url"] = service._build_legal_assessments_url(
             normalized_country_code
@@ -467,7 +489,7 @@ class MockActionFinancialFeasibilityScoresDataApiClient:
 
 
 class ApiLegalDataApiClient:
-    """API-backed legal client using the flat upstream legal assessments service."""
+    """Deprecated API-backed legal client that raises before upstream HTTP calls."""
 
     def __init__(
         self, service: ActionLegalAssessmentsApiService | None = None
@@ -478,7 +500,25 @@ class ApiLegalDataApiClient:
     def get_action_legal_assessments(
         self, country_code: str
     ) -> dict[str, LegalAssessmentRecord]:
-        """Fetch country-scoped legal assessments from the upstream legal API."""
+        """Raise because the public legal API is no longer an active source."""
+        return self._service.get_assessments_by_action_id(country_code)
+
+
+class S3LegalDataApiClient:
+    """S3-backed legal client using the private legal classification CSV."""
+
+    def __init__(
+        self,
+        service: ActionLegalAssessmentsS3Service | None = None,
+    ) -> None:
+        """Create the legal S3 client with a small synchronous service wrapper."""
+        self._service = service or ActionLegalAssessmentsS3Service()
+
+    def get_action_legal_assessments(
+        self,
+        country_code: str,
+    ) -> dict[str, LegalAssessmentRecord]:
+        """Fetch country-scoped legal assessments from the S3 CSV source."""
         return self._service.get_assessments_by_action_id(country_code)
 
 
@@ -571,6 +611,7 @@ _default_mock_action_client = MockActionPathwaysDataApiClient(
     / "action_pathways_api_mock.json"
 )
 _default_api_legal_client = ApiLegalDataApiClient()
+_default_s3_legal_client = S3LegalDataApiClient()
 _default_mock_legal_client = MockLegalDataApiClient(
     mock_file_path=Path(__file__).resolve().parents[2]
     / "data"
@@ -649,18 +690,26 @@ def get_action_pathways_data_api_client() -> MockActionPathwaysDataApiClient | A
     return _default_mock_action_client
 
 
-def get_legal_data_api_client() -> MockLegalDataApiClient | ApiLegalDataApiClient:
+def get_legal_data_api_client() -> (
+    MockLegalDataApiClient | ApiLegalDataApiClient | S3LegalDataApiClient
+):
     """FastAPI dependency provider for legal assessment client."""
-    source = _resolve_configured_data_source("HIAP_MEED_LEGAL_DATA_SOURCE")
+    source = _resolve_configured_data_source(
+        "HIAP_MEED_LEGAL_DATA_SOURCE",
+        default="s3",
+        allowed_sources={"mock", "api", "s3"},
+    )
+    if source == "s3":
+        return _default_s3_legal_client
     if source == "api":
         return _default_api_legal_client
 
     if not _default_mock_legal_client.mock_file_path.exists():
         logger.warning(
-            "Mock legal file not found at `%s`; using API legal client",
+            "Mock legal file not found at `%s`; using S3 legal client",
             _default_mock_legal_client.mock_file_path,
         )
-        return _default_api_legal_client
+        return _default_s3_legal_client
 
     return _default_mock_legal_client
 

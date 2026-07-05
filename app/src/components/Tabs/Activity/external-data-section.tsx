@@ -1,7 +1,6 @@
 import {
   Badge,
   Box,
-  Button,
   Card,
   Center,
   Flex,
@@ -9,33 +8,51 @@ import {
   Icon,
   Link,
   SimpleGrid,
-  Tag,
-  TagLabel,
   Text,
   useDisclosure,
+  VStack,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { TFunction } from "i18next";
 import { InventoryValue } from "@/models/InventoryValue";
 import HeadingText from "@/components/heading-text";
-import { MdHomeWork } from "react-icons/md";
+import {
+  MdCheckCircleOutline,
+  MdOutlineHomeWork,
+  MdOutlineLocalShipping,
+  MdOutlineDelete,
+  MdOutlineFactory,
+} from "react-icons/md";
+import { LuWheat } from "react-icons/lu";
 import { getTranslationFromDict } from "@/i18n";
 import { DataCheckIcon } from "@/components/icons";
-import { FiCheckCircle, FiTarget } from "react-icons/fi";
+import { FiTarget } from "react-icons/fi";
 import { SourceDrawer } from "@/components/GHGI/data-step/SourceDrawer";
 import type { DataSourceWithRelations } from "@/components/GHGI/data-step/types";
 import { api } from "@/services/api";
 import { convertKgToTonnes } from "@/util/helpers";
-import { UseErrorToast } from "@/hooks/Toasts";
+import { Tooltip } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { toaster } from "@/components/ui/toaster";
+
+const ensureProtocol = (url?: string) => {
+  if (!url) return "";
+  if (!/^https?:\/\//i.test(url)) {
+    return "https://" + url;
+  }
+  return url;
+};
 
 const ExternalDataSection = ({
   t,
   inventoryValue,
   numberFormat,
+  onDisconnect,
 }: {
   t: TFunction;
   inventoryValue: InventoryValue;
   numberFormat?: string;
+  onDisconnect?: (datasourceId: string) => void;
 }) => {
   const source = inventoryValue.dataSource;
   const [disconnectThirdPartyData, { isLoading: isDisconnectLoading }] =
@@ -47,21 +64,12 @@ const ExternalDataSection = ({
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
   const onSourceClick = (_source: DataSourceWithRelations, _data: any) => {
-    // setSelectedSource(source);
-    // setSelectedSourceData(data);
     onSourceDrawerOpen();
   };
   const [hovered, setHovered] = useState(false);
 
   const handleMouseEnter = () => setHovered(true);
   const handleMouseLeave = () => setHovered(false);
-
-  const buttonContent = hovered ? t("disconnect-data") : t("data-connected");
-  const buttonIcon = !hovered ? <Icon as={FiCheckCircle} /> : null;
-  const buttonColorScheme = hovered ? "danger" : "primary"; // TODO create these color palletes
-  const { showErrorToast } = UseErrorToast({
-    title: "disconnected-data-source",
-  });
 
   const onDisconnectThirdPartyData = async (
     _source: DataSourceWithRelations,
@@ -70,7 +78,12 @@ const ExternalDataSection = ({
       inventoryId: inventoryValue.inventoryId,
       datasourceId: inventoryValue.datasourceId,
     });
-    showErrorToast();
+    toaster.create({
+      title: t("disconnected-data-source"),
+      type: "info",
+      duration: 5000,
+    });
+    onDisconnect?.(inventoryValue.datasourceId!);
   };
 
   if (!source) {
@@ -89,6 +102,17 @@ const ExternalDataSection = ({
       </Center>
     );
   }
+
+  const refNum = inventoryValue.sector?.referenceNumber;
+  const romanSector = refNum ?? "I";
+
+  const sectorIcon = {
+    I: MdOutlineHomeWork,
+    II: MdOutlineLocalShipping,
+    III: MdOutlineDelete,
+    IV: MdOutlineFactory,
+    V: LuWheat,
+  }[romanSector] ?? MdOutlineHomeWork;
 
   return (
     <Box>
@@ -115,63 +139,164 @@ const ExternalDataSection = ({
           </Text>
         </Box>
       </Box>
-      <SimpleGrid columns={3} spaceX={4} spaceY={4}>
+      <SimpleGrid
+        columns={{
+          base: 1,
+          md: 2,
+          lg: 3,
+        }}
+        gap="16px"
+      >
         <Card.Root
           key={source.datasourceId}
+          data-testid="source-card"
           variant="outline"
+          borderWidth="1px"
           borderColor={hovered ? "semantic.danger" : "interactive.tertiary"}
-          borderWidth={2}
-          boxShadow="none"
-          _hover={{ filter: "drop-shadow(0 10px 15px rgba(0,0,0,0.1))" }}
-          transition="box-shadow 0.2s"
+          shadow="none"
+          _hover={{ shadow: "xl" }}
+          transition="all 300ms"
+          w="full"
+          p="24px"
+          gap="4px"
         >
-          <Card.Body>
-            {/* TODO add icon to DataSource */}
-            <Icon as={MdHomeWork} boxSize={9} mb={6} />
-            <Heading size="sm" lineClamp={2} minHeight={10}>
+          <Card.Header p="0" display="flex" flexDirection="column" gap="0">
+            <Icon
+              as={sectorIcon}
+              boxSize={9}
+              color="content.tertiary-light"
+              mb="10px"
+            />
+            <Flex direction="row" align="center" gap="8px">
+              <Badge
+                variant="plain"
+                fontSize="label.sm"
+                fontWeight="medium"
+                fontFamily="heading"
+                letterSpacing="widest"
+                bg="background.graySubtle"
+                color="content.secondary"
+                px="8px"
+                py="1px"
+                borderRadius="md"
+                lineHeight="1.2"
+                borderWidth="0"
+              >
+                {source.subCategory?.referenceNumber ||
+                  source.subSector?.referenceNumber}
+              </Badge>
+              <Tooltip showArrow content={source.subSector?.subsectorName}>
+                <Text
+                  fontSize="overline"
+                  fontWeight="bold"
+                  color="content.primary"
+                  textTransform="uppercase"
+                  letterSpacing="widest"
+                  lineHeight="24"
+                  fontFamily="heading"
+                  lineClamp={1}
+                >
+                  {source.subSector?.subsectorName}
+                </Text>
+              </Tooltip>
+            </Flex>
+            <Heading
+              fontSize="title.md"
+              lineClamp={2}
+              minHeight={10}
+              mt="6px"
+              lineHeight={24}
+            >
               {getTranslationFromDict(source.datasetName)}
             </Heading>
-            <Flex direction="row" my={4} wrap="wrap" gap={2}>
-              <Badge>
-                <Icon as={DataCheckIcon} boxSize={5} color="content.tertiary" />
-                {t("data-quality")}: {t("quality-" + source.dataQuality)}
-              </Badge>
-              {source.subCategory?.scope && (
-                <Tag.Root>
-                  <Tag.StartElement>
+            <Text fontSize="label.md" mt="4px">
+              {t("by-data-source")}{" "}
+              <Link
+                href={ensureProtocol(source.publisher?.url)}
+                target="_blank"
+                textDecoration="underline"
+                color="content.link"
+                rel="noreferrer noopener"
+              >
+                {source.publisher?.name}
+              </Link>
+            </Text>
+          </Card.Header>
+          <Card.Body justifyContent="space-between" p="0" mt="12px">
+            <Flex direction="row" mb={0} wrap="wrap" gap={2}>
+              <Flex direction="row" gap="4px" flexWrap="nowrap">
+                <Badge fontSize={12} borderColor="border.overlay" w="fit-content">
+                  <Icon as={DataCheckIcon} boxSize={5} color="content.tertiary" />
+                  {t("data-quality")}: {t("quality-" + source.dataQuality)}
+                </Badge>
+                {source.subCategory?.scope && (
+                  <Badge fontSize={12} borderColor="border.overlay" w="fit-content">
                     <Icon as={FiTarget} boxSize={4} color="content.tertiary" />
-                  </Tag.StartElement>
-                  <TagLabel fontSize={11}>
                     {t("scope")}: {source.subCategory.scope.scopeName}
-                  </TagLabel>
-                </Tag.Root>
-              )}
+                  </Badge>
+                )}
+              </Flex>
             </Flex>
-            <Text color="content.tertiary" lineClamp={5} minHeight={120}>
+            <Text
+              textOverflow="ellipsis"
+              whiteSpace="nowrap"
+              overflow="hidden"
+              color="content.tertiary"
+              lineClamp={0}
+              maxHeight="100px"
+              fontFamily="body"
+              fontSize="body.md"
+              lineHeight="20px"
+              fontWeight="regular"
+              marginTop="8px"
+            >
               {getTranslationFromDict(source.datasetDescription) ||
                 getTranslationFromDict(source.methodologyDescription)}
             </Text>
-            <Link
-              textDecoration="underline"
-              mt={4}
-              mb={6}
-              onClick={() => onSourceClick(source, null)}
-            >
-              {t("see-more-details")}
-            </Link>
-            <Button
-              variant="solid"
-              colorScheme={buttonColorScheme}
-              px={6}
-              py={4}
-              onClick={() => onDisconnectThirdPartyData(source)}
-              loading={isDisconnectLoading}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            >
-              {buttonIcon}
-              {buttonContent}
-            </Button>
+            <VStack w="full" mb="16px" mt="12px">
+              <Link
+                textDecoration="underline"
+                mt={4}
+                mb={2}
+                onClick={() => onSourceClick(source, null)}
+                alignSelf="flex-start"
+                fontSize="label.lg"
+                fontWeight="medium"
+                letterSpacing="wide"
+              >
+                {t("see-more-details")}
+              </Link>
+              <Button
+                variant="outline"
+                w="full"
+                h="50px"
+                bg={
+                  hovered
+                    ? "semantic.dangerOverlay"
+                    : "semantic.successOverlay"
+                }
+                borderColor={
+                  hovered
+                    ? "semantic.danger"
+                    : "semantic.success"
+                }
+                borderWidth="1px"
+                color={
+                  hovered
+                    ? "semantic.danger"
+                    : "semantic.success"
+                }
+                fontWeight="semibold"
+                fontSize="14px"
+                onClick={() => onDisconnectThirdPartyData(source)}
+                loading={isDisconnectLoading}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                <Icon as={MdCheckCircleOutline} />
+                {hovered ? t("disconnect-data") : t("data-connected")}
+              </Button>
+            </VStack>
           </Card.Body>
         </Card.Root>
       </SimpleGrid>
@@ -202,17 +327,18 @@ const ExternalDataSection = ({
       </Box>
       <SourceDrawer
         inventoryId={inventoryValue.inventoryId!}
-        source={{ ...inventoryValue, ...source }}
+        source={{ ...inventoryValue, ...source } as any}
         hideActions={true}
         totalEmissionsData={inventoryValue.co2eq as unknown as string}
         sourceData={null}
         sector={inventoryValue.sector}
         isOpen={isSourceDrawerOpen}
         onClose={onSourceDrawerClose}
-        onConnectClick={() => {}}
+        onConnectClick={() => { }}
         isConnectLoading={false}
         t={t}
         numberFormat={numberFormat}
+        isConnected={true}
       />
     </Box>
   );

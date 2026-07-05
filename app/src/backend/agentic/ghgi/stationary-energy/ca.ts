@@ -1,20 +1,17 @@
 import createHttpError from "http-errors";
 
-type TokenResponse = {
-  access_token: string;
-  expires_in: number;
-  token_type: string;
-};
+import {
+  type ClimateAdvisorTokenResponse,
+  joinServiceUrl,
+  readClimateAdvisorTokenResponse,
+  requireServiceEnv,
+} from "@/backend/climate-advisor-connection";
 
 /**
  * Read a required Climate Advisor proxy environment variable.
  */
 function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new createHttpError.InternalServerError(`${name} is not configured`);
-  }
-  return value;
+  return requireServiceEnv(name);
 }
 
 /**
@@ -100,22 +97,25 @@ async function throwClimateAdvisorProxyError(
 export async function issueCaUserToken(params: {
   tokenUserID: string;
   inventoryId?: string;
-}): Promise<TokenResponse> {
+}): Promise<ClimateAdvisorTokenResponse> {
   const serviceKey = requireEnv("CC_SERVICE_API_KEY");
   const host = requireEnv("HOST");
   let response: Response;
   try {
-    response = await fetch(`${host}/api/v1/internal/ca/user-token/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CA-Service-Key": serviceKey,
+    response = await fetch(
+      joinServiceUrl(host, "/api/v1/internal/ca/user-token/"),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CA-Service-Key": serviceKey,
+        },
+        body: JSON.stringify({
+          user_id: params.tokenUserID,
+          inventory_id: params.inventoryId,
+        }),
       },
-      body: JSON.stringify({
-        user_id: params.tokenUserID,
-        inventory_id: params.inventoryId,
-      }),
-    });
+    );
   } catch (error) {
     throw new createHttpError.BadGateway(
       error instanceof Error
@@ -128,7 +128,7 @@ export async function issueCaUserToken(params: {
     await throwClimateAdvisorProxyError(response, "CA token issuance failed");
   }
 
-  return response.json();
+  return readClimateAdvisorTokenResponse(response);
 }
 
 export async function callClimateAdvisor(params: {
@@ -145,7 +145,7 @@ export async function callClimateAdvisor(params: {
   });
   const caBaseUrl = requireEnv("CA_BASE_URL");
   try {
-    return await fetch(`${caBaseUrl}${params.path}`, {
+    return await fetch(joinServiceUrl(caBaseUrl, params.path), {
       method: params.method ?? "GET",
       headers: {
         "Content-Type": "application/json",

@@ -1,7 +1,7 @@
 {
   "project-deleted": {
-    "subject": "City Catalyst - Exclusão de Projeto",
-    "preview": "CityCatalyst: Projeto Excluído",
+    "subject": "Exclusão de Projeto",
+    "preview": "Projeto Excluído",
     "brand": "CityCatalyst",
     "title": "Projeto excluído da conta {{organizationName}}",
     "greeting": "Olá {{name}},",
@@ -10,8 +10,8 @@
     "footer": "Open Earth Foundation é uma corporação de benefício público sem fins lucrativos da Califórnia, EUA. EIN: 85-3261449"
   },
   "role-updated": {
-    "subject": "City Catalyst - Função Atualizada",
-    "preview": "CityCatalyst: Atualização de Função",
+    "subject": "Função Atualizada",
+    "preview": "Atualização de Função",
     "brand": "CityCatalyst",
     "title": "Sua função foi atualizada",
     "greeting": "Olá {{email}},",
@@ -20,7 +20,7 @@
     "footer": "CityCatalyst é uma plataforma alimentada pela Open Earth Foundation."
   },
   "welcome": {
-    "subject": "City Catalyst - Registro de Usuário",
+    "subject": "Registro de Usuário",
     "greeting": "Bem-vindo ao City Catalyst, {{name}}!",
     "message": "Obrigado por se juntar ao City Catalyst. Estamos empolgados em tê-lo a bordo e ajudá-lo a fazer um impacto positivo na jornada de sustentabilidade da sua cidade.",
     "cta": "Começar",
@@ -28,8 +28,8 @@
     "brand": "CityCatalyst"
   },
   "reset-password": {
-    "subject": "City Catalyst - Redefinir sua Senha",
-    "preview": "CityCatalyst: Redefinir sua senha",
+    "subject": "Redefinir sua Senha",
+    "preview": "Redefinir sua senha",
     "brand": "CityCatalyst",
     "title": "Esqueceu sua senha?",
     "message": "Redefina-a clicando no botão abaixo:",
@@ -38,8 +38,8 @@
     "footer": "Se você não solicitou isso, pode ignorar este e-mail com segurança."
   },
   "invite": {
-    "subject": "City Catalyst - Convite para Cidade",
-    "preview": "CityCatalyst: Convite para Cidade",
+    "subject": "Convite para Cidade",
+    "preview": "Convite para Cidade",
     "brand": "CityCatalyst",
     "title": "Você foi convidado para se juntar ao City Catalyst",
     "greeting": "Olá {{name}},",
@@ -49,8 +49,8 @@
     "footer": "Este convite expirará em 7 dias."
   },
   "project-created": {
-    "subject": "City Catalyst - Criação de Projeto",
-    "preview": "CityCatalyst: Projeto Adicionado",
+    "subject": "Criação de Projeto",
+    "preview": "Projeto Adicionado",
     "brand": "CityCatalyst",
     "title": "Projeto adicionado à conta {{organizationName}}",
     "greeting": "Olá {{name}},",
@@ -59,7 +59,7 @@
     "footer": "Open Earth Foundation é uma corporação de benefício público sem fins lucrativos da Califórnia, EUA. EIN: 85-3261449"
   },
   "account-frozen": {
-    "subject": "City Catalyst - Conta Congelada",
+    "subject": "Conta Congelada",
     "preview": "City Catalyst: Conta Congelada",
     "brand": "CityCatalyst",
     "title": "Sua Conta Foi Congelada",
@@ -83,8 +83,8 @@
     "footer-4": "A Equipe CityCatalyst"
   },
   "account-unfrozen": {
-    "subject": "City Catalyst - Conta Ativada",
-    "preview": "CityCatalyst: Conta Ativada",
+    "subject": "Conta Ativada",
+    "preview": "Conta Ativada",
     "brand": "CityCatalyst",
     "title": "Sua Conta Foi Ativada",
     "greeting": "Olá {{name}},",
@@ -94,7 +94,7 @@
     "footer": "Open Earth Foundation é uma corporação de benefício público sem fins lucrativos da Califórnia, EUA. EIN: 85-3261449"
   },
   "city-slot-changed": {
-    "subject": "City Catalyst - Espaços de Cidade Alterados",
+    "subject": "Espaços de Cidade Alterados",
     "title": "Limite de Espaços de Cidade Alterado em {{organizationName}}",
     "greeting": "Olá {{name}},",
     "message": "O limite de espaços de cidade para o projeto '{{projectName}}' foi alterado para {{cityCount}}.",
@@ -104,7 +104,7 @@
   },
   "admin-notification": {
     "subject": "CityCatalyst Upload de Arquivos",
-    "preview": "CityCatalyst: Upload de Arquivos",
+    "preview": "Upload de Arquivos",
     "brand": "CityCatalyst",
     "title": "{{userName}} de {{cityName}} Fez Upload de Novos Arquivos para Revisão",
     "greeting": "Olá {{adminNames}},",
@@ -113,7 +113,7 @@
     "footer": "Open Earth Foundation é uma corporação de benefício público sem fins lucrativos da Califórnia, EUA. EIN: 85-3261449"
   },
   "invite-multiple": {
-    "subject": "CityCatalyst: Convite para Cidade",
+    "subject": "Convite para Cidade",
     "title": "O acesso foi concedido a você",
     "greeting": "Olá {{email}},",
     "message": "O acesso foi concedido a você para {{citiesCount}}:",
@@ -123,8 +123,8 @@
     "brand": "CityCatalyst"
   },
   "remove-multiple-cities": {
-    "subject": "City Catalyst - Acesso Removido",
-    "preview": "CityCatalyst: Acesso Removido",
+    "subject": "Acesso Removido",
+    "preview": "Acesso Removido",
     "brand": "CityCatalyst",
     "title": "Mudanças no Acesso",
     "greeting": "Olá {{email}},",
@@ -136,8 +136,8 @@
     "footer2": "Open Earth Foundation é uma corporação de benefício público sem fins lucrativos da Califórnia, EUA. EIN: 85-3261449"
   },
   "invite-organization": {
-    "subject": "City Catalyst - Convite para Organização",
-    "preview": "CityCatalyst: Convite para Organização",
+    "subject": "Convite para Organização",
+    "preview": "Convite para Organização",
     "brand": "CityCatalyst",
     "title": "Junte-se à sua Equipe no CityCatalyst",
     "greeting": "Olá {{name}},",
@@ -158,8 +158,8 @@
     "step4": "<1>Pergunte à IA</1> - O nosso Assistente Climático está pronto para responder às suas perguntas e apoiá-lo no processo de revisar as ações de impacto sugeridas."
   },
   "role-update": {
-    "subject": "City Catalyst - Função Atualizada",
-    "preview": "CityCatalyst: Atualização de Função",
+    "subject": "Função Atualizada",
+    "preview": "Atualização de Função",
     "brand": "CityCatalyst",
     "title": "Sua função foi atualizada",
     "greeting": "Olá {{email}},",
@@ -168,7 +168,7 @@
     "footer": "CityCatalyst é uma plataforma alimentada pela Open Earth Foundation."
   },
   "cities-added": {
-    "subject": "City Catalyst - Cidades Adicionadas",
+    "subject": "Cidades Adicionadas",
     "preview": "Cidades Adicionadas ao Projeto",
     "title": "Cidades Adicionadas ao Projeto",
     "greeting": "Olá {{name}},",
@@ -196,7 +196,7 @@
   },
   "hiap-ranking-ready": {
     "subject": "Catalisador da Cidade - Classificação HIAP Pronta",
-    "preview": "CityCatalyst: Classificação HIAP Pronta",
+    "preview": "Classificação HIAP Pronta",
     "brand": "CityCatalyst",
     "title": "As suas ações de mitigação estão prontas!",
     "cta": "Vá para suas ações",
@@ -208,7 +208,7 @@
   },
   "action-plan-ready": {
     "subject": "CityCatalyst - Plano de Ação Pronto",
-    "preview": "CityCatalyst: Seu plano de ação climática está pronto!",
+    "preview": "Seu plano de ação climática está pronto!",
     "brand": "CityCatalyst",
     "title": "Seu plano de ação climática está pronto!",
     "greeting": "Olá {{name}},",

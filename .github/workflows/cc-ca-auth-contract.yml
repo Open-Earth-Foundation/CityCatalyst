@@ -1,0 +1,122 @@
+name: CC CA Auth Contract
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - app/**
+      - climate-advisor/service/**
+      - climate-advisor/k8s/**
+      - climate-advisor/pyproject.toml
+      - climate-advisor/uv.lock
+      - k8s/**
+      - .github/scripts/**
+      - .github/workflows/climate-advisor-develop.yml
+      - .github/workflows/climate-advisor-tag.yml
+      - .github/workflows/climate-advisor-test.yml
+      - .github/workflows/cc-ca-auth-contract.yml
+      - .github/workflows/web-develop.yml
+      - .github/workflows/web-tag.yml
+      - .github/workflows/web-test.yml
+
+jobs:
+  cc-ca-auth-contract:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      DATABASE_HOST: localhost
+      DATABASE_NAME: citycatalyst
+      DATABASE_USER: citycatalyst
+      DATABASE_PASSWORD: development
+      DATABASE_USE_SSL: "false"
+      NEXTAUTH_SECRET: "diTMz/XLX4edSmmfzwJtmzKjCJGRt81Gf0PdjO3IPs8="
+      NEXTAUTH_URL: "http://127.0.0.1:3000"
+      HOST: "http://127.0.0.1:3000"
+      NEXT_PUBLIC_API_URL: "http://127.0.0.1:3000"
+      NEXT_PUBLIC_OPENCLIMATE_API_URL: "https://openclimate.openearth.dev"
+      NEXT_PUBLIC_FEATURE_FLAGS: "CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC"
+      CC_SERVICE_API_KEY: "ci-shared-service-key"
+      VERIFICATION_TOKEN_SECRET: "ci-jwt-secret"
+      CA_SMOKE_USER_ID: "11111111-1111-4111-8111-111111111111"
+      CA_SMOKE_CITY_ID: "22222222-2222-4222-8222-222222222222"
+      CA_SMOKE_INVENTORY_ID: "33333333-3333-4333-8333-333333333333"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install app dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Set up app database and smoke fixture
+        working-directory: app
+        run: |
+          docker run --name github_action_postgresql -d -p 5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_PASSWORD="" postgres
+          sleep 10
+          createuser -w -h localhost -p 5432 -U postgres citycatalyst
+          createdb -w -h localhost -p 5432 -U postgres citycatalyst -O citycatalyst
+          cp env.example .env
+          npm run db:migrate
+          npm run upsert-ca-smoke-fixture
+
+      - name: Build CityCatalyst app
+        working-directory: app
+        run: npm run build
+
+      - name: Start CityCatalyst app
+        working-directory: app
+        run: |
+          npx next start -H 127.0.0.1 -p 3000 > ../cc-server.log 2>&1 &
+          echo "$!" > ../cc-server.pid
+
+      - name: Wait for CityCatalyst app
+        run: |
+          for attempt in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000/api/v1/check/liveness; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat cc-server.log
+          exit 1
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.7"
+          enable-cache: true
+          cache-dependency-glob: "climate-advisor/uv.lock"
+
+      - name: Sync Climate Advisor dependencies
+        working-directory: climate-advisor
+        run: uv sync --locked --group dev
+
+      - name: Run CA client against local CC
+        working-directory: climate-advisor
+        env:
+          CC_BASE_URL: "http://127.0.0.1:3000/"
+          CC_API_KEY: "ci-shared-service-key"
+          CA_AUTH_CONTRACT_USER_ID: "11111111-1111-4111-8111-111111111111"
+          CA_AUTH_CONTRACT_OTHER_USER_ID: "00000000-0000-4000-8000-000000000002"
+          CA_AUTH_CONTRACT_CITY_ID: "22222222-2222-4222-8222-222222222222"
+          CA_AUTH_CONTRACT_INVENTORY_ID: "33333333-3333-4333-8333-333333333333"
+        run: |
+          uv run --directory service pytest tests/test_citycatalyst_client_auth_contract.py -q
+
+      - name: Show CC server log on failure
+        if: failure()
+        run: cat cc-server.log || true

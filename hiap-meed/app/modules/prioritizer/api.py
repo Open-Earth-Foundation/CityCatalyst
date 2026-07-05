@@ -37,6 +37,7 @@ from app.services.data_clients import (
     ApiActionMitigationFeasibilityScoresDataApiClient,
     ApiCityDataApiClient,
     ApiLegalDataApiClient,
+    S3LegalDataApiClient,
     ApiActionPolicyScoresDataApiClient,
     MockActionFinancialFeasibilityScoresDataApiClient,
     MockActionPathwaysDataApiClient,
@@ -156,7 +157,7 @@ def _mlflow_source_params() -> dict[str, str]:
     """Return the active source-config params logged on MLflow request runs."""
     return {
         "city_data_source": os.getenv("HIAP_MEED_CITY_DATA_SOURCE", "api"),
-        "legal_data_source": os.getenv("HIAP_MEED_LEGAL_DATA_SOURCE", "api"),
+        "legal_data_source": os.getenv("HIAP_MEED_LEGAL_DATA_SOURCE", "s3"),
         "action_pathways_data_source": os.getenv(
             "HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE", "api"
         ),
@@ -385,7 +386,9 @@ def prioritize(
     action_pathways_data_api_client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient = Depends(
         get_action_pathways_data_api_client
     ),
-    legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient = Depends(
+    legal_data_api_client: (
+        MockLegalDataApiClient | ApiLegalDataApiClient | S3LegalDataApiClient
+    ) = Depends(
         get_legal_data_api_client
     ),
     action_policy_scores_data_api_client: (
@@ -720,7 +723,9 @@ def _run_for_city_input(
     requested_top_n: int | None,
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient,
     action_pathways_data_api_client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient,
-    legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient,
+    legal_data_api_client: (
+        MockLegalDataApiClient | ApiLegalDataApiClient | S3LegalDataApiClient
+    ),
     action_policy_scores_data_api_client: (
         MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
     ),

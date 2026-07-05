@@ -1033,6 +1033,48 @@ class ActionLegalAssessmentApiItem(BaseModel):
     )
 
 
+class ActionLegalAssessmentS3CsvRow(BaseModel):
+    """Legal assessment row loaded from the private S3 classification CSV."""
+
+    model_config = ConfigDict(extra="allow")
+
+    action_id: str = Field(min_length=1)
+    verdict_category: str | None = None
+    verdict_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    ownership_category: str | None = None
+    ownership_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    ownership_weight: float | None = None
+    ownership_description: str | None = None
+    ownership_description_es: str | None = None
+    restrictions_category: str | None = None
+    restrictions_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    restrictions_weight: float | None = None
+    restrictions_description: str | None = None
+    restrictions_description_es: str | None = None
+    legal_justification: str | None = None
+    legal_justification_en: str | None = None
+    legal_reference_1: str | None = None
+    legal_reference_2: str | None = None
+    legal_reference_3: str | None = None
+    legal_reference_4: str | None = None
+    legal_reference_5: str | None = None
+    legal_reference_6: str | None = None
+    action_name_en: str | None = None
+    action_name_es: str | None = None
+    sector: str | None = None
+    analysis_date: str | None = None
+    generation_method: str | None = None
+    publisher_id: str | None = None
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def normalize_blank_cells(cls, value: object) -> object | None:
+        """Normalize blank CSV cells before field-level validation."""
+        if isinstance(value, str) and not value.strip():
+            return None
+        return value
+
+
 class RankedActionImpactEvidenceSummary(BaseModel):
     """Compact impact evidence snapshot returned for one ranked action."""
 

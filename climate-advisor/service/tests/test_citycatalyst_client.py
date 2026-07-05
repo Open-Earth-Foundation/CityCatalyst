@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import json
 from types import SimpleNamespace
 from typing import Any, Dict, List, Optional
 import unittest
@@ -61,10 +63,22 @@ class _StubAsyncClient:
 def _response(
     status_code: int,
     *,
-    json_data: Optional[Dict[str, Any]] = None,
+    json_data: Optional[Any] = None,
 ) -> httpx.Response:
     request = httpx.Request("GET", "https://cc.example/api")
     return httpx.Response(status_code, json=json_data, request=request)
+
+
+def _unsigned_jwt(claims: Dict[str, Any]) -> str:
+    def encode_json(payload: Dict[str, Any]) -> str:
+        raw = json.dumps(payload, separators=(",", ":")).encode("utf-8")
+        return base64.urlsafe_b64encode(raw).decode("ascii").rstrip("=")
+
+    return (
+        f"{encode_json({'alg': 'none', 'typ': 'JWT'})}."
+        f"{encode_json(claims)}."
+        "signature"
+    )
 
 
 class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
@@ -392,16 +406,27 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
             ),
         ):
             client = CityCatalystClient()
+            token_payload = {
+                "access_token": _unsigned_jwt(
+                    {
+                        "aud": "https://cc.example",
+                        "iss": "climate-advisor-service",
+                        "sub": "user-123",
+                    }
+                ),
+                "expires_in": 3600,
+                "token_type": "Bearer",
+            }
             stub = _StubAsyncClient(
                 [
-                    _response(200, json_data={"access_token": "new-token", "expires_in": 3600}),
+                    _response(200, json_data=token_payload),
                 ]
             )
 
             with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
                 token, expires_in = await client.refresh_token("user-123")
 
-            self.assertEqual(token, "new-token")
+            self.assertEqual(token, token_payload["access_token"])
             self.assertEqual(expires_in, 3600)
             recorded = stub.requests[0]
             self.assertEqual(

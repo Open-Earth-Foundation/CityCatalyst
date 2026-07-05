@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: cc-test-ca-smoke-fixture-
+spec:
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: cc-test-ca-smoke-fixture
+          image: ghcr.io/open-earth-foundation/citycatalyst:main
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: cc-test-db-configmap
+          env:
+            - name: NODE_ENV
+              value: development
+          command: ["npm", "run", "upsert-ca-smoke-fixture"]
+          resources:
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"

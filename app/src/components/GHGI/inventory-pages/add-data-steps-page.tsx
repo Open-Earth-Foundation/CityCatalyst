@@ -320,11 +320,11 @@ export default function AddDataSteps() {
 
   const totalStepCompletion = currentStep
     ? clamp(
-        currentStep.connectedProgress +
-          currentStep.addedProgress +
-          currentStep.reasonNEProgress +
-          currentStep.reasonNOProgress,
-      )
+      currentStep.connectedProgress +
+      currentStep.addedProgress +
+      currentStep.reasonNEProgress +
+      currentStep.reasonNOProgress,
+    )
     : 0;
   const formatPercentage = (percentage: number) =>
     Math.round(percentage * 1000) / 10;
@@ -647,6 +647,11 @@ export default function AddDataSteps() {
   const selectedSubsectorId = selectedSubsector[0];
 
   const filteredDataSources = dataSources?.filter(({ source }) => {
+    // Hide data sources that only contain notation keys (e.g. "NO" = not occurring)
+    // and no actual emissions data
+    if (source.retrievalMethod === "global_api_notation_key") {
+      return false;
+    }
     if (!selectedSubsectorId || selectedSubsectorId === allSubsectorsValue) {
       return true;
     }
@@ -899,7 +904,7 @@ export default function AddDataSteps() {
                         justify="space-between"
                       >
                         {subSector.completedCount > 0 &&
-                        subSector.completedCount < subSector.totalCount ? (
+                          subSector.completedCount < subSector.totalCount ? (
                           <ProgressCircle.Root
                             size="xs"
                             mr={1}
@@ -1100,7 +1105,7 @@ export default function AddDataSteps() {
                                       borderWidth="1px"
                                       borderColor={
                                         isSourceConnected(source) &&
-                                        source.inventoryValues?.length
+                                          source.inventoryValues?.length
                                           ? "interactive.tertiary"
                                           : "border.overlay"
                                       }
@@ -1126,7 +1131,7 @@ export default function AddDataSteps() {
                                               IV: MdOutlineFactory,
                                               V: LuWheat,
                                             }[
-                                              currentStep.referenceNumber
+                                            currentStep.referenceNumber
                                             ] ?? MdOutlineHomeWork
                                           }
                                           boxSize={9}
@@ -1272,13 +1277,13 @@ export default function AddDataSteps() {
                                           color="content.tertiary"
                                           lineClamp={
                                             isSourceConnected(source) &&
-                                            source.inventoryValues?.length
+                                              source.inventoryValues?.length
                                               ? 0
                                               : 4
                                           }
                                           maxHeight={
                                             isSourceConnected(source) &&
-                                            source.inventoryValues?.length
+                                              source.inventoryValues?.length
                                               ? "100px"
                                               : "184px"
                                           }
@@ -1311,7 +1316,7 @@ export default function AddDataSteps() {
                                             {t("see-more-details")}
                                           </Link>
                                           {isSourceConnected(source) &&
-                                          source.inventoryValues?.length ? (
+                                            source.inventoryValues?.length ? (
                                             <Button
                                               variant="outline"
                                               w="full"
@@ -1338,13 +1343,13 @@ export default function AddDataSteps() {
                                                 isFrozenCheck()
                                                   ? null
                                                   : onDisconnectThirdPartyData(
-                                                      source,
-                                                    )
+                                                    source,
+                                                  )
                                               }
                                               loading={
                                                 isDisconnectLoading &&
                                                 source.datasourceId ===
-                                                  disconnectingDataSourceId
+                                                disconnectingDataSourceId
                                               }
                                               onMouseEnter={() =>
                                                 onButtonHover(source)
@@ -1400,7 +1405,7 @@ export default function AddDataSteps() {
                                               loading={
                                                 isConnectDataSourceLoading &&
                                                 source.datasourceId ===
-                                                  connectingDataSourceId
+                                                connectingDataSourceId
                                               }
                                             >
                                               {t("connect-data")}

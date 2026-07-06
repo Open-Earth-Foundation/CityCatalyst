@@ -30,6 +30,8 @@
   "edit-subsector": "Teilsektor bearbeiten",
   "more-datasets": "Mehr Datensätze anzeigen",
   "less-datasets": "Weniger Datensätze anzeigen",
+  "notation-key-no-notice": "Um die Datenschlüssel \"Nicht aufgetreten\" anzuzeigen, prüfen Sie:",
+  "manage-missing-sub-sectors": "Fehlende Teilsektoren verwalten",
   "add-data-heading": "Fügen Sie manuell Ihre eigenen lokalen Werte hinzu",
   "add-data-details": "Fügen Sie manuell Ihre berechneten Werte für erforderliche Teilsektoren in die Inventur ein.",
   "select-subsector": "Teilsektor auswählen",

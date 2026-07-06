@@ -122,6 +122,8 @@
   "edit-subsector": "Edit subsector",
   "more-datasets": "View more datasets",
   "less-datasets": "View less datasets",
+  "notation-key-no-notice": "To view \"Not Occurring\" data keys, check:",
+  "manage-missing-sub-sectors": "Manage missing sub-sectors",
   "add-data-heading": "Add Data to Your Inventory Data",
   "add-data-details": "These are the subsectors to be completed according to the GPC methodology for the current sector. Select a sub-sector and fill in the information to complete your inventory.",
   "select-subsector": "Select sub-sector",

@@ -46,6 +46,7 @@ export default function OnboardingSetup(props: {
 }) {
   const { lng } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
+  const { t: tDrawer } = useTranslation(lng, "data");
   const router = useRouter();
 
   const {
@@ -420,6 +421,7 @@ export default function OnboardingSetup(props: {
           {!isUploadMode && activeStep === thirdPartyStepIndex && (
             <ThirdPartyInventoryDataStep
               t={t}
+              tDrawer={tDrawer}
               cityId={createdCityId!}
               year={
                 typeof data.year === "string"

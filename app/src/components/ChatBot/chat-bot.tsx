@@ -13,7 +13,7 @@ export interface ChatBotProps {
   userName?: string;
   inputRef?: React.Ref<HTMLTextAreaElement>;
   t: TFunction;
-  inventoryId: string;
+  inventoryId?: string;
   contextSuggestions?: { preview: string; message: string }[] | null;
 }
 
@@ -39,8 +39,8 @@ export default function ChatBot({
 
   return (
     <Box display="flex" flexDirection="column" w="full" flex="1" minH={0}>
-      <ChatMessageList 
-        messages={messages} 
+      <ChatMessageList
+        messages={messages}
         isGenerating={isGenerating}
         assistantStartedResponding={assistantStartedResponding}
       />

@@ -37,7 +37,7 @@ export const EmissionsForecastCard = ({
         lng={lng}
       />
 
-      <Card.Root paddingY="0px" paddingX="0px" height="650px" width="100%">
+      <Card.Root paddingY="0px" paddingX="0px" minHeight="650px" width="100%">
         <CardHeader>
           <HStack>
             <TitleMedium>
@@ -63,10 +63,11 @@ export const EmissionsForecastCard = ({
           </HStack>
         </CardHeader>
         <CardBody
-          paddingY="0px"
+          paddingTop="0px"
+          paddingBottom={6}
           paddingLeft={4}
           paddingRight={0}
-          height="600px"
+          minHeight="600px"
           width="100%"
         >
           <EmissionsForecastChart

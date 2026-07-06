@@ -12,6 +12,14 @@ from app.services.action_legal_assessments_api import (
     ActionLegalAssessmentsApiService,
     LEGAL_ASSESSMENTS_ENDPOINT_TEMPLATE,
 )
+from app.services.action_legal_assessments_s3 import (
+    ActionLegalAssessmentsS3Service,
+    LEGAL_ASSESSMENTS_S3_ENDPOINT,
+)
+from app.services.action_financial_feasibility_scores_api import (
+    ACTION_FINANCIAL_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE,
+    ActionFinancialFeasibilityScoresApiService,
+)
 from app.services.action_mitigation_feasibility_scores_api import (
     ACTION_MITIGATION_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE,
     ActionMitigationFeasibilityScoresApiService,
@@ -28,6 +36,8 @@ from app.services.action_policy_scores_api import (
 from app.services.city_attributes_api import CityAttributesApiService
 from app.modules.prioritizer.internal_models import (
     Action,
+    ActionFinancialFeasibilityScoreRecord,
+    ActionFinancialFeasibilityScoresFetchResult,
     ActionPathwaysFetchResult,
     ActionMitigationFeasibilityScoreRecord,
     ActionMitigationFeasibilityScoresFetchResult,
@@ -37,6 +47,8 @@ from app.modules.prioritizer.internal_models import (
     LegalAssessmentRecord,
 )
 from app.modules.prioritizer.models import (
+    ActionFinancialFeasibilityScoreApiItem,
+    ActionFinancialFeasibilityScoresApiResponse,
     ActionMitigationFeasibilityScoreApiItem,
     ActionMitigationFeasibilityScoresApiResponse,
     ActionPolicyScoreApiItem,
@@ -50,18 +62,26 @@ from app.modules.prioritizer.models import (
 logger = logging.getLogger(__name__)
 
 
-def _resolve_configured_data_source(env_var_name: str, default: str = "api") -> str:
+def _resolve_configured_data_source(
+    env_var_name: str,
+    default: str = "api",
+    allowed_sources: set[str] | None = None,
+) -> str:
     """Return a validated data-source mode from the environment."""
+    if allowed_sources is None:
+        allowed_sources = {"mock", "api"}
     source = os.getenv(env_var_name, default).strip().lower()
-    if source in {"mock", "api"}:
+    if source in allowed_sources:
         return source
+    allowed_sources_label = ", ".join(sorted(allowed_sources))
     logger.error(
-        "Invalid %s=`%s`; expected one of: api, mock",
+        "Invalid %s=`%s`; expected one of: %s",
         env_var_name,
         source,
+        allowed_sources_label,
     )
     raise ValueError(
-        f"Invalid {env_var_name}=`{source}`; expected one of: api, mock"
+        f"Invalid {env_var_name}=`{source}`; expected one of: {allowed_sources_label}"
     )
 
 
@@ -77,7 +97,7 @@ def _base_source_metadata() -> dict[str, object]:
 
 
 def describe_legal_data_source(
-    client: MockLegalDataApiClient | ApiLegalDataApiClient,
+    client: MockLegalDataApiClient | ApiLegalDataApiClient | S3LegalDataApiClient,
     *,
     country_code: str,
 ) -> dict[str, object]:
@@ -94,6 +114,16 @@ def describe_legal_data_source(
     source_metadata = _base_source_metadata()
     source_metadata["requested_country_code"] = normalized_country_code
     service = getattr(client, "_service", None)
+    if service is not None and hasattr(service, "bucket") and hasattr(service, "key"):
+        source_metadata["upstream_url"] = f"s3://{service.bucket}/{service.key}"
+        source_metadata["upstream_endpoint"] = LEGAL_ASSESSMENTS_S3_ENDPOINT
+        source_metadata["source_type"] = "s3_csv"
+        source_metadata["s3_bucket"] = service.bucket
+        source_metadata["s3_key_suffix"] = str(service.key).rsplit("/", 1)[-1]
+        return {
+            "source": "action_legal_assessments_s3",
+            "source_metadata": source_metadata,
+        }
     if service is not None and hasattr(service, "_build_legal_assessments_url"):
         source_metadata["upstream_url"] = service._build_legal_assessments_url(
             normalized_country_code
@@ -347,6 +377,29 @@ def _map_action_mitigation_feasibility_score_item(
     )
 
 
+def _map_action_financial_feasibility_score_item(
+    *,
+    score: ActionFinancialFeasibilityScoreApiItem,
+    source_metadata: dict[str, object],
+) -> ActionFinancialFeasibilityScoreRecord:
+    """Map one upstream financial feasibility item into the action-keyed record."""
+    score_raw = score.model_dump(mode="json")
+    return ActionFinancialFeasibilityScoreRecord.model_validate(
+        {
+            "action_id": score.action_id,
+            "action_name": score.action_name,
+            "sector": score.sector,
+            "financial_feasibility": score.financial_feasibility,
+            "route": score.route,
+            "reason": score.reason,
+            "inputs": score.inputs,
+            "links": score.links,
+            "raw": score_raw,
+            "source_metadata": source_metadata,
+        }
+    )
+
+
 @dataclass
 class MockActionMitigationFeasibilityScoresDataApiClient:
     """File-backed mitigation feasibility scores client loading mock payload."""
@@ -391,8 +444,52 @@ class MockActionMitigationFeasibilityScoresDataApiClient:
         )
 
 
+@dataclass
+class MockActionFinancialFeasibilityScoresDataApiClient:
+    """File-backed financial feasibility scores client loading mock payload."""
+
+    mock_file_path: Path
+
+    def get_action_financial_feasibility_scores(
+        self, locode: str, country_code: str
+    ) -> ActionFinancialFeasibilityScoresFetchResult:
+        """Load financial feasibility scores grouped by action ID."""
+        payload = json.loads(self.mock_file_path.read_text(encoding="utf-8"))
+        response = ActionFinancialFeasibilityScoresApiResponse.model_validate(payload)
+        requested_locode = locode.strip().upper()
+        requested_country_code = country_code.strip().upper()
+        source_metadata = {
+            **_base_source_metadata(),
+            "mock_file_path": str(self.mock_file_path),
+            "requested_locode": requested_locode,
+            "requested_country_code": requested_country_code,
+            "upstream_endpoint": ACTION_FINANCIAL_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE,
+            "upstream_generated_at_utc": response.meta.generated_at_utc,
+        }
+        scores_by_action_id: dict[str, ActionFinancialFeasibilityScoreRecord] = {}
+        for score in response.data:
+            action_id = score.action_id
+            if action_id in scores_by_action_id:
+                raise ValueError(
+                    "Mock action financial feasibility scores payload contains duplicate "
+                    f"action_id values for locode={requested_locode}"
+                )
+            scores_by_action_id[action_id] = (
+                _map_action_financial_feasibility_score_item(
+                    score=score,
+                    source_metadata=source_metadata,
+                )
+            )
+        return ActionFinancialFeasibilityScoresFetchResult(
+            scores_by_action_id=scores_by_action_id,
+            source_metadata=source_metadata,
+            upstream_meta=response.meta.model_dump(mode="json"),
+            warning=None,
+        )
+
+
 class ApiLegalDataApiClient:
-    """API-backed legal client using the flat upstream legal assessments service."""
+    """Deprecated API-backed legal client that raises before upstream HTTP calls."""
 
     def __init__(
         self, service: ActionLegalAssessmentsApiService | None = None
@@ -403,7 +500,25 @@ class ApiLegalDataApiClient:
     def get_action_legal_assessments(
         self, country_code: str
     ) -> dict[str, LegalAssessmentRecord]:
-        """Fetch country-scoped legal assessments from the upstream legal API."""
+        """Raise because the public legal API is no longer an active source."""
+        return self._service.get_assessments_by_action_id(country_code)
+
+
+class S3LegalDataApiClient:
+    """S3-backed legal client using the private legal classification CSV."""
+
+    def __init__(
+        self,
+        service: ActionLegalAssessmentsS3Service | None = None,
+    ) -> None:
+        """Create the legal S3 client with a small synchronous service wrapper."""
+        self._service = service or ActionLegalAssessmentsS3Service()
+
+    def get_action_legal_assessments(
+        self,
+        country_code: str,
+    ) -> dict[str, LegalAssessmentRecord]:
+        """Fetch country-scoped legal assessments from the S3 CSV source."""
         return self._service.get_assessments_by_action_id(country_code)
 
 
@@ -434,6 +549,22 @@ class ApiActionMitigationFeasibilityScoresDataApiClient:
         self, locode: str, country_code: str
     ) -> ActionMitigationFeasibilityScoresFetchResult:
         """Fetch city-scoped mitigation feasibility scores from the upstream API."""
+        return self._service.get_scores_by_action_id(locode, country_code)
+
+
+class ApiActionFinancialFeasibilityScoresDataApiClient:
+    """API-backed financial feasibility client using the upstream score service."""
+
+    def __init__(
+        self, service: ActionFinancialFeasibilityScoresApiService | None = None
+    ) -> None:
+        """Create the financial feasibility API client with a service wrapper."""
+        self._service = service or ActionFinancialFeasibilityScoresApiService()
+
+    def get_action_financial_feasibility_scores(
+        self, locode: str, country_code: str
+    ) -> ActionFinancialFeasibilityScoresFetchResult:
+        """Fetch city-scoped financial feasibility scores from the upstream API."""
         return self._service.get_scores_by_action_id(locode, country_code)
 
 
@@ -480,6 +611,7 @@ _default_mock_action_client = MockActionPathwaysDataApiClient(
     / "action_pathways_api_mock.json"
 )
 _default_api_legal_client = ApiLegalDataApiClient()
+_default_s3_legal_client = S3LegalDataApiClient()
 _default_mock_legal_client = MockLegalDataApiClient(
     mock_file_path=Path(__file__).resolve().parents[2]
     / "data"
@@ -508,6 +640,20 @@ _default_api_action_mitigation_feasibility_scores_client = (
 _default_mock_action_mitigation_feasibility_scores_client = (
     MockActionMitigationFeasibilityScoresDataApiClient(
         mock_file_path=_default_action_mitigation_feasibility_scores_mock_file_path
+    )
+)
+_default_action_financial_feasibility_scores_mock_file_path = (
+    Path(__file__).resolve().parents[2]
+    / "data"
+    / "mock"
+    / "action_financial_feasibility_scores_api_mock.json"
+)
+_default_api_action_financial_feasibility_scores_client = (
+    ApiActionFinancialFeasibilityScoresDataApiClient()
+)
+_default_mock_action_financial_feasibility_scores_client = (
+    MockActionFinancialFeasibilityScoresDataApiClient(
+        mock_file_path=_default_action_financial_feasibility_scores_mock_file_path
     )
 )
 
@@ -544,18 +690,26 @@ def get_action_pathways_data_api_client() -> MockActionPathwaysDataApiClient | A
     return _default_mock_action_client
 
 
-def get_legal_data_api_client() -> MockLegalDataApiClient | ApiLegalDataApiClient:
+def get_legal_data_api_client() -> (
+    MockLegalDataApiClient | ApiLegalDataApiClient | S3LegalDataApiClient
+):
     """FastAPI dependency provider for legal assessment client."""
-    source = _resolve_configured_data_source("HIAP_MEED_LEGAL_DATA_SOURCE")
+    source = _resolve_configured_data_source(
+        "HIAP_MEED_LEGAL_DATA_SOURCE",
+        default="s3",
+        allowed_sources={"mock", "api", "s3"},
+    )
+    if source == "s3":
+        return _default_s3_legal_client
     if source == "api":
         return _default_api_legal_client
 
     if not _default_mock_legal_client.mock_file_path.exists():
         logger.warning(
-            "Mock legal file not found at `%s`; using API legal client",
+            "Mock legal file not found at `%s`; using S3 legal client",
             _default_mock_legal_client.mock_file_path,
         )
-        return _default_api_legal_client
+        return _default_s3_legal_client
 
     return _default_mock_legal_client
 
@@ -601,4 +755,26 @@ def get_action_mitigation_feasibility_scores_data_api_client() -> (
         return _default_api_action_mitigation_feasibility_scores_client
 
     return _default_mock_action_mitigation_feasibility_scores_client
+
+
+def get_action_financial_feasibility_scores_data_api_client() -> (
+    MockActionFinancialFeasibilityScoresDataApiClient
+    | ApiActionFinancialFeasibilityScoresDataApiClient
+):
+    """FastAPI dependency provider for financial feasibility scores client."""
+    source = _resolve_configured_data_source(
+        "HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE"
+    )
+    if source == "api":
+        return _default_api_action_financial_feasibility_scores_client
+
+    if not _default_action_financial_feasibility_scores_mock_file_path.exists():
+        logger.warning(
+            "Mock action financial feasibility scores file not found at `%s`; "
+            "using API action financial feasibility scores client",
+            _default_action_financial_feasibility_scores_mock_file_path,
+        )
+        return _default_api_action_financial_feasibility_scores_client
+
+    return _default_mock_action_financial_feasibility_scores_client
 

@@ -44,8 +44,10 @@ export default function ChatPopover({
   // get user info
   const { data: userInfo } = api.useGetUserInfoQuery();
 
+  // Leave undefined when the user has no inventory yet (e.g. during onboarding)
+  // so Clima opens an inventory-less thread instead of sending an invalid "".
   const effectiveInventoryId =
-    inventoryId ?? userInfo?.defaultInventoryId ?? "";
+    inventoryId ?? userInfo?.defaultInventoryId ?? undefined;
 
   // Check if user has accepted disclaimer on mount
   useEffect(() => {
@@ -148,8 +150,11 @@ export default function ChatPopover({
             fontWeight="600"
             letterSpacing="wider"
             py="26px"
+            px="24px"
             bg="interactive.tertiary"
-            maxW="220px"
+            w="fit-content"
+            maxW="280px"
+            whiteSpace="nowrap"
             fontFamily="heading"
             aria-label={t("ai-expert")}
             variant="solid"

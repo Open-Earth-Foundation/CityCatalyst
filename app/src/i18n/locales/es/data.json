@@ -97,6 +97,8 @@
   "manually-added": "Datos añadidos manualmente",
   "check-data-heading": "Explora Conjuntos de Datos Relevantes para Conectar a tu Inventario",
   "check-data-details": "Revisa e integra datos automáticamente obtenidos relevantes para el inventario de GEI de tu ciudad.",
+  "browse-and-connect-external-datasets-heading": "Examinar y conectar conjuntos de datos externos a su inventario de emisiones de GEI",
+  "browse-and-connect-external-datasets-description": "Puede revisar e integrar datos de emisiones de proveedores externos directamente en su inventario de emisiones de GEI.",
   "no-data-sources": "No hay Fuentes de Datos Externas Disponibles",
   "no-data-sources-description": "Parece que no hay fuentes externas disponibles en este momento.<1></1>Si conoces alguna, <3>por favor repórtalo</3> y priorizaremos tu solicitud.",
   "data-quality": "Calidad de los Datos",
@@ -1281,5 +1283,10 @@
   "not-estimated-progress": "No Estimado",
   "uncategorized": "Sin categorizar",
   "legend": "Leyenda",
-  "data-already-added-connected": "Este conjunto de datos no está disponible porque ya tiene uno conectado para este subsector."
+  "data-already-added-connected": "Este conjunto de datos no está disponible porque ya tiene uno conectado para este subsector.",
+  "datasets": "conjunto de datos(s)",
+  "filter-by-subsector": "Filtrar por subsector",
+  "refresh-datasets": "Actualizar conjuntos de datos",
+  "agriculture-forestry-and-other-land-use-afolu": "Agricultura, silvicultura y uso de la tierra (AFOLU)",
+  "industrial-processes-and-product-uses-ippu": "Procesos industriales y uso de productos (IPPU)"
 }

@@ -19,6 +19,7 @@ import { logger } from "@/services/logger";
 import type { ImportStatusResponse } from "@/util/types";
 import { usePollUntil } from "@/hooks/usePollUntil";
 import { TFunction } from "i18next";
+import { useAppDispatch } from "@/lib/hooks";
 
 /** If errorLog starts with "i18n:", return t(key); else return errorLog or fallback. */
 function resolveErrorMessage(
@@ -46,9 +47,23 @@ function ImportButton({
   onImport: () => void;
   t: TFunction;
 }) {
+  const dispatch = useAppDispatch();
   const [approveImport, { isLoading: isImporting }] =
     api.useApproveImportMutation();
   const [getImportStatus] = api.useLazyGetImportStatusQuery();
+
+  /** Invalidate inventory-related caches so the GHGI page shows fresh totalEmissions. */
+  const invalidateInventoryCache = () => {
+    dispatch(
+      api.util.invalidateTags([
+        "Inventory",
+        "InventoryProgress",
+        "InventoryValue",
+        "ReportResults",
+        "YearlyReportResults",
+      ]),
+    );
+  };
 
   const makeErrorToast = (title: string, description?: string) => {
     const { showErrorToast } = UseErrorToast({ description, title });
@@ -72,6 +87,7 @@ function ImportButton({
         return { done: false };
       },
       onSuccess: () => {
+        invalidateInventoryCache();
         makeSuccessToast(t("import-completed"), t("import-completed-description"));
         onImport();
       },
@@ -109,6 +125,7 @@ function ImportButton({
       }
 
       if ((result as { importStatus?: string }).importStatus === "completed") {
+        invalidateInventoryCache();
         makeSuccessToast(t("import-completed"), t("import-completed-description"));
         onImport();
         return;

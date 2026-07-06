@@ -162,10 +162,11 @@ export default function VersionEntry({
       isDeleted: entry.version.isDeleted,
       // module specific fields
       referenceNumber: entry.subCategory?.referenceNumber,
-      subCategory:
-        entry.subCategory?.referenceNumber +
-        " " +
-        tData(entry.subCategory?.subcategoryName ?? ""),
+      subCategory: entry.subCategory
+        ? entry.subCategory.referenceNumber +
+          " " +
+          tData(entry.subCategory.subcategoryName ?? "")
+        : "-",
       totalEmissions: entry.version.data?.co2eq
         ? toEmissionsString(entry.version.data.co2eq, numberFormat)
         : "-",

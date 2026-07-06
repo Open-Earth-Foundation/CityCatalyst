@@ -253,6 +253,8 @@ class StreamingHandler:
             ):
                 yield event_bytes
 
+            await self._persist_refreshed_token_from_agent()
+
             # Persist the assistant message before the terminal done event so
             # history_saved reflects the actual write result.
             await self.persist_message()
@@ -581,7 +583,7 @@ class StreamingHandler:
         if instruction_text or not self.stationary_energy_draft_run_id:
             return instruction_text
         try:
-            return get_settings().llm.prompts.get_prompt(
+            return get_settings().llm.prompts.compose_prompt(
                 "stationary_energy_review"
             ).strip()
         except Exception as exc:
@@ -1008,6 +1010,20 @@ class StreamingHandler:
                 event="info",
             ).encode("utf-8")
 
+    async def _persist_refreshed_token_from_agent(self) -> None:
+        """Persist a refreshed token held by AgentService after tool execution."""
+        if not self.agent_service or not self.token_handler:
+            return
+
+        current_token = getattr(self.agent_service, "current_cc_token", lambda: None)()
+        if not isinstance(current_token, str) or not current_token:
+            return
+        if current_token == self.cc_access_token:
+            return
+
+        await self.token_handler.handle_refreshed_token(current_token, self.agent_service)
+        self.cc_access_token = current_token
+
     def _format_completion_event(self, req_id: str, ok: bool = None) -> bytes:
         """Format the final completion event."""
         if ok is None:
@@ -1125,7 +1141,7 @@ class StreamingHandler:
                 else "normal_conversation"
             ),
             "prompt_name": (
-                "stationary_energy_review" if has_agentic_context else "default"
+                "stationary_energy_review" if has_agentic_context else "chat"
             ),
             "ca_agentic_flow": has_agentic_context,
             "context_mode": (

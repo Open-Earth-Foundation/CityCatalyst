@@ -43,7 +43,7 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
     cities?: Array<{
       cityId: string;
       cityName: string;
-      flag: string;
+      countryCode?: string;
     }>;
   } | null>(null);
 
@@ -100,17 +100,6 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
       };
       return charMap[char] || char;
     });
-  };
-
-  const getCountryFlag = (countryCode: string | undefined): string => {
-    if (!countryCode || countryCode.length !== 2) return "🏙️";
-
-    const codePoints = countryCode
-      .toUpperCase()
-      .split("")
-      .map(char => 127397 + char.charCodeAt(0));
-
-    return String.fromCodePoint(...codePoints);
   };
 
   const acceptInvite = async () => {
@@ -197,7 +186,7 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
           cities?: Array<{
             cityId: string;
             cityName: string;
-            flag: string;
+            countryCode?: string;
           }>} = {
             type: currentInviteType,
             email: sanitizedEmail,
@@ -217,7 +206,9 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
                 return {
                   cityId,
                   cityName: city?.name || "Unknown City",
-                  flag: getCountryFlag(city?.countryLocode)
+                  countryCode: city?.countryLocode
+                    ?.substring(0, 2)
+                    .toLowerCase(),
                 };
               });
 

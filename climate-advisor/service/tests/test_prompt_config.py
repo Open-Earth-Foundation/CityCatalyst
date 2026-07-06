@@ -91,13 +91,21 @@ def test_compose_prompt_wraps_core_and_stationary_energy_review() -> None:
     assert "Handle one Stationary Energy review intent per user turn" in composed_prompt
     assert "Route the user request by choosing the first matching route" in composed_prompt
     assert "Confirmation payload routes 4 and 6 take precedence" in composed_prompt
+    assert "Do not start a new draft from casual affirmation" in composed_prompt
+    assert "New draft / start-over UI confirmation" in composed_prompt
     assert "<tools>" in composed_prompt
     assert "</tools>" in composed_prompt
     assert "`inventory_status_overview`" in composed_prompt
     assert "`inventory_emissions_context`" in composed_prompt
+    assert "`stationary_energy_start_draft`" not in composed_prompt
+    assert '"go ahead" when nothing is staged yet' not in composed_prompt
+    assert "`proposal_id`" in composed_prompt
+    assert "`selected_source_id`" in composed_prompt
+    assert "`activity_value`" in composed_prompt
     assert "`stationary_energy_accept_one`" in composed_prompt
     assert "`stationary_energy_request_bulk_review_confirmation`" in composed_prompt
     assert "`stationary_energy_save_review_draft`" in composed_prompt
+    assert "save just that one" in composed_prompt
     assert "focused_decision_state" in composed_prompt
     assert "inventory_context" not in composed_prompt
     assert "Stationary Energy review tool argument contracts:" not in composed_prompt

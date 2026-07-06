@@ -218,4 +218,5 @@ def test_single_smoke_script_runs_fixture_job_and_runtime_smoke() -> None:
     assert "kubectl wait --for=condition=complete" in script
     assert 'kubectl logs "job/${JOB_NAME}"' in script
     assert "kubectl rollout status" in script
+    assert 'kubectl exec "${CA_POD}"' in script
     assert "python -m scripts.smoke_cc_contract" in script

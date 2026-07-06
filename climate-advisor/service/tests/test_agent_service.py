@@ -516,6 +516,8 @@ class InventoryToolIntegrationTests(unittest.TestCase):
                 cc_access_token="jwt-token",
                 cc_thread_id=uuid4(),
                 cc_user_id="user-123",
+                city_id="city-123",
+                inventory_id="inventory-123",
                 session_factory=MagicMock(),
                 stationary_energy_draft_run_id=uuid4(),
             )
@@ -526,34 +528,26 @@ class InventoryToolIntegrationTests(unittest.TestCase):
                 getattr(tool, "name", "")
                 for tool in mock_agent_class.call_args.kwargs["tools"]
             ]
-            self.assertIn("inventory_status_overview", tool_names)
-            self.assertIn("inventory_emissions_context", tool_names)
-            self.assertIn("stationary_energy_accept_one", tool_names)
-            self.assertIn("stationary_energy_accept_multiple", tool_names)
-            self.assertIn("stationary_energy_accept_all_recommended", tool_names)
-            self.assertIn(
-                "stationary_energy_request_bulk_review_confirmation",
-                tool_names,
-            )
-            self.assertIn(
-                "stationary_energy_request_all_recommended_confirmation",
-                tool_names,
-            )
-            self.assertIn(
-                "stationary_energy_request_staged_source_change_confirmation",
-                tool_names,
-            )
-            self.assertIn(
-                "stationary_energy_request_staged_sources_rollback_confirmation",
-                tool_names,
-            )
-            self.assertIn("stationary_energy_rollback_staged_sources", tool_names)
-            self.assertIn("stationary_energy_save_review_draft", tool_names)
-            self.assertIn(
-                "stationary_energy_request_inventory_save_confirmation",
-                tool_names,
+            self.assertEqual(
+                set(tool_names),
+                {
+                    "inventory_status_overview",
+                    "inventory_emissions_context",
+                    "stationary_energy_list_review_options",
+                    "stationary_energy_accept_one",
+                    "stationary_energy_accept_multiple",
+                    "stationary_energy_accept_all_recommended",
+                    "stationary_energy_request_bulk_review_confirmation",
+                    "stationary_energy_request_all_recommended_confirmation",
+                    "stationary_energy_request_staged_source_change_confirmation",
+                    "stationary_energy_request_staged_sources_rollback_confirmation",
+                    "stationary_energy_rollback_staged_sources",
+                    "stationary_energy_save_review_draft",
+                    "stationary_energy_request_inventory_save_confirmation",
+                },
             )
             self.assertNotIn("inventory_list_accessible", tool_names)
+            self.assertNotIn("stationary_energy_start_draft", tool_names)
             self.assertNotIn("get_user_inventories", tool_names)
             self.assertNotIn("get_inventory", tool_names)
             self.assertNotIn("get_all_datasources", tool_names)
@@ -585,6 +579,68 @@ class InventoryToolIntegrationTests(unittest.TestCase):
             self.assertNotIn("city_inventory_search", tool_names)
             self.assertNotIn("get_inventory", tool_names)
             self.assertNotIn("stationary_energy_accept_one", tool_names)
+
+    @patch("app.services.agent_service.get_settings")
+    def test_stationary_energy_start_draft_registered_only_before_draft_exists(
+        self,
+        mock_get_settings,
+    ) -> None:
+        """Test start-draft is available only for the pre-draft SE surface."""
+        mock_settings = build_mock_settings(prompt="Base prompt")
+        mock_get_settings.return_value = mock_settings
+
+        with patch("app.services.agent_service.AsyncOpenAI"), patch(
+            "app.services.agent_service.Agent"
+        ) as mock_agent_class:
+            service = AgentService(
+                cc_thread_id=uuid4(),
+                cc_user_id="user-123",
+                city_id="city-123",
+                inventory_id="inventory-123",
+                session_factory=MagicMock(),
+                stationary_energy_surface=True,
+            )
+
+            asyncio.run(service.create_agent())
+
+            tool_names = [
+                getattr(tool, "name", "")
+                for tool in mock_agent_class.call_args.kwargs["tools"]
+            ]
+            instructions = mock_agent_class.call_args.kwargs["instructions"]
+            start_draft_tool = next(
+                tool
+                for tool in mock_agent_class.call_args.kwargs["tools"]
+                if getattr(tool, "name", "") == "stationary_energy_start_draft"
+            )
+            self.assertIn("stationary_energy_start_draft", tool_names)
+            self.assertEqual(instructions, "Base prompt")
+            self.assertIn(
+                "pre-draft Stationary Energy surface",
+                start_draft_tool.description,
+            )
+            self.assertIn("no arguments", start_draft_tool.description)
+
+        with patch("app.services.agent_service.AsyncOpenAI"), patch(
+            "app.services.agent_service.Agent"
+        ) as mock_agent_class:
+            service = AgentService(
+                cc_thread_id=uuid4(),
+                cc_user_id="user-123",
+                city_id="city-123",
+                inventory_id="inventory-123",
+                session_factory=MagicMock(),
+                stationary_energy_surface=True,
+                stationary_energy_draft_run_id=uuid4(),
+            )
+
+            asyncio.run(service.create_agent())
+
+            tool_names = [
+                getattr(tool, "name", "")
+                for tool in mock_agent_class.call_args.kwargs["tools"]
+            ]
+            self.assertNotIn("stationary_energy_start_draft", tool_names)
 
     @patch("app.services.agent_service.get_settings")
     def test_stationary_energy_review_prompt_uses_composed_workflow_prompt(

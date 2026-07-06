@@ -87,7 +87,7 @@ sequenceDiagram
 
 `AgentService.create_agent()` builds the tool pack at request time:
 
-- Added for default/general Clima:
+- Added outside active Stationary Energy review chat:
   - `climate_vector_search`
 - Added when the request has CityCatalyst credentials and thread scope:
   - `inventory_list_accessible`
@@ -96,6 +96,9 @@ sequenceDiagram
   - `get_all_datasources` as the temporary legacy datasource lookup
   - The general prompt must disambiguate same-city/year inventories with
     inventory name, type, and GWP before calling inventory detail tools.
+- Added when the request is scoped to the Stationary Energy draft surface and
+  no draft run is active:
+  - `stationary_energy_start_draft`
 - Added when the request is scoped to a Stationary Energy draft run:
   - `inventory_status_overview`
   - `inventory_emissions_context`
@@ -118,6 +121,7 @@ flowchart LR
     Review["Stationary Energy review"]
     Core["Core inventory tools<br/>inventory_list_accessible<br/>inventory_status_overview<br/>inventory_emissions_context"]
     Legacy["Temporary legacy<br/>get_all_datasources"]
+    StartDraft["Pre-draft tool<br/>stationary_energy_start_draft"]
     ReviewTools["Specialized review tools<br/>stage / confirm / save / rollback"]
     SharedContext["Shared no-argument context tools<br/>inventory_status_overview<br/>inventory_emissions_context"]
 
@@ -125,6 +129,7 @@ flowchart LR
     Pool --> Review
     Default --> Core
     Default --> Legacy
+    Default --> StartDraft
     Review --> ReviewTools
     Review --> SharedContext
 ```
@@ -132,10 +137,13 @@ flowchart LR
 `AgentService.create_agent()` selects instructions from the active chat mode:
 
 - General chat composes `prompts.core` with `prompts.chat`.
+- Stationary Energy draft-surface chat can register `stationary_energy_start_draft`
+  before a draft run exists, while staying on the composed general chat prompt.
 - Stationary Energy review chat composes `prompts.core` with
   `prompts.stationary_energy_review` and registers only tools scoped to the
   active draft review workflow. That pack includes read-only whole-inventory
-  context tools plus Stationary Energy review tools.
+  context tools plus Stationary Energy review tools, but not the pre-draft
+  `stationary_energy_start_draft` tool.
 
 ## Stationary Energy Review Flow
 
@@ -192,6 +200,8 @@ workflow state in PostgreSQL.
   - Composes `prompts.core` with `prompts.chat` for general chat.
   - Composes `prompts.core` with `prompts.stationary_energy_review` for active
     Stationary Energy review chat.
+  - Registers the pre-draft `stationary_energy_start_draft` tool only when the
+    Stationary Energy surface is active and no draft run is loaded.
   - Keeps general inventory and vector-search tools out of active review chat.
   - Registers the correct tool pack for the request, including read-only
     whole-inventory context tools for both general inventory chat and active
@@ -229,6 +239,9 @@ workflow state in PostgreSQL.
 - `tools/stationary_energy_review_tools.py`
   - The scoped Stationary Energy review tool pack backed by
     `StationaryEnergyAgentReviewService`.
+- `tools/stationary_energy_start_draft_tools.py`
+  - The scoped chat tool that starts Stationary Energy draft generation before
+    a draft run is active and review proposals exist.
 
 ### Utility Layer
 
@@ -270,6 +283,7 @@ values inside `tool_result` payloads:
 - `stationary_energy_review_change_confirmation_requested`
 - `stationary_energy_review_rollback_confirmation_requested`
 - `stationary_energy_inventory_save_confirmation_requested`
+- `stationary_energy_draft_started`
 
 ## Prompts And Configuration
 

@@ -4,6 +4,7 @@ import {
   createDecisionReviewMessage,
   type ChatMessage,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-messages";
+import { TERMINAL_DRAFT_STATUSES } from "@/components/StationaryEnergyDraft/flow-types";
 import type {
   DecisionOption,
   DecisionReviewContext,
@@ -40,17 +41,20 @@ export type FocusedDecisionStatePayload = {
   selected_option: FocusedDecisionOptionPayload | null;
 };
 
-const TERMINAL_DRAFT_STATUSES = new Set([
-  "saved",
-  "partially_saved",
-  "no_changes",
-  "failed",
-]);
-const SOURCE_PREFERENCE_PREFIX = "source:";
+export type StationaryEnergyStartDraftToolResult = {
+  success: boolean;
+  ui_event: "stationary_energy_draft_started";
+  message_key?: string | null;
+  message_params?: unknown;
+  draft_run_id?: string | null;
+  error_code?: string | null;
+};
 
-export const NO_SOURCE_PREFERENCE = "__source_preference_none__";
-export const START_CHOOSE_SOURCES = "__start_choose_sources__";
-export const SET_EMPTY_NOTATION_PREFERENCE = "__set_empty_notation__";
+const GENERIC_START_DRAFT_FAILURE_KEYS = new Set([
+  "tool-error-generic",
+  "tool-error-http",
+  "tool-error-missing-token",
+]);
 
 type StationaryEnergyToolMessageParams = Record<
   string,
@@ -93,6 +97,40 @@ export function resolveStationaryEnergyToolMessage(
   return fallbackKey ? t(fallbackKey) : null;
 }
 
+export function isStationaryEnergyStartDraftToolResult(
+  tool: unknown,
+): tool is StationaryEnergyStartDraftToolResult {
+  return (
+    typeof tool === "object" &&
+    tool !== null &&
+    (tool as { ui_event?: unknown }).ui_event ===
+      "stationary_energy_draft_started" &&
+    typeof (tool as { success?: unknown }).success === "boolean"
+  );
+}
+
+export function resolveStationaryEnergyStartDraftFailureMessage(
+  t: TFunction,
+  tool: unknown,
+): string | null {
+  if (!isStationaryEnergyStartDraftToolResult(tool) || tool.success) {
+    return null;
+  }
+
+  if (
+    tool.message_key &&
+    !GENERIC_START_DRAFT_FAILURE_KEYS.has(tool.message_key)
+  ) {
+    return resolveStationaryEnergyToolMessage(
+      t,
+      tool,
+      "error-failed-to-start-stationary-energy-draft-retry",
+    );
+  }
+
+  return t("error-failed-to-start-stationary-energy-draft-retry");
+}
+
 export function hasTerminalDraftStatus(status: string): boolean {
   return TERMINAL_DRAFT_STATUSES.has(status);
 }
@@ -115,64 +153,6 @@ export function mergeDecisionReviewMessages(
     .map((context) => createDecisionReviewMessage(context.proposal_id));
 
   return additions.length === 0 ? current : [...current, ...additions];
-}
-
-export function sourcePreferenceCommand(sourceName: string): string {
-  return `${SOURCE_PREFERENCE_PREFIX}${sourceName}`;
-}
-
-function sourceNameFromPreference(preference: string): string | null {
-  return preference.startsWith(SOURCE_PREFERENCE_PREFIX)
-    ? preference.slice(SOURCE_PREFERENCE_PREFIX.length)
-    : null;
-}
-
-export function buildSourcePreferenceLabel(
-  t: TFunction,
-  preference: string,
-): string {
-  if (preference === NO_SOURCE_PREFERENCE) {
-    return t("chat-source-preference-no-preference");
-  }
-  if (preference === START_CHOOSE_SOURCES) {
-    return t("chat-start-choose-sources");
-  }
-  if (preference === SET_EMPTY_NOTATION_PREFERENCE) {
-    return t("chat-quick-reply-set-notation");
-  }
-
-  const sourceName = sourceNameFromPreference(preference);
-  if (sourceName) {
-    return t("chat-source-preference-prefer", {
-      sourceName,
-    });
-  }
-
-  return preference;
-}
-
-export function buildSourcePreferenceReply(
-  t: TFunction,
-  preference: string,
-): string {
-  if (preference === NO_SOURCE_PREFERENCE) {
-    return t("chat-source-preference-reply-no-preference");
-  }
-  if (preference === START_CHOOSE_SOURCES) {
-    return t("chat-start-choose-sources-reply");
-  }
-  if (preference === SET_EMPTY_NOTATION_PREFERENCE) {
-    return t("chat-quick-reply-set-notation-reply");
-  }
-
-  const sourceName = sourceNameFromPreference(preference);
-  if (sourceName) {
-    return t("chat-source-preference-reply-prefer", {
-      sourceName,
-    });
-  }
-
-  return preference;
 }
 
 export function nextDecisionState(
@@ -251,9 +231,19 @@ export function buildFocusedDecisionStatePayload(params: {
   decisionReviewContext: DecisionReviewContext[];
   decisionState: Record<string, DraftDecisionState>;
   focusedProposalId?: string | null;
+  resolvedProposalIds: Set<string>;
 }): FocusedDecisionStatePayload | undefined {
-  const { decisionReviewContext, decisionState, focusedProposalId } = params;
+  const {
+    decisionReviewContext,
+    decisionState,
+    focusedProposalId,
+    resolvedProposalIds,
+  } = params;
   if (!focusedProposalId) {
+    return undefined;
+  }
+
+  if (!resolvedProposalIds.has(focusedProposalId)) {
     return undefined;
   }
 
@@ -314,27 +304,34 @@ export function buildStationaryEnergyChatRequest(params: {
     threadId,
     content,
     inventory_id: inventoryId,
-    context: draftState
-      ? {
-          stationary_energy_draft_run_id: draftState.draft_run_id,
-          draft_run_id: draftState.draft_run_id,
-          city_id: cityId,
-          inventory_id: inventoryId,
-          stationary_energy_interaction_mode: "free_text",
-          stationary_energy_pending_decision_reviews: decisionReviewContext,
-          stationary_energy_focused_decision_state: focusedDecisionState,
-          stationary_energy_focused_proposal_id: focusedProposalId,
-          stationary_energy_confirmed_bulk_review_choices:
-            confirmedBulkReviewChoices && confirmedBulkReviewChoices.length > 0
-              ? confirmedBulkReviewChoices
-              : undefined,
-          stationary_energy_confirmed_staged_review_rollback_choices:
-            confirmedRollbackReviewChoices &&
-            confirmedRollbackReviewChoices.length > 0
-              ? confirmedRollbackReviewChoices
-              : undefined,
-        }
-      : undefined,
+    // Always identify the Stationary Energy draft surface (city + inventory +
+    // interaction marker) so the agent can offer the start-draft tool even
+    // before a draft exists. Only this page sends these, so the general chat is
+    // unaffected.
+    context: {
+      city_id: cityId,
+      inventory_id: inventoryId,
+      stationary_energy_interaction_mode: "free_text",
+      ...(draftState
+        ? {
+            stationary_energy_draft_run_id: draftState.draft_run_id,
+            draft_run_id: draftState.draft_run_id,
+            stationary_energy_pending_decision_reviews: decisionReviewContext,
+            stationary_energy_focused_decision_state: focusedDecisionState,
+            stationary_energy_focused_proposal_id: focusedProposalId,
+            stationary_energy_confirmed_bulk_review_choices:
+              confirmedBulkReviewChoices &&
+              confirmedBulkReviewChoices.length > 0
+                ? confirmedBulkReviewChoices
+                : undefined,
+            stationary_energy_confirmed_staged_review_rollback_choices:
+              confirmedRollbackReviewChoices &&
+              confirmedRollbackReviewChoices.length > 0
+                ? confirmedRollbackReviewChoices
+                : undefined,
+          }
+        : {}),
+    },
     options: draftState
       ? {
           stationary_energy_draft_run_id: draftState.draft_run_id,
@@ -342,7 +339,10 @@ export function buildStationaryEnergyChatRequest(params: {
             decisionReviewContext.length,
           stationary_energy_ui_surfaces: ["chat_text", "decision_review_card"],
         }
-      : {},
+      : {
+          stationary_energy_interaction_mode: "free_text",
+          stationary_energy_ui_surfaces: ["chat_text"],
+        },
   };
 }
 

@@ -4,9 +4,7 @@ import {
   Container,
   Font,
   Head,
-  Hr,
   Html,
-  Img,
   Link,
   Preview,
   Section,
@@ -29,7 +27,6 @@ export default function InviteToOrganizationTemplate({
   language?: string;
 }) {
   const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
-  const ImageURL = "https://citycatalyst.openearth.dev/assets/icon.png";
   return (
     <Html>
       <Head>

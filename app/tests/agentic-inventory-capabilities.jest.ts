@@ -8,6 +8,7 @@ import {
   it,
   jest,
 } from "@jest/globals";
+import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
 import { Op } from "sequelize";
 
@@ -191,6 +192,54 @@ describe("GHGI inventory internal CA capability routes", () => {
         }),
       ]),
     );
+  });
+
+  it("filters listed inventories through the permission service", async () => {
+    const originalCanAccessInventory =
+      PermissionService.canAccessInventory.bind(PermissionService);
+    const accessSpy = jest
+      .spyOn(PermissionService, "canAccessInventory")
+      .mockImplementation(async (targetSession, targetInventoryId, options) => {
+        if (targetInventoryId === priorYearInventory.inventoryId) {
+          throw new createHttpError.Forbidden("Access denied to inventory");
+        }
+        return originalCanAccessInventory(
+          targetSession,
+          targetInventoryId,
+          options,
+        );
+      });
+
+    const res = await listAccessibleRoute(
+      listAccessibleRequest({ include_all_city_years: true }),
+      { params: Promise.resolve({}) },
+    );
+
+    await expectStatusCode(res, 200);
+    const payload = await res.json();
+    const matchingCity = payload.data.cities.find(
+      (candidate: { city_id: string }) => candidate.city_id === city.cityId,
+    );
+
+    expect(accessSpy).toHaveBeenCalledWith(
+      expect.anything(),
+      inventory.inventoryId,
+      { includeResource: false },
+    );
+    expect(accessSpy).toHaveBeenCalledWith(
+      expect.anything(),
+      priorYearInventory.inventoryId,
+      { includeResource: false },
+    );
+    expect(matchingCity.inventories).toEqual([
+      expect.objectContaining({ inventory_id: inventory.inventoryId }),
+    ]);
+    expect(
+      matchingCity.inventories.some(
+        (candidate: { inventory_id: string }) =>
+          candidate.inventory_id === priorYearInventory.inventoryId,
+      ),
+    ).toBe(false);
   });
 
   it("filters accessible inventories by city and year", async () => {

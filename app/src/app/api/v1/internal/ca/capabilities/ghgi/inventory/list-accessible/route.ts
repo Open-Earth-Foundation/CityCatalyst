@@ -61,7 +61,13 @@ import {
   requireClimateAdvisorServiceRequest,
   requireStationaryEnergyAgenticEnabled,
 } from "@/backend/agentic/ghgi/stationary-energy/auth";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+import type { AppSession } from "@/lib/auth";
 import { apiHandler } from "@/util/api";
+
+type AccessibleInventoryList = Awaited<
+  ReturnType<typeof buildAccessibleInventoryList>
+>;
 
 export const POST = apiHandler(async (req, { session }) => {
   requireStationaryEnergyAgenticEnabled();
@@ -73,14 +79,76 @@ export const POST = apiHandler(async (req, { session }) => {
     throw new createHttpError.Unauthorized("Unauthorized");
   }
 
-  return NextResponse.json({
-    action: INVENTORY_LIST_ACCESSIBLE_CAPABILITY,
-    success: true,
-    data: await buildAccessibleInventoryList({
+  const accessibleInventoryList = await filterByInventoryPermission(
+    session,
+    await buildAccessibleInventoryList({
       userId,
       cityQuery: body.city_query,
       year: body.year,
       includeAllCityYears: body.include_all_city_years,
     }),
+  );
+
+  return NextResponse.json({
+    action: INVENTORY_LIST_ACCESSIBLE_CAPABILITY,
+    success: true,
+    data: accessibleInventoryList,
   });
 });
+
+async function filterByInventoryPermission(
+  session: AppSession | null,
+  list: AccessibleInventoryList,
+): Promise<AccessibleInventoryList> {
+  const cities = await Promise.all(
+    list.cities.map(async (city) => {
+      const inventories = (
+        await Promise.all(
+          city.inventories.map(async (inventory) => {
+            const hasAccess = await canAccessInventory(
+              session,
+              inventory.inventory_id,
+            );
+            return hasAccess ? inventory : null;
+          }),
+        )
+      ).filter((inventory): inventory is (typeof city.inventories)[number] =>
+        Boolean(inventory),
+      );
+
+      return { ...city, inventories };
+    }),
+  );
+
+  const permittedCities = cities.filter((city) => city.inventories.length > 0);
+
+  return {
+    ...list,
+    cities: permittedCities,
+    total_cities: permittedCities.length,
+    total_inventories: permittedCities.reduce(
+      (sum, city) => sum + city.inventories.length,
+      0,
+    ),
+  };
+}
+
+async function canAccessInventory(
+  session: AppSession | null,
+  inventoryId: string,
+): Promise<boolean> {
+  try {
+    await PermissionService.canAccessInventory(session, inventoryId, {
+      includeResource: false,
+    });
+    return true;
+  } catch (error) {
+    if (
+      createHttpError.isHttpError(error) &&
+      [403, 404].includes(error.statusCode)
+    ) {
+      return false;
+    }
+    throw error;
+  }
+}
